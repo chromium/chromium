@@ -66,6 +66,9 @@ class RecordReplayAgent : public content::RenderFrameObserver,
   void DoSelect(DomNodeId dom_node_id,
                 FieldValue value,
                 base::OnceCallback<void(bool)> cb) override;
+  void GetValuesOfMatchingElements(
+      Selector element_selector,
+      base::OnceCallback<void(std::vector<FieldValue>)> cb) override;
 
  private:
   friend class RecordReplayAgentTestApi;

@@ -7,6 +7,7 @@
 #include "base/functional/callback.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
+#include "components/record_replay/core/browser/task_parameters_extractor.h"
 #include "components/record_replay/core/common/aliases.h"
 #include "components/record_replay/core/common/element_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -122,6 +123,41 @@ void ContentRecordReplayDriver::OnTextChange(DomNodeId dom_node_id,
   client_->GetManager().OnTextChange(
       *this, ElementId{GetFrameToken(), dom_node_id},
       std::move(element_selector), std::move(text), GetPassKey());
+}
+
+void ContentRecordReplayDriver::ExtractParameters(
+    base::WeakPtr<TaskParametersExtractor> extractor,
+    const GURL& url) {
+  if (!extractor) {
+    return;
+  }
+
+  mojom::RecordReplayAgent* agent = GetRecordReplayAgent();
+  if (!agent) {
+    return;
+  }
+
+  for (const auto& [key, selector] :
+       extractor->GetParameterValueSelectorsForUrl(url)) {
+    agent->GetValuesOfMatchingElements(
+        Selector(selector),
+        base::BindOnce(&ContentRecordReplayDriver::OnValuesExtracted,
+                       weak_ptr_factory_.GetWeakPtr(), extractor, key));
+  }
+}
+
+void ContentRecordReplayDriver::OnValuesExtracted(
+    base::WeakPtr<TaskParametersExtractor> extractor,
+    const std::string& key,
+    std::vector<FieldValue> values) {
+  if (!extractor || values.empty()) {
+    return;
+  }
+
+  // TODO(crbug.com/511996748): Figure out how to handle cases where multiple
+  // elements match the selector and return multiple values. Currently, we
+  // simply fall back to storing the first matching element's value.
+  extractor->StoreExtractedValue(key, *values.front());
 }
 
 }  // namespace record_replay

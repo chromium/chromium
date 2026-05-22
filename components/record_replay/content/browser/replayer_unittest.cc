@@ -63,6 +63,11 @@ class MockRecordReplayAgent : public mojom::RecordReplayAgent {
                FieldValue value,
                base::OnceCallback<void(bool)> cb),
               (override));
+  MOCK_METHOD(void,
+              GetValuesOfMatchingElements,
+              (Selector element_selector,
+               base::OnceCallback<void(std::vector<FieldValue>)> cb),
+              (override));
 };
 
 class MockRecordReplayClient : public RecordReplayClient,

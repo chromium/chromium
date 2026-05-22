@@ -177,6 +177,28 @@ void RecordReplayAgent::DoSelect(DomNodeId dom_node_id,
   std::move(cb).Run(true);
 }
 
+void RecordReplayAgent::GetValuesOfMatchingElements(
+    Selector element_selector,
+    base::OnceCallback<void(std::vector<FieldValue>)> cb) {
+  // TODO(crbug.com/511996748): Refine the logic of handling different elements.
+  const blink::WebDocument document = GetDocument();
+  if (!document) {
+    std::move(cb).Run({});
+    return;
+  }
+  const std::vector<blink::WebElement> matches =
+      document.QuerySelectorAll(blink::WebString::FromUtf8(*element_selector));
+  std::vector<FieldValue> values;
+  for (const blink::WebElement& element : matches) {
+    if (element.HasHTMLTagName("input")) {
+      values.emplace_back(element.To<blink::WebInputElement>().Value().Utf8());
+    } else {
+      values.emplace_back(element.TextContent().Utf8());
+    }
+  }
+  std::move(cb).Run(std::move(values));
+}
+
 void RecordReplayAgent::DidReceiveLeftMouseDownOrGestureTapInNode(
     const blink::WebNode& node) {
   if (!record_) {

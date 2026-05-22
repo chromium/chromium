@@ -9,6 +9,7 @@
 #include "chrome/browser/glic/browser_ui/glic_nudge_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/record_replay/recording_data_manager_factory.h"
+#include "chrome/browser/record_replay/task_parameters_extractor_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toasts/api/toast_id.h"
@@ -20,6 +21,7 @@
 #include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/task_discovery_service.h"
 #include "components/record_replay/core/browser/task_discovery_service_impl.h"
+#include "components/record_replay/core/browser/task_parameters_extractor.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -133,6 +135,24 @@ void ChromeRecordReplayClient::DidFinishNavigation(
       navigation_handle->GetURL(),
       base::BindOnce(&ChromeRecordReplayClient::OnShouldOfferTask,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  PerformParametersExtraction(navigation_handle->GetURL());
+}
+
+void ChromeRecordReplayClient::PerformParametersExtraction(const GURL& url) {
+  Profile* profile =
+      Profile::FromBrowserContext(tab().GetContents()->GetBrowserContext());
+  if (auto* extractor =
+          record_replay::TaskParametersExtractorFactory::GetForProfile(
+              profile)) {
+    content::RenderFrameHost* main_frame =
+        tab().GetContents()->GetPrimaryMainFrame();
+    if (record_replay::ContentRecordReplayDriver* driver =
+            static_cast<record_replay::ContentRecordReplayDriver*>(
+                driver_factory_.GetOrCreateDriver(main_frame))) {
+      driver->ExtractParameters(extractor->GetWeakPtr(), url);
+    }
+  }
 }
 
 void ChromeRecordReplayClient::OnShouldOfferTask(bool offered) {

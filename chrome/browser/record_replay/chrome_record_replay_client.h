@@ -22,6 +22,7 @@ class AutofillClient;
 }
 
 namespace content {
+class NavigationHandle;
 class WebContents;
 }
 
@@ -62,6 +63,7 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
 
  private:
   void OnShouldOfferTask(bool offered);
+  void PerformParametersExtraction(const GURL& url);
 
   void OnDiscardContents(tabs::TabInterface* tab,
                          content::WebContents* old_contents,

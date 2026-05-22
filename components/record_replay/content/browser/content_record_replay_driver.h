@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/record_replay/core/browser/record_replay_driver.h"
 #include "components/record_replay/core/common/aliases.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
@@ -15,6 +16,8 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
+class GURL;
+
 namespace content {
 class RenderFrameHost;
 }
@@ -22,6 +25,7 @@ class RenderFrameHost;
 namespace record_replay {
 
 class RecordReplayClient;
+class TaskParametersExtractor;
 
 // The browser-side endpoint for Mojo communication with the renderer
 // implementation of the interface (`RecordReplayAgent`).
@@ -42,6 +46,10 @@ class ContentRecordReplayDriver : public RecordReplayDriver,
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::RecordReplayDriver>
           pending_receiver);
+
+  // Initiates parameter extraction using the given extractor for the GURL.
+  void ExtractParameters(base::WeakPtr<TaskParametersExtractor> extractor,
+                         const GURL& url);
 
   // RecordReplayDriver:
   bool IsActive() const override;
@@ -75,11 +83,16 @@ class ContentRecordReplayDriver : public RecordReplayDriver,
  private:
   mojom::RecordReplayAgent* GetRecordReplayAgent();
 
+  void OnValuesExtracted(base::WeakPtr<TaskParametersExtractor> extractor,
+                         const std::string& key,
+                         std::vector<FieldValue> values);
+
   const raw_ref<RecordReplayClient> client_;
   const raw_ref<content::RenderFrameHost> rfh_;
   raw_ptr<mojom::RecordReplayAgent> test_record_replay_agent_ = nullptr;
   mojo::AssociatedReceiver<mojom::RecordReplayDriver> receiver_{this};
   mojo::AssociatedRemote<mojom::RecordReplayAgent> agent_;
+  base::WeakPtrFactory<ContentRecordReplayDriver> weak_ptr_factory_{this};
 };
 
 }  // namespace record_replay

@@ -51,6 +51,9 @@ interface RecordReplayAgent {
   // Selects the first option of the given select element that has the given
   // `value`.
   DoSelect(DomNodeId dom_node_id, FieldValue value) => (bool success);
+
+  // Determines all elements matching a selector and retrieves their values.
+  GetValuesOfMatchingElements(Selector element_selector) => (array<FieldValue> values);
 };
 
 // There is one instance of this interface per RenderFrameHost in the browser

@@ -5,19 +5,23 @@
 #ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_PARAMETERS_EXTRACTOR_H_
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_PARAMETERS_EXTRACTOR_H_
 
+#include <map>
 #include <optional>
 #include <string>
+#include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
+#include "components/record_replay/core/common/aliases.h"
+#include "url/gurl.h"
 
 namespace record_replay {
 
-// Component responsible for extracting and caching task parameters. Currently
-// implemented as a skeleton that populates dummy data.
-// TODO(crbug.com/511996748): Implement tracking of web page loads and
-// performing real parameter extraction.
+// Component responsible for caching task parameters. Implemented as a
+// KeyedService which stores extracted parameter values and populates them into
+// TaskObservations.
 class TaskParametersExtractor : public KeyedService {
  public:
   TaskParametersExtractor();
@@ -25,12 +29,26 @@ class TaskParametersExtractor : public KeyedService {
   TaskParametersExtractor& operator=(const TaskParametersExtractor&) = delete;
   ~TaskParametersExtractor() override;
 
+  base::WeakPtr<TaskParametersExtractor> GetWeakPtr();
+
   // Starts parameter extraction for the given TaskDefinition.
   void StartExtraction(TaskDefinition task_definition);
 
-  // Fills extracted parameter values into the given task
-  // observation object. Upon completion - calls the
-  // completion callback.
+  // Returns a map of expected parameter keys and their corresponding CSS
+  // selectors if the active task is configured for the given URL.
+  std::map<std::string, std::string> GetParameterValueSelectorsForUrl(
+      const GURL& url);
+
+  // Stores a successfully extracted value for a parameter key.
+  void StoreExtractedValue(const std::string& key, const std::string& value);
+
+  // Fills currently cached parameter values into the given task observation
+  // object and immediately runs the callback.
+  //
+  // NOTE: There is a potential race condition. If this is called before
+  // asynchronous Mojo extractions have completed, the observation will only be
+  // populated with currently cached values (or remain empty if no extractions
+  // resolved yet).
   void FillExtractedParametersTo(
       TaskObservation* observation,
       base::OnceCallback<void(bool)> completion_callback);
@@ -39,8 +57,16 @@ class TaskParametersExtractor : public KeyedService {
   void FinishExtraction();
 
  private:
+  // Returns a CSS selector for extracting values for the given key.
+  std::string GetSelectorForKey(const std::string& key) const;
+
   // Active task definition under observation, if any.
   std::optional<TaskDefinition> active_task_definition_;
+
+  // Cached parameter values extracted from the DOM: key -> value.
+  std::map<std::string, std::string> extracted_values_;
+
+  base::WeakPtrFactory<TaskParametersExtractor> weak_ptr_factory_{this};
 };
 
 }  // namespace record_replay
