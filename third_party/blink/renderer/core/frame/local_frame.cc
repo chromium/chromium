@@ -3681,32 +3681,8 @@ void LocalFrame::MediaPlayerActionAtViewportPoint(
       media_element->SetUserWantsControlsVisible(enable);
       break;
     case mojom::blink::MediaPlayerActionType::kSaveVideoFrameAs:
-      if (auto* video = DynamicTo<HTMLVideoElement>(media_element); video) {
-        auto image = video->CreateStaticBitmapImage();
-        if (!image) {
-          return;
-        }
-        auto data_buffer = ImageDataBuffer::Create(image);
-        if (!data_buffer) {
-          return;
-        }
-
-        ImageEncodingMimeType encoding_mime_type =
-            ImageEncoderUtils::ToEncodingMimeType(
-                "image/png", ImageEncoderUtils::kEncodeReasonToDataURL);
-        String data_url =
-            data_buffer->ToDataURL(encoding_mime_type, /*quality=*/0);
-
-        auto params = mojom::blink::DownloadURLParams::New();
-        params->is_context_menu_save = true;
-        // Suggested name always starts with "videoframe_", plus the timestamp
-        // of the video frame in milliseconds.
-        auto timestamp_ms = base::saturated_cast<uint32_t>(
-            media_element->currentTime() * base::Time::kMillisecondsPerSecond);
-        params->suggested_name =
-            StrCat({"videoframe_", String::Number(timestamp_ms)});
-        params->data_url_blob = DataURLToBlob(data_url);
-        GetLocalFrameHostRemote().DownloadURL(std::move(params));
+      if (auto* video = DynamicTo<HTMLVideoElement>(media_element)) {
+        video->RequestSaveVideoFrame();
       }
       break;
     case mojom::blink::MediaPlayerActionType::kCopyVideoFrame:

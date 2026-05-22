@@ -14,6 +14,9 @@ specific_include_rules = {
     "html_media_element_test\.cc": [
         "+base/run_loop.h",
     ],
+    "html_video_element_test\.cc": [
+        "+media/renderers/paint_canvas_video_renderer.h",
+    ],
     "media_fragment_uri_parser.cc": [
         "+base/no_destructor.h",
     ],

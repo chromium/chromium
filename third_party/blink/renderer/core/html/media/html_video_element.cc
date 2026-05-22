@@ -34,6 +34,8 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/platform/web_fullscreen_video_status.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_fullscreen_options.h"
@@ -44,7 +46,11 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
+#include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/picture_in_picture_controller.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
@@ -66,18 +72,22 @@
 #include "third_party/blink/renderer/core/loader/lazy_media_helper.h"
 #include "third_party/blink/renderer/core/loader/resource/video_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non2d_snapshot_provider_bitmap.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/extensions_3d_util.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+#include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
+#include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_utf8_adaptor.h"
 
 namespace blink {
 
@@ -469,6 +479,53 @@ void HTMLVideoElement::OnEncryptedMediaInitData() {
   if (visibility_tracker_) {
     visibility_tracker_->RequestVisibilityRatio(BindOnce(
         &HTMLVideoElement::OnVisibilityRatioReport, WrapWeakPersistent(this)));
+  }
+}
+
+void HTMLVideoElement::RequestSaveVideoFrame() {
+  auto image = CreateStaticBitmapImage();
+  if (!image) {
+    return;
+  }
+  auto data_buffer = ImageDataBuffer::Create(image);
+  if (!data_buffer) {
+    return;
+  }
+
+  ImageEncodingMimeType encoding_mime_type =
+      ImageEncoderUtils::ToEncodingMimeType(
+          "image/png", ImageEncoderUtils::kEncodeReasonToDataURL);
+
+  Vector<unsigned char> png_bytes;
+  if (!data_buffer->EncodeImage(encoding_mime_type, /*quality=*/0,
+                                &png_bytes)) {
+    return;
+  }
+
+  // TODO(crbug.com/515541028): Avoid copying the bytes here.
+  Blob* blob = Blob::Create(base::span(png_bytes), "image/png");
+  LocalDOMWindow* window = GetDocument().domWindow();
+  CHECK(window);
+  PublicURLManager& url_manager = window->GetPublicURLManager();
+  String blob_url = url_manager.RegisterURL(blob);
+
+  mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
+  url_manager.ResolveAsBlobURLToken(
+      KURL(blob_url), blob_url_token.InitWithNewPipeAndPassReceiver(),
+      /*is_top_level_navigation=*/false);
+
+  auto params = mojom::blink::DownloadURLParams::New();
+  params->is_context_menu_save = true;
+  auto timestamp_ms = base::saturated_cast<uint32_t>(
+      currentTime() * base::Time::kMillisecondsPerSecond);
+  params->suggested_name =
+      StrCat({"videoframe_", String::Number(timestamp_ms)});
+  params->url = KURL(blob_url);
+  params->blob_url_token = std::move(blob_url_token);
+
+  if (GetDocument().GetFrame()) {
+    GetDocument().GetFrame()->GetLocalFrameHostRemote().DownloadURL(
+        std::move(params));
   }
 }
 

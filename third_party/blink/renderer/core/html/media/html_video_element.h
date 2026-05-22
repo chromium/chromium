@@ -176,6 +176,8 @@ class CORE_EXPORT HTMLVideoElement final
   // HTMLMediaElement overrides.
   void OnEncryptedMediaInitData() final;
 
+  void RequestSaveVideoFrame();
+
   bool poster_deferred_for_lazy_load_for_tests() const {
     return poster_deferred_for_lazy_load_;
   }
