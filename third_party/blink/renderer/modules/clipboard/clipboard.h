@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event_controller.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_item.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
@@ -19,7 +20,8 @@ class Navigator;
 class ScriptState;
 class ClipboardReadOptions;
 
-class Clipboard : public EventTarget, public Supplement<Navigator> {
+class MODULES_EXPORT Clipboard : public EventTarget,
+                                 public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -66,7 +68,13 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
                             const RegisteredEventListener&) override;
 
  private:
+  // Runs post-prerender-activation to perform deferred registration.
+  void OnPrerenderActivatedRegisterController();
+
   Member<ClipboardChangeEventController> clipboard_change_event_controller_;
+
+  // Set while a deferred registration is queued on a prerendering Document.
+  bool register_with_dispatcher_pending_ = false;
 };
 
 }  // namespace blink

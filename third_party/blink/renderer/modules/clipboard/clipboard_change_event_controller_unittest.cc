@@ -5,11 +5,21 @@
 #include "third_party/blink/renderer/modules/clipboard/clipboard_change_event_controller.h"
 
 #include "base/functional/bind.h"
+#include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/modules/clipboard/clipboard.h"
 #include "third_party/blink/renderer/modules/clipboard/clipboard_test_utils.h"
 #include "third_party/blink/renderer/modules/clipboard/mock_clipboard_permission_service.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -347,6 +357,38 @@ TEST_F(ClipboardChangeEventTest,
   // focused_frame_ == main_frame) -> NotifyFocusChangedObservers() ->
   // FocusedFrameChanged() -> MaybeDispatchClipboardChangeEvent().
   // Before the fix: crashes with null dereference.
+}
+
+// Regression test for crbug.com/500385607: addEventListener('clipboardchange')
+// on a prerendering document must not bind blink.mojom.ClipboardHost.
+class ClipboardChangeEventPrerenderTest : public SimTest {};
+
+TEST_F(ClipboardChangeEventPrerenderTest, NoClipboardHostBindWhilePrerendering) {
+  InitializePrerenderPageRoot();
+  SimRequest resource("https://example.test/", "text/html");
+  LoadURL("https://example.test/");
+  resource.Complete("<!DOCTYPE html><html><body></body></html>");
+  ASSERT_TRUE(GetDocument().IsPrerendering());
+
+  int clipboard_host_bind_count = 0;
+  ASSERT_TRUE(
+      GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+          mojom::blink::ClipboardHost::Name_,
+          base::BindRepeating(
+              [](int* c, mojo::ScopedMessagePipeHandle) { ++*c; },
+              base::Unretained(&clipboard_host_bind_count))));
+
+  Navigator* navigator = GetDocument().GetFrame()->DomWindow()->navigator();
+  Clipboard* clipboard = Clipboard::clipboard(*navigator);
+  auto* listener = MakeGarbageCollected<EventCountingListener>();
+  clipboard->addEventListener(event_type_names::kClipboardchange, listener);
+  test::RunPendingTasks();
+
+  EXPECT_EQ(clipboard_host_bind_count, 0);
+
+  ASSERT_TRUE(
+      GetDocument().GetFrame()->GetBrowserInterfaceBroker().SetBinderForTesting(
+          mojom::blink::ClipboardHost::Name_, {}));
 }
 
 }  // namespace blink
