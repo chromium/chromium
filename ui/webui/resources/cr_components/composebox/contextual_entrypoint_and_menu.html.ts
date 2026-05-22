@@ -28,6 +28,7 @@ export function getHtml(this: ContextualEntrypointAndMenuElement) {
         .inputState="${this.inputState}"
         .smartTabSharingActive="${this.smartTabSharingActive}"
         .disableAutoReposition="${this.disableAutoReposition}"
+        .uploadButtonDisabled="${this.uploadButtonDisabled}"
         @close="${this.onMenuClose_}">
     </cr-composebox-contextual-action-menu>
   <!--_html_template_end_-->`;
