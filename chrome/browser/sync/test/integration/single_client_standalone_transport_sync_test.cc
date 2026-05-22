@@ -39,6 +39,14 @@ namespace {
 using testing::ContainerEq;
 
 syncer::DataTypeSet GetTypesGatedBehindHistoryOptIn() {
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
+    // History, Tabs and Saved Tab Groups are enabled by default on ChromeOS,
+    // when the flag is enabled.
+    return {};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
   syncer::DataTypeSet types = {syncer::COLLABORATION_GROUP,
                                syncer::HISTORY,
                                syncer::HISTORY_DELETE_DIRECTIVES,
@@ -201,8 +209,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  // History sync is enabled by default on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
+#endif
 
   // Make sure that only the allowed types got activated.
   syncer::DataTypeSet expected_types =
@@ -224,8 +235,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientStandaloneTransportSyncTest,
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
   ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  // History sync is enabled by default on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kHistory));
+#endif
 
   // Opt in to history and tabs.
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
@@ -273,8 +287,16 @@ IN_PROC_BROWSER_TEST_F(
 
   // Make sure that only the allowed types got activated.
   syncer::DataTypeSet expected_types =
+#if !BUILDFLAG(IS_CHROMEOS)
       Difference(AllowedTypesInStandaloneTransportMode(),
-                 GetTypesGatedBehindHistoryOptIn());
+                 GetTypesGatedBehindHistoryOptIn())
+#else
+      // With a custom passphrase, the actual HISTORY types are not supported.
+      Difference(AllowedTypesInStandaloneTransportMode(),
+                 {syncer::HISTORY, syncer::HISTORY_DELETE_DIRECTIVES,
+                  syncer::USER_EVENTS})
+#endif
+      ;
 
 #if !(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
   // After SyncToSignin, CONTACT_INFO are enabled for Win/Mac/Linux, and

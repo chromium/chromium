@@ -280,18 +280,19 @@ TEST_F(SyncUserSettingsImplTest,
 
   const UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
-  // History and Tabs require a separate opt-in.
-  // SavedTabGroups also requires a separate opt-in, either the same one as
-  // history and tabs (on mobile), or a dedicated opt-in.
-  UserSelectableTypeSet expected_disabled_types = {
-      UserSelectableType::kHistory, UserSelectableType::kTabs,
-      UserSelectableType::kSavedTabGroups};
+
+  UserSelectableTypeSet expected_disabled_types = {};
 
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Themes is not supported on mobile.
   expected_disabled_types.Put(UserSelectableType::kThemes);
 #endif
 #if !BUILDFLAG(IS_CHROMEOS)
+  // History, Tabs and Saved Tab Groups are enabled by default on ChromeOS,
+  // while they require a separate opt-in on the other platforms.
+  expected_disabled_types.Put(UserSelectableType::kHistory);
+  expected_disabled_types.Put(UserSelectableType::kTabs);
+  expected_disabled_types.Put(UserSelectableType::kSavedTabGroups);
   // Cookies is only supported on ChromeOS.
   expected_disabled_types.Put(UserSelectableType::kCookies);
 #endif  // BUILDFLAG(IS_CHROMEOS)

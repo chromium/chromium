@@ -1158,8 +1158,12 @@ bool SyncPrefs::IsTypeSelectedByDefaultInTransportMode(
     case UserSelectableType::kHistory:
     case UserSelectableType::kTabs:
     case UserSelectableType::kSavedTabGroups:
+#if BUILDFLAG(IS_CHROMEOS)
+      return IsReplaceSyncPromosWithSignInPromosEnabled();
+#else
       // History and tabs require a separate opt in.
       return false;
+#endif
     case UserSelectableType::kBookmarks:
     case UserSelectableType::kReadingList:
       return IsBookmarksSelectedByDefaultInTransportMode(*pref_service_,

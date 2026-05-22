@@ -537,12 +537,12 @@ TEST_F(SyncPrefsTest,
                                         UserSelectableType::kReadingList,
                                         UserSelectableType::kExtensions,
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kHistory,
                                         UserSelectableType::kSavedTabGroups,
                                         UserSelectableType::kTabs,
-#if !BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kCookies,
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
                                     });
 
   EXPECT_THAT(sync_prefs_->GetSelectedTypesForAccount(gaia_id_),
@@ -561,10 +561,10 @@ TEST_F(SyncPrefsTest,
   signin_prefs.SetExtensionsExplicitBrowserSignin(gaia_id_, true);
   const UserSelectableTypeSet expected_types_new_signin = Difference(
       UserSelectableTypeSet::All(), {
+#if !BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kHistory,
                                         UserSelectableType::kSavedTabGroups,
                                         UserSelectableType::kTabs,
-#if !BUILDFLAG(IS_CHROMEOS)
                                         UserSelectableType::kCookies,
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -1455,14 +1455,23 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_DefaultState) {
   default_enabled_types.Put(UserSelectableType::kReadingList);
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // History, Tabs and Saved Tab Groups are enabled by default on ChromeOS.
+  default_enabled_types.Put(UserSelectableType::kHistory);
+  default_enabled_types.Put(UserSelectableType::kTabs);
+  default_enabled_types.Put(UserSelectableType::kSavedTabGroups);
+#endif
+
   ASSERT_TRUE(SyncPrefs(&pref_service_)
                   .GetSelectedTypesForAccount(gaia_id_)
                   .HasAll(default_enabled_types));
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(
       SyncPrefs(&pref_service_)
           .GetSelectedTypesForAccount(gaia_id_)
           .HasAny({UserSelectableType::kHistory, UserSelectableType::kTabs,
                    UserSelectableType::kSavedTabGroups}));
+#endif
 
   SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
 
@@ -1515,10 +1524,12 @@ TEST_F(SyncPrefsMigrationTest, GlobalToAccount_CustomState) {
                   .GetSelectedTypesForAccount(gaia_id_)
                   .HasAll(pre_migration_selected_types));
 
+#if !BUILDFLAG(IS_CHROMEOS)
   ASSERT_FALSE(
       SyncPrefs(&pref_service_)
           .GetSelectedTypesForAccount(gaia_id_)
           .HasAny({UserSelectableType::kHistory, UserSelectableType::kTabs}));
+#endif
 
   SyncPrefs::MigrateGlobalDataTypePrefsToAccount(&pref_service_, gaia_id_);
 
