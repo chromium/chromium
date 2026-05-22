@@ -469,11 +469,8 @@ public class FindTest {
     /** Verify FIP in IncognitoTabs. */
     @Test
     @SmallTest
-    @DisableIf.Build(
-            sdk_is_greater_than = 34,
-            message = "b/514878860")
     @Feature({"FindInPage"})
-    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511287685
+    @DisabledTest(message = "https://crbug.com/515428606")
     public void testFindNextPreviousIncognitoTab() {
         String query = "pitts";
         var incognitoPage = mPage.openNewIncognitoTabOrWindowFast();
