@@ -155,11 +155,10 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
       std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
 }
 
-scoped_refptr<StaticBitmapImage>
-Canvas2DResourceProviderBitmap::SnapshotForCanvas2D(
+scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderBitmap::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "Canvas2DResourceProviderBitmap::Snapshot");
-  return UnacceleratedSnapshotForCanvas2D(orientation);
+  return UnacceleratedSnapshot(orientation);
 }
 
 sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
@@ -940,8 +939,7 @@ void Canvas2DResourceProviderSharedImage::EndWriteAccess() {
   current_resource_has_write_access_ = false;
 }
 
-scoped_refptr<StaticBitmapImage>
-Canvas2DResourceProviderSharedImage::SnapshotForCanvas2D(
+scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderSharedImage::Snapshot(
     ImageOrientation orientation) {
   TRACE_EVENT0("blink", "Canvas2DResourceProviderSharedImage::Snapshot");
   if (!IsValid()) {
@@ -953,7 +951,7 @@ Canvas2DResourceProviderSharedImage::SnapshotForCanvas2D(
   // while in this case we are simply returning the rendered CPU-side results to
   // the client.
   if (!is_accelerated_) {
-    return UnacceleratedSnapshotForCanvas2D(orientation);
+    return UnacceleratedSnapshot(orientation);
   }
 
   if (!cached_snapshot_) {
@@ -1794,8 +1792,7 @@ CanvasResourceProvider::GetCanvasForCanvas2DForTesting() {
 }
 
 scoped_refptr<UnacceleratedStaticBitmapImage>
-CanvasResourceProvider::UnacceleratedSnapshotForCanvas2D(
-    ImageOrientation orientation) {
+CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   if (!IsValid())
     return nullptr;
 

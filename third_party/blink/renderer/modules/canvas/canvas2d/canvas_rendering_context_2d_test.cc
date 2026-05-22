@@ -591,9 +591,9 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
             gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
                 gpu::SHARED_IMAGE_USAGE_RASTER_WRITE,
             delegate) {
-    ON_CALL(*this, SnapshotForCanvas2D)
+    ON_CALL(*this, Snapshot)
         .WillByDefault([this](ImageOrientation orientation) {
-          return UnacceleratedSnapshotForCanvas2D(orientation);
+          return UnacceleratedSnapshot(orientation);
         });
   }
   ~FakeCanvasResourceProvider() override = default;
@@ -619,7 +619,7 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
               (cc::PaintRecord last_recording));
 
   MOCK_METHOD((scoped_refptr<StaticBitmapImage>),
-              SnapshotForCanvas2D,
+              Snapshot,
               (ImageOrientation orientation));
 
   MOCK_METHOD(bool,
@@ -3228,7 +3228,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   // when getting out of hibernation, so this mock will not see the later calls
   // to `RasterRecordForCanvas2D`.
   cc::PaintRecord hibernation_raster;
-  EXPECT_CALL(*provider, SnapshotForCanvas2D(_)).Times(1);
+  EXPECT_CALL(*provider, Snapshot(_)).Times(1);
   EXPECT_CALL(*provider, RasterRecordForCanvas2D)
       .Times(1)
       .WillOnce(SaveArg<0>(&hibernation_raster));

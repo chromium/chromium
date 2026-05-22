@@ -768,7 +768,7 @@ scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage() {
   }
 
   resource_provider_->FlushCanvas2D();
-  return resource_provider_->SnapshotForCanvas2D();
+  return resource_provider_->Snapshot();
 }
 
 ImageData* CanvasRenderingContext2D::getImageDataInternal(
