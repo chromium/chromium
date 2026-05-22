@@ -1125,4 +1125,81 @@ public class ToolbarControlContainerTest {
         verify(mLocationBarCoordinator, times(2)).hideOptionalButton();
         verify(mOptionalButtonCoordinator).hideButton();
     }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
+    public void testOnMeasure_WithToolBarSnapShotRefactorEnabled_SetsCorrectMargins() {
+        // Top margins (toolbar_container, toolbar, hairline) when the flag is enabled:
+        // tab strip height, 0, toolbar height
+
+        Resources res = mActivity.getResources();
+        int toolbarLayoutHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        int simulatedTabStripHeight = 105;
+
+        checkOnMeasureMargins(
+                simulatedTabStripHeight,
+                toolbarLayoutHeight,
+                /* expectedContainerTopMargin= */ simulatedTabStripHeight,
+                /* expectedHairlineTopMargin= */ toolbarLayoutHeight);
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
+    public void testOnMeasure_WithToolBarSnapShotRefactorDisabled_LeavesMarginsUntouched() {
+        // Top margins (toolbar_container, toolbar, hairline) when the flag is disabled:
+        // 0, tab strip height, tab strip height + toolbar height
+
+        Resources res = mActivity.getResources();
+        int toolbarLayoutHeight = res.getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+        int simulatedTabStripHeight = 105;
+
+        checkOnMeasureMargins(
+                simulatedTabStripHeight,
+                toolbarLayoutHeight,
+                /* expectedContainerTopMargin= */ 0,
+                /* expectedHairlineTopMargin= */ simulatedTabStripHeight + toolbarLayoutHeight);
+    }
+
+    private void checkOnMeasureMargins(
+            int simulatedTabStripHeight,
+            int toolbarLayoutHeight,
+            int expectedContainerTopMargin,
+            int expectedHairlineTopMargin) {
+        initControlContainer(R.layout.toolbar_tablet);
+
+        doReturn(simulatedTabStripHeight).when(mToolbar).getTabStripHeight();
+
+        View toolbarContainerView = mControlContainer.findViewById(R.id.toolbar_container);
+        View hairlineView = mControlContainer.findViewById(R.id.toolbar_hairline);
+
+        // Get the existing layout params.
+        MarginLayoutParams oldToolbarContainerParams =
+                (MarginLayoutParams) toolbarContainerView.getLayoutParams();
+        oldToolbarContainerParams.topMargin = 0;
+        toolbarContainerView.setLayoutParams(oldToolbarContainerParams);
+
+        MarginLayoutParams oldHairlineParams = (MarginLayoutParams) hairlineView.getLayoutParams();
+        oldHairlineParams.topMargin = simulatedTabStripHeight + toolbarLayoutHeight;
+        hairlineView.setLayoutParams(oldHairlineParams);
+
+        // Execute the onMeasure pass that we overrode.
+        int widthSpec = View.MeasureSpec.makeMeasureSpec(1024, View.MeasureSpec.EXACTLY);
+        int heightSpec = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+        mControlContainer.measure(widthSpec, heightSpec);
+
+        // Read back the final layout parameters.
+        MarginLayoutParams newToolbarContainerParams =
+                (MarginLayoutParams) toolbarContainerView.getLayoutParams();
+        MarginLayoutParams newHairlineParams = (MarginLayoutParams) hairlineView.getLayoutParams();
+
+        assertEquals(
+                "Toolbar container top margin is incorrect.",
+                expectedContainerTopMargin,
+                newToolbarContainerParams.topMargin);
+
+        assertEquals(
+                "Hairline top margin is incorrect.",
+                expectedHairlineTopMargin,
+                newHairlineParams.topMargin);
+    }
 }
