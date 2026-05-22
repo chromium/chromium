@@ -170,10 +170,18 @@ public class ImmersiveVideoPlaybackActivity extends VideoOverlayActivity {
     @Override
     public void onStopWithNative() {
         super.onStopWithNative();
-        if (isNativeHandleInitialized()) {
+        if (isFinishing() && isNativeHandleInitialized()) {
             onBackToTab();
             finishOverlay(/* closeByNative= */ false);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (isNativeHandleInitialized()) {
+            finishOverlay(/* closeByNative= */ false);
+        }
+        super.onDestroy();
     }
 
     @Override

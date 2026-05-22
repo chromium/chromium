@@ -53,6 +53,10 @@ class ImmersiveOverlayWindowAndroid : public OverlayWindowAndroid {
     UpdateVideoSizeJava(natural_size.width(), natural_size.height());
   }
 
+  void OnActivityStopped() override {
+    // No-op. Do not auto-close the overlay when the activity is stopped.
+  }
+
   gfx::Rect GetBounds() override { return gfx::Rect(video_size_); }
 
  private:
