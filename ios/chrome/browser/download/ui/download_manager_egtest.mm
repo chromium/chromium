@@ -384,12 +384,12 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
 // Tests that "Open in..." works if the download ended while waiting in a
 // different tab which also contains a download task.
 // TODO(crbug.com/438749917): Flaky on iPhone simulators.
+// TODO(crbug.com/515613762): Fails on iPhone devices.
 - (void)testSwitchTabsAndOpenInDownloads {
-#if TARGET_IPHONE_SIMULATOR
   if (![ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Failing on iPhone simulator, crbug.com/438749917");
+    EARL_GREY_TEST_DISABLED(
+        @"Failing on iPhone, crbug.com/438749917 crbug.com/515613762");
   }
-#endif
 
   // Apple is hiding UIActivityViewController's contents from the host app on
   // iPad.
