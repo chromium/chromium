@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<script>
+
+testRunner.waitUntilDone();
+
+</script>
+<style>
+
+#scroller {
+  width: 300px;
+  height: 300px;
+  overflow: scroll;
+  scrollbar-color: #4af #eef;
+}
+#space {
+  width: 800px;
+  height: 800px;
+}
+
+</style>
+<div id="scroller">
+  <div id="space">
+    Hovered scrollbar with scrollbar-color
+  </div>
+</div>
+<script>
+
+(async () => {
+  await new Promise(r => { requestAnimationFrame(r) });
+  const scroller = document.getElementById("scroller");
+  const rect = scroller.getBoundingClientRect();
+  const thickness = scroller.offsetWidth - scroller.clientWidth;
+  eventSender.mouseMoveTo(rect.right - thickness / 2,
+                          rect.top + thickness * 2);
+  await new Promise(r => { requestAnimationFrame(r) });
+  testRunner.notifyDone();
+})();
+
+</script>

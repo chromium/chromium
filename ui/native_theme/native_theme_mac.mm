@@ -74,18 +74,29 @@ void CaptionSettingsChangedNotificationCallback(CFNotificationCenterRef,
   NativeTheme::GetInstanceForWeb()->NotifyOnCaptionStyleUpdated();
 }
 
-// These functions are called from the renderer process through the scrollbar
-// drawing functions. Due to this, they cannot use any of the dynamic NS system
-// colors.
+}  // namespace
+
+// GetMacScrollbarThumbColor and GetMacScrollbarTrackBorderColor are called from
+// the renderer process through the scrollbar drawing functions. Due to this,
+// they cannot use any of the dynamic NS system colors.
 // TODO(pkasting): Consider whether these colors should instead go in a
 // Mac-specific color mixer, which would mean scrollbars in web content would
 // get these colors instead of Aura defaults.
 
-SkColor GetMacScrollbarThumbColor(
+SkColor NativeThemeMac::GetMacScrollbarThumbColor(
     bool dark_mode,
-    const NativeTheme::ScrollbarExtraParams& extra_params) {
+    State state,
+    const ColorProvider* color_provider,
+    const ScrollbarExtraParams& extra_params) const {
   if (extra_params.thumb_color.has_value()) {
-    return extra_params.thumb_color.value();
+    if (extra_params.is_overlay) {
+      return extra_params.thumb_color.value();
+    }
+    return GetScrollbarThumbColor(color_provider, state,
+                                  {
+                                      .thumb_color = extra_params.thumb_color,
+                                      .track_color = extra_params.track_color,
+                                  });
   }
   if (extra_params.is_overlay) {
     return dark_mode ? SkColorSetARGB(0x80, 0xFF, 0xFF, 0xFF)
@@ -98,6 +109,8 @@ SkColor GetMacScrollbarThumbColor(
   return dark_mode ? SkColorSetRGB(0x6B, 0x6B, 0x6B)
                    : SkColorSetARGB(0x3A, 0, 0, 0);
 }
+
+namespace {
 
 template <bool inner_border>
 SkColor GetMacScrollbarTrackBorderColor(
@@ -123,13 +136,16 @@ SkColor GetMacScrollbarTrackBorderColor(
   }
 }
 
-void PaintMacScrollbarThumb(
+}  // namespace
+
+void NativeThemeMac::PaintMacScrollbarThumb(
     cc::PaintCanvas* canvas,
-    NativeTheme::Part part,
-    NativeTheme::State state,
+    Part part,
+    State state,
     const gfx::Rect& rect,
-    const NativeTheme::ScrollbarExtraParams& extra_params,
-    bool dark_mode) {
+    const ScrollbarExtraParams& extra_params,
+    bool dark_mode,
+    const ColorProvider* color_provider) const {
   // Compute the bounds for the rounded rect for the thumb from the bounds of
   // the thumb.
   gfx::Rect bounds(rect);
@@ -145,8 +161,8 @@ void PaintMacScrollbarThumb(
     (horizontal ? inset_top : inset_left) +=
         ScrollbarTrackBorderWidth(extra_params.scale_from_dip);
 
-    const gfx::Size min_size = NativeThemeMac::GetThumbMinSize(
-        horizontal, extra_params.scale_from_dip);
+    const gfx::Size min_size =
+        GetThumbMinSize(horizontal, extra_params.scale_from_dip);
     ConstrainInsets(bounds.width(), min_size.width(), &inset_left,
                     &inset_right);
     ConstrainInsets(bounds.height(), min_size.height(), &inset_top,
@@ -159,9 +175,12 @@ void PaintMacScrollbarThumb(
 
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(GetMacScrollbarThumbColor(dark_mode, extra_params));
+  flags.setColor(GetMacScrollbarThumbColor(dark_mode, state, color_provider,
+                                           extra_params));
   gfx::Canvas(canvas, 1.0f).DrawRoundRect(bounds, radius, flags);
 }
+
+namespace {
 
 void PaintScrollBarTrackGradient(
     cc::PaintCanvas* canvas,
@@ -377,7 +396,7 @@ void NativeThemeMac::PaintImpl(cc::PaintCanvas* canvas,
   if (part == kScrollbarHorizontalThumb || part == kScrollbarVerticalThumb) {
     PaintMacScrollbarThumb(canvas, part, state, rect,
                            std::get<ScrollbarExtraParams>(extra_params),
-                           dark_mode);
+                           dark_mode, color_provider);
     return;
   }
   if (part == kScrollbarHorizontalTrack || part == kScrollbarVerticalTrack ||
@@ -405,6 +424,10 @@ void NativeThemeMac::PaintMenuPopupBackground(
   const SkScalar radius = SkIntToScalar(extra_params.corner_radius);
   canvas->drawRoundRect(gfx::RectToSkRect(gfx::Rect(size)), radius, radius,
                         flags);
+}
+
+float NativeThemeMac::GetScrollbarPartContrastRatioForState(State state) const {
+  return 1.8f;
 }
 
 }  // namespace ui

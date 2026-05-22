@@ -313,8 +313,8 @@ void ScrollbarThemeMac::PaintThumb(const PaintInfo& paint_info,
           : WebThemeEngine::Part::kPartScrollbarVerticalThumb;
   mojom::blink::ColorScheme color_scheme = scrollbar.UsedColorScheme();
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
-      context.Canvas(), thumb_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, scrollbar.InForcedColorsMode(), color_scheme,
+      context.Canvas(), thumb_part, scrollbar.GetStateForPart(kThumbPart),
+      bounds, &params, scrollbar.InForcedColorsMode(), color_scheme,
       scrollbar.GetPreferredContrast(),
       scrollbar.GetColorProvider(color_scheme));
 }

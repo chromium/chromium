@@ -50,9 +50,23 @@ class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
       const ColorProvider* color_provider,
       const gfx::Size& size,
       const MenuBackgroundExtraParams& extra_params) const override;
+  float GetScrollbarPartContrastRatioForState(State state) const override;
 
  private:
   friend class base::NoDestructor<NativeThemeMac>;
+
+  SkColor GetMacScrollbarThumbColor(
+      bool dark_mode,
+      State state,
+      const ColorProvider* color_provider,
+      const ScrollbarExtraParams& extra_params) const;
+  void PaintMacScrollbarThumb(cc::PaintCanvas* canvas,
+                              Part part,
+                              State state,
+                              const gfx::Rect& rect,
+                              const ScrollbarExtraParams& extra_params,
+                              bool dark_mode,
+                              const ColorProvider* color_provider) const;
 };
 
 }  // namespace ui
