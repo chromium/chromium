@@ -278,6 +278,7 @@ static const char* const kSwitchNames[] = {
     switches::kDumpCompositorFrame,
     switches::kEnableGpuMainTimeKeeperMetrics,
     switches::kEnableGpuRasterization,
+    switches::kEnableWebGLDraftExtensions,
     switches::kEnableSkiaGraphite,
     switches::kEnableSkiaGraphitePrecompilation,
     switches::kDoubleBufferCompositing,

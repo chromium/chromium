@@ -239,6 +239,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
   void EnableANGLEInstancedArrayIfPossible(const gfx::ExtensionSet& extensions);
   void EnableWEBGLMultiDrawIfPossible(const gfx::ExtensionSet& extensions);
 
+  bool enable_webgl_draft_extensions_ = false;
   bool initialized_ = false;
 
   Validators validators_;

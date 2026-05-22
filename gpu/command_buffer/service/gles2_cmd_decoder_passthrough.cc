@@ -33,6 +33,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_manager.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_switches.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
@@ -275,14 +276,12 @@ static constexpr const char* kOptionalFunctionalityExtensions[] = {
 // List of extensions needed to implement WebGL extensions and other command
 // decoder client functionality.
 constexpr const char* kValidRequestableExtensions[] = {
-    "GL_ANGLE_base_vertex_base_instance",
     "GL_ANGLE_clip_cull_distance",
     "GL_ANGLE_compressed_texture_etc",
     "GL_ANGLE_instanced_arrays",
     "GL_ANGLE_multi_draw",
     "GL_ANGLE_polygon_mode",
     "GL_ANGLE_provoking_vertex",
-    "GL_ANGLE_shader_pixel_local_storage",
     "GL_ANGLE_stencil_texturing",
     "GL_ANGLE_texture_compression_dxt1",
     "GL_ANGLE_texture_compression_dxt3",
@@ -339,6 +338,13 @@ constexpr const char* kValidRequestableExtensions[] = {
     "GL_OES_vertex_array_object",
     "GL_OVR_multiview2",
     "GL_QCOM_render_shared_exponent",
+};
+
+// List of extensions needed to implement draft (not-yet-released)
+// WebGL extensions.
+constexpr const char* kValidRequestableWebGLDraftExtensions[] = {
+    "GL_ANGLE_base_vertex_base_instance",
+    "GL_ANGLE_shader_pixel_local_storage",
 };
 
 void RequestExtensions(gl::GLApi* api,
@@ -2276,6 +2282,16 @@ void GLES2DecoderPassthroughImpl::BuildRequestableExtensionString() {
   for (const char* valid_requestable_ext : kValidRequestableExtensions) {
     if (driver_requestable_extensions.contains(valid_requestable_ext)) {
       requestable_extensions_.insert(valid_requestable_ext);
+    }
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kEnableWebGLDraftExtensions)) {
+    for (const char* valid_requestable_draft_webgl_ext :
+         kValidRequestableWebGLDraftExtensions) {
+      if (driver_requestable_extensions.contains(
+              valid_requestable_draft_webgl_ext)) {
+        requestable_extensions_.insert(valid_requestable_draft_webgl_ext);
+      }
     }
   }
 

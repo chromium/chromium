@@ -62,7 +62,7 @@ class WebGLShaderPixelLocalStorage final : public WebGLExtension {
                                size_t src_length,
                                GLuint src_offset);
 
-  const bool coherent_;
+  bool coherent_;
   GLint max_pls_planes_ = 0;
 };
 

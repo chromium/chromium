@@ -24,9 +24,7 @@ const char* WebGLShaderPixelLocalStorage::ExtensionName() {
 WebGLShaderPixelLocalStorage::WebGLShaderPixelLocalStorage(
     WebGLRenderingContextBase* context,
     ExecutionContext* execution_context)
-    : WebGLExtension(context),
-      coherent_(context->ExtensionsUtil()->SupportsExtension(
-          "GL_ANGLE_shader_pixel_local_storage_coherent")) {
+    : WebGLExtension(context) {
   context->EnableExtensionIfSupported("OES_draw_buffers_indexed",
                                       execution_context);
   context->EnableExtensionIfSupported("EXT_color_buffer_float",
@@ -35,6 +33,10 @@ WebGLShaderPixelLocalStorage::WebGLShaderPixelLocalStorage(
                                       execution_context);
   context->ExtensionsUtil()->EnsureExtensionEnabled(
       "GL_ANGLE_shader_pixel_local_storage");
+  context->EnableExtensionIfSupported(
+      "GL_ANGLE_shader_pixel_local_storage_coherent", execution_context);
+  coherent_ = context->ExtensionsUtil()->SupportsExtension(
+      "GL_ANGLE_shader_pixel_local_storage_coherent");
   context->ContextGL()->GetIntegerv(GL_MAX_PIXEL_LOCAL_STORAGE_PLANES_ANGLE,
                                     &max_pls_planes_);
 }

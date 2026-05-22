@@ -44,6 +44,11 @@ const char kGpuDiskCacheSizeKB[] = "gpu-disk-cache-size-kb";
 const char kDisableGpuProcessForDX12InfoCollection[] =
     "disable-gpu-process-for-dx12-info-collection";
 
+// Enables WebGL draft extensions (not yet approved by the
+// community). This has side-effects in the GPU process, so the flag
+// is here so that code in both gpu/ and content/ can access it.
+const char kEnableWebGLDraftExtensions[] = "enable-webgl-draft-extensions";
+
 const char kEnableUnsafeWebGPU[] = "enable-unsafe-webgpu";
 
 const char kForceHighPerformanceGPU[] = "force-high-performance-gpu";

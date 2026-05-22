@@ -182,6 +182,8 @@ size_t GetNumAttachments(GLenum attachment) {
   return base::checked_cast<size_t>(max_color_attachments);
 }
 
+const char kEnableWebGLDraftExtensions[] = "enable-webgl-draft-extensions";
+
 }  // anonymous namespace.
 
 FeatureInfo::FeatureFlags::FeatureFlags() = default;
@@ -205,6 +207,9 @@ FeatureInfo::FeatureInfo(
 void FeatureInfo::InitializeBasicState(const base::CommandLine* command_line) {
   if (!command_line)
     return;
+
+  enable_webgl_draft_extensions_ =
+      command_line->HasSwitch(kEnableWebGLDraftExtensions);
 
   feature_flags_.enable_shader_name_hashing =
       !command_line->HasSwitch(switches::kDisableShaderNameHashing);
@@ -1561,12 +1566,14 @@ void FeatureInfo::InitializeFeatures(uint32_t complete_fbo_for_workarounds) {
     AddExtensionString("GL_AMD_framebuffer_multisample_advanced");
   }
 
-  if (gfx::HasExtension(extensions, "GL_ANGLE_shader_pixel_local_storage")) {
+  if (enable_webgl_draft_extensions_ &&
+      gfx::HasExtension(extensions, "GL_ANGLE_shader_pixel_local_storage")) {
     feature_flags_.angle_shader_pixel_local_storage = true;
     AddExtensionString("GL_ANGLE_shader_pixel_local_storage");
   }
 
-  if (gfx::HasExtension(extensions,
+  if (enable_webgl_draft_extensions_ &&
+      gfx::HasExtension(extensions,
                         "GL_ANGLE_shader_pixel_local_storage_coherent")) {
     AddExtensionString("GL_ANGLE_shader_pixel_local_storage_coherent");
   }
