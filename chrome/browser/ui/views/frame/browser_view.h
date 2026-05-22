@@ -1304,8 +1304,9 @@ class BrowserView : public BrowserWindow,
   base::OnceClosure loading_animation_state_change_closure_;
 
   // Start timestamp for all throbbers. Set when the loading animation
-  // starts and used for all consecutive tabs (while any are loading) to keep
-  // throbbers in sync.
+  // starts. For paint-driven animations (i.e. when `kCompositorLoadingThrobber`
+  // is disabled), this is used for all consecutive tabs (while any are loading)
+  // to keep throbbers in sync.
   base::TimeTicks loading_animation_start_;
 
   views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
