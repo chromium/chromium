@@ -722,8 +722,6 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
 
   source->AddBoolean("composeboxSmartComposeEnabled",
                      ntp_composebox::kShowSmartCompose.Get());
-  source->AddBoolean("composeboxShowCreateImageButton",
-                     ntp_composebox::IsCreateImagesEnabled(profile));
 
   source->AddBoolean("enableThreadsRail",
                      ntp_composebox::kEnableThreadsRail.Get());

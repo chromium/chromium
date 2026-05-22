@@ -473,9 +473,6 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
   test(
       'upload button should not be disabled except when upload is in progress',
       async () => {
-        loadTimeData.overrideValues({
-          'composeboxShowCreateImageButton': true,
-        });
         const testInputState = {
           ...new testSupport.MockInputState(),
           maxInputsByType: {
