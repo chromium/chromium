@@ -10,6 +10,7 @@
 #include <string>
 #include <string_view>
 #include <variant>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
@@ -503,6 +504,42 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
     std::unique_ptr<Step> step_;
   };
 
+  // Callback that completes the transition from the current step to waiting for
+  // (or executing) the following step. Normally, this is called by the
+  // sequence itself after the step start callback. But some test code may want
+  // to delay calling this until after some asynchronous operation.
+  //
+  // If the parameter is true, the next step proceeds as normal. If it is false,
+  // the sequence fails.
+  using ProceedToNextStepCallback = base::OnceCallback<void(bool)>;
+
+  // Test-only handle for test steps that want to hold off ending a step until
+  // some asynchronous operation completes. The handle must be used to
+  // complete the step.
+  class COMPONENT_EXPORT(UI_BASE_INTERACTION) StepTransitionHandle {
+   public:
+    StepTransitionHandle();
+    StepTransitionHandle(StepTransitionHandle&& other);
+    StepTransitionHandle& operator=(StepTransitionHandle&& other);
+    StepTransitionHandle(const StepTransitionHandle&) = delete;
+    StepTransitionHandle& operator=(const StepTransitionHandle&) = delete;
+    ~StepTransitionHandle();
+
+    // Call to complete the step. Pass true for success, false for failure.
+    // The handle is consumed by this call.
+    void Proceed(bool success) &&;
+
+    // Returns true if this handle is valid.
+
+    explicit operator bool() const { return !callback_.is_null(); }
+
+   private:
+    friend class InteractionSequence;
+    explicit StepTransitionHandle(ProceedToNextStepCallback callback);
+
+    ProceedToNextStepCallback callback_;
+  };
+
   // Returns a step with the following values already set, typically used as the
   // first step in a sequence (because the first element is usually present):
   //   ElementID: element->identifier()
@@ -564,6 +601,11 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
   // Builds aborted data for the current step and the given reason.
   AbortedData BuildAbortedData(AbortedReason reason) const;
 
+  // Test-only method for test steps that want to hold off ending a step until
+  // some asynchronous operation completes. The handle returned must be used to
+  // complete the step.
+  [[nodiscard]] StepTransitionHandle SeizeStepTransitionControl();
+
   // Gets a weak pointer to this object.
   base::WeakPtr<InteractionSequence> AsWeakPtr();
 
@@ -618,6 +660,10 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
   // Finish the transition from the current step to the next step.
   void CompleteStepTransition();
 
+  // Called when a step is complete, either automatically or via the callback
+  // from SeizeStepTransitionControl().
+  void FinishStep(bool success);
+
   // Looks at the next step to determine what needs to be done. Called at the
   // start of the sequence and after each subsequent step starts.
   void StageNextStep();
@@ -656,6 +702,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) InteractionSequence {
   int active_step_index_ = 0;
   bool missing_first_element_ = false;
   bool trigger_during_callback_ = false;
+  ProceedToNextStepCallback step_transition_callback_;
   std::unique_ptr<Step> current_step_;
   ElementTracker::Subscription next_step_hidden_subscription_;
   std::unique_ptr<Configuration> configuration_;

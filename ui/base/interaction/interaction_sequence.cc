@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/check_is_test.h"
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -587,6 +588,36 @@ void InteractionSequence::FailForTesting() {
   Abort(AbortedReason::kFailedForTesting);
 }
 
+InteractionSequence::StepTransitionHandle::StepTransitionHandle() = default;
+InteractionSequence::StepTransitionHandle::StepTransitionHandle(
+    StepTransitionHandle&&) = default;
+InteractionSequence::StepTransitionHandle&
+InteractionSequence::StepTransitionHandle::operator=(StepTransitionHandle&&) =
+    default;
+InteractionSequence::StepTransitionHandle::~StepTransitionHandle() {
+  CHECK(!callback_) << "StepTransitionHandle destroyed without being called. "
+                       "This usually indicates a timeout or a logic error in a "
+                       "test.";
+}
+
+void InteractionSequence::StepTransitionHandle::Proceed(bool success) && {
+  if (callback_) {
+    std::move(callback_).Run(success);
+  }
+}
+
+InteractionSequence::StepTransitionHandle::StepTransitionHandle(
+    ProceedToNextStepCallback callback)
+    : callback_(std::move(callback)) {}
+
+InteractionSequence::StepTransitionHandle
+InteractionSequence::SeizeStepTransitionControl() {
+  CHECK_IS_TEST();
+  CHECK_EQ(State::kInStartCallback, state_);
+  CHECK(step_transition_callback_);
+  return StepTransitionHandle(std::move(step_transition_callback_));
+}
+
 void InteractionSequence::NameElement(TrackedElement* element,
                                       std::string_view name) {
   DCHECK(!name.empty());
@@ -1124,11 +1155,29 @@ void InteractionSequence::CompleteStepTransition() {
     Abort(AbortedReason::kElementHiddenBetweenTriggerAndStepStart);
     return;
   }
+
+  step_transition_callback_ = base::BindOnce(&InteractionSequence::FinishStep,
+                                            weak_factory_.GetWeakPtr());
+
   RunIfValid(std::move(current_step_->start_callback), this,
              current_step_->element.get());
   if (!abort_guard) {
     return;
   }
+
+  if (step_transition_callback_) {
+    std::move(step_transition_callback_).Run(true);
+  }
+}
+
+void InteractionSequence::FinishStep(bool success) {
+  if (!success) {
+    CHECK_IS_TEST();
+    FailForTesting();
+    return;
+  }
+
+  CHECK_EQ(State::kInStartCallback, state_);
   state_ = State::kIdle;
 
   if (configuration_->steps.empty()) {
@@ -1376,6 +1425,7 @@ void InteractionSequence::Abort(AbortedReason reason) {
       std::move(configuration_->aborted_callback);
   std::unique_ptr<Step> current_step = std::move(current_step_);
   configuration_->steps.clear();
+  step_transition_callback_.Reset();
 
   // This blows up any abort guards and pending callbacks.
   weak_factory_.InvalidateWeakPtrs();
