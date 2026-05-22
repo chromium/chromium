@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.provider.Browser;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -61,7 +60,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history.HistoryManager;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.history.HistoryTabHelper;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.merchant_viewer.PageInfoStoreInfoController.StoreInfoActionHandler;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
@@ -193,15 +191,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         super.performPostInflationStartup();
 
         mRootUiCoordinator.getStatusBarColorController().updateStatusBarColor();
-
-        // Properly attach tab's InfoBarContainer to the view hierarchy if the tab is already
-        // attached to a ChromeActivity, as the main tab might have been initialized prior to
-        // inflation.
-        if (getCustomTabActivityTabProvider().getTab() != null) {
-            ViewGroup bottomContainer = findViewById(R.id.bottom_container);
-            InfoBarContainer.get(getCustomTabActivityTabProvider().getTab())
-                    .setParentView(bottomContainer);
-        }
 
         int toolbarColor = getIntentDataProvider().getColorProvider().getToolbarColor();
         // Not setting the task title and icon or setting them to null (pre-Android T) will preserve

@@ -27,7 +27,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -116,11 +115,6 @@ public class SuspendedTab extends EmptyTabObserver implements UserData, TabViewP
             if (TabUtils.isCapturingForMedia(mTab)) {
                 MediaCaptureDevicesDispatcherAndroid.notifyStopped(webContents);
             }
-        }
-
-        InfoBarContainer infoBarContainer = InfoBarContainer.get(mTab);
-        if (infoBarContainer != null) {
-            infoBarContainer.setHidden(true);
         }
 
         if (isViewAttached()) {

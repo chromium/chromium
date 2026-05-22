@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.overlay_panel.PanelState;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -188,7 +187,6 @@ public class ContextualSearchManager
 
     private long mLoadedSearchUrlTimeMs;
     private boolean mWereSearchResultsSeen;
-    private boolean mWereInfoBarsHidden;
     private boolean mDidPromoteSearchNavigation;
 
     private boolean mIsInitialized;
@@ -491,15 +489,6 @@ public class ContextualSearchManager
 
         mSelectionController.onSearchEnded(reason);
 
-        // Show the infobar container if it was visible before Contextual Search was shown.
-        if (mWereInfoBarsHidden) {
-            mWereInfoBarsHidden = false;
-            InfoBarContainer container = getInfoBarContainer();
-            if (container != null) {
-                container.setHidden(false);
-            }
-        }
-
         if (mWereSearchResultsSeen) {
             // Clear the selection, since the user just acted upon it by looking at the panel.
             // However if the selection is invalid we don't need to clear it.
@@ -545,15 +534,6 @@ public class ContextualSearchManager
 
         // Dismiss the undo SnackBar if present by committing all tab closures.
         mTabModelSelector.commitAllTabClosures();
-
-        if (!mSearchPanel.isShowing()) {
-            // If visible, hide the infobar container before showing the Contextual Search panel.
-            InfoBarContainer container = getInfoBarContainer();
-            if (container != null && container.getVisibility() == View.VISIBLE) {
-                mWereInfoBarsHidden = true;
-                container.setHidden(true);
-            }
-        }
 
         // If the user is jumping from one unseen search to another search, remove the last search
         // from history.
@@ -616,12 +596,6 @@ public class ContextualSearchManager
         WebContents baseWebContents = getBaseWebContents();
         if (baseWebContents == null) return null;
         return baseWebContents.getLastCommittedUrl();
-    }
-
-    /** Accessor for the {@code InfoBarContainer} currently attached to the {@code Tab}. */
-    private @Nullable InfoBarContainer getInfoBarContainer() {
-        Tab tab = mTabSupplier.get();
-        return tab == null ? null : InfoBarContainer.get(tab);
     }
 
     /** Listens for notifications that should hide the Contextual Search bar. */

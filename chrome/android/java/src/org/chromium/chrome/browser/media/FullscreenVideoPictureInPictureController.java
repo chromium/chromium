@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.media;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.PictureInPictureParams;
@@ -30,7 +28,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -369,20 +366,11 @@ public class FullscreenVideoPictureInPictureController {
 
         webContents.setHasPersistentVideo(true);
 
-        // We don't want InfoBars displaying while in PiP, they cover too much content.
-        assumeNonNull(getInfoBarContainerForTab(activityTab)).setHidden(true);
-
         mOnLeavePipCallbacks.add(
                 () -> {
                     Log.i(TAG, "Running Picture-in-picture exit callbacks");
                     if (!webContents.isDestroyed()) {
                         webContents.setHasPersistentVideo(false);
-                    }
-                    if (!activityTab.isDestroyed()) {
-                        InfoBarContainer container = getInfoBarContainerForTab(activityTab);
-                        if (container != null) {
-                            container.setHidden(false);
-                        }
                     }
                 });
 
@@ -834,16 +822,9 @@ public class FullscreenVideoPictureInPictureController {
         }
     }
 
-    /** Protected to allow tests to override, since mocking statics is error-prone. */
-    @VisibleForTesting
-    /* package */ @Nullable InfoBarContainer getInfoBarContainerForTab(@Nullable Tab tab) {
-        if (tab == null) return null;
-        return InfoBarContainer.get(tab);
-    }
-
     /**
-     * Protected to allow tests to override, since it breaks in N.  It's also not clear that we
-     * need this at all.
+     * Protected to allow tests to override, since it breaks in N. It's also not clear that we need
+     * this at all.
      */
     @VisibleForTesting
     /* package */ void assertLibraryLoaderIsInitialized() {

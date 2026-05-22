@@ -36,7 +36,6 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.PipEntered;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.MediaSession;
@@ -56,7 +55,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
     @Mock private FullscreenManager mFullscreenManager;
     @Mock private Tab mTab;
     @Mock private MockWebContents mWebContents;
-    @Mock private InfoBarContainer mInfoBarContainer;
     @Mock private MediaSession mMediaSession;
     @Mock private PowerManager mPowerManager;
 
@@ -77,11 +75,6 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
                 ActivityTabProvider activityTabProvider,
                 FullscreenManager fullscreenManager) {
             super(activity, activityTabProvider, fullscreenManager);
-        }
-
-        @Override
-        InfoBarContainer getInfoBarContainerForTab(Tab tab) {
-            return mInfoBarContainer;
         }
 
         @Override
