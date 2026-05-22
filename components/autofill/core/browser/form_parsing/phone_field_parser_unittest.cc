@@ -135,7 +135,6 @@ void PhoneFieldParserTest::RunParsingTest(
   field_ = Parse(context, scanner);
   ASSERT_EQ(expect_success, field_.get() != nullptr);
 
-  // Verify expecations.
   if (expect_success) {
     field_->AddClassificationsForTesting(field_candidates_map_);
     for (size_t i = 0; i < fields.size(); ++i) {
@@ -250,13 +249,17 @@ TEST_F(PhoneFieldParserTest, GrammarMetrics) {
 // Tests if the country code, city code and phone number fields are correctly
 // classified by the heuristic when the phone code is a select element.
 TEST_F(PhoneFieldParserTest, CountryCodeIsSelectElement) {
-  RunParsingTest({{FormControlType::kSelectOne, u"Phone Country Code", u"ccode",
-                   PHONE_HOME_COUNTRY_CODE},
-                  {FormControlType::kInputText, u"Phone City Code", u"areacode",
-                   PHONE_HOME_CITY_CODE,
-                   /*max_length=*/3},
-                  {FormControlType::kInputText, u"Phone Number", u"phonenumber",
-                   PHONE_HOME_NUMBER}});
+  std::vector<const char*> augmented_field_options = {
+      "India(+91) ",    "Germany(+49)",  "United States(+1)", "Egypt(+20)",
+      "Bahamas(+1242)", "Ecuador(+593)", "Russia(+7)"};
+  RunParsingTest(
+      {{FormControlType::kSelectOne, u"Phone Country Code", u"phonecountry",
+        PHONE_HOME_COUNTRY_CODE, 0, augmented_field_options},
+       {FormControlType::kInputText, u"Phone City Code", u"areacode",
+        PHONE_HOME_CITY_CODE,
+        /*max_length=*/3},
+       {FormControlType::kInputText, u"Phone Number", u"phonenumber",
+        PHONE_HOME_NUMBER}});
 }
 
 // Tests if the country code, city code and phone number fields are correctly
