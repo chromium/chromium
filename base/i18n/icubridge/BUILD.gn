@@ -1,0 +1,38 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("icubridge") {
+  sources = [
+    "icu_bridge.cc",
+    "icu_bridge.h",
+  ]
+
+  defines = [ "BASE_I18N_IMPLEMENTATION" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//base/i18n:base_i18n_export",
+    "//base/i18n:time_formatting_types",
+  ]
+
+  deps = [ "//third_party/icu" ]
+
+  visibility = [
+    ":unit_tests",
+    "//base:i18n",
+    "//base/i18n:*",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":icubridge",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
