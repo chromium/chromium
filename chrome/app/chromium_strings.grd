@@ -1019,6 +1019,11 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Anchored Message-->
+      <message name="IDS_ANCHORED_MESSAGE_MENU_TOOLTIP" desc="Tooltip for the anchored message menu.">
+        More options
+      </message>
+
       <!-- Main Chrome menu -->
       <message name="IDS_APPMENU_TOOLTIP" desc="The tooltip to show for the browser menu">
         Customize and control Chromium

@@ -228,7 +228,8 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
       base::BindRepeating(&AnchoredMessageBubbleView::MenuButtonPressed,
                           base::Unretained(this))));
   ConfigureInkDropForToolbar(menu_button_);
-  menu_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_APPMENU_TOOLTIP));
+  menu_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_ANCHORED_MESSAGE_MENU_TOOLTIP));
   menu_button_->SetImageModel(
       views::Button::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
