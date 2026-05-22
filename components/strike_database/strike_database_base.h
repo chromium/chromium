@@ -28,6 +28,8 @@ class StrikeData;
 class StrikeDatabaseBase : public KeyedService {
  public:
   StrikeDatabaseBase();
+  StrikeDatabaseBase(const StrikeDatabaseBase&) = delete;
+  StrikeDatabaseBase& operator=(const StrikeDatabaseBase&) = delete;
   ~StrikeDatabaseBase() override;
 
   // Increases in-memory cache by `strikes_increase` and updates underlying

@@ -57,6 +57,8 @@ class StrikeDatabase : public StrikeDatabaseBase {
 
   StrikeDatabase(leveldb_proto::ProtoDatabaseProvider* db_provider,
                  base::FilePath profile_path);
+  StrikeDatabase(const StrikeDatabase&) = delete;
+  StrikeDatabase& operator=(const StrikeDatabase&) = delete;
   ~StrikeDatabase() override;
 
   // StrikeDatabaseBase:

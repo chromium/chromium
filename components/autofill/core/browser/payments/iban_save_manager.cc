@@ -240,8 +240,8 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
 
 IbanSaveStrikeDatabase* IbanSaveManager::GetIbanSaveStrikeDatabase() {
   if (iban_save_strike_database_.get() == nullptr) {
-    iban_save_strike_database_ = std::make_unique<IbanSaveStrikeDatabase>(
-        IbanSaveStrikeDatabase(client_->GetStrikeDatabase()));
+    iban_save_strike_database_ =
+        std::make_unique<IbanSaveStrikeDatabase>(client_->GetStrikeDatabase());
   }
   return iban_save_strike_database_.get();
 }

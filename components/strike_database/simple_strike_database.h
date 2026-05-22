@@ -44,6 +44,8 @@ class SimpleStrikeDatabase : public StrikeDatabaseIntegratorBase {
       : StrikeDatabaseIntegratorBase(strike_database) {
     RemoveExpiredStrikes();
   }
+  SimpleStrikeDatabase(const SimpleStrikeDatabase&) = delete;
+  SimpleStrikeDatabase& operator=(const SimpleStrikeDatabase&) = delete;
   ~SimpleStrikeDatabase() override = default;
 
   // Functions are `final` because they are (indirectly) called by

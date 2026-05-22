@@ -285,8 +285,7 @@ CreditCardFidoAuthenticator::GetOrCreateFidoAuthenticationStrikeDatabase() {
   if (!fido_authentication_strike_database_) {
     if (auto* strike_database = autofill_client_->GetStrikeDatabase()) {
       fido_authentication_strike_database_ =
-          std::make_unique<FidoAuthenticationStrikeDatabase>(
-              FidoAuthenticationStrikeDatabase(strike_database));
+          std::make_unique<FidoAuthenticationStrikeDatabase>(strike_database);
     }
   }
   return fido_authentication_strike_database_.get();

@@ -47,6 +47,9 @@ class StrikeDatabaseIntegratorBase {
   static constexpr std::string_view kSharedId = "shared_id";
 
   explicit StrikeDatabaseIntegratorBase(StrikeDatabaseBase* strike_database);
+  StrikeDatabaseIntegratorBase(const StrikeDatabaseIntegratorBase&) = delete;
+  StrikeDatabaseIntegratorBase& operator=(const StrikeDatabaseIntegratorBase&) =
+      delete;
   virtual ~StrikeDatabaseIntegratorBase();
 
   // Returns the StrikeDatabase's decision on whether a particular feature
