@@ -226,6 +226,13 @@ public class EntityDataManagerTest {
     }
 
     @Test
+    public void testCanShowWalletDataSharingPromotion() {
+        when(mEntityDataManagerJniMock.canShowWalletDataSharingPromotion(NATIVE_PTR))
+                .thenReturn(true);
+        assertTrue(mEntityDataManager.canShowWalletDataSharingPromotion());
+    }
+
+    @Test
     public void testGetAutofillAiOptInStatus() {
         when(mEntityDataManagerJniMock.getAutofillAiOptInStatus(NATIVE_PTR)).thenReturn(true);
         assertTrue(mEntityDataManager.getAutofillAiOptInStatus());

@@ -386,6 +386,12 @@ bool EntityDataManagerAndroid::CanListEntityInstancesInSettings(JNIEnv* env) {
       /*entity_type=*/std::nullopt);
 }
 
+bool EntityDataManagerAndroid::CanShowWalletDataSharingPromotion(JNIEnv* env) {
+  return RunMayPerformAutofillAiAction(
+      AutofillAiAction::kWalletDataSharingPromotion,
+      /*entity_type=*/std::nullopt);
+}
+
 bool EntityDataManagerAndroid::IsWalletPublicPassStorageEnabledHelper() const {
   return account_setting_service_ &&
          account_setting_service_

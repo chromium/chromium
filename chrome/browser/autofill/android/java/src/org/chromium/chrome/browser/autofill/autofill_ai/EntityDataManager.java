@@ -224,6 +224,13 @@ public class EntityDataManager implements Destroyable {
                 .canListEntityInstancesInSettings(mNativeEntityDataManagerAndroid);
     }
 
+    /** Returns whether the user can see the Wallet data sharing promotion. */
+    public boolean canShowWalletDataSharingPromotion() {
+        ThreadUtils.assertOnUiThread();
+        return EntityDataManagerJni.get()
+                .canShowWalletDataSharingPromotion(mNativeEntityDataManagerAndroid);
+    }
+
     /** Returns the opt-in status for Autofill AI. */
     public boolean getAutofillAiOptInStatus() {
         ThreadUtils.assertOnUiThread();
@@ -290,6 +297,8 @@ public class EntityDataManager implements Destroyable {
                 long nativeEntityDataManagerAndroid, @EntityTypeName int entityType);
 
         boolean canListEntityInstancesInSettings(long nativeEntityDataManagerAndroid);
+
+        boolean canShowWalletDataSharingPromotion(long nativeEntityDataManagerAndroid);
 
         boolean getAutofillAiOptInStatus(long nativeEntityDataManagerAndroid);
 

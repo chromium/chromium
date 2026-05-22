@@ -300,7 +300,16 @@ public class AutofillAiDelegate {
                 && entityDataManager != null
                 && !entityDataManager.isWalletPublicPassStorageEnabled()
                 && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER);
+                        ChromeFeatureList.AUTOFILL_AI_SHOW_WALLET_DISABLED_BANNER)
+                && canShowWalletDataSharingPromotion(entityDataManager);
+    }
+
+    private static boolean canShowWalletDataSharingPromotion(EntityDataManager entityDataManager) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)) {
+            return true;
+        }
+
+        return entityDataManager.canShowWalletDataSharingPromotion();
     }
 
     /** Adds an information card if sharing data from Wallet is disabled. */

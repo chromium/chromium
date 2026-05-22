@@ -676,6 +676,7 @@ public class AutofillIdentityDocsFragmentTest {
                             AndroidAutofillAvailabilityStatus.SETTING_TURNED_OFF);
                 });
         when(mEntityDataManager.isWalletPublicPassStorageEnabled()).thenReturn(false);
+        when(mEntityDataManager.canShowWalletDataSharingPromotion()).thenReturn(true);
 
         mSettingsActivityTestRule.startSettingsActivity();
         AutofillIdentityDocsFragment fragment = mSettingsActivityTestRule.getFragment();

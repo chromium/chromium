@@ -135,6 +135,10 @@ class EntityDataManagerAndroid : public autofill::EntityDataManager::Observer {
   // `AutofillAiAction::kListEntityInstancesInSettings`.
   bool CanListEntityInstancesInSettings(JNIEnv* env);
 
+  // Returns whether the user might perform
+  // `AutofillAiAction::kWalletDataSharingPromotion`.
+  bool CanShowWalletDataSharingPromotion(JNIEnv* env);
+
   // Returns true if the user can store and read public passes on Google Wallet
   // servers. Used to display a notice in the management UI.
   bool IsWalletPublicPassStorageEnabled(JNIEnv* env);
