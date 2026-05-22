@@ -281,6 +281,58 @@ class GnConfigsImpl:
             'symbol_level=1',
         ] + current_exec
 
+        # Project specific configs for standalone builds.
+        # TODO(crbug.com/497912213): Add more platforms and configs for these.
+        root_dir = os.path.abspath(
+            os.path.join(os.path.dirname(__file__), '../../..'))
+        clang_path = os.path.join(
+            root_dir, 'third_party/llvm-build/Release+Asserts/bin')
+        self.skia_configs = {
+            'linux': [
+                'is_debug=false',
+                'is_component_build=false',
+                'target_cpu="x64"',
+                'target_os="linux"',
+                f'cc="{os.path.join(clang_path, "clang")}"',
+                f'cxx="{os.path.join(clang_path, "clang++")}"',
+            ]
+        }
+
+        clang_base_path = os.path.join(
+            root_dir, 'third_party/llvm-build/Release+Asserts')
+        self.dawn_configs = {
+            'linux': [
+                'is_debug=false',
+                'is_component_build=false',
+                'symbol_level=0',
+                'target_cpu="x64"',
+                'target_os="linux"',
+                f'clang_base_path="{clang_base_path}"',
+            ] + current_exec
+        }
+        self.angle_configs = {
+            'linux': [
+                'is_debug=false',
+                'is_component_build=false',
+                'symbol_level=0',
+                'target_cpu="x64"',
+                'target_os="linux"',
+                'build_with_chromium=false',
+            ] + current_exec
+        }
+        self.webrtc_configs = {
+            'linux': [
+                'is_debug=false',
+                'is_component_build=false',
+                'symbol_level=0',
+                'target_cpu="x64"',
+                'target_os="linux"',
+                'build_with_chromium=false',
+            ] + current_exec
+        }
+
+
+
         # A set of platforms that gives you minimum coverage.
         self.min_all_platforms = {}
         self.min_all_platforms['linux'] = self.linux_configs['linux-rel']
@@ -300,17 +352,40 @@ class GnConfigsImpl:
                                           | self.fuchsia_configs
                                           | self.chromeos_configs)
 
+    def get_config(self, platform, project='chrome'):
+        """
+        Returns the GN arguments for a given platform and project.
+        """
+        if project == 'chrome' or project == 'partition_alloc':
+            # Use standard chrome configs for these.
+            args = self.min_all_platforms.get(platform)
+            if args is None:
+                args = self.all_platforms_and_configs.get(platform)
+            return args
+
+        # Check for project-specific configs.
+        project_configs_key = '%s_configs' % project
+        if hasattr(self, project_configs_key):
+            project_configs = getattr(self, project_configs_key)
+            return project_configs.get(platform)
+
+        return None
+
     # Make it simple to get a certain config or all platform configs if you only
     # care about a single one.
     def __getitem__(self, key):
+        # First check if it's a project name.
         potential_platform_key = '%s_configs' % key
         if hasattr(self, potential_platform_key):
             return getattr(self, potential_platform_key)
+
+        # Then check if it's a specific config name (e.g., 'linux-rel').
         for name, config in self.all_platforms_and_configs.items():
-            print(name)
             if key == name:
                 return config
-        return None
+
+        # Finally, check if it's a platform name in min_all_platforms.
+        return self.min_all_platforms.get(key)
 
 
 # To prevent initializing it repeatedly if people call it as a simple accessor.

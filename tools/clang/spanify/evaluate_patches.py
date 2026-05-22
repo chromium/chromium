@@ -7,70 +7,8 @@
 # ----------------------------------------------------------------------------
 # A temporary script to evaluate how many patches produced by the tool compile.
 # The output are stored on the Google internal spreadsheet:
-# http://go/autospan-tracker
+#
 # ----------------------------------------------------------------------------
-
-from datetime import datetime
-import argparse
-import getpass
-import os
-import random
-import re
-import subprocess
-import sys
-from spanify_utils import scratch_dir
-
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from googleapiclient.http import MediaFileUpload
-
-# common gn args for spanify project scripts.
-from gnconfigs import GnConfigs, GenerateGnTarget
-
-PROJECTS = {
-    # http://go/autospan-tracker
-    'chrome': {
-        'spreadsheet_id': '14YCQY2eBlLDr2wd8XaCfbLacz0t94YRuyt5CjkohBK4',
-        'build_targets': ['all'],
-    },
-    # http://go/autospan-partition-alloc-tracker
-    'partition_alloc': {
-        'spreadsheet_id':
-        '15AuAyRmxG95L5G8ejTlJ7C2p6zgvKTLt8lV9lg6xmDk',
-        'build_targets': [
-            'base/allocator/partition_allocator/src/partition_alloc:partition_alloc'
-        ],
-    },
-    # http://go/autospan-dawn-tracker
-    'dawn': {
-        'spreadsheet_id': '11I41N369S7tcbMrWhsn6gStLKbOxseGSOMSTE3dsQok',
-        'build_targets': ['third_party/dawn/src/dawn:dawn'],
-        'compile_dirs': 'third_party/dawn',
-    },
-    # http://go/autospan-skia-tracker
-    'skia': {
-        'spreadsheet_id': '1dJ5PIQMsQ4IBYTcZUrshOJUIOmoa0MOwedK-jGzHYxI',
-        'build_targets': ['skia:skia'],
-        'compile_dirs': 'third_party/skia',
-    },
-    # http://go/autospan-angle-tracker
-    'angle': {
-        'spreadsheet_id': '10g9-rrhGRQM1bGfHyZyK4Yris6X1ZfPmq-iRxw-9n38',
-        'build_targets': ['third_party/angle:angle'],
-        'compile_dirs': 'third_party/angle',
-    },
-    # http://go/autospan-webrtc-tracker
-    'webrtc': {
-        'spreadsheet_id': '1gDu0ZCAONoIm242lRscCoYKmrfWLbwflxtwgWi-NUVk',
-        'build_targets': ['third_party/webrtc_overrides:webrtc_component'],
-        'compile_dirs': 'third_party/webrtc',
-    },
-}
-
-
 # To install the required dependencies to interact with the Google Sheets API:
 # ```
 # python3 -m venv env
@@ -83,7 +21,39 @@ PROJECTS = {
 # In addition when invoking evaluate_patches.py you can pass an optional integer
 # argument which will set the limit of patches to evaluate. Default is 100.
 # ```
-def run(command, error_message=None, exit_on_error=True):
+
+from datetime import datetime
+import argparse
+import getpass
+import os
+import pathlib
+import random
+import re
+
+import subprocess
+import sys
+from spanify_utils import scratch_dir
+
+
+def strip_ansi(text):
+    ansi_escape = re.compile(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])')
+    return ansi_escape.sub('', text)
+
+from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
+from google_auth_oauthlib.flow import InstalledAppFlow
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
+from googleapiclient.http import MediaFileUpload
+
+# common gn args for spanify project scripts.
+from gnconfigs import GnConfigs, GenerateGnTarget
+from project import PROJECTS
+
+GOOGLE_DRIVE_FOLDER_ID = '18lLW_YPCXRGUYiPghDXTA6h2TC4WpGeJ'
+
+
+def run(command, error_message=None, exit_on_error=True, cwd=None):
     """
     Helper function to run a shell command.
     """
@@ -93,7 +63,11 @@ def run(command, error_message=None, exit_on_error=True):
     else:
         print(command)
     try:
-        output = subprocess.run(command, shell=True, check=True, text=True)
+        output = subprocess.run(command,
+                                shell=True,
+                                check=True,
+                                text=True,
+                                cwd=cwd)
 
     except subprocess.CalledProcessError as e:
 
@@ -105,6 +79,67 @@ def run(command, error_message=None, exit_on_error=True):
         return False
 
     return True
+
+
+def get_current_branch(cwd=None):
+    """
+    Returns the current branch name or revision.
+    """
+    # --abbrev-ref HEAD returns the branch name or "HEAD"
+    result = subprocess.run("git rev-parse --abbrev-ref HEAD",
+                            shell=True,
+                            check=True,
+                            text=True,
+                            capture_output=True,
+                            cwd=cwd)
+    branch = result.stdout.strip()
+    if branch != "HEAD":
+        return branch
+
+    result = subprocess.run("git rev-parse HEAD",
+                            shell=True,
+                            check=True,
+                            text=True,
+                            capture_output=True,
+                            cwd=cwd)
+    return result.stdout.strip()
+
+
+def restore(cwd):
+    """
+    Restores the staged and unstaged working tree changes of the repository.
+    """
+    run("git restore --staged .",
+        "Failed to restore staged repository",
+        cwd=cwd)
+    run("git restore .", "Failed to restore repository", cwd=cwd)
+
+
+def analyze_error(stdout, stderr):
+    """
+    Analyzes compiler output to extract a clean, readable error message.
+    """
+    # Errors format: <file>:<line>:<column>: [fatal] error: <error_msg>
+    error_regex = re.compile(r"([^:]+:\d+(?::\d+)?: (?:fatal )?error: .*)")
+    for line in stdout.split("\n") + stderr.split("\n"):
+        match = error_regex.search(line)
+        if match:
+            return match.group(1)
+
+    # Fallback to Siso/Ninja FAILED line
+    failed_regex = re.compile(r"FAILED: .*")
+    for line in stdout.split("\n") + stderr.split("\n"):
+        match = failed_regex.search(line)
+        if match:
+            return match.group(0)
+
+    # Generic fallback: grab the first non-empty, non-utility line of output
+    for line in (stderr + "\n" + stdout).split("\n"):
+        if (line.strip() and not line.startswith("ninja: Entering directory")
+                and not line.startswith("shutdown cloud logging")):
+            return line.strip()
+
+    return "Unknown compilation error"
 
 
 def get_google_creds():
@@ -193,10 +228,7 @@ def upload_zip_to_drive_folder(creds, zip_file):
     try:
         service = build("drive", "v3", credentials=creds)
         name = os.path.basename(zip_file)
-        file_metadata = {
-            "name": name,
-            "parents": ["18lLW_YPCXRGUYiPghDXTA6h2TC4WpGeJ"]
-        }
+        file_metadata = {"name": name, "parents": [GOOGLE_DRIVE_FOLDER_ID]}
         media = MediaFileUpload(zip_file, mimetype="application/zip")
         #pylint: disable=maybe-no-member
         file = (service.files().create(body=file_metadata,
@@ -223,14 +255,14 @@ def upload_scratch(creds, file_name):
 
 
 def report_case_result(result, spreadsheet, spreadsheet_id, today, index,
-                       patches, user, error_msg, diff, final_file):
+                       total_patches, user, error_msg, diff, final_file):
     with (scratch_dir() / "evaluation.csv").open("a") as f:
         f.write(f"{index}, {result}, {error_msg}\n")
     try:
         append_row(spreadsheet, spreadsheet_id, [
             today,
             index,
-            len(patches),
+            total_patches,
             result,
             error_msg,
             diff,
@@ -241,7 +273,7 @@ def report_case_result(result, spreadsheet, spreadsheet_id, today, index,
             append_row(spreadsheet, spreadsheet_id, [
                 today,
                 index,
-                len(patches),
+                total_patches,
                 result,
                 f"\"Failed to upload to spreadsheet: {str(e)}\"",
                 f"diff_len: {len(diff)} error_msg_len: {len(error_msg)}",
@@ -274,15 +306,23 @@ if __name__ == "__main__":
                         choices=PROJECTS.keys(),
                         default="chrome",
                         help="Project to evaluate.")
+
     args = parser.parse_args()
+
+    root_dir = pathlib.Path(__file__).resolve().parents[3]
+    os.environ['CHROMIUM_BUILDTOOLS_PATH'] = str(root_dir / 'buildtools')
 
     platform = args.platform
     patch_limit = args.patch_limit
     project = args.project
     spreadsheet_id = PROJECTS[project]['spreadsheet_id']
     rewrite_project = project
-    build_targets = " ".join(PROJECTS[project]['build_targets'])
-    git_submodule_base = PROJECTS[project]['compile_dirs']
+    submodule = PROJECTS[project].get('submodule', '.')
+    standalone = submodule != '.'
+
+    # Record the starting branch/revision to restore it at the end.
+    original_top_branch = get_current_branch()
+    original_submodule_branch = get_current_branch(submodule)
 
     today = datetime.now().strftime("%Y/%m/%d")
     today_underscore = today.replace("/", "_")
@@ -290,52 +330,102 @@ if __name__ == "__main__":
     spreadsheet = get_spreadsheet(creds)
     user = getpass.getuser()
 
-    def report_success(index, patches, error_msg, diff, final_file):
+    def report_success(index, total_patches, error_msg, diff, final_file):
         report_case_result("pass", spreadsheet, spreadsheet_id, today, index,
-                           patches, user, error_msg, diff, final_file)
+                           total_patches, user, error_msg, diff, final_file)
 
-    def report_failure(index, patches, error_msg, diff, final_file):
+    def report_failure(index, total_patches, error_msg, diff, final_file):
         report_case_result("fail", spreadsheet, spreadsheet_id, today, index,
-                           patches, user, error_msg, diff, final_file)
+                           total_patches, user, error_msg, diff, final_file)
+
+
 
     print(f"Running evaluate_patches.py for project {project}...")
 
-    # Fetch the latest changes from the main branch.
-    run("git fetch origin")
-    run("git checkout main", exit_on_error=False)  # Might be already on main.
-    run("git reset --hard origin/main")
+    cwd = submodule if standalone else None
 
-    # Setup a build directory to evaluate the patches. This is common to all the
-    # patches to avoid recompiling the entire project for each patch.
-    run("gclient sync -fD", exit_on_error=False)
+    # Generate build files
+    configs = GnConfigs(False)
+    gn_args = configs.get_config(platform, project)
+
+    if gn_args is None:
+        print(
+            f"Error: Unknown platform/project combination: {platform}/{project}"
+        )
+        sys.exit(1)
 
     try:
         run("gcertstatus --check_remaining=3h --nocheck_ssh")
-        print("Remote exec available. Enabling.")
-        GenerateGnTarget(platform, GnConfigs(True).min_all_platforms[platform])
-    except:
-        print("Remote exec not available. Disabling.")
-        GenerateGnTarget(platform,
-                         GnConfigs(False).min_all_platforms[platform])
+        if project in ['chrome', 'partition_alloc']:
+            print("Remote exec available. Enabling.")
+            gn_args = GnConfigs(True).get_config(platform, project) or gn_args
+        else:
+            print(
+                "Submodule project. Keeping remote exec disabled to avoid ACL issues."
+            )
 
-    # We've updated the args and need to generate new build files.
-    run(f"gn gen out/{platform}", f"Failed to generate out/{platform}.")
+        gn_path = root_dir / 'buildtools/linux64/gn'
+
+        # Ensure the build directory exists and write GN args directly to args.gn
+        # to avoid shell escaping and quoting issues.
+        out_dir = (pathlib.Path(cwd)
+                   if cwd else pathlib.Path(".")).resolve() / f"out/{platform}"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "args.gn").write_text('\n'.join(gn_args))
+
+        # We manually run gn gen to ensure it's in the right directory.
+        run(f"{gn_path} gen out/{platform}",
+            f"Failed to generate out/{platform}.",
+            cwd=cwd)
+    except Exception as e:
+        print(f"Remote exec not available or failed: {e}. Disabling.")
+        gn_args = GnConfigs(False).get_config(platform, project)
+        if gn_args is None:
+            print(
+                f"Error: Unknown platform/project combination: {platform}/{project}"
+            )
+            sys.exit(1)
+
+        gn_path = root_dir / 'buildtools/linux64/gn'
+
+        # Ensure the build directory exists and write GN args directly to args.gn
+        # to avoid shell escaping and quoting issues.
+        out_dir = (pathlib.Path(cwd)
+                   if cwd else pathlib.Path(".")).resolve() / f"out/{platform}"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        (out_dir / "args.gn").write_text('\n'.join(gn_args))
+
+        run(f"{gn_path} gen out/{platform}",
+            f"Failed to generate out/{platform}.",
+            cwd=cwd)
+
+
+
+
 
     # Produce a full rewrite, and store individual patches below <scratch>/patch_*
-    rewrite_script = "./tools/clang/spanify/rewrite_multiple_platforms.py"
-    run(f"{rewrite_script} --platform={platform} --project={rewrite_project}")
 
-    run("git reset --hard origin/main")  # Restore source code.
-    run("gclient sync -fD", exit_on_error=False)  # Restore compiler.
-    run(f'git rev-parse HEAD > "{(scratch_dir() / "git_revision.txt")}"')
+    run(f"./tools/clang/spanify/rewrite_multiple_platforms.py \
+        --platform={platform} \
+        --project={rewrite_project} \
+        ")
+
+    run(f'git rev-parse HEAD > "{(scratch_dir() / "git_revision.txt")}"',
+        cwd=submodule)
+
+    # Restore the workspace to a clean state, excluding the spanify tools directory.
+    restore(cwd)
 
     patches = [p.name for p in scratch_dir().glob("patch_*.txt")]
 
     # Sort numerically the patches to evaluate.
     patches.sort(key=lambda x: int(x.split("_")[1].split(".")[0]))
+    total_patches_count = len(patches)
     patches = patches[:patch_limit]
 
-    print(f"Found {len(patches)} patches to evaluate.")
+    print(
+        f"Found {total_patches_count} patches to evaluate (limiting to {len(patches)})."
+    )
 
     # This file will store a summary of each patch evaluation.
     # ```
@@ -350,9 +440,11 @@ if __name__ == "__main__":
         f.write("patch, status, error_msg\n")
 
     # Perform a clean build to ensure a valid state for the incremental builds.
-    run(f"autoninja -C out/{platform} {build_targets}",
-        "Failed to build the project.",
-        exit_on_error=False)
+    run(f"autoninja -C out/{platform}",
+        "Failed to build the project. Ensure the output directory and targets are correct.",
+        exit_on_error=True,
+        cwd=cwd)
+
 
     # Create and evaluate patches
     try:
@@ -362,107 +454,100 @@ if __name__ == "__main__":
 
             print(f"Producing patch {index}/{len(patches)}: {patch}")
 
-            # Apply edits
-            run(f"git branch -D spanification_rewrite_evaluate_{index}",
-                exit_on_error=False)
-            run(f"git new-branch spanification_rewrite_evaluate_{index}")
+            diff = ""
+            final_file = ""
             try:
-                result = subprocess.run(
-                    f'cat "{(scratch_dir() / patch)}" ' +
-                    " | tools/clang/scripts/apply_edits.py" +
-                    f" -p ./out/{platform}/ " + git_submodule_base,
-                    shell=True,
-                    check=True,
-                    capture_output=True,
-                    text=True)
-            except subprocess.CalledProcessError as e:
-                error_msg = ("\"" + str(e) + " !!! exception(stderr): " +
-                             str(e.stderr) + "\"")
+                # Apply edits
+                apply_edits_path = os.path.abspath(
+                    "tools/clang/scripts/apply_edits.py")
+                cmd = [
+                    sys.executable,
+                    apply_edits_path,
+                    "-p",
+                    f"out/{platform}",
+                ]
+                try:
+                    with open(scratch_dir() / patch, "rb") as patch_f:
+                        result = subprocess.run(
+                            cmd,
+                            stdin=patch_f,
+                            capture_output=True,
+                            text=True,
+                            cwd=cwd,
+                            check=True,
+                        )
+                except subprocess.CalledProcessError as e:
+                    stdout_clean = strip_ansi(e.stdout)
+                    stderr_clean = strip_ansi(e.stderr)
+                    error_msg = ("\"" + str(e) + " !!! exception(stderr): " +
+                                 stderr_clean + "\"")
 
-                run(f'git diff  > "{(scratch_dir() / f"patch_{index}.diff")}"')
+                    run(f'git diff > "{(scratch_dir() / f"patch_{index}.diff")}"',
+                        cwd=cwd)
+                    diff = (scratch_dir() / f"patch_{index}.diff").read_text()
+                    final_file = stderr_clean + "\n" + stdout_clean
+
+                    report_failure(index, total_patches_count, error_msg, diff,
+                                   final_file)
+                    continue
+
+                run("git cl format", cwd=cwd, exit_on_error=False)
+
+                # Serialize changes (Generate diff directly from working tree)
+                run(f'git diff > "{(scratch_dir() / f"patch_{index}.diff")}"',
+                    cwd=cwd)
                 diff = (scratch_dir() / f"patch_{index}.diff").read_text()
 
-                final_file = str(e.stderr) + "\n" + str(e.stdout)
+                if not diff.strip():
+                    # We fail when there is no diff, get the replacements instead
+                    diff = (scratch_dir() / f"patch_{index}.txt").read_text()
+                    final_file = strip_ansi(result.stderr) + "\n" + strip_ansi(
+                        result.stdout)
+                    report_failure(index, total_patches_count,
+                                   "No files modified by patch", diff,
+                                   final_file)
+                    continue
 
-                report_failure(index, patches, error_msg, diff, final_file)
+                # Build and evaluate
+                print(f"Evaluating patch {index}/{len(patches)}")
+                print("Building...")
 
-                run("git restore .", "Failed to restore after failed patch.")
-                continue
+                result = subprocess.run(f"time autoninja -C out/{platform}",
+                                        shell=True,
+                                        capture_output=True,
+                                        text=True,
+                                        cwd=cwd)
 
-            run("git cl format")
+                stdout_clean = strip_ansi(result.stdout)
+                stderr_clean = strip_ansi(result.stderr)
+                final_file = stderr_clean + "\n" + stdout_clean
+                with (scratch_dir() / f"patch_{index}.out").open("w+") as f:
+                    f.write(stderr_clean)
+                    f.write(stdout_clean)
 
-            # Commit changes
-            run("git add -u", "Failed to add changes.")
-
-            with open("commit_message.txt", "w+") as f:
-                f.write(
-                    f"""spanification patch {index} applied.\n\nPatch: {index}"""
-                )
-            # Sometimes we generate patches that apply_edits will skip (for example
-            # third_party) thus don't treat failure to commit as an error.
-            if not run("git commit -F commit_message.txt",
-                       exit_on_error=False):
-                # We fail when there is no diff get the replacements instead.
-                diff = (scratch_dir() / f"patch_{index}.txt").read_text()
-
-                report_failure(index, patches, "Failed to commit diff", diff,
-                               "")
-                continue
-
-            # Serialize changes
-            run(f'git diff HEAD~...HEAD > "{(scratch_dir() / f"patch_{index}.diff")}"'
-                )
-            diff = (scratch_dir() / f"patch_{index}.diff").read_text()
-
-            # Build and evaluate
-            print(f"Evaluating patch {index}/{len(patches)}")
-            print("Building...")
-
-            result = subprocess.run(
-                f"time autoninja -C out/{platform} {build_targets}",
-                shell=True,
-                capture_output=True,
-                text=True)
-
-            print(result.stdout)
-            print(result.stderr)
-
-            final_file = result.stderr + "\n" + result.stdout
-            with (scratch_dir() / f"patch_{index}.out").open("w+") as f:
-                f.write(result.stderr)
-                f.write(result.stdout)
-
-            if result.returncode != 0:
-                error_msg = ""
-                # Errors format:
-                # <file>:<line>:<column>: [fatal] error: <error_msg>
-                error_regex = re.compile(
-                    r"([^:]+:\d+(?::\d+)?: (?:fatal )?error: .*)")
-                for line in result.stdout.split("\n") + result.stderr.split(
-                        "\n"):
-                    match = error_regex.search(line)
-                    if match:
-                        error_msg = match.group(1)
-                        break
-
-                if not error_msg:
-                    # Fallback to Siso/Ninja FAILED line
-                    failed_regex = re.compile(r"FAILED: .*")
-                    for line in result.stdout.split(
-                            "\n") + result.stderr.split("\n"):
-                        match = failed_regex.search(line)
-                        if match:
-                            error_msg = match.group(0)
-                            break
-
-                report_failure(index, patches, error_msg, diff, final_file)
-            elif not run(f'gn check out/{platform}', exit_on_error=False):
-                error_msg = "failed gn check"
-                report_failure(index, patches, error_msg, diff, final_file)
-                continue
-            else:
-                report_success(index, patches, "", diff, final_file)
+                if result.returncode != 0:
+                    error_msg = analyze_error(stdout_clean, stderr_clean)
+                    report_failure(index, total_patches_count, error_msg, diff,
+                                   final_file)
+                elif not run(f'gn check out/{platform}',
+                             exit_on_error=False,
+                             cwd=cwd):
+                    error_msg = "failed gn check"
+                    report_failure(index, total_patches_count, error_msg, diff,
+                                   final_file)
+                else:
+                    report_success(index, total_patches_count, "", diff,
+                                   final_file)
+            finally:
+                # Unconditionally restore the workspace to clean for the next patch
+                restore(cwd)
     finally:
+        # Restore the starting branch/revision.
+        run(f"git checkout {original_submodule_branch}",
+            exit_on_error=False,
+            cwd=submodule)
+        run(f"git checkout {original_top_branch}", exit_on_error=False)
+
         # Regardless of success or failure we want to upload the scratch directory
         # to the shared google drive for easy debugging of either compile errors or
         # the evaluate_patches tool itself.

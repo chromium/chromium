@@ -13,6 +13,7 @@
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "llvm/ADT/StringRef.h"
 #include "project.h"
 
 class AngleProject : public Project {
@@ -60,16 +61,21 @@ class AngleProject : public Project {
     return kFuncMappingTable;
   }
   bool IsExcludedFromProject(const clang::Decl& Node) const override {
-    const clang::SourceManager& sm = Node.getASTContext().getSourceManager();
+    const clang::SourceManager& source_manager =
+        Node.getASTContext().getSourceManager();
 
     std::string filename = raw_ptr_plugin::GetFilename(
-        sm, raw_ptr_plugin::getRepresentativeLocation(Node),
+        source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
         raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
-    return filename.find("third_party/angle/third_party") !=
-               std::string::npos ||
-           filename.find("third_party/angle/src/third_party") !=
-               std::string::npos;
+    // Running in-place inside Chromium: absolute path contains
+    // "third_party/angle". We only want to spanify ANGLE sources, excluding its
+    // own internal third_party.
+    llvm::StringRef file(filename);
+    return (file.contains("third_party/") &&
+            !file.contains("third_party/angle/")) ||
+           file.contains("third_party/angle/third_party/") ||
+           file.contains("third_party/angle/src/third_party/");
   }
 };
 

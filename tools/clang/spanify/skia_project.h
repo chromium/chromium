@@ -11,6 +11,7 @@
 #include "clang/AST/ASTContext.h"
 #include "clang/AST/Decl.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "llvm/ADT/StringRef.h"
 #include "project.h"
 
 class SkiaProject : public Project {
@@ -67,7 +68,13 @@ class SkiaProject : public Project {
         source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
         raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
-    return filename.find("third_party/skia/third_party") != std::string::npos;
+    // Running in-place inside Chromium: absolute path contains
+    // "third_party/skia". We only want to spanify Skia sources, excluding its
+    // own internal third_party.
+    llvm::StringRef file(filename);
+    return (file.contains("third_party/") &&
+            !file.contains("third_party/skia/")) ||
+           file.contains("third_party/skia/third_party/");
   }
 };
 

@@ -15,6 +15,7 @@
 #include "clang/AST/Decl.h"
 #include "clang/AST/DeclBase.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "llvm/ADT/StringRef.h"
 #include "llvm/Support/Casting.h"
 #include "project.h"
 
@@ -71,7 +72,13 @@ class DawnProject : public Project {
         source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
         raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
-    return filename.find("third_party/dawn/third_party") != std::string::npos;
+    // Running in-place inside Chromium: absolute path contains
+    // "third_party/dawn". We only want to spanify Dawn sources, excluding its
+    // own internal third_party.
+    llvm::StringRef file(filename);
+    return (file.contains("third_party/") &&
+            !file.contains("third_party/dawn/")) ||
+           file.contains("third_party/dawn/third_party/");
   }
 };
 

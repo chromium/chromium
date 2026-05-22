@@ -13,63 +13,25 @@ import re
 import shlex
 import shutil
 import subprocess
+import sys
 import time
 
 from gnconfigs import GnConfigs
+from project import PROJECTS
 from spanify_utils import scratch_dir, clear_scratch_dir
 
-PROJECTS = {
-    'chrome': {
-        'compile_dirs': '.',
-        'tool_arg': '',
-        'build_targets': ['//:gn_all'],
-    },
-    'partition_alloc': {
-        'compile_dirs':
-        'base/allocator/partition_allocator/src',
-        'tool_arg':
-        '--project=partition_alloc',
-        'build_targets':
-        ['//base/allocator/partition_allocator/src/partition_alloc'],
-    },
-    'skia': {
-        'compile_dirs': 'third_party/skia',
-        'tool_arg': '--project=skia',
-        'build_targets': ['//third_party/skia']
-    },
-    'dawn': {
-        'compile_dirs': 'third_party/dawn/src',
-        'tool_arg': '--project=dawn',
-        'build_targets': ['//third_party/dawn/src/dawn'],
-    },
-    'webrtc': {
-        'compile_dirs':
-        'third_party/webrtc',
-        'tool_arg':
-        '--project=webrtc',
-        'build_targets': [
-            '//third_party/webrtc_overrides:webrtc_component',
-
-            # These proto targets are needed to build some required generated
-            # files that the script isn't smart enough to discover on its own.
-            '//third_party/webrtc/api/test/metrics:metric_proto',
-            '//third_party/catapult/tracing/tracing/proto:histogram_proto',
-            '//third_party/webrtc/api/test/network_emulation:network_config_schedule_proto',
-            '//third_party/webrtc/modules/audio_coding:neteq_unittest_proto',
-        ],
-    },
-    'angle': {
-        'compile_dirs': 'third_party/angle',
-        'tool_arg': '--project=angle',
-        'build_targets': ['//third_party/angle:angle'],
-    },
-}
 
 # Standard GN arguments common to most platforms for spanification.
+ROOT_DIR = pathlib.Path(__file__).resolve().parents[3]
+CLANG_BASE_PATH = ROOT_DIR / 'third_party/llvm-build/Release+Asserts'
+GN_PATH = ROOT_DIR / 'buildtools/linux64/gn'
+
 COMMON_EXTRA_GN_ARGS = [
     'clang_use_chrome_plugins = false',
     'force_enable_raw_ptr_exclusion = true',
+    f'clang_base_path = "{CLANG_BASE_PATH}"',
 ]
+
 
 # Discover all available platforms and configurations from gnconfigs.
 AVAILABLE_PLATFORMS = sorted(set(GnConfigs(False).min_all_platforms.keys()) |
@@ -81,28 +43,31 @@ REWRITER_BINARY_PATH = LLVM_BUILD_DIR / 'Release+Asserts/bin/spanify'
 CLANG_LIB_REL_PATH = pathlib.Path('Release+Asserts/lib/clang')
 
 
-def get_out_dir(platform):
+def get_out_dir(platform, submodule='.'):
     """
     Standardizes the output directory path for a given platform.
     """
-    return pathlib.Path(f'out/rewrite-{platform}')
+    return pathlib.Path(submodule) / 'out' / f'rewrite-{platform}'
 
 
-def get_platform_args(platform):
+def get_platform_args(platform, project='chrome'):
     """
     Returns the GN arguments for the given platform.
     """
     configs = GnConfigs(False)
 
-    args = configs.min_all_platforms.get(platform)
-    if args is None:
-        # If not in min_all_platforms, try to get it directly from all configs.
-        args = configs[platform]
+    args = configs.get_config(platform, project)
 
     if args is None:
-        raise ValueError(f"Unknown platform: {platform}")
+        raise ValueError(f"Unknown platform/project combination: "
+                         f"{platform}/{project}")
 
-    return '\n'.join(args + COMMON_EXTRA_GN_ARGS) + '\n'
+    submodule = PROJECTS[project].get('submodule', '.')
+    standalone = submodule != '.'
+    extra_args = COMMON_EXTRA_GN_ARGS if not standalone else []
+
+    return '\n'.join(args + extra_args) + '\n'
+
 
 
 @contextlib.contextmanager
@@ -173,15 +138,113 @@ def run_command(cmd, **kwargs):
     logging.info('Done in %.2fs', time.time() - start)
 
 
+def _prepare_skia(submodule):
+    submodule_path = pathlib.Path(submodule)
+    gn_bin = submodule_path / 'bin/gn'
+    if gn_bin.is_symlink():
+        logging.info('Removing stale GN symlink in Skia...')
+        gn_bin.unlink()
+
+    # Sync dependencies (which also downloads real bin/gn natively).
+    run_command([sys.executable, 'tools/git-sync-deps'], cwd=submodule)
+
+
+def _prepare_dawn(submodule):
+    # Manually write .gclient to bypass depot_tools CLI validation changes.
+    submodule_path = pathlib.Path(submodule)
+    gclient_content = """solutions = [
+  {
+    "name": ".",
+    "url": "https://dawn.googlesource.com/dawn.git",
+    "deps_file": "DEPS",
+    "managed": False,
+    "custom_deps": {},
+  },
+]
+"""
+    (submodule_path / '.gclient').write_text(gclient_content)
+
+    # Sync dependencies.
+    run_command(['gclient', 'sync', '--no-history', '--shallow'],
+                cwd=submodule)
+
+
+def _prepare_angle(submodule):
+    # Bootstrap (generates .gclient).
+    run_command([sys.executable, 'scripts/bootstrap.py'], cwd=submodule)
+
+    # Sync dependencies.
+    run_command(['gclient', 'sync', '--no-history', '--shallow'],
+                cwd=submodule)
+
+    # Patch gclient_args.gni.
+    submodule_path = pathlib.Path(submodule)
+    gclient_args_path = submodule_path / 'build/config/gclient_args.gni'
+    if gclient_args_path.exists():
+        content = gclient_args_path.read_text()
+        if 'checkout_src_internal' not in content:
+            logging.info('Patching ANGLE gclient_args.gni...')
+            with gclient_args_path.open('a') as f:
+                f.write('\ncheckout_src_internal = false\n')
+
+
+def _prepare_webrtc(submodule):
+    # WebRTC expects to be checked out inside a "src" solution directory.
+    # We write the .gclient file to the parent directory and sync there.
+    submodule_path = pathlib.Path(submodule)
+    parent_path = submodule_path.parent
+    gclient_content = """solutions = [
+  {
+    "name": "src",
+    "url": "https://webrtc.googlesource.com/src.git",
+    "deps_file": "DEPS",
+    "managed": False,
+    "custom_deps": {},
+  },
+]
+"""
+    (parent_path / '.gclient').write_text(gclient_content)
+
+    # Sync dependencies.
+    run_command(['gclient', 'sync', '--no-history', '--shallow'],
+                cwd=parent_path)
+
+
+def prepare_standalone_project(submodule, project):
+    """
+    Syncs dependencies and applies setup fixes for a standalone project.
+    """
+    logging.info('Preparing standalone project %s in %s...', project,
+                 submodule)
+    match project:
+        case 'skia':
+            _prepare_skia(submodule)
+        case 'dawn':
+            _prepare_dawn(submodule)
+        case 'angle':
+            _prepare_angle(submodule)
+        case 'webrtc':
+            _prepare_webrtc(submodule)
+
+
 def prepare_platform(platform, out_dir, project):
     """
     Generates args.gn and builds necessary generated files for the given
     platform.
     """
+    submodule = PROJECTS[project].get('submodule', '.')
     compile_dirs = PROJECTS[project]['compile_dirs']
+    standalone = submodule != '.'
+
+    if standalone:
+        prepare_standalone_project(submodule, project)
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    (out_dir / 'args.gn').write_text(get_platform_args(platform))
+
+
+    # Generate build files.
+    platform_args = get_platform_args(platform, project)
+    (out_dir / 'args.gn').write_text(platform_args)
 
     # Mac requires specific runtime libraries from the upstream build.
     if platform == 'mac' and LLVM_UPSTREAM_DIR.exists():
@@ -194,22 +257,30 @@ def prepare_platform(platform, out_dir, project):
                        'lib/darwin')
                 shutil.copytree(src, dst, dirs_exist_ok=True)
 
-    logging.info('Generating build files for %s...', platform)
-    run_command(['gn', 'gen', str(out_dir)])
+    logging.info('Generating build files for %s in %s...', platform, submodule)
+    out_dir_arg = out_dir.relative_to(submodule) if standalone else out_dir
+    run_command([str(GN_PATH), 'gen', str(out_dir_arg)],
+                cwd=submodule if standalone else None)
+
 
     # Build generated files that a successful compilation depends on.
     logging.info('Building generated targets for %s...', platform)
 
     targets_proc = subprocess.Popen(
-        ['ninja', '-C', str(out_dir), '-t', 'targets', 'all'],
+        ['ninja', '-C',
+         str(out_dir_arg), '-t', 'targets', 'all'],
         stdout=subprocess.PIPE,
-        text=True)
+        text=True,
+        cwd=submodule if standalone else None)
+
     assert targets_proc.stdout is not None
 
     targets = []
     # If compile_dirs is '.', we want to match anything in gen/
     # Otherwise, we want to match anything in gen/compile_dirs/
-    if compile_dirs == '.':
+    if compile_dirs == '.' or standalone:
+        # In standalone, compile_dirs is usually relative to submodule root.
+        # But generated files are usually in gen/
         pattern = re.compile(r'^gen/.*(\.h|inc|css_tokenizer_codepoints\.cc)$')
     else:
         escaped_path = re.escape(compile_dirs.strip('/'))
@@ -233,41 +304,58 @@ def prepare_platform(platform, out_dir, project):
     for t in targets:
         logging.info('-  %s', t)
 
-    # Generate them in batches to avoid hitting command line length limits. The
-    # xargs -s option allows us to specify the maximum command line length.
-    # We use a fraction of the system's ARG_MAX limit, capped at 1MB, to be safe
-    # against environment variable size fluctuations.
+    # Generate them in batches to avoid hitting command line length limits.
     arg_max = min(os.sysconf('SC_ARG_MAX') // 2, 1000000)
-    subprocess.run(['xargs', '-s',
-                    str(arg_max), 'ninja', '-C',
-                    str(out_dir)],
-                   input='\n'.join(targets),
-                   text=True,
-                   check=True)
+    subprocess.run(
+        ['xargs', '-s',
+         str(arg_max), 'ninja', '-C',
+         str(out_dir_arg)],
+        input='\n'.join(targets),
+        text=True,
+        check=True,
+        cwd=submodule if standalone else None)
+
+
 
 
 def run_rewrite_tool(platform, out_dir, project):
     """
     Runs the spanify tool and filters output for uniqueness using awk.
     """
+    submodule = PROJECTS[project].get('submodule', '.')
     compile_dirs = PROJECTS[project]['compile_dirs']
-    tool_arg = PROJECTS[project]['tool_arg']
+    tool_arg = f'--project={project}'
+    standalone = submodule != '.'
 
-    logging.info('Starting rewrite for %s...', platform)
+    logging.info('Starting rewrite for %s in %s...', platform, submodule)
+
+    root_dir = pathlib.Path(os.getcwd())
+    run_tool_path = root_dir / 'tools/clang/scripts/run_tool.py'
+
+    if standalone:
+        out_dir_arg = out_dir.relative_to(submodule)
+    else:
+        out_dir_arg = out_dir
 
     cmd = [
-        'tools/clang/scripts/run_tool.py',
+        sys.executable,
+        str(run_tool_path),
         '--tool',
         'spanify',
         '--generate-compdb',
         '-p',
-        str(out_dir),
+        str(out_dir_arg),
     ]
     # Optional flags MUST be inserted before positional arguments
     if platform == 'win':
         cmd.append('--target_os=win')
     if tool_arg:
         cmd.append(f'--tool-arg={tool_arg}')
+    # Standard LLVM Clang compilation flags are required to prevent custom
+    # Chromium pragmas (like #pragma allow_unsafe_buffers) from being treated
+    # as fatal unknown pragma errors during submodule rewrites.
+    cmd.append('--tool-arg=-extra-arg=-Wno-error')
+    cmd.append('--tool-arg=-extra-arg=-Wno-unknown-pragmas')
 
     cmd.extend([compile_dirs, f'path-filter={compile_dirs}'])
 
@@ -282,7 +370,8 @@ def run_rewrite_tool(platform, out_dir, project):
         proc1 = subprocess.Popen(cmd,
                                  stdout=subprocess.PIPE,
                                  stderr=err_f,
-                                 text=True)
+                                 text=True,
+                                 cwd=submodule if standalone else None)
         proc2 = subprocess.Popen(['awk', '!x[$0]++'],
                                  stdin=proc1.stdout,
                                  stdout=out_f,
@@ -295,112 +384,113 @@ def run_rewrite_tool(platform, out_dir, project):
         proc2.wait()
         proc1.wait()
 
-        if proc1.returncode != 0:
-            logging.warning(
-                'Rewrite tool failed for %s with exit code %d. '
-                'Continuing with partial results.', platform, proc1.returncode)
+    if proc1.returncode != 0:
+        logging.warning(
+            'Rewrite tool failed for %s with exit code %d. '
+            'Continuing with partial results.', platform, proc1.returncode)
 
 
-def run_rewrite_phase(platforms, project):
+def apply_edits_phase(platform, out_dir, project):
     """
-    Prepares and runs the rewrite tool for all specified platforms.
+    Collects all rewriter output and applies edits using apply_edits.py.
     """
-    clear_scratch_dir()
+    submodule = PROJECTS[project].get('submodule', '.')
+    standalone = submodule != '.'
 
-    for platform in platforms:
-        out_dir = get_out_dir(platform)
-        prepare_platform(platform, out_dir, project)
-        run_rewrite_tool(platform, out_dir, project)
-
-
-def apply_edits_phase(last_platform):
-    """
-    Extracts edits from the rewrite tool output and applies them.
-    """
-    scratch_dir().mkdir(parents=True, exist_ok=True)
     logging.info('Applying edits...')
-    # Clear out stale patches from previous runs or tests. They will be
-    # recreated by apply_edits.py, but we want to make sure we don't have any
-    # leftover patches lying around from previous runs that could cause
-    # confusion.
-    for f in scratch_dir().glob('patch*'):
-        f.unlink()
-
-    logging.info('Running: extract_edits.py | apply_edits.py')
-
-    # Combine all rewrite outputs into one file first
-    all_edits = scratch_dir() / 'all.main.out'
+    all_edits = scratch_dir() / 'all_edits.out'
     with all_edits.open('wb') as wfd:
-        # Use sorted to guarantee reproducible ordering across environments
         for f in sorted(scratch_dir().glob('*.main.out')):
             if f != all_edits:
                 with f.open('rb') as rfd:
                     shutil.copyfileobj(rfd, wfd)
 
+    root_dir = pathlib.Path(os.getcwd())
+    extract_edits_path = root_dir / 'tools/clang/spanify/extract_edits.py'
+    apply_edits_path = root_dir / 'tools/clang/scripts/apply_edits.py'
+
+    if standalone:
+        out_dir_arg = out_dir.relative_to(submodule)
+    else:
+        out_dir_arg = out_dir
+
     # Let the OS pipe them naturally
     with all_edits.open('rb') as rfd:
         extract_proc = subprocess.Popen(
-            ['tools/clang/spanify/extract_edits.py'],
+            [sys.executable, str(extract_edits_path)],
             stdin=rfd,
             stdout=subprocess.PIPE)
 
         assert extract_proc.stdout is not None
         apply_proc = subprocess.Popen([
-            'tools/clang/scripts/apply_edits.py', '-p',
-            str(get_out_dir(last_platform)), '.'
+            sys.executable,
+            str(apply_edits_path),
+            '-p',
+            str(out_dir_arg),
         ],
-                                      stdin=extract_proc.stdout)
+                                      stdin=extract_proc.stdout,
+                                      cwd=submodule if standalone else None)
 
         # Allow extract to receive SIGPIPE if apply exits early
         extract_proc.stdout.close()
         apply_proc.communicate()
 
-    if extract_proc.wait() != 0:
-        logging.warning('extract_edits.py failed with exit code %d.',
-                        extract_proc.returncode)
-    if apply_proc.returncode != 0:
-        logging.warning('apply_edits.py failed with exit code %d.',
-                        apply_proc.returncode)
+        if extract_proc.wait() != 0:
+            logging.warning('extract_edits.py failed with exit code %d.',
+                            extract_proc.returncode)
+        if apply_proc.returncode != 0:
+            logging.warning('apply_edits.py failed with exit code %d.',
+                            apply_proc.returncode)
 
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Multi-platform spanify tool.',
-        formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument('-p',
-                        '--platforms',
-                        nargs='+',
-                        choices=AVAILABLE_PLATFORMS,
-                        default=['linux-rel'],
-                        metavar='PLATFORM',
-                        help='Platforms to rewrite. Available options:\n  ' +
-                        '\n  '.join(AVAILABLE_PLATFORMS) +
-                        '\n(default: linux-rel)')
-    parser.add_argument('-r', '--skip-rewrite', action='store_true')
-    parser.add_argument('-e', '--skip-extract-edits', action='store_true')
-    parser.add_argument('--project', choices=PROJECTS.keys(), default='chrome')
+        description='Rewrite multiple platforms using spanify.')
+    parser.add_argument(
+        '--platform',
+        action='append',
+        help='Platforms to rewrite (e.g., linux, win, mac, android). '
+        'Can be specified multiple times.')
+    parser.add_argument('--project',
+                        choices=PROJECTS.keys(),
+                        default='chrome',
+                        help='Project to rewrite.')
+
     args = parser.parse_args()
 
-    # Configure logging.
-    logging.basicConfig(level=logging.DEBUG,
+    # Set CHROMIUM_BUILDTOOLS_PATH globally so LLVM/Clang tools find the
+    # correct buildtools directory when executed inside submodule roots.
+    os.environ['CHROMIUM_BUILDTOOLS_PATH'] = str(ROOT_DIR / 'buildtools')
+
+    platforms = args.platform or ['linux']
+    project = args.project
+    submodule = PROJECTS[project].get('submodule', '.')
+
+    logging.basicConfig(level=logging.INFO,
                         format='[%(asctime)s %(levelname)s] %(message)s',
                         datefmt='%H:%M:%S')
 
+    clear_scratch_dir()
+
     with build_and_manage_llvm():
-        logging.info('Testing rewriter...')
-        run_command([
-            'tools/clang/spanify/run_all_tests.py',
-            f'--project={args.project}',
-        ])
+        for platform in platforms:
+            out_dir = get_out_dir(platform, submodule)
+            prepare_platform(platform, out_dir, project)
+            run_rewrite_tool(platform, out_dir, project)
 
-        if not args.skip_rewrite:
-            run_rewrite_phase(args.platforms, args.project)
+        # Apply edits after running the tool on all requested platforms.
+        # We use the last platform's out_dir for apply_edits.py as it needs
+        # a valid build directory to find headers, etc.
+        apply_edits_phase(platforms[-1], get_out_dir(platforms[-1], submodule),
+                          project)
 
-        if not args.skip_extract_edits:
-            apply_edits_phase(args.platforms[-1])
+    logging.info('Formatting...')
+    # Running git cl format in the submodule if necessary.
+    try:
+        run_command(['git', 'cl', 'format'], cwd=submodule)
+    except subprocess.CalledProcessError:
+        logging.warning('git cl format failed, continuing...')
 
-        logging.info('Formatting...')
-        run_command(['git', 'cl', 'format'])
 
 
 if __name__ == '__main__':

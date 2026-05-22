@@ -10,6 +10,7 @@
 #include "RawPtrHelpers.h"
 #include "clang/AST/Decl.h"
 #include "clang/ASTMatchers/ASTMatchFinder.h"
+#include "llvm/ADT/StringRef.h"
 #include "project.h"
 
 class WebrtcProject : public Project {
@@ -60,7 +61,13 @@ class WebrtcProject : public Project {
         source_manager, raw_ptr_plugin::getRepresentativeLocation(Node),
         raw_ptr_plugin::FilenameLocationType::kSpellingLoc);
 
-    return filename.find("third_party/webrtc/third_party") != std::string::npos;
+    // Running in-place inside Chromium: absolute path contains
+    // "third_party/webrtc". We only want to spanify WebRTC sources, excluding
+    // its own internal third_party.
+    llvm::StringRef file(filename);
+    return (file.contains("third_party/") &&
+            !file.contains("third_party/webrtc/")) ||
+           file.contains("third_party/webrtc/third_party/");
   }
 };
 
