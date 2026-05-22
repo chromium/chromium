@@ -53,9 +53,22 @@ if (renderer_ipc_fuzzing_enabled) {
       "//content/test:test_support",
     ]
   }
+
   action("renderer_in_process_mojolpm_fuzzer_generator") {
     testonly = true
-    deps = [ ":ipc_interfaces_dumper" ]
+    deps = [
+      ":ipc_interfaces_dumper",
+      "//chrome:packed_resources",
+    ]
+
+    # Non-header transitive dependencies of actions are not always propagated
+    # as inputs for the action, which can cause failures on bots where the
+    # transitive dependency, in this case the chrome_crashpad_handler executable
+    # and the packed_resources are not present. See https://crbug.com/515451645.
+    if (is_linux) {
+      deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+    }
+
     depfile = "$target_out_dir/$target_name.d"
     inputs = []
     foreach(target, browser_exposed_mojom_targets) {
