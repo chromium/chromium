@@ -294,7 +294,7 @@ source_set("unit_tests") {
 }
 
 if (enterprise_cloud_content_analysis || is_android) {
-  source_set("cloud_content_scanning_unittests") {
+  source_set("cloud_content_scanning_unit_tests") {
     testonly = true
 
     sources = [
