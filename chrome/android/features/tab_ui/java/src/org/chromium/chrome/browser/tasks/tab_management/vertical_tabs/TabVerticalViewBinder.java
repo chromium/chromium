@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
@@ -28,12 +26,96 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListViewBinderUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** View binder for the Vertical Tab List item rows. */
 @NullMarked
 class TabVerticalViewBinder {
+
+    private static final float ROTATION_COLLAPSED = 0f;
+    private static final float ROTATION_EXPANDED = 180f;
+
+    // Public Entry-Point Binders
+
+    /**
+     * Binds PropertyModel properties of a standard tab item to the row's ViewGroup elements.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root ViewGroup representing the standard tab row item.
+     * @param propertyKey the specific property key to bind, or null to bind all properties.
+     */
+    public static void bindTab(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+
+        bindCommonProperties(model, view, propertyKey);
+
+        if (TabProperties.TITLE == propertyKey) {
+            TextView titleView = view.findViewById(R.id.tab_title);
+            titleView.setText(model.get(TabProperties.TITLE));
+        } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.IS_INCOGNITO == propertyKey) {
+            updateRegularColors(model, view);
+        } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
+            @Nullable TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
+            @Nullable View actionButton = view.findViewById(R.id.action_button);
+            if (actionButton != null) {
+                TabListViewBinderUtils.bindActionButton(model, actionButton, data);
+            }
+        } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            TabListViewBinderUtils.updateContentDescription(model, view);
+        }
+        // TODO(crbug.com/509226293): Add MEDIA_INDICATOR to TabProperties.ALL_KEYS_VERTICAL_TAB
+        // and implement binder logic to display/update playing/muted audio icons.
+    }
+
+    /**
+     * Binds PropertyModel properties of a compact, icon-only pinned tab row to the view elements.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root ViewGroup representing the pinned tab row item.
+     * @param propertyKey the specific property key to bind, or null to bind all properties.
+     */
+    public static void bindPinnedTab(PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+        bindCommonProperties(model, view, propertyKey);
+
+        if (TabProperties.TITLE == propertyKey) {
+            view.setContentDescription(model.get(TabProperties.TITLE));
+        } else if (TabProperties.IS_SELECTED == propertyKey
+                || TabProperties.IS_INCOGNITO == propertyKey) {
+            updatePinnedColors(model, view);
+        }
+    }
+
+    /**
+     * Binds properties of a tab group header row item to its ViewGroup elements.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root ViewGroup representing the tab group header row item.
+     * @param propertyKey the specific property key to bind.
+     */
+    public static void bindTabGroupHeader(
+            PropertyModel model, ViewGroup view, PropertyKey propertyKey) {
+        bindCommonProperties(model, view, propertyKey);
+
+        if (TabProperties.TITLE == propertyKey) {
+            TextView titleView = view.findViewById(R.id.group_title);
+            titleView.setText(model.get(TabProperties.TITLE));
+        } else if (TabProperties.TAB_GROUP_CARD_COLOR == propertyKey
+                || TabProperties.IS_INCOGNITO == propertyKey) {
+            updateGroupHeaderColors(model, view);
+        } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
+            TabListViewBinderUtils.updateContentDescription(model, view);
+            // TODO(crbug.com/509226293): Override the default ACTION_CLICK action label
+            // to announce "expand" or "collapse" dynamically based on the TabProperties.IS_EXPANDED
+            // state once child rows are implemented. Also confirm and resolve the conflicting
+            // "Expand" prefix in the main content description string for active/expanded groups.
+        } else if (TabProperties.IS_EXPANDED == propertyKey) {
+            updateChevronRotation(model, view);
+        }
+    }
+
+    // Common Property Binding Helpers
 
     /**
      * Binds common property keys shared by all tab row views, preventing duplicate routing logic.
@@ -58,57 +140,6 @@ class TabVerticalViewBinder {
         }
     }
 
-    /**
-     * Binds PropertyModel properties of a standard tab item to the row's ViewGroup elements.
-     *
-     * @param model the model containing the tab properties.
-     * @param view the root ViewGroup representing the standard tab row item.
-     * @param propertyKey the specific property key to bind, or null to bind all properties.
-     */
-    public static void bindTab(
-            PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
-        assertNonNull(propertyKey);
-
-        bindCommonProperties(model, view, propertyKey);
-
-        if (TabProperties.TITLE == propertyKey) {
-            TextView titleView = view.findViewById(R.id.tab_title);
-            titleView.setText(model.get(TabProperties.TITLE));
-        } else if (TabProperties.IS_SELECTED == propertyKey
-                || TabProperties.IS_INCOGNITO == propertyKey) {
-            updateRegularColors(model, view);
-        } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
-            @Nullable TabActionButtonData data = model.get(TabProperties.TAB_ACTION_BUTTON_DATA);
-            @Nullable View actionButton = view.findViewById(R.id.action_button);
-            if (actionButton != null) {
-                TabListViewBinderUtils.bindActionButton(model, actionButton, data);
-            }
-        }
-        // TODO(crbug.com/509226293): Add MEDIA_INDICATOR to TabProperties.ALL_KEYS_VERTICAL_TAB
-        // and implement binder logic to display/update playing/muted audio icons.
-    }
-
-    /**
-     * Binds PropertyModel properties of a compact, icon-only pinned tab row to the view elements.
-     *
-     * @param model the model containing the tab properties.
-     * @param view the root ViewGroup representing the pinned tab row item.
-     * @param propertyKey the specific property key to bind, or null to bind all properties.
-     */
-    public static void bindPinnedTab(
-            PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
-        assertNonNull(propertyKey);
-
-        bindCommonProperties(model, view, propertyKey);
-
-        if (TabProperties.TITLE == propertyKey) {
-            view.setContentDescription(model.get(TabProperties.TITLE));
-        } else if (TabProperties.IS_SELECTED == propertyKey
-                || TabProperties.IS_INCOGNITO == propertyKey) {
-            updatePinnedColors(model, view);
-        }
-    }
-
     private static void updateFavicon(PropertyModel model, ViewGroup view) {
         @Nullable ImageView faviconView = view.findViewById(R.id.tab_favicon);
         if (faviconView != null) {
@@ -116,30 +147,7 @@ class TabVerticalViewBinder {
         }
     }
 
-    /**
-     * Updates the background tint and website favicon specifically for a pinned tab row view.
-     * Clears background tints when unselected, to allow the solid XML container drawable to render.
-     *
-     * @param model the model containing the tab properties.
-     * @param view the root ViewGroup representing the pinned tab row item.
-     */
-    private static void updatePinnedColors(PropertyModel model, ViewGroup view) {
-        boolean isSelected = model.get(TabProperties.IS_SELECTED);
-        boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-        Context context = view.getContext();
-        view.setSelected(isSelected);
-
-        @Nullable Drawable bg = view.getBackground();
-        if (bg != null) {
-            bg.mutate();
-            ColorStateList tintList =
-                    isSelected
-                            ? getBackgroundTintList(context, /* isSelected= */ true, isIncognito)
-                            : null;
-            ViewCompat.setBackgroundTintList(view, tintList);
-        }
-        updateFavicon(model, view);
-    }
+    // Row-Specific Layout Color Binder Helpers
 
     private static void updateRegularColors(PropertyModel model, ViewGroup view) {
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
@@ -167,6 +175,80 @@ class TabVerticalViewBinder {
         updateFavicon(model, view);
         setupCloseButtonHoverListener(model, view);
     }
+
+    /**
+     * Updates the background tint and website favicon specifically for a pinned tab row view.
+     * Clears background tints when unselected, to allow the solid XML container drawable to render.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the root ViewGroup representing the pinned tab row item.
+     */
+    private static void updatePinnedColors(PropertyModel model, ViewGroup view) {
+        boolean isSelected = model.get(TabProperties.IS_SELECTED);
+        boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
+        Context context = view.getContext();
+        view.setSelected(isSelected);
+
+        @Nullable Drawable bg = view.getBackground();
+        if (bg != null) {
+            bg.mutate();
+            ColorStateList tintList =
+                    isSelected
+                            ? getBackgroundTintList(context, /* isSelected= */ true, isIncognito)
+                            : null;
+            ViewCompat.setBackgroundTintList(view, tintList);
+        }
+        updateFavicon(model, view);
+    }
+
+    /**
+     * Updates the background tint color specifically for the tab group header row view, dynamically
+     * resolving the group color ID using TabGroupColorPickerUtils.
+     *
+     * @param model the model containing the tab group properties.
+     * @param view the root ViewGroup representing the tab group header row item.
+     */
+    private static void updateGroupHeaderColors(PropertyModel model, ViewGroup view) {
+        @Nullable Integer colorId = model.get(TabProperties.TAB_GROUP_CARD_COLOR);
+        boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
+        Context context = view.getContext();
+
+        @Nullable Drawable bg = view.getBackground();
+        if (bg != null && colorId != null) {
+            bg.mutate();
+            int color =
+                    TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                            context, colorId, isIncognito);
+            ViewCompat.setBackgroundTintList(view, ColorStateList.valueOf(color));
+
+            @ColorInt
+            int textColor = ContextCompat.getColor(context, R.color.default_text_color_light);
+            @ColorInt
+            int iconColor = ContextCompat.getColor(context, R.color.default_icon_color_light);
+
+            TextView titleView = view.findViewById(R.id.group_title);
+            if (titleView != null) {
+                titleView.setTextColor(textColor);
+            }
+
+            @Nullable ImageView expandChevron = view.findViewById(R.id.expand_chevron);
+            if (expandChevron != null) {
+                ImageViewCompat.setImageTintList(expandChevron, ColorStateList.valueOf(iconColor));
+            }
+        }
+    }
+
+    private static void updateChevronRotation(PropertyModel model, ViewGroup view) {
+        boolean isExpanded = model.get(TabProperties.IS_EXPANDED);
+        @Nullable ImageView expandChevron = view.findViewById(R.id.expand_chevron);
+        if (expandChevron != null) {
+            // TODO(crbug.com/509226293): Animate the rotation once child tab
+            // expansion transitions are implemented.
+            expandChevron.setRotation(isExpanded ? ROTATION_EXPANDED : ROTATION_COLLAPSED);
+        }
+    }
+
+    // Theme & Color Utility Methods
 
     private static ColorStateList getBackgroundTintList(
             Context context, boolean isSelected, boolean isIncognito) {
@@ -208,6 +290,8 @@ class TabVerticalViewBinder {
                                 : SemanticColorUtils.getDefaultIconColorSecondary(context));
         return ColorStateList.valueOf(color);
     }
+
+    // Gesture & Interaction Layout Helpers
 
     private static void setupCloseButtonHoverListener(PropertyModel model, ViewGroup view) {
         @Nullable ImageView actionButton = view.findViewById(R.id.action_button);

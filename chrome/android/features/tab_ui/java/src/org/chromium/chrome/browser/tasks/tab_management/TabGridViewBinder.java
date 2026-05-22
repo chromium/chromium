@@ -164,12 +164,7 @@ public class TabGridViewBinder {
             FrameLayout container = view.fastFindViewById(R.id.tab_group_color_view_container);
             TabCardViewBinderUtils.updateTabGroupColorView(container, provider);
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
-            TextResolver contentDescriptionTextResolver =
-                    model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
-            CharSequence contentDescriptionString =
-                    TabCardViewBinderUtils.resolveNullSafe(
-                            contentDescriptionTextResolver, view.getContext());
-            view.setContentDescription(contentDescriptionString);
+            TabListViewBinderUtils.updateContentDescription(model, view);
         } else if (TabProperties.GRID_CARD_SIZE == propertyKey) {
             final Size cardSize = model.get(TabProperties.GRID_CARD_SIZE);
             int height = cardSize.getHeight();

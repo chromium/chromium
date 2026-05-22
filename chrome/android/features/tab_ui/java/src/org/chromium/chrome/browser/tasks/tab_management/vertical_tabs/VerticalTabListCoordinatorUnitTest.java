@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -42,6 +44,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -53,6 +56,7 @@ import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
@@ -147,15 +151,73 @@ public class VerticalTabListCoordinatorUnitTest {
 
         PropertyModel reg = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
         PropertyModel pin = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
+        PropertyModel group = new PropertyModel(TabProperties.ALL_KEYS_VERTICAL_TAB);
         pin.set(TabProperties.IS_PINNED, true);
+        group.set(TabProperties.TAB_GROUP_CARD_COLOR, 1);
 
-        assert adapter != null;
+        assertNotNull(adapter);
         adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, reg));
         adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, pin));
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, group));
 
         assertEquals(UiType.TAB, adapter.getItemViewType(0));
         assertEquals(UiType.PINNED_TAB, adapter.getItemViewType(1));
+        assertEquals(UiType.TAB_GROUP, adapter.getItemViewType(2));
         assertEquals(4, lookup.getSpanSize(0));
         assertEquals(1, lookup.getSpanSize(1));
+        assertEquals(4, lookup.getSpanSize(2));
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleTabGroupExpansion() {
+        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        PropertyKey[] keys =
+                PropertyModel.concatKeys(
+                        TabProperties.ALL_KEYS_VERTICAL_TAB,
+                        new PropertyKey[] {TabListModel.CardProperties.CARD_TYPE});
+        PropertyModel groupModel =
+                new PropertyModel.Builder(keys)
+                        .with(TabProperties.TAB_ID, 123)
+                        .with(TabProperties.TAB_GROUP_CARD_COLOR, 1)
+                        .with(TabProperties.IS_EXPANDED, false)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .build();
+
+        assertNotNull(adapter);
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB_GROUP, groupModel));
+
+        mCoordinator.toggleTabGroupExpansion(123);
+        assertTrue(
+                "Tab group should be expanded after first toggle click.",
+                groupModel.get(TabProperties.IS_EXPANDED));
+
+        mCoordinator.toggleTabGroupExpansion(123);
+        assertFalse(
+                "Tab group should be collapsed after second toggle click.",
+                groupModel.get(TabProperties.IS_EXPANDED));
+
+        // 3. Add a regular tab (no TAB_GROUP_CARD_COLOR) to verify it cannot be toggled
+        PropertyModel tabModel =
+                new PropertyModel.Builder(keys)
+                        .with(TabProperties.TAB_ID, 456)
+                        .with(TabProperties.IS_EXPANDED, false)
+                        .with(
+                                TabListModel.CardProperties.CARD_TYPE,
+                                TabListModel.CardProperties.ModelType.TAB)
+                        .build();
+        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, tabModel));
+
+        // Toggling a regular tab ID should do nothing (remain false)
+        mCoordinator.toggleTabGroupExpansion(456);
+        assertFalse(
+                "Regular tab's expansion state should remain completely unchanged.",
+                tabModel.get(TabProperties.IS_EXPANDED));
     }
 }

@@ -39,6 +39,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
@@ -46,6 +47,10 @@ import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabA
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.TextResolver;
+import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
+import org.chromium.components.tab_groups.TabGroupsFeatureMap;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link TabVerticalViewBinder}. */
@@ -318,5 +323,101 @@ public class TabVerticalViewBinderUnitTest {
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TITLE);
 
         assertEquals("Google Website", pinnedView.getContentDescription().toString());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS})
+    public void testBindTabGroupHeader_TitleAndColors() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ViewGroup headerView =
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        TextView titleView = headerView.findViewById(R.id.group_title);
+
+        // 1. Test Title binding
+        mModel.set(TabProperties.TITLE, "My Research Group");
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.TITLE);
+        assertEquals("My Research Group", titleView.getText());
+
+        // 2. Test Colors tinting
+        mModel.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.TAB_GROUP_CARD_COLOR);
+
+        Drawable bg = headerView.getBackground();
+        assertNotNull("Background drawable should not be null", bg);
+
+        ColorStateList tintList = headerView.getBackgroundTintList();
+        assertNotNull("Background tint list should be set", tintList);
+
+        int expectedColor =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        activity, TabGroupColorId.RED, /* isIncognito= */ false);
+        assertEquals(expectedColor, tintList.getDefaultColor());
+
+        // 3. Test Colors tinting in Incognito mode
+        PropertyModel incognitoModel =
+                new PropertyModel.Builder(TabProperties.ALL_KEYS_VERTICAL_TAB)
+                        .with(TabProperties.IS_INCOGNITO, true)
+                        .with(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.RED)
+                        .build();
+        TabVerticalViewBinder.bindTabGroupHeader(
+                incognitoModel, headerView, TabProperties.IS_INCOGNITO);
+
+        tintList = headerView.getBackgroundTintList();
+        assertNotNull("Background tint list should be set in Incognito", tintList);
+        int expectedIncognitoColor =
+                TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
+                        activity, TabGroupColorId.RED, /* isIncognito= */ true);
+        assertEquals(expectedIncognitoColor, tintList.getDefaultColor());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_ContentDescription() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ViewGroup headerView =
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_group_header, null, false);
+
+        TextResolver resolver = context -> "Accessibility Group Description";
+
+        mModel.set(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER, resolver);
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
+
+        assertEquals(
+                "Accessibility Group Description", headerView.getContentDescription().toString());
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupHeader_ExpandedState() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+        ViewGroup headerView =
+                (ViewGroup)
+                        LayoutInflater.from(activity)
+                                .inflate(R.layout.vertical_tab_group_header, null, false);
+        ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);
+
+        // 0. Test Default/Null State (should point down - 0 degrees)
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_EXPANDED);
+        assertEquals(0f, expandChevron.getRotation(), 0.0f);
+
+        // 1. Test Collapsed State (should point down - 0 degrees)
+        mModel.set(TabProperties.IS_EXPANDED, false);
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_EXPANDED);
+        assertEquals(0f, expandChevron.getRotation(), 0.0f);
+
+        // 2. Test Expanded State (should point up - 180 degrees)
+        mModel.set(TabProperties.IS_EXPANDED, true);
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_EXPANDED);
+        assertEquals(180f, expandChevron.getRotation(), 0.0f);
     }
 }

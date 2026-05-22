@@ -123,6 +123,8 @@ public class TabProperties {
 
     public static final WritableBooleanPropertyKey IS_PINNED = new WritableBooleanPropertyKey();
 
+    public static final WritableBooleanPropertyKey IS_EXPANDED = new WritableBooleanPropertyKey();
+
     public static final WritableObjectPropertyKey<TabActionButtonData> TAB_ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
 
@@ -299,11 +301,13 @@ public class TabProperties {
                 FAVICON_FETCHER,
                 IS_SELECTED,
                 IS_INCOGNITO,
+                IS_EXPANDED,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 TAB_CONTEXT_CLICK_LISTENER,
                 TAB_ACTION_BUTTON_DATA,
                 TAB_GROUP_CARD_COLOR,
-                IS_PINNED
+                IS_PINNED,
+                CONTENT_DESCRIPTION_TEXT_RESOLVER
             };
 }

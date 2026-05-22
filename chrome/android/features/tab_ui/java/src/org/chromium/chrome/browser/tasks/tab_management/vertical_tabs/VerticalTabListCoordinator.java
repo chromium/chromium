@@ -31,6 +31,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Coordinator to manage and display the Vertical Tab List. */
@@ -42,16 +44,31 @@ public class VerticalTabListCoordinator {
     static final int DEFAULT_GRID_SPAN_COUNT = 4;
     private final ViewGroup mContainerView;
     private final TabListFaviconProvider mTabListFaviconProvider;
+    private final TabListModel mModelList;
     private @Nullable TabListMediator mMediator;
     private @Nullable TabModelSelector mTabModelSelector;
     private @Nullable TabModelSelectorObserver mTabModelSelectorObserver;
 
     private class VerticalTabListClickHandler
             implements TabListMediator.GridCardOnClickListenerProvider {
+        private final TabActionListener mTabGroupClickedListener =
+                new TabActionListener() {
+                    @Override
+                    public void run(
+                            View view, int tabId, @Nullable MotionEventInfo triggeringMotion) {
+                        toggleTabGroupExpansion(tabId);
+                    }
+
+                    @Override
+                    public void run(
+                            View view, String syncId, @Nullable MotionEventInfo triggeringMotion) {
+                        // Intentional no-op.
+                    }
+                };
+
         @Override
         public @Nullable TabActionListener onTabGroupClicked(Tab tab) {
-            // TODO(crbug.com/509226293): expand/collapse
-            return null;
+            return mTabGroupClickedListener;
         }
 
         @Override
@@ -72,14 +89,18 @@ public class VerticalTabListCoordinator {
 
     public VerticalTabListCoordinator(
             Activity activity, TabModelSelector tabModelSelector, Profile profile) {
-        TabListModel modelList = new TabListModel();
+        mModelList = new TabListModel();
         SimpleRecyclerViewAdapter adapter =
-                new SimpleRecyclerViewAdapter(modelList) {
+                new SimpleRecyclerViewAdapter(mModelList) {
                     @Override
                     public int getItemViewType(int position) {
-                        ListItem item = modelList.get(position);
-                        if (item.type == UiType.TAB && item.model.get(TabProperties.IS_PINNED)) {
-                            return UiType.PINNED_TAB;
+                        ListItem item = mModelList.get(position);
+                        if (item.type == UiType.TAB) {
+                            if (item.model.get(TabProperties.IS_PINNED)) {
+                                return UiType.PINNED_TAB;
+                            } else if (item.model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null) {
+                                return UiType.TAB_GROUP;
+                            }
                         }
                         return super.getItemViewType(position);
                     }
@@ -100,6 +121,14 @@ public class VerticalTabListCoordinator {
                                 LayoutInflater.from(activity)
                                         .inflate(R.layout.vertical_tab_pinned_item, parent, false),
                 TabVerticalViewBinder::bindPinnedTab);
+
+        adapter.registerType(
+                UiType.TAB_GROUP,
+                parent ->
+                        (ViewGroup)
+                                LayoutInflater.from(activity)
+                                        .inflate(R.layout.vertical_tab_group_header, parent, false),
+                TabVerticalViewBinder::bindTabGroupHeader);
 
         mContainerView =
                 (ViewGroup)
@@ -130,9 +159,6 @@ public class VerticalTabListCoordinator {
         // 2. Wire up footer container (R.id.vertical_tab_footer_container)
         // 3. Attach ItemTouchHelper for vertical row dragging & reordering.
         // 4. Register Right-click / Long-press Context Menu listener for tab interactions.
-        // 5. Define a dedicated vertical_tab_group_header.xml layout and styling to handle
-        // colorful background fills, expand/collapse chevron arrows, and group titles for
-        // tab groups cleanly.
 
         mTabModelSelector = tabModelSelector;
 
@@ -145,7 +171,7 @@ public class VerticalTabListCoordinator {
         mMediator =
                 new TabListMediator(
                         activity,
-                        modelList,
+                        mModelList,
                         TabListCoordinator.TabListMode.GRID,
                         /* modalDialogManager */ null,
                         tabModelSelector.getCurrentTabModelSupplier(),
@@ -193,14 +219,6 @@ public class VerticalTabListCoordinator {
         }
     }
 
-    private void resetWithListOfTabs(@Nullable TabModel tabModel) {
-        if (mMediator == null || tabModel == null) return;
-        mMediator.resetWithListOfTabs(
-                tabModel.getRepresentativeTabList(),
-                /* tabGroupSyncIds */ null,
-                /* quickMode */ false);
-    }
-
     /** Returns the root ViewGroup container representing the Left Rail sidebar. */
     public View getView() {
         return mContainerView;
@@ -219,6 +237,34 @@ public class VerticalTabListCoordinator {
 
         if (mTabListFaviconProvider != null) {
             mTabListFaviconProvider.destroy();
+        }
+    }
+
+    private void resetWithListOfTabs(@Nullable TabModel tabModel) {
+        if (mMediator == null || tabModel == null) return;
+        mMediator.resetWithListOfTabs(
+                tabModel.getRepresentativeTabList(),
+                /* tabGroupSyncIds */ null,
+                /* quickMode */ false);
+    }
+
+    /**
+     * Toggles the expanded/collapsed visual and layout state of a tab group.
+     *
+     * @param tabId the ID of the representative tab representing the tab group.
+     */
+    void toggleTabGroupExpansion(int tabId) {
+        PropertyModel model = mModelList.getModelFromTabId(tabId);
+        if (model != null && model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null) {
+            boolean isExpanded = model.get(TabProperties.IS_EXPANDED);
+            model.set(TabProperties.IS_EXPANDED, !isExpanded);
+            // TODO(crbug.com/509226293):
+            // 1. Fetch child tabs using TabGroupModelFilter and dynamically insert them (if
+            //    expanded) or remove them (if collapsed).
+            // 2. Persist the expanded/collapsed state natively by calling
+            //    TabGroupModelFilter.setTabGroupCollapsed(tabGroupId, isCollapsed) instead of just
+            //    updating the model locally, and register a TabGroupModelFilterObserver to keep
+            //    our model list in sync across restarts and with the horizontal tab strip.
         }
     }
 

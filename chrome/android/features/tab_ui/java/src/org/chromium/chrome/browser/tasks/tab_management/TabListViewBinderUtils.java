@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconFetcher;
+import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.OnPeripheralClickListener;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -168,6 +169,21 @@ public class TabListViewBinderUtils {
                     }
                     faviconView.setImageDrawable(drawable);
                 });
+    }
+
+    /**
+     * Resolves the accessibility text resolver and sets the content description on the view.
+     *
+     * @param model the model containing the tab properties.
+     * @param view the View to receive the accessibility content description.
+     */
+    public static void updateContentDescription(PropertyModel model, View view) {
+        @Nullable TextResolver contentDescriptionTextResolver =
+                model.get(TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER);
+        @Nullable CharSequence contentDescriptionString =
+                TabCardViewBinderUtils.resolveNullSafe(
+                        contentDescriptionTextResolver, view.getContext());
+        view.setContentDescription(contentDescriptionString);
     }
 
     private static void runTabActionListener(

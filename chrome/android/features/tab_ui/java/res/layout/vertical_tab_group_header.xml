@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/vertical_tab_item_padding_horizontal"
+    android:paddingEnd="@dimen/vertical_tab_item_padding_horizontal"
+    android:paddingTop="@dimen/vertical_tab_item_padding_vertical"
+    android:paddingBottom="@dimen/vertical_tab_item_padding_vertical"
+    android:layout_marginBottom="@dimen/vertical_tab_item_margin_bottom"
+    android:background="@drawable/vertical_tab_item_background"
+    android:clickable="true"
+    android:focusable="true">
+
+
+    <!-- Group Title text -->
+    <TextView
+        android:id="@+id/group_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginEnd="@dimen/vertical_tab_item_title_margin_end"
+        android:singleLine="true"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+        android:importantForAccessibility="no" />
+
+    <!-- Expand/Collapse Arrow (Points down naturally by default for Collapsed state) -->
+    <ImageView
+        android:id="@+id/expand_chevron"
+        android:layout_width="@dimen/vertical_tab_item_icon_size"
+        android:layout_height="@dimen/vertical_tab_item_icon_size"
+        android:src="@drawable/ic_expand_more_black_24dp"
+        android:importantForAccessibility="no" />
+</LinearLayout>
