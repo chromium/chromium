@@ -205,6 +205,48 @@ const base::FeatureParam<double> kSmartTabSharingPromoScoreThreshold(
     "ContextualTasksContextSmartTabSharingPromoScoreThreshold",
     0.6);
 
+const base::FeatureParam<SmartTabSharingIphFirstTimePromptOption>::Option
+    kSmartTabSharingIphFirstTimePromptOptions[] = {
+        {SmartTabSharingIphFirstTimePromptOption::kIphFirstTimePromptV1,
+         "iphStsFirstTimePromptV1"},
+        {SmartTabSharingIphFirstTimePromptOption::kIphFirstTimePromptV2,
+         "iphStsFirstTimePromptV2"},
+};
+const base::FeatureParam<SmartTabSharingIphFirstTimePromptOption>
+    kSmartTabSharingIphFirstTimePromptOption(
+        &kContextualTasksContext,
+        "ContextualTasksContextSmartTabSharingIphFirstTimePromptOption",
+        SmartTabSharingIphFirstTimePromptOption::kIphFirstTimePromptV1,
+        &kSmartTabSharingIphFirstTimePromptOptions);
+
+const base::FeatureParam<SmartTabSharingIphDefaultOnOption>::Option
+    kSmartTabSharingIphDefaultOnOptions[] = {
+        {SmartTabSharingIphDefaultOnOption::kIphDefaultOnV1,
+         "iphStsDefaultOnV1"},
+        {SmartTabSharingIphDefaultOnOption::kIphDefaultOnV2,
+         "iphStsDefaultOnV2"},
+};
+const base::FeatureParam<SmartTabSharingIphDefaultOnOption>
+    kSmartTabSharingIphDefaultOnOption(
+        &kContextualTasksContext,
+        "ContextualTasksContextSmartTabSharingDefaultOnOption",
+        SmartTabSharingIphDefaultOnOption::kIphDefaultOnV1,
+        &kSmartTabSharingIphDefaultOnOptions);
+
+const base::FeatureParam<SmartTabSharingIphTryItPromoOption>::Option
+    kSmartTabSharingIphTryItPromoOptions[] = {
+        {SmartTabSharingIphTryItPromoOption::kIphTryItPromoV1,
+         "iphStsTryItPromoV1"},
+        {SmartTabSharingIphTryItPromoOption::kIphTryItPromoV2,
+         "iphStsTryItPromoV2"},
+};
+const base::FeatureParam<SmartTabSharingIphTryItPromoOption>
+    kSmartTabSharingIphTryItPromoOption(
+        &kContextualTasksContext,
+        "ContextualTasksContextSmartTabSharingIphTryItPromoOption",
+        SmartTabSharingIphTryItPromoOption::kIphTryItPromoV1,
+        &kSmartTabSharingIphTryItPromoOptions);
+
 const base::FeatureParam<double> kContextualTasksContextLoggingSampleRate{
     &kContextualTasksContextLogging, "ContextualTasksContextLoggingSampleRate",
     1.0};

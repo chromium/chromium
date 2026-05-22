@@ -428,14 +428,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       {"oauthErrorDialogBody", IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_BODY},
       {"oauthErrorDialogReloadButton",
        IDS_CONTEXTUAL_TASKS_OAUTH_ERROR_DIALOG_RELOAD_BUTTON},
-      {"stsTryItHeader", IDS_STS_IPH_TRY_IT_HEADER},
-      {"stsTryItBody", IDS_STS_IPH_TRY_IT_BODY},
       {"stsTryItLink", IDS_STS_IPH_TRY_IT_LINK},
       {"stsTryItBodyEnd", IDS_STS_IPH_TRY_IT_BODY_END},
       {"stsTryItTurnOn", IDS_STS_IPH_TRY_IT_TURN_ON},
       {"stsTryItNotNow", IDS_STS_IPH_TRY_IT_NOT_NOW},
-      {"stsDefaultOnHeader", IDS_STS_IPH_DEFAULT_ON_HEADER},
-      {"stsDefaultOnBody", IDS_STS_IPH_DEFAULT_ON_BODY},
       {"stsDefaultOnLink", IDS_STS_IPH_DEFAULT_ON_LINK},
       {"stsDefaultOnBodyEnd", IDS_STS_IPH_DEFAULT_ON_BODY_END},
       {"stsDefaultOnTurnOn", IDS_STS_IPH_DEFAULT_ON_TURN_ON},
@@ -446,6 +442,37 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
 #endif
   };
   source->AddLocalizedStrings(kLocalizedStrings);
+
+  int stsDefaultOnHeaderId = IDS_STS_IPH_DEFAULT_ON_HEADER;
+  int stsDefaultOnBodyId = IDS_STS_IPH_DEFAULT_ON_BODY;
+  switch (contextual_tasks::kSmartTabSharingIphDefaultOnOption.Get()) {
+    case contextual_tasks::SmartTabSharingIphDefaultOnOption::kIphDefaultOnV1:
+      stsDefaultOnHeaderId = IDS_STS_IPH_DEFAULT_ON_HEADER;
+      stsDefaultOnBodyId = IDS_STS_IPH_DEFAULT_ON_BODY;
+      break;
+    case contextual_tasks::SmartTabSharingIphDefaultOnOption::kIphDefaultOnV2:
+      stsDefaultOnHeaderId = IDS_STS_IPH_DEFAULT_ON_HEADER_V2;
+      stsDefaultOnBodyId = IDS_STS_IPH_DEFAULT_ON_BODY_V2;
+      break;
+  }
+  source->AddLocalizedString("stsDefaultOnHeader", stsDefaultOnHeaderId);
+  source->AddLocalizedString("stsDefaultOnBody", stsDefaultOnBodyId);
+
+  int stsTryItHeaderId = IDS_STS_IPH_TRY_IT_HEADER;
+  int stsTryItBodyId = IDS_STS_IPH_TRY_IT_BODY;
+  switch (contextual_tasks::kSmartTabSharingIphTryItPromoOption.Get()) {
+    case contextual_tasks::SmartTabSharingIphTryItPromoOption::kIphTryItPromoV1:
+      stsTryItHeaderId = IDS_STS_IPH_TRY_IT_HEADER;
+      stsTryItBodyId = IDS_STS_IPH_TRY_IT_BODY;
+      break;
+    case contextual_tasks::SmartTabSharingIphTryItPromoOption::kIphTryItPromoV2:
+      stsTryItHeaderId = IDS_STS_IPH_TRY_IT_HEADER_V2;
+      stsTryItBodyId = IDS_STS_IPH_TRY_IT_BODY_V2;
+      break;
+  }
+  source->AddLocalizedString("stsTryItHeader", stsTryItHeaderId);
+  source->AddLocalizedString("stsTryItBody", stsTryItBodyId);
+
   source->AddLocalizedString(
       "lensSearchButtonLabel",
       IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL);

@@ -132,6 +132,30 @@ extern const base::FeatureParam<double> kContentVisibilityThreshold;
 // Whether Smart Tab Sharing is enabled for the ContextualTasksContext feature.
 extern const base::FeatureParam<bool> kContextualTasksContextSmartTabSharing;
 
+// Option for smart tab sharing IPH first time prompt.
+enum class SmartTabSharingIphFirstTimePromptOption {
+  kIphFirstTimePromptV1,
+  kIphFirstTimePromptV2,
+};
+extern const base::FeatureParam<SmartTabSharingIphFirstTimePromptOption>
+    kSmartTabSharingIphFirstTimePromptOption;
+
+// Option for smart tab sharing IPH default on variants.
+enum class SmartTabSharingIphDefaultOnOption {
+  kIphDefaultOnV1,
+  kIphDefaultOnV2,
+};
+extern const base::FeatureParam<SmartTabSharingIphDefaultOnOption>
+    kSmartTabSharingIphDefaultOnOption;
+
+// Option for smart tab sharing IPH try it promo variants.
+enum class SmartTabSharingIphTryItPromoOption {
+  kIphTryItPromoV1,
+  kIphTryItPromoV2,
+};
+extern const base::FeatureParam<SmartTabSharingIphTryItPromoOption>
+    kSmartTabSharingIphTryItPromoOption;
+
 // Task string to use for formatting the query embedding.
 extern const base::FeatureParam<std::string> kQueryEmbeddingTask;
 
