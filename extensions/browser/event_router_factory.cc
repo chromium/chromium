@@ -10,6 +10,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_user_activation_service_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager_factory.h"
 
@@ -35,6 +36,7 @@ EventRouterFactory::EventRouterFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionRegistryFactory::GetInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
+  DependsOn(ExtensionUserActivationServiceFactory::GetInstance());
   DependsOn(ProcessManagerFactory::GetInstance());
 }
 
