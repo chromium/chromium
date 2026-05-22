@@ -169,9 +169,6 @@ error::Error DoEnableVertexAttribArray(GLuint index);
 error::Error DoFenceSync(GLenum condition, GLbitfield flags, GLuint client_id);
 error::Error DoFinish();
 error::Error DoFlush();
-error::Error DoFlushMappedBufferRange(GLenum target,
-                                      GLintptr offset,
-                                      GLsizeiptr size);
 error::Error DoFramebufferParameteri(GLenum target, GLenum pname, GLint param);
 error::Error DoFramebufferRenderbuffer(GLenum target,
                                        GLenum attachment,
@@ -248,6 +245,10 @@ error::Error DoGetBufferParameteriv(GLenum target,
                                     GLsizei bufsize,
                                     GLsizei* length,
                                     GLint* params);
+error::Error DoGetBufferSubDataCHROMIUM(GLenum target,
+                                        GLintptr offset,
+                                        GLsizeiptr size,
+                                        void* data);
 error::Error DoGetError(uint32_t* result);
 error::Error DoGetFloatv(GLenum pname,
                          GLsizei bufsize,
@@ -768,15 +769,6 @@ error::Error DoGetMaxValueInBufferCHROMIUM(GLuint buffer_id,
                                            GLenum type,
                                            GLuint offset,
                                            uint32_t* result);
-error::Error DoMapBufferRange(GLenum target,
-                              GLintptr offset,
-                              GLsizeiptr size,
-                              GLbitfield access,
-                              void* ptr,
-                              int32_t data_shm_id,
-                              uint32_t data_shm_offset,
-                              uint32_t* result);
-error::Error DoUnmapBuffer(GLenum target);
 error::Error DoResizeCHROMIUM(GLuint width,
                               GLuint height,
                               GLfloat scale_factor,

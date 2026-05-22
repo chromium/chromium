@@ -131,10 +131,6 @@ struct PassthroughResources {
   // TODO(ericrk): Remove this once TexturePassthrough holds a reference to
   // the GLTexturePassthroughImageRepresentation itself.
   base::flat_map<GLuint, SharedImageData> texture_shared_image_map;
-
-  // Mapping of client buffer IDs that are mapped to the shared memory used to
-  // back the mapping so that it can be flushed when the buffer is unmapped
-  base::flat_map<GLuint, MappedBuffer> mapped_buffer_map;
 };
 
 // Impose an upper bound on the number ANGLE_shader_pixel_local_storage planes
@@ -413,13 +409,6 @@ class GPU_GLES2_EXPORT GLES2DecoderPassthroughImpl
                                                       GLenum pname,
                                                       GLsizei length,
                                                       GLint* params);
-
-  template <typename T>
-  error::Error PatchGetBufferResults(GLenum target,
-                                     GLenum pname,
-                                     GLsizei bufsize,
-                                     GLsizei* length,
-                                     T* params);
 
   error::Error PatchGetFramebufferPixelLocalStorageParameterivANGLE(
       GLint plane,

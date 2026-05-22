@@ -52,6 +52,17 @@ typedef GLboolean (GL_APIENTRY PFNGLUNMAPBUFFERCHROMIUM) (GLuint target);
 #endif
 #endif  /* GL_CHROMIUM_pixel_transfer_buffer_object */
 
+#ifdef GL_GLEXT_PROTOTYPES
+GL_APICALL void GL_APIENTRY glGetBufferSubDataCHROMIUM(GLenum target,
+                                                       GLintptr offset,
+                                                       GLsizeiptr size,
+                                                       void* data);
+#endif
+typedef void(GL_APIENTRY PFNGLGETBUFFERSUBDATACHROMIUM)(GLenum target,
+                                                        GLintptr offset,
+                                                        GLsizeiptr size,
+                                                        void* data);
+
 /* GL_CHROMIUM_deschedule */
 #ifndef GL_CHROMIUM_deschedule
 #define GL_CHROMIUM_deschedule 1

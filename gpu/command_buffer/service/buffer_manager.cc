@@ -102,26 +102,6 @@ void BufferManager::StopTracking(Buffer* buffer) {
   --buffer_count_;
 }
 
-Buffer::MappedRange::MappedRange(
-    GLintptr offset, GLsizeiptr size, GLenum access, void* pointer,
-    scoped_refptr<gpu::Buffer> shm, unsigned int shm_offset)
-    : offset(offset),
-      size(size),
-      access(access),
-      pointer(pointer),
-      shm(shm),
-      shm_offset(shm_offset) {
-  DCHECK(pointer);
-  DCHECK(shm.get() && GetShmPointer());
-}
-
-Buffer::MappedRange::~MappedRange() = default;
-
-void* Buffer::MappedRange::GetShmPointer() const {
-  DCHECK(shm.get());
-  return shm->GetDataAddress(shm_offset, static_cast<unsigned int>(size));
-}
-
 Buffer::Buffer(BufferManager* manager, GLuint service_id)
     : manager_(manager),
       size_(0),
@@ -139,7 +119,6 @@ Buffer::~Buffer() {
       GLuint id = service_id();
       glDeleteBuffersARB(1, &id);
     }
-    RemoveMappedRange();
     manager_->StopTracking(this);
     manager_ = nullptr;
   }
@@ -346,19 +325,7 @@ bool Buffer::GetMaxValueForRange(
   return true;
 }
 
-void Buffer::SetMappedRange(GLintptr offset, GLsizeiptr size, GLenum access,
-                            void* pointer, scoped_refptr<gpu::Buffer> shm,
-                            unsigned int shm_offset) {
-  mapped_range_ = std::make_unique<MappedRange>(offset, size, access, pointer,
-                                                shm, shm_offset);
-}
-
-void Buffer::RemoveMappedRange() {
-  mapped_range_.reset(nullptr);
-}
-
 void Buffer::ClearMapping() {
-  mapped_range_.reset(nullptr);
   readback_shm_ = nullptr;
   readback_shm_offset_ = 0;
 }
@@ -641,17 +608,11 @@ void BufferManager::ValidateAndDoGetBufferParameteri64v(
       *params = buffer->size();
       break;
     case GL_BUFFER_MAP_LENGTH:
-      {
-        const Buffer::MappedRange* mapped_range = buffer->GetMappedRange();
-        *params = mapped_range ? mapped_range->size : 0;
-        break;
-      }
+      *params = 0;
+      break;
     case GL_BUFFER_MAP_OFFSET:
-      {
-        const Buffer::MappedRange* mapped_range = buffer->GetMappedRange();
-        *params = mapped_range ? mapped_range->offset : 0;
-        break;
-      }
+      *params = 0;
+      break;
     default:
       NOTREACHED();
   }
@@ -678,13 +639,10 @@ void BufferManager::ValidateAndDoGetBufferParameteriv(
       *params = buffer->usage();
       break;
     case GL_BUFFER_ACCESS_FLAGS:
-      {
-        const Buffer::MappedRange* mapped_range = buffer->GetMappedRange();
-        *params = mapped_range ? mapped_range->access : 0;
-        break;
-      }
+      *params = 0;
+      break;
     case GL_BUFFER_MAPPED:
-      *params = buffer->GetMappedRange() != nullptr;
+      *params = 0;
       break;
     default:
       NOTREACHED();
@@ -808,20 +766,6 @@ bool BufferManager::OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
     dump->AddScalar(MemoryAllocatorDump::kNameSize,
                     MemoryAllocatorDump::kUnitsBytes,
                     static_cast<uint64_t>(buffer->size()));
-
-    auto* mapped_range = buffer->GetMappedRange();
-    if (!mapped_range)
-      continue;
-    auto shared_memory_guid = mapped_range->shm->backing()->GetGUID();
-    if (!shared_memory_guid.is_empty()) {
-      pmd->CreateSharedMemoryOwnershipEdge(dump->guid(), shared_memory_guid,
-                                           0 /* importance */);
-    } else {
-      auto guid = gl::GetGLBufferGUIDForTracing(context_group_tracing_id,
-                                                client_buffer_id);
-      pmd->CreateSharedGlobalAllocatorDump(guid);
-      pmd->AddOwnershipEdge(dump->guid(), guid);
-    }
   }
 
   return true;
@@ -917,13 +861,6 @@ bool BufferManager::RequestBuffersAccess(
           error_state, GL_INVALID_OPERATION, func_name, msg.c_str());
       return false;
     }
-    if (buffer->GetMappedRange()) {
-      std::string msg = base::StringPrintf(
-          "%s : buffer is mapped at index %zu", message_tag, ii);
-      ERRORSTATE_SET_GL_ERROR(
-          error_state, GL_INVALID_OPERATION, func_name, msg.c_str());
-      return false;
-    }
     if (buffer->IsBoundForTransformFeedbackAndOther()) {
       std::string msg = base::StringPrintf(
           "%s : buffer at index %zu is bound for transform feedback and other "
@@ -960,15 +897,6 @@ bool BufferManager::RequestBufferAccessV(ErrorState* error_state,
     std::string message_tag =
         UNSAFE_TODO(base::StringPrintV(error_message_format, varargs));
     std::string msg = base::StringPrintf("%s : no buffer", message_tag.c_str());
-    ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_OPERATION, func_name,
-                            msg.c_str());
-    return false;
-  }
-  if (buffer->GetMappedRange()) {
-    std::string message_tag =
-        UNSAFE_TODO(base::StringPrintV(error_message_format, varargs));
-    std::string msg = base::StringPrintf("%s : buffer is mapped",
-                                         message_tag.c_str());
     ERRORSTATE_SET_GL_ERROR(error_state, GL_INVALID_OPERATION, func_name,
                             msg.c_str());
     return false;

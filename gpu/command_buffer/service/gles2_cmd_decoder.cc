@@ -172,25 +172,6 @@ struct TexSubCoord3D {
   int depth;
 };
 
-// Check if all |ref| bits are set in |bits|.
-bool AllBitsSet(GLbitfield bits, GLbitfield ref) {
-  DCHECK_NE(0u, ref);
-  return ((bits & ref) == ref);
-}
-
-// Check if any of |ref| bits are set in |bits|.
-bool AnyBitsSet(GLbitfield bits, GLbitfield ref) {
-  DCHECK_NE(0u, ref);
-  return ((bits & ref) != 0);
-}
-
-// Check if any bits are set in |bits| other than the bits in |ref|.
-bool AnyOtherBitsSet(GLbitfield bits, GLbitfield ref) {
-  DCHECK_NE(0u, ref);
-  GLbitfield mask = ~ref;
-  return ((bits & mask) != 0);
-}
-
 void GL_APIENTRY GLDebugMessageCallback(GLenum source,
                                         GLenum type,
                                         GLuint id,
@@ -806,7 +787,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                       const volatile GLuint* client_ids);
   void DeleteSyncHelper(GLuint sync);
 
-  bool UnmapBufferHelper(Buffer* buffer, GLenum target);
 
   // Workarounds
   void OnFboChanged() const;
@@ -1111,9 +1091,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoLoseContextCHROMIUM(GLenum current, GLenum other);
 
   void DoFlushDriverCachesCHROMIUM(void);
-
-  void DoFlushMappedBufferRange(
-      GLenum target, GLintptr offset, GLsizeiptr size);
 
   // Wrappers for ANGLE_shader_pixel_local_storage.
   void DoFramebufferMemorylessPixelLocalStorageANGLE(GLint plane,
@@ -3797,22 +3774,6 @@ void GLES2DecoderImpl::DeleteBuffersHelper(GLsizei n,
     GLuint client_id = UNSAFE_TODO(client_ids[ii]);
     Buffer* buffer = GetBuffer(client_id);
     if (buffer && !buffer->IsDeleted()) {
-      if (buffer->GetMappedRange()) {
-        // The buffer is not guaranteed to still be bound to any binding point,
-        // even though it is mapped. If it is not bound, we will need to bind
-        // it temporarily in order to unmap it.
-        GLenum target = buffer->initial_target();
-        Buffer* currently_bound =
-            buffer_manager()->GetBufferInfoForTarget(&state_, target);
-        if (currently_bound != buffer) {
-          api()->glBindBufferFn(target, buffer->service_id());
-        }
-        UnmapBufferHelper(buffer, target);
-        if (currently_bound != buffer) {
-          api()->glBindBufferFn(
-              target, currently_bound ? currently_bound->service_id() : 0);
-        }
-      }
       state_.RemoveBoundBuffer(buffer);
       buffer_manager()->RemoveBuffer(client_id);
     }
@@ -5494,12 +5455,6 @@ void GLES2DecoderImpl::DoBeginTransformFeedback(GLenum primitive_mode) {
     if (!buffer) {
       std::string msg = base::StringPrintf("missing buffer bound at index %i",
                                            static_cast<int>(ii));
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, function_name, msg.c_str());
-      return;
-    }
-    if (buffer->GetMappedRange()) {
-      std::string msg = base::StringPrintf(
-          "bound buffer bound at index %i is mapped", static_cast<int>(ii));
       LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, function_name, msg.c_str());
       return;
     }
@@ -13057,11 +13012,6 @@ error::Error GLES2DecoderImpl::HandleTexImage2D(uint32_t immediate_data_size,
   if (buffer) {
     if (pixels_shm_id)
       return error::kInvalidArguments;
-    if (buffer->GetMappedRange()) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
-          "pixel unpack buffer should not be mapped to client memory");
-      return error::kNoError;
-    }
     params = state_.GetUnpackParams(ContextState::k2D);
   } else {
     if (!pixels_shm_id && pixels_shm_offset)
@@ -13156,11 +13106,6 @@ error::Error GLES2DecoderImpl::HandleTexImage3D(uint32_t immediate_data_size,
   if (buffer) {
     if (pixels_shm_id)
       return error::kInvalidArguments;
-    if (buffer->GetMappedRange()) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
-          "pixel unpack buffer should not be mapped to client memory");
-      return error::kNoError;
-    }
     params = state_.GetUnpackParams(ContextState::k3D);
   } else {
     if (!pixels_shm_id && pixels_shm_offset)
@@ -13946,11 +13891,6 @@ error::Error GLES2DecoderImpl::HandleTexSubImage2D(
   if (buffer) {
     if (pixels_shm_id)
       return error::kInvalidArguments;
-    if (buffer->GetMappedRange()) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
-          "pixel unpack buffer should not be mapped to client memory");
-      return error::kNoError;
-    }
     params = state_.GetUnpackParams(ContextState::k2D);
   } else {
     if (!pixels_shm_id && pixels_shm_offset)
@@ -14051,11 +13991,6 @@ error::Error GLES2DecoderImpl::HandleTexSubImage3D(
   if (buffer) {
     if (pixels_shm_id)
       return error::kInvalidArguments;
-    if (buffer->GetMappedRange()) {
-      LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
-          "pixel unpack buffer should not be mapped to client memory");
-      return error::kNoError;
-    }
     params = state_.GetUnpackParams(ContextState::k3D);
   } else {
     if (!pixels_shm_id && pixels_shm_offset)
@@ -15286,17 +15221,6 @@ void GLES2DecoderImpl::ReadBackBuffersIntoShadowCopies(
     scoped_refptr<gpu::Buffer> gpu_buffer =
         buffer->TakeReadbackShadowAllocation(&shadow);
     if (!shadow) {
-      continue;
-    }
-
-    if (buffer->GetMappedRange()) {
-      // The buffer is already mapped by the client. It's okay that the shadow
-      // copy will be out-of-date, because the client will never read it:
-      // * Client issues READBACK_SHADOW_COPIES_UPDATED_CHROMIUM query
-      // * Client maps buffer
-      // * Client receives signal that the query completed
-      // * Client unmaps buffer - invalidating the shadow copy
-      // * Client maps buffer to read back - hits the round-trip path
       continue;
     }
 
@@ -16692,32 +16616,20 @@ error::Error GLES2DecoderImpl::HandleGetInternalformativ(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleMapBufferRange(
-    uint32_t immediate_data_size, const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2OrES3Context()) {
-    return error::kUnknownCommand;
-  }
+error::Error GLES2DecoderImpl::HandleGetBufferSubDataCHROMIUM(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile gles2::cmds::GetBufferSubDataCHROMIUM& c =
+      *static_cast<const volatile gles2::cmds::GetBufferSubDataCHROMIUM*>(
+          cmd_data);
 
-  const char* func_name = "glMapBufferRange";
-  const volatile gles2::cmds::MapBufferRange& c =
-      *static_cast<const volatile gles2::cmds::MapBufferRange*>(cmd_data);
-  GLenum target = static_cast<GLenum>(c.target);
-  GLbitfield access = static_cast<GLbitfield>(c.access);
+  const char* func_name = "glGetBufferSubDataCHROMIUM";
+  GLenum target = c.target;
   GLintptr offset = static_cast<GLintptr>(c.offset);
   GLsizeiptr size = static_cast<GLsizeiptr>(c.size);
-  uint32_t data_shm_id = static_cast<uint32_t>(c.data_shm_id);
-  uint32_t data_shm_offset = static_cast<uint32_t>(c.data_shm_offset);
+  uint32_t data_shm_id = c.data_shm_id;
+  uint32_t data_shm_offset = c.data_shm_offset;
 
-  typedef cmds::MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>(
-      c.result_shm_id, c.result_shm_offset, sizeof(*result));
-  if (!result) {
-    return error::kOutOfBounds;
-  }
-  if (*result != 0) {
-    *result = 0;
-    return error::kInvalidArguments;
-  }
   if (!validators_->buffer_target.IsValid(target)) {
     LOCAL_SET_GL_ERROR_INVALID_ENUM(func_name, target, "target");
     return error::kNoError;
@@ -16749,175 +16661,19 @@ error::Error GLES2DecoderImpl::HandleMapBufferRange(
   if (!mem) {
     return error::kOutOfBounds;
   }
-  if (AnyOtherBitsSet(access, (GL_MAP_READ_BIT |
-                               GL_MAP_WRITE_BIT |
-                               GL_MAP_INVALIDATE_RANGE_BIT |
-                               GL_MAP_INVALIDATE_BUFFER_BIT |
-                               GL_MAP_FLUSH_EXPLICIT_BIT |
-                               GL_MAP_UNSYNCHRONIZED_BIT))) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name, "invalid access bits");
-    return error::kNoError;
-  }
-  if (!AnyBitsSet(access, GL_MAP_READ_BIT | GL_MAP_WRITE_BIT)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
-        "neither MAP_READ_BIT nor MAP_WRITE_BIT is set");
-    return error::kNoError;
-  }
-  if (AllBitsSet(access, GL_MAP_READ_BIT) &&
-      AnyBitsSet(access, (GL_MAP_INVALIDATE_RANGE_BIT |
-                          GL_MAP_INVALIDATE_BUFFER_BIT |
-                          GL_MAP_UNSYNCHRONIZED_BIT))) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
-        "incompatible access bits with MAP_READ_BIT");
-    return error::kNoError;
-  }
-  if (AllBitsSet(access, GL_MAP_FLUSH_EXPLICIT_BIT) &&
-      !AllBitsSet(access, GL_MAP_WRITE_BIT)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
-        "MAP_FLUSH_EXPLICIT_BIT set without MAP_WRITE_BIT");
-    return error::kNoError;
-  }
-  GLbitfield filtered_access = access;
-  if (AllBitsSet(filtered_access, GL_MAP_INVALIDATE_BUFFER_BIT)) {
-    // To be on the safe side, always map GL_MAP_INVALIDATE_BUFFER_BIT to
-    // GL_MAP_INVALIDATE_RANGE_BIT.
-    filtered_access = (filtered_access & ~GL_MAP_INVALIDATE_BUFFER_BIT);
-    filtered_access = (filtered_access | GL_MAP_INVALIDATE_RANGE_BIT);
-  }
-  // Always filter out GL_MAP_UNSYNCHRONIZED_BIT to get rid of undefined
-  // behaviors.
-  filtered_access = (filtered_access & ~GL_MAP_UNSYNCHRONIZED_BIT);
-  if (AllBitsSet(filtered_access, GL_MAP_WRITE_BIT) &&
-      !AllBitsSet(filtered_access, GL_MAP_INVALIDATE_RANGE_BIT)) {
-    filtered_access = (filtered_access | GL_MAP_READ_BIT);
-  }
-  void* ptr = api()->glMapBufferRangeFn(target, offset, size, filtered_access);
+
+  void* ptr = api()->glMapBufferRangeFn(target, offset, size, GL_MAP_READ_BIT);
   if (ptr == nullptr) {
     // This should mean GL_OUT_OF_MEMORY (or context loss).
     LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(func_name);
     return error::kNoError;
   }
-  // The un-filtered bits in |access| are deliberately used here.
-  buffer->SetMappedRange(offset, size, access, ptr,
-                         GetSharedMemoryBuffer(data_shm_id),
-                         static_cast<unsigned int>(data_shm_offset));
-  if ((filtered_access & GL_MAP_INVALIDATE_RANGE_BIT) == 0) {
-    UNSAFE_TODO(memcpy(mem, ptr, size));
-  }
-  *result = 1;
+
+  UNSAFE_TODO(memcpy(mem, ptr, size));
+
+  api()->glUnmapBufferFn(target);
+
   return error::kNoError;
-}
-
-bool GLES2DecoderImpl::UnmapBufferHelper(Buffer* buffer, GLenum target) {
-  DCHECK(buffer);
-  const Buffer::MappedRange* mapped_range = buffer->GetMappedRange();
-  if (!mapped_range)
-    return true;
-  if (!AllBitsSet(mapped_range->access, GL_MAP_WRITE_BIT) ||
-      AllBitsSet(mapped_range->access, GL_MAP_FLUSH_EXPLICIT_BIT)) {
-    // If we don't need to write back, or explict flush is required, no copying
-    // back is needed.
-  } else if (!WasContextLost()) {
-    void* mem = mapped_range->GetShmPointer();
-    DCHECK(mem);
-    DCHECK(mapped_range->pointer);
-    UNSAFE_TODO(memcpy(mapped_range->pointer, mem, mapped_range->size));
-    if (buffer->shadowed()) {
-      buffer->SetRange(mapped_range->offset, mapped_range->size,
-                       mapped_range->pointer);
-    }
-  }
-  buffer->RemoveMappedRange();
-  if (WasContextLost())
-    return true;
-  GLboolean rt = api()->glUnmapBufferFn(target);
-  if (rt == GL_FALSE) {
-    // At this point, we have already done the necessary validation, so
-    // GL_FALSE indicates data corruption.
-    // TODO(zmo): We could redo the map / copy data / unmap to recover, but
-    // the second unmap could still return GL_FALSE. For now, we simply lose
-    // the contexts in the share group.
-    LOG(ERROR) << "glUnmapBuffer unexpectedly returned GL_FALSE";
-    // Need to lose current context before broadcasting!
-    MarkContextLost(error::kGuilty);
-    group_->LoseContexts(error::kInnocent);
-    return false;
-  }
-  return true;
-}
-
-error::Error GLES2DecoderImpl::HandleUnmapBuffer(
-    uint32_t immediate_data_size, const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2OrES3Context()) {
-    return error::kUnknownCommand;
-  }
-  const char* func_name = "glUnmapBuffer";
-
-  const volatile gles2::cmds::UnmapBuffer& c =
-      *static_cast<const volatile gles2::cmds::UnmapBuffer*>(cmd_data);
-  GLenum target = static_cast<GLenum>(c.target);
-
-  if (!validators_->buffer_target.IsValid(target)) {
-    LOCAL_SET_GL_ERROR_INVALID_ENUM(func_name, target, "target");
-    return error::kNoError;
-  }
-
-  Buffer* buffer = buffer_manager()->GetBufferInfoForTarget(&state_, target);
-  if (!buffer) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name, "no buffer bound");
-    return error::kNoError;
-  }
-  const Buffer::MappedRange* mapped_range = buffer->GetMappedRange();
-  if (!mapped_range) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name, "buffer is unmapped");
-    return error::kNoError;
-  }
-  if (!UnmapBufferHelper(buffer, target))
-    return error::kLostContext;
-  return error::kNoError;
-}
-
-void GLES2DecoderImpl::DoFlushMappedBufferRange(
-    GLenum target, GLintptr offset, GLsizeiptr size) {
-  const char* func_name = "glFlushMappedBufferRange";
-  // |size| is validated in HandleFlushMappedBufferRange().
-  if (offset < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name, "offset < 0");
-    return;
-  }
-  Buffer* buffer = buffer_manager()->GetBufferInfoForTarget(&state_, target);
-  if (!buffer) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name, "no buffer bound");
-    return;
-  }
-  const Buffer::MappedRange* mapped_range = buffer->GetMappedRange();
-  if (!mapped_range) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name, "buffer is unmapped");
-    return;
-  }
-  if (!AllBitsSet(mapped_range->access, GL_MAP_FLUSH_EXPLICIT_BIT)) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
-        "buffer is mapped without MAP_FLUSH_EXPLICIT_BIT flag");
-    return;
-  }
-  base::CheckedNumeric<int32_t> range_size = size;
-  range_size += offset;
-  if (!range_size.IsValid() ||
-      range_size.ValueOrDefault(0) > mapped_range->size) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, func_name,
-        "offset + size out of bounds");
-    return;
-  }
-  char* client_data = reinterpret_cast<char*>(mapped_range->GetShmPointer());
-  DCHECK(client_data);
-  char* gpu_data = reinterpret_cast<char*>(mapped_range->pointer.get());
-  DCHECK(gpu_data);
-  UNSAFE_TODO(memcpy(gpu_data + offset, client_data + offset, size));
-  if (buffer->shadowed()) {
-    buffer->SetRange(mapped_range->offset + offset, size,
-                     UNSAFE_TODO(gpu_data + offset));
-  }
-  api()->glFlushMappedBufferRangeFn(target, offset, size);
 }
 
 void GLES2DecoderImpl::DoFramebufferMemorylessPixelLocalStorageANGLE(

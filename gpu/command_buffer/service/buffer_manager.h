@@ -36,20 +36,6 @@ class TestHelper;
 // Info about Buffers currently in the system.
 class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
  public:
-  struct MappedRange {
-    GLintptr offset;
-    GLsizeiptr size;
-    GLenum access;
-    raw_ptr<void, DanglingUntriaged> pointer;  // Pointer returned by driver.
-    scoped_refptr<gpu::Buffer> shm;  // Client side mem buffer.
-    unsigned int shm_offset;  // Client side mem buffer offset.
-
-    MappedRange(GLintptr offset, GLsizeiptr size, GLenum access, void* pointer,
-                scoped_refptr<gpu::Buffer> shm, unsigned int shm_offset);
-    ~MappedRange();
-    void* GetShmPointer() const;
-  };
-
   Buffer(BufferManager* manager, GLuint service_id);
 
   GLenum initial_target() const { return initial_target_; }
@@ -98,14 +84,7 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
     return is_client_side_array_;
   }
 
-  void SetMappedRange(GLintptr offset, GLsizeiptr size, GLenum access,
-                      void* pointer, scoped_refptr<gpu::Buffer> shm,
-                      unsigned int shm_offset);
-  void RemoveMappedRange();
   void ClearMapping();
-  const MappedRange* GetMappedRange() const {
-    return mapped_range_.get();
-  }
 
   // These maintain the reference counts for checking whether a buffer is
   // double-bound to transform feedback and non-transform-feedback binding
@@ -231,9 +210,6 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
 
   // Usage of buffer.
   GLenum usage_;
-
-  // Data cached from last glMapBufferRange call.
-  std::unique_ptr<MappedRange> mapped_range_;
 
   // A map of ranges to the highest value in that range of a certain type.
   typedef std::map<Range, GLuint, Range::Less> RangeToMaxValueMap;

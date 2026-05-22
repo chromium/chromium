@@ -3197,25 +3197,6 @@ void GLES2Implementation::FramebufferParameteri(GLenum target,
   CheckGLError();
 }
 
-void GLES2Implementation::FlushMappedBufferRange(GLenum target,
-                                                 GLintptr offset,
-                                                 GLsizeiptr size) {
-  GPU_CLIENT_SINGLE_THREAD_CHECK();
-  GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glFlushMappedBufferRange("
-                     << GLES2Util::GetStringBufferTarget(target) << ", "
-                     << offset << ", " << size << ")");
-  if (offset < 0) {
-    SetGLError(GL_INVALID_VALUE, "glFlushMappedBufferRange", "offset < 0");
-    return;
-  }
-  if (size < 0) {
-    SetGLError(GL_INVALID_VALUE, "glFlushMappedBufferRange", "size < 0");
-    return;
-  }
-  helper_->FlushMappedBufferRange(target, offset, size);
-  CheckGLError();
-}
-
 void GLES2Implementation::DescheduleUntilFinishedCHROMIUM() {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDescheduleUntilFinishedCHROMIUM("

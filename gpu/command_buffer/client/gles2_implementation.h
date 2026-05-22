@@ -682,9 +682,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void FailGLError(GLenum /* error */) { }
 #endif
 
-  void RemoveMappedBufferRangeByTarget(GLenum target);
-  void RemoveMappedBufferRangeById(GLuint buffer);
-  void ClearMappedBufferRangeMap();
   void ClearMappedBufferMap();
   void ClearMappedTextureMap();
 
@@ -805,10 +802,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   // base::span<uint8_t> instead of void*.
   typedef std::map<const void*, MappedBuffer> MappedBufferMap;
   MappedBufferMap mapped_buffers_;
-
-  // TODO(zmo): Consolidate |mapped_buffers_| and |mapped_buffer_range_map_|.
-  typedef std::unordered_map<GLuint, MappedBuffer> MappedBufferRangeMap;
-  MappedBufferRangeMap mapped_buffer_range_map_;
 
   // TODO(crbug.com/40285824): Spanify `mapped_textures_` to use
   // base::span<uint8_t> instead of void*.

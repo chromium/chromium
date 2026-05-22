@@ -1932,50 +1932,6 @@ INSTANTIATE_PATCH_NUMERIC_RESULTS(GLfloat);
 INSTANTIATE_PATCH_NUMERIC_RESULTS(GLboolean);
 #undef INSTANTIATE_PATCH_NUMERIC_RESULTS
 
-template <typename T>
-error::Error GLES2DecoderPassthroughImpl::PatchGetBufferResults(GLenum target,
-                                                                GLenum pname,
-                                                                GLsizei bufsize,
-                                                                GLsizei* length,
-                                                                T* params) {
-  if (pname != GL_BUFFER_ACCESS_FLAGS) {
-    return error::kNoError;
-  }
-
-  // If there was no error, the buffer target should exist
-  DCHECK(bound_buffers_.find(target) != bound_buffers_.end());
-  if (target == GL_ELEMENT_ARRAY_BUFFER) {
-    LazilyUpdateCurrentlyBoundElementArrayBuffer();
-  }
-  GLuint current_client_buffer = bound_buffers_[target];
-
-  auto mapped_buffer_info_iter =
-      resources_->mapped_buffer_map.find(current_client_buffer);
-  if (mapped_buffer_info_iter == resources_->mapped_buffer_map.end()) {
-    // Buffer is not mapped, nothing to do
-    return error::kNoError;
-  }
-
-  // Buffer is mapped, patch the result with the original access flags
-  DCHECK_GE(bufsize, 1);
-  DCHECK_EQ(*length, 1);
-  params[0] = mapped_buffer_info_iter->second.original_access;
-  return error::kNoError;
-}
-
-template error::Error GLES2DecoderPassthroughImpl::PatchGetBufferResults(
-    GLenum target,
-    GLenum pname,
-    GLsizei bufsize,
-    GLsizei* length,
-    GLint64* params);
-template error::Error GLES2DecoderPassthroughImpl::PatchGetBufferResults(
-    GLenum target,
-    GLenum pname,
-    GLsizei bufsize,
-    GLsizei* length,
-    GLint* params);
-
 error::Error GLES2DecoderPassthroughImpl::
     PatchGetFramebufferPixelLocalStorageParameterivANGLE(GLint plane,
                                                          GLenum pname,

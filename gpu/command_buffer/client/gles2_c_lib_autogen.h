@@ -1299,20 +1299,6 @@ void* GL_APIENTRY GLES2MapBufferSubDataCHROMIUM(GLuint target,
 void GL_APIENTRY GLES2UnmapBufferSubDataCHROMIUM(const void* mem) {
   gles2::GetGLContext()->UnmapBufferSubDataCHROMIUM(mem);
 }
-void* GL_APIENTRY GLES2MapBufferRange(GLenum target,
-                                      GLintptr offset,
-                                      GLsizeiptr size,
-                                      GLbitfield access) {
-  return gles2::GetGLContext()->MapBufferRange(target, offset, size, access);
-}
-GLboolean GL_APIENTRY GLES2UnmapBuffer(GLenum target) {
-  return gles2::GetGLContext()->UnmapBuffer(target);
-}
-void GL_APIENTRY GLES2FlushMappedBufferRange(GLenum target,
-                                             GLintptr offset,
-                                             GLsizeiptr size) {
-  gles2::GetGLContext()->FlushMappedBufferRange(target, offset, size);
-}
 void* GL_APIENTRY GLES2MapTexSubImage2DCHROMIUM(GLenum target,
                                                 GLint level,
                                                 GLint xoffset,
@@ -1473,6 +1459,12 @@ GLuint GL_APIENTRY GLES2GetLastFlushIdCHROMIUM() {
 }
 void GL_APIENTRY GLES2SetActiveURLCHROMIUM(const char* url) {
   gles2::GetGLContext()->SetActiveURLCHROMIUM(url);
+}
+void GL_APIENTRY GLES2GetBufferSubDataCHROMIUM(GLenum target,
+                                               GLintptr offset,
+                                               GLsizeiptr size,
+                                               void* data) {
+  gles2::GetGLContext()->GetBufferSubDataCHROMIUM(target, offset, size, data);
 }
 void GL_APIENTRY GLES2ContextVisibilityHintCHROMIUM(GLboolean visibility) {
   gles2::GetGLContext()->ContextVisibilityHintCHROMIUM(visibility);
@@ -2783,18 +2775,6 @@ extern const NameToFunc g_gles2_function_table[] = {
         reinterpret_cast<GLES2FunctionPointer>(glUnmapBufferSubDataCHROMIUM),
     },
     {
-        "glMapBufferRange",
-        reinterpret_cast<GLES2FunctionPointer>(glMapBufferRange),
-    },
-    {
-        "glUnmapBuffer",
-        reinterpret_cast<GLES2FunctionPointer>(glUnmapBuffer),
-    },
-    {
-        "glFlushMappedBufferRange",
-        reinterpret_cast<GLES2FunctionPointer>(glFlushMappedBufferRange),
-    },
-    {
         "glMapTexSubImage2DCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glMapTexSubImage2DCHROMIUM),
     },
@@ -2903,6 +2883,10 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glSetActiveURLCHROMIUM",
         reinterpret_cast<GLES2FunctionPointer>(glSetActiveURLCHROMIUM),
+    },
+    {
+        "glGetBufferSubDataCHROMIUM",
+        reinterpret_cast<GLES2FunctionPointer>(glGetBufferSubDataCHROMIUM),
     },
     {
         "glContextVisibilityHintCHROMIUM",

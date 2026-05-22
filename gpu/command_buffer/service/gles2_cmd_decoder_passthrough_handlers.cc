@@ -1358,56 +1358,29 @@ error::Error GLES2DecoderPassthroughImpl::HandlePushGroupMarkerEXT(
   return DoPushGroupMarkerEXT(0, str.c_str());
 }
 
-error::Error GLES2DecoderPassthroughImpl::HandleMapBufferRange(
+error::Error GLES2DecoderPassthroughImpl::HandleGetBufferSubDataCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {
   if (!feature_info_->IsWebGL2OrES3OrHigherContext()) {
     return error::kUnknownCommand;
   }
-  const volatile gles2::cmds::MapBufferRange& c =
-      *static_cast<const volatile gles2::cmds::MapBufferRange*>(cmd_data);
-  GLenum target = static_cast<GLenum>(c.target);
-  GLbitfield access = static_cast<GLbitfield>(c.access);
+  const volatile gles2::cmds::GetBufferSubDataCHROMIUM& c =
+      *static_cast<const volatile gles2::cmds::GetBufferSubDataCHROMIUM*>(
+          cmd_data);
+
+  GLenum target = c.target;
   GLintptr offset = static_cast<GLintptr>(c.offset);
   GLsizeiptr size = static_cast<GLsizeiptr>(c.size);
-  uint32_t result_shm_id = c.result_shm_id;
-  uint32_t result_shm_offset = c.result_shm_offset;
   uint32_t data_shm_id = c.data_shm_id;
   uint32_t data_shm_offset = c.data_shm_offset;
 
-  typedef cmds::MapBufferRange::Result Result;
-  Result* result = GetSharedMemoryAs<Result*>(result_shm_id, result_shm_offset,
-                                              sizeof(*result));
-  if (!result) {
-    return error::kOutOfBounds;
-  }
-  if (*result != 0) {
-    *result = 0;
-    return error::kInvalidArguments;
-  }
-  uint8_t* mem =
+  uint8_t* data =
       GetSharedMemoryAs<uint8_t*>(data_shm_id, data_shm_offset, size);
-  if (!mem) {
+  if (!data) {
     return error::kOutOfBounds;
   }
 
-  error::Error error = DoMapBufferRange(target, offset, size, access, mem,
-                                        data_shm_id, data_shm_offset, result);
-  DCHECK(error == error::kNoError || *result == 0);
-  return error;
-}
-
-error::Error GLES2DecoderPassthroughImpl::HandleUnmapBuffer(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2OrES3OrHigherContext()) {
-    return error::kUnknownCommand;
-  }
-  const volatile gles2::cmds::UnmapBuffer& c =
-      *static_cast<const volatile gles2::cmds::UnmapBuffer*>(cmd_data);
-  GLenum target = static_cast<GLenum>(c.target);
-
-  return DoUnmapBuffer(target);
+  return DoGetBufferSubDataCHROMIUM(target, offset, size, data);
 }
 
 error::Error

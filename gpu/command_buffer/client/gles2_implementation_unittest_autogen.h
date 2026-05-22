@@ -2611,17 +2611,6 @@ TEST_F(GLES2ImplementationTest, FramebufferParameteri) {
   EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
 }
 
-TEST_F(GLES2ImplementationTest, FlushMappedBufferRange) {
-  struct Cmds {
-    cmds::FlushMappedBufferRange cmd;
-  };
-  Cmds expected;
-  expected.cmd.Init(GL_ARRAY_BUFFER, 2, 3);
-
-  gl_->FlushMappedBufferRange(GL_ARRAY_BUFFER, 2, 3);
-  EXPECT_EQ(0, UNSAFE_TODO(memcmp(&expected, commands_, sizeof(expected))));
-}
-
 TEST_F(GLES2ImplementationTest, DescheduleUntilFinishedCHROMIUM) {
   struct Cmds {
     cmds::DescheduleUntilFinishedCHROMIUM cmd;

@@ -2283,6 +2283,16 @@ _FUNCTION_INFO = {
     'expectation': False,
     'shadowed': True,
   },
+    'GetBufferSubDataCHROMIUM': {
+    'type': 'Custom',
+    'data_transfer_methods': ['shm'],
+    'impl_func': False,
+    'client_test': False,
+    'cmd_args':
+        'GLenumBufferTarget target, GLintptr offset, GLsizeiptr size,'
+        'uint32_t data_shm_id, uint32_t data_shm_offset',
+    'trace_level': 1,
+  },
   'GetError': {
     'type': 'Is',
     'decoder_func': 'GetErrorState()->GetGLError',

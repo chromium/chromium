@@ -2524,36 +2524,6 @@ void GetMaxValueInBufferCHROMIUM(GLuint buffer_id,
   }
 }
 
-void MapBufferRange(GLenum target,
-                    GLintptr offset,
-                    GLsizeiptr size,
-                    GLbitfield access,
-                    uint32_t data_shm_id,
-                    uint32_t data_shm_offset,
-                    uint32_t result_shm_id,
-                    uint32_t result_shm_offset) {
-  gles2::cmds::MapBufferRange* c = GetCmdSpace<gles2::cmds::MapBufferRange>();
-  if (c) {
-    c->Init(target, offset, size, access, data_shm_id, data_shm_offset,
-            result_shm_id, result_shm_offset);
-  }
-}
-
-void UnmapBuffer(GLenum target) {
-  gles2::cmds::UnmapBuffer* c = GetCmdSpace<gles2::cmds::UnmapBuffer>();
-  if (c) {
-    c->Init(target);
-  }
-}
-
-void FlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr size) {
-  gles2::cmds::FlushMappedBufferRange* c =
-      GetCmdSpace<gles2::cmds::FlushMappedBufferRange>();
-  if (c) {
-    c->Init(target, offset, size);
-  }
-}
-
 void GetRequestableExtensionsCHROMIUM(uint32_t bucket_id) {
   gles2::cmds::GetRequestableExtensionsCHROMIUM* c =
       GetCmdSpace<gles2::cmds::GetRequestableExtensionsCHROMIUM>();
@@ -2789,6 +2759,18 @@ void SetActiveURLCHROMIUM(GLuint url_bucket_id) {
       GetCmdSpace<gles2::cmds::SetActiveURLCHROMIUM>();
   if (c) {
     c->Init(url_bucket_id);
+  }
+}
+
+void GetBufferSubDataCHROMIUM(GLenum target,
+                              GLintptr offset,
+                              GLsizeiptr size,
+                              uint32_t data_shm_id,
+                              uint32_t data_shm_offset) {
+  gles2::cmds::GetBufferSubDataCHROMIUM* c =
+      GetCmdSpace<gles2::cmds::GetBufferSubDataCHROMIUM>();
+  if (c) {
+    c->Init(target, offset, size, data_shm_id, data_shm_offset);
   }
 }
 

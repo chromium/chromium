@@ -672,14 +672,6 @@ virtual void* MapBufferSubDataCHROMIUM(GLuint target,
                                        GLsizeiptr size,
                                        GLenum access) = 0;
 virtual void UnmapBufferSubDataCHROMIUM(const void* mem) = 0;
-virtual void* MapBufferRange(GLenum target,
-                             GLintptr offset,
-                             GLsizeiptr size,
-                             GLbitfield access) = 0;
-virtual GLboolean UnmapBuffer(GLenum target) = 0;
-virtual void FlushMappedBufferRange(GLenum target,
-                                    GLintptr offset,
-                                    GLsizeiptr size) = 0;
 virtual void* MapTexSubImage2DCHROMIUM(GLenum target,
                                        GLint level,
                                        GLint xoffset,
@@ -774,6 +766,10 @@ virtual void DrawBuffersEXT(GLsizei count, const GLenum* bufs) = 0;
 virtual void FlushDriverCachesCHROMIUM() = 0;
 virtual GLuint GetLastFlushIdCHROMIUM() = 0;
 virtual void SetActiveURLCHROMIUM(const char* url) = 0;
+virtual void GetBufferSubDataCHROMIUM(GLenum target,
+                                      GLintptr offset,
+                                      GLsizeiptr size,
+                                      void* data) = 0;
 virtual void ContextVisibilityHintCHROMIUM(GLboolean visibility) = 0;
 virtual GLenum GetGraphicsResetStatusKHR() = 0;
 virtual void BlendBarrierKHR() = 0;

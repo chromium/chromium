@@ -884,18 +884,6 @@ void* GLES2InterfaceStub::MapBufferSubDataCHROMIUM(GLuint /* target */,
   return 0;
 }
 void GLES2InterfaceStub::UnmapBufferSubDataCHROMIUM(const void* /* mem */) {}
-void* GLES2InterfaceStub::MapBufferRange(GLenum /* target */,
-                                         GLintptr /* offset */,
-                                         GLsizeiptr /* size */,
-                                         GLbitfield /* access */) {
-  return 0;
-}
-GLboolean GLES2InterfaceStub::UnmapBuffer(GLenum /* target */) {
-  return 0;
-}
-void GLES2InterfaceStub::FlushMappedBufferRange(GLenum /* target */,
-                                                GLintptr /* offset */,
-                                                GLsizeiptr /* size */) {}
 void* GLES2InterfaceStub::MapTexSubImage2DCHROMIUM(GLenum /* target */,
                                                    GLint /* level */,
                                                    GLint /* xoffset */,
@@ -1005,6 +993,10 @@ GLuint GLES2InterfaceStub::GetLastFlushIdCHROMIUM() {
   return 0;
 }
 void GLES2InterfaceStub::SetActiveURLCHROMIUM(const char* /* url */) {}
+void GLES2InterfaceStub::GetBufferSubDataCHROMIUM(GLenum /* target */,
+                                                  GLintptr /* offset */,
+                                                  GLsizeiptr /* size */,
+                                                  void* /* data */) {}
 void GLES2InterfaceStub::ContextVisibilityHintCHROMIUM(
     GLboolean /* visibility */) {}
 GLenum GLES2InterfaceStub::GetGraphicsResetStatusKHR() {

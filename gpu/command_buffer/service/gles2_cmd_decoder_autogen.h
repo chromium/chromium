@@ -4765,32 +4765,6 @@ error::Error GLES2DecoderImpl::HandleGetMaxValueInBufferCHROMIUM(
   return error::kNoError;
 }
 
-error::Error GLES2DecoderImpl::HandleFlushMappedBufferRange(
-    uint32_t immediate_data_size,
-    const volatile void* cmd_data) {
-  if (!feature_info_->IsWebGL2OrES3OrHigherContext()) {
-    return error::kUnknownCommand;
-  }
-  const volatile gles2::cmds::FlushMappedBufferRange& c =
-      *static_cast<const volatile gles2::cmds::FlushMappedBufferRange*>(
-          cmd_data);
-  GLenum target = static_cast<GLenum>(c.target);
-  GLintptr offset = static_cast<GLintptr>(c.offset);
-  GLsizeiptr size = static_cast<GLsizeiptr>(c.size);
-  if (!validators_->buffer_target.IsValid(target)) {
-    LOCAL_SET_GL_ERROR_INVALID_ENUM("glFlushMappedBufferRange", target,
-                                    "target");
-    return error::kNoError;
-  }
-  if (size < 0) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_VALUE, "glFlushMappedBufferRange",
-                       "size < 0");
-    return error::kNoError;
-  }
-  DoFlushMappedBufferRange(target, offset, size);
-  return error::kNoError;
-}
-
 error::Error GLES2DecoderImpl::HandleCopyTextureCHROMIUM(
     uint32_t immediate_data_size,
     const volatile void* cmd_data) {

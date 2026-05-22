@@ -12633,159 +12633,6 @@ static_assert(
     offsetof(GetMaxValueInBufferCHROMIUM, result_shm_offset) == 24,
     "offset of GetMaxValueInBufferCHROMIUM result_shm_offset should be 24");
 
-struct MapBufferRange {
-  typedef MapBufferRange ValueType;
-  static const CommandId kCmdId = kMapBufferRange;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
-
-  typedef uint32_t Result;
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLenum _target,
-            GLintptr _offset,
-            GLsizeiptr _size,
-            GLbitfield _access,
-            uint32_t _data_shm_id,
-            uint32_t _data_shm_offset,
-            uint32_t _result_shm_id,
-            uint32_t _result_shm_offset) {
-    SetHeader();
-    target = _target;
-    offset = _offset;
-    size = _size;
-    access = _access;
-    data_shm_id = _data_shm_id;
-    data_shm_offset = _data_shm_offset;
-    result_shm_id = _result_shm_id;
-    result_shm_offset = _result_shm_offset;
-  }
-
-  void* Set(void* cmd,
-            GLenum _target,
-            GLintptr _offset,
-            GLsizeiptr _size,
-            GLbitfield _access,
-            uint32_t _data_shm_id,
-            uint32_t _data_shm_offset,
-            uint32_t _result_shm_id,
-            uint32_t _result_shm_offset) {
-    static_cast<ValueType*>(cmd)->Init(_target, _offset, _size, _access,
-                                       _data_shm_id, _data_shm_offset,
-                                       _result_shm_id, _result_shm_offset);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t target;
-  int32_t offset;
-  int32_t size;
-  uint32_t access;
-  uint32_t data_shm_id;
-  uint32_t data_shm_offset;
-  uint32_t result_shm_id;
-  uint32_t result_shm_offset;
-};
-
-static_assert(sizeof(MapBufferRange) == 36,
-              "size of MapBufferRange should be 36");
-static_assert(offsetof(MapBufferRange, header) == 0,
-              "offset of MapBufferRange header should be 0");
-static_assert(offsetof(MapBufferRange, target) == 4,
-              "offset of MapBufferRange target should be 4");
-static_assert(offsetof(MapBufferRange, offset) == 8,
-              "offset of MapBufferRange offset should be 8");
-static_assert(offsetof(MapBufferRange, size) == 12,
-              "offset of MapBufferRange size should be 12");
-static_assert(offsetof(MapBufferRange, access) == 16,
-              "offset of MapBufferRange access should be 16");
-static_assert(offsetof(MapBufferRange, data_shm_id) == 20,
-              "offset of MapBufferRange data_shm_id should be 20");
-static_assert(offsetof(MapBufferRange, data_shm_offset) == 24,
-              "offset of MapBufferRange data_shm_offset should be 24");
-static_assert(offsetof(MapBufferRange, result_shm_id) == 28,
-              "offset of MapBufferRange result_shm_id should be 28");
-static_assert(offsetof(MapBufferRange, result_shm_offset) == 32,
-              "offset of MapBufferRange result_shm_offset should be 32");
-
-struct UnmapBuffer {
-  typedef UnmapBuffer ValueType;
-  static const CommandId kCmdId = kUnmapBuffer;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLenum _target) {
-    SetHeader();
-    target = _target;
-  }
-
-  void* Set(void* cmd, GLenum _target) {
-    static_cast<ValueType*>(cmd)->Init(_target);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t target;
-};
-
-static_assert(sizeof(UnmapBuffer) == 8, "size of UnmapBuffer should be 8");
-static_assert(offsetof(UnmapBuffer, header) == 0,
-              "offset of UnmapBuffer header should be 0");
-static_assert(offsetof(UnmapBuffer, target) == 4,
-              "offset of UnmapBuffer target should be 4");
-
-struct FlushMappedBufferRange {
-  typedef FlushMappedBufferRange ValueType;
-  static const CommandId kCmdId = kFlushMappedBufferRange;
-  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
-  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
-
-  static uint32_t ComputeSize() {
-    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
-  }
-
-  void SetHeader() { header.SetCmd<ValueType>(); }
-
-  void Init(GLenum _target, GLintptr _offset, GLsizeiptr _size) {
-    SetHeader();
-    target = _target;
-    offset = _offset;
-    size = _size;
-  }
-
-  void* Set(void* cmd, GLenum _target, GLintptr _offset, GLsizeiptr _size) {
-    static_cast<ValueType*>(cmd)->Init(_target, _offset, _size);
-    return NextCmdAddress<ValueType>(cmd);
-  }
-
-  gpu::CommandHeader header;
-  uint32_t target;
-  int32_t offset;
-  int32_t size;
-};
-
-static_assert(sizeof(FlushMappedBufferRange) == 16,
-              "size of FlushMappedBufferRange should be 16");
-static_assert(offsetof(FlushMappedBufferRange, header) == 0,
-              "offset of FlushMappedBufferRange header should be 0");
-static_assert(offsetof(FlushMappedBufferRange, target) == 4,
-              "offset of FlushMappedBufferRange target should be 4");
-static_assert(offsetof(FlushMappedBufferRange, offset) == 8,
-              "offset of FlushMappedBufferRange offset should be 8");
-static_assert(offsetof(FlushMappedBufferRange, size) == 12,
-              "offset of FlushMappedBufferRange size should be 12");
-
 struct GetRequestableExtensionsCHROMIUM {
   typedef GetRequestableExtensionsCHROMIUM ValueType;
   static const CommandId kCmdId = kGetRequestableExtensionsCHROMIUM;
@@ -13898,6 +13745,66 @@ static_assert(offsetof(SetActiveURLCHROMIUM, header) == 0,
               "offset of SetActiveURLCHROMIUM header should be 0");
 static_assert(offsetof(SetActiveURLCHROMIUM, url_bucket_id) == 4,
               "offset of SetActiveURLCHROMIUM url_bucket_id should be 4");
+
+struct GetBufferSubDataCHROMIUM {
+  typedef GetBufferSubDataCHROMIUM ValueType;
+  static const CommandId kCmdId = kGetBufferSubDataCHROMIUM;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(1);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLenum _target,
+            GLintptr _offset,
+            GLsizeiptr _size,
+            uint32_t _data_shm_id,
+            uint32_t _data_shm_offset) {
+    SetHeader();
+    target = _target;
+    offset = _offset;
+    size = _size;
+    data_shm_id = _data_shm_id;
+    data_shm_offset = _data_shm_offset;
+  }
+
+  void* Set(void* cmd,
+            GLenum _target,
+            GLintptr _offset,
+            GLsizeiptr _size,
+            uint32_t _data_shm_id,
+            uint32_t _data_shm_offset) {
+    static_cast<ValueType*>(cmd)->Init(_target, _offset, _size, _data_shm_id,
+                                       _data_shm_offset);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t target;
+  int32_t offset;
+  int32_t size;
+  uint32_t data_shm_id;
+  uint32_t data_shm_offset;
+};
+
+static_assert(sizeof(GetBufferSubDataCHROMIUM) == 24,
+              "size of GetBufferSubDataCHROMIUM should be 24");
+static_assert(offsetof(GetBufferSubDataCHROMIUM, header) == 0,
+              "offset of GetBufferSubDataCHROMIUM header should be 0");
+static_assert(offsetof(GetBufferSubDataCHROMIUM, target) == 4,
+              "offset of GetBufferSubDataCHROMIUM target should be 4");
+static_assert(offsetof(GetBufferSubDataCHROMIUM, offset) == 8,
+              "offset of GetBufferSubDataCHROMIUM offset should be 8");
+static_assert(offsetof(GetBufferSubDataCHROMIUM, size) == 12,
+              "offset of GetBufferSubDataCHROMIUM size should be 12");
+static_assert(offsetof(GetBufferSubDataCHROMIUM, data_shm_id) == 16,
+              "offset of GetBufferSubDataCHROMIUM data_shm_id should be 16");
+static_assert(
+    offsetof(GetBufferSubDataCHROMIUM, data_shm_offset) == 20,
+    "offset of GetBufferSubDataCHROMIUM data_shm_offset should be 20");
 
 struct ContextVisibilityHintCHROMIUM {
   typedef ContextVisibilityHintCHROMIUM ValueType;
