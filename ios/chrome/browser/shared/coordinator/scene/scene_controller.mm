@@ -2589,7 +2589,20 @@ bool IsProfileUnmanaged(ProfileIOS* profile) {
       self.currentInterface.browser->GetCommandDispatcher(), BWGCommands);
   GeminiStartupState* startupState = [[GeminiStartupState alloc]
       initWithEntryPoint:gemini::EntryPoint::ExternalAppStoreEvent];
-  [geminiHandler startGeminiFlowWithStartupState:startupState];
+
+  if (IsGeneralizedGeminiEntryFlowEnabled()) {
+    [geminiHandler
+        startGeminiEntryFlowWithStartupState:startupState
+                          baseViewController:self.activeViewController
+                                 accessPoint:signin_metrics::AccessPoint::
+                                                 kDeepLinkDefault
+                    showSnackbarOnCompletion:YES
+                                  completion:nil];
+  } else {
+    // TODO(crbug.com/515476625): Remove this fallback path, the associated
+    // method and string when the generalized Gemini entry flow is rolled out.
+    [geminiHandler startGeminiFlowWithStartupState:startupState];
+  }
 }
 
 // Triggers the switcher view when the last WebState is closed on a device

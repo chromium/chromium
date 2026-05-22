@@ -6,11 +6,13 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
+#import "ios/chrome/browser/authentication/test/signin_matchers.h"
 #import "ios/chrome/browser/first_run/public/first_run_constants.h"
 #import "ios/chrome/browser/first_run/test/first_run_test_case_base.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -123,8 +125,8 @@ void SimulateGeminiPromoURLOpening() {
                       grey_accessibilityID(@"BubbleViewLabelIdentifier")];
 }
 
-// Tests that the snackbar shows on a fresh install after deep link if user
-// stays signed out.
+// Tests that the sign-in sheet is presented on a fresh install after deep link,
+// and dismissing it leaves the user signed out with no promo shown.
 - (void)testAppStorePromoFreshInstallSignedOut {
   SimulateGeminiPromoURLOpening();
 
@@ -136,10 +138,12 @@ void SimulateGeminiPromoURLOpening() {
   // Dismiss Default Browser and remaining screens.
   [FirstRunTestCaseBase dismissDefaultBrowserAndRemainingScreens];
 
-  // Verify that the snackbar appears.
-  id<GREYMatcher> snackbarMatcher = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_GEMINI_SIGN_IN_REQUIRED_SNACKBAR));
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+  [ChromeEarlGrey
+      waitForMatcher:grey_accessibilityID(kFakeAuthActivityViewIdentifier)];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
+      performAction:grey_tap()];
 
   // Verify that the specialized IPH bubble is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -177,8 +181,8 @@ void SimulateGeminiPromoURLOpening() {
                       grey_accessibilityID(@"BubbleViewLabelIdentifier")];
 }
 
-// Tests that the snackbar shows for an existing signed-out user after deep
-// link.
+// Tests that the sign-in sheet is presented for an existing signed-out user
+// after deep link, and dismissing it leaves the user signed out with no promo.
 - (void)testAppStorePromoExistingUserSignedOut {
   // Dismiss FRE to simulate existing user.
   [[EarlGrey
@@ -187,9 +191,13 @@ void SimulateGeminiPromoURLOpening() {
   [FirstRunTestCaseBase dismissDefaultBrowserAndRemainingScreens];
 
   SimulateGeminiPromoURLOpening();
-  id<GREYMatcher> snackbarMatcher = grey_accessibilityLabel(
-      l10n_util::GetNSString(IDS_IOS_GEMINI_SIGN_IN_REQUIRED_SNACKBAR));
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:snackbarMatcher];
+
+  [ChromeEarlGrey
+      waitForMatcher:grey_accessibilityID(kFakeAuthActivityViewIdentifier)];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kFakeAuthCancelButtonIdentifier)]
+      performAction:grey_tap()];
 
   // Verify that the specialized IPH bubble is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
