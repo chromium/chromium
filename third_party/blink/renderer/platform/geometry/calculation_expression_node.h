@@ -60,6 +60,7 @@ class PLATFORM_EXPORT CalculationExpressionNode
   virtual void Trace(Visitor*) const {}
 
   virtual float Evaluate(float max_value, const EvaluationInput&) const = 0;
+  virtual bool EvaluatesToNumber() const = 0;
   bool operator==(const CalculationExpressionNode& other) const {
     return Equals(other);
   }
@@ -112,6 +113,7 @@ class PLATFORM_EXPORT CalculationExpressionNumberNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool EvaluatesToNumber() const final { return true; }
   bool Equals(const CalculationExpressionNode& other) const final;
   const CalculationExpressionNode* Zoom(double factor) const final {
     return this;
@@ -142,6 +144,7 @@ class PLATFORM_EXPORT CalculationExpressionIdentifierNode final
   float Evaluate(float max_value, const EvaluationInput&) const final {
     return 0.0f;
   }
+  bool EvaluatesToNumber() const final { return false; }
   bool Equals(const CalculationExpressionNode& other) const final {
     auto* other_identifier =
         DynamicTo<CalculationExpressionIdentifierNode>(other);
@@ -190,6 +193,7 @@ class PLATFORM_EXPORT CalculationExpressionSizingKeywordNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool EvaluatesToNumber() const final { return false; }
   bool Equals(const CalculationExpressionNode& other) const final {
     auto* other_sizing_keyword =
         DynamicTo<CalculationExpressionSizingKeywordNode>(other);
@@ -236,6 +240,11 @@ class PLATFORM_EXPORT CalculationExpressionColorChannelKeywordNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool EvaluatesToNumber() const final {
+    // All components keywords resolve to <number>.
+    // https://drafts.csswg.org/css-color-5/#relative-syntax
+    return true;
+  }
   bool Equals(const CalculationExpressionNode& other) const final {
     auto* other_color_channel_keyword =
         DynamicTo<CalculationExpressionColorChannelKeywordNode>(other);
@@ -276,6 +285,7 @@ class PLATFORM_EXPORT CalculationExpressionPixelsAndPercentNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool EvaluatesToNumber() const final { return false; }
   bool Equals(const CalculationExpressionNode& other) const final;
   const CalculationExpressionNode* Zoom(double factor) const final;
   bool IsPixelsAndPercent() const final { return true; }
@@ -314,6 +324,7 @@ class PLATFORM_EXPORT CalculationExpressionOperationNode final
 
   // Implement |CalculationExpressionNode|:
   float Evaluate(float max_value, const EvaluationInput&) const final;
+  bool EvaluatesToNumber() const final;
   bool Equals(const CalculationExpressionNode& other) const final;
   const CalculationExpressionNode* Zoom(double factor) const final;
   bool IsOperation() const final { return true; }

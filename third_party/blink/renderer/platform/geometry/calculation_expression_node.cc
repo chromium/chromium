@@ -646,7 +646,7 @@ float CalculationExpressionOperationNode::Evaluate(
     case CalculationOperator::kAtan2: {
       float a = children_[0]->Evaluate(max_value, input);
       if (ShouldConvertRad2DegForOperator(operator_) &&
-          children_.front()->IsNumber()) {
+          children_.front()->EvaluatesToNumber()) {
         a = Rad2deg(a);
       }
       std::optional<float> b =
@@ -668,6 +668,55 @@ float CalculationExpressionOperationNode::Evaluate(
       return ComputeCSSRandomValue(random_base_value, min, max, step);
     }
       // TODO(crbug.com/1284199): Support other math functions.
+  }
+  NOTREACHED();
+}
+
+bool CalculationExpressionOperationNode::EvaluatesToNumber() const {
+  switch (operator_) {
+    case CalculationOperator::kLog:
+    case CalculationOperator::kExp:
+    case CalculationOperator::kSqrt:
+    case CalculationOperator::kSign:
+    case CalculationOperator::kPow:
+    case CalculationOperator::kSin:
+    case CalculationOperator::kCos:
+    case CalculationOperator::kTan:
+    case CalculationOperator::kProgress:
+    case CalculationOperator::kMediaProgress:
+    case CalculationOperator::kContainerProgress:
+      // Always returns <number>.
+      return true;
+    case CalculationOperator::kCalcSize:
+    case CalculationOperator::kAsin:
+    case CalculationOperator::kAcos:
+    case CalculationOperator::kAtan:
+    case CalculationOperator::kAtan2:
+      // Never returns <number>.
+      return false;
+    case CalculationOperator::kAdd:
+    case CalculationOperator::kSubtract:
+    case CalculationOperator::kInvert:
+    case CalculationOperator::kMax:
+    case CalculationOperator::kMin:
+    case CalculationOperator::kClamp:
+    case CalculationOperator::kRoundNearest:
+    case CalculationOperator::kRoundUp:
+    case CalculationOperator::kRoundDown:
+    case CalculationOperator::kRoundToZero:
+    case CalculationOperator::kMod:
+    case CalculationOperator::kRem:
+    case CalculationOperator::kHypot:
+    case CalculationOperator::kAbs:
+      // Consistent types, check the first argument.
+      return children_[0]->EvaluatesToNumber();
+    case CalculationOperator::kMultiply:
+      return children_[0]->EvaluatesToNumber() &&
+             children_[1]->EvaluatesToNumber();
+    case CalculationOperator::kRandom:
+      // Consistent types, but the first argument is the <random-key>, so check
+      // the second argument.
+      return children_[1]->EvaluatesToNumber();
   }
   NOTREACHED();
 }
