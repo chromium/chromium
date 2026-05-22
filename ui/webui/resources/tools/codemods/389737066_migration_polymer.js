@@ -6,7 +6,7 @@
 // declaration in a class. To be used to update remaining Polymer UIs for the
 // purposes of fixing crbug.com/389737066.
 
-module.exports = function transformer(file, api) {
+export default function transformer(file, api) {
   const source = file.source;
   const j = api.jscodeshift;
   const root = j(source);
@@ -35,4 +35,4 @@ module.exports = function transformer(file, api) {
 
   const outputOptions = {quote: 'single'};
   return root.toSource(outputOptions);
-};
+}
