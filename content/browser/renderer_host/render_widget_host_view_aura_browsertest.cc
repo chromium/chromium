@@ -583,12 +583,14 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
   // done in `WebFrameWidgetImpl`.
   const base::ListValue eval_result =
       EvalJs(wc, "getSelectionBounds();").TakeValue().TakeList();
-  const int x = floor(eval_result[0].GetDouble());
-  const int right = ceil(eval_result[1].GetDouble());
-  const int y = floor(eval_result[2].GetDouble());
-  const int bottom = ceil(eval_result[3].GetDouble());
-  const int expected_dip_width = floor(right / scale()) - ceil(x / scale());
-  const int expected_dip_height = floor(bottom / scale()) - ceil(y / scale());
+  const double x = eval_result[0].GetDouble();
+  const double right = eval_result[1].GetDouble();
+  const double y = eval_result[2].GetDouble();
+  const double bottom = eval_result[3].GetDouble();
+  const int expected_dip_width = floor(ceil(right * scale()) / scale()) -
+                                 ceil(floor(x * scale()) / scale());
+  const int expected_dip_height = floor(ceil(bottom * scale()) / scale()) -
+                                  ceil(floor(y * scale()) / scale());
 
   // Verify the DIP size of the bounding box.
   const gfx::Rect selection_bounds =
