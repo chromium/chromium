@@ -15,6 +15,7 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 
 /**
  * Layout for the new tab page. This positions the page elements in the correct vertical positions.
@@ -52,9 +53,7 @@ public class NewTabPageLayout extends LinearLayout {
     protected void onFinishInflate() {
         super.onFinishInflate();
 
-        setBackgroundColor(
-                getResources()
-                        .getColor(R.color.home_surface_background_color, getContext().getTheme()));
+        setBackgroundColor(ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(getContext()));
 
         // TODO(crbug.com/347509698): Remove the log statements after fixing the bug.
         Log.i(TAG, "NewTabPageLayout.onFinishInflate before insertSiteSectionView");

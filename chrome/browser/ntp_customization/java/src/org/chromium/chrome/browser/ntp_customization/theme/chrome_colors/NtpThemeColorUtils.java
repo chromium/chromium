@@ -13,7 +13,6 @@ import android.graphics.drawable.LayerDrawable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.StringRes;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +23,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
@@ -248,7 +248,7 @@ public class NtpThemeColorUtils {
      * @param context The current Activity context. It is themed and can provide the correct color.
      */
     public static @ColorInt int getDefaultBackgroundColor(Context context) {
-        return ContextCompat.getColor(context, R.color.home_surface_background_color);
+        return ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(context);
     }
 
     /**

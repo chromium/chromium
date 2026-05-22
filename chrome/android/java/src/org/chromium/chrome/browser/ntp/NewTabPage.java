@@ -19,7 +19,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.CallbackController;
@@ -93,6 +92,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -445,7 +445,7 @@ public class NewTabPage
         mContext = activity;
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
-        mBackgroundColor = ContextCompat.getColor(mContext, R.color.home_surface_background_color);
+        mBackgroundColor = ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(activity);
 
         mIsTablet = isTablet;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
@@ -1094,7 +1094,7 @@ public class NewTabPage
     public @ColorInt int getToolbarTextBoxBackgroundColor(@ColorInt int defaultColor) {
         if (isLocationBarShownInNtp()) {
             if (!isLocationBarScrolledToTopInNtp()) {
-                return ContextCompat.getColor(mContext, R.color.home_surface_background_color);
+                return getBackgroundColor();
             }
 
             if (mIsInNightMode) {

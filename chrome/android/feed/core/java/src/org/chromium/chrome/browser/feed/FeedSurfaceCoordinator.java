@@ -26,7 +26,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ItemDecoration;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -68,6 +67,7 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.TouchEnabledDelegate;
 import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
@@ -427,8 +427,7 @@ public class FeedSurfaceCoordinator
         mUseStaggeredLayout = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         mIsNewTabPageCustomizationV2Enabled =
                 NtpCustomizationUtils.isNtpThemeCustomizationEnabled();
-        mDefaultBackgroundColor =
-                ContextCompat.getColor(mActivity, R.color.home_surface_background_color);
+        mDefaultBackgroundColor = ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(mActivity);
 
         mRootView = new RootView(mActivity);
         mRootView.setPadding(0, mTabStripHeightSupplier.get(), 0, 0);
@@ -770,10 +769,7 @@ public class FeedSurfaceCoordinator
         manualRefresh();
     }
 
-    /**
-     * Implements SwipeRefreshLayout.OnRefreshListener to be used only for pull
-     * to refresh.
-     */
+    /** Implements SwipeRefreshLayout.OnRefreshListener to be used only for pull to refresh. */
     @Override
     public void onRefresh() {
         manualRefresh();
@@ -814,7 +810,7 @@ public class FeedSurfaceCoordinator
 
     /**
      * @return The {@link FeedSurfaceLifecycleManager} that manages the lifecycle of the {@link
-     *         Stream}.
+     *     Stream}.
      */
     @Nullable FeedSurfaceLifecycleManager getSurfaceLifecycleManager() {
         return mFeedSurfaceLifecycleManager;
@@ -952,22 +948,30 @@ public class FeedSurfaceCoordinator
         return view;
     }
 
-    /** @return The {@link RecyclerView} associated with this feed. */
+    /**
+     * @return The {@link RecyclerView} associated with this feed.
+     */
     public RecyclerView getRecyclerView() {
         return mRecyclerView;
     }
 
-    /** @return The {@link FeedSurfaceScope} used to create this feed. */
+    /**
+     * @return The {@link FeedSurfaceScope} used to create this feed.
+     */
     @Nullable FeedSurfaceScope getSurfaceScope() {
         return mSurfaceScope;
     }
 
-    /** @return The {@link HybridListRenderer} used to render this feed. */
+    /**
+     * @return The {@link HybridListRenderer} used to render this feed.
+     */
     HybridListRenderer getHybridListRenderer() {
         return mHybridListRenderer;
     }
 
-    /** @return The {@link FeedListContentManager} managing the contents of this feed. */
+    /**
+     * @return The {@link FeedListContentManager} managing the contents of this feed.
+     */
     FeedListContentManager getContentManager() {
         return mContentManager;
     }
@@ -981,8 +985,8 @@ public class FeedSurfaceCoordinator
     }
 
     /**
-     * Configures header views and properties for feed:
-     * Adds the feed headers, creates the feed lifecycle manager, adds swipe-to-refresh if needed.
+     * Configures header views and properties for feed: Adds the feed headers, creates the feed
+     * lifecycle manager, adds swipe-to-refresh if needed.
      */
     void setupHeaders(boolean feedEnabled) {
         // Directly add header views to content manager.
@@ -1146,9 +1150,9 @@ public class FeedSurfaceCoordinator
      * Initializes things related to the bubbles which will start listening to scroll events to
      * determine whether a bubble should be triggered.
      *
-     * You must stop the IPH with #stopBubbleTriggering before tearing down feed components, e.g.,
-     * on #destroy. This also applies for the case where the feed stream is deleted when disabled
-     * (e.g., by policy).
+     * <p>You must stop the IPH with #stopBubbleTriggering before tearing down feed components,
+     * e.g., on #destroy. This also applies for the case where the feed stream is deleted when
+     * disabled (e.g., by policy).
      */
     void initializeBubbleTriggering() {
         // Don't do anything when there is no feed stream because the bubble isn't needed in

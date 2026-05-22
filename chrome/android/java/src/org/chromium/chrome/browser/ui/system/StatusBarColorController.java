@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
@@ -204,7 +205,7 @@ public class StatusBarColorController
                 ChromeColors.getDefaultThemeColor(activity, /* isIncognito= */ true);
 
         mDefaultBackgroundColorForNtp =
-                ContextCompat.getColor(activity, R.color.home_surface_background_color);
+                ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(activity);
         mBackgroundColorForNtp = mDefaultBackgroundColorForNtp;
         mStatusIndicatorColor = UNDEFINED_STATUS_BAR_COLOR;
 
@@ -540,7 +541,7 @@ public class StatusBarColorController
 
     /**
      * @return The status bar color without the status indicator's color taken into consideration.
-     *         However, scrimming isn't included since it's managed completely by this class.
+     *     However, scrimming isn't included since it's managed completely by this class.
      */
     public @ColorInt int getStatusBarColorWithoutStatusIndicator() {
         return mStatusBarColorWithoutStatusIndicator;

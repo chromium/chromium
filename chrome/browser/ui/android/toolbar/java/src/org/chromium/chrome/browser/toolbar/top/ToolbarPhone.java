@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -230,10 +231,10 @@ public class ToolbarPhone extends ToolbarLayout
     private final Rect mLocationBarBackgroundNtpOffset = new Rect();
 
     /**
-     * Offsets applied to the <i>contents</i> of the omnibox if we are showing a New Tab Page.
-     * This can be different from {@link #mLocationBarBackgroundNtpOffset} due to the fact that we
-     * extend the omnibox horizontally beyond the screen boundaries when focused, to hide its
-     * rounded corners.
+     * Offsets applied to the <i>contents</i> of the omnibox if we are showing a New Tab Page. This
+     * can be different from {@link #mLocationBarBackgroundNtpOffset} due to the fact that we extend
+     * the omnibox horizontally beyond the screen boundaries when focused, to hide its rounded
+     * corners.
      */
     private float mLocationBarNtpOffsetLeft;
 
@@ -354,7 +355,7 @@ public class ToolbarPhone extends ToolbarLayout
         mBackgroundHeightIncreaseWhenFocus =
                 OmniboxResourceProvider.getLocationBarBackgroundOnFocusHeightIncrease(context);
         mToolbarBackgroundColorForNtp =
-                ContextCompat.getColor(getContext(), R.color.home_surface_background_color);
+                ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(getContext());
         float locationBarBackgroundColorAlphaForNtp =
                 ResourcesCompat.getFloat(
                         getResources(), R.dimen.home_surface_search_box_background_alpha);
@@ -834,8 +835,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     /**
      * @param visualState The current {@link VisualState} of the toolbar.
-     * @return The left bounds of the location bar, accounting for any buttons on the left side
-     *         of the toolbar.
+     * @return The left bounds of the location bar, accounting for any buttons on the left side of
+     *     the toolbar.
      */
     private int getViewBoundsLeftOfLocationBar(@VisualState int visualState) {
         // Uses getMeasuredWidth()s instead of getLeft() because this is called in onMeasure
@@ -872,8 +873,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     /**
      * @param visualState The current {@link VisualState} of the toolbar.
-     * @return The right bounds of the location bar, accounting for any buttons on the right side
-     *         of the toolbar.
+     * @return The right bounds of the location bar, accounting for any buttons on the right side of
+     *     the toolbar.
      */
     private int getViewBoundsRightOfLocationBar(@VisualState int visualState) {
         // Uses getMeasuredWidth()s instead of getRight() because this is called in onMeasure
@@ -1164,8 +1165,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return The left drawing position for the location bar background when the location bar
-     *         has focus.
+     * @return The left drawing position for the location bar background when the location bar has
+     *     focus.
      */
     private int getFocusedLeftPositionOfLocationBarBackground() {
         return mToolbarSidePadding;
@@ -1206,8 +1207,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * @return The right drawing position for the location bar background when the location bar
-     *         has focus.
+     * @return The right drawing position for the location bar background when the location bar has
+     *     focus.
      */
     private int getFocusedRightPositionOfLocationBarBackground() {
         return getWidth() - mToolbarSidePadding;
@@ -1773,7 +1774,7 @@ public class ToolbarPhone extends ToolbarLayout
 
     /**
      * @return Whether or not the location bar should be drawing at any particular state of the
-     *         toolbar.
+     *     toolbar.
      */
     private boolean shouldDrawLocationBar() {
         // The location bar should have alpha or clip+translation when its not supposed to be
@@ -3652,8 +3653,8 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     /**
-     * Whether the menu button is visible. Used as a proxy for whether there are end toolbar
-     * buttons besides the optional button.
+     * Whether the menu button is visible. Used as a proxy for whether there are end toolbar buttons
+     * besides the optional button.
      */
     private boolean isMenuButtonPresent() {
         return getMenuButtonCoordinator().isVisible();

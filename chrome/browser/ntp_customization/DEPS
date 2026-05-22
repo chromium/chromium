@@ -1,6 +1,7 @@
 include_rules = [
+  "+chrome/browser/ui/android/theme",
+  "+components/browser_ui/bottomsheet/android",
+  "+components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget",
   "+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcher.java",
   "+components/image_fetcher/android/java/src/org/chromium/components/image_fetcher/ImageFetcherFactory.java",
-  "+components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget",
-  "+components/browser_ui/bottomsheet/android",
 ]
