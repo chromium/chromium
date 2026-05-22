@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.ui.actions.R;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -159,11 +158,8 @@ public class GlicActionCoordinator {
                     ActionProperties.ICON_TINT,
                     GlicActionUtils.getIncognitoDisabledTint(mActivity));
         } else {
-            boolean isNtp = currentTab != null && UrlUtilities.isNtpUrl(currentTab.getUrl());
-            boolean isEnabled = currentTab != null && !isNtp;
-
             model.set(ActionProperties.ON_PRESS_CALLBACK, this::onGlicActionPressed);
-            model.set(ActionProperties.BUTTON_STATE, isEnabled ? DEFAULT : UNCLICKABLE);
+            model.set(ActionProperties.BUTTON_STATE, currentTab != null ? DEFAULT : UNCLICKABLE);
             model.set(ActionProperties.ICON_TINT, null);
         }
     }

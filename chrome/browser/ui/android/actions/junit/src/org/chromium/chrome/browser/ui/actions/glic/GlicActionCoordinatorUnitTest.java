@@ -161,6 +161,12 @@ public class GlicActionCoordinatorUnitTest {
     @Test
     public void testState_Ntp() {
         mTabSupplier.set(mNtpTab);
+        assertEquals(ButtonState.DEFAULT, mActionModel.get(ActionProperties.BUTTON_STATE));
+    }
+
+    @Test
+    public void testState_NullTab() {
+        mTabSupplier.set(null);
         assertEquals(ButtonState.UNCLICKABLE, mActionModel.get(ActionProperties.BUTTON_STATE));
     }
 
@@ -189,7 +195,7 @@ public class GlicActionCoordinatorUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
         observer.onUrlUpdated(mTab);
 
-        assertEquals(ButtonState.UNCLICKABLE, mActionModel.get(ActionProperties.BUTTON_STATE));
+        assertEquals(ButtonState.DEFAULT, mActionModel.get(ActionProperties.BUTTON_STATE));
     }
 
     @Test
