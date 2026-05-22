@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -47,6 +49,7 @@
 #include "components/zoom/zoom_controller.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "extensions/browser/extension_user_activation_service.h"
 #include "extensions/browser/extension_zoom_request_client.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/buildflags/buildflags.h"
@@ -522,6 +525,138 @@ std::vector<::tabs::TabHandle> GetTabsInSplit(
   }
 
   return split_tabs;
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class UpdateActionType {
+  // Updates that are not redirects for the default search engine page.
+  kOtherUpdates = 0,
+  // Updates that are redirects for the default search engine page which are
+  // not a result of a user gesture.
+  kDSERedirectsWithoutUserGesture = 1,
+  // Updates that are redirects for the default search engine page after a user
+  // gesture has occurred.
+  kDSERedirectsWithUserGesture = 2,
+  // Updates that are redirects after the user has landed on the search engine
+  // results page (SERP) for a while.
+  kDSERedirectsAfterLandingOnSERP = 3,
+  // The maximum value of the UpdateActionType enum.
+  kMaxValue = kDSERedirectsAfterLandingOnSERP,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class RemoveActionType {
+  // Removals that are not for the default search engine page.
+  kOtherRemovals = 0,
+  // Removals of the default search engine page which are not a result of a user
+  // gesture.
+  kDSERemovalsWithoutUserGesture = 1,
+  // Removals of the default search engine page after a user gesture has
+  // occurred.
+  kDSERemovalsWithUserGesture = 2,
+  // Removals of the default search engine page after the user has landed on the
+  // search engine results page (SERP) for a while.
+  kDSERemovalsAfterLandingOnSERP = 3,
+  // The maximum value of the RemoveActionType enum.
+  kMaxValue = kDSERemovalsAfterLandingOnSERP,
+};
+
+bool HasUserActivation(const ExtensionId& extension_id,
+                       content::BrowserContext& browser_context,
+                       content::RenderFrameHost* calling_render_frame_host,
+                       content::WebContents& tab_web_contents,
+                       bool extension_function_user_gesture) {
+  return extension_function_user_gesture ||
+         ExtensionUserActivationService::Get(&browser_context)
+             ->HasTransientActivation(extension_id) ||
+         (calling_render_frame_host &&
+          calling_render_frame_host->HasTransientUserActivation()) ||
+         (tab_web_contents.GetPrimaryMainFrame() &&
+          tab_web_contents.GetPrimaryMainFrame()->HasTransientUserActivation());
+}
+
+void CheckDSERedirect(const ExtensionId& extension_id,
+                      content::BrowserContext& browser_context,
+                      content::RenderFrameHost* calling_render_frame_host,
+                      content::WebContents& tab_web_contents,
+                      const GURL& destination_url,
+                      bool extension_function_user_gesture) {
+  auto is_dse_redirect = [&browser_context,
+                          &destination_url](const GURL& source_url) {
+    return ExtensionsBrowserClient::Get()->IsDefaultSearchEngineRedirect(
+        &browser_context, source_url, destination_url);
+  };
+
+  // If there is a pending entry, proceed to checking user gestures since the
+  // user may have not yet landed on the DSE page.
+  content::NavigationEntry* entry =
+      tab_web_contents.GetController().GetPendingEntry();
+  if (!entry) {
+    entry = tab_web_contents.GetController().GetLastCommittedEntry();
+    // Assume no redirect if user has landed on the DSE page for a while.
+    if (entry && base::Time::Now() - entry->GetTimestamp() > base::Seconds(5)) {
+      base::UmaHistogramEnumeration(
+          "Extensions.Tabs.UpdateAction",
+          is_dse_redirect(entry->GetURL())
+              ? UpdateActionType::kDSERedirectsAfterLandingOnSERP
+              : UpdateActionType::kOtherUpdates);
+      return;
+    }
+  }
+  if (!entry || !is_dse_redirect(entry->GetURL())) {
+    base::UmaHistogramEnumeration("Extensions.Tabs.UpdateAction",
+                                  UpdateActionType::kOtherUpdates);
+    return;
+  }
+  bool has_user_activation = HasUserActivation(
+      extension_id, browser_context, calling_render_frame_host,
+      tab_web_contents, extension_function_user_gesture);
+  base::UmaHistogramEnumeration(
+      "Extensions.Tabs.UpdateAction",
+      has_user_activation ? UpdateActionType::kDSERedirectsWithUserGesture
+                          : UpdateActionType::kDSERedirectsWithoutUserGesture);
+}
+
+void CheckDSERemoval(const ExtensionId& extension_id,
+                     content::BrowserContext& browser_context,
+                     content::RenderFrameHost* calling_render_frame_host,
+                     content::WebContents& tab_web_contents,
+                     bool extension_function_user_gesture) {
+  auto is_dse = [&browser_context](const GURL& source_url) {
+    return ExtensionsBrowserClient::Get()->IsDefaultSearchEngineRedirect(
+        &browser_context, source_url, GURL());
+  };
+
+  // If there is a pending entry, proceed to checking user gestures since the
+  // user may have not yet landed on the DSE page.
+  content::NavigationEntry* entry =
+      tab_web_contents.GetController().GetPendingEntry();
+  if (!entry) {
+    entry = tab_web_contents.GetController().GetLastCommittedEntry();
+    // Assume no removal if user has landed on the DSE page for a while.
+    if (entry && base::Time::Now() - entry->GetTimestamp() > base::Seconds(5)) {
+      base::UmaHistogramEnumeration(
+          "Extensions.Tabs.RemoveAction",
+          is_dse(entry->GetURL())
+              ? RemoveActionType::kDSERemovalsAfterLandingOnSERP
+              : RemoveActionType::kOtherRemovals);
+      return;
+    }
+  }
+  if (!entry || !is_dse(entry->GetURL())) {
+    base::UmaHistogramEnumeration("Extensions.Tabs.RemoveAction",
+                                  RemoveActionType::kOtherRemovals);
+    return;
+  }
+  bool has_user_activation = HasUserActivation(
+      extension_id, browser_context, calling_render_frame_host,
+      tab_web_contents, extension_function_user_gesture);
+  base::UmaHistogramEnumeration(
+      "Extensions.Tabs.RemoveAction",
+      has_user_activation ? RemoveActionType::kDSERemovalsWithUserGesture
+                          : RemoveActionType::kDSERemovalsWithoutUserGesture);
 }
 
 }  // namespace
@@ -2657,6 +2792,8 @@ bool TabsUpdateFunction::UpdateURL(content::WebContents* web_contents,
     return false;
   }
 
+  CheckDSERedirect(extension()->id(), *browser_context(), render_frame_host(),
+                   *web_contents, *url, user_gesture());
   content::NavigationController::LoadURLParams load_params(*url);
 
   // Treat extension-initiated navigations as renderer-initiated so that the URL
@@ -2988,6 +3125,9 @@ bool TabsRemoveFunction::RemoveTab(int tab_id, std::string* error) {
       !window) {
     return false;
   }
+
+  CheckDSERemoval(extension()->id(), *browser_context(), render_frame_host(),
+                  *contents, user_gesture());
 
   // Don't let the extension remove a tab if the user is dragging tabs around.
   if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
