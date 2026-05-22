@@ -511,4 +511,5 @@ found in the LICENSE file.
 
     <!-- Immersive Playback Confirmation Dialog dimens -->
     <dimen name="immersive_playback_confirmation_dialog_padding">24dp</dimen>
+    <dimen name="immersive_playback_confirmation_dialog_width">256dp</dimen>
 </resources>

@@ -249,6 +249,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Supplier<TabModelSelector> tabModelSelectorSupplier,
                 Supplier<@Nullable CompositorViewHolder> compositorViewHolderSupplier,
                 Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
+                Supplier<SnackbarManager> snackbarManagerSupplier,
                 Supplier<Boolean> headerControlsVisibilitySupplier,
                 Supplier<Boolean> headerAsOverlaySupplier,
                 @Nullable ExclusiveAccessManager exclusiveAccessManager,
@@ -264,6 +265,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                     tabModelSelectorSupplier,
                     compositorViewHolderSupplier,
                     modalDialogManagerSupplier,
+                    snackbarManagerSupplier,
                     exclusiveAccessManager);
             mActivity = activity;
             mActivityType = activityType;
@@ -617,6 +619,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                         mTabModelSelectorSupplier,
                         mCompositorViewHolderSupplier,
                         mModalDialogManagerSupplier,
+                        mSnackbarManager,
                         mHeaderControlsVisibilitySupplier,
                         mHeaderAsOverlaySupplier,
                         mExclusiveAccessManager,

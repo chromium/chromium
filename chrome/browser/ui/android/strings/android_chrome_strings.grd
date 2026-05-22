@@ -7599,42 +7599,33 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Gemini isn’t available in Incognito mode
       </message>
 
-      <!-- Immersive Playback Confirmation Dialog strings -->
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_TITLE" desc="Title of the dialog asking the user to confirm entering immersive playback mode." translateable="false">
-        Immersive Mode
+      <!-- Immersive Playback Confirmation strings -->
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the snackbar asking the user if they want to view the video in immersive mode." translateable="false">
+        View this video in immersive mode?
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_MESSAGE" desc="Message in the dialog asking the user if they want to view the video in immersive mode." translateable="false">
-        Do you want to view this video in immersive mode?
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_STEREO_MODE_LABEL" desc="Label for the stereo mode selection spinner in the immersive playback confirmation dialog." translateable="false">
-        Stereo Mode:
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_PROJECTION_TYPE_LABEL" desc="Label for the projection type selection spinner in the immersive playback confirmation dialog." translateable="false">
-        Projection Type:
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_STEREO_MODE_MONO" desc="Option for mono (non-stereo) mode in the immersive playback confirmation dialog." translateable="false">
-        Mono
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_STEREO_MODE_SIDE_BY_SIDE" desc="Option for side-by-side stereo mode in the immersive playback confirmation dialog." translateable="false">
-        Side by Side
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_STEREO_MODE_TOP_BOTTOM" desc="Option for top-bottom stereo mode in the immersive playback confirmation dialog." translateable="false">
-        Top-Bottom
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_PROJECTION_TYPE_QUAD" desc="Option for quad (flat) projection in the immersive playback confirmation dialog." translateable="false">
-        Quad
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_PROJECTION_TYPE_SPHERE" desc="Option for spherical (360) projection in the immersive playback confirmation dialog." translateable="false">
-        Sphere
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_PROJECTION_TYPE_HEMISPHERE" desc="Option for hemispherical (180) projection in the immersive playback confirmation dialog." translateable="false">
-        Hemisphere
-      </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_CONFIRM" desc="Text for the positive button to confirm entering immersive mode." translateable="false">
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_YES" desc="Text for the positive button in the snackbar to proceed to format selection." translateable="false">
         Yes
       </message>
-      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_DECLINE" desc="Text for the negative button to decline entering immersive mode." translateable="false">
-        No
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_FORMAT_TITLE" desc="Title of the dialog for selecting immersive playback format." translateable="false">
+        Format
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_STANDARD" desc="Option for standard projection in the immersive playback confirmation dialog." translateable="false">
+        Standard
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_STEREO_3D" desc="Option for stereoscopic 3D projection in the immersive playback confirmation dialog." translateable="false">
+        Stereoscopic (3D)
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_VR180" desc="Option for VR 180 projection in the immersive playback confirmation dialog." translateable="false">
+        VR 180
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OPTION_VR360" desc="Option for VR 360 projection in the immersive playback confirmation dialog." translateable="false">
+        VR 360
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_OK" desc="Text for the positive button in the format selection dialog." translateable="false">
+        OK
+      </message>
+      <message name="IDS_IMMERSIVE_PLAYBACK_CONFIRMATION_CANCEL" desc="Text for the negative button in the format selection dialog." translateable="false">
+        Cancel
       </message>
     </messages>
   </release>

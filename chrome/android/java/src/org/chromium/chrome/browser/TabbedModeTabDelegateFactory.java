@@ -166,6 +166,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                 mTabModelSelectorSupplier,
                 mCompositorViewHolderSupplier,
                 (Supplier<@Nullable ModalDialogManager>) mModalDialogManagerSupplier,
+                mSnackbarManagerSupplier,
                 mExclusiveAccessManager);
     }
 

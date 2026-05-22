@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.Context;
-import android.widget.Spinner;
+import android.widget.RadioButton;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -31,21 +31,21 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** Tests for {@link ImmersivePlaybackConfirmationDialog}. */
+/** Tests for {@link ImmersiveVideoFormatSelectionDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class ImmersivePlaybackConfirmationDialogTest {
+public class ImmersiveVideoFormatSelectionDialogTest {
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private ImmersivePlaybackConfirmationDialog.ConfirmationCallback mCallback;
+    @Mock private ImmersivePlaybackConfirmationCallback mCallback;
 
     private Context mContext;
-    private ImmersivePlaybackConfirmationDialog mDialog;
+    private ImmersiveVideoFormatSelectionDialog mDialog;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mContext = Robolectric.buildActivity(Activity.class).get();
-        mDialog = new ImmersivePlaybackConfirmationDialog(mContext, mModalDialogManager, mCallback);
+        mDialog = new ImmersiveVideoFormatSelectionDialog(mContext, mModalDialogManager, mCallback);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class ImmersivePlaybackConfirmationDialogTest {
     }
 
     @Test
-    public void testPositiveButton() {
+    public void testPositiveButton_DefaultSelection() {
         mDialog.show();
 
         ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
@@ -73,34 +73,20 @@ public class ImmersivePlaybackConfirmationDialogTest {
         PropertyModel model = modelCaptor.getValue();
         assertNotNull(model);
 
-        // Obtain internal spinners directly from the exposed dialog instances.
-        Spinner stereoSpinner = mDialog.mStereoSpinner;
-        Spinner projectionSpinner = mDialog.mProjectionSpinner;
-
-        assertNotNull(stereoSpinner);
-        assertNotNull(projectionSpinner);
-
-        // Set the last items dynamically to ensure we're selecting from current capacity
-        int stereoIndex = Math.max(0, stereoSpinner.getCount() - 1);
-        int projectionIndex = Math.max(0, projectionSpinner.getCount() - 1);
-        stereoSpinner.setSelection(stereoIndex);
-        projectionSpinner.setSelection(projectionIndex);
-
-        // Manually trigger dismissal through the controller to simulate ModalDialogManager
-        // lifecycle
+        // Dismiss with positive button click
         model.get(ModalDialogProperties.CONTROLLER)
                 .onDismiss(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
 
-        // Verify results map to class defined constant keys.
+        // Default selected format is Standard (MONO / QUAD)
         verify(mCallback)
                 .onResult(
                         ImmersivePlaybackConfirmationStatus.CONFIRMED,
-                        ImmersivePlaybackConfirmationDialog.STEREO_MODE_KEYS[stereoIndex],
-                        ImmersivePlaybackConfirmationDialog.PROJECTION_TYPE_KEYS[projectionIndex]);
+                        ImmersiveStereoMode.MONO,
+                        ImmersiveProjectionType.QUAD);
     }
 
     @Test
-    public void testNegativeButton() {
+    public void testPositiveButton_ChangeSelection() {
         mDialog.show();
 
         ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
@@ -111,9 +97,38 @@ public class ImmersivePlaybackConfirmationDialogTest {
                         eq(true));
 
         PropertyModel model = modelCaptor.getValue();
+        ImmersiveVideoFormatRadioGroup radioGroup =
+                (ImmersiveVideoFormatRadioGroup) model.get(ModalDialogProperties.CUSTOM_VIEW);
+        assertNotNull(radioGroup);
 
-        // Manually trigger dismissal through the controller to simulate ModalDialogManager
-        // lifecycle
+        // Change selection to the 3rd option (VR180)
+        RadioButton radioButton = (RadioButton) radioGroup.getChildAt(2);
+        radioButton.setChecked(true);
+
+        // Dismiss with positive button click
+        model.get(ModalDialogProperties.CONTROLLER)
+                .onDismiss(model, DialogDismissalCause.POSITIVE_BUTTON_CLICKED);
+
+        // VR180 options are MONO and HEMISPHERE
+        verify(mCallback)
+                .onResult(
+                        ImmersivePlaybackConfirmationStatus.CONFIRMED,
+                        ImmersiveStereoMode.MONO,
+                        ImmersiveProjectionType.HEMISPHERE);
+    }
+
+    @Test
+    public void testNegativeButton_Declined() {
+        mDialog.show();
+
+        ArgumentCaptor<PropertyModel> modelCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(mModalDialogManager)
+                .showDialog(
+                        modelCaptor.capture(),
+                        eq(ModalDialogManager.ModalDialogType.APP),
+                        eq(true));
+
+        PropertyModel model = modelCaptor.getValue();
         model.get(ModalDialogProperties.CONTROLLER)
                 .onDismiss(model, DialogDismissalCause.NEGATIVE_BUTTON_CLICKED);
 
@@ -136,8 +151,6 @@ public class ImmersivePlaybackConfirmationDialogTest {
                         eq(true));
 
         PropertyModel model = modelCaptor.getValue();
-
-        // Cancel dialog
         model.get(ModalDialogProperties.CONTROLLER)
                 .onDismiss(model, DialogDismissalCause.NAVIGATE_BACK_OR_TOUCH_OUTSIDE);
 
@@ -146,14 +159,5 @@ public class ImmersivePlaybackConfirmationDialogTest {
                         ImmersivePlaybackConfirmationStatus.CANCELED,
                         ImmersiveStereoMode.MONO,
                         ImmersiveProjectionType.QUAD);
-    }
-
-    @Test
-    public void testDismiss() {
-        mDialog.show();
-        mDialog.dismiss();
-
-        verify(mModalDialogManager)
-                .dismissDialog(any(), eq(DialogDismissalCause.DISMISSED_BY_NATIVE));
     }
 }

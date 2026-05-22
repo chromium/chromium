@@ -97,6 +97,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
                     mock(Supplier.class),
                     mock(Supplier.class),
                     mock(Supplier.class),
+                    mock(Supplier.class),
                     null);
             mTabModel = tabModel;
             mTabMap = new HashMap<>();
