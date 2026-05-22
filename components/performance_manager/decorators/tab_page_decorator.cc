@@ -31,6 +31,16 @@ class TabPageDecorator::Data
   std::unique_ptr<TabHandle> tab_handle_;
 };
 
+TabPageDecorator::TabHandle::TabHandle(const PageNode* page_node)
+    : page_node_(page_node) {}
+
+TabPageDecorator::TabHandle::~TabHandle() = default;
+
+base::WeakPtr<TabPageDecorator::TabHandle>
+TabPageDecorator::TabHandle::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 TabPageDecorator::TabPageDecorator() = default;
 TabPageDecorator::~TabPageDecorator() = default;
 
@@ -54,6 +64,16 @@ TabPageDecorator::TabHandle* TabPageDecorator::FromPageNode(
   }
 
   return data->tab_handle();
+}
+
+// static
+base::WeakPtr<TabPageDecorator::TabHandle>
+TabPageDecorator::WeakHandleFromPageNode(const PageNode* page_node) {
+  auto* tab_handle = TabPageDecorator::FromPageNode(page_node);
+  if (tab_handle) {
+    return tab_handle->GetWeakPtr();
+  }
+  return nullptr;
 }
 
 void TabPageDecorator::MaybeTabCreated(const PageNode* page_node) {
