@@ -30,6 +30,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/compositor.h"
+#include "ui/display/screen.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -53,6 +54,16 @@ bool IsTabFullscreenType(ExclusiveAccessBubbleType type) {
              EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION ||
          type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION;
 }
+
+#if BUILDFLAG(IS_MAC)
+bool IsFullscreenType(ExclusiveAccessBubbleType type) {
+  return IsTabFullscreenType(type) ||
+         type ==
+             EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION ||
+         type ==
+             EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION;
+}
+#endif
 
 }  // namespace
 
@@ -340,10 +351,21 @@ void ExclusiveAccessBubbleViews::AnimationEnded(
 
 gfx::Rect ExclusiveAccessBubbleViews::GetPopupRect() const {
   gfx::Size size(view_->GetPreferredSize());
-  gfx::Rect widget_bounds = bubble_view_context_->GetClientAreaBoundsInScreen();
+  const gfx::Rect widget_bounds =
+      bubble_view_context_->GetClientAreaBoundsInScreen();
   int x = widget_bounds.x() + (widget_bounds.width() - size.width()) / 2;
 
   int top_container_bottom = widget_bounds.y();
+#if BUILDFLAG(IS_MAC)
+  if (IsFullscreenType(params_.type)) {
+    // In macOS fullscreen, AppKit can move the window and content rects when
+    // the fullscreen toolbar is revealed. Keep the exit bubble anchored to the
+    // fullscreen display's top edge, while preserving the window bounds for
+    // horizontal placement.
+    top_container_bottom =
+        display::Screen::Get()->GetDisplayMatching(widget_bounds).bounds().y();
+  }
+#endif
 #if BUILDFLAG(IS_CHROMEOS)
   if (bubble_view_context_->IsImmersiveModeEnabled()) {
     // Skip querying the top container height in CrOS non-immersive fullscreen
