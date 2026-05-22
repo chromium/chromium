@@ -26,8 +26,12 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ntp.NewTabPage;
+import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -173,6 +177,65 @@ public class TabThemeTest {
         themeColorHelper.waitForCallback(curCallCount, 1);
         assertColorsEqual(THEME_COLOR, colorObserver.getColor());
         assertColorsEqual(THEME_COLOR, getThemeColor());
+    }
+
+    @Test
+    @Feature({"Toolbar-Theme-Color"})
+    @MediumTest
+    @Restriction(DeviceFormFactor.PHONE)
+    public void testThemeColorSerializationOnWebUI() throws ExecutionException, TimeoutException {
+        EmbeddedTestServer testServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
+
+        final Tab tab = mActivityTestRule.getActivityTab();
+
+        CallbackHelper initialResetHelper = new CallbackHelper();
+        CallbackHelper themeColorHelper = new CallbackHelper();
+        TabObserver observer =
+                new EmptyTabObserver() {
+                    @Override
+                    public void onDidChangeThemeColor(Tab tab, int color) {
+                        if (color == TabState.UNSPECIFIED_THEME_COLOR) {
+                            initialResetHelper.notifyCalled();
+                        } else if (color == THEME_COLOR) {
+                            themeColorHelper.notifyCalled();
+                        }
+                    }
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(observer));
+
+        try {
+            // 0. Ensure we start from a clean unspecified theme color.
+            // If a previous test case left the color as red, wait for the about:blank paint
+            // to reset it to UNSPECIFIED_THEME_COLOR (0).
+            int curCallCount = initialResetHelper.getCallCount();
+            int initialColor = ThreadUtils.runOnUiThreadBlocking(() -> tab.getThemeColor());
+            if (initialColor != TabState.UNSPECIFIED_THEME_COLOR) {
+                initialResetHelper.waitForCallback(curCallCount, 1);
+            }
+            int tabColorAfterReset = ThreadUtils.runOnUiThreadBlocking(() -> tab.getThemeColor());
+            assertColorsEqual(TabState.UNSPECIFIED_THEME_COLOR, tabColorAfterReset);
+
+            // 1. Navigate to a themed page and wait for the Tab theme color to update to red.
+            curCallCount = themeColorHelper.getCallCount();
+            mActivityTestRule.loadUrl(testServer.getURL(THEMED_TEST_PAGE));
+            themeColorHelper.waitForCallback(curCallCount, 1);
+
+            int tabColor = ThreadUtils.runOnUiThreadBlocking(() -> tab.getThemeColor());
+            assertColorsEqual(THEME_COLOR, tabColor);
+
+            // 2. Navigate to a WebUI page (e.g. chrome://version) which is unthemed.
+            mActivityTestRule.loadUrl("chrome://version/");
+
+            // 3. Extract TabState immediately. It should extract UNSPECIFIED_THEME_COLOR
+            // rather than leaking the themed page's color, even if the paint hasn't completed.
+            TabState state = ThreadUtils.runOnUiThreadBlocking(() -> TabStateExtractor.from(tab));
+            assertColorsEqual(TabState.UNSPECIFIED_THEME_COLOR, state.themeColor);
+        } finally {
+            ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(observer));
+        }
     }
 
     @Test
