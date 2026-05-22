@@ -2877,6 +2877,14 @@ class WebUIPinnedToolbarActionsBrowserTest
       SetPinnableProperty(mapping.first, true);
     }
     model_ = PinnedToolbarActionsModel::Get(browser()->profile());
+    WebUIToolbarWebView* webui_toolbar_view = GetWebUIToolbarWebView(browser());
+    // cast to get to the non-const variant.
+    static_cast<views::View*>(webui_toolbar_view)
+        ->GetColorProvider()
+        ->SetColorForTesting(ui::kColorIcon, SK_ColorYELLOW);
+    static_cast<views::View*>(webui_toolbar_view)
+        ->GetColorProvider()
+        ->SetColorForTesting(ui::kColorMenuIcon, SK_ColorMAGENTA);
   }
 
   void TearDownOnMainThread() override {
@@ -3205,9 +3213,12 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest, RouteMediaIcons) {
               EvalJsOnPinnedButton(
                   web_contents, mojom_action,
                   "return btn?.getAttribute('iron-icon') || '(null)'"));
-    EXPECT_EQ("(null)", EvalJsOnPinnedButton(
-                            web_contents, mojom_action,
-                            "return btn?.getAttribute('style') || '(null)'"));
+
+    // And the color.
+    EXPECT_EQ(
+        "--cr-icon-button-fill-color: rgba(255, 0, 255, 1.00);",
+        EvalJsOnPinnedButton(web_contents, mojom_action,
+                             "return btn?.getAttribute('style') || '(null)'"));
 
     UnpinAction(kActionRouteMedia, mojom_action);
   }
@@ -3233,7 +3244,8 @@ IN_PROC_BROWSER_TEST_F(WebUIPinnedToolbarActionsBrowserTest,
                               kShowPasswordsBubbleOrPage,
                           "return btn?.getAttribute('iron-icon') || '(null)'"));
   EXPECT_EQ(
-      "--cr-icon-image: url(rhs_icons/password_manager.svg)",
+      "--cr-icon-image: url(rhs_icons/password_manager.svg);"
+      "--cr-icon-button-fill-color: rgba(255, 255, 0, 1.00);",
       EvalJsOnPinnedButton(web_contents,
                            toolbar_ui_api::mojom::PinnedToolbarAction::
                                kShowPasswordsBubbleOrPage,

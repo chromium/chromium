@@ -59,9 +59,8 @@ class IconTable {
   // (see KnownIcons() in .cc). Returns a null IconHandle if it doesn't
   // recognize it.
   //
-  // If set, `model_info` will be used to help out reuse.
-  //
-  // It's the WebUI side's responsibility to set the appropriate pen color.
+  // If set, `model_info` will be checked to see if the ImageModel configures
+  // a color, and to help out reuse.
   toolbar_ui_api::IconHandle RegisterVectorIcon(
       const gfx::VectorIcon& icon,
       std::optional<ui::ImageModel> model_info = std::nullopt);
@@ -71,9 +70,6 @@ class IconTable {
   // the icon changes, as it can be expensive. Note that models with vector
   // icons that could be handled if they were registered will trigger a
   // DHECK failure.
-  //
-  // Note that for the vector icons, the responsibility is on WebUI side to
-  // configure colors.
   toolbar_ui_api::IconHandle RegisterImageModel(ui::ImageModel icon);
 
   // Like RegisterImageModel, but checks to see if `previous_handle`

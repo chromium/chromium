@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "skia/ext/skia_utils_base.h"
 
 MockToolbarUIObserver::MockToolbarUIObserver() = default;
 MockToolbarUIObserver::~MockToolbarUIObserver() = default;
@@ -73,7 +74,11 @@ std::ostream& operator<<(
   return out << "{handle_id: " << icon_update->handle_id
              << ", icon_url_or_name: "
              << icon_update->icon_url_or_name.value_or(std::string("(nullopt)"))
-             << ", icon_type: " << icon_update->icon_type << "}";
+             << ", icon_type: " << icon_update->icon_type << ", color: "
+             << (icon_update->color.has_value()
+                     ? skia::SkColorToHexString(*icon_update->color)
+                     : std::string("(nullopt)"))
+             << "}";
 }
 
 }  // namespace mojo

@@ -321,6 +321,12 @@ void WebUIToolbarWebView::AddedToWidget() {
 void WebUIToolbarWebView::OnThemeChanged() {
   views::View::OnThemeChanged();
   avatar_control_.UpdateIcon();
+  if (location_bar_) {
+    location_bar_->OnThemeChanged();
+  }
+  if (features::IsWebUIPinnedToolbarActionsEnabled()) {
+    pinned_toolbar_actions_.OnThemeChanged();
+  }
 }
 
 gfx::Size WebUIToolbarWebView::CalculatePreferredSize(

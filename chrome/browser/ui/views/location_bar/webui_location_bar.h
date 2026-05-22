@@ -48,6 +48,7 @@ class WebUILocationBar : public LocationBar,
       toolbar_ui_api::mojom::OmniboxViewStatePtr update) override;
 
   // Called from WebUIToolbarWebView:
+  void OnThemeChanged();
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnOmniboxAction(
       toolbar_ui_api::mojom::OmniboxActionPtr action);
 

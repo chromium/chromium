@@ -271,12 +271,12 @@ TEST_F(ToolbarUIServiceTest, TestInvokePinnedToolbarAction) {
 }
 
 TEST_F(ToolbarUIServiceTest, IconUpdates) {
-  auto icon1 =
-      mojom::IconUpdate::New(1u, "a.png", mojom::IconType::kFullColorUrl);
-  auto icon2 =
-      mojom::IconUpdate::New(2u, "icon-set:puppy", mojom::IconType::kIconSet);
-  auto icon3 =
-      mojom::IconUpdate::New(3u, "icon-set:kitten", mojom::IconType::kIconSet);
+  auto icon1 = mojom::IconUpdate::New(
+      1u, "a.png", mojom::IconType::kFullColorUrl, /*color=*/std::nullopt);
+  auto icon2 = mojom::IconUpdate::New(
+      2u, "icon-set:puppy", mojom::IconType::kIconSet, /*color=*/std::nullopt);
+  auto icon3 = mojom::IconUpdate::New(
+      3u, "icon-set:kitten", mojom::IconType::kIconSet, /*color=*/std::nullopt);
 
   fake_icon_table()->AddUpdate(icon1.Clone());
   PushNavigationControlsStateUpdate();
@@ -309,12 +309,12 @@ TEST_F(ToolbarUIServiceTest, IconUpdates) {
 
 // Test with a second observer joining in between updates.
 TEST_F(ToolbarUIServiceTest, IconUpdates2) {
-  auto icon1 =
-      mojom::IconUpdate::New(1u, "a.png", mojom::IconType::kFullColorUrl);
-  auto icon2 =
-      mojom::IconUpdate::New(2u, "icon-set:puppy", mojom::IconType::kIconSet);
-  auto icon3 =
-      mojom::IconUpdate::New(3u, "icon-set:kitten", mojom::IconType::kIconSet);
+  auto icon1 = mojom::IconUpdate::New(
+      1u, "a.png", mojom::IconType::kFullColorUrl, /*color=*/std::nullopt);
+  auto icon2 = mojom::IconUpdate::New(
+      2u, "icon-set:puppy", mojom::IconType::kIconSet, /*color=*/std::nullopt);
+  auto icon3 = mojom::IconUpdate::New(
+      3u, "icon-set:kitten", mojom::IconType::kIconSet, /*color=*/std::nullopt);
 
   fake_icon_table()->AddUpdate(icon1.Clone());
   PushNavigationControlsStateUpdate();
@@ -351,8 +351,8 @@ TEST_F(ToolbarUIServiceTest, IconUpdates2) {
 
 // Test for icon updates before connect.
 TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect) {
-  auto icon1 =
-      mojom::IconUpdate::New(1u, "a.png", mojom::IconType::kFullColorUrl);
+  auto icon1 = mojom::IconUpdate::New(
+      1u, "a.png", mojom::IconType::kFullColorUrl, /*color=*/std::nullopt);
 
   fake_icon_table()->AddUpdate(icon1.Clone());
 
@@ -374,8 +374,8 @@ TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect) {
 // Test for icon updates before connect. Variant where no push attempt
 // was made.
 TEST_F(ToolbarUIServiceNoInitialObserverTest, IconUpdatesBeforeConnect2) {
-  auto icon1 =
-      mojom::IconUpdate::New(1u, "a.png", mojom::IconType::kFullColorUrl);
+  auto icon1 = mojom::IconUpdate::New(
+      1u, "a.png", mojom::IconType::kFullColorUrl, /*color=*/std::nullopt);
 
   fake_icon_table()->AddUpdate(icon1.Clone());
 

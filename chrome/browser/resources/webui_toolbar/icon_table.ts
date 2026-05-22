@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {skColorToRgba} from '//resources/js/color_utils.js';
+import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+
 import type {IconHandle, IconUpdate} from './toolbar_ui_api_data_model.mojom-webui.js';
 import {IconType} from './toolbar_ui_api_data_model.mojom-webui.js';
 
 export interface IconInfo {
   urlOrName: string;
   type: IconType;
+  color: SkColor|null;
 }
 
 export class IconTable {
@@ -31,6 +35,8 @@ export class IconTable {
     type:
             // Make it a mask URL so it can work with cr-icon-button.
         IconType.kMaskUrl,
+
+    color: null,
   };
 
   constructor() {
@@ -44,6 +50,7 @@ export class IconTable {
         this.icons_.set(update.handleId, {
           urlOrName: update.iconUrlOrName,
           type: update.iconType,
+          color: update.color,
         });
       } else {
         this.icons_.delete(update.handleId);
@@ -65,6 +72,14 @@ export class IconTable {
     return maybeIcon && maybeIcon.type === IconType.kMaskUrl ?
         maybeIcon.urlOrName :
         undefined;
+  }
+
+  // If the icon with given handle has been registered with a pen color,
+  // returns it in CSS syntax.
+  getIconColor(handle: IconHandle): string|undefined {
+    const maybeIcon = this.icons_.get(handle.handleId);
+    return maybeIcon && maybeIcon.color ? skColorToRgba(maybeIcon.color) :
+                                          undefined;
   }
 
   // If the icon with given handle has been registered as being a name in

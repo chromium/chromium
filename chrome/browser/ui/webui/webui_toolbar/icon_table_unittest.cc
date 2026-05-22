@@ -27,6 +27,8 @@ class IconTableTest : public testing::Test, public IconTable::Delegate {
  public:
   IconTableTest() : icon_table_(this) {
     icon_table_.PermitFallbackVectorRasterizationForTesting();
+    color_provider_.SetColorForTesting(ui::kColorIcon, SK_ColorBLUE);
+    color_provider_.SetColorForTesting(ui::kColorMenuIcon, SK_ColorGREEN);
   }
 
   // IconTable::Delegate:
@@ -54,7 +56,8 @@ TEST_F(IconTableTest, BasicOperation) {
   ASSERT_FALSE(i1.is_null());
 
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
+      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      /*color=*/std::nullopt);
 
   // Binding i1 in both full state and pending updates.
   EXPECT_THAT(
@@ -75,7 +78,7 @@ TEST_F(IconTableTest, BasicOperation) {
   // Release i1, bind i2.
   i1 = toolbar_ui_api::IconHandle();
   auto expected_delete_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, std::nullopt, IconType::kMaskUrl);
+      1u, std::nullopt, IconType::kMaskUrl, /*color=*/std::nullopt);
 
   toolbar_ui_api::IconHandle i2 = icon_table_.RegisterVectorIcon(
       vector_icons::kHistoryChromeRefreshOldIcon);
@@ -83,7 +86,7 @@ TEST_F(IconTableTest, BasicOperation) {
 
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
       2u, "pinned-toolbar-action:SidePanelShowHistoryCluster",
-      IconType::kIconSet);
+      IconType::kIconSet, /*color=*/std::nullopt);
 
   // Updates has delete of i1, and addition of i2; full state just i2.
   EXPECT_THAT(icon_table_.TakePendingUpdates(),
@@ -100,8 +103,8 @@ TEST_F(IconTableTest, BasicOperation) {
   ASSERT_FALSE(i3.is_null());
 
   auto expected_i3 = toolbar_ui_api::mojom::IconUpdate::New(
-      3u, "pinned-toolbar-action:SidePanelShowReadAnything",
-      IconType::kIconSet);
+      3u, "pinned-toolbar-action:SidePanelShowReadAnything", IconType::kIconSet,
+      /*color=*/std::nullopt);
 
   // Update has addition of i3; full state i2 + i3.
   EXPECT_THAT(
@@ -123,7 +126,8 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
       icon_table->RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
   ASSERT_FALSE(i1.is_null());
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
+      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      /*color=*/std::nullopt);
 
   // Binding i1 in both full state and pending updates.
   EXPECT_THAT(
@@ -140,7 +144,7 @@ TEST_F(IconTableTest, MakeIconTableFetcher) {
 
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
       2u, "pinned-toolbar-action:SidePanelShowHistoryCluster",
-      IconType::kIconSet);
+      IconType::kIconSet, /*color=*/std::nullopt);
 
   // Pending has i2, full state has both.
   EXPECT_THAT(
@@ -173,8 +177,10 @@ TEST_F(IconTableTest, RegisterImageModel) {
   toolbar_ui_api::IconHandle i2 = icon_table_.RegisterImageModel(
       ui::ImageModel::FromVectorIcon(vector_icons::kPasswordManagerOldIcon));
   ASSERT_FALSE(i2.is_null());
+  // kColorMenuIcon is default, and we set it to green.
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
+      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      /*color=*/SK_ColorGREEN);
 
   EXPECT_THAT(
       icon_table_.GetFullState(),
@@ -187,7 +193,7 @@ TEST_F(IconTableTest, RegisterColorUrl) {
   ASSERT_FALSE(i1.is_null());
 
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rainbow.png", IconType::kFullColorUrl);
+      1u, "rainbow.png", IconType::kFullColorUrl, /*color=*/std::nullopt);
 
   EXPECT_THAT(
       icon_table_.GetFullState(),
@@ -206,7 +212,8 @@ TEST_F(IconTableTest, RegisterImageModelTryReuse) {
       toolbar_ui_api::IconHandle());
   ASSERT_FALSE(i1.is_null());
   auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
-      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
+      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      /*color=*/SK_ColorGREEN);
 
   // Now try to create the same one.
   toolbar_ui_api::IconHandle i2 = icon_table_.RegisterImageModelTryReuse(
@@ -248,7 +255,8 @@ TEST_F(IconTableTest, ScaleFactorChange) {
       icon_table_.RegisterVectorIcon(vector_icons::kPasswordManagerOldIcon);
   ASSERT_FALSE(i2.is_null());
   auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
-      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl);
+      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      /*color=*/std::nullopt);
 
   EXPECT_THAT(
       icon_table_.TakePendingUpdates(),
@@ -271,6 +279,29 @@ TEST_F(IconTableTest, ScaleFactorChange) {
   EXPECT_THAT(icon_table_.TakePendingUpdates(),
               testing::UnorderedElementsAre(MatchesBitmapIconUpdate(1u),
                                             MatchesBitmapIconUpdate(3u)));
+}
+
+TEST_F(IconTableTest, Colors) {
+  toolbar_ui_api::IconHandle i1 =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
+          vector_icons::kPasswordManagerOldIcon, ui::kColorIcon));
+  ASSERT_FALSE(i1.is_null());
+  auto expected_i1 = toolbar_ui_api::mojom::IconUpdate::New(
+      1u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      /*color=*/SK_ColorBLUE);
+
+  toolbar_ui_api::IconHandle i2 =
+      icon_table_.RegisterImageModel(ui::ImageModel::FromVectorIcon(
+          vector_icons::kPasswordManagerOldIcon, ui::kColorMenuIcon));
+  ASSERT_FALSE(i2.is_null());
+  auto expected_i2 = toolbar_ui_api::mojom::IconUpdate::New(
+      2u, "rhs_icons/password_manager.svg", IconType::kMaskUrl,
+      /*color=*/SK_ColorGREEN);
+
+  EXPECT_THAT(
+      icon_table_.GetFullState(),
+      testing::UnorderedElementsAre(MatchesIconUpdate(std::ref(expected_i1)),
+                                    MatchesIconUpdate(std::ref(expected_i2))));
 }
 
 }  // namespace

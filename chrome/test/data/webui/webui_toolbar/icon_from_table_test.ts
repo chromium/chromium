@@ -32,16 +32,19 @@ suite('IconFromTableTest', function() {
         handleId: 1n,
         iconUrlOrName: 'cr:schedule',
         iconType: IconType.kIconSet,
+        color: null,
       },
       {
         handleId: 2n,
         iconUrlOrName: 'puppy.svg',
         iconType: IconType.kMaskUrl,
+        color: null,
       },
       {
         handleId: 3n,
         iconUrlOrName: 'parrot.png',
         iconType: IconType.kFullColorUrl,
+        color: null,
       },
     ]);
 
@@ -96,6 +99,53 @@ suite('IconFromTableTest', function() {
       assertEquals(
           'url("chrome://webui-toolbar.top-chrome/parrot.png")',
           style.get('background-image')?.toString());
+    }
+  });
+
+  test('Rendering icon colors', async function() {
+    iconTable.applyUpdates([
+      {
+        handleId: 1n,
+        iconUrlOrName: 'cr:schedule',
+        iconType: IconType.kIconSet,
+        color: {value: 0xFF0000FF},
+      },
+      {
+        handleId: 2n,
+        iconUrlOrName: 'puppy.svg',
+        iconType: IconType.kMaskUrl,
+        color: {value: 0x80FF0000},
+      },
+    ]);
+
+    iconFromTable.style.setProperty('--icon-size', '32px');
+
+    {
+      iconFromTable.iconHandle = {
+        handleId: 1n,
+      };
+      await microtasksFinished();
+
+      const renderer =
+          iconFromTable.shadowRoot.querySelector<CrIconElement>('cr-icon');
+      assertTrue(!!renderer);
+      const style = renderer.computedStyleMap();
+      assertEquals(
+          'rgba(0, 0, 255, 1.0)',
+          style.get('--cr-icon-button-fill-color')?.toString());
+    }
+
+    {
+      iconFromTable.iconHandle = {
+        handleId: 2n,
+      };
+      await microtasksFinished();
+
+      const renderer =
+          iconFromTable.shadowRoot.querySelector('#maskIconContainer');
+      assertTrue(!!renderer);
+      const style = renderer.computedStyleMap();
+      assertEquals('rgba(255, 0, 0, 0.5)', style.get('color')?.toString());
     }
   });
 });

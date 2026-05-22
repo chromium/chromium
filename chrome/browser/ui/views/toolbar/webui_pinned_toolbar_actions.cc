@@ -63,6 +63,10 @@ void WebUIPinnedToolbarActions::Init() {
   OnActionsChanged();
 }
 
+void WebUIPinnedToolbarActions::OnThemeChanged() {
+  OnActionsChanged();
+}
+
 void WebUIPinnedToolbarActions::OnActionsChanged() {
   std::vector<toolbar_ui_api::mojom::PinnedToolbarActionStatePtr> states;
   base::flat_set<actions::ActionId> processed_actions;

@@ -8,6 +8,7 @@ import "components/browser_apis/browser_controls/browser_controls_api_data_model
 import "components/content_settings/core/common/content_settings_types.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "ui/gfx/range/mojom/range.mojom";
 
 // A reference to a separately uploaded icon. See IconHandle in icon_handle.h
@@ -39,6 +40,9 @@ struct IconUpdate {
   //                that's not controlled by pen colors.
   string? icon_url_or_name;
   IconType icon_type;
+
+  // Color to apply to vector icons.
+  skia.mojom.SkColor? color;
 };
 
 // The context menu types that can be opened with ToolbarUIService's

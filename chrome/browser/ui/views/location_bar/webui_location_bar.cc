@@ -121,6 +121,14 @@ void WebUILocationBar::PropagateOmniboxUpdate(
   toolbar_delegate_->OnOmniboxViewStateChanged(std::move(omnibox_state));
 }
 
+void WebUILocationBar::OnThemeChanged() {
+  if (!is_initialized_) {
+    return;
+  }
+  // Location icon cares about color scheme.
+  UpdateLhsChipsState();
+}
+
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUILocationBar::OnOmniboxAction(
     toolbar_ui_api::mojom::OmniboxActionPtr action) {

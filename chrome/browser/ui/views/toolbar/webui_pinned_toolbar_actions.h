@@ -56,6 +56,7 @@ class WebUIPinnedToolbarActions : public PinnedToolbarActions,
   void UpdatePinnedStateAndAnnounce(actions::ActionId id, bool pin) override;
 
   void Init();
+  void OnThemeChanged();
 
   // Handle a context menu request from WebUI.
   void HandleContextMenu(toolbar_ui_api::mojom::ContextMenuType menu_type,

@@ -95,10 +95,16 @@ export class PinnedToolbarActionElement extends CrLitElement {
 
   protected getIconStyle_(): string|undefined {
     const providedIconUrl = this.iconTable_.getIconMaskUrl(this.state.icon);
+    const providedIconColor = this.iconTable_.getIconColor(this.state.icon);
+    let style = '';
+
     if (providedIconUrl) {
-      return `--cr-icon-image: url(${providedIconUrl})`;
+      style += `--cr-icon-image: url(${providedIconUrl});`;
     }
-    return undefined;
+    if (providedIconColor) {
+      style += `--cr-icon-button-fill-color: ${providedIconColor};`;
+    }
+    return style.length > 0 ? style : undefined;
   }
 
   protected onActionClick_() {

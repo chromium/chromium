@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {IconFromTableElement} from './icon_from_table.js';
 import {IconType} from './toolbar_ui_api_data_model.mojom-webui.js';
@@ -10,7 +10,7 @@ import {IconType} from './toolbar_ui_api_data_model.mojom-webui.js';
 export function getHtml(this: IconFromTableElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
-<div id="container">
+<div id="container" style="${this.getIconColorCss_() ?? nothing}">
   ${this.iconInfo_.type === IconType.kIconSet ?
       html`<cr-icon .icon="${this.iconInfo_.urlOrName}"></cr-icon>` :
     this.iconInfo_.type === IconType.kMaskUrl ?

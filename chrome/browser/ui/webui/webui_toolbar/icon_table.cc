@@ -223,6 +223,7 @@ class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
   void Detach() { icon_table_ = nullptr; }
 
   toolbar_ui_api::mojom::IconUpdatePtr ToMojom(float scale_factor) {
+    std::optional<SkColor> color;
     if (need_rasterize_) {
       // The downside of lazy rasterization like this is that a lot may
       // happen at once; but it will also not be done until it's needed and
@@ -232,10 +233,13 @@ class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
             image_model_->Rasterize(icon_table_->delegate_->GetColorProvider()),
             scale_factor);
       }
+    } else if (image_model_ && image_model_->IsVectorIcon()) {
+      ui::ColorVariant color_variant = image_model_->GetVectorIcon().color();
+      color = color_variant.ResolveToSkColor(
+          icon_table_->delegate_->GetColorProvider());
     }
-
-    return toolbar_ui_api::mojom::IconUpdate::New(handle_id_.value(),
-                                                  name_or_url_, icon_type_);
+    return toolbar_ui_api::mojom::IconUpdate::New(
+        handle_id_.value(), name_or_url_, icon_type_, color);
   }
 
   const std::optional<ui::ImageModel>& MaybeImageModel() {
@@ -390,7 +394,8 @@ IconTable::TakePendingUpdates() {
       // The icon got deleted on the C++ end since last update; let the JS end
       // know it can free up memory, too.
       updates.push_back(toolbar_ui_api::mojom::IconUpdate::New(
-          id.value(), std::nullopt, IconType::kMaskUrl));
+          id.value(), std::nullopt, IconType::kMaskUrl,
+          /*color=*/std::nullopt));
     }
   }
 
