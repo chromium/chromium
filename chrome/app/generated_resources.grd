@@ -18097,9 +18097,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_PIN_ENTRY_ERROR_FAILED" desc="Error message. Displayed when the user attempts to enter the PIN code for their security key (an external physical device for user authentication), but the entered PIN is incorrect.">
         Incorrect PIN
       </message>
-      <message name="IDS_WEBAUTHN_PIN_SETUP_ERROR_FAILED" desc="Error message. Displayed when the user attempts to set up a PIN code for their security key (an external physical device for user authentication), and but the entered PIN contains invalid characters.">
-        PIN contains invalid characters
-      </message>
       <message name="IDS_WEBAUTHN_PIN_TAP_AGAIN_DESCRIPTION" desc="Description of a dialog shown after the user first activated their security key (an external physical device for user authentication) and provided the PIN for it.">
         Touch your security key again to complete the request.
       </message>
@@ -18117,9 +18114,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_PIN_ENTRY_ERROR_SAME_AS_CURRENT" desc="Error message. Displayed when the user attempts to set a new PIN code for their security key (an external physical device for user authentication), and the new PIN is the same as the currently set PIN.">
         Create a new PIN that's different from your current PIN
-      </message>
-      <message name="IDS_WEBAUTHN_USE_PHONE_WITH_NAME" desc="Text that appears on a button to save or use a passkey on the user's phone. It identifies the phone by name.">
-        Use <ph name="DEVICE_NAME">$1<ex>Ted's Pixel 6 Pro</ex></ph>
       </message>
 
       <!-- WebAuthn authenticator internal user verification -->
@@ -18193,12 +18187,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CREATE_PASSKEY_CHOOSE_DEVICE_TITLE" desc="The title of a dialog prompting the user to create a passkey for signing into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
         Choose where to save your passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
-      <message name="IDS_WEBAUTHN_USE_PASSKEY_CHOOSE_DEVICE_TITLE" desc="The title of a dialog prompting the user to use a passkey for signing into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Use your passkey
-      </message>
-      <message name="IDS_WEBAUTHN_USE_PASSKEY_CHOOSE_DEVICE_BODY" desc="The body of a dialog prompting the user to use a passkey for signing into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Choose which device has the passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
-      </message>
       <message name="IDS_WEBAUTHN_USE_PASSKEY_TITLE" desc="The title of a dialog prompting the user to use a passkey for signing into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
          Use a saved passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
@@ -18208,29 +18196,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CHOOSE_PASSKEY_BODY" desc="The body of a dialog prompting the user to choose a passkey from a list to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
         Which passkey do you want to use for <ph name="APP_NAME">$1<ex>example.com</ex></ph>?
       </message>
-      <message name="IDS_WEBAUTHN_CREATE_PASSKEY_QR_TITLE" desc="The title of a dialog prompting the user to create a passkey to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Create a passkey on a phone or tablet
-      </message>
-      <message name="IDS_WEBAUTHN_CREATE_PASSKEY_QR_BODY" desc="The body of a dialog prompting the user to create a passkey to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Scan this QR code with a camera on the device where you want to create a passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
-      </message>
-      <message name="IDS_WEBAUTHN_USE_PASSKEY_QR_TITLE" desc="The title of a dialog prompting the user to use a passkey to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Use a passkey from another device?
-      </message>
-      <message name="IDS_WEBAUTHN_USE_PASSKEY_QR_BODY" desc="The body of a dialog prompting the user to use a passkey to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Scan this QR code with the device that has the passkey you want to use for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
-      </message>
       <message name="IDS_WEBAUTHN_QR_CODE_ALT_TEXT" desc="Alt text for an image depicting a QR code. This will be read by screen readers to help blind and low vision users scan a QR code.">
         QR code
       </message>
       <message name="IDS_WEBAUTHN_USE_A_DIFFERENT_PASSKEY" desc="Label on a secondary button on a dialog for creating or using a passkey to sign into a website. Clicking this button will show a menu that lets the user pick a different passkey or device (such as a phone or hardware security key) to sign in. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
          Use a different passkey
-      </message>
-      <message name="IDS_WEBAUTHN_QR_CREATE_PASSKEY_ON_SECURITY_KEY_LABEL" desc="Label on a modal dialog with a QR code. The label indicates to the user that instead of scanning the QR code with a phone, they can insert and activate a security key to create a passkey instead. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         If you want to create a passkey for <ph name="APP_NAME">$1<ex>google.com</ex></ph> on a USB security key, insert and touch it now
-      </message>
-      <message name="IDS_WEBAUTHN_QR_USE_PASSKEY_ON_SECURITY_KEY_LABEL" desc="Label on a modal dialog with a QR code. The label indicates to the user that instead of scanning the QR code with a phone, they can insert and activate a security key to sign in with a passkey instead. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         If your passkey for <ph name="APP_NAME">$1<ex>google.com</ex></ph> is on a USB security key, insert and touch it now
       </message>
 
       <!-- Multi source passkey picker -->
@@ -18239,9 +18209,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
       <message name="IDS_WEBAUTHN_THIS_DEVICE_LABEL" desc="The label for a list of passkeys the user can choose from the device they are using.">
         On this device
-      </message>
-      <message name="IDS_WEBAUTHN_FROM_PHONE_LABEL" desc="The label for a list of passkeys the user can choose from a phone they own.">
-        From "<ph name="PHONE_NAME">$1<ex>Pixel 7</ex></ph>"
       </message>
       <message name="IDS_WEBAUTHN_OTHER_DEVICES_LABEL" desc="The label for a list of passkeys and their sources the user can choose from devices other than the one they are using. The list includes both passkeys (e.g. 'Juan Perez | Passkey from Pixel 7') and devices that may have passkeys (e.g. 'USB Security Key').">
         On other devices
@@ -18289,9 +18256,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <!-- WebAuthn GPM desktop passkeys -->
       <message name="IDS_WEBAUTHN_CREATE" desc="Text link that appears on a button to create a passkey.">
         Create
-      </message>
-      <message name="IDS_WEBAUTHN_CREATE_PASSKEY" desc="Text link that appears on a button to create a passkey. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-        Create passkey
       </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE" desc="This string appears in a dialog users see after they choose to create a sign-in method called a passkey on a website. 'To sign in to' means to sign in to the site or app they are creating a passkey for. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
         Create a passkey to sign in to <ph name="APP_NAME">$1<ex>example.com</ex></ph>?
@@ -18353,29 +18317,14 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_GPM_CREATE_ALPHANUMERIC_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield during creation of an alphanumeric pin.">
         Create an alphanumeric recovery PIN for Google Password Manager
       </message>
-      <message name="IDS_WEBAUTHN_GPM_CREATE_SIX_DIGIT_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield during creation of a 6-digit pin.">
-        Create a 6-digit recovery PIN for Google Password Manager
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_CREATE_SIX_DIGIT_PIN_ACCESSIBILITY_WITH_FOCUSED_DIGIT" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield during creation of a 6-digit pin, additionally informing which digit needs to be typed.">
-        Create a 6-digit recovery PIN for Google Password Manager, PIN digit <ph name="NUM_DIGIT">$1<ex>3</ex></ph> of 6
-      </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_DESC" desc="The description of a dialog that is shown when a user is creating a Google Password Manager PIN explaining that it will be used to access their passkeys on all devices. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         This helps you access your saved passkeys on any device
       </message>
       <message name="IDS_WEBAUTHN_GPM_ENTER_PIN_TITLE" desc="The title of a dialog that is shown when a user has to verify their presence in passkey creation / sign-in flows by using their Google Password Manager PIN.">
         Enter your PIN
       </message>
-      <message name="IDS_WEBAUTHN_GPM_ENTER_ALPHANUMERIC_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering an alphanumeric pin for user verification.">
-        Enter your alphanumeric PIN for Google Password Manager
-      </message>
       <message name="IDS_WEBAUTHN_GPM_ENTER_ALPHANUMERIC_PIN_ACCESSIBILITY_WITH_WEBSITE" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering an alphanumeric pin for user verification, additionally informing about the reason for user verification.">
         <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you. Enter your alphanumeric PIN for Google Password Manager
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_ENTER_SIX_DIGIT_PIN_ACCESSIBILITY" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering a 6-digit pin for user verification.">
-        Enter your 6-digit PIN for Google Password Manager
-      </message>
-      <message name="IDS_WEBAUTHN_GPM_ENTER_SIX_DIGIT_PIN_ACCESSIBILITY_WITH_FOCUSED_DIGIT" desc="The accessibility label that is announced by a screen reader when a focus lands on a Google Password Manager PIN textfield when entering a 6-digit pin for user verification, additionally informing about the reason for user verification and which digit needs to be typed.">
-        <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you. Enter your 6-digit PIN for Google Password Manager, PIN digit <ph name="NUM_DIGIT">$2<ex>3</ex></ph> of 6
       </message>
       <message name="IDS_WEBAUTHN_GPM_ENTER_PIN_DESC" desc="The description of a dialog that is shown when a user is verifying their presence in passkey creation / sign-in flows explaining that the website requires that.">
         <ph name="SITE">$1<ex>example.com</ex></ph> wants to verify it's you
