@@ -55,8 +55,6 @@ class TestPersonalDataManager : public PersonalDataManager {
 
   // Unique to TestPersonalDataManager:
   void SetPrefService(PrefService* pref_service);
-
-  using PersonalDataManager::GetWeakPtr;
 };
 
 }  // namespace autofill

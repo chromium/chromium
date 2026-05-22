@@ -27,6 +27,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
@@ -395,6 +396,28 @@ TEST_F(PaymentsDataManagerTest, OnPaymentsDataLoaded) {
   // are loaded from the WebDatabase.
   payments_data_manager().Refresh();
   WaitForOnPaymentsDataChanged();
+}
+
+// Verifies that `AddCallbackAfterRefreshCompleted` immediately triggers
+// the callback if no `Refresh()` operation is pending.
+TEST_F(PaymentsDataManagerTest, AddCallbackAfterRefreshCompleted_NoRefresh) {
+  base::test::TestFuture<void> future;
+  payments_data_manager().AddCallbackAfterRefreshCompleted(
+      future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
+}
+
+// Verifies that `AddCallbackAfterRefreshCompleted` triggers the callback after
+// a `Refresh()` operation concluded.
+TEST_F(PaymentsDataManagerTest,
+       AddCallbackAfterRefreshCompleted_DuringRefresh) {
+  base::test::TestFuture<void> future;
+  payments_data_manager().Refresh();
+  payments_data_manager().AddCallbackAfterRefreshCompleted(
+      future.GetCallback());
+  EXPECT_FALSE(future.IsReady());
+  // Check that the callback is called eventually.
+  EXPECT_TRUE(future.Wait());
 }
 
 // Test that a local IBAN is removed from suggestions when it has a matching

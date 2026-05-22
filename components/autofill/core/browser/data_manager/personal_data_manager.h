@@ -144,9 +144,9 @@ class PersonalDataManager : public KeyedService,
   // TODO(crbug.com/40100455): Consider moving this to the TestPDM or a TestAPI.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
- protected:
   base::WeakPtr<PersonalDataManager> GetWeakPtr();
 
+ protected:
   // Responsible for all address-related logic of the PDM. Non-null.
   std::unique_ptr<AddressDataManager> address_data_manager_;
 

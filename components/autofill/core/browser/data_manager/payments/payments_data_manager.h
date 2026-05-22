@@ -546,7 +546,11 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // user.
   virtual bool ShouldSuggestServerPaymentMethods() const;
 
-  base::WeakPtr<const PaymentsDataManager> GetWeakPtr() const;
+  // Adds a callback that gets executed immediately if no `Refresh()` operation
+  // is active, or otherwise once a pending `Refresh()` operation is completed.
+  void AddCallbackAfterRefreshCompleted(base::OnceClosure callback);
+
+  base::WeakPtr<PaymentsDataManager> GetWeakPtr();
 
  protected:
   friend class PaymentsDataManagerTestApi;
@@ -809,6 +813,8 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;
+
+  std::vector<base::OnceClosure> refresh_complete_callbacks_;
 
   base::WeakPtrFactory<PaymentsDataManager> weak_ptr_factory_{this};
 };

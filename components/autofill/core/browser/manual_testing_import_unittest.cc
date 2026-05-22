@@ -28,7 +28,10 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
+#include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -714,36 +717,67 @@ TEST_F(ManualTestingImportTest, SetCreditCards_PreservesCardOnGuidMismatch) {
     ]
   })");
 
-  base::test::ScopedCommandLine command_line;
-  command_line.GetProcessCommandLine()->AppendSwitchPath(
-      kManualFileImportForTestingFlag, file_path);
-
   std::optional<std::vector<CreditCard>> loaded_cards =
       LoadCreditCardsFromFile(file_path);
   ASSERT_TRUE(loaded_cards);
   ASSERT_EQ(1u, loaded_cards->size());
 
-  PaymentsDataManager& pdm =
-      test_personal_data_manager_.test_payments_data_manager();
+  // This test uses a real in-memory database to verify that asynchronous
+  // operations are executed properly.
+  std::unique_ptr<PrefService> prefs = test::PrefServiceForTesting();
+  AutofillWebDataServiceTestHelper webdata_helper(
+      std::make_unique<PaymentsAutofillTable>());
+
+  // LocalPDM is a variation of the TestPersonalDataManager that uses a real
+  // PaymentsDataManager instead of the TestPaymentsDataManager. Don't call
+  // `test_payments_data_manager()` on it as that would perform an invalid cast.
+  struct LocalPDM : public TestPersonalDataManager {
+    explicit LocalPDM(std::unique_ptr<PaymentsDataManager> payments_pdm) {
+      payments_data_manager_observation_.Reset();
+      payments_data_manager_ = std::move(payments_pdm);
+      payments_data_manager_observation_.Observe(payments_data_manager_.get());
+    }
+
+    PaymentsDataManager* payments_data_manager() {
+      return payments_data_manager_.get();
+    }
+  };
+
+  LocalPDM personal_data_manager(std::make_unique<PaymentsDataManager>(
+      webdata_helper.autofill_webdata_service(),
+      /*account_database=*/nullptr,
+      /*image_fetcher=*/nullptr, prefs.get(),
+      /*sync_service=*/nullptr,
+      /*identity_manager=*/nullptr, GeoIpCountryCode("US"), "en-US",
+      /*autofill_optimization_guide_decider=*/nullptr));
+  PaymentsDataManager* payments_data_manager =
+      personal_data_manager.payments_data_manager();
 
   // 1. Create a card that's identical to the card that will be loaded from the
   // file except for it's id.
   CreditCard card1 = loaded_cards->at(0);
   card1.set_guid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  pdm.AddCreditCard(card1);
+  payments_data_manager->AddCreditCard(card1);
+  webdata_helper.WaitUntilIdle();
 
-  // Verify it lands in the `PaymentsDataManager`.
-  ASSERT_EQ(1u, pdm.GetCreditCards().size());
-  EXPECT_EQ(card1.guid(), pdm.GetCreditCards()[0]->guid());
+  // Verify the card lands in the `PaymentsDataManager`.
+  ASSERT_EQ(1u, payments_data_manager->GetCreditCards().size());
+  EXPECT_EQ(card1.guid(), payments_data_manager->GetCreditCards()[0]->guid());
 
   // 2. Simulate importing cards from a file.
-  MaybeImportProfilesAndCardsForTesting(
-      test_personal_data_manager_.GetWeakPtr());
+  // The ScopedCommandLine is defined only here so that spinning up the
+  // PersonalDataManager above does not trigger the importing of profiles and
+  // cards, yet.
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchPath(
+      kManualFileImportForTestingFlag, file_path);
+  MaybeImportProfilesAndCardsForTesting(personal_data_manager.GetWeakPtr());
 
   // We expect that at some point in time, the same credit card exists in the
   // database but with a different guid.
   EXPECT_TRUE(base::test::RunUntil([&] {
-    std::vector<const CreditCard*> cards = pdm.GetCreditCards();
+    std::vector<const CreditCard*> cards =
+        payments_data_manager->GetCreditCards();
     return cards.size() == 1u && cards[0]->guid() != card1.guid() &&
            cards[0]->number() == card1.number();
   }));

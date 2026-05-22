@@ -277,9 +277,29 @@ void SetDataForPDM(base::WeakPtr<PersonalDataManager> pdm,
   }
   if (!import_data->credit_cards->empty()) {
     pdm->payments_data_manager().DeleteAllLocalCreditCards();
-    for (const CreditCard& card : *import_data->credit_cards) {
-      pdm->payments_data_manager().AddCreditCard(card);
-    }
+    // Adding `AddCreditCard` cannot immediately follow
+    // `DeleteAllLocalCreditCards` because the latter keeps the in-memory
+    // cache of credit cards alive and triggers an asynchronous `Refresh`
+    // operation. `AddCreditCard` discards cards that are duplicates of existing
+    // cards and uses the stale cache for this operation. The following
+    // workaround ensures that the `Refresh` operation terminates before trying
+    // to add new cards. Addresses are not affected because all operations are
+    // added to a queue for serial execution. Entities are not affected because
+    // deduplication happens only based on the guid, which are randomly
+    // generated on each import.
+    pdm->payments_data_manager().AddCallbackAfterRefreshCompleted(
+        base::BindOnce(
+            [](base::WeakPtr<PaymentsDataManager> payments_data_manager,
+               std::vector<CreditCard> cards) {
+              if (!payments_data_manager) {
+                return;
+              }
+              for (const CreditCard& card : cards) {
+                payments_data_manager->AddCreditCard(card);
+              }
+            },
+            pdm->payments_data_manager().GetWeakPtr(),
+            std::move(*import_data->credit_cards)));
   }
 }
 

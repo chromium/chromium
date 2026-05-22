@@ -494,6 +494,12 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
   }
 
   NotifyObservers();
+
+  std::vector<base::OnceClosure> callbacks =
+      std::exchange(refresh_complete_callbacks_, {});
+  for (base::OnceClosure& callback : callbacks) {
+    std::move(callback).Run();
+  }
 }
 
 bool PaymentsDataManager::ShouldShowBnplSettings() const {
@@ -1767,8 +1773,17 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
   return sync_service_->GetActiveDataTypes().Has(syncer::AUTOFILL_WALLET_DATA);
 }
 
-base::WeakPtr<const PaymentsDataManager> PaymentsDataManager::GetWeakPtr()
-    const {
+void PaymentsDataManager::AddCallbackAfterRefreshCompleted(
+    base::OnceClosure callback) {
+  if (!HasPendingPaymentQueries()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  refresh_complete_callbacks_.push_back(std::move(callback));
+}
+
+base::WeakPtr<PaymentsDataManager> PaymentsDataManager::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
