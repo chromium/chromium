@@ -30,10 +30,6 @@ declare_args() {
   # compatible build configurations (see comment for the
   # `enable_webui_generate_code_cache` update below).
   enable_webui_generate_code_cache = true
-
-  # Enable the native TypeScript compiler (tsgo) instead of the JS-based one.
-  # TODO(crbug.com/423789047): Enable this by default once ready.
-  use_typescript_go = false
 }
 
 if (enable_cast_receiver || is_cast_android || is_castos) {
