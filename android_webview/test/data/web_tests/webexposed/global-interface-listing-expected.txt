@@ -2089,6 +2089,7 @@ interface Document : Node
     getter routeMap
     getter scripts
     getter scrollingElement
+    getter spellCheckCustomDictionary
     getter styleSheets
     getter timeline
     getter title
@@ -12618,7 +12619,6 @@ namespace console
     getter self
     getter sessionStorage
     getter sharedStorage
-    getter spellCheckCustomDictionary
     getter status
     getter statusbar
     getter styleMedia

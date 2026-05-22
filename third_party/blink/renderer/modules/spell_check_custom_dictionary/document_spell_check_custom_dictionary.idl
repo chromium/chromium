@@ -5,9 +5,9 @@
 // https://github.com/Igalia/explainers/tree/main/spell-check-dictionary
 
 [
-    ImplementedAs=WindowSpellCheckCustomDictionary,
+    ImplementedAs=DocumentSpellCheckCustomDictionary,
     SecureContext,
     RuntimeEnabled=SpellCheckCustomDictionaryAPI
-] partial interface Window {
+] partial interface Document {
   readonly attribute SpellCheckCustomDictionary spellCheckCustomDictionary;
 };

@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/modules/spell_check_custom_dictionary/window_spell_check_custom_dictionary.h"
+#include "third_party/blink/renderer/modules/spell_check_custom_dictionary/document_spell_check_custom_dictionary.h"
 
 namespace blink {
 
@@ -62,9 +62,9 @@ class SpellCheckCustomDictionaryTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp(gfx::Size());
 
-    LocalDOMWindow* window = GetDocument().GetFrame()->DomWindow();
     dictionary_ =
-        WindowSpellCheckCustomDictionary::spellCheckCustomDictionary(*window);
+        DocumentSpellCheckCustomDictionary::spellCheckCustomDictionary(
+            GetDocument());
 
     spellcheck_ = new SpellCheck(&dummy_provider_);
     provider_ = std::make_unique<TestingSpellCheckProvider>(spellcheck_,
