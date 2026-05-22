@@ -83,6 +83,7 @@ if (newSemVer.compare(oldSemVer) <= 0) {
 }
 
 actions.setOutput('commit', message);
+await writeFile('./.browser_commit_msg', message, 'utf-8');
 
 console.log(`Chrome Canary version is: ${version} (${revision})`);
 await updateDevToolsProtocolVersion(revision);
