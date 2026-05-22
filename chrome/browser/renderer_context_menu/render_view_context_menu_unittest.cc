@@ -1880,6 +1880,44 @@ TEST_F(RenderViewContextMenuPrefsTest,
 
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
+TEST_F(RenderViewContextMenuPrefsTest,
+       ReadingModeSidePanelContextMenuAllowlist) {
+  // Simulate a context menu request with page level options.
+  content::ContextMenuParams params = CreateParams(MenuItem::PAGE);
+  params.page_url = GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL);
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.Init();
+
+  // Verify that unwanted page-level actions are suppressed.
+  EXPECT_FALSE(menu.IsItemPresent(IDC_BACK));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_RELOAD));
+  EXPECT_FALSE(menu.IsItemPresent(IDC_SAVE_PAGE));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+TEST_F(RenderViewContextMenuPrefsTest,
+       ReadingModeSidePanelKeepsApprovedLinkItems) {
+  // Simulate context-clicking an interactive link cleanly.
+  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+  params.page_url = GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL);
+  params.unfiltered_link_url = params.link_url;
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  custom_handlers::ProtocolHandlerRegistry registry(profile()->GetPrefs(),
+                                                    nullptr);
+  menu.set_protocol_handler_registry(&registry);
+  menu.Init();
+
+  // Verify standard link context actions and inspection logic remain.
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_COPYLINKLOCATION));
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
 // Test FormatUrlForClipboard behavior
 // -------------------------------------------
 

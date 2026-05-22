@@ -502,6 +502,7 @@ component("chrome_features") {
 static_library("url_constants") {
   visibility = [
     "//chrome/browser/contextual_tasks/*",
+    "//chrome/browser/renderer_context_menu/*",
     "//chrome/browser/ui/android",
     "//chrome/common/*",
   ]

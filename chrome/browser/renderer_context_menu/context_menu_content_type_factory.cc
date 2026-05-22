@@ -7,9 +7,15 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/renderer_context_menu/context_menu_content_type_read_anything.h"
+#endif
+#include "chrome/common/webui_url_constants.h"
 #include "components/renderer_context_menu/context_menu_content_type.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -75,6 +81,14 @@ std::unique_ptr<ContextMenuContentType>
 ContextMenuContentTypeFactory::CreateInternal(
     content::RenderFrameHost* render_frame_host,
     const content::ContextMenuParams& params) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (params.page_url.SchemeIs(content::kChromeUIUntrustedScheme) &&
+      params.page_url.host() ==
+          chrome::kChromeUIUntrustedReadAnythingSidePanelHost) {
+    return std::make_unique<ContextMenuContentTypeReadAnything>(params);
+  }
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (IsRunningInForcedAppMode()) {
     return base::WrapUnique(new ContextMenuContentTypeAppMode(params));
