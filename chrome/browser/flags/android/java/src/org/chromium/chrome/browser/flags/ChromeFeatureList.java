@@ -714,6 +714,7 @@ public abstract class ChromeFeatureList {
             "UseLibunwindstackNativeUnwinderAndroid";
     public static final String USE_WEB_UI_NTP_ANDROID = "UseWebUiNtpAndroid";
     public static final String VERIFY_QWACS = "VerifyQWACs";
+    public static final String VERIFY_STARTUP_SIGNIN_STATE = "VerifyStartupSigninState";
     public static final String VIRTUAL_KEYBOARD_TRANSIENT_INNER_HEIGHT_FIX =
             "VirtualKeyboardTransientInnerHeightFix";
     public static final String VISITED_URL_RANKING_SERVICE = "VisitedURLRankingService";

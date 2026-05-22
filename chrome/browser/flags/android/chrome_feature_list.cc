@@ -470,6 +470,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kUseInitialNetworkStateAtStartup,
     &kUseLibunwindstackNativeUnwinderAndroid,
     &kUseWebUiNtpAndroid,
+    &kVerifyStartupSigninState,
     &kVirtualKeyboardTransientInnerHeightFix,
     &kWebApkMinShellVersion,
     &kWebOtpCrossDeviceSimpleString,
@@ -844,6 +845,8 @@ BASE_FEATURE(kUseInitialNetworkStateAtStartup, base::FEATURE_ENABLED_BY_DEFAULT)
 // only on Android.
 BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kUseWebUiNtpAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+// Verify sign-in state on startup.
+BASE_FEATURE(kVerifyStartupSigninState, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kVirtualKeyboardTransientInnerHeightFix, base::FEATURE_ENABLED_BY_DEFAULT);
 // Shows only the remote device name on the Android notification instead of
 // a descriptive text.

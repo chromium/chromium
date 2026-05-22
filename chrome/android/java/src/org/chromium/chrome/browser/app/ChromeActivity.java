@@ -231,6 +231,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.signin.StartupSigninStateCheckController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.webapps.AppInstallMenuHandler;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -404,6 +405,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     // The FullscreenVideoPictureInPictureController is initialized lazily
     // https://crbug.com/41323316.
     private FullscreenVideoPictureInPictureController mFullscreenVideoPictureInPictureController;
+    private StartupSigninStateCheckController mStartupSigninStateCheckController;
 
     private ActorPictureInPictureController mActorPipController;
 
@@ -763,6 +765,14 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                                             mTabModelProfileSupplier.get()),
                             mRootUiCoordinator::getBookmarkBarVisibility);
             mTabBookmarkerSupplier.set(tabBookmarker);
+            if (!isCustomTab()) {
+                mStartupSigninStateCheckController =
+                        new StartupSigninStateCheckController(
+                                /* context= */ this,
+                                /* dialogManager= */ getModalDialogManager(),
+                                /* lifecycleDispatcher= */ getLifecycleDispatcher(),
+                                /* profileSupplier= */ mTabModelProfileSupplier);
+            }
 
             mShowContentRunnable =
                     () -> {
@@ -1962,6 +1972,10 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         if (mActorPipController != null) {
             mActorPipController.destroy();
             mActorPipController = null;
+        }
+
+        if (mStartupSigninStateCheckController != null) {
+            mStartupSigninStateCheckController = null;
         }
 
         onDestroyInternal();
