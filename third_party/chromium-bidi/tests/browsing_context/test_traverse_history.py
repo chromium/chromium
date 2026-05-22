@@ -14,8 +14,7 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import (execute_command, goto_url, read_JSON_message,
-                          subscribe)
+from test_helpers import execute_command, goto_url, read_JSON_message, subscribe
 
 HISTORY_LENGTH = 2
 
@@ -26,7 +25,7 @@ async def test_traverse_history(websocket, context_id):
     for i in range(HISTORY_LENGTH + 1):
         # TODO: use `html` fixture instead.
         #  https://github.com/GoogleChromeLabs/chromium-bidi/issues/2376
-        url = f'data:text/html,{i}'
+        url = f"data:text/html,{i}"
         urls.append(url)
         await goto_url(websocket, context_id, url)
 
@@ -46,39 +45,44 @@ async def test_traverse_history(websocket, context_id):
 
     # There is no event here.
     await traverse_history(websocket, context_id, 0)
-    await assert_location_href_equals(websocket, context_id,
-                                      urls[HISTORY_LENGTH])
+    await assert_location_href_equals(websocket, context_id, urls[HISTORY_LENGTH])
 
 
 @pytest.mark.asyncio
 async def test_traverse_history_no_entry(websocket, context_id, html):
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "no such history entry",
-                           "message": "No history entry at delta -2"
-                       })):
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "no such history entry",
+                "message": "No history entry at delta -2",
+            }
+        ),
+    ):
         await traverse_history(websocket, context_id, -2)
 
 
 async def traverse_history(websocket, context_id, delta):
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.traverseHistory",
-            "params": {
-                "context": context_id,
-                "delta": delta
-            }
-        })
+            "params": {"context": context_id, "delta": delta},
+        },
+    )
 
 
 @pytest.mark.asyncio
 async def test_traverse_history_iframe(websocket, iframe_id):
     with pytest.raises(
-            Exception,
-            match=str({
+        Exception,
+        match=str(
+            {
                 "error": "invalid argument",
-                "message": "Traversing history is only supported on the top-level context"
-            })):
+                "message": "Traversing history is only supported on the top-level context",
+            }
+        ),
+    ):
         await traverse_history(websocket, iframe_id, 0)
 
 
@@ -89,16 +93,16 @@ async def assert_href_equals(websocket, href):
 
 async def assert_location_href_equals(websocket, context_id, href):
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "window.location.href",
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "resultOwnership": "none",
-                "awaitPromise": True
-            }
-        })
+                "awaitPromise": True,
+            },
+        },
+    )
 
     assert result["result"]["value"] == href

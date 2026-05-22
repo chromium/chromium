@@ -14,29 +14,26 @@
 # limitations under the License.
 import pytest
 from anys import ANY_STR
-from test_helpers import (ANY_TIMESTAMP, read_JSON_message, send_JSON_command,
-                          subscribe)
+from test_helpers import ANY_TIMESTAMP, read_JSON_message, send_JSON_command, subscribe
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_domContentLoaded_create_notReceived(
-        websocket, assert_no_more_messages):
+    websocket, assert_no_more_messages
+):
     await subscribe(websocket, ["browsingContext.domContentLoaded"])
 
-    command_id = await send_JSON_command(websocket, {
-        "method": "browsingContext.create",
-        "params": {
-            "type": "tab"
-        }
-    })
+    command_id = await send_JSON_command(
+        websocket, {"method": "browsingContext.create", "params": {"type": "tab"}}
+    )
 
     response = await read_JSON_message(websocket)
     assert response == {
-        'id': command_id,
-        'result': {
-            'context': ANY_STR,
+        "id": command_id,
+        "result": {
+            "context": ANY_STR,
         },
-        'type': 'success',
+        "type": "success",
     }
 
     await assert_no_more_messages()
@@ -44,41 +41,39 @@ async def test_browsingContext_domContentLoaded_create_notReceived(
 
 @pytest.mark.asyncio
 async def test_browsingContext_domContentLoaded_navigate_received(
-        websocket, context_id, url_example, read_messages):
+    websocket, context_id, url_example, read_messages
+):
     await subscribe(websocket, ["browsingContext.domContentLoaded"])
 
     command_id = await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": url_example,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+            "params": {"url": url_example, "wait": "complete", "context": context_id},
+        },
+    )
 
-    messages = await read_messages(2,
-                                   keys_to_stabilize=['navigation'],
-                                   check_no_other_messages=True,
-                                   sort=True)
+    messages = await read_messages(
+        2, keys_to_stabilize=["navigation"], check_no_other_messages=True, sort=True
+    )
 
     assert messages == [
         {
-            'id': command_id,
-            'result': {
-                'navigation': 'stable_0',
-                'url': url_example,
+            "id": command_id,
+            "result": {
+                "navigation": "stable_0",
+                "url": url_example,
             },
-            'type': 'success',
+            "type": "success",
         },
         {
-            'method': 'browsingContext.domContentLoaded',
-            'params': {
-                'context': context_id,
-                'navigation': 'stable_0',
-                'timestamp': ANY_TIMESTAMP,
-                'url': url_example,
+            "method": "browsingContext.domContentLoaded",
+            "params": {
+                "context": context_id,
+                "navigation": "stable_0",
+                "timestamp": ANY_TIMESTAMP,
+                "url": url_example,
             },
-            'type': 'event',
+            "type": "event",
         },
     ]

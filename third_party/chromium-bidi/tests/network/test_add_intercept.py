@@ -16,46 +16,61 @@ import re
 
 import pytest
 from anys import ANY_DICT, ANY_LIST, ANY_NUMBER, ANY_STR
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+from test_helpers import (
+    ANY_TIMESTAMP,
+    ANY_UUID,
+    AnyExtending,
+    execute_command,
+    send_JSON_command,
+    subscribe,
+    wait_for_event,
+)
 
 
 @pytest.mark.asyncio
 async def test_add_intercept_invalid_empty_phases(websocket):
     with pytest.raises(
-            Exception,
-            match=re.escape(
-                str({
+        Exception,
+        match=re.escape(
+            str(
+                {
                     "error": "invalid argument",
-                    "message": "Array must contain at least 1 element(s) in \"phases\"."
-                }))):
+                    "message": 'Array must contain at least 1 element(s) in "phases".',
+                }
+            )
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "network.addIntercept",
                 "params": {
                     "phases": [],
-                    "urlPatterns": [{
-                        "type": 'string',
-                        "pattern": "https://www.example.com/*",
-                    }],
+                    "urlPatterns": [
+                        {
+                            "type": "string",
+                            "pattern": "https://www.example.com/*",
+                        }
+                    ],
                 },
-            })
+            },
+        )
 
 
 @pytest.mark.asyncio
 async def test_add_intercept_returns_intercept_id(websocket):
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "network.addIntercept",
             "params": {
                 "phases": ["beforeRequestSent"],
-                "urlPatterns": [{
-                    "type": "string",
-                    "pattern": "https://www.example.com"
-                }],
+                "urlPatterns": [
+                    {"type": "string", "pattern": "https://www.example.com"}
+                ],
             },
-        })
+        },
+    )
 
     assert result == {
         "intercept": ANY_UUID,
@@ -65,18 +80,22 @@ async def test_add_intercept_returns_intercept_id(websocket):
 @pytest.mark.asyncio
 async def test_add_intercept_type_pattern_valid(websocket):
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "network.addIntercept",
             "params": {
                 "phases": ["beforeRequestSent"],
-                "urlPatterns": [{
-                    "type": "pattern",
-                    "protocol": "https",
-                    "hostname": "www.example.com",
-                    "path": "/",
-                }],
+                "urlPatterns": [
+                    {
+                        "type": "pattern",
+                        "protocol": "https",
+                        "hostname": "www.example.com",
+                        "path": "/",
+                    }
+                ],
             },
-        })
+        },
+    )
 
     assert result == {
         "intercept": ANY_UUID,
@@ -86,86 +105,112 @@ async def test_add_intercept_type_pattern_valid(websocket):
 @pytest.mark.asyncio
 async def test_add_intercept_type_string_invalid(websocket):
     with pytest.raises(
-            Exception,
-            match=str({
+        Exception,
+        match=str(
+            {
                 "error": "invalid argument",
-                "message": "Failed to construct 'URL': Invalid URL 'foo'"
-            })):
+                "message": "Failed to construct 'URL': Invalid URL 'foo'",
+            }
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "network.addIntercept",
                 "params": {
                     "phases": ["beforeRequestSent"],
-                    "urlPatterns": [{
-                        "type": "string",
-                        "pattern": "foo",
-                    }],
+                    "urlPatterns": [
+                        {
+                            "type": "string",
+                            "pattern": "foo",
+                        }
+                    ],
                 },
-            })
+            },
+        )
 
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_string_one_valid_and_one_invalid(websocket):
     with pytest.raises(
-            Exception,
-            match=str({
+        Exception,
+        match=str(
+            {
                 "error": "invalid argument",
-                "message": "Failed to construct 'URL': Invalid URL 'foo'"
-            })):
+                "message": "Failed to construct 'URL': Invalid URL 'foo'",
+            }
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "network.addIntercept",
                 "params": {
                     "phases": ["beforeRequestSent"],
-                    "urlPatterns": [{
-                        "type": "string",
-                        "pattern": "foo",
-                    }, {
-                        "type": "string",
-                        "pattern": "https://www.example.com/",
-                    }],
+                    "urlPatterns": [
+                        {
+                            "type": "string",
+                            "pattern": "foo",
+                        },
+                        {
+                            "type": "string",
+                            "pattern": "https://www.example.com/",
+                        },
+                    ],
                 },
-            })
+            },
+        )
 
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_pattern_protocol_empty_invalid(websocket):
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "invalid argument",
-                           "message": "URL pattern must specify a protocol"
-                       })):
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "invalid argument",
+                "message": "URL pattern must specify a protocol",
+            }
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "network.addIntercept",
                 "params": {
                     "phases": ["beforeRequestSent"],
-                    "urlPatterns": [{
-                        "type": "pattern",
-                        "protocol": "",
-                        "hostname": "www.example.com",
-                        "port": "80",
-                    }],
+                    "urlPatterns": [
+                        {
+                            "type": "pattern",
+                            "protocol": "",
+                            "hostname": "www.example.com",
+                            "port": "80",
+                        }
+                    ],
                 },
-            })
+            },
+        )
 
 
 @pytest.mark.asyncio
-async def test_add_intercept_type_pattern_protocol_non_special_success(
-        websocket):
+async def test_add_intercept_type_pattern_protocol_non_special_success(websocket):
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "network.addIntercept",
             "params": {
                 "phases": ["beforeRequestSent"],
-                "urlPatterns": [{
-                    "type": "pattern",
-                    "protocol": "sftp",
-                    "hostname": "www.example.com",
-                    "port": "22",
-                }],
+                "urlPatterns": [
+                    {
+                        "type": "pattern",
+                        "protocol": "sftp",
+                        "hostname": "www.example.com",
+                        "port": "22",
+                    }
+                ],
             },
-        })
+        },
+    )
 
     assert result == {
         "intercept": ANY_UUID,
@@ -174,105 +219,127 @@ async def test_add_intercept_type_pattern_protocol_non_special_success(
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_pattern_hostname_empty_invalid(websocket):
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "invalid argument",
-                           "message": "URL pattern must specify a hostname"
-                       })):
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "invalid argument",
+                "message": "URL pattern must specify a hostname",
+            }
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "network.addIntercept",
                 "params": {
                     "phases": ["beforeRequestSent"],
-                    "urlPatterns": [{
-                        "type": "pattern",
-                        "protocol": "https",
-                        "hostname": "",
-                        "port": "80",
-                    }],
+                    "urlPatterns": [
+                        {
+                            "type": "pattern",
+                            "protocol": "https",
+                            "hostname": "",
+                            "port": "80",
+                        }
+                    ],
                 },
-            })
+            },
+        )
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("hostname", ["abc:com", "abc::com"])
-async def test_add_intercept_type_pattern_hostname_invalid(
-        websocket, hostname):
+async def test_add_intercept_type_pattern_hostname_invalid(websocket, hostname):
     with pytest.raises(
-            Exception,
-            match=str({
+        Exception,
+        match=str(
+            {
                 "error": "invalid argument",
-                "message": "':' is only allowed inside brackets in hostname"
-            })):
+                "message": "':' is only allowed inside brackets in hostname",
+            }
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "network.addIntercept",
                 "params": {
                     "phases": ["beforeRequestSent"],
-                    "urlPatterns": [{
-                        "type": "pattern",
-                        "hostname": hostname,
-                    }],
+                    "urlPatterns": [
+                        {
+                            "type": "pattern",
+                            "hostname": hostname,
+                        }
+                    ],
                 },
-            })
+            },
+        )
 
 
 @pytest.mark.asyncio
 async def test_add_intercept_type_pattern_port_empty_invalid(websocket):
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "invalid argument",
-                           "message": "URL pattern must specify a port"
-                       })):
+    with pytest.raises(
+        Exception,
+        match=str(
+            {"error": "invalid argument", "message": "URL pattern must specify a port"}
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "network.addIntercept",
                 "params": {
                     "phases": ["beforeRequestSent"],
-                    "urlPatterns": [{
-                        "type": "pattern",
-                        "protocol": "https",
-                        "hostname": "www.example.com",
-                        "port": "",
-                    }],
+                    "urlPatterns": [
+                        {
+                            "type": "pattern",
+                            "protocol": "https",
+                            "hostname": "www.example.com",
+                            "port": "",
+                        }
+                    ],
                 },
-            })
+            },
+        )
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize("url_patterns", [
+@pytest.mark.parametrize(
+    "url_patterns",
     [
-        {
-            "type": "string",
-            "pattern": "https://www.example.com/",
-        },
+        [
+            {
+                "type": "string",
+                "pattern": "https://www.example.com/",
+            },
+        ],
+        [
+            {
+                "type": "pattern",
+                "protocol": "https",
+                "hostname": "www.example.com",
+                "pathname": "/",
+            },
+        ],
+        [
+            {
+                "type": "string",
+                "pattern": "https://www.example.com/",
+            },
+            {
+                "type": "pattern",
+                "protocol": "https",
+                "hostname": "www.example.com",
+                "pathname": "/",
+            },
+        ],
     ],
-    [
-        {
-            "type": "pattern",
-            "protocol": "https",
-            "hostname": "www.example.com",
-            "pathname": "/",
-        },
+    ids=[
+        "string",
+        "pattern",
+        "string and pattern",
     ],
-    [
-        {
-            "type": "string",
-            "pattern": "https://www.example.com/",
-        },
-        {
-            "type": "pattern",
-            "protocol": "https",
-            "hostname": "www.example.com",
-            "pathname": "/",
-        },
-    ],
-],
-                         ids=[
-                             "string",
-                             "pattern",
-                             "string and pattern",
-                         ])
+)
 async def test_add_intercept_blocks(
     websocket,
     context_id,
@@ -283,52 +350,57 @@ async def test_add_intercept_blocks(
     await subscribe(websocket, ["network.beforeRequestSent"])
 
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "network.addIntercept",
             "params": {
                 "phases": ["beforeRequestSent"],
                 "urlPatterns": url_patterns,
             },
-        })
+        },
+    )
 
     assert result == {
         "intercept": ANY_UUID,
     }
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": example_url,
                 "context": context_id,
                 "wait": "complete",
-            }
-        })
-
-    event_response = await wait_for_event(websocket,
-                                          "network.beforeRequestSent")
-    assert event_response == AnyExtending({
-        "method": "network.beforeRequestSent",
-        "params": {
-            "intercepts": [result["intercept"]],
-            "isBlocked": True,
-            "initiator": {
-                "type": "other",
             },
-            "context": context_id,
-            "navigation": ANY_STR,
-            "redirectCount": 0,
-            "request": {
-                "request": ANY_STR,
-                "url": example_url,
-                "method": "GET",
-                "headers": ANY_LIST,
-                "cookies": [],
-                "headersSize": ANY_NUMBER,
-                "bodySize": 0,
-                "timings": ANY_DICT
-            },
-            "timestamp": ANY_TIMESTAMP,
         },
-        "type": "event",
-    })
+    )
+
+    event_response = await wait_for_event(websocket, "network.beforeRequestSent")
+    assert event_response == AnyExtending(
+        {
+            "method": "network.beforeRequestSent",
+            "params": {
+                "intercepts": [result["intercept"]],
+                "isBlocked": True,
+                "initiator": {
+                    "type": "other",
+                },
+                "context": context_id,
+                "navigation": ANY_STR,
+                "redirectCount": 0,
+                "request": {
+                    "request": ANY_STR,
+                    "url": example_url,
+                    "method": "GET",
+                    "headers": ANY_LIST,
+                    "cookies": [],
+                    "headersSize": ANY_NUMBER,
+                    "bodySize": 0,
+                    "timings": ANY_DICT,
+                },
+                "timestamp": ANY_TIMESTAMP,
+            },
+            "type": "event",
+        }
+    )

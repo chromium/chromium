@@ -15,11 +15,15 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import (AnyExtending, execute_command, goto_url, subscribe,
-                          wait_for_event)
+from test_helpers import (
+    AnyExtending,
+    execute_command,
+    goto_url,
+    subscribe,
+    wait_for_event,
+)
 
-from . import (FAKE_DEVICE_ADDRESS, disable_simulation, request_device,
-               setup_device)
+from . import FAKE_DEVICE_ADDRESS, disable_simulation, request_device, setup_device
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -29,44 +33,42 @@ async def teardown(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id,
-                                                    html):
-    await subscribe(websocket, ['bluetooth.requestDevicePromptUpdated'])
+async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id, html):
+    await subscribe(websocket, ["bluetooth.requestDevicePromptUpdated"])
     await goto_url(websocket, context_id, html())
     await setup_device(websocket, context_id)
     await request_device(websocket, context_id)
-    response = await wait_for_event(websocket,
-                                    'bluetooth.requestDevicePromptUpdated')
-    assert response == AnyExtending({
-        'type': 'event',
-        'method': 'bluetooth.requestDevicePromptUpdated',
-        'params': {
-            'context': context_id,
-            'devices': [{
-                'id': FAKE_DEVICE_ADDRESS
-            }],
+    response = await wait_for_event(websocket, "bluetooth.requestDevicePromptUpdated")
+    assert response == AnyExtending(
+        {
+            "type": "event",
+            "method": "bluetooth.requestDevicePromptUpdated",
+            "params": {
+                "context": context_id,
+                "devices": [{"id": FAKE_DEVICE_ADDRESS}],
+            },
         }
-    })
+    )
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('accept', [True, False])
-async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html,
-                                                   accept):
-    await subscribe(websocket, ['bluetooth'])
+@pytest.mark.parametrize("accept", [True, False])
+async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html, accept):
+    await subscribe(websocket, ["bluetooth"])
     await goto_url(websocket, context_id, html())
     await setup_device(websocket, context_id)
     await request_device(websocket, context_id)
-    event = await wait_for_event(websocket,
-                                 'bluetooth.requestDevicePromptUpdated')
+    event = await wait_for_event(websocket, "bluetooth.requestDevicePromptUpdated")
 
     await execute_command(
-        websocket, {
-            'method': 'bluetooth.handleRequestDevicePrompt',
-            'params': {
-                'context': context_id,
-                'accept': accept,
-                'prompt': event['params']['prompt'],
-                'device': event['params']['devices'][0]['id']
-            }
-        })
+        websocket,
+        {
+            "method": "bluetooth.handleRequestDevicePrompt",
+            "params": {
+                "context": context_id,
+                "accept": accept,
+                "prompt": event["params"]["prompt"],
+                "device": event["params"]["devices"][0]["id"],
+            },
+        },
+    )

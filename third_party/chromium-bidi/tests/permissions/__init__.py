@@ -17,43 +17,44 @@ from test_helpers import execute_command
 
 
 async def query_permission(websocket, context_id, name):
-    """ Queries a permission via the script.callFunction command."""
+    """Queries a permission via the script.callFunction command."""
 
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.callFunction",
             "params": {
-                "functionDeclaration": """() => {
-                    return navigator.permissions.query({ name: '%s' })
+                "functionDeclaration": f"""() => {{
+                    return navigator.permissions.query({{ name: '{name}' }})
                       .then(val => val.state, err => err.message)
-                  }""" % name,
-                "target": {
-                    "context": context_id
-                },
+                  }}""",
+                "target": {"context": context_id},
                 "awaitPromise": True,
-            }
-        })
+            },
+        },
+    )
 
-    return result['result']['value']
+    return result["result"]["value"]
 
 
-async def set_permission(websocket,
-                         origin,
-                         descriptor,
-                         state,
-                         user_context=None,
-                         embedded_origin=None):
-    """ Set a permission via the permissions.setPermission command."""
+async def set_permission(
+    websocket, origin, descriptor, state, user_context=None, embedded_origin=None
+):
+    """Set a permission via the permissions.setPermission command."""
     return await execute_command(
-        websocket, {
-            'method': 'permissions.setPermission',
-            'params': {
-                'origin': origin,
-                'descriptor': descriptor,
-                'state': state,
-                'goog:userContext': user_context,
-                **({} if embedded_origin is None else {
-                       "embeddedOrigin": embedded_origin
-                   })
-            }
-        })
+        websocket,
+        {
+            "method": "permissions.setPermission",
+            "params": {
+                "origin": origin,
+                "descriptor": descriptor,
+                "state": state,
+                "goog:userContext": user_context,
+                **(
+                    {}
+                    if embedded_origin is None
+                    else {"embeddedOrigin": embedded_origin}
+                ),
+            },
+        },
+    )

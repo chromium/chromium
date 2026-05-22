@@ -22,23 +22,23 @@ from pathlib import Path
 import pytest
 from test_helpers import execute_command, goto_url
 
-ITERATIONS = int(os.environ.get('ITERATIONS', 10))
+ITERATIONS = int(os.environ.get("ITERATIONS", 10))
 
 
-def log_metric(test_name, name, value, unit='ms'):
-    os_name = os.environ.get('OS', 'unknownOs')
-    head = os.environ.get('HEAD', 'unknownHead')
-    runner = os.environ.get('RUNNER', 'unknownRunner')
-    metrics_json_file = os.environ.get('METRICS_JSON_FILE')
+def log_metric(test_name, name, value, unit="ms"):
+    os_name = os.environ.get("OS", "unknownOs")
+    head = os.environ.get("HEAD", "unknownHead")
+    runner = os.environ.get("RUNNER", "unknownRunner")
+    metrics_json_file = os.environ.get("METRICS_JSON_FILE")
     metric = {
-        'name': f'{os_name}-{head}-{runner}:{test_name}_{name}',
-        'value': value,
-        'unit': unit,
-        'extra': f'{os_name}-{head}:e2e-perf-metric'
+        "name": f"{os_name}-{head}-{runner}:{test_name}_{name}",
+        "value": value,
+        "unit": unit,
+        "extra": f"{os_name}-{head}:e2e-perf-metric",
     }
     if metrics_json_file:
-        with open(metrics_json_file, 'a') as f:
-            f.write(json.dumps(metric) + ',\n')
+        with open(metrics_json_file, "a") as f:
+            f.write(json.dumps(metric) + ",\n")
     else:
         print(f"PERF_METRIC:{json.dumps(metric)}")
 
@@ -48,22 +48,20 @@ async def capture_screenshot(websocket, context_id):
         websocket,
         {
             "method": "browsingContext.captureScreenshot",
-            "params": {
-                "origin": "document",
-                "context": context_id
-            }
+            "params": {"origin": "document", "context": context_id},
         },
         # Increase timeout for screenshots.
-        timeout=60)
+        timeout=60,
+    )
 
 
 # Timeout 10 minutes.
 @pytest.mark.timeout(10 * 60)
 @pytest.mark.asyncio
-async def test_performance_screenshot(websocket, context_id,
-                                      current_test_name):
+async def test_performance_screenshot(websocket, context_id, current_test_name):
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.setViewport",
             "params": {
                 "context": context_id,
@@ -71,13 +69,16 @@ async def test_performance_screenshot(websocket, context_id,
                     "width": 800,
                     "height": 600,
                 },
-                "devicePixelRatio": None
-            }
-        })
+                "devicePixelRatio": None,
+            },
+        },
+    )
 
     await goto_url(
-        websocket, context_id,
-        f'file://{Path(__file__).parent.resolve()}/resources/long_page.html')
+        websocket,
+        context_id,
+        f"file://{Path(__file__).parent.resolve()}/resources/long_page.html",
+    )
 
     # Pre-warm.
     await capture_screenshot(websocket, context_id)
@@ -92,6 +93,6 @@ async def test_performance_screenshot(websocket, context_id,
     median_value = statistics.median(samples) * 1000
     p10_value = sorted(samples)[int(len(samples) * 0.1)] * 1000
 
-    log_metric(current_test_name, 'mean', mean_value)
-    log_metric(current_test_name, 'median', median_value)
-    log_metric(current_test_name, 'p10', p10_value)
+    log_metric(current_test_name, "mean", mean_value)
+    log_metric(current_test_name, "median", median_value)
+    log_metric(current_test_name, "p10", p10_value)

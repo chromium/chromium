@@ -26,6 +26,7 @@ pytest-flakes = "*"
 pytest-instafail = "*"
 pytest-randomly = "*"
 pytest-xdist = "*"
+ruff = "*"
 
 [requires]
 python_version = "3.11"

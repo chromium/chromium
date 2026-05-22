@@ -25,7 +25,8 @@ async def is_scripting_enabled(websocket):
 
     async def is_scripting_enabled(target_context_id):
         resp = await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "script.evaluate",
                 "params": {
                     "expression": """(() => {
@@ -33,46 +34,43 @@ async def is_scripting_enabled(websocket):
                         n.innerHTML = '<div></div>';
                         return n.childElementCount === 0;
                     })()""",
-                    "target": {
-                        "context": target_context_id
-                    },
-                    "awaitPromise": True
-                }
-            })
+                    "target": {"context": target_context_id},
+                    "awaitPromise": True,
+                },
+            },
+        )
         return resp["result"]["value"]
 
     return is_scripting_enabled
 
 
 @pytest.mark.asyncio
-async def test_script_disable_and_enabled(websocket, context_id,
-                                          is_scripting_enabled):
+async def test_script_disable_and_enabled(websocket, context_id, is_scripting_enabled):
     assert await is_scripting_enabled(context_id) is True
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
-            "params": {
-                "enabled": False,
-                "contexts": [context_id]
-            }
-        })
+            "params": {"enabled": False, "contexts": [context_id]},
+        },
+    )
     assert await is_scripting_enabled(context_id) is False
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
-            "params": {
-                "enabled": None,
-                "contexts": [context_id]
-            }
-        })
+            "params": {"enabled": None, "contexts": [context_id]},
+        },
+    )
     assert await is_scripting_enabled(context_id) is True
 
 
 @pytest.mark.asyncio
-async def test_script_disable_per_browsing_context(websocket, create_context,
-                                                   is_scripting_enabled):
+async def test_script_disable_per_browsing_context(
+    websocket, create_context, is_scripting_enabled
+):
 
     browsing_context_id_1 = await create_context()
     browsing_context_id_2 = await create_context()
@@ -81,54 +79,62 @@ async def test_script_disable_per_browsing_context(websocket, create_context,
     assert await is_scripting_enabled(browsing_context_id_2) is True
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": False,
-                'contexts': [browsing_context_id_1],
-            }
-        })
+                "contexts": [browsing_context_id_1],
+            },
+        },
+    )
     assert await is_scripting_enabled(browsing_context_id_1) is False
     assert await is_scripting_enabled(browsing_context_id_2) is True
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": False,
-                'contexts': [browsing_context_id_2],
-            }
-        })
+                "contexts": [browsing_context_id_2],
+            },
+        },
+    )
     assert await is_scripting_enabled(browsing_context_id_1) is False
     assert await is_scripting_enabled(browsing_context_id_2) is False
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": None,
-                'contexts': [browsing_context_id_1],
-            }
-        })
+                "contexts": [browsing_context_id_1],
+            },
+        },
+    )
     assert await is_scripting_enabled(browsing_context_id_1) is True
     assert await is_scripting_enabled(browsing_context_id_2) is False
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": None,
-                'contexts': [browsing_context_id_2],
-            }
-        })
+                "contexts": [browsing_context_id_2],
+            },
+        },
+    )
     assert await is_scripting_enabled(browsing_context_id_1) is True
     assert await is_scripting_enabled(browsing_context_id_2) is True
 
 
 @pytest.mark.asyncio
-async def test_script_disable_per_user_context(websocket, user_context_id,
-                                               create_context,
-                                               is_scripting_enabled):
+async def test_script_disable_per_user_context(
+    websocket, user_context_id, create_context, is_scripting_enabled
+):
     browsing_context_id_1 = await create_context()
     browsing_context_id_2 = await create_context(user_context_id)
 
@@ -136,86 +142,95 @@ async def test_script_disable_per_user_context(websocket, user_context_id,
     assert await is_scripting_enabled(browsing_context_id_2) is True
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": False,
-                'userContexts': ["default"],
-            }
-        })
+                "userContexts": ["default"],
+            },
+        },
+    )
     assert await is_scripting_enabled(browsing_context_id_1) is False
     assert await is_scripting_enabled(await create_context()) is False
     assert await is_scripting_enabled(browsing_context_id_2) is True
-    assert await is_scripting_enabled(await
-                                      create_context(user_context_id)) is True
+    assert await is_scripting_enabled(await create_context(user_context_id)) is True
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": False,
-                'userContexts': [user_context_id],
-            }
-        })
+                "userContexts": [user_context_id],
+            },
+        },
+    )
     assert await is_scripting_enabled(browsing_context_id_1) is False
     assert await is_scripting_enabled(await create_context()) is False
     assert await is_scripting_enabled(browsing_context_id_2) is False
-    assert await is_scripting_enabled(await
-                                      create_context(user_context_id)) is False
+    assert await is_scripting_enabled(await create_context(user_context_id)) is False
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": None,
-                'userContexts': ["default"],
-            }
-        })
+                "userContexts": ["default"],
+            },
+        },
+    )
     assert await is_scripting_enabled(browsing_context_id_1) is True
     assert await is_scripting_enabled(await create_context()) is True
     assert await is_scripting_enabled(browsing_context_id_2) is False
-    assert await is_scripting_enabled(await
-                                      create_context(user_context_id)) is False
+    assert await is_scripting_enabled(await create_context(user_context_id)) is False
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": None,
-                'userContexts': [user_context_id],
-            }
-        })
+                "userContexts": [user_context_id],
+            },
+        },
+    )
     assert await is_scripting_enabled(browsing_context_id_1) is True
     assert await is_scripting_enabled(await create_context()) is True
     assert await is_scripting_enabled(browsing_context_id_2) is True
-    assert await is_scripting_enabled(await
-                                      create_context(user_context_id)) is True
+    assert await is_scripting_enabled(await create_context(user_context_id)) is True
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("same_origin", [True, False])
-async def test_script_disable_iframe(websocket, context_id, iframe_id,
-                                     is_scripting_enabled, same_origin, html):
+async def test_script_disable_iframe(
+    websocket, context_id, iframe_id, is_scripting_enabled, same_origin, html
+):
     await goto_url(websocket, iframe_id, html("", same_origin=same_origin))
 
     assert await is_scripting_enabled(iframe_id) is True
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": False,
-                'contexts': [context_id],
-            }
-        })
+                "contexts": [context_id],
+            },
+        },
+    )
     assert await is_scripting_enabled(iframe_id) is False
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setScriptingEnabled",
             "params": {
                 "enabled": None,
-                'contexts': [context_id],
-            }
-        })
+                "contexts": [context_id],
+            },
+        },
+    )
     assert await is_scripting_enabled(iframe_id) is True

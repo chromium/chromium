@@ -20,85 +20,83 @@ from test_helpers import execute_command
 
 @pytest.mark.asyncio
 async def test_browser_get_client_windows_single_tab(websocket, context_id):
-    resp = await execute_command(websocket, {
-        "method": "browser.getClientWindows",
-        "params": {}
-    })
+    resp = await execute_command(
+        websocket, {"method": "browser.getClientWindows", "params": {}}
+    )
     assert resp == {
-        'clientWindows': [
+        "clientWindows": [
             {
                 # `active` is not implemented yet
-                'active': False,
-                'clientWindow': ANY_STR,
-                'height': ANY_NUMBER,
-                'state': 'normal',
-                'width': ANY_NUMBER,
-                'x': ANY_NUMBER,
-                'y': ANY_NUMBER,
+                "active": False,
+                "clientWindow": ANY_STR,
+                "height": ANY_NUMBER,
+                "state": "normal",
+                "width": ANY_NUMBER,
+                "x": ANY_NUMBER,
+                "y": ANY_NUMBER,
             },
         ],
     }
 
 
 @pytest.mark.asyncio
-async def test_browser_get_client_windows_two_tabs(websocket, context_id,
-                                                   create_context,
-                                                   test_headless_mode):
+async def test_browser_get_client_windows_two_tabs(
+    websocket, context_id, create_context, test_headless_mode
+):
     if test_headless_mode == "old":
         pytest.xfail("In old headless mode, each tab is in a separate window")
 
-    await create_context(context_type='tab')
+    await create_context(context_type="tab")
 
-    resp = await execute_command(websocket, {
-        "method": "browser.getClientWindows",
-        "params": {}
-    })
+    resp = await execute_command(
+        websocket, {"method": "browser.getClientWindows", "params": {}}
+    )
     assert resp == {
-        'clientWindows': [
+        "clientWindows": [
             {
                 # `active` is not implemented yet
-                'active': False,
-                'clientWindow': ANY_STR,
-                'height': ANY_NUMBER,
-                'state': 'normal',
-                'width': ANY_NUMBER,
-                'x': ANY_NUMBER,
-                'y': ANY_NUMBER,
+                "active": False,
+                "clientWindow": ANY_STR,
+                "height": ANY_NUMBER,
+                "state": "normal",
+                "width": ANY_NUMBER,
+                "x": ANY_NUMBER,
+                "y": ANY_NUMBER,
             },
         ],
     }
 
 
 @pytest.mark.asyncio
-async def test_browser_get_client_windows_two_windows(websocket, context_id,
-                                                      create_context):
-    await create_context(context_type='window')
+async def test_browser_get_client_windows_two_windows(
+    websocket, context_id, create_context
+):
+    await create_context(context_type="window")
 
-    resp = await execute_command(websocket, {
-        "method": "browser.getClientWindows",
-        "params": {}
-    })
+    resp = await execute_command(
+        websocket, {"method": "browser.getClientWindows", "params": {}}
+    )
     assert resp == {
-        'clientWindows': [
+        "clientWindows": [
             {
                 # `active` is not implemented yet
-                'active': False,
-                'clientWindow': ANY_STR,
-                'height': ANY_NUMBER,
-                'state': 'normal',
-                'width': ANY_NUMBER,
-                'x': ANY_NUMBER,
-                'y': ANY_NUMBER,
+                "active": False,
+                "clientWindow": ANY_STR,
+                "height": ANY_NUMBER,
+                "state": "normal",
+                "width": ANY_NUMBER,
+                "x": ANY_NUMBER,
+                "y": ANY_NUMBER,
             },
             {
                 # `active` is not implemented yet
-                'active': False,
-                'clientWindow': ANY_STR,
-                'height': ANY_NUMBER,
-                'state': 'normal',
-                'width': ANY_NUMBER,
-                'x': ANY_NUMBER,
-                'y': ANY_NUMBER,
+                "active": False,
+                "clientWindow": ANY_STR,
+                "height": ANY_NUMBER,
+                "state": "normal",
+                "width": ANY_NUMBER,
+                "x": ANY_NUMBER,
+                "y": ANY_NUMBER,
             },
         ],
     }

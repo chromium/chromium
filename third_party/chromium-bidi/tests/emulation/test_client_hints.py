@@ -19,14 +19,8 @@ import pytest_asyncio
 from test_helpers import execute_command
 
 SOME_CLIENT_HINTS = {
-    "brands": [{
-        "brand": "TestBrand",
-        "version": "99"
-    }],
-    "fullVersionList": [{
-        "brand": "TestBrand",
-        "version": "99.0.0.0"
-    }],
+    "brands": [{"brand": "TestBrand", "version": "99"}],
+    "fullVersionList": [{"brand": "TestBrand", "version": "99.0.0.0"}],
     "mobile": True,
     "platform": "TestPlatform",
     "platformVersion": "1.0.0",
@@ -34,18 +28,12 @@ SOME_CLIENT_HINTS = {
     "model": "TestModel",
     "bitness": "64",
     "wow64": False,
-    "formFactors": ["Tablet", "Mobile"]
+    "formFactors": ["Tablet", "Mobile"],
 }
 
 ANOTHER_CLIENT_HINTS = {
-    "brands": [{
-        "brand": "Brand1",
-        "version": "1"
-    }],
-    "fullVersionList": [{
-        "brand": "Brand1",
-        "version": "1.1.1.1"
-    }],
+    "brands": [{"brand": "Brand1", "version": "1"}],
+    "fullVersionList": [{"brand": "Brand1", "version": "1.1.1.1"}],
     "mobile": False,
     "platform": "Platform1",
     "platformVersion": "2.0.0",
@@ -53,7 +41,7 @@ ANOTHER_CLIENT_HINTS = {
     "model": "Model1",
     "bitness": "32",
     "wow64": True,
-    "formFactors": ["Desktop"]
+    "formFactors": ["Desktop"],
 }
 
 
@@ -75,17 +63,20 @@ async def get_navigator_client_hints(websocket, local_server_good_ssl):
         # Ensure the context is navigated to a secure context for userAgentData to be available
         url_secure = local_server_good_ssl.url_200()
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "browsingContext.navigate",
                 "params": {
                     "context": context_id,
                     "url": url_secure,
-                    "wait": "complete"
-                }
-            })
+                    "wait": "complete",
+                },
+            },
+        )
 
         result = await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "script.evaluate",
                 "params": {
                     "expression": """
@@ -114,15 +105,14 @@ async def get_navigator_client_hints(websocket, local_server_good_ssl):
                         });
                     })()
                     """,
-                    "target": {
-                        "context": context_id
-                    },
-                    "awaitPromise": True
-                }
-            })
+                    "target": {"context": context_id},
+                    "awaitPromise": True,
+                },
+            },
+        )
 
-        navigator_data = json.loads(result['result']['value'])
-        if 'error' in navigator_data:
+        navigator_data = json.loads(result["result"]["value"])
+        if "error" in navigator_data:
             raise Exception(f"userAgentData error: {navigator_data['error']}")
         return navigator_data
 
@@ -140,54 +130,52 @@ async def get_network_client_hints(websocket, local_server_good_ssl):
 
         # Navigate to echo page to see headers
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "browsingContext.navigate",
-                "params": {
-                    "context": context_id,
-                    "url": url_echo,
-                    "wait": "complete"
-                }
-            })
+                "params": {"context": context_id, "url": url_echo, "wait": "complete"},
+            },
+        )
 
         # Extract headers from the echo response
         result = await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "script.evaluate",
                 "params": {
                     "expression": "document.body.innerText",
-                    "target": {
-                        "context": context_id
-                    },
-                    "awaitPromise": True
-                }
-            })
+                    "target": {"context": context_id},
+                    "awaitPromise": True,
+                },
+            },
+        )
 
-        response_data = json.loads(result['result']['value'])
-        headers = {k.lower(): v for k, v in response_data['headers'].items()}
+        response_data = json.loads(result["result"]["value"])
+        headers = {k.lower(): v for k, v in response_data["headers"].items()}
 
         client_hints = {}
 
         # Parse Sec-CH-UA
         # Example: "TestBrand";v="99"
-        if 'sec-ch-ua' in headers:
+        if "sec-ch-ua" in headers:
             brands = []
-            parts = headers['sec-ch-ua'].split(',')
+            parts = headers["sec-ch-ua"].split(",")
             for part in parts:
                 part = part.strip()
-                if ';v=' in part:
-                    brand, version = part.split(';v=')
+                if ";v=" in part:
+                    brand, version = part.split(";v=")
                     brand = brand.strip().strip('"')
                     version = version.strip().strip('"')
-                    brands.append({'brand': brand, 'version': version})
-            client_hints['brands'] = brands
+                    brands.append({"brand": brand, "version": version})
+            client_hints["brands"] = brands
 
         # Parse Sec-CH-UA-Mobile
-        if 'sec-ch-ua-mobile' in headers:
-            client_hints['mobile'] = headers['sec-ch-ua-mobile'] == '?1'
+        if "sec-ch-ua-mobile" in headers:
+            client_hints["mobile"] = headers["sec-ch-ua-mobile"] == "?1"
 
         # Parse Sec-CH-UA-Platform
-        if 'sec-ch-ua-platform' in headers:
-            client_hints['platform'] = headers['sec-ch-ua-platform'].strip('"')
+        if "sec-ch-ua-platform" in headers:
+            client_hints["platform"] = headers["sec-ch-ua-platform"].strip('"')
 
         return client_hints
 
@@ -196,45 +184,45 @@ async def get_network_client_hints(websocket, local_server_good_ssl):
 
 def get_expected_nerwork_client_hints(client_hints):
     return {
-        'brands': client_hints['brands'],
-        'mobile': client_hints['mobile'],
-        'platform': client_hints['platform'],
+        "brands": client_hints["brands"],
+        "mobile": client_hints["mobile"],
+        "platform": client_hints["platform"],
     }
 
 
 @pytest.mark.asyncio
-async def test_client_hints_override_global(websocket, context_id,
-                                            create_context,
-                                            get_navigator_client_hints,
-                                            get_network_client_hints,
-                                            initial_client_hints):
+async def test_client_hints_override_global(
+    websocket,
+    context_id,
+    create_context,
+    get_navigator_client_hints,
+    get_network_client_hints,
+    initial_client_hints,
+):
     # Set global override
     await execute_command(
-        websocket, {
-            'method': 'userAgentClientHints.setClientHintsOverride',
-            'params': {
-                'clientHints': SOME_CLIENT_HINTS
-            }
-        })
+        websocket,
+        {
+            "method": "userAgentClientHints.setClientHintsOverride",
+            "params": {"clientHints": SOME_CLIENT_HINTS},
+        },
+    )
 
     # Verify via fixtures
     navigator_hints = await get_navigator_client_hints(context_id)
-    assert navigator_hints.pop(
-        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
+    assert navigator_hints.pop("navigatorPlatform") == SOME_CLIENT_HINTS["platform"]
     assert navigator_hints == (SOME_CLIENT_HINTS)
 
     # Verify Network Headers
     network_hints = await get_network_client_hints(context_id)
     # Filter expected hints to only those we expect in headers (Low Entropy)
-    expected_network_hints = get_expected_nerwork_client_hints(
-        SOME_CLIENT_HINTS)
+    expected_network_hints = get_expected_nerwork_client_hints(SOME_CLIENT_HINTS)
     assert network_hints == expected_network_hints
 
     # Verify new context inherits
     new_context_id = await create_context()
     navigator_hints_new = await get_navigator_client_hints(new_context_id)
-    assert navigator_hints_new.pop(
-        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
+    assert navigator_hints_new.pop("navigatorPlatform") == SOME_CLIENT_HINTS["platform"]
     assert navigator_hints_new == (SOME_CLIENT_HINTS)
 
     network_hints_new = await get_network_client_hints(new_context_id)
@@ -242,93 +230,98 @@ async def test_client_hints_override_global(websocket, context_id,
 
     # Clear override
     await execute_command(
-        websocket, {
-            'method': 'userAgentClientHints.setClientHintsOverride',
-            'params': {
-                'clientHints': None
-            }
-        })
+        websocket,
+        {
+            "method": "userAgentClientHints.setClientHintsOverride",
+            "params": {"clientHints": None},
+        },
+    )
 
     # Check that override is cleared and matches initial hints
-    assert (await
-            get_navigator_client_hints(context_id)) == initial_client_hints
+    assert (await get_navigator_client_hints(context_id)) == initial_client_hints
 
 
 @pytest.mark.asyncio
-async def test_client_hints_override_per_context(websocket, context_id,
-                                                 create_context,
-                                                 get_navigator_client_hints,
-                                                 get_network_client_hints):
+async def test_client_hints_override_per_context(
+    websocket,
+    context_id,
+    create_context,
+    get_navigator_client_hints,
+    get_network_client_hints,
+):
     await execute_command(
-        websocket, {
-            'method': 'userAgentClientHints.setClientHintsOverride',
-            'params': {
-                'clientHints': SOME_CLIENT_HINTS,
-                'contexts': [context_id]
-            }
-        })
+        websocket,
+        {
+            "method": "userAgentClientHints.setClientHintsOverride",
+            "params": {"clientHints": SOME_CLIENT_HINTS, "contexts": [context_id]},
+        },
+    )
 
     new_context_id = await create_context()
     await execute_command(
-        websocket, {
-            'method': 'userAgentClientHints.setClientHintsOverride',
-            'params': {
-                'clientHints': ANOTHER_CLIENT_HINTS,
-                'contexts': [new_context_id]
-            }
-        })
+        websocket,
+        {
+            "method": "userAgentClientHints.setClientHintsOverride",
+            "params": {
+                "clientHints": ANOTHER_CLIENT_HINTS,
+                "contexts": [new_context_id],
+            },
+        },
+    )
 
     # Verify initial context
     navigator_hints_1 = await get_navigator_client_hints(context_id)
-    assert navigator_hints_1.pop(
-        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
+    assert navigator_hints_1.pop("navigatorPlatform") == SOME_CLIENT_HINTS["platform"]
     assert navigator_hints_1 == (SOME_CLIENT_HINTS)
     # Check headers for initial context
     network_hints_1 = await get_network_client_hints(context_id)
-    expected_network_hints1 = get_expected_nerwork_client_hints(
-        SOME_CLIENT_HINTS)
+    expected_network_hints1 = get_expected_nerwork_client_hints(SOME_CLIENT_HINTS)
     assert network_hints_1 == expected_network_hints1
 
     # Verify new context
     navigator_hints_2 = await get_navigator_client_hints(new_context_id)
-    assert navigator_hints_2.pop(
-        'navigatorPlatform') == ANOTHER_CLIENT_HINTS['platform']
+    assert (
+        navigator_hints_2.pop("navigatorPlatform") == ANOTHER_CLIENT_HINTS["platform"]
+    )
     assert navigator_hints_2 == (ANOTHER_CLIENT_HINTS)
     # Check headers for new context
     network_hints_2 = await get_network_client_hints(new_context_id)
-    expected_network_hints_2 = get_expected_nerwork_client_hints(
-        ANOTHER_CLIENT_HINTS)
+    expected_network_hints_2 = get_expected_nerwork_client_hints(ANOTHER_CLIENT_HINTS)
     assert network_hints_2 == expected_network_hints_2
 
 
 @pytest.mark.asyncio
 async def test_client_hints_override_per_user_context(
-        websocket, create_context, create_user_context,
-        get_navigator_client_hints, get_network_client_hints, context_id,
-        initial_client_hints):
+    websocket,
+    create_context,
+    create_user_context,
+    get_navigator_client_hints,
+    get_network_client_hints,
+    context_id,
+    initial_client_hints,
+):
     user_context = await create_user_context()
-    context_in_user_context = await create_context(user_context_id=user_context
-                                                   )
+    context_in_user_context = await create_context(user_context_id=user_context)
 
     # Set override for the user context
     await execute_command(
-        websocket, {
-            'method': 'userAgentClientHints.setClientHintsOverride',
-            'params': {
-                'clientHints': SOME_CLIENT_HINTS,
-                'userContexts': [user_context]
-            }
-        })
+        websocket,
+        {
+            "method": "userAgentClientHints.setClientHintsOverride",
+            "params": {
+                "clientHints": SOME_CLIENT_HINTS,
+                "userContexts": [user_context],
+            },
+        },
+    )
 
     # Verify context in user context has the override
     navigator_hints = await get_navigator_client_hints(context_in_user_context)
-    assert navigator_hints.pop(
-        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
+    assert navigator_hints.pop("navigatorPlatform") == SOME_CLIENT_HINTS["platform"]
     assert navigator_hints == SOME_CLIENT_HINTS
 
     network_hints = await get_network_client_hints(context_in_user_context)
-    expected_network_hints = get_expected_nerwork_client_hints(
-        SOME_CLIENT_HINTS)
+    expected_network_hints = get_expected_nerwork_client_hints(SOME_CLIENT_HINTS)
     assert network_hints == expected_network_hints
 
     # Verify default context (not in user context) does NOT have the override
@@ -336,10 +329,7 @@ async def test_client_hints_override_per_user_context(
     assert navigator_hints_default == initial_client_hints
 
     # Verify new context in user context inherits override
-    new_context_in_user_context = await create_context(
-        user_context_id=user_context)
-    navigator_hints_new = await get_navigator_client_hints(
-        new_context_in_user_context)
-    assert navigator_hints_new.pop(
-        'navigatorPlatform') == SOME_CLIENT_HINTS['platform']
+    new_context_in_user_context = await create_context(user_context_id=user_context)
+    navigator_hints_new = await get_navigator_client_hints(new_context_in_user_context)
+    assert navigator_hints_new.pop("navigatorPlatform") == SOME_CLIENT_HINTS["platform"]
     assert navigator_hints_new == SOME_CLIENT_HINTS

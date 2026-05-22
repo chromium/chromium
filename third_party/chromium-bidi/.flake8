@@ -1,3 +1,0 @@
-[flake8]
-# https://flake8.pycqa.org/en/latest/user/error-codes.html
-extend-ignore = E121,E131,E126,E501

@@ -36,33 +36,30 @@ logging.basicConfig(
 
 async def main():
     # Prepare WebDriver.
-    port = os.getenv('PORT', 8080)
+    port = os.getenv("PORT", 8080)
     new_session = await get_webdriver_session()
-    websocket = await websockets.connect(
-        new_session["capabilities"]["webSocketUrl"])
+    websocket = await websockets.connect(new_session["capabilities"]["webSocketUrl"])
     session_id = new_session["sessionId"]
-    classic_session_prefix = f'http://localhost:{port}/session/{session_id}'
+    classic_session_prefix = f"http://localhost:{port}/session/{session_id}"
 
     # Get browsing context (window handle in WebDriver Classic).
-    window_response = requests.get(f'{classic_session_prefix}/window',
-                                   timeout=10).json()
+    window_response = requests.get(
+        f"{classic_session_prefix}/window", timeout=10
+    ).json()
     browsing_context = window_response["value"]
 
     # WebDriver Classic: navigate to page.
-    page_url = f'file://{Path(__file__).parent.resolve()}/app.html'
-    requests.post(f'{classic_session_prefix}/url',
-                  json={
-                      "url": page_url
-                  },
-                  timeout=10).json()
+    page_url = f"file://{Path(__file__).parent.resolve()}/app.html"
+    requests.post(
+        f"{classic_session_prefix}/url", json={"url": page_url}, timeout=10
+    ).json()
 
     # WebDriver Classic: find all titles' links.
-    classic_result = requests.post(f'{classic_session_prefix}/elements',
-                                   json={
-                                       "using": "css selector",
-                                       "value": ".titleline > a"
-                                   },
-                                   timeout=10).json()
+    classic_result = requests.post(
+        f"{classic_session_prefix}/elements",
+        json={"using": "css selector", "value": ".titleline > a"},
+        timeout=10,
+    ).json()
 
     # `classic_result` has the following format:
     # {'value':
@@ -75,12 +72,14 @@ async def main():
 
     # Collect element references into an array.
     raw_element_ids = list(
-        map(lambda _element: _element["element-6066-11e4-a52e-4f735466cecf"],
-            classic_result["value"]))
+        map(
+            lambda _element: _element["element-6066-11e4-a52e-4f735466cecf"],
+            classic_result["value"],
+        )
+    )
 
     # Collect element ids into an array of BiDi shared references.
-    bidi_element_references = list(
-        map(lambda _id: {"sharedId": _id}, raw_element_ids))
+    bidi_element_references = list(map(lambda _id: {"sharedId": _id}, raw_element_ids))
 
     # Pass BiDi shared references to BiDi script.
     command_result = await run_and_wait_command(
@@ -95,12 +94,12 @@ async def main():
                 });
             }""",
                 "arguments": bidi_element_references,
-                "target": {
-                    "context": browsing_context
-                },
-                "awaitPromise": True
-            }
-        }, websocket)
+                "target": {"context": browsing_context},
+                "awaitPromise": True,
+            },
+        },
+        websocket,
+    )
 
     links = command_result["result"]["result"]
 

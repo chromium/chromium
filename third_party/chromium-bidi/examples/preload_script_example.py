@@ -34,11 +34,8 @@ async def main():
     # Open browser
     websocket = await get_websocket()
     await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "session.new",
-            "params": {}
-        }, websocket)
+        {"id": next(ID), "method": "session.new", "params": {}}, websocket
+    )
 
     # Add preload script
     await run_and_wait_command(
@@ -47,33 +44,29 @@ async def main():
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": """() => { window.foo='bar'; }""",
-            }
-        }, websocket)
+            },
+        },
+        websocket,
+    )
 
     # Open tab
     command_result = await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "browsingContext.create",
-            "params": {
-                "type": "tab"
-            }
-        }, websocket)
-    context_id = command_result['result']['context']
+        {"id": next(ID), "method": "browsingContext.create", "params": {"type": "tab"}},
+        websocket,
+    )
+    context_id = command_result["result"]["context"]
 
     # Navigate to page: https://news.ycombinator.com/
     # To avoid network dependency in this test, use a local (static) copy.
-    page_url = f'file://{Path(__file__).parent.resolve()}/app.html'
+    page_url = f"file://{Path(__file__).parent.resolve()}/app.html"
     await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.navigate",
-            "params": {
-                "url": page_url,
-                "context": context_id,
-                "wait": "complete"
-            }
-        }, websocket)
+            "params": {"url": page_url, "context": context_id, "wait": "complete"},
+        },
+        websocket,
+    )
 
     # Verify preload script is executed.
     result = await run_and_wait_command(
@@ -82,13 +75,13 @@ async def main():
             "method": "script.evaluate",
             "params": {
                 "expression": "window.foo",
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "awaitPromise": True,
                 "resultOwnership": "root",
-            }
-        }, websocket)
+            },
+        },
+        websocket,
+    )
     assert result["result"]["result"] == {"type": "string", "value": "bar"}
 
 

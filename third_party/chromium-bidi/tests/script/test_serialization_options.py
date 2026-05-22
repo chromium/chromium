@@ -19,39 +19,54 @@ from test_helpers import execute_command
 TEST_CASES = pytest.mark.parametrize(
     "eval, max_object_depth, expected_result",
     [
-        ("({'foo': {'bar': 'baz'}})", 0, {
-            "type": "object"
-        }),
-        ("({'foo': {'bar': 'baz'}})", 1, {
-            "type": "object",
-            "value": [["foo", {
+        ("({'foo': {'bar': 'baz'}})", 0, {"type": "object"}),
+        (
+            "({'foo': {'bar': 'baz'}})",
+            1,
+            {
                 "type": "object",
-            }]],
-        }),
-        ("({'foo': {'bar': 'baz'}})", 2, {
-            "type": "object",
-            "value": [[
-                "foo", {
-                    "type": "object",
-                    "value": [["bar", {
-                        "type": "string",
-                        "value": "baz"
-                    }]]
-                }
-            ]],
-        }),
-        ("({'foo': {'bar': 'baz'}})", None, {
-            "type": "object",
-            "value": [[
-                "foo", {
-                    "type": "object",
-                    "value": [["bar", {
-                        "type": "string",
-                        "value": "baz"
-                    }]]
-                }
-            ]],
-        }),
+                "value": [
+                    [
+                        "foo",
+                        {
+                            "type": "object",
+                        },
+                    ]
+                ],
+            },
+        ),
+        (
+            "({'foo': {'bar': 'baz'}})",
+            2,
+            {
+                "type": "object",
+                "value": [
+                    [
+                        "foo",
+                        {
+                            "type": "object",
+                            "value": [["bar", {"type": "string", "value": "baz"}]],
+                        },
+                    ]
+                ],
+            },
+        ),
+        (
+            "({'foo': {'bar': 'baz'}})",
+            None,
+            {
+                "type": "object",
+                "value": [
+                    [
+                        "foo",
+                        {
+                            "type": "object",
+                            "value": [["bar", {"type": "string", "value": "baz"}]],
+                        },
+                    ]
+                ],
+            },
+        ),
     ],
     ids=[
         "maxObjectDepth: 0",
@@ -65,43 +80,39 @@ TEST_CASES = pytest.mark.parametrize(
 @pytest.mark.asyncio
 @TEST_CASES
 async def test_serializationOptions_maxObjectDepth_evaluate(
-        websocket, context_id, eval, max_object_depth, expected_result):
+    websocket, context_id, eval, max_object_depth, expected_result
+):
     response = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": eval,
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "awaitPromise": False,
-                "serializationOptions": {
-                    "maxObjectDepth": max_object_depth
-                }
-            }
-        })
+                "serializationOptions": {"maxObjectDepth": max_object_depth},
+            },
+        },
+    )
     assert response["result"] == expected_result
 
 
 @pytest.mark.asyncio
 @TEST_CASES
 async def test_serializationOptions_maxObjectDepth_callFunction(
-        websocket, context_id, eval, max_object_depth, expected_result):
+    websocket, context_id, eval, max_object_depth, expected_result
+):
     response = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": f"()=>{eval}",
-                "this": {
-                    "type": "undefined"
-                },
+                "this": {"type": "undefined"},
                 "awaitPromise": False,
-                "target": {
-                    "context": context_id
-                },
-                "serializationOptions": {
-                    "maxObjectDepth": max_object_depth
-                }
-            }
-        })
+                "target": {"context": context_id},
+                "serializationOptions": {"maxObjectDepth": max_object_depth},
+            },
+        },
+    )
     assert response["result"] == expected_result

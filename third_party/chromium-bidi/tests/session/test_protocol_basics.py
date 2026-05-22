@@ -15,8 +15,13 @@
 
 import pytest
 from anys import ANY_STR
-from test_helpers import (AnyExtending, execute_command, json,
-                          read_JSON_message, send_JSON_command)
+from test_helpers import (
+    AnyExtending,
+    execute_command,
+    json,
+    read_JSON_message,
+    send_JSON_command,
+)
 
 # Tests for "handle an incoming message" error handling, when the message
 # can't be decoded as known command.
@@ -25,15 +30,11 @@ from test_helpers import (AnyExtending, execute_command, json,
 
 @pytest.mark.asyncio
 async def test_invalid_json(websocket):
-    message = 'this is not json'
+    message = "this is not json"
     await websocket.send(message)
     resp = await read_JSON_message(websocket)
-    assert resp == {
-        "type": "error",
-        "error": "invalid argument",
-        "message": ANY_STR
-    }
-    assert "unable to parse BiDi command" in resp['message']
+    assert resp == {"type": "error", "error": "invalid argument", "message": ANY_STR}
+    assert "unable to parse BiDi command" in resp["message"]
 
 
 @pytest.mark.asyncio
@@ -41,105 +42,93 @@ async def test_empty_object(websocket):
     command = {}
     await websocket.send(json.dumps(command))
     resp = await read_JSON_message(websocket)
-    assert resp == {
-        "type": "error",
-        "error": "invalid argument",
-        "message": ANY_STR
-    }
+    assert resp == {"type": "error", "error": "invalid argument", "message": ANY_STR}
 
 
 @pytest.mark.asyncio
 async def test_session_status(websocket):
-    command = {
-        "type": "success",
-        "id": 5,
-        "method": "session.status",
-        "params": {}
-    }
+    command = {"type": "success", "id": 5, "method": "session.status", "params": {}}
     await send_JSON_command(websocket, command)
     resp = await read_JSON_message(websocket)
-    assert resp == AnyExtending({
-        "id": 5,
-        "type": "success",
-        "result": {
-            "ready": False,
-            "message": "already connected"
+    assert resp == AnyExtending(
+        {
+            "id": 5,
+            "type": "success",
+            "result": {"ready": False, "message": "already connected"},
         }
-    })
+    )
 
 
 @pytest.mark.asyncio
 async def test_channel_non_empty_static_command(websocket):
-    command_id = await send_JSON_command(websocket, {
-        "method": "session.status",
-        "params": {},
-        "goog:channel": "SOME_CHANNEL"
-    })
+    command_id = await send_JSON_command(
+        websocket,
+        {"method": "session.status", "params": {}, "goog:channel": "SOME_CHANNEL"},
+    )
     resp = await read_JSON_message(websocket)
 
     if "build" in resp["result"]:
         # Heuristic to detect chromedriver.
         pytest.xfail(reason="TODO: http://b/343683918")
 
-    assert resp == AnyExtending({
-        "id": command_id,
-        "goog:channel": "SOME_CHANNEL",
-        "type": "success",
-        "result": {
-            "ready": False,
-            "message": "already connected"
+    assert resp == AnyExtending(
+        {
+            "id": command_id,
+            "goog:channel": "SOME_CHANNEL",
+            "type": "success",
+            "result": {"ready": False, "message": "already connected"},
         }
-    })
+    )
 
 
 @pytest.mark.asyncio
 async def test_channel_non_empty_not_static_command(websocket):
     command_id = await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "id": 2,
             "method": "browsingContext.getTree",
             "params": {},
-            "goog:channel": "SOME_CHANNEL"
-        })
+            "goog:channel": "SOME_CHANNEL",
+        },
+    )
     resp = await read_JSON_message(websocket)
-    assert resp == AnyExtending({
-        "id": command_id,
-        "goog:channel": "SOME_CHANNEL",
-        "type": "success",
-        "result": {
-            "contexts": [{}]
+    assert resp == AnyExtending(
+        {
+            "id": command_id,
+            "goog:channel": "SOME_CHANNEL",
+            "type": "success",
+            "result": {"contexts": [{}]},
         }
-    })
+    )
 
 
 @pytest.mark.asyncio
 async def test_channel_empty(websocket):
-    await send_JSON_command(websocket, {
-        "id": 7000,
-        "method": "session.status",
-        "params": {},
-        "goog:channel": ""
-    })
+    await send_JSON_command(
+        websocket,
+        {"id": 7000, "method": "session.status", "params": {}, "goog:channel": ""},
+    )
     resp = await read_JSON_message(websocket)
-    assert resp == AnyExtending({
-        "id": 7000,
-        "type": "success",
-        "result": {
-            "ready": False,
-            "message": "already connected"
+    assert resp == AnyExtending(
+        {
+            "id": 7000,
+            "type": "success",
+            "result": {"ready": False, "message": "already connected"},
         }
-    })
+    )
 
 
 @pytest.mark.asyncio
 async def test_command_unknown(websocket):
     unknown_command = "some.unknown.command"
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'unknown command',
-                           'message': f"Unknown command '{unknown_command}'."
-                       })):
-        await execute_command(websocket, {
-            "method": unknown_command,
-            "params": {}
-        })
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "unknown command",
+                "message": f"Unknown command '{unknown_command}'.",
+            }
+        ),
+    ):
+        await execute_command(websocket, {"method": unknown_command, "params": {}})

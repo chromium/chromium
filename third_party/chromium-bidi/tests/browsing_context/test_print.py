@@ -19,14 +19,14 @@ from test_helpers import execute_command, goto_url
 
 
 @pytest.mark.asyncio
-async def test_print_top_level_context(websocket, context_id, html,
-                                       test_headless_mode):
+async def test_print_top_level_context(websocket, context_id, html, test_headless_mode):
     if test_headless_mode == "old":
         pytest.xfail("PDF viewer not available in headless.")
     await goto_url(websocket, context_id, html())
 
     print_result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.print",
             "params": {
                 "context": context_id,
@@ -35,27 +35,35 @@ async def test_print_top_level_context(websocket, context_id, html,
                     "height": 100,
                 },
                 "scale": 1.0,
-            }
-        })
+            },
+        },
+    )
 
     # 'data' is not deterministic, ~a dozen characters differ between runs.
     assert print_result["data"] == ANY_STR
 
-    await goto_url(websocket, context_id,
-                   f'data:application/pdf,base64;{print_result["data"]}')
+    await goto_url(
+        websocket, context_id, f"data:application/pdf,base64;{print_result['data']}"
+    )
 
 
 @pytest.mark.asyncio
 async def test_print_iframe(websocket, iframe_id, html):
     with pytest.raises(
-            Exception,
-            match=str({
-                'error': 'unsupported operation',
-                'message': 'Printing of non-top level contexts is not supported'
-            })):
-        await execute_command(websocket, {
-            "method": "browsingContext.print",
-            "params": {
-                "context": iframe_id,
+        Exception,
+        match=str(
+            {
+                "error": "unsupported operation",
+                "message": "Printing of non-top level contexts is not supported",
             }
-        })
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "browsingContext.print",
+                "params": {
+                    "context": iframe_id,
+                },
+            },
+        )

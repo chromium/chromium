@@ -14,22 +14,30 @@
 # limitations under the License.
 
 import pytest
-from test_helpers import (AnyExtending, execute_command, goto_url,
-                          send_JSON_command, subscribe, wait_for_event)
+from test_helpers import (
+    AnyExtending,
+    execute_command,
+    goto_url,
+    send_JSON_command,
+    subscribe,
+    wait_for_event,
+)
 
-KEYS_TO_STABILIZE = ['sharedId', 'context', 'realm', 'id']
+KEYS_TO_STABILIZE = ["sharedId", "context", "realm", "id"]
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('multiple', [True, False])
-async def test_file_dialog_show_file_event(websocket, context_id, url_example,
-                                           multiple):
+@pytest.mark.parametrize("multiple", [True, False])
+async def test_file_dialog_show_file_event(
+    websocket, context_id, url_example, multiple
+):
     await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket, ["input.fileDialogOpened"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": f"window.showOpenFilePicker({{multiple: {'true' if multiple else 'false'}}})",
@@ -37,30 +45,31 @@ async def test_file_dialog_show_file_event(websocket, context_id, url_example,
                     "context": context_id,
                 },
                 "awaitPromise": False,
-                "userActivation": True
-            }
-        })
-
-    response = await wait_for_event(websocket, 'input.fileDialogOpened')
-    assert response == {
-        'method': 'input.fileDialogOpened',
-        'params': {
-            'context': context_id,
-            'multiple': multiple,
+                "userActivation": True,
+            },
         },
-        'type': 'event',
+    )
+
+    response = await wait_for_event(websocket, "input.fileDialogOpened")
+    assert response == {
+        "method": "input.fileDialogOpened",
+        "params": {
+            "context": context_id,
+            "multiple": multiple,
+        },
+        "type": "event",
     }
 
 
 @pytest.mark.asyncio
-async def test_file_dialog_show_directory_event(websocket, context_id,
-                                                url_example):
+async def test_file_dialog_show_directory_event(websocket, context_id, url_example):
     await goto_url(websocket, context_id, url_example)
 
     await subscribe(websocket, ["input.fileDialogOpened"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "window.showDirectoryPicker()",
@@ -68,34 +77,38 @@ async def test_file_dialog_show_directory_event(websocket, context_id,
                     "context": context_id,
                 },
                 "awaitPromise": False,
-                "userActivation": True
-            }
-        })
-
-    response = await wait_for_event(websocket, 'input.fileDialogOpened')
-    assert response == {
-        'method': 'input.fileDialogOpened',
-        'params': {
-            'context': context_id,
-            'multiple': False,
+                "userActivation": True,
+            },
         },
-        'type': 'event',
+    )
+
+    response = await wait_for_event(websocket, "input.fileDialogOpened")
+    assert response == {
+        "method": "input.fileDialogOpened",
+        "params": {
+            "context": context_id,
+            "multiple": False,
+        },
+        "type": "event",
     }
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('multiple', [True, False])
-async def test_file_dialog_input_click_event(websocket, context_id, html,
-                                             read_messages, multiple,
-                                             snapshot):
+@pytest.mark.parametrize("multiple", [True, False])
+async def test_file_dialog_input_click_event(
+    websocket, context_id, html, read_messages, multiple, snapshot
+):
     await goto_url(
-        websocket, context_id,
-        html(f"<input id=input type=file {'multiple' if multiple else ''} />"))
+        websocket,
+        context_id,
+        html(f"<input id=input type=file {'multiple' if multiple else ''} />"),
+    )
 
     await subscribe(websocket, ["input.fileDialogOpened"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "input.click(); input",
@@ -103,59 +116,39 @@ async def test_file_dialog_input_click_event(websocket, context_id, html,
                     "context": context_id,
                 },
                 "awaitPromise": False,
-                "userActivation": True
-            }
-        })
+                "userActivation": True,
+            },
+        },
+    )
 
     messages = await read_messages(2, keys_to_stabilize=KEYS_TO_STABILIZE)
     assert messages == snapshot
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [
-    {
-        'unhandledPromptBehavior': 'dismiss'
-    },
-    {
-        'unhandledPromptBehavior': 'dismiss and notify'
-    },
-    {
-        'unhandledPromptBehavior': {
-            'default': 'dismiss'
-        }
-    },
-    {
-        'unhandledPromptBehavior': {
-            'file': 'dismiss',
-            'default': 'ignore'
-        }
-    },
-    {
-        'unhandledPromptBehavior': 'accept'
-    },
-    {
-        'unhandledPromptBehavior': 'accept and notify'
-    },
-    {
-        'unhandledPromptBehavior': {
-            'default': 'accept'
-        }
-    },
-    {
-        'unhandledPromptBehavior': {
-            'file': 'accept',
-            'default': 'ignore'
-        }
-    },
-],
-                         indirect=True)
+@pytest.mark.parametrize(
+    "capabilities",
+    [
+        {"unhandledPromptBehavior": "dismiss"},
+        {"unhandledPromptBehavior": "dismiss and notify"},
+        {"unhandledPromptBehavior": {"default": "dismiss"}},
+        {"unhandledPromptBehavior": {"file": "dismiss", "default": "ignore"}},
+        {"unhandledPromptBehavior": "accept"},
+        {"unhandledPromptBehavior": "accept and notify"},
+        {"unhandledPromptBehavior": {"default": "accept"}},
+        {"unhandledPromptBehavior": {"file": "accept", "default": "ignore"}},
+    ],
+    indirect=True,
+)
 async def test_file_dialog_unhandled_prompt_behavior_input_cancel(
-        websocket, context_id, html, read_messages, snapshot):
+    websocket, context_id, html, read_messages, snapshot
+):
     await goto_url(websocket, context_id, html("<input id=input type=file />"))
-    await subscribe(websocket, ["script.message", 'input.fileDialogOpened'])
+    await subscribe(websocket, ["script.message", "input.fileDialogOpened"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": """function(channel) {
@@ -171,47 +164,43 @@ async def test_file_dialog_unhandled_prompt_behavior_input_cancel(
                 "target": {
                     "context": context_id,
                 },
-                "arguments": [{
-                    "type": "channel",
-                    "value": {
-                        "channel": "channel_name"
-                    }
-                }],
+                "arguments": [
+                    {"type": "channel", "value": {"channel": "channel_name"}}
+                ],
                 "awaitPromise": False,
-                "userActivation": True
-            }
-        })
+                "userActivation": True,
+            },
+        },
+    )
 
     messages = await read_messages(3, keys_to_stabilize=KEYS_TO_STABILIZE)
     assert messages == snapshot
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{}, {
-    'unhandledPromptBehavior': 'ignore'
-}, {
-    'unhandledPromptBehavior': {
-        'default': 'ignore'
-    }
-}, {
-    'unhandledPromptBehavior': {
-        'file': 'ignore',
-        'default': 'dismiss'
-    }
-}],
-                         indirect=True)
+@pytest.mark.parametrize(
+    "capabilities",
+    [
+        {},
+        {"unhandledPromptBehavior": "ignore"},
+        {"unhandledPromptBehavior": {"default": "ignore"}},
+        {"unhandledPromptBehavior": {"file": "ignore", "default": "dismiss"}},
+    ],
+    indirect=True,
+)
 async def test_file_dialog_unhandled_prompt_behavior_input_ignore(
-        websocket, context_id, html, read_messages, snapshot,
-        test_headless_mode):
+    websocket, context_id, html, read_messages, snapshot, test_headless_mode
+):
     if test_headless_mode != "false":
         pytest.xfail("Headless browser always cancels the file dialog")
         return
 
     await goto_url(websocket, context_id, html("<input id=input type=file />"))
-    await subscribe(websocket, ["script.message", 'input.fileDialogOpened'])
+    await subscribe(websocket, ["script.message", "input.fileDialogOpened"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": """function(channel) {
@@ -227,68 +216,45 @@ async def test_file_dialog_unhandled_prompt_behavior_input_ignore(
                 "target": {
                     "context": context_id,
                 },
-                "arguments": [{
-                    "type": "channel",
-                    "value": {
-                        "channel": "channel_name"
-                    }
-                }],
+                "arguments": [
+                    {"type": "channel", "value": {"channel": "channel_name"}}
+                ],
                 "awaitPromise": False,
-                "userActivation": True
-            }
-        })
+                "userActivation": True,
+            },
+        },
+    )
 
-    messages = await read_messages(2,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True)
+    messages = await read_messages(
+        2, keys_to_stabilize=KEYS_TO_STABILIZE, check_no_other_messages=True
+    )
     assert messages == snapshot
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [
-    {
-        'unhandledPromptBehavior': 'dismiss'
-    },
-    {
-        'unhandledPromptBehavior': 'dismiss and notify'
-    },
-    {
-        'unhandledPromptBehavior': {
-            'default': 'dismiss'
-        }
-    },
-    {
-        'unhandledPromptBehavior': {
-            'file': 'dismiss',
-            'default': 'ignore'
-        }
-    },
-    {
-        'unhandledPromptBehavior': 'accept'
-    },
-    {
-        'unhandledPromptBehavior': 'accept and notify'
-    },
-    {
-        'unhandledPromptBehavior': {
-            'default': 'accept'
-        }
-    },
-    {
-        'unhandledPromptBehavior': {
-            'file': 'accept',
-            'default': 'ignore'
-        }
-    },
-],
-                         indirect=True)
+@pytest.mark.parametrize(
+    "capabilities",
+    [
+        {"unhandledPromptBehavior": "dismiss"},
+        {"unhandledPromptBehavior": "dismiss and notify"},
+        {"unhandledPromptBehavior": {"default": "dismiss"}},
+        {"unhandledPromptBehavior": {"file": "dismiss", "default": "ignore"}},
+        {"unhandledPromptBehavior": "accept"},
+        {"unhandledPromptBehavior": "accept and notify"},
+        {"unhandledPromptBehavior": {"default": "accept"}},
+        {"unhandledPromptBehavior": {"file": "accept", "default": "ignore"}},
+    ],
+    indirect=True,
+)
 async def test_file_dialog_unhandled_prompt_behavior_show_file_cancel(
-        websocket, context_id, url_example):
+    websocket, context_id, url_example
+):
     await goto_url(websocket, context_id, url_example)
     await subscribe(websocket, ["input.fileDialogOpened"])
 
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "window.showOpenFilePicker()",
@@ -296,34 +262,35 @@ async def test_file_dialog_unhandled_prompt_behavior_show_file_cancel(
                     "context": context_id,
                 },
                 "awaitPromise": True,
-                "userActivation": True
-            }
-        })
+                "userActivation": True,
+            },
+        },
+    )
 
-    assert resp == AnyExtending({
-        "type": "exception",
-        "exceptionDetails": {
-            "text": "AbortError: Failed to execute 'showOpenFilePicker' on 'Window': Intercepted by Page.setInterceptFileChooserDialog()."
+    assert resp == AnyExtending(
+        {
+            "type": "exception",
+            "exceptionDetails": {
+                "text": "AbortError: Failed to execute 'showOpenFilePicker' on 'Window': Intercepted by Page.setInterceptFileChooserDialog()."
+            },
         }
-    })
+    )
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{}, {
-    'unhandledPromptBehavior': 'ignore'
-}, {
-    'unhandledPromptBehavior': {
-        'default': 'ignore'
-    }
-}, {
-    'unhandledPromptBehavior': {
-        'file': 'ignore',
-        'default': 'dismiss'
-    }
-}],
-                         indirect=True)
+@pytest.mark.parametrize(
+    "capabilities",
+    [
+        {},
+        {"unhandledPromptBehavior": "ignore"},
+        {"unhandledPromptBehavior": {"default": "ignore"}},
+        {"unhandledPromptBehavior": {"file": "ignore", "default": "dismiss"}},
+    ],
+    indirect=True,
+)
 async def test_file_dialog_unhandled_prompt_behavior_show_file_ignore(
-        websocket, context_id, url_example, test_headless_mode):
+    websocket, context_id, url_example, test_headless_mode
+):
     """
     The test exploits the fact that the file picker dialog can't be opened
     twice. This is used as an indicator that the dialog was shown.
@@ -335,7 +302,8 @@ async def test_file_dialog_unhandled_prompt_behavior_show_file_ignore(
     await goto_url(websocket, context_id, url_example)
 
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "Promise.all([window.showOpenFilePicker(),window.showOpenFilePicker()])",
@@ -343,13 +311,16 @@ async def test_file_dialog_unhandled_prompt_behavior_show_file_ignore(
                     "context": context_id,
                 },
                 "awaitPromise": True,
-                "userActivation": True
-            }
-        })
+                "userActivation": True,
+            },
+        },
+    )
 
-    assert resp == AnyExtending({
-        "type": "exception",
-        "exceptionDetails": {
-            "text": "NotAllowedError: Failed to execute 'showOpenFilePicker' on 'Window': File picker already active."
+    assert resp == AnyExtending(
+        {
+            "type": "exception",
+            "exceptionDetails": {
+                "text": "NotAllowedError: Failed to execute 'showOpenFilePicker' on 'Window': File picker already active."
+            },
         }
-    })
+    )

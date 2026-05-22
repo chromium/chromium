@@ -26,16 +26,15 @@ from pathlib import Path
 from threading import Event, Thread
 from typing import Any, Literal
 
-from flask import Flask
+from flask import Flask, redirect, request, stream_with_context
 from flask import Response as FlaskResponse
-from flask import redirect, request, stream_with_context
 
 
 # Helper to find a free port
 def find_free_port() -> int:
     """Finds and returns an available port number."""
     with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as s:
-        s.bind(('', 0))
+        s.bind(("", 0))
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         return s.getsockname()[1]
 
@@ -57,12 +56,12 @@ class LocalHttpServer:
     __path_cacheable = "/cacheable"
     __path_echo = "/echo"
 
-    content_200: str = 'default 200 page'
+    content_200: str = "default 200 page"
 
     __app: Flask
     __host: str
     __port: int
-    __protocol: Literal['http', 'https']
+    __protocol: Literal["http", "https"]
 
     __start_time: datetime
     _dynamic_responses: dict[str, Any]
@@ -98,12 +97,12 @@ class LocalHttpServer:
     def __html_doc(self, content: str) -> str:
         return f"<!DOCTYPE html><html><head><link rel='shortcut icon' href='data:image/x-icon;,' type='image/x-icon'></head><body>{content}</body></html>"
 
-    def __init__(self, host: str = 'localhost', ssl_cert_prefix=None) -> None:
+    def __init__(self, host: str = "localhost", ssl_cert_prefix=None) -> None:
         self.__app = Flask(__name__)
         # Important for some Flask behaviors in a test context
         self.__app.testing = True
         self.__host = host
-        self.__protocol = 'http' if ssl_cert_prefix is None else "https"
+        self.__protocol = "http" if ssl_cert_prefix is None else "https"
         self.__port = find_free_port()
 
         ssl_context = None
@@ -113,10 +112,10 @@ class LocalHttpServer:
             key_file = current_dir / f"certs/{ssl_cert_prefix}.key"
             if not cert_file.exists():
                 raise FileNotFoundError(
-                    f"SSL certificate file not found in {cert_file}")
+                    f"SSL certificate file not found in {cert_file}"
+                )
             if not key_file.exists():
-                raise FileNotFoundError(
-                    f"SSL key file not found in {key_file}")
+                raise FileNotFoundError(f"SSL key file not found in {key_file}")
             ssl_context = (str(cert_file), str(key_file))
 
         self.__start_time = datetime.now(timezone.utc)
@@ -132,8 +131,9 @@ class LocalHttpServer:
 
         @self.__app.route(self.__path_base)
         def base_route():
-            return FlaskResponse(self.__html_doc("I prevent CORS"),
-                                 mimetype="text/html")
+            return FlaskResponse(
+                self.__html_doc("I prevent CORS"), mimetype="text/html"
+            )
 
         @self.__app.route(self.__path_favicon)
         def favicon_route():
@@ -141,16 +141,19 @@ class LocalHttpServer:
 
         @self.__app.route(self.__path_200)
         def route_200_default():
-            return FlaskResponse(self.__html_doc(self.content_200),
-                                 mimetype="text/html")
+            return FlaskResponse(
+                self.__html_doc(self.content_200), mimetype="text/html"
+            )
 
         @self.__app.route(f"{self.__path_200}/<string:response_id>")
         def route_200_dynamic(response_id: str):
             data = self._dynamic_responses.get(response_id)
             if data:
-                return FlaskResponse(data["content"],
-                                     mimetype=data["content_type"],
-                                     headers=data["headers"])
+                return FlaskResponse(
+                    data["content"],
+                    mimetype=data["content_type"],
+                    headers=data["headers"],
+                )
             return FlaskResponse("Not Found", status=404)
 
         @self.__app.route(self.__path_echo)
@@ -162,7 +165,7 @@ class LocalHttpServer:
                 "origin": request.origin,
                 "json": request.json if request.is_json else None,
                 "form": request.form if request.form else None,
-                "data": request.data.decode('utf-8') if request.data else None,
+                "data": request.data.decode("utf-8") if request.data else None,
             }
             return FlaskResponse(json.dumps(data), mimetype="application/json")
 
@@ -174,35 +177,32 @@ class LocalHttpServer:
         def process_auth():
             authorization = request.headers.get("Authorization")
             if authorization is not None:
-                if authorization.startswith("Basic ") and len(
-                        authorization.split(" ")) == 2:
+                if (
+                    authorization.startswith("Basic ")
+                    and len(authorization.split(" ")) == 2
+                ):
                     # If the authorization is a basic auth, return the decoded.
                     decoded = base64.b64decode(authorization.split(" ")[1])
-                    return FlaskResponse(decoded,
-                                         status=200,
-                                         mimetype="text/html")
+                    return FlaskResponse(decoded, status=200, mimetype="text/html")
                 else:
                     # Otherwise, return them as is with a 500 HTTP code.
-                    return FlaskResponse(authorization,
-                                         status=500,
-                                         mimetype="text/html")
+                    return FlaskResponse(
+                        authorization, status=500, mimetype="text/html"
+                    )
             # No Authorization header
             return FlaskResponse(
-                'HTTP Error 401 Unauthorized: Access is denied',
+                "HTTP Error 401 Unauthorized: Access is denied",
                 status=401,
                 mimetype="text/html",
-                headers={
-                    "WWW-Authenticate": 'Basic realm="Access to staging site"'
-                })
+                headers={"WWW-Authenticate": 'Basic realm="Access to staging site"'},
+            )
 
         @self.__app.route(self.__path_hang_forever)
         def hang_forever():
             # Reset if called multiple times
             self.hang_forever_stop_flag.clear()
             self.hang_forever_stop_flag.wait()
-            return FlaskResponse("Request unblocked.",
-                                 status=200,
-                                 mimetype="text/html")
+            return FlaskResponse("Request unblocked.", status=200, mimetype="text/html")
 
         @self.__app.route(self.__path_hang_forever_download)
         def hang_forever_download():
@@ -222,9 +222,10 @@ class LocalHttpServer:
                 status=200,
                 mimetype="text/html",
                 headers={
-                    'Content-Disposition': 'attachment; filename="partially_downloaded_file.txt"',
-                    'Content-Type': 'text/plain',
-                })
+                    "Content-Disposition": 'attachment; filename="partially_downloaded_file.txt"',
+                    "Content-Type": "text/plain",
+                },
+            )
 
         @self.__app.route(self.__path_cacheable)
         def cache():
@@ -240,29 +241,30 @@ class LocalHttpServer:
                     status=200,
                     mimetype="text/html",
                     headers={
-                        "Cache-Control": 'public, max-age=31536000',
+                        "Cache-Control": "public, max-age=31536000",
                         # HTTP spec prefers RFC 1123 date format (GMT)
-                        'Last-Modified': self.__start_time.strftime(
-                            "%a, %d %b %Y %H:%M:%S GMT")
-                    })
+                        "Last-Modified": self.__start_time.strftime(
+                            "%a, %d %b %Y %H:%M:%S GMT"
+                        ),
+                    },
+                )
 
     def _check_server_readiness(self, timeout_s: float = 0.1) -> bool:
         """Checks if the server is up and responding to a basic request."""
         try:
             conn: http.client.HTTPConnection | http.client.HTTPSConnection
-            if self.__protocol == 'https':
+            if self.__protocol == "https":
                 context = ssl.create_default_context()
                 context.check_hostname = False
                 # For self-signed certs
                 context.verify_mode = ssl.CERT_NONE
-                conn = http.client.HTTPSConnection(self.__host,
-                                                   self.__port,
-                                                   timeout=timeout_s,
-                                                   context=context)
+                conn = http.client.HTTPSConnection(
+                    self.__host, self.__port, timeout=timeout_s, context=context
+                )
             else:
-                conn = http.client.HTTPConnection(self.__host,
-                                                  self.__port,
-                                                  timeout=timeout_s)
+                conn = http.client.HTTPConnection(
+                    self.__host, self.__port, timeout=timeout_s
+                )
 
             conn.request("GET", self.__path_base)
             response = conn.getresponse()
@@ -271,8 +273,13 @@ class LocalHttpServer:
             conn.close()
             # Check for any 2xx success
             return 200 <= response.status < 300
-        except (ConnectionRefusedError, TimeoutError, OSError,
-                http.client.HTTPException, ssl.SSLError):
+        except (
+            ConnectionRefusedError,
+            TimeoutError,
+            OSError,
+            http.client.HTTPException,
+            ssl.SSLError,
+        ):
             return False
         except Exception:
             # Catch any other unexpected errors during check
@@ -290,22 +297,21 @@ class LocalHttpServer:
             f"Flask server failed to start on {self.__protocol}://{self.__host}:{self.__port} within {max_wait_s}s."
         )
 
-    def _start_server(self,
-                      ssl_context_config: tuple[str, str] | None) -> None:
+    def _start_server(self, ssl_context_config: tuple[str, str] | None) -> None:
         """Starts the Flask development server in a separate thread."""
         if self.is_running():
             return
 
         kwargs = {
-            'host': self.__host,
-            'port': self.__port,
+            "host": self.__host,
+            "port": self.__port,
             # Should be False for stability and threaded mode
-            'debug': False,
+            "debug": False,
             # Reloader must be False when running in a thread
-            'use_reloader': False
+            "use_reloader": False,
         }
-        if self.__protocol == 'https':
-            kwargs['ssl_context'] = ssl_context_config
+        if self.__protocol == "https":
+            kwargs["ssl_context"] = ssl_context_config
 
         def run_server_thread():
             try:
@@ -335,10 +341,12 @@ class LocalHttpServer:
         """Returns the URL for the base page (used to prevent CORS issues)."""
         return self._build_url(self.__path_base)
 
-    def url_200(self,
-                content: str | None = None,
-                content_type: str = "text/html",
-                headers: dict[str, str] | None = None) -> str:
+    def url_200(
+        self,
+        content: str | None = None,
+        content_type: str = "text/html",
+        headers: dict[str, str] | None = None,
+    ) -> str:
         """
         Returns a URL that serves a 200 response.
         If 'content' is provided, a unique URL is generated for that specific content.
@@ -359,7 +367,7 @@ class LocalHttpServer:
                 "content": final_content,
                 "content_type": content_type,
                 # User-provided headers
-                "headers": headers
+                "headers": headers,
             }
             path = f"{self.__path_200}/{response_id}"
             return self._build_url(path)

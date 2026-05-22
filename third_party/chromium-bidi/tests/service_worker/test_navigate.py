@@ -19,44 +19,47 @@ from test_helpers import execute_command
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'acceptInsecureCerts': True
-}],
-                         indirect=True)
+@pytest.mark.parametrize("capabilities", [{"acceptInsecureCerts": True}], indirect=True)
 async def test_serviceWorker_acceptInsecureCertsCapability_respected(
-        websocket, context_id, local_server_bad_ssl):
+    websocket, context_id, local_server_bad_ssl
+):
     service_worker_script = local_server_bad_ssl.url_200(
-        content='', content_type='text/javascript')
-    service_worker_page = local_server_bad_ssl.url_200(content=f"""<script>
+        content="", content_type="text/javascript"
+    )
+    service_worker_page = local_server_bad_ssl.url_200(
+        content=f"""<script>
           window.registrationPromise = navigator.serviceWorker.register('{service_worker_script}');
-        </script>""")
+        </script>"""
+    )
 
     await execute_command(
-        websocket, {
-            'method': 'browsingContext.navigate',
-            'params': {
-                'url': service_worker_page,
-                'wait': 'complete',
-                'context': context_id
-            }
-        })
+        websocket,
+        {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": service_worker_page,
+                "wait": "complete",
+                "context": context_id,
+            },
+        },
+    )
 
     resp = await execute_command(
-        websocket, {
-            'method': 'script.evaluate',
-            'params': {
-                'expression': 'window.registrationPromise.then(r=>r.unregister())',
-                'awaitPromise': True,
-                'target': {
-                    'context': context_id
-                }
-            }
-        })
-    assert resp == {
-        'realm': ANY_STR,
-        'result': {
-            'type': 'boolean',
-            'value': True,
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "window.registrationPromise.then(r=>r.unregister())",
+                "awaitPromise": True,
+                "target": {"context": context_id},
+            },
         },
-        'type': 'success',
+    )
+    assert resp == {
+        "realm": ANY_STR,
+        "result": {
+            "type": "boolean",
+            "value": True,
+        },
+        "type": "success",
     }

@@ -32,16 +32,16 @@ def get_navigator_online(websocket):
 
     async def get_navigator_online(context_id):
         resp = await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "script.evaluate",
                 "params": {
                     "expression": "navigator.onLine",
-                    "target": {
-                        "context": context_id
-                    },
+                    "target": {"context": context_id},
                     "awaitPromise": True,
-                }
-            })
+                },
+            },
+        )
 
         return resp["result"]["value"] if "result" in resp else resp
 
@@ -54,20 +54,21 @@ def get_can_navigate(websocket, get_url):
     async def can_navigate(context_id):
         try:
             await execute_command(
-                websocket, {
+                websocket,
+                {
                     "method": "browsingContext.navigate",
                     "params": {
                         "url": get_url(),
                         "context": context_id,
                         "wait": "complete",
-                    }
-                })
+                    },
+                },
+            )
             return True
         except Exception as e:
-            if str(e) == str({
-                    "error": "unknown error",
-                    "message": "net::ERR_INTERNET_DISCONNECTED"
-            }):
+            if str(e) == str(
+                {"error": "unknown error", "message": "net::ERR_INTERNET_DISCONNECTED"}
+            ):
                 return False
             raise e
 
@@ -79,17 +80,17 @@ def get_can_fetch(websocket, url_echo):
 
     async def get_can_fetch(context_id):
         resp = await execute_command(
-            websocket, {
-                'method': 'script.evaluate',
-                'params': {
-                    'expression': f"fetch('{url_echo}')",
-                    'awaitPromise': True,
-                    'target': {
-                        'context': context_id
-                    }
-                }
-            })
-        return resp['type'] == 'success'
+            websocket,
+            {
+                "method": "script.evaluate",
+                "params": {
+                    "expression": f"fetch('{url_echo}')",
+                    "awaitPromise": True,
+                    "target": {"context": context_id},
+                },
+            },
+        )
+        return resp["type"] == "success"
 
     return get_can_fetch
 
@@ -98,11 +99,12 @@ def get_can_fetch(websocket, url_echo):
 def assert_status(get_navigator_online, get_can_fetch):
 
     async def assert_status(context_id, expected_status):
-        assert expected_status == await get_navigator_online(
-            context_id), f"navigator.onLine should be {expected_status}"
-        assert expected_status == await get_can_fetch(
-            context_id
-        ), f"fetch should {'not ' if expected_status else ''}be blocked"
+        assert expected_status == await get_navigator_online(context_id), (
+            f"navigator.onLine should be {expected_status}"
+        )
+        assert expected_status == await get_can_fetch(context_id), (
+            f"fetch should {'not ' if expected_status else ''}be blocked"
+        )
 
     return assert_status
 
@@ -123,35 +125,34 @@ def prepare_contexts(websocket, get_url):
 
 @pytest.mark.asyncio
 async def test_network_conditions_offline_set_and_clear_per_context(
-        websocket, context_id, another_context_id, prepare_contexts,
-        assert_status):
+    websocket, context_id, another_context_id, prepare_contexts, assert_status
+):
     await prepare_contexts(context_id, another_context_id)
 
     await assert_status(context_id, True)
     await assert_status(another_context_id, True)
 
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
             "params": {
-                "networkConditions": {
-                    "type": "offline"
-                },
-                "contexts": [context_id]
-            }
-        })
+                "networkConditions": {"type": "offline"},
+                "contexts": [context_id],
+            },
+        },
+    )
     assert resp == {}
     await assert_status(context_id, False)
     await assert_status(another_context_id, True)
 
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
-            "params": {
-                "networkConditions": None,
-                "contexts": [context_id]
-            }
-        })
+            "params": {"networkConditions": None, "contexts": [context_id]},
+        },
+    )
     assert resp == {}
     await assert_status(context_id, True)
     await assert_status(another_context_id, True)
@@ -159,7 +160,8 @@ async def test_network_conditions_offline_set_and_clear_per_context(
 
 @pytest.mark.asyncio
 async def test_network_conditions_offline_set_and_clear_per_user_context(
-        websocket, user_context_id, create_context, get_can_navigate):
+    websocket, user_context_id, create_context, get_can_navigate
+):
     """
     Assertion navigator.onLine requires navigation, which is not possible
     while offline, so check only possibility of navigation.
@@ -170,15 +172,15 @@ async def test_network_conditions_offline_set_and_clear_per_user_context(
     assert await get_can_navigate(browsing_context_id_2)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
             "params": {
-                "networkConditions": {
-                    "type": "offline"
-                },
-                "userContexts": [user_context_id]
-            }
-        })
+                "networkConditions": {"type": "offline"},
+                "userContexts": [user_context_id],
+            },
+        },
+    )
 
     assert await get_can_navigate(browsing_context_id_1)
     assert not await get_can_navigate(browsing_context_id_2)
@@ -187,15 +189,15 @@ async def test_network_conditions_offline_set_and_clear_per_user_context(
     assert not await get_can_navigate(browsing_context_id_3)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
             "params": {
-                "networkConditions": {
-                    "type": "offline"
-                },
-                "userContexts": ["default"]
-            }
-        })
+                "networkConditions": {"type": "offline"},
+                "userContexts": ["default"],
+            },
+        },
+    )
     assert not await get_can_navigate(browsing_context_id_1)
     assert not await get_can_navigate(browsing_context_id_2)
     assert not await get_can_navigate(browsing_context_id_3)
@@ -204,26 +206,24 @@ async def test_network_conditions_offline_set_and_clear_per_user_context(
     assert not await get_can_navigate(browsing_context_id_4)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
-            "params": {
-                "networkConditions": None,
-                "userContexts": [user_context_id]
-            }
-        })
+            "params": {"networkConditions": None, "userContexts": [user_context_id]},
+        },
+    )
     assert not await get_can_navigate(browsing_context_id_1)
     assert await get_can_navigate(browsing_context_id_2)
     assert await get_can_navigate(browsing_context_id_3)
     assert not await get_can_navigate(browsing_context_id_4)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
-            "params": {
-                "networkConditions": None,
-                "userContexts": ["default"]
-            }
-        })
+            "params": {"networkConditions": None, "userContexts": ["default"]},
+        },
+    )
     assert await get_can_navigate(browsing_context_id_1)
     assert await get_can_navigate(browsing_context_id_2)
     assert await get_can_navigate(browsing_context_id_3)
@@ -232,7 +232,8 @@ async def test_network_conditions_offline_set_and_clear_per_user_context(
 
 @pytest.mark.asyncio
 async def test_network_conditions_offline_set_and_clear_globally(
-        websocket, user_context_id, create_context, get_can_navigate):
+    websocket, user_context_id, create_context, get_can_navigate
+):
     """
     Assertion navigator.onLine requires navigation, which is not possible
     while offline, so check only possibility of navigation.
@@ -243,14 +244,14 @@ async def test_network_conditions_offline_set_and_clear_globally(
     assert await get_can_navigate(browsing_context_id_2)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
             "params": {
-                "networkConditions": {
-                    "type": "offline"
-                },
-            }
-        })
+                "networkConditions": {"type": "offline"},
+            },
+        },
+    )
 
     assert not await get_can_navigate(browsing_context_id_1)
     assert not await get_can_navigate(browsing_context_id_2)
@@ -261,12 +262,14 @@ async def test_network_conditions_offline_set_and_clear_globally(
     assert not await get_can_navigate(browsing_context_id_4)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
             "params": {
                 "networkConditions": None,
-            }
-        })
+            },
+        },
+    )
     assert await get_can_navigate(browsing_context_id_1)
     assert await get_can_navigate(browsing_context_id_2)
     assert await get_can_navigate(browsing_context_id_3)
@@ -280,7 +283,8 @@ async def test_network_conditions_offline_set_and_clear_globally(
 
 @pytest.mark.asyncio
 async def test_network_conditions_offline_set_and_clear_with_navigation(
-        websocket, context_id, prepare_contexts, get_can_navigate):
+    websocket, context_id, prepare_contexts, get_can_navigate
+):
     """
     Navigating away from the page while online puts page to an exotic
     `offline` state, so this should be tested separately from the other
@@ -291,23 +295,22 @@ async def test_network_conditions_offline_set_and_clear_with_navigation(
     assert await get_can_navigate(context_id)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
             "params": {
-                "networkConditions": {
-                    "type": "offline"
-                },
-                "contexts": [context_id]
-            }
-        })
+                "networkConditions": {"type": "offline"},
+                "contexts": [context_id],
+            },
+        },
+    )
     assert not await get_can_navigate(context_id)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "emulation.setNetworkConditions",
-            "params": {
-                "networkConditions": None,
-                "contexts": [context_id]
-            }
-        })
+            "params": {"networkConditions": None, "contexts": [context_id]},
+        },
+    )
     assert await get_can_navigate(context_id)

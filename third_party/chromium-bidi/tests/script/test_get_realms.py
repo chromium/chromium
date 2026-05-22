@@ -19,49 +19,44 @@ from test_helpers import execute_command
 
 @pytest.mark.asyncio
 async def test_scriptGetRealms(websocket, context_id, another_context_id):
-    result = await execute_command(websocket, {
-        "method": "script.getRealms",
-        "params": {
-            "context": context_id
-        }
-    })
+    result = await execute_command(
+        websocket, {"method": "script.getRealms", "params": {"context": context_id}}
+    )
 
     assert {
-        "realms": [{
-            "realm": ANY_STR,
-            "origin": "null",
-            "type": "window",
-            "context": context_id
-        }]
+        "realms": [
+            {
+                "realm": ANY_STR,
+                "origin": "null",
+                "type": "window",
+                "context": context_id,
+            }
+        ]
     } == result
 
     old_realm = result["realms"][0]["realm"]
 
     # Create a sandbox.
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "",
-                "target": {
-                    "context": context_id,
-                    "sandbox": 'some_sandbox'
-                },
+                "target": {"context": context_id, "sandbox": "some_sandbox"},
                 "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
+                "resultOwnership": "root",
+            },
+        },
+    )
 
     assert result["type"] == "success"
 
     sandbox_realm = result["realm"]
 
-    result = await execute_command(websocket, {
-        "method": "script.getRealms",
-        "params": {
-            "context": context_id
-        }
-    })
+    result = await execute_command(
+        websocket, {"method": "script.getRealms", "params": {"context": context_id}}
+    )
 
     assert ["realms"] == list(result.keys())
 
@@ -69,32 +64,34 @@ async def test_scriptGetRealms(websocket, context_id, another_context_id):
     def realm_key(x):
         return x["realm"]
 
-    assert sorted([{
-        "realm": old_realm,
-        "origin": "null",
-        "type": "window",
-        "context": context_id
-    }, {
-        "realm": sandbox_realm,
-        "origin": "null",
-        "type": "window",
-        "sandbox": "some_sandbox",
-        "context": context_id
-    }],
-                  key=realm_key) == sorted(result["realms"], key=realm_key)
+    assert sorted(
+        [
+            {
+                "realm": old_realm,
+                "origin": "null",
+                "type": "window",
+                "context": context_id,
+            },
+            {
+                "realm": sandbox_realm,
+                "origin": "null",
+                "type": "window",
+                "sandbox": "some_sandbox",
+                "context": context_id,
+            },
+        ],
+        key=realm_key,
+    ) == sorted(result["realms"], key=realm_key)
 
     # Assert closing browsing context destroys its realms.
-    await execute_command(websocket, {
-        "method": "browsingContext.close",
-        "params": {
-            "context": context_id
-        }
-    })
+    await execute_command(
+        websocket,
+        {"method": "browsingContext.close", "params": {"context": context_id}},
+    )
 
-    result = await execute_command(websocket, {
-        "method": "script.getRealms",
-        "params": {}
-    })
+    result = await execute_command(
+        websocket, {"method": "script.getRealms", "params": {}}
+    )
 
     # Assert only realm form the another tab is present.
     assert len(result["realms"]) == 1

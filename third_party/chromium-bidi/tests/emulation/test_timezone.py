@@ -17,9 +17,7 @@ import pytest
 import pytest_asyncio
 from test_helpers import execute_command, goto_url
 
-TIMEZONES = [
-    "Asia/Yekaterinburg", "Europe/Berlin", "America/New_York", "Asia/Tokyo"
-]
+TIMEZONES = ["Asia/Yekaterinburg", "Europe/Berlin", "America/New_York", "Asia/Tokyo"]
 TIMEZONE_OFFSET = "+10:00"
 
 
@@ -66,66 +64,63 @@ async def get_timezone(websocket, context_id):
     Returns browsing context's current timezone.
     """
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "Intl.DateTimeFormat().resolvedOptions().timeZone",
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "awaitPromise": True,
-            }
-        })
+            },
+        },
+    )
 
     return resp["result"]["value"] if "result" in resp else resp
 
 
 @pytest.mark.asyncio
-async def test_timezone_set_and_clear(websocket, context_id, default_timezone,
-                                      some_timezone):
+async def test_timezone_set_and_clear(
+    websocket, context_id, default_timezone, some_timezone
+):
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'contexts': [context_id],
-                'timezone': some_timezone
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"contexts": [context_id], "timezone": some_timezone},
+        },
+    )
 
     assert (await get_timezone(websocket, context_id)) == some_timezone
 
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'contexts': [context_id],
-                'timezone': None
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"contexts": [context_id], "timezone": None},
+        },
+    )
     assert (await get_timezone(websocket, context_id)) == default_timezone
 
 
 @pytest.mark.asyncio
-async def test_timezone_per_user_context(websocket, user_context_id,
-                                         create_context, some_timezone,
-                                         another_timezone):
+async def test_timezone_per_user_context(
+    websocket, user_context_id, create_context, some_timezone, another_timezone
+):
     # Set different timezone overrides for different user contexts.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'userContexts': ["default"],
-                'timezone': some_timezone
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"userContexts": ["default"], "timezone": some_timezone},
+        },
+    )
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'userContexts': [user_context_id],
-                'timezone': another_timezone
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"userContexts": [user_context_id], "timezone": another_timezone},
+        },
+    )
 
     # Assert the overrides applied for the right contexts.
     browsing_context_id_1 = await create_context()
@@ -138,102 +133,107 @@ async def test_timezone_per_user_context(websocket, user_context_id,
 
 
 @pytest.mark.asyncio
-async def test_timezone_per_browsing_context(websocket, context_id,
-                                             another_context_id,
-                                             create_context, some_timezone,
-                                             another_timezone):
+async def test_timezone_per_browsing_context(
+    websocket,
+    context_id,
+    another_context_id,
+    create_context,
+    some_timezone,
+    another_timezone,
+):
     # Set different timezone overrides for different user contexts.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'contexts': [context_id],
-                'timezone': some_timezone
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"contexts": [context_id], "timezone": some_timezone},
+        },
+    )
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'contexts': [another_context_id],
-                'timezone': another_timezone
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"contexts": [another_context_id], "timezone": another_timezone},
+        },
+    )
 
     assert await get_timezone(websocket, context_id) == some_timezone
-    assert await get_timezone(websocket,
-                              another_context_id) == another_timezone
+    assert await get_timezone(websocket, another_context_id) == another_timezone
 
 
 @pytest.mark.asyncio
-async def test_timezone_iframe(websocket, context_id, iframe_id, html,
-                               default_timezone, some_timezone,
-                               another_timezone):
+async def test_timezone_iframe(
+    websocket,
+    context_id,
+    iframe_id,
+    html,
+    default_timezone,
+    some_timezone,
+    another_timezone,
+):
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'contexts': [context_id],
-                'timezone': some_timezone
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"contexts": [context_id], "timezone": some_timezone},
+        },
+    )
 
     assert await get_timezone(websocket, iframe_id) == some_timezone
 
     # Move iframe out of process
-    await goto_url(websocket, iframe_id,
-                   html("<h1>FRAME</h1>", same_origin=False))
+    await goto_url(websocket, iframe_id, html("<h1>FRAME</h1>", same_origin=False))
     # Assert timezone emulation persisted.
     assert await get_timezone(websocket, iframe_id) == some_timezone
 
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'contexts': [context_id],
-                'timezone': another_timezone
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"contexts": [context_id], "timezone": another_timezone},
+        },
+    )
     assert await get_timezone(websocket, iframe_id) == another_timezone
 
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'contexts': [context_id],
-                'timezone': None
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"contexts": [context_id], "timezone": None},
+        },
+    )
     assert await get_timezone(websocket, iframe_id) == default_timezone
 
 
 @pytest.mark.asyncio
 async def test_timezone_invalid(websocket, context_id):
     INVALID_TIMEZONE = "abcd"
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "invalid argument",
-                           "message": f'Invalid timezone "{INVALID_TIMEZONE}"'
-                       })):
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "invalid argument",
+                "message": f'Invalid timezone "{INVALID_TIMEZONE}"',
+            }
+        ),
+    ):
         await execute_command(
-            websocket, {
-                'method': 'emulation.setTimezoneOverride',
-                'params': {
-                    'contexts': [context_id],
-                    'timezone': INVALID_TIMEZONE
-                }
-            })
+            websocket,
+            {
+                "method": "emulation.setTimezoneOverride",
+                "params": {"contexts": [context_id], "timezone": INVALID_TIMEZONE},
+            },
+        )
 
 
 @pytest.mark.asyncio
 async def test_timezone_offset(websocket, context_id, default_timezone):
     await execute_command(
-        websocket, {
-            'method': 'emulation.setTimezoneOverride',
-            'params': {
-                'contexts': [context_id],
-                'timezone': TIMEZONE_OFFSET
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setTimezoneOverride",
+            "params": {"contexts": [context_id], "timezone": TIMEZONE_OFFSET},
+        },
+    )
 
     assert (await get_timezone(websocket, context_id)) == TIMEZONE_OFFSET

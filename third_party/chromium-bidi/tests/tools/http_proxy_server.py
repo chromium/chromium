@@ -16,7 +16,7 @@
 from subprocess import PIPE, Popen
 
 
-class HttpProxyServer():
+class HttpProxyServer:
     """A wrapper of `tools/http-proxy.mjs` to simplify the usage. Sets
     up common use cases and provides url for them."""
 
@@ -24,12 +24,11 @@ class HttpProxyServer():
         self._url = ""
 
     def start(self):
-        self._process = Popen(["node", "tools/http-proxy.mjs"],
-                              stdout=PIPE,
-                              shell=False)
+        self._process = Popen(
+            ["node", "tools/http-proxy.mjs"], stdout=PIPE, shell=False
+        )
         # Wait for the proxy to start.
-        node_output_line = self._process.stdout.readline().decode(
-            "utf-8").strip()
+        node_output_line = self._process.stdout.readline().decode("utf-8").strip()
         # Assert the prefix is present before removing it.
         assert node_output_line.startswith("Listening on ")
         self._url = node_output_line.removeprefix("Listening on ").strip()
@@ -40,7 +39,7 @@ class HttpProxyServer():
         """
         lines = []
         self._process.terminate()
-        while self._process.stdout.peek().decode("utf-8").strip() != '':
+        while self._process.stdout.peek().decode("utf-8").strip() != "":
             line = self._process.stdout.readline().decode("utf-8").strip()
             lines.append(line)
         return lines

@@ -24,8 +24,15 @@ from collections.abc import Callable
 from typing import Literal
 from urllib.parse import urlparse
 
-from anys import (ANY_NUMBER, ANY_STR, AnyFullmatch, AnyGT, AnyLT, AnyMatch,
-                  AnyWithEntries)
+from anys import (
+    ANY_NUMBER,
+    ANY_STR,
+    AnyFullmatch,
+    AnyGT,
+    AnyLT,
+    AnyMatch,
+    AnyWithEntries,
+)
 from PIL import Image, ImageChops
 
 logging.basicConfig(level=logging.INFO)
@@ -43,10 +50,12 @@ def get_next_command_id() -> int:
     return next(_command_counter)
 
 
-async def subscribe(websocket,
-                    events: list[str] | str,
-                    context_ids: list[str] | str | None = None,
-                    goog_channel: str | None = None):
+async def subscribe(
+    websocket,
+    events: list[str] | str,
+    context_ids: list[str] | str | None = None,
+    goog_channel: str | None = None,
+):
     if type(events) is str:
         events = [events]
 
@@ -57,7 +66,7 @@ async def subscribe(websocket,
         "method": "session.subscribe",
         "params": {
             "events": events,
-        }
+        },
     }
 
     if context_ids is not None:
@@ -102,9 +111,7 @@ async def execute_command(websocket, command: dict, timeout: int = 20) -> dict:
         raise
 
 
-async def wait_for_command(websocket,
-                           command_id: int,
-                           timeout: int = 20) -> dict:
+async def wait_for_command(websocket, command_id: int, timeout: int = 20) -> dict:
 
     def _filter(resp):
         return "id" in resp and resp["id"] == command_id
@@ -115,9 +122,9 @@ async def wait_for_command(websocket,
     raise Exception({"error": resp["error"], "message": resp["message"]})
 
 
-async def wait_for_message(websocket,
-                           filter_lambda: Callable[[dict], bool],
-                           timeout: int = 20):
+async def wait_for_message(
+    websocket, filter_lambda: Callable[[dict], bool], timeout: int = 20
+):
 
     async def future():
         while True:
@@ -139,49 +146,44 @@ async def get_tree(websocket, context_id: str | None = None) -> dict:
     params = {}
     if context_id is not None:
         params["root"] = context_id
-    return await execute_command(websocket, {
-        "method": "browsingContext.getTree",
-        "params": params
-    })
+    return await execute_command(
+        websocket, {"method": "browsingContext.getTree", "params": params}
+    )
 
 
 async def goto_url(
-        websocket,
-        context_id: str,
-        url: str,
-        wait: Literal["none", "interactive", "complete"] = "complete") -> dict:
+    websocket,
+    context_id: str,
+    url: str,
+    wait: Literal["none", "interactive", "complete"] = "complete",
+) -> dict:
     """Open given URL in the given context."""
     logger.info(
         f"Navigating to url '{url}' with wait '{wait}' in context '{context_id}'..."
     )
     return await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": url,
-                "context": context_id,
-                "wait": wait
-            }
-        })
+            "params": {"url": url, "context": context_id, "wait": wait},
+        },
+    )
 
 
 async def set_html_content(websocket, context_id: str, html_content: str):
     """Sets the current page content without navigation."""
     return await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": "(html_content) => { document.body.innerHTML = html_content }",
-                "arguments": [{
-                    'type': 'string',
-                    'value': html_content
-                }],
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        })
+                "arguments": [{"type": "string", "value": html_content}],
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
 
 
 async def wait_for_event(websocket, event_method: str) -> dict:
@@ -201,18 +203,23 @@ async def wait_for_events(websocket, event_methods: list[str]) -> dict:
     """Wait and return any of the given event prefixes from BiDi server."""
     logger.info(f"Waiting for any of the events '{event_methods}'...")
     return await wait_for_filtered_event(
-        websocket, lambda event_response: any([
-            event_response["method"].startswith(event_method)
-            for event_method in event_methods
-        ]))
+        websocket,
+        lambda event_response: any(
+            [
+                event_response["method"].startswith(event_method)
+                for event_method in event_methods
+            ]
+        ),
+    )
 
 
 async def wait_for_filtered_event(
-        websocket, filter_lambda: Callable[[dict], bool]) -> dict:
-    """Wait and return any of the given event satisfying filter. Ignores """
+    websocket, filter_lambda: Callable[[dict], bool]
+) -> dict:
+    """Wait and return any of the given event satisfying filter. Ignores"""
 
     def filter_lambda_wrapper(resp):
-        if 'type' in resp and resp['type'] == 'event':
+        if "type" in resp and resp["type"] == "event":
             return filter_lambda(resp)
 
     return await wait_for_message(websocket, filter_lambda_wrapper)
@@ -227,7 +234,8 @@ ANY_TIMESTAMP = ANY_NUMBER & AnyGT(1577833200000) & AnyLT(4102441200000)
 
 # Check if the UUID is a valid UUID v4.
 ANY_UUID = AnyFullmatch(
-    r'^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$')
+    r"^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$"
+)
 
 
 def AnyExtending(expected: list | dict):
@@ -275,9 +283,9 @@ def AnyExtending(expected: list | dict):
     return expected
 
 
-def assert_images_similar(img1: Image.Image | str,
-                          img2: Image.Image | str,
-                          percent=0.90):
+def assert_images_similar(
+    img1: Image.Image | str, img2: Image.Image | str, percent=0.90
+):
     """Assert that the given images are similar based on the given percent."""
     if isinstance(img1, str):
         img1 = Image.open(io.BytesIO(base64.b64decode(img1)))
@@ -293,8 +301,9 @@ def assert_images_similar(img1: Image.Image | str,
     else:
         equal_alphas = True
 
-    difference = ImageChops.difference(img1.convert("RGB"),
-                                       img2.convert("RGB")).getdata()
+    difference = ImageChops.difference(
+        img1.convert("RGB"), img2.convert("RGB")
+    ).getdata()
     pixel_count = 0
     for pixel in difference:
         if pixel == (0, 0, 0):
@@ -309,36 +318,41 @@ def assert_images_similar(img1: Image.Image | str,
 
 def save_png(png_bytes_or_str: bytes | str, output_file: str):
     """Save the given PNG (bytes or base64 string representation) to the given output file."""
-    png_bytes = png_bytes_or_str if isinstance(
-        png_bytes_or_str, bytes) else base64.b64decode(png_bytes_or_str,
-                                                       validate=True)
-    Image.open(io.BytesIO(png_bytes)).save(output_file, 'PNG')
+    png_bytes = (
+        png_bytes_or_str
+        if isinstance(png_bytes_or_str, bytes)
+        else base64.b64decode(png_bytes_or_str, validate=True)
+    )
+    Image.open(io.BytesIO(png_bytes)).save(output_file, "PNG")
 
 
 def save_pdf(pdf_bytes_or_str: bytes | str, output_file: str):
-    pdf_bytes = pdf_bytes_or_str if isinstance(
-        pdf_bytes_or_str, bytes) else base64.b64decode(pdf_bytes_or_str,
-                                                       validate=True)
-    if pdf_bytes[0:4] != b'%PDF':
-        raise ValueError('Missing the PDF file signature')
+    pdf_bytes = (
+        pdf_bytes_or_str
+        if isinstance(pdf_bytes_or_str, bytes)
+        else base64.b64decode(pdf_bytes_or_str, validate=True)
+    )
+    if pdf_bytes[0:4] != b"%PDF":
+        raise ValueError("Missing the PDF file signature")
 
-    with open(output_file, 'wb') as f:
+    with open(output_file, "wb") as f:
         f.write(pdf_bytes)
 
 
-async def create_request_via_fetch(websocket, context_id: str,
-                                   url: str) -> int:
+async def create_request_via_fetch(websocket, context_id: str, url: str) -> int:
     return await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": f"fetch('{url}')",
                 "target": {
                     "context": context_id,
                 },
-                "awaitPromise": False
-            }
-        })
+                "awaitPromise": False,
+            },
+        },
+    )
 
 
 def merge_dicts_recursively(default_dict, custom_dict):
@@ -359,12 +373,9 @@ def merge_dicts_recursively(default_dict, custom_dict):
     for key, custom_value in custom_dict.items():
         if key in default_dict:
             default_value = default_dict[key]
-            if isinstance(default_value, dict) and isinstance(
-                    custom_value, dict):
-                merged_dict[key] = merge_dicts_recursively(
-                    default_value, custom_value)
-            elif isinstance(default_value, list) and isinstance(
-                    custom_value, list):
+            if isinstance(default_value, dict) and isinstance(custom_value, dict):
+                merged_dict[key] = merge_dicts_recursively(default_value, custom_value)
+            elif isinstance(default_value, list) and isinstance(custom_value, list):
                 # Merge arrays by concatenating and removing duplicates
                 merged_dict[key] = list(set(default_value + custom_value))
             else:
@@ -379,32 +390,28 @@ def test_merge_dicts_simple():
     default_dict = {"a": 1, "b": 2}
     custom_dict = {"b": 3, "c": 4}
     expected_result = {"a": 1, "b": 3, "c": 4}
-    assert merge_dicts_recursively(default_dict,
-                                   custom_dict) == expected_result
+    assert merge_dicts_recursively(default_dict, custom_dict) == expected_result
 
 
 def test_merge_dicts_nested():
     default_dict = {"a": 1, "b": {"x": 10, "y": 20}}
     custom_dict = {"b": {"y": 30, "z": 40}, "c": 5}
     expected_result = {"a": 1, "b": {"x": 10, "y": 30, "z": 40}, "c": 5}
-    assert merge_dicts_recursively(default_dict,
-                                   custom_dict) == expected_result
+    assert merge_dicts_recursively(default_dict, custom_dict) == expected_result
 
 
 def test_merge_dicts_empty_custom():
     default_dict = {"a": 1, "b": 2}
     custom_dict = {}
     expected_result = {"a": 1, "b": 2}
-    assert merge_dicts_recursively(default_dict,
-                                   custom_dict) == expected_result
+    assert merge_dicts_recursively(default_dict, custom_dict) == expected_result
 
 
 def test_merge_dicts_empty_default():
     default_dict = {}
     custom_dict = {"a": 1, "b": 2}
     expected_result = {"a": 1, "b": 2}
-    assert merge_dicts_recursively(default_dict,
-                                   custom_dict) == expected_result
+    assert merge_dicts_recursively(default_dict, custom_dict) == expected_result
 
 
 def test_merge_dicts_complex_nested():
@@ -412,49 +419,30 @@ def test_merge_dicts_complex_nested():
     custom_dict = {"b": {"y": {"q": 300, "r": 400}, "z": 500}, "d": 4}
     expected_result = {
         "a": 1,
-        "b": {
-            "x": 10,
-            "y": {
-                "p": 100,
-                "q": 300,
-                "r": 400
-            },
-            "z": 500
-        },
+        "b": {"x": 10, "y": {"p": 100, "q": 300, "r": 400}, "z": 500},
         "c": 3,
-        "d": 4
+        "d": 4,
     }
-    assert merge_dicts_recursively(default_dict,
-                                   custom_dict) == expected_result
+    assert merge_dicts_recursively(default_dict, custom_dict) == expected_result
 
 
 def test_merge_dicts_with_arrays():
     default_dict = {"a": [1, 2, 3], "b": 2}
     custom_dict = {"a": [3, 4, 5], "c": 4}
     expected_result = {"a": [1, 2, 3, 4, 5], "b": 2, "c": 4}
-    assert merge_dicts_recursively(default_dict,
-                                   custom_dict) == expected_result
+    assert merge_dicts_recursively(default_dict, custom_dict) == expected_result
 
 
 def test_merge_dicts_nested_with_arrays():
     default_dict = {"a": 1, "b": {"x": [10, 20], "y": 20}}
     custom_dict = {"b": {"x": [20, 30], "z": 40}, "c": 5}
-    expected_result = {
-        "a": 1,
-        "b": {
-            "x": [10, 20, 30],
-            "y": 20,
-            "z": 40
-        },
-        "c": 5
-    }
-    assert merge_dicts_recursively(default_dict,
-                                   custom_dict) == expected_result
+    expected_result = {"a": 1, "b": {"x": [10, 20, 30], "y": 20, "z": 40}, "c": 5}
+    assert merge_dicts_recursively(default_dict, custom_dict) == expected_result
 
 
-def stabilize_key_values(obj,
-                         keys_to_stabilize: list[str],
-                         known_values: dict[str, str] | None = None):
+def stabilize_key_values(
+    obj, keys_to_stabilize: list[str], known_values: dict[str, str] | None = None
+):
     """
     Recursively traverses the provided object and replaces the values associated
     with specified keys with stable, predictable placeholders. This ensures
@@ -582,10 +570,10 @@ def stabilize_key_values(obj,
 
 
 def get_origin(url):
-    """ Return the origin for the given url."""
+    """Return the origin for the given url."""
     parts = urlparse(url)
-    return parts.scheme + '://' + parts.netloc
+    return parts.scheme + "://" + parts.netloc
 
 
 def to_base64(str):
-    return base64.b64encode(str.encode('utf-8')).decode()
+    return base64.b64encode(str.encode("utf-8")).decode()

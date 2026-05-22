@@ -18,50 +18,63 @@ from unittest.mock import ANY
 
 import pytest
 from anys import ANY_DICT, ANY_STR, AnyWithEntries
-from test_helpers import (ANY_TIMESTAMP, ANY_UUID, AnyExtending,
-                          execute_command, get_next_command_id,
-                          read_JSON_message, send_JSON_command, subscribe)
+from test_helpers import (
+    ANY_TIMESTAMP,
+    ANY_UUID,
+    AnyExtending,
+    execute_command,
+    get_next_command_id,
+    read_JSON_message,
+    send_JSON_command,
+    subscribe,
+)
 
 
 @pytest.mark.asyncio
 async def test_subscribeForUnknownContext_exceptionReturned(websocket):
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'no such frame',
-                           'message': 'Context UNKNOWN_CONTEXT_ID not found'
-                       })):
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "no such frame",
+                "message": "Context UNKNOWN_CONTEXT_ID not found",
+            }
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "session.subscribe",
                 "params": {
                     "events": ["browsingContext.load"],
-                    "contexts": ["UNKNOWN_CONTEXT_ID"]
-                }
-            })
+                    "contexts": ["UNKNOWN_CONTEXT_ID"],
+                },
+            },
+        )
 
 
 @pytest.mark.asyncio
 async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
-        websocket, context_id, html):
+    websocket, context_id, html
+):
     result = await execute_command(
-        websocket, {
-            "method": "session.subscribe",
-            "params": {
-                "events": ["browsingContext.load"]
-            }
-        })
-    assert result == {'subscription': ANY_UUID}
+        websocket,
+        {"method": "session.subscribe", "params": {"events": ["browsingContext.load"]}},
+    )
+    assert result == {"subscription": ANY_UUID}
 
     # Navigate to some page.
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": html("<h2>test</h2>"),
                 "wait": "complete",
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
@@ -72,25 +85,26 @@ async def test_subscribeWithoutContext_subscribesToEventsInAllContexts(
 @pytest.mark.asyncio
 async def test_subscribeUserContext(websocket, context_id, html):
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "session.subscribe",
-            "params": {
-                "events": ["browsingContext.load"],
-                "userContexts": ["default"]
-            }
-        })
-    assert result == {'subscription': ANY_UUID}
+            "params": {"events": ["browsingContext.load"], "userContexts": ["default"]},
+        },
+    )
+    assert result == {"subscription": ANY_UUID}
 
     # Navigate to some page.
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": html("<h2>test</h2>"),
                 "wait": "complete",
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
@@ -100,27 +114,29 @@ async def test_subscribeUserContext(websocket, context_id, html):
 
 @pytest.mark.asyncio
 async def test_subscribeWithContext_subscribesToEventsInGivenContext(
-        websocket, context_id, html):
+    websocket, context_id, html
+):
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "session.subscribe",
-            "params": {
-                "events": ["browsingContext.load"],
-                "contexts": [context_id]
-            }
-        })
+            "params": {"events": ["browsingContext.load"], "contexts": [context_id]},
+        },
+    )
     assert result == {"subscription": ANY_UUID}
 
     # Navigate to some page.
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": html("<h2>test</h2>"),
                 "wait": "complete",
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
@@ -130,19 +146,22 @@ async def test_subscribeWithContext_subscribesToEventsInGivenContext(
 
 @pytest.mark.asyncio
 async def test_subscribeWithContext_subscribesToEventsInNestedContext(
-        websocket, context_id, html, iframe, url_all_origins):
+    websocket, context_id, html, iframe, url_all_origins
+):
     await subscribe(websocket, ["browsingContext.contextCreated"])
 
     # Navigate to some page.
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": html(iframe(url_all_origins)),
                 "wait": "complete",
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
 
     # Wait for `browsingContext.load` event.
     resp = await read_JSON_message(websocket)
@@ -157,28 +176,29 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
             "children": None,
             "parent": context_id,
             "userContext": "default",
-            'clientWindow': ANY_STR,
-            "originalOpener": None
-        }
+            "clientWindow": ANY_STR,
+            "originalOpener": None,
+        },
     } == resp
 
 
 @pytest.mark.asyncio
 async def test_subscribeToNestedContext_subscribesToTopLevelContext(
-        websocket, context_id, iframe_id):
+    websocket, context_id, iframe_id
+):
     await subscribe(websocket, ["log.entryAdded"], [iframe_id])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "console.log('SOME_MESSAGE')",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        })
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
 
     # Assert event received.
     resp = await read_JSON_message(websocket)
@@ -191,7 +211,8 @@ async def test_subscribeToNestedContext_subscribesToTopLevelContext(
 
 @pytest.mark.asyncio
 async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
-        websocket, context_id, another_context_id, html):
+    websocket, context_id, another_context_id, html
+):
     # 1. Get 2 contexts.
     # 2. Subscribe to event `browsingContext.load` on the first one.
     # 3. Navigate waiting complete loading in both contexts.
@@ -202,15 +223,17 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
     # 3.1 Navigate first context.
     command_id_1 = get_next_command_id()
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "id": command_id_1,
             "method": "browsingContext.navigate",
             "params": {
                 "url": html("<h2>test</h2>"),
                 "wait": "complete",
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
     # 4.1 Verify `browsingContext.load` is emitted for the first context.
     resp = await read_JSON_message(websocket)
     assert resp["method"] == "browsingContext.load"
@@ -224,15 +247,17 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
     command_id_2 = get_next_command_id()
     assert command_id_1 != command_id_2
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "id": command_id_2,
             "method": "browsingContext.navigate",
             "params": {
                 "url": html("<h2>test</h2>"),
                 "wait": "complete",
-                "context": another_context_id
-            }
-        })
+                "context": another_context_id,
+            },
+        },
+    )
 
     # 4.2 Verify second navigation finished without emitting
     # `browsingContext.load`.
@@ -242,46 +267,47 @@ async def test_subscribeWithContext_doesNotSubscribeToEventsInAnotherContexts(
 
 @pytest.mark.asyncio
 async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
-        websocket, context_id):
+    websocket, context_id
+):
     # Subscribe and unsubscribe in `CHANNEL_1`.
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "session.subscribe",
             "goog:channel": "CHANNEL_1",
-            "params": {
-                "events": ["log.entryAdded"]
-            }
-        })
+            "params": {"events": ["log.entryAdded"]},
+        },
+    )
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "session.unsubscribe",
             "goog:channel": "CHANNEL_1",
-            "params": {
-                "events": ["log.entryAdded"]
-            }
-        })
+            "params": {"events": ["log.entryAdded"]},
+        },
+    )
 
     # Subscribe in `CHANNEL_2`.
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "session.subscribe",
             "goog:channel": "CHANNEL_2",
-            "params": {
-                "events": ["log.entryAdded"]
-            }
-        })
+            "params": {"events": ["log.entryAdded"]},
+        },
+    )
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "console.log('SOME_MESSAGE')",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        })
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
 
     # Assert event received in `CHANNEL_2`.
     resp = await read_JSON_message(websocket)
@@ -289,13 +315,14 @@ async def test_subscribeToOneChannel_eventReceivedWithProperChannel(
         "type": "event",
         "method": "log.entryAdded",
         "params": ANY_DICT,
-        "goog:channel": "CHANNEL_2"
+        "goog:channel": "CHANNEL_2",
     } == resp
 
 
 @pytest.mark.asyncio
 async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
-        websocket, context_id):
+    websocket, context_id
+):
     empty_channel = ""
     channel_2 = "999_SECOND_SUBSCRIBED_CHANNEL"
     channel_3 = "000_THIRD_SUBSCRIBED_CHANNEL"
@@ -311,37 +338,36 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
     await subscribe(websocket, ["log.entryAdded"], None, channel_2)
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "session.subscribe",
             "goog:channel": channel_3,
-            "params": {
-                "events": ["log.entryAdded"]
-            }
-        })
+            "params": {"events": ["log.entryAdded"]},
+        },
+    )
     # Subscribe with a context. The initial subscription should still have
     # higher priority.
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "session.subscribe",
             "goog:channel": channel_2,
-            "params": {
-                "events": ["log.entryAdded"],
-                "context": context_id
-            }
-        })
+            "params": {"events": ["log.entryAdded"], "context": context_id},
+        },
+    )
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "goog:channel": "SOME_OTHER_CHANNEL",
             "params": {
                 "expression": "console.log('SOME_MESSAGE')",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        })
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
 
     # Empty string channel is considered as no channel provided.
     resp = await read_JSON_message(websocket)
@@ -349,18 +375,14 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
         # Chromedriver adds channel even if it is an empty string.
         pytest.xfail("TODO: http://b/343698990")
     else:
-        assert {
-            "type": "event",
-            "method": "log.entryAdded",
-            "params": ANY_DICT
-        } == resp
+        assert {"type": "event", "method": "log.entryAdded", "params": ANY_DICT} == resp
 
     resp = await read_JSON_message(websocket)
     assert {
         "type": "event",
         "method": "log.entryAdded",
         "goog:channel": channel_2,
-        "params": ANY_DICT
+        "params": ANY_DICT,
     } == resp
 
     resp = await read_JSON_message(websocket)
@@ -368,7 +390,7 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
         "type": "event",
         "method": "log.entryAdded",
         "goog:channel": channel_3,
-        "params": ANY_DICT
+        "params": ANY_DICT,
     } == resp
 
     resp = await read_JSON_message(websocket)
@@ -376,53 +398,49 @@ async def test_subscribeToMultipleChannels_eventsReceivedInProperOrder(
         "type": "event",
         "method": "log.entryAdded",
         "goog:channel": channel_4,
-        "params": ANY_DICT
+        "params": ANY_DICT,
     } == resp
 
 
 @pytest.mark.asyncio
 async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreReturned(
-        websocket, context_id, another_context_id):
+    websocket, context_id, another_context_id
+):
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "goog:channel": "SOME_OTHER_CHANNEL",
             "params": {
                 "expression": "console.log('SOME_MESSAGE')",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        })
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "goog:channel": "SOME_OTHER_CHANNEL",
             "params": {
                 "expression": "console.log('ANOTHER_MESSAGE')",
-                "target": {
-                    "context": another_context_id
-                },
-                "awaitPromise": True
-            }
-        })
+                "target": {"context": another_context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
 
     await execute_command(
-        websocket, {
-            "method": "browsingContext.close",
-            "params": {
-                "context": another_context_id
-            }
-        })
+        websocket,
+        {"method": "browsingContext.close", "params": {"context": another_context_id}},
+    )
 
-    command_id = await send_JSON_command(websocket, {
-        "method": "session.subscribe",
-        "params": {
-            "events": ["log.entryAdded"]
-        }
-    })
+    command_id = await send_JSON_command(
+        websocket,
+        {"method": "session.subscribe", "params": {"events": ["log.entryAdded"]}},
+    )
 
     # Assert only message from not closed context is received.
     resp = await read_JSON_message(websocket)
@@ -432,49 +450,43 @@ async def test_subscribeWithoutContext_bufferedEventsFromNotClosedContextsAreRet
         "method": "log.entryAdded",
         "params": {
             "level": "info",
-            "source": {
-                "realm": ANY,
-                "context": context_id
-            },
+            "source": {"realm": ANY, "context": context_id},
             "text": "SOME_MESSAGE",
             "timestamp": ANY_TIMESTAMP,
             "stackTrace": ANY,
             "type": "console",
             "method": "log",
-            "args": [{
-                "type": "string",
-                "value": "SOME_MESSAGE"
-            }]
-        }
+            "args": [{"type": "string", "value": "SOME_MESSAGE"}],
+        },
     } == resp
 
     # Assert no more events were buffered.
     resp = await read_JSON_message(websocket)
-    assert {"type": "success", "id": command_id, 'result': ANY} == resp
+    assert {"type": "success", "id": command_id, "result": ANY} == resp
 
 
 @pytest.mark.asyncio
 async def test_unsubscribe_by_id(websocket):
     res = await subscribe(websocket, ["log.entryAdded"])
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "session.unsubscribe",
-            "params": {
-                "subscriptions": [res["subscription"]]
-            }
-        })
+            "params": {"subscriptions": [res["subscription"]]},
+        },
+    )
 
 
 @pytest.mark.asyncio
 async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
     await subscribe(websocket, ["log.entryAdded"], [iframe_id])
 
-    with pytest.raises(Exception,
-                       match=re.compile(
-                           str({
-                               "error": "invalid argument",
-                               "message": 'No subscription found'
-                           }))):
+    with pytest.raises(
+        Exception,
+        match=re.compile(
+            str({"error": "invalid argument", "message": "No subscription found"})
+        ),
+    ):
         await execute_command(
             websocket,
             {
@@ -485,63 +497,69 @@ async def test_unsubscribeIsAtomic(websocket, context_id, iframe_id):
                         # This event is not subscribed.
                         "network.responseCompleted",
                     ],
-                    "contexts": [context_id]
-                }
-            })
+                    "contexts": [context_id],
+                },
+            },
+        )
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "console.log('SOME_MESSAGE')",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        })
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
 
     # Assert evaluate script ended with an event before, as log.entryAdded was not unsubscribed.
     resp = await read_JSON_message(websocket)
-    assert AnyWithEntries({
-        'type': 'event',
-        'method': 'log.entryAdded',
-        'params': AnyWithEntries({'text': 'SOME_MESSAGE'})
-    }) == resp
+    assert (
+        AnyWithEntries(
+            {
+                "type": "event",
+                "method": "log.entryAdded",
+                "params": AnyWithEntries({"text": "SOME_MESSAGE"}),
+            }
+        )
+        == resp
+    )
 
 
 @pytest.mark.asyncio
-async def test_unsubscribe_from_detached_target(websocket, context_id,
-                                                read_messages):
+async def test_unsubscribe_from_detached_target(websocket, context_id, read_messages):
     events = [
-        'bluetooth', 'browser', 'browsingContext', 'goog:cdp', 'input', 'log',
-        'network', 'script', 'session'
+        "bluetooth",
+        "browser",
+        "browsingContext",
+        "goog:cdp",
+        "input",
+        "log",
+        "network",
+        "script",
+        "session",
     ]
 
     await subscribe(websocket, events)
 
-    close_command_id = await send_JSON_command(websocket, {
-        "method": "browsingContext.close",
-        "params": {
-            "context": context_id
-        }
-    })
+    close_command_id = await send_JSON_command(
+        websocket,
+        {"method": "browsingContext.close", "params": {"context": context_id}},
+    )
 
-    unsubscribe_command_id = await send_JSON_command(websocket, {
-        "method": "session.unsubscribe",
-        "params": {
-            "events": events
-        }
-    })
+    unsubscribe_command_id = await send_JSON_command(
+        websocket, {"method": "session.unsubscribe", "params": {"events": events}}
+    )
 
     # Read only command responses ignoring events previously subscribed.
-    [close_command_response, unsubscribe_command_response
-     ] = await read_messages(2, lambda message: "id" in message, sort=True)
-    assert close_command_response == AnyExtending({
-        "id": close_command_id,
-        "type": "success"
-    })
-    assert unsubscribe_command_response == AnyExtending({
-        "id": unsubscribe_command_id,
-        "type": "success"
-    })
+    [close_command_response, unsubscribe_command_response] = await read_messages(
+        2, lambda message: "id" in message, sort=True
+    )
+    assert close_command_response == AnyExtending(
+        {"id": close_command_id, "type": "success"}
+    )
+    assert unsubscribe_command_response == AnyExtending(
+        {"id": unsubscribe_command_id, "type": "success"}
+    )

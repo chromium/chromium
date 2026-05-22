@@ -15,18 +15,26 @@
 
 import pytest
 from syrupy.filters import props
-from test_helpers import (execute_command, goto_url, send_JSON_command,
-                          subscribe)
+from test_helpers import execute_command, goto_url, send_JSON_command, subscribe
 
-SNAPSHOT_EXCLUDE = props("timestamp", "timings", "headers", "stacktrace",
-                         "response", "initiator", "realm", "clientWindow",
-                         "originalOpener")
-KEYS_TO_STABILIZE = ['context', 'navigation', 'id', 'url', 'request']
+SNAPSHOT_EXCLUDE = props(
+    "timestamp",
+    "timings",
+    "headers",
+    "stacktrace",
+    "response",
+    "initiator",
+    "realm",
+    "clientWindow",
+    "originalOpener",
+)
+KEYS_TO_STABILIZE = ["context", "navigation", "id", "url", "request"]
 
 
 async def set_beforeunload_handler(websocket, context_id, show_popup=False):
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": """
@@ -41,158 +49,166 @@ async def set_beforeunload_handler(websocket, context_id, show_popup=False):
                         document.body.click();
                     }
                 """,
-                "arguments": [{
-                    "type": "channel",
-                    "value": {
-                        "channel": "beforeunload_channel",
-                        "ownership": "none",
-                    }
-                }, {
-                    "type": "boolean",
-                    "value": show_popup
-                }],
+                "arguments": [
+                    {
+                        "type": "channel",
+                        "value": {
+                            "channel": "beforeunload_channel",
+                            "ownership": "none",
+                        },
+                    },
+                    {"type": "boolean", "value": show_popup},
+                ],
                 "target": {
                     "context": context_id,
                 },
                 "awaitPromise": False,
-                "userActivation": True
-            }
-        })
+                "userActivation": True,
+            },
+        },
+    )
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_navigate_checkEvents(websocket, context_id, url_base,
-                                    url_example, read_messages, snapshot,
-                                    wait):
+async def test_navigate_checkEvents(
+    websocket, context_id, url_base, url_example, read_messages, snapshot, wait
+):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": url_example,
-                "wait": wait,
-                "context": context_id
-            }
-        })
+            "params": {"url": url_example, "wait": wait, "context": context_id},
+        },
+    )
 
-    messages = await read_messages(6,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        6, keys_to_stabilize=KEYS_TO_STABILIZE, check_no_other_messages=True, sort=False
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_navigate_fragment_checkEvents(websocket, context_id,
-                                             url_example, read_messages,
-                                             snapshot, wait):
+async def test_navigate_fragment_checkEvents(
+    websocket, context_id, url_example, read_messages, snapshot, wait
+):
     await goto_url(websocket, context_id, url_example)
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": url_example + "#test",
                 "wait": wait,
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
 
-    messages = await read_messages(2,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        2, keys_to_stabilize=KEYS_TO_STABILIZE, check_no_other_messages=True, sort=False
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
-async def test_window_open_url_checkEvents(websocket, context_id, url_example,
-                                           read_messages, snapshot):
+async def test_window_open_url_checkEvents(
+    websocket, context_id, url_example, read_messages, snapshot
+):
     await subscribe(websocket, ["browsingContext"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": f"window.open('{url_example}');",
                 "target": {
                     "context": context_id,
                 },
-                "awaitPromise": False
-            }
-        })
+                "awaitPromise": False,
+            },
+        },
+    )
 
-    messages = await read_messages(5,
-                                   filter_lambda=lambda x: 'id' not in x,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        5,
+        filter_lambda=lambda x: "id" not in x,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        check_no_other_messages=True,
+        sort=False,
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("url", ["", "about:blank", "about:blank?test"])
-async def test_window_open_aboutBlank_checkEvents(websocket, context_id, url,
-                                                  read_messages, snapshot):
+async def test_window_open_aboutBlank_checkEvents(
+    websocket, context_id, url, read_messages, snapshot
+):
     await subscribe(websocket, ["browsingContext"])
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": f"window.open('{url}');",
                 "target": {
                     "context": context_id,
                 },
-                "awaitPromise": False
-            }
-        })
+                "awaitPromise": False,
+            },
+        },
+    )
 
-    messages = await read_messages(1,
-                                   filter_lambda=lambda x: 'id' not in x,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        1,
+        filter_lambda=lambda x: "id" not in x,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        check_no_other_messages=True,
+        sort=False,
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_navigate_aboutBlank_checkEvents(websocket, context_id, url_base,
-                                               read_messages, snapshot, wait):
+async def test_navigate_aboutBlank_checkEvents(
+    websocket, context_id, url_base, read_messages, snapshot, wait
+):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(websocket, ["browsingContext", "script.message"])
 
-    about_blank_url = 'about:blank'
+    about_blank_url = "about:blank"
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": about_blank_url,
-                "wait": wait,
-                "context": context_id
-            }
-        })
+            "params": {"url": about_blank_url, "wait": wait, "context": context_id},
+        },
+    )
 
-    messages = await read_messages(6,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        6, keys_to_stabilize=KEYS_TO_STABILIZE, check_no_other_messages=True, sort=False
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
-                                            read_messages, snapshot, wait):
+async def test_navigate_dataUrl_checkEvents(
+    websocket, context_id, url_base, read_messages, snapshot, wait
+):
     await goto_url(websocket, context_id, url_base)
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(websocket, ["browsingContext", "script.message"])
@@ -200,26 +216,29 @@ async def test_navigate_dataUrl_checkEvents(websocket, context_id, url_base,
     data_url = "data:text/html;,<h2>header</h2>"
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": data_url,
-                "wait": wait,
-                "context": context_id
-            }
-        })
+            "params": {"url": data_url, "wait": wait, "context": context_id},
+        },
+    )
 
-    messages = await read_messages(6,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        6, keys_to_stabilize=KEYS_TO_STABILIZE, check_no_other_messages=True, sort=False
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 async def test_navigate_hang_navigate_again_checkEvents(
-        websocket, context_id, url_base, url_hang_forever,
-        url_example_another_origin, read_messages, snapshot):
+    websocket,
+    context_id,
+    url_base,
+    url_hang_forever,
+    url_example_another_origin,
+    read_messages,
+    snapshot,
+):
     # Use `url_example_another_origin`, as `url_example` will hang because of
     # `url_hang_forever`.
     await goto_url(websocket, context_id, url_base)
@@ -230,50 +249,59 @@ async def test_navigate_hang_navigate_again_checkEvents(
     known_values = {}
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": url_hang_forever,
                 "wait": "complete",
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
 
-    messages_log += await read_messages(2,
-                                        keys_to_stabilize=KEYS_TO_STABILIZE,
-                                        known_values=known_values,
-                                        sort=False)
+    messages_log += await read_messages(
+        2, keys_to_stabilize=KEYS_TO_STABILIZE, known_values=known_values, sort=False
+    )
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": url_example_another_origin,
                 "wait": "complete",
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
 
-    messages_log += await read_messages(8,
-                                        keys_to_stabilize=KEYS_TO_STABILIZE,
-                                        known_values=known_values,
-                                        check_no_other_messages=True,
-                                        sort=False)
+    messages_log += await read_messages(
+        8,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        known_values=known_values,
+        check_no_other_messages=True,
+        sort=False,
+    )
 
     assert messages_log == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('capabilities', [{
-    'unhandledPromptBehavior': {
-        'beforeUnload': 'dismiss'
-    }
-}],
-                         indirect=True)
-async def test_navigate_beforeunload_cancel(websocket, context_id, url_base,
-                                            url_hang_forever,
-                                            url_example_another_origin,
-                                            read_messages, snapshot):
+@pytest.mark.parametrize(
+    "capabilities",
+    [{"unhandledPromptBehavior": {"beforeUnload": "dismiss"}}],
+    indirect=True,
+)
+async def test_navigate_beforeunload_cancel(
+    websocket,
+    context_id,
+    url_base,
+    url_hang_forever,
+    url_example_another_origin,
+    read_messages,
+    snapshot,
+):
     # Use `url_example_another_origin`, as `url_example` will hang because of
     # `url_hang_forever`.
     await goto_url(websocket, context_id, url_base)
@@ -283,235 +311,230 @@ async def test_navigate_beforeunload_cancel(websocket, context_id, url_base,
     known_values = {}
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
             "params": {
                 "url": url_hang_forever,
                 "wait": "complete",
-                "context": context_id
-            }
-        })
+                "context": context_id,
+            },
+        },
+    )
 
-    messages = await read_messages(6,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   known_values=known_values,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        6,
+        keys_to_stabilize=KEYS_TO_STABILIZE,
+        known_values=known_values,
+        check_no_other_messages=True,
+        sort=False,
+    )
 
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_scriptNavigate_checkEvents(websocket, context_id, url_example,
-                                          html, read_messages, snapshot, wait):
+async def test_scriptNavigate_checkEvents(
+    websocket, context_id, url_example, html, read_messages, snapshot, wait
+):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html(f"<script>window.location='{url_example}';</script>")
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": initial_url,
-                "wait": wait,
-                "context": context_id
-            }
-        })
+            "params": {"url": initial_url, "wait": wait, "context": context_id},
+        },
+    )
 
     messages = await read_messages(
         7,
         # Filter out command result, as it can be
         # racy with other events.
-        filter_lambda=lambda x: 'id' not in x,
+        filter_lambda=lambda x: "id" not in x,
         keys_to_stabilize=KEYS_TO_STABILIZE,
         check_no_other_messages=True,
-        sort=False)
+        sort=False,
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_scriptNavigate_aboutBlank_checkEvents(websocket, context_id,
-                                                     url_base, html,
-                                                     read_messages, snapshot,
-                                                     wait):
+async def test_scriptNavigate_aboutBlank_checkEvents(
+    websocket, context_id, url_base, html, read_messages, snapshot, wait
+):
     # Other events can be racy.
-    await subscribe(websocket, [
-        "browsingContext.navigationStarted",
-        "browsingContext.navigationAborted"
-    ])
+    await subscribe(
+        websocket,
+        ["browsingContext.navigationStarted", "browsingContext.navigationAborted"],
+    )
 
-    about_blank_url = 'about:blank'
-    initial_url = html(
-        f"<script>window.location='{about_blank_url}';</script>")
+    about_blank_url = "about:blank"
+    initial_url = html(f"<script>window.location='{about_blank_url}';</script>")
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": initial_url,
-                "wait": wait,
-                "context": context_id
-            }
-        })
+            "params": {"url": initial_url, "wait": wait, "context": context_id},
+        },
+    )
 
     messages = await read_messages(
         3,
         # Filter out command result, as it can be
         # racy with other events.
-        filter_lambda=lambda x: 'id' not in x,
+        filter_lambda=lambda x: "id" not in x,
         keys_to_stabilize=KEYS_TO_STABILIZE,
         check_no_other_messages=True,
-        sort=False)
+        sort=False,
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_scriptNavigate_dataUrl_checkEvents(websocket, context_id,
-                                                  url_base, html,
-                                                  read_messages, snapshot,
-                                                  wait):
+async def test_scriptNavigate_dataUrl_checkEvents(
+    websocket, context_id, url_base, html, read_messages, snapshot, wait
+):
     await subscribe(websocket, ["browsingContext"])
 
     data_url = "data:text/html;,<h2>header</h2>"
     initial_url = html(f"<script>window.location='{data_url}';</script>")
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": initial_url,
-                "wait": wait,
-                "context": context_id
-            }
-        })
+            "params": {"url": initial_url, "wait": wait, "context": context_id},
+        },
+    )
 
     messages = await read_messages(
         4,
         # Filter out command result, as it can be
         # racy with other events.
-        filter_lambda=lambda x: 'id' not in x,
+        filter_lambda=lambda x: "id" not in x,
         keys_to_stabilize=KEYS_TO_STABILIZE,
         check_no_other_messages=True,
-        sort=False)
+        sort=False,
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
-async def test_scriptNavigate_fragment_checkEvents(websocket, context_id,
-                                                   url_base, html,
-                                                   read_messages, snapshot,
-                                                   wait):
+async def test_scriptNavigate_fragment_checkEvents(
+    websocket, context_id, url_base, html, read_messages, snapshot, wait
+):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html("<script>window.location='#test';</script>")
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": initial_url,
-                "wait": wait,
-                "context": context_id
-            }
-        })
+            "params": {"url": initial_url, "wait": wait, "context": context_id},
+        },
+    )
 
     messages = await read_messages(
         5,
         # Filter out command result, as it can be
         # racy with other events.
-        filter_lambda=lambda x: 'id' not in x,
+        filter_lambda=lambda x: "id" not in x,
         keys_to_stabilize=KEYS_TO_STABILIZE,
         check_no_other_messages=True,
-        sort=False)
+        sort=False,
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("wait", ["none", "interactive", "complete"])
 async def test_scriptNavigate_fragment_nested_checkEvents(
-        websocket, iframe_id, html, url_base, read_messages, snapshot, wait):
+    websocket, iframe_id, html, url_base, read_messages, snapshot, wait
+):
     await subscribe(websocket, ["browsingContext"])
 
     initial_url = html("<script>window.location='#test';</script>")
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": initial_url,
-                "wait": wait,
-                "context": iframe_id
-            }
-        })
+            "params": {"url": initial_url, "wait": wait, "context": iframe_id},
+        },
+    )
 
     messages = await read_messages(
         5,
         # Filter out command result, as it can be
         # racy with other events.
-        filter_lambda=lambda x: 'id' not in x,
+        filter_lambda=lambda x: "id" not in x,
         keys_to_stabilize=KEYS_TO_STABILIZE,
         check_no_other_messages=True,
-        sort=False)
+        sort=False,
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
-async def test_reload_checkEvents(websocket, context_id, url_example, html,
-                                  read_messages, snapshot):
+async def test_reload_checkEvents(
+    websocket, context_id, url_example, html, read_messages, snapshot
+):
     await goto_url(websocket, context_id, url_example)
 
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.reload",
-            "params": {
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+            "params": {"wait": "complete", "context": context_id},
+        },
+    )
 
-    messages = await read_messages(6,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        6, keys_to_stabilize=KEYS_TO_STABILIZE, check_no_other_messages=True, sort=False
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
-async def test_reload_aboutBlank_checkEvents(websocket, context_id, html,
-                                             url_base, read_messages,
-                                             snapshot):
-    url = 'about:blank'
+async def test_reload_aboutBlank_checkEvents(
+    websocket, context_id, html, url_base, read_messages, snapshot
+):
+    url = "about:blank"
     await goto_url(websocket, context_id, url)
 
     await set_beforeunload_handler(websocket, context_id)
     await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.reload",
-            "params": {
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+            "params": {"wait": "complete", "context": context_id},
+        },
+    )
 
-    messages = await read_messages(6,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        6, keys_to_stabilize=KEYS_TO_STABILIZE, check_no_other_messages=True, sort=False
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)
 
 
 @pytest.mark.asyncio
-async def test_reload_dataUrl_checkEvents(websocket, context_id, html,
-                                          url_base, read_messages, snapshot):
+async def test_reload_dataUrl_checkEvents(
+    websocket, context_id, html, url_base, read_messages, snapshot
+):
     data_url = "data:text/html;,<h2>header</h2>"
     await goto_url(websocket, context_id, data_url)
 
@@ -519,16 +542,14 @@ async def test_reload_dataUrl_checkEvents(websocket, context_id, html,
     await subscribe(websocket, ["browsingContext", "script.message"])
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.reload",
-            "params": {
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+            "params": {"wait": "complete", "context": context_id},
+        },
+    )
 
-    messages = await read_messages(6,
-                                   keys_to_stabilize=KEYS_TO_STABILIZE,
-                                   check_no_other_messages=True,
-                                   sort=False)
+    messages = await read_messages(
+        6, keys_to_stabilize=KEYS_TO_STABILIZE, check_no_other_messages=True, sort=False
+    )
     assert messages == snapshot(exclude=SNAPSHOT_EXCLUDE)

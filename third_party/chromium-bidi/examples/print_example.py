@@ -35,46 +35,37 @@ async def main():
     # Open browser
     websocket = await get_websocket()
     await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "session.new",
-            "params": {}
-        }, websocket)
+        {"id": next(ID), "method": "session.new", "params": {}}, websocket
+    )
 
     # Open tab
     command_result = await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "browsingContext.create",
-            "params": {
-                "type": "tab"
-            }
-        }, websocket)
-    context_id = command_result['result']['context']
+        {"id": next(ID), "method": "browsingContext.create", "params": {"type": "tab"}},
+        websocket,
+    )
+    context_id = command_result["result"]["context"]
 
     # Navigate to page: https://news.ycombinator.com/
     # To avoid network dependency in this test, use a local (static) copy.
-    page_url = f'file://{Path(__file__).parent.resolve()}/app.html'
+    page_url = f"file://{Path(__file__).parent.resolve()}/app.html"
     await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.navigate",
-            "params": {
-                "url": page_url,
-                "context": context_id,
-                "wait": "complete"
-            }
-        }, websocket)
+            "params": {"url": page_url, "context": context_id, "wait": "complete"},
+        },
+        websocket,
+    )
 
     # Print to PDF
     command_result = await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.print",
-            "params": {
-                "context": context_id
-            }
-        }, websocket)
+            "params": {"context": context_id},
+        },
+        websocket,
+    )
 
     # `pdf` has the base64 encoded PDF data.
     pdf = command_result["result"]["data"]
@@ -86,7 +77,7 @@ async def main():
     #     file.write(base64.urlsafe_b64decode(pdf))
 
     # Open PDF file in web browser.
-    webbrowser.open(f'data:application/pdf;base64,{pdf}')
+    webbrowser.open(f"data:application/pdf;base64,{pdf}")
 
 
 loop = asyncio.new_event_loop()

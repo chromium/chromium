@@ -1,12 +1,7 @@
-# https://github.com/pre-commit/action
-
 name: Pre-commit
 
 # Declare default permissions as read only.
 permissions: read-all
-
-env:
-  PIP_DISABLE_PIP_VERSION_CHECK: 1
 
 on:
   merge_group:
@@ -19,25 +14,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: '3.11'
+      - name: Install ruff
+        run: pip install ruff
+      - name: Setup Go
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v5.0.0
+      - name: Install keep-sorted
+        run: |
+          go install github.com/google/keep-sorted@v0.8.0
+          echo "$HOME/go/bin" >> $GITHUB_PATH
       - name: Set up Node.js
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version-file: '.nvmrc'
           cache: npm
-      - name: Setup Go
-        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v5.0.0
-        with:
-          go-version: '1.21.x'
       - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
       - run: npm ci
       - run: npm run build
       - name: Test that BidiMapper can be imported
         run: cd lib/bidiMapper && node ./BidiMapper.js
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
-        with:
-          python-version: '3.11'
-          cache: pip
-      - uses: pre-commit/action@2c7b3805fd2a0fd8c1884dcaebf91fc102a13ecd #v3.0.1
-        with:
-          # We need --all-files as this overrides the defaults
-          extra_args: --hook-stage manual --all-files
+      - name: Run formatting and linting
+        run: npm run format
+      - name: Verify that codebase is fully formatted
+        run: git diff --exit-code

@@ -35,46 +35,37 @@ async def main():
     # Open browser
     websocket = await get_websocket()
     await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "session.new",
-            "params": {}
-        }, websocket)
+        {"id": next(ID), "method": "session.new", "params": {}}, websocket
+    )
 
     # Open tab
     command_result = await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "browsingContext.create",
-            "params": {
-                "type": "tab"
-            }
-        }, websocket)
-    context_id = command_result['result']['context']
+        {"id": next(ID), "method": "browsingContext.create", "params": {"type": "tab"}},
+        websocket,
+    )
+    context_id = command_result["result"]["context"]
 
     # Navigate to page: https://news.ycombinator.com/
     # To avoid network dependency in this test, use a local (static) copy.
-    page_url = f'file://{Path(__file__).parent.resolve()}/app.html'
+    page_url = f"file://{Path(__file__).parent.resolve()}/app.html"
     await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.navigate",
-            "params": {
-                "url": page_url,
-                "context": context_id,
-                "wait": "complete"
-            }
-        }, websocket)
+            "params": {"url": page_url, "context": context_id, "wait": "complete"},
+        },
+        websocket,
+    )
 
     # Take screenshot
     command_result = await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.captureScreenshot",
-            "params": {
-                "context": context_id
-            }
-        }, websocket)
+            "params": {"context": context_id},
+        },
+        websocket,
+    )
 
     # `screenshot` has the base64 encoded PNG data.
     screenshot = command_result["result"]["data"]
@@ -86,7 +77,7 @@ async def main():
     #     file.write(base64.urlsafe_b64decode(screenshot))
 
     # Open PNG file in web browser.
-    webbrowser.open(f'data:image/png;base64,{screenshot}')
+    webbrowser.open(f"data:image/png;base64,{screenshot}")
 
 
 loop = asyncio.new_event_loop()

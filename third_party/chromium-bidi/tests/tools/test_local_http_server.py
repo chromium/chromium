@@ -20,56 +20,69 @@ from test_helpers import execute_command
 async def get_content(websocket, context_id, url):
     """Get the body innerText content from the page with the given url."""
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": url,
-                "wait": "complete",
-                "context": context_id
-            }
-        })
+            "params": {"url": url, "wait": "complete", "context": context_id},
+        },
+    )
 
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "document.body.innerText",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        })
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+    )
 
     return resp["result"]["value"]
 
 
 @pytest.mark.asyncio
 async def test_local_server_200(websocket, context_id, local_server_http):
-    assert await get_content(websocket, context_id, local_server_http.url_200()) \
-           == local_server_http.content_200
+    assert (
+        await get_content(websocket, context_id, local_server_http.url_200())
+        == local_server_http.content_200
+    )
 
 
 @pytest.mark.asyncio
 async def test_local_server_http_another_host_200(
-        websocket, context_id, local_server_http_another_host):
-    assert await get_content(websocket, context_id, local_server_http_another_host.url_200()) \
-           == local_server_http_another_host.content_200
+    websocket, context_id, local_server_http_another_host
+):
+    assert (
+        await get_content(
+            websocket, context_id, local_server_http_another_host.url_200()
+        )
+        == local_server_http_another_host.content_200
+    )
 
 
 @pytest.mark.asyncio
-async def test_local_server_custom_content(websocket, context_id,
-                                           local_server_http):
-    some_custom_content = 'some custom content'
-    assert await get_content(websocket, context_id, local_server_http.url_200(content=some_custom_content)) \
-           == some_custom_content
+async def test_local_server_custom_content(websocket, context_id, local_server_http):
+    some_custom_content = "some custom content"
+    assert (
+        await get_content(
+            websocket,
+            context_id,
+            local_server_http.url_200(content=some_custom_content),
+        )
+        == some_custom_content
+    )
 
 
 @pytest.mark.asyncio
 async def test_local_server_redirect(websocket, context_id, local_server_http):
-    assert await get_content(websocket, context_id,
-                             local_server_http.url_permanent_redirect()) \
-           == local_server_http.content_200
+    assert (
+        await get_content(
+            websocket, context_id, local_server_http.url_permanent_redirect()
+        )
+        == local_server_http.content_200
+    )
 
 
 @pytest.mark.asyncio
@@ -79,21 +92,22 @@ async def test_local_server_html(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-async def test_local_server_bad_ssl(websocket, context_id,
-                                    local_server_bad_ssl):
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "unknown error",
-                           "message": "net::ERR_CERT_AUTHORITY_INVALID"
-                       })):
-        assert await get_content(
-            websocket, context_id,
-            local_server_bad_ssl.url_200()) == local_server_bad_ssl.content_200
+async def test_local_server_bad_ssl(websocket, context_id, local_server_bad_ssl):
+    with pytest.raises(
+        Exception,
+        match=str(
+            {"error": "unknown error", "message": "net::ERR_CERT_AUTHORITY_INVALID"}
+        ),
+    ):
+        assert (
+            await get_content(websocket, context_id, local_server_bad_ssl.url_200())
+            == local_server_bad_ssl.content_200
+        )
 
 
 @pytest.mark.asyncio
-async def test_local_server_good_ssl(websocket, context_id,
-                                     local_server_good_ssl):
-    assert await get_content(
-        websocket, context_id,
-        local_server_good_ssl.url_200()) == local_server_good_ssl.content_200
+async def test_local_server_good_ssl(websocket, context_id, local_server_good_ssl):
+    assert (
+        await get_content(websocket, context_id, local_server_good_ssl.url_200())
+        == local_server_good_ssl.content_200
+    )

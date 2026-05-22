@@ -19,66 +19,82 @@ from test_helpers import execute_command, goto_url
 
 @pytest.mark.asyncio
 async def test_preloadScript_remove_nonExistingScript_fails(websocket):
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'no such script',
-                           'message': "No preload script with id '42'"
-                       })):
-        await execute_command(websocket, {
-            "method": "script.removePreloadScript",
-            "params": {
-                "script": '42',
-            }
-        })
+    with pytest.raises(
+        Exception,
+        match=str(
+            {"error": "no such script", "message": "No preload script with id '42'"}
+        ),
+    ):
+        await execute_command(
+            websocket,
+            {
+                "method": "script.removePreloadScript",
+                "params": {
+                    "script": "42",
+                },
+            },
+        )
 
 
 @pytest.mark.asyncio
 async def test_preloadScript_remove_addAndRemoveIsNoop_secondRemoval_fails(
-        websocket, context_id, html):
+    websocket, context_id, html
+):
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.addPreloadScript",
             "params": {
                 "functionDeclaration": "() => { window.foo='bar'; }",
-            }
-        })
-    assert result == {'script': ANY_STR}
+            },
+        },
+    )
+    assert result == {"script": ANY_STR}
     bidi_id = result["script"]
 
-    result = await execute_command(websocket, {
-        "method": "script.removePreloadScript",
-        "params": {
-            "script": bidi_id,
-        }
-    })
+    result = await execute_command(
+        websocket,
+        {
+            "method": "script.removePreloadScript",
+            "params": {
+                "script": bidi_id,
+            },
+        },
+    )
     assert result == {}
 
     await goto_url(websocket, context_id, html())
 
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "window.foo",
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
+                "resultOwnership": "root",
+            },
+        },
+    )
     assert result["result"] == {"type": "undefined"}
 
     # Ensure script was removed
-    with pytest.raises(Exception,
-                       match=str({
-                           'error': 'no such script',
-                           'message': f"No preload script with id '{bidi_id}'"
-                       })):
+    with pytest.raises(
+        Exception,
+        match=str(
+            {
+                "error": "no such script",
+                "message": f"No preload script with id '{bidi_id}'",
+            }
+        ),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "script.removePreloadScript",
                 "params": {
                     "script": bidi_id,
-                }
-            })
+                },
+            },
+        )

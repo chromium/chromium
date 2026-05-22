@@ -15,26 +15,27 @@
 
 import pytest
 import pytest_asyncio
-from test_helpers import (execute_command, send_JSON_command, subscribe,
-                          wait_for_event)
+from test_helpers import execute_command, send_JSON_command, subscribe, wait_for_event
 
 from . import disable_simulation, setup_granted_device
 
 
 async def is_gatt_connected(websocket, context_id: str) -> bool:
     response = await execute_command(
-        websocket, {
-            'method': 'script.evaluate',
-            'params': {
-                'expression': 'device.gatt.connected',
-                'awaitPromise': True,
-                'target': {
-                    'context': context_id,
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "device.gatt.connected",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
                 },
-                'userActivation': True
-            }
-        })
-    return response['result']['value']
+                "userActivation": True,
+            },
+        },
+    )
+    return response["result"]["value"]
 
 
 @pytest_asyncio.fixture(autouse=True)
@@ -44,44 +45,51 @@ async def teardown(websocket, context_id):
 
 
 @pytest.mark.asyncio
-@pytest.mark.parametrize('code', [0x0, 0x1, 0x2])
+@pytest.mark.parametrize("code", [0x0, 0x1, 0x2])
 async def test_bluetooth_simulateGattConnectionResponse(
-        websocket, context_id, html, code):
-    await subscribe(websocket, ['bluetooth.gattConnectionAttempted'])
+    websocket, context_id, html, code
+):
+    await subscribe(websocket, ["bluetooth.gattConnectionAttempted"])
     await setup_granted_device(websocket, context_id, html)
 
     await send_JSON_command(
-        websocket, {
-            'method': 'script.evaluate',
-            'params': {
-                'expression': 'device.gatt.connect()',
-                'awaitPromise': True,
-                'target': {
-                    'context': context_id,
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": "device.gatt.connect()",
+                "awaitPromise": True,
+                "target": {
+                    "context": context_id,
                 },
-                'userActivation': True
-            }
-        })
-    event = await wait_for_event(websocket,
-                                 'bluetooth.gattConnectionAttempted')
+                "userActivation": True,
+            },
+        },
+    )
+    event = await wait_for_event(websocket, "bluetooth.gattConnectionAttempted")
     await execute_command(
-        websocket, {
-            'method': 'bluetooth.simulateGattConnectionResponse',
-            'params': {
-                'context': context_id,
-                'address': event['params']['address'],
-                'code': code
-            }
-        })
-    assert await is_gatt_connected(
-        websocket, context_id) == (True if code == 0x0 else False)
+        websocket,
+        {
+            "method": "bluetooth.simulateGattConnectionResponse",
+            "params": {
+                "context": context_id,
+                "address": event["params"]["address"],
+                "code": code,
+            },
+        },
+    )
+    assert await is_gatt_connected(websocket, context_id) == (
+        True if code == 0x0 else False
+    )
 
     await execute_command(
-        websocket, {
-            'method': 'bluetooth.simulateGattDisconnection',
-            'params': {
-                'context': context_id,
-                'address': event['params']['address'],
-            }
-        })
+        websocket,
+        {
+            "method": "bluetooth.simulateGattDisconnection",
+            "params": {
+                "context": context_id,
+                "address": event["params"]["address"],
+            },
+        },
+    )
     assert not await is_gatt_connected(websocket, context_id)

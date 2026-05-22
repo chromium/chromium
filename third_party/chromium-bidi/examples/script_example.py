@@ -38,11 +38,8 @@ async def main():
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L29
     websocket = await get_websocket()
     await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "session.new",
-            "params": {}
-        }, websocket)
+        {"id": next(ID), "method": "session.new", "params": {}}, websocket
+    )
 
     # Not implemented:
     # await browser.version();
@@ -55,13 +52,9 @@ async def main():
     # await browser.newPage();
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L31
     command_result = await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "browsingContext.create",
-            "params": {
-                "type": "tab"
-            }
-        }, websocket)
+        {"id": next(ID), "method": "browsingContext.create", "params": {"type": "tab"}},
+        websocket,
+    )
 
     # Puppeteer:
     # Part 2. Get the command result.
@@ -76,23 +69,21 @@ async def main():
     #         "children": []
     #     }
     # }
-    context_id = command_result['result']['context']
+    context_id = command_result["result"]["context"]
 
     # Puppeteer:
     # await page.goto('https://news.ycombinator.com/');
     # https://github.com/puppeteer/puppeteer/blob/4c3caaa3f99f0c31333a749ec50f56180507a374/examples/cross-browser.js#L34
     # To avoid network dependency in this test, use a local (static) copy.
-    page_url = f'file://{Path(__file__).parent.resolve()}/app.html'
+    page_url = f"file://{Path(__file__).parent.resolve()}/app.html"
     await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.navigate",
-            "params": {
-                "url": page_url,
-                "context": context_id,
-                "wait": "complete"
-            }
-        }, websocket)
+            "params": {"url": page_url, "context": context_id, "wait": "complete"},
+        },
+        websocket,
+    )
 
     # Puppeteer:
     # const resultsSelector = '.titlelink';
@@ -118,12 +109,12 @@ async def main():
                 });
             }""",
                 "arguments": [results_selector],
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        }, websocket)
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+        websocket,
+    )
 
     # Part 2. Get the command result.
     # const links = ...;

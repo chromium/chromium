@@ -19,8 +19,12 @@ import asyncio
 import itertools
 import logging
 
-from _helpers import (get_websocket, read_JSON_message, run_and_wait_command,
-                      send_JSON_command)
+from _helpers import (
+    get_websocket,
+    read_JSON_message,
+    run_and_wait_command,
+    send_JSON_command,
+)
 
 ID = itertools.count(1000)
 
@@ -36,21 +40,14 @@ async def main():
     # Open browser
     websocket = await get_websocket()
     await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "session.new",
-            "params": {}
-        }, websocket)
+        {"id": next(ID), "method": "session.new", "params": {}}, websocket
+    )
 
     # Open tab
     command_result = await run_and_wait_command(
-        {
-            "id": next(ID),
-            "method": "browsingContext.create",
-            "params": {
-                "type": "tab"
-            }
-        }, websocket)
+        {"id": next(ID), "method": "browsingContext.create", "params": {"type": "tab"}},
+        websocket,
+    )
     # `command_result` should be like this:
     # {
     #     "id": __SOME_ID__,
@@ -60,20 +57,18 @@ async def main():
     #         "children": []
     #     }
     # }
-    context_id = command_result['result']['context']
+    context_id = command_result["result"]["context"]
 
     # Navigate to page
-    page_url = 'about:blank'
+    page_url = "about:blank"
     await run_and_wait_command(
         {
             "id": next(ID),
             "method": "browsingContext.navigate",
-            "params": {
-                "url": page_url,
-                "context": context_id,
-                "wait": "complete"
-            }
-        }, websocket)
+            "params": {"url": page_url, "context": context_id, "wait": "complete"},
+        },
+        websocket,
+    )
 
     # Part 2. Subscribe to log events.
 
@@ -82,10 +77,10 @@ async def main():
         {
             "id": next(ID),
             "method": "session.subscribe",
-            "params": {
-                "events": ["log.entryAdded"]
-            }
-        }, websocket)
+            "params": {"events": ["log.entryAdded"]},
+        },
+        websocket,
+    )
 
     # Part 3. Evaluate console.log on the page.
 
@@ -96,12 +91,12 @@ async def main():
             "method": "script.evaluate",
             "params": {
                 "expression": "console.log(`Hello, world!`);",
-                "target": {
-                    "context": context_id
-                },
-                "awaitPromise": True
-            }
-        }, websocket)
+                "target": {"context": context_id},
+                "awaitPromise": True,
+            },
+        },
+        websocket,
+    )
 
     # Part 4. Read the log.entryAdded event.
 
@@ -129,8 +124,10 @@ async def main():
     # Assert the result is an event.
     assert event_response["method"] == "log.entryAdded"
 
-    print(f'text: {event_response["params"]["text"]}' + '\n'
-          f'args: {event_response["params"]["args"]}')
+    print(
+        f"text: {event_response['params']['text']}" + "\n"
+        f"args: {event_response['params']['args']}"
+    )
 
 
 loop = asyncio.new_event_loop()

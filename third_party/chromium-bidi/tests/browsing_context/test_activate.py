@@ -21,24 +21,27 @@ from test_helpers import execute_command, goto_url
 async def test_activate(websocket, context_id, html):
     await goto_url(websocket, context_id, html())
 
-    await execute_command(websocket, {
-        "method": "browsingContext.activate",
-        "params": {
-            "context": context_id,
-        }
-    })
+    await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.activate",
+            "params": {
+                "context": context_id,
+            },
+        },
+    )
 
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "document.visibilityState",
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "resultOwnership": "none",
-                "awaitPromise": True
-            }
-        })
+                "awaitPromise": True,
+            },
+        },
+    )
 
-    assert result["result"]["value"] == 'visible'
+    assert result["result"]["value"] == "visible"

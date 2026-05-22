@@ -16,40 +16,41 @@
 from test_helpers import execute_command
 
 
-def get_bidi_cookie(cookie_name,
-                    cookie_value,
-                    domain,
-                    path="/",
-                    http_only=False,
-                    secure=True,
-                    same_site='none',
-                    expiry=None):
-    """ Return a cookie object with the given parameters."""
+def get_bidi_cookie(
+    cookie_name,
+    cookie_value,
+    domain,
+    path="/",
+    http_only=False,
+    secure=True,
+    same_site="none",
+    expiry=None,
+):
+    """Return a cookie object with the given parameters."""
     return {
-        'domain': domain,
-        'httpOnly': http_only,
-        'name': cookie_name,
-        'path': path,
-        'sameSite': same_site,
-        'secure': secure,
-        'size': len(cookie_name) + len(cookie_value),
-        'value': {
-            'type': 'string',
-            'value': cookie_value,
+        "domain": domain,
+        "httpOnly": http_only,
+        "name": cookie_name,
+        "path": path,
+        "sameSite": same_site,
+        "secure": secure,
+        "size": len(cookie_name) + len(cookie_value),
+        "value": {
+            "type": "string",
+            "value": cookie_value,
         },
-    } | ({
-        'expiry': expiry
-    } if expiry is not None else {})
+    } | ({"expiry": expiry} if expiry is not None else {})
 
 
 async def set_cookie(websocket, context_id, bidi_cookie, partition=None):
-    """ Set cookie via BiDi command."""
+    """Set cookie via BiDi command."""
     await execute_command(
-        websocket, {
-            'method': 'storage.setCookie',
-            'params': {
-                'cookie': bidi_cookie,
-            } | ({
-                'partition': partition
-            } if partition is not None else {})
-        })
+        websocket,
+        {
+            "method": "storage.setCookie",
+            "params": {
+                "cookie": bidi_cookie,
+            }
+            | ({"partition": partition} if partition is not None else {}),
+        },
+    )

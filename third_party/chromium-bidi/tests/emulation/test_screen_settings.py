@@ -38,7 +38,8 @@ async def get_screen_settings(websocket, context_id):
     Returns browsing context's current screen settings.
     """
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": """({
@@ -47,12 +48,11 @@ async def get_screen_settings(websocket, context_id):
                     availWidth: screen.availWidth,
                     availHeight: screen.availHeight,
                 })""",
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "awaitPromise": True,
-            }
-        })
+            },
+        },
+    )
     if "result" not in resp:
         return resp
 
@@ -69,39 +69,41 @@ async def test_screen_settings_set_and_clear(
     initial_screen_settings,
 ):
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'contexts': [context_id],
-                'screenArea': {
-                    'width': 100,
-                    'height': 200,
-                }
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {
+                "contexts": [context_id],
+                "screenArea": {
+                    "width": 100,
+                    "height": 200,
+                },
+            },
+        },
+    )
 
     settings = await get_screen_settings(websocket, context_id)
-    assert settings['width'] == 100
-    assert settings['height'] == 200
+    assert settings["width"] == 100
+    assert settings["height"] == 200
 
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'contexts': [context_id],
-                'screenArea': None
-            }
-        })
-    assert await get_screen_settings(websocket,
-                                     context_id) == initial_screen_settings
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {"contexts": [context_id], "screenArea": None},
+        },
+    )
+    assert await get_screen_settings(websocket, context_id) == initial_screen_settings
 
 
 @pytest.mark.asyncio
 async def test_screen_settings_screen_area_and_viewport(
-        websocket, context_id, read_messages, initial_screen_settings):
+    websocket, context_id, read_messages, initial_screen_settings
+):
     # Set viewport
     command_id_1 = await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.setViewport",
             "params": {
                 "context": context_id,
@@ -109,36 +111,42 @@ async def test_screen_settings_screen_area_and_viewport(
                     "width": 345,
                     "height": 456,
                 },
-                "devicePixelRatio": 4
-            }
-        })
+                "devicePixelRatio": 4,
+            },
+        },
+    )
 
     await read_messages(
-        1, filter_lambda=lambda x: 'id' in x and x['id'] == command_id_1)
+        1, filter_lambda=lambda x: "id" in x and x["id"] == command_id_1
+    )
 
     # Set Screen Area
     command_id_2 = await send_JSON_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'contexts': [context_id],
-                'screenArea': {
-                    'width': 600,
-                    'height': 800,
-                }
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {
+                "contexts": [context_id],
+                "screenArea": {
+                    "width": 600,
+                    "height": 800,
+                },
+            },
+        },
+    )
 
     await read_messages(
-        1, filter_lambda=lambda x: 'id' in x and x['id'] == command_id_2)
+        1, filter_lambda=lambda x: "id" in x and x["id"] == command_id_2
+    )
 
     settings = await get_screen_settings(websocket, context_id)
-    assert settings['width'] == 600
-    assert settings['height'] == 800
+    assert settings["width"] == 600
+    assert settings["height"] == 800
 
     # Also verify viewport is still set (by checking innerWidth/innerHeight)
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": """({
@@ -146,20 +154,19 @@ async def test_screen_settings_screen_area_and_viewport(
                     height: window.innerHeight,
                     dpr: window.devicePixelRatio,
                 })""",
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "awaitPromise": True,
-            }
-        })
+            },
+        },
+    )
 
     viewport_result = {}
     for key, value in resp["result"]["value"]:
         viewport_result[key] = value["value"]
 
-    assert viewport_result['width'] == 345
-    assert viewport_result['height'] == 456
-    assert viewport_result['dpr'] == 4
+    assert viewport_result["width"] == 345
+    assert viewport_result["height"] == 456
+    assert viewport_result["dpr"] == 4
 
 
 @pytest.mark.asyncio
@@ -170,32 +177,33 @@ async def test_screen_settings_per_user_context(
 ):
     # Set different screen settings overrides for different user contexts.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'userContexts': ["default"],
-                'screenArea': SOME_SCREEN_SETTINGS
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {"userContexts": ["default"], "screenArea": SOME_SCREEN_SETTINGS},
+        },
+    )
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'userContexts': [user_context_id],
-                'screenArea': ANOTHER_SCREEN_SETTINGS
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {
+                "userContexts": [user_context_id],
+                "screenArea": ANOTHER_SCREEN_SETTINGS,
+            },
+        },
+    )
 
     # Assert the overrides applied for the right contexts.
     browsing_context_id_1 = await create_context()
     settings_1 = await get_screen_settings(websocket, browsing_context_id_1)
-    assert settings_1['width'] == SOME_SCREEN_SETTINGS['width']
-    assert settings_1['height'] == SOME_SCREEN_SETTINGS['height']
+    assert settings_1["width"] == SOME_SCREEN_SETTINGS["width"]
+    assert settings_1["height"] == SOME_SCREEN_SETTINGS["height"]
 
     browsing_context_id_2 = await create_context(user_context_id)
     settings_2 = await get_screen_settings(websocket, browsing_context_id_2)
-    assert settings_2['width'] == ANOTHER_SCREEN_SETTINGS['width']
-    assert settings_2['height'] == ANOTHER_SCREEN_SETTINGS['height']
+    assert settings_2["width"] == ANOTHER_SCREEN_SETTINGS["width"]
+    assert settings_2["height"] == ANOTHER_SCREEN_SETTINGS["height"]
 
 
 @pytest.mark.asyncio
@@ -206,42 +214,45 @@ async def test_screen_settings_per_browsing_context(
 ):
     # Set different screen settings overrides for different browsing contexts.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'contexts': [context_id],
-                'screenArea': SOME_SCREEN_SETTINGS
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {"contexts": [context_id], "screenArea": SOME_SCREEN_SETTINGS},
+        },
+    )
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'contexts': [another_context_id],
-                'screenArea': ANOTHER_SCREEN_SETTINGS
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {
+                "contexts": [another_context_id],
+                "screenArea": ANOTHER_SCREEN_SETTINGS,
+            },
+        },
+    )
 
     settings_1 = await get_screen_settings(websocket, context_id)
-    assert settings_1['width'] == SOME_SCREEN_SETTINGS['width']
-    assert settings_1['height'] == SOME_SCREEN_SETTINGS['height']
+    assert settings_1["width"] == SOME_SCREEN_SETTINGS["width"]
+    assert settings_1["height"] == SOME_SCREEN_SETTINGS["height"]
 
     settings_2 = await get_screen_settings(websocket, another_context_id)
-    assert settings_2['width'] == ANOTHER_SCREEN_SETTINGS['width']
-    assert settings_2['height'] == ANOTHER_SCREEN_SETTINGS['height']
+    assert settings_2["width"] == ANOTHER_SCREEN_SETTINGS["width"]
+    assert settings_2["height"] == ANOTHER_SCREEN_SETTINGS["height"]
 
 
 @pytest.mark.asyncio
-async def test_screen_settings_global_fail(websocket, ):
+async def test_screen_settings_global_fail(
+    websocket,
+):
     # Try to set global screen settings override.
-    with pytest.raises(Exception, match='invalid argument'):
+    with pytest.raises(Exception, match="invalid argument"):
         await execute_command(
-            websocket, {
-                'method': 'emulation.setScreenSettingsOverride',
-                'params': {
-                    'screenArea': SOME_SCREEN_SETTINGS
-                }
-            })
+            websocket,
+            {
+                "method": "emulation.setScreenSettingsOverride",
+                "params": {"screenArea": SOME_SCREEN_SETTINGS},
+            },
+        )
 
 
 @pytest.mark.asyncio
@@ -252,47 +263,50 @@ async def test_screen_settings_browsing_context_precedence_over_user_context(
 ):
     # Set screen settings override for user context.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'userContexts': [user_context_id],
-                'screenArea': SOME_SCREEN_SETTINGS
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {
+                "userContexts": [user_context_id],
+                "screenArea": SOME_SCREEN_SETTINGS,
+            },
+        },
+    )
 
     browsing_context_id = await create_context(user_context_id)
 
     # Check that user context settings are applied.
     settings = await get_screen_settings(websocket, browsing_context_id)
-    assert settings['width'] == SOME_SCREEN_SETTINGS['width']
-    assert settings['height'] == SOME_SCREEN_SETTINGS['height']
+    assert settings["width"] == SOME_SCREEN_SETTINGS["width"]
+    assert settings["height"] == SOME_SCREEN_SETTINGS["height"]
 
     # Set screen settings override for browsing context.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'contexts': [browsing_context_id],
-                'screenArea': ANOTHER_SCREEN_SETTINGS
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {
+                "contexts": [browsing_context_id],
+                "screenArea": ANOTHER_SCREEN_SETTINGS,
+            },
+        },
+    )
 
     # Check that browsing context settings take precedence.
     settings = await get_screen_settings(websocket, browsing_context_id)
-    assert settings['width'] == ANOTHER_SCREEN_SETTINGS['width']
-    assert settings['height'] == ANOTHER_SCREEN_SETTINGS['height']
+    assert settings["width"] == ANOTHER_SCREEN_SETTINGS["width"]
+    assert settings["height"] == ANOTHER_SCREEN_SETTINGS["height"]
 
     # Unset screen settings override for browsing context.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setScreenSettingsOverride',
-            'params': {
-                'contexts': [browsing_context_id],
-                'screenArea': None
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setScreenSettingsOverride",
+            "params": {"contexts": [browsing_context_id], "screenArea": None},
+        },
+    )
 
     # Check that it reverts to user context settings.
     settings = await get_screen_settings(websocket, browsing_context_id)
-    assert settings['width'] == SOME_SCREEN_SETTINGS['width']
-    assert settings['height'] == SOME_SCREEN_SETTINGS['height']
+    assert settings["width"] == SOME_SCREEN_SETTINGS["width"]
+    assert settings["height"] == SOME_SCREEN_SETTINGS["height"]

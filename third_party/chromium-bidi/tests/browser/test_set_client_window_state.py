@@ -36,8 +36,7 @@ SOME_WIDTH = 666
 
 
 @pytest.mark.asyncio
-async def test_set_client_window_state_normal(websocket, context_id,
-                                              client_window_id):
+async def test_set_client_window_state_normal(websocket, context_id, client_window_id):
     await goto_url(websocket, context_id, "about:blank")
 
     result = await execute_command(
@@ -72,30 +71,30 @@ async def test_set_client_window_state_normal(websocket, context_id,
             "params": {},
         },
     )
-    assert result["clientWindows"] == [{
-        "clientWindow": client_window_id,
-        "state": "normal",
-        "x": SOME_X,
-        "y": SOME_Y,
-        "width": SOME_WIDTH,
-        "height": SOME_HEIGHT,
-        "active": ANY_BOOL,
-    }]
+    assert result["clientWindows"] == [
+        {
+            "clientWindow": client_window_id,
+            "state": "normal",
+            "x": SOME_X,
+            "y": SOME_Y,
+            "width": SOME_WIDTH,
+            "height": SOME_HEIGHT,
+            "active": ANY_BOOL,
+        }
+    ]
 
 
 @pytest.mark.asyncio
-async def test_set_client_window_state_maximized(websocket, context_id,
-                                                 client_window_id):
+async def test_set_client_window_state_maximized(
+    websocket, context_id, client_window_id
+):
     await goto_url(websocket, context_id, "about:blank")
 
     result = await execute_command(
         websocket,
         {
             "method": "browser.setClientWindowState",
-            "params": {
-                "clientWindow": client_window_id,
-                "state": "maximized"
-            },
+            "params": {"clientWindow": client_window_id, "state": "maximized"},
         },
     )
 
@@ -116,30 +115,30 @@ async def test_set_client_window_state_maximized(websocket, context_id,
             "params": {},
         },
     )
-    assert result["clientWindows"] == [{
-        "clientWindow": client_window_id,
-        "state": "maximized",
-        "x": ANY_NUMBER,
-        "y": ANY_NUMBER,
-        "width": ANY_NUMBER,
-        "height": ANY_NUMBER,
-        "active": ANY_BOOL,
-    }]
+    assert result["clientWindows"] == [
+        {
+            "clientWindow": client_window_id,
+            "state": "maximized",
+            "x": ANY_NUMBER,
+            "y": ANY_NUMBER,
+            "width": ANY_NUMBER,
+            "height": ANY_NUMBER,
+            "active": ANY_BOOL,
+        }
+    ]
 
 
 @pytest.mark.asyncio
-async def test_set_client_window_state_minimized(websocket, context_id,
-                                                 client_window_id):
+async def test_set_client_window_state_minimized(
+    websocket, context_id, client_window_id
+):
     await goto_url(websocket, context_id, "about:blank")
 
     result = await execute_command(
         websocket,
         {
             "method": "browser.setClientWindowState",
-            "params": {
-                "clientWindow": client_window_id,
-                "state": "minimized"
-            },
+            "params": {"clientWindow": client_window_id, "state": "minimized"},
         },
     )
 
@@ -160,30 +159,30 @@ async def test_set_client_window_state_minimized(websocket, context_id,
             "params": {},
         },
     )
-    assert result["clientWindows"] == [{
-        "clientWindow": client_window_id,
-        "state": "minimized",
-        "x": ANY_NUMBER,
-        "y": ANY_NUMBER,
-        "width": ANY_NUMBER,
-        "height": ANY_NUMBER,
-        "active": ANY_BOOL,
-    }]
+    assert result["clientWindows"] == [
+        {
+            "clientWindow": client_window_id,
+            "state": "minimized",
+            "x": ANY_NUMBER,
+            "y": ANY_NUMBER,
+            "width": ANY_NUMBER,
+            "height": ANY_NUMBER,
+            "active": ANY_BOOL,
+        }
+    ]
 
 
 @pytest.mark.asyncio
-async def test_set_client_window_state_fullscreen(websocket, context_id,
-                                                  client_window_id):
+async def test_set_client_window_state_fullscreen(
+    websocket, context_id, client_window_id
+):
     await goto_url(websocket, context_id, "about:blank")
 
     result = await execute_command(
         websocket,
         {
             "method": "browser.setClientWindowState",
-            "params": {
-                "clientWindow": client_window_id,
-                "state": "fullscreen"
-            },
+            "params": {"clientWindow": client_window_id, "state": "fullscreen"},
         },
     )
 
@@ -204,12 +203,14 @@ async def test_set_client_window_state_fullscreen(websocket, context_id,
             "params": {},
         },
     )
-    assert result["clientWindows"] == [{
-        "clientWindow": client_window_id,
-        "state": "fullscreen",
-        "x": ANY_NUMBER,
-        "y": ANY_NUMBER,
-        "width": ANY_NUMBER,
-        "height": ANY_NUMBER,
-        "active": ANY_BOOL,
-    }]
+    assert result["clientWindows"] == [
+        {
+            "clientWindow": client_window_id,
+            "state": "fullscreen",
+            "x": ANY_NUMBER,
+            "y": ANY_NUMBER,
+            "width": ANY_NUMBER,
+            "height": ANY_NUMBER,
+            "active": ANY_BOOL,
+        }
+    ]

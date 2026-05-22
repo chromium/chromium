@@ -22,50 +22,52 @@ async def test_browsingContext_getTree_contextReturned(websocket, context_id):
     result = await get_tree(websocket)
 
     assert result == {
-        "contexts": [{
-            "context": context_id,
-            "children": [],
-            "parent": None,
-            "url": "about:blank",
-            "userContext": "default",
-            "originalOpener": None,
-            'clientWindow': ANY_STR,
-        }]
+        "contexts": [
+            {
+                "context": context_id,
+                "children": [],
+                "parent": None,
+                "url": "about:blank",
+                "userContext": "default",
+                "originalOpener": None,
+                "clientWindow": ANY_STR,
+            }
+        ]
     }
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_getTreeWithRoot_contextReturned(websocket):
-    result = await execute_command(websocket, {
-        "method": "browsingContext.create",
-        "params": {
-            "type": "tab"
-        }
-    })
+    result = await execute_command(
+        websocket, {"method": "browsingContext.create", "params": {"type": "tab"}}
+    )
     new_context_id = result["context"]
 
     result = await get_tree(websocket)
 
-    assert len(result['contexts']) == 2
+    assert len(result["contexts"]) == 2
 
     result = await get_tree(websocket, new_context_id)
 
     assert result == {
-        "contexts": [{
-            "context": new_context_id,
-            "parent": None,
-            "url": "about:blank",
-            "children": [],
-            "userContext": "default",
-            "originalOpener": None,
-            'clientWindow': ANY_STR,
-        }]
+        "contexts": [
+            {
+                "context": new_context_id,
+                "parent": None,
+                "url": "about:blank",
+                "children": [],
+                "userContext": "default",
+                "originalOpener": None,
+                "clientWindow": ANY_STR,
+            }
+        ]
     }
 
 
 @pytest.mark.asyncio
 async def test_browsingContext_afterNavigation_getTree_contextsReturned(
-        websocket, context_id, html, iframe, url_all_origins):
+    websocket, context_id, html, iframe, url_all_origins
+):
     page_with_nested_iframe = html(iframe(url_all_origins))
     another_page_with_nested_iframe = html(iframe(url_all_origins))
 
@@ -73,43 +75,50 @@ async def test_browsingContext_afterNavigation_getTree_contextsReturned(
 
     result = await get_tree(websocket)
     assert {
-        "contexts": [{
-            "context": context_id,
-            "children": [{
-                "context": ANY_STR,
-                "url": url_all_origins,
-                "children": [],
+        "contexts": [
+            {
+                "context": context_id,
+                "children": [
+                    {
+                        "context": ANY_STR,
+                        "url": url_all_origins,
+                        "children": [],
+                        "userContext": "default",
+                        "originalOpener": None,
+                        "clientWindow": ANY_STR,
+                    }
+                ],
+                "parent": None,
+                "url": page_with_nested_iframe,
                 "userContext": "default",
                 "originalOpener": None,
-                'clientWindow': ANY_STR,
-            }],
-            "parent": None,
-            "url": page_with_nested_iframe,
-            "userContext": "default",
-            "originalOpener": None,
-            'clientWindow': ANY_STR,
-        }]
+                "clientWindow": ANY_STR,
+            }
+        ]
     } == result
 
-    await goto_url(websocket, context_id, another_page_with_nested_iframe,
-                   "complete")
+    await goto_url(websocket, context_id, another_page_with_nested_iframe, "complete")
 
     result = await get_tree(websocket)
     assert {
-        "contexts": [{
-            "context": context_id,
-            "children": [{
-                "context": ANY_STR,
-                "url": url_all_origins,
-                "children": [],
+        "contexts": [
+            {
+                "context": context_id,
+                "children": [
+                    {
+                        "context": ANY_STR,
+                        "url": url_all_origins,
+                        "children": [],
+                        "userContext": "default",
+                        "originalOpener": None,
+                        "clientWindow": ANY_STR,
+                    }
+                ],
+                "parent": None,
+                "url": another_page_with_nested_iframe,
                 "userContext": "default",
                 "originalOpener": None,
-                'clientWindow': ANY_STR,
-            }],
-            "parent": None,
-            "url": another_page_with_nested_iframe,
-            "userContext": "default",
-            "originalOpener": None,
-            'clientWindow': ANY_STR,
-        }]
+                "clientWindow": ANY_STR,
+            }
+        ]
     } == result

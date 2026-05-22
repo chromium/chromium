@@ -14,14 +14,20 @@
 #  limitations under the License.
 from typing import Literal
 
-from test_helpers import (create_request_via_fetch, execute_command, subscribe,
-                          wait_for_event)
+from test_helpers import (
+    create_request_via_fetch,
+    execute_command,
+    subscribe,
+    wait_for_event,
+)
 
 
-async def create_blocked_request(websocket, context_id: str, url: str,
-                                 phase: Literal["beforeRequestSent",
-                                                "responseStarted",
-                                                "authRequired"]):
+async def create_blocked_request(
+    websocket,
+    context_id: str,
+    url: str,
+    phase: Literal["beforeRequestSent", "responseStarted", "authRequired"],
+):
     """Creates a dummy blocked network request and returns its network id."""
 
     event = f"network.{phase}"
@@ -29,16 +35,20 @@ async def create_blocked_request(websocket, context_id: str, url: str,
     await subscribe(websocket, [event], context_ids=[context_id])
 
     await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "network.addIntercept",
             "params": {
                 "phases": [phase],
-                "urlPatterns": [{
-                    "type": "string",
-                    "pattern": url,
-                }, ],
+                "urlPatterns": [
+                    {
+                        "type": "string",
+                        "pattern": url,
+                    },
+                ],
             },
-        })
+        },
+    )
 
     await create_request_via_fetch(websocket, context_id, url)
 

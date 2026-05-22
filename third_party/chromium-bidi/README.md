@@ -6,7 +6,7 @@
 ![Unit Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/unit.yml/badge.svg)
 ![WPT Tests](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/wpt.yml/badge.svg)
 
-![Pre-commit](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/pre-commit.yml/badge.svg)
+![Lint and Format Checks](https://github.com/GoogleChromeLabs/chromium-bidi/actions/workflows/pre-commit.yml/badge.svg)
 
 This is an implementation of the
 [WebDriver BiDi](https://w3c.github.io/webdriver-bidi/) protocol with some
@@ -175,19 +175,27 @@ We use [cddlconv](https://github.com/google/cddlconv) to generate our WebDriverB
 1.  Install [Rust](https://rustup.rs/).
 2.  Run `cargo install --git https://github.com/google/cddlconv.git cddlconv`
 
-### pre-commit.com integration
+### Code Formatting & Linting
 
-Refer to the documentation at [.pre-commit-config.yaml](.pre-commit-config.yaml).
+We use a suite of tools to format and lint the codebase:
+
+- [keep-sorted](https://github.com/google/keep-sorted) to automatically sort lists, imports, and keys.
+- [ESLint](https://eslint.org/) to lint JavaScript and TypeScript files.
+- [Prettier](https://prettier.io/) to format JavaScript, TypeScript, JSON, and Markdown files.
+- [Ruff](https://docs.astral.sh/ruff/) to lint and format Python files.
+
+To check and auto-format the entire codebase, run:
 
 ```sh
-pre-commit install --hook-type pre-push
+npm run format
 ```
 
-Re-installing pre-commit locally:
+This command sequentially executes the following steps:
 
-```
-pre-commit clean && pip install pre-commit
-```
+1. `keep-sorted --mode=fix`
+2. `eslint --cache --fix`
+3. `prettier --cache --write`
+4. `ruff check --fix` and `ruff format`
 
 ### Starting WebDriver BiDi Server
 

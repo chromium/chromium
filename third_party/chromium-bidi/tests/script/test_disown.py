@@ -22,7 +22,8 @@ from test_helpers import execute_command
 @pytest.mark.asyncio
 async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": "({foo:'bar'})",
@@ -30,121 +31,96 @@ async def test_disown_releasesObject(websocket, default_realm, sandbox_realm):
                     "realm": default_realm,
                 },
                 "awaitPromise": True,
-                "resultOwnership": "root"
-            }
-        })
+                "resultOwnership": "root",
+            },
+        },
+    )
     assert {
         "type": "success",
-        "type": "success",
-        "result": {
-            "type": "object",
-            "value": ANY,
-            "handle": ANY_STR
-        },
-        "realm": default_realm
+        "result": {"type": "object", "value": ANY, "handle": ANY_STR},
+        "realm": default_realm,
     } == result
 
     handle = result["result"]["handle"]
 
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": "(obj)=>{return obj;}",
-                "arguments": [{
-                    "handle": handle
-                }],
-                "target": {
-                    "realm": default_realm
-                },
+                "arguments": [{"handle": handle}],
+                "target": {"realm": default_realm},
                 "awaitPromise": True,
-                "resultOwnership": "none"
-            }
-        })
+                "resultOwnership": "none",
+            },
+        },
+    )
 
     assert {
         "type": "success",
-        "type": "success",
-        "result": {
-            "type": "object",
-            "value": ANY
-        },
-        "realm": ANY_STR
+        "result": {"type": "object", "value": ANY},
+        "realm": ANY_STR,
     } == result
 
     # Disown in the wrong realm does not have any effect.
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.disown",
-            "params": {
-                "handles": [handle],
-                "target": {
-                    "realm": sandbox_realm
-                }
-            }
-        })
+            "params": {"handles": [handle], "target": {"realm": sandbox_realm}},
+        },
+    )
 
     assert {} == result
 
     # Assert the object is not disposed.
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.callFunction",
             "params": {
                 "functionDeclaration": "(obj)=>{return obj;}",
-                "arguments": [{
-                    "handle": handle
-                }],
-                "target": {
-                    "realm": default_realm
-                },
+                "arguments": [{"handle": handle}],
+                "target": {"realm": default_realm},
                 "awaitPromise": True,
-                "resultOwnership": "none"
-            }
-        })
+                "resultOwnership": "none",
+            },
+        },
+    )
 
     assert {
         "type": "success",
-        "type": "success",
-        "result": {
-            "type": "object",
-            "value": ANY
-        },
-        "realm": ANY_STR
+        "result": {"type": "object", "value": ANY},
+        "realm": ANY_STR,
     } == result
 
     # Disown the object in proper realm.
     result = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.disown",
-            "params": {
-                "handles": [handle],
-                "target": {
-                    "realm": default_realm
-                }
-            }
-        })
+            "params": {"handles": [handle], "target": {"realm": default_realm}},
+        },
+    )
 
     assert {} == result
 
     # Assert the object is disposed.
-    with pytest.raises(Exception,
-                       match=str({
-                           "error": "no such handle",
-                           "message": "Handle was not found."
-                       })):
+    with pytest.raises(
+        Exception,
+        match=str({"error": "no such handle", "message": "Handle was not found."}),
+    ):
         await execute_command(
-            websocket, {
+            websocket,
+            {
                 "method": "script.callFunction",
                 "params": {
                     "functionDeclaration": "(obj)=>{return obj;}",
-                    "arguments": [{
-                        "handle": handle
-                    }],
-                    "target": {
-                        "realm": default_realm
-                    },
+                    "arguments": [{"handle": handle}],
+                    "target": {"realm": default_realm},
                     "awaitPromise": True,
-                    "resultOwnership": "none"
-                }
-            })
+                    "resultOwnership": "none",
+                },
+            },
+        )

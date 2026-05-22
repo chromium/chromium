@@ -24,38 +24,35 @@ ID = itertools.count(1000)
 
 
 async def get_webdriver_session():
-    port = os.getenv('PORT', 8080)
-    new_session = requests.post(f'http://localhost:{port}/session',
-                                json={
-                                    "capabilities": {
-                                        "alwaysMatch": {
-                                            "acceptInsecureCerts": True,
-                                            "webSocketUrl": True
-                                        }
-                                    }
-                                },
-                                timeout=10).json()
+    port = os.getenv("PORT", 8080)
+    new_session = requests.post(
+        f"http://localhost:{port}/session",
+        json={
+            "capabilities": {
+                "alwaysMatch": {"acceptInsecureCerts": True, "webSocketUrl": True}
+            }
+        },
+        timeout=10,
+    ).json()
 
     return new_session["value"]
 
 
 async def get_websocket():
-    port = os.getenv('PORT', 8080)
+    port = os.getenv("PORT", 8080)
 
     # Try to connect directly via WebSocket. If not available, connect via
     # WebDriver Classic with BiDi capabilities.
     try:
         # `max_size` is needed for `browsingContext.captureScreenshot` and
         # `browsingContext.print` commands, both of which return a big payload.
-        websocket = await websockets.connect(f'ws://localhost:{port}/session',
-                                             max_size=None)
+        websocket = await websockets.connect(
+            f"ws://localhost:{port}/session", max_size=None
+        )
         # Init BiDi session.
         await run_and_wait_command(
-            {
-                "id": next(ID),
-                "method": "session.new",
-                "params": {}
-            }, websocket)
+            {"id": next(ID), "method": "session.new", "params": {}}, websocket
+        )
         return websocket
     except websockets.exceptions.InvalidStatusCode:
         # Fall back. Try to connect via WebDriver Classic, and upgrade to BiDi.

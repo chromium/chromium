@@ -30,19 +30,19 @@ ANOTHER_LONGITUDE = 9.009
 ANOTHER_ACCURACY = 10.01
 
 SOME_COORDINATES = {
-    'latitude': SOME_LATITUDE,
-    'longitude': SOME_LONGITUDE,
-    'accuracy': SOME_ACCURACY,
-    'altitude': SOME_ALTITUDE,
-    'altitudeAccuracy': SOME_ALTITUDE_ACCURACY,
-    'heading': SOME_HEADING,
-    'speed': SOME_SPEED
+    "latitude": SOME_LATITUDE,
+    "longitude": SOME_LONGITUDE,
+    "accuracy": SOME_ACCURACY,
+    "altitude": SOME_ALTITUDE,
+    "altitudeAccuracy": SOME_ALTITUDE_ACCURACY,
+    "heading": SOME_HEADING,
+    "speed": SOME_SPEED,
 }
 
 ANOTHER_COORDINATES = {
-    'latitude': ANOTHER_LATITUDE,
-    'longitude': ANOTHER_LONGITUDE,
-    'accuracy': ANOTHER_ACCURACY,
+    "latitude": ANOTHER_LATITUDE,
+    "longitude": ANOTHER_LONGITUDE,
+    "accuracy": ANOTHER_ACCURACY,
 }
 
 
@@ -51,7 +51,8 @@ async def get_geolocation(websocket, context_id):
     Returns a geolocation, or error if the geolocation is not available in 0.2s.
     """
     resp = await execute_command(
-        websocket, {
+        websocket,
+        {
             "method": "script.evaluate",
             "params": {
                 "expression": """
@@ -62,172 +63,183 @@ async def get_geolocation(websocket, context_id):
                                 {timeout: 200}
                         ))
                     """,
-                "target": {
-                    "context": context_id
-                },
+                "target": {"context": context_id},
                 "awaitPromise": True,
-            }
-        })
+            },
+        },
+    )
 
     return resp["result"] if "result" in resp else resp
 
 
 @pytest.mark.asyncio
-async def test_geolocation_set_and_clear(websocket, context_id, url_example,
-                                         snapshot):
+async def test_geolocation_set_and_clear(websocket, context_id, url_example, snapshot):
     await goto_url(websocket, context_id, url_example)
 
-    await set_permission(websocket, get_origin(url_example),
-                         {'name': 'geolocation'}, 'granted')
+    await set_permission(
+        websocket, get_origin(url_example), {"name": "geolocation"}, "granted"
+    )
 
     initial_geolocation = await get_geolocation(websocket, context_id)
 
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'contexts': [context_id],
-                'coordinates': SOME_COORDINATES
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {"contexts": [context_id], "coordinates": SOME_COORDINATES},
+        },
+    )
 
     emulated_geolocation = await get_geolocation(websocket, context_id)
 
-    assert initial_geolocation != emulated_geolocation, "Geolocation should have changed"
-    assert emulated_geolocation == snapshot(
-    ), "New geolocation should match snapshot"
+    assert initial_geolocation != emulated_geolocation, (
+        "Geolocation should have changed"
+    )
+    assert emulated_geolocation == snapshot(), "New geolocation should match snapshot"
 
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'contexts': [context_id],
-                'coordinates': ANOTHER_COORDINATES
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {"contexts": [context_id], "coordinates": ANOTHER_COORDINATES},
+        },
+    )
     emulated_geolocation = await get_geolocation(websocket, context_id)
-    assert emulated_geolocation == snapshot(
-    ), "New geolocation should match snapshot"
+    assert emulated_geolocation == snapshot(), "New geolocation should match snapshot"
 
     # Clear geolocation override.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'contexts': [context_id],
-                'coordinates': None
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {"contexts": [context_id], "coordinates": None},
+        },
+    )
 
     # Assert the geolocation has returned to the original state.
     assert initial_geolocation == await get_geolocation(websocket, context_id)
 
 
 @pytest.mark.asyncio
-async def test_geolocation_emulate_unavailable(websocket, context_id,
-                                               url_example, snapshot):
+async def test_geolocation_emulate_unavailable(
+    websocket, context_id, url_example, snapshot
+):
     await goto_url(websocket, context_id, url_example)
 
-    await set_permission(websocket, get_origin(url_example),
-                         {'name': 'geolocation'}, 'granted')
+    await set_permission(
+        websocket, get_origin(url_example), {"name": "geolocation"}, "granted"
+    )
 
     initial_geolocation = await get_geolocation(websocket, context_id)
 
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'contexts': [context_id],
-                'error': {
-                    'type': 'positionUnavailable'
-                }
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {
+                "contexts": [context_id],
+                "error": {"type": "positionUnavailable"},
+            },
+        },
+    )
 
     emulated_geolocation = await get_geolocation(websocket, context_id)
 
-    assert initial_geolocation != emulated_geolocation, "Geolocation should have changed"
-    assert emulated_geolocation == snapshot(
-    ), "New geolocation should match snapshot"
+    assert initial_geolocation != emulated_geolocation, (
+        "Geolocation should have changed"
+    )
+    assert emulated_geolocation == snapshot(), "New geolocation should match snapshot"
 
     # Clear geolocation override.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'contexts': [context_id],
-                'coordinates': None
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {"contexts": [context_id], "coordinates": None},
+        },
+    )
 
     # Assert the geolocation has returned to the original state.
     assert initial_geolocation == await get_geolocation(websocket, context_id)
 
 
 @pytest.mark.asyncio
-async def test_geolocation_per_user_context(websocket, url_example,
-                                            url_example_another_origin,
-                                            user_context_id, create_context,
-                                            snapshot):
+async def test_geolocation_per_user_context(
+    websocket,
+    url_example,
+    url_example_another_origin,
+    user_context_id,
+    create_context,
+    snapshot,
+):
     # `url_example_another_origin` is required as `local_server_http` can
     # be dead-locked in case of concurrent requests.
 
-    await set_permission(websocket, get_origin(url_example),
-                         {'name': 'geolocation'}, 'granted', "default")
-    await set_permission(websocket, get_origin(url_example_another_origin),
-                         {'name': 'geolocation'}, 'granted', user_context_id)
+    await set_permission(
+        websocket,
+        get_origin(url_example),
+        {"name": "geolocation"},
+        "granted",
+        "default",
+    )
+    await set_permission(
+        websocket,
+        get_origin(url_example_another_origin),
+        {"name": "geolocation"},
+        "granted",
+        user_context_id,
+    )
 
     # Set different geolocation overrides for different user contexts.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'userContexts': ["default"],
-                'coordinates': SOME_COORDINATES
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {"userContexts": ["default"], "coordinates": SOME_COORDINATES},
+        },
+    )
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'userContexts': [user_context_id],
-                'coordinates': ANOTHER_COORDINATES
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {
+                "userContexts": [user_context_id],
+                "coordinates": ANOTHER_COORDINATES,
+            },
+        },
+    )
 
     # Assert the overrides applied for the right contexts.
     browsing_context_id_1 = await create_context()
     await goto_url(websocket, browsing_context_id_1, url_example)
-    emulated_geolocation_1 = await get_geolocation(websocket,
-                                                   browsing_context_id_1)
+    emulated_geolocation_1 = await get_geolocation(websocket, browsing_context_id_1)
     assert emulated_geolocation_1 == snapshot()
 
     browsing_context_id_2 = await create_context(user_context_id)
-    await goto_url(websocket, browsing_context_id_2,
-                   url_example_another_origin)
-    emulated_geolocation_2 = await get_geolocation(websocket,
-                                                   browsing_context_id_2)
+    await goto_url(websocket, browsing_context_id_2, url_example_another_origin)
+    emulated_geolocation_2 = await get_geolocation(websocket, browsing_context_id_2)
     assert emulated_geolocation_2 == snapshot()
 
 
 @pytest.mark.asyncio
-async def test_geolocation_iframe(websocket, context_id, iframe_id,
-                                  url_example, url_example_another_origin):
-    await set_permission(websocket, get_origin(url_example),
-                         {'name': 'geolocation'}, 'granted')
+async def test_geolocation_iframe(
+    websocket, context_id, iframe_id, url_example, url_example_another_origin
+):
+    await set_permission(
+        websocket, get_origin(url_example), {"name": "geolocation"}, "granted"
+    )
 
     await goto_url(websocket, iframe_id, url_example)
 
     initial_geolocation = await get_geolocation(websocket, context_id)
 
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'contexts': [context_id],
-                'coordinates': SOME_COORDINATES
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {"contexts": [context_id], "coordinates": SOME_COORDINATES},
+        },
+    )
 
     emulated_geolocation = await get_geolocation(websocket, context_id)
     iframe_geolocation = await get_geolocation(websocket, iframe_id)
@@ -235,33 +247,35 @@ async def test_geolocation_iframe(websocket, context_id, iframe_id,
 
     # Move iframe out of process.
     await goto_url(websocket, iframe_id, url_example_another_origin)
-    await set_permission(websocket, get_origin(url_example_another_origin),
-                         {'name': 'geolocation'}, 'granted')
+    await set_permission(
+        websocket,
+        get_origin(url_example_another_origin),
+        {"name": "geolocation"},
+        "granted",
+    )
 
     iframe_geolocation = await get_geolocation(websocket, iframe_id)
     assert iframe_geolocation == emulated_geolocation
 
     # Update emulation.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'contexts': [context_id],
-                'coordinates': ANOTHER_COORDINATES
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {"contexts": [context_id], "coordinates": ANOTHER_COORDINATES},
+        },
+    )
     emulated_geolocation = await get_geolocation(websocket, context_id)
     iframe_geolocation = await get_geolocation(websocket, iframe_id)
     assert iframe_geolocation == emulated_geolocation
 
     # Reset emulation.
     await execute_command(
-        websocket, {
-            'method': 'emulation.setGeolocationOverride',
-            'params': {
-                'contexts': [context_id],
-                'coordinates': None
-            }
-        })
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {"contexts": [context_id], "coordinates": None},
+        },
+    )
     iframe_geolocation = await get_geolocation(websocket, iframe_id)
     assert iframe_geolocation == initial_geolocation

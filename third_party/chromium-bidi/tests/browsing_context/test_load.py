@@ -13,13 +13,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import pytest
-from test_helpers import (ANY_TIMESTAMP, read_JSON_message, send_JSON_command,
-                          subscribe)
+from test_helpers import ANY_TIMESTAMP, read_JSON_message, send_JSON_command, subscribe
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_noInitialLoadEvents(websocket, html,
-                                                   assert_no_more_messages):
+async def test_browsingContext_noInitialLoadEvents(
+    websocket, html, assert_no_more_messages
+):
     # Due to the nature, the test does not always fail, even if the
     # implementation does not guarantee the initial context to be fully loaded.
     # The test asserts there was no initial "browsingContext.load" emitted
@@ -32,38 +32,35 @@ async def test_browsingContext_noInitialLoadEvents(websocket, html,
     url = html("<h2>test</h2>")
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "id": 1,
             "method": "session.subscribe",
-            "params": {
-                "events": ["browsingContext.load"]
-            }
-        })
+            "params": {"events": ["browsingContext.load"]},
+        },
+    )
 
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 1
 
-    await send_JSON_command(websocket, {
-        "id": 2,
-        "method": "browsingContext.getTree",
-        "params": {}
-    })
+    await send_JSON_command(
+        websocket, {"id": 2, "method": "browsingContext.getTree", "params": {}}
+    )
 
     resp = await read_JSON_message(websocket)
-    assert resp[
-        "id"] == 2, "The message should be result of command `browsingContext.getTree` with `id`: 2"
+    assert resp["id"] == 2, (
+        "The message should be result of command `browsingContext.getTree` with `id`: 2"
+    )
     context_id = resp["result"]["contexts"][0]["context"]
 
     await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "id": 3,
             "method": "browsingContext.navigate",
-            "params": {
-                "url": url,
-                "wait": "none",
-                "context": context_id
-            }
-        })
+            "params": {"url": url, "wait": "none", "context": context_id},
+        },
+    )
 
     resp = await read_JSON_message(websocket)
     assert resp["id"] == 3
@@ -72,56 +69,53 @@ async def test_browsingContext_noInitialLoadEvents(websocket, html,
     # Wait for the navigated page to be loaded.
     resp = await read_JSON_message(websocket)
     assert {
-        'type': 'event',
-        'method': 'browsingContext.load',
-        'params': {
-            'context': context_id,
-            'navigation': navigation,
-            'timestamp': ANY_TIMESTAMP,
-            'url': url
-        }
+        "type": "event",
+        "method": "browsingContext.load",
+        "params": {
+            "context": context_id,
+            "navigation": navigation,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        },
     } == resp
     await assert_no_more_messages()
 
 
 @pytest.mark.asyncio
-async def test_browsingContext_load_properNavigation(websocket, context_id,
-                                                     url_example,
-                                                     read_messages):
+async def test_browsingContext_load_properNavigation(
+    websocket, context_id, url_example, read_messages
+):
     await subscribe(websocket, "browsingContext.load")
 
     command_id = await send_JSON_command(
-        websocket, {
+        websocket,
+        {
             "method": "browsingContext.navigate",
-            "params": {
-                "url": url_example,
-                "wait": "none",
-                "context": context_id
-            }
-        })
+            "params": {"url": url_example, "wait": "none", "context": context_id},
+        },
+    )
 
-    messages = await read_messages(2,
-                                   keys_to_stabilize=['navigation'],
-                                   check_no_other_messages=True,
-                                   sort=True)
+    messages = await read_messages(
+        2, keys_to_stabilize=["navigation"], check_no_other_messages=True, sort=True
+    )
 
     assert messages == [
         {
-            'id': command_id,
-            'result': {
-                'navigation': 'stable_0',
-                'url': url_example,
+            "id": command_id,
+            "result": {
+                "navigation": "stable_0",
+                "url": url_example,
             },
-            'type': 'success',
+            "type": "success",
         },
         {
-            'method': 'browsingContext.load',
-            'params': {
-                'context': context_id,
-                'navigation': 'stable_0',
-                'timestamp': ANY_TIMESTAMP,
-                'url': url_example,
+            "method": "browsingContext.load",
+            "params": {
+                "context": context_id,
+                "navigation": "stable_0",
+                "timestamp": ANY_TIMESTAMP,
+                "url": url_example,
             },
-            'type': 'event',
+            "type": "event",
         },
     ]
