@@ -85,7 +85,6 @@ bool IsSystemWebUIHost(std::string_view host) {
       ash::kChromeUIAppInstallDialogHost,
       ash::kChromeUIBluetoothPairingHost,
       ash::kChromeUIBorealisCreditsHost,
-      ash::kChromeUIBorealisInstallerHost,
       ash::kChromeUIBorealisMOTDHost,
       kChromeUICertificateManagerHost,
       ash::kChromeUICloudUploadHost,

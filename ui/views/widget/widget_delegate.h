@@ -229,10 +229,6 @@ FORWARD_DECLARE_TEST(NativeWidgetAuraTest, TransientChildModalWindowVisibility);
 FORWARD_DECLARE_TEST(NativeViewHostAuraTest,
                      FocusManagerUpdatedDuringDestruction);
 
-namespace borealis {
-class BorealisDisallowedDialog;
-class BorealisLaunchErrorDialog;
-}  // namespace borealis
 
 namespace test {
 FORWARD_DECLARE_TEST(DesktopWidgetTest, LockPaintAsActiveAndCloseParent);
@@ -437,8 +433,6 @@ class VIEWS_EXPORT WidgetDelegate {
     friend class BubbleDialogModelHost;
     friend class FocusTraversalTest;
     FRIEND_TEST_ALL_PREFIXES(BubbleUmaLoggerTest, LogMetricFromDelegate);
-    friend class borealis::BorealisDisallowedDialog;
-    friend class borealis::BorealisLaunchErrorDialog;
     friend class ::web_app::IsolatedWebAppInstallerViewController;
     friend class ::web_app::SubAppsInstallDialogController;
 

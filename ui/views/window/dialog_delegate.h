@@ -127,10 +127,6 @@ class SelectBnplIssuerDialog;
 }  // namespace payments
 }  // namespace autofill
 
-namespace borealis {
-class BorealisSplashScreenView;
-}
-
 namespace extensions {
 class SecurityDialogTrackerTest;
 }
@@ -793,7 +789,6 @@ class VIEWS_EXPORT DialogDelegateView : public DialogDelegate, public View {
   friend class ::autofill::WebauthnDialogView;
   friend class ::autofill::payments::PaymentsWindowUserConsentDialogView;
   friend class ::autofill::payments::SelectBnplIssuerDialog;
-  friend class ::borealis::BorealisSplashScreenView;
   friend class ::extensions::SecurityDialogTrackerTest;
   friend class ::glic::GlicFreDialogView;
   friend class ::payments::PaymentRequestDialogView;

@@ -18,7 +18,6 @@ group("resources") {
     "add_supervision:resources",
     "app_install:resources",
     "bluetooth_pairing_dialog:resources",
-    "borealis_installer:resources",
     "cloud_upload:resources",
     "crostini_installer:resources",
     "cryptohome:resources",

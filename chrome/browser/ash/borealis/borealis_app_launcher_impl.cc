@@ -13,9 +13,6 @@
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/views/borealis/borealis_launch_error_dialog.h"
-#include "chrome/browser/ui/views/borealis/borealis_splash_screen_view.h"
-#include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_dialog.h"
 #include "chromeos/ash/experiences/guest_os/borealis/motd/borealis_motd_dialog.h"
 
 namespace borealis {
@@ -56,16 +53,10 @@ void BorealisAppLauncherImpl::LaunchAfterMOTD(
   if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {
-    ash::BorealisInstallerDialog::Show(profile_);
-    RecordBorealisInstallSourceHistogram(source);
     std::move(callback).Run(LaunchResult::kUnknownApp);
     return;
   }
-  if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
-           ->ContextManager()
-           .IsRunning()) {
-    borealis::ShowBorealisSplashScreenView(profile_);
-  }
+
   RecordBorealisLaunchSourceHistogram(source);
   BorealisServiceFactory::GetForProfile(profile_)
       ->ContextManager()
@@ -78,11 +69,6 @@ void BorealisAppLauncherImpl::LaunchAfterMOTD(
               LOG(ERROR) << "Failed to launch " << app_id << "(code "
                          << result.error().error()
                          << "): " << result.error().description();
-              // If splash screen is showing and borealis did not launch
-              // properly, close it.
-              borealis::CloseBorealisSplashScreenView();
-              views::borealis::ShowBorealisLaunchErrorView(
-                  profile, result.error().error());
               std::move(callback).Run(LaunchResult::kError);
               return;
             }

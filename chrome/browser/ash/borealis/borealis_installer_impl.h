@@ -21,9 +21,7 @@ namespace borealis {
 
 // This class is responsible for installing the Borealis VM. Currently
 // the only installation requirements for Borealis is to install the
-// relevant DLC component. The installer works closely with
-// chrome/browser/ui/webui/ash/borealis_installer/
-// borealis_installer_page_handler.cc.
+// relevant DLC component.
 class BorealisInstallerImpl : public BorealisInstaller {
  public:
   explicit BorealisInstallerImpl(Profile* profile);

@@ -86,8 +86,6 @@
 #include "chrome/browser/ui/webui/ash/app_install/app_install_dialog.h"
 #include "chrome/browser/ui/webui/ash/app_install/app_install_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
-#include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer.mojom.h"
-#include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload.mojom.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
@@ -278,10 +276,6 @@ void PopulateChromeWebUIFrameBindersPartsCros(
   RegisterWebUIControllerInterfaceBinder<
       ash::cellular_setup::mojom::ESimManager, ash::settings::OSSettingsUI,
       ash::NetworkUI, ash::OobeUI>(map);
-
-  RegisterWebUIControllerInterfaceBinder<
-      ash::borealis_installer::mojom::PageHandlerFactory,
-      ash::BorealisInstallerUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::borealis_motd::mojom::PageHandlerFactory,

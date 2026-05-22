@@ -77,7 +77,6 @@
 #include "chrome/browser/ui/webui/ash/arc_overview_tracing/arc_overview_tracing_ui.h"
 #include "chrome/browser/ui/webui/ash/arc_power_control/arc_power_control_ui.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_pairing_dialog.h"
-#include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_ui.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_ui.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_ui.h"
@@ -254,7 +253,6 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<BocaReceiverUIConfig>());
   map.AddWebUIConfig(std::make_unique<borealis::BorealisMOTDUIConfig>());
   map.AddWebUIConfig(std::make_unique<BorealisCreditsUI>());
-  map.AddWebUIConfig(std::make_unique<BorealisInstallerUIConfig>());
   map.AddWebUIConfig(std::make_unique<cloud_upload::CloudUploadUIConfig>());
   map.AddWebUIConfig(std::make_unique<ColorInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ConfirmPasswordChangeUIConfig>());

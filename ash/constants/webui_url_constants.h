@@ -44,9 +44,6 @@ inline constexpr char kChromeUIBluetoothPairingHost[] = "bluetooth-pairing";
 inline constexpr char kChromeUIBluetoothPairingURL[] =
     "chrome://bluetooth-pairing/";
 inline constexpr char kChromeUIBorealisCreditsHost[] = "borealis-credits";
-inline constexpr char kChromeUIBorealisInstallerHost[] = "borealis-installer";
-inline constexpr char kChromeUIBorealisInstallerURL[] =
-    "chrome://borealis-installer";
 
 // The host and URL for the Borealis MOTD Dialog
 inline constexpr char kChromeUIBorealisMOTDHost[] = "borealis-motd";
