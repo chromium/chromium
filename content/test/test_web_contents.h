@@ -210,6 +210,8 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void SetMediaCaptureRawDeviceIdsOpened(blink::mojom::MediaStreamType type,
                                          std::vector<std::string> ids) override;
   void SetCurrentlyPlayingVideoCount(int count) override;
+  void SetHasPictureInPictureDocument(
+      bool has_picture_in_picture_document) override;
 
   void OnIgnoredUIEvent() override;
   bool GetIgnoredUIEventCalled() const;

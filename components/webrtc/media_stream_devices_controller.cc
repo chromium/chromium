@@ -425,10 +425,11 @@ bool MediaStreamDevicesController::IsUserAcceptAllowedOnAndroid(
     }
   }
 
-  // Don't approve device requests if the tab was hidden.
-  // TODO(qinmin): Add a test for this. http://crbug.com/396869.
+  // Don't approve device requests if the tab was hidden, unless there is an
+  // active Picture-in-Picture document.
   // TODO(raymes): Shouldn't this apply to all permissions not just audio/video?
-  return web_contents_->GetRenderWidgetHostView()->IsShowing();
+  return web_contents_->GetRenderWidgetHostView()->IsShowing() ||
+         web_contents_->HasPictureInPictureDocument();
 }
 #endif
 

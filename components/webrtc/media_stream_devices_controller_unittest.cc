@@ -18,6 +18,7 @@
 #include "content/public/test/mock_permission_controller.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
@@ -210,6 +211,54 @@ class MediaStreamDevicesControllerTest : public testing::Test {
   std::unique_ptr<TestPermissionsClient> permissions_client_;
   std::tuple<blink::mojom::MediaStreamRequestResult,
              blink::mojom::StreamDevicesPtr>
+  RequestPermissionsRaw(
+      blink::MediaStreamRequestType request_type,
+      const std::vector<std::string>& requested_audio_device_ids,
+      const std::vector<std::string>& requested_video_device_ids,
+      blink::mojom::MediaStreamType audio_type,
+      blink::mojom::MediaStreamType video_type) {
+    base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
+                           blink::mojom::StreamDevicesPtr>
+        result_future;
+    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+    webrtc::MediaStreamDevicesController::RequestPermissions(
+        content::MediaStreamRequest{
+            /*render_process_id=*/render_frame_host_id_.child_id
+                .GetUnsafeValue(),
+            /*render_frame_id=*/render_frame_host_id_.frame_routing_id,
+            /*page_request_id=*/0,
+            /*url_origin=*/origin_,
+            /*user_gesture=*/false,
+            request_type,
+            requested_audio_device_ids,
+            requested_video_device_ids,
+            audio_type,
+            video_type,
+            /*disable_local_echo=*/false,
+            /*request_pan_tilt_zoom_permission=*/false,
+            /*captured_surface_control_active=*/false,
+        },
+        &enumerator_,
+        base::BindLambdaForTesting(
+            [&](const blink::mojom::StreamDevicesSet& stream_devices_set,
+                blink::mojom::MediaStreamRequestResult result,
+                bool blocked_by_permissions_policy,
+                ContentSetting audio_setting, ContentSetting video_setting) {
+              if (result == blink::mojom::MediaStreamRequestResult::OK) {
+                CHECK_EQ(stream_devices_set.stream_devices.size(), 1u);
+              } else {
+                CHECK(stream_devices_set.stream_devices.empty());
+              }
+              result_future.SetValue(
+                  result, stream_devices_set.stream_devices.empty()
+                              ? blink::mojom::StreamDevicesPtr()
+                              : stream_devices_set.stream_devices[0]->Clone());
+            }));
+    return result_future.Take();
+  }
+
+  std::tuple<blink::mojom::MediaStreamRequestResult,
+             blink::mojom::StreamDevicesPtr>
   MakeRequest(blink::MediaStreamRequestType request_type,
               const std::vector<std::string>& requested_audio_device_ids,
               const std::vector<std::string>& requested_video_device_ids,
@@ -264,41 +313,12 @@ class MediaStreamDevicesControllerTest : public testing::Test {
                        content::PermissionStatusSource::UNSPECIFIED)});
             });
 
-    base::test::TestFuture<blink::mojom::MediaStreamRequestResult,
-                           blink::mojom::StreamDevicesPtr>
-        result_future;
-    // TODO(crbug.com/379869738) Remove GetUnsafeValue.
-    webrtc::MediaStreamDevicesController::RequestPermissions(
-        content::MediaStreamRequest{
-            /*render_process_id=*/render_frame_host_id_.child_id
-                .GetUnsafeValue(),
-            /*render_frame_id=*/render_frame_host_id_.frame_routing_id,
-            /*page_request_id=*/0,
-            /*url_origin=*/origin_,
-            /*user_gesture=*/false,
-            /*request_type=*/
-            request_type,
-            /*requested_audio_device_ids=*/requested_audio_device_ids,
-            /*requested_video_device_ids=*/requested_video_device_ids,
-            request_audio ? blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
-                          : blink::mojom::MediaStreamType::NO_SERVICE,
-            request_video ? blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE
-                          : blink::mojom::MediaStreamType::NO_SERVICE,
-            /*disable_local_echo=*/false,
-            /*request_pan_tilt_zoom_permission=*/false,
-            /*captured_surface_control_active=*/false,
-        },
-        &enumerator_,
-        base::BindLambdaForTesting(
-            [&](const blink::mojom::StreamDevicesSet& stream_devices_set,
-                blink::mojom::MediaStreamRequestResult result,
-                bool blocked_by_permissions_policy,
-                ContentSetting audio_setting, ContentSetting video_setting) {
-              CHECK_EQ(stream_devices_set.stream_devices.size(), 1u);
-              result_future.SetValue(
-                  result, stream_devices_set.stream_devices[0]->Clone());
-            }));
-    return result_future.Take();
+    return RequestPermissionsRaw(
+        request_type, requested_audio_device_ids, requested_video_device_ids,
+        request_audio ? blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
+                      : blink::mojom::MediaStreamType::NO_SERVICE,
+        request_video ? blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE
+                      : blink::mojom::MediaStreamType::NO_SERVICE);
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -411,3 +431,62 @@ TEST_F(MediaStreamDevicesControllerTest,
       enumerator_.GetVideoCaptureDevices().back()));
   ASSERT_FALSE(stream_devices->audio_device.has_value());
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(MediaStreamDevicesControllerTest, RequestBlockedWhenTabIsHidden) {
+  // Hide the RenderWidgetHostView.
+  web_contents_->GetRenderWidgetHostView()->Hide();
+
+  // We expect that RequestPermissionsFromCurrentDocument will be called with
+  // empty permissions (since they are blocked early).
+  auto* mock_permission_controller = static_cast<MockPermissionController*>(
+      browser_context_.GetPermissionController());
+  EXPECT_CALL(
+      *mock_permission_controller,
+      RequestPermissionsFromCurrentDocument(
+          _,
+          testing::Field(&content::PermissionRequestDescription::permissions,
+                         testing::IsEmpty()),
+          _))
+      .WillOnce(
+          [](auto*, auto,
+             base::OnceCallback<void(
+                 const std::vector<content::PermissionResult>&)> callback) {
+            std::move(callback).Run({});
+          });
+
+  // Try to request video capture.
+  auto [result, stream_devices] = RequestPermissionsRaw(
+      blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_ids=*/{},
+      /*requested_video_device_ids=*/
+      GetIds(enumerator_.GetVideoCaptureDevices(), 0),
+      blink::mojom::MediaStreamType::NO_SERVICE,
+      blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE);
+
+  EXPECT_EQ(
+      result,
+      blink::mojom::MediaStreamRequestResult::ANDROID_CANT_REQUEST_PERMISSION);
+}
+
+TEST_F(MediaStreamDevicesControllerTest,
+       RequestAllowedWhenTabIsHiddenButHasPictureInPictureDocument) {
+  // Hide the RenderWidgetHostView.
+  web_contents_->GetRenderWidgetHostView()->Hide();
+
+  // Mark that WebContents has a Picture-in-Picture document.
+  content::WebContentsTester::For(web_contents_)
+      ->SetHasPictureInPictureDocument(true);
+
+  // Try to request video capture.
+  auto [result, stream_devices] =
+      MakeRequest(blink::MediaStreamRequestType::MEDIA_GENERATE_STREAM,
+                  /*requested_audio_device_ids=*/{},
+                  /*requested_video_device_ids=*/
+                  GetIds(enumerator_.GetVideoCaptureDevices(), 0),
+                  /*request_audio=*/false, /*request_video=*/true);
+
+  // It should succeed (or get OK).
+  EXPECT_EQ(result, blink::mojom::MediaStreamRequestResult::OK);
+}
+#endif

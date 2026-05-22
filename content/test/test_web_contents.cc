@@ -647,6 +647,12 @@ void TestWebContents::SetCurrentlyPlayingVideoCount(int count) {
   playing_video_count_ = count;
 }
 
+void TestWebContents::SetHasPictureInPictureDocument(
+    bool has_picture_in_picture_document) {
+  WebContentsImpl::SetHasPictureInPictureDocument(
+      has_picture_in_picture_document);
+}
+
 void TestWebContents::OnIgnoredUIEvent() {
   ignored_ui_event_called_ = true;
 }

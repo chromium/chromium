@@ -236,6 +236,10 @@ class WebContentsTester {
 
   // Sets the return value for GetCurrentlyPlayingVideoCount().
   virtual void SetCurrentlyPlayingVideoCount(int count) = 0;
+
+  // Sets the return value for HasPictureInPictureDocument().
+  virtual void SetHasPictureInPictureDocument(
+      bool has_picture_in_picture_document) = 0;
 };
 
 }  // namespace content
