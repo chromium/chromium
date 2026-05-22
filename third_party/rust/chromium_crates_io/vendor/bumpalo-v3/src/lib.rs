@@ -6,6 +6,6 @@
 // by `tools/crates/run_gnrt.py vendor`. Do not edit!
 //
 // This is an empty placeholder that has replaced the
-// `bumpalo-3.20.2` crate.
+// `bumpalo-3.20.3` crate.
 //
 // See `//tools/crates/gnrt/removed_crate.md` to learn more.
