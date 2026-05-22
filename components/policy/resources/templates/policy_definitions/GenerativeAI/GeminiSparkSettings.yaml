@@ -1,0 +1,43 @@
+caption: Allows <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> to connect to and use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse
+desc: |-
+  Controls if the <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> agent is allowed to connect to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and use auto browse.
+
+  0 = <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> is allowed to connect to and use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse
+
+  1 = <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> is not allowed to connect to or use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse
+
+  Warning: Enabling <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> to connect to <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> and use auto browse permits the <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> agent to perform autonomous, multi-step actions on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> clients using the active browser session. This entails significant security risks, including credential risks, Local Network Ingress and loss of context aware signals. Existing management and security controls might not be respected.
+
+  Administrators are advised to carefully evaluate their organization's network threat model, compliance and privacy guidelines before enabling this feature.
+
+  This policy has no effect when the <ph name="GOOGLE_GEMINI_PRODUCT_NAME">Google Gemini</ph> app or <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse policies are disabled. For example, the <ph name="GOOGLE_GEMINI_PRODUCT_NAME">Google Gemini</ph> app can be disabled by <ph name="GEMINI_SETTINGS_POLICY_NAME">GeminiSettings</ph> policy. For more information on <ph name="GOOGLE_GEMINI_PRODUCT_NAME">Google Gemini</ph> in <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>, please see https://support.google.com/chrome/a?p=gemini_in_chrome.
+
+  <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse and <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> are not available in all countries or all languages. Setting this policy to 0 - Enabled does not guarantee the feature will be enabled; it remains subject to availability. For more info on the roll-out, check the Enterprise Release Notes: https://chromeenterprise.google/resources/release-notes/
+
+  If the policy is unset, its behavior is determined by the <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME">GenAiDefaultSettings</ph> policy.
+owners:
+- rosiey@google.com
+- sauski@google.com
+- file://chrome/browser/glic/OWNERS
+example_value: 1
+future_on:
+- chrome.*
+- chrome_os
+features:
+  dynamic_refresh: true
+  per_profile: true
+type: int-enum
+schema:
+  type: integer
+  enum:
+  - 0
+  - 1
+items:
+- caption: <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> is allowed to connect to and use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse.
+  name: Enabled
+  value: 0
+- caption: <ph name="GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph> is not allowed to connect to or use <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> auto browse.
+  name: Disabled
+  value: 1
+default: 1
+tags: []

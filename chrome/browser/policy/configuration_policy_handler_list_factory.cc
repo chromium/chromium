@@ -24,7 +24,7 @@
 #include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_policy_handler.h"
 #include "chrome/browser/first_party_sets/first_party_sets_overrides_policy_handler.h"
 #include "chrome/browser/glic/gemini_act_on_web_settings_policy_handler.h"
-#include "chrome/browser/glic/gemini_experimental_triggering_settings_policy_handler.h"
+#include "chrome/browser/glic/gemini_spark_settings_policy_handler.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/net/disk_cache_dir_policy_handler.h"
@@ -3633,8 +3633,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>(
           gen_ai_default_policies)));
 #if !BUILDFLAG(IS_ANDROID)
-  handlers->AddHandler(std::make_unique<
-                       GeminiExperimentalTriggeringSettingsPolicyHandler>(
+  handlers->AddHandler(std::make_unique<GeminiSparkSettingsPolicyHandler>(
       std::make_unique<GenAiDefaultSettingsPolicyHandler>(
           std::vector<GenAiDefaultSettingsPolicyHandler::GenAiPolicyDetails>(
               gen_ai_default_policies))));

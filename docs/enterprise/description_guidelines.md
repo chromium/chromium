@@ -208,6 +208,7 @@ avoid validation errors.
 
 #### Google Product
 
+* Gemini Spark: `<ph name="GOOGLE_GEMINI_SPARK_PRODUCT_NAME">Gemini Spark</ph>`
 * Google Admin console: `<ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME">Google Admin console</ph>`
 * Google AI Mode: `<ph name="GOOGLE_AI_MODE_PRODUCT_NAME">Google AI Mode</ph>`
 * Google Calendar: `<ph name="GOOGLE_CALENDAR_NAME">Google Calendar</ph>`

@@ -9,20 +9,20 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
-          "GeminiExperimentalTriggeringSettings": 1
+          "GeminiSparkSettings": 1
         },
         "prefs": {
-          "glic.experimental_triggering_policy_settings": {
+          "glic.spark_policy_settings": {
             "value": 1
           }
         }
       },
       {
         "policies": {
-          "GeminiExperimentalTriggeringSettings": 0
+          "GeminiSparkSettings": 0
         },
         "prefs": {
-          "glic.experimental_triggering_policy_settings": {
+          "glic.spark_policy_settings": {
             "value": 0
           }
         }

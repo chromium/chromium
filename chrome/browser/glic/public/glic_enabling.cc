@@ -1007,12 +1007,9 @@ GlicEnabling::GetExperimentalTriggeringState() const {
   if (is_managed && !is_likely_dogfood_client) {
     // Check policy
     auto* pref_service = profile_->GetPrefs();
-    auto policy_state =
-        static_cast<glic::prefs::GlicExperimentalTriggeringPolicyState>(
-            pref_service->GetInteger(
-                glic::prefs::kGlicExperimentalTriggeringPolicySettings));
-    if (policy_state !=
-        glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled) {
+    auto policy_state = static_cast<glic::prefs::GlicSparkPolicyState>(
+        pref_service->GetInteger(glic::prefs::kGlicSparkPolicySettings));
+    if (policy_state != glic::prefs::GlicSparkPolicyState::kEnabled) {
       return syncer::DeviceInfo::GlicExperimentalTriggeringState::kUnavailable;
     }
   }

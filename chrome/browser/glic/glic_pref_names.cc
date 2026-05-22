@@ -68,11 +68,11 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kGlicExperimentalTriggeringEnabled,
                                 false);
 
-  // Integer pref that determines if Glic experimental triggering is enabled.
+  // Integer pref that determines if Glic Spark is enabled.
   // Controlled by enterprise policy.
   registry->RegisterIntegerPref(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(GlicExperimentalTriggeringPolicyState::kDisabled));
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(GlicSparkPolicyState::kDisabled));
 
   registry->RegisterIntegerPref(
       prefs::kGlicActuationOnWeb,

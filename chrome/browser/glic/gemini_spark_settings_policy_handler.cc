@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/glic/gemini_experimental_triggering_settings_policy_handler.h"
+#include "chrome/browser/glic/gemini_spark_settings_policy_handler.h"
 
 #include "base/values.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -17,16 +17,14 @@ namespace policy {
 
 using base::Value::Type::INTEGER;
 
-GeminiExperimentalTriggeringSettingsPolicyHandler::
-    GeminiExperimentalTriggeringSettingsPolicyHandler(
-        std::unique_ptr<GenAiDefaultSettingsPolicyHandler>
-            gen_ai_default_settings_policy_handler)
-    : IntRangePolicyHandler(
-          key::kGeminiExperimentalTriggeringSettings,
-          glic::prefs::kGlicExperimentalTriggeringPolicySettings,
-          /*min=*/0,
-          /*max=*/1,
-          /*clamp_=*/false),
+GeminiSparkSettingsPolicyHandler::GeminiSparkSettingsPolicyHandler(
+    std::unique_ptr<GenAiDefaultSettingsPolicyHandler>
+        gen_ai_default_settings_policy_handler)
+    : IntRangePolicyHandler(key::kGeminiSparkSettings,
+                            glic::prefs::kGlicSparkPolicySettings,
+                            /*min=*/0,
+                            /*max=*/1,
+                            /*clamp_=*/false),
       gen_ai_default_settings_policy_handler_(
           std::move(gen_ai_default_settings_policy_handler)),
       gemini_settings_policy_handler_(
@@ -39,10 +37,9 @@ GeminiExperimentalTriggeringSettingsPolicyHandler::
               glic::prefs::kGlicActuationOnWeb,
               base::Value::Type::INTEGER)) {}
 
-GeminiExperimentalTriggeringSettingsPolicyHandler::
-    ~GeminiExperimentalTriggeringSettingsPolicyHandler() = default;
+GeminiSparkSettingsPolicyHandler::~GeminiSparkSettingsPolicyHandler() = default;
 
-bool GeminiExperimentalTriggeringSettingsPolicyHandler::CheckPolicySettings(
+bool GeminiSparkSettingsPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
     PolicyErrorMap* errors) {
   const base::Value* experimental_policy =

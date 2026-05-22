@@ -1450,7 +1450,7 @@ policies:
   1449: SubAppsWithoutPromptsAllowedForOrigins
   1450: SubAppsWithoutPromptsBlockedForOrigins
   1451: IsolatedModeSettings
-  1452: GeminiExperimentalTriggeringSettings
+  1452: GeminiSparkSettings
   1453: SmartTabSharingSettings
   1454: HttpHeaderInjection
   1455: ChromeSuggestionsSettings

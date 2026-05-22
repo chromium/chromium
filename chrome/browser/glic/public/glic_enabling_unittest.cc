@@ -996,9 +996,8 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
           policy::EnterpriseManagementAuthority::CLOUD);
 
   profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(glic::prefs::GlicSparkPolicyState::kEnabled));
 
   auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
   enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
@@ -1057,9 +1056,8 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
   signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(glic::prefs::GlicSparkPolicyState::kEnabled));
 
   auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
   enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
@@ -1106,9 +1104,8 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
           policy::EnterpriseManagementAuthority::CLOUD);
 
   profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kDisabled));
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(glic::prefs::GlicSparkPolicyState::kDisabled));
 
   auto& enabling = glic::GlicKeyedService::Get(profile())->enabling();
   enabling.SetCompletedFre(prefs::FreStatus::kCompleted);
@@ -1162,9 +1159,8 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
 
   // Bypass the enterprise policy check which defaults to disabled.
   profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(glic::prefs::GlicSparkPolicyState::kEnabled));
 
   EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
             syncer::DeviceInfo::GlicExperimentalTriggeringState::kNeedsOptIn);
@@ -1186,9 +1182,8 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
   enabling.SetExperimentalTriggeringEnabled(true);
   // Bypass the enterprise policy check which defaults to disabled.
   profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(glic::prefs::GlicSparkPolicyState::kEnabled));
 
   EXPECT_EQ(enabling.GetExperimentalTriggeringState(),
             syncer::DeviceInfo::GlicExperimentalTriggeringState::kReady);
@@ -1212,9 +1207,8 @@ TEST_F(GlicEnablingProfileReadyStateTestBase,
 
   // Bypass the enterprise policy check which defaults to disabled.
   profile()->GetPrefs()->SetInteger(
-      prefs::kGlicExperimentalTriggeringPolicySettings,
-      std::to_underlying(
-          glic::prefs::GlicExperimentalTriggeringPolicyState::kEnabled));
+      prefs::kGlicSparkPolicySettings,
+      std::to_underlying(glic::prefs::GlicSparkPolicyState::kEnabled));
 
   // Bypass should make it ready.
   EXPECT_EQ(enabling.GetExperimentalTriggeringState(),

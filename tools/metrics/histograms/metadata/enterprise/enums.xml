@@ -2447,7 +2447,7 @@ chromium-metrics-reviews@google.com.
   <int value="1449" label="SubAppsWithoutPromptsAllowedForOrigins"/>
   <int value="1450" label="SubAppsWithoutPromptsBlockedForOrigins"/>
   <int value="1451" label="IsolatedModeSettings"/>
-  <int value="1452" label="GeminiExperimentalTriggeringSettings"/>
+  <int value="1452" label="GeminiSparkSettings"/>
   <int value="1453" label="SmartTabSharingSettings"/>
   <int value="1454" label="HttpHeaderInjection"/>
   <int value="1455" label="ChromeSuggestionsSettings"/>

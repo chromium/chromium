@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_GEMINI_EXPERIMENTAL_TRIGGERING_SETTINGS_POLICY_HANDLER_H_
-#define CHROME_BROWSER_GLIC_GEMINI_EXPERIMENTAL_TRIGGERING_SETTINGS_POLICY_HANDLER_H_
+#ifndef CHROME_BROWSER_GLIC_GEMINI_SPARK_SETTINGS_POLICY_HANDLER_H_
+#define CHROME_BROWSER_GLIC_GEMINI_SPARK_SETTINGS_POLICY_HANDLER_H_
 
 #include <memory>
 
@@ -16,13 +16,12 @@ class PolicyErrorMap;
 class PolicyMap;
 class SimplePolicyHandler;
 
-class GeminiExperimentalTriggeringSettingsPolicyHandler
-    : public IntRangePolicyHandler {
+class GeminiSparkSettingsPolicyHandler : public IntRangePolicyHandler {
  public:
-  explicit GeminiExperimentalTriggeringSettingsPolicyHandler(
+  explicit GeminiSparkSettingsPolicyHandler(
       std::unique_ptr<GenAiDefaultSettingsPolicyHandler>
           gen_ai_default_settings_policy_handler);
-  ~GeminiExperimentalTriggeringSettingsPolicyHandler() override;
+  ~GeminiSparkSettingsPolicyHandler() override;
 
  protected:
   // `IntRangePolicyHandler`:
@@ -39,4 +38,4 @@ class GeminiExperimentalTriggeringSettingsPolicyHandler
 
 }  // namespace policy
 
-#endif  // CHROME_BROWSER_GLIC_GEMINI_EXPERIMENTAL_TRIGGERING_SETTINGS_POLICY_HANDLER_H_
+#endif  // CHROME_BROWSER_GLIC_GEMINI_SPARK_SETTINGS_POLICY_HANDLER_H_
