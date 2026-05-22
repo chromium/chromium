@@ -568,8 +568,6 @@ ci.thin_tester(
         mixins = [
             "mac_mini_intel_gpu_stable",
             "puppet_production",
-            # TODO(b/515485034): Revert when bot capacity is restored.
-            "ci_only",
         ],
     ),
     targets_settings = targets.settings(
