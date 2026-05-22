@@ -4,7 +4,7 @@
        referencing .grdp file or translation console pipeline breaks. -->
   <part file="omnibox_pedal_ui_strings.grdp" />
 
-<!-- Omnibox popup match descriptions. -->
+  <!-- Omnibox popup match descriptions. -->
   <message name="IDS_AUTOCOMPLETE_SEARCH_DESCRIPTION" desc="Description for the default search match.">
     <ph name="ENGINE">$1<ex>Google</ex></ph> Search
   </message>
@@ -16,9 +16,6 @@
   </message>
   <message name="IDS_AUTOCOMPLETE_ASK_DESCRIPTION" desc="Description for matches from ask-keywords; e.g. gemini or ai mode.">
     Ask <ph name="ENGINE">$1<ex>AI Mode</ex></ph>
-  </message>
-  <message name="IDS_AUTOCOMPLETE_SEARCH_IN_SIDE_PANEL_DESCRIPTION" desc="Description for search matches that open in side panel.">
-    Search in side panel
   </message>
 
   <message name="IDS_CONTEXTUAL_SEARCH_OPEN_LENS_ACTION_LABEL" desc="Label text for the action match that opens lens.">
@@ -128,9 +125,6 @@
       Image you copied
     </message>
   </if>
-  <message name="IDS_SECURE_CONNECTION_EV" desc="Short text shown in the location bar when the connection is secure with an EV cert.">
-    <ph name="ORGANIZATION">$1<ex>Paypal Inc.</ex></ph> [<ph name="COUNTRY">$2<ex>US</ex></ph>]
-  </message>
 
   <message name="IDS_SECURE_VERBOSE_STATE" desc="An adjective or short adjective phrase shown next to the green lock icon in the omnibox to describe a secure site (valid HTTPS connection). Note that 'secure' in this case primarily refers to HTTPS connection security, so prefer translations with a connotation of 'private' (no one can intercept your communication with the site) rather than 'trustworthy' (which would be a judgment of site reputation). This phrase takes away space from the URL in the omnibox, so it should ideally be as short as possible while staying accurate. This phrase should also make sense compared to the companion phrase 'Not Secure'." meaning="Omnibox phrase to describe a secure site.">
     Secure
@@ -187,9 +181,6 @@
       </message>
       <message name="IDS_OMNIBOX_EMPTY_HINT_FOR_IMAGE_GENERATION" desc="The text displayed in the omnibox when it is empty and image generation is selected." formatter_data="android_java">
         Describe your image
-      </message>
-      <message name="IDS_FUSEBOX_MODEL_PRO" desc="The text in attachments popup for the button to switch the active model to pro.">
-        Pro
       </message>
       <message name="IDS_FUSEBOX_RECENT_TABS_HEADER" desc="The text displayed in the omnibox attachments popup as a header for the most recent tabs list." formatter_data="android_java">
         Add recent tabs
@@ -335,18 +326,6 @@
   <message name="IDS_PERSON_SUGGESTION_DESCRIPTION" desc="Description for person suggestions in omnibox.">
   <ph name="ENGINE">$1<ex>Agentspace</ex></ph> People
   </message>
-  <if expr="use_titlecase">
-    <then>
-      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" meaning="Text for feature that encourages the user to think about how accurate the content is" desc="This text appears in the address bar chip, which states the title of the feature shown in the page info bubble below (see screenshot). With this feature, the user will see a reminder on the page they're visiting that encourages the user to think about how accurate the content is. You may translate 'Accuracy' as 'Trustworthiness' or 'Reliability,' if those terms work better in your language. The 'Accuracy Check' is a noun; avoid translating this as an imperative command. Chrome does not verify accuracy by providing this feature; avoid any translation that implies Google or Chrome verification.">
-        Accuracy Check
-      </message>
-    </then>
-    <else>
-      <message name="IDS_ACCURACY_CHECK_VERBOSE_STATE" meaning="Text for feature that encourages the user to think about how accurate the content is" desc="This text appears in the  address bar chip, which states the title of the feature shown in the page info bubble below (see screenshot). With this feature, the user will see a reminder on the page they're visiting that encourages the user to think about how accurate the content is. You may translate 'Accuracy' as 'Trustworthiness' or 'Reliability,' if those terms work better in your language. The 'Accuracy Check' is a noun; avoid translating this as an imperative command. Chrome does not verify accuracy by providing this feature; avoid any translation that implies Google or Chrome verification.">
-        Accuracy check
-      </message>
-    </else>
-  </if>
 
   <!-- Accessibility for Grouped Omnibox Suggestions -->
   <message name="IDS_ACC_OMNIBOX_SUGGESTION_IN_GROUP" desc="Accessibility text for an omnibox suggestion that may be in a specific group, with the group's header text, along with its list position. Speaks the suggestion title, followed by its position within the group and the group's header." formatter_data="android_java">
@@ -390,9 +369,6 @@
   <message name="IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX" desc="Suffix for spoken suggestion description with actions in suggest button(s) explaining that additional actions are available. Unlike Pedals or History Clusters, Actions come from the server and may encompass things like `Website` or `Call`, but are otherwise no different than, say, `Switch To Tab` on the attached screenshot.">
     <ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>Call</ex></ph>, press Tab to browse available actions, then Enter to execute selected action.
   </message>
-  <message name="IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST" desc="Announcement when the Action in Suggest button is focused. Unlike Pedals or History Clusters, Actions come from the server and may encompass things like `Website` or `Call`, but are otherwise no different than, say, `Switch To Tab` on the attached screenshot.">
-    Press Enter to activate this action.
-  </message>
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_CALL_HINT" desc="Label for Omnibox Action button that pre-dials the phone number." meaning="Length: 12em">
     Call
   </message>
@@ -422,12 +398,6 @@
   </message>
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_TAB_SWITCH_CONTENTS" desc="The button hover tooltip text to describe action.">
     Switch to this tab.
-  </message>
-  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT" desc="Label for Omnibox Action button that opens the POI website." meaning="Length: 12em">
-    Website
-  </message>
-  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_CONTENTS" desc="The button hover tooltip text to describe action.">
-    Access the website to view information, resources, or services provided by the business.
   </message>
 
   <message name="IDS_ACC_OMNIBOX_ACTION_IN_EXTENSION_SUGGEST_SUFFIX" desc="Suffix for spoken suggestion description with actions in suggest button(s) explaining that additional actions are available.">
@@ -497,10 +467,6 @@
   <!-- Accessibility suffix for suggestions with a tab switch match. Commas are important as they add pauses. -->
   <message name="IDS_ACC_TAB_SWITCH_SUFFIX" desc="Suffix for tab switch suggestions to explain keystroke used to switch.">
     <ph name="TAB_SWITCH_SUFFIX">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>, currently open, press Tab then Enter to switch to the open tab
-  </message>
-  <!-- Accessibility prefix for suggestions where the tab switch button is focused. Commas are important as they add pauses. -->
-  <message name="IDS_ACC_TAB_SWITCH_BUTTON_FOCUSED_PREFIX" desc="Announcement when tab switch button focused.">
-    Tab switch button, press Enter to switch to the open tab, <ph name="TAB_SWITCH_FOCUSED_FRIENDLY_MATCH_TEXT">$1<ex>The Chromium Projects http://www.chromium.org bookmark</ex></ph>
   </message>
   <message name="IDS_ACC_TAB_SWITCH_BUTTON" desc="Announcement when tab switch button focused.">
     Tab switch button, press Enter to switch to this tab
@@ -676,11 +642,6 @@
 
   <message name="IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE" desc = "The string displayed when a calculator answer is suggested.">
     <ph name="EXPRESSION">$1</ph> = <ph name="ANSWER">$2</ph>
-  </message>
-
-  <!-- Supplementary Omnibox header strings, that appear above suggestion groups. -->
-  <message name="IDS_OMNIBOX_HEADER_POPULAR_TOPICS" desc="The text displayed above the popular topic search suggestions section.">
-    Popular topics
   </message>
 
   <!-- Placeholder text for the various starter pack scopes -->
