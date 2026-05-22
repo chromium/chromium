@@ -31,15 +31,19 @@ class GLClearFramebufferTest : public testing::TestWithParam<bool> {
   GLClearFramebufferTest() : color_handle_(0u), depth_handle_(0u) {}
 
  protected:
+  virtual GLManager::Options GetGlManagerOptions() {
+    return GLManager::Options();
+  }
+
   void SetUp() override {
     if (GetParam()) {
       // Force the glClear() workaround so we can test it here.
       GpuDriverBugWorkarounds workarounds;
       workarounds.gl_clear_broken = true;
-      gl_.InitializeWithWorkarounds(GLManager::Options(), workarounds);
+      gl_.InitializeWithWorkarounds(GetGlManagerOptions(), workarounds);
       DCHECK(gl_.workarounds().gl_clear_broken);
     } else {
-      gl_.Initialize(GLManager::Options());
+      gl_.Initialize(GetGlManagerOptions());
       DCHECK(!gl_.workarounds().gl_clear_broken);
     }
   }
@@ -260,16 +264,15 @@ TEST_P(GLClearFramebufferTest, SeparateFramebufferClear) {
   EXPECT_TRUE(GLTestHelper::CheckPixels(3, 3, 1, 1, 0, kGreen, nullptr));
 }
 
-class ES3ClearBufferTest : public testing::Test {
+class ES3ClearBufferTest : public GLClearFramebufferTest {
  protected:
   static const GLsizei kCanvasSize = 4;
 
-  void SetUp() override {
+  GLManager::Options GetGlManagerOptions() override {
     GLManager::Options options;
     options.size = gfx::Size(kCanvasSize, kCanvasSize);
     options.context_type = CONTEXT_TYPE_OPENGLES3;
-
-    gl_.Initialize(options);
+    return options;
   }
 
   bool ShouldSkipTest() const {
@@ -278,15 +281,13 @@ class ES3ClearBufferTest : public testing::Test {
     // See crbug.com/654709.
     return (!gl_.decoder() || !gl_.decoder()->GetContextGroup());
   }
-
-  void TearDown() override {
-    gl_.Destroy();
-  }
-
-  GLManager gl_;
 };
 
-TEST_F(ES3ClearBufferTest, ClearBuffersuiv) {
+INSTANTIATE_TEST_SUITE_P(ES3ClearBufferTestWithParam,
+                         ES3ClearBufferTest,
+                         ::testing::Values(true, false));
+
+TEST_P(ES3ClearBufferTest, ClearBuffersuiv) {
   if (ShouldSkipTest())
     return;
 
@@ -296,6 +297,89 @@ TEST_F(ES3ClearBufferTest, ClearBuffersuiv) {
   // The above call should not crash in ASAN build.
   EXPECT_EQ(static_cast<GLenum>(GL_INVALID_ENUM), glGetError());
   GLTestHelper::CheckGLError("no errors", __LINE__);
+}
+
+TEST_P(ES3ClearBufferTest, RasterizerDiscardIntegerClearBypass) {
+  if (ShouldSkipTest()) {
+    return;
+  }
+
+  const GLsizei kDirtyWidth = 256;
+  const GLsizei kDirtyHeight = 256;
+
+  // Step 0: Dirty VRAM using a separate context.
+  {
+    GLManager gl2;
+    gl2.Initialize(GetGlManagerOptions());
+    gl2.MakeCurrent();
+
+    for (int i = 0; i < 8; ++i) {
+      GLuint rb = 0;
+      glGenRenderbuffers(1, &rb);
+      glBindRenderbuffer(GL_RENDERBUFFER, rb);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, kDirtyWidth,
+                            kDirtyHeight);
+      GLuint fb = 0;
+      glGenFramebuffers(1, &fb);
+      glBindFramebuffer(GL_FRAMEBUFFER, fb);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                GL_RENDERBUFFER, rb);
+      EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+                glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+      glClearColor(0.8f, 0.2f, 0.6f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      glDeleteFramebuffers(1, &fb);
+      glDeleteRenderbuffers(1, &rb);
+    }
+    glFinish();
+    gl2.Destroy();
+  }
+
+  // Restore main context.
+  gl_.MakeCurrent();
+
+  // Step 1: Trigger the bug.
+  GLuint rb = 0;
+  glGenRenderbuffers(1, &rb);
+  glBindRenderbuffer(GL_RENDERBUFFER, rb);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8UI, kDirtyWidth, kDirtyHeight);
+
+  GLuint fb = 0;
+  glGenFramebuffers(1, &fb);
+  glBindFramebuffer(GL_FRAMEBUFFER, fb);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            GL_RENDERBUFFER, rb);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  glEnable(GL_RASTERIZER_DISCARD);
+  ASSERT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // readPixels to trigger lazy clear.
+  std::vector<GLuint> pixels(kDirtyWidth * kDirtyHeight * 4, 0xAAAAAAAAu);
+  glReadPixels(0, 0, kDirtyWidth, kDirtyHeight, GL_RGBA_INTEGER,
+               GL_UNSIGNED_INT, pixels.data());
+
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Inspect results.
+  uint32_t nonzero_components = 0;
+  for (GLuint val : pixels) {
+    if (val != 0) {
+      nonzero_components++;
+    }
+  }
+
+  // If bug is present, we expect non-zero components (leak from dirty VRAM).
+  // If fixed, we expect ALL zero.
+  EXPECT_EQ(0u, nonzero_components);
+
+  // Cleanup.
+  glDisable(GL_RASTERIZER_DISCARD);
+  glDeleteFramebuffers(1, &fb);
+  glDeleteRenderbuffers(1, &rb);
 }
 
 }  // namespace gpu
