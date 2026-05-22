@@ -77,7 +77,9 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/enter_old_password_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/osauth/local_data_loss_warning_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_confirm_password_handler.h"
@@ -2795,6 +2797,7 @@ class SamlTestWithManagedLocalPinAndPassword : public SAMLPolicyTest {
   SamlTestWithManagedLocalPinAndPassword() {
     scoped_feature_list_.InitAndEnableFeature(
         features::kManagedLocalPinAndPassword);
+    FakeUserDataAuthClient::TestApi::Get()->set_enable_auth_check(true);
   }
 
   void SetLoginAsOnlineReauthentication() {
@@ -2802,6 +2805,13 @@ class SamlTestWithManagedLocalPinAndPassword : public SAMLPolicyTest {
         ->GetWizardContext()
         ->knowledge_factor_setup.auth_setup_flow =
         WizardContext::AuthChangeFlow::kReauthentication;
+  }
+
+  void SetLoginAsRecovery() {
+    LoginDisplayHost::default_host()
+        ->GetWizardContext()
+        ->knowledge_factor_setup.auth_setup_flow =
+        WizardContext::AuthChangeFlow::kRecovery;
   }
 
   void SetSkipPostLoginScreens(bool skip) {
@@ -2838,10 +2848,12 @@ class SamlTestWithManagedLocalPinAndPassword : public SAMLPolicyTest {
     cryptohome_mixin_.AddLocalPassword(account_id, test::kLocalPassword);
   }
 
-  void SetGaiaPassword(std::string email, GaiaId::Literal gaia_id) {
+  void SetGaiaPassword(std::string email,
+                       GaiaId::Literal gaia_id,
+                       const std::string& password = test::kGaiaPassword) {
     auto account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
     cryptohome_mixin_.MarkUserAsExisting(account_id);
-    cryptohome_mixin_.AddGaiaPassword(account_id, test::kGaiaPassword);
+    cryptohome_mixin_.AddGaiaPassword(account_id, password);
   }
 
   void SetPin(std::string email, GaiaId::Literal gaia_id) {
@@ -2849,6 +2861,17 @@ class SamlTestWithManagedLocalPinAndPassword : public SAMLPolicyTest {
     cryptohome_mixin_.MarkUserAsExisting(account_id);
     cryptohome_mixin_.AddCryptohomePin(account_id, test::kAuthPin,
                                        test::kPinStubSalt);
+  }
+
+  void ExpectCanUnlockWithPassword(std::string email,
+                                   GaiaId::Literal gaia_id,
+                                   std::string password) {
+    auto account_id = AccountId::FromUserEmailGaiaId(email, gaia_id);
+    ash::ScreenLockerTester locker;
+    locker.Lock();
+    locker.WaitForLock();
+    locker.UnlockWithPassword(account_id, password);
+    locker.WaitForUnlock();
   }
 
  private:
@@ -3020,6 +3043,65 @@ IN_PROC_BROWSER_TEST_F(SamlTestWithManagedLocalPinAndPassword,
 
   // Expect Session stop (logout)
   ExpectChromeExit();
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SamlTestWithManagedLocalPinAndPassword,
+    PasswordConfirmationAndLocalDataRemovalWithOnlinePassword) {
+  SetGaiaPassword(saml_test_users::kSixthUserCorpExampleTestEmail,
+                  kSixthSAMLUserGaiaId, "wrong_pw");
+  ShowGAIALoginForm();
+
+  LogInWithSAMLUsingTemplate(saml_test_users::kSixthUserCorpExampleTestEmail,
+                             kSixthSAMLUserGaiaId, kTestAuthSIDCookie1,
+                             kTestAuthLSIDCookie1, kSamlLoginNoPasswordTemplate,
+                             /*use_password=*/false, /*submit=*/true);
+
+  // Lands on confirm password screen.
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
+  SetManualPasswords(test::kGaiaPassword, test::kGaiaPassword);
+
+  // After successful confirmation, it tries to mount. Since disk has a
+  // different password, it will show the `EnterOldPasswordScreen`.
+  test::CreateOldPasswordEnterPageWaiter()->Wait();
+  test::PasswordChangedForgotPasswordAction();
+
+  test::LocalDataLossWarningPageWaiter()->Wait();
+  test::LocalDataLossWarningPageRemoveAction();
+
+  // User enters the session directly (since `kOobeSkipPostLogin` is enabled and
+  // they already confirmed their password).
+  test::WaitForPrimaryUserSessionStart();
+  // Confirm that you can unlock the screen with the new password.
+  ExpectCanUnlockWithPassword(saml_test_users::kSixthUserCorpExampleTestEmail,
+                              kSixthSAMLUserGaiaId, test::kGaiaPassword);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SamlTestWithManagedLocalPinAndPassword,
+    PasswordConfirmationAndLocalDataRemovalWithoutOnlinePassword) {
+  // Use a local password on disk. This will cause `SamlConfirmPasswordScreen`
+  // to be skipped initially because it's not a Gaia password.
+  SetLocalPassword(saml_test_users::kSixthUserCorpExampleTestEmail,
+                   kSixthSAMLUserGaiaId);
+
+  ShowGAIALoginForm();
+  // Set Login as recovery, as with a local auth factor enabled, we only show
+  // the data loss screen for users without a recovery factor but a local auth
+  // factor.
+  SetLoginAsRecovery();
+  LogInWithSAMLUsingTemplate(saml_test_users::kSixthUserCorpExampleTestEmail,
+                             kSixthSAMLUserGaiaId, kTestAuthSIDCookie1,
+                             kTestAuthLSIDCookie1, kSamlLoginNoPasswordTemplate,
+                             /*use_password=*/false, /*submit=*/true);
+  // As the user doesn't remember their local password, we directly end up on
+  // the local data loss warning page
+  test::LocalDataLossWarningPageWaiter()->Wait();
+  test::LocalDataLossWarningPageRemoveAction();
+
+  // When the user has no online password in UserContext, the
+  // SamlConfirmPassword screen will show up after data loss.
+  OobeScreenWaiter(SamlConfirmPasswordView::kScreenId).Wait();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, SamlTestWithFeatures, ::testing::Bool());

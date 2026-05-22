@@ -39,6 +39,15 @@ void StoreSamlPassword(const std::string& password, UserContext& user_context) {
   user_context.SetPasswordKey(Key(password));
 }
 
+void StoreSamlPasswordAndClearRequiresPasswordConfirmation(
+    const std::string& password,
+    UserContext& user_context) {
+  StoreSamlPassword(password, user_context);
+  // As we have set the password, we do not need the requires password
+  // confirmation screen anymore.
+  user_context.SetRequiresPasswordConfirmation(false);
+}
+
 bool HasAllowedLocalAuthFactors(const AccountId& account_id) {
   AuthPolicyConnector* connector = AuthPolicyConnector::Get();
   if (!connector) {
@@ -125,7 +134,8 @@ void SamlConfirmPasswordScreen::SetContextAndPasswords(
 void SamlConfirmPasswordScreen::ObtainContextAndStoreSamlPassword(
     const std::string password) {
   if (context()->user_context != nullptr) {
-    StoreSamlPassword(password, *context()->user_context);
+    StoreSamlPasswordAndClearRequiresPasswordConfirmation(
+        password, *context()->user_context);
     exit_callback_.Run(Result::kSuccess);
   } else {
     auto set_password_callback = base::BindOnce(
@@ -249,7 +259,8 @@ void SamlConfirmPasswordScreen::SetPasswordAndReturnContextWithExitSuccess(
   }
   CHECK(context()->extra_factors_token.has_value())
       << "Extra factors token is required for SAML confirm password flow";
-  StoreSamlPassword(password, *user_context);
+  StoreSamlPasswordAndClearRequiresPasswordConfirmation(password,
+                                                        *user_context);
 
   AuthSessionStorage::Get()->Return(context()->extra_factors_token.value(),
                                     std::move(user_context));
