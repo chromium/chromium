@@ -491,13 +491,15 @@ void ProcessManager::IncrementLazyKeepaliveCount(
   }
 }
 
-void ProcessManager::DecrementLazyKeepaliveCount(
+bool ProcessManager::DecrementLazyKeepaliveCount(
     const Extension* extension,
     Activity::Type activity_type,
     const std::string& extra_data) {
   if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
-    DecrementLazyKeepaliveCount(extension->id(), activity_type, extra_data);
+    return DecrementLazyKeepaliveCount(extension->id(), activity_type,
+                                       extra_data);
   }
+  return false;
 }
 
 void ProcessManager::NotifyExtensionProcessTerminated(
@@ -755,20 +757,28 @@ base::Uuid ProcessManager::IncrementServiceWorkerKeepaliveCount(
   return request_uuid;
 }
 
-void ProcessManager::DecrementLazyKeepaliveCount(
+bool ProcessManager::DecrementLazyKeepaliveCount(
     const ExtensionId& extension_id,
     Activity::Type activity_type,
     const std::string& extra_data) {
-  BackgroundPageData& data = background_page_data_[extension_id];
+  auto map_it = background_page_data_.find(extension_id);
+  if (map_it == background_page_data_.end()) {
+    return false;
+  }
+  BackgroundPageData& data = map_it->second;
 
+  // Only decrement counts that correspond to a precisely tracked increment.
+  // Renderer IPCs are untrusted and must not be able to balance or drain other
+  // legitimate keepalive activity types.
+  const auto activity = std::make_pair(activity_type, extra_data);
+  const auto it = data.activities.find(activity);
+  if (it == data.activities.end()) {
+    return false;
+  }
   DCHECK(data.lazy_keepalive_count > 0 ||
          !extension_registry_->enabled_extensions().Contains(extension_id));
   --data.lazy_keepalive_count;
-  const auto it =
-      data.activities.find(std::make_pair(activity_type, extra_data));
-  if (it != data.activities.end()) {
-    data.activities.erase(it);
-  }
+  data.activities.erase(it);
 
   // If we reach a zero keepalive count when the lazy background page is about
   // to be closed, incrementing close_sequence_id will cancel the close
@@ -787,6 +797,7 @@ void ProcessManager::DecrementLazyKeepaliveCount(
           g_event_page_idle_time);
     }
   }
+  return true;
 }
 
 void ProcessManager::DecrementServiceWorkerKeepaliveCount(

@@ -200,6 +200,7 @@ void ExtensionWebContentsObserver::SetUpRenderFrameHost(
 void ExtensionWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized_);
+  extension_frame_host_->RenderFrameDeleted(render_frame_host);
   local_frame_map_.erase(render_frame_host);
   ProcessManager::Get(browser_context_)
       ->UnregisterRenderFrameHost(render_frame_host);
