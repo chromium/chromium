@@ -27,11 +27,14 @@
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extensions_client.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace helpers = extension_web_request_api_helpers;
 namespace keys = extensions::declarative_webrequest_constants;
@@ -118,8 +121,8 @@ bool WebRequestActionWithThreadsTest::ActionWorksOnRequest(
     RequestStage stage) {
   const content::ChildProcessId kRendererId(2);
   EventResponseDeltas deltas;
-  scoped_refptr<net::HttpResponseHeaders> headers(
-      new net::HttpResponseHeaders(""));
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
   WebRequestInfoInitParams params;
   params.url = GURL(url_string);
   WebRequestInfoInitParams request_params(std::move(params));

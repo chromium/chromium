@@ -28,10 +28,13 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/rules_registry_ids.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest-message.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace helpers = extension_web_request_api_helpers;
 namespace keys = extensions::declarative_webrequest_constants;
@@ -70,9 +73,8 @@ class TestWebRequestRulesRegistry : public WebRequestRulesRegistry {
  public:
   explicit TestWebRequestRulesRegistry(content::BrowserContext* context)
       : WebRequestRulesRegistry(context,
-                                nullptr /* cache_delegate */,
-                                rules_registry_ids::kDefaultRulesRegistryID),
-        num_clear_cache_calls_(0) {}
+                                /*cache_delegate=*/nullptr,
+                                rules_registry_ids::kDefaultRulesRegistryID) {}
 
   // Returns how often the in-memory caches of the renderers were instructed
   // to be cleared.
@@ -90,7 +92,7 @@ class TestWebRequestRulesRegistry : public WebRequestRulesRegistry {
   void ClearCacheOnNavigation() override { ++num_clear_cache_calls_; }
 
  private:
-  int num_clear_cache_calls_;
+  int num_clear_cache_calls_ = 0;
 };
 
 class WebRequestRulesRegistryTest : public testing::Test {
@@ -260,8 +262,8 @@ void WebRequestRulesRegistryTest::SetUp() {
 
 
 TEST_F(WebRequestRulesRegistryTest, AddRulesImpl) {
-  scoped_refptr<TestWebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<TestWebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
   std::string error;
 
   {
@@ -300,8 +302,8 @@ TEST_F(WebRequestRulesRegistryTest, AddRulesImpl) {
 }
 
 TEST_F(WebRequestRulesRegistryTest, RemoveRulesImpl) {
-  scoped_refptr<TestWebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<TestWebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
   std::string error;
 
   // Setup RulesRegistry to contain two rules.
@@ -350,8 +352,8 @@ TEST_F(WebRequestRulesRegistryTest, RemoveRulesImpl) {
 }
 
 TEST_F(WebRequestRulesRegistryTest, RemoveAllRulesImpl) {
-  scoped_refptr<TestWebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<TestWebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
   std::string error;
 
   {
@@ -407,8 +409,8 @@ TEST_F(WebRequestRulesRegistryTest, RemoveAllRulesImpl) {
 
 // Test precedences between extensions.
 TEST_F(WebRequestRulesRegistryTest, Precedences) {
-  scoped_refptr<WebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<WebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
   std::string error;
 
   {
@@ -449,8 +451,8 @@ TEST_F(WebRequestRulesRegistryTest, Precedences) {
 
 // Test priorities of rules within one extension.
 TEST_F(WebRequestRulesRegistryTest, Priorities) {
-  scoped_refptr<WebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<WebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
   std::string error;
 
   {
@@ -537,8 +539,8 @@ TEST_F(WebRequestRulesRegistryTest, IgnoreRulesByTag) {
   std::vector<const api::events::Rule*> rules = {&rule1.value(),
                                                  &rule2.value()};
 
-  scoped_refptr<WebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<WebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
   std::string error = registry->AddRulesImpl(kExtensionId, rules);
   EXPECT_EQ("", error);
   EXPECT_FALSE(registry->IsEmpty());
@@ -558,8 +560,8 @@ TEST_F(WebRequestRulesRegistryTest, IgnoreRulesByTag) {
 // Test that rules failing IsFulfilled on their conditions are never returned by
 // GetMatches.
 TEST_F(WebRequestRulesRegistryTest, GetMatchesCheckFulfilled) {
-  scoped_refptr<TestWebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<TestWebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
   const std::string kMatchingUrlAttribute(
       "\"url\": { \"pathContains\": \"\" }, \n");
   const std::string kNonMatchingNonUrlAttribute(
@@ -605,8 +607,8 @@ TEST_F(WebRequestRulesRegistryTest, GetMatchesCheckFulfilled) {
 
 // Test different URL patterns.
 TEST_F(WebRequestRulesRegistryTest, GetMatchesDifferentUrls) {
-  scoped_refptr<TestWebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<TestWebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
   const std::string kUrlAttribute(
       "\"url\": { \"hostContains\": \"url\" }, \n");
   const std::string kUrlAttribute2(
@@ -777,8 +779,8 @@ TEST_F(WebRequestRulesRegistryTest, CheckOriginAndPathRegEx) {
   ASSERT_TRUE(rule);
   std::vector<const api::events::Rule*> rules = {&rule.value()};
 
-  scoped_refptr<WebRequestRulesRegistry> registry(
-      new TestWebRequestRulesRegistry(&profile_));
+  scoped_refptr<WebRequestRulesRegistry> registry =
+      base::MakeRefCounted<TestWebRequestRulesRegistry>(&profile_);
 
   URLMatcher matcher;
   std::string error = registry->AddRulesImpl(kExtensionId, rules);

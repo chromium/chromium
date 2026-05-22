@@ -1830,6 +1830,8 @@ source_set("unit_tests") {
     "api/declarative_net_request/dnr_test_base.cc",
     "api/declarative_net_request/dnr_test_base.h",
     "api/declarative_net_request/ruleset_manager_unittest.cc",
+    "api/declarative_webrequest/webrequest_action_unittest.cc",
+    "api/declarative_webrequest/webrequest_rules_registry_unittest.cc",
     "api/developer_private/developer_private_api_unittest.cc",
     "api/developer_private/extension_info_generator_unittest.cc",
     "api/enterprise_hardware_platform/enterprise_hardware_platform_api_unittest.cc",
@@ -2004,8 +2006,6 @@ source_set("unit_tests") {
   if (enable_extensions) {
     sources += [
       "api/activity_log_private/activity_log_private_api_unittest.cc",
-      "api/declarative_webrequest/webrequest_action_unittest.cc",
-      "api/declarative_webrequest/webrequest_rules_registry_unittest.cc",
       "api/device_permissions_manager_unittest.cc",
       "api/enterprise_reporting_private/enterprise_reporting_private_unittest.cc",
       "api/file_system/file_system_api_unittest.cc",
