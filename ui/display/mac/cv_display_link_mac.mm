@@ -309,7 +309,10 @@ base::TimeTicks CVDisplayLinkMac::GetCurrentTime() const {
 void CVDisplayLinkMac::RunCallbacks(const VSyncParamsMac& params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (auto* callback : callbacks_) {
+  // Make a local copy first because DisplayLink can be destroyed during the
+  // callback.
+  auto local_callbacks = callbacks_;
+  for (auto* callback : local_callbacks) {
     callback->callback_for_displaylink_thread_.Run(params);
   }
 }
@@ -367,13 +370,16 @@ std::unique_ptr<VSyncCallbackMac> CVDisplayLinkMac::RegisterCallback(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT("gpu", "CVDisplayLinkMac::RegisterCallback");
 
+  // Check if this is in the fallback path for CADisplayLink
+  bool post_callback_to_ctor_thread =
+      !DisplayLinkMac::SupportsDisplayLinkMacInBrowser();
+
   // Make add the new callback. Register first before calling
   // EnsureDisplayLinkRunning() to ensure the callback function is available.
-
   std::unique_ptr<VSyncCallbackMac> new_callback =
       base::WrapUnique(new VSyncCallbackMac(
           base::BindOnce(&CVDisplayLinkMac::UnregisterCallback, this),
-          std::move(callback), /*post_callback_to_ctor_thread=*/true));
+          std::move(callback), post_callback_to_ctor_thread));
 
   // Ensure that the DisplayLink is running. If something goes wrong, return
   // nullptr.
