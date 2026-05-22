@@ -7,9 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
-#include "third_party/blink/renderer/modules/webtransport/web_transport_receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -24,17 +22,12 @@ BidirectionalStream::BidirectionalStream(
     WebTransport* web_transport,
     uint32_t stream_id,
     mojo::ScopedDataPipeProducerHandle outgoing_producer,
-    mojo::ScopedDataPipeConsumerHandle incoming_consumer) {
-  // TODO(crbug.com/510589920): Remove old ReceiveStream path when
-  // WebTransportReceiveStream ships.
-  if (RuntimeEnabledFeatures::WebTransportReceiveStreamEnabled(
-          ExecutionContext::From(script_state))) {
-    receive_stream_ = MakeGarbageCollected<WebTransportReceiveStream>(
-        script_state, web_transport, stream_id, std::move(incoming_consumer));
-  } else {
-    receive_stream_ = MakeGarbageCollected<ReceiveStream>(
-        script_state, web_transport, stream_id, std::move(incoming_consumer));
-  }
+    mojo::ScopedDataPipeConsumerHandle incoming_consumer)
+    : receive_stream_(
+          MakeGarbageCollected<ReceiveStream>(script_state,
+                                              web_transport,
+                                              stream_id,
+                                              std::move(incoming_consumer))) {
   // TODO(crbug.com/487117768): Remove old SendStream path when
   // WebTransportSendGroup ships.
   if (RuntimeEnabledFeatures::WebTransportSendGroupEnabled(
@@ -63,16 +56,7 @@ void BidirectionalStream::Init(ExceptionState& exception_state) {
   if (exception_state.HadException())
     return;
 
-  if (auto* receive_stream =
-          DynamicTo<WebTransportReceiveStream>(receive_stream_.Get())) {
-    receive_stream->Init(exception_state);
-  } else {
-    // Same invariant as the send side: legacy ReceiveStream lacks
-    // DowncastTraits, so use static_cast guarded by CHECK.
-    auto* readable = receive_stream_.Get();
-    CHECK(readable);
-    static_cast<ReceiveStream*>(readable)->Init(exception_state);
-  }
+  receive_stream_->Init(exception_state);
 }
 
 OutgoingStream* BidirectionalStream::GetOutgoingStream() {
@@ -87,21 +71,6 @@ OutgoingStream* BidirectionalStream::GetOutgoingStream() {
   auto* writable = send_stream_.Get();
   CHECK(writable);
   return static_cast<SendStream*>(writable)->GetOutgoingStream();
-}
-
-IncomingStream* BidirectionalStream::GetIncomingStream() {
-  if (auto* receive_stream =
-          DynamicTo<WebTransportReceiveStream>(receive_stream_.Get())) {
-    return receive_stream->GetIncomingStream();
-  }
-  // The constructor guarantees receive_stream_ is either
-  // WebTransportReceiveStream or ReceiveStream. ReceiveStream lacks
-  // DowncastTraits (no IDL binding), so we can't DynamicTo<ReceiveStream>;
-  // we CHECK non-null and rely on the constructor-established type invariant
-  // for the static_cast.
-  auto* readable = receive_stream_.Get();
-  CHECK(readable);
-  return static_cast<ReceiveStream*>(readable)->GetIncomingStream();
 }
 
 void BidirectionalStream::Trace(Visitor* visitor) const {
