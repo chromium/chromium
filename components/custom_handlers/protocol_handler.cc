@@ -50,7 +50,10 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
     const GURL& url,
     blink::ProtocolHandlerSecurityLevel security_level) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ProtocolHandler(protocol, url, base::Time::Now(), security_level);
+  return ProtocolHandler(protocol, url, /*app_id=*/std::nullopt,
+                         /*extension_id=*/std::nullopt, base::Time::Now(),
+                         /*is_confirmed=*/true,
+                         /*is_allowed_in_incognito=*/false, security_level);
 }
 
 ProtocolHandler::ProtocolHandler(
@@ -60,6 +63,7 @@ ProtocolHandler::ProtocolHandler(
     std::optional<std::string> extension_id,
     base::Time last_modified,
     bool is_confirmed,
+    bool is_allowed_in_incognito,
     blink::ProtocolHandlerSecurityLevel security_level)
     : protocol_(base::ToLowerASCII(protocol)),
       url_(url),
@@ -67,6 +71,7 @@ ProtocolHandler::ProtocolHandler(
       extension_id_(extension_id),
       last_modified_(last_modified),
       is_confirmed_(is_confirmed),
+      is_allowed_in_incognito_(is_allowed_in_incognito),
       security_level_(security_level) {}
 
 // static
@@ -77,6 +82,7 @@ ProtocolHandler ProtocolHandler::CreateWebAppProtocolHandler(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ProtocolHandler(protocol, url, app_id, /*extension_id=*/std::nullopt,
                          base::Time::Now(), /*is_confirmed=*/true,
+                         /*is_allowed_in_incognito=*/true,
                          blink::ProtocolHandlerSecurityLevel::kStrict);
 }
 
@@ -84,11 +90,12 @@ ProtocolHandler ProtocolHandler::CreateWebAppProtocolHandler(
 ProtocolHandler ProtocolHandler::CreateExtensionProtocolHandler(
     const std::string& protocol,
     const GURL& url,
-    const std::string& extension_id) {
+    const std::string& extension_id,
+    bool is_allowed_in_incognito) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return ProtocolHandler(
       protocol, url, /*app_id=*/std::nullopt, extension_id, base::Time::Now(),
-      /*is_confirmed=*/false,
+      /*is_confirmed=*/false, is_allowed_in_incognito,
       blink::ProtocolHandlerSecurityLevel::kExtensionFeatures);
 }
 
@@ -133,6 +140,7 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   // |time| defaults to the beginning of time if it is not specified.
   base::Time time;
   bool is_confirmed = true;
+  bool is_allowed_in_incognito = false;
   blink::ProtocolHandlerSecurityLevel security_level =
       blink::ProtocolHandlerSecurityLevel::kStrict;
   if (const std::string* protocol_in = value.FindString("protocol"))
@@ -147,31 +155,32 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   if (std::optional<bool> is_confirmed_value = value.FindBool("is_confirmed")) {
     is_confirmed = *is_confirmed_value;
   }
+  if (std::optional<bool> is_allowed_in_incognito_value =
+          value.FindBool("is_allowed_in_incognito")) {
+    is_allowed_in_incognito = *is_allowed_in_incognito_value;
+  }
   std::optional<int> security_level_value = value.FindInt("security_level");
   if (security_level_value) {
     security_level =
         blink::ProtocolHandlerSecurityLevelFrom(*security_level_value);
   }
 
+  std::optional<std::string> app_id;
   if (const base::Value* app_id_val = value.Find("app_id")) {
-    std::string app_id;
-    if (app_id_val->is_string())
+    if (app_id_val->is_string()) {
       app_id = app_id_val->GetString();
-    return ProtocolHandler(protocol, GURL(url), app_id,
-                           /*extension_id=*/std::nullopt, time, is_confirmed,
-                           security_level);
+    }
   }
 
+  std::optional<std::string> extension_id;
   if (const base::Value* extension_id_val = value.Find("extension_id")) {
-    std::string extension_id;
     if (extension_id_val->is_string()) {
       extension_id = extension_id_val->GetString();
     }
-    return ProtocolHandler(protocol, GURL(url), /*app_id=*/std::nullopt,
-                           extension_id, time, is_confirmed, security_level);
   }
 
-  return ProtocolHandler(protocol, GURL(url), time, security_level);
+  return ProtocolHandler(protocol, GURL(url), app_id, extension_id, time,
+                         is_confirmed, is_allowed_in_incognito, security_level);
 }
 
 GURL ProtocolHandler::TranslateUrl(const GURL& url) const {
@@ -205,6 +214,7 @@ base::DictValue ProtocolHandler::Encode() const {
   d.Set("url", url_.spec());
   d.Set("last_modified", base::TimeToValue(last_modified_));
   d.Set("is_confirmed", is_confirmed_);
+  d.Set("is_allowed_in_incognito", is_allowed_in_incognito_);
   d.Set("security_level", static_cast<int>(security_level_));
 
   if (web_app_id_.has_value())

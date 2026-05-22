@@ -55,6 +55,7 @@ source_set("test_support") {
     ":custom_handlers",
     "//base",
     "//components/keyed_service/content",
+    "//content/public/browser",
   ]
 }
 
