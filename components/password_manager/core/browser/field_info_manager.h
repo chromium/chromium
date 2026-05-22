@@ -16,6 +16,7 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_manager_driver.h"
 
 namespace password_manager {
 
@@ -24,7 +25,7 @@ struct FormPredictions;
 struct FieldInfo {
   // Id of the PasswordManagerDriver which corresponds to the frame of the
   // field. Paired with the |field_id|, this identifies a field globally.
-  int driver_id = -1;
+  DriverId driver_id;
 
   // The renderer id of a field.
   autofill::FieldRendererId field_id;
@@ -45,7 +46,7 @@ struct FieldInfo {
   // Predictions for the form containing the field.
   std::optional<FormPredictions> stored_predictions;
 
-  FieldInfo(int driver_id,
+  FieldInfo(DriverId driver_id,
             autofill::FieldRendererId field_id,
             std::string signon_realm,
             std::u16string value,
@@ -78,8 +79,8 @@ class FieldInfoManager : public KeyedService {
 
   // Propagates signatures and field type received from the server.
   void ProcessServerPredictions(
-      const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
-          predictions);
+      const std::map<std::pair<autofill::FormSignature, DriverId>,
+                     FormPredictions>& predictions);
 
  private:
   struct FieldInfoEntry {

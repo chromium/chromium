@@ -29,7 +29,7 @@ class IsPossibleUsernameValidTest : public testing::Test {
       autofill::FieldRendererId(1u),
       kUser /* value */,
       base::Time::Now() /* last_change */,
-      /*driver_id=*/10,
+      DriverId(10),
       /*autocomplete_attribute_has_username=*/false,
       /*is_likely_otp=*/false};
 };

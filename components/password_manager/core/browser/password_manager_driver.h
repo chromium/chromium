@@ -9,11 +9,13 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/id_type.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/password_manager/core/common/driver_id.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "url/origin.h"
 
@@ -49,7 +51,7 @@ class PasswordManagerDriver {
   virtual ~PasswordManagerDriver() = default;
 
   // Returns driver id which is unique in the current tab.
-  virtual int GetId() const = 0;
+  virtual DriverId GetId() const = 0;
 
   // Propagates `form_data` to the renderer, in order to store values for
   // filling on account select, or fill on pageload if appliccable.

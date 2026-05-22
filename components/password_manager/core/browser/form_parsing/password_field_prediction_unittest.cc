@@ -105,7 +105,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     test_api(form_data).Append(std::move(field));
   }
 
-  constexpr int driver_id = 1000;
+  const DriverId driver_id = DriverId(1000);
   FormPredictions actual_predictions =
       ConvertToFormPredictions(driver_id, form_data, autofill_predictions);
 
@@ -174,8 +174,8 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
       test_api(form_data).Append(std::move(field));
     }
 
-    FormPredictions actual_predictions = ConvertToFormPredictions(
-        /*driver_id=*/0, form_data, autofill_predictions);
+    FormPredictions actual_predictions =
+        ConvertToFormPredictions(DriverId(1), form_data, autofill_predictions);
 
     for (size_t i = 0; i < form_data.fields().size(); ++i) {
       SCOPED_TRACE(
@@ -230,7 +230,7 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
 // Tests that if |AutofillServerPrediction| has an override flag, it
 // will be propagated to |FormPredictions|.
 TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
-  constexpr int driver_id = 0;
+  const DriverId driver_id = DriverId(1);
 
   FormData form;
   FormFieldData single_username_field;

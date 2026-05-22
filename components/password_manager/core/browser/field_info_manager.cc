@@ -40,7 +40,7 @@ bool StoresPredictionsForInfo(const FormPredictions& predictions,
 
 }  // namespace
 
-FieldInfo::FieldInfo(int driver_id,
+FieldInfo::FieldInfo(DriverId driver_id,
                      FieldRendererId field_id,
                      std::string signon_realm,
                      std::u16string value,
@@ -116,8 +116,8 @@ std::vector<FieldInfo> FieldInfoManager::GetFieldInfo(
 }
 
 void FieldInfoManager::ProcessServerPredictions(
-    const std::map<std::pair<autofill::FormSignature, int>, FormPredictions>&
-        predictions) {
+    const std::map<std::pair<autofill::FormSignature, DriverId>,
+                   FormPredictions>& predictions) {
   for (auto& entry : field_info_cache_) {
     FieldInfo& field_info = entry.field_info;
     // Do nothing if predictions are already stored.
@@ -126,7 +126,7 @@ void FieldInfoManager::ProcessServerPredictions(
     }
 
     for (const auto& [key, form_predictions] : predictions) {
-      const int driver_id = key.second;
+      const DriverId driver_id = key.second;
       if (driver_id != field_info.driver_id) {
         continue;
       }

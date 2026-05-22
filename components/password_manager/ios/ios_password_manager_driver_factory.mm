@@ -22,7 +22,8 @@ IOSPasswordManagerDriverFactory::IOSPasswordManagerDriver(
     web::WebFrame* web_frame,
     web::WebState* web_state) {
   IOSPasswordManagerWebFrameDriverHelper::CreateForWebFrame(
-      web_state, bridge_, password_manager_, web_frame, next_free_id++);
+      web_state, bridge_, password_manager_, web_frame,
+      id_generator_.GenerateNextId());
   return !web_frame
              ? nullptr
              : IOSPasswordManagerWebFrameDriverHelper::FromWebFrame(web_frame)
@@ -55,7 +56,7 @@ void IOSPasswordManagerWebFrameDriverHelper::CreateForWebFrame(
     id<PasswordManagerDriverBridge> bridge,
     password_manager::PasswordManagerInterface* password_manager,
     web::WebFrame* web_frame,
-    int driver_id) {
+    password_manager::DriverId driver_id) {
   if (!web_frame || FromWebFrame(web_frame) || !web_state) {
     return;
   }
@@ -71,7 +72,7 @@ IOSPasswordManagerWebFrameDriverHelper::IOSPasswordManagerWebFrameDriverHelper(
     id<PasswordManagerDriverBridge> bridge,
     password_manager::PasswordManagerInterface* password_manager,
     web::WebFrame* web_frame,
-    int driver_id)
+    password_manager::DriverId driver_id)
     : driver_(
           base::WrapRefCounted(new IOSPasswordManagerDriver(web_state,
                                                             bridge,

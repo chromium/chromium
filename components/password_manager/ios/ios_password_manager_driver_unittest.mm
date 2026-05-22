@@ -100,8 +100,8 @@ class IOSPasswordManagerDriverTest : public PlatformTest {
 
 // Tests that the drivers have the correct ids.
 TEST_F(IOSPasswordManagerDriverTest, GetId) {
-  ASSERT_EQ(driver_->GetId(), 0);
-  ASSERT_EQ(driver2_->GetId(), 1);
+  ASSERT_EQ(driver_->GetId(), password_manager::DriverId(1));
+  ASSERT_EQ(driver2_->GetId(), password_manager::DriverId(2));
 }
 
 // Tests the IsInPrimaryMainFrame method.

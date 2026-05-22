@@ -58,7 +58,7 @@ class IOSPasswordManagerDriverFactory
   id<PasswordManagerDriverBridge> bridge_;
   raw_ptr<password_manager::PasswordManagerInterface, DanglingUntriaged>
       password_manager_;
-  int next_free_id = 0;
+  password_manager::DriverId::Generator id_generator_;
 };
 
 // This class is tied to the web frame and owns a reference to
@@ -88,7 +88,7 @@ class IOSPasswordManagerWebFrameDriverHelper
       id<PasswordManagerDriverBridge> bridge,
       password_manager::PasswordManagerInterface* password_manager,
       web::WebFrame* web_frame,
-      int driver_id);
+      password_manager::DriverId driver_id);
 
   // The constructor creates a ref countable IOSPasswordManagerDriver and saves
   // it in the driver_ field.
@@ -97,7 +97,7 @@ class IOSPasswordManagerWebFrameDriverHelper
       id<PasswordManagerDriverBridge> bridge,
       password_manager::PasswordManagerInterface* password_manager,
       web::WebFrame* web_frame,
-      int driver_id);
+      password_manager::DriverId driver_id);
 
   IOSPasswordManagerDriver* driver() { return driver_.get(); }
   scoped_refptr<IOSPasswordManagerDriver> RetainableDriver() { return driver_; }

@@ -26,18 +26,18 @@ namespace {
 const char kTestDomain[] = "https://firstdomain.com";
 constexpr FormSignature kTestFormSignature(100);
 constexpr FieldSignature kTestFieldSignature(200);
-constexpr int kTestDriverId = 1;
+const DriverId kTestDriverId = DriverId(1);
 constexpr FieldRendererId kTestFieldId(1);
 constexpr FieldType kTestFieldType = autofill::USERNAME;
 
 const char kAnotherDomain[] = "https://seconddomain.com";
 constexpr FormSignature kAnotherFormSignature(300);
 constexpr FieldSignature kAnotherFieldSignature(400);
-constexpr int kAnotherDriverId = 2;
+const DriverId kAnotherDriverId = DriverId(2);
 constexpr FieldRendererId kAnotherFieldId(2);
 constexpr FieldType kAnotherFieldType = autofill::PASSWORD;
 
-FormPredictions CreateTestPredictions(int driver_id,
+FormPredictions CreateTestPredictions(DriverId driver_id,
                                       FormSignature form_signature,
                                       FieldSignature field_signature,
                                       FieldRendererId renderer_id,
@@ -140,7 +140,7 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
   manager_->AddFieldInfo(info, /*predictions=*/std::nullopt);
 
   // Create test predictions.
-  std::map<std::pair<autofill::FormSignature, int>, FormPredictions>
+  std::map<std::pair<autofill::FormSignature, DriverId>, FormPredictions>
       predictions;
   FormPredictions form_prediction =
       CreateTestPredictions(kTestDriverId, kTestFormSignature,

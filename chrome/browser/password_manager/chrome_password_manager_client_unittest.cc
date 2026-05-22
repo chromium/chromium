@@ -786,7 +786,7 @@ TEST_F(ChromePasswordManagerClientTest,
 
   ContentPasswordManagerDriver* password_driver =
       ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh());
-  int driver_id = password_driver->GetId();
+  password_manager::DriverId driver_id = password_driver->GetId();
 
   EXPECT_THAT(static_cast<const password_manager::PasswordManager*>(
                   GetClient()->GetPasswordManager())
@@ -907,8 +907,8 @@ TEST_F(ChromePasswordManagerClientTest,
       ContentPasswordManagerDriver::GetForRenderFrameHost(main_rfh());
   ContentPasswordManagerDriver* child_password_driver =
       ContentPasswordManagerDriver::GetForRenderFrameHost(child_rfh);
-  int main_driver_id = main_password_driver->GetId();
-  int child_driver_id = child_password_driver->GetId();
+  password_manager::DriverId main_driver_id = main_password_driver->GetId();
+  password_manager::DriverId child_driver_id = child_password_driver->GetId();
 
   EXPECT_THAT(
       static_cast<const password_manager::PasswordManager*>(

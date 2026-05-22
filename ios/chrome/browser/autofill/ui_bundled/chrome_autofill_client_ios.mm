@@ -583,7 +583,7 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
   // manager logic that handles the `PasswordForm` returned by the parser.
   return password_manager::ClassifyAsPasswordForm(
       *renderer_form, password_manager::ConvertToFormPredictions(
-                          /*driver_id=*/0, *renderer_form,
+                          password_manager::DriverId(), *renderer_form,
                           form_structure->GetServerPredictions(field_ids)));
 }
 

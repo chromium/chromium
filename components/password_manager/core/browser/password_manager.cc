@@ -981,7 +981,7 @@ void PasswordManager::OnUserModifiedNonPasswordField(
     bool autocomplete_attribute_has_username,
     bool is_likely_otp) {
   // |driver| might be empty on iOS or in tests.
-  int driver_id = driver ? driver->GetId() : 0;
+  DriverId driver_id = driver ? driver->GetId() : DriverId();
 
   // Add user modified text field as a username candidate outside of the
   // password form.
@@ -1784,7 +1784,7 @@ void PasswordManager::ProcessAutofillPredictions(
   }
 
   // `driver` might be null in tests.
-  int driver_id = driver ? driver->GetId() : 0;
+  DriverId driver_id = driver ? driver->GetId() : DriverId();
   // Update the `server_predictions_` stored as a member.
   const FormPredictions& form_predictions =
       server_predictions_
@@ -1938,7 +1938,7 @@ PasswordFormManager* PasswordManager::GetMatchedManagerForField(
 
 std::optional<FormPredictions> PasswordManager::FindServerPredictionsForField(
     FieldRendererId field_id,
-    int driver_id) {
+    DriverId driver_id) {
   for (const auto& [key, predictions] : server_predictions_) {
     if (key.second != driver_id) {
       continue;

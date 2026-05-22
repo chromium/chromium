@@ -15,8 +15,8 @@ namespace password_manager {
 StubPasswordManagerDriver::StubPasswordManagerDriver() = default;
 StubPasswordManagerDriver::~StubPasswordManagerDriver() = default;
 
-int StubPasswordManagerDriver::GetId() const {
-  return 0;
+DriverId StubPasswordManagerDriver::GetId() const {
+  return DriverId(1);
 }
 
 void StubPasswordManagerDriver::PropagateFillDataOnParsingCompletion(
@@ -101,7 +101,7 @@ bool StubPasswordManagerDriver::CanShowAutofillUi() const {
 }
 
 int StubPasswordManagerDriver::GetFrameId() const {
-  return GetId();
+  return GetId().GetUnsafeValue();
 }
 
 const GURL& StubPasswordManagerDriver::GetLastCommittedURL() const {

@@ -120,8 +120,8 @@ ContentPasswordManagerDriver::ContentPasswordManagerDriver(
           autofill::ContentAutofillClient::FromWebContents(
               content::WebContents::FromRenderFrameHost(render_frame_host)),
           client) {
-  static unsigned next_free_id = 0;
-  id_ = next_free_id++;
+  static DriverId::Generator id_generator;
+  id_ = id_generator.GenerateNextId();
 
   render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(
       &password_autofill_agent_);
@@ -172,7 +172,7 @@ void ContentPasswordManagerDriver::DidNavigate() {
   }
 }
 
-int ContentPasswordManagerDriver::GetId() const {
+DriverId ContentPasswordManagerDriver::GetId() const {
   return id_;
 }
 

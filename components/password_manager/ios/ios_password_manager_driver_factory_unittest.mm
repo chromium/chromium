@@ -69,8 +69,8 @@ TEST_F(IOSPasswordManagerDriverFactoryTest, CreateFactoryAndDriver) {
   ASSERT_EQ(driver_created, driver_retrieved);
   ASSERT_TRUE(no_driver_created == nullptr);
 
-  // If everything worked, the driver should exist and have an id equal to 0.
-  ASSERT_EQ(driver_created->GetId(), 0);
+  // If everything worked, the driver should exist and have an id equal to 1.
+  ASSERT_EQ(driver_created->GetId(), password_manager::DriverId(1));
 
   auto retainable_driver =
       IOSPasswordManagerDriverFactory::GetRetainableDriver(&web_state_, frame);
@@ -94,6 +94,6 @@ TEST_F(IOSPasswordManagerDriverFactoryTest,
       IOSPasswordManagerDriverFactory::GetRetainableDriver(&web_state_, frame);
   ASSERT_TRUE(retainable_driver != nullptr);
 
-  // If everything worked, the driver should exist and have an id equal to 0.
-  ASSERT_EQ(retainable_driver.get()->GetId(), 0);
+  // If everything worked, the driver should exist and have an id equal to 1.
+  ASSERT_EQ(retainable_driver.get()->GetId(), password_manager::DriverId(1));
 }

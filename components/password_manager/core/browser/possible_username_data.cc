@@ -34,7 +34,7 @@ PossibleUsernameData::PossibleUsernameData(
     autofill::FieldRendererId renderer_id,
     const std::u16string& value,
     base::Time last_change,
-    int driver_id,
+    DriverId driver_id,
     bool autocomplete_attribute_has_username,
     bool is_likely_otp)
     : signon_realm(std::move(signon_realm)),

@@ -41,7 +41,7 @@ class IOSPasswordManagerDriver final
   IOSPasswordManagerDriver& operator=(const IOSPasswordManagerDriver&) = delete;
 
   // password_manager::PasswordManagerDriver implementation.
-  int GetId() const override;
+  password_manager::DriverId GetId() const override;
   void PropagateFillDataOnParsingCompletion(
       const autofill::PasswordFormFillData& form_data) override;
   void InformNoSavedCredentials(
@@ -112,7 +112,7 @@ class IOSPasswordManagerDriver final
       id<PasswordManagerDriverBridge> bridge,
       password_manager::PasswordManagerInterface* password_manager,
       web::WebFrame* web_frame,
-      int driver_id);
+      password_manager::DriverId driver_id);
 
   ~IOSPasswordManagerDriver() override;
 
@@ -122,7 +122,7 @@ class IOSPasswordManagerDriver final
       password_manager_;
   std::unique_ptr<password_manager::PasswordGenerationFrameHelper>
       password_generation_helper_;
-  int id_;
+  password_manager::DriverId id_;
 
   // The hash of the cached frame ID of `web_frame_`. This is cached because
   // `web_frame` might be set to null when the frame is deleted.

@@ -51,7 +51,7 @@ autofill::PasswordFormClassification ClassifyAsPasswordForm(
       base::ToVector(it->first.fields(), &autofill::FormFieldData::global_id);
   return ClassifyAsPasswordForm(
       it->first, ConvertToFormPredictions(
-                     /*driver_id=*/0, it->first,
+                     DriverId(), it->first,
                      manager.GetServerPredictionsForForm(form_id, field_ids)));
 }
 

@@ -29,7 +29,7 @@ IOSPasswordManagerDriver::IOSPasswordManagerDriver(
     id<PasswordManagerDriverBridge> bridge,
     password_manager::PasswordManagerInterface* password_manager,
     web::WebFrame* web_frame,
-    int driver_id)
+    password_manager::DriverId driver_id)
     : web_state_(web_state->GetWeakPtr()),
       bridge_(bridge),
       password_manager_(password_manager),
@@ -49,7 +49,7 @@ IOSPasswordManagerDriver::IOSPasswordManagerDriver(
 
 IOSPasswordManagerDriver::~IOSPasswordManagerDriver() = default;
 
-int IOSPasswordManagerDriver::GetId() const {
+password_manager::DriverId IOSPasswordManagerDriver::GetId() const {
   return id_;
 }
 

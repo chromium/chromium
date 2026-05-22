@@ -111,7 +111,7 @@ FormPredictions& FormPredictions::operator=(FormPredictions&&) = default;
 FormPredictions::~FormPredictions() = default;
 
 FormPredictions ConvertToFormPredictions(
-    int driver_id,
+    DriverId driver_id,
     const autofill::FormData& form,
     const base::flat_map<FieldGlobalId, AutofillServerPrediction>&
         predictions) {

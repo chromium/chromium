@@ -53,7 +53,7 @@ constexpr char16_t kPreferredPassword[] = u"password";
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
-  MOCK_METHOD(int, GetId, (), (const, override));
+  MOCK_METHOD(DriverId, GetId, (), (const, override));
   MOCK_METHOD(void,
               PropagateFillDataOnParsingCompletion,
               (const PasswordFormFillData&),

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/form_parsing/password_field_prediction.h"
+#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/votes_uploader.h"
 
 namespace password_manager {
@@ -27,7 +28,7 @@ struct PossibleUsernameFieldIdentifier {
   // Id of the `PasswordManagerDriver` which corresponds to the frame of this
   // field. When paired with the `renderer_id`, this pair uniquely identifies a
   // field globally.
-  int driver_id;
+  DriverId driver_id;
 
   // Id of the field within the frame.
   autofill::FieldRendererId renderer_id;
@@ -40,7 +41,7 @@ struct PossibleUsernameData {
                        autofill::FieldRendererId renderer_id,
                        const std::u16string& value,
                        base::Time last_change,
-                       int driver_id,
+                       DriverId driver_id,
                        bool autocomplete_attribute_has_username,
                        bool is_likely_otp);
   PossibleUsernameData(const PossibleUsernameData&);
@@ -57,7 +58,7 @@ struct PossibleUsernameData {
   // Id of the `PasswordManagerDriver` which corresponds to the frame of this
   // field. When paired with the `renderer_id`, this pair uniquely identifies a
   // field globally.
-  int driver_id;
+  DriverId driver_id;
 
   // Whether the autocomplete attribute is present and equals to
   // username.
