@@ -67,7 +67,7 @@ public class ActorNotificationFactory {
                                         NotificationUmaTracker.SystemNotificationType.ACTOR,
                                         /* notificationTag= */ null,
                                         notificationId))
-                        .setSmallIcon(R.drawable.ic_spark_24dp)
+                        .setSmallIcon(R.drawable.ic_chrome)
                         .setLocalOnly(true)
                         .setSilent(isSilent);
 
@@ -185,7 +185,7 @@ public class ActorNotificationFactory {
         if (intent == null) return;
 
         builder.addAction(
-                R.drawable.ic_spark_24dp,
+                R.drawable.ic_chrome,
                 context.getString(R.string.actor_notification_button_go_to_chrome),
                 intent,
                 NotificationUmaTracker.ActionType.ACTOR_VIEW);

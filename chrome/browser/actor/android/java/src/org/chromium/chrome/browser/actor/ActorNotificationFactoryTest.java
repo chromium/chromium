@@ -105,6 +105,7 @@ public class ActorNotificationFactoryTest {
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
 
+        assertSmallIcon(notification);
         assertAction(notification);
     }
 
@@ -135,6 +136,7 @@ public class ActorNotificationFactoryTest {
                 "Notification should be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
 
+        assertSmallIcon(notification);
         assertAction(notification);
     }
 
@@ -166,6 +168,7 @@ public class ActorNotificationFactoryTest {
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
         assertNotNull("Content intent should not be null", notification.contentIntent);
 
+        assertSmallIcon(notification);
         assertAction(notification);
     }
 
@@ -189,6 +192,7 @@ public class ActorNotificationFactoryTest {
             intent = shadowOf(wrappedPendingIntent).getSavedIntent();
         }
         assertEquals("MOCK_ACTION", intent.getAction());
+        assertSmallIcon(notification);
     }
 
     @Test
@@ -221,6 +225,7 @@ public class ActorNotificationFactoryTest {
                 "Notification should have auto-cancel enabled",
                 (notification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
 
+        assertSmallIcon(notification);
         assertAction(notification);
     }
 
@@ -237,6 +242,7 @@ public class ActorNotificationFactoryTest {
                 mContext.getString(R.string.actor_notification_title_working_on_task),
                 shadowOf(notification).getContentTitle());
         assertNotNull("Content intent should be set", notification.contentIntent);
+        assertSmallIcon(notification);
         assertAction(notification);
     }
 
@@ -253,6 +259,7 @@ public class ActorNotificationFactoryTest {
                 mContext.getString(R.string.actor_notification_title_task_paused),
                 shadowOf(notification).getContentTitle());
         assertNotNull("Content intent should be set", notification.contentIntent);
+        assertSmallIcon(notification);
         assertAction(notification);
     }
 
@@ -284,6 +291,7 @@ public class ActorNotificationFactoryTest {
                 "Notification should not be ongoing",
                 (notification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
         assertNotNull("Content intent should be set", notification.contentIntent);
+        assertSmallIcon(notification);
         assertNoActions(notification);
     }
 
@@ -299,6 +307,14 @@ public class ActorNotificationFactoryTest {
         assertTrue("Notification should be silent", wrapper.isSilent());
     }
 
+    private void assertSmallIcon(Notification notification) {
+        assertNotNull("Small icon should not be null", notification.getSmallIcon());
+        assertEquals(
+                "Small icon should be ic_chrome",
+                R.drawable.ic_chrome,
+                notification.getSmallIcon().getResId());
+    }
+
     private void assertAction(Notification notification) {
         assertNotNull("Actions should not be null", notification.actions);
         assertEquals("Should have 1 action", 1, notification.actions.length);
@@ -306,6 +322,10 @@ public class ActorNotificationFactoryTest {
                 "Action title should match",
                 mContext.getString(R.string.actor_notification_button_go_to_chrome),
                 notification.actions[0].title);
+        assertEquals(
+                "Action icon should be ic_chrome",
+                R.drawable.ic_chrome,
+                notification.actions[0].getIcon().getResId());
     }
 
     private void assertNoActions(Notification notification) {
