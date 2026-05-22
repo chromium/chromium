@@ -533,4 +533,5 @@ Refer to README.md for content description and update process.
  <item id="iwa_installer_view_controller" added_in_milestone="149" type="partial" second_id="iwa_update_manifest_fetcher" content_hash_code="06e97185" os_list="chromeos,windows,linux" semantics_fields="1,2,3" policy_fields="-1,3,4" file_path="chrome/browser/ui/views/web_apps/isolated_web_apps/isolated_web_app_installer_view_controller.cc" />
  <item id="web_app_custom_icon_fetcher" added_in_milestone="150" content_hash_code="035af1c7" os_list="windows,chromeos,linux" file_path="chrome/browser/web_applications/custom_icon_fetcher.cc" />
  <item id="suggestions_powered_by_ai" added_in_milestone="150" content_hash_code="058a6c2b" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
+ <item id="preload_activation_beacon" added_in_milestone="150" content_hash_code="04f37095" os_list="linux,windows,chromeos,android" file_path="content/browser/preloading/preload_activation_report_manager.cc" />
 </annotations>

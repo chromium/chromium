@@ -1700,6 +1700,8 @@ source_set("browser") {
     "preloading/prefetch/prefetch_url_loader_interceptor.h",
     "preloading/prefetcher.cc",
     "preloading/prefetcher.h",
+    "preloading/preload_activation_report_manager.cc",
+    "preloading/preload_activation_report_manager.h",
     "preloading/preload_pipeline_info_impl.cc",
     "preloading/preload_pipeline_info_impl.h",
     "preloading/preload_serving_metrics.cc",
