@@ -5,7 +5,7 @@
 #include "chrome/browser/actor/aggregated_journal_serializer.h"
 
 #include "base/containers/span.h"
-#include "chrome/common/actor/journal_details_builder.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/tracing/common/system_profile_metadata_recorder.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/perfetto/include/perfetto/ext/tracing/core/trace_packet.h"

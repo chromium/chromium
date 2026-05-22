@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/common/actor/journal_details_builder.h"
+#include "components/actor/core/journal_details_builder.h"
 
 namespace actor {
 

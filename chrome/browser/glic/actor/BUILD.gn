@@ -34,7 +34,7 @@ source_set("actor") {
 
   public_deps = [
     "//chrome/browser/profiles:profile",
-    "//components/actor/core:task_id",
+    "//components/actor/core:journal",
   ]
 }
 

@@ -221,12 +221,6 @@ enum JournalEntryType {
   kInstant,
 };
 
-// Details of a journal entry.
-struct JournalDetails {
-  string key;
-  string value;
-};
-
 // Represents a journal entry. This should only be used for logging and
 // debugging. It should not be used to make logic decisions since a
 // compromised renderer could lie about events (such as mismatched

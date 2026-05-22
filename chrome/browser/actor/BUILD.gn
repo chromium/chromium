@@ -200,6 +200,7 @@ source_set("impl") {
     "//chrome/browser/ui/navigator",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
+    "//components/actor/core:journal",
     "//components/affiliations/core/browser:affiliations",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
@@ -355,6 +356,7 @@ source_set("unit_tests") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/test:test_support",
+    "//components/actor/core:journal",
     "//components/tabs:test_support",
     "//testing/gtest",
   ]

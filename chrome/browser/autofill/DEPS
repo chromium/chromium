@@ -1,4 +1,5 @@
 include_rules = [
+  '+components/actor/core/journal_details_builder.h',
   '+third_party/libaddressinput/chromium/chrome_metadata_source.h',
   '+third_party/libaddressinput/chromium/chrome_storage_impl.h',
   '+components/browser_ui/device_lock/android',

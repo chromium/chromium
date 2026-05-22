@@ -17,9 +17,9 @@
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 

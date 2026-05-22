@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_ACTOR_JOURNAL_DETAILS_BUILDER_H_
-#define CHROME_COMMON_ACTOR_JOURNAL_DETAILS_BUILDER_H_
+#ifndef COMPONENTS_ACTOR_CORE_JOURNAL_DETAILS_BUILDER_H_
+#define COMPONENTS_ACTOR_CORE_JOURNAL_DETAILS_BUILDER_H_
+
+#include <cstdint>
+#include <ostream>
+#include <string>
+#include <string_view>
+#include <vector>
 
 #include "base/hash/hash.h"
 #include "base/strings/to_string.h"
-#include "chrome/common/actor.mojom.h"
 #include "components/actor/core/task_id.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 
 namespace actor {
 
@@ -110,4 +116,4 @@ inline std::ostream& operator<<(
   return stream;
 }
 
-#endif  // CHROME_COMMON_ACTOR_JOURNAL_DETAILS_BUILDER_H_
+#endif  // COMPONENTS_ACTOR_CORE_JOURNAL_DETAILS_BUILDER_H_

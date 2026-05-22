@@ -23,6 +23,7 @@ source_set("actor_internals") {
     "//chrome/browser/actor",
     "//chrome/browser/profiles",
     "//chrome/common",
+    "//components/actor/core:journal",
     "//components/actor/core/internals/browser",
     "//components/actor/core/internals/resources",
     "//content/public/browser",

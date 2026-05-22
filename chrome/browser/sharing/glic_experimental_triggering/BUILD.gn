@@ -28,6 +28,7 @@ source_set("impl") {
     "//chrome/browser/glic:impl",
     "//chrome/browser/profiles:profile",
     "//chrome/common:chrome_features",
+    "//components/actor/core:journal",
   ]
 }
 

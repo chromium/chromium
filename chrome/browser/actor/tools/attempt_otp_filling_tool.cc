@@ -15,7 +15,7 @@
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
-#include "chrome/common/actor/journal_details_builder.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 
 namespace actor {

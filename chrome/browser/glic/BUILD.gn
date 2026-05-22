@@ -421,6 +421,7 @@ source_set("impl") {
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/common",
+    "//components/actor/core:journal",
     "//components/application_locale_storage",
     "//components/autofill/core/browser/integrators/actor:actor_form_filling_types",
     "//components/enterprise",

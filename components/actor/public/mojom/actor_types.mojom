@@ -471,3 +471,9 @@ enum ActionResultCode {
 struct TaskId {
   int32 id;
 };
+
+// Details of a journal entry.
+struct JournalDetails {
+  string key;
+  string value;
+};

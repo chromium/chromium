@@ -6,7 +6,7 @@
 
 #include "base/rand_util.h"
 #include "chrome/common/actor/actor_logging.h"
-#include "chrome/common/actor/journal_details_builder.h"
+#include "components/actor/core/journal_details_builder.h"
 
 namespace actor {
 

@@ -23,7 +23,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_mojom_traits.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
-#include "chrome/common/actor/journal_details_builder.h"
+#include "components/actor/core/journal_details_builder.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"

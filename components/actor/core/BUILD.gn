@@ -7,6 +7,18 @@ source_set("task_id") {
   deps = [ "//base" ]
 }
 
+source_set("journal") {
+  sources = [
+    "journal_details_builder.cc",
+    "journal_details_builder.h",
+  ]
+  deps = [ "//base" ]
+  public_deps = [
+    ":task_id",
+    "//components/actor/public/mojom:mojo_bindings",
+  ]
+}
+
 source_set("core") {
   sources = [
     "actor_features.cc",
