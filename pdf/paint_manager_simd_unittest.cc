@@ -69,14 +69,17 @@ std::vector<uint8_t> GenerateTestBuffer() {
 // scalar reference implementation.
 TEST(PaintManagerSimdTest, NonPremulBlendIsCorrect) {
   std::vector<uint8_t> src = GenerateTestBuffer();
-  size_t n_pixels = src.size() / 4;
-  std::vector<uint8_t> actual_dest(n_pixels * 4);
-  std::vector<uint8_t> expected_dest(n_pixels * 4);
+  for (size_t n_pixels = 1; n_pixels <= src.size() / 4; ++n_pixels) {
+    std::vector<uint8_t> actual_dest(n_pixels * 4);
+    std::vector<uint8_t> expected_dest(n_pixels * 4);
 
-  NonPremulBlend(src.data(), actual_dest.data(), n_pixels);
-  ReferenceNonPremulBlend(src, expected_dest);
+    NonPremulBlend(src.data(), actual_dest.data(), n_pixels);
+    ReferenceNonPremulBlend(base::span<const uint8_t>(src).first(n_pixels * 4),
+                            expected_dest);
 
-  EXPECT_EQ(actual_dest, expected_dest);
+    ASSERT_EQ(actual_dest, expected_dest)
+        << "Failed for n_pixels = " << n_pixels;
+  }
 }
 
 // Tests that `PremulBlend` produces bit-exact output compared to the
@@ -84,20 +87,23 @@ TEST(PaintManagerSimdTest, NonPremulBlendIsCorrect) {
 TEST(PaintManagerSimdTest, PremulBlendIsCorrect) {
   std::vector<uint8_t> src = GenerateTestBuffer();
   // Clamp components to alpha to ensure valid premul input
-  for (size_t i = 0; i < 256; ++i) {
+  for (size_t i = 0; i < src.size() / 4; ++i) {
     uint8_t a = src[i * 4 + 3];
     src[i * 4] = std::min(src[i * 4], a);
     src[i * 4 + 1] = std::min(src[i * 4 + 1], a);
     src[i * 4 + 2] = std::min(src[i * 4 + 2], a);
   }
-  size_t n_pixels = src.size() / 4;
-  std::vector<uint8_t> actual_dest(n_pixels * 4);
-  std::vector<uint8_t> expected_dest(n_pixels * 4);
+  for (size_t n_pixels = 1; n_pixels <= src.size() / 4; ++n_pixels) {
+    std::vector<uint8_t> actual_dest(n_pixels * 4);
+    std::vector<uint8_t> expected_dest(n_pixels * 4);
 
-  PremulBlend(src.data(), actual_dest.data(), n_pixels);
-  ReferencePremulBlend(src, expected_dest);
+    PremulBlend(src.data(), actual_dest.data(), n_pixels);
+    ReferencePremulBlend(base::span<const uint8_t>(src).first(n_pixels * 4),
+                         expected_dest);
 
-  EXPECT_EQ(actual_dest, expected_dest);
+    ASSERT_EQ(actual_dest, expected_dest)
+        << "Failed for n_pixels = " << n_pixels;
+  }
 }
 
 // From here onwards, the tests are "property tests", meaning that they test
@@ -150,7 +156,7 @@ TEST(PaintManagerSimdTest, PremulBlendValidInputProperty) {
 // original color components preserved exactly in the destination buffer.
 //
 // Using templates to remove code duplication between the blending impls.
-template <void (*BlendFunc)(uint8_t*, uint8_t*, size_t)>
+template <void (*BlendFunc)(const uint8_t*, uint8_t*, size_t)>
 void VerifyBlendOpaqueProperty() {
   std::vector<uint8_t> src = GenerateTestBuffer();
   size_t n_pixels = src.size() / 4;
@@ -179,7 +185,7 @@ TEST(PaintManagerSimdTest, PremulBlendOpaqueProperty) {
 
 // Property: Fully transparent source pixels (`A == 0`) must render as pure
 // white (`255, 255, 255, 255`).
-template <void (*BlendFunc)(uint8_t*, uint8_t*, size_t), bool kIsPremul>
+template <void (*BlendFunc)(const uint8_t*, uint8_t*, size_t), bool kIsPremul>
 void VerifyBlendTransparentProperty() {
   std::vector<uint8_t> src = GenerateTestBuffer();
   size_t n_pixels = src.size() / 4;
@@ -213,7 +219,7 @@ TEST(PaintManagerSimdTest, PremulBlendTransparentProperty) {
 
 // Property: The resulting destination buffer must always be fully opaque (`A ==
 // 255`).
-template <void (*BlendFunc)(uint8_t*, uint8_t*, size_t)>
+template <void (*BlendFunc)(const uint8_t*, uint8_t*, size_t)>
 void VerifyBlendOutputOpaqueProperty() {
   std::vector<uint8_t> src = GenerateTestBuffer();
   size_t n_pixels = src.size() / 4;

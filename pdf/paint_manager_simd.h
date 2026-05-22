@@ -10,8 +10,11 @@
 
 namespace chrome_pdf {
 
-void NonPremulBlend(uint8_t* src_ptr, uint8_t* dest_ptr, size_t n_pixels);
-void PremulBlend(uint8_t* src_ptr, uint8_t* dest_ptr, size_t n_pixels);
+// Blends `src_ptr` over `dest_ptr`.
+// `src_ptr` and `dest_ptr` must not overlap (in-place blending is not
+// supported).
+void NonPremulBlend(const uint8_t* src_ptr, uint8_t* dest_ptr, size_t n_pixels);
+void PremulBlend(const uint8_t* src_ptr, uint8_t* dest_ptr, size_t n_pixels);
 
 }  // namespace chrome_pdf
 
