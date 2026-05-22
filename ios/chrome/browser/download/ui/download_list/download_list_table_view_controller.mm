@@ -94,6 +94,10 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
   NSArray<DownloadListItem*>* _cachedDownloadItems;
   // Repeating timer for periodic UI updates.
   base::RepeatingTimer _updateTimer;
+  // Height of the on-screen keyboard overlapping `self.view`. Used to keep
+  // the empty-state illustration vertically centered within the visible
+  // (un-occluded) area while the search keyboard is up.
+  CGFloat _keyboardOverlap;
 }
 
 - (void)viewDidLoad {
@@ -193,10 +197,88 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   [self resumePeriodicUpdates];
+  // Observe keyboard frame changes so the empty-state illustration can be
+  // kept above the keyboard (it would otherwise stay centered against the
+  // full tableView bounds and slide behind the search keyboard).
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(keyboardWillChangeFrame:)
+             name:UIKeyboardWillChangeFrameNotification
+           object:nil];
+  // Drop any stale keyboard overlap captured during the previous appearance
+  // and re-apply to any existing empty view so it doesn't render off-center.
+  _keyboardOverlap = 0;
+  TableViewIllustratedEmptyView* emptyView =
+      base::apple::ObjCCast<TableViewIllustratedEmptyView>(
+          self.tableView.backgroundView);
+  if (emptyView) {
+    [self applyEmptyViewKeyboardOverlap:emptyView];
+  }
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+  [super viewDidDisappear:animated];
+  [[NSNotificationCenter defaultCenter]
+      removeObserver:self
+                name:UIKeyboardWillChangeFrameNotification
+              object:nil];
 }
 
 - (void)dealloc {
   [self stopPeriodicUpdates];
+}
+
+#pragma mark - Keyboard Handling
+
+// Re-centers the empty-state illustration above the on-screen keyboard. The
+// inner scroll view of `TableViewIllustratedEmptyView` is centerY-pinned to
+// its container, so growing its bottom content inset by the overlap height
+// shifts the centered stack up by overlap/2 — leaving it visually centered
+// in the un-occluded area without re-laying-out the table view itself.
+- (void)keyboardWillChangeFrame:(NSNotification*)note {
+  if (!self.viewLoaded || !self.view.window) {
+    return;
+  }
+  NSValue* endFrameValue = note.userInfo[UIKeyboardFrameEndUserInfoKey];
+  if (!endFrameValue) {
+    return;
+  }
+  CGRect endFrameInView = [self.view convertRect:[endFrameValue CGRectValue]
+                                        fromView:nil];
+  _keyboardOverlap =
+      MAX(0, CGRectGetMaxY(self.view.bounds) - CGRectGetMinY(endFrameInView));
+
+  TableViewIllustratedEmptyView* emptyView =
+      base::apple::ObjCCast<TableViewIllustratedEmptyView>(
+          self.tableView.backgroundView);
+  if (!emptyView) {
+    return;
+  }
+  NSTimeInterval duration =
+      [note.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+  UIViewAnimationCurve curve = static_cast<UIViewAnimationCurve>(
+      [note.userInfo[UIKeyboardAnimationCurveUserInfoKey] integerValue]);
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:duration
+                        delay:0
+                      options:(curve << 16) |
+                              UIViewAnimationOptionBeginFromCurrentState
+                   animations:^{
+                     [weakSelf applyEmptyViewKeyboardOverlap:emptyView];
+                   }
+                   completion:nil];
+}
+
+// Pushes the cached keyboard overlap height into the empty view's inner
+// scroll-view bottom inset. Called both from the keyboard notification and
+// when an empty view is freshly installed while the keyboard is already up.
+- (void)applyEmptyViewKeyboardOverlap:(TableViewIllustratedEmptyView*)view {
+  UIEdgeInsets insets = view.scrollViewContentInsets;
+  if (insets.bottom == _keyboardOverlap) {
+    return;
+  }
+  insets.bottom = _keyboardOverlap;
+  view.scrollViewContentInsets = insets;
 }
 
 #pragma mark - Periodic Updates
@@ -574,6 +656,10 @@ typedef NSDiffableDataSourceSnapshot<DownloadListGroupItem*, DownloadListItem*>
                                    IDS_IOS_DOWNLOAD_LIST_NO_ENTRIES_MESSAGE))];
       emptyView.delegate = self;
       self.tableView.backgroundView = emptyView;
+      // If the keyboard is already up (e.g. user typed a non-matching
+      // search), apply the current overlap so the prompt is installed
+      // already-centered in the visible area.
+      [self applyEmptyViewKeyboardOverlap:emptyView];
     }
     // Only hide search bar when genuinely empty, not during active search
     // with no matching results.
