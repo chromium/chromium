@@ -125,7 +125,7 @@ TEST_F(FilterSuggestionGeneratorTest,
       expected_candidate.navigation_url,
       base::UTF8ToUTF16(annotation.source_domain),
       annotation.creation_timestamp, std::move(attribute_ui_labels),
-      kTestNavigationId, /*triggering_domain=*/"example.com");
+      kTestNavigationId, /*triggering_domain=*/"example.com", kShoppingTask);
 
   EXPECT_CALL(mock_client(),
               GetFilterSuggestionCandidates(url, _, _, kTestNavigationId))

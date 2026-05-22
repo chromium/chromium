@@ -48,7 +48,7 @@ TEST(UrlFilterSuggestionTest, CopyAndMove) {
       {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
           FilterAttribute("key1", "val1"))},
-      kTriggeringNavigationId, "example.com");
+      kTriggeringNavigationId, "example.com", "task1");
 
   UrlFilterSuggestion copy = suggestion;
   EXPECT_EQ(copy, suggestion);
@@ -63,7 +63,7 @@ TEST(UrlFilterSuggestionTest, Equality) {
       {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
           FilterAttribute("key1", "val1"))},
-      kTriggeringNavigationId, "example.com");
+      kTriggeringNavigationId, "example.com", "task1");
   UrlFilterSuggestion suggestion2 = suggestion1;
 
   EXPECT_EQ(suggestion1, suggestion2);
@@ -90,6 +90,10 @@ TEST(UrlFilterSuggestionTest, Equality) {
   suggestion2 = suggestion1;
   suggestion2.triggering_navigation_id = 456;
   EXPECT_NE(suggestion1, suggestion2);
+
+  suggestion2 = suggestion1;
+  suggestion2.task_type = "other";
+  EXPECT_NE(suggestion1, suggestion2);
 }
 
 TEST(UrlFilterSuggestionTest, ToString) {
@@ -101,7 +105,7 @@ TEST(UrlFilterSuggestionTest, ToString) {
       {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
           FilterAttribute("key1", "val1"))},
-      kTriggeringNavigationId, "example.com");
+      kTriggeringNavigationId, "example.com", "task1");
 
   EXPECT_EQ(suggestion.ToString(),
             "UrlFilterSuggestion(navigation_url=https://example.com/, "
@@ -112,7 +116,7 @@ TEST(UrlFilterSuggestionTest, ToString) {
                 ", attribute_ui_labels=[FilterAttributeUiLabel(label=label1, "
                 "value=val1)], triggering_navigation_id=" +
                 base::NumberToString(kTriggeringNavigationId) +
-                ", triggering_domain=example.com)");
+                ", triggering_domain=example.com, task_type=task1)");
 }
 
 TEST(UrlFilterSuggestionTest, ToStringMultipleAttributes) {
@@ -126,7 +130,7 @@ TEST(UrlFilterSuggestionTest, ToStringMultipleAttributes) {
        FilterAttributeUiLabel(
            FilterSuggestionCandidateAttribute("key2", u"label2"),
            FilterAttribute("key2", "val2"))},
-      kTriggeringNavigationId, "example.com");
+      kTriggeringNavigationId, "example.com", "task1");
 
   EXPECT_EQ(suggestion.ToString(),
             "UrlFilterSuggestion(navigation_url=https://example.com/, "
@@ -138,7 +142,7 @@ TEST(UrlFilterSuggestionTest, ToStringMultipleAttributes) {
                 "value=val1), FilterAttributeUiLabel(label=label2, "
                 "value=val2)], triggering_navigation_id=" +
                 base::NumberToString(kTriggeringNavigationId) +
-                ", triggering_domain=example.com)");
+                ", triggering_domain=example.com, task_type=task1)");
 }
 
 }  // namespace

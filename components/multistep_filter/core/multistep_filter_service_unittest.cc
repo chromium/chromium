@@ -197,7 +197,8 @@ TEST_F(MultistepFilterServiceTest, GenerateFilterSuggestions) {
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
       mock_callback;
   UrlFilterSuggestion mock_suggestion(kUrl, u"example.com", base::Time::Now(),
-                                      {}, kTestNavigationId, "example.com");
+                                      {}, kTestNavigationId, "example.com",
+                                      "task1");
 
   EXPECT_CALL(*mock_generator_,
               GenerateSuggestion(kUrl, _, kTestNavigationId, "example.com"))

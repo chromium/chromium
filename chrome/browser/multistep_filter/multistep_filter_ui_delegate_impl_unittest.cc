@@ -83,7 +83,7 @@ TEST_F(MultistepFilterUiDelegateImplTest,
   const GURL suggestion_url("https://suggestion.com");
   UrlFilterSuggestion suggestion(suggestion_url, u"suggestion.com",
                                  base::Time::Now(), /*attribute_ui_labels=*/{},
-                                 kTestNavigationId, "suggestion.com");
+                                 kTestNavigationId, "suggestion.com", "task1");
 
   EXPECT_CALL(*mock_controller,
               OnSuggestionGenerated(testing::Optional(suggestion)));
@@ -95,7 +95,7 @@ TEST_F(MultistepFilterUiDelegateImplTest,
   const GURL suggestion_url("https://suggestion.com");
   UrlFilterSuggestion suggestion(suggestion_url, u"suggestion.com",
                                  base::Time::Now(), /*attribute_ui_labels=*/{},
-                                 kTestNavigationId, "suggestion.com");
+                                 kTestNavigationId, "suggestion.com", "task1");
   // Should not crash when there is no controller.
   delegate_->OnSuggestionGenerated(suggestion);
 }

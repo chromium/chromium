@@ -37,13 +37,15 @@ UrlFilterSuggestion::UrlFilterSuggestion(
     base::Time extraction_timestamp,
     std::vector<FilterAttributeUiLabel> attribute_ui_labels,
     int64_t triggering_navigation_id,
-    std::string triggering_domain)
+    std::string triggering_domain,
+    std::string task_type)
     : navigation_url(std::move(navigation_url)),
       source_domain(std::move(source_domain)),
       extraction_timestamp(extraction_timestamp),
       attribute_ui_labels(std::move(attribute_ui_labels)),
       triggering_navigation_id(triggering_navigation_id),
-      triggering_domain(std::move(triggering_domain)) {}
+      triggering_domain(std::move(triggering_domain)),
+      task_type(std::move(task_type)) {}
 
 UrlFilterSuggestion::UrlFilterSuggestion(const UrlFilterSuggestion&) = default;
 UrlFilterSuggestion::UrlFilterSuggestion(UrlFilterSuggestion&&) = default;
@@ -68,8 +70,8 @@ std::string UrlFilterSuggestion::ToString() const {
            extraction_timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()),
        ", attribute_ui_labels=[", base::JoinString(attribute_strings, ", "),
        "], triggering_navigation_id=",
-       base::NumberToString(triggering_navigation_id),
-       ", triggering_domain=", triggering_domain, ")"});
+       base::NumberToString(triggering_navigation_id), ", triggering_domain=",
+       triggering_domain, ", task_type=", task_type, ")"});
 }
 
 }  // namespace multistep_filter

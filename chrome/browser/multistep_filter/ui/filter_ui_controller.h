@@ -16,6 +16,7 @@
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class GURL;
+struct ToastParams;
 
 namespace tabs {
 class TabInterface;
@@ -25,6 +26,7 @@ namespace multistep_filter {
 
 class FilterUiControllerTestApi;
 class MultistepFilterLogRouter;
+class MultistepFilterService;
 
 // Manages the UI lifecycle and user interactions for multistep filter
 // suggestions within a tab.
@@ -74,7 +76,7 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
 
  protected:
   // Shows the UI for the given suggestion.
-  virtual void ShowSuggestionUi(const UrlFilterSuggestion& suggestion);
+  virtual bool ShowSuggestionUi(ToastParams params);
 
   // Navigates the current tab to the given URL. Virtual for testing.
   virtual void NavigateTo(const GURL& url);
@@ -102,6 +104,9 @@ class FilterUiController : public tabs::ContentsObservingTabFeature {
 
   // Router for logging filter events.
   raw_ptr<MultistepFilterLogRouter> log_router_ = nullptr;
+
+  // Service for managing filters.
+  raw_ptr<MultistepFilterService> service_ = nullptr;
 
   // Factory for dismissal callbacks. Must be the last member variable to
   // ensure that it is destroyed first, invalidating all weak pointers before

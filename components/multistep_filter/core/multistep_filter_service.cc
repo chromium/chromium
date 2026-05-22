@@ -54,6 +54,15 @@ void LogSuggestionGenerationStarted(MultistepFilterLogRouter* log_router,
                        LogEventType::kSuggestionGenerationStarted, domain)
       << LogDetail{"url", url.spec()};
 }
+void LogAnnotationsExpired(MultistepFilterLogRouter* log_router,
+                           int64_t navigation_id,
+                           std::string_view domain,
+                           std::optional<int64_t> count) {
+  MULTISTEP_FILTER_LOG(log_router, navigation_id,
+                       LogEventType::kSuggestionCleared, domain)
+      << LogDetail{"success", count.has_value()}
+      << LogDetail{"expired_count", static_cast<int>(count.value_or(0))};
+}
 
 }  // namespace
 
@@ -138,6 +147,16 @@ void MultistepFilterService::OnExtractionFinished(
   if (observer_for_test_) {
     observer_for_test_->OnExtractionFinished(annotation_id);
   }
+}
+
+void MultistepFilterService::DeleteAnnotationsForTask(
+    std::string_view task_type,
+    int64_t navigation_id,
+    std::string_view domain) {
+  filter_store_->DeleteAnnotationsForTask(
+      std::string(task_type),
+      base::BindOnce(&LogAnnotationsExpired, log_router_, navigation_id,
+                     std::string(domain)));
 }
 
 void MultistepFilterService::OnSuggestionGenerated(

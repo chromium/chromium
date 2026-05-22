@@ -70,6 +70,11 @@ class MultistepFilterService : public KeyedService {
       const GURL& url,
       base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
 
+  // Deletes all annotations for the given `task_type`.
+  virtual void DeleteAnnotationsForTask(std::string_view task_type,
+                                        int64_t navigation_id,
+                                        std::string_view domain);
+
  private:
   friend class MultistepFilterServiceTestApi;
 

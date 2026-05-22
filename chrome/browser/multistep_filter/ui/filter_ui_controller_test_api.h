@@ -13,6 +13,8 @@
 
 namespace multistep_filter {
 
+class MultistepFilterService;
+
 class FilterUiControllerTestApi {
  public:
   explicit FilterUiControllerTestApi(FilterUiController& controller)
@@ -20,6 +22,10 @@ class FilterUiControllerTestApi {
 
   const std::optional<UrlFilterSuggestion>& current_url_filter_suggestion() const {
     return controller_->current_url_filter_suggestion_;
+  }
+
+  void set_service(MultistepFilterService* service) {
+    controller_->service_ = service;
   }
 
  private:

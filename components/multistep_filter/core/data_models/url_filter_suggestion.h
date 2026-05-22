@@ -45,7 +45,8 @@ struct UrlFilterSuggestion {
                       base::Time extraction_timestamp,
                       std::vector<FilterAttributeUiLabel> attribute_ui_labels,
                       int64_t triggering_navigation_id,
-                      std::string triggering_domain);
+                      std::string triggering_domain,
+                      std::string task_type);
 
   UrlFilterSuggestion(const UrlFilterSuggestion&);
   UrlFilterSuggestion(UrlFilterSuggestion&&);
@@ -74,6 +75,8 @@ struct UrlFilterSuggestion {
   // The eTLD+1 domain of the original triggering navigation. Used only for
   // logging.
   std::string triggering_domain;
+  // The identifier classifying the purpose of the annotation.
+  std::string task_type;
 };
 
 }  // namespace multistep_filter

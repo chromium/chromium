@@ -58,6 +58,7 @@ source_set("unit_tests") {
   if (!is_android && !is_ios) {
     sources += [ "filter_ui_controller_unittest.cc" ]
     deps += [
+      ":test_support",
       ":ui",
       "//base/test:test_support",
       "//chrome/browser/multistep_filter/core",
@@ -67,6 +68,7 @@ source_set("unit_tests") {
       "//components/multistep_filter/content",
       "//components/multistep_filter/core",
       "//components/multistep_filter/core:features",
+      "//components/multistep_filter/core/annotation_index:test_support",
       "//components/tabs:test_support",
       "//content/test:test_support",
       "//testing/gmock",

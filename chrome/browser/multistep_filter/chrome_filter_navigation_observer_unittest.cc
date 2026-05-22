@@ -218,7 +218,7 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
   UrlFilterSuggestion suggestion(
       suggestion_url, base::UTF8ToUTF16(GetEtldPlusOne(suggestion_url)),
       base::Time::Now(), /*attribute_ui_labels=*/{}, kTestNavigationId,
-      GetEtldPlusOne(suggestion_url));
+      GetEtldPlusOne(suggestion_url), "task1");
   EXPECT_CALL(*mock_controller,
               OnSuggestionGenerated(testing::Optional(suggestion)));
   std::move(captured_callback).Run(suggestion);
