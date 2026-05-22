@@ -79,10 +79,11 @@ bool FaviconHelper::GetLocalFaviconImageForURL(
     return false;
   }
 
-  favicon_base::FaviconRawBitmapCallback callback_runner = base::BindOnce(
-      &FaviconHelper::OnFaviconBitmapResultAvailable,
-      weak_ptr_factory_.GetWeakPtr(),
-      ScopedJavaGlobalRef<jobject>(j_favicon_image_callback), fallback_to_host);
+  favicon_base::FaviconRawBitmapCallback callback_runner =
+      base::BindOnce(&FaviconHelper::OnFaviconBitmapResultAvailable,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     ScopedJavaGlobalRef<jobject>(j_favicon_image_callback),
+                     fallback_to_host, profile->IsOffTheRecord());
 
   GetLocalFaviconImageForURLInternal(
       favicon_service, page_url, static_cast<int>(j_desired_size_in_pixel),
@@ -134,7 +135,7 @@ bool FaviconHelper::GetForeignFaviconImageForURL(
       base::BindOnce(&FaviconHelper::OnFaviconBitmapResultAvailable,
                      weak_ptr_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(j_favicon_image_callback),
-                     fallback_to_host));
+                     fallback_to_host, profile->IsOffTheRecord()));
   return true;
 }
 
@@ -143,15 +144,26 @@ FaviconHelper::~FaviconHelper() = default;
 void FaviconHelper::OnFaviconBitmapResultAvailable(
     const JavaRef<jobject>& j_favicon_image_callback,
     bool original_fallback_to_host,
+    bool off_the_record,
     const favicon_base::FaviconRawBitmapResult& result) {
   JNIEnv* env = AttachCurrentThread();
 
   if (original_fallback_to_host) {
     ::base::UmaHistogramBoolean(
         "Favicons.AndroidHostFallbackFetchResult.Enabled", result.is_valid());
+    if (off_the_record) {
+      ::base::UmaHistogramBoolean(
+          "Favicons.AndroidHostFallbackFetchResult.Enabled.OffTheRecord",
+          result.is_valid());
+    }
   } else {
     ::base::UmaHistogramBoolean(
         "Favicons.AndroidHostFallbackFetchResult.Disabled", result.is_valid());
+    if (off_the_record) {
+      ::base::UmaHistogramBoolean(
+          "Favicons.AndroidHostFallbackFetchResult.Disabled.OffTheRecord",
+          result.is_valid());
+    }
   }
 
   // Convert favicon_image_result to java objects.
