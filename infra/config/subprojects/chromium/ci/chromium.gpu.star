@@ -428,11 +428,6 @@ ci.thin_tester(
             # TODO(crbug.com/331756538): Specify the puppet_production mixin
             # once testing is moved to Ubuntu 22.
         ],
-        per_test_modifications = {
-            "tab_capture_end2end_tests": targets.remove(
-                reason = "Run these only on Release bots.",
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.DEBUG,
@@ -479,11 +474,6 @@ ci.thin_tester(
             # TODO(crbug.com/331756538): Specify the puppet_production mixin
             # once testing is moved to Ubuntu 22.
         ],
-        per_test_modifications = {
-            "tab_capture_end2end_tests": targets.remove(
-                reason = "Disabled due to dbus crashes crbug.com/927465",
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -529,9 +519,6 @@ ci.thin_tester(
                 swarming = targets.swarming(
                     shards = 2,
                 ),
-            ),
-            "tab_capture_end2end_tests": targets.remove(
-                reason = "Run these only on Release bots.",
             ),
             "trace_test": targets.mixin(
                 # Debug builds are slow enough to warrant an extra shard.
@@ -631,9 +618,6 @@ ci.thin_tester(
                         shards = 2,
                     ),
                 ),
-            ),
-            "tab_capture_end2end_tests": targets.remove(
-                reason = "Run these only on Release bots.",
             ),
         },
     ),

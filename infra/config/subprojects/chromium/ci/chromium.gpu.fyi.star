@@ -1573,11 +1573,6 @@ ci.thin_tester(
         mixins = [
             "linux_nvidia_gtx_1660_stable",
         ],
-        per_test_modifications = {
-            "tab_capture_end2end_tests": targets.remove(
-                reason = "Disabled due to dbus crashes crbug.com/927465",
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -1822,11 +1817,6 @@ ci.thin_tester(
         mixins = [
             "linux_intel_uhd_630_stable",
         ],
-        per_test_modifications = {
-            "tab_capture_end2end_tests": targets.remove(
-                reason = "Disabled due to dbus crashes crbug.com/927465",
-            ),
-        },
     ),
     targets_settings = targets.settings(
         browser_config = targets.browser_config.RELEASE,
@@ -2839,9 +2829,7 @@ ci.thin_tester(
                     "gpu bots once the Windows OS supports HW secure decryption.",
                 ],
             ),
-            "tab_capture_end2end_tests": targets.remove(
-                reason = "Run these only on Release bots.",
-            ),
+
             # TODO(crbug.com/380431384): Re-enable when fixed
             "webgl_conformance_vulkan_passthrough_tests": targets.remove(
                 reason = [

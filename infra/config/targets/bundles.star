@@ -4155,28 +4155,7 @@ targets.bundle(
     targets = [
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
-        "gpu_desktop_specific_gtests",
     ],
-)
-
-targets.bundle(
-    name = "gpu_desktop_specific_gtests",
-    targets = [
-        "tab_capture_end2end_tests",
-    ],
-    per_test_modifications = {
-        "tab_capture_end2end_tests": targets.mixin(
-            args = [
-                "--enable-gpu",
-                "--test-launcher-bot-mode",
-                "--test-launcher-jobs=1",
-                "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*",
-            ],
-            linux_args = [
-                "--no-xvfb",
-            ],
-        ),
-    },
 )
 
 targets.bundle(
@@ -4289,7 +4268,6 @@ targets.bundle(
     targets = [
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
-        "gpu_desktop_specific_gtests",
         "mappable_buffer_tests_suite",
         "gpu_vulkan_gtests",
     ],
@@ -4344,7 +4322,6 @@ targets.bundle(
     targets = [
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
-        "gpu_desktop_specific_gtests",
         "gpu_fyi_and_optional_non_linux_gtests",
         "gpu_fyi_mac_specific_gtests",
     ],
@@ -4456,7 +4433,6 @@ targets.bundle(
         "gpu_common_gtests_passthrough",
         "gpu_default_and_optional_win_media_foundation_specific_gtests",
         "gpu_default_and_optional_win_specific_gtests",
-        "gpu_desktop_specific_gtests",
         "gpu_fyi_and_optional_non_linux_gtests",
         "gpu_fyi_and_optional_win_specific_gtests",
     ],
@@ -4797,7 +4773,6 @@ targets.bundle(
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_default_and_optional_win_specific_gtests",
-        "gpu_desktop_specific_gtests",
     ],
 )
 
