@@ -612,8 +612,19 @@ void AnnotatedPageContentRequest::OnPageContextFetched(
   base::UmaHistogramEnumeration(
       "OptimizationGuide.PageContentExtraction.TriggerSource", trigger_source);
 
-  CHECK_EQ(stop_loading_timer_.has_value(), extraction_timer_.has_value());
+  // When using PageSettledMonitor, it's possible for the page to be considered
+  // "settled" (triggering extraction) before the browser considers it to have
+  // "stopped loading". If `DidStopLoading()` fires while an extraction is
+  // already in progress, `stop_loading_timer_` will be initialized, but
+  // `extraction_timer_` will remain null (since it is only initialized in
+  // StartExtraction if `stop_loading_timer_` already exists). In this race
+  // condition, we simply skip recording the AutomaticOnLoad latency metrics.
+  if (!use_page_settled_monitor_) {
+    CHECK_EQ(stop_loading_timer_.has_value(), extraction_timer_.has_value());
+  }
+
   if (trigger_source == TriggerSource::kOnLoad && extraction_timer_) {
+    CHECK(stop_loading_timer_);
     base::UmaHistogramTimes(
         "OptimizationGuide.PageContentExtraction.AutomaticOnLoad."
         "ExtractionLatency",
