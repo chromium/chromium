@@ -80,13 +80,16 @@ void SqlPersistentStoreInMemoryIndex::SetEntryDataHints(
 std::optional<MemoryEntryDataHints>
 SqlPersistentStoreInMemoryIndex::GetEntryDataHints(
     CacheEntryKeyHash hash) const {
-  const auto res_id_32 = impl32_.TryGetSingleResId(hash);
-  const auto res_id_64 =
-      impl64_ ? impl64_->TryGetSingleResId(hash) : std::nullopt;
-  if (res_id_32.has_value() && !res_id_64.has_value()) {
-    return impl32_.GetEntryDataHints(*res_id_32);
-  } else if (!res_id_32.has_value() && res_id_64.has_value()) {
-    return impl64_->GetEntryDataHints(*res_id_64);
+  const bool in_32 = impl32_.Contains(hash);
+  const bool in_64 = impl64_ && impl64_->Contains(hash);
+  if (in_32 && in_64) {
+    return std::nullopt;
+  }
+  if (in_32) {
+    return impl32_.GetEntryDataHints(hash);
+  }
+  if (in_64) {
+    return impl64_->GetEntryDataHints(hash);
   }
   return std::nullopt;
 }

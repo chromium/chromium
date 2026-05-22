@@ -337,6 +337,41 @@ TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsNoHint) {
   EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
 }
 
+TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollision32Unique64) {
+  SqlPersistentStoreInMemoryIndex index;
+  const SqlPersistentStoreResId kResId32_1(100);
+  const SqlPersistentStoreResId kResId32_2(101);
+  const SqlPersistentStoreResId kResId64(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+  const MemoryEntryDataHints kHints(1);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId32_1));
+  EXPECT_TRUE(index.Insert(kHash1, kResId32_2));
+  EXPECT_TRUE(index.Insert(kHash1, kResId64));
+  index.SetEntryDataHints(kHash1, kResId64, kHints);
+
+  // This should be nullopt because of the collision in the 32-bit map.
+  EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
+}
+
+TEST(SqlPersistentStoreInMemoryIndexTest, EntryDataHintsCollision64Unique32) {
+  SqlPersistentStoreInMemoryIndex index;
+  const SqlPersistentStoreResId kResId32(100);
+  const SqlPersistentStoreResId kResId64_1(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 1);
+  const SqlPersistentStoreResId kResId64_2(
+      static_cast<int64_t>(std::numeric_limits<uint32_t>::max()) + 2);
+  const MemoryEntryDataHints kHints(1);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId32));
+  EXPECT_TRUE(index.Insert(kHash1, kResId64_1));
+  EXPECT_TRUE(index.Insert(kHash1, kResId64_2));
+  index.SetEntryDataHints(kHash1, kResId32, kHints);
+
+  // This should be nullopt because of the collision in the 64-bit map.
+  EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
+}
+
 TEST(SqlPersistentStoreInMemoryIndexTest, GetResIdsWithHints) {
   SqlPersistentStoreInMemoryIndex index;
   const CacheEntryKeyHash kHashLarge(3);

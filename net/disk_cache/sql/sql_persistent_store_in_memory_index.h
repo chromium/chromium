@@ -126,11 +126,16 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
       }
     }
 
-    // Retrieves the in-memory hints for the entry identified by `res_id`, if
-    // available.
+    // Retrieves the in-memory hints for the entry identified by `hash`, if
+    // available and unique.
     std::optional<MemoryEntryDataHints> GetEntryDataHints(
-        ResIdType res_id) const {
-      if (const auto it = res_id_to_hints_map_.find(res_id);
+        CacheEntryKeyHash hash) const {
+      std::optional<ResIdType> res_id =
+          hash_res_id_set_.TryGetSingleSubKey(hash);
+      if (!res_id) {
+        return std::nullopt;
+      }
+      if (const auto it = res_id_to_hints_map_.find(*res_id);
           it != res_id_to_hints_map_.end()) {
         return it->second;
       }
