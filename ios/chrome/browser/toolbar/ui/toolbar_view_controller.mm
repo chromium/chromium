@@ -1426,6 +1426,9 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
   }
 
   BOOL visibilityChanged = hideToolbar != self.view.isHidden;
+
+  // While browsing (non-NTP), the toolbar should be reset to be fully visible
+  // if it is not already.
   BOOL needsToolbarReset =
       !_NTPVisible &&
       (!CGAffineTransformIsIdentity(_locationBarContainer.transform) ||
@@ -1436,10 +1439,36 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
     return;
   }
 
+  BOOL toolbarWillAppear = visibilityChanged && !hideToolbar;
+
+  if (toolbarWillAppear) {
+    __weak __typeof(self) weakSelf = self;
+    [UIView performWithoutAnimation:^{
+      __strong __typeof(self) strongSelf = weakSelf;
+      if (!strongSelf) {
+        return;
+      }
+      // When unhiding the toolbar (e.g. when navigating forward from the NTP
+      // when the toolbar is hidden), resolve the parent constraints instantly.
+      // This prevents a race condition with the toolbar height and prevents
+      // visual glitching where the toolbar appears initially out of place.
+      [strongSelf applyToolbarVisibility:hideToolbar
+                       needsToolbarReset:needsToolbarReset];
+      [strongSelf.view.superview layoutIfNeeded];
+    }];
+  } else {
+    [self applyToolbarVisibility:hideToolbar
+               needsToolbarReset:needsToolbarReset];
+  }
+}
+
+// Helper for `-updateToolbarVisibility`. Applies the computed toolbar
+// visibility state and resets location bar transforms and transparency if
+// needed.
+- (void)applyToolbarVisibility:(BOOL)hideToolbar
+             needsToolbarReset:(BOOL)needsToolbarReset {
   self.view.hidden = hideToolbar;
 
-  // Resets the position of the location bar and the alpha of the toolbar. While
-  // browsing (non-NTP), the toolbar should be fully visible.
   if (needsToolbarReset) {
     _locationBarContainer.transform = CGAffineTransformIdentity;
     _locationBarContainer.alpha = 1.0;
