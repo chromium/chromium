@@ -5,7 +5,7 @@
 #include "chrome/renderer/actor/journal.h"
 
 #include "base/rand_util.h"
-#include "chrome/common/actor/actor_logging.h"
+#include "components/actor/core/actor_logging.h"
 #include "components/actor/core/journal_details_builder.h"
 
 namespace actor {

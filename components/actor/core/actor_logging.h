@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_COMMON_ACTOR_ACTOR_LOGGING_H_
-#define CHROME_COMMON_ACTOR_ACTOR_LOGGING_H_
+#ifndef COMPONENTS_ACTOR_CORE_ACTOR_LOGGING_H_
+#define COMPONENTS_ACTOR_CORE_ACTOR_LOGGING_H_
 
 #include "base/logging.h"
 
@@ -12,4 +12,4 @@
 
 #define ACTOR_LOG() VLOG(1) << "[ActorTool]: "
 
-#endif  // CHROME_COMMON_ACTOR_ACTOR_LOGGING_H_
+#endif  // COMPONENTS_ACTOR_CORE_ACTOR_LOGGING_H_

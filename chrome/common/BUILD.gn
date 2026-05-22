@@ -125,7 +125,6 @@ static_library("common_lib") {
     "actor/action_result.cc",
     "actor/action_result.h",
     "actor/actor_constants.h",
-    "actor/actor_logging.h",
     "actor/page_stability_metrics_common.cc",
     "actor/page_stability_metrics_common.h",
     "chrome_content_client.cc",

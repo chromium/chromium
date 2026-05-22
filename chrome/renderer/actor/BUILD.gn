@@ -49,6 +49,7 @@ source_set("actor") {
   deps = [
     "//chrome/common",
     "//components/actor/core:journal",
+    "//components/actor/core:logging",
     "//components/page_content_annotations/content/renderer",
     "//components/page_content_annotations/core",
     "//third_party/blink/public:blink",
