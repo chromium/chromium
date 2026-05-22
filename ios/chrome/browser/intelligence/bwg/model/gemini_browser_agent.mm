@@ -799,10 +799,18 @@ void GeminiBrowserAgent::OnProcessingStatusChanged(
       ios::provider::GetCurrentMode() != ios::provider::GeminiViewMode::kLive) {
     return;
   }
+
+  processing_status_ = processing_status;
   switch (processing_status) {
-    case ios::provider::GeminiClientMode::kListening:
+    case ios::provider::GeminiClientMode::kTranscribing:
       RequestPageContextGeneration();
       break;
+    case ios::provider::GeminiClientMode::kResponding: {
+      // Update partial page context (i.e., live sharing context label) when
+      // transitioning out of the transcribing (i.e., speaking) state.
+      UpdateFloatyWithPartialPageContext();
+      break;
+    }
     case ios::provider::GeminiClientMode::kDormant:
       is_showing_live_session_dormant_snackbar_ = true;
       ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
@@ -822,6 +830,11 @@ void GeminiBrowserAgent::CollapseFloatyIfInvoked() {
 
   ios::provider::UpdateGeminiViewState(
       ios::provider::GeminiViewState::kCollapsed, /*animated=*/true);
+}
+
+void GeminiBrowserAgent::OnGeminiLiveUserDidBargeIn() {
+  processing_status_ = ios::provider::GeminiClientMode::kTranscribing;
+  RequestPageContextGeneration();
 }
 
 void GeminiBrowserAgent::SetLastShownViewState(
@@ -922,6 +935,7 @@ void GeminiBrowserAgent::DismissFloaty() {
   }
   active_hiding_sources_.clear();
   is_hidden_by_keyboard_ = false;
+  processing_status_ = ios::provider::GeminiClientMode::kUnknown;
   elapsed_minimized_floaty_time_ = base::TimeTicks();
   // TODO(crbug.com/484045717): Refactor to merge these two provider calls.
   if (IsGeminiCopresenceEnabled()) {
@@ -1124,12 +1138,19 @@ void GeminiBrowserAgent::OnScrollEvent() {
 void GeminiBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
   UpdateGeminiAvailability();
 
+  // Update page context for Gemini Live only when the user is not speaking, as
+  // when they start wording their query, the page context should be locked in.
+  if (IsGeminiLiveEnabled() &&
+      ios::provider::GetCurrentMode() == ios::provider::GeminiViewMode::kLive &&
+      processing_status_ == ios::provider::GeminiClientMode::kTranscribing) {
+    return;
+  }
+
   GeminiTabHelper* tab_helper = GetActiveTabHelper(web_state);
   if (!tab_helper || (!is_floaty_invoked_ && IsGeminiCopresenceEnabled())) {
     return;
   }
 
-  // This update is from the active tab. Propagate it to the provider.
   GeminiPageContext* gemini_page_context = tab_helper->GetPartialPageContext();
   PropagatePageContextToProvider(gemini_page_context);
 }
@@ -1246,6 +1267,17 @@ void GeminiBrowserAgent::PropagatePageContextToProvider(
   }
   ApplyUserPrefsToPageContext(gemini_page_context);
   ios::provider::UpdatePageContext(gemini_page_context);
+}
+
+void GeminiBrowserAgent::UpdateFloatyWithPartialPageContext() {
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
+  if (tab_helper) {
+    GeminiPageContext* gemini_page_context =
+        tab_helper->GetPartialPageContext();
+    PropagatePageContextToProvider(gemini_page_context);
+  }
 }
 
 GeminiConfiguration* GeminiBrowserAgent::CreateGeminiConfiguration(
@@ -1392,6 +1424,12 @@ void GeminiBrowserAgent::SetSessionCommandHandlers() {
 }
 
 void GeminiBrowserAgent::OnPageContentPrefChanged() {
+  if (IsGeminiLiveEnabled() &&
+      ios::provider::GetCurrentMode() == ios::provider::GeminiViewMode::kLive &&
+      processing_status_ == ios::provider::GeminiClientMode::kTranscribing) {
+    return;
+  }
+
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);

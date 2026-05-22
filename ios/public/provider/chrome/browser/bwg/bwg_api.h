@@ -134,6 +134,9 @@ enum class GeminiClientMode {
   kResponding,
   // The Gemini client is loading the previous conversation.
   kPreviousConversationLoading,
+  // The Gemini client is transcribing user speech (e.g. after barge-in). This
+  // is also used as a proxy for speaking.
+  kTranscribing,
 };
 
 // Enum representing the Gemini view mode.

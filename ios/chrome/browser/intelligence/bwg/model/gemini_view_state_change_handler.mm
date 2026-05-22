@@ -59,4 +59,11 @@
   _target->OnLiveButtonTapped();
 }
 
+- (void)geminiLiveUserDidBargeIn {
+  if (!_target) {
+    return;
+  }
+  _target->OnGeminiLiveUserDidBargeIn();
+}
+
 @end

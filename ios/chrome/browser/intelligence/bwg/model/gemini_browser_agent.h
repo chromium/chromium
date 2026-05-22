@@ -137,6 +137,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   void SetLastShownViewState(
       ios::provider::GeminiViewState view_state) override;
   void OnLiveButtonTapped() override;
+  void OnGeminiLiveUserDidBargeIn() override;
 
   // Called when the scene activation level changes.
   void OnSceneActivationLevelChanged(SceneActivationLevel level);
@@ -158,6 +159,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Propagates the page context to the provider if the floaty is invoked.
   void PropagatePageContextToProvider(GeminiPageContext* gemini_page_context);
+
+  // Updates the floaty with partial page context synchronously if the tab
+  // helper is available.
+  void UpdateFloatyWithPartialPageContext();
 
   // Starts the Gemini session (prepares context and shows overlay).
   void PresentFloaty(UIViewController* base_view_controller,
@@ -393,6 +398,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Whether the floaty is hidden by the keyboard.
   bool is_hidden_by_keyboard_ = false;
+
+  // The current processing status of the Gemini client.
+  ios::provider::GeminiClientMode processing_status_ =
+      ios::provider::GeminiClientMode::kUnknown;
 
   // The last known availability of Gemini for the active web state.
   bool last_known_gemini_availability_ = false;

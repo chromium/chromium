@@ -31,6 +31,9 @@ class GeminiViewStateChangeHandlerTarget {
 
   // Called when the user taps the Live button.
   virtual void OnLiveButtonTapped() = 0;
+
+  // Called when the user barges in during Gemini Live session.
+  virtual void OnGeminiLiveUserDidBargeIn() = 0;
 };
 
 // Handler for the Gemini view state changes.
