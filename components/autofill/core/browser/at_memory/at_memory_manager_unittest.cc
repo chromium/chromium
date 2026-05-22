@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -13,14 +14,26 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/types/expected.h"
 #include "components/accessibility_annotator/core/mock_accessibility_query_service.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
+#include "components/autofill/core/browser/at_memory/at_memory_utils.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
+#include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
+#include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/test_autofill_driver.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
+#include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
+#include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
+#include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,14 +42,57 @@ namespace autofill {
 namespace {
 
 using ::testing::_;
+using ::testing::Eq;
 using ::testing::NiceMock;
 using ::testing::SaveArg;
 
-class AtMemoryManagerTest
-    : public testing::Test,
-      public WithTestAutofillClientDriverManager<TestAutofillClient,
-                                                 TestAutofillDriver,
-                                                 TestBrowserAutofillManager> {
+class MockAutofillClient : public TestAutofillClient {
+ public:
+  MockAutofillClient() = default;
+  ~MockAutofillClient() override = default;
+
+  MOCK_METHOD(void,
+              ShowAutofillAiFetchFromWalletFailureNotification,
+              (),
+              (override));
+};
+
+class MockBrowserAutofillManager : public TestBrowserAutofillManager {
+ public:
+  using TestBrowserAutofillManager::TestBrowserAutofillManager;
+  ~MockBrowserAutofillManager() override = default;
+
+  MOCK_METHOD(void,
+              FillOrPreviewField,
+              (mojom::ActionPersistence action_persistence,
+               mojom::FieldActionType action_type,
+               const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& value,
+               FillingProduct filling_product,
+               std::optional<FieldType> field_type_used),
+              (override));
+};
+
+class MockAutofillAiAccessManager : public AutofillAiAccessManager {
+ public:
+  explicit MockAutofillAiAccessManager(BrowserAutofillManager* manager)
+      : AutofillAiAccessManager(manager) {}
+  ~MockAutofillAiAccessManager() override = default;
+
+  MOCK_METHOD(bool,
+              FetchEntityInstance,
+              (EntityInstance entity,
+               bool will_fill_sensitive_info,
+               OnEntityInstanceFetchedCallback callback),
+              (override));
+};
+
+class AtMemoryManagerTest : public testing::Test,
+                            public WithTestAutofillClientDriverManager<
+                                NiceMock<MockAutofillClient>,
+                                TestAutofillDriver,
+                                NiceMock<MockBrowserAutofillManager>> {
  public:
   void SetUp() override {
     InitAutofillClient();
@@ -45,6 +101,17 @@ class AtMemoryManagerTest
     mock_query_service_ptr_ = mock_query_service.get();
     autofill_client().set_accessibility_query_service(
         std::move(mock_query_service));
+
+    autofill_client().set_entity_data_manager(
+        std::make_unique<EntityDataManager>(
+            autofill_client().GetPrefs(),
+            autofill_client().GetIdentityManager(),
+            autofill_client().GetSyncService(),
+            webdata_helper_.autofill_webdata_service(),
+            /*history_service=*/nullptr,
+            /*strike_database=*/nullptr,
+            /*variation_country_code=*/GeoIpCountryCode("US")));
+
     CreateAutofillDriver();
   }
 
@@ -60,9 +127,18 @@ class AtMemoryManagerTest
     return *mock_query_service_ptr_;
   }
 
+  AutofillWebDataServiceTestHelper& webdata_helper() { return webdata_helper_; }
+
+  void AddOrUpdateEntityInstance(const EntityInstance& entity) {
+    autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(entity);
+    webdata_helper().WaitUntilIdle();
+  }
+
   base::test::TaskEnvironment task_environment_;
   raw_ptr<accessibility_annotator::MockAccessibilityQueryService>
       mock_query_service_ptr_ = nullptr;
+  AutofillWebDataServiceTestHelper webdata_helper_{
+      std::make_unique<EntityTable>()};
 };
 
 // Tests that attempting to start a subsequent incremental (type-ahead) search
@@ -101,6 +177,153 @@ TEST_F(AtMemoryManagerTest, IncrementalSearchBlockedByOngoingFullSearch) {
               Run(_, AutofillSuggestionTriggerSource::kAtMemory));
 
   full_search_callback.Run(std::move(full_results));
+}
+
+// Tests that when filling an attribute (e.g. Passport Number), the manager
+// fetches the unmasked entity instance from AutofillAiAccessManager and fills
+// the unmasked attribute value correctly.
+TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_AttributeSuccess) {
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  AddOrUpdateEntityInstance(passport);
+
+  // Configure the mock access manager.
+  auto mock_ai_access_manager =
+      std::make_unique<NiceMock<MockAutofillAiAccessManager>>(
+          &autofill_manager());
+  MockAutofillAiAccessManager* mock_ai_access_manager_ptr =
+      mock_ai_access_manager.get();
+  test_api(autofill_manager())
+      .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
+
+  FormData form;
+  FormFieldData field;
+  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
+
+  Suggestion::AtMemoryPayload at_memory_payload(
+      u"some text", accessibility_annotator::EntryType::kPassportNumber);
+  at_memory_payload.identifier = passport.guid();
+  suggestion.payload = std::move(at_memory_payload);
+
+  base::optional_ref<const AttributeInstance> passport_attribute =
+      passport.attribute(AttributeType(AttributeTypeName::kPassportNumber));
+  ASSERT_TRUE(passport_attribute.has_value());
+
+  EXPECT_CALL(*mock_ai_access_manager_ptr,
+              FetchEntityInstance(Eq(passport), true, _))
+      .WillOnce([&](EntityInstance entity, bool will_fill,
+                    AutofillAiAccessManager::OnEntityInstanceFetchedCallback
+                        callback) {
+        std::move(callback).Run(entity, /*reauth_attempted=*/false);
+        return true;
+      });
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         passport_attribute->GetCompleteRawInfo(),
+                         FillingProduct::kAtMemory, _));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
+                                      field, suggestion);
+}
+
+// Tests that when filling a full entity (e.g. Passport Full), the manager
+// fetches the unmasked entity instance from AutofillAiAccessManager and fills
+// the primary entity value correctly.
+TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_EntitySuccess) {
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  AddOrUpdateEntityInstance(passport);
+
+  auto mock_ai_access_manager =
+      std::make_unique<NiceMock<MockAutofillAiAccessManager>>(
+          &autofill_manager());
+  MockAutofillAiAccessManager* mock_ai_access_manager_ptr =
+      mock_ai_access_manager.get();
+  test_api(autofill_manager())
+      .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
+
+  FormData form;
+  FormFieldData field;
+  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
+
+  Suggestion::AtMemoryPayload at_memory_payload(
+      u"some text", accessibility_annotator::EntryType::kPassportFull);
+  at_memory_payload.identifier = passport.guid();
+  suggestion.payload = std::move(at_memory_payload);
+
+  EXPECT_CALL(*mock_ai_access_manager_ptr,
+              FetchEntityInstance(Eq(passport), true, _))
+      .WillOnce([&](EntityInstance entity, bool will_fill,
+                    AutofillAiAccessManager::OnEntityInstanceFetchedCallback
+                        callback) {
+        std::move(callback).Run(entity, /*reauth_attempted=*/false);
+        return true;
+      });
+
+  std::optional<AttributeType> expected_primary_attribute_type =
+      GetPrimaryAttributeType(passport);
+  ASSERT_TRUE(expected_primary_attribute_type.has_value());
+  base::optional_ref<const AttributeInstance> expected_primary_attribute =
+      passport.attribute(*expected_primary_attribute_type);
+  ASSERT_TRUE(expected_primary_attribute.has_value());
+  std::u16string expected_primary_value =
+      expected_primary_attribute->GetCompleteInfo(
+          autofill_client().GetAppLocale());
+  ASSERT_FALSE(expected_primary_value.empty());
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceAtMemoryTrigger, _, _,
+                         expected_primary_value, FillingProduct::kAtMemory, _));
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
+                                      field, suggestion);
+}
+
+// Tests that when fetching the unmasked entity instance fails, the manager
+// triggers the fetch failure notification and does not fill any value.
+TEST_F(AtMemoryManagerTest, FillSensitiveAutofillAiData_FetchFailed) {
+  EntityInstance passport = test::GetPassportEntityInstanceWithRandomGuid();
+  AddOrUpdateEntityInstance(passport);
+
+  auto mock_ai_access_manager =
+      std::make_unique<NiceMock<MockAutofillAiAccessManager>>(
+          &autofill_manager());
+  MockAutofillAiAccessManager* mock_ai_access_manager_ptr =
+      mock_ai_access_manager.get();
+  test_api(autofill_manager())
+      .set_autofill_ai_access_manager(std::move(mock_ai_access_manager));
+
+  FormData form;
+  FormFieldData field;
+  Suggestion suggestion(u"some result", SuggestionType::kAtMemorySearchResult);
+
+  Suggestion::AtMemoryPayload at_memory_payload(
+      u"some text", accessibility_annotator::EntryType::kPassportNumber);
+  at_memory_payload.identifier = passport.guid();
+  suggestion.payload = std::move(at_memory_payload);
+
+  EXPECT_CALL(*mock_ai_access_manager_ptr,
+              FetchEntityInstance(Eq(passport), true, _))
+      .WillOnce([&](EntityInstance entity, bool will_fill,
+                    AutofillAiAccessManager::OnEntityInstanceFetchedCallback
+                        callback) {
+        std::move(callback).Run(
+            base::unexpected(
+                AutofillAiAccessManager::FailureReason::kFetchFailed),
+            /*reauth_attempted=*/false);
+        return true;
+      });
+
+  EXPECT_CALL(autofill_client(),
+              ShowAutofillAiFetchFromWalletFailureNotification());
+  EXPECT_CALL(autofill_manager(), FillOrPreviewField(_, _, _, _, _, _, _))
+      .Times(0);
+
+  manager().FillOrPreviewSearchResult(mojom::ActionPersistence::kFill, form,
+                                      field, suggestion);
 }
 
 }  // namespace

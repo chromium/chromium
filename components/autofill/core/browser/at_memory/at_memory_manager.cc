@@ -24,9 +24,16 @@
 #include "components/accessibility_annotator/core/annotation_reducer/memory_search_result.h"
 #include "components/autofill/core/browser/at_memory/at_memory_data_type.h"
 #include "components/autofill/core/browser/at_memory/at_memory_funnel_metrics.h"
+#include "components/autofill/core/browser/at_memory/at_memory_utils.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/from_accessibility_annotator.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
+#include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
+#include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -83,21 +90,41 @@ std::u16string GetSourceDescriptionText(
 Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     accessibility_annotator::EntryType type,
     const std::variant<std::monostate, std::string, int64_t>& identifier) {
-  if (type == accessibility_annotator::EntryType::kIban) {
-    if (const std::string* guid_str = std::get_if<std::string>(&identifier)) {
-      return Iban::Guid(*guid_str);
+  if (std::holds_alternative<std::monostate>(identifier)) {
+    return std::monostate();
+  }
+
+  switch (type) {
+    case accessibility_annotator::EntryType::kIban: {
+      if (const std::string* guid = std::get_if<std::string>(&identifier)) {
+        return Iban::Guid(*guid);
+      }
+      if (const int64_t* instrument_id = std::get_if<int64_t>(&identifier)) {
+        return Iban::InstrumentId(*instrument_id);
+      }
+      NOTREACHED();
     }
-    CHECK(std::holds_alternative<int64_t>(identifier));
-    return Iban::InstrumentId(*std::get_if<int64_t>(&identifier));
+    case accessibility_annotator::EntryType::kCreditCardNumber:
+    case accessibility_annotator::EntryType::kCreditCardSecurityCode: {
+      CHECK(std::holds_alternative<std::string>(identifier));
+      return *std::get_if<std::string>(&identifier);
+    }
+    case accessibility_annotator::EntryType::kPassportFull:
+    case accessibility_annotator::EntryType::kDriversLicenseFull:
+    case accessibility_annotator::EntryType::kNationalIdCardFull:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberFull:
+    case accessibility_annotator::EntryType::kRedressNumberFull:
+    case accessibility_annotator::EntryType::kPassportNumber:
+    case accessibility_annotator::EntryType::kDriversLicenseNumber:
+    case accessibility_annotator::EntryType::kNationalIdCardNumber:
+    case accessibility_annotator::EntryType::kKnownTravelerNumberNumber:
+    case accessibility_annotator::EntryType::kRedressNumberNumber: {
+      CHECK(std::holds_alternative<std::string>(identifier));
+      return EntityInstance::EntityId(*std::get_if<std::string>(&identifier));
+    }
+    default:
+      return std::monostate();
   }
-  if (type == accessibility_annotator::EntryType::kCreditCardNumber ||
-      type == accessibility_annotator::EntryType::kCreditCardSecurityCode) {
-    CHECK(std::holds_alternative<std::string>(identifier));
-    return *std::get_if<std::string>(&identifier);
-  }
-  // TODO(crbug.com/497794390): Implement identifier support for other entry
-  // types.
-  return std::monostate();
 }
 
 Suggestion::Icon GetIconForEntryType(accessibility_annotator::EntryType type) {
@@ -323,6 +350,38 @@ Suggestion CreateNoConnectionSuggestion() {
   return suggestion;
 }
 
+std::optional<std::u16string> GetAttributeFillValue(
+    const EntityInstance& entity,
+    const AttributeType& attribute_type,
+    const FormData& form,
+    const FormFieldData& field,
+    BrowserAutofillManager& manager) {
+  base::optional_ref<const AttributeInstance> attribute =
+      entity.attribute(attribute_type);
+  if (!attribute) {
+    return std::nullopt;
+  }
+  const FormStructure* form_structure =
+      manager.FindCachedFormById(form.global_id());
+  const AutofillField* autofill_field =
+      form_structure ? form_structure->GetFieldById(field.global_id())
+                     : nullptr;
+  const std::string app_locale = manager.client().GetAppLocale();
+  // Using `GetFillingValueAndTypeForEntity` is preferred when the field is
+  // known because it handles field-specific requirements such as state/country
+  // normalization, dates, and truncation for length limits.
+  if (autofill_field) {
+    std::vector<AutofillFieldWithAttributeType> fields_and_types = {
+        AutofillFieldWithAttributeType(*autofill_field, attribute_type)};
+    FillingValueAndType value_and_type = GetFillingValueAndTypeForEntity(
+        entity, fields_and_types, *autofill_field,
+        mojom::ActionPersistence::kFill, app_locale,
+        manager.client().GetAddressNormalizer());
+    return value_and_type.value;
+  }
+  return attribute->GetCompleteInfo(app_locale);
+}
+
 }  // namespace
 
 AtMemoryManager::AtMemoryManager(BrowserAutofillManager* manager)
@@ -402,8 +461,30 @@ void AtMemoryManager::FillOrPreviewSearchResult(
           FillCreditCard(payload.identifier, form, field, suggestion);
           break;
         }
+        case accessibility_annotator::EntryType::kPassportFull:
+        case accessibility_annotator::EntryType::kDriversLicenseFull:
+        case accessibility_annotator::EntryType::kNationalIdCardFull:
+        case accessibility_annotator::EntryType::kKnownTravelerNumberFull:
+        case accessibility_annotator::EntryType::kRedressNumberFull:
+        case accessibility_annotator::EntryType::kPassportNumber:
+        case accessibility_annotator::EntryType::kDriversLicenseNumber:
+        case accessibility_annotator::EntryType::kNationalIdCardNumber:
+        case accessibility_annotator::EntryType::kKnownTravelerNumberNumber:
+        case accessibility_annotator::EntryType::kRedressNumberNumber: {
+          CHECK(std::holds_alternative<EntityInstance::EntityId>(
+              payload.identifier));
+          std::optional<AtMemoryDataType> data_type =
+              ToAtMemoryDataType(payload.entry_type);
+          CHECK(data_type &&
+                (std::holds_alternative<AttributeType>(*data_type) ||
+                 std::holds_alternative<EntityType>(*data_type)));
+          FillSensitiveAutofillAiData(
+              std::get<EntityInstance::EntityId>(payload.identifier), form,
+              field, suggestion, *data_type);
+          break;
+        }
 
-        default:
+        default: {
           if (at_memory_funnel_metrics_) {
             at_memory_funnel_metrics_->OnSuggestionAccepted();
           }
@@ -413,6 +494,7 @@ void AtMemoryManager::FillOrPreviewSearchResult(
               payload.value, FillingProduct::kAtMemory,
               /*field_type_used=*/std::nullopt);
           break;
+        }
       }
       break;
   }
@@ -620,6 +702,76 @@ void AtMemoryManager::FillCreditCard(
                 /*field_type_used=*/std::nullopt);
           },
           fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
+}
+
+void AtMemoryManager::FillSensitiveAutofillAiData(
+    const EntityInstance::EntityId& entity_id,
+    const FormData& form,
+    const FormFieldData& field,
+    const Suggestion& suggestion,
+    const AtMemoryDataType& data_type) {
+  EntityDataManager* entity_data_manager =
+      owner_->client().GetEntityDataManager();
+  CHECK(entity_data_manager);
+
+  base::optional_ref<const EntityInstance> entity =
+      entity_data_manager->GetEntityInstance(entity_id);
+  if (!entity) {
+    return;
+  }
+
+  owner_->GetAutofillAiAccessManager().FetchEntityInstance(
+      *entity, /*will_fill_sensitive_info=*/true,
+      base::BindOnce(&AtMemoryManager::OnAutofillAiFetched,
+                     fill_weak_ptr_factory_.GetWeakPtr(), form, field,
+                     suggestion, data_type));
+}
+
+void AtMemoryManager::OnAutofillAiFetched(
+    const FormData& form,
+    const FormFieldData& field,
+    const Suggestion& suggestion,
+    const AtMemoryDataType& data_type,
+    base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
+        result,
+    bool reauth_attempted) {
+  if (!result.has_value()) {
+    if (result.error() ==
+        AutofillAiAccessManager::FailureReason::kFetchFailed) {
+      owner_->client().ShowAutofillAiFetchFromWalletFailureNotification();
+    }
+    return;
+  }
+
+  if (at_memory_funnel_metrics_) {
+    at_memory_funnel_metrics_->OnSuggestionAccepted();
+  }
+
+  const EntityInstance& fetched_entity = result.value();
+
+  std::optional<AttributeType> target_attribute_type;
+  if (std::holds_alternative<AttributeType>(data_type)) {
+    target_attribute_type = std::get<AttributeType>(data_type);
+  } else {
+    CHECK(std::holds_alternative<EntityType>(data_type));
+    target_attribute_type = GetPrimaryAttributeType(fetched_entity);
+  }
+
+  if (!target_attribute_type) {
+    return;
+  }
+
+  std::optional<std::u16string> attribute_fill_value = GetAttributeFillValue(
+      fetched_entity, *target_attribute_type, form, field, *owner_);
+  if (!attribute_fill_value) {
+    return;
+  }
+
+  owner_->FillOrPreviewField(mojom::ActionPersistence::kFill,
+                             mojom::FieldActionType::kReplaceAtMemoryTrigger,
+                             form, field, std::move(*attribute_fill_value),
+                             FillingProduct::kAtMemory,
+                             /*field_type_used=*/std::nullopt);
 }
 
 }  // namespace autofill
