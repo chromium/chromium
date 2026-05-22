@@ -63,7 +63,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "arm64",
-            "os": "Mac-15",
+            "os": "Mac-15|Mac-26",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -99,7 +99,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Mac-15",
+            "os": "Mac-15|Mac-26",
             "pool": "chrome.tests"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com"
