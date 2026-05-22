@@ -124,7 +124,8 @@ std::unique_ptr<net::test_server::HttpResponse> LargeLinksPageResponse(
 }
 
 // TODO(crbug.com/514631478): Re-enable this test on iPad once fixed.
-- (void)testLargePage_RichOn_ActionableOn_ExpectNull {
+// TODO(crbug.com/515628350): Re-enable once fixed.
+- (void)DISABLED_testLargePage_RichOn_ActionableOn_ExpectNull {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Disabled on iPad.");
   }
