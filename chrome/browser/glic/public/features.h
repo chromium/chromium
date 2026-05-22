@@ -21,6 +21,8 @@ BASE_DECLARE_FEATURE(kGlicClearTurnIdOnPanelWillOpen);
 BASE_DECLARE_FEATURE(kGlicChromeStatusIcon);
 extern const base::FeatureParam<int> kGlicChromeStatusIconSizePx;
 extern const base::FeatureParam<bool> kGlicChromeStatusIconUseAltIcon;
+extern const base::FeatureParam<bool> kGlicChromeStatusIconLogOnly;
+extern const base::FeatureParam<std::string> kGlicChromeStatusIconOtherAppID;
 
 BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 

@@ -37,6 +37,12 @@ source_set("impl") {
       "glic_status_icon.h",
     ]
   }
+  if (is_mac) {
+    sources += [
+      "os_icon_provider_mac.h",
+      "os_icon_provider_mac.mm",
+    ]
+  }
   if (is_win) {
     sources += [
       "glic_status_icon_win.cc",
@@ -96,6 +102,9 @@ source_set("unit_tests") {
       "glic_launcher_configuration_unittest.cc",
       "glic_status_icon_unittest.cc",
     ]
+  }
+  if (is_mac) {
+    sources += [ "os_icon_provider_mac_unittest.mm" ]
   }
   deps = []
   if (!is_android) {

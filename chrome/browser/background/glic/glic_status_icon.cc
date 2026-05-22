@@ -44,6 +44,8 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "chrome/browser/background/glic/os_icon_provider_mac.h"
+#include "chrome/browser/browser_process.h"
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #endif                                                // BUILDFLAG(IS_MAC)
 
@@ -89,7 +91,14 @@ std::unique_ptr<GlicStatusIcon> GlicStatusIcon::Create(
 
 GlicStatusIcon::GlicStatusIcon(GlicController* controller,
                                StatusTray* status_tray)
-    : controller_(controller), status_tray_(status_tray) {}
+    : controller_(controller),
+      status_tray_(status_tray)
+#if BUILDFLAG(IS_MAC)
+      ,
+      os_icon_provider_mac_(*g_browser_process->local_state(), *this)
+#endif
+{
+}
 
 GlicStatusIcon::~GlicStatusIcon() {
   context_menu_ = nullptr;
@@ -243,21 +252,12 @@ gfx::ImageSkia GlicStatusIcon::GetIcon() const {
   // Win need theme aware icons. (See GetIcon() implementations of
   // GlicStatusIconWin and GlicStatusIconChromeOS)
 #if BUILDFLAG(IS_MAC)
-  if (base::FeatureList::IsEnabled(features::kGlicChromeStatusIcon)) {
-    if (features::kGlicChromeStatusIconUseAltIcon.Get()) {
-      return gfx::CreateVectorIcon(glic::GlicVectorIconManager::GetVectorIcon(
-                                       IDR_GLIC_MAC_ALT_STATUS_ICON),
-                                   features::kGlicChromeStatusIconSizePx.Get(),
-                                   SK_ColorWHITE);
-    }
-    return gfx::CreateVectorIcon(omnibox::kProductChromeRefreshIcon,
-                                 features::kGlicChromeStatusIconSizePx.Get(),
-                                 SK_ColorWHITE);
-  }
-#endif
+  return os_icon_provider_mac_.GetIcon();
+#else
   const auto& icon =
       glic::GlicVectorIconManager::GetVectorIcon(IDR_GLIC_STATUS_ICON);
   return gfx::CreateVectorIcon(icon, SK_ColorWHITE);
+#endif
 }
 
 std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
@@ -281,6 +281,12 @@ std::unique_ptr<StatusIconMenuModel> GlicStatusIcon::CreateStatusIconMenu() {
                 l10n_util::GetStringUTF16(IDS_GLIC_STATUS_ICON_MENU_EXIT));
 #endif
   return menu;
+}
+
+void GlicStatusIcon::SetIcon(const gfx::ImageSkia& icon) {
+  if (status_icon_) {
+    status_icon_->SetImage(icon);
+  }
 }
 
 }  // namespace glic
