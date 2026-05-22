@@ -847,6 +847,7 @@ void LanguageModel::ExecuteMeasureInputUsage(
     ScriptPromiseResolver<IDLDouble>* resolver,
     AbortSignal* signal,
     Vector<mojom::blink::AILanguageModelPromptPtr> prompts) {
+  auto reject_fn = RejectOnDestruction(resolver, signal);
   language_model_remote_->MeasureInputUsage(
       std::move(prompts),
       BindOnce(
@@ -869,7 +870,8 @@ void LanguageModel::ExecuteMeasureInputUsage(
             }
             resolver->Resolve(static_cast<double>(usage.value()));
           },
-          WrapPersistent(resolver), WrapPersistent(signal)));
+          WrapPersistent(resolver), WrapPersistent(signal))
+          .Then(std::move(reject_fn)));
 }
 
 bool LanguageModel::ValidateInput(ScriptState* script_state,

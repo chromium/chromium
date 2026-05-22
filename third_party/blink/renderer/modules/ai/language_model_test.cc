@@ -59,7 +59,11 @@ class MockAILanguageModel : public mojom::blink::AILanguageModel {
   }
   void MeasureInputUsage(Vector<mojom::blink::AILanguageModelPromptPtr> prompt,
                          MeasureInputUsageCallback callback) override {
-    std::move(callback).Run(0);
+    if (reset_client_on_call_) {
+      receiver_.reset();
+    } else {
+      std::move(callback).Run(0);
+    }
   }
   void Destroy() override {}
   void Fork(
@@ -321,6 +325,26 @@ TEST_F(LanguageModelTest, MojoDisconnectClone) {
   // Check that the promise will be rejected
   EXPECT_EQ(GetRejectedExceptionCode(script_state, promise),
             DOMExceptionCode::kInvalidStateError);
+}
+
+TEST_F(LanguageModelTest, MojoDisconnectMeasureContextUsage) {
+  V8TestingScope scope;
+  LanguageModel* language_model =
+      CreateLanguageModel(scope.GetExecutionContext());
+  mock_remote_->reset_client_on_call_ = true;
+  V8LanguageModelPrompt* input = CreateStringPrompt("foobar");
+  EXPECT_TRUE(mock_remote_->receiver_.is_bound());
+
+  ScriptState* script_state = scope.GetScriptState();
+  DummyExceptionStateForTesting exception_state;
+  auto promise = language_model->measureContextUsage(
+      script_state, input, LanguageModelPromptOptions::Create(),
+      exception_state);
+
+  // Check that the promise will be rejected
+  ScriptPromiseTester tester(script_state, promise);
+  tester.WaitUntilSettled();
+  EXPECT_TRUE(tester.IsRejected());
 }
 
 TEST_F(LanguageModelTest, PromptStreamingWithFaultyImage) {
