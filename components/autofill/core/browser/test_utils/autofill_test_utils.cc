@@ -606,8 +606,7 @@ CreditCard GetRandomCreditCard(CreditCard::RecordType record_type) {
       base::StringPrintf("%d", now.year + base::RandIntInclusive(1, 4)).c_str(),
       "1");
   if (record_type == CreditCard::RecordType::kMaskedServerCard) {
-    credit_card.SetNetworkForMaskedCard(
-        kNetworks[base::RandIntInclusive(0, kNetworks.size() - 1)]);
+    credit_card.SetNetworkForMaskedCard(base::RandomChoice(kNetworks));
   }
 
   return credit_card;
