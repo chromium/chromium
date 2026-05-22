@@ -8,6 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/render_frame_host.h"
+#include "net/base/schemeful_site.h"
 
 namespace content::webid {
 
@@ -19,11 +20,20 @@ namespace content::webid {
 // RenderFrameHost which has to outlive it.
 class EmailVerifier : public base::SupportsUserData::Data {
  public:
-  // The resulting `verification` is a signed SD-JWT+KB token as
-  // defined here:
-  // https://github.com/dickhardt/email-verification-protocol#6-token-verification
+  // The result of the verification.
+  struct Result {
+    // A signed SD-JWT+KB token as defined in the Email Verification Protocol:
+    // https://github.com/dickhardt/email-verification-protocol#6-token-verification
+    std::string verification;
+
+    // The site of the issuer that verified the email.
+    net::SchemefulSite issuer_site;
+
+    bool operator==(const Result& other) const = default;
+  };
+
   using OnEmailVerifiedCallback =
-      base::OnceCallback<void(std::optional<std::string> verification)>;
+      base::OnceCallback<void(std::optional<Result> result)>;
 
   ~EmailVerifier() override = default;
 

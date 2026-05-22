@@ -100,13 +100,14 @@ class CONTENT_EXPORT EmailVerificationRequest {
       EmailVerifierNetworkRequestManager::WellKnown well_known);
   void OnTokenRequestComplete(
       const std::string& nonce,
+      const url::Origin& issuer,
       std::unique_ptr<crypto::keypair::PrivateKey> private_key,
       EmailVerifier::OnEmailVerifiedCallback callback,
       FetchStatus token_status,
       EmailVerifierNetworkRequestManager::TokenResult&& result);
 
   void CompleteRequest(EmailVerifier::OnEmailVerifiedCallback callback,
-                       std::optional<std::string> response,
+                       std::optional<EmailVerifier::Result> response,
                        EvpRequestStatus status);
 
   std::unique_ptr<DnsRequest> dns_request_;

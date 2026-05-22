@@ -45,7 +45,7 @@ void EmailVerifierImpl::Verify(
 void EmailVerifierImpl::OnRequestComplete(
     std::unique_ptr<EmailVerificationRequest> request,
     EmailVerifier::OnEmailVerifiedCallback callback,
-    std::optional<std::string> result) {
+    std::optional<EmailVerifier::Result> result) {
   std::move(callback).Run(std::move(result));
 }
 

@@ -15,8 +15,10 @@
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using ::testing::_;
 using ::testing::NiceMock;
@@ -68,12 +70,15 @@ TEST_F(EmailVerifierImplTest, TestSingleRequest) {
   EXPECT_CALL(*request_ptr, Send("test@example.com", "nonce", _))
       .WillOnce(testing::WithArgs<2>(
           [&](EmailVerifier::OnEmailVerifiedCallback callback) {
-            std::move(callback).Run("token");
+            std::move(callback).Run(EmailVerifier::Result{
+                "token", net::SchemefulSite(GURL("https://example.com"))});
           }));
   EXPECT_CALL(*request_ptr, Destroy());
 
   base::MockCallback<EmailVerifier::OnEmailVerifiedCallback> cb;
-  EXPECT_CALL(cb, Run(Optional<std::string>("token")));
+  EXPECT_CALL(cb,
+              Run(testing::Optional(EmailVerifier::Result{
+                  "token", net::SchemefulSite(GURL("https://example.com"))})));
   verifier.Verify("test@example.com", "nonce", cb.Get());
 }
 
@@ -123,12 +128,18 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
   // Set up expectations for the final callbacks and object destruction.
   EXPECT_CALL(*request_ptr1, Destroy());
   EXPECT_CALL(*request_ptr2, Destroy());
-  EXPECT_CALL(cb1, Run(Optional<std::string>("token1")));
-  EXPECT_CALL(cb2, Run(Optional<std::string>("token2")));
+  EXPECT_CALL(cb1,
+              Run(testing::Optional(EmailVerifier::Result{
+                  "token1", net::SchemefulSite(GURL("https://example.com"))})));
+  EXPECT_CALL(cb2,
+              Run(testing::Optional(EmailVerifier::Result{
+                  "token2", net::SchemefulSite(GURL("https://example.com"))})));
 
   // Complete in reverse order to test concurrency.
-  std::move(callback2).Run("token2");
-  std::move(callback1).Run("token1");
+  std::move(callback2).Run(EmailVerifier::Result{
+      "token2", net::SchemefulSite(GURL("https://example.com"))});
+  std::move(callback1).Run(EmailVerifier::Result{
+      "token1", net::SchemefulSite(GURL("https://example.com"))});
 }
 
 }  // namespace content::webid

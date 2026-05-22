@@ -40,11 +40,13 @@
 #include "components/autofill/core/browser/single_field_fillers/single_field_fill_router.h"
 #include "components/autofill/core/browser/studies/autofill_ablation_study.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/personal_context/core/personal_context_enablement_service.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "net/base/schemeful_site.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
@@ -75,6 +77,7 @@ class AtMemoryBottomSheetBridge;
 
 class ActorKeyMetricsRecorder;
 class AutofillOptimizationGuideDecider;
+class EmailVerificationPopupController;
 class EmailVerifierDelegate;
 class FormFieldData;
 class OtpFieldDetector;
@@ -268,6 +271,11 @@ class ChromeAutofillClient : public ContentAutofillClient {
   void ShowAutofillAiSaveToWalletFailureNotification() final;
   void ShowAutofillAiFetchFromWalletFailureNotification() final;
   void ShowEmailVerifiedToast() final;
+  void ShowEmailVerificationPopup(
+      const gfx::RectF& element_bounds,
+      const net::SchemefulSite& issuer_site,
+      const std::u16string& email,
+      base::OnceCallback<void(bool)> callback) final;
 
   // TODO(crbug.com/407666146): Create a test API.
   base::WeakPtr<AutofillSuggestionController>
@@ -375,6 +383,8 @@ class ChromeAutofillClient : public ContentAutofillClient {
 #else   // BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_;
+  std::unique_ptr<EmailVerificationPopupController>
+      email_verification_popup_controller_;
 #endif  // BUILDFLAG(IS_ANDROID)
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;

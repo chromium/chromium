@@ -195,6 +195,7 @@
 #include "chrome/browser/ui/autofill/autofill_ai/autofill_ai_import_data_controller.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller_impl.h"
 #include "chrome/browser/ui/autofill/delete_address_profile_dialog_controller_impl.h"
+#include "chrome/browser/ui/autofill/email_verification_popup_controller.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -209,6 +210,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_manager.h"  // nogncheck
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_COMPOSE)
@@ -219,7 +221,6 @@
 namespace autofill {
 
 namespace {
-
 
 AutoselectFirstSuggestion ShouldAutofillPopupAutoselectFirstSuggestion(
     AutofillSuggestionTriggerSource source) {
@@ -1230,6 +1231,27 @@ void ChromeAutofillClient::ShowEmailVerifiedToast() {
   if (ToastController* toast_controller = GetToastController()) {
     toast_controller->MaybeShowToast(ToastParams(ToastId::kEmailVerified));
   }
+#endif
+}
+
+void ChromeAutofillClient::ShowEmailVerificationPopup(
+    const gfx::RectF& element_bounds,
+    const net::SchemefulSite& issuer_site,
+    const std::u16string& email,
+    base::OnceCallback<void(bool)> callback) {
+#if BUILDFLAG(IS_ANDROID)
+  std::move(callback).Run(false);
+#else
+  if (!email_verification_popup_controller_) {
+    email_verification_popup_controller_ =
+        std::make_unique<EmailVerificationPopupController>(web_contents());
+  }
+  const gfx::Rect client_area = web_contents()->GetContainerBounds();
+  const gfx::RectF element_bounds_in_screen_space =
+      element_bounds + client_area.OffsetFromOrigin();
+
+  email_verification_popup_controller_->Show(
+      element_bounds_in_screen_space, issuer_site, email, std::move(callback));
 #endif
 }
 

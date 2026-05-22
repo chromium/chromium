@@ -35,6 +35,10 @@
 #include "components/security_state/core/security_state.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+namespace net {
+class SchemefulSite;
+}
+
 class GoogleGroupsManager;
 class GURL;
 class PrefService;
@@ -771,6 +775,17 @@ class AutofillClient {
   virtual void ShowAutofillAiFetchFromWalletFailureNotification();
 
   virtual void ShowEmailVerifiedToast();
+
+  // Shows a yes/no prompt asking the user to confirm that they want to verify
+  // their email. The prompt is anchored on the field at `element_bounds`.
+  // `issuer_site` is the site that issued the assertion.
+  // `callback` is called with the user's decision (true for yes, false for no).
+  // Dismissing the bubble is treated as no.
+  virtual void ShowEmailVerificationPopup(
+      const gfx::RectF& element_bounds,
+      const net::SchemefulSite& issuer_site,
+      const std::u16string& email,
+      base::OnceCallback<void(bool)> callback);
 
   // May return null on platforms where OTPs are not supported.
   virtual OtpFieldDetector* GetOtpFieldDetector();

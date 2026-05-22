@@ -48,7 +48,7 @@ class CONTENT_EXPORT EmailVerifierImpl : public EmailVerifier {
  private:
   void OnRequestComplete(std::unique_ptr<EmailVerificationRequest> request,
                          EmailVerifier::OnEmailVerifiedCallback callback,
-                         std::optional<std::string> result);
+                         std::optional<EmailVerifier::Result> result);
 
   RequestBuilder request_builder_;
 

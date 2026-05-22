@@ -134,6 +134,7 @@ source_set("autofill") {
       "edit_address_profile_dialog_controller.h",
       "edit_address_profile_dialog_controller_impl.h",
       "edit_address_profile_view.h",
+      "email_verification_popup_controller.h",
       "save_address_bubble_controller.h",
       "update_address_bubble_controller.h",
     ]
@@ -273,6 +274,7 @@ source_set("impl") {
       "bubble_manager_impl.cc",
       "delete_address_profile_dialog_controller_impl.cc",
       "edit_address_profile_dialog_controller_impl.cc",
+      "email_verification_popup_controller.cc",
       "save_address_bubble_controller.cc",
       "update_address_bubble_controller.cc",
     ]

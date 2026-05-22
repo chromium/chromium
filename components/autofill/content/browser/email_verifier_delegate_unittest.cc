@@ -4,8 +4,10 @@
 
 #include "components/autofill/content/browser/email_verifier_delegate.h"
 
+#include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
@@ -13,6 +15,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
@@ -24,6 +27,7 @@
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
+#include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
@@ -34,6 +38,8 @@ namespace {
 
 using ::base::test::RunOnceCallback;
 using ::testing::_;
+using ::testing::Assign;
+using ::testing::DoAll;
 using ::testing::NiceMock;
 using ::testing::Return;
 
@@ -72,6 +78,13 @@ class MockAutofillClient : public TestContentAutofillClient {
  public:
   using TestContentAutofillClient::TestContentAutofillClient;
   MOCK_METHOD(void, ShowEmailVerifiedToast, (), (override));
+  MOCK_METHOD(void,
+              ShowEmailVerificationPopup,
+              (const gfx::RectF&,
+               const net::SchemefulSite&,
+               const std::u16string&,
+               base::OnceCallback<void(bool)>),
+              (override));
 
   EmailVerifierDelegate& delegate() { return *delegate_; }
 
@@ -165,20 +178,70 @@ TEST_F(EmailVerifierDelegateTest, VerificationTriggered) {
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
   EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>("test_token"));
+      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
+          "test_token", net::SchemefulSite(GURL("https://example.com"))}));
 
+  bool popup_shown = false;
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce(DoAll(Assign(&popup_shown, true), RunOnceCallback<3>(true)));
+
+  // This is only called on form submission, which we are not testing here.
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
   EXPECT_CALL(driver(), SendEmailVerificationToken(
                             form->field(0)->global_id(), "test@example.com",
                             form->field(1)->global_id(), "test_token"));
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
+  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
+                                        "en-US",
+                                        VerificationStatus::kUserVerified);
+
+  base::flat_set<FieldGlobalId> filled_field_ids = {
+      form->field(0)->global_id()};
+  delegate().OnFillOrPreviewForm(
+      manager(), form->global_id(), form->field(0)->global_id(),
+      mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return popup_shown; }));
+}
+
+// Verifies that if the user declines the prompt, no verification is triggered.
+TEST_F(EmailVerifierDelegateTest, VerificationDeclined) {
+  base::test::ScopedFeatureList feature_list{
+      ::features::kEmailVerificationProtocol};
+
+  FormData form_data = ValidForm();
+
+  std::vector<FieldType> types = {EMAIL_ADDRESS, UNKNOWN_TYPE};
+  manager().AddSeenForm(form_data, types);
+  FormStructure* form =
+      test_api(manager()).FindCachedFormById(form_data.global_id());
+  ASSERT_TRUE(form);
+  form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
+
+  EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
+      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
+          "test_token", net::SchemefulSite(GURL("https://example.com"))}));
+
+  bool popup_shown = false;
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce(DoAll(Assign(&popup_shown, true), RunOnceCallback<3>(false)));
+
+  EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
+  EXPECT_CALL(client(), ShowEmailVerifiedToast).Times(0);
+
+  AutofillProfile profile = test::GetFullProfile();
+  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
+                                        "en-US",
+                                        VerificationStatus::kUserVerified);
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return popup_shown; }));
 }
 
 // Verifies that if the base feature is explicitly overridden to disabled,
@@ -309,8 +372,12 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
   ASSERT_TRUE(form);
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
+  bool verify_called = false;
   EXPECT_CALL(email_verifier(), Verify)
-      .WillOnce(RunOnceCallback<2>(std::nullopt));
+      .WillOnce(DoAll(Assign(&verify_called, true),
+                      RunOnceCallback<2>(std::nullopt)));
+
+  EXPECT_CALL(client(), ShowEmailVerificationPopup).Times(0);
 
   // When the verification fails, the event is not dispatched.
   EXPECT_CALL(driver(), SendEmailVerificationToken).Times(0);
@@ -322,6 +389,8 @@ TEST_F(EmailVerifierDelegateTest, VerificationFails) {
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return verify_called; }));
 }
 
 // Verifies that if the base feature is in its default state (enabled by
@@ -418,20 +487,29 @@ TEST_F(EmailVerifierDelegateTest,
   form->field(0)->set_autofilled_type(EMAIL_ADDRESS);
 
   EXPECT_CALL(email_verifier(), Verify("test@example.com", "test_nonce", _))
-      .WillOnce(RunOnceCallback<2>("test_token"));
+      .WillOnce(RunOnceCallback<2>(content::webid::EmailVerifier::Result{
+          "test_token", net::SchemefulSite(GURL("https://example.com"))}));
+
+  bool popup_shown = false;
+  EXPECT_CALL(client(), ShowEmailVerificationPopup)
+      .WillOnce(DoAll(Assign(&popup_shown, true), RunOnceCallback<3>(true)));
 
   EXPECT_CALL(driver(), SendEmailVerificationToken(
                             form->field(0)->global_id(), "test@example.com",
                             form->field(1)->global_id(), "test_token"));
 
   AutofillProfile profile = test::GetFullProfile();
-  profile.SetRawInfo(EMAIL_ADDRESS, u"test@example.com");
+  profile.SetInfoWithVerificationStatus(EMAIL_ADDRESS, u"test@example.com",
+                                        "en-US",
+                                        VerificationStatus::kUserVerified);
 
   base::flat_set<FieldGlobalId> filled_field_ids = {
       form->field(0)->global_id(), form->field(1)->global_id()};
   delegate().OnFillOrPreviewForm(
       manager(), form->global_id(), form->field(0)->global_id(),
       mojom::ActionPersistence::kFill, filled_field_ids, &profile);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() { return popup_shown; }));
 }
 
 }  // namespace autofill

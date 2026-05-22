@@ -38,6 +38,7 @@
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "net/base/schemeful_site.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
@@ -373,6 +374,14 @@ void AutofillClient::ShowAutofillAiFetchFromWalletFailureNotification() {
 
 void AutofillClient::ShowEmailVerifiedToast() {
   NOTIMPLEMENTED();
+}
+
+void AutofillClient::ShowEmailVerificationPopup(
+    const gfx::RectF& element_bounds,
+    const net::SchemefulSite& issuer_site,
+    const std::u16string& email,
+    base::OnceCallback<void(bool)> callback) {
+  std::move(callback).Run(false);
 }
 
 OtpFieldDetector* AutofillClient::GetOtpFieldDetector() {

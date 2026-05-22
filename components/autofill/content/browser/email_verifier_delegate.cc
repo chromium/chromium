@@ -20,6 +20,7 @@
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/common/content_features.h"
+#include "net/base/schemeful_site.h"
 
 namespace autofill {
 
@@ -150,23 +151,34 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
   // later stage (specifically after the renderer confirms the fill and the
   // browser updates its cache) so we can use the email_field->value() instead.
   std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
-
   verifier->Verify(
       base::UTF16ToUTF8(email), base::UTF16ToUTF8(nonce_field->nonce()),
       base::BindOnce(
           [](base::WeakPtr<AutofillManager> manager,
-             FieldGlobalId email_field_id, const std::string& email,
-             FieldGlobalId token_field_id,
-             std::optional<std::string> presentation_token) {
-            if (!manager || !presentation_token) {
+             FieldGlobalId email_field_id, FieldGlobalId nonce_field_id,
+             gfx::RectF email_field_bounds, std::u16string email,
+             std::optional<content::webid::EmailVerifier::Result> result) {
+            if (!manager || !result) {
               return;
             }
-
-            manager->driver().SendEmailVerificationToken(
-                email_field_id, email, token_field_id, *presentation_token);
+            manager->client().ShowEmailVerificationPopup(
+                email_field_bounds, result->issuer_site, email,
+                base::BindOnce(
+                    [](base::WeakPtr<AutofillManager> manager,
+                       FieldGlobalId email_field_id, std::string email,
+                       FieldGlobalId token_field_id, std::string token,
+                       bool confirmed) {
+                      if (!confirmed || !manager) {
+                        return;
+                      }
+                      manager->driver().SendEmailVerificationToken(
+                          email_field_id, email, token_field_id, token);
+                    },
+                    manager, email_field_id, base::UTF16ToUTF8(email),
+                    nonce_field_id, std::move(result->verification)));
           },
-          manager.GetWeakPtr(), triggering_email_field->global_id(),
-          base::UTF16ToUTF8(email), nonce_field->global_id()));
+          manager.GetWeakPtr(), trigger_field_id, nonce_field->global_id(),
+          triggering_email_field->bounds(), email));
 }
 
 }  // namespace autofill

@@ -21,6 +21,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
+#include "net/base/schemeful_site.h"
 #include "url/origin.h"
 
 namespace content::webid {
@@ -253,12 +254,13 @@ void EmailVerificationRequest::OnWellKnownFetched(
       // TODO(crbug.com/380367784): figure out how to measure the feature
       // here.
       base::BindOnce(&EmailVerificationRequest::OnTokenRequestComplete,
-                     weak_ptr_factory_.GetWeakPtr(), nonce,
+                     weak_ptr_factory_.GetWeakPtr(), nonce, issuer,
                      std::move(private_key), std::move(callback)));
 }
 
 void EmailVerificationRequest::OnTokenRequestComplete(
     const std::string& nonce,
+    const url::Origin& issuer,
     std::unique_ptr<crypto::keypair::PrivateKey> private_key,
     EmailVerifier::OnEmailVerifiedCallback callback,
     FetchStatus token_status,
@@ -338,13 +340,15 @@ void EmailVerificationRequest::OnTokenRequestComplete(
   // Step 5.3: the browser notifies the page that
   // the SD-JWT+KB is ready.
 
-  CompleteRequest(std::move(callback), sd_jwt_kb.Serialize(),
+  CompleteRequest(std::move(callback),
+                  EmailVerifier::Result{sd_jwt_kb.Serialize(),
+                                        net::SchemefulSite(issuer.GetURL())},
                   EvpRequestStatus::kSuccess);
 }
 
 void EmailVerificationRequest::CompleteRequest(
     EmailVerifier::OnEmailVerifiedCallback callback,
-    std::optional<std::string> response,
+    std::optional<EmailVerifier::Result> response,
     EvpRequestStatus status) {
   RecordEvpRequestStatus(status);
   std::move(callback).Run(std::move(response));
