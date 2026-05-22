@@ -381,6 +381,7 @@ void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
     params.referrer.policy = web::ReferrerPolicyStrictOriginWhenCrossOrigin;
   }
   params.transition_type = request_info.transition_type;
+  params.is_renderer_initiated = true;
   web_state_->GetNavigationManager()->LoadURLWithParams(params);
 }
 

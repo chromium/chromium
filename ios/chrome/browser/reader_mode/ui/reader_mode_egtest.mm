@@ -6,6 +6,7 @@
 
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "components/dom_distiller/core/dom_distiller_features.h"
 #import "components/dom_distiller/core/mojom/distilled_page_prefs.mojom.h"
 #import "components/dom_distiller/core/pref_names.h"
@@ -36,9 +37,12 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
 #import "net/test/embedded_test_server/default_handlers.h"
+#import "net/test/embedded_test_server/http_request.h"
+#import "net/test/embedded_test_server/http_response.h"
 #import "testing/gmock/include/gmock/gmock-matchers.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -125,6 +129,27 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
       grey_interactable(), nil);
 }
 
+// Handles requests for Reader Mode link navigation test case.
+std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
+    const net::test_server::HttpRequest& request) {
+  if (request.GetURL().path() == "/distillable_page") {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    response->set_code(net::HTTP_OK);
+    response->set_content(
+        "<!DOCTYPE html><html><body><article>"
+        "<h1>Distillable Article Title</h1>"
+        "<p>Here is some paragraph text that makes this page look like a "
+        "real article to the DOM Distiller.</p>"
+        "<a id='spoof' href='/victim'>Link to hung victim page</a>"
+        "</article></body></html>");
+    return response;
+  }
+  if (request.GetURL().path() == "/victim") {
+    return std::make_unique<net::test_server::HungResponse>();
+  }
+  return nullptr;
+}
+
 }  // namespace
 
 // Tests interactions with Reader Mode on a web page.
@@ -143,6 +168,8 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
                    forUserPref:translate::prefs::kOfferTranslateEnabled];
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kIOSBwgConsent];
 
+  self.testServer->RegisterRequestHandler(
+      base::BindRepeating(&HandleReaderModeTestRequests));
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
@@ -1465,6 +1492,34 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
 
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"escape" flags:0];
   [self assertReaderModePageIsHidden];
+}
+
+// Tests that tapping a link inside Reader mode results in a renderer-initiated
+// navigation that does not display a pending navigation in the omnibox.
+- (void)testReaderModeLinkNavigationRendererInitiated {
+  GURL distillableURL = self.testServer->GetURL("/distillable_page");
+
+  // Navigate to the distillable page and mark it eligible via optimization
+  // guide.
+  [self loadURLWithOptimizationGuideHints:distillableURL];
+
+  // Open Reader Mode UI.
+  GREYAssertTrue(
+      [ChromeEarlGrey showReaderModeAndWaitUntilReaderModeWebStateIsReady],
+      @"Reader mode content could not be loaded");
+  [self assertReaderModePageIsVisible];
+
+  // Disable EarlGrey synchronization because the navigation to /victim hangs.
+  ScopedSynchronizationDisabler disabler;
+
+  // Tap the spoof link inside the distilled Reader view.
+  [ChromeEarlGrey tapWebStateElementWithID:@"spoof"];
+
+  // Immediately verify that the pending navigation item's URL (the victim page)
+  // is NOT visible in the omnibox, i.e. webStateVisibleURL remains the
+  // distillable page.
+  GREYAssertEqual([ChromeEarlGrey webStateVisibleURL], distillableURL,
+                  @"Visible URL should remain the distillable page.");
 }
 
 @end
