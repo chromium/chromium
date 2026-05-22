@@ -36,6 +36,7 @@ class PLATFORM_EXPORT ThreadCPUThrottler final {
   // Any rate less or equal to 1.0 disables throttling and
   // cleans up helper thread.
   void SetThrottlingRate(double rate);
+  double GetThrottlingRateForTesting() const;
 
  private:
   ThreadCPUThrottler();

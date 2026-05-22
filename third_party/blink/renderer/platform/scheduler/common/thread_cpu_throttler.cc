@@ -33,6 +33,9 @@ class ThreadCPUThrottler::ThrottlingThread final
   ~ThrottlingThread() override;
 
   void SetThrottlingRate(double rate);
+  double GetThrottlingRateForTesting() const {
+    return throttling_rate_percent_.load(std::memory_order_acquire) / 100.0;
+  }
 
  private:
   void ThreadMain() override;
@@ -212,6 +215,13 @@ void ThreadCPUThrottler::SetThrottlingRate(double rate) {
   } else {
     throttling_thread_ = std::make_unique<ThrottlingThread>(rate);
   }
+}
+
+double ThreadCPUThrottler::GetThrottlingRateForTesting() const {
+  if (!throttling_thread_) {
+    return 1.0;
+  }
+  return throttling_thread_->GetThrottlingRateForTesting();
 }
 
 // static

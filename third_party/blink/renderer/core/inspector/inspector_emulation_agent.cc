@@ -157,7 +157,9 @@ void InspectorEmulationAgent::Restore() {
       reinterpret_cast<char*>(save_serialized_ua_metadata_override.data()),
       save_serialized_ua_metadata_override.size()));
   serialized_ua_metadata_override_.Set(save_serialized_ua_metadata_override);
-  setCPUThrottlingRate(cpu_throttling_rate_.Get());
+  if (cpu_throttling_rate_.Get() != 1.0) {
+    setCPUThrottlingRate(cpu_throttling_rate_.Get());
+  }
 
   if (int concurrency = hardware_concurrency_override_.Get())
     setHardwareConcurrencyOverride(concurrency);
@@ -270,7 +272,9 @@ protocol::Response InspectorEmulationAgent::disable() {
   if (!emulated_vision_deficiency_.Get().IsNull())
     setEmulatedVisionDeficiency(String("none"));
   setEmulatedOSTextScale(std::nullopt);
-  setCPUThrottlingRate(1);
+  if (cpu_throttling_rate_.Get() != 1.0) {
+    setCPUThrottlingRate(1.0);
+  }
   if (emulate_focus_.Get()) {
     setFocusEmulationEnabled(false);
   }
