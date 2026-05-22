@@ -712,12 +712,7 @@ void PageContextFetcher::ReceivedViewportBitmapOrError(
     if (progress_listener_) {
       progress_listener_->ScreenshotCaptured(*bitmap);
     }
-
-    if (!CollectTrackedElementRectsForIframes(tracked_element_rects)) {
-      ReceivedEncodedScreenshot(
-          base::unexpected("Failed to collect iframe info from screenshot."));
-      return;
-    }
+    CollectTrackedElementRectsForIframes(tracked_element_rects);
     MaybeAddIframeInfoToAPC();
     RedactAndEncodeScreenshotIfNeeded();
   } else {
@@ -943,18 +938,18 @@ void PageContextFetcher::RunCallbackIfComplete() {
   std::move(callback_).Run(base::ok(std::move(pending_result_)));
 }
 
-bool PageContextFetcher::CollectTrackedElementRectsForIframes(
+void PageContextFetcher::CollectTrackedElementRectsForIframes(
     const viz::TrackedElementRects& tracked_element_rects) {
   if (!base::FeatureList::IsEnabled(
           blink::features::kAIPageContentTrackedElementsIframe)) {
-    return true;
+    return;
   }
 
   iframe_info_.clear();
   const auto iframe_tracking_feature =
       viz::TrackedElementFeature::kIframeTracking;
   if (!tracked_element_rects.contains(iframe_tracking_feature)) {
-    return true;
+    return;
   }
 
   // Build a map from local frame token to RFH. We can use this to get the
@@ -983,34 +978,29 @@ bool PageContextFetcher::CollectTrackedElementRectsForIframes(
 
     // Iframe tracked elements should always have a parent frame token and a
     // frame token.
-    if (!element.frame_token.has_value() ||
-        !element.parent_frame_token.has_value()) {
-      return false;
+    if (element.frame_token.has_value() &&
+        element.parent_frame_token.has_value()) {
+      // If we can't find the RFH associated with the iframe, we cannot
+      // determine the iframe's url/origin. This could happen if the screenshot
+      // is displaying stale content. We should leave the url and origin empty
+      // in this case.
+      auto it = frame_token_to_rfh.find(element.parent_frame_token.value());
+      if (it != frame_token_to_rfh.end()) {
+        content::RenderFrameHost* parent_rfh = it->second;
+        int renderer_process_id = parent_rfh->GetProcess()->GetID().value();
+        content::RenderFrameHost* iframe_rfh =
+            optimization_guide::GetRenderFrameHostForToken(
+                renderer_process_id, element.frame_token.value());
+        if (iframe_rfh) {
+          iframe_info.set_url(iframe_rfh->GetLastCommittedURL().spec());
+          optimization_guide::SecurityOriginSerializer::Serialize(
+              iframe_rfh->GetLastCommittedOrigin(),
+              iframe_info.mutable_security_origin());
+        }
+      }
     }
-
-    // If we can't find the RFH associated with the iframe, we cannot determine
-    // the iframe's url/origin. This could happen if the screenshot is
-    // displaying stale content. We should fail in this case.
-    auto it = frame_token_to_rfh.find(element.parent_frame_token.value());
-    if (it == frame_token_to_rfh.end()) {
-      return false;
-    }
-    content::RenderFrameHost* parent_rfh = it->second;
-    int renderer_process_id = parent_rfh->GetProcess()->GetID().value();
-    content::RenderFrameHost* iframe_rfh =
-        optimization_guide::GetRenderFrameHostForToken(
-            renderer_process_id, element.frame_token.value());
-    if (!iframe_rfh) {
-      return false;
-    }
-
-    iframe_info.set_url(iframe_rfh->GetLastCommittedURL().spec());
-    optimization_guide::SecurityOriginSerializer::Serialize(
-        iframe_rfh->GetLastCommittedOrigin(),
-        iframe_info.mutable_security_origin());
     iframe_info_.push_back(std::move(iframe_info));
   }
-  return true;
 }
 
 void PageContextFetcher::MaybeAddIframeInfoToAPC() {

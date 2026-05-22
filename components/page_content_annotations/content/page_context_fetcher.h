@@ -401,9 +401,7 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void RunCallbackIfComplete();
 
-  // Returns true on success, false if we are unable to get the URL or origin
-  // for any of the tracked iframe elements.
-  bool CollectTrackedElementRectsForIframes(
+  void CollectTrackedElementRectsForIframes(
       const viz::TrackedElementRects& tracked_element_rects);
 
   void MaybeAddIframeInfoToAPC();
