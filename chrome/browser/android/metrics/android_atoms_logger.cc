@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/metrics/android_atoms_logger.h"
 
+#include "base/android/device_info.h"
 #include "base/android/jni_android.h"
 #include "base/functional/bind.h"
 #include "base/functional/function_ref.h"
@@ -26,6 +27,12 @@ AndroidAtomsLogger::AndroidAtomsLogger()
 AndroidAtomsLogger::AndroidAtomsLogger(
     base::span<const HistogramInfo> allowlist) {
   if (!base::FeatureList::IsEnabled(kAndroidAtomsLogging)) {
+    return;
+  }
+
+  if (!base::android::device_info::is_desktop()) {
+    // The feature to log UMA histograms as Atoms is only intended to be enabled
+    // for Android Desktop for now.
     return;
   }
 

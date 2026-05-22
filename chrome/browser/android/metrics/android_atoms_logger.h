@@ -42,8 +42,12 @@ class AndroidAtomsLogger {
 
  private:
   friend class base::NoDestructor<AndroidAtomsLogger>;
-  FRIEND_TEST_ALL_PREFIXES(AndroidAtomsLoggerTest, FeatureDisabled);
-  FRIEND_TEST_ALL_PREFIXES(AndroidAtomsLoggerTest, FeatureEnabled);
+  FRIEND_TEST_ALL_PREFIXES(AndroidAtomsLoggerTest,
+                           FeatureDisabled_DoesNotInitialize);
+  FRIEND_TEST_ALL_PREFIXES(AndroidAtomsLoggerTest,
+                           FeatureEnabled_InitializesOnDesktop);
+  FRIEND_TEST_ALL_PREFIXES(AndroidAtomsLoggerTest,
+                           FeatureEnabled_DoesNotInitializeOnNonDesktop);
 
   // Production constructor.
   AndroidAtomsLogger();

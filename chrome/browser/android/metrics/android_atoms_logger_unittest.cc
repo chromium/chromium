@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/metrics/android_atoms_logger.h"
 
+#include "base/android/device_info.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
@@ -53,7 +54,7 @@ class AndroidAtomsLoggerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(AndroidAtomsLoggerTest, FeatureDisabled) {
+TEST_F(AndroidAtomsLoggerTest, FeatureDisabled_DoesNotInitialize) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(kAndroidAtomsLogging);
 
@@ -62,13 +63,32 @@ TEST_F(AndroidAtomsLoggerTest, FeatureDisabled) {
   EXPECT_TRUE(logger.observers_.empty());
 }
 
-TEST_F(AndroidAtomsLoggerTest, FeatureEnabled) {
+TEST_F(AndroidAtomsLoggerTest, FeatureEnabled_InitializesOnDesktop) {
+  if (!base::android::device_info::is_desktop()) {
+    // Unit test is not built for Desktop. Skipping this unit test.
+    return;
+  }
+
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(kAndroidAtomsLogging);
 
   TestAndroidAtomsLogger logger(kTestAllowlist);
 
   EXPECT_EQ(logger.observers_.size(), std::size(kTestAllowlist));
+}
+
+TEST_F(AndroidAtomsLoggerTest, FeatureEnabled_DoesNotInitializeOnNonDesktop) {
+  if (base::android::device_info::is_desktop()) {
+    // Unit test is built for Desktop. Skipping this unit test.
+    return;
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kAndroidAtomsLogging);
+
+  TestAndroidAtomsLogger logger(kTestAllowlist);
+
+  EXPECT_TRUE(logger.observers_.empty());
 }
 
 }  // namespace chrome::android::westworld
