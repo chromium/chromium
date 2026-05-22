@@ -260,6 +260,7 @@ class PLATFORM_EXPORT ResourceFetcher
   struct PreloadInfo {
     String as;
     CrossOriginAttributeValue crossorigin = kCrossOriginAttributeNotSet;
+    bool early_hints = false;
     // Timestamp when the preload was matched/used, or nullopt if unused.
     std::optional<base::TimeTicks> used_time;
   };

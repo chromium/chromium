@@ -1551,7 +1551,7 @@ SpeculationData* WindowPerformance::getSpeculations() {
     const auto& preload_records = document->Fetcher()->GetPreloadRecords();
     for (const auto& [url, info] : preload_records) {
       preloads.push_back(MakeGarbageCollected<PreloadData>(
-          url, info.as, info.crossorigin, info.used_time));
+          url, info.as, info.crossorigin, info.early_hints, info.used_time));
     }
   }
 

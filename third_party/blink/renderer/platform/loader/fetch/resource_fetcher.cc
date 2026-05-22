@@ -2453,6 +2453,7 @@ void ResourceFetcher::SetEarlyHintsPreloadedResources(
         PreloadInfo info;
         info.as = LinkAsAttributeToString(entry.as);
         info.crossorigin = CrossOriginAttributeToBlink(entry.cross_origin);
+        info.early_hints = true;
         preload_records_.insert(url, std::move(info));
       }
     }

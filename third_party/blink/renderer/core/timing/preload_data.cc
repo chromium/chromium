@@ -15,8 +15,13 @@ namespace blink {
 PreloadData::PreloadData(const KURL& url,
                          const String& as,
                          CrossOriginAttributeValue crossorigin,
+                         bool early_hints,
                          std::optional<base::TimeTicks> used_time)
-    : url_(url), as_(as), crossorigin_(crossorigin), used_time_(used_time) {}
+    : url_(url),
+      as_(as),
+      crossorigin_(crossorigin),
+      early_hints_(early_hints),
+      used_time_(used_time) {}
 
 V8CrossOriginMode PreloadData::crossorigin() const {
   switch (crossorigin_) {

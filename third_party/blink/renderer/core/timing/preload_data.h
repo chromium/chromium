@@ -27,11 +27,13 @@ class PreloadData final : public ScriptWrappable {
   PreloadData(const KURL& url,
               const String& as,
               CrossOriginAttributeValue crossorigin,
+              bool early_hints,
               std::optional<base::TimeTicks> used_time);
 
   String url() const { return url_.GetString(); }
   const String& as() const { return as_; }
   V8CrossOriginMode crossorigin() const;
+  bool earlyHints() const { return early_hints_; }
   std::optional<double> used(ScriptState* script_state) const;
 
   void Trace(Visitor*) const override;
@@ -40,6 +42,7 @@ class PreloadData final : public ScriptWrappable {
   const KURL url_;
   const String as_;
   const CrossOriginAttributeValue crossorigin_;
+  const bool early_hints_;
   // Monotonic time when the preload was used, or nullopt if unused.
   // Converted to a coarsened DOMHighResTimeStamp on access.
   const std::optional<base::TimeTicks> used_time_;

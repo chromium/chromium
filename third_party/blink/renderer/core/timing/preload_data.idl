@@ -20,5 +20,6 @@ interface PreloadData {
     readonly attribute USVString url;
     readonly attribute DOMString as;
     readonly attribute CrossOriginMode crossorigin;
+    readonly attribute boolean earlyHints;
     [CallWith=ScriptState] readonly attribute DOMHighResTimeStamp? used;
 };

@@ -7502,6 +7502,7 @@ interface PreloadData
     attribute @@toStringTag
     getter as
     getter crossorigin
+    getter earlyHints
     getter url
     getter used
     method constructor
