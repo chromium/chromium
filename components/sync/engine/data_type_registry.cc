@@ -12,11 +12,11 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "components/sync/engine/cryptographer.h"
 #include "components/sync/engine/data_type_activation_response.h"
 #include "components/sync/engine/data_type_processor.h"
 #include "components/sync/engine/data_type_worker.h"
-#include "components/sync/engine/nigori/cryptographer.h"
-#include "components/sync/engine/nigori/keystore_keys_handler.h"
+#include "components/sync/engine/keystore_keys_handler.h"
 #include "components/sync/engine/required_passphrase_verifier.h"
 
 namespace syncer {

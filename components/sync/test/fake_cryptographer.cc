@@ -90,9 +90,9 @@ bool FakeCryptographer::DecryptToString(const sync_pb::EncryptedData& encrypted,
   return true;
 }
 
-const CrossUserSharingPublicPrivateKeyPair&
-FakeCryptographer::GetCrossUserSharingKeyPair(uint32_t version) const {
-  return cross_user_sharing_key_pair_;
+std::array<uint8_t, 32> FakeCryptographer::GetCrossUserSharingRawPublicKey()
+    const {
+  return cross_user_sharing_key_pair_.GetRawPublicKey();
 }
 
 std::optional<std::vector<uint8_t>>

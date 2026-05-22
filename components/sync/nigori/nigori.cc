@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/nigori.h"
 
 #include <stdint.h>
 
@@ -22,7 +22,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/default_tick_clock.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/nigori/key_derivation_params.h"
 #include "crypto/aes_cbc.h"
 #include "crypto/hmac.h"
 #include "crypto/kdf.h"

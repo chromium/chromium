@@ -25,7 +25,7 @@
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_contributor.h"
 #include "components/sync/engine/commit_queue.h"
-#include "components/sync/engine/nigori/cryptographer.h"
+#include "components/sync/engine/cryptographer.h"
 #include "components/sync/engine/nudge_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/update_handler.h"

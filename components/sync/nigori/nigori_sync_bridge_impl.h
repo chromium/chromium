@@ -13,7 +13,7 @@
 
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/sync/engine/nigori/keystore_keys_handler.h"
+#include "components/sync/engine/keystore_keys_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/model/conflict_resolution.h"
 #include "components/sync/model/model_error.h"

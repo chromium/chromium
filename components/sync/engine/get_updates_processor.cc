@@ -19,7 +19,7 @@
 #include "components/sync/engine/cycle/sync_cycle.h"
 #include "components/sync/engine/events/get_updates_response_event.h"
 #include "components/sync/engine/get_updates_delegate.h"
-#include "components/sync/engine/nigori/keystore_keys_handler.h"
+#include "components/sync/engine/keystore_keys_handler.h"
 #include "components/sync/engine/syncer_error.h"
 #include "components/sync/engine/syncer_proto_util.h"
 #include "components/sync/engine/update_handler.h"

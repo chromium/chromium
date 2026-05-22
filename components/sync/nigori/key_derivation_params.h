@@ -2,19 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_NIGORI_KEY_DERIVATION_PARAMS_H_
-#define COMPONENTS_SYNC_ENGINE_NIGORI_KEY_DERIVATION_PARAMS_H_
+#ifndef COMPONENTS_SYNC_NIGORI_KEY_DERIVATION_PARAMS_H_
+#define COMPONENTS_SYNC_NIGORI_KEY_DERIVATION_PARAMS_H_
 
 #include <string>
 
 #include "components/sync/base/passphrase_enums.h"
-
-// TODO(crbug.com/41449994): Move this file to components/sync/nigori/. It lives
-// in engine/nigori/ now because some engine code requires KeyDerivationParams
-// to implement SyncEncryptionHandler::OnPassphraseRequired(). None of the
-// implementations actually uses the parameter though, which means we can
-// probably split the interface and depend on KeyDerivationParams only outside
-// of the engine.
 
 namespace syncer {
 
@@ -43,4 +36,4 @@ class KeyDerivationParams {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_NIGORI_KEY_DERIVATION_PARAMS_H_
+#endif  // COMPONENTS_SYNC_NIGORI_KEY_DERIVATION_PARAMS_H_

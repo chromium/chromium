@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
+#include "components/sync/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 

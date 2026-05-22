@@ -8,9 +8,9 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
-#include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/cross_user_sharing_public_private_key_pair.h"
+#include "components/sync/nigori/key_derivation_params.h"
+#include "components/sync/nigori/nigori.h"
 #include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"

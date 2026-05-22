@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -94,11 +95,11 @@ sync_pb::EntitySpecifics EncryptPasswordSpecificsWithNthKey(
 }
 
 sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
-    const CrossUserSharingPublicPrivateKeyPair& key_pair,
+    base::span<const uint8_t> raw_public_key,
     uint32_t version) {
   sync_pb::CrossUserSharingPublicKey output;
-  std::array<uint8_t, X25519_PUBLIC_VALUE_LEN> key = key_pair.GetRawPublicKey();
-  output.set_x25519_public_key(std::string(key.begin(), key.end()));
+  output.set_x25519_public_key(
+      std::string(raw_public_key.begin(), raw_public_key.end()));
   output.set_version(version);
   return output;
 }
@@ -133,18 +134,18 @@ CreateIncomingPasswordSharingInvitation(const std::string& invitation_guid,
   bool success = password_data.SerializeToString(&serialized_data);
   CHECK(success);
 
-  const CrossUserSharingPublicPrivateKeyPair& key_pair =
-      cryptographer->GetCrossUserSharingKeyPair(/*version=*/0);
+  std::array<uint8_t, 32> raw_public_key =
+      cryptographer->GetCrossUserSharingRawPublicKey();
   std::optional<std::vector<uint8_t>> encrypted_data =
       cryptographer->AuthEncryptForCrossUserSharing(
-          base::as_byte_span(serialized_data), key_pair.GetRawPublicKey());
+          base::as_byte_span(serialized_data), raw_public_key);
   CHECK(encrypted_data);
 
   invitation.set_encrypted_password_sharing_invitation_data(
       encrypted_data->data(), encrypted_data->size());
   invitation.mutable_sender_info()
       ->mutable_cross_user_sharing_public_key()
-      ->CopyFrom(PublicKeyToProto(key_pair, /*version=*/0));
+      ->CopyFrom(PublicKeyToProto(raw_public_key, /*version=*/0));
   return invitation;
 }
 

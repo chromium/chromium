@@ -17,7 +17,7 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/user_selectable_type.h"
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/nigori.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service_crypto.h"
 #include "components/version_info/version_info.h"

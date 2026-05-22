@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
+#include "components/sync/nigori/cross_user_sharing_public_private_key_pair.h"
 
 #include <algorithm>
 #include <vector>

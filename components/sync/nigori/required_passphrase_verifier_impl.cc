@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "components/sync/base/custom_passphrase_bootstrap_token.h"
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/nigori.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 
 namespace syncer {

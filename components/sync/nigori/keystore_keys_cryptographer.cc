@@ -8,8 +8,8 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
-#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/nigori/cryptographer_impl.h"
+#include "components/sync/nigori/key_derivation_params.h"
 #include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"

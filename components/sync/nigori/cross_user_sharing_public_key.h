@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_NIGORI_CROSS_USER_SHARING_PUBLIC_KEY_H_
-#define COMPONENTS_SYNC_ENGINE_NIGORI_CROSS_USER_SHARING_PUBLIC_KEY_H_
+#ifndef COMPONENTS_SYNC_NIGORI_CROSS_USER_SHARING_PUBLIC_KEY_H_
+#define COMPONENTS_SYNC_NIGORI_CROSS_USER_SHARING_PUBLIC_KEY_H_
 
 #include <array>
 #include <optional>
@@ -42,4 +42,4 @@ class CrossUserSharingPublicKey {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_NIGORI_CROSS_USER_SHARING_PUBLIC_KEY_H_
+#endif  // COMPONENTS_SYNC_NIGORI_CROSS_USER_SHARING_PUBLIC_KEY_H_

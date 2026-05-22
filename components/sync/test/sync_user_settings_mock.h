@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "components/signin/public/base/gaia_id_hash.h"
-#include "components/sync/engine/nigori/nigori.h"
+#include "components/sync/nigori/nigori.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

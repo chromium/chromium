@@ -19,7 +19,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sharing/password_sender_service.h"
 #include "components/password_manager/core/browser/sharing/recipient_info.h"
-#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
+#include "components/sync/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "components/sync/protocol/password_sharing_invitation_specifics.pb.h"
 #include "components/sync/test/fake_server_nigori_helper.h"

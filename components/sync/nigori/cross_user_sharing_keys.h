@@ -5,11 +5,8 @@
 #ifndef COMPONENTS_SYNC_NIGORI_CROSS_USER_SHARING_KEYS_H_
 #define COMPONENTS_SYNC_NIGORI_CROSS_USER_SHARING_KEYS_H_
 
-#include <memory>
-#include <string>
+#include "components/sync/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
-
-#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 
 namespace sync_pb {
 class CrossUserSharingKeys;

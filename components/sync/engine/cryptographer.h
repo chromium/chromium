@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_ENGINE_NIGORI_CRYPTOGRAPHER_H_
-#define COMPONENTS_SYNC_ENGINE_NIGORI_CRYPTOGRAPHER_H_
+#ifndef COMPONENTS_SYNC_ENGINE_CRYPTOGRAPHER_H_
+#define COMPONENTS_SYNC_ENGINE_CRYPTOGRAPHER_H_
 
 #include <memory>
 #include <optional>
@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 
 namespace google::protobuf {
 class MessageLite;
@@ -87,4 +86,4 @@ class Cryptographer {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_ENGINE_NIGORI_CRYPTOGRAPHER_H_
+#endif  // COMPONENTS_SYNC_ENGINE_CRYPTOGRAPHER_H_

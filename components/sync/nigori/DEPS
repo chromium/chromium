@@ -6,4 +6,5 @@ include_rules = [
   "+components/sync/protocol",
   "+components/sync/test",
   "+crypto",
+  "+third_party/boringssl/src/include/openssl",
 ]

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/nigori/key_derivation_params.h"
+#include "components/sync/nigori/key_derivation_params.h"
 
 #include "base/check_op.h"
 

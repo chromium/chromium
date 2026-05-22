@@ -10,7 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/uuid.h"
-#include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
+#include "components/sync/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 
 namespace password_sharing_helper {

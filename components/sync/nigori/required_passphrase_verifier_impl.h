@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/required_passphrase_verifier.h"
+#include "components/sync/nigori/key_derivation_params.h"
 #include "components/sync/protocol/encryption.pb.h"
 
 namespace syncer {

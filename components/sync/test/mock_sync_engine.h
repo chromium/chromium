@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_status.h"
+#include "components/sync/nigori/nigori.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace syncer {

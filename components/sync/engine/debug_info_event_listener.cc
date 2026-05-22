@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "base/logging.h"
-#include "components/sync/engine/nigori/cryptographer.h"
+#include "components/sync/engine/cryptographer.h"
 #include "components/sync/engine/required_passphrase_verifier.h"
 #include "components/sync/protocol/client_debug_info.pb.h"
 #include "components/sync/protocol/encryption.pb.h"
