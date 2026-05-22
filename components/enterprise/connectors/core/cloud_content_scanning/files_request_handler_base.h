@@ -172,6 +172,8 @@ class FilesRequestHandlerBase : public RequestHandlerBase {
                            OnGotFileInfo_EmptyFile);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
+                           FinishRequestEarly_WaitsForHash);
+  FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
                            OnGotFileInfo_FileTooLarge_Blocked);
   FRIEND_TEST_ALL_PREFIXES(FilesRequestHandlerBaseTest,
                            OnGotFileInfo_FileTooLarge_NotBlocked);

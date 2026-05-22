@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -387,6 +388,68 @@ TEST_F(FilesRequestHandlerBaseTest, OnGotFileInfo_Failure) {
                         std::move(data));
   run_loop.Run();
   EXPECT_TRUE(callback_called);
+}
+
+// Tests that OnGotFileInfo finishes the request early if there's an upload
+// failure.
+TEST_F(FilesRequestHandlerBaseTest, FinishRequestEarly_WaitsForHash) {
+  auto delegate_ptr = std::make_unique<MockFilesRequestHandlerBaseDelegate>();
+  auto* delegate = delegate_ptr.get();
+
+  EXPECT_CALL(*delegate, GetFileCount()).WillRepeatedly(testing::Return(1));
+  EXPECT_CALL(*delegate, SetHandler(testing::_)).Times(1);
+  FilesRequestHandlerBase handler(&content_analysis_info_, &upload_service_,
+                                  url_, "content_transfer_method",
+                                  DeepScanAccessPoint::UPLOAD,
+                                  ::std::move(delegate_ptr));
+
+  FilesRequestHandlerBase::FileInfo file_info;
+  EXPECT_CALL(*delegate, GetMutableFileInfo(0))
+      .WillRepeatedly(testing::ReturnRef(file_info));
+  EXPECT_CALL(content_analysis_info_, settings())
+      .WillRepeatedly(testing::ReturnRef(settings_));
+  EXPECT_CALL(upload_service_, MaybeUploadForDeepScanning(testing::_)).Times(0);
+
+  bool callback_called = false;
+  auto request = std::make_unique<FakeBinaryUploadRequest>(
+      base::BindLambdaForTesting(
+          [&callback_called](ScanRequestUploadResult result,
+                             ContentAnalysisResponse response) {
+            EXPECT_EQ(result, ScanRequestUploadResult::kFileTooLarge);
+            callback_called = true;
+          }),
+      CloudOrLocalAnalysisSettings(CloudAnalysisSettings()));
+  base::OneShotTimer hash_timer;
+  base::RunLoop run_loop;
+  bool hash_callback_called = false;
+  auto hash_cb = base::BindLambdaForTesting(
+      [&hash_callback_called, &run_loop](OnGotHashCallback cb) {
+        hash_callback_called = true;
+        std::move(cb).Run("digest");
+        run_loop.Quit();
+      });
+  int cb_register_count = 0;
+  request->register_on_got_hash_callback_ =
+      base::BindLambdaForTesting([&hash_timer, &hash_cb, &cb_register_count](
+                                     bool call_last, OnGotHashCallback cb) {
+        if (++cb_register_count == 0) {
+          return;
+        }
+        hash_timer.Start(FROM_HERE, base::Seconds(1),
+                         base::BindPostTaskToCurrentDefault(
+                             base::BindOnce(hash_cb, std::move(cb))));
+      });
+
+  BinaryUploadRequest::Data data;
+  data.size = 100;
+  data.hash = "";
+  handler.OnGotFileInfo(std::move(request), 0,
+                        ScanRequestUploadResult::kFileTooLarge,
+                        std::move(data));
+  run_loop.Run();
+  EXPECT_EQ(cb_register_count, 2);
+  EXPECT_TRUE(callback_called && hash_callback_called &&
+              run_loop.AnyQuitCalled());
 }
 
 // Tests that FileRequestCallback calls the delegate methods and reports events.
