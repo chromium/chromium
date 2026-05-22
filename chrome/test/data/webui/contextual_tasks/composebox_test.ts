@@ -123,6 +123,7 @@ suite('ContextualTasksComposeboxTest', () => {
       composeboxHintTextAskAboutThisImage: 'Ask about this image',
       composeboxHintTextAskAboutThisDoc: 'Ask about this doc',
       forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
     });
 
     testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);

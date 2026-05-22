@@ -33,12 +33,18 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
     return {
       target: {type: Object},
       shouldShow: {type: Boolean},
+      isCoinsEnabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   // The element that the tooltip is anchored to.
   accessor target: Element|null = null;
   accessor shouldShow: boolean = false;
+  accessor isCoinsEnabled: boolean =
+      loadTimeData.getBoolean('tabFaviconChipsToCoinsEnabled');
 
   private onboardingTooltipIsVisible_: boolean = false;
   private numberOfTimesTooltipShown_: number = 0;
@@ -125,7 +131,10 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
       this.stopObservingTooltipResize_();
       this.clearTooltipImpressionTimer_();
     } else if (composebox.getHasAutomaticActiveTabChipToken()) {
-      const target = composebox.getAutomaticActiveTabChipElement();
+       const target = this.isCoinsEnabled ?
+          composebox.getContextEntrypointElement() :
+          composebox.getAutomaticActiveTabChipElement();
+
       if (target) {
         this.target = target;
       }
@@ -149,7 +158,7 @@ export class ContextualTasksOnboardingTooltipElement extends CrLitElement {
   private shouldShowOnboardingTooltip(): boolean {
     return this.numberOfTimesTooltipShown_ < this.maximumTimesTooltipShown_ &&
         this.isOnboardingTooltipDismissCountBelowCap_ &&
-        !this.userDismissedTooltip_;
+        !this.userDismissedTooltip_ && this.target !== null;
   }
 
   private clearTooltipImpressionTimer_() {

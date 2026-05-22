@@ -430,6 +430,9 @@ export const ComposeboxEmbedderMixin =
               this.input = this.lastQueriedInput;
             }
           }
+          if (changedPrivateProperties.has('files')) {
+            this.dispatchEvent(new CustomEvent('on-context-files-changed'));
+          }
           if (changedPrivateProperties.has('smartComposeInlineHint')) {
             if (this.smartComposeAnnounceTimeout_ !== null) {
               clearTimeout(this.smartComposeAnnounceTimeout_);

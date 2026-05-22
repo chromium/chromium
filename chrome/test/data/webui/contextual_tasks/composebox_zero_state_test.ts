@@ -103,6 +103,7 @@ suite('ContextualTasksComposeboxZeroStateTest', () => {
       enableBasicModeZOrder: true,
       composeboxShowContextMenu: true,
       forcedEmbeddedPageHost: '',
+      tabFaviconChipsToCoinsEnabled: false,
     });
 
     testProxy = new TestContextualTasksBrowserProxy(fixtureUrl);

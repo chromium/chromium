@@ -23,6 +23,7 @@ suite('OnboardingTooltipTest', () => {
       isOnboardingTooltipDismissCountBelowCap: true,
       composeboxShowOnboardingTooltipImpressionDelay: 0,
       showOnboardingTooltip: true,
+      tabFaviconChipsToCoinsEnabled: false,
     });
 
     // Create a positioned container.
@@ -44,6 +45,69 @@ suite('OnboardingTooltipTest', () => {
     tooltipElement = document.createElement('contextual-tasks-onboarding-tooltip');
     container.appendChild(tooltipElement);
     await microtasksFinished();
+  });
+
+  test('shows and positions correctly when coins enabled', async () => {
+    tooltipElement.isCoinsEnabled = true;
+
+    const mockComposebox = document.createElement('div') as any;
+    mockComposebox.getHasAutomaticActiveTabChipToken = () => true;
+    mockComposebox.getContextEntrypointElement = () => target;
+    mockComposebox.getAutomaticActiveTabChipElement = () => null;
+
+    tooltipElement.updateTooltipVisibility(container, mockComposebox);
+    await microtasksFinished();
+
+    assertTrue(tooltipElement.shouldShow);
+
+    const crTooltip = tooltipElement.shadowRoot.querySelector('cr-tooltip')!;
+    assertEquals('auto', crTooltip.style.bottom);
+    assertTrue(crTooltip.style.top !== '');
+    assertTrue(crTooltip.style.top !== 'auto');
+  });
+
+  test('hides tooltip when auto tab chip is removed', async () => {
+    tooltipElement.isCoinsEnabled = true;
+
+    let hasToken = true;
+    const mockComposebox = document.createElement('div') as any;
+    mockComposebox.getHasAutomaticActiveTabChipToken = () => hasToken;
+    mockComposebox.getContextEntrypointElement = () => target;
+    mockComposebox.getAutomaticActiveTabChipElement = () => null;
+
+    // Show tooltip.
+    tooltipElement.updateTooltipVisibility(container, mockComposebox);
+    await microtasksFinished();
+    assertTrue(tooltipElement.shouldShow);
+
+    // Remove auto tab chip.
+    hasToken = false;
+    tooltipElement.updateTooltipVisibility(container, mockComposebox);
+    await microtasksFinished();
+
+    assertTrue(!tooltipElement.shouldShow);
+  });
+
+  test('hides tooltip when auto tab chip is removed with coins disabled', async () => {
+    tooltipElement.isCoinsEnabled = false;
+
+    let hasToken = true;
+    const mockComposebox = document.createElement('div') as any;
+    mockComposebox.getHasAutomaticActiveTabChipToken = () => hasToken;
+    mockComposebox.getContextEntrypointElement = () => null;
+    mockComposebox.getAutomaticActiveTabChipElement = () => target;
+
+    // Show tooltip.
+    tooltipElement.updateTooltipVisibility(container, mockComposebox);
+    await microtasksFinished();
+    assertTrue(tooltipElement.shouldShow);
+
+    // Remove auto tab chip.
+    hasToken = false;
+    tooltipElement.updateTooltipVisibility(container, mockComposebox);
+    await microtasksFinished();
+
+    assertTrue(!tooltipElement.shouldShow);
   });
 
   test('positions correctly and resets bottom', async () => {
