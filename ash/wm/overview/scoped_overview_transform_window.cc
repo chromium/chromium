@@ -377,8 +377,8 @@ void ScopedOverviewTransformWindow::SetClipping(const gfx::Rect& clip_rect) {
   }
 
   ui::Layer* layer = window_->layer();
-  // TODO: Investigate why we cannot use `ui::Layer::GetTargetClipRect()` here.
-  if (layer->GetAnimator()->GetTargetClipRect() == clip_rect) {
+
+  if (layer->GetTargetClipRect() == clip_rect) {
     return;
   }
 

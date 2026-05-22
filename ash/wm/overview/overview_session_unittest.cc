@@ -5873,11 +5873,10 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
 
     ToggleOverview();
 
-    // Tests that after entering overview, windows with no top inset and
-    // minimized windows still have no clip.
+    // Tests that after entering overview, minimized windows still have no clip.
     ASSERT_TRUE(GetOverviewController()->InOverviewSession());
-    EXPECT_EQ(clipping1, window1->layer()->clip_rect());
-    EXPECT_EQ(clipping2, window2->layer()->clip_rect());
+    EXPECT_NE(clipping1, window1->layer()->clip_rect());
+    EXPECT_NE(clipping2, window2->layer()->clip_rect());
     EXPECT_EQ(clipping3, window3->layer()->clip_rect());
     EXPECT_NE(clipping4, window4->layer()->clip_rect());
     const gfx::Rect overview_clipping4 = window4->layer()->clip_rect();
@@ -5984,9 +5983,9 @@ TEST_F(SplitViewOverviewSessionTest, Clipping) {
 }
 
 // Tests that when splitview is inactive, there is no need for aspect ratio
-// changes, so there is no clipping on the overview windows. Regression test for
-// crbug.com/1020440.
-TEST_F(SplitViewOverviewSessionTest, NoClippingWhenSplitviewDisabled) {
+// changes, so there is no dynamic clipping on the overview windows. Regression
+// test for crbug.com/1020440.
+TEST_F(SplitViewOverviewSessionTest, NoDynamicClippingWhenSplitviewDisabled) {
   std::unique_ptr<aura::Window> window1 = CreateWindowWithAppType();
   std::unique_ptr<aura::Window> window2 = CreateWindowWithAppType();
 
@@ -5994,8 +5993,8 @@ TEST_F(SplitViewOverviewSessionTest, NoClippingWhenSplitviewDisabled) {
   Shell::Get()->accessibility_controller()->SetSpokenFeedbackEnabled(
       true, A11Y_NOTIFICATION_NONE);
   ASSERT_FALSE(ShouldAllowSplitView());
-  const gfx::Rect clipping1 = window1->layer()->clip_rect();
-  const gfx::Rect clipping2 = window2->layer()->clip_rect();
+  const gfx::Rect clipping1 = gfx::Rect(window1->bounds().size());
+  const gfx::Rect clipping2 = gfx::Rect(window2->bounds().size());
 
   ToggleOverview();
   ASSERT_TRUE(GetOverviewController()->InOverviewSession());
