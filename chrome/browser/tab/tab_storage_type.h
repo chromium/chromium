@@ -30,7 +30,8 @@ enum class StorageLoadWarningCode {
   kMultipleUniqueNodesError = 2,
   kTreeTooDeepError = 3,
   kUnknownCollectionTypeError = 4,
-  kMaxValue = kUnknownCollectionTypeError
+  kMissingRootNodeWithTabs = 5,
+  kMaxValue = kMissingRootNodeWithTabs
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:StorageLoadWarningCode)
 

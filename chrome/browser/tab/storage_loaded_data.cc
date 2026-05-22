@@ -282,6 +282,10 @@ std::unique_ptr<StorageLoadedData> StorageLoadedData::Builder::Build(
                     children_map_, loaded_tabs_map_, loaded_tabs,
                     active_tab_index, &context_);
   } else {
+    if (!loaded_tabs_map_.empty()) {
+      context_.AddWarning(StorageLoadWarningCode::kMissingRootNodeWithTabs,
+                          "Root node missing but tabs are present.");
+    }
     // Temporarily fallback to just loading the tabs in a random order. It is
     // not possible to determine the `active_tab_index` as
     // `active_tab_storage_id` is not set if `root_storage_id` is not set.

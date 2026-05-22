@@ -370,6 +370,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Multiple unique nodes error"/>
   <int value="3" label="Tree too deep error"/>
   <int value="4" label="Unknown collection type error"/>
+  <int value="5" label="Missing root node with tabs error"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/tab/tab_storage_type.h:StorageLoadWarningCode) -->
