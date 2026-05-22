@@ -6,15 +6,21 @@
 
 #include <utility>
 
+#include "base/check.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/strcat.h"
+#include "base/strings/to_string.h"
+#include "base/types/expected_macros.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/metrics/structured/structured_events.h"
 #include "components/metrics/structured/structured_metrics_client.h"
 #include "components/prefs/pref_service.h"
@@ -85,25 +91,29 @@ void AppDiscoveryMetrics::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 std::optional<std::string> AppDiscoveryMetrics::GetAppStringToRecordForPackage(
     const PackageId& package_id) {
   switch (package_id.package_type()) {
-    case apps::PackageType::kArc:
-      return ukm::AppSourceUrlRecorder::GetURLForArcPackageName(
-                 package_id.identifier())
-          .spec();
-    case apps::PackageType::kBorealis:
-      return ukm::AppSourceUrlRecorder::GetURLForBorealis(
-                 package_id.identifier())
-          .spec();
-    case apps::PackageType::kChromeApp:
-      return ukm::AppSourceUrlRecorder::GetURLForChromeApp(
-                 package_id.identifier())
-          .spec();
+    case apps::PackageType::kArc: {
+      GURL url = ukm::AppSourceUrlRecorder::GetURLForArcPackageName(
+          package_id.identifier());
+      CHECK(url.is_valid(), base::NotFatalUntil::M154);
+      return url.spec();
+    }
+    case apps::PackageType::kBorealis: {
+      GURL url =
+          ukm::AppSourceUrlRecorder::GetURLForBorealis(package_id.identifier());
+      CHECK(url.is_valid(), base::NotFatalUntil::M154);
+      return url.spec();
+    }
+    case apps::PackageType::kChromeApp: {
+      GURL url = ukm::AppSourceUrlRecorder::GetURLForChromeApp(
+          package_id.identifier());
+      CHECK(url.is_valid(), base::NotFatalUntil::M154);
+      return url.spec();
+    }
     case apps::PackageType::kWeb: {
-      std::optional<webapps::ManifestId> manifest_id =
-          webapps::ManifestId::Create(GURL(package_id.identifier()));
-      if (!manifest_id.has_value()) {
-        return std::nullopt;
-      }
-      return web_app::GenerateAppIdFromManifestId(*manifest_id);
+      ASSIGN_OR_RETURN(
+          webapps::ManifestId manifest_id,
+          webapps::ManifestId::Create(GURL(package_id.identifier())));
+      return web_app::GenerateAppIdFromManifestId(manifest_id);
     }
     case apps::PackageType::kGeForceNow:
       // GFN is not currently supported by the metrics system.
@@ -119,7 +129,8 @@ void AppDiscoveryMetrics::OnAppInstalled(const std::string& app_id,
                                          InstallSource app_install_source,
                                          InstallReason app_install_reason,
                                          InstallTime app_install_time) {
-  auto app_str_to_record = GetAppStringToRecord(app_id, app_type);
+  ASSIGN_OR_RETURN(std::string app_str_to_record,
+                   GetAppStringToRecord(app_id, app_type), [] {});
   bool app_installed = AddAppInstall(app_str_to_record);
 
   // Do not record any metrics if the app is already installed.
@@ -158,8 +169,11 @@ void AppDiscoveryMetrics::OnAppLaunched(const std::string& app_id,
     return;
   }
 
+  ASSIGN_OR_RETURN(std::string app_str_to_record,
+                   GetAppStringToRecord(app_id, app_type), [] {});
+
   cros_events::AppDiscovery_AppLaunched event;
-  event.SetAppId(GetAppStringToRecord(app_id, app_type))
+  event.SetAppId(app_str_to_record)
       .SetAppType(static_cast<int>(app_type))
       .SetLaunchSource(static_cast<int>(launch_source));
   metrics::structured::StructuredMetricsClient::Record(std::move(event));
@@ -172,7 +186,8 @@ void AppDiscoveryMetrics::OnAppUninstalled(
   // TODO(b/313980856): App service currently does not receive events when apps
   // disappear from a publisher (i.e. app is uninstalled via a sync). Revisit
   // this once app service can receive these events.
-  auto app_str_to_record = GetAppStringToRecord(app_id, app_type);
+  ASSIGN_OR_RETURN(std::string app_str_to_record,
+                   GetAppStringToRecord(app_id, app_type), [] {});
   bool app_uninstalled = RemoveAppInstall(app_str_to_record);
 
   // Do not record any metrics if the app was not uninstalled.
@@ -216,9 +231,11 @@ void AppDiscoveryMetrics::OnInstanceUpdate(
   // Check whether the app is installed or not since there is a maximum
   // number of apps we want to kepp track of. If the app is not in the installed
   // apps list, do not emit state changes of the app.
-  if (ShouldRecordAppKMForAppId(app_id) &&
-      IsAppInstalled(GetAppStringToRecord(app_id, app_type))) {
-    RecordAppState(instance_update);
+  if (ShouldRecordAppKMForAppId(app_id)) {
+    auto app_str_to_record = GetAppStringToRecord(app_id, app_type);
+    if (app_str_to_record.has_value() && IsAppInstalled(*app_str_to_record)) {
+      RecordAppState(instance_update);
+    }
   }
 
   // Apply state to internal model.
@@ -345,21 +362,27 @@ bool AppDiscoveryMetrics::IsStateActive(InstanceState instance_state) {
 
 void AppDiscoveryMetrics::RecordAppActive(
     const InstanceUpdate& instance_update) {
+  ASSIGN_OR_RETURN(
+      std::string app_str_to_record,
+      GetAppStringToRecord(instance_update.AppId(),
+                           GetAppType(profile_, instance_update.AppId())),
+      [] {});
   metrics::structured::StructuredMetricsClient::Record(
       std::move(cros_events::AppDiscovery_AppStateChanged()
-                    .SetAppId(GetAppStringToRecord(
-                        instance_update.AppId(),
-                        GetAppType(profile_, instance_update.AppId())))
+                    .SetAppId(app_str_to_record)
                     .SetAppState(static_cast<int>(AppStateChange::kActive))));
 }
 
 void AppDiscoveryMetrics::RecordAppInactive(
     const InstanceUpdate& instance_update) {
+  ASSIGN_OR_RETURN(
+      std::string app_str_to_record,
+      GetAppStringToRecord(instance_update.AppId(),
+                           GetAppType(profile_, instance_update.AppId())),
+      [] {});
   metrics::structured::StructuredMetricsClient::Record(
       std::move(cros_events::AppDiscovery_AppStateChanged()
-                    .SetAppId(GetAppStringToRecord(
-                        instance_update.AppId(),
-                        GetAppType(profile_, instance_update.AppId())))
+                    .SetAppId(app_str_to_record)
                     .SetAppState(static_cast<int>(AppStateChange::kInactive))));
 }
 
@@ -370,21 +393,40 @@ void AppDiscoveryMetrics::RecordAppClosed(
 
   // If instance_update is the only instance of the app.
   if (prev_instances.size() == 1) {
+    ASSIGN_OR_RETURN(
+        std::string app_str_to_record,
+        GetAppStringToRecord(instance_update.AppId(),
+                             GetAppType(profile_, instance_update.AppId())),
+        [] {});
     metrics::structured::StructuredMetricsClient::Record(
         std::move(cros_events::AppDiscovery_AppStateChanged()
-                      .SetAppId(GetAppStringToRecord(
-                          instance_update.AppId(),
-                          GetAppType(profile_, instance_update.AppId())))
+                      .SetAppId(app_str_to_record)
                       .SetAppState(static_cast<int>(AppStateChange::kClosed))));
   }
 }
 
-std::string AppDiscoveryMetrics::GetAppStringToRecord(
+std::optional<std::string> AppDiscoveryMetrics::GetAppStringToRecord(
     const std::string& hashed_app_id,
     AppType app_type) {
   // Generates a URL for the given |profile_| and |hashed_app_id| that may
   // return the canonical app name for certain |app_type|.
   GURL url = AppPlatformMetrics::GetURLForApp(profile_, hashed_app_id);
+
+  static crash_reporter::CrashKeyString<256> bad_app_url_key("bad-app-url");
+  static crash_reporter::CrashKeyString<64> bad_app_id_key("bad-app-id");
+  static crash_reporter::CrashKeyString<32> bad_app_type_key("bad-app-type");
+
+  if (!url.is_valid()) {
+    bad_app_url_key.Set(url.possibly_invalid_spec());
+    bad_app_id_key.Set(hashed_app_id);
+    bad_app_type_key.Set(base::ToString(app_type));
+    base::debug::DumpWithoutCrashing();
+    return std::nullopt;
+  }
+
+  bad_app_url_key.Clear();
+  bad_app_id_key.Clear();
+  bad_app_type_key.Clear();
 
   switch (app_type) {
     // Collects the app package name unhashed. App package names are public and
@@ -418,7 +460,7 @@ std::string AppDiscoveryMetrics::GetAppStringToRecord(
 
     // Any other app types should not be collected.
     default:
-      return "";
+      return std::nullopt;
   }
 }
 
@@ -456,7 +498,8 @@ void AppDiscoveryMetrics::OnCapabilityAccessUpdate(
 
   AppType app_type = GetAppType(profile_, app_id);
   if (app_type == AppType::kArc) {
-    std::string arc_app_name = GetAppStringToRecord(app_id, app_type);
+    ASSIGN_OR_RETURN(std::string arc_app_name,
+                     GetAppStringToRecord(app_id, app_type), [] {});
     metrics::structured::StructuredMetricsClient::Record(
         std::move(cros_events::AppDiscovery_ArcAppCameraAccessed().SetAppId(
             arc_app_name)));

@@ -153,8 +153,9 @@ class AppDiscoveryMetrics : public AppPlatformMetrics::Observer,
   //
   // ARC app package names are collected unhashed since the app package names
   // are public information on the play store.
-  std::string GetAppStringToRecord(const std::string& hashed_app_id,
-                                   AppType app_type);
+  std::optional<std::string> GetAppStringToRecord(
+      const std::string& hashed_app_id,
+      AppType app_type);
 
   // Profile for which apps discovery metrics are being recorded for.
   raw_ptr<Profile> profile_;
