@@ -9,9 +9,7 @@ android-pixel4-perf-pgo,1,1
 android-pixel4_webview-perf,1,1
 android-pixel10_webview-perf,1,1
 android-pixel4_webview-perf-pgo,1,1
-android-pixel6-perf,4,1
 android-pixel6-perf-pgo,16,1
-android-pixel6-pro-perf,1,1
 android-pixel6-pro-perf-pgo,1,1
 linux-falcon-rak-5070-perf,1,1
 linux-perf-fyi,1,4

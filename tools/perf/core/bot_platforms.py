@@ -926,21 +926,9 @@ PLATFORM_INFO = {
         'platform_os': 'android',
         'is_fyi': False
     },
-    'android-pixel6-perf': {
-        'description': 'Android U',
-        'num_shards': 14,
-        'platform_os': 'android',
-        'is_fyi': False
-    },
     'android-pixel6-perf-pgo': {
         'description': 'Android U',
         'num_shards': 8,
-        'platform_os': 'android',
-        'is_fyi': False
-    },
-    'android-pixel6-pro-perf': {
-        'description': 'Android T',
-        'num_shards': 10,
         'platform_os': 'android',
         'is_fyi': False
     },

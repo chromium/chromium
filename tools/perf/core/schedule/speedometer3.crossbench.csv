@@ -3,7 +3,6 @@ android-brya-kano-i5-8gb-perf,1,1,--fileserver --debug --disable-field-trials
 android-corsola-steelix-8gb-perf,1,1,--fileserver --debug --disable-field-trials
 android-nissa-uldren-8gb-perf,1,1,--fileserver --debug --disable-field-trials
 android-pixel10-perf,1,4,--fileserver --debug --disable-field-trials
-android-pixel6-perf,1,1,--fileserver --disable-field-trials
 android-pixel6-perf-pgo,1,1,--fileserver --disable-field-trials
 android-pixel9-perf,1,4,--fileserver --debug --disable-field-trials
 android-pixel9-pro-perf,1,4,--fileserver --debug --disable-field-trials

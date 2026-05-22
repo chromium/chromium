@@ -148,9 +148,7 @@ UPLOAD_SKIA_JSON_BUILDERS = frozenset([
     'android-pixel4-perf',
     'android-pixel4_webview-perf',  # One of the mobile testers.
     'android-pixel4_webview-perf-pgo',
-    'android-pixel6-perf',
     'android-pixel6-perf-pgo',
-    'android-pixel6-pro-perf',
     'android-pixel9-perf',
     'android-pixel9-pro-perf',
     'android-pixel9-pro-xl-perf',
@@ -198,9 +196,7 @@ PUBLIC_PERF_BUILDERS = [
     'android-pixel4-perf',
     'android-pixel4_webview-perf',  # One of the mobile testers.
     'android-pixel4_webview-perf-pgo',
-    'android-pixel6-perf',
     'android-pixel6-perf-pgo',
-    'android-pixel6-pro-perf',
     'android-pixel9-perf',
     'android-pixel9-pro-perf',
     'android-pixel9-pro-xl-perf',
@@ -729,21 +725,6 @@ BUILDERS = {
             'device_os_flavor': 'google',
         },
     },
-    'android-pixel6-perf': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Android',
-            'device_type': 'oriole',
-            'device_os': 'AP1A.240405.002',
-            'device_os_flavor': 'google',
-        },
-    },
     'android-pixel6-perf-pgo': {
         'tests': [{
             'isolate':
@@ -787,21 +768,6 @@ BUILDERS = {
             'pool': 'chrome.tests.perf',
             'os': 'Android',
             'device_type': 'tangorpro',
-            'device_os_flavor': 'google',
-        },
-    },
-    'android-pixel6-pro-perf': {
-        'tests': [{
-            'isolate':
-            'performance_test_suite_android_trichrome_chrome_google_64_32_bundle',
-        }],
-        'platform':
-        'android-trichrome-chrome-google-64-32-bundle',
-        'dimension': {
-            'pool': 'chrome.tests.perf',
-            'os': 'Android',
-            'device_type': 'raven',
-            'device_os': 'AP1A.240405.002',
             'device_os_flavor': 'google',
         },
     },

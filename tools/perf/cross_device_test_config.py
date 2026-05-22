@@ -70,18 +70,6 @@ TARGET_DEVICES = {
             'Speedometer3': 20,
         },
     },
-    'android-pixel6-perf': {
-        'jetstream2': {
-            'JetStream2': 5,
-        },
-        'speedometer2': {
-            'Speedometer2': 5,
-        },
-        'speedometer3': {
-            'Speedometer3': 5,
-        },
-        'loadline_phone.crossbench': 5,
-    },
     'android-pixel6-perf-pgo': {
         'jetstream2': {
             'JetStream2': 5,

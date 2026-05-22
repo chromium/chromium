@@ -1,6 +1,5 @@
 bot,repeat,shard,flags
 android-pixel10-perf,1,1,--cool-down-threshold=moderate --debug --disable-field-trials
-android-pixel6-perf,1,5,--cool-down-threshold=moderate --disable-field-trials
 android-pixel6-perf-pgo,1,1,--cool-down-threshold=moderate --disable-field-trials
 android-pixel9-perf,1,1,--cool-down-threshold=moderate --debug --disable-field-trials
 android-pixel9-pro-perf,1,1,--cool-down-threshold=moderate --debug --disable-field-trials
