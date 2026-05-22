@@ -221,7 +221,8 @@ export class XfTreeItem extends XfBase {
               type=${ifDefined(this.iconSet ? undefined : this.icon)}
               .iconSet=${this.iconSet}
             ></xf-icon>
-            <span class="tree-label" id="tree-label">${this.label || ''}</span>
+            <span class="tree-label" id="tree-label">${
+        (this.label || '').replace(/\r?\n|\r/g, ' ')}</span>
             <slot name="rename"></slot>
             <slot name="trailingIcon"></slot>
           </div>

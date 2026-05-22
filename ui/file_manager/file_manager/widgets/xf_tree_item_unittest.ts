@@ -491,3 +491,18 @@ export async function testHasChildrenAttribute(done: () => void) {
 
   done();
 }
+
+/** Tests that tree item label sanitizes newlines and carriage returns. */
+export async function testLabelSanitization(done: () => void) {
+  await setUpSingleTreeItem();
+  const item1 = getTreeItemById('item1');
+
+  // Set a label with newlines and carriage returns.
+  item1.label = 'foo\nbar\r\nbaz\rqux';
+  await waitForElementUpdate(item1);
+
+  const {treeLabel} = getTreeItemInnerElements(item1);
+  assertEquals('foo bar baz qux', treeLabel.textContent);
+
+  done();
+}

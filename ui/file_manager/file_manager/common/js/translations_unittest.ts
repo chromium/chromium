@@ -4,7 +4,7 @@
 
 import {assertEquals} from 'chrome://webui-test/chromeos/chai_assert.js';
 
-import {bytesToString, getFileErrorString, str} from './translations.js';
+import {bytesToString, getEntryLabel, getFileErrorString, str} from './translations.js';
 
 /**
  * Tests the formatting of bytesToString.
@@ -153,4 +153,19 @@ export function testGetFileErrorString() {
 
   i18nErrorName = getFileErrorString('PathExistsError');
   assertEquals(i18nErrorName, str('FILE_ERROR_PATH_EXISTS'));
+}
+
+/**
+ * Tests that getEntryLabel sanitizes newlines and carriage returns.
+ */
+export function testGetEntryLabel() {
+  // Mock Entry
+  const mockEntry = {
+    name: 'foo\nbar\r\nbaz\rqux',
+    getParent: () => {},
+    toURL: () => '',
+  } as unknown as Entry;
+
+  // If locationInfo is null, it should just return the sanitized entry.name
+  assertEquals(getEntryLabel(null, mockEntry), 'foo bar baz qux');
 }

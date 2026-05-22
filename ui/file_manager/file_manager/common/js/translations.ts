@@ -198,36 +198,41 @@ export function getRootTypeLabel(locationInfo: EntryLocation) {
  */
 export function getEntryLabel(
     locationInfo: EntryLocation|null, entry: Entry|FilesAppEntry) {
-  if (isOneDrivePlaceholder(entry)) {
-    // Placeholders have locationInfo, but no locationInfo.volumeInfo
-    // so getRootTypeLabel() would return null.
+  const getRawLabel = () => {
+    if (isOneDrivePlaceholder(entry)) {
+      // Placeholders have locationInfo, but no locationInfo.volumeInfo
+      // so getRootTypeLabel() would return null.
+      return entry.name;
+    }
+
+    if (locationInfo) {
+      if (locationInfo.hasFixedLabel) {
+        return getRootTypeLabel(locationInfo);
+      }
+
+      if (entry.filesystem && entry.filesystem.root === entry) {
+        return getRootTypeLabel(locationInfo);
+      }
+    }
+
+    // Special case for MyFiles/Downloads, MyFiles/PvmDefault and
+    // MyFiles/Camera.
+    if (locationInfo && locationInfo.rootType === RootType.DOWNLOADS) {
+      if (entry.fullPath === '/Downloads') {
+        return str('DOWNLOADS_DIRECTORY_LABEL');
+      }
+      if (entry.fullPath === '/PvmDefault') {
+        return str('PLUGIN_VM_DIRECTORY_LABEL');
+      }
+      if (entry.fullPath === '/Camera') {
+        return str('CAMERA_DIRECTORY_LABEL');
+      }
+    }
+
     return entry.name;
-  }
+  };
 
-  if (locationInfo) {
-    if (locationInfo.hasFixedLabel) {
-      return getRootTypeLabel(locationInfo);
-    }
-
-    if (entry.filesystem && entry.filesystem.root === entry) {
-      return getRootTypeLabel(locationInfo);
-    }
-  }
-
-  // Special case for MyFiles/Downloads, MyFiles/PvmDefault and MyFiles/Camera.
-  if (locationInfo && locationInfo.rootType === RootType.DOWNLOADS) {
-    if (entry.fullPath === '/Downloads') {
-      return str('DOWNLOADS_DIRECTORY_LABEL');
-    }
-    if (entry.fullPath === '/PvmDefault') {
-      return str('PLUGIN_VM_DIRECTORY_LABEL');
-    }
-    if (entry.fullPath === '/Camera') {
-      return str('CAMERA_DIRECTORY_LABEL');
-    }
-  }
-
-  return entry.name;
+  return getRawLabel().replace(/\r?\n|\r/g, ' ');
 }
 
 /**
