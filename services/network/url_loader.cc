@@ -438,6 +438,13 @@ URLLoader::URLLoader(
       durable_message_writer_(std::move(maybe_durable_message_writer)) {
   DCHECK(delete_callback_);
 
+  // To minimize performance overhead and UMA report volume, this metric is
+  // only logged for extremely long URLs, and aims to track their prevalence.
+  if (request.url.GetWithoutRef().spec().length() > 8192) {
+    base::UmaHistogramCounts10M("Net.RequestedUrlLength",
+                                request.url.GetWithoutRef().spec().length());
+  }
+
   if (options_ & mojom::kURLLoadOptionReadAndDiscardBody) {
     if (!factory_params_->is_orb_enabled) {
       discard_buffer_ =

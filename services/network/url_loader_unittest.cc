@@ -9203,4 +9203,29 @@ TEST_F(URLLoaderTest, PerformSyntheticResponseFallbackFailure) {
   EXPECT_EQ(net::ERR_INSUFFICIENT_RESOURCES, LoadRequest(request));
 }
 
+TEST_F(URLLoaderTest, LogsRequestedUrlLengthForLongUrls) {
+  base::HistogramTester histogram_tester;
+  std::string long_path(8200, 'a');
+  GURL long_url = test_server()->GetURL("/" + long_path);
+
+  ResourceRequest request = CreateResourceRequest("GET", long_url);
+  EXPECT_EQ(LoadRequest(request), net::OK);
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.RequestedUrlLength", long_url.GetWithoutRef().spec().length(), 1);
+}
+
+TEST_F(URLLoaderTest, DoesNotLogRequestedUrlLengthForShortUrls) {
+  base::HistogramTester histogram_tester;
+  size_t base_len = test_server()->GetURL("/").spec().length();
+  std::string path(1000 - base_len, 'a');
+  GURL short_url = test_server()->GetURL("/" + path);
+  ASSERT_EQ(1000u, short_url.spec().length());
+
+  ResourceRequest request = CreateResourceRequest("GET", short_url);
+  EXPECT_EQ(LoadRequest(request), net::OK);
+
+  histogram_tester.ExpectTotalCount("Net.RequestedUrlLength", 0);
+}
+
 }  // namespace network

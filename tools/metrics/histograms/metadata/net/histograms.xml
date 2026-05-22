@@ -7507,6 +7507,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.RequestedUrlLength" units="characters"
+    expires_after="2027-05-01">
+  <owner>tov@google.com</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    The length of the requested URL, excluding the fragment. Only logged for
+    requests where the URL length exceeds 8192 characters. Recorded when the
+    network loader (URLLoader) request is initiated in the Network Service.
+  </summary>
+</histogram>
+
 <histogram name="Net.RestrictedCookieManager.GetCookiesString.Count30Seconds"
     units="IPCs" expires_after="2026-04-26">
   <owner>olivierli@chromium.org</owner>
