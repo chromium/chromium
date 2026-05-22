@@ -43,7 +43,7 @@ ${this.shouldExpand_() ? html`
           .renamingId="${this.renamingId}"
           .imageUrls="${this.imageUrls}"
           .shoppingCollectionFolderId="${this.shoppingCollectionFolderId}"
-          ?draggable="${this.canDrag}"
+          draggable="${String(this.canDrag)}"
           ?can-drag="${this.canDrag}"
           ?has-active-drag="${this.hasActiveDrag}"
           .activeFolderPath="${this.activeFolderPath}"
