@@ -633,4 +633,87 @@ TEST_P(ES3ClearBufferTest,
   ASSERT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
 }
 
+TEST_P(ES3ClearBufferTest, RasterizerDiscardIntegerClearBypass) {
+  if (ShouldSkipTest()) {
+    return;
+  }
+
+  const GLsizei kDirtyWidth = 256;
+  const GLsizei kDirtyHeight = 256;
+
+  // Step 0: Dirty VRAM using a separate context.
+  {
+    GLManager gl2;
+    gl2.Initialize(GetGlManagerOptions());
+    gl2.MakeCurrent();
+
+    for (int i = 0; i < 8; ++i) {
+      GLuint rb = 0;
+      glGenRenderbuffers(1, &rb);
+      glBindRenderbuffer(GL_RENDERBUFFER, rb);
+      glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8, kDirtyWidth,
+                            kDirtyHeight);
+      GLuint fb = 0;
+      glGenFramebuffers(1, &fb);
+      glBindFramebuffer(GL_FRAMEBUFFER, fb);
+      glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                GL_RENDERBUFFER, rb);
+      EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+                glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+      glClearColor(0.8f, 0.2f, 0.6f, 1.0f);
+      glClear(GL_COLOR_BUFFER_BIT);
+
+      glDeleteFramebuffers(1, &fb);
+      glDeleteRenderbuffers(1, &rb);
+    }
+    glFinish();
+    gl2.Destroy();
+  }
+
+  // Restore main context.
+  gl_.MakeCurrent();
+
+  // Step 1: Trigger the bug.
+  GLuint rb = 0;
+  glGenRenderbuffers(1, &rb);
+  glBindRenderbuffer(GL_RENDERBUFFER, rb);
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8UI, kDirtyWidth, kDirtyHeight);
+
+  GLuint fb = 0;
+  glGenFramebuffers(1, &fb);
+  glBindFramebuffer(GL_FRAMEBUFFER, fb);
+  glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            GL_RENDERBUFFER, rb);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  glEnable(GL_RASTERIZER_DISCARD);
+  ASSERT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // readPixels to trigger lazy clear.
+  std::vector<GLuint> pixels(kDirtyWidth * kDirtyHeight * 4, 0xAAAAAAAAu);
+  glReadPixels(0, 0, kDirtyWidth, kDirtyHeight, GL_RGBA_INTEGER,
+               GL_UNSIGNED_INT, pixels.data());
+
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Inspect results.
+  uint32_t nonzero_components = 0;
+  for (GLuint val : pixels) {
+    if (val != 0) {
+      nonzero_components++;
+    }
+  }
+
+  // If bug is present, we expect non-zero components (leak from dirty VRAM).
+  // If fixed, we expect ALL zero.
+  EXPECT_EQ(0u, nonzero_components);
+
+  // Cleanup.
+  glDisable(GL_RASTERIZER_DISCARD);
+  glDeleteFramebuffers(1, &fb);
+  glDeleteRenderbuffers(1, &rb);
+}
+
 }  // namespace gpu
