@@ -492,7 +492,7 @@ suite('NewTabPageComposeboxTest', () => {
   test('isCollapsible attribute sets expanding state when true', async () => {
     createComposeboxElement(testProxy);
     const collapsibleBox = testProxy.element;
-    (collapsibleBox as any).isCollapsible = true;
+    collapsibleBox.isCollapsible = true;
     document.body.appendChild(collapsibleBox);
     await collapsibleBox.updateComplete;
 
@@ -531,7 +531,7 @@ suite('NewTabPageComposeboxTest', () => {
 
   test('isCollapsible attribute sets expanded state with file', async () => {
     createComposeboxElement(testProxy);
-    (testProxy.element as any).isCollapsible = true;
+    testProxy.element.isCollapsible = true;
     await microtasksFinished();
 
     testProxy.element.$.composebox.dispatchEvent(new FocusEvent('focusin'));
@@ -596,7 +596,7 @@ suite('NewTabPageComposeboxTest', () => {
     createComposeboxElement(testProxy);
     const collapsibleBox = testProxy.element;
     const collapsibleInput = collapsibleBox.getInputElement().$.input;
-    (collapsibleBox as any).isCollapsible = false;
+    collapsibleBox.isCollapsible = false;
     await collapsibleBox.updateComplete;
 
     // Blur the input first, since connectedCallback focuses it by
@@ -614,7 +614,7 @@ suite('NewTabPageComposeboxTest', () => {
     createComposeboxElement(testProxy);
     const collapsibleBox = testProxy.element;
     const collapsibleInput = collapsibleBox.getInputElement().$.input;
-    (collapsibleBox as any).isCollapsible = true;
+    collapsibleBox.isCollapsible = true;
     await collapsibleBox.updateComplete;
 
     collapsibleInput.focus();

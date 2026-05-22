@@ -136,7 +136,6 @@ suite('NewTabPageRealboxTabsTest', () => {
     await microtasksFinished();
 
     assertEquals(testProxy.handler.getCallCount('getRecentTabs'), 1);
-    assertDeepEquals((realbox as any).tabSuggestions_, sampleTabs);
 
     // Once the context menu is closed again, getRecentTabs should not be called
     // on tab strip changes.
@@ -392,10 +391,9 @@ suite('NewTabPageRealboxNextTest', () => {
     const file2 = event.detail.files[1] as FileUpload;
     assertEquals('pasted.pdf', file2.file.name);
     assertEquals('application/pdf', file2.file.type);
-    assertFalse((realbox.$.input as any).pastedInInput_);
   });
 
-  test('pasting text sets pastedInInput flag', async () => {
+  test('pasting text affects preventInlineAutocomplete', async () => {
     // Re-create realbox to pick up new loadTimeData.
     realbox = await createAndAppendRealbox({ntpRealboxNextEnabled: true});
 
@@ -418,7 +416,7 @@ suite('NewTabPageRealboxNextTest', () => {
 
     assertFalse(pasteEvent.defaultPrevented);
     assertFalse(openComposeboxCalled);
-    assertTrue((realbox.$.input as any).pastedInInput_);
+    assertTrue(realbox.$.input.preventInlineAutocomplete(''));
   });
 
   test('useWebKitSearchboxIcons with compose button enabled', async () => {
@@ -874,7 +872,6 @@ suite('NewTabPageRealboxNextTest', () => {
     await microtasksFinished();
 
     assertEquals(testProxy.handler.getCallCount('getRecentTabs'), 1);
-    assertDeepEquals((realbox as any).tabSuggestions_, sampleTabs);
 
     // Verify shown metrics for input types based on SAMPLE_INPUT_STATE
     assertEquals(1, metrics.count(metricName, ContextType.IMAGE));

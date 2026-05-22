@@ -183,7 +183,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   // If isCollapsible is set to true, the composebox will be a pill shape until
   // it gets focused, at which point it will expand. If false, defaults to the
   // expanded state.
-  protected accessor isCollapsible: boolean = false;
+  accessor isCollapsible: boolean = false;
   // Whether the composebox is currently expanded. Always true if isCollapsible
   // is false.
   protected accessor expanding_: boolean = false;

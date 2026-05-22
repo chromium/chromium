@@ -2240,7 +2240,8 @@ suite('NewTabPageAppTest', () => {
         detail: {text: '', files: []},
       }));
       await microtasksFinished();
-      assertTrue((app as any).showComposebox_);
+      let composeboxDialog = app.shadowRoot.querySelector('#composeboxDialog');
+      assertTrue(!!composeboxDialog);
       assertFalse(scrim.hidden);
 
       // 5 & 6. Close composebox and clear modes (the 'x' button clicks).
@@ -2251,7 +2252,8 @@ suite('NewTabPageAppTest', () => {
         composed: true,
       }));
       await microtasksFinished();
-      assertFalse((app as any).showComposebox_);
+      composeboxDialog = app.shadowRoot.querySelector('#composeboxDialog');
+      assertFalse(!!composeboxDialog);
 
       // The scrim should now be hidden because focus was lost
       // when the dialog closed.
@@ -2641,6 +2643,7 @@ suite('NewTabPageAppReducedMotionTest', () => {
         installMock(WindowProxy, (mock) => WindowProxy.setInstance(mock));
     windowProxy.setResultFor('waitForLazyRender', Promise.resolve());
     windowProxy.setResultFor('createIframeSrc', '');
+    windowProxy.setResultFor('now', new Date());
     windowProxy.setResultFor('url', url);
     windowProxy.setResultFor('matchMedia', {
       matches: false,
@@ -2736,7 +2739,7 @@ suite('NewTabPageAppReducedMotionTest', () => {
 
           assertEquals(
               GlifAnimationState.SPINNER_ONLY,
-              (app as any).contextMenuGlifAnimationState_);
+              app.$.searchbox.contextMenuGlifAnimationState);
         });
   });
 
@@ -2748,7 +2751,9 @@ suite('NewTabPageAppReducedMotionTest', () => {
         async () => {
           setReducedMotionPreference(true);
           await createAndAppendApp();
-          (app as any).showComposebox_ = true;
+          app.$.searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+            detail: {text: '', files: []},
+          }));
           await microtasksFinished();
 
           const scrim = app.shadowRoot.querySelector('#scrim')!;
@@ -2760,7 +2765,9 @@ suite('NewTabPageAppReducedMotionTest', () => {
         async () => {
           setReducedMotionPreference(false);
           await createAndAppendApp();
-          (app as any).showComposebox_ = true;
+          app.$.searchbox.dispatchEvent(new CustomEvent('open-composebox', {
+            detail: {text: '', files: []},
+          }));
           await microtasksFinished();
 
           const scrim = app.shadowRoot.querySelector('#scrim')!;
