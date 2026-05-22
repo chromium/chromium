@@ -1296,7 +1296,8 @@ bool ContextualTasksUiService::HandleNavigationImpl(
       // Store the initiator_contents (source_contents) to prevent matching
       // different contents if they navigate to the same URL.
       auto tracker = std::make_unique<ContextualTasksWindowTracker>(
-          task_id, url_params.url, source_contents->GetWeakPtr(),
+          ContextualTaskId(task_id), url_params.url,
+          source_contents->GetWeakPtr(),
           base::BindOnce(&ContextualTasksUiService::RemoveWindowTracker,
                          weak_ptr_factory_.GetWeakPtr()));
       tracker_manager_->AddTracker(std::move(tracker));
@@ -1537,7 +1538,32 @@ void ContextualTasksUiService::RemoveWindowTracker(
   if (!tracker) {
     return;
   }
+  if (tracker->window_id().has_value()) {
+    if (tracker->initiator_contents()) {
+      auto* web_ui_interface =
+          GetWebUiInterface(tracker->initiator_contents().get());
+      if (web_ui_interface) {
+        web_ui_interface->GetPageRemote()->OnWindowClosed(
+            tracker->window_id().value());
+      }
+    }
+  }
   tracker_manager_->RemoveTracker(tracker.get());
+}
+
+void ContextualTasksUiService::RegisterWindow(ContextualTaskId task_id,
+                                              const GURL& url,
+                                              ContextualWindowId window_id) {
+  if (tracker_manager_) {
+    tracker_manager_->RegisterWindow(task_id, url, window_id);
+  }
+}
+
+void ContextualTasksUiService::CloseTrackedWindow(
+    ContextualWindowId window_id) {
+  if (tracker_manager_) {
+    tracker_manager_->CloseTrackedWindow(window_id);
+  }
 }
 
 bool ContextualTasksUiService::IsTrustedHost(const std::string& host) {

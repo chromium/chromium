@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_window_tracker.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
@@ -405,9 +406,10 @@ TEST_P(ContextualTasksUiServiceTestParameterized,
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
 
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  GURL source_url = net::AppendQueryParameter(
-      host_web_content_url, kTaskQueryParam, task_id.AsLowercaseString());
+  ContextualTaskId task_id(base::Uuid::GenerateRandomV4());
+  GURL source_url =
+      net::AppendQueryParameter(host_web_content_url, kTaskQueryParam,
+                                task_id.value().AsLowercaseString());
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
 
@@ -757,9 +759,10 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
 
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  GURL source_url = net::AppendQueryParameter(
-      host_web_content_url, kTaskQueryParam, task_id.AsLowercaseString());
+  ContextualTaskId task_id(base::Uuid::GenerateRandomV4());
+  GURL source_url =
+      net::AppendQueryParameter(host_web_content_url, kTaskQueryParam,
+                                task_id.value().AsLowercaseString());
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
 
@@ -819,9 +822,10 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
 
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  GURL source_url = net::AppendQueryParameter(
-      host_web_content_url, kTaskQueryParam, task_id.AsLowercaseString());
+  ContextualTaskId task_id(base::Uuid::GenerateRandomV4());
+  GURL source_url =
+      net::AppendQueryParameter(host_web_content_url, kTaskQueryParam,
+                                task_id.value().AsLowercaseString());
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
 
@@ -893,9 +897,10 @@ TEST_F(ContextualTasksUiServiceTest,
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(host_web_content_url);
 
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  GURL source_url = net::AppendQueryParameter(
-      host_web_content_url, kTaskQueryParam, task_id.AsLowercaseString());
+  ContextualTaskId task_id(base::Uuid::GenerateRandomV4());
+  GURL source_url =
+      net::AppendQueryParameter(host_web_content_url, kTaskQueryParam,
+                                task_id.value().AsLowercaseString());
   content::WebContentsTester::For(web_contents.get())
       ->SetLastCommittedURL(source_url);
 
@@ -2227,6 +2232,99 @@ TEST_F(ContextualTasksUiServiceTest, OnWebUIDestroyed) {
       .Times(1);
 
   service.OnWebUIDestroyed(&browser_window, task_id);
+}
+
+TEST_F(ContextualTasksUiServiceTest, RegisterWindow_UpdatesTracker) {
+  GURL navigated_url(kTestUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  ContextualTaskId task_id(base::Uuid::GenerateRandomV4());
+  GURL source_url =
+      net::AppendQueryParameter(host_web_content_url, kTaskQueryParam,
+                                task_id.value().AsLowercaseString());
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(source_url);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/true,
+      /*is_same_site_or_from_ui=*/true));
+
+  const auto& trackers = service_for_nav_->window_trackers_for_testing();
+  ASSERT_EQ(1U, trackers.size());
+  EXPECT_FALSE(trackers[0]->window_id().has_value());
+
+  ContextualWindowId window_id =
+      ContextualWindowId(base::UnguessableToken::Create());
+  service_for_nav_->RegisterWindow(task_id, navigated_url, window_id);
+
+  EXPECT_TRUE(trackers[0]->window_id().has_value());
+  EXPECT_EQ(window_id, trackers[0]->window_id().value());
+}
+
+TEST_F(ContextualTasksUiServiceTest, CloseTrackedWindow_ClosesTab) {
+  GURL navigated_url(kTestUrl);
+  GURL host_web_content_url(chrome::kChromeUIContextualTasksURL);
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(host_web_content_url);
+
+  ContextualTaskId task_id(base::Uuid::GenerateRandomV4());
+  GURL source_url =
+      net::AppendQueryParameter(host_web_content_url, kTaskQueryParam,
+                                task_id.value().AsLowercaseString());
+  content::WebContentsTester::For(web_contents.get())
+      ->SetLastCommittedURL(source_url);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(navigated_url, true), web_contents.get(),
+      /*is_from_embedded_page=*/true, /*from_can_create_window=*/true,
+      /*is_same_site_or_from_ui=*/true));
+
+  const auto& trackers = service_for_nav_->window_trackers_for_testing();
+  ASSERT_EQ(1U, trackers.size());
+
+  ContextualWindowId window_id =
+      ContextualWindowId(base::UnguessableToken::Create());
+  service_for_nav_->RegisterWindow(task_id, navigated_url, window_id);
+
+  auto* tracker = trackers[0].get();
+  auto new_web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+  content::WebContentsTester::For(new_web_contents.get())
+      ->NavigateAndCommit(navigated_url);
+
+  tabs::MockTabInterface mock_tab;
+  tabs::TabLookupFromWebContents::CreateForWebContents(new_web_contents.get(),
+                                                       &mock_tab);
+  tabs::TabInterface::WillDetach detach_callback;
+  EXPECT_CALL(mock_tab, RegisterWillDetach(_))
+      .WillOnce([&](tabs::TabInterface::WillDetach callback) {
+        detach_callback = std::move(callback);
+        return base::CallbackListSubscription();
+      });
+  ON_CALL(mock_tab, GetContents).WillByDefault(Return(new_web_contents.get()));
+
+  tracker->SetTabWebContents(new_web_contents.get());
+
+  service_for_nav_->CloseTrackedWindow(window_id);
+
+  // Simulate the guest window being destroyed.
+  ASSERT_FALSE(detach_callback.is_null());
+  detach_callback.Run(&mock_tab, tabs::TabInterface::DetachReason::kDelete);
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return service_for_nav_->window_trackers_for_testing().empty();
+  }));
+
+  EXPECT_EQ(0U, service_for_nav_->window_trackers_for_testing().size());
 }
 
 }  // namespace contextual_tasks

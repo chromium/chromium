@@ -771,6 +771,22 @@ void ContextualTasksPageHandler::NotifySmartTabSharingDefaultOnIphResult(
 #endif
 }
 
+void ContextualTasksPageHandler::RegisterWindow(
+    const contextual_tasks::ContextualTaskId& task_id,
+    const GURL& url,
+    const contextual_tasks::ContextualWindowId& window_id) {
+  if (ui_service_) {
+    ui_service_->RegisterWindow(task_id, url, window_id);
+  }
+}
+
+void ContextualTasksPageHandler::CloseWindow(
+    const contextual_tasks::ContextualWindowId& window_id) {
+  if (ui_service_) {
+    ui_service_->CloseTrackedWindow(window_id);
+  }
+}
+
 void ContextualTasksPageHandler::UnpinSidePanel() {
   if (!contextual_tasks::IsContextualTasksPinButtonInToolbarEnabled()) {
     return;

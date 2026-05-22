@@ -18,6 +18,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_delegate_desktop.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -93,6 +94,10 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
   MOCK_METHOD(void, SetInNlm, (bool in_nlm), (override));
   MOCK_METHOD(void, OnAiPageStatusChanged, (bool), (override));
+  MOCK_METHOD(void,
+              OnWindowClosed,
+              (const contextual_tasks::ContextualWindowId& window_id),
+              (override));
   MOCK_METHOD(void,
               OnLensOverlayStateChanged,
               (bool is_showing, bool maybe_show_overlay_hint_text),

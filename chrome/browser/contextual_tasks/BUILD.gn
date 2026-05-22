@@ -209,6 +209,7 @@ source_set("ui") {
   public_deps = [
     ":contextual_tasks",
     ":mojo_bindings",
+    ":mojom_traits",
     "//base",
     "//chrome/browser/tab_list",
     "//chrome/common:url_constants",
@@ -431,6 +432,19 @@ source_set("ui_impl") {
   }
 }
 
+source_set("mojom_traits") {
+  sources = [
+    "contextual_tasks_mojom_traits.h",
+    "contextual_tasks_types.h",
+  ]
+  public_deps = [
+    ":mojo_bindings_shared_cpp_sources",
+    "//base",
+    "//mojo/public/cpp/base:shared_typemap_traits",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
 mojom("mojo_bindings") {
   sources = [
     "contextual_tasks.mojom",
@@ -443,6 +457,23 @@ mojom("mojo_bindings") {
     "//ui/base/mojom",
     "//ui/webui/resources/cr_components/composebox:mojo_bindings",
     "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "contextual_tasks.mojom.ContextualTaskId"
+          cpp = "::contextual_tasks::ContextualTaskId"
+        },
+        {
+          mojom = "contextual_tasks.mojom.ContextualWindowId"
+          cpp = "::contextual_tasks::ContextualWindowId"
+        },
+      ]
+      traits_headers = [ "contextual_tasks_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
+    },
   ]
 }
 

@@ -9,7 +9,7 @@
 #include <set>
 #include <vector>
 
-#include "base/uuid.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_types.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "url/gurl.h"
 
@@ -46,6 +46,14 @@ class ContextualTasksWindowTrackerManager : public TabListInterfaceObserver {
 
   // Removes a tracker.
   void RemoveTracker(ContextualTasksWindowTracker* tracker);
+
+  // Registers a tracked window with its ID, associated task ID, and URL.
+  void RegisterWindow(ContextualTaskId task_id,
+                      const GURL& url,
+                      ContextualWindowId window_id);
+
+  // Requests the browser to close a tracked window.
+  void CloseTrackedWindow(ContextualWindowId window_id);
 
   // Returns true if the web_contents is tracked.
   bool IsTrackedWindow(content::WebContents* web_contents) const;

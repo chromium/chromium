@@ -12,7 +12,7 @@
 namespace contextual_tasks {
 
 ContextualTasksWindowTracker::ContextualTasksWindowTracker(
-    const base::Uuid& task_id,
+    const ContextualTaskId& task_id,
     const GURL& expected_url,
     base::WeakPtr<content::WebContents> initiator_contents,
     base::OnceCallback<void(base::WeakPtr<ContextualTasksWindowTracker>)>
@@ -28,7 +28,7 @@ ContextualTasksWindowTracker::ContextualTasksWindowTracker(
                      base::Unretained(this)));
   OMNIBOX_LOG("window_tracker")
       << "ContextualTasksWindowTracker created for task: "
-      << task_id_.AsLowercaseString();
+      << task_id_.value().AsLowercaseString();
 }
 
 ContextualTasksWindowTracker::~ContextualTasksWindowTracker() = default;
