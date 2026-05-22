@@ -22,7 +22,13 @@ template("fuzzable_proto_library") {
       current_toolchain != "//build/toolchain/cros:target") {
     _proto_target_name = "${target_name}__proto"
     proto_library(_proto_target_name) {
-      forward_variables_from(invoker, "*", [ "proto_library_deps" ])
+      forward_variables_from(invoker,
+                             "*",
+                             [
+                               "proto_library_deps",
+                               "component_build_force_source_set",
+                             ])
+      component_build_force_source_set = true
 
       if (defined(invoker.proto_library_deps)) {
         if (!defined(deps)) {
@@ -34,6 +40,10 @@ template("fuzzable_proto_library") {
       # Override LITE_RUNTIME settings in the protobuf files.
       cc_generator_options = "speed"
       extra_configs = [ "//third_party/protobuf:protobuf_config" ]
+      if (!is_win) {
+        # Ensure symbols are exported across shared library boundaries.
+        extra_configs += [ "//build/config/gcc:symbol_visibility_default" ]
+      }
     }
 
     # These groups are required by proto_library template in proto_library.gni.
@@ -44,18 +54,15 @@ template("fuzzable_proto_library") {
       public_deps = [ ":${_proto_target_name}_gen" ]
     }
 
-    # Inspired by proto_library.gni's handling of
-    # component_build_force_source_set.
-    if (defined(component_build_force_source_set) &&
-        component_build_force_source_set && is_component_build) {
-      link_target_type = "source_set"
-    } else {
-      link_target_type = "static_library"
-    }
-
-    # By making target a static_library or source_set, we can add protobuf_full
-    # to public_deps.
-    target(link_target_type, target_name) {
+    # In component builds, we build fuzzable proto libraries as shared
+    # components rather than static libraries. If they were static libraries,
+    # multiple components depending on them would statically link duplicate
+    # copies of the generated proto code. If a binary depends on multiple of
+    # these components it result in ODR violations and crashes due to duplicate
+    # proto descriptor registrations since the protobuf library is a shared
+    # library. By making the target a `component`, we ensure the generated code
+    # is compiled exactly once into a single shared library.
+    component(target_name) {
       if (defined(invoker.testonly)) {
         testonly = invoker.testonly
       }

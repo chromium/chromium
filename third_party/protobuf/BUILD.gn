@@ -19,7 +19,6 @@ group("absl") {
   visibility = [ ":*" ]
 }
 
-
 config("protobuf_config") {
   include_dirs = [ "src" ]
   defines = [
@@ -61,6 +60,17 @@ config("using_proto") {
   include_dirs = [ "src" ]
 }
 
+# Chromium uses two distinct protobuf targets:
+# 1. `protobuf_lite`: The lightweight runtime used by production Chrome/Blink
+#     code.
+# 2. `protobuf_full`: The heavy runtime used by tests, fuzzers, and build tools
+#    (`protoc`).
+#
+# In non-component builds, these are built as two static_libraries and full
+# depends on both. In component builds, a single shared library is used for
+# both, because they can't be broken into separate shared libraries. See
+# https://crbug.com/40229487 for further background.
+#
 # On Android, we must use a static library to avoid symbol conflicts with the
 # system's version of protobuf. Exclude Android fuzzing builds since having
 # targets that include a proto_library and a fuzzable_proto_library leads to
@@ -76,6 +86,10 @@ if (is_android && !use_fuzzing_engine_with_lpm) {
 
 target(_protobuf_lite_target_type, "protobuf_lite") {
   sources = protobuf_lite_sources
+
+  if (is_component_build) {
+    sources += protobuf_sources
+  }
   public = protobuf_headers
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -116,7 +130,16 @@ target(_protobuf_lite_target_type, "protobuf_lite") {
 # This is the full, heavy protobuf lib that's needed for c++ .protos that don't
 # specify the LITE_RUNTIME option. The protocol compiler itself (protoc) falls
 # into that category. Do not use in Chrome code.
-static_library("protobuf_full") {
+#
+# In component builds, this just forwards the dependency to `protobuf_lite`. See
+# comment above `protobuf_lite`.
+if (is_component_build) {
+  _protobuf_full_target_type = "group"
+} else {
+  _protobuf_full_target_type = "static_library"
+}
+
+target(_protobuf_full_target_type, "protobuf_full") {
   if (defined(build_with_chromium) && build_with_chromium) {
     # Prevent people from depending on this outside our file.
     visibility = [
@@ -191,38 +214,38 @@ static_library("protobuf_full") {
     ]
   }
 
-  deps = [ ":utf8_range" ]
-
-  # In component build, protobuf_full can't depend on protobuf_lite because
-  # it uses non-PROTOBUF_EXPORT symbols; in non-component build, protobuf_full
-  # must have protobuf_lite as a dependency instead of building
-  # protobuf_lite_sources to avoid ODR violations in targets that link both.
-  # See crbug.com/1338164.
+  # In component builds, this just forwards the dependency to `protobuf_lite`.
+  # See comment above `protobuf_lite`.
   if (is_component_build) {
-    sources = protobuf_lite_sources + protobuf_sources
+    public_deps = [
+      ":protobuf_lite",
+      "${protobuf_abseil_dir}:absl",
+    ]
   } else {
     sources = protobuf_sources
-    deps += [ ":protobuf_lite" ]
+    public = protobuf_headers
+    deps = [
+      ":protobuf_lite",
+      ":utf8_range",
+    ]
+    public_deps = [ "${protobuf_abseil_dir}:absl" ]
+
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+
+    configs += [ ":protobuf_config_internal" ]
+
+    # Remove coverage and Sanitizers other than ASan for a performance boost
+    # when fuzzing. ASan can't be removed here because of a bug preventing
+    # unsanitized code from using libc++, which protobuf_full uses.
+    configs -= not_fuzzed_remove_configs
+    configs += not_fuzzed_needs_asan_add_configs
+
+    if (is_win) {
+      configs -= [ "//build/config/win:lean_and_mean" ]
+    }
   }
 
-  public = protobuf_headers
-
-  public_deps = [ ":absl" ]
-
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-
-  configs += [ ":protobuf_config_internal" ]
-
-  # Remove coverage and Sanitizers other than ASan for a performance boost when
-  # fuzzing. ASan can't be removed here because of a bug preventing unsanitized
-  # code from using libc++, which protobuf_full uses.
-  configs -= not_fuzzed_remove_configs
-  configs += not_fuzzed_needs_asan_add_configs
-
-  if (is_win) {
-    configs -= [ "//build/config/win:lean_and_mean" ]
-  }
   public_configs = [ ":protobuf_config" ]
 }
 
@@ -241,6 +264,7 @@ if (current_toolchain == host_toolchain) {
   # challenging for GN header dependency checks.
   source_set("protoc_java_all_headers") {
     sources = protoc_java_all_headers
+    configs += [ ":libprotoc_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
@@ -250,6 +274,7 @@ if (current_toolchain == host_toolchain) {
   }
   source_set("protoc_java") {
     sources = protoc_java_sources
+    configs += [ ":libprotoc_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
@@ -262,6 +287,7 @@ if (current_toolchain == host_toolchain) {
   }
   source_set("protoc_java_full") {
     sources = protoc_java_full_sources
+    configs += [ ":libprotoc_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
@@ -274,6 +300,7 @@ if (current_toolchain == host_toolchain) {
   }
   source_set("protoc_java_lite") {
     sources = protoc_java_lite_sources
+    configs += [ ":libprotoc_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
@@ -287,6 +314,7 @@ if (current_toolchain == host_toolchain) {
 
   source_set("protoc_cpp") {
     sources = protoc_cpp_sources + protoc_cpp_headers
+    configs += [ ":libprotoc_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
@@ -297,12 +325,23 @@ if (current_toolchain == host_toolchain) {
 
   source_set("protoc_python") {
     sources = protoc_python_sources + protoc_python_headers
+    configs += [ ":libprotoc_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
 
     configs += [ ":protobuf_config_internal" ]
 
     public_deps = [ ":protobuf_full" ]
+  }
+
+  # In component builds, protoc targets depending on `protobuf_lite` inherit
+  # PROTOBUF_USE_DLLS. This causes PROTOC_EXPORT to resolve to dllimport on
+  # Windows, which leads to compilation errors (`-Winconsistent-dllimport`)
+  # since the dllimports are for symbols that are implemented locally. Defining
+  # LIBPROTOC_EXPORTS forces PROTOC_EXPORT to resolve to dllexport to fix the
+  # issue.
+  config("libprotoc_config") {
+    defines = [ "LIBPROTOC_EXPORTS" ]
   }
 
   # protoc generates language-specific bindings from protos.
@@ -314,6 +353,16 @@ if (current_toolchain == host_toolchain) {
     configs += [ ":protobuf_config_internal" ]
 
     public_configs = [ ":protobuf_config" ]
+
+    # In component builds, targets depending on protoc_lib inherit
+    # PROTOBUF_USE_DLLS, which makes them dllimport protoc symbols. However,
+    # protoc_lib is a static_library and thus part of these targets. This
+    # causes link failures on Windows when trying to dllimport symbols that
+    # are defined locally.
+    #
+    # Adding this config to public_configs forces these targets to dllexport
+    # protoc symbols instead.
+    public_configs += [ ":libprotoc_config" ]
 
     public_deps = [ ":protobuf_full" ]
     deps = [
