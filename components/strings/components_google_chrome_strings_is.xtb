@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">Þessar síður eru ætlaðar til notkunar hjá þróunaraðilum Chrome og er e.t.v. ekki haldið við eða prófaðar reglulega. Til að kveikja á þeim skaltu fara á <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, smella á hnappinn til að kveikja á villuleitarsíðum og fara síðan aftur á þessa síðu.</translation>
 <translation id="3875312571075912821">Veittu Chrome aðgang að netkerfinu þínu í eldveggsstillingunum þínum eða
            vírusvarnarstillingunum.</translation>
+<translation id="3893985792899396936">Ábending frá Chrome: Leitaðu með linsu</translation>
 <translation id="4949828774841497663">Farðu í Forrit &gt; Kerfisstillingar &gt; Netkerfi og veldu
           virkt netkerfi, smelltu á hnappinn Upplýsingar... og afveldu alla staðgengla
           sem kunna að hafa verið valdir.</translation>
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           og gakktu úr skugga um að stillt sé á „ekki proxy“ eða „beint“.</translation>
+<translation id="6187085551300363958">Chrome-ráð: Vistaðu aðgangsorð</translation>
 <translation id="6341737370356890233">Farðu í
         valmynd Chrome &gt;
         <ph name="SETTINGS_TITLE" />
@@ -43,6 +45,7 @@
           Netkerfi og internet &gt; Proxy
           og afveldu „Greina stillingar sjálfkrafa“.</translation>
 <translation id="7230956101631259640">Þú ert að skoða örugga Chrome síðu</translation>
+<translation id="7641448682796883218">Chrome-ráð: Enn öruggari vefskoðun</translation>
 <translation id="8232971017369963250">Chrome virkar í krafti verkefnis <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> um opinn kóða.</translation>
 <translation id="8279509328145658601">Chrome virkar einnig í krafti annars <ph name="BEGIN_LINK_OSS" />hugbúnaðar með opinn kóða<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome er að reyna að breyta stillingum fyrir útfyllingu greiðslumáta.</translation>

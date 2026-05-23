@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Estas páginas están destinadas a los desarrolladores de Chrome y es posible que no se prueben ni se mantengan de forma activa. Para habilitarlas, ve a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, haz clic en el botón para habilitar las páginas de depuración y, luego, vuelve a esta página.</translation>
 <translation id="3875312571075912821">Permite que Chrome acceda a la red en tu configuración de firewall
           o antivirus.</translation>
+<translation id="3893985792899396936">Sugerencia de Chrome: Busca con Lens</translation>
 <translation id="4949828774841497663">Ve a Aplicaciones &gt; Configuración del sistema &gt; Red, selecciona la
           red activa, haz clic en el botón Detalles… y anula la selección de los proxies
           que se hayan seleccionado.</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           y asegúrate de que la configuración seleccionada sea "sin proxy" o "directa".</translation>
+<translation id="6187085551300363958">Sugerencia de Chrome: Guardar contraseñas</translation>
 <translation id="6341737370356890233">Ve
           al menú de Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@
           Red e Internet &gt; Proxy
           y anula la selección de la opción "Detectar la configuración automáticamente".</translation>
 <translation id="7230956101631259640">Estás viendo una página segura de Chrome</translation>
+<translation id="7641448682796883218">Sugerencia de Chrome: Navegación segura mejorada</translation>
 <translation id="8232971017369963250">Chrome funciona gracias al proyecto de código abierto de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome también funciona gracias a otros <ph name="BEGIN_LINK_OSS" />software de código abierto<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome está intentando modificar la configuración para completar formas de pago.</translation>

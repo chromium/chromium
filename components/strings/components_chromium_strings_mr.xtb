@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
 <translation id="130631256467250065">तुम्ही आपल्या डिव्हाइसचा पुढील वेळी पुनरारंभ कराल तेव्हा तुमचे बदल प्रभावी होतील.</translation>
+<translation id="1965068424387304464">Chromium टीप: पासवर्ड सेव्ह करा</translation>
 <translation id="261308610302996111">Chromium मेनू &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -14,6 +15,7 @@
 <translation id="3064346599913645280">तुम्ही एक सुरक्षित Chromium पेज पाहत आहात</translation>
 <translation id="3255926992597692024">Chromium पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="358997566136285270">Chromium लोगो</translation>
+<translation id="3837584850181228767">Chromium टीप: वर्धित सुरक्षित ब्राउझिंग</translation>
 <translation id="4050599136622776556">Chromium हे पेमेंट पद्धती संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
 <translation id="4365115785552740256">Chromium हे <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोत प्रकल्प आणि इतर <ph name="BEGIN_LINK_OSS" />खुले स्रोत सॉफ्टवेअर<ph name="END_LINK_OSS" /> द्वारे बनवणे शक्य झाले.</translation>
 <translation id="4622039161600275920">हे पेज Chromium ने ब्लॉक केले आहे</translation>
@@ -48,4 +50,5 @@
           हा पर्याय निवडण्याची शिफारस करतो.</translation>
 <translation id="8597726643333341451">तुम्ही सुरक्षित Chrome for Testing पेज पाहत आहात</translation>
 <translation id="8684913864886094367">Chromium योग्यरित्या बंद केले नव्‍हते.</translation>
+<translation id="9183331186620388872">Chromium टीप: Lens वापरून शोधा</translation>
 </translationbundle>

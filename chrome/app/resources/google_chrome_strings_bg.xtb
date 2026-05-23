@@ -286,7 +286,6 @@
 <translation id="3885770153807205175">Инструмент за избор на език</translation>
 <translation id="3889417619312448367">Деинсталиране на Google Chrome</translation>
 <translation id="3892148308691398805">Копиране на текста</translation>
-<translation id="3893985792899396936">Съвет за Chrome: Търсене с Обектив</translation>
 <translation id="3941890832296813527">Грешка при инсталирането: Името на файла с инсталационната програма е невалидно или не се поддържа.</translation>
 <translation id="395904275706073188">Защитените страници не могат да бъдат прочетени. Опитайте с друга страница.</translation>
 <translation id="3968962723676998462">Въведете пропуска си, за да използвате и запазвате данните от Chrome в профила си (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -500,7 +499,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
 <translation id="6180522807229584611">Този раздел използва допълнителни ресурси. За да подобрите ефективността, разрешете на Chrome да го деактивира.</translation>
 <translation id="6182736845697986886">Инсталирането не бе успешно поради вътрешна грешка в сървъра за актуализиране.</translation>
-<translation id="6187085551300363958">Съвет за Chrome: Запазване на паролите</translation>
 <translation id="6192058120268468905">Профилът ви в Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> добави разширение, което може да промени начина на работа на Chrome.
 
@@ -647,7 +645,6 @@
 <translation id="7627609214560473136">За да защитите данните си, разрешете на Chrome да премахва разрешенията от сайтовете, които не сте посещавали наскоро.</translation>
 <translation id="7629695634924605473">Chrome ви уведомява, ако паролите ви бъдат компрометирани</translation>
 <translation id="7641148173327520642">Системният ви администратор е конфигурирал Google Chrome да отваря <ph name="ALTERNATIVE_BROWSER_NAME" /> за достъп до <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Съвет за Chrome: Подобрена защита от Безопасно сърфиране</translation>
 <translation id="7649070708921625228">Помощ</translation>
 <translation id="7651907282515937834">Лого на Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome блокира това изтегляне, защото сте изключили Безопасно сърфиране и файлът не може да бъде потвърден</translation>

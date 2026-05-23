@@ -287,7 +287,6 @@
 <translation id="3885770153807205175">Хэл сонгогч</translation>
 <translation id="3889417619312448367">Google Chrome-ыг устгах</translation>
 <translation id="3892148308691398805">Текстийг хуулах</translation>
-<translation id="3893985792899396936">Chrome-н зөвлөгөө: Lens-р хайх</translation>
 <translation id="3941890832296813527">Суулгах үед алдаа гарлаа: Суулгагчийн файлын нэр буруу эсвэл дэмжигдээгүй.</translation>
 <translation id="395904275706073188">Хамгаалагдсан хуудсыг унших боломжгүй. Өөр хуудас туршиж үзнэ үү.</translation>
 <translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> бүртгэлдээ Chrome-н өгөгдлийг ашиглах, хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
@@ -505,7 +504,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Бета</translation>
 <translation id="6180522807229584611">Энэ таб нэмэлт нөөц ашиглаж байна. Гүйцэтгэлээ сайжруулахын тулд Chrome-д энэ табыг идэвхгүй болгохыг зөвшөөрнө үү.</translation>
 <translation id="6182736845697986886">Шинэчлэлтийн серверийн дотоод алдааны улмаас суулгалт амжилтгүй болсон.</translation>
-<translation id="6187085551300363958">Chrome-н зөвлөгөө: Нууц үгийг хадгалаарай</translation>
 <translation id="6192058120268468905">Таны Chrome дахь бүртгэл</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome-н ажиллах зарчмыг өөрчилж болох өргөтгөл нэмсэн.
 
@@ -652,7 +650,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="7627609214560473136">Өгөгдлөө хамгаалахын тулд Chrome-д таны сүүлийн үед зочлоогүй сайтын зөвшөөрлийг хасахыг зөвшөөрнө үү.</translation>
 <translation id="7629695634924605473">Хэрэв таны нууц үг алдагдсан байвал Chrome танд мэдэгдэнэ</translation>
 <translation id="7641148173327520642">Таны системийн админ Google Chrome-г <ph name="TARGET_URL_HOSTNAME" />-д хандахын тулд <ph name="ALTERNATIVE_BROWSER_NAME" />-г нээхээр тохируулсан байна.</translation>
-<translation id="7641448682796883218">Chrome-н зөвлөгөө: Сайжруулсан аюулгүй хөтөч</translation>
 <translation id="7649070708921625228">Тусламж</translation>
 <translation id="7651907282515937834">Chrome-н байгууллагын лого</translation>
 <translation id="76531479118467370">Та Safe Browsing-г унтраасан бөгөөд файлыг баталгаажуулах боломжгүй тул Chrome энэ таталтыг блоклосон</translation>

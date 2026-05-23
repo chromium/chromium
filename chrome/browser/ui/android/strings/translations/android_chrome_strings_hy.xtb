@@ -1015,6 +1015,7 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, ամրացված ինկոգնիտո ներդիր, որը հասանելի է այլ օգտատերերի</translation>
 <translation id="5375374982898812658">Ձեզ անմիջապես անհասանելի կդառնա ներդիրների «<ph name="GROUP_NAME" />» խումբը, և այն կջնջվի ձեր բոլոր սարքերից</translation>
 <translation id="5375577065097716013">Որոնել Google Տեսապակու միջոցով <ph name="BEGIN_NEW" />Նոր<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Պահել և կիսվել</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />-ը ցանկանում է օգտագործել ձեր թվային դրամապանակի անձնական տեղեկությունները։ Շարունակեք միայն, եթե վստահում եք այս կայքին։ Վտանգավոր կայքերը կարող են ձեզ խաբել՝ բացահայտելու ձեր լրիվ անունը կամ անձը հաստատող փաստաթղթի համարը։</translation>
 <translation id="5395376160638294582">Համոզվեք, որ միշտ կարող եք օգտվել Chrome-ի տվյալներից ձեր Google հաշվում</translation>
 <translation id="539881862970320163">Հուսալի գաղտնաբառ է առաջարկվում։ Ստեղնաշարը թաքցված է։</translation>
@@ -1098,6 +1099,7 @@
 <translation id="5763514718066511291">Հպեք՝ այս հավելվածի URL-ը պատճենելու համար</translation>
 <translation id="5765517223145864268">Կիսվեք մեզ հետ ձեր կարծիքով։ Կարող եք նաև <ph name="BEGIN_LINK" />փոխել կարգավորումները<ph name="END_LINK" />։</translation>
 <translation id="5776970333778123608">Ոչ կարևոր տվյալներ</translation>
+<translation id="5788665823391532892">Հաղորդել խնդրի մասին…</translation>
 <translation id="5793665092639000975">Օգտագործվում է՝ <ph name="SPACE_USED" />/<ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Թեման արգելափակված է</translation>
 <translation id="580893287573699959">Կառավարեք ձեզ հետաքրքրող թեմաները և որոնման հարցումները</translation>

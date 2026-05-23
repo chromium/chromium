@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ml">
 <translation id="130631256467250065">നിങ്ങൾ അടുത്ത തവണ ഉപകരണം റീസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ മാറ്റങ്ങൾ പ്രാബല്യത്തിൽ വരും.</translation>
+<translation id="1965068424387304464">Chromium നുറുങ്ങ്: പാസ്‌വേഡുകൾ സംരക്ഷിക്കൂ</translation>
 <translation id="261308610302996111">Chromium മെനു &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -13,6 +14,7 @@
 <translation id="3064346599913645280">നിങ്ങൾ സുരക്ഷിതമായ ഒരു Chromium പേജാണ് കാണുന്നത്</translation>
 <translation id="3255926992597692024">പേയ്‌മെന്റ് രീതികൾ പൂരിപ്പിക്കുന്നതിനുള്ള ക്രമീകരണം പരിഷ്‌കരിക്കാൻ ശ്രമിക്കുകയാണ് Chromium.</translation>
 <translation id="358997566136285270">Chromium ലോഗോ</translation>
+<translation id="3837584850181228767">Chromium നുറുങ്ങ്: മെച്ചപ്പെടുത്തിയ സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="4050599136622776556">പേയ്‌മെന്റ് രീതികൾ എഡിറ്റ് ചെയ്യാൻ Chromium ശ്രമിക്കുന്നു.</translation>
 <translation id="4365115785552740256">Chromium സാധ്യമായത് <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ഓപ്പൺ സോഴ്‌സ് പ്രോജക്റ്റും മറ്റ് <ph name="BEGIN_LINK_OSS" />ഓപ്പൺ സോഴ്‌സ് സോഫ്റ്റ്‌വെയറും<ph name="END_LINK_OSS" /> ഉപയോഗിച്ചാണ്</translation>
 <translation id="4622039161600275920">Chromium ഈ പേജ് ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
@@ -44,4 +46,5 @@
           ഇത് പ്രശ്‌നം പരിഹരിക്കുന്നില്ലെങ്കിൽ, മെച്ചപ്പെട്ട പ്രകടനത്തിനായി ഈ ഓപ്‌ഷൻ വീണ്ടും തിരഞ്ഞെടുക്കാൻ ഞങ്ങൾ ശുപാർശ ചെയ്യുന്നു.</translation>
 <translation id="8597726643333341451">സുരക്ഷിതമായ ഒരു Chrome for Testing പേജാണ് നിങ്ങൾ കാണുന്നത്</translation>
 <translation id="8684913864886094367">Chromium ശരിയായി ഷട്ട്ഡൗൺ ചെയ്‌തിട്ടില്ല.</translation>
+<translation id="9183331186620388872">Chromium നുറുങ്ങ്: Lens ഉപയോഗിച്ച് തിരയുക</translation>
 </translationbundle>

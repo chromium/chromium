@@ -164,6 +164,7 @@
 <translation id="1104098698795583187">您将立即失去对此标签页分组的访问权限，并且该分组将从您的所有设备中删除</translation>
 <translation id="1106270460549661906">取消与 Gemini 分享</translation>
 <translation id="1106350001632362876">提高阈值</translation>
+<translation id="1107300737351978027">不能包含重复的数字</translation>
 <translation id="110850812463801904">手动连接到 OneDrive</translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
 <translation id="1108938384783527433">历史记录同步</translation>
@@ -268,6 +269,7 @@
 <translation id="1173894706177603556">重命名</translation>
 <translation id="1174073918202301297">快捷方式已添加</translation>
 <translation id="1174366174291287894">您的连接始终是安全的，除非 Chrome 另有说明</translation>
+<translation id="1174759280027683968">前往 Chrome</translation>
 <translation id="1175131936083782305">您的管理员已停用此功能。</translation>
 <translation id="1175277108283187866">在地址栏中访问网站或开始搜索</translation>
 <translation id="1175364870820465910">打印(&amp;P)...</translation>
@@ -948,7 +950,6 @@
 <translation id="1636212173818785548">确定</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />应用数据可以是应用已保存的任何数据（具体取决于开发者的设置），包括联系人、消息和照片等数据。备份数据不会计入您的云端硬盘存储空间配额。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可在“设置”中关闭此服务。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1637224376458524414">在您的 iPhone 上获取此书签</translation>
 <translation id="1637765355341780467">打开您的个人资料时出了点问题，部分功能可能无法使用。</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1641113438599504367">安全浏览</translation>
@@ -1783,7 +1784,6 @@
 <translation id="221297410904507041">删除历史记录、Cookie、缓存内容及其他数据</translation>
 <translation id="2213410656650624348">适中</translation>
 <translation id="2214018885812055163">共享的文件夹</translation>
-<translation id="2214453882118345682">使用相机购买、翻译和识别所见内容。</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;有 1 行代码未显示出来&gt;}other{&lt;有 <ph name="NUMBER_OF_LINES" /> 行代码未显示出来&gt;}}</translation>
 <translation id="2215070081105889450">若要分享音频，请改为分享标签页或屏幕</translation>
 <translation id="2217208085547223783">信任状态</translation>
@@ -2694,7 +2694,6 @@
 <translation id="2813765525536183456">添加新个人资料(&amp;A)</translation>
 <translation id="281390819046738856">无法签署该请求。</translation>
 <translation id="2814489978934728345">停止加载此页</translation>
-<translation id="2815693974042551705">“书签”文件夹</translation>
 <translation id="2816319641769218778">若想将密码保存到您的 Google 账号中，请开启同步功能。</translation>
 <translation id="2817435998497102771">设置您的壁纸与风格</translation>
 <translation id="2817861546829549432">如果您启用了“请勿跟踪”，您的浏览流量中将会包含一个请求。具体影响取决于网站是否回应该请求以及如何解读该请求。例如：某些网站在收到该请求后，可能会向您展示广告（这些广告并不是根据您访问过的其他网站展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了在网站上提供相关内容、服务、广告和推荐内容，以及为了生成报告统计信息。</translation>
@@ -2808,7 +2807,6 @@
 <translation id="2893318819023133318">反转视图</translation>
 <translation id="2894596417096093634">崩溃报告标识符</translation>
 <translation id="2894757982205307093">在组内添加新标签页</translation>
-<translation id="2895244606836384727">提醒：别忘了您的标签页分组</translation>
 <translation id="289695669188700754">密钥 ID：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">当您关闭所有无痕式窗口后，系统将会撤消这项自定义设置</translation>
 <translation id="2897878306272793870">是否确实要打开 <ph name="TAB_COUNT" /> 个标签页？</translation>
@@ -4438,7 +4436,6 @@
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{此操作会将该分组从您的设备中永久删除。}other{此操作会将这些分组从您的设备中永久删除。}}</translation>
 <translation id="4010036441048359843">开启突出显示功能</translation>
 <translation id="4010746393007464819">可以升级至 Debian 12 (Bookworm)</translation>
-<translation id="4010917659463429001">要在移动设备上获取书签，请<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4011073493055408531">城市上空闪耀着紫色和绿色的北极光。</translation>
 <translation id="4011897773956589748">下次 Gemini 需要访问此账号时，会再次向您发出请求。</translation>
 <translation id="4012509903424054869">系统会自动转换 PDF 文件，以便您搜索和选择文本</translation>
@@ -5340,7 +5337,6 @@
 <translation id="4660465405448977105">{COUNT,plural, =1{图片}other{# 张图片}}</translation>
 <translation id="4660540330091848931">正在调整大小</translation>
 <translation id="4662373422909645029">昵称不能包含数字</translation>
-<translation id="4662788913887017617">将此书签共享给您的 iPhone</translation>
 <translation id="4663373278480897665">已允许使用摄像头</translation>
 <translation id="4665014895760275686">制造商</translation>
 <translation id="4665446389743427678">即将删除 <ph name="SITE" /> 存储的所有数据。</translation>
@@ -5385,7 +5381,6 @@
 <translation id="4688176403504673761"><ph name="MANAGER" /> 正在将此设备回滚到上一个版本 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">请检查网络连接，然后再次尝试使用 Gemini</translation>
 <translation id="4689235506267737042">选择您的演示偏好设置</translation>
-<translation id="4689421377817139245">将此书签同步到您的 iPhone</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 固件生成了四个文件：csr.lst、fh_regs.lst、radio_reg.lst 和 monitor.lst.sysmon。前三个文件是包含注册表转储的二进制文件，且 Intel 表示其中并未包含任何个人信息或设备标识信息。最后一个文件是 Intel 固件的执行跟踪记录，其中的个人信息和设备标识信息已全部清除，但由于文件过大而无法显示在这里。因为您的设备最近发生过 Wi-Fi 问题，所以系统生成了这些文件，且会将文件提供给 Intel 以协助排查相关问题。&gt;</translation>
 <translation id="4691995778017338841">对照片进行创意编辑</translation>
 <translation id="4692342362587775867">来自此网站的通知可能会造成干扰</translation>
@@ -5635,7 +5630,6 @@
 <translation id="4864805589453749318">请选择让哪位家长授权您添加学校账号。</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" />（已屏蔽）</translation>
 <translation id="486505726797718946">节省的内存</translation>
-<translation id="4865063548323785458">保存并自动填充密码，轻松登录网站和应用</translation>
 <translation id="486635084936119914">下载特定类型的文件后自动将其打开</translation>
 <translation id="4867272607148176509">家长可以批准或屏蔽应用、设置使用时限，以及控制网络浏览。日后需要时，您还可添加学校账号以用于访问大多数学校资源。</translation>
 <translation id="486796517585164369">· 最近打开的标签页</translation>
@@ -5742,6 +5736,7 @@
 <translation id="4931387733184123331">日食</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4933484234309072027">嵌入 <ph name="URL" /></translation>
+<translation id="4934763315031217818">不能包含有序序列</translation>
 <translation id="4936042273057045735">设有工作资料的手机无法同步通知</translation>
 <translation id="4937676329899947885">正在接收 Wi-Fi 网络</translation>
 <translation id="4938052313977274277">速度</translation>
@@ -6710,7 +6705,6 @@
 <translation id="5624120631404540903">管理密码</translation>
 <translation id="5624959475330585145">在使用不安全的连接前询问</translation>
 <translation id="5625225435499354052">在 Google Pay 中修改</translation>
-<translation id="5626134646977739690">名字：</translation>
 <translation id="5626172233890210551">改用密码</translation>
 <translation id="5627832140542566187">显示屏方向</translation>
 <translation id="5628434207686266338">设置设备密码</translation>
@@ -6856,7 +6850,6 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> 硬件支持和稳定性</translation>
 <translation id="574104302965107104">显示屏镜像</translation>
 <translation id="574209121243317957">音高</translation>
-<translation id="5742787970423162234">具有增强功能的打包 Web 应用。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">PIN 码不超过 12 位，才能使用自动解锁功能</translation>
 <translation id="5746169159649715125">另存为 PDF</translation>
 <translation id="5747785204778348146">开发者版本 - 不稳定</translation>
@@ -7368,6 +7361,7 @@
 <translation id="6096326118418049043">X.500 名称</translation>
 <translation id="6097480669505687979">如果不释放空间，系统可能会自动移除用户和数据。</translation>
 <translation id="6097600385983390082">已关闭语音搜索</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />，<ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">在 iPhone 上使用此卡</translation>
 <translation id="609942571968311933">从“<ph name="DEVICE_NAME" />”复制的文字</translation>
 <translation id="6099766472403716061">始终允许 <ph name="HOST" /> 控制您的 MIDI 设备以及为其重新编程</translation>
@@ -7887,7 +7881,6 @@
 <translation id="6464825623202322042">此设备</translation>
 <translation id="6465841119675156448">不使用互联网</translation>
 <translation id="6466258437571594570">禁止网站在询问能否向您发送通知时干扰您</translation>
-<translation id="6466988389784393586">打开所有书签(&amp;O)</translation>
 <translation id="6467230443178397264">扫描“<ph name="FILE_NAME" />”文件</translation>
 <translation id="6467304607960172345">优化全屏视频</translation>
 <translation id="6467377768028664108">您的 <ph name="DEVICE_TYPE" /> 将能够：</translation>
@@ -8722,6 +8715,7 @@
 <translation id="7030695672997239647">右键点击某个标签页，选择“向组中添加标签页”，然后选择“新建组”</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已连接到串行端口</translation>
 <translation id="7033616203784997570">所输入的内容不得超过 62 个字符</translation>
+<translation id="7033731598469029604">自动浏览</translation>
 <translation id="7034692021407794547">拥有结算管理权限的管理员必须先接受管理控制台的“Google Meet 设备”部分中的 Google Meet 设备服务条款。</translation>
 <translation id="70356134210715500">开始使用您的通行密钥</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> 刚刚为您的账号创建了通行密钥。通行密钥提供了一种更快捷、更安全的登录方式。它们会保存在 <ph name="USER" /> 的 Google 密码管理工具中。<ph name="LEARN_MORE" /></translation>
@@ -9489,7 +9483,6 @@
 <translation id="7582582252461552277">首选此网络</translation>
 <translation id="7582844466922312471">移动数据</translation>
 <translation id="7583948862126372804">计数</translation>
-<translation id="7584287158780898016">启用价格跟踪提醒</translation>
 <translation id="7585106857920830898">正在检查是否符合贵组织的安全政策…</translation>
 <translation id="7585490016012953607">恢复密码 - 最多临时保存 3 个月</translation>
 <translation id="7586498138629385861">Chrome应用处于打开状态时，Chrome将持续运行。</translation>
@@ -10508,6 +10501,7 @@
 <translation id="8265018477030547118">仅在该设备上</translation>
 <translation id="826511437356419340">已进入窗口概览模式。您可以滑动手指或（若使用键盘）按 Tab 键进行浏览。</translation>
 <translation id="8266430295499893285">您需要验证身份，然后才能访问您的密码</translation>
+<translation id="8266751606569906450">必须至少包含 <ph name="MINIMUM" /> 个字符</translation>
 <translation id="8266947622852630193">所有输入法</translation>
 <translation id="8267539814046467575">添加打印机</translation>
 <translation id="826905130698769948">客户端证书无效</translation>
@@ -10653,7 +10647,6 @@
 <translation id="8363277452449582220">海洋</translation>
 <translation id="8366396658833131068">您的网络连接已恢复。要启动自助服务终端应用，请选择其他网络或按下方的“继续”按钮。</translation>
 <translation id="8366694425498033255">选择键</translation>
-<translation id="8368859634510605990">打开所有书签(&amp;O)</translation>
 <translation id="8370294614544004647">合上笔记本电脑后休眠</translation>
 <translation id="8370419414641876532">点击“密码和自动填充”</translation>
 <translation id="8371695176452482769">请开始说话</translation>
@@ -11320,7 +11313,6 @@
 <translation id="881799181680267069">隐藏其他应用</translation>
 <translation id="8818152010000655963">壁纸</translation>
 <translation id="8818988764764862764">窗口已向左移动</translation>
-<translation id="8819155700324279105">增添一层额外的安全保障，防范在线威胁</translation>
 <translation id="8819510664278523111">您的设备 EID 为 <ph name="EID_NUMBER" />，设备 IMEI 为 <ph name="IMEI_NUMBER" />，设备序列号为 <ph name="SERIAL_NUMBER" />。这些号码可用于帮助激活服务。</translation>
 <translation id="8820817407110198400">书签</translation>
 <translation id="8821045908425223359">自动配置 IP 地址</translation>
@@ -11576,7 +11568,6 @@
 <translation id="8987321822984361516">浏览器由组织管理，个人资料由“<ph name="PROFILE_DOMAIN" />”管理</translation>
 <translation id="8987736167266086032">从上次停下的地方继续</translation>
 <translation id="8987927404178983737">月</translation>
-<translation id="8988539543012086784">此网页已保存到“<ph name="BOOKMARK_FOLDER" />”文件夹</translation>
 <translation id="8989359959810288806">刷新网络共享状态</translation>
 <translation id="8989779557457435460">默认分享当前标签页</translation>
 <translation id="8990243615717080992">使用密码或其他恢复方法登录</translation>

@@ -86,7 +86,6 @@
 <translation id="193439633299369377">Cal reiniciar Chromium OS per aplicar l'actualització.</translation>
 <translation id="1951406923938785464">Chromium ha bloquejat aquesta baixada perquè el tipus de fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="1953553007165777902">S'està baixant... Queden <ph name="MINUTE" /> minuts</translation>
-<translation id="1965068424387304464">Consell de Chromium: desa les contrasenyes</translation>
 <translation id="1966382378801805537">Chromium no pot determinar ni definir el navegador predeterminat</translation>
 <translation id="1990262977744080398">Descobreix per què Chromium bloqueja alguns fitxers (s'obre en una pestanya nova)</translation>
 <translation id="1999715455684970349">Manté el programari de Chromium actualitzat. Si aquest servei es desactiva o s'atura, el programari Chromium no es mantindrà actualitzat i, per tant, no es podran corregir les vulnerabilitats de seguretat que puguin sorgir i és possible que les funcions no estiguin operatives. Aquest servei es desinstal·la sol quan no hi ha cap programari de Chromium que l'utilitzi.</translation>
@@ -262,7 +261,6 @@
 <translation id="3802055581630249637">Chromium precarrega les pàgines que és probable que visitis perquè es carreguin més ràpidament quan ho facis</translation>
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="3823384748599722168">Per utilitzar les contrasenyes desades, segueix el codi QR, baixa Chromium per a iOS i inicia la sessió al teu Compte de Google</translation>
-<translation id="3837584850181228767">Consell de Chromium: Navegació segura millorada</translation>
 <translation id="3846683726093018685">**Resumeix**: en una sola frase de menys de 30 paraules, descriu el tema i la finalitat principals del contingut de la captura de pantalla.
 
           **Preguntes suggerides**: genera una llista de pics d'entre 3 i 5 preguntes que facin reflexionar i que un usuari podria fer per entendre millor la captura de pantalla. Aquestes preguntes n'han d'incloure com a mínim una que sigui específicament sobre un objecte visual, el seu disseny o el seu emplaçament.</translation>
@@ -749,7 +747,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="9148058034647219655">Surt</translation>
 <translation id="9155105544013854680">Continua des d'on ho vas deixar: Chromium pot restaurar les teves pestanyes cada vegada que reiniciïs el navegador. Per activar-ho, ves a</translation>
 <translation id="9158494823179993217">L'administrador del sistema ha configurat Chromium perquè obri un navegador alternatiu per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9183331186620388872">Consell de Chromium: cerca amb Lens</translation>
 <translation id="9185526690718004400">Reinicia per actualitzar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personalitza Chromium</translation>

@@ -87,7 +87,6 @@
 <translation id="193439633299369377">必須重新啟動 Chromium 作業系統，才能套用更新。</translation>
 <translation id="1951406923938785464">由於此檔案類型不是常見的下載項目，可能含有危險內容，因此 Chromium 已禁止下載</translation>
 <translation id="1953553007165777902">正在下載… 剩餘 <ph name="MINUTE" /> 分鐘</translation>
-<translation id="1965068424387304464">Chromium 提示：儲存密碼</translation>
 <translation id="1966382378801805537">Chromium 無法偵測或設定預設瀏覽器</translation>
 <translation id="1990262977744080398">了解 Chromium 封鎖部分檔案嘅原因，喺新分頁打開</translation>
 <translation id="1999715455684970349">確保 Chromium 軟件為最新版本。如果此服務停用或停止，Chromium 軟件就無法保持最新狀態，導致潛在安全漏洞無法修正，功能也可能無法正常運作。如果沒有用於任何 Chromium 軟件，此服務會自行解除安裝。</translation>
@@ -263,7 +262,6 @@
 <translation id="3802055581630249637">Chromium 會預先載入你可能瀏覽的頁面，以便在你瀏覽時更快載入</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3823384748599722168">如要使用已儲存的密碼，請掃瞄 QR 碼下載 iOS 版 Chromium，並登入 Google 帳戶</translation>
-<translation id="3837584850181228767">Chromium 提示：強化安全瀏覽</translation>
 <translation id="3846683726093018685">**摘要：**以不多於 30 個字的一句話，描述螢幕截圖的主體及內容目的。
 
           **建議問題：**以項目符號清單形式生成 3 至 5 條可以啟發思考的問題，幫助使用者深入瞭解螢幕截圖。應該有至少一條具體關於可視物件、其設計或位置的問題。</translation>
@@ -748,7 +746,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="9148058034647219655">結束</translation>
 <translation id="9155105544013854680">開啟上次瀏覽的內容：Chromium 可以在每次重新啟動後還原分頁。如要開啟此功能，請前往</translation>
 <translation id="9158494823179993217">系統管理員已設定 Chromium 開啟替代瀏覽器來存取 <ph name="TARGET_URL_HOSTNAME" />。</translation>
-<translation id="9183331186620388872">Chromium 提示：使用「智能鏡頭」搜尋</translation>
 <translation id="9185526690718004400">重新啟動以更新 &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">自訂屬於您的 Chromium</translation>

@@ -86,7 +86,6 @@
 <translation id="193439633299369377">ChromiumOS cần được khởi động lại để áp dụng bản cập nhật.</translation>
 <translation id="1951406923938785464">Chromium đã chặn tệp tải xuống này vì loại tệp này ít được tải xuống và có thể nguy hiểm</translation>
 <translation id="1953553007165777902">Đang tải xuống... Còn <ph name="MINUTE" /> phút</translation>
-<translation id="1965068424387304464">Mẹo khi dùng Chromium: Lưu mật khẩu</translation>
 <translation id="1966382378801805537">Chromium không thể xác định hoặc đặt trình duyệt mặc định</translation>
 <translation id="1990262977744080398">Tìm hiểu lý do Chromium chặn một số tệp, mở trong thẻ mới</translation>
 <translation id="1999715455684970349">Dịch vụ này giúp cập nhật phần mềm Chromium của bạn. Nếu dịch vụ này bị vô hiệu hoá hoặc bị dừng, phần mềm Chromium của bạn sẽ không được cập nhật. Điều này có nghĩa là lỗ hổng bảo mật phát sinh sẽ không thể khắc phục được và các tính năng có thể không hoạt động. Dịch vụ này sẽ tự gỡ cài đặt khi không được phần mềm Chromium nào dùng.</translation>
@@ -262,7 +261,6 @@
 <translation id="3802055581630249637">Chromium tải trước các trang mà bạn có thể sẽ truy cập để các trang đó tải nhanh hơn khi bạn truy cập</translation>
 <translation id="3810973564298564668">Quản lý</translation>
 <translation id="3823384748599722168">Để sử dụng mật khẩu bạn đã lưu, hãy quét mã QR, tải Chromium dành cho iOS xuống rồi đăng nhập vào Tài khoản Google của bạn</translation>
-<translation id="3837584850181228767">Mẹo khi dùng Chromium: Duyệt web an toàn có tăng cường bảo vệ</translation>
 <translation id="3846683726093018685">**Tóm tắt:** Hãy mô tả chủ đề và mục đích chính của nội dung trong ảnh chụp màn hình này bằng một câu dưới 30 từ.
 
           **Đề xuất câu hỏi:** Tạo một danh sách có dấu đầu dòng gồm 3 đến 5 câu hỏi gợi mở mà người dùng có thể đặt ra để hiểu rõ hơn về ảnh chụp màn hình này. Danh sách này phải có ít nhất một câu hỏi cụ thể về một đối tượng trực quan trong ảnh và thiết kế hoặc vị trí của đối tượng đó.</translation>
@@ -749,7 +747,6 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="9148058034647219655">Thoát</translation>
 <translation id="9155105544013854680">Tiếp tục từ nơi bạn đã dừng lại: Chromium có thể khôi phục các thẻ của bạn mỗi khi bạn khởi động lại. Để bật tính năng này, hãy chuyển đến</translation>
 <translation id="9158494823179993217">Quản trị viên hệ thống của bạn đã định cấu hình Chromium để mở một trình duyệt thay thế khi truy cập vào <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9183331186620388872">Mẹo dùng Chromium: Tìm kiếm bằng Ống kính</translation>
 <translation id="9185526690718004400">Chạy lại để cập nhật &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Biến Chromium thành trình duyệt của riêng bạn</translation>

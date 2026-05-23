@@ -1401,9 +1401,9 @@ Jika kebijakan disetel ke Nonaktif, <ph name="PRODUCT_NAME" /> akan menutup tab 
         Kebijakan ini bersifat komplementer terhadap 'UsageTimeLimit'. Pembatasan yang ditentukan dalam 'UsageTimeLimit' seperti waktu pemakaian perangkat dan waktu tidur akan diterapkan tanpa memandang 'PerAppTimeLimits'.</translation>
 <translation id="1913629775420987861">Tampilkan dialog peringatan saat pengguna mencoba menutup browser</translation>
 <translation id="1915242485679279502">Tampilkan badge toolbar perusahaan yang diperluas</translation>
-<translation id="1916266055944569995">Menyetel kebijakan akan menentukan nilai Managed Configuration API yang ditampilkan untuk sumber tertentu.
+<translation id="1916266055944569995">Nilai Managed Configuration API yang ditampilkan untuk sumber tertentu ditentukan saat kebijakan ditetapkan.
 
-      Managed Configuration API adalah konfigurasi nilai kunci yang dapat diakses melalui panggilan JavaScript navigator.managed.getManagedConfiguration(). API ini hanya tersedia untuk sumber yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
+      Managed Configuration API adalah konfigurasi kunci-nilai yang dapat diakses melalui panggilan JavaScript navigator.managed.getManagedConfiguration(). API ini hanya tersedia untuk sumber yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
      </translation>
 <translation id="1919802376548418720">Gunakan kebijakan KDC untuk mendelegasikan kredensial.</translation>
 <translation id="1920046221095339924">Mengizinkan sesi yang dikelola di perangkat</translation>
@@ -3005,6 +3005,13 @@ Kebijakan ini hanya dapat disetel sebagai kebijakan pengguna cloud.</translation
 <translation id="2866726566162790531">Daftar asal yang mengizinkan semua autentikasi HTTP</translation>
 <translation id="2868756546751652023">Izinkan pengguna menggunakan Tethering Instan</translation>
 <translation id="286898786908566256">Izinkan pengguna mengirim nomor telepon dari Chrome ke perangkat Android mereka</translation>
+<translation id="287087426320717057">Kebijakan ini memungkinkan pengguna memulai jenis update firmware apa pun.
+
+      Jika kebijakan ini disetel ke Aktif atau tidak disetel, pengguna seperti pemilik perangkat akan dapat memulai update firmware.
+
+      Jika kebijakan ini disetel ke Nonaktif, semua pengguna tidak akan dapat menerapkan update firmware.
+
+      Kebijakan ini berlaku bagi firmware untuk update firmware periferal eksternal dan update firmware komponen internal untuk perangkat <ph name="PRODUCT_OS_FLEX_NAME" />. Update firmware komponen internal untuk perangkat <ph name="PRODUCT_OS_NAME" /> tidak terpengaruh oleh kebijakan ini.</translation>
 <translation id="2872098849906555324">Nonaktifkan sinkronisasi Google Drive</translation>
 <translation id="2872189563975139803">Setelan pemisahan profil perusahaan</translation>
 <translation id="2872961005593481000">Matikan</translation>

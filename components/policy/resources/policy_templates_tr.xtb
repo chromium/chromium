@@ -2193,6 +2193,7 @@ Bu politika ayarlandığında kullanıcı, değeri geçersiz kılamaz.
 
 Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı bırakılır, ancak kullanıcı tarafından kontrol edilebilir.</translation>
 <translation id="2413899611035194909">Giriş ekranı sistem tepsisi menüsünde erişilebilirlik seçeneklerini göster</translation>
+<translation id="2414712434655365347">Spesifik URL kalıpları için HTTP başlığı yerleştirmeyi yapılandır</translation>
 <translation id="2415715982424988916">Keşfet (91 sürümünden itibaren desteklenir)</translation>
 <translation id="2420958105721932612">Bir uygulamanın nasıl yükleneceğini belirtir. AVAILABLE: Uygulama otomatik olarak yüklenmez, ancak kullanıcı tarafından yüklenebilir. Bu politika belirtilmezse varsayılan olarak bu ayar uygulanır. FORCE_INSTALLED: Uygulama otomatik olarak yüklenir ve kullanıcı tarafından kaldırılamaz. BLOCKED: Uygulama engellenir ve yüklenemez. Uygulama önceki politikalardan biri kapsamında yüklenmişse kaldırılır.</translation>
 <translation id="2421400544595297401">İlişkili olmayan kullanıcıların Android uygulamalarını kullanmasına izin verme</translation>
@@ -2950,6 +2951,13 @@ Bu politika yalnızca bulut kullanıcı politikası olarak ayarlanabilir.</trans
 <translation id="2866726566162790531">Tüm HTTP kimlik doğrulamalarına izin veren kaynakların listesi</translation>
 <translation id="2868756546751652023">Kullanıcıların Hızlı Tethering özelliğini kullanmasına izin ver</translation>
 <translation id="286898786908566256">Kullanıcıların Chrome'dan Android cihazlarına telefon numarası göndermesine izin ver</translation>
+<translation id="287087426320717057">Bu politika, kullanıcıların her türlü donanım yazılımı güncellemesini başlatmasına izin verir.
+
+      Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa cihaz sahibi gibi kullanıcıların donanım yazılımı güncellemeleri başlatmalarına izin verilir.
+
+      Politika, Devre Dışı değerine ayarlanırsa kullanıcıların donanım yazılımı güncellemeleri uygulamalarına izin verilmez.
+
+      Bu politika, <ph name="PRODUCT_OS_FLEX_NAME" /> cihazların harici çevre birimi donanım yazılımı güncellemeleri ve dahili bileşen donanım yazılımı güncellemeleri için geçerlidir. <ph name="PRODUCT_OS_NAME" /> cihazların dahili bileşen donanım yazılımı güncellemeleri bu politikadan etkilenmez.</translation>
 <translation id="2872098849906555324">Google Drive senkronizasyonunu devre dışı bırak</translation>
 <translation id="2872189563975139803">Kurumsal profil ayırma ayarları</translation>
 <translation id="2872961005593481000">Kapat</translation>
@@ -8158,6 +8166,25 @@ Bu takviye 8 ile 32 karakter arasında bir dize olmalıdır.
 <translation id="624219423122512710">Boşta Kalan Tarayıcı İşlemleri</translation>
 <translation id="6244061205361004687">Kullanıcının manuel olarak VPN bağlantısını kesmesine veya VPN'yi yapılandırmasına izin ver</translation>
 <translation id="6244210204546589761">Başlangıçta açılacak olan URL'ler</translation>
+<translation id="6245828368576563662">Bu politika, spesifik URL kalıplarıyla eşleşen web isteklerine özel HTTP başlıkları yerleştirmek için bir kural listesi tanımlanmasını sağlar. Bu politika tarafından ayarlanan başlıklar, başlangıçta istekte bulunan başlıkların yanı sıra kullanıcılar veya uzantılar tarafından yapılan değişikliklere göre önceliklidir.
+
+Bu politikanın yaygın kullanım alanlarından biri, özel başlıklar (ör. <ph name="EXAMPLE_HEADER_NAME" />) yerleştirerek kiracı erişim denetimlerini zorunlu kılmaktır.
+
+Politika, bir kural listesini kabul eder. Her kural şunları içerir:
+
+* <ph name="PATTERNS_KEY" />: Eşleştirilecek URL kalıplarının listesi. URL kalıbının nasıl biçimlendirileceğine göz atın (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: Yerleştirilecek başlıkları temsil eden nesnelerin listesi. Her nesne şunları içerir:
+
+  * <ph name="HEADER_NAME_KEY" />: Yerleştirilecek başlığın adı.
+
+  * <ph name="HEADER_VALUE_KEY" />: Yerleştirilecek başlığın değeri.
+
+Bir istek birden fazla kuralla eşleşirse eşleşen tüm kurallardaki başlıklar uygulanır. Aynı ada sahip birden fazla başlık varsa en spesifik URL kalıbına sahip olan başlık uygulanır. Kalıplar eşit derecede spesifik ise listede en son görünen kalıp uygulanır.
+
+Başlık adları RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616) ile uyumlu olmalıdır. Başlık değerleri NUL, CR veya LF sembolleri içermemelidir. Her bir başlığın boyutu 8 KB'ı aşmamalıdır. Geçersiz başlıklar ve URL kalıpları yoksayılır.
+
+Bu politika, tüm kurallarda toplam 500 URL kalıbıyla sınırlıdır. Her kural en fazla 20 başlık içerebilir. Bu eşiklerin üzerindeki kalıplar ve başlıklar yoksayılır.</translation>
 <translation id="624595269193747921">Eşleşen yazıcı arama işleminin belirli bir yazıcı grubuyla sınırlı olup olmayacağı.</translation>
 <translation id="6246290059248303618">Yerel ağdaki diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için medya kontrollerini göster</translation>
 <translation id="6247316685259031374">Bu politika, korumalı alana alınan ses işlemini kontrol eder.

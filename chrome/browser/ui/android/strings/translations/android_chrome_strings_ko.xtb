@@ -1015,6 +1015,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, 고정되고 공유 중인 시크릿 탭</translation>
 <translation id="5375374982898812658">'<ph name="GROUP_NAME" />' 탭 그룹에 대한 액세스 권한을 즉시 잃게 되며 탭 그룹이 모든 기기에서 삭제됩니다.</translation>
 <translation id="5375577065097716013">Google 렌즈로 이미지 검색 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">저장 및 공유</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다. 이 사이트를 신뢰하는 경우에만 계속 진행하세요. 위험한 사이트는 사용자를 속여 법적 이름이나 신분증 번호 등을 공개하도록 유도할 수 있습니다.</translation>
 <translation id="5395376160638294582">Google 계정의 Chrome 데이터를 언제든지 사용할 수 있도록 설정하세요.</translation>
 <translation id="539881862970320163">안전한 비밀번호가 제안되었습니다. 키보드가 숨겨졌습니다.</translation>
@@ -1098,6 +1099,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="5763514718066511291">탭하여 이 앱의 URL 복사하기</translation>
 <translation id="5765517223145864268">사용 경험에 관해 알려주세요. 아니면 <ph name="BEGIN_LINK" />설정을 변경하세요<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">중요하지 않은 데이터</translation>
+<translation id="5788665823391532892">문제 신고...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> 중 <ph name="SPACE_USED" /> 사용 중</translation>
 <translation id="5797949256525811424">주제를 차단했습니다.</translation>
 <translation id="580893287573699959">관심 있는 주제 및 사이트 관리</translation>

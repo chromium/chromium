@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">ໜ້າເຫຼົ່ານີ້ມີໄວ້ສຳລັບນັກພັດທະນາ Chrome ເທົ່ານັ້ນ ແລະ ອາດບໍ່ໄດ້ຮັບການບຳລຸງຮັກສາ ຫຼື ທົດສອບຢ່າງສະໝ່ຳສະເໝີ. ເພື່ອເປີດການນຳໃຊ້, ໃຫ້ເຂົ້າໄປ <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, ຄລິກປຸ່ມເພື່ອເປີດການນຳໃຊ້ໜ້າດີບັກ, ຈາກນັ້ນນຳທາງໄປຫາໜ້ານີ້ອີກຄັ້ງ.</translation>
 <translation id="3875312571075912821">ອະນຸຍາດໃຫ້ Chrome ເຂົ້າເຖິງເຄືອຂ່າຍໃນການຕັ້ງຄ່າໄຟຣ໌ວໍ ຫຼື ໂປຣແກຣມ
           ຕ້ານໄວຣັສຂອງທ່ານ.</translation>
+<translation id="3893985792899396936">ເຄັດລັບສຳລັບ Chrome: ຊອກຫາດ້ວຍ Lens</translation>
 <translation id="4949828774841497663">ເຂົ້າໄປແອັບພລິເຄຊັນ &gt; ການຕັ້ງຄ່າລະບົບ &gt; ເຄືອຂ່າຍ, ເລືອກ
           ເຄືອຂ່າຍທີ່ນຳໃຊ້ຢູ່, ຄລິກປຸ່ມລາຍລະອຽດ... ແລ້ວເຊົາເລືອກພຣັອກຊີໃດກໍຕາມ
           ທີ່ອາດເລືອກໄວ້.</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ແລະເບິ່ງໃຫ້ແນ່ໃຈວ່າ ການກໍານົດຂອງທ່ານໄດ້ຕັ້ງເປັນ "ບໍ່ມີພຣັອກຊີ" ຫຼື "ໂດຍກົງ" ແລ້ວ.</translation>
+<translation id="6187085551300363958">ເຄັດລັບ Chrome: ບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="6341737370356890233">ໄປ​ທີ່
            ເມ​ນູ Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@
           ເຄືອຂ່າຍ ແລະ ອິນເຕີເນັດ &gt; ພຣັອກຊີ
           ແລ້ວເຊົາເລືອກ "ກວດຫາການຕັ້ງຄ່າໂດຍອັດຕະໂນມັດ".</translation>
 <translation id="7230956101631259640">ທ່ານກຳລັງເບິ່ງໜ້າເວັບ Chrome ທີ່ປອດໄພ</translation>
+<translation id="7641448682796883218">ເຄັດລັບ Chrome: Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ</translation>
 <translation id="8232971017369963250">Chrome ເປັນໄປໄດ້ໂດຍໂຄງການໂອເພນຊອດ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome ຍັງເປັນໄປໄດ້ໂດຍ <ph name="BEGIN_LINK_OSS" />ຊອບແວໂອເພນຊອດ<ph name="END_LINK_OSS" /> ອື່ນນຳອີກ.</translation>
 <translation id="8544217240017914508">Google Chrome ກຳລັງພະຍາຍາມແກ້ໄຂການຕັ້ງຄ່າສຳລັບການຕື່ມຂໍ້ມູນວິທີການຈ່າຍເງິນ.</translation>

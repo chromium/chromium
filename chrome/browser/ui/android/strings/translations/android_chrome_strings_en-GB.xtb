@@ -493,6 +493,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3067505415088964188">Price is low</translation>
 <translation id="3070005020161560471">Automatically translate</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> will open in Chrome. By continuing, you agree to the <ph name="BEGIN_LINK1" />Google Terms of Service<ph name="END_LINK1" />, and the <ph name="BEGIN_LINK2" />Google Chrome and Chrome OS additional Terms of Service<ph name="END_LINK2" />. The <ph name="BEGIN_LINK3" />Privacy Policy<ph name="END_LINK3" /> also applies.</translation>
+<translation id="3080375898390966733">Search tab with Google Lens</translation>
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3087734570205094154">Bottom</translation>
 <translation id="3091010850649238832">Show clipboard contents</translation>
@@ -550,6 +551,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3384347053049321195">Share image</translation>
 <translation id="3385749568468586663">Gemini isn't available in Incognito mode</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> download failed due to file system errors.</translation>
+<translation id="3391311825344469964">You can manage your windows in Chrome's Window Manager</translation>
 <translation id="3417835166382867856">Search tabs</translation>
 <translation id="3430670036890315772">Turning off your profile lock will remove your saved info</translation>
 <translation id="3435575784518354875">To keep access to your passwords, export them now, update Google Play services and then import them back to Google Password Manager. <ph name="BEGIN_LINK" />See full instructions<ph name="END_LINK" />.</translation>
@@ -1015,6 +1017,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, pinned sharing Incognito tab</translation>
 <translation id="5375374982898812658">You'll immediately lose access to the '<ph name="GROUP_NAME" />' tab group, and it will be deleted from all your devices</translation>
 <translation id="5375577065097716013">Search image with Google Lens <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Save and share</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> wants to use personal info from your digital wallet. Only continue if you trust this site. Dangerous sites might trick you into revealing things like your legal name or ID number.</translation>
 <translation id="5395376160638294582">Make sure that you can always use the Chrome data in your Google Account</translation>
 <translation id="539881862970320163">Strong password suggested. Keyboard hidden.</translation>
@@ -1069,6 +1072,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5628604359369369630">Unread – available offline</translation>
 <translation id="5631483240431073854">Manage open tabs</translation>
 <translation id="5632485077360054581">Show me how</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> needs your permission to run <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Signed in as <ph name="USER_NAME" />. Google Account error. Opens settings.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Search history<ph name="END_LINK1" /> and <ph name="BEGIN_LINK2" />other forms of activity<ph name="END_LINK2" /> may be saved in your Google Account</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
@@ -1098,6 +1102,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5763514718066511291">Tap to copy the URL for this app</translation>
 <translation id="5765517223145864268">Tell us about your experience. Or, <ph name="BEGIN_LINK" />change your settings<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Unimportant data</translation>
+<translation id="5788665823391532892">Report an issue...</translation>
 <translation id="5793665092639000975">Using <ph name="SPACE_USED" /> of <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Blocked topic</translation>
 <translation id="580893287573699959">Manage the topics and sites that you're interested in</translation>
@@ -1875,6 +1880,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome found a weak password that you could improve}other{Chrome found # weak passwords that you could improve}}</translation>
 <translation id="8766529642647037772">Create a highlighted link like this one?</translation>
 <translation id="8769783688897433958">View site information and permissions</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> needs your permission to run <ph name="COUNT" /> extensions</translation>
 <translation id="8788265440806329501">Navigation history is closed</translation>
 <translation id="8790193082819560975">Tap to search buying options for the product in a new tab.</translation>
 <translation id="8798449543960971550">Read</translation>

@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Ове странице су намењене програмерима Chrome-а и можда се не одржавају нити тестирају активно. Да бисте их омогућили, идите на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликните на дугме да бисте омогућили странице за отклањање грешака, па поново идите на ову страницу.</translation>
 <translation id="3875312571075912821">Дозволите Chrome-у да приступа мрежи у заштитном зиду или антивирусним
           подешавањима.</translation>
+<translation id="3893985792899396936">Савет за Chrome: Претражујте помоћу Објектива</translation>
 <translation id="4949828774841497663">Идите у Applications (Апликације) &gt; System Settings (Подешавања система) &gt; Network (Мрежа), па изаберите
           активну мрежу, кликните на дугме Details... (Детаљи), а затим поништите избор свих проксија
           који су изабрани.</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           и проверите да ли је конфигурација подешена на „no proxy“ (без проксија) или „direct“ (директно).</translation>
+<translation id="6187085551300363958">Напомена за Chrome: Сачувајте лозинке</translation>
 <translation id="6341737370356890233">Отворите
           Chromе мени &gt;
           <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@
           Мрежа и интернет &gt; Прокси
           и поништите избор опције Аутоматски откриј подешавања.</translation>
 <translation id="7230956101631259640">Прегледате безбедну Chrome страницу</translation>
+<translation id="7641448682796883218">Напомена за Chrome: Побољшано безбедно прегледање</translation>
 <translation id="8232971017369963250">Chrome омогућава <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> пројекат отвореног кода.</translation>
 <translation id="8279509328145658601">Chrome омогућава и други <ph name="BEGIN_LINK_OSS" />софтвер отвореног кода<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome покушава да измени подешавања за попуњавање начина плаћања.</translation>

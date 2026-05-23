@@ -12,6 +12,7 @@
 <translation id="3444832043240812445">Táto stránka zobrazuje informácie o nedávnych zlyhaniach, len ak ste <ph name="BEGIN_LINK" />povolili hlásenia zlyhaní<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Tieto stránky môžu používať vývojári Chromu a nemusia byť aktívne udržiavané ani testované. Ak ich chcete povoliť, prejdite na <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknutím na tlačidlo povoľte stránky ladenia a potom sa vráťte na túto stránku.</translation>
 <translation id="3875312571075912821">Chromu povoľte prístup k sieti v nastaveniach brány firewall alebo antivírusového softvéru.</translation>
+<translation id="3893985792899396936">Tip pre Chrome: vyhľadávajte pomocou funkcie Lens</translation>
 <translation id="4949828774841497663">Prejdite do sekcie Aplikácie &gt; Nastavenia systému &gt; Sieť, vyberte aktívnu sieť, kliknite na tlačidlo Podrobnosti… a zrušte výber všetkých vybraných proxy serverov.</translation>
 <translation id="5005121315113832363">Táto stránka bola zablokovaná Chromom</translation>
 <translation id="6011049234605203654">Prejdite na
@@ -22,6 +23,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           a uistite sa, že je vaša konfigurácia nastavená na hodnotu „žiadny server proxy“ alebo „priame“.</translation>
+<translation id="6187085551300363958">Tip pre Chrome: Ukladanie hesiel</translation>
 <translation id="6341737370356890233">Prejdite do
         ponuky Chrome &gt;
         <ph name="SETTINGS_TITLE" />
@@ -40,6 +42,7 @@
           &gt;
           Sieť a internet &gt; Proxy server a zrušte výber možnosti Automaticky zisťovať nastavenia.</translation>
 <translation id="7230956101631259640">Prezeráte si zabezpečenú stránku Chromu</translation>
+<translation id="7641448682796883218">Tip pre Chrome: Zlepšené bezpečné prehliadanie</translation>
 <translation id="8232971017369963250">Chrome je založený na projekte open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome je založený aj na inom <ph name="BEGIN_LINK_OSS" />softvéri open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome sa pokúša upraviť nastavenia dopĺňania spôsobov platby.</translation>

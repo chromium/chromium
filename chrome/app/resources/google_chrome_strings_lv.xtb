@@ -285,7 +285,6 @@ Ja šī lapa nedarbojas, kā paredzēts, mēģiniet atļaut optimizāciju.</tran
 <translation id="3885770153807205175">Valodas atlasītājs</translation>
 <translation id="3889417619312448367">Atinstalēt Google Chrome</translation>
 <translation id="3892148308691398805">Kopēt tekstu</translation>
-<translation id="3893985792899396936">Chrome padoms: meklējiet, izmantojot Lens</translation>
 <translation id="3941890832296813527">Instalēšanas kļūda: instalēšanas programmas faila nosaukums nav derīgs vai netiek atbalstīts.</translation>
 <translation id="395904275706073188">Aizsargātas lapas nevar lasīt. Izmēģiniet citu lapu.</translation>
 <translation id="3968962723676998462">Lai savā kontā (<ph name="ACCOUNT_EMAIL" />) izmantotu un saglabātu Chrome datus, ievadiet ieejas frāzi.</translation>
@@ -501,7 +500,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome beta versija</translation>
 <translation id="6180522807229584611">Šī cilne izmanto papildu resursus. Lai uzlabotu veiktspēju, ļaujiet pārlūkā Chrome padarīt to neaktīvu.</translation>
 <translation id="6182736845697986886">Instalēšana neizdevās, jo radās atjauninājumu servera iekšēja kļūda.</translation>
-<translation id="6187085551300363958">Chrome padoms: paroļu saglabāšana</translation>
 <translation id="6192058120268468905">Jūsu konts pārlūkā Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> pievienoja paplašinājumu, kas var ietekmēt pārlūka Chrome darbību.
 
@@ -648,7 +646,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="7627609214560473136">Lai aizsargātu savus datus, ļaujiet pārlūkā Chrome noņemt atļaujas vietnēm, ko pēdējā laikā neesat apmeklējis.</translation>
 <translation id="7629695634924605473">Ja jūsu paroles kādreiz tiks apdraudētas, pārlūkā Chrome saņemsiet paziņojumu</translation>
 <translation id="7641148173327520642">Jūsu sistēmas administrators ir konfigurējis Google Chrome atvērt <ph name="ALTERNATIVE_BROWSER_NAME" />, lai piekļūtu <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Chrome padoms: funkcija “Droša pārlūkošana ar papildu aizsardzību”</translation>
 <translation id="7649070708921625228">Palīdzība</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotips</translation>
 <translation id="76531479118467370">Pārlūkā Chrome šī lejupielāde tika bloķēta, jo jūs izslēdzāt drošu pārlūkošanu un failu nevar verificēt.</translation>

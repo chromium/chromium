@@ -493,6 +493,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3067505415088964188">Harga rendah</translation>
 <translation id="3070005020161560471">Terjemah secara automatik</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> akan dibuka dalam Chrome. Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_LINK1" />Syarat Perkhidmatan Google<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />Syarat Perkhidmatan Tambahan Google Chrome dan Chrome OS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Dasar Privasi<ph name="END_LINK3" /> juga dikenakan.</translation>
+<translation id="3080375898390966733">Cari tab dengan Google Lens</translation>
 <translation id="3080525922482950719">Anda boleh menyimpan halaman untuk dibaca kemudian atau secara luar talian</translation>
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="3091010850649238832">Paparkan kandungan papan keratan</translation>
@@ -550,6 +551,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="3384347053049321195">Kongsi imej</translation>
 <translation id="3385749568468586663">Gemini tidak tersedia dalam Mod inkognito</translation>
 <translation id="3387650086002190359">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh ralat sistem fail.</translation>
+<translation id="3391311825344469964">Anda boleh mengurus tetingkap anda dalam Pengurus Tetingkap Chrome</translation>
 <translation id="3417835166382867856">Cari tab</translation>
 <translation id="3430670036890315772">Tindakan mematikan kunci profil anda akan mengalih keluar maklumat anda yang disimpan</translation>
 <translation id="3435575784518354875">Untuk mengekalkan akses kepada kata laluan anda, eksport kata laluan tersebut sekarang, kemas kinikan Perkhidmatan Google Play, kemudian import semula kata laluan tersebut pada Google Password Manager. <ph name="BEGIN_LINK" />Lihat arahan penuh<ph name="END_LINK" />.</translation>
@@ -1015,6 +1017,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, Tab Inkognito Perkongsian Yang Tersemat</translation>
 <translation id="5375374982898812658">Anda akan kehilangan akses kepada kumpulan tab “<ph name="GROUP_NAME" />” dengan serta-merta dan kumpulan tab ini akan dipadamkan daripada semua peranti anda</translation>
 <translation id="5375577065097716013">Cari imej dengan Lens <ph name="BEGIN_NEW" />Baharu<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Simpan dan kongsi</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> mahu menggunakan maklumat peribadi daripada dompet digital anda. Teruskan hanya jika anda mempercayai laman ini. Laman berbahaya mungkin memperdaya anda untuk mendedahkan maklumat seperti nama sah atau nombor ID anda.</translation>
 <translation id="5395376160638294582">Pastikan anda dapat menggunakan data Chrome pada bila-bila masa dalam Google Account anda</translation>
 <translation id="539881862970320163">Kata laluan kukuh dicadangkan. Papan kekunci tersembunyi.</translation>
@@ -1069,6 +1072,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5628604359369369630">Belum dibaca - Tersedia di luar talian</translation>
 <translation id="5631483240431073854">Urus tab terbuka</translation>
 <translation id="5632485077360054581">Tunjukkan caranya</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> memerlukan kebenaran anda untuk menjalankan <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Log masuk sebagai <ph name="USER_NAME" />. Ralat Google Account. Membuka tetapan.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Sejarah carian<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />bentuk aktiviti yang lain<ph name="END_LINK2" /> mungkin disimpan pada Google Account anda</translation>
 <translation id="5648166631817621825">7 hari lalu</translation>
@@ -1098,6 +1102,7 @@ Google Account anda mungkin mempunyai sejarah penyemakan imbas dalam bentuk lain
 <translation id="5763514718066511291">Ketik untuk menyalin URL apl ini</translation>
 <translation id="5765517223145864268">Beritahu kami pengalaman anda. Atau <ph name="BEGIN_LINK" />tukar tetapan anda<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Data tidak penting</translation>
+<translation id="5788665823391532892">Laporkan masalah...</translation>
 <translation id="5793665092639000975">Menggunakan <ph name="SPACE_USED" /> daripada <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Topik yang disekat</translation>
 <translation id="580893287573699959">Urus topik dan laman perkara yang anda minati</translation>
@@ -1875,6 +1880,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />padamkan data Chrome dalam ak
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome menemukan kata laluan lemah yang boleh anda tingkatkan}other{Chrome menemukan # kata laluan lemah yang boleh anda tingkatkan}}</translation>
 <translation id="8766529642647037772">Buat pautan yang diserlahkan seperti ini?</translation>
 <translation id="8769783688897433958">Lihat maklumat dan kebenaran laman</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> memerlukan kebenaran anda untuk menjalankan <ph name="COUNT" /> sambungan</translation>
 <translation id="8788265440806329501">Sejarah navigasi ditutup</translation>
 <translation id="8790193082819560975">Ketik untuk mencari pilihan pembelian untuk produk dalam tab baharu.</translation>
 <translation id="8798449543960971550">Baca</translation>

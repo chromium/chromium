@@ -288,7 +288,6 @@
 <translation id="3885770153807205175">ቋንቋ መራጭ</translation>
 <translation id="3889417619312448367">Google Chromeን አራግፍ</translation>
 <translation id="3892148308691398805">ጽሁፍ ቅዳ</translation>
-<translation id="3893985792899396936">የChrome ጠቃሚ ምክር፦ በሌንስ ይፈልጉ</translation>
 <translation id="3941890832296813527">የጭነት ስህተት፦ የጫኙ የፋይል ስም ልክ ያልሆነ ወይም የማይደገፍ ነው።</translation>
 <translation id="395904275706073188">የተጠብቁ ገፆች ሊነበቡ አይችሉም። የተለተ ገፅ ይሞክሩ።</translation>
 <translation id="3968962723676998462">በእርስዎ መለያ <ph name="ACCOUNT_EMAIL" /> ውስጥ Chrome ውሂብን ለመጠቀም እና ለማስቀመጥ የይለፍ ሐረግዎን ያስገቡ</translation>
@@ -506,7 +505,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ቅድመ-ይሁንታ</translation>
 <translation id="6180522807229584611">ይህ ትር ተጨማሪ ንብረቶችን እየተጠቀመ ነው። አፈጻጸዎን ለማሻሻል Chrome እንዲያቦዝነው ይፍቀዱ።</translation>
 <translation id="6182736845697986886">በዝማኔ አገልጋይ የውስጥ ስህተት ምክንያት መጫኑ አልተሳካም።</translation>
-<translation id="6187085551300363958">የChrome ጠቃሚ ምክር፦ የተቀመጡ የይለፍ ቃላት</translation>
 <translation id="6192058120268468905">Chrome ውስጥ ያለ መለያዎ</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome የሚሠራበትን መንገድ ሊለውጥ የሚችል ቅጥያ አክሏል።
 
@@ -653,7 +651,6 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="7627609214560473136">ውሂብዎን ለመጠበቅ Chrome እርስዎ በቅርቡ ካልጎበኟቸው ጣቢያዎች ላይ ፈቃዶችን እንዲያስወግድ ይፍቀዱ።</translation>
 <translation id="7629695634924605473">Chrome የእርስዎ የይለፍ ቃላት ከተነጠቁ እርስዎ እንዲያውቁት ያደርግዎታል</translation>
 <translation id="7641148173327520642">የስርዓት አስተዳዳሪዎ Google Chrome <ph name="TARGET_URL_HOSTNAME" /> ለመድረስ <ph name="ALTERNATIVE_BROWSER_NAME" />ን እንዲከፍት አዋቅሮታል።</translation>
-<translation id="7641448682796883218">የChrome ጠቃሚ ምክር፦ የተሻሻለ የደህንነት አሰሳ</translation>
 <translation id="7649070708921625228">እገዛ</translation>
 <translation id="7651907282515937834">Chrome Enterprise ዓርማ</translation>
 <translation id="76531479118467370">እርስዎ ደህንነቱ የተጠበቀ አሰሳን ስላጠፉ እና ፋይሉ ሊረጋገጥ ስለማይችል Chrome ይህን ውርድ አግዷል</translation>

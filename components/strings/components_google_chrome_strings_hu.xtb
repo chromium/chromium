@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Ezek az oldalak a Chrome fejlesztői számára készültek, és előfordulhat, hogy nincsenek aktívan karbantartva vagy tesztelve. Az engedélyezésükhöz lépjen a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> oldalra, kattintson a hibaelhárítási oldalak engedélyezéséhez tartozó gombra, majd lépjen ismét erre az oldalra.</translation>
 <translation id="3875312571075912821">A hálózat elérésének engedélyezése a Chrome számára a tűzfal-
           vagy vírusirtó-beállításokban.</translation>
+<translation id="3893985792899396936">Chrome-tipp: Kereshet a Lens segítségével</translation>
 <translation id="4949828774841497663">Lépjen az Alkalmazások &gt; Rendszerbeállítások &gt; Hálózat menüpontra,
           válassza ki az aktív hálózatot, kattintson a Részletek… gombra, és szüntesse meg
           a kiválasztott proxyk kijelölését.</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />,
           és gondoskodjon róla, hogy a konfiguráció beállítása „nincs proxy” vagy „közvetlen” legyen.</translation>
+<translation id="6187085551300363958">Chrome-tipp: Jelszavak mentése</translation>
 <translation id="6341737370356890233">Lépjen ide:
         Chrome menü &gt;
         <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@
           Hálózat és internet &gt; Proxy
           menüpontra, és szüntesse meg a „Beállítások automatikus észlelése” beállítás kijelölését.</translation>
 <translation id="7230956101631259640">Jelenleg biztonságos Chrome-oldalt tekint meg</translation>
+<translation id="7641448682796883218">Chrome-tipp: Biztonságos Böngészés fokozott védelemmel</translation>
 <translation id="8232971017369963250">A Chrome a <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> nyílt forráskódú projektnek köszönhetően jött létre.</translation>
 <translation id="8279509328145658601">A Chrome létrejöttéhez más <ph name="BEGIN_LINK_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_OSS" /> is hozzájárultak.</translation>
 <translation id="8544217240017914508">A Google Chrome módosítani próbálja a fizetési módok kitöltési beállításait.</translation>

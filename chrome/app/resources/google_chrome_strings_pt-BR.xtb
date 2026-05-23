@@ -284,7 +284,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="3885770153807205175">Seletor de idioma</translation>
 <translation id="3889417619312448367">Desinstalar o Google Chrome</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
-<translation id="3893985792899396936">Dica do Chrome: pesquise com o Lens</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome do arquivo do instalador é inválido ou não tem suporte.</translation>
 <translation id="395904275706073188">Não é possível ler páginas protegidas. Tente usar outra.</translation>
 <translation id="3968962723676998462">Digite a senha longa para usar e salvar os dados do Chrome na sua conta <ph name="ACCOUNT_EMAIL" /></translation>
@@ -498,7 +497,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Google Chrome Beta</translation>
 <translation id="6180522807229584611">Esta guia está usando recursos extras. Para melhorar o desempenho, permita que o Chrome a deixe inativa.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
-<translation id="6187085551300363958">Dica do Chrome: salve senhas</translation>
 <translation id="6192058120268468905">Sua conta no Chrome</translation>
 <translation id="6220551899604141979">O parceiro <ph name="PARTNER_NAME" /> adicionou uma extensão que pode mudar a forma como o Chrome funciona.
 
@@ -645,7 +643,6 @@ Se esta página não funcionar como o esperado, ative a otimização.</translati
 <translation id="7627609214560473136">Para proteger seus dados, permita que o Chrome remova permissões de sites que você não visitou recentemente.</translation>
 <translation id="7629695634924605473">O Chrome avisa se suas senhas forem comprometidas</translation>
 <translation id="7641148173327520642">O administrador do seu sistema configurou o Google Chrome para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> ao acessar <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Dica do Chrome: Navegação Segura com Maior Proteção</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logotipo do Chrome Enterprise</translation>
 <translation id="76531479118467370">O Chrome bloqueou o download porque você desativou o recurso Navegação segura, e não é possível verificar o arquivo</translation>
@@ -746,6 +743,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="8555465886620020932">Erro de serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8575047640889685742">Usar <ph name="BEGIN_LINK" />sua senha longa<ph name="END_LINK" /> para criptografar todos os dados do Chrome na sua Conta do Google. As formas de pagamento e os endereços do Google Pay não serão criptografados. O histórico de navegação do Chrome não será sincronizado.</translation>
+<translation id="8590782867495422699">Reabrir o Modo IA da Pesquisa Google</translation>
 <translation id="8601359445272098721">Novidade! Agora você pode traduzir texto e imagens na sua tela selecionando o botão "Traduzir tela".</translation>
 <translation id="8614913330719544658">O Google Chrome não responde. Reiniciar agora?</translation>
 <translation id="861702415419836452">O Chrome precisa de permissão para acessar sua câmera e criar um mapa 3D do ambiente a sua volta</translation>

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ja">
 <translation id="130631256467250065">変更内容は、次回のデバイスの起動時に反映されます。</translation>
+<translation id="1965068424387304464">Chromium のヒント: パスワードを保存</translation>
 <translation id="261308610302996111">Chromium メニュー &gt;
           [<ph name="SETTINGS_TITLE" />]
           &gt;
@@ -13,6 +14,7 @@
 <translation id="3064346599913645280">保護された Chromium ページを表示しています</translation>
 <translation id="3255926992597692024">Chromium がお支払い方法の入力の設定を変更しようとしています。</translation>
 <translation id="358997566136285270">Chromium ロゴ</translation>
+<translation id="3837584850181228767">Chromium のヒント: セーフ ブラウジング保護強化機能</translation>
 <translation id="4050599136622776556">Chromium がお支払い方法を編集しようとしています。</translation>
 <translation id="4365115785552740256">Chromium は <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> オープンソース プロジェクトやその他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />によって実現しました。</translation>
 <translation id="4622039161600275920">このページは Chromium によってブロックされています</translation>
@@ -42,4 +44,5 @@
           このオプションを再びオンにすることをおすすめします。</translation>
 <translation id="8597726643333341451">保護された Chrome for Testing ページを表示しています</translation>
 <translation id="8684913864886094367">Chromium は正しく終了しませんでした。</translation>
+<translation id="9183331186620388872">Chromium のヒント: レンズで検索</translation>
 </translationbundle>

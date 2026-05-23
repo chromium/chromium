@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Ces pages sont destinées aux développeurs Chrome, et il est possible qu'elles ne fassent pas l'objet d'une maintenance ni de tests actifs. Pour les activer, accédez à <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliquez sur le bouton pour activer les pages de débogage, puis accédez à nouveau à cette page.</translation>
 <translation id="3875312571075912821">Autorisez Chrome à accéder au réseau dans les paramètres du pare-feu ou
         de l'antivirus.</translation>
+<translation id="3893985792899396936">Astuce Chrome : recherchez avec Lens</translation>
 <translation id="4949828774841497663">Accédez à Applications &gt; Réglages système &gt; Réseau, puis sélectionnez le réseau actif, cliquez sur le bouton "Détails..." et désélectionnez tous les proxys qui auraient pu être sélectionnés.</translation>
 <translation id="5005121315113832363">Cette page a été bloquée par Chrome</translation>
 <translation id="6011049234605203654">Accédez au
@@ -23,6 +24,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           et assurez-vous que vos paramètres sont définis sur "sans proxy" ou "direct".</translation>
+<translation id="6187085551300363958">Astuce Chrome : enregistrez vos mots de passe</translation>
 <translation id="6341737370356890233">Accédez au
         menu Chrome &gt;
         <ph name="SETTINGS_TITLE" />
@@ -42,6 +44,7 @@
           Réseau et Internet &gt; Proxy,
           puis désélectionnez "Détecter automatiquement les paramètres".</translation>
 <translation id="7230956101631259640">Cette page Chrome est sécurisée</translation>
+<translation id="7641448682796883218">Astuce Chrome : navigation sécurisée avec protection renforcée</translation>
 <translation id="8232971017369963250">Chrome fonctionne grâce au projet Open Source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome fonctionne également grâce à d'autres <ph name="BEGIN_LINK_OSS" />logiciels Open Source<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome tente de modifier les paramètres de saisie des modes de paiement.</translation>

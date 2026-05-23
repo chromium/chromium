@@ -85,7 +85,6 @@
 <translation id="193439633299369377">Yangilanishni oʻrnatish uchun ChromeOS qayta ishga tushirilishi kerak.</translation>
 <translation id="1951406923938785464">Chromium bu yuklamani blokladi, chunki bunday turdagi fayl odatda yuklab olinmaydi va xavfli boʻlishi mumkin</translation>
 <translation id="1953553007165777902">Yuklab olinmoqda... <ph name="MINUTE" /> daqiqa qoldi</translation>
-<translation id="1965068424387304464">Chromium maslahati: Parollarni saqlang</translation>
 <translation id="1966382378801805537">Chromium asosiy brauzerni aniqlay olmadi yoki tayinlay olmadi.</translation>
 <translation id="1990262977744080398">Chromium ayrim fayllarni nega bloklashi haqida batafsil. Yangi varaqda ochiladi</translation>
 <translation id="1999715455684970349">Chromium dasturini yangilab turadi. Bu xizmat faolsizlantirilsa yoki toʻxtatilsa, Chromium dasturi yangilanmasligi, tuzatilmas zaifliklarni keltirib chiqarishi va ayrim funksiyalar ishlamay qolishi mumkin. Xizmat ishlatadigan Chromium dasturi mavjud boʻlmasa, xizmat avtomatik oʻchirib tashlanadi.</translation>
@@ -259,7 +258,6 @@
 <translation id="3802055581630249637">Chromium siz tashrif buyurishingiz mumkin boʻlgan sahifalarni oldindan yuklaydi, shunda ular tashrif buyurganingizda tezroq yuklanadi</translation>
 <translation id="3810973564298564668">Sozlash</translation>
 <translation id="3823384748599722168">Saqlangan parollardan foydalanish uchun QR kodni kiriting, iOS uchun Chromium ilovasini yuklab oling va Google hisobingizga kiring</translation>
-<translation id="3837584850181228767">Chromium maslahati: Saytlarni kuchaytirilgan rejimda xavfsiz kezish</translation>
 <translation id="3846683726093018685">**Xulosalash:** Skrinshot kontentidagi asosiy mavzu va maqsadni 30 soʻzdan kam bitta gapda ifodalang.
 
           **Savol takliflari:** Skrinshotni yaxshiroq tushunish uchun foydalanuvchi berishi mumkin 3-5 oʻylantiruvchi savollarning markerlangan roʻyxatini yarating. Bu savollarga vizual obyekt, uning dizayni yoki joylashuvi haqida kamida bittasi kiritilishi kerak.</translation>
@@ -746,7 +744,6 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="9148058034647219655">To‘liq ekran rejimidan chiqish</translation>
 <translation id="9155105544013854680">Ishni kelgan joyidan davom ettiring: Chromium har safar qayta ishga tushganda oxirgi varaqlarni tiklashi mumkin. Yoqish uchun bu yerga kiring:</translation>
 <translation id="9158494823179993217">Tizim administratori <ph name="TARGET_URL_HOSTNAME" /> havolasini muqobil brauzerda ochiladigan qilib sozlagan.</translation>
-<translation id="9183331186620388872">Chromium maslahati: Lens bilan qidiring</translation>
 <translation id="9185526690718004400">&amp;Chromium brauzerini yangilash uchun qayta ishga tushiring</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Chromium brauzerini oʻzingizga moslashtiring</translation>

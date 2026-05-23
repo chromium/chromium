@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
 <translation id="130631256467250065">Los cambios se aplicarán la próxima vez que reinicies el dispositivo.</translation>
+<translation id="1965068424387304464">Consejo de Chromium: guarda contraseñas</translation>
 <translation id="261308610302996111">Accede al menú de Chromium, haz clic en <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> y asegúrate de que esté seleccionada la opción de configuración sin proxy o directa.</translation>
 <translation id="275588974610408078">Los informes de errores no se encuentran disponibles en Chromium.</translation>
 <translation id="3064346599913645280">Estás viendo una página de Chromium segura</translation>
 <translation id="3255926992597692024">Chromium está intentando modificar la configuración para completar los métodos de pago.</translation>
 <translation id="358997566136285270">Logotipo de Chromium</translation>
+<translation id="3837584850181228767">Consejo de Chromium: Navegación segura mejorada</translation>
 <translation id="4050599136622776556">Chromium está intentando editar los métodos de pago.</translation>
 <translation id="4365115785552740256">Chromium se ha creado gracias al proyecto de software libre <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> y a otro <ph name="BEGIN_LINK_OSS" />software libre<ph name="END_LINK_OSS" />.</translation>
 <translation id="4622039161600275920">Chromium ha bloqueado esta página</translation>
@@ -30,4 +32,5 @@
           para conseguir un mejor rendimiento.</translation>
 <translation id="8597726643333341451">Estás viendo una página segura de Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium no se ha cerrado correctamente.</translation>
+<translation id="9183331186620388872">Consejo de Chromium: busca con Lens</translation>
 </translationbundle>

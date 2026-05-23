@@ -88,7 +88,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="193439633299369377">Kailangang ma-restart ang ChromiumOS para mailapat ang update.</translation>
 <translation id="1951406923938785464">Na-block ng Chromium ang pag-download na ito dahil hindi karaniwang dina-download ang uri ng file at posibleng mapanganib ito</translation>
 <translation id="1953553007165777902">Nagda-download... <ph name="MINUTE" /> (na) minuto na lang ang natitira</translation>
-<translation id="1965068424387304464">Tip sa Chromium: Mag-save ng Mga Password</translation>
 <translation id="1966382378801805537">Hindi matukoy o maitakda ng Chromium ang default na browser</translation>
 <translation id="1990262977744080398">Alamin kung bakit bina-block ng Chromium ang ilang file, magbubukas sa bagong tab</translation>
 <translation id="1999715455684970349">Pinapanatiling up to date ang iyong software ng Chromium. Kung na-disable o inihinto ang serbisyong ito, hindi mapapanatiling up to date ang iyong software ng Chromium, ibig sabihin, hindi maaayos ang mga kahinaan sa seguridad na posibleng mangyari at puwedeng hindi gumana ang mga feature. Kusang nag-a-uninstall ang serbisyong ito kapag walang software ng Chromium na gumagamit dito.</translation>
@@ -264,7 +263,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3802055581630249637">Nagpi-preload ang Chromium ng mga page na malamang na bisitahin mo, para mas mabilis na mag-load ang mga ito kapag binisita mo</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="3823384748599722168">Para magamit ang iyong mga naka-save na password, sundan ang QR code, i-download ang Chromium para sa iOS, at mag-sign in sa Google Account mo</translation>
-<translation id="3837584850181228767">Tip sa Chromium: Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="3846683726093018685">**Ibuod:** Sa isang pangungusap na walang pang 30 salita, ilarawan ang pangunahing paksa at layunin ng content na nasa screenshot.
 
           **Magmungkahi ng Mga Tanong:** Bumuo ng naka-bullet na listahan ng 3-5 nagpapaisip na tanong na puwedeng magamit ng isang user para mas maintindihan ang screenshot. Ang mga tanong na ito ay dapat may kasamang kahit isang partikular na tanong na tungkol sa visual na object, o sa disenyo o placement nito.</translation>
@@ -751,7 +749,6 @@ Hindi mabawi ng Chromium ang iyong mga setting.</translation>
 <translation id="9148058034647219655">Lumabas</translation>
 <translation id="9155105544013854680">Magpatuloy kung saan ka huminto: Puwedeng i-restore ng Chromium ang iyong mga tab sa tuwing magre-restart ka. Para i-on ito, pumunta sa</translation>
 <translation id="9158494823179993217">Na-configure ng iyong system administrator ang Chromium na magbukas ng alternatibong browser para i-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9183331186620388872">Tip sa Chromium: Maghanap Gamit ang Lens</translation>
 <translation id="9185526690718004400">Ilunsad ulit para ma-update ang Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Gawing iyo ang Chromium</translation>

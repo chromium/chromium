@@ -284,7 +284,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="3885770153807205175">Selector d'idioma</translation>
 <translation id="3889417619312448367">Desinstal·la Google Chrome</translation>
 <translation id="3892148308691398805">Copia el text</translation>
-<translation id="3893985792899396936">Consell de Chrome: cerca amb Lens</translation>
 <translation id="3941890832296813527">Error d'instal·lació: el nom de fitxer de l'instal·lador no és vàlid o no s'admet.</translation>
 <translation id="395904275706073188">Les pàgines protegides no es poden llegir. Prova una altra pàgina.</translation>
 <translation id="3968962723676998462">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chrome al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -498,7 +497,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Aquesta pestanya utilitza recursos addicionals. Per millorar el rendiment, permet que Chrome la desactivi.</translation>
 <translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
-<translation id="6187085551300363958">Consell de Chrome: desa les contrasenyes</translation>
 <translation id="6192058120268468905">El teu compte a Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ha afegit una extensió que pot canviar el funcionament de Chrome.
 
@@ -645,7 +643,6 @@ Si aquesta pàgina no funciona de la manera prevista, prova de permetre l'optimi
 <translation id="7627609214560473136">Per protegir les teves dades, permet que Chrome suprimeixi els permisos dels llocs web que no has visitat recentment.</translation>
 <translation id="7629695634924605473">Chrome et permet saber si les contrasenyes s'han posat en perill</translation>
 <translation id="7641148173327520642">L'administrador del sistema ha configurat Google Chrome perquè obri <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Consell de Chrome: Navegació segura millorada</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logotip de Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome ha bloquejat aquesta baixada perquè has desactivat Navegació segura i el fitxer no es pot verificar</translation>

@@ -288,7 +288,6 @@ Om sidan inte fungerar som förväntat kan du testa att tillåta optimering.</tr
 <translation id="3885770153807205175">Språkväljare</translation>
 <translation id="3889417619312448367">Avinstallera Google Chrome</translation>
 <translation id="3892148308691398805">Kopiera text</translation>
-<translation id="3893985792899396936">Tips för Chrome: Sök med Lens</translation>
 <translation id="3941890832296813527">Installationsfel: Installationens filnamn är ogiltigt eller stöds inte.</translation>
 <translation id="395904275706073188">Det går inte att läsa skyddade sidor. Testa med en annan sida.</translation>
 <translation id="3968962723676998462">Ange lösenfrasen om du vill använda och spara Chrome-data i ditt konto, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -506,7 +505,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Den här fliken använder extra resurser. Du kan förbättra prestandan genom att låta Chrome inaktivera den.</translation>
 <translation id="6182736845697986886">Installationen misslyckades på grund av ett internt fel på uppdateringsservern.</translation>
-<translation id="6187085551300363958">Tips för Chrome: Spara lösenord</translation>
 <translation id="6192058120268468905">Ditt konto i Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> har lagt till ett tillägg som kan ändra hur Chrome fungerar.
 
@@ -653,7 +651,6 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="7627609214560473136">Låt Chrome ta bort behörigheter från webbplatser som du inte har besökt nyligen för att skydda din data.</translation>
 <translation id="7629695634924605473">Om dina lösenord någonsin skulle läcka ut får du veta det i Chrome</translation>
 <translation id="7641148173327520642">Systemadministratören har konfigurerat Google Chrome så att <ph name="TARGET_URL_HOSTNAME" /> öppnas i <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
-<translation id="7641448682796883218">Tips för Chrome: Förbättrad säker webbsökning</translation>
 <translation id="7649070708921625228">Hjälp</translation>
 <translation id="7651907282515937834">Logotyp för Chrome Enterprise</translation>
 <translation id="76531479118467370">Den här nedladdningen blockerades av Chrome eftersom du har inaktiverat Säker webbsökning och filen inte kan verifieras</translation>

@@ -164,6 +164,7 @@
 <translation id="1104098698795583187">คุณจะเสียสิทธิ์เข้าถึงกลุ่มแท็บนี้ทันที และระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="1106270460549661906">เลิกแชร์กับ Gemini</translation>
 <translation id="1106350001632362876">เพิ่มเกณฑ์</translation>
+<translation id="1107300737351978027">ต้องไม่มีตัวเลขซ้ำกัน</translation>
 <translation id="110850812463801904">เชื่อมต่อกับ OneDrive ด้วยตนเอง</translation>
 <translation id="1108600514891325577">&amp;หยุด</translation>
 <translation id="1108938384783527433">ซิงค์ประวัติการเข้าชม</translation>
@@ -268,6 +269,7 @@
 <translation id="1173894706177603556">เปลี่ยนชื่อ</translation>
 <translation id="1174073918202301297">เพิ่มทางลัดแล้ว</translation>
 <translation id="1174366174291287894">การเชื่อมต่อของคุณปลอดภัยเสมอ เว้นแต่ Chrome จะบอกเป็นอย่างอื่น</translation>
+<translation id="1174759280027683968">ไปที่ Chrome</translation>
 <translation id="1175131936083782305">ผู้ดูแลระบบปิดใช้ฟีเจอร์นี้</translation>
 <translation id="1175277108283187866">ไปที่เว็บไซต์หรือเริ่มการค้นหาในแถบที่อยู่</translation>
 <translation id="1175364870820465910">&amp;พิมพ์...</translation>
@@ -953,7 +955,6 @@
 <translation id="1636212173818785548">ตกลง</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />ข้อมูลแอปอาจเป็นข้อมูลใดก็ตามที่แอปบันทึกไว้ (ขึ้นอยู่กับการตั้งค่าของนักพัฒนาแอป) ซึ่งรวมถึงข้อมูลอย่างเช่นรายชื่อติดต่อ ข้อความ และรูปภาพ ข้อมูลสำรองจะไม่นับรวมในโควต้าพื้นที่เก็บข้อมูล Google ไดรฟ์<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />คุณปิดบริการนี้ได้ในการตั้งค่า<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1637224376458524414">รับบุ๊กมาร์กนี้ใน iPhone ของคุณ</translation>
 <translation id="1637765355341780467">เกิดข้อผิดพลาดขณะเปิดโปรไฟล์ ฟีเจอร์บางอย่างอาจไม่พร้อมใช้งาน</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641113438599504367">Google Safe Browsing</translation>
@@ -1790,7 +1791,6 @@
 <translation id="221297410904507041">ลบประวัติการเข้าชม คุกกี้ แคช และอื่นๆ</translation>
 <translation id="2213410656650624348">ปานกลาง</translation>
 <translation id="2214018885812055163">โฟลเดอร์ที่แชร์</translation>
-<translation id="2214453882118345682">เลือกซื้อ แปล และระบุสิ่งที่คุณเห็นโดยใช้กล้อง</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;ไม่ได้แสดง 1 บรรทัด&gt;}other{&lt;ไม่ได้แสดง <ph name="NUMBER_OF_LINES" /> บรรทัด&gt;}}</translation>
 <translation id="2215070081105889450">หากต้องการแชร์เสียง ให้แชร์แท็บหรือหน้าจอแทน</translation>
 <translation id="2217208085547223783">สถานะความน่าเชื่อถือ</translation>
@@ -2702,7 +2702,6 @@
 <translation id="2813765525536183456">&amp;เพิ่มโปรไฟล์ใหม่</translation>
 <translation id="281390819046738856">ลงนามคำขอไม่ได้</translation>
 <translation id="2814489978934728345">หยุดโหลดหน้านี้</translation>
-<translation id="2815693974042551705">โฟลเดอร์บุ๊กมาร์ก</translation>
 <translation id="2816319641769218778">หากต้องการบันทึกรหัสผ่านลงในบัญชี Google ให้เปิดการซิงค์</translation>
 <translation id="2817435998497102771">ตั้งค่าวอลเปเปอร์และสไตล์</translation>
 <translation id="2817861546829549432">การเปิดใช้ "ไม่ติดตาม" หมายความว่าจะมีการรวมคำขอไว้กับการเข้าชมเว็บของคุณ ผลกระทบทั้งหมดขึ้นอยู่กับว่าเว็บไซต์ตอบสนองต่อคำขอหรือไม่ และวิธีในการตีความคำขอ ตัวอย่างเช่น บางเว็บไซต์อาจตอบสนองต่อคำขอนี้โดยแสดงให้คุณเห็นโฆษณาที่ไม่ได้อิงอยู่กับเว็บไซต์อื่นๆ ที่คุณเข้าชม เว็บไซต์จำนวนมากจะยังคงรวบรวมและใช้ข้อมูลการท่องเว็บของคุณ ตัวอย่างเช่น เพื่อปรับปรุงความปลอดภัย เพื่อแสดงเนื้อหา บริการ โฆษณา หรือคำแนะนำเกี่ยวกับเว็บไซต์ของตน และเพื่อสร้างสถิติการรายงาน</translation>
@@ -2816,7 +2815,6 @@
 <translation id="2893318819023133318">มุมมองแบบย้อนกลับ</translation>
 <translation id="2894596417096093634">ตัวระบุรายงานข้อขัดข้อง</translation>
 <translation id="2894757982205307093">แท็บใหม่ในกลุ่ม</translation>
-<translation id="2895244606836384727">การช่วยเตือน: กลุ่มแท็บของคุณ</translation>
 <translation id="289695669188700754">รหัสคีย์: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ระบบจะนำการตั้งค่าที่กำหนดเองนี้ออกเมื่อคุณปิดหน้าต่างที่ไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="2897878306272793870">คุณแน่ใจหรือไม่ว่าต้องการเปิด <ph name="TAB_COUNT" /> แท็บ</translation>
@@ -4447,7 +4445,6 @@
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร}other{การดำเนินการนี้จะลบกลุ่มออกจากอุปกรณ์ของคุณอย่างถาวร}}</translation>
 <translation id="4010036441048359843">เปิดไฮไลต์</translation>
 <translation id="4010746393007464819">มีการอัปเกรดเป็น Debian 12 (Bookworm) พร้อมใช้งาน</translation>
-<translation id="4010917659463429001">หากต้องการรับบุ๊กมาร์กบนมือถือ ให้<ph name="GET_IOS_APP_LINK" /></translation>
 <translation id="4011073493055408531">แสงเหนือสีม่วงและเขียวที่ปรากฏอยู่เหนือเมือง</translation>
 <translation id="4011897773956589748">Gemini จะขอสิทธิ์อีกครั้งในครั้งถัดไปที่ต้องการเข้าถึงบัญชีนี้</translation>
 <translation id="4012509903424054869">ระบบจะแปลงไฟล์ PDF โดยอัตโนมัติเพื่อให้คุณค้นหาและเลือกข้อความได้</translation>
@@ -5349,7 +5346,6 @@
 <translation id="4660465405448977105">{COUNT,plural, =1{ภาพ}other{# ภาพ}}</translation>
 <translation id="4660540330091848931">กำลังปรับขนาด</translation>
 <translation id="4662373422909645029">ชื่อเล่นต้องไม่มีตัวเลข</translation>
-<translation id="4662788913887017617">แชร์บุ๊กมาร์กนี้กับ iPhone ของคุณ</translation>
 <translation id="4663373278480897665">อนุญาตให้ใช้กล้องถ่ายรูป</translation>
 <translation id="4665014895760275686">ผู้ผลิต</translation>
 <translation id="4665446389743427678">ระบบจะลบข้อมูลทั้งหมดที่ <ph name="SITE" /> จัดเก็บไว้</translation>
@@ -5394,7 +5390,6 @@
 <translation id="4688176403504673761"><ph name="MANAGER" /> จะทำให้อุปกรณ์นี้เป็นเวอร์ชันก่อนหน้า (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">โปรดตรวจสอบการเชื่อมต่ออินเทอร์เน็ตแล้วลองใช้ Gemini อีกครั้ง</translation>
 <translation id="4689235506267737042">เลือกค่ากำหนดการสาธิต</translation>
-<translation id="4689421377817139245">ซิงค์บุ๊กมาร์กนี้กับ iPhone ของคุณ</translation>
 <translation id="4690091457710545971">&lt;มีไฟล์ 4 ไฟล์ที่สร้างขึ้นโดยเฟิร์มแวร์ Wi-Fi ของ Intel ได้แก่ csr.lst, fh_regs.lst, radio_reg.lst และ monitor.lst.sysmon  โดย 3 ไฟล์แรกเป็นไฟล์ไบนารีที่มี Register Dump ซึ่งผ่านการยืนยันโดย Intel เพื่อไม่ให้รวมข้อมูลส่วนตัวหรือข้อมูลที่ระบุอุปกรณ์  ส่วนไฟล์สุดท้ายเป็นการติดตามการทำงานจากเฟิร์มแวร์ของ Intel โดยมีการลบข้อมูลส่วนตัวหรือข้อมูลที่ระบุอุปกรณ์ออกไปแล้ว แต่ไฟล์มีขนาดใหญ่เกินกว่าที่จะแสดงตรงนี้ได้  ไฟล์เหล่านี้สร้างขึ้นมาเพื่อตอบสนองต่อปัญหา Wi-Fi ล่าสุดในอุปกรณ์ของคุณและระบบจะแชร์ไฟล์กับ Intel เพื่อช่วยแก้ปัญหาเหล่านี้&gt;</translation>
 <translation id="4691995778017338841">แต่งรูปภาพใหม่</translation>
 <translation id="4692342362587775867">การแจ้งเตือนจากเว็บไซต์นี้อาจรบกวน</translation>
@@ -5644,7 +5639,6 @@
 <translation id="4864805589453749318">เลือกผู้ปกครองที่จะให้สิทธิ์ในการเพิ่มบัญชีโรงเรียน</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ถูกบล็อก)</translation>
 <translation id="486505726797718946">ประหยัดหน่วยความจำแล้ว</translation>
-<translation id="4865063548323785458">บันทึกและป้อนรหัสผ่านอัตโนมัติเพื่อลงชื่อเข้าใช้เว็บไซต์และแอปต่างๆ ได้อย่างง่ายดาย</translation>
 <translation id="486635084936119914">เปิดไฟล์บางประเภทโดยอัตโนมัติหลังจากที่ดาวน์โหลดมา</translation>
 <translation id="4867272607148176509">ผู้ปกครองจะอนุมัติหรือบล็อกแอป จำกัดเวลาใช้งาน และควบคุมการท่องเว็บได้ คุณสามารถเพิ่มบัญชีโรงเรียนในภายหลังเพื่อให้เข้าถึงแหล่งข้อมูลส่วนใหญ่ของโรงเรียนได้</translation>
 <translation id="486796517585164369">· แท็บล่าสุด</translation>
@@ -5751,6 +5745,7 @@
 <translation id="4931387733184123331">อุปราคา</translation>
 <translation id="4932733599132424254">วันที่</translation>
 <translation id="4933484234309072027">ฝังตัวใน <ph name="URL" /></translation>
+<translation id="4934763315031217818">ต้องไม่มีตัวเลขที่เรียงตามลำดับ</translation>
 <translation id="4936042273057045735">การซิงค์การแจ้งเตือนใช้ไม่ได้กับโทรศัพท์ที่ใช้โปรไฟล์งาน</translation>
 <translation id="4937676329899947885">กำลังรับเครือข่าย Wi-Fi</translation>
 <translation id="4938052313977274277">ความเร็ว</translation>
@@ -6719,7 +6714,6 @@
 <translation id="5624120631404540903">จัดการรหัสผ่าน</translation>
 <translation id="5624959475330585145">ถามก่อนใช้การเชื่อมต่อที่ไม่ปลอดภัย</translation>
 <translation id="5625225435499354052">แก้ไขใน Google Pay</translation>
-<translation id="5626134646977739690">ชื่อ:</translation>
 <translation id="5626172233890210551">ใช้รหัสผ่านแทน</translation>
 <translation id="5627832140542566187">การวางแนวจอแสดงผล</translation>
 <translation id="5628434207686266338">ตั้งรหัสผ่านของอุปกรณ์</translation>
@@ -6865,7 +6859,6 @@
 <translation id="5740709157181662145">การรองรับและความเสถียรของฮาร์ดแวร์ <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">การมิเรอร์จอแสดงผล</translation>
 <translation id="574209121243317957">ระดับเสียงสูงต่ำ</translation>
-<translation id="5742787970423162234">เว็บแอปพลิเคชันแบบแพ็กเกจพร้อมความสามารถที่ปรับปรุงใหม่ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">PIN สำหรับการปลดล็อกอัตโนมัติต้องไม่เกิน 12 หลัก</translation>
 <translation id="5746169159649715125">บันทึกเป็น PDF</translation>
 <translation id="5747785204778348146">นักพัฒนาซอฟต์แวร์ - ไม่เสถียร</translation>
@@ -7897,7 +7890,6 @@
 <translation id="6464825623202322042">อุปกรณ์นี้</translation>
 <translation id="6465841119675156448">ไม่ใช้อินเทอร์เน็ต</translation>
 <translation id="6466258437571594570">เว็บไซต์ถูกบล็อกไม่ให้รบกวนคุณด้วยการขอส่งการแจ้งเตือน</translation>
-<translation id="6466988389784393586">&amp;เปิดบุ๊กมาร์กทั้งหมด</translation>
 <translation id="6467230443178397264">สแกน <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">เพิ่มประสิทธิภาพวิดีโอเต็มหน้าจอ</translation>
 <translation id="6467377768028664108">จากนั้น <ph name="DEVICE_TYPE" /> จะสามารถ</translation>
@@ -9499,7 +9491,6 @@
 <translation id="7582582252461552277">ต้องการใช้เครือข่ายนี้</translation>
 <translation id="7582844466922312471">ดาต้ามือถือ</translation>
 <translation id="7583948862126372804">จำนวน</translation>
-<translation id="7584287158780898016">เปิดใช้การแจ้งเตือนการติดตามราคา</translation>
 <translation id="7585106857920830898">กำลังตรวจสอบกับนโยบายความปลอดภัยขององค์กร…</translation>
 <translation id="7585490016012953607">รหัสผ่านสำหรับการกู้คืน — บันทึกไว้ชั่วคราวนานสูงสุด 3 เดือน</translation>
 <translation id="7586498138629385861">Chrome จะยังคงทำงานต่อไปขณะที่แอปของ Chrome เปิดอยู่</translation>
@@ -10518,6 +10509,7 @@
 <translation id="8265018477030547118">เฉพาะในอุปกรณ์นี้</translation>
 <translation id="826511437356419340">เข้าสู่โหมดภาพรวมหน้าต่างแล้ว เลื่อนเพื่อไปยังส่วนต่างๆ หรือกด Tab หากใช้แป้นพิมพ์</translation>
 <translation id="8266430295499893285">คุณต้องยืนยันตัวตนก่อนจึงจะเข้าถึงรหัสผ่านได้</translation>
+<translation id="8266751606569906450">ต้องมีอักขระอย่างน้อย <ph name="MINIMUM" /> ตัว</translation>
 <translation id="8266947622852630193">วิธีการป้อนข้อมูลทั้งหมด</translation>
 <translation id="8267539814046467575">เพิ่มเครื่องพิมพ์</translation>
 <translation id="826905130698769948">ใบรับรองไคลเอ็นต์ไม่ถูกต้อง</translation>
@@ -10663,7 +10655,6 @@
 <translation id="8363277452449582220">มหาสมุทร</translation>
 <translation id="8366396658833131068">กู้คืนการเชื่อมต่อเครือข่ายของคุณแล้ว โปรดเลือกเครือข่ายอื่นหรือกดปุ่ม "ดำเนินการต่อ" ที่ด้านล่างเพื่อเปิดแอปคีออสก์</translation>
 <translation id="8366694425498033255">คีย์การเลือก</translation>
-<translation id="8368859634510605990">&amp;เปิดบุ๊กมาร์กทั้งหมด</translation>
 <translation id="8370294614544004647">เข้าสู่โหมดสลีปเมื่อปิดแล็ปท็อป</translation>
 <translation id="8370419414641876532">คลิก "รหัสผ่านและป้อนข้อความอัตโนมัติ"</translation>
 <translation id="8371695176452482769">เชิญพูดเลย</translation>
@@ -11330,7 +11321,6 @@
 <translation id="881799181680267069">ซ่อนรายการอื่นๆ</translation>
 <translation id="8818152010000655963">วอลเปเปอร์</translation>
 <translation id="8818988764764862764">หน้าต่างเลื่อนไปทางซ้าย</translation>
-<translation id="8819155700324279105">เพิ่มการป้องกันภัยคุกคามทางออนไลน์อีกชั้นหนึ่ง</translation>
 <translation id="8819510664278523111">EID ของอุปกรณ์คือ <ph name="EID_NUMBER" />, IMEI ของอุปกรณ์คือ <ph name="IMEI_NUMBER" /> และหมายเลขซีเรียลของอุปกรณ์คือ <ph name="SERIAL_NUMBER" /> คุณใช้หมายเลขเหล่านี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8821045908425223359">กำหนดค่าที่อยู่ IP โดยอัตโนมัติ</translation>
@@ -11586,7 +11576,6 @@
 <translation id="8987321822984361516">เบราว์เซอร์ที่จัดการโดยองค์กร โปรไฟล์ที่จัดการโดย <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987736167266086032">ทำสิ่งที่ค้างไว้ต่อจากคราวที่แล้ว</translation>
 <translation id="8987927404178983737">เดือน</translation>
-<translation id="8988539543012086784">บันทึกหน้านี้ใน <ph name="BOOKMARK_FOLDER" /> แล้ว</translation>
 <translation id="8989359959810288806">รีเฟรชสถานะการเชื่อมต่ออินเทอร์เน็ตผ่านมือถือ</translation>
 <translation id="8989779557457435460">แชร์แท็บปัจจุบันโดยค่าเริ่มต้น</translation>
 <translation id="8990243615717080992">ลงชื่อเข้าใช้ด้วยรหัสผ่านหรือวิธีกู้คืนอื่นๆ</translation>

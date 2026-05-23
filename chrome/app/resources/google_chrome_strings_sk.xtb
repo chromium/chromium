@@ -285,7 +285,6 @@ Ak stránka nefunguje podľa očakávaní, skúste optimalizáciu povoliť.</tra
 <translation id="3885770153807205175">Výber jazyka</translation>
 <translation id="3889417619312448367">Odinštalovanie prehliadača Google Chrome</translation>
 <translation id="3892148308691398805">Kopírovať text</translation>
-<translation id="3893985792899396936">Tip pre Chrome: vyhľadávajte pomocou funkcie Lens</translation>
 <translation id="3941890832296813527">Chyba inštalácie: názov súboru inštalátora je neplatný alebo nie je podporovaný.</translation>
 <translation id="395904275706073188">Chránené stránky sa nedajú čítať. Skúste inú stránku.</translation>
 <translation id="3968962723676998462">Ak chcete používať a ukladať údaje Chromu vo svojom účte <ph name="ACCOUNT_EMAIL" />, zadajte prístupovú frázu</translation>
@@ -503,7 +502,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Táto karta používa dodatočné zdroje. Chrome ju môže deaktivovať, aby zlepšil výkon.</translation>
 <translation id="6182736845697986886">Nepodarilo sa nainštalovať pre internú chybu servera aktualizácií.</translation>
-<translation id="6187085551300363958">Tip pre Chrome: Ukladanie hesiel</translation>
 <translation id="6192058120268468905">Váš účet v Chrome</translation>
 <translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> pridal rozšírenie, ktoré môže zmeniť spôsob fungovania Chromu.
 
@@ -650,7 +648,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7627609214560473136">Povoľte Chromu odstraňovať povolenia z webov, ktoré ste v poslednom čase nenavštívili, a ochráňte tak svoje údaje.</translation>
 <translation id="7629695634924605473">Ak budú vaše heslá napadnuté, Chrome vám to oznámi</translation>
 <translation id="7641148173327520642">Správca systému nakonfiguroval Google Chrome, aby <ph name="TARGET_URL_HOSTNAME" /> otváral v prehliadači <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
-<translation id="7641448682796883218">Tip pre Chrome: Zlepšené bezpečné prehliadanie</translation>
 <translation id="7649070708921625228">Pomocník</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome toto sťahovanie zablokoval, pretože ste vypli Bezpečné prehliadanie a súbor sa nedá overiť</translation>

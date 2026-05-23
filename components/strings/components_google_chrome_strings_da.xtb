@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Disse sider er beregnet til brug af Chrome-udviklere og vedligeholdes eller testes muligvis ikke aktivt. Hvis du vil aktivere dem, skal du gå til <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klikke på knappen for at aktivere fejlretningssider og derefter gå til denne side igen.</translation>
 <translation id="3875312571075912821">Tillad, at Chrome får adgang til netværket i dine indstillinger for firewall eller
        antivirus.</translation>
+<translation id="3893985792899396936">Tip til Chrome: Søg med Lens</translation>
 <translation id="4949828774841497663">Gå til Apps &gt; Systemindstillinger &gt; Netværk, vælg det aktive netværk, klik på knappen Oplysninger…, og fravælg eventuelle proxyer, der måtte være valgt.</translation>
 <translation id="5005121315113832363">Chrome har blokeret denne side</translation>
 <translation id="6011049234605203654">Gå til
@@ -23,6 +24,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />,
           og kontrollér, at din konfiguration er indstillet til "ingen proxy" eller "direkte".</translation>
+<translation id="6187085551300363958">Tip til Chrome: Gem adgangskoder</translation>
 <translation id="6341737370356890233">Gå til
         Chrome-menuen &gt;
         <ph name="SETTINGS_TITLE" />
@@ -42,6 +44,7 @@
           Netværk og internet &gt; Proxy,
           og fravælg "Registrer indstillinger automatisk".</translation>
 <translation id="7230956101631259640">Du ser en sikker Google Chrome-side</translation>
+<translation id="7641448682796883218">Tip til Chrome: Udvidet beskyttet browsing</translation>
 <translation id="8232971017369963250">Chrome leveres ved hjælp af open source-projektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome leveres også ved hjælp af andet <ph name="BEGIN_LINK_OSS" />open source-software<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome forsøger at ændre indstillinger for udfyldning af betalingsmetoder.</translation>

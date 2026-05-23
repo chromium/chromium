@@ -145,6 +145,7 @@ Các mẫu URL không được xung đột với <ph name="CONTROLLED_FRAME_ALLO
 Để biết thông tin chi tiết về các mẫu URL hợp lệ, vui lòng truy cập vào https://chromeenterprise.google/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="1082802595100075771">Cho phép người dùng chọn sử dụng một dịch vụ ẩn danh của Google để cung cấp nội dung mô tả tự động cho những hình ảnh chưa gắn nhãn</translation>
 <translation id="1084697375611053264">Chỉ định danh sách các miền ứng dụng web bên thứ ba được phép sử dụng <ph name="DESK_API_NAME" /> để kiểm soát không gian làm việc trên <ph name="PRODUCT_OS_NAME" />. Các mẫu URL này phải tuân theo định dạng đã xác định cho thuộc tính "matches" trong https://developer.chrome.com/docs/extensions/mv3/manifest/externally_connectable/#reference</translation>
+<translation id="1086596047220085412">Chế độ cài đặt cách chia sẻ thẻ thông minh</translation>
 <translation id="1087057100912843460">Cho phép bản cập nhật</translation>
 <translation id="1087187152710800704">Từ chối cấp quyền Quản lý cửa sổ trên tất cả trang web theo mặc định</translation>
 <translation id="1087437665304381368">Chính sách này chỉ kiểm soát chế độ nhà phát triển của <ph name="PRODUCT_OS_NAME" />. Nếu muốn ngăn khả năng truy cập vào Tùy chọn của nhà phát triển Android, bạn cần đặt chính sách <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
@@ -1089,6 +1090,7 @@ gặp sự cố do thay đổi này. Phiên bản cuối cùng hỗ trợ chính
       Để biết thêm thông tin, vui lòng truy cập <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Lưu ý: Tùy chọn cài đặt này sẽ ghi đè chính sách <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, nếu có.</translation>
+<translation id="1723571018091915166">Không cho phép chia sẻ thẻ thông minh với các công cụ tích hợp <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="172374442286684480">Cho phép tất cả trang web lưu dữ liệu trên máy</translation>
 <translation id="1729169799290004131">Việc đặt chính sách này sẽ chỉ định tỷ lệ phần trăm độ sáng màn hình, tắt các tính năng tự động điều chỉnh độ sáng. Độ sáng màn hình ban đầu sẽ thay đổi theo giá trị của chính sách nhưng người dùng có thể thay đổi giá trị này.
 
@@ -2166,6 +2168,7 @@ Khi bạn đặt chính sách này, người dùng sẽ không thể ghi đè gi
 
 Nếu bạn không đặt chính sách này, thì màn hình bảo vệ quyền riêng tư sẽ tắt lúc ban đầu nhưng người dùng vẫn có thể kiểm soát.</translation>
 <translation id="2413899611035194909">Hiển thị các tuỳ chọn hỗ trợ tiếp cận trong trình đơn ở khay hệ thống của màn hình đăng nhập</translation>
+<translation id="2414712434655365347">Định cấu hình tính năng Chèn tiêu đề HTTP cho các mẫu URL cụ thể</translation>
 <translation id="2415715982424988916">Khám phá (được hỗ trợ kể từ phiên bản 91)</translation>
 <translation id="2420958105721932612">Chỉ định cách cài đặt một ứng dụng. AVAILABLE: Ứng dụng không được cài đặt tự động, nhưng người dùng có thể cài đặt. Đây là giá trị mặc định nếu bạn không chỉ định chính sách này. FORCE_INSTALLED: Ứng dụng được cài đặt tự động và người dùng không thể gỡ cài đặt. BLOCKED: Ứng dụng bị chặn và không cài đặt được. Nếu ứng dụng đã được cài đặt theo chính sách trước đó, thì ứng dụng sẽ bị gỡ cài đặt.</translation>
 <translation id="2421400544595297401">Không cho phép người dùng chưa liên kết sử dụng ứng dụng Android</translation>
@@ -8150,6 +8153,25 @@ Từ phiên bản 114 trở lên, bạn không bắt buộc phải đặt chính
 <translation id="624219423122512710">Thao tác của trình duyệt ở trạng thái rảnh</translation>
 <translation id="6244061205361004687">Cho phép người dùng ngắt kết nối hoặc sửa đổi VPN theo cách thủ công</translation>
 <translation id="6244210204546589761">Các URL sẽ mở khi khởi động</translation>
+<translation id="6245828368576563662">Chính sách này cho phép xác định danh sách các quy tắc để chèn các tiêu đề HTTP tuỳ chỉnh vào những yêu cầu web khớp với các mẫu URL cụ thể. Các tiêu đề được thiết lập theo chính sách này sẽ được ưu tiên hơn những tiêu đề vốn có trong yêu cầu, cũng như những thay đổi mà người dùng hoặc tiện ích cố gắng thực hiện.
+
+Một trường hợp sử dụng phổ biến của chính sách này là thực thi các chế độ kiểm soát quyền truy cập của đối tượng thuê bằng cách chèn các tiêu đề tuỳ chỉnh (ví dụ: <ph name="EXAMPLE_HEADER_NAME" />).
+
+Chính sách này chấp nhận một danh sách các Quy tắc. Mỗi quy tắc chứa:
+
+* <ph name="PATTERNS_KEY" />: Danh sách các mẫu URL cần so khớp. Xem cách định dạng mẫu URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+* <ph name="HEADERS_KEY" />: Danh sách các đối tượng đại diện cho tiêu đề cần chèn, mỗi đối tượng chứa:
+
+  * <ph name="HEADER_NAME_KEY" />: Tên của tiêu đề cần chèn.
+
+  * <ph name="HEADER_VALUE_KEY" />: Giá trị của tiêu đề cần chèn.
+
+Nếu nhiều quy tắc khớp với một yêu cầu, thì các tiêu đề trong tất cả các quy tắc trùng khớp sẽ được áp dụng. Trong trường hợp có nhiều tiêu đề cùng tên, tiêu đề có mẫu URL cụ thể nhất sẽ được áp dụng. Nếu các mẫu có mức độ cụ thể như nhau, thì mẫu xuất hiện cuối cùng trong danh sách sẽ được áp dụng.
+
+Tên tiêu đề phải tuân thủ RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 ). Giá trị tiêu đề không được chứa các ký hiệu NUL, CR hoặc LF. Kích thước của từng tiêu đề không được vượt quá 8 KB. Tiêu đề và mẫu URL không hợp lệ sẽ bị bỏ qua.
+
+Chính sách này chỉ áp dụng cho tổng cộng 500 mẫu URL trên tất cả các quy tắc. Mỗi quy tắc có thể chứa tối đa 20 tiêu đề. Các mẫu và tiêu đề vượt quá ngưỡng này sẽ bị bỏ qua.</translation>
 <translation id="624595269193747921">Liệu có giới hạn phạm vi tìm kiếm máy in phù hợp ở một nhóm máy in cụ thể hay không.</translation>
 <translation id="6246290059248303618">Hiện bộ điều khiển nội dung nghe nhìn cho các phiên <ph name="PRODUCT_NAME" /> do các thiết bị khác trên mạng cục bộ bắt đầu</translation>
 <translation id="6247316685259031374">Chính sách này kiểm soát môi trường hộp cát của tiến trình âm thanh.
@@ -10952,6 +10974,7 @@ Nếu bạn đặt chính sách này thành Disabled (Tắt) hoặc không đặ
 
 Nếu bạn đặt chính sách <ph name="ENABLE_MEDIA_ROUTER_POLICY_NAME" /> thành Disabled (Tắt), thì giá trị của chính sách này sẽ không có hiệu lực và biểu tượng thanh công cụ sẽ không xuất hiện.</translation>
 <translation id="7933141401888114454">Cho phép tạo người dùng được giám sát</translation>
+<translation id="793360449603660370">Cho phép chia sẻ thẻ thông minh với các công cụ tích hợp <ph name="GOOGLE_AI_MODE_PRODUCT_NAME" />.</translation>
 <translation id="793473937901685727">Đặt mức độ khả dụng của chứng chỉ cho ứng dụng ARC</translation>
 <translation id="7936302526928951356">Chuỗi User-Agent sẽ không làm phiên bản lớn dừng lại.</translation>
 <translation id="7936632434238618620">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL chỉ định trang web mà Chrome có thể tự động chọn chứng chỉ máy khách. Giá trị là một mảng từ điển JSON phân thành chuỗi, mỗi mảng có dạng <ph name="AUTO_SELECT_CERTIFICATE_FOR_URLS_EXAMPLE" />, trong đó <ph name="URL_PATTERN_PLACEHOLDER" /> là mẫu thông tin cài đặt nội dung. <ph name="FILTER_PLACEHOLDER" /> giới hạn các chứng chỉ máy khách mà trình duyệt sẽ tự động chọn. Bất kể bộ lọc là gì, chỉ các chứng chỉ khớp với yêu cầu chứng chỉ của máy chủ mới được chọn. Trên Android và iOS, Chrome chỉ có thể chọn những chứng chỉ máy khách mà trình duyệt tự cung cấp chứ không thể truy cập vào những chứng chỉ được cài đặt ở cấp hệ điều hành.

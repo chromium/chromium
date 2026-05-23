@@ -164,6 +164,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1104098698795583187">Du verlierst dann sofort den Zugriff auf diese Tabgruppe und sie wird von allen deinen Geräten gelöscht</translation>
 <translation id="1106270460549661906">Teilen mit Gemini aufheben</translation>
 <translation id="1106350001632362876">Schwellenwert erhöhen</translation>
+<translation id="1107300737351978027">Darf keine sich wiederholenden Ziffern enthalten</translation>
 <translation id="110850812463801904">Manuell mit OneDrive verbinden</translation>
 <translation id="1108600514891325577">&amp;Anhalten</translation>
 <translation id="1108938384783527433">Verlauf synchronisieren</translation>
@@ -268,6 +269,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1173894706177603556">Umbenennen</translation>
 <translation id="1174073918202301297">Verknüpfung hinzugefügt</translation>
 <translation id="1174366174291287894">Deine Verbindung ist immer sicher, solange Chrome dich nicht auf eine unsichere Verbindung hinweist</translation>
+<translation id="1174759280027683968">Chrome aufrufen</translation>
 <translation id="1175131936083782305">Dein Administrator hat diese Funktion deaktiviert.</translation>
 <translation id="1175277108283187866">Rufe eine Website auf oder starte in der Adressleiste eine Suche</translation>
 <translation id="1175364870820465910">&amp;Drucken...</translation>
@@ -950,7 +952,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1636212173818785548">Ok</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />App-Daten können alle Daten sein, die eine App aufgrund der Einstellungen des Entwicklers gespeichert hat, z. B. Kontakte, Nachrichten und Fotos. Sicherungsdaten werden nicht auf dein Google Drive-Speicherkontingent angerechnet.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Du kannst diesen Dienst in den Einstellungen deaktivieren.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1637224376458524414">Dieses Lesezeichen auf dem iPhone abrufen</translation>
 <translation id="1637765355341780467">Beim Öffnen deines Profils ist ein Fehler aufgetreten. Einige Funktionen sind möglicherweise nicht verfügbar.</translation>
 <translation id="1639239467298939599">Wird geladen</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -1787,7 +1788,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="221297410904507041">Verlauf, Cookies und andere Daten löschen sowie Cache leeren</translation>
 <translation id="2213410656650624348">Mäßig</translation>
 <translation id="2214018885812055163">Freigegebene Ordner</translation>
-<translation id="2214453882118345682">Nutze deine Kamera zum Einkaufen, Übersetzen und um mehr über Dinge zu erfahren, die du siehst.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 Zeile wird nicht angezeigt&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> Zeilen werden nicht angezeigt&gt;}}</translation>
 <translation id="2215070081105889450">Zum Teilen von Audio, musst du stattdessen einen Tab oder Bildschirm teilen</translation>
 <translation id="2217208085547223783">Vertrauensstatus</translation>
@@ -2699,7 +2699,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2813765525536183456">Neues Profil hinzuf&amp;ügen</translation>
 <translation id="281390819046738856">Die Anfrage konnte nicht signiert werden.</translation>
 <translation id="2814489978934728345">Seite nicht weiter laden</translation>
-<translation id="2815693974042551705">Lesezeichenordner</translation>
 <translation id="2816319641769218778">Aktiviere die Synchronisierung, um Passwörter in deinem Google-Konto zu speichern.</translation>
 <translation id="2817435998497102771">Hintergrund und Stil festlegen</translation>
 <translation id="2817861546829549432">Wenn Sie "Do Not Track" aktivieren, wird mit Ihren Browserzugriffen eine Anfrage gesendet. Die Wirkung hängt davon ab, ob eine Website auf die Anfrage reagiert und wie die Anfrage interpretiert wird. Beispielsweise reagieren einige Websites auf diese Anfragen, indem Anzeigen für Sie geschaltet werden, die nicht auf bereits besuchten Websites beruhen. Viele Websites werden Ihre Internetdaten weiter erfassen und nutzen – beispielsweise zur Verbesserung der Sicherheit, zur Bereitstellung von Inhalten und Diensten, für Anzeigen und Empfehlungen auf ihren Websites und zum Erstellen von Berichtstatistiken.</translation>
@@ -2813,7 +2812,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2893318819023133318">Ansichten umkehren</translation>
 <translation id="2894596417096093634">IDs von Absturzberichten</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
-<translation id="2895244606836384727">Erinnerung: Deine Tabgruppen</translation>
 <translation id="289695669188700754">Schlüssel-ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Diese benutzerdefinierte Einstellung wird entfernt, wenn du alle deine Inkognitofenster schließt</translation>
 <translation id="2897878306272793870">Möchtest du wirklich <ph name="TAB_COUNT" /> Tabs öffnen?</translation>
@@ -4444,7 +4442,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Dadurch wird die Gruppe endgültig von deinem Gerät gelöscht.}other{Dadurch werden die Gruppen endgültig von deinem Gerät gelöscht.}}</translation>
 <translation id="4010036441048359843">Hervorheben aktivieren</translation>
 <translation id="4010746393007464819">Ein Upgrade auf Debian 12 (Bookworm) ist verfügbar</translation>
-<translation id="4010917659463429001">Lesezeichen auf deinem Mobilgerät abrufen: <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Stilisierte Polarlichter in Lila und Grün über einer Stadt.</translation>
 <translation id="4011897773956589748">Wenn Gemini das nächste Mal Zugriff auf dieses Konto benötigt, wirst du noch einmal gefragt.</translation>
 <translation id="4012509903424054869">PDFs werden automatisch konvertiert, damit du Text suchen und auswählen kannst</translation>
@@ -5346,7 +5343,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Bild}other{# Bilder}}</translation>
 <translation id="4660540330091848931">Größenanpassung läuft</translation>
 <translation id="4662373422909645029">Der Alias darf keine Zahlen enthalten</translation>
-<translation id="4662788913887017617">Dieses Lesezeichen für mein iPhone freigeben</translation>
 <translation id="4663373278480897665">Kameranutzung zulässig</translation>
 <translation id="4665014895760275686">Hersteller</translation>
 <translation id="4665446389743427678">Alle von <ph name="SITE" /> gespeicherten Daten werden gelöscht.</translation>
@@ -5391,7 +5387,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> setzt dieses Gerät auf eine vorherige Version zurück (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">Prüfe deine Internetverbindung und versuche noch einmal, Gemini zu verwenden</translation>
 <translation id="4689235506267737042">Einstellungen für den Demomodus auswählen</translation>
-<translation id="4689421377817139245">Lesezeichen mit meinem iPhone synchronisieren</translation>
 <translation id="4690091457710545971">&lt;Vier Dateien wurden von der Intel-WLAN-Firmware erstellt: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. Bei den ersten drei handelt es sich um Binärdateien mit Registrierungsabbildern, für die Intel angibt, dass sie keine personenbezogenen oder zur Geräteidentifikation nutzbaren Informationen enthält. Die letzte Datei ist eine Ablaufverfolgungsdatei von der Intel-Firmware, aus der alle personenbezogenen oder zur Geräteidentifikation nutzbaren Informationen entfernt wurden. Sie ist allerdings zu groß, um hier angezeigt zu werden. Diese Dateien wurden wegen WLAN-Problemen auf Ihrem Gerät erstellt, die kürzlich aufgetreten sind. Sie werden zur Fehlerbehebung an Intel weitergegeben.&gt;</translation>
 <translation id="4691995778017338841">Foto neu gestalten</translation>
 <translation id="4692342362587775867">Benachrichtigungen von dieser Website können störend sein</translation>
@@ -5641,7 +5636,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4864805589453749318">Es muss ein Elternteil ausgewählt werden, das seine Zustimmung gibt, damit das Konto einer Bildungseinrichtung hinzugefügt werden kann.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blockiert)</translation>
 <translation id="486505726797718946">Arbeitsspeicher gespart</translation>
-<translation id="4865063548323785458">Du kannst deine Passwörter speichern und automatisch ausfüllen lassen, um dich einfacher auf Websites und in Apps anzumelden</translation>
 <translation id="486635084936119914">Bestimmte Dateitypen nach dem Herunterladen automatisch öffnen</translation>
 <translation id="4867272607148176509">Eltern können Apps genehmigen oder blockieren, Zeitlimits festlegen und das Surfen im Web kontrollieren. Das Konto einer Bildungseinrichtung kann später hinzugefügt werden, um auf die meisten Ressourcen der Bildungseinrichtung zuzugreifen.</translation>
 <translation id="486796517585164369">· Zuletzt verwendeter Tab</translation>
@@ -5748,6 +5742,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4931387733184123331">Verfinsterungen</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933484234309072027">auf <ph name="URL" /> eingebettet</translation>
+<translation id="4934763315031217818">Darf keine aufeinanderfolgenden Ziffern enthalten</translation>
 <translation id="4936042273057045735">Benachrichtigungssynchronisierung wird nicht unterstützt, wenn auf einem Smartphone aktuell ein Arbeitsprofil verwendet wird</translation>
 <translation id="4937676329899947885">WLAN-Anmeldedaten werden empfangen</translation>
 <translation id="4938052313977274277">Geschwindigkeit</translation>
@@ -6716,7 +6711,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5624120631404540903">Passwörter verwalten</translation>
 <translation id="5624959475330585145">Vor Nutzung unsicherer Verbindungen fragen</translation>
 <translation id="5625225435499354052">In Google Pay bearbeiten</translation>
-<translation id="5626134646977739690">Name:</translation>
 <translation id="5626172233890210551">Stattdessen Passwort verwenden</translation>
 <translation id="5627832140542566187">Displayausrichtung</translation>
 <translation id="5628434207686266338">Gerätepasswort festlegen</translation>
@@ -6862,7 +6856,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5740709157181662145">Hardware-Unterstützung und Stabilität von <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">Displayspiegelung</translation>
 <translation id="574209121243317957">Tonhöhe</translation>
-<translation id="5742787970423162234">Gepackte Web-Apps mit erweiterten Funktionen. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">Die PIN zum automatischen Entsperren darf maximal 12 Zeichen lang sein</translation>
 <translation id="5746169159649715125">Als PDF speichern</translation>
 <translation id="5747785204778348146">Entwickler – instabil</translation>
@@ -7374,6 +7367,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6096326118418049043">X.500-Name</translation>
 <translation id="6097480669505687979">Wenn kein Speicherplatz freigegeben wird, können Nutzer und Daten automatisch entfernt werden.</translation>
 <translation id="6097600385983390082">Sprachsuche geschlossen</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />, <ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">Diese Karte auf deinem iPhone verwenden</translation>
 <translation id="609942571968311933">Text kopiert von <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061"><ph name="HOST" /> darf meine MIDI-Geräte immer steuern und neu programmieren</translation>
@@ -7893,7 +7887,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6464825623202322042">Dieses Gerät</translation>
 <translation id="6465841119675156448">Ohne Internet</translation>
 <translation id="6466258437571594570">Websites können dich nicht unterbrechen, um dich zu fragen, ob du Benachrichtigungen erhalten möchtest</translation>
-<translation id="6466988389784393586">&amp;Alle Lesezeichen öffnen</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> scannen</translation>
 <translation id="6467304607960172345">Vollbildvideos optimieren</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> kann dann folgende Aktionen ausführen:</translation>
@@ -8728,6 +8721,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7030695672997239647">Klicke mit der rechten Maustaste auf einen Tab, wähle „Tab zu Gruppe hinzufügen“ aus und klicke dann auf „Neue Gruppe“</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: serielle Schnittstelle verbunden</translation>
 <translation id="7033616203784997570">Du darfst höchstens 62 Zeichen eingeben</translation>
+<translation id="7033731598469029604">Automatisches Browsen</translation>
 <translation id="7034692021407794547">Ein Administrator mit der Berechtigung „Abrechnungsverwaltung“ muss zuerst im Bereich „Google Meet-Hardware“ in der Admin-Konsole die Nutzungsbedingungen der Google Meet-Hardware akzeptieren.</translation>
 <translation id="70356134210715500">Passkeys verwenden</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> hat soeben einen Passkey für dein Konto erstellt. Passkeys ermöglichen dir eine schnellere und sicherere Anmeldung und werden im Google Passwortmanager für <ph name="USER" /> gespeichert. <ph name="LEARN_MORE" /></translation>
@@ -9495,7 +9489,6 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7582582252461552277">Dieses Netzwerk bevorzugen</translation>
 <translation id="7582844466922312471">Mobilfunk</translation>
 <translation id="7583948862126372804">Anzahl</translation>
-<translation id="7584287158780898016">Preis-Tracking-Benachrichtigungen aktivieren</translation>
 <translation id="7585106857920830898">Dieser Download wird auf die Einhaltung der Sicherheitsrichtlinien deines Unternehmens geprüft…</translation>
 <translation id="7585490016012953607">Wiederherstellungspasswort – vorübergehend bis zu 3 Monate lang gespeichert</translation>
 <translation id="7586498138629385861">Chrome wird weiter ausgeführt, solange die Chrome-Apps geöffnet sind.</translation>
@@ -10514,6 +10507,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8265018477030547118">Nur auf diesem Gerät</translation>
 <translation id="826511437356419340">Du befindest dich jetzt im Modus "Fensterübersicht". Um zwischen Fenstern zu wechseln, kannst du wischen oder auf der Tastatur die Tabulatortaste drücken.</translation>
 <translation id="8266430295499893285">Du musst deine Identität bestätigen, bevor du auf deine Passwörter zugreifen kannst</translation>
+<translation id="8266751606569906450">Muss mindestens <ph name="MINIMUM" /> Zeichen lang sein</translation>
 <translation id="8266947622852630193">Alle Eingabemethoden</translation>
 <translation id="8267539814046467575">Drucker hinzufügen</translation>
 <translation id="826905130698769948">Ungültiges Clientzertifikat</translation>
@@ -10659,7 +10653,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8363277452449582220">Ozean</translation>
 <translation id="8366396658833131068">Deine Netzwerkverbindung wurde wiederhergestellt. Wähle ein anderes Netzwerk aus oder klicke unten auf "Weiter", um deine Kiosk-App zu starten.</translation>
 <translation id="8366694425498033255">Auswahltasten</translation>
-<translation id="8368859634510605990">&amp;Alle Lesezeichen öffnen</translation>
 <translation id="8370294614544004647">Beim Zuklappen des Laptops in den Ruhemodus wechseln</translation>
 <translation id="8370419414641876532">Auf „Passwörter und &amp;Autofill“ klicken</translation>
 <translation id="8371695176452482769">Jetzt sprechen</translation>
@@ -11326,7 +11319,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="881799181680267069">Andere ausblenden</translation>
 <translation id="8818152010000655963">Hintergrund</translation>
 <translation id="8818988764764862764">Fenster nach links verschoben</translation>
-<translation id="8819155700324279105">Du kannst dich durch zusätzliche Schutzmaßnahmen besser vor Onlinebedrohungen schützen lassen</translation>
 <translation id="8819510664278523111">Die Geräte-EID lautet <ph name="EID_NUMBER" />, die Geräte-IMEI <ph name="IMEI_NUMBER" /> und die Geräte-Seriennummer <ph name="SERIAL_NUMBER" />. Diese Nummern können zur Aktivierung des Diensts verwendet werden.</translation>
 <translation id="8820817407110198400">Lesezeichen</translation>
 <translation id="8821045908425223359">IP-Adresse automatisch konfigurieren</translation>
@@ -11582,7 +11574,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="8987321822984361516">Browser wird von einer Organisation verwaltet, Profil wird von <ph name="PROFILE_DOMAIN" /> verwaltet</translation>
 <translation id="8987736167266086032">Da weitermachen, wo du aufgehört hast</translation>
 <translation id="8987927404178983737">Monat</translation>
-<translation id="8988539543012086784">Diese Seite wurde in „<ph name="BOOKMARK_FOLDER" />“ gespeichert.</translation>
 <translation id="8989359959810288806">Tethering-Status aktualisieren</translation>
 <translation id="8989779557457435460">Aktuellen Tab standardmäßig teilen</translation>
 <translation id="8990243615717080992">Du kannst dich mit einem Passwort oder einer anderen Wiederherstellungsmethode anmelden</translation>

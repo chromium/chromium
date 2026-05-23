@@ -288,7 +288,6 @@ Ako ova stranica ne radi na očekivani način, dozvolite optimizaciju.</translat
 <translation id="3885770153807205175">Birač jezika</translation>
 <translation id="3889417619312448367">Deinstaliraj Google Chrome</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
-<translation id="3893985792899396936">Savet za Chrome: Pretražujte pomoću Objektiva</translation>
 <translation id="3941890832296813527">Greška pri instalaciji: Naziv fajla programa za instalaciju je nevažeći ili nije podržan.</translation>
 <translation id="395904275706073188">Zaštićene stranice ne mogu da se čitaju. Probajte sa drugom stranicom.</translation>
 <translation id="3968962723676998462">Unesite pristupnu frazu da biste koristili i sačuvali Chrome podatke na nalogu, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -506,7 +505,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6180522807229584611">Ova kartica koristi dodatne resurse. Da biste poboljšali performanse, dozvolite Chrome-u da je učini neaktivnom.</translation>
 <translation id="6182736845697986886">Instalacija nije uspela zbog interne greške servera za ažuriranje.</translation>
-<translation id="6187085551300363958">Napomena za Chrome: Sačuvajte lozinke</translation>
 <translation id="6192058120268468905">Vaš nalog u Chrome-u</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> je dodao dodatak koji može da promeni način na koji Chrome funkcioniše.
 
@@ -653,7 +651,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7627609214560473136">Da biste zaštitili podatke, dozvolite da Chrome uklanja dozvole sa sajtova koje duže niste posećivali.</translation>
 <translation id="7629695634924605473">Chrome vas obaveštava ako su lozinke ugrožene</translation>
 <translation id="7641148173327520642">Administrator sistema je konfigurisao Google Chrome da otvara pregledač <ph name="ALTERNATIVE_BROWSER_NAME" /> da bi pristupao <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Napomena za Chrome: Poboljšano bezbedno pregledanje</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotip</translation>
 <translation id="76531479118467370">Chrome je blokirao ovo preuzimanje jer ste isključili Bezbedno pregledanje, pa fajl ne može da se verifikuje</translation>
@@ -754,6 +751,7 @@ Ne možete da sačuvate nove obeleživače na nalogu dok ne izbrišete neke. Ako
 <translation id="8555465886620020932">Greška u usluzi: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pretražite listu jezika</translation>
 <translation id="8575047640889685742">Koristite <ph name="BEGIN_LINK" />sopstvenu pristupnu frazu<ph name="END_LINK" /> da biste šifrovali sve Chrome podatke na Google nalogu. Načini plaćanja i adrese iz Google Pay-a se neće šifrovati. Istorija pregledanja iz Chrome-a se neće sinhronizovati.</translation>
+<translation id="8590782867495422699">Ponovo otvori AI režim Google pretrage</translation>
 <translation id="8601359445272098721">Novo. Možete da prevodite i tekst i slike na ekranu tako što ćete izabrati dugme „Prevedi ekran“</translation>
 <translation id="8614913330719544658">Google Chrome ne reaguje. Želite li da ga odmah ponovo pokrenete?</translation>
 <translation id="861702415419836452">Chrome traži dozvolu da pristupi kameri da bi napravio 3D mapu okruženja</translation>

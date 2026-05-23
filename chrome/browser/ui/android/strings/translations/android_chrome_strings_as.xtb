@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">কম মূল্যৰ</translation>
 <translation id="3070005020161560471">স্বয়ংক্ৰিয়ভাৱে অনুবাদ কৰিবলগীয়া</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeত খুলিব। অব্যাহত ৰাখি আপুনি <ph name="BEGIN_LINK1" />Googleৰ সেৱাৰ চৰ্তাৱলী<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />Google Chrome আৰু ChromeOSৰ সেৱাৰ অতিৰিক্ত চৰ্তাৱলী<ph name="END_LINK2" />ত সন্মতি দিয়ে। <ph name="BEGIN_LINK3" />গোপনীয়তা নীতি<ph name="END_LINK3" />টোও প্ৰযোজ্য।</translation>
+<translation id="3080375898390966733">Google Lensৰ জৰিয়তে টেব সন্ধান কৰক</translation>
 <translation id="3080525922482950719">আপুনি পাছত অথবা অফলাইনত পঢ়িবলৈ পৃষ্ঠাসমূহ ছেভ কৰিব পাৰে</translation>
 <translation id="3087734570205094154">একেবাৰে তলি</translation>
 <translation id="3091010850649238832">ক্লিপব'ৰ্ডৰ সমল দেখুৱাওক</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">প্ৰতিচ্ছবি শ্বেয়াৰ কৰক</translation>
 <translation id="3385749568468586663">ইনক’গনিট’ ম’ডত Gemini উপলব্ধ নহয়</translation>
 <translation id="3387650086002190359">ফাইল ছিষ্টেম সম্পর্কীয় আসোঁৱাহৰ বাবে <ph name="FILE_NAME" /> ডাউনল’ড কৰিব পৰা নগ’ল।</translation>
+<translation id="3391311825344469964">আপুনি Chromeৰ ৱিণ্ড’ পৰিচালকত আপোনাৰ ৱিণ্ড’সমূহ পৰিচালনা কৰিব পাৰে</translation>
 <translation id="3417835166382867856">সন্ধানৰ টেব</translation>
 <translation id="3430670036890315772">আপোনাৰ প্ৰ’ফাইল লকটো অফ কৰাটোৱে আপোনাৰ ছেভ কৰি থোৱা তথ্যখিনি আঁতৰাব</translation>
 <translation id="3435575784518354875">আপোনাৰ পাছৱৰ্ডসমূহৰ এক্সেছ ৰাখিবলৈ, সেইসমূহ এতিয়াই ৰপ্তানি কৰক, Google Play সেৱাসমূহ আপডে’ট কৰক আৰু তাৰ পাছত সেইসমূহ পুনৰ Google Password Managerলৈ আমদানি কৰক। <ph name="BEGIN_LINK" />সম্পূৰ্ণ নিৰ্দেশনাৱলী চাওক<ph name="END_LINK" />।</translation>
@@ -1015,6 +1017,7 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, পিন কৰি থোৱা শ্বেয়াৰ কৰা ইনক’গ্নিট’ টেব</translation>
 <translation id="5375374982898812658">আপুনি লগে লগে "<ph name="GROUP_NAME" />" টেবৰ গোটটোৰ এক্সেছ হেৰুৱাব আৰু এইটো আপোনাৰ আটাইবোৰ ডিভাইচৰ পৰা মচা হ’ব</translation>
 <translation id="5375577065097716013">Google Lensৰে প্ৰতিচ্ছবি সন্ধান কৰক <ph name="BEGIN_NEW" />নতুন<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">ছেভ কৰি শ্বেয়াৰ কৰক</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />এ আপোনাৰ ডিজিটেল ৱালেটৰ পৰা ব্যক্তিগত তথ্য ব্যৱহাৰ কৰিব বিচাৰে। আপুনি এই ছাইটটোক বিশ্বাস কৰিলেহে অব্যাহত ৰাখক। বিপজ্জনক ছাইটবোৰে আপোনাক আপোনাৰ আইনী নাম বা আইডি নম্বৰৰ দৰে বস্তু সদৰী কৰিবলৈ প্ৰতাৰণা কৰিব পাৰে।</translation>
 <translation id="5395376160638294582">আপোনাৰ Google একাউণ্টত আপুনি সদায়ে Chromeৰ ডেটা ব্যৱহাৰ কৰিব পৰাটো নিশ্চিত কৰক</translation>
 <translation id="539881862970320163">বিশ্বস্ত পাছৱৰ্ড দিবলৈ পৰামৰ্শ দিয়া হৈছে। কীব’ৰ্ড লুকুওৱা হৈছে।</translation>
@@ -1069,6 +1072,7 @@
 <translation id="5628604359369369630">নপঢ়া - অফলাইনত উপলব্ধ</translation>
 <translation id="5631483240431073854">খুলি থোৱা টেব পৰিচালনা কৰক</translation>
 <translation id="5632485077360054581">কেনেকৈ কৰে মোক দেখুৱাওক</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" />ক <ph name="EXTENSION_NAME" /> চলিবলৈ আপোনাৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> হিচাপে ছাইন ইন কৰিছে। Google একাউণ্ট সম্পৰ্কীয় আসোঁৱাহ। ছেটিং খোলে।</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />সন্ধানৰ ইতিহাস<ph name="END_LINK1" /> আৰু <ph name="BEGIN_LINK2" />অন্য প্ৰকাৰৰ কাৰ্যকলাপ<ph name="END_LINK2" /> আপোনাৰ Google একাউণ্টত ছেভ কৰা হ’ব পাৰে</translation>
 <translation id="5648166631817621825">যোৱা ৭ দিনত</translation>
@@ -1098,6 +1102,7 @@
 <translation id="5763514718066511291">এই এপৰ URLটো প্ৰতিলিপি কৰিবলৈ টিপক</translation>
 <translation id="5765517223145864268">আমাক আপোনাৰ অভিজ্ঞতাৰ বিষয়ে কওক। অথবা <ph name="BEGIN_LINK" />আপোনাৰ ছেটিং সলনি কৰক<ph name="END_LINK" />।</translation>
 <translation id="5776970333778123608">গুৰুত্বহীন ডেটা</translation>
+<translation id="5788665823391532892">সমস্যাৰ অভিযোগ দিয়ক...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />ৰ <ph name="SPACE_USED" /> ব্যৱহাৰ কৰা হৈছে</translation>
 <translation id="5797949256525811424">অৱৰোধিত বিষয়বস্তু</translation>
 <translation id="580893287573699959">আপোনাৰ আগ্ৰহ থকা বিষয় আৰু ছাইটসমূহ পৰিচালনা কৰক</translation>
@@ -1875,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chromeএ এটা অবিশ্বস্ত পাছৱৰ্ড পাইছে, যিটো আপুনি উন্নত কৰিব পাৰে}one{Chromeএ # টা অবিশ্বস্ত পাছৱৰ্ড পাইছে, যিসমূহ আপুনি উন্নত কৰিব পাৰে}other{Chromeএ # টা অবিশ্বস্ত পাছৱৰ্ড পাইছে, যিসমূহ আপুনি উন্নত কৰিব পাৰে}}</translation>
 <translation id="8766529642647037772">এইটোৰ দৰে এটা হাইলাইট কৰা লিংক সৃষ্টি কৰিবনে?</translation>
 <translation id="8769783688897433958">ছাইটৰ তথ্য আৰু অনুমতি চাওক</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" />ক <ph name="COUNT" /> টা এক্সটেনশ্বন চলাবলৈ আপোনাৰ অনুমতিৰ আৱশ্যক</translation>
 <translation id="8788265440806329501">নেভিগেশ্বন ইতিহাস বন্ধ কৰা আছে</translation>
 <translation id="8790193082819560975">এটা নতুন টেবত প্ৰ’ডাক্টৰ বাবে ক্ৰয়ৰ বিকল্পসমূহ সন্ধান কৰিবলৈ টিপক।</translation>
 <translation id="8798449543960971550">পঢ়ক</translation>

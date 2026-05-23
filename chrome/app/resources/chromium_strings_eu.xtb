@@ -87,7 +87,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="193439633299369377">Eguneratzea aplikatzeko, berrabiarazi egin behar da Chromium OS.</translation>
 <translation id="1951406923938785464">Chromium-ek deskarga hau blokeatu du, fitxategi mota normalean deskargatzen ez delako eta agian arriskutsua delako</translation>
 <translation id="1953553007165777902">Deskargatzen… <ph name="MINUTE" /> minutu geratzen dira.</translation>
-<translation id="1965068424387304464">Chromium-erako aholkua: gorde pasahitzak</translation>
 <translation id="1966382378801805537">Chromium-ek ezin du ezarri edo zehaztu arakatzaile lehenetsia</translation>
 <translation id="1990262977744080398">Ikusi zergatik blokeatzen dituen Chromium-ek fitxategi batzuk, beste fitxa batean irekiko da</translation>
 <translation id="1999715455684970349">Chromium-en softwarea eguneratuta mantentzen du. Zerbitzu hau desgaitzen edo gelditzen bada, Chromium-en softwarea ez da eguneratuta mantenduko; beraz, agertzen diren segurtasun-ahultasunak ezin izango dira konpondu eta eginbideek agian ez dute funtzionatuko. Zerbitzu hau erabiltzen duen Chromium-en softwarerik ez badago, automatikoki desinstalatuko da.</translation>
@@ -263,7 +262,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3802055581630249637">Ziurrenik bisitatuko dituzun orriak aurrez kargatzen ditu Chromium-ek, bisitatzen dituzunean bizkorrago karga daitezen</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="3823384748599722168">Gordetako pasahitzak erabiltzeko, jarraitu QR kodeari, deskargatu iOS-erako Chromium eta hasi saioa Google-ko kontuan</translation>
-<translation id="3837584850181228767">Chromium-erako aholkua: arakatze seguru hobetua</translation>
 <translation id="3846683726093018685">**Laburbildu:** 30 hitz baino gutxiagoko esaldi bakar batean, azaldu pantaila-argazkiko edukiaren gai nagusia eta xedea.
 
           **Iradoki galderak:** sortu pentsarazten duten 3-5 galdera dituen zerrenda buletdun bat, erabiltzaile batek pantaila-argazkia hobeki ulertzeko galdetuko lituzkeenak. Galdera horietako batek gutxienez objektu bisual bati buruzkoa izan behar du, edo haren diseinuari edo kokapenari buruzkoa.</translation>
@@ -750,7 +748,6 @@ Chromium-ek ezin ditu ezarpenak berreskuratu.</translation>
 <translation id="9148058034647219655">Irten</translation>
 <translation id="9155105544013854680">Jarraitu utzi zenuen tokitik: Chromium-ek fitxak lehenera ditzake berrabiarazten duzun bakoitzean. Aukera hori aktibatzeko, joan hona:</translation>
 <translation id="9158494823179993217">Sistemaren administratzailearen konfigurazioaren arabera, Chromium-ek beste arakatzaile bat ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>
-<translation id="9183331186620388872">Chromium-i buruzko aholkua: bilatu Lens bidez</translation>
 <translation id="9185526690718004400">Exekuta ezazu berriro &amp;Chromium eguneratzeko</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Pertsonalizatu Chromium</translation>

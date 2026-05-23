@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Низкая цена</translation>
 <translation id="3070005020161560471">Переводить автоматически</translation>
 <translation id="3072980200212375806">Приложение "<ph name="APP_NAME" />" откроется в Chrome. Продолжая, вы принимаете <ph name="BEGIN_LINK1" />Условия использования Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнительные условия использования Chrome и Chrome OS<ph name="END_LINK2" />. Также действует <ph name="BEGIN_LINK3" />Политика конфиденциальности<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Поиск на вкладке с Объективом</translation>
 <translation id="3080525922482950719">Сохраняйте страницы, чтобы продолжить чтение позже или в офлайн-режиме.</translation>
 <translation id="3087734570205094154">Снизу</translation>
 <translation id="3091010850649238832">Показать содержимое буфера обмена</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Поделиться изображением</translation>
 <translation id="3385749568468586663">Gemini недоступен в режиме инкогнито.</translation>
 <translation id="3387650086002190359">Не удалось скачать файл <ph name="FILE_NAME" /> из-за ошибок файловой системы.</translation>
+<translation id="3391311825344469964">Управлять окнами можно в Менеджере окон Chrome.</translation>
 <translation id="3417835166382867856">Поиск по вкладкам</translation>
 <translation id="3430670036890315772">Если вы отключите блокировку профиля, вся сохраненная вами информация будет удалена.</translation>
 <translation id="3435575784518354875">Экспортируйте пароли, обновите сервисы Google Play и импортируйте пароли обратно в Google Менеджер паролей. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -1015,6 +1017,7 @@
 <translation id="5370504953185181057">Закрепленная вкладка инкогнито "<ph name="TAB_TITLE" />" с доступом к экрану</translation>
 <translation id="5375374982898812658">Группа вкладок "<ph name="GROUP_NAME" />" сразу станет недоступна вам и будет удалена со всех ваших устройств.</translation>
 <translation id="5375577065097716013">Найти через Google Объектив <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Сохранить и поделиться</translation>
 <translation id="5390367025924544771">Сайт <ph name="WEBSITE_ORIGIN" /> запрашивает разрешение на использование вашей личной информации из электронного кошелька. Не предоставляйте к ней доступ, если не доверяете этому сайту. На нем злоумышленники могут попытаться обманом заставить вас раскрыть персональные данные, например полное имя или номер удостоверения личности.</translation>
 <translation id="5395376160638294582">Обеспечьте доступ к данным Chrome в аккаунте Google.</translation>
 <translation id="539881862970320163">Предложен надежный пароль. Клавиатура скрыта.</translation>
@@ -1098,6 +1101,7 @@
 <translation id="5763514718066511291">Нажмите, чтобы скопировать URL этого приложения.</translation>
 <translation id="5765517223145864268">Поделитесь впечатлениями! Или <ph name="BEGIN_LINK" />измените настройки<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Маловажные данные</translation>
+<translation id="5788665823391532892">Сообщить о проблеме</translation>
 <translation id="5793665092639000975">Использовано: <ph name="SPACE_USED" /> из <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Тема заблокирована</translation>
 <translation id="580893287573699959">Управляйте темами и сайтами, которые вам интересны</translation>

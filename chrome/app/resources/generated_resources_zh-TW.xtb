@@ -164,6 +164,7 @@
 <translation id="1104098698795583187">你將立即失去這個分頁群組的存取權，且該群組會從你的所有裝置中刪除</translation>
 <translation id="1106270460549661906">取消與 Gemini 分享</translation>
 <translation id="1106350001632362876">提高門檻</translation>
+<translation id="1107300737351978027">數字不得重複</translation>
 <translation id="110850812463801904">手動連線至 OneDrive</translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
 <translation id="1108938384783527433">同步處理歷史記錄</translation>
@@ -268,6 +269,7 @@
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1174073918202301297">已新增捷徑</translation>
 <translation id="1174366174291287894">除非 Chrome 另行通知，否則你的連線都安全無虞</translation>
+<translation id="1174759280027683968">前往 Chrome</translation>
 <translation id="1175131936083782305">管理員已停用這項功能。</translation>
 <translation id="1175277108283187866">造訪網站或在網址列中開始搜尋</translation>
 <translation id="1175364870820465910">列印(&amp;P)...</translation>
@@ -953,7 +955,6 @@
 <translation id="1636212173818785548">確定</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />應用程式資料泛指應用程式依據開發人員設定所儲存的任何資料，包括聯絡人、訊息和相片等。備份資料不會計入您的雲端硬碟儲存空間配額。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />您可以在「設定」中關閉這項服務。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1637224376458524414">在 iPhone 上取得這個書籤</translation>
 <translation id="1637765355341780467">開啟你的設定檔時發生錯誤，部分功能可能無法使用。</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641113438599504367">安全瀏覽</translation>
@@ -1790,7 +1791,6 @@
 <translation id="221297410904507041">刪除歷史記錄、Cookie、快取和其他資料</translation>
 <translation id="2213410656650624348">中等</translation>
 <translation id="2214018885812055163">共用資料夾</translation>
-<translation id="2214453882118345682">使用相機購物、翻譯及辨識所見內容。</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;還有 1 行未顯示&gt;}other{&lt;還有 <ph name="NUMBER_OF_LINES" /> 行未顯示&gt;}}</translation>
 <translation id="2215070081105889450">如要分享音訊，請改為分享分頁或螢幕畫面</translation>
 <translation id="2217208085547223783">信任狀態</translation>
@@ -2702,7 +2702,6 @@
 <translation id="2813765525536183456">新增設定檔(&amp;A)</translation>
 <translation id="281390819046738856">無法簽署要求。</translation>
 <translation id="2814489978934728345">停止載入此網頁</translation>
-<translation id="2815693974042551705">書籤資料夾</translation>
 <translation id="2816319641769218778">如要將密碼儲存到你的 Google 帳戶，請開啟同步功能。</translation>
 <translation id="2817435998497102771">設定桌布和樣式</translation>
 <translation id="2817861546829549432">啟用「不追蹤」選項後，你的瀏覽流量會置入一項特定的要求，其作用則視以及網站解讀要求的方式而定。舉例來說，某些網站收到這個要求後，將不會根據你先前瀏覽的其他網站顯示廣告。不過，許多網站仍會基於下列原因收集並使用你的瀏覽資料：強化安全性、在網站上提供內容、服務、廣告與其他推薦項目，以及產生統計資料報告。</translation>
@@ -2816,7 +2815,6 @@
 <translation id="2893318819023133318">對調畫面</translation>
 <translation id="2894596417096093634">當機報告 ID</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
-<translation id="2895244606836384727">提醒：你的分頁群組</translation>
 <translation id="289695669188700754">金鑰識別碼：<ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">所有無痕視窗關閉後，這項自訂設定將會移除</translation>
 <translation id="2897878306272793870">你確定要開啟 <ph name="TAB_COUNT" /> 分頁嗎？</translation>
@@ -4445,7 +4443,6 @@
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{這項操作會將群組從裝置中永久刪除。}other{這項操作會將群組從裝置中永久刪除。}}</translation>
 <translation id="4010036441048359843">開啟醒目顯示功能</translation>
 <translation id="4010746393007464819">現在可以升級至 Debian 12 (Bookworm)</translation>
-<translation id="4010917659463429001">如要在行動裝置上取得你的書籤，請<ph name="GET_IOS_APP_LINK" />。</translation>
 <translation id="4011073493055408531">城市上空閃耀著紫色和綠色的北極光。</translation>
 <translation id="4011897773956589748">下次 Gemini 需要存取這個帳戶時，會再次請求授權。</translation>
 <translation id="4012509903424054869">自動轉換 PDF 檔案，方便搜尋及選取文字</translation>
@@ -5344,7 +5341,6 @@
 <translation id="4660465405448977105">{COUNT,plural, =1{圖片}other{# 張圖片}}</translation>
 <translation id="4660540330091848931">正在調整大小</translation>
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
-<translation id="4662788913887017617">在 iPhone 上取得這個書籤</translation>
 <translation id="4663373278480897665">可使用攝影機</translation>
 <translation id="4665014895760275686">製造商</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> 儲存的所有資料都將遭到刪除。</translation>
@@ -5389,7 +5385,6 @@
 <translation id="4688176403504673761"><ph name="MANAGER" /> 正在將這部裝置復原為先前的版本 (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">請檢查網際網路連線，然後重試 Gemini</translation>
 <translation id="4689235506267737042">選擇示範模式偏好設定</translation>
-<translation id="4689421377817139245">將這個書籤同步到 iPhone 上</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi 韌體產生了 4 個檔案：csr.lst、fh_regs.lst、radio_reg.lst 和 monitor.lst.sysmon。前三個檔案為包含暫存器傾印的二進位檔案，且 Intel 表示當中並未包含任何個人資訊或裝置識別資訊。最後一個檔案是 Intel 韌體的執行追蹤記錄，其中的個人資訊或裝置識別資訊已全部遭到清除，但由於檔案過大而無法顯示在這裡。這些檔案的產生原因是裝置的 Wi-Fi 最近出現問題所導致，系統會將檔案提供給 Intel 以協助排解這些問題。&gt;</translation>
 <translation id="4691995778017338841">改造相片</translation>
 <translation id="4692342362587775867">這個網站的通知可能會造成干擾</translation>
@@ -5639,7 +5634,6 @@
 <translation id="4864805589453749318">請選取要授予新增學校帳戶權限的家長。</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (已封鎖)</translation>
 <translation id="486505726797718946">已釋出記憶體</translation>
-<translation id="4865063548323785458">儲存及自動填寫密碼，輕鬆登入網站和應用程式</translation>
 <translation id="486635084936119914">下載特定類型的檔案後自動開啟</translation>
 <translation id="4867272607148176509">家長可以核准或封鎖應用程式、設定使用時間限制，以及控管網路瀏覽內容。如要存取大多數的學校資源，之後可以新增學校帳戶。</translation>
 <translation id="486796517585164369">· 最近開啟的分頁</translation>
@@ -5746,6 +5740,7 @@
 <translation id="4931387733184123331">日蝕</translation>
 <translation id="4932733599132424254">日期</translation>
 <translation id="4933484234309072027">嵌入至 <ph name="URL" /></translation>
+<translation id="4934763315031217818">不得為連續數字</translation>
 <translation id="4936042273057045735">設有工作資料夾的手機不支援通知同步功能</translation>
 <translation id="4937676329899947885">正在接收 Wi-Fi 網路憑證</translation>
 <translation id="4938052313977274277">速度</translation>
@@ -6714,7 +6709,6 @@
 <translation id="5624120631404540903">管理密碼</translation>
 <translation id="5624959475330585145">使用不安全連線前先詢問</translation>
 <translation id="5625225435499354052">在 Google Pay 中編輯</translation>
-<translation id="5626134646977739690">名稱：</translation>
 <translation id="5626172233890210551">改用密碼</translation>
 <translation id="5627832140542566187">螢幕方向</translation>
 <translation id="5628434207686266338">設定裝置密碼</translation>
@@ -6860,7 +6854,6 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> 硬體支援和穩定性</translation>
 <translation id="574104302965107104">螢幕鏡像</translation>
 <translation id="574209121243317957">音調</translation>
-<translation id="5742787970423162234">具備進階功能的封裝網頁應用程式。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">PIN 碼長度不得超過 12 個數字，才能使用自動解鎖功能</translation>
 <translation id="5746169159649715125">另存為 PDF</translation>
 <translation id="5747785204778348146">開發人員版 - 不穩定</translation>
@@ -7371,6 +7364,7 @@
 <translation id="6096326118418049043">X.500 姓名</translation>
 <translation id="6097480669505687979">如果您未釋出空間，系統可能會自動移除使用者和資料。</translation>
 <translation id="6097600385983390082">語音搜尋功能已關閉</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />，<ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">在 iPhone 使用這張卡片</translation>
 <translation id="609942571968311933">從「<ph name="DEVICE_NAME" />」複製的文字</translation>
 <translation id="6099766472403716061">一律允許 <ph name="HOST" /> 控制 MIDI 裝置及重設程式</translation>
@@ -7890,7 +7884,6 @@
 <translation id="6464825623202322042">這個裝置</translation>
 <translation id="6465841119675156448">不使用網際網路</translation>
 <translation id="6466258437571594570">網站無法要求傳送通知，以免造成干擾</translation>
-<translation id="6466988389784393586">開啟所有書籤(&amp;O)</translation>
 <translation id="6467230443178397264">掃描「<ph name="FILE_NAME" />」</translation>
 <translation id="6467304607960172345">針對全螢幕影片進行最佳化處理</translation>
 <translation id="6467377768028664108">你的 <ph name="DEVICE_TYPE" /> 將可以：</translation>
@@ -8725,6 +8718,7 @@
 <translation id="7030695672997239647">在分頁標籤上按一下滑鼠右鍵，然後依序選取「將分頁加入群組」和「新群組」</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - 已連線至序列埠</translation>
 <translation id="7033616203784997570">輸入內容長度上限為 62 個半形字元</translation>
+<translation id="7033731598469029604">自動瀏覽</translation>
 <translation id="7034692021407794547">有「帳單管理」權限的管理員必須先前往管理控制台的「Google Meet 設備」專區接受《Google Meet 設備服務條款》。</translation>
 <translation id="70356134210715500">取得密碼金鑰</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> 剛剛為你的帳戶建立了密碼金鑰。密碼金鑰會儲存到 <ph name="USER" /> 的 Google 密碼管理工具，讓你登入時更快速、安全。<ph name="LEARN_MORE" /></translation>
@@ -9491,7 +9485,6 @@
 <translation id="7582582252461552277">偏好使用這個網路</translation>
 <translation id="7582844466922312471">行動數據</translation>
 <translation id="7583948862126372804">計數</translation>
-<translation id="7584287158780898016">啟用價格追蹤通知</translation>
 <translation id="7585106857920830898">正在檢查下載內容是否符合貴機構的安全性政策...</translation>
 <translation id="7585490016012953607">備援密碼：最多可暫時儲存 3 個月</translation>
 <translation id="7586498138629385861">在 Chrome 應用程式開啟的狀態下保持 Chrome 繼續執行。</translation>
@@ -10510,6 +10503,7 @@
 <translation id="8265018477030547118">僅儲存到這部裝置</translation>
 <translation id="826511437356419340">已進入視窗總覽模式。滑動畫面或按下鍵盤上的 Tab 鍵即可瀏覽。</translation>
 <translation id="8266430295499893285">你必須先驗證身分，才能存取密碼</translation>
+<translation id="8266751606569906450">至少要 <ph name="MINIMUM" /> 個字元</translation>
 <translation id="8266947622852630193">所有輸入法</translation>
 <translation id="8267539814046467575">新增印表機</translation>
 <translation id="826905130698769948">用戶端憑證無效</translation>
@@ -10655,7 +10649,6 @@
 <translation id="8363277452449582220">海洋</translation>
 <translation id="8366396658833131068">你的網路連線已恢復。請選取其他網路，或按底下的 [繼續] 按鈕啟動 Kiosk 應用程式。</translation>
 <translation id="8366694425498033255">選字鍵</translation>
-<translation id="8368859634510605990">開啟所有書籤(&amp;O)</translation>
 <translation id="8370294614544004647">闔上筆電時進入休眠狀態</translation>
 <translation id="8370419414641876532">按一下「密碼和自動填入」</translation>
 <translation id="8371695176452482769">請說話</translation>
@@ -11322,7 +11315,6 @@
 <translation id="881799181680267069">隱藏其他</translation>
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8818988764764862764">視窗已向左移動</translation>
-<translation id="8819155700324279105">多添一層防護，有效防範線上威脅</translation>
 <translation id="8819510664278523111">裝置 EID 為 <ph name="EID_NUMBER" />，裝置 IMEI 為 <ph name="IMEI_NUMBER" />，裝置序號為 <ph name="SERIAL_NUMBER" />。你可以使用這些號碼啟用服務。</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8821045908425223359">自動設定 IP 位址</translation>
@@ -11578,7 +11570,6 @@
 <translation id="8987321822984361516">瀏覽器是由機構管理，設定檔是由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
 <translation id="8987736167266086032">接續上次進度</translation>
 <translation id="8987927404178983737">月</translation>
-<translation id="8988539543012086784">這個網頁已儲存到「<ph name="BOOKMARK_FOLDER" />」</translation>
 <translation id="8989359959810288806">重新整理網路共用狀態</translation>
 <translation id="8989779557457435460">預設分享目前分頁</translation>
 <translation id="8990243615717080992">請使用密碼或其他備援方式登入</translation>

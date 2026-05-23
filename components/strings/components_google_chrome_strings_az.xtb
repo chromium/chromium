@@ -11,6 +11,7 @@
 <translation id="3444832043240812445"><ph name="BEGIN_LINK" />Xəta haqqında hesabatı aktiv etdikdə<ph name="END_LINK" />, bu səhifə yalnız son xətalar haqqında məlumatı göstərir.</translation>
 <translation id="3512634283363927263">Bu səhifələr Chrome developerləri tərəfindən istifadə üçün nəzərdə tutulub və aktiv şəkildə saxlanıla və ya sınaqdan keçirilə bilməz. Aktivləşdirmək üçün <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> ünvanına keçin, sazlama səhifələrini aktivləşdirmək üçün düyməni basın və sonra yenidən bu səhifəyə keçin.</translation>
 <translation id="3875312571075912821">Chrome'a brandmauerinizdə və ya antivirus ayarlarınızda şəbəkəyə giriş imkanı verin.</translation>
+<translation id="3893985792899396936">Chrome ipucusu: Linza ilə axtarın</translation>
 <translation id="4949828774841497663">Tətbiqlər &gt; Sistem Ayarları &gt; Şəbəkə bölməsinə keçin,
           aktiv şəbəkə keçin, Detallar... düyməsinə klikləyin və seçilmiş ola biləcək bütün proksilərin
           seçimini silin.</translation>
@@ -22,6 +23,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           və konfiqurasiyanın "heç bir proksi" və ya "birbaşa" ayarlandığına əmin olun.</translation>
+<translation id="6187085551300363958">Chrome ipucusu: Parolları yadda saxlayın</translation>
 <translation id="6341737370356890233">Buraya keçin:
           Chrome menyusu&gt;
           <ph name="SETTINGS_TITLE" />
@@ -39,6 +41,7 @@
           Şəbəkə və internet &gt; Proksi
           bölməsinə keçin və "Ayarları avtomatik aşkarlayın" seçimini silin.</translation>
 <translation id="7230956101631259640">Təhlükəsiz Chrome səhifəsinə baxırsınız</translation>
+<translation id="7641448682796883218">Chrome ipucusu: Qabaqcıl Güvənli Baxış</translation>
 <translation id="8232971017369963250">Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açıq mənbə layihəsi olmadan mümkün olmazdı.</translation>
 <translation id="8279509328145658601">Chrome, həmçinin <ph name="BEGIN_LINK_OSS" />digər açıq mənbə proqram təminatı<ph name="END_LINK_OSS" /> olmadan mümkün olmazdı.</translation>
 <translation id="8544217240017914508">Google Chrome ödəniş metodlarını doldurmaq üçün ayarlara dəyişiklik etməyə çalışır.</translation>

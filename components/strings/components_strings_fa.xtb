@@ -206,7 +206,6 @@
 <translation id="1304542452206545141">هتل و اقامتگاه</translation>
 <translation id="1307966114820526988">ویژگی‌های منسوخ‌شده</translation>
 <translation id="1308113895091915999">پیشنهادهای موجود</translation>
-<translation id="1309375166585231290">والدینتان هنوز موافقت نکرده‌اند</translation>
 <translation id="1310677614877521969">میزبانی وب</translation>
 <translation id="1314311879718644478">مشاهده محتوای واقعیت افزوده</translation>
 <translation id="1314509827145471431">به‌هم چسباندن از راست</translation>
@@ -523,7 +522,6 @@
 <translation id="1803254472779303354">قفل موشواره مجاز است</translation>
 <translation id="1803351196216024260">می‌تواند برای استفاده از میکروفون درخواست دهد</translation>
 <translation id="1804258830776932716">‏با پیوند دادن سریع حسابتان، Pix را فعال کنید</translation>
-<translation id="180427761654372420">‏وقتی روشن باشد، Chrome به‌طور خودکار زبانه‌های مربوط شما را برای پاسخ‌های بهتر شناسایی و استفاده خواهد کرد.</translation>
 <translation id="1806174020048213474">‏این برنامه برای نصب اطلاعات اعتباری Wi-Fi اجازه می‌خواهد. پس‌از راه‌اندازی، <ph name="DEVICE_TYPE" /> به‌طور خودکار به شبکه‌های Wi-Fi شرکت‌کننده متصل خواهد شد. برای حذف این اطلاعات اعتباری، برنامه را حذف نصب کنید.</translation>
 <translation id="1807246157184219062">روشن</translation>
 <translation id="1807528111851433570">صفحه شروع</translation>
@@ -698,6 +696,7 @@
 <translation id="2093982008204312032">‏Google Chrome می‌خواهد Windows Hello را برای درج گذرواژه‌ها خاموش کند.</translation>
 <translation id="2094505752054353250">عدم تطابق دامنه</translation>
 <translation id="2094704029599359040">اطلاعات نسخه</translation>
+<translation id="209961642949927292">می‌خواهید دفعه بعدی سریع‌تر تسویه حساب کنید؟</translation>
 <translation id="2099652385553570808">سه منگنه در چپ</translation>
 <translation id="2101225219012730419">نسخه:</translation>
 <translation id="2102134110707549001">پیشنهاد گذرواژه قوی…</translation>
@@ -791,6 +790,7 @@
 <translation id="2213606439339815911">در حال واکشی موارد...</translation>
 <translation id="2213612003795704869">صفحه چاپ شد</translation>
 <translation id="2214086901479959524">‏برای ادامه استفاده از گروه‌های زبانه هم‌رسانی‌شده، Chrome را به‌روز کنید</translation>
+<translation id="2214453882118345682">آنچه را می‌بینید با دوربینتان بخرید، ترجمه کنید، و شناسایی کنید.</translation>
 <translation id="2215368073167343359">‏تکمیل خودکار با Google</translation>
 <translation id="2215539479425228550">صخره‌نوردی و کوهنوردی</translation>
 <translation id="2215727959747642672">ویرایش فایل</translation>
@@ -814,7 +814,6 @@
 <translation id="2241693394036365668">فایل بارگیری شده است</translation>
 <translation id="2242389809734574253">‏برگ ذخیره کردن IBAN بسته شد.</translation>
 <translation id="2246264294482514010">۱۲ × ۱۰ اینچ</translation>
-<translation id="2246480341630108201">ولی‌تان هنوز موافقت نکرده است</translation>
 <translation id="2247789808226901522">کارت منقضی شده است</translation>
 <translation id="2248949050832152960">‏استفاده از WebAuthn</translation>
 <translation id="2250931979407627383">دوختن لبه از چپ</translation>
@@ -1212,6 +1211,7 @@
 <translation id="2891963978019740012">‏موتور جستجوی شما در Chrome</translation>
 <translation id="2893773853358652045">رول چهارم</translation>
 <translation id="2894137550885451583">این‌ها قیمت‌های <ph name="CURRENCY" /> برای محصول <ph name="PRODUCT" /> هستند</translation>
+<translation id="2895244606836384727">یادآوری: گروه‌های زبانه</translation>
 <translation id="2898398337339787921">Microsoft Excel</translation>
 <translation id="2900528713135656174">ایجاد رویداد</translation>
 <translation id="2902312830803030883">کنش‌های بیشتر</translation>
@@ -1292,6 +1292,7 @@
 <translation id="2995121550202354573">استفاده کردن برای همه نمایه‌های «مهمان»</translation>
 <translation id="2995517112308048736">اندازه فایل:</translation>
 <translation id="299990983510665749">هاچ‌بک</translation>
+<translation id="3001783404098700732">برای تکمیل خودکار بااستفاده از روش پرداخت ذخیره‌شده، دکمه «تکمیل خودکار پرداخت» را انتخاب کنید.</translation>
 <translation id="3002501248619246229">بررسی رسانه سینی ورودی</translation>
 <translation id="3005723025932146533">نمایش کپی ذخیره شده</translation>
 <translation id="300580149047131921">اخیراً استفاده شده است</translation>
@@ -1798,6 +1799,7 @@
 <translation id="3763752038825281594">قبلاً <ph name="PERMISSION" /> را برای این سایت مجاز نکردید</translation>
 <translation id="3765588406864124894">صندوق پست ۹</translation>
 <translation id="3767485424735936570">براساس خط‌مشی سرپرست، کپی کردن و جای‌گذاری این محتوا در <ph name="VM_NAME" /> توصیه نمی‌شود</translation>
+<translation id="3769584711865378220">‫<ph name="URL" /> می‌خواهد اجازه دسترسی مکان را از تقریبی به دقیق تغییر دهد</translation>
 <translation id="3772211998634047851">کاغذ (باند)</translation>
 <translation id="377451872037045164">‏<ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای ایجاد سریع یادداشت جدید در Google Keep، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="3780694243617746492">مخزن خروجی</translation>
@@ -1966,6 +1968,7 @@
 <translation id="404831776305217138">نشانی اینترنتی به‌روزرسانی برای افزونه با شناسه «<ph name="EXTENSION_ID" />» نامعتبر است یا از طرح پشتیبانی‌نشده استفاده می‌کند. طرح‌های پشتیبانی‌شده این‌ها هستند: <ph name="HTTP_SCHEME" />، <ph name="HTTPS_SCHEME" />، و <ph name="FILE_SCHEME" />.</translation>
 <translation id="4050392779074832022">‏می‌توانید از آن در محصولات Google استفاده کنید.</translation>
 <translation id="4050599136622776556">‏Chromium می‌خواهد روش‌های پرداخت را ویرایش کند.</translation>
+<translation id="4051369790469504434">تکمیل خودکار بااستفاده از روش پرداخت ذخیره‌شده</translation>
 <translation id="4052683751389375539">ویرایش، پنجره جدیدی باز می‌کند</translation>
 <translation id="405399507749852140">اگر قیمت در هر سایتی کاهش پیدا کرد، هشدار دریافت می‌کنید</translation>
 <translation id="4056223980640387499">سپیا</translation>
@@ -2079,6 +2082,7 @@
 <translation id="421066178035138955">از دستگاه‌ها و داده‌های واقعیت مجازی استفاده کند</translation>
 <translation id="4213500579045346575">بدنسازی</translation>
 <translation id="4214357935346142455">نمایه صفحه ورود به سیستم</translation>
+<translation id="4218327733815631046">حفظ مکان تقریبی</translation>
 <translation id="4219596572397833317">با دیدن سابقه قیمت و اطلاعات بیشتر، هوشمندانه‌تر خرید کنید.</translation>
 <translation id="4220128509585149162">خرابی‌ها</translation>
 <translation id="4221630205957821124">‏&lt;h4&gt;مرحله ۱: به سیستم پورتال وارد شوید&lt;/h4&gt;
@@ -2208,6 +2212,7 @@
 <translation id="4377125064752653719">شما سعی در دسترسی به <ph name="DOMAIN" /> را داشتید، اما صادر کننده، گواهی ارائه شده از سوی سرور را باطل کرده است. یعنی اصلاً نباید به اطلاعات کاربری که این سرور ارائه می‌کند اطمینان کرد. ممکن است شما با مهاجمی در ارتباط باشید.</translation>
 <translation id="4377869186417956230">تغییر به همه کارت‌های وفاداری در این گزینه منو.</translation>
 <translation id="4378154925671717803">تلفن</translation>
+<translation id="4381997246130185847">می‌توانید از جایی که رها کرده‌اید ادامه دهید یا درحال حرکت گروه‌های زبانه جدید ایجاد کنید</translation>
 <translation id="4382484599443659549">PDF</translation>
 <translation id="4382833368532556056">ازاین‌پس فایل‌هایتان را در فضای ذخیره‌سازی ابری ذخیره کنید</translation>
 <translation id="4384395682990721132">A4x3</translation>
@@ -2300,7 +2305,6 @@
 <translation id="4542971377163063093">سینی ۶</translation>
 <translation id="4543072026714825470">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت و نشانی صورت‌حسابتان را در «حساب Google» خود ذخیره کنید</translation>
 <translation id="4546730006268514143">مهلت زمانی انتقال تمام شد</translation>
-<translation id="4547989603022124809">هم‌رسانی زبانه برای این رشته روشن شود؟</translation>
 <translation id="4548974025982531828">{NUM_DAYS,plural, =1{‫۱ روز پیش ایجاد شده است}one{‫{NUM_DAYS} روز پیش ایجاد شده است}other{‫{NUM_DAYS} روز پیش ایجاد شده است}}</translation>
 <translation id="455113658016510503">A9</translation>
 <translation id="4556069465387849460">از قفل صفحه برای تکمیل گذرواژه‌ها استفاده می‌کنید</translation>
@@ -2488,6 +2492,7 @@
 <translation id="4864406669374375262">رشته نسخه در بریده‌دان کپی شد</translation>
 <translation id="486459320933704969">ولی یا سرپرست باید بازدید شما از این وب‌سایت را تأیید کند</translation>
 <translation id="4864801646102013152">بهینه‌سازی خانه</translation>
+<translation id="4865063548323785458">گذرواژه‌ها و گذرکلیدهایتان را ذخیره و تکمیل خودکار کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید</translation>
 <translation id="4866506163384898554">برای نمایش مکان‌نما، |<ph name="ACCELERATOR1" />| + |<ph name="ACCELERATOR2" />| را فشار دهید</translation>
 <translation id="4868277513442568587">‏برای ادامه استفاده از گروه زبانه‌های هم‌رسانی‌شده‌تان، Chrome را به‌روز کنید</translation>
 <translation id="4873616204573862158">عینک</translation>
@@ -2956,7 +2961,6 @@
 <translation id="5556459405103347317">مجدد بار کردن</translation>
 <translation id="5556843284826862956">‏افراد بازبین ممکن است رشته‌ها را برای بهبود «هوشواره‌های Google» ببینند</translation>
 <translation id="5558083606899411167">دستگاه‌های تهویه مطبوع</translation>
-<translation id="5558125320634132440">این سایت مسدود شده است زیرا احتمالاً حاوی محتوای بزرگ‌سالان است</translation>
 <translation id="5559311991468302423">حذف نشانی</translation>
 <translation id="5561747310506483298">کارت‌های شناسایی</translation>
 <translation id="55635442646131152">طرح کلی سند</translation>
@@ -2977,6 +2981,7 @@
 <translation id="558420943003240152">مدیریت گذرواژه‌ها و گذرکلیدها…</translation>
 <translation id="5586446728396275693">نشانی ذخیره‌شده‌ای وجود ندارد</translation>
 <translation id="5586831831248371458">جستجوی <ph name="KEYWORD_SUFFIX" /></translation>
+<translation id="5587058852341670759">‏دیگر نیازی به عوض کردن برنامه نخواهید داشت. رمزگذاری Google از اطلاعات شما محافظت می‌کند و پیش‌از انجام پرداخت، هویت شما را تأیید خواهد کرد.</translation>
 <translation id="5587987780934666589">کاربر پلاتفرم</translation>
 <translation id="5593349413089863479">اتصال کاملاً امن نیست</translation>
 <translation id="5593640815048812868">رایانه کیفی و نوت‌بوک</translation>
@@ -3001,6 +3006,7 @@
 <translation id="5617949217645503996">تعداد دفعاتی که <ph name="HOST_NAME" /> شما را به نشانی‌های دیگر هدایت کرده بیش از حد است.</translation>
 <translation id="5619721953841297650">پیش‌تنظیم</translation>
 <translation id="5624120631404540903">مدیریت گذرواژه‌ها</translation>
+<translation id="5627344039351500898">تغییر به مکان دقیق</translation>
 <translation id="5628060911499153873">‏اطلاعاتتان را ذخیره کنید تا کارها را در محصولات Google سریع‌تر انجام دهید. اطلاعاتتان در «<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />» حساب <ph name="ACCOUNT" /> ذخیره می‌شود.</translation>
 <translation id="5629630648637658800">تنظیمات خط‌مشی بارگیری نشد</translation>
 <translation id="5630981295558454585">‏دکمه پرسیدن از Google درباره این صفحه، برای پرسیدن از Google درباره این صفحه، فعال کنید</translation>
@@ -3064,7 +3070,6 @@
 <translation id="5728246486828755318">می‌تواند برای استفاده از ویژگی‌های پیشرفته چاپگر درخواست دهد</translation>
 <translation id="5729442113829771034">آموزش خردسالان</translation>
 <translation id="5730040223043577876">‏Chrome توصیه می‌کند اگر از گذرواژه‌تان در سایت‌های دیگری استفاده کردید آن را بازنشانی کنید.</translation>
-<translation id="5732392974455271431">والدینتان می‌توانند این سایت را برای شما بگشایند</translation>
 <translation id="573555826359077410">‏دکمه ایجاد فرم؛ برای ایجاد سریع فرم جدید در «فرم‌نگار Google»، آن را فعال کنید</translation>
 <translation id="5738385766833540397">مدیریت نحوه دریافت هشدارهای کاهش قیمت برای محصولاتی که ردیابی می‌کنید</translation>
 <translation id="5739619009927381786">در مرحله بعد، قفل صفحه را باز کنید که معمولاً بااستفاده از اثر انگشتتان انجام می‌شود. یا می‌توانید <ph name="BEGIN_LINK" />با روش دیگری راستی‌آزمایی کنید<ph name="END_LINK" />.</translation>
@@ -3751,6 +3756,7 @@
 <translation id="6798066466127540426">فهرست فاقد ارائه‌دهنده جستجوی معتبر است.</translation>
 <translation id="6798460514924505775">پاکت چو ۳</translation>
 <translation id="6799145206637008376">کد تأیید کارت مربوط به این کارت مجازی را وارد کنید</translation>
+<translation id="6801920212017470190">درحرکت از همه کاهش قیمت‌ها مطلع شوید</translation>
 <translation id="6805030849054648206">پاکت بی۶/سی۴</translation>
 <translation id="6807791860691150411">آموزش</translation>
 <translation id="6808579246645021886">زبانه‌ها و فایل‌های هم‌رسانی‌شده</translation>
@@ -3917,7 +3923,6 @@
 <translation id="7062344833049251424">‏برای اینکه دفعه بعد پرداخت سریع‌تری داشته باشید، اطلاعات کارت و نشانی صورت‌حسابتان را در «کیف پول Google» ذخیره کنید</translation>
 <translation id="706295145388601875">‏افزودن و مدیریت نشانی‌ها در تنظیمات Chrome</translation>
 <translation id="7063157783216323487">سبز ۲</translation>
-<translation id="7064111249130685461">برای دریافت کردن شخصی‌سازی‌شده‌ترین پاسخ‌ها، به این رشته اجازه دهید به زبانه‌های باز شما ارجاع دهد.</translation>
 <translation id="7064443976734085921">خودروهای کوچک</translation>
 <translation id="7064851114919012435">اطلاعات تماس</translation>
 <translation id="7067633076996245366">سول و آر اَند بی</translation>
@@ -4126,6 +4131,7 @@
 <translation id="739728382607845710">نماد مدیریت‌كننده پرداخت</translation>
 <translation id="7399616692258236448">درخواست‌های مکان به‌طور خودکار برای همه سایت‌ها، به‌جز آن‌هایی که مجاز کرده‌اید، مسدود می‌شوند</translation>
 <translation id="7400418766976504921">نشانی وب</translation>
+<translation id="7402375256128852434">افزودن زبانه‌های اخیر</translation>
 <translation id="7403392780200267761">هم‌رسانی این زبانه ازطریق هم‌رسانی پیوند، ایجاد رمزینه پاسخ‌سریع، پخش محتوا، و موارد دیگر</translation>
 <translation id="7403591733719184120">دستگاه <ph name="DEVICE_NAME" /> تحت مدیریت است</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> برنامه‌هایی را برای افزودن عملکردهای بیشتر نصب کرده است. این برنامه‌ها به برخی‌از داده‌های شما دسترسی دارند.</translation>
@@ -4166,7 +4172,6 @@
 <translation id="7441864845853794192">غذاهای لذیذ و ویژه</translation>
 <translation id="7442389976360981500">ردیابی دست مجاز شود؟</translation>
 <translation id="7442725080345379071">نارنجی روشن</translation>
-<translation id="7444046173054089907">این سایت مسدود شده است</translation>
 <translation id="7444176988908839653">{COUNT,plural, =0{کوکی‌ها امروز دوباره مسدود خواهد شد}=1{کوکی‌ها فردا دوباره مسدود خواهد شد}one{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}other{کوکی‌ها # روز دیگر دوباره مسدود خواهد شد}}</translation>
 <translation id="7447234474237738389">خدمات پوشاک</translation>
 <translation id="7447625772313191651">‏<ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> میلی‌متر)</translation>
@@ -4191,6 +4196,7 @@
 <translation id="7470854469646445678">دلیلی برای کپی کردن ارائه دهید (الزامی)</translation>
 <translation id="7471007961486718967">دلیلی برای انتقال دادن ارائه دهید (الزامی)</translation>
 <translation id="7473033553872550521">‏همچنین می‌توانید با مالک سایت تماس بگیرید و پیشنهاد دهید که سایت را به HTTPS ارتقا دهد. <ph name="LEARN_MORE" /></translation>
+<translation id="7473555040328423550">افزودن زبانه</translation>
 <translation id="7473891865547856676">نه متشکرم</translation>
 <translation id="7475618719385705713">این صفحه مسدود شده است</translation>
 <translation id="7481312909269577407">ارسال کردن</translation>
@@ -4272,6 +4278,7 @@
 <translation id="7579442726219254162">متغیر نامعلوم «<ph name="VARIABLE" />» در پیکربندی تحت‌مدیریت «<ph name="APPLICATION_ID" />».</translation>
 <translation id="7581199239021537589">‏روی ۲، تغییر جهت تصویر حول محور Y</translation>
 <translation id="7582602800368606489">‏ایجاد سریع رویداد جدید در «تقویم Google»</translation>
+<translation id="7584287158780898016">فعال کردن هشدارهای پیگیری قیمت</translation>
 <translation id="7586676035079382730">اعلان‌ها مجاز نیست</translation>
 <translation id="7588707273764747927">انتقال</translation>
 <translation id="7589062909165841767">‏«حساب Google» شما ممکن است دربردارنده <ph name="BEGIN_LINK_GAA" />فعالیت برنامه‌های Gemini<ph name="END_LINK_GAA" /> شما باشد</translation>
@@ -4392,7 +4399,6 @@
 <translation id="7751971323486164747">‏سفارشی کردن اندازه قلم‌ها و طرح حروف در Chrome</translation>
 <translation id="7752995774971033316">مدیریت نشده</translation>
 <translation id="7754587126786572336">‏هنگام شروع به‌روزرسانی، برنامه‌ها و برگه‌های Chrome بسته خواهد شد</translation>
-<translation id="7755287808199759310">والدینتان می‌توانند این سایت را برای شما بگشایند</translation>
 <translation id="7755624218968747854">رول اصلی</translation>
 <translation id="7756441544371887150">‏این کارت برای خریدها در Chrome، وقتی در «کیف پول Google» ذخیره شده است به‌‌صورت خودکار تکمیل شود.</translation>
 <translation id="7758069387465995638">دیوار آتش یا نرم‌افزار ضدویروس ممکن است مانع اتصال شده باشد.</translation>
@@ -4507,7 +4513,6 @@
 <translation id="7947285636476623132">سال انقضا را بررسی و دوباره امتحان کنید</translation>
 <translation id="7947310711271925113">موسیقی پاپ</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای اطلاع از ویژگی‌های جدید Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
-<translation id="7948579849190819732">زبانه فعلی</translation>
 <translation id="7949135979217012031">ضدویروس و بدافزار</translation>
 <translation id="7950027195171824198">‏مدیریت اولویت‌های کوکی در تنظیمات Chrome</translation>
 <translation id="7951415247503192394">(۳۲ بیت)</translation>
@@ -5038,6 +5043,7 @@
 <translation id="8814707942599948500">پاکت سی۸</translation>
 <translation id="881559332211266856">به‌روزرسانی شماره جبران خسارت</translation>
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
+<translation id="8819155700324279105">اضافه شدن لایه محافظتی بیشتر دربرابر تهدیدهای آنلاین</translation>
 <translation id="8819855907485254989">ذخیره کردن بلیت حمل‌ونقل در «کیف پول»</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="882338992931677877">شیار دستی</translation>
@@ -5188,7 +5194,6 @@
 <translation id="9069693763241529744">توسط افزونه مسدود شده است</translation>
 <translation id="9073799351042754113">انتخاب کرده‌اید هشدارهای امنیتی را برای این سایت خاموش کنید.</translation>
 <translation id="9075717835386447447">برنزه ۱</translation>
-<translation id="9076283476770535406">این سایت ممکن است شامل محتوای مخصوص بزرگسالان باشد</translation>
 <translation id="9078170656887151974">‏برای ارائه پیشنهادها و بهبود این ویژگی، نشانی وب و محتوای صفحه با Google هم‌رسانی می‌شود. هرزمان که خواستید نظرتان را تغییر دهید و <ph name="LEARN_MORE" />.</translation>
 <translation id="9078912659001679888">مخلوط‌کن و آبمیوه‌گیری</translation>
 <translation id="9078964945751709336">اطلاعات بیشتری نیاز است</translation>

@@ -164,6 +164,7 @@
 <translation id="1104098698795583187">ਤੁਸੀਂ ਤੁਰੰਤ ਇਸ ਟੈਬ ਗਰੁੱਪ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਬੈਠੋਗੇ ਅਤੇ ਇਸਨੂੰ ਤੁਹਾਡੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ ਤੋਂ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="1106270460549661906">Gemini ਨਾਲ ਸਾਂਝਾ ਨਾ ਕਰੋ</translation>
 <translation id="1106350001632362876">ਨਿਊਨਤਮ ਸੀਮਾ ਨੂੰ ਵਧਾਓ</translation>
+<translation id="1107300737351978027">ਇਸ ਵਿੱਚ ਦੁਹਰਾਏ ਜਾਣ ਵਾਲੇ ਅੰਕ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੇ</translation>
 <translation id="110850812463801904">OneDrive ਨਾਲ ਹੱਥੀਂ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="1108600514891325577">&amp;ਬੰਦ ਕਰੋ</translation>
 <translation id="1108938384783527433">ਇਤਿਹਾਸ ਸਿੰਕ</translation>
@@ -268,6 +269,7 @@
 <translation id="1173894706177603556">ਮੁੜ-ਨਾਮਕਰਨ ਕਰੋ</translation>
 <translation id="1174073918202301297">ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1174366174291287894">ਤੁਹਾਡਾ ਕਨੈਕਸ਼ਨ ਹਮੇਸ਼ਾਂ ਸੁਰੱਖਿਅਤ ਹੁੰਦਾ ਹੈ ਜਦੋਂ ਤੱਕ Chrome ਵੱਲੋਂ ਤੁਹਾਨੂੰ ਇਸ ਦੇ ਸੁਰੱਖਿਅਤ ਨਾ ਹੋਣ ਬਾਰੇ ਸੂਚਿਤ ਨਹੀਂ ਕੀਤਾ ਜਾਂਦਾ</translation>
+<translation id="1174759280027683968">Chrome 'ਤੇ ਜਾਓ</translation>
 <translation id="1175131936083782305">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ।</translation>
 <translation id="1175277108283187866">ਸਾਈਟ 'ਤੇ ਜਾਓ ਜਾਂ ਪਤਾ ਬਾਰ ਵਿੱਚ ਖੋਜ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="1175364870820465910">&amp;ਪ੍ਰਿੰਟ...</translation>
@@ -955,7 +957,6 @@
 <translation id="1636212173818785548">ਠੀਕ</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />ਐਪ ਡਾਟਾ ਕਿਸੇ ਐਪ ਵੱਲੋਂ (ਵਿਕਾਸਕਾਰ ਸੈਟਿੰਗਾਂ ਦੇ ਆਧਾਰ 'ਤੇ) ਰੱਖਿਅਤ ਕੀਤਾ ਕੋਈ ਵੀ ਡਾਟਾ ਹੋ ਸਕਦਾ ਹੈ, ਜਿਸ ਵਿੱਚ ਸੰਪਰਕਾਂ, ਸੁਨੇਹਿਆਂ ਅਤੇ ਫ਼ੋਟੋਆਂ ਵਰਗਾ ਡਾਟਾ ਸ਼ਾਮਲ ਹੈ। ਬੈਕਅੱਪ ਡਾਟੇ ਨੂੰ ਤੁਹਾਡੇ Drive ਸਟੋਰੇਜ ਕੋਟੇ ਵਿੱਚ ਨਹੀਂ ਗਿਣਿਆ ਜਾਵੇਗਾ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />ਤੁਸੀਂ ਇਸ ਸੇਵਾ ਨੂੰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਬੰਦ ਕਰ ਸਕਦੇ ਹੋ।<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1637224376458524414">ਆਪਣੇ iPhone 'ਤੇ ਇਹ ਬੁੱਕਮਾਰਕ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1637765355341780467">ਤੁਹਾਡੇ ਪ੍ਰੋਫ਼ਾਈਲ ਨੂੰ ਖੋਲ੍ਹਣ ਦੌਰਾਨ ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ ਸੀ। ਕੁਝ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਅਪ੍ਰਾਪਤ ਹੋ ਸਕਦੀਆਂ ਹਨ।</translation>
 <translation id="1639239467298939599">ਲੋਡ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="1641113438599504367">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ</translation>
@@ -1801,7 +1802,6 @@
 <translation id="221297410904507041">ਇਤਿਹਾਸ, ਕੁਕੀਜ਼, ਕੈਸ਼ੇ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਮਿਟਾਓ</translation>
 <translation id="2213410656650624348">ਔਸਤ</translation>
 <translation id="2214018885812055163">ਸਾਂਝੇ ਕੀਤੇ ਫੋਲਡਰ</translation>
-<translation id="2214453882118345682">ਤੁਹਾਨੂੰ ਜਿਹੜੀਆਂ ਚੀਜ਼ਾਂ ਦਿਖਾਈ ਦੇ ਰਹੀਆਂ ਹਨ, ਉਨ੍ਹਾਂ ਨੂੰ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਖਰੀਦੋ, ਉਨ੍ਹਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰੋ ਅਤੇ ਉਨ੍ਹਾਂ ਦੀ ਪਛਾਣ ਕਰੋ।</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ਲਾਈਨ ਨਹੀਂ ਦਿਖਾਈ ਗਈ&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> ਲਾਈਨ ਨਹੀਂ ਦਿਖਾਈ ਗਈ&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ਲਾਈਨਾਂ ਨਹੀਂ ਦਿਖਾਈਆਂ ਗਈਆਂ&gt;}}</translation>
 <translation id="2215070081105889450">ਆਡੀਓ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਲਈ, ਇਸਦੀ ਬਜਾਏ ਕਿਸੇ ਟੈਬ ਜਾਂ ਸਕ੍ਰੀਨ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="2217208085547223783">ਭਰੋਸੇ ਦੀ ਸਥਿਤੀ</translation>
@@ -2716,7 +2716,6 @@
 <translation id="2813765525536183456">ਨਵਾਂ ਪ੍ਰੋਫਾਈਲ &amp;ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="281390819046738856">ਬੇਨਤੀ ਮਨਜ਼ੂਰ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="2814489978934728345">ਇਹ ਸਫ਼ਾ ਲੋਡ ਕਰਨਾ ਬੰਦ ਕਰੋ</translation>
-<translation id="2815693974042551705">ਬੁੱਕਮਾਰਕ ਫੋਲਡਰ</translation>
 <translation id="2816319641769218778">ਪਾਸਵਰਡਾਂ ਨੂੰ ਆਪਣੇ 'Google ਖਾਤੇ' ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਲਈ, ਸਿੰਕ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2817435998497102771">ਆਪਣੇ ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ ਸੈੱਟ ਕਰੋ</translation>
 <translation id="2817861546829549432">‘ਟਰੈਕ ਨਾ ਕਰੋ’ ਨੂੰ ਸਮਰੱਥ ਬਣਾਉਣ ਦਾ ਮਤਲਬ ਹੈ ਕਿ ਇੱਕ ਬੇਨਤੀ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਟ੍ਰੈਫਿਕ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤੀ ਜਾਏਗੀ। ਕੋਈ ਵੀ ਪ੍ਰਭਾਵ ਇਸਤੇ ਨਿਰਭਰ ਕਰਦਾ ਹੈ ਕਿ ਇੱਕ ਵੈੱਬਸਾਈਟ ਬੇਨਤੀ ਦਾ ਜਵਾਬ ਦਿੰਦੀ ਹੈ ਜਾਂ ਨਹੀਂ ਅਤੇ ਬੇਨਤੀ ਦਾ ਅਰਥ ਕਿਵੇਂ ਕੱਢਿਆ ਜਾਂਦਾ ਹੈ।
@@ -2832,7 +2831,6 @@
 <translation id="2893318819023133318">ਉਲਟ ਦ੍ਰਿਸ਼</translation>
 <translation id="2894596417096093634">ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟ ਪਛਾਣਕਰਤਾ</translation>
 <translation id="2894757982205307093">ਗਰੁੱਪ ਵਿੱਚ ਨਵੀਂ ਟੈਬ</translation>
-<translation id="2895244606836384727">ਰਿਮਾਈਂਡਰ: ਤੁਹਾਡੇ ਟੈਬ ਗਰੁੱਪ</translation>
 <translation id="289695669188700754">ਕੁੰਜੀ ਆਈ.ਡੀ.: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੀ ਸਾਰੀਆਂ ਇਨਕੋਗਨਿਟੋ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ 'ਤੇ ਇਸ ਵਿਉਂਤਬੱਧ ਸੈਟਿੰਗ ਨੂੰ ਹਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ</translation>
 <translation id="2897878306272793870">ਕੀ ਤੁਸੀਂ ਯਕੀਨੀ ਤੌਰ ਤੇ <ph name="TAB_COUNT" /> ਟੈਬਸ ਖੋਲ੍ਹਣੀਆਂ ਹਨ?</translation>
@@ -4464,7 +4462,6 @@
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{ਇਸ ਨਾਲ ਗਰੁੱਪ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟ ਜਾਵੇਗਾ।}one{ਇਸ ਨਾਲ ਗਰੁੱਪ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟ ਜਾਵੇਗਾ।}other{ਇਸ ਨਾਲ ਗਰੁੱਪ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਪੱਕੇ ਤੌਰ 'ਤੇ ਮਿਟ ਜਾਣਗੇ।}}</translation>
 <translation id="4010036441048359843">'ਉਜਾਗਰ ਕਰੋ' ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="4010746393007464819">Debian 12 (Bookworm) ਦਾ ਅੱਪਗ੍ਰੇਡ ਉਪਲਬਧ ਹੈ</translation>
-<translation id="4010917659463429001">ਆਪਣੇ ਮੋਬਾਈਲ ਡੀਵਾਈਸ 'ਤੇ ਆਪਣੇ ਬੁੱਕਮਾਰਕਾਂ ਨੂੰ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ, <ph name="GET_IOS_APP_LINK" />।</translation>
 <translation id="4011073493055408531">ਸ਼ਹਿਰ ਦੇ ਉੱਪਰ, ਜਾਮਨੀ ਅਤੇ ਹਰੇ ਰੰਗ ਦੇ ਔਰੋਰਾ ਬੋਰੇਲਿਸ ਦਾ ਸ਼ਾਨਦਾਰ ਦ੍ਰਿਸ਼ ਦਿਖਾਈ ਦੇ ਰਿਹਾ ਹੈ।</translation>
 <translation id="4011897773956589748">ਅਗਲੀ ਵਾਰ ਜਦੋਂ Gemini ਨੂੰ ਇਸ ਖਾਤੇ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ, ਤਾਂ ਇਹ ਤੁਹਾਨੂੰ ਦੁਬਾਰਾ ਪੁੱਛੇਗਾ।</translation>
 <translation id="4012509903424054869">PDF ਫ਼ਾਈਲਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਬਦਲ ਜਾਂਦੀਆਂ ਹਨ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਖੋਜ ਕਰ ਸਕੋ ਅਤੇ ਲਿਖਤ ਚੁਣ ਸਕੋ</translation>
@@ -5366,7 +5363,6 @@
 <translation id="4660465405448977105">{COUNT,plural, =1{ਚਿੱਤਰ}one{# ਚਿੱਤਰ}other{# ਚਿੱਤਰ}}</translation>
 <translation id="4660540330091848931">ਆਕਾਰ ਨੂੰ ਬਦਲਿਆ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4662373422909645029">ਉਪਨਾਮ 'ਚ ਅੰਕ ਨਹੀਂ ਹੋ ਸਕਦੇ</translation>
-<translation id="4662788913887017617">ਆਪਣੇ iPhone ਨਾਲ ਇਸ ਬੁੱਕਮਾਰਕ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="4663373278480897665">ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4665014895760275686">ਨਿਰਮਾਤਾ</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> ਵੱਲੋਂ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟਾ ਦਿੱਤਾ ਜਾਵੇਗਾ।</translation>
@@ -5411,7 +5407,6 @@
 <translation id="4688176403504673761"><ph name="MANAGER" /> ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਪਿਛਲੇ ਵਰਜਨ (<ph name="PROGRESS_PERCENT" />) 'ਤੇ ਵਾਪਸ ਲੈ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4688870304423708920">ਆਪਣੇ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੀ ਜਾਂਚ ਕਰੋ ਅਤੇ Gemini ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਮੁੜ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="4689235506267737042">ਆਪਣੇ ਡੈਮੋ ਦੀਆਂ ਤਰਜੀਹਾਂ ਚੁਣੋ</translation>
-<translation id="4689421377817139245">ਆਪਣੇ iPhone 'ਤੇ ਇਸ ਬੁੱਕਮਾਰਕ ਨੂੰ ਸਿੰਕ ਕਰੋ</translation>
 <translation id="4690091457710545971">&lt;Intel ਵਾਈ-ਫਾਈ ਫ਼ਰਮਵੇਅਰ ਦੁਆਰਾ ਚਾਰ ਫਾਈਲਾਂ ਬਣਾਈਆਂ ਗਈਆਂ: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon। ਪਹਿਲੀਆਂ ਤਿੰਨ ਬਾਈਨਰੀ ਫ਼ਾਈਲਾਂ ਹਨ ਜਿਨ੍ਹਾਂ ਵਿੱਚ ਰਜਿਸਟਰ ਡੰਪ ਹਨ, ਅਤੇ ਇਹਨਾਂ ਬਾਰੇ Intel ਦੁਆਰਾ ਕੋਈ ਨਿੱਜੀ ਜਾਂ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨਾ ਹੋਣ ਦਾ ਦਾਅਵਾ ਕੀਤਾ ਗਿਆ ਹੈ। ਆਖਰੀ ਫ਼ਾਈਲ Intel ਫ਼ਰਮਵੇਅਰ ਤੋਂ ਚਲਾਏ ਜਾਣ ਦਾ ਟ੍ਰੇਸ ਹੈ; ਇਸ ਤੋਂ ਕੋਈ ਵੀ ਨਿੱਜੀ ਜਾਂ ਡੀਵਾਈਸ ਦੀ ਪਛਾਣ ਕਰਨ ਵਾਲੀ ਜਾਣਕਾਰੀ ਸਾਫ਼ ਕਰ ਦਿੱਤੀ ਗਈ ਹੈ, ਪਰ ਇੱਥੇ ਪ੍ਰਦਰਸ਼ਿਤ ਕੀਤੇ ਜਾਣ ਲਈ ਬਹੁਤ ਵੱਡੀ ਹੈ। ਇਹ ਫ਼ਾਈਲਾਂ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਨਾਲ ਹਾਲੀਆ ਵਾਈ-ਫਾਈ ਸਮੱਸਿਆਵਾਂ 'ਤੇ ਪ੍ਰਤਿਕਿਰਿਆ ਵਿੱਚ ਉਤਪੰਨ ਹੋਈਆਂ ਸਨ, ਅਤੇ ਇਹਨਾਂ ਸਮੱਸਿਆਵਾਂ ਦਾ ਨਿਪਟਾਰਾ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਨ ਲਈ Intel ਨਾਲ ਸਾਂਝੀਆਂ ਕੀਤੀਆਂ ਜਾਣਗੀਆਂ।&gt;</translation>
 <translation id="4691995778017338841">ਫ਼ੋਟੋ ਦੀ ਮੁੜ-ਕਲਪਨਾ ਕਰੋ</translation>
 <translation id="4692342362587775867">ਇਸ ਸਾਈਟ ਦੀਆਂ ਸੂਚਨਾਵਾਂ ਵਿਘਨਕਾਰੀ ਹੋ ਸਕਦੀਆਂ ਹਨ</translation>
@@ -5661,7 +5656,6 @@
 <translation id="4864805589453749318">ਸਕੂਲੀ ਖਾਤਾ ਸ਼ਾਮਲ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦੇਣ ਵਾਲੇ ਮਾਂ-ਪਿਓ ਨੂੰ ਚੁਣੋ।</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (ਬਲਾਕ ਕੀਤਾ ਗਿਆ)</translation>
 <translation id="486505726797718946">ਮੈਮੋਰੀ ਰੱਖਿਅਤ ਕੀਤੀ ਗਈ</translation>
-<translation id="4865063548323785458">ਸਾਈਟਾਂ ਅਤੇ ਐਪਾਂ ਵਿੱਚ ਆਸਾਨੀ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਆਪਣੇ ਪਾਸਵਰਡ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ ਆਟੋਫਿਲ ਕਰੋ</translation>
 <translation id="486635084936119914">ਕੁਝ ਕਿਸਮ ਦੀਆਂ ਫ਼ਾਈਲਾਂ ਨੂੰ ਡਾਊਨਲੋਡ ਕਰਨ ਤੋਂ ਬਾਅਦ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="4867272607148176509">ਮਾਂ-ਪਿਓ ਐਪਾਂ ਨੂੰ ਮਨਜ਼ੂਰੀ ਦੇ ਸਕਦੇ ਹਨ ਜਾਂ ਉਨ੍ਹਾਂ ਨੂੰ ਬਲਾਕ ਕਰ ਸਕਦੇ ਹਨ, ਸਮਾਂ ਸੀਮਾਵਾਂ ਸੈੱਟ ਕਰ ਸਕਦੇ ਹਨ ਅਤੇ ਵੈੱਬ ਬ੍ਰਾਊਜ਼ਿੰਗ ਕੰਟਰੋਲ ਕਰ ਸਕਦੇ ਹਨ। ਜ਼ਿਆਦਾਤਰ ਸਕੂਲੀ ਸਰੋਤਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਬਾਅਦ ਵਿੱਚ ਸਕੂਲ ਖਾਤਾ ਸ਼ਾਮਲ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="486796517585164369">· ਹਾਲੀਆ ਟੈਬ</translation>
@@ -5768,6 +5762,7 @@
 <translation id="4931387733184123331">ਗ੍ਰਹਿਣ</translation>
 <translation id="4932733599132424254">ਤਾਰੀਖ</translation>
 <translation id="4933484234309072027"><ph name="URL" /> ਤੇ ਜੋੜਿਆ</translation>
+<translation id="4934763315031217818">ਕ੍ਰਮਬੱਧ ਕ੍ਰਮ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੇ</translation>
 <translation id="4936042273057045735">ਕਾਰਜ ਪ੍ਰੋਫਾਈਲ ਵਿੱਚ ਫ਼ੋਨਾਂ ਲਈ ਸੂਚਨਾ ਸਿੰਕ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4937676329899947885">ਵਾਈ-ਫਾਈ ਨੈੱਟਵਰਕ ਨੂੰ ਪ੍ਰਾਪਤ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="4938052313977274277">ਗਤੀ</translation>
@@ -6739,7 +6734,6 @@
 <translation id="5624120631404540903">ਪਾਸਵਰਡ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="5624959475330585145">ਅਸੁਰੱਖਿਅਤ ਕਨੈਕਸ਼ਨਾਂ ਦੀ ਵਰਤੋਂ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਪੁੱਛੋ</translation>
 <translation id="5625225435499354052">Google Pay ਵਿੱਚ ਸੰਪਾਦਨ ਕਰੋ</translation>
-<translation id="5626134646977739690">ਨਾਮ:</translation>
 <translation id="5626172233890210551">ਇਸਦੀ ਬਜਾਏ ਪਾਸਵਰਡ ਵਰਤੋ</translation>
 <translation id="5627832140542566187">ਡਿਸਪਲੇ ਦਿਸ਼ਾਮਾਨ</translation>
 <translation id="5628434207686266338">ਡੀਵਾਈਸ ਦਾ ਪਾਸਵਰਡ ਸੈੱਟ ਕਰੋ</translation>
@@ -6885,7 +6879,6 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> ਹਾਰਡਵੇਅਰ ਸਮਰਥਨ ਅਤੇ ਸਥਿਰਤਾ</translation>
 <translation id="574104302965107104">ਡਿਸਪਲੇ ਪ੍ਰਤਿਬਿੰਬੀਕਰਨ</translation>
 <translation id="574209121243317957">ਪਿਚ</translation>
-<translation id="5742787970423162234">ਵਿਸਤ੍ਰਿਤ ਸਮਰੱਥਾਵਾਂ ਨਾਲ ਪੈਕੇਜ ਕੀਤੀਆਂ ਗਈਆਂ ਵੈੱਬ ਐਪਲੀਕੇਸ਼ਨਾਂ। <ph name="BEGIN_LINK_LEARN_MORE" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">ਸਵੈਚਲਿਤ ਅਣਲਾਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਲਈ ਪਿੰਨ 12 ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਅੰਕਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
 <translation id="5746169159649715125">PDF ਵਜੋਂ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5747785204778348146">ਵਿਕਾਸਕਾਰ - ਅਸਥਿਰ</translation>
@@ -7398,6 +7391,7 @@
 <translation id="6096326118418049043">X.500 ਨਾਮ</translation>
 <translation id="6097480669505687979">ਜੇਕਰ ਤੁਸੀਂ ਜਗ੍ਹਾ ਖਾਲੀ ਨਹੀਂ ਕਰਦੇ, ਤਾਂ ਵਰਤੋਂਕਾਰਾਂ ਅਤੇ ਡਾਟੇ ਨੂੰ ਆਪਣੇ ਆਪ ਹਟਾਇਆ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6097600385983390082">ਅਵਾਜ਼ੀ ਖੋਜ ਬੰਦ ਹੈ</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />, <ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">ਆਪਣੇ iPhone 'ਤੇ ਇਸ ਕਾਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> ਤੋਂ ਲਿਖਤ ਕਾਪੀ ਕੀਤੀ ਗਈ</translation>
 <translation id="6099766472403716061"><ph name="HOST" /> ਨੂੰ ਹਮੇਸ਼ਾਂ ਆਪਣੇ MIDI ਡੀਵਾਈਸਾਂ ਨੂੰ ਕੰਟਰੋਲ ਕਰਨ ਅਤੇ ਰੀ-ਪ੍ਰੋਗਰਾਮ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
@@ -7917,7 +7911,6 @@
 <translation id="6464825623202322042">ਇਹ ਡੀਵਾਈਸ</translation>
 <translation id="6465841119675156448">ਇੰਟਰਨੈੱਟ ਦੇ ਬਿਨਾਂ</translation>
 <translation id="6466258437571594570">ਸਾਈਟਾਂ ਤੁਹਾਨੂੰ ਸੂਚਨਾਵਾਂ ਭੇਜਣ ਬਾਰੇ ਪੁੱਛ ਕੇ ਪਰੇਸ਼ਾਨ ਨਹੀਂ ਕਰ ਪਾਉਣਗੀਆਂ</translation>
-<translation id="6466988389784393586">&amp;ਸਾਰੇ ਬੁੱਕਮਾਰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> ਨੂੰ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="6467304607960172345">ਪੂਰੀ-ਸਕ੍ਰੀਨ ਵਾਲੇ ਵੀਡੀਓ ਸੁਯੋਗ ਬਣਾਓ</translation>
 <translation id="6467377768028664108">ਫਿਰ ਤੁਹਾਡਾ <ph name="DEVICE_TYPE" /> ਇਹ ਕਰ ਸਕਦਾ ਹੈ:</translation>
@@ -8753,6 +8746,7 @@
 <translation id="7030695672997239647">ਟੈਬ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰੋ ਅਤੇ "ਗਰੁੱਪ ਵਿੱਚ ਟੈਬ ਸ਼ਾਮਲ ਕਰੋ" ਚੁਣੋ ਅਤੇ ਫਿਰ "ਨਵਾਂ ਗਰੁੱਪ" ਚੁਣੋ</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - ਸੀਰੀਅਲ ਪੋਰਟ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="7033616203784997570">ਇਨਪੁੱਟ ਵੱਧ ਤੋਂ ਵੱਧ 62 ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
+<translation id="7033731598469029604">ਆਟੋ ਬ੍ਰਾਊਜ਼</translation>
 <translation id="7034692021407794547">ਬਿਲਿੰਗ ਪ੍ਰਬੰਧਨ ਅਧਿਕਾਰਾਂ ਵਾਲੇ ਪ੍ਰਸ਼ਾਸਕ ਦਾ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਪ੍ਰਸ਼ਾਸਕ ਕੰਸੋਲ ਦੇ Google Meet ਹਾਰਡਵੇਅਰ ਸੈਕਸ਼ਨ ਵਿੱਚ Google Meet ਹਾਰਡਵੇਅਰ ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮਾਂ ਨੂੰ ਸਵੀਕਾਰ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ।</translation>
 <translation id="70356134210715500">ਆਪਣੀਆਂ ਪਾਸਕੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> ਨੇ ਹੁਣੇ ਤੁਹਾਡੇ ਖਾਤੇ ਲਈ ਪਾਸਕੀ ਬਣਾਈ। ਪਾਸਕੀਆਂ ਸਾਈਨ-ਇਨ ਕਰਨ ਦਾ ਇੱਕ ਤੇਜ਼ ਅਤੇ ਸੁਰੱਖਿਅਤ ਤਰੀਕਾ ਪੇਸ਼ ਕਰਦੀਆਂ ਹਨ ਅਤੇ ਇਨ੍ਹਾਂ ਨੂੰ <ph name="USER" /> ਲਈ Google Password Manager ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। <ph name="LEARN_MORE" /></translation>
@@ -9520,7 +9514,6 @@
 <translation id="7582582252461552277">ਇਸ ਨੈੱਟਵਰਕ ਨੂੰ ਤਰਜੀਹ ਦਿਓ</translation>
 <translation id="7582844466922312471">ਮੋਬਾਈਲ ਡਾਟਾ</translation>
 <translation id="7583948862126372804">ਗਿਣਤੀ</translation>
-<translation id="7584287158780898016">ਕੀਮਤ ਸੰਬੰਧੀ ਟਰੈਕਿੰਗ ਅਲਰਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7585106857920830898">ਤੁਹਾਡੀ ਸੰਸਥਾ ਦੀ ਸੁਰੱਖਿਆ ਨੀਤੀਆਂ ਨਾਲ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="7585490016012953607">ਰਿਕਵਰੀ ਪਾਸਵਰਡ — ਕੁਝ ਸਮੇਂ ਲਈ ਵੱਧੋ-ਵੱਧ 3 ਮਹੀਨਿਆਂ ਤੱਕ ਰੱਖਿਅਤ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="7586498138629385861">Chrome ਐਪਾਂ ਖੁੱਲ੍ਹੀਆਂ ਹੋਣ ਵੇਲੇ ਵੀ Chrome ਚੱਲਦਾ ਰਹੇਗਾ।</translation>
@@ -10539,6 +10532,7 @@
 <translation id="8265018477030547118">ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ</translation>
 <translation id="826511437356419340">ਵਿੰਡੋ ਰੂਪ-ਰੇਖਾ ਮੋਡ ਵਿੱਚ ਦਾਖਲ ਹੋਏ। ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਸਵਾਈਪ ਕਰੋ ਜਾਂ ਜੇ ਕੀ-ਬੋਰਡ ਵਰਤ ਰਹੇ ਹੋ ਤਾਂ Tab ਦਬਾਓ।</translation>
 <translation id="8266430295499893285">ਤੁਸੀਂ ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰਨ ਤੋਂ ਬਾਅਦ ਹੀ ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰ ਸਕਦੇ ਹੋ</translation>
+<translation id="8266751606569906450">ਇਹ ਘੱਟੋ-ਘੱਟ <ph name="MINIMUM" /> ਅੱਖਰ-ਚਿੰਨ੍ਹਾਂ ਦਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ</translation>
 <translation id="8266947622852630193">ਸਾਰੀਆਂ ਇਨਪੁੱਟ ਵਿਧੀਆਂ</translation>
 <translation id="8267539814046467575">ਪ੍ਰਿੰਟਰ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="826905130698769948">ਅਵੈਧ ਕਲਾਇੰਟ ਪ੍ਰਮਾਣ-ਪੱਤਰ</translation>
@@ -10684,7 +10678,6 @@
 <translation id="8363277452449582220">ਮਹਾਂਸਾਗਰ</translation>
 <translation id="8366396658833131068">ਤੁਹਾਡਾ ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਮੁੜ-ਬਹਾਲ ਕੀਤਾ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਕਿਓਸਕ ਐਪ ਲਾਂਚ ਕਰਨ ਲਈ ਇੱਕ ਵੱਖਰਾ ਨੈੱਟਵਰਕ ਚੁਣੋ ਜਾਂ 'ਜਾਰੀ ਰੱਖੋ' ਬਟਨ ਦਬਾਓ।</translation>
 <translation id="8366694425498033255">ਚੋਣ ਕੁੰਜੀਆਂ</translation>
-<translation id="8368859634510605990">&amp;ਸਾਰੇ ਬੁੱਕਮਾਰਕ ਖੋਲ੍ਹੋ</translation>
 <translation id="8370294614544004647">ਲੈਪਟਾਪ ਬੰਦ ਹੋਣ 'ਤੇ ਸਲੀਪ ਮੋਡ ਵਿੱਚ ਜਾਓ</translation>
 <translation id="8370419414641876532">“ਪਾਸਵਰਡ ਅਤੇ ਆਟੋਫਿਲ” 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
 <translation id="8371695176452482769">ਹੁਣ ਬੋਲੋ</translation>
@@ -11352,7 +11345,6 @@
 <translation id="881799181680267069">ਹੋਰਾਂ ਨੂੰ ਲੁਕਾਓ</translation>
 <translation id="8818152010000655963">ਵਾਲਪੇਪਰ</translation>
 <translation id="8818988764764862764">ਵਿੰਡੋ ਨੂੰ ਖੱਬੇ ਪਾਸੇ ਵੱਲ ਲਿਜਾਇਆ ਗਿਆ</translation>
-<translation id="8819155700324279105">ਆਨਲਾਈਨ ਖਤਰਿਆਂ ਤੋਂ ਬਚਣ ਲਈ ਸੁਰੱਖਿਆ ਦੀ ਇੱਕ ਵਾਧੂ ਤਹਿ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8819510664278523111">ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਦਾ EID ਨੰਬਰ <ph name="EID_NUMBER" /> ਹੈ, ਡੀਵਾਈਸ ਦਾ IMEI ਨੰਬਰ <ph name="IMEI_NUMBER" /> ਹੈ ਅਤੇ ਡੀਵਾਈਸ ਦਾ ਸੀਰੀਅਲ ਨੰਬਰ <ph name="SERIAL_NUMBER" /> ਹੈ। ਇਨ੍ਹਾਂ ਨੰਬਰਾਂ ਦੀ ਵਰਤੋਂ ਸੇਵਾ ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ IP ਪਤੇ ਦਾ ਸੰਰੂਪਣ ਕਰੋ</translation>
@@ -11608,7 +11600,6 @@
 <translation id="8987321822984361516">ਬ੍ਰਾਊਜ਼ਰ ਦਾ ਪ੍ਰਬੰਧਨ ਕਿਸੇ ਸੰਸਥਾ ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="PROFILE_DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="8987736167266086032">ਜਿੱਥੇ ਤੁਸੀਂ ਛੱਡਿਆ ਸੀ ਓਥੋਂ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="8987927404178983737">ਮਹੀਨਾ</translation>
-<translation id="8988539543012086784">ਇਹ ਪੰਨਾ <ph name="BOOKMARK_FOLDER" /> ਵਿੱਚ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="8989359959810288806">ਟੈਦਰਿੰਗ ਸਥਿਤੀ ਨੂੰ ਰਿਫ੍ਰੈਸ਼ ਕਰੋ</translation>
 <translation id="8989779557457435460">ਪੂਰਵ-ਨਿਰਧਾਰਿਤ ਤੌਰ 'ਤੇ ਮੌਜੂਦਾ ਟੈਬ ਨੂੰ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="8990243615717080992">ਪਾਸਵਰਡ ਜਾਂ ਕਿਸੇ ਹੋਰ ਰਿਕਵਰੀ ਵਿਧੀ ਦੀ ਵਰਤੋਂ ਕਰ ਕੇ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>

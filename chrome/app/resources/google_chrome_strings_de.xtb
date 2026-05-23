@@ -283,7 +283,6 @@ Wenn diese Seite nicht wie erwartet funktioniert, kannst du versuchen, die Optim
 <translation id="3885770153807205175">Sprachauswahl</translation>
 <translation id="3889417619312448367">Google Chrome deinstallieren</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
-<translation id="3893985792899396936">Chrome-Tipp: Mit Lens suchen</translation>
 <translation id="3941890832296813527">Installationsfehler: Der Dateiname des Installationsprogramms ist ungültig oder wird nicht unterstützt.</translation>
 <translation id="395904275706073188">Geschützte Seiten können nicht gelesen werden. Versuche es mit einer anderen Seite.</translation>
 <translation id="3968962723676998462">Gib deine Passphrase ein, um Chrome-Daten in deinem Konto <ph name="ACCOUNT_EMAIL" /> zu verwenden und zu speichern</translation>
@@ -497,7 +496,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Dieser Tab verbraucht zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chrome ihn deaktiviert.</translation>
 <translation id="6182736845697986886">Die Installation ist aufgrund eines internen Fehlers des Update-Servers fehlgeschlagen.</translation>
-<translation id="6187085551300363958">Chrome-Tipp: Passwörter speichern</translation>
 <translation id="6192058120268468905">Mein Konto in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> hat eine Erweiterung hinzugefügt, die sich möglicherweise auf die Funktionsweise von Chrome auswirkt.
 
@@ -644,7 +642,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, gespeicherte Passwörter und den 
 <translation id="7627609214560473136">Erlaube Chrome zum Schutz deiner Daten, Berechtigungen von Websites zu entfernen, die du in letzter Zeit nicht besucht hast.</translation>
 <translation id="7629695634924605473">Chrome wird dich informieren, sollten deine Passwörter nicht mehr sicher sein</translation>
 <translation id="7641148173327520642">Dein Systemadministrator hat Google Chrome so konfiguriert, dass <ph name="ALTERNATIVE_BROWSER_NAME" /> für den Zugriff auf <ph name="TARGET_URL_HOSTNAME" /> geöffnet wird.</translation>
-<translation id="7641448682796883218">Chrome-Tipp: erweitertes Safe Browsing</translation>
 <translation id="7649070708921625228">Hilfe</translation>
 <translation id="7651907282515937834">Logo von Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome hat diesen Download blockiert, weil du Safe Browsing deaktiviert hast und die Datei nicht überprüft werden kann</translation>

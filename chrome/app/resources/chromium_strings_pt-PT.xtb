@@ -86,7 +86,6 @@
 <translation id="193439633299369377">O ChromiumOS tem de ser reiniciado para aplicar a atualização.</translation>
 <translation id="1951406923938785464">O Chromium bloqueou esta transferência porque o tipo de ficheiro não é habitualmente transferido e pode ser perigoso</translation>
 <translation id="1953553007165777902">A transferir… Falta(m) <ph name="MINUTE" /> minuto(s)</translation>
-<translation id="1965068424387304464">Dica do Chromium: guarde palavras-passe</translation>
 <translation id="1966382378801805537">O Chromium não consegue determinar ou definir o navegador predefinido</translation>
 <translation id="1990262977744080398">Saiba por que motivo o Chromium bloqueia alguns ficheiros, abre num novo separador</translation>
 <translation id="1999715455684970349">Mantém o software do Chromium atualizado. Se este serviço estiver desativado ou parado, o software do Chromium não vai ser mantido atualizado, o que significa que não vai ser possível corrigir as vulnerabilidades de segurança que possam surgir. Além disso, as funcionalidades podem não funcionar. Este serviço desinstala-se quando não existir nenhum software do Chromium a usá-lo.</translation>
@@ -262,7 +261,6 @@
 <translation id="3802055581630249637">O Chromium pré-carrega páginas que provavelmente vai visitar para que sejam carregadas mais rapidamente quando as visita</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3823384748599722168">Para usar as palavras-passe guardadas, siga o código QR, transfira o Chromium para iOS e inicie sessão na sua Conta Google</translation>
-<translation id="3837584850181228767">Dica do Chromium: Navegação segura melhorada</translation>
 <translation id="3846683726093018685">**Resume:** numa única frase com menos de 30 palavras, descreve o assunto e o objetivo principal do conteúdo na captura de ecrã.
 
           **Sugere perguntas:** gera uma lista com marcas de 3 a 5 perguntas que estimulem o pensamento e que um utilizador possa fazer para compreender melhor a captura de ecrã. Estas perguntas devem incluir, pelo menos, uma que seja especificamente sobre um objeto visual, o respetivo design ou o respetivo posicionamento.</translation>
@@ -749,7 +747,6 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="9148058034647219655">Sair</translation>
 <translation id="9155105544013854680">Continue a partir de onde ficou: o Chromium pode restaurar os seus separadores sempre que reiniciar. Para ativar esta opção, aceda às</translation>
 <translation id="9158494823179993217">O administrador do sistema configurou o Chromium para abrir um navegador alternativo, de modo a aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9183331186620388872">Dica do Chromium: pesquise com o Lens</translation>
 <translation id="9185526690718004400">Reiniciar para atualizar o &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personalize o Chromium</translation>

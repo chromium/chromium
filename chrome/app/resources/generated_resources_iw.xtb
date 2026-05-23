@@ -953,7 +953,6 @@
 <translation id="1636212173818785548">אישור</translation>
 <translation id="163712950892155760">‏<ph name="BEGIN_PARAGRAPH1" />נתוני האפליקציות כוללים את כל הנתונים שאפליקציה מסוימת שמרה (בהתאם להגדרות המפתח), כולל נתונים כמו אנשי קשר, הודעות ותמונות. נתוני גיבוי לא נחשבים כחלק ממכסת האחסון שלך ב-Drive.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />אפשר להשבית את השירות הזה ב'הגדרות'.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1637224376458524414">‏שליחה של סימנייה זו למכשיר ה-iPhone</translation>
 <translation id="1637765355341780467">אירעה שגיאה בפתיחת הפרופיל שלך. ייתכן שחלק מהתכונות לא יהיו זמינות.</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
@@ -1798,7 +1797,6 @@
 <translation id="221297410904507041">‏מחיקת ההיסטוריה, קובצי ה-Cookie, המטמון ועוד</translation>
 <translation id="2213410656650624348">בינוני</translation>
 <translation id="2214018885812055163">תיקיות משותפות</translation>
-<translation id="2214453882118345682">קונים, מתרגמים ומזהים את מה שרואים באמצעות המצלמה.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;שורה אחת לא מוצגת&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}two{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> שורות לא מוצגות&gt;}}</translation>
 <translation id="2215070081105889450">כדי לשתף אודיו צריך לשתף כרטיסיה או מסך ולא חלון</translation>
 <translation id="2217208085547223783">מצב אמינות</translation>
@@ -2713,7 +2711,6 @@
 <translation id="2813765525536183456">&amp;הוספת פרופיל חדש</translation>
 <translation id="281390819046738856">לא ניתן לחתום על הבקשה.</translation>
 <translation id="2814489978934728345">הפסקת טעינת הדף</translation>
-<translation id="2815693974042551705">הוספת התיקייה לסימניות</translation>
 <translation id="2816319641769218778">‏כדי לשמור סיסמאות בחשבון Google, יש להפעיל את הסנכרון.</translation>
 <translation id="2817435998497102771">הגדרה של הטפט והסגנון שלך</translation>
 <translation id="2817861546829549432">הפעלת התכונה 'ללא מעקב' תגרום להכללת בקשה בתנועת הגלישה שלך. ההשפעה שלה תלויה בנכונות של אתר להגיב לבקשה, ובאופן שבו הבקשה תפורש. לדוגמה, אתרים מסוימים עשויים להגיב לבקשה זו על ידי הצגת מודעות שאינן מבוססות על אתרים אחרים שבהם ביקרת. אתרי אינטרנט רבים עדיין יאספו את נתוני הגלישה שלך וישתמשו בהם - למשל, כדי לשפר את האבטחה, לספק תוכן, שירותים, מודעות והמלצות באתרי האינטרנט שלהם ולהפיק סטטיסטיקת דיווח.</translation>
@@ -2827,7 +2824,6 @@
 <translation id="2893318819023133318">היפוך התצוגות</translation>
 <translation id="2894596417096093634">מזהים של דוחות קריסה</translation>
 <translation id="2894757982205307093">כרטיסייה חדשה בקבוצה</translation>
-<translation id="2895244606836384727">תזכורת: קבוצות הכרטיסיות שלך</translation>
 <translation id="289695669188700754">מזהה מפתח: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">לאחר הסגירה של כל החלונות האנונימיים, ההגדרה שהותאמה אישית תוסר</translation>
 <translation id="2897878306272793870">רוצה לפתוח <ph name="TAB_COUNT" /> כרטיסיות, בטוח?</translation>
@@ -4460,7 +4456,6 @@
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{הקבוצה תימחק לתמיד מהמכשיר שלך.}one{הקבוצות יימחקו לתמיד מהמכשיר שלך.}two{הקבוצות יימחקו לתמיד מהמכשיר שלך.}other{הקבוצות יימחקו לתמיד מהמכשיר שלך.}}</translation>
 <translation id="4010036441048359843">הפעלת ההדגשה</translation>
 <translation id="4010746393007464819">‏יש שדרוג ל-Debian 12‏ (Bookworm)</translation>
-<translation id="4010917659463429001">כדי לגשת לסימניות שלך בנייד, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">אורות הזוהר הצפוני בצבעי סגול וירוק, מעל עיר.</translation>
 <translation id="4011897773956589748">‏בפעם הבאה ש-Gemini יצטרך גישה לחשבון הזה, הוא יבקש ממך רשות שוב.</translation>
 <translation id="4012509903424054869">‏קובצי PDF מומרים באופן אוטומטי כדי שתהיה לך אפשרות לחפש טקסט ולבחור אותו</translation>
@@ -5363,7 +5358,6 @@
 <translation id="4660465405448977105">{COUNT,plural, =1{תמונה}one{# תמונות}two{# תמונות}other{# תמונות}}</translation>
 <translation id="4660540330091848931">שינוי הגודל מתבצע</translation>
 <translation id="4662373422909645029">אין לכלול מספרים בכינוי</translation>
-<translation id="4662788913887017617">‏שיתוף הסימנייה באמצעות ה-iPhone</translation>
 <translation id="4663373278480897665">ניתן להשתמש במצלמה בדף זה</translation>
 <translation id="4665014895760275686">יצרן</translation>
 <translation id="4665446389743427678">כל הנתונים שמאוחסנים על ידי <ph name="SITE" /> יימחקו.</translation>
@@ -5408,7 +5402,6 @@
 <translation id="4688176403504673761">המכשיר הזה מועבר לגרסה קודמת (<ph name="PROGRESS_PERCENT" />) על ידי <ph name="MANAGER" /></translation>
 <translation id="4688870304423708920">‏כדאי לבדוק את החיבור לאינטרנט ולנסות להשתמש ב-Gemini שוב</translation>
 <translation id="4689235506267737042">בחירת העדפות ההדגמה</translation>
-<translation id="4689421377817139245">‏סנכרון הסימנייה עם ה-iPhone</translation>
 <translation id="4690091457710545971">‏&lt;קושחת ה-Wi-Fi של Intel יצרה ארבעה קבצים: csr.lst‏, fh_regs.lst‏, radio_reg.lst‏, monitor.lst.sysmon. שלושת הקבצים הראשונים הם קובצי Dump בינאריים של הרישום, והמערכת של Intel מטפלת בהם מתוך הנחה שהם לא מכילים מידע שמאפשר זיהוי אישי או זיהוי של המכשיר. הקובץ האחרון הוא מעקב ביצוע מהקושחה של Intel. נמחק ממנו מידע שמאפשר זיהוי אישי או זיהוי של המכשיר, אבל הוא גדול מדי מכדי להציג אותו כאן. הקבצים האלה נוצרו בתגובה לבעיות שאירעו לאחרונה בחיבור ה-Wi-Fi של המכשיר שלך, והם ישותפו עם Intel בניסיון לפתור את הבעיות האלה.&gt;</translation>
 <translation id="4691995778017338841">‏רוצה לערוך תמונה עם AI?</translation>
 <translation id="4692342362587775867">ההתראות מהאתר הזה עשויות להפריע</translation>
@@ -5659,7 +5652,6 @@
 <translation id="4864805589453749318">יש לבחור את ההורה שאישר את ההוספה של חשבון בית ספרי</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (הגישה חסומה)</translation>
 <translation id="486505726797718946">הזיכרון נשמר</translation>
-<translation id="4865063548323785458">אפשר לשמור את הסיסמאות ולמלא אותן באופן אוטומטי כדי להיכנס בקלות לאתרים ולאפליקציות</translation>
 <translation id="486635084936119914">פתיחת סוגי קבצים מסוימים באופן אוטומטי לאחר הורדתם</translation>
 <translation id="4867272607148176509">ההורים יכולים לאשר או לחסום אפליקציות, להגדיר מגבלות זמן ולשלוט בגלישה באינטרנט. אפשר להוסיף חשבון בית ספרי בשלב מאוחר יותר כדי לגשת לרוב משאבי בית הספר.</translation>
 <translation id="486796517585164369">· פעילה לאחרונה</translation>
@@ -6737,7 +6729,6 @@
 <translation id="5624120631404540903">ניהול סיסמאות</translation>
 <translation id="5624959475330585145">צריך לבקש אישור לפני שימוש בחיבורים לא מאובטחים</translation>
 <translation id="5625225435499354052">‏עריכה ב-Google Pay</translation>
-<translation id="5626134646977739690">שם:</translation>
 <translation id="5626172233890210551">אפשר גם להשתמש בסיסמה</translation>
 <translation id="5627832140542566187">כיוון המסך</translation>
 <translation id="5628434207686266338">הגדרת סיסמה למכשיר</translation>
@@ -6883,7 +6874,6 @@
 <translation id="5740709157181662145">יציבות ותמיכה בחומרה של <ph name="DEVICE_OS" /></translation>
 <translation id="574104302965107104">שיקוף מסך</translation>
 <translation id="574209121243317957">גובה צליל</translation>
-<translation id="5742787970423162234">אפליקציות אינטרנט ארוזות עם יכולות משופרות. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">כדי להשתמש בביטול הנעילה האוטומטי, קוד האימות יכול להכיל עד 12 ספרות</translation>
 <translation id="5746169159649715125">‏שמירה כקובץ PDF</translation>
 <translation id="5747785204778348146">מפתח - לא יציב</translation>
@@ -7396,6 +7386,7 @@
 <translation id="6096326118418049043">‏שם X.500</translation>
 <translation id="6097480669505687979">אם לא יתפנה שטח, ייתכן שמשתמשים ונתונים יוסרו באופן אוטומטי.</translation>
 <translation id="6097600385983390082">החיפוש הקולי נסגר</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />, <ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">שימוש בכרטיס הזה באייפון</translation>
 <translation id="609942571968311933">הטקסט הועתק מהמכשיר הבא: <ph name="DEVICE_NAME" /></translation>
 <translation id="6099766472403716061">‏יש להתיר תמיד ל-<ph name="HOST" /> לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש.</translation>
@@ -7915,7 +7906,6 @@
 <translation id="6464825623202322042">מכשיר זה</translation>
 <translation id="6465841119675156448">ללא אינטרנט</translation>
 <translation id="6466258437571594570">כדי למנוע הפרעות, אתרים ייחסמו כאשר יבקשו לשלוח התראות</translation>
-<translation id="6466988389784393586">&amp;פתיחת כל הסימניות</translation>
 <translation id="6467230443178397264">סריקה של <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">אופטימיזציה של סרטונים במסך מלא</translation>
 <translation id="6467377768028664108">ל-<ph name="DEVICE_TYPE" /> שלך תהיה אפשרות:</translation>
@@ -8754,6 +8744,7 @@
 <translation id="7030695672997239647">לוחצים לחיצה ימנית על הכרטיסייה ובוחרים באפשרות 'הוספת כרטיסייה לקבוצה' ואז באפשרות 'קבוצה חדשה'</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - מחובר ליציאה טורית</translation>
 <translation id="7033616203784997570">הקלט חייב להכיל עד 62 תווים</translation>
+<translation id="7033731598469029604">פעולות אוטומטיות בדפדפן</translation>
 <translation id="7034692021407794547">‏תחילה מנהל מערכת עם הרשאות 'ניהול חיובים' חייב לקבל את התנאים וההגבלות של הציוד ל-Google Meet בקטע 'ציוד ל-Google Meet' של מסוף ה-Admin.</translation>
 <translation id="70356134210715500">למפתחות הגישה</translation>
 <translation id="7036550011779986598">‏האתר <ph name="RP_ID" /> יצר מפתח גישה לחשבון שלך. מפתחות גישה הם דרך מהירה ובטוחה יותר להיכנס לחשבון, והם נשמרים במנהל הסיסמאות של Google בחשבון <ph name="USER" />. <ph name="LEARN_MORE" /></translation>
@@ -9521,7 +9512,6 @@
 <translation id="7582582252461552277">העדפת הרשת הזו</translation>
 <translation id="7582844466922312471">נתונים סלולריים</translation>
 <translation id="7583948862126372804">מספר</translation>
-<translation id="7584287158780898016">הפעלת התראות על מעקב מחירים</translation>
 <translation id="7585106857920830898">המערכת בודקת אם הקובץ עומד בדרישות של מדיניות האבטחה של הארגון…</translation>
 <translation id="7585490016012953607">סיסמת השחזור נשמרת באופן זמני למשך עד 3 חודשים</translation>
 <translation id="7586498138629385861">‏Chrome ימשיך לפעול כל עוד יש אפליקציות Chrome פתוחות.</translation>
@@ -10685,7 +10675,6 @@
 <translation id="8363277452449582220">אוקיינוס</translation>
 <translation id="8366396658833131068">קישוריות הרשת שלך התחדשה. יש לבחור רשת אחרת או ללחוץ על הכפתור 'המשך' שלמטה כדי להפעיל את יישום הקיוסק.</translation>
 <translation id="8366694425498033255">מקשי בחירה</translation>
-<translation id="8368859634510605990">&amp;פתיחת כל הסימניות</translation>
 <translation id="8370294614544004647">מעבר למצב שינה כשהמחשב הנייד נסגר</translation>
 <translation id="8370419414641876532">לוחצים על 'סיסמאות ומילוי אוטומטי'</translation>
 <translation id="8371695176452482769">דיבור עכשיו</translation>
@@ -11354,7 +11343,6 @@
 <translation id="881799181680267069">הסתרת אחרים</translation>
 <translation id="8818152010000655963">טפט</translation>
 <translation id="8818988764764862764">החלון הועבר שמאלה</translation>
-<translation id="8819155700324279105">מוסיפים שכבה נוספת של הגנה מפני איומים באינטרנט</translation>
 <translation id="8819510664278523111">‏ה-EID של המכשיר הוא <ph name="EID_NUMBER" />, ה-IMEI של המכשיר הוא <ph name="IMEI_NUMBER" /> והמספר הסידורי של המכשיר הוא <ph name="SERIAL_NUMBER" />. המספרים האלה יכולים לשמש להפעלת השירות.</translation>
 <translation id="8820817407110198400">סימניות</translation>
 <translation id="8821045908425223359">‏הגדרת כתובת IP באופן אוטומטי</translation>
@@ -11610,7 +11598,6 @@
 <translation id="8987321822984361516">הדפדפן מנוהל על ידי ארגון, הפרופיל מנוהל על ידי <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987736167266086032">המשך מהנקודה שבה הפסקת</translation>
 <translation id="8987927404178983737">חודש</translation>
-<translation id="8988539543012086784">הדף הזה נשמר בתיקייה <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">‏רענון הסטטוס של שיתוף אינטרנט בין מכשירים (tethering)</translation>
 <translation id="8989779557457435460">שיתוף הכרטיסייה הנוכחית כברירת מחדל</translation>
 <translation id="8990243615717080992">כניסה באמצעות סיסמה או שיטת שחזור אחרת</translation>

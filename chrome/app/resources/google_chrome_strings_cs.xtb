@@ -287,7 +287,6 @@ Pokud tato stránka nefunguje správně, zkuste optimalizaci povolit.</translati
 <translation id="3885770153807205175">Výběr jazyka</translation>
 <translation id="3889417619312448367">Odinstalovat Google Chrome</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
-<translation id="3893985792899396936">Tip pro Chrome: Vyhledávejte pomocí Lens</translation>
 <translation id="3941890832296813527">Chyba instalace: Název souboru instalačního programu je neplatný nebo není podporován.</translation>
 <translation id="395904275706073188">Chráněné stránky nelze číst. Zkuste jinou stránku.</translation>
 <translation id="3968962723676998462">Pokud chcete používat a ukládat data Chromu ve svém účtu <ph name="ACCOUNT_EMAIL" />, zadejte heslovou frázi</translation>
@@ -505,7 +504,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Tato karta využívá další zdroje. Ke zlepšení výkonu ji Chrome nechte deaktivovat.</translation>
 <translation id="6182736845697986886">Instalace se nezdařila kvůli interní chybě serveru s aktualizací.</translation>
-<translation id="6187085551300363958">Tip pro Chrome: Ukládání hesel</translation>
 <translation id="6192058120268468905">Váš účet v Chromu</translation>
 <translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> přidal rozšíření, které může změnit fungování Chromu.
 
@@ -652,7 +650,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7627609214560473136">Chraňte svá data tím, že prohlížeči Chrome povolíte odebírat oprávnění webům, které jste v poslední době nenavštívili.</translation>
 <translation id="7629695634924605473">Pokud vaše hesla někdo prolomí, Chrome vás o tom bude informovat</translation>
 <translation id="7641148173327520642">Administrátor systému nakonfiguroval prohlížeč Google Chrome tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel prohlížeč <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
-<translation id="7641448682796883218">Tip pro Chrome: Vylepšené bezpečné prohlížení</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome toto stahování zablokoval, protože jste vypnuli Bezpečné prohlížení a soubor nelze ověřit</translation>

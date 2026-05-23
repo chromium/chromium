@@ -284,7 +284,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="3885770153807205175">Pemilih bahasa</translation>
 <translation id="3889417619312448367">Nyahpasang Google Chrome</translation>
 <translation id="3892148308691398805">Salin teks</translation>
-<translation id="3893985792899396936">Petua Chrome: Cari Dengan Lens</translation>
 <translation id="3941890832296813527">Ralat pemasangan: Nama fail pemasang tidak sah atau tidak disokong.</translation>
 <translation id="395904275706073188">Halaman yang dilindungi tidak dapat dibaca. Cuba halaman yang lain.</translation>
 <translation id="3968962723676998462">Masukkan ungkapan laluan anda untuk menggunakan dan menyimpan data Chrome dalam akaun anda, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -498,7 +497,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Tab ini menggunakan sumber tambahan. Untuk meningkatkan prestasi anda, benarkan Chrome menjadikan tab tersebut tidak aktif.</translation>
 <translation id="6182736845697986886">Pemasangan gagal akibat ralat dalaman pelayan kemaskinian.</translation>
-<translation id="6187085551300363958">Petua Chrome: Simpan Kata Laluan</translation>
 <translation id="6192058120268468905">Akaun Anda dalam Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> telah menambahkan sambungan yang boleh mengubah cara Chrome berfungsi.
 
@@ -645,7 +643,6 @@ Jika halaman ini tidak berfungsi seperti yang dijangkakan, cuba benarkan pengopt
 <translation id="7627609214560473136">Untuk melindungi data anda, benarkan Chrome mengalih keluar kebenaran daripada laman yang belum anda lawati baru-baru ini.</translation>
 <translation id="7629695634924605473">Chrome akan memberitahu anda sekiranya kata laluan anda terjejas</translation>
 <translation id="7641148173327520642">Pentadbir sistem anda telah mengkonfigurasikan Google Chrome agar membuka <ph name="ALTERNATIVE_BROWSER_NAME" /> untuk mengakses <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Petua Chrome: Penyemakan Imbas Selamat Dipertingkat</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome menyekat muat turun ini kerana anda mematikan Penyemakan Imbas Selamat dan fail tidak dapat disahkan</translation>
@@ -746,6 +743,7 @@ Penanda halaman baharu tidak boleh disimpan dalam akaun anda sehingga anda memad
 <translation id="8555465886620020932">Ralat perkhidmatan: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Cari senarai bahasa</translation>
 <translation id="8575047640889685742">Gunakan <ph name="BEGIN_LINK" />ungkapan laluan<ph name="END_LINK" /> anda sendiri untuk menyulitkan data Chrome dalam Google Account anda. Kaedah pembayaran dan alamat daripada Google Pay tidak akan disulitkan. Sejarah penyemakan imbas daripada Chrome tidak akan disegerakkan.</translation>
+<translation id="8590782867495422699">Buka semula AI Mode Google Search</translation>
 <translation id="8601359445272098721">Baharu! Anda boleh menterjemahkan teks dan imej pada skrin anda dengan memilih butang "terjemahkan skrin"</translation>
 <translation id="8614913330719544658">Google Chrome tidak responsif. Lancarkan semula sekarang?</translation>
 <translation id="861702415419836452">Chrome memerlukan kebenaran untuk mengakses kamera anda untuk membuat peta 3D persekitaran anda</translation>

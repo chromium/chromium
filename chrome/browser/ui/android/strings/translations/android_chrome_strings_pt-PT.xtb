@@ -493,6 +493,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3067505415088964188">O preço é baixo</translation>
 <translation id="3070005020161560471">Traduzir automaticamente</translation>
 <translation id="3072980200212375806">A app <ph name="APP_NAME" /> vai abrir no Chrome. Ao continuar, aceita os <ph name="BEGIN_LINK1" />Termos de Utilização da Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Utilização Adicionais do Google Chrome e ChromeOS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
+<translation id="3080375898390966733">Pesquisar separador com Google Lens</translation>
 <translation id="3080525922482950719">Pode guardar páginas para ler mais tarde ou offline.</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3091010850649238832">Mostrar conteúdos de Copiar e colar</translation>
@@ -550,6 +551,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="3384347053049321195">Partilhar imagem</translation>
 <translation id="3385749568468586663">O Gemini não está disponível no modo de navegação anónima</translation>
 <translation id="3387650086002190359">A transferência de <ph name="FILE_NAME" /> falhou devido a erros do sistema de ficheiros.</translation>
+<translation id="3391311825344469964">Pode gerir as suas janelas no Gestor de janelas do Chrome</translation>
 <translation id="3417835166382867856">Pesquisar separadores</translation>
 <translation id="3430670036890315772">Desativar o bloqueio do perfil remove as suas informações guardadas</translation>
 <translation id="3435575784518354875">Para manter o acesso às suas palavras-passe, exporte-as agora, atualize os Serviços do Google Play e, de seguida, importe-as novamente para o Gestor de Palavras-passe da Google. <ph name="BEGIN_LINK" />Veja as instruções completas<ph name="END_LINK" />.</translation>
@@ -1015,6 +1017,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, separador de navegação anónima a partilhar fixado</translation>
 <translation id="5375374982898812658">Vai perder imediatamente o acesso ao grupo de separadores "<ph name="GROUP_NAME" />", e este vai ser eliminado de todos os seus dispositivos</translation>
 <translation id="5375577065097716013">Pesquisar imagem com Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Guardar e partilhar</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital. Continue apenas se confiar neste site. Os sites perigosos podem fazer com que revele informações como o seu nome legal ou número de ID.</translation>
 <translation id="5395376160638294582">Certifique-se de que pode sempre usar os dados do Chrome na sua Conta Google</translation>
 <translation id="539881862970320163">Palavra-passe forte sugerida. Teclado oculto.</translation>
@@ -1069,6 +1072,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5628604359369369630">Não lido – Disponível offline</translation>
 <translation id="5631483240431073854">Faça a gestão dos separadores abertos</translation>
 <translation id="5632485077360054581">Mostrar-me como</translation>
+<translation id="5639031457248936693">O Website <ph name="WEBSITE" /> precisa da sua autorização para executar a extensão <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Com sessão iniciada como <ph name="USER_NAME" />. Erro da Conta Google. Abre as definições.</translation>
 <translation id="5641456720590409793">O <ph name="BEGIN_LINK1" />histórico de pesquisas<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outras formas de atividade<ph name="END_LINK2" /> podem ser guardados na sua Conta Google</translation>
 <translation id="5648166631817621825">Últimos 7 dias</translation>
@@ -1098,6 +1102,7 @@ A sua Conta Google pode ter outras formas do histórico de navegação, como pes
 <translation id="5763514718066511291">Toque para copiar o URL desta aplicação.</translation>
 <translation id="5765517223145864268">Conte-nos a sua experiência. Em alternativa, <ph name="BEGIN_LINK" />altere as definições<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Dados não importantes</translation>
+<translation id="5788665823391532892">Comunicar um problema…</translation>
 <translation id="5793665092639000975">A utilizar <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" />.</translation>
 <translation id="5797949256525811424">Tópico bloqueado</translation>
 <translation id="580893287573699959">Faça a gestão dos tópicos e sites que lhe interessam</translation>
@@ -1875,6 +1880,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{O Chrome encontrou uma palavra-passe fraca que pode melhorar}other{O Chrome encontrou # palavras-passe fracas que pode melhorar}}</translation>
 <translation id="8766529642647037772">Quer criar um link realçado como este?</translation>
 <translation id="8769783688897433958">Ver informações e autorizações do site</translation>
+<translation id="8786293874273448556">O Website <ph name="WEBSITE" /> precisa da sua autorização para executar <ph name="COUNT" /> extensões</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado.</translation>
 <translation id="8790193082819560975">Toque para pesquisar opções de compra do produto num novo separador.</translation>
 <translation id="8798449543960971550">Lidas</translation>

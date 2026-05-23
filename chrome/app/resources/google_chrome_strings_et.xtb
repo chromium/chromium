@@ -286,7 +286,6 @@ Kui see leht ei tööta ootuspäraselt, proovige optimeerimine lubada.</translat
 <translation id="3885770153807205175">Keelevalija</translation>
 <translation id="3889417619312448367">Google Chrome'i desinstallimine</translation>
 <translation id="3892148308691398805">Kopeeri tekst</translation>
-<translation id="3893985792899396936">Chrome'i nõuanne: otsige Lensiga</translation>
 <translation id="3941890832296813527">Installimisviga: installiprogrammi failinimi on sobimatu või seda ei toetata.</translation>
 <translation id="395904275706073188">Kaitstud lehti ei saa lugeda. Proovige teist lehte.</translation>
 <translation id="3968962723676998462">Sisestage pääsukood, et Chrome'i andmeid kasutada ja oma kontole <ph name="ACCOUNT_EMAIL" /> salvestada</translation>
@@ -502,7 +501,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome'i beetaversioon</translation>
 <translation id="6180522807229584611">See vaheleht kasutab lisaressursse. Laske Chrome'il see toimivuse täiustamiseks interaktiivseks teha.</translation>
 <translation id="6182736845697986886">Installimine ebaõnnestus, kuna värskendusserveris ilmnes sisemine viga.</translation>
-<translation id="6187085551300363958">Chrome'i nõuanne: salvestage paroolid</translation>
 <translation id="6192058120268468905">Teie konto Chrome'is</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> lisas laienduse, mis võib muuta Chrome’i tööpõhimõtteid.
 
@@ -649,7 +647,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="7627609214560473136">Andmete kaitsmiseks laske Chrome'il eemaldada load saitidelt, mida te pole hiljuti külastanud.</translation>
 <translation id="7629695634924605473">Chrome annab teile teada, kui teie paroolid ohtu satuvad</translation>
 <translation id="7641148173327520642">Teie süsteemiadministraator on seadistanud Google Chrome'i avama brauseri <ph name="ALTERNATIVE_BROWSER_NAME" />, et lehele <ph name="TARGET_URL_HOSTNAME" /> juurde pääseda.</translation>
-<translation id="7641448682796883218">Chrome'i nõuanne: täiustatud ohutu sirvimine</translation>
 <translation id="7649070708921625228">Abi</translation>
 <translation id="7651907282515937834">Chrome Enterprise'i logo</translation>
 <translation id="76531479118467370">Chrome blokeeris selle allalaadimise, kuna lülitasite Google'i ohutu sirvimise välja ja faili ei saa kinnitada</translation>

@@ -287,7 +287,6 @@
 <translation id="3885770153807205175">ભાષા પિકર</translation>
 <translation id="3889417619312448367">Google Chromeને અનઇન્સ્ટૉલ કરો</translation>
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
-<translation id="3893985792899396936">Chrome ટિપ: Lens વડે શોધો</translation>
 <translation id="3941890832296813527">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલરની ફાઇલનું નામ અમાન્ય અથવા અનસપોર્ટેડ છે.</translation>
 <translation id="395904275706073188">સંરક્ષિત પેજ વાંચી શકાતા નથી. કોઈ અલગ પેજ અજમાવી જુઓ.</translation>
 <translation id="3968962723676998462">તમારા <ph name="ACCOUNT_EMAIL" /> એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે તમારો પાસફ્રેઝ દાખલ કરો</translation>
@@ -505,7 +504,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome બીટા</translation>
 <translation id="6180522807229584611">આ ટૅબ વધારાના સંસાધનોનો ઉપયોગ કરી રહ્યું છે. તમારા પર્ફોર્મન્સને બહેતર બનાવવા માટે, Chromeને તેને નિષ્ક્રિય કરવા દો.</translation>
 <translation id="6182736845697986886">કોઈ અપડેટ સર્વરની આંતરિક ભૂલને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
-<translation id="6187085551300363958">Chrome ટિપ: પાસવર્ડ સાચવો</translation>
 <translation id="6192058120268468905">Chromeમાં તમારું એકાઉન્ટ</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> દ્વારા કોઈ એક્સ્ટેન્શન ઉમેરવામાં આવ્યું છે, જેને કારણે Chromeની કામ કરવાની રીતમાં ફેરફાર થઈ શકે છે.
 
@@ -652,7 +650,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7627609214560473136">તમારા ડેટાને સુરક્ષિત કરવા માટે, Chromeને તમે તાજેતરમાં મુલાકાત લીધી ન હોય તેવી સાઇટમાંથી પરવાનગીઓ દૂર કરવા દો.</translation>
 <translation id="7629695634924605473">Chrome વડે તમે તમારા પાસવર્ડમાં ક્યારેક ચેડાં થાય તો તેના વિશે જાણકારી મેળવી શકો છો</translation>
 <translation id="7641148173327520642">તમારા સિસ્ટમ વ્યવસ્થાપકે <ph name="TARGET_URL_HOSTNAME" />ને ઍક્સેસ કરવા Google Chromeને <ph name="ALTERNATIVE_BROWSER_NAME" /> ખોલવા માટે ગોઠવેલું છે.</translation>
-<translation id="7641448682796883218">Chrome ટિપ: Safe Browsingમાં વધારેલી સુરક્ષા</translation>
 <translation id="7649070708921625228">સહાય</translation>
 <translation id="7651907282515937834">Chrome એન્ટરપ્રાઇઝ લૉગો</translation>
 <translation id="76531479118467370">Chrome દ્વારા આ ડાઉનલોડ બ્લૉક કરવામાં આવ્યું કારણ કે તમે Safe Browsingની સુવિધા બંધ કરેલી છે અને ફાઇલની ચકાસણી કરી શકાતી નથી</translation>
@@ -753,6 +750,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8555465886620020932">સેવામાં ભૂલ: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">ભાષાની સૂચિ શોધો</translation>
 <translation id="8575047640889685742">તમારા Google એકાઉન્ટમાંનો Chromeનો બધો ડેટા એન્ક્રિપ્ટ કરવા માટે તમારા <ph name="BEGIN_LINK" />પોતાના પાસફ્રેઝ<ph name="END_LINK" />નો ઉપયોગ કરો. Google Payમાંથી ચુકવણી પદ્ધતિઓ અને સરનામા એન્ક્રિપ્ટ કરવામાં આવશે નહીં. Chromeમાંનો બ્રાઉઝિંગ ઇતિહાસ સિંક કરવામાં આવશે નહીં.</translation>
+<translation id="8590782867495422699">Google Searchનો AI મોડ ફરીથી ખોલો</translation>
 <translation id="8601359445272098721">નવું! "સ્ક્રીનનો અનુવાદ કરો" બટન પસંદ કરીને તમે તમારી સ્ક્રીન પર ટેક્સ્ટ અને છબીઓનો અનુવાદ કરી શકો છો</translation>
 <translation id="8614913330719544658">Google Chrome પ્રતિસાદ આપતું નથી. હવે ફરીથી લોંચ કરીએ?</translation>
 <translation id="861702415419836452">તમારા આસપાસનો 3D નકશો બનાવવા માટે, Chromeને તમારા કૅમેરાના ઍક્સેસની પરવાનગી જરૂરી છે</translation>

@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">Estas páxinas están pensadas para os programadores de Chrome, polo que é posible que non se manteñan nin proben activamente. Para habilitalas, vai a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fai clic no botón para activar as páxinas de depuración e, a continuación, volve a esta páxina.</translation>
 <translation id="3875312571075912821">Configura o teu firewall ou o teu antivirus para permitir o acceso
           de Chrome á rede.</translation>
+<translation id="3893985792899396936">Consello de Chrome: Fai buscas con Lens</translation>
 <translation id="4949828774841497663">Vai a Aplicacións &gt; Configuración do sistema &gt; Rede, selecciona a
           rede activa, fai clic no botón Detalles e anula a selección de calquera proxy
           que poida estar seleccionado.</translation>
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           e asegúrate de que a túa configuración estea establecida en "sen proxy" ou en "directo".</translation>
+<translation id="6187085551300363958">Consello de Chrome: Garda os contrasinais</translation>
 <translation id="6341737370356890233">Accede ao
         menú de Chrome &gt;
         <ph name="SETTINGS_TITLE" />
@@ -43,6 +45,7 @@
           Rede e Internet &gt; Proxy
           e anula a selección de Automatically detect settings (Detectar automaticamente a configuración).</translation>
 <translation id="7230956101631259640">Estás vendo unha páxina de Chrome segura</translation>
+<translation id="7641448682796883218">Consello de Chrome: Utiliza Navegación segura mellorada</translation>
 <translation id="8232971017369963250">Chrome creouse grazas ao proxecto de código aberto <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome tamén se creou grazas a outro <ph name="BEGIN_LINK_OSS" />software de código aberto<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome está tentando modificar a configuración para completar os métodos de pago.</translation>

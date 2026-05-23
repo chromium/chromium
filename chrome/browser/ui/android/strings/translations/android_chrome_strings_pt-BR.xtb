@@ -493,6 +493,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3067505415088964188">Preço baixo</translation>
 <translation id="3070005020161560471">Traduzir automaticamente</translation>
 <translation id="3072980200212375806">O app <ph name="APP_NAME" /> será aberto no Chrome. Ao continuar, você concorda com os <ph name="BEGIN_LINK1" />Termos de Serviço do Google<ph name="END_LINK1" /> e os <ph name="BEGIN_LINK2" />Termos de Serviço adicionais do Google Chrome e do ChromeOS<ph name="END_LINK2" />. A <ph name="BEGIN_LINK3" />Política de Privacidade<ph name="END_LINK3" /> também se aplica.</translation>
+<translation id="3080375898390966733">Pesquisar guia com o Google Lens</translation>
 <translation id="3080525922482950719">Você pode salvar páginas para ler depois ou off-line</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3091010850649238832">Mostrar conteúdo da área de transferência</translation>
@@ -550,6 +551,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3384347053049321195">Compartilhar imagem</translation>
 <translation id="3385749568468586663">O Gemini não está disponível no modo de navegação anônima</translation>
 <translation id="3387650086002190359">Falha no download de <ph name="FILE_NAME" /> devido a erros do sistema de arquivos.</translation>
+<translation id="3391311825344469964">Você pode gerenciar suas janelas no Gerenciador de janelas do Chrome</translation>
 <translation id="3417835166382867856">Pesquisar guias</translation>
 <translation id="3430670036890315772">Se o bloqueio de perfil for desativado, as informações salvas serão removidas</translation>
 <translation id="3435575784518354875">Para manter o acesso às suas senhas, exporte-as agora, atualize o Google Play Services e importe-as de volta ao Gerenciador de senhas do Google. <ph name="BEGIN_LINK" />Ver instruções completas<ph name="END_LINK" />.</translation>
@@ -1071,6 +1073,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5628604359369369630">Não lidas - Disponíveis off-line</translation>
 <translation id="5631483240431073854">Gerenciar guias abertas</translation>
 <translation id="5632485077360054581">Saiba como</translation>
+<translation id="5639031457248936693">O <ph name="WEBSITE" /> precisa de sua permissão para executar <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Login feito como <ph name="USER_NAME" />. Erro na Conta do Google. Abre as configurações.</translation>
 <translation id="5641456720590409793">O <ph name="BEGIN_LINK1" />histórico de pesquisa<ph name="END_LINK1" /> e <ph name="BEGIN_LINK2" />outras formas de atividade<ph name="END_LINK2" /> podem ser salvos na sua Conta do Google.</translation>
 <translation id="5648166631817621825">Últimos sete dias</translation>
@@ -1878,6 +1881,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{O Chrome encontrou uma senha fraca que pode ser melhorada}one{O Chrome encontrou # senha fraca que pode ser melhorada}other{O Chrome encontrou # senhas fracas que podem ser melhoradas}}</translation>
 <translation id="8766529642647037772">Criar um link destacado como este?</translation>
 <translation id="8769783688897433958">Ver informações e permissões do site</translation>
+<translation id="8786293874273448556">O <ph name="WEBSITE" /> precisa da sua permissão para executar <ph name="COUNT" /> extensões</translation>
 <translation id="8788265440806329501">O histórico de navegação está fechado</translation>
 <translation id="8790193082819560975">Toque para pesquisar opções de compra do produto em uma nova guia.</translation>
 <translation id="8798449543960971550">Lidas</translation>

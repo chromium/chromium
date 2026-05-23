@@ -2226,6 +2226,7 @@ Se esta política for definida, o usuário não poderá modificar o valor.
 
 Se esta política não for definida, a tela de privacidade ficará desativada inicialmente, mas poderá ser controlada pelo usuário.</translation>
 <translation id="2413899611035194909">Mostrar opções de acessibilidade no menu da bandeja do sistema na tela de login</translation>
+<translation id="2414712434655365347">Configurar a injeção de cabeçalho HTTP para padrões de URL específicos</translation>
 <translation id="2415715982424988916">Explorar (compatível desde a versão 91)</translation>
 <translation id="2420958105721932612">Especifica como um app é instalado. AVAILABLE: o app não será instalado automaticamente, mas o usuário poderá fazer isso de forma manual. Se a política não for especificada, esse será o valor padrão. FORCE_INSTALLED: o app será instalado automaticamente, e o usuário não poderá desinstalá-lo. BLOCKED: o app fica bloqueado e não pode ser instalado. Se tiver sido instalado em uma política anterior, ele será desinstalado.</translation>
 <translation id="2421400544595297401">Não permitir o acesso de usuários não afiliados aos apps Android</translation>
@@ -8303,6 +8304,25 @@ Na versão 114 e mais recentes, esta política é opcional quando a <ph name="DO
 <translation id="624219423122512710">Ações do navegador inativo</translation>
 <translation id="6244061205361004687">Permitir que o usuário desconecte ou modifique uma VPN de forma manual</translation>
 <translation id="6244210204546589761">URLs que devem ser abertos na inicialização</translation>
+<translation id="6245828368576563662">Esta política permite definir uma lista de regras para injetar cabeçalhos HTTP personalizados em solicitações da web que correspondem a padrões de URL específicos. Os cabeçalhos definidos por esta política têm precedência sobre aqueles inicialmente presentes na solicitação, bem como sobre as tentativas de modificações feitas por usuários ou extensões.
+
+Um caso de uso comum para essa política é aplicar controles de acesso de locatário injetando cabeçalhos personalizados (por exemplo, <ph name="EXAMPLE_HEADER_NAME" />).
+
+A política aceita uma lista de regras. Cada regra contém:
+
+* <ph name="PATTERNS_KEY" />: uma lista de padrões de URL para correspondência. Confira como formatar um padrão de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: uma lista de objetos que representam cabeçalhos a serem injetados. Cada um contém:
+
+  * <ph name="HEADER_NAME_KEY" />: o nome do cabeçalho a ser injetado.
+
+  * <ph name="HEADER_VALUE_KEY" />: o valor do cabeçalho a ser injetado.
+
+Se várias regras corresponderem a uma solicitação, serão aplicados os cabeçalhos de todas as regras correspondentes. Se houver vários cabeçalhos com o mesmo nome, será aplicado aquele que tiver o padrão de URL mais específico. Se os padrões forem igualmente específicos, será aplicado aquele que estiver por último na lista.
+
+Os nomes de cabeçalho precisam estar em conformidade com a RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Os valores de cabeçalho não podem conter símbolos NUL, CR ou LF. Os cabeçalhos individuais não podem exceder 8 KB. Cabeçalhos e padrões de URL inválidos serão ignorados.
+
+Esta política é limitada a um total de 500 padrões de URL em todas as regras. Cada regra pode conter no máximo 20 cabeçalhos. Padrões e cabeçalhos além desses limites serão ignorados.</translation>
 <translation id="624595269193747921">Se a pesquisa de impressora correspondente é limitada ou não a um conjunto específico de impressoras.</translation>
 <translation id="6246290059248303618">Mostrar controles de mídia para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos na rede local</translation>
 <translation id="6247316685259031374">Esta política controla o sandbox do processo de áudio.

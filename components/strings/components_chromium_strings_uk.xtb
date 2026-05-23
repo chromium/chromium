@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="130631256467250065">Ваші зміни почнуть діяти під час наступного перезапуску пристрою.</translation>
+<translation id="1965068424387304464">Порада щодо Chromium: зберігайте паролі</translation>
 <translation id="261308610302996111">Відкрийте
           меню Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -14,6 +15,7 @@
 <translation id="3064346599913645280">Ви переглядаєте безпечну сторінку Chromium</translation>
 <translation id="3255926992597692024">Chromium намагається змінити параметри заповнення способів оплати.</translation>
 <translation id="358997566136285270">Логотип Chromium</translation>
+<translation id="3837584850181228767">Порада щодо Chromium: увімкніть Безпечний перегляд із розширеним захистом</translation>
 <translation id="4050599136622776556">Chromium намагається змінити способи оплати.</translation>
 <translation id="4365115785552740256">Chromium став можливим завдяки проекту з відкритим кодом <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> та іншому <ph name="BEGIN_LINK_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_OSS" />.</translation>
 <translation id="4622039161600275920">Веб-переглядач Chromium заблокував цю сторінку</translation>
@@ -46,4 +48,5 @@
           щоб покращити стабільність.</translation>
 <translation id="8597726643333341451">Ви переглядаєте безпечну сторінку Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium було неправильно закрито.</translation>
+<translation id="9183331186620388872">Підказка щодо Chromium: шукайте за допомогою Об’єктива</translation>
 </translationbundle>

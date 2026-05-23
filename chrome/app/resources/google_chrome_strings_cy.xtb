@@ -288,7 +288,6 @@ Os nad yw'r dudalen hon yn gweithio fel y disgwylir, rhowch gynnig ar ganiatáu 
 <translation id="3885770153807205175">Dewisydd iaith</translation>
 <translation id="3889417619312448367">Dadosod Google Chrome</translation>
 <translation id="3892148308691398805">Copïo'r testun</translation>
-<translation id="3893985792899396936">Awgrym Chrome: Chwilio â Lens</translation>
 <translation id="3941890832296813527">Gwall gosod: Mae enw ffeil y gosodwr yn annilys neu heb ei gefnogi.</translation>
 <translation id="395904275706073188">Nid oes modd darllen tudalennau gwarchodedig. Rhowch gynnig ar dudalen wahanol.</translation>
 <translation id="3968962723676998462">Rhowch eich cyfrin-ymadrodd i'w ddefnyddio a chadwch ddata Chrome yn eich cyfrif, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -506,7 +505,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Mae'r tab hwn yn defnyddio adnoddau ychwanegol. Er mwyn gwella eich perfformiad, gadewch i Chrome ei wneud yn anweithredol.</translation>
 <translation id="6182736845697986886">Methodd y gosodiad oherwydd gwall mewnol yn y gweinydd diweddaru.</translation>
-<translation id="6187085551300363958">Awgrym Chrome: Cadw Cyfrineiriau</translation>
 <translation id="6192058120268468905">Eich Cyfrif yn Chrome</translation>
 <translation id="6220551899604141979">Mae <ph name="PARTNER_NAME" /> wedi ychwanegu estyniad a allai newid y ffordd y mae Chrome yn gweithio.
 
@@ -653,7 +651,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="7627609214560473136">I ddiogelu eich data, gadewch i Chrome dynnu caniatadau o wefannau nad ydych wedi ymweld â nhw yn ddiweddar.</translation>
 <translation id="7629695634924605473">Mae Chrome yn gadael i chi wybod a yw'ch cyfrineiriau byth wedi'u darganfod</translation>
 <translation id="7641148173327520642">Mae gweinyddwr eich system wedi ffurfweddu Google Chrome i agor <ph name="ALTERNATIVE_BROWSER_NAME" /> i gael mynediad at <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Awgrym Chrome: Gwell Pori'n Ddiogel</translation>
 <translation id="7649070708921625228">Cymorth</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="76531479118467370">Gwnaeth Chrome rwystro'r lawrlwythiad hwn oherwydd i chi ddiffodd Pori'n Ddiogel ac nid oes modd dilysu'r ffeil</translation>

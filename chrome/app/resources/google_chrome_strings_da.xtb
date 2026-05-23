@@ -284,7 +284,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="3885770153807205175">Sprogvælger</translation>
 <translation id="3889417619312448367">Afinstaller Google Chrome</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
-<translation id="3893985792899396936">Tip til Chrome: Søg med Lens</translation>
 <translation id="3941890832296813527">Installationsfejl: Installationens filnavn er ugyldigt eller understøttes ikke.</translation>
 <translation id="395904275706073188">Beskyttede sider kan ikke læses. Prøv en anden side.</translation>
 <translation id="3968962723676998462">Angiv din adgangssætning for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -498,7 +497,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6180522807229584611">Denne fane bruger ekstra ressourcer. Du kan forbedre ydeevnen ved at give Chrome tilladelse til at gøre den inaktiv.</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
-<translation id="6187085551300363958">Tip til Chrome: Gem adgangskoder</translation>
 <translation id="6192058120268468905">Din konto i Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> har tilføjet en udvidelse, der kan ændre den måde, Chrome fungerer på.
 
@@ -645,7 +643,6 @@ Hvis denne side ikke fungerer som forventet, kan du prøve at tillade optimering
 <translation id="7627609214560473136">Du kan beskytte dine data ved at lade Chrome fjerne tilladelser fra websites, du ikke har besøgt for nylig.</translation>
 <translation id="7629695634924605473">Chrome giver dig besked, hvis dine adgangskoder kompromitteres</translation>
 <translation id="7641148173327520642">Din systemadministrator har konfigureret Google Chrome til at åbne <ph name="ALTERNATIVE_BROWSER_NAME" /> for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Tip til Chrome: Udvidet beskyttet browsing</translation>
 <translation id="7649070708921625228">Hjælp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="76531479118467370">Chrome har blokeret denne download, fordi du har deaktiveret Beskyttet browsing, og filen ikke kan verificeres</translation>
@@ -746,6 +743,7 @@ Nye bogmærker kan ikke gemmes på din konto, før du sletter nogle. Hvis du log
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Søg i sproglisten</translation>
 <translation id="8575047640889685742">Brug din <ph name="BEGIN_LINK" />egen adgangssætning<ph name="END_LINK" /> til at kryptere alle Chrome-data på din Google-konto. Betalingsmetoder og adresser fra Google Pay krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.</translation>
+<translation id="8590782867495422699">Åbn AI-tilstand i Google Søgning igen</translation>
 <translation id="8601359445272098721">Nyhed! Du kan oversætte både tekst og billeder på din skærm ved at vælge knappen "Oversæt skærmen"</translation>
 <translation id="8614913330719544658">Google Chrome svarer ikke. Vil du genstarte nu?</translation>
 <translation id="861702415419836452">Chrome skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>

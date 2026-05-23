@@ -1015,6 +1015,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, prikvačena anonimna kartica koja dijeli sadržaj</translation>
 <translation id="5375374982898812658">Odmah ćete izgubiti pristup grupi kartica <ph name="GROUP_NAME" /> i ona će se izbrisati sa svih vaših uređaja</translation>
 <translation id="5375577065097716013">Pretraži sliku pomoću Google objektiva <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Spremi i podijeli</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> želi upotrijebiti osobne podatke iz vašeg digitalnog novčanika. Nastavite samo ako smatrate da je ta web-lokacija pouzdana. Opasne web-lokacije mogu vas na prijevaru navesti da otkrijete podatke kao što su vaše puno ime i prezime ili broj osobne iskaznice.</translation>
 <translation id="5395376160638294582">Provjerite možete li uvijek upotrebljavati podatke iz Chromea na svom Google računu</translation>
 <translation id="539881862970320163">Predložena je snažna zaporka. Tipkovnica je skrivena.</translation>
@@ -1098,6 +1099,7 @@ Vaš Google račun može sadržavati druge oblike povijesti pregledavanja, na pr
 <translation id="5763514718066511291">Dodirnite da biste kopirali URL za tu aplikaciju</translation>
 <translation id="5765517223145864268">Podijelite svoj doživljaj s nama. Možete i <ph name="BEGIN_LINK" />promijeniti postavke<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Nevažni podaci</translation>
+<translation id="5788665823391532892">Prijavite problem...</translation>
 <translation id="5793665092639000975">Upotrebljava se <ph name="SPACE_USED" /> od <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Tema je blokirana</translation>
 <translation id="580893287573699959">Upravljajte temama i web-lokacijama koja vas zanimaju</translation>

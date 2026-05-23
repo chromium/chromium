@@ -136,6 +136,7 @@
 <translation id="1450170672351507823">A proteção padrão está ativada. Para ter ainda mais segurança, use a Proteção reforçada.</translation>
 <translation id="1455660774629812862">Não ocultar</translation>
 <translation id="1456545332132818232">Avaliações do produto <ph name="PRODUCT_NAME" />, <ph name="STARS" /> de <ph name="MAX_STARS" />, em <ph name="DOMAIN" /></translation>
+<translation id="1457205318287377173"><ph name="RESPECT_PRIVACY" /> e peça permissão antes de gravar ou incluir alguém em uma conversa Live.</translation>
 <translation id="1460751212339734034">Poupe tempo digitando menos</translation>
 <translation id="1466035273550360103">Não há guias abertas</translation>
 <translation id="1469381646033328562">Sua conta é gerenciada pelo seu familiar responsável.
@@ -330,6 +331,7 @@
 <translation id="2078437078822043850">Role a tela para a direita para navegar no modo de navegação anônima.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
 <translation id="2085876078937250610">Salvar…</translation>
+<translation id="2089180529062519164">Ativar microfone</translation>
 <translation id="2096239473850415494">Falha no download</translation>
 <translation id="2096716221239095980">Excluir todos os dados</translation>
 <translation id="2104436223719117661">Pesquisas em alta</translation>
@@ -517,6 +519,7 @@
 <translation id="2766178952536179189">{COUNT,plural, =1{Adicione até 1 imagem}one{Adicione até {COUNT} imagem}other{Adicione até {COUNT} imagens}}</translation>
 <translation id="2772667768515195373">Os endereços salvos podem ser usados em vários produtos do Google. Esse endereço foi salvo na sua conta <ph name="USER_EMAIL" />.</translation>
 <translation id="2773344962924806829">Notificações por e-mail</translation>
+<translation id="2773639432667090013">As gravações das suas interações com o modo Live e o conteúdo que você compartilha com ele são salvos e tratados conforme <ph name="PRIVACY_NOTICE" />. <ph name="LEARN_MORE" /></translation>
 <translation id="2781331604911854368">Ativado</translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783161812871838616">Pedir site para computador</translation>
@@ -858,6 +861,7 @@
 <translation id="4021447724486050609">Atualize o navegador</translation>
 <translation id="4021931095789478915">Adicionar ${url} à Lista de leitura</translation>
 <translation id="4028871427853484857">Salvar na conta…</translation>
+<translation id="4031508004313556822">Respeite a privacidade das outras pessoas</translation>
 <translation id="4038354071007134711">Nenhum app deste dispositivo pode abrir o arquivo.</translation>
 <translation id="4042870976416480368">Buscar na página</translation>
 <translation id="4045441967987592849">Reabrir</translation>
@@ -1513,6 +1517,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6241132809279377987">Aproveite mais recursos no seu iPhone com os apps do Google</translation>
 <translation id="6247557882553405851">Gerenciador de Senhas do Google</translation>
 <translation id="6251835855431997163">Preencher <ph name="VALUE" /> automaticamente</translation>
+<translation id="6253686838150111720">Fazer login em <ph name="URL" /></translation>
 <translation id="6254066287920239840">Abrir links no app em vez de abrir no navegador.</translation>
 <translation id="6259928806013786178">Falha no modo de leitura</translation>
 <translation id="6268773951964630964">Pesquisar imagem copiada</translation>
@@ -2128,6 +2133,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8319282042900445670">Lembrete definido para <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Atividade recente</translation>
 <translation id="8325455175867928593">Ocultar "Avaliações com base nos seus interesses"</translation>
+<translation id="8333459276976141586">O Gemini Live vai usar seu microfone. Toque no botão Live para ativar o microfone. Para desativar, toque no botão de parar ou feche o Gemini.</translation>
 <translation id="833647236762414178">Crie, salve e gerencie suas senhas e chaves de acesso para fazer login em sites e apps com facilidade. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />.</translation>
 <translation id="8343993175958086504">Faça backup e use seus dados em qualquer dispositivo.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Conclua mais 1 tarefa para avançar de nível}one{Conclua mais {count} tarefa para avançar de nível}other{Conclua mais {count} tarefas para avançar de nível}}</translation>
@@ -2204,6 +2210,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8571019948162152515">Excluir "<ph name="FILENAME" />"?</translation>
 <translation id="8571213806525832805">Últimas quatro semanas</translation>
 <translation id="8577056989960190117">Preencher automaticamente o ano de validade <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Use o Live do Gemini</translation>
 <translation id="8587001564479545614">Crie um PIN de recuperação</translation>
 <translation id="8588404856427128947">Desativada</translation>
 <translation id="8590286732816598906">Grupo de guias, <ph name="GROUP_TITLE" />, menu.</translation>
@@ -2278,6 +2285,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="8803526663383843427">Quando ativado</translation>
 <translation id="8803639129939845298">Seguro</translation>
 <translation id="8813277370772331957">Lembrar mais tarde</translation>
+<translation id="8814308045751067027">Para usar o Live, permita que o Chrome acesse o microfone nas configurações</translation>
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="881559332211266856">Atualizar número de reparação</translation>
 <translation id="8817524703470045896">Monitore os preços e receba alertas quando houver redução em algum site</translation>

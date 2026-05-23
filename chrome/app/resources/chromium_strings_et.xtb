@@ -86,7 +86,6 @@
 <translation id="193439633299369377">Chromium OS tuleb värskenduse rakendamiseks taaskäivitada.</translation>
 <translation id="1951406923938785464">Chromium blokeeris selle allalaadimise, kuna seda faili tüüpi ei laadita sageli alla ja see võib olla ohtlik</translation>
 <translation id="1953553007165777902">Allalaadimine … <ph name="MINUTE" /> minut(it) jäänud</translation>
-<translation id="1965068424387304464">Chromiumi nõuanne: salvestage paroolid</translation>
 <translation id="1966382378801805537">Chromium ei saa määrata ega seadistada vaikebrauserit</translation>
 <translation id="1990262977744080398">Vaadake, miks Chromium blokeerib mõned failid ja avaneb uuel vahelehel</translation>
 <translation id="1999715455684970349">Hoiab teie Chromiumi tarkvara ajakohasena. Kui see teenus keelatakse või peatatakse, ei hoita teie Chromiumi tarkvara ajakohasena, mis tähendab, et tekkida võivaid turvaauke ei saa parandada ja funktsioonid ei pruugi töötada. See teenus desinstallib end ise, kui Chromiumi tarkvara seda ei kasuta.</translation>
@@ -262,7 +261,6 @@
 <translation id="3802055581630249637">Chromium eellaadib lehed, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
 <translation id="3810973564298564668">Halda</translation>
 <translation id="3823384748599722168">Salvestatud paroolide kasutamiseks skannige QR-kood, laadige alla Chromium iOS-ile ja logige sisse oma Google’i kontole.</translation>
-<translation id="3837584850181228767">Chromiumi nõuanne: täiustatud ohutu sirvimine</translation>
 <translation id="3846683726093018685">**Kokkuvõte.** Kirjelda ühes alla 30-sõnalises lauses ekraanipildil oleva sisu põhiteemat ja eesmärki.
 
           **Soovita küsimusi.** Genereeri täpploend 3–5 mõtlemapaneva küsimusega, mille kasutaja võiks ekraanipildi paremaks mõistmiseks esitada. Nende küsimuste hulgas peaks olema vähemalt üks selline, mis käsitleb konkreetselt visuaalset objekti, selle kujundust või paigutust.</translation>
@@ -749,7 +747,6 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="9148058034647219655">Välju</translation>
 <translation id="9155105544013854680">Jätkake sealt, kus pooleli jäite: Chromium saab teie vahelehed taastada iga kord, kui brauseri uuesti käivitate. Selle sisselülitamiseks avage</translation>
 <translation id="9158494823179993217">Teie süsteemiadministraator on konfigureerinud Chromiumi avama alternatiivset brauserit, et saada juurdepääs lehele <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9183331186620388872">Chromiumi nõuanne: otsige Lensiga</translation>
 <translation id="9185526690718004400">Taaskäivitage &amp;Chromiumi värskendamiseks</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Isikupärastage Chromium</translation>

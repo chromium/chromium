@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">കുറഞ്ഞ നിരക്ക്</translation>
 <translation id="3070005020161560471">സ്വയമേവ വിവർത്തനം ചെയ്യുക</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome-ൽ തുറക്കും. തുടരുന്നതിലൂടെ, നിങ്ങൾ <ph name="BEGIN_LINK1" />Google സേവന നിബന്ധനകളും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS അധിക സേവന നിബന്ധനകളും<ph name="END_LINK2" /> അംഗീകരിക്കുന്നു. <ph name="BEGIN_LINK3" />സ്വകാര്യതാ നയവും<ph name="END_LINK3" /> ബാധകമാണ്.</translation>
+<translation id="3080375898390966733">Google Lens ഉപയോഗിച്ച് ടാബ് തിരയുക</translation>
 <translation id="3080525922482950719">പിന്നീട് അല്ലെങ്കിൽ ഓഫ്‌ലൈനിൽ വായിക്കുന്നതിന് നിങ്ങൾക്ക് പേജുകൾ സംരക്ഷിക്കാനാകും</translation>
 <translation id="3087734570205094154">താഴെ</translation>
 <translation id="3091010850649238832">ക്ലിപ്പ്ബോർഡിലെ ഉള്ളടക്കങ്ങൾ കാണിക്കുക</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">ചിത്രം പങ്കിടുക</translation>
 <translation id="3385749568468586663">Gemini അദൃശ്യ മോഡിൽ ലഭ്യമല്ല</translation>
 <translation id="3387650086002190359">ഫയൽ സിസ്‌റ്റം പിശകുകൾ കാരണം <ph name="FILE_NAME" /> ഡൗൺലോഡ് ചെയ്യാനായില്ല.</translation>
+<translation id="3391311825344469964">Chrome-ന്റെ വിൻഡോ മാനേജറിൽ നിങ്ങളുടെ വിൻഡോകൾ മാനേജ് ചെയ്യാം</translation>
 <translation id="3417835166382867856">ടാബുകൾ തിരയുക</translation>
 <translation id="3430670036890315772">പ്രൊഫൈൽ ലോക്ക് ഓഫാക്കുന്നത് നിങ്ങളുടെ സംരക്ഷിച്ച വിവരങ്ങൾ നീക്കം ചെയ്യും</translation>
 <translation id="3435575784518354875">നിങ്ങളുടെ പാസ്‌വേഡുകളിലേക്കുള്ള ആക്‌സസ് നിലനിർത്താൻ, അവ ഇപ്പോൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക, Google Play സേവനങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്യുക, തുടർന്ന് Google Password Manager-ലേക്ക് തിരികെ ഇമ്പോർട്ട് ചെയ്യുക. <ph name="BEGIN_LINK" />പൂർണ്ണമായ നിർദ്ദേശങ്ങൾ കാണുക<ph name="END_LINK" />.</translation>
@@ -1015,6 +1017,7 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, പിൻ ചെയ്ത, ഉള്ളടക്കം പങ്കിടുന്ന അദൃശ്യ ടാബ്</translation>
 <translation id="5375374982898812658">നിങ്ങൾക്ക് ഉടൻ തന്നെ “<ph name="GROUP_NAME" />” ടാബ് ഗ്രൂപ്പിലേക്ക് ആക്‌സസ് നഷ്ടപ്പെടും, അത് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിൽ നിന്നും ഇല്ലാതാക്കുകയും ചെയ്യും</translation>
 <translation id="5375577065097716013">Google Lens-ലൂടെ ചിത്രം തിരയൂ <ph name="BEGIN_NEW" />പുതിയവ<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">സംരക്ഷിക്കുക, പങ്കിടുക</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> എന്നതിന് നിങ്ങളുടെ ഡിജിറ്റൽ വാലറ്റിൽ നിന്ന് വ്യക്തിപരമായ വിവരങ്ങൾ ഉപയോഗിക്കണമെന്നുണ്ട്. നിങ്ങൾ ഈ സൈറ്റിനെ വിശ്വസിക്കുന്നുണ്ടെങ്കിൽ മാത്രം തുടരുക. അപകടകരമായ സൈറ്റുകൾ നിങ്ങളുടെ നിയമപരമായ പേര് അല്ലെങ്കിൽ ഐഡി നമ്പർ പോലുള്ള വിവരങ്ങൾ നൽകുന്നതിന് നിങ്ങളെ കബളിപ്പിച്ചേക്കാം.</translation>
 <translation id="5395376160638294582">നിങ്ങളുടെ Google അക്കൗണ്ടിലെ Chrome ഡാറ്റ എല്ലായ്‌പ്പോഴും ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="539881862970320163">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിച്ചു. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
@@ -1069,6 +1072,7 @@
 <translation id="5628604359369369630">വായിക്കാത്തവ - ഓഫ്‌ലൈനിൽ ലഭ്യമാണ്</translation>
 <translation id="5631483240431073854">തുറന്ന ടാബുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="5632485077360054581">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> പ്ലഗിന് <ph name="EXTENSION_NAME" /> റൺ ചെയ്യാൻ നിങ്ങളുടെ അനുമതി ആവശ്യമുണ്ട്</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> എന്നയാളായി സൈൻ ഇൻ ചെയ്‌തു. Google Account-ലെ പിശക്. ക്രമീകരണം തുറക്കുന്നു.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />തിരയൽ ചരിത്രവും<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റിയും<ph name="END_LINK2" /> നിങ്ങളുടെ Google Account-ൽ സംരക്ഷിച്ചേക്കാം</translation>
 <translation id="5648166631817621825">കഴിഞ്ഞ 7 ദിവസം</translation>
@@ -1098,6 +1102,7 @@
 <translation id="5763514718066511291">ഈ ആപ്പിനായുള്ള URL പകർത്താൻ ടാപ്പ് ചെയ്യുക</translation>
 <translation id="5765517223145864268">നിങ്ങളുടെ അനുഭവം ഞങ്ങളോട് പറയൂ. അല്ലെങ്കിൽ <ph name="BEGIN_LINK" />നിങ്ങളുടെ ക്രമീകരണം മാറ്റുക<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">പ്രധാനമല്ലാത്ത ഡാറ്റ</translation>
+<translation id="5788665823391532892">പ്രശ്‌നം റിപ്പോർട്ടുചെയ്യുക...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> / <ph name="SPACE_AVAILABLE" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="5797949256525811424">തടഞ്ഞ വിഷയം</translation>
 <translation id="580893287573699959">നിങ്ങൾക്ക് താൽപ്പര്യമുള്ള വിഷയങ്ങളും സൈറ്റുകളും മാനേജ് ചെയ്യുക</translation>
@@ -1875,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{നിങ്ങൾക്ക് മെച്ചപ്പെടുത്താവുന്ന, ബലഹീനമായൊരു പാസ്‍വേഡ് Chrome കണ്ടെത്തി}other{നിങ്ങൾക്ക് മെച്ചപ്പെടുത്താവുന്ന, ബലഹീനമായ # പാസ്‍വേഡുകൾ Chrome കണ്ടെത്തി}}</translation>
 <translation id="8766529642647037772">ഇതുപോലുള്ള ഒരു ഹൈലൈറ്റ് ചെയ്‌ത ലിങ്ക് സൃഷ്‌ടിക്കണോ?</translation>
 <translation id="8769783688897433958">സൈറ്റ് വിവരങ്ങളും അനുമതികളും കാണുക</translation>
+<translation id="8786293874273448556"><ph name="COUNT" /> വിപുലീകരണങ്ങൾ റൺ ചെയ്യാൻ <ph name="WEBSITE" /> എന്നതിന് നിങ്ങളുടെ അനുമതി ആവശ്യമാണ്</translation>
 <translation id="8788265440806329501">നാവിഗേഷന്‍ ചരിത്രം അടച്ചു</translation>
 <translation id="8790193082819560975">പുതിയ ടാബിൽ, ഒരു ഉൽപ്പന്നത്തിന്റെ വാങ്ങൽ ഓപ്ഷനുകൾ തിരയാൻ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="8798449543960971550">വായിച്ചവ</translation>

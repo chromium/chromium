@@ -1016,6 +1016,7 @@
 <translation id="5370504953185181057">‫"<ph name="TAB_TITLE" />"، علامة تبويب مثبَّتة في "وضع التصفح المتخفي" وتشارك محتواها</translation>
 <translation id="5375374982898812658">ستفقد على الفور إمكانية الوصول إلى مجموعة علامات التبويب "<ph name="GROUP_NAME" />"، وسيتم حذفها من جميع أجهزتك</translation>
 <translation id="5375577065097716013">‏ابحث في الصور عبر "عدسة Google‏" <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">حفظ ومشاركة</translation>
 <translation id="5390367025924544771">يريد <ph name="WEBSITE_ORIGIN" /> استخدام معلومات شخصية من محفظتك الرقمية. يُرجى المتابعة فقط إذا كنت تثق في هذا الموقع الإلكتروني، فقد تحاول المواقع الإلكترونية الخطيرة خداعك لكي تكشف عن معلومات مثل اسمك القانوني أو رقم بطاقتك الشخصية.</translation>
 <translation id="5395376160638294582">‏يُرجى التأكُّد من أنّه يمكنك استخدام بيانات Chrome في حسابك على Google في أي وقت.</translation>
 <translation id="539881862970320163">تم اقتراح كلمة مرور قوية. لوحة المفاتيح مخفية.</translation>
@@ -1099,6 +1100,7 @@
 <translation id="5763514718066511291">‏النقر لنسخ عنوان URL لهذا التطبيق</translation>
 <translation id="5765517223145864268">أخبِرنا عن تجربتك أو <ph name="BEGIN_LINK" />غيِّر إعداداتك<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">بيانات غير مهمة</translation>
+<translation id="5788665823391532892">الإبلاغ عن مشكلة...</translation>
 <translation id="5793665092639000975">يتم استخدام <ph name="SPACE_USED" /> من أصل <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">تم حظر الموضوع.</translation>
 <translation id="580893287573699959">إدارة المواضيع والمواقع الإلكترونية التي تهمّك</translation>

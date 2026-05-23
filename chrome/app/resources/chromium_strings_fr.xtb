@@ -86,7 +86,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="193439633299369377">Redémarrez Chromium OS pour appliquer la mise à jour.</translation>
 <translation id="1951406923938785464">Chromium a bloqué ce téléchargement, car ce type de fichier n'est pas souvent téléchargé et peut être dangereux</translation>
 <translation id="1953553007165777902">Téléchargement… <ph name="MINUTE" /> minute(s) restante(s)</translation>
-<translation id="1965068424387304464">Astuce Chromium : enregistrez vos mots de passe</translation>
 <translation id="1966382378801805537">Impossible d'identifier ou de définir le navigateur par défaut avec Chromium</translation>
 <translation id="1990262977744080398">Découvrir pourquoi Chromium bloque certains fichiers, s'ouvre dans un nouvel onglet</translation>
 <translation id="1999715455684970349">Ce service maintient à jour votre logiciel Chromium, ce qui ne sera pas le cas s'il est désactivé ou arrêté. Toute faille de sécurité susceptible d'apparaître ne pourra alors pas être corrigée, et il est possible que certaines options ne fonctionneront pas. Ce service se désinstalle automatiquement quand aucun logiciel Chromium ne l'utilise.</translation>
@@ -262,7 +261,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3802055581630249637">Chromium précharge des pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
 <translation id="3810973564298564668">Gérer</translation>
 <translation id="3823384748599722168">Pour utiliser vos mots de passe enregistrés, scannez le QR code, téléchargez Chromium pour iOS et connectez-vous à votre compte Google</translation>
-<translation id="3837584850181228767">Astuce Chromium : navigation sécurisée avec protection renforcée</translation>
 <translation id="3846683726093018685">**Résume :** En une seule phrase de moins de 30 mots, décris le sujet principal et l'objectif du contenu de la capture d'écran.
 
           **Suggère des questions** : génère une liste à puces de trois à cinq questions qui poussent à la réflexion et qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant spécifiquement sur un objet visuel, sa conception ou son emplacement.</translation>
@@ -749,7 +747,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="9148058034647219655">Quitter</translation>
 <translation id="9155105544013854680">Reprenez là où vous en étiez : Chromium peut restaurer vos onglets à chaque redémarrage. Pour activer cette option, accédez aux</translation>
 <translation id="9158494823179993217">Votre administrateur système a configuré Chromium pour que <ph name="TARGET_URL_HOSTNAME" /> s'ouvre dans un autre navigateur.</translation>
-<translation id="9183331186620388872">Astuce Chromium : recherchez avec Lens</translation>
 <translation id="9185526690718004400">Relancer et mettre à jour &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Personnaliser Chromium</translation>

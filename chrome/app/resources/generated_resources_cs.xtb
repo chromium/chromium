@@ -164,6 +164,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1104098698795583187">K této skupině karet okamžitě ztratíte přístup a bude smazána ze všech vašich zařízení</translation>
 <translation id="1106270460549661906">Zrušit sdílení s Gemini</translation>
 <translation id="1106350001632362876">Zvýšit práh</translation>
+<translation id="1107300737351978027">Nesmí obsahovat opakující se číslice</translation>
 <translation id="110850812463801904">Připojit se k OneDrive ručně</translation>
 <translation id="1108600514891325577">&amp;Zastavit</translation>
 <translation id="1108938384783527433">Synchronizace historie</translation>
@@ -268,6 +269,7 @@ Hesla můžete kdykoli zobrazit v nástroji <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1173894706177603556">Přejmenovat</translation>
 <translation id="1174073918202301297">Zkratka byla přidána</translation>
 <translation id="1174366174291287894">Pokud vás Chrome neinformuje o opaku, je připojení vždy zabezpečené</translation>
+<translation id="1174759280027683968">Přejít do Chromu</translation>
 <translation id="1175131936083782305">Váš administrátor tuto funkci zakázal.</translation>
 <translation id="1175277108283187866">Navštivte web nebo v adresním řádku něco vyhledejte</translation>
 <translation id="1175364870820465910">Tisk...</translation>
@@ -955,7 +957,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />Data aplikací mohou zahrnovat jakákoliv data, která uložila aplikace (v závislosti na nastavení vývojáře), včetně dat, jako jsou kontakty, zprávy a fotky. Zálohovaná data se nezapočítávají do kvóty úložiště na Disku.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Tuto službu můžete vypnout v Nastavení.<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1637224376458524414">Uložte si tuto záložku do iPhonu</translation>
 <translation id="1637765355341780467">Při otevírání vašeho profilu se něco pokazilo. Některé funkce mohou být nedostupné.</translation>
 <translation id="1639239467298939599">Načítání</translation>
 <translation id="1641113438599504367">Bezpečné prohlížení</translation>
@@ -1792,7 +1793,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="221297410904507041">Vymažte historii, soubory cookie, mezipaměť a další obsah</translation>
 <translation id="2213410656650624348">Mírné</translation>
 <translation id="2214018885812055163">Sdílené složky</translation>
-<translation id="2214453882118345682">Nakupujte, překládejte a identifikujte různé věci pomocí fotoaparátu.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 řádek není zobrazen&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> řádky nejsou zobrazeny&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> řádku není zobrazeno&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> řádků není zobrazeno&gt;}}</translation>
 <translation id="2215070081105889450">Pokud chcete sdílet zvuk, sdílejte místo toho kartu nebo obrazovku</translation>
 <translation id="2217208085547223783">Stav důvěryhodnosti</translation>
@@ -2704,7 +2704,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2813765525536183456">&amp;Přidat nový profil</translation>
 <translation id="281390819046738856">Požadavek nebylo možné podepsat.</translation>
 <translation id="2814489978934728345">Přerušit načítání této stránky</translation>
-<translation id="2815693974042551705">Složka záložek</translation>
 <translation id="2816319641769218778">Chcete-li ukládat hesla na účet Google, zapněte synchronizaci.</translation>
 <translation id="2817435998497102771">Nastavte si tapetu a styl</translation>
 <translation id="2817861546829549432">Pokud povolíte požadavek Do Not Track, bude připojován k datům provozu prohlížení. Efekt tohoto požadavku však závisí na tom, zda na něj webové stránky reagují a jak jej interpretují. Některé webové stránky na tento požadavek mohou reagovat například tím, že při zobrazování reklam nebudou používat informace o tom, které jiné weby jste navštívili. Mnoho webových stránek bude i nadále shromažďovat a používat údaje o prohlížení – například ke zlepšení bezpečnosti, poskytování obsahu, služeb, reklamy a doporučení na webech a ke generování statistických přehledů.</translation>
@@ -2818,7 +2817,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2893318819023133318">Obrátit zobrazení</translation>
 <translation id="2894596417096093634">Identifikátory zpráv o selhání</translation>
 <translation id="2894757982205307093">Nová karta ve skupině</translation>
-<translation id="2895244606836384727">Připomenutí: Vaše skupiny karet</translation>
 <translation id="289695669188700754">ID klíče: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Po zavření všech anonymních oken bude toto vlastní nastavení odstraněno</translation>
 <translation id="2897878306272793870">Určitě chcete otevřít <ph name="TAB_COUNT" /> karty (karet)?</translation>
@@ -4448,7 +4446,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{Skupina bude ze zařízení natrvalo smazána.}few{Skupiny budou ze zařízení natrvalo smazány.}many{Skupiny budou ze zařízení natrvalo smazány.}other{Skupiny budou ze zařízení natrvalo smazány.}}</translation>
 <translation id="4010036441048359843">Zapnout zvýraznění</translation>
 <translation id="4010746393007464819">Je k dispozici upgrade na Debian 12 (Bookworm)</translation>
-<translation id="4010917659463429001">Chcete-li své záložky mít na mobilním zařízení, <ph name="GET_IOS_APP_LINK" />.</translation>
 <translation id="4011073493055408531">Polární záře nad městem stylizovaná do fialových a zelených barev.</translation>
 <translation id="4011897773956589748">Až bude příště Gemini potřebovat přístup k tomuto účtu, zase vás požádá.</translation>
 <translation id="4012509903424054869">Soubory PDF se automaticky převedou, abyste mohli vyhledávat a vybírat text</translation>
@@ -5350,7 +5347,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4660465405448977105">{COUNT,plural, =1{Obrázek}few{# obrázky}many{# obrázku}other{# obrázků}}</translation>
 <translation id="4660540330091848931">Probíhá změna velikosti</translation>
 <translation id="4662373422909645029">Přezdívka nesmí obsahovat čísla</translation>
-<translation id="4662788913887017617">Sdílejte tuto záložku se svým iPhonem</translation>
 <translation id="4663373278480897665">Kamera je povolena</translation>
 <translation id="4665014895760275686">Výrobce</translation>
 <translation id="4665446389743427678">Veškerá data uložená webem <ph name="SITE" /> budou smazána.</translation>
@@ -5395,7 +5391,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4688176403504673761">Organizace <ph name="MANAGER" /> toto zařízení převádí na předchozí verzi (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="4688870304423708920">Zkontrolujte připojení k internetu a zkuste Gemini použít znovu</translation>
 <translation id="4689235506267737042">Zvolte předvolby ukázkového režimu</translation>
-<translation id="4689421377817139245">Synchronizujte tuto záložku do svého iPhonu</translation>
 <translation id="4690091457710545971">&lt;Čtyři soubory vygenerované firmwarem Wi-Fi od společnosti Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. První tři jsou binární soubory s výpisy z registru a společnost Intel o nich prohlašuje, že neobsahují žádné informace umožňující identifikaci osob ani zařízení. Poslední soubor obsahuje trasovací informace z firmwaru Intel. Byly z něj odstraněny všechny informace umožňující identifikaci osob nebo zařízení, ale je příliš velký na to, aby jej zde bylo možné zobrazit. Tyto soubory byly vygenerovány v reakci na nedávné problémy se sítí Wi-Fi ve vašem zařízení a budou poskytnuty společnosti Intel, aby tyto problémy mohla odstranit.&gt;</translation>
 <translation id="4691995778017338841">Přetvořte fotku</translation>
 <translation id="4692342362587775867">Oznámení z tohoto webu mohou být rušivá</translation>
@@ -5645,7 +5640,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4864805589453749318">Vyberte, který rodič uděluje oprávnění k přidání školního účtu.</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" /> (blokováno)</translation>
 <translation id="486505726797718946">Úspora paměti</translation>
-<translation id="4865063548323785458">Ukládejte a automaticky vyplňujte hesla, abyste se mohli snadno přihlašovat na weby a do aplikací</translation>
 <translation id="486635084936119914">Určité typy souborů po stažení automaticky otevírat</translation>
 <translation id="4867272607148176509">Rodiče mohou schvalovat nebo blokovat aplikace, nastavovat časové limity a ovládat procházení webu. Později lze přidat školní účet a získat tak přístup k většině školních zdrojů.</translation>
 <translation id="486796517585164369">· Nedávno použitá karta</translation>
@@ -5752,6 +5746,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="4931387733184123331">Zatmění</translation>
 <translation id="4932733599132424254">Datum</translation>
 <translation id="4933484234309072027">vloženo do <ph name="URL" /></translation>
+<translation id="4934763315031217818">Nesmí obsahovat postupné sekvence</translation>
 <translation id="4936042273057045735">U telefonů s pracovním profilem není synchronizace oznámení podporována</translation>
 <translation id="4937676329899947885">Příjem sítě Wi-Fi</translation>
 <translation id="4938052313977274277">Rychlost</translation>
@@ -6720,7 +6715,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5624120631404540903">Spravovat hesla</translation>
 <translation id="5624959475330585145">Před použitím nezabezpečených připojení se zeptat</translation>
 <translation id="5625225435499354052">Upravit ve službě Google Pay</translation>
-<translation id="5626134646977739690">Jméno:</translation>
 <translation id="5626172233890210551">Použít místo toho heslo</translation>
 <translation id="5627832140542566187">Orientace displeje</translation>
 <translation id="5628434207686266338">Nastavení hesla zařízení</translation>
@@ -6866,7 +6860,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> – hardwarová podpora a stabilita</translation>
 <translation id="574104302965107104">Zrcadlení displeje</translation>
 <translation id="574209121243317957">Výška</translation>
-<translation id="5742787970423162234">Zabalené webové aplikace s rozšířenými možnostmi. <ph name="BEGIN_LINK_LEARN_MORE" />Další informace<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">Aby bylo možné použít automatické odemykání, PIN smí mít maximálně 12 číslic</translation>
 <translation id="5746169159649715125">Uložit jako PDF</translation>
 <translation id="5747785204778348146">Pro vývojáře – nestabilní</translation>
@@ -7898,7 +7891,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6464825623202322042">Toto zařízení</translation>
 <translation id="6465841119675156448">Bez internetu</translation>
 <translation id="6466258437571594570">Weby vás nebudou rušit žádostmi o odesílání oznámení</translation>
-<translation id="6466988389784393586">&amp;Otevřít všechny záložky</translation>
 <translation id="6467230443178397264">Zkontrolovat soubor <ph name="FILE_NAME" /></translation>
 <translation id="6467304607960172345">Optimalizovat videa na celou obrazovku</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> pak může:</translation>
@@ -9504,7 +9496,6 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7582582252461552277">Preferovat tuto síť</translation>
 <translation id="7582844466922312471">Mobilní data</translation>
 <translation id="7583948862126372804">Počet</translation>
-<translation id="7584287158780898016">Zapněte si upozornění na ceny</translation>
 <translation id="7585106857920830898">Kontroluje se, zda soubor odpovídá bezpečnostním zásadám organizace…</translation>
 <translation id="7585490016012953607">Heslo pro obnovení – dočasně uloženo až na 3 měsíce</translation>
 <translation id="7586498138629385861">Pokud jsou otevřeny aplikace Chrome, zůstane Chrome spuštěný.</translation>
@@ -10523,6 +10514,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8265018477030547118">Pouze na tomto zařízení</translation>
 <translation id="826511437356419340">Byl aktivován režim přehledu oken. Můžete mezi nimi přecházet přejetím prstem nebo tabulátorem.</translation>
 <translation id="8266430295499893285">Pokud chcete získat přístup ke svým heslům, musíte nejdříve ověřit svou totožnost</translation>
+<translation id="8266751606569906450">Musí mít nejméně tento počet znaků: <ph name="MINIMUM" /></translation>
 <translation id="8266947622852630193">Všechny metody zadávání</translation>
 <translation id="8267539814046467575">Přidat tiskárnu</translation>
 <translation id="826905130698769948">Neplatný certifikát klienta</translation>
@@ -10668,7 +10660,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8363277452449582220">Oceán</translation>
 <translation id="8366396658833131068">Připojení k síti je obnoveno. Vyberte jinou síť nebo stisknutím tlačítka Pokračovat níže spusťte aplikaci kiosku.</translation>
 <translation id="8366694425498033255">Klávesy výběru</translation>
-<translation id="8368859634510605990">&amp;Otevřít všechny záložky</translation>
 <translation id="8370294614544004647">Při zavření notebooku přejít do režimu spánku</translation>
 <translation id="8370419414641876532">Klikněte na Hesla a automatické vyplňování</translation>
 <translation id="8371695176452482769">Mluvte</translation>
@@ -11336,7 +11327,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="881799181680267069">Skrýt ostatní</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8818988764764862764">Okno se posunulo doleva</translation>
-<translation id="8819155700324279105">Využijte další vrstvu ochrany proti online hrozbám</translation>
 <translation id="8819510664278523111">EID vašeho zařízení je <ph name="EID_NUMBER" />, jeho IMEI je <ph name="IMEI_NUMBER" /> a jeho sériové číslo je <ph name="SERIAL_NUMBER" />. Tato čísla lze použít k aktivaci služby.</translation>
 <translation id="8820817407110198400">Záložky</translation>
 <translation id="8821045908425223359">Nakonfigurovat IP adresu automaticky</translation>
@@ -11592,7 +11582,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="8987321822984361516">Prohlížeč spravuje organizace, profil spravuje doména <ph name="PROFILE_DOMAIN" /></translation>
 <translation id="8987736167266086032">Pokračujte, kde jste skončili</translation>
 <translation id="8987927404178983737">Měsíc</translation>
-<translation id="8988539543012086784">Tato stránka je uložena ve složce <ph name="BOOKMARK_FOLDER" /></translation>
 <translation id="8989359959810288806">Obnovit stav tetheringu</translation>
 <translation id="8989779557457435460">Ve výchozím nastavení sdílet aktuální kartu</translation>
 <translation id="8990243615717080992">Přihlaste se heslem nebo jinou metodou obnovení</translation>

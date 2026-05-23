@@ -288,7 +288,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3885770153807205175">Тил тандоо</translation>
 <translation id="3889417619312448367">Google Chrome'ду орнотуудан чыгаруу</translation>
 <translation id="3892148308691398805">Текстти көчүрүү</translation>
-<translation id="3893985792899396936">Chrome кеңеши: Lens менен издеңиз</translation>
 <translation id="3941890832296813527">Орнотуу катасы: Орнотуу файлынын аталышы жараксыз же колдоого алынбайт.</translation>
 <translation id="395904275706073188">Корголгон барактарды окууга болбойт. Башка баракты колдонуп көрүңүз.</translation>
 <translation id="3968962723676998462">Аккаунтуңузга (<ph name="ACCOUNT_EMAIL" />) Chrome маалыматын сактоо жана колдонуу үчүн сыр сүйлөмдү киргизиңиз</translation>
@@ -506,7 +505,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета сынамык версиясы</translation>
 <translation id="6180522807229584611">Бул өтмөк кошумча ресурстарды колдонуп жатат. Иштин майнаптуулугун жакшыртуу үчүн Chrome'го аны жигерсиз кылууга уруксат бериңиз.</translation>
 <translation id="6182736845697986886">Орнотулган жок, анткени жаңыртуу серверинде ички ката кетти.</translation>
-<translation id="6187085551300363958">Chrome кеңеши: Сырсөздөрдү сактаңыз</translation>
 <translation id="6192058120268468905">Chrome'догу аккаунтуңуз</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome'дун ишин өзгөртө турган кеңейтүүнү кошту.
 
@@ -653,7 +651,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="7627609214560473136">Маалыматыңызды коргоо үчүн Chrome'га сиз жакында кирбеген сайттардан уруксаттарды алып салууга макулдугуңузду бериңиз.</translation>
 <translation id="7629695634924605473">Chrome сырсөздөрүңүздү башка бирөөлөр билип алса сизге кабарлайт</translation>
 <translation id="7641148173327520642">Тутумуңуздун администратору Google Chrome'ду <ph name="TARGET_URL_HOSTNAME" /> доменин <ph name="ALTERNATIVE_BROWSER_NAME" /> аркылуу ачууга конфигуациялады.</translation>
-<translation id="7641448682796883218">Chrome кеңеши: Өркүндөтүлгөн коопсуз серептөө</translation>
 <translation id="7649070708921625228">Жардам</translation>
 <translation id="7651907282515937834">Chrome ишкана логотиби</translation>
 <translation id="76531479118467370">Коопсуз серептөө өчүрүлүп, файлды текшерүү мүмкүн эмес болгондуктан, Chrome бул жүктөп алууну бөгөттөдү</translation>

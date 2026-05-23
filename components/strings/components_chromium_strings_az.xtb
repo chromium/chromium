@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="az">
 <translation id="130631256467250065">Dəyişiklikləriniz cihazınızı işə salandan sonra qüvvəyə minəcək.</translation>
+<translation id="1965068424387304464">Chromium ipucusu: Parolları yadda saxlayın</translation>
 <translation id="261308610302996111">Chromium menyusuna &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -13,6 +14,7 @@
 <translation id="3064346599913645280">Təhlükəsiz Chromium səhifəsinə baxırsınız</translation>
 <translation id="3255926992597692024">Chromium ödəniş metodlarını doldurmaq üçün ayarlara dəyişiklik etməyə çalışır.</translation>
 <translation id="358997566136285270">Chromium loqo</translation>
+<translation id="3837584850181228767">Chromium ipucusu: Qabaqcıl Güvənli Baxış</translation>
 <translation id="4050599136622776556">Chromium ödəniş metodlarını redaktə etməyə çalışır.</translation>
 <translation id="4365115785552740256">Chromium <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> açıq mənbə layihəsi və digər <ph name="BEGIN_LINK_OSS" />açıq mənbə proqram təminatları tərəfindən<ph name="END_LINK_OSS" /> əlçatan edilib.</translation>
 <translation id="4622039161600275920">Bu səhifə Chromium tərəfindən bloklanıb</translation>
@@ -43,4 +45,5 @@
 Əgər problem bununla həll olmursa, bu variantı qabaqcıl performans üçün seçməyi tövsiyə edirik.</translation>
 <translation id="8597726643333341451">Təhlükəsiz Sınaq üçün Chrome səhifəsinə baxırsınız</translation>
 <translation id="8684913864886094367">Chromium düzgün qapadılmadı.</translation>
+<translation id="9183331186620388872">Chromium ipucusu: Linza ilə axtarın</translation>
 </translationbundle>

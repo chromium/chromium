@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">કિંમત ઓછી છે</translation>
 <translation id="3070005020161560471">ઑટોમૅટિક રીતે અનુવાદ કરો</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeમાં ખુલશે. આગળ વધીને, તમે <ph name="BEGIN_LINK1" />Googleની સેવાની શરતો<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />Google Chrome તથા ChromeOSની વધારાની સેવાની શરતો<ph name="END_LINK2" /> સાથે સંમત થાઓ છો. <ph name="BEGIN_LINK3" />પ્રાઇવસી પૉલિસી<ph name="END_LINK3" /> પણ લાગુ થાય છે.</translation>
+<translation id="3080375898390966733">Google Lens વડે ટૅબ શોધો</translation>
 <translation id="3080525922482950719">તમે પછીથી અથવા ઑફલાઇન વાંચવા માટે પેજ સાચવી શકો છો</translation>
 <translation id="3087734570205094154">તળિયું</translation>
 <translation id="3091010850649238832">ક્લિપબોર્ડ પરના કન્ટેન્ટ બતાવો</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">છબી શેર કરો</translation>
 <translation id="3385749568468586663">Gemini છૂપા મોડમાં ઉપલબ્ધ નથી</translation>
 <translation id="3387650086002190359">ફાઇલ સિસ્ટમ ભૂલોના કારણે <ph name="FILE_NAME" /> ડાઉનલોડ નિષ્ફળ થયું.</translation>
+<translation id="3391311825344469964">તમે Chromeના વિન્ડો મેનેજરમાં તમારી વિન્ડો મેનેજ કરી શકો છો</translation>
 <translation id="3417835166382867856">ટૅબ શોધો</translation>
 <translation id="3430670036890315772">તમારું પ્રોફાઇલ લૉક બંધ કરવાથી તમારી સાચવેલી માહિતી કાઢી નાખવામાં આવશે</translation>
 <translation id="3435575784518354875">તમારા પાસવર્ડનો ઍક્સેસ જાળવી રાખવા માટે, તેની હમણાં નિકાસ કરો, Google Play સેવાઓ અપડેટ કરો અને પછી તેમને પાછા Google Password Managerમાં આયાત કરો. <ph name="BEGIN_LINK" />સંપૂર્ણ સૂચના જુઓ<ph name="END_LINK" />.</translation>
@@ -1015,6 +1017,7 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, પિન કરેલું શેર કરતું છૂપું ટૅબ</translation>
 <translation id="5375374982898812658">તમે તરત જ “<ph name="GROUP_NAME" />” ટૅબના ગ્રૂપનો ઍક્સેસ ગુમાવશો અને તમારા બધા ડિવાઇસમાંથી તે ડિલીટ કરવામાં આવશે</translation>
 <translation id="5375577065097716013">Google Lens વડે છબી શોધો <ph name="BEGIN_NEW" />નવું<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">સાચવો અને શેર કરો</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> તમારા ડિજિટલ વૉલેટમાંથી વ્યક્તિગત માહિતીનો ઉપયોગ કરવા માગે છે. જો તમને આ સાઇટ પર વિશ્વાસ હોય, તો જ ચાલુ રાખો. જોખમી સાઇટ તમને તમારા કાનૂની નામ અથવા ID નંબર જેવી બાબતો જણાવવા છેતરી શકે છે.</translation>
 <translation id="5395376160638294582">ખાતરી કરો કે તમે હંમેશાં તમારા Google એકાઉન્ટમાં Chromeના ડેટાનો ઉપયોગ કરી શકો</translation>
 <translation id="539881862970320163">સશક્ત પાસવર્ડ સૂચવવામાં આવ્યો છે. કીબોર્ડ છુપાવેલું છે.</translation>
@@ -1069,6 +1072,7 @@
 <translation id="5628604359369369630">વાંચ્યા વગરનું - ઑફલાઇન ઉપલબ્ધ</translation>
 <translation id="5631483240431073854">ખુલ્લા ટૅબ મેનેજ કરો</translation>
 <translation id="5632485077360054581">મને બતાવો કે કેવી રીતે</translation>
+<translation id="5639031457248936693"><ph name="EXTENSION_NAME" />ને ચલાવવા માટે <ph name="WEBSITE" />ને તમારી પરવાનગીની જરૂર છે</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> તરીકે સાઇન ઇન થયા. Google એકાઉન્ટમાં ભૂલ. સેટિંગ ખોલે છે.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />શોધ ઇતિહાસ<ph name="END_LINK1" /> અને <ph name="BEGIN_LINK2" />પ્રવૃત્તિના અન્ય પ્રકારો<ph name="END_LINK2" /> તમારા Google એકાઉન્ટમાં સચવાઈ શકે છે</translation>
 <translation id="5648166631817621825">છેલ્લા 7 દિવસ</translation>
@@ -1098,6 +1102,7 @@
 <translation id="5763514718066511291">આ ઍપ માટેની URL કૉપિ કરવા માટે ટૅપ કરો</translation>
 <translation id="5765517223145864268">અમને તમારા અનુભવ વિશે જણાવો. અથવા <ph name="BEGIN_LINK" />તમારા સેટિંગને બદલો<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">બિનમહત્ત્વપૂર્ણ ડેટા</translation>
+<translation id="5788665823391532892">સમસ્યાની જાણ કરો...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" />માંથી <ph name="SPACE_USED" />નો વપરાશ કરી રહ્યાં છીએ</translation>
 <translation id="5797949256525811424">બ્લૉક કરેલો વિષય</translation>
 <translation id="580893287573699959">તમને જેમાં રુચિ હોય તેવા વિષયો અને સાઇટ મેનેજ કરો</translation>
@@ -1875,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chromeને એવો નબળો પાસવર્ડ મળી આવ્યો છે જેને તમે બહેતર બનાવી શકો છો}one{Chromeને એવો # નબળો પાસવર્ડ મળી આવ્યો છે જેને તમે બહેતર બનાવી શકો છો}other{Chromeને એવા # નબળો પાસવર્ડ મળી આવ્યા છે જેમને તમે બહેતર બનાવી શકો છો}}</translation>
 <translation id="8766529642647037772">શું આના જેવી હાઇલાઇટ કરેલી લિંક બનાવીએ?</translation>
 <translation id="8769783688897433958">સાઇટની માહિતી અને પરવાનગીઓ જુઓ</translation>
+<translation id="8786293874273448556"><ph name="COUNT" /> એક્સ્ટેન્શનને ચલાવવા માટે <ph name="WEBSITE" />ને તમારી પરવાનગીની જરૂર છે</translation>
 <translation id="8788265440806329501">નૅવિગેશન ઇતિહાસ બંધ છે</translation>
 <translation id="8790193082819560975">કોઈ નવા ટૅબમાં, પ્રોડક્ટની ખરીદી કરવાના વિકલ્પો શોધવા માટે ટૅપ કરો.</translation>
 <translation id="8798449543960971550">વાંચેલાં</translation>

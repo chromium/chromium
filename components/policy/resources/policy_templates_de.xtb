@@ -2152,6 +2152,7 @@ Ist diese Richtlinie konfiguriert, können Nutzer den Wert nicht überschreiben.
 
 Ist sie nicht konfiguriert, ist der Datenschutzbildschirm anfangs deaktiviert, Nutzer können ihn jedoch steuern.</translation>
 <translation id="2413899611035194909">Optionen für Bedienungshilfen im Taskleistenmenü des Anmeldebildschirms anzeigen</translation>
+<translation id="2414712434655365347">HTTP-Header-Einschleusung für bestimmte URL-Muster konfigurieren</translation>
 <translation id="2415715982424988916">Entdecken (seit Version 91 unterstützt)</translation>
 <translation id="2420958105721932612">Gibt an, wie eine App installiert wird. AVAILABLE: Die App wird nicht automatisch installiert, Nutzer können sie jedoch installieren. Wenn die Richtlinie nicht festgelegt wird, ist diese Option standardmäßig ausgewählt. FORCE_INSTALLED: Die App wird automatisch installiert und Nutzer können sie nicht deinstallieren. BLOCKED: Die App ist gesperrt und kann nicht installiert werden. Falls die App unter einer früheren Richtlinie installiert wurde, wird sie deinstalliert.</translation>
 <translation id="2421400544595297401">Nicht zugehörige Nutzer dürfen keine Android-Apps verwenden</translation>
@@ -2885,6 +2886,13 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
 <translation id="2866726566162790531">Liste der Ursprünge, für die alle HTTP-Authentifizierungsschemas zulässig sind</translation>
 <translation id="2868756546751652023">Nutzer dürfen Instant Tethering verwenden</translation>
 <translation id="286898786908566256">Nutzer dürfen Telefonnummern aus Chrome an ihr Android-Gerät senden</translation>
+<translation id="287087426320717057">Mit dieser Richtlinie können Nutzer jegliche Art von Firmware-Updates starten.
+
+      Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer, beispielsweise der Eigentümer des Geräts, Firmware-Updates starten.
+
+      Ist diese Richtlinie deaktiviert, können Nutzer keine Firmware-Updates anwenden.
+
+      Diese Richtlinie gilt für Firmware-Updates von Peripheriegeräten und internen Komponenten von <ph name="PRODUCT_OS_FLEX_NAME" />-Geräten. Firmware-Updates interner Komponenten von <ph name="PRODUCT_OS_NAME" />-Geräten sind von dieser Richtlinie nicht betroffen.</translation>
 <translation id="2872098849906555324">Google Drive-Synchronisierung deaktivieren</translation>
 <translation id="2872189563975139803">Einstellungen für die Trennung von Unternehmensprofilen</translation>
 <translation id="2872961005593481000">Herunterfahren</translation>
@@ -8018,6 +8026,25 @@ In Version 114 und höher ist diese Richtlinie optional, wenn die Richtlinie �
 <translation id="624219423122512710">Aktionen bei inaktivem Browser</translation>
 <translation id="6244061205361004687">Nutzern erlauben, VPN-Verbindungen manuell zu trennen oder zu ändern</translation>
 <translation id="6244210204546589761">Beim Start zu öffnende URLs</translation>
+<translation id="6245828368576563662">Mit dieser Richtlinie lässt sich eine Liste von Regeln definieren, um benutzerdefinierte HTTP-Header in Webanfragen einzuschleusen, die mit bestimmten URL-Mustern übereinstimmen. Header, die durch diese Richtlinie festgelegt werden, haben Vorrang vor Headern, die ursprünglich bereits in der Anfrage vorhanden waren, sowie vor Änderungen, die von Nutzern oder Erweiterungen vorgenommen werden.
+
+Ein häufiger Anwendungsfall für diese Richtlinie ist die Durchsetzung von Mandanten-Zugriffskontrollen durch das Einschleusen benutzerdefinierter Header (z. B. <ph name="EXAMPLE_HEADER_NAME" />).
+
+Die Richtlinie akzeptiert eine Liste von Regeln. Jede Regel enthält:
+
+* <ph name="PATTERNS_KEY" />: Eine Liste von URL-Mustern, die abgeglichen werden sollen. Wie ein URL-Muster formatiert wird, erfährst du unter https://support.google.com/chrome/a?p=url_blocklist_filter_format.
+
+* <ph name="HEADERS_KEY" />: Eine Liste von Objekten, die die einzufügenden Header repräsentieren. Jedes Objekt enthält:
+
+  * <ph name="HEADER_NAME_KEY" />: Den Namen des einzuschleusenden Headers.
+
+  * <ph name="HEADER_VALUE_KEY" />: Den Wert des einzuschleusenden Headers.
+
+Wenn mehrere Regeln auf eine Anfrage zutreffen, werden Header aus allen übereinstimmenden Regeln angewendet. Falls mehrere Header denselben Namen haben, wird der Header mit dem spezifischsten URL-Muster angewendet. Sind die Muster gleich spezifisch, wird der Header angewendet, der zuletzt in der Liste erscheint.
+
+Headernamen müssen RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616) entsprechen. Headerwerte dürfen keine NUL-, CR- oder LF-Zeichen enthalten. Einzelne Header dürfen eine Größe von 8 KB nicht überschreiten. Ungültige Header und URL-Muster werden ignoriert.
+
+Diese Richtlinie ist auf insgesamt 500 URL-Muster über alle Regeln hinweg begrenzt. Jede Regel darf maximal 20 Header enthalten. Muster und Header, die diese Grenzwerte überschreiten, werden ignoriert.</translation>
 <translation id="624595269193747921">Gibt an, ob die Suche nach dem passenden Drucker auf eine bestimmte Gruppe von Druckern beschränkt werden soll.</translation>
 <translation id="6246290059248303618">Mediensteuerelemente für <ph name="PRODUCT_NAME" />-Sitzungen anzeigen, die von anderen Geräten im lokalen Netzwerk gestartet wurden</translation>
 <translation id="6247316685259031374">Mit dieser Richtlinie kann die Sandbox für den Audioprozess konfiguriert werden.

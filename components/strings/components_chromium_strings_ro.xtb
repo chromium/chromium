@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ro">
 <translation id="130631256467250065">Modificările dvs. se vor aplica următoarea dată când reporniți dispozitivul.</translation>
+<translation id="1965068424387304464">Sfat pentru Chromium: salvează parolele</translation>
 <translation id="261308610302996111">Accesează
           meniul Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -14,6 +15,7 @@
 <translation id="3064346599913645280">Se afișează o pagină Chromium securizată</translation>
 <translation id="3255926992597692024">Chromium încearcă să modifice setările pentru completarea metodelor de plată.</translation>
 <translation id="358997566136285270">Sigla Chromium</translation>
+<translation id="3837584850181228767">Sfat pentru Chromium: Navigarea sigură îmbunătățită</translation>
 <translation id="4050599136622776556">Chromium încearcă să modifice metodele de plată.</translation>
 <translation id="4365115785552740256">Chromium există mulțumită proiectului open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> și a altor <ph name="BEGIN_LINK_OSS" />produse software open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="4622039161600275920">Pagina a fost blocată de Chromium</translation>
@@ -47,4 +49,5 @@
           această opțiune pentru performanță îmbunătățită.</translation>
 <translation id="8597726643333341451">Se afișează o pagină Chrome for Testing</translation>
 <translation id="8684913864886094367">Chromium nu s-a închis corect.</translation>
+<translation id="9183331186620388872">Sfat pentru Chromium: caută cu Lens</translation>
 </translationbundle>

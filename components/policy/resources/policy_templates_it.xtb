@@ -2933,6 +2933,13 @@ Questa policy può essere impostata soltanto come policy relativa agli utenti cl
 <translation id="2866726566162790531">Elenco delle origini che consentono tutte le autenticazioni HTTP</translation>
 <translation id="2868756546751652023">Consenti agli utenti di utilizzare il tethering istantaneo</translation>
 <translation id="286898786908566256">Consenti agli utenti di inviare numeri di telefono da Chrome al loro dispositivo Android</translation>
+<translation id="287087426320717057">Questa policy consente agli utenti di avviare qualsiasi tipo di aggiornamento firmware.
+
+      Se la policy viene attivata o se non viene configurata, gli utenti (ad es. il proprietario del dispositivo) possono avviare aggiornamenti firmware.
+
+      Se la policy viene disattivata, gli utenti non possono applicare gli aggiornamenti firmware.
+
+      Questa policy si applica al firmware per gli aggiornamenti firmware delle periferiche esterne e dei componenti interni per i dispositivi <ph name="PRODUCT_OS_FLEX_NAME" />. Questa policy non influisce sugli aggiornamenti firmware dei componenti interni per i dispositivi <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2872098849906555324">Disattiva la sincronizzazione Google Drive</translation>
 <translation id="2872189563975139803">Impostazioni di separazione dei profili aziendali</translation>
 <translation id="2872961005593481000">Spegni</translation>

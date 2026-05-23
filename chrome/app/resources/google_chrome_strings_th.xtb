@@ -283,7 +283,6 @@
 <translation id="3885770153807205175">เครื่องมือเลือกภาษา</translation>
 <translation id="3889417619312448367">ยกเลิกการติดตั้ง Google Chrome</translation>
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
-<translation id="3893985792899396936">เคล็ดลับสำหรับ Chrome: ค้นหาด้วย Lens</translation>
 <translation id="3941890832296813527">ข้อผิดพลาดในการติดตั้ง: ชื่อไฟล์ของโปรแกรมติดตั้งไม่ถูกต้องหรือระบบไม่รองรับ</translation>
 <translation id="395904275706073188">อ่านหน้าเว็บที่มีการป้องกันไม่ได้ โปรดลองใช้หน้าอื่น</translation>
 <translation id="3968962723676998462">ป้อนพาสเฟรสเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี <ph name="ACCOUNT_EMAIL" /></translation>
@@ -497,7 +496,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome เบต้า</translation>
 <translation id="6180522807229584611">แท็บนี้ใช้ทรัพยากรมากเป็นพิเศษ ให้ Chrome ช่วยปิดใช้งานแท็บเหล่านี้เพื่อปรับปรุงประสิทธิภาพ</translation>
 <translation id="6182736845697986886">การติดตั้งไม่สำเร็จเนื่องจากเกิดข้อผิดพลาดภายในเซิร์ฟเวอร์การอัปเดต</translation>
-<translation id="6187085551300363958">เคล็ดลับสำหรับ Chrome: บันทึกรหัสผ่าน</translation>
 <translation id="6192058120268468905">บัญชีของคุณใน Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ได้เพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chrome
 
@@ -644,7 +642,6 @@
 <translation id="7627609214560473136">ให้ Chrome นำสิทธิ์ออกจากเว็บไซต์ที่คุณไม่ได้เข้าชมเมื่อเร็วๆ นี้เพื่อปกป้องข้อมูลของคุณ</translation>
 <translation id="7629695634924605473">Chrome จะแจ้งให้ทราบหากมีคนล่วงรู้รหัสผ่านของคุณ</translation>
 <translation id="7641148173327520642">ผู้ดูแลระบบได้กำหนดค่าให้ Google Chrome เปิด <ph name="ALTERNATIVE_BROWSER_NAME" /> เพื่อเข้าถึง <ph name="TARGET_URL_HOSTNAME" /></translation>
-<translation id="7641448682796883218">เคล็ดลับสำหรับ Chrome: Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="7649070708921625228">ความช่วยเหลือ</translation>
 <translation id="7651907282515937834">โลโก้ Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome บล็อกการดาวน์โหลดนี้เนื่องจากคุณปิด Google Safe Browsing จึงยืนยันไฟล์ไม่ได้</translation>

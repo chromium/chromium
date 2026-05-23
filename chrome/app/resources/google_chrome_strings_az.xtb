@@ -282,7 +282,6 @@ Bu səhifə gözlənildiyi kimi işləmirsə, optimallaşdırmaya icazə verməy
 <translation id="3885770153807205175">Dil seçicisi</translation>
 <translation id="3889417619312448367">Google Chrome'u sistemdən silin</translation>
 <translation id="3892148308691398805">Mətni kopyalayın</translation>
-<translation id="3893985792899396936">Chrome ipucusu: Linza ilə axtarın</translation>
 <translation id="3941890832296813527">Quraşdırma xətası: Quraşdırıcı fayl adı yanlışdır və ya dəstəklənmir.</translation>
 <translation id="395904275706073188">Qorunan səhifələri oxumaq mümkün deyil. Fərqli səhifə yoxlayın.</translation>
 <translation id="3968962723676998462">Chrome datasını hesabınızda (<ph name="ACCOUNT_EMAIL" />) istifadə etmək və yadda saxlamaq üçün parol ifadəsini daxil edin</translation>
@@ -498,7 +497,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Bu tab əlavə resurslardan istifadə edir. Performansı təkmilləşdirmək üçün Chrome-a onu deaktiv etmək imkanı verin.</translation>
 <translation id="6182736845697986886">Yeniləmə serverində daxili xəta səbəbindən quraşdırma alınmadı.</translation>
-<translation id="6187085551300363958">Chrome ipucusu: Parolları yadda saxlayın</translation>
 <translation id="6192058120268468905">Chrome-dakı Hesabınız</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> Chrome-un iş prinsipini dəyişdirə biləcək artırma əlavə etdi.
 
@@ -645,7 +643,6 @@ Bəzi funksiyalar əlçatmaz ola bilər. Xüsusi profil direktoriyası göstəri
 <translation id="7627609214560473136">Datanı qorumaq üçün Chrome-un son vaxtlar daxil olmadığınız saytlardan icazələri silməsinə icazə verin.</translation>
 <translation id="7629695634924605473">Chrome parollarınızın oğurlanıb-oğurlanmadığı haqqında Sizə məlumat verir</translation>
 <translation id="7641148173327520642">Sistem administratorunun konfiqurasiyasına əsasən Google Chrome <ph name="TARGET_URL_HOSTNAME" /> ünvanına daxil olmaq üçün <ph name="ALTERNATIVE_BROWSER_NAME" /> tətbiqini aça bilər.</translation>
-<translation id="7641448682796883218">Chrome ipucusu: Qabaqcıl Güvənli Baxış</translation>
 <translation id="7649070708921625228">Yardım</translation>
 <translation id="7651907282515937834">Chrome'un Korporativ loqosu</translation>
 <translation id="76531479118467370">Güvənli Baxış deaktiv olduğu və bu fayl doğrulanmadığı üçün Chrome endirməni blokladı</translation>

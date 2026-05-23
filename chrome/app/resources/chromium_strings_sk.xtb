@@ -87,7 +87,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="193439633299369377">Aktualizácia sa použije po reštartovaní systému Chromium OS.</translation>
 <translation id="1951406923938785464">Prehliadač Chromium toto sťahovanie zablokoval, pretože používatelia tento typ súboru bežne nesťahujú a môže byť nebezpečný</translation>
 <translation id="1953553007165777902">Sťahuje sa… Zostávajúci čas: <ph name="MINUTE" /> min</translation>
-<translation id="1965068424387304464">Tip pre Chromium: Ukladanie hesiel</translation>
 <translation id="1966382378801805537">Chromium nedokáže určiť alebo nastaviť predvolený prehliadač</translation>
 <translation id="1990262977744080398">Prečo Chromium blokuje niektoré súbory, otvorí sa na novej karte</translation>
 <translation id="1999715455684970349">Udržiava softvér prehliadača Chromium aktuálny. Ak je táto služba deaktivovaná alebo zastavená, softvér prehliadača Chromium sa nebude aktualizovať, čo znamená, že nedostatky zabezpečenia, ktoré sa vyskytnú, sa nebudú dať opraviť a funkcie nemusia fungovať. Táto služba sa sama odinštaluje, keď ju nebude používať žiadny softvér prehliadača Chromium.</translation>
@@ -263,7 +262,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3802055581630249637">Chromium prednačítava stránky, ktoré pravdepodobne navštívite, aby sa načítali rýchlejšie, keď na ne prejdete</translation>
 <translation id="3810973564298564668">Spravovať</translation>
 <translation id="3823384748599722168">Ak chcete používať uložené heslá, naskenujte QR kód, stiahnite si Chromium pre iOS a prihláste sa do účtu Google</translation>
-<translation id="3837584850181228767">Tip pre Chromium: Zlepšené bezpečné prehliadanie</translation>
 <translation id="3846683726093018685">**Zhrňte:** jednou vetou s menej ako 30 slovami opíšte hlavný objekt a účel obsahu na snímke obrazovky.
 
           **Navrhnite otázky:** vygenerujte nečíslovaný zoznam troch až piatich otázok na zamyslenie, ktoré by používateľ mohol položiť, aby lepšie porozumel snímke obrazovky. Medzi týmito otázkami by mala byť aspoň jedna, ktorá sa bude týkať konkrétneho vizuálneho objektu, jeho vzhľadu alebo umiestnenia.</translation>
@@ -750,7 +748,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="9148058034647219655">Ukončiť</translation>
 <translation id="9155105544013854680">Pokračujte, kde ste prestali: Chromium môže obnoviť vaše karty pri každom reštarte. Ak to chcete zapnúť, prejdite do sekcie</translation>
 <translation id="9158494823179993217">Správca systému nakonfiguroval Chromium, aby web <ph name="TARGET_URL_HOSTNAME" /> otváral v alternatívnom prehliadači.</translation>
-<translation id="9183331186620388872">Tip pre prehliadač Chromium: vyhľadávajte pomocou funkcie Lens</translation>
 <translation id="9185526690718004400">Znova spustiť a aktualizovať Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Upravte Chromium podľa seba</translation>

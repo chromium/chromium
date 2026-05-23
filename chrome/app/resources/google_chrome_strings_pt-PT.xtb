@@ -284,7 +284,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="3885770153807205175">Selecionador de idiomas</translation>
 <translation id="3889417619312448367">Desinstalar o Google Chrome</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
-<translation id="3893985792899396936">Dica do Chrome: pesquise com o Lens</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome de ficheiro do instalador é inválido ou não é suportado.</translation>
 <translation id="395904275706073188">Não é possível ler páginas protegidas. Experimente uma página diferente.</translation>
 <translation id="3968962723676998462">Introduza a sua frase de acesso para usar e guardar dados do Chrome na sua conta, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -498,7 +497,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Este separador está a usar recursos adicionais. Para melhorar o seu desempenho, permita que o Chrome o torne inativo.</translation>
 <translation id="6182736845697986886">A instalação falhou devido a um erro interno do servidor de atualização.</translation>
-<translation id="6187085551300363958">Dica do Chrome: guarde palavras-passe</translation>
 <translation id="6192058120268468905">A sua conta no Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> adicionou uma extensão que pode alterar o funcionamento do Chrome.
 
@@ -645,7 +643,6 @@ Se esta página não estiver a funcionar conforme esperado, experimente permitir
 <translation id="7627609214560473136">Para proteger os seus dados, permita que o Chrome remova as autorizações de sites que não visitou recentemente.</translation>
 <translation id="7629695634924605473">O Chrome indica-lhe se as suas palavras-passe forem comprometidas.</translation>
 <translation id="7641148173327520642">O administrador do sistema configurou o Google Chrome para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> e aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Dica do Chrome: Navegação segura melhorada</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7651907282515937834">Logótipo do Chrome Enterprise</translation>
 <translation id="76531479118467370">O Chrome bloqueou esta transferência porque desativou a Navegação Segura e não é possível validar o ficheiro</translation>
@@ -746,6 +743,7 @@ Não é possível guardar novos marcadores na sua conta até eliminar alguns. Se
 <translation id="8555465886620020932">Erro no serviço: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Pesquisar na lista de idiomas</translation>
 <translation id="8575047640889685742">Use a sua <ph name="BEGIN_LINK" />própria frase de acesso<ph name="END_LINK" /> para encriptar todos os dados do Chrome na sua Conta Google. Os métodos de pagamento e as moradas do Google Pay não são encriptados. O histórico de navegação do Chrome não é sincronizado.</translation>
+<translation id="8590782867495422699">Reabrir Modo IA da Pesquisa Google</translation>
 <translation id="8601359445272098721">Novo! Pode traduzir texto e imagens no ecrã selecionando o botão "Traduzir ecrã"</translation>
 <translation id="8614913330719544658">O Google Chrome não responde. Reiniciar agora?</translation>
 <translation id="861702415419836452">O Chrome necessita de autorização de acesso à câmara para criar um mapa 3D do ambiente à sua volta.</translation>

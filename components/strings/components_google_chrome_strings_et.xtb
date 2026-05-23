@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">Need lehed on mõeldud kasutamiseks Chrome'i arendajatele ning neid ei pruugita aktiivselt hooldada ega testida. Silumislehtede lubamiseks navigeerige lingile <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, klõpsake selleks ettenähtud nupul ja seejärel navigeerige uuesti praegusele lehele.</translation>
 <translation id="3875312571075912821">Lubage Chrome'i juurdepääs võrgule tulemüüri või viirusetõrje
          seadetes.</translation>
+<translation id="3893985792899396936">Chrome'i nõuanne: otsige Lensiga</translation>
 <translation id="4949828774841497663">Avage Applications &gt; System Settings &gt; Network, valige
           aktiivne võrk, klõpsake nupul Details... ja tühistage mis tahes puhverserverite valikud,
           mis võisid olla valitud.</translation>
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ja veenduge, et konfiguratsioon on määratud valikule „Puhverserverita” või „Otse”</translation>
+<translation id="6187085551300363958">Chrome'i nõuanne: salvestage paroolid</translation>
 <translation id="6341737370356890233">Avage
         Chrome'i menüü &gt;
         <ph name="SETTINGS_TITLE" />
@@ -43,6 +45,7 @@
           Võrk ja internet &gt; Puhverserver
           ning tühistage valik „Tuvasta seaded automaatselt“.</translation>
 <translation id="7230956101631259640">Vaatate turvalist Google Chrome'i lehte</translation>
+<translation id="7641448682796883218">Chrome'i nõuanne: täiustatud ohutu sirvimine</translation>
 <translation id="8232971017369963250">Chrome'i võimaldab pakkuda <ph name="BEGIN_LINK_CHROMIUM" />Chromiumi<ph name="END_LINK_CHROMIUM" /> avatud lähtekoodi projekt.</translation>
 <translation id="8279509328145658601">Chrome'i võimaldab pakkuda ka muu <ph name="BEGIN_LINK_OSS" />avatud lähtekoodiga tarkvara<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome proovib muuta makseviiside sisestamise seadeid.</translation>

@@ -85,7 +85,6 @@
 <translation id="193439633299369377">需要重新启动 Chromium 操作系统以应用更新。</translation>
 <translation id="1951406923938785464">Chromium 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
-<translation id="1965068424387304464">Chromium 提示：保存密码</translation>
 <translation id="1966382378801805537">Chromium 无法确定或设置默认浏览器</translation>
 <translation id="1990262977744080398">了解 Chromium 为何屏蔽某些文件（在新标签页中打开）</translation>
 <translation id="1999715455684970349">让您的 Chromium 软件保持最新状态。如果此服务已停用或已停止运行，您的 Chromium 软件将无法保持最新状态，这意味着可能出现的安全漏洞无法得到修复，并且某些功能可能无法正常运行。当没有 Chromium 软件使用此服务时，此服务会自行卸载。</translation>
@@ -261,7 +260,6 @@
 <translation id="3802055581630249637">Chromium 会预加载您可能访问的网页，以便提高这些网页在您访问时的加载速度</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3823384748599722168">如需使用已保存的密码，请扫描二维码、下载 iOS 版 Chromium 应用，并登录您的 Google 账号</translation>
-<translation id="3837584850181228767">Chromium 提示：增强型安全浏览</translation>
 <translation id="3846683726093018685">**总结：**用一句话（不到 30 个字）概括屏幕截图所示内容的核心主题和主要目的。
 
           **建议问题：**生成 3-5 个发人深省的问题，以项目符号列表的形式呈现，帮助用户更深入地理解屏幕截图。这些问题中，至少应有一个是关于某个视觉对象、其设计或其放置位置的问题。</translation>
@@ -748,7 +746,6 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="9148058034647219655">退出</translation>
 <translation id="9155105544013854680">从上次停下的地方继续：Chromium 可在您每次重启后恢复标签页。如需开启此功能，请前往</translation>
 <translation id="9158494823179993217">您的系统管理员已将 Chromium 配置为使用备用浏览器访问 <ph name="TARGET_URL_HOSTNAME" />。</translation>
-<translation id="9183331186620388872">Chromium 提示：使用智能镜头搜索</translation>
 <translation id="9185526690718004400">重新启动以更新 Chromium(&amp;C)</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">定制您的专属 Chromium</translation>

@@ -11,11 +11,13 @@
 <translation id="3444832043240812445">Orri honek azkenaldiko hutsegiteei buruzko informazioa soilik bistaratzen du, <ph name="BEGIN_LINK" />hutsegiteen berri ematea gaitzen baduzu<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Orri hauek Chrome-ren garatzaileek erabiltzeko pentsatuta daude, eta baliteke aktiboki ez mantentzea edo probatzea. Haiek gaitzeko, joan <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> helbidera, sakatu orrien arazketa gaitzeko botoia eta itzuli orri honetara.</translation>
 <translation id="3875312571075912821">Ez eman suebakiaren edo birusen aurkako softwarearen ezarpenetan sarea erabiltzeko baimena Chrome-ri.</translation>
+<translation id="3893985792899396936">Chrome-ri buruzko aholkua: bilatu Lens bidez</translation>
 <translation id="4949828774841497663">Joan Aplikazioak &gt; Sistemaren ezarpenak &gt; Sarea aukerara eta hautatu
           sare aktiboa. Bertan, sakatu Xehetasunak… botoia eta desautatu hautatutako
           proxyak.</translation>
 <translation id="5005121315113832363">Chrome-k blokeatu du orria</translation>
 <translation id="6011049234605203654">Sakatu Chrome-ko menua &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> eta ziurtatu konfigurazioa "proxyrik ez" edo "zuzena" gisa ezarrita dagoela.</translation>
+<translation id="6187085551300363958">Chrome-rako aholkua: gorde pasahitzak</translation>
 <translation id="6341737370356890233">Sakatu
           Chrome-ko menua &gt;
           <ph name="SETTINGS_TITLE" />
@@ -34,6 +36,7 @@
           Sareak eta Internet &gt; Proxya
           eta desautatu "Automatically detect settings" (hauteman automatikoki ezarpenak).</translation>
 <translation id="7230956101631259640">Chrome-ko orri seguru bat ari zara ikusten</translation>
+<translation id="7641448682796883218">Chrome-rako aholkua: arakatze seguru hobetua</translation>
 <translation id="8232971017369963250">Kode irekiko <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> proiektuak egiten du posible Chrome.</translation>
 <translation id="8279509328145658601"><ph name="BEGIN_LINK_OSS" />Kode irekiko beste software<ph name="END_LINK_OSS" /> batzuek ere posible egiten dute Chrome.</translation>
 <translation id="8544217240017914508">Google Chrome-k ordainketa-metodoak betetzeko ezarpenak aldatu behar ditu.</translation>

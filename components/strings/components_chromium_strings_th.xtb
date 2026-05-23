@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="th">
 <translation id="130631256467250065">การเปลี่ยนแปลงของคุณจะมีผลในครั้งถัดไปที่คุณรีสตาร์ทอุปกรณ์ของคุณ</translation>
+<translation id="1965068424387304464">เคล็ดลับสำหรับ Chromium: บันทึกรหัสผ่าน</translation>
 <translation id="261308610302996111">ไปที่
           เมนู Chromium &gt;
           <ph name="SETTINGS_TITLE" />
@@ -14,6 +15,7 @@
 <translation id="3064346599913645280">คุณกำลังดูหน้า Chromium ที่ปลอดภัย</translation>
 <translation id="3255926992597692024">Chromium กำลังพยายามแก้ไขการตั้งค่าสำหรับการกรอกวิธีการชำระเงิน</translation>
 <translation id="358997566136285270">โลโก้ Chromium</translation>
+<translation id="3837584850181228767">เคล็ดลับสำหรับ Chromium: Safe Browsing พร้อมการปกป้องที่ดียิ่งขึ้น</translation>
 <translation id="4050599136622776556">Chromium กําลังพยายามแก้ไขวิธีการชําระเงิน</translation>
 <translation id="4365115785552740256">Chromium เกิดขึ้นได้ด้วยการสนับสนุนจากโครงการโอเพนซอร์ส <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> และ<ph name="BEGIN_LINK_OSS" />ซอฟต์แวร์โอเพนซอร์ส<ph name="END_LINK_OSS" />อื่นๆ</translation>
 <translation id="4622039161600275920">หน้านี้ถูกบล็อกโดย Chromium</translation>
@@ -45,4 +47,5 @@
           อีกครั้งเพื่อให้ประสิทธิภาพการทำงานดียิ่งขึ้น</translation>
 <translation id="8597726643333341451">คุณกําลังดูหน้า Chrome สําหรับการทดสอบที่ปลอดภัย</translation>
 <translation id="8684913864886094367">Chromium ไม่ได้ปิดอย่างถูกต้อง</translation>
+<translation id="9183331186620388872">เคล็ดลับสำหรับ Chromium: ค้นหาด้วย Lens</translation>
 </translationbundle>

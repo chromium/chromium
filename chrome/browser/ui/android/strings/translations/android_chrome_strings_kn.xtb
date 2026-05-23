@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">ಕಡಿಮೆ ದರ</translation>
 <translation id="3070005020161560471">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನುವಾದಿಸಿ</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />, Chrome ನಲ್ಲಿ ತೆರೆಯುತ್ತದೆ. ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_LINK1" />Google ಸೇವಾ ನಿಯಮಗಳು<ph name="END_LINK1" />, ಹಾಗೂ <ph name="BEGIN_LINK2" />Google Chrome ಮತ್ತು ChromeOS ಹೆಚ್ಚುವರಿ ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_LINK2" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ. <ph name="BEGIN_LINK3" />ಗೌಪ್ಯತೆ ನೀತಿ<ph name="END_LINK3" /> ಸಹ ಅನ್ವಯಿಸುತ್ತದೆ.</translation>
+<translation id="3080375898390966733">Google Lens ಮೂಲಕ ಟ್ಯಾಬ್ ಹುಡುಕಿ</translation>
 <translation id="3080525922482950719">ನೀವು ಪುಟಗಳನ್ನು ನಂತರ ಅಥವಾ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಓದಲು ಉಳಿಸಬಹುದು</translation>
 <translation id="3087734570205094154">ಕೆಳಗೆ</translation>
 <translation id="3091010850649238832">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ವಿಷಯಗಳನ್ನು ತೋರಿಸಿ</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">ಚಿತ್ರ ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="3385749568468586663">Gemini ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಲಭ್ಯವಿಲ್ಲ</translation>
 <translation id="3387650086002190359">ಫೈಲ್ ಸಿಸ್ಟಂ ದೋಷಗಳ ಕಾರಣದಿಂದಾಗಿ <ph name="FILE_NAME" /> ಡೌನ್‌ಲೋಡ್ ವಿಫಲವಾಗಿದೆ.</translation>
+<translation id="3391311825344469964">Chrome ನ ವಿಂಡೋ ಮ್ಯಾನೇಜರ್‌ನಲ್ಲಿ ನಿಮ್ಮ ವಿಂಡೋಗಳನ್ನು ನೀವು ನಿರ್ವಹಿಸಬಹುದು</translation>
 <translation id="3417835166382867856">ಟ್ಯಾಬ್‌ಗಳನ್ನು ಹುಡುಕಿ</translation>
 <translation id="3430670036890315772">ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಲಾಕ್ ಅನ್ನು ಆಫ್ ಮಾಡುವುದರಿಂದ ನಿಮ್ಮ ಸೇವ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ತೆಗೆದುಹಾಕಲಾಗುತ್ತದೆ</translation>
 <translation id="3435575784518354875">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಉಳಿಸಿಕೊಳ್ಳಲು, ಅವುಗಳನ್ನು ಈಗಲೇ ಎಕ್ಸ್‌ಪೋರ್ಟ್ ಮಾಡಿ, Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ, ನಂತರ ಅವುಗಳನ್ನು Google Password Manager ಗೆ ಪುನಃ ಇಂಪೋರ್ಟ್ ಮಾಡಿಕೊಳ್ಳಿ. <ph name="BEGIN_LINK" />ಸಂಪೂರ್ಣ ಸೂಚನೆಗಳನ್ನು ನೋಡಿ<ph name="END_LINK" />.</translation>
@@ -1014,6 +1016,7 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, ಪಿನ್ ಮಾಡಿದ ಹಂಚಿಕೊಳ್ಳುವಿಕೆ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
 <translation id="5375374982898812658">ನೀವು ತಕ್ಷಣವೇ <ph name="GROUP_NAME" /> ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಕಳೆದುಕೊಳ್ಳುತ್ತೀರಿ ಮತ್ತು ಅದನ್ನು ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಿಂದ ಅಳಿಸಲಾಗುತ್ತದೆ</translation>
 <translation id="5375577065097716013">Google Lens ಬಳಸಿ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ <ph name="BEGIN_NEW" />ಹೊಸತು<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">ಸೇವ್ ಮಾಡಿ ಮತ್ತು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> ನಿಮ್ಮ ಡಿಜಿಟಲ್ ವಾಲೆಟ್‌ನಿಂದ ವೈಯಕ್ತಿಕ ಮಾಹಿತಿಯನ್ನು ಬಳಸಲು ಬಯಸುತ್ತದೆ. ನೀವು ಈ ಸೈಟ್ ಅನ್ನು ನಂಬಿದರೆ ಮಾತ್ರ ಮುಂದುವರಿಯಿರಿ. ಅಪಾಯಕಾರಿ ಸೈಟ್‌ಗಳು ನಿಮ್ಮ ಕಾನೂನು ಬದ್ಧ ಹೆಸರು ಅಥವಾ ID ಸಂಖ್ಯೆಯಂತಹ ವಿಷಯಗಳನ್ನು ಬಹಿರಂಗಪಡಿಸುವಂತೆ ನಿಮ್ಮನ್ನು ಮೋಸಗೊಳಿಸಬಹುದು.</translation>
 <translation id="5395376160638294582">ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ನೀವು ಯಾವಾಗಲೂ Chrome ಡೇಟಾವನ್ನು ಬಳಸಬಹುದು ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="539881862970320163">ಸದೃಢ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಸೂಚಿಸಲಾಗಿದೆ. ಕೀಬೋರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಲಾಗಿದೆ.</translation>
@@ -1097,6 +1100,7 @@
 <translation id="5763514718066511291">ಈ ಅಪ್ಲಿಕೇಶನ್‌ಗಾಗಿ URL ನಕಲಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="5765517223145864268">ನಿಮ್ಮ ಅನುಭವದ ಬಗ್ಗೆ ನಮಗೆ ತಿಳಿಸಿ. ಅಥವಾ <ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಬದಲಿಸಿ<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">ಮುಖ್ಯವಲ್ಲದ ಡೇಟಾ</translation>
+<translation id="5788665823391532892">ಸಮಸ್ಯೆಯೊಂದನ್ನು ವರದಿ ಮಾಡಿ...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> ಯಲ್ಲಿ <ph name="SPACE_USED" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="5797949256525811424">ನಿರ್ಬಂಧಿಸಲಾದ ವಿಷಯ</translation>
 <translation id="580893287573699959">ನೀವು ಆಸಕ್ತಿ ಹೊಂದಿರುವ ವಿಷಯಗಳು ಮತ್ತು ಸೈಟ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

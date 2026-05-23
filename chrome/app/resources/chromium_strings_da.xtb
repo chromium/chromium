@@ -86,7 +86,6 @@
 <translation id="193439633299369377">Chromium OS skal genstartes, før opdateringen kan anvendes.</translation>
 <translation id="1951406923938785464">Chromium har blokeret denne download, fordi filtypen normalt ikke downloades og kan være skadelig</translation>
 <translation id="1953553007165777902">Downloader… Der er <ph name="MINUTE" /> minutter tilbage</translation>
-<translation id="1965068424387304464">Tip til Chromium: Gem adgangskoder</translation>
 <translation id="1966382378801805537">Chromium kan ikke fastlægge eller angive standardbrowseren</translation>
 <translation id="1990262977744080398">Se, hvorfor Chromium blokerer visse filer (åbnes på en ny fane)</translation>
 <translation id="1999715455684970349">Holder din Chromium-software opdateret. Hvis denne tjeneste deaktiveres eller stoppes, bliver din Chromium-software ikke opdateret. Dette betyder, at eventuelle sikkerhedsbrister ikke kan rettes, og at funktioner muligvis ikke fungerer. Denne tjeneste afinstallerer sig selv, når den ikke bruges af nogen Chromium-software.</translation>
@@ -262,7 +261,6 @@
 <translation id="3802055581630249637">Chromium forudindlæser sider, du sandsynligvis vil besøge, så disse sider indlæses hurtigere, når du besøger dem</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3823384748599722168">Hvis du vil bruge dine gemte adgangskoder, skal du følge QR-koden, downloade Chromium til iOS og logge ind på din Google-konto</translation>
-<translation id="3837584850181228767">Tip til Chromium: Udvidet beskyttet browsing</translation>
 <translation id="3846683726093018685">**Opsummer:** Beskriv det primære emne og formålet med indholdet på screenshottet i én sætning på under 30 ord.
 
           **Foreslå spørgsmål:** Generér en opstilling med punkttegn med 3-5 tankevækkende spørgsmål, som en bruger kan stille for bedre at forstå screenshottet. Disse spørgsmål skal omfatte mindst ét spørgsmål, der specifikt handler om et visuelt objekt, dets design eller dets placering.</translation>
@@ -749,7 +747,6 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="9148058034647219655">Afslut</translation>
 <translation id="9155105544013854680">Fortsæt, hvor du slap: Chromium kan gendanne dine faner, hver gang du genstarter. For at aktivere dette skal du gå til</translation>
 <translation id="9158494823179993217">Din systemadministrator har konfigureret Chromium til at åbne en anden browser for at få adgang til <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9183331186620388872">Tip til Chromium: Søg med Lens</translation>
 <translation id="9185526690718004400">Genstart og opdater &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Tilpas Chromium</translation>

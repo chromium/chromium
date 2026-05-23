@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Aquestes pàgines estan pensades per a desenvolupadors de Chrome i és possible que no es mantinguin ni es provin activament. Per activar-les, navega fins a <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, fes clic al botó per activar les pàgines de depuració i, a continuació, torna a aquesta pàgina.</translation>
 <translation id="3875312571075912821">Configureu el tallafoc o l'antivirus per permetre que Chrome accedeixi
           a la xarxa.</translation>
+<translation id="3893985792899396936">Consell de Chrome: cerca amb Lens</translation>
 <translation id="4949828774841497663">Ves a Aplicacions &gt; Configuració del sistema &gt; Xarxa, selecciona la xarxa activa, fes clic al botó Detalls... i desselecciona els servidors intermediaris que s'hagin seleccionat.</translation>
 <translation id="5005121315113832363">Chrome ha bloquejat aquesta pàgina</translation>
 <translation id="6011049234605203654">Aneu al
@@ -23,6 +24,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           i assegureu-vos que la configuració estigui definida sense servidor intermediari o com a directa.</translation>
+<translation id="6187085551300363958">Consell de Chrome: desa les contrasenyes</translation>
 <translation id="6341737370356890233">Aneu al
         menú de Chrome &gt;
         <ph name="SETTINGS_TITLE" />
@@ -33,6 +35,7 @@
         aquesta opció per obtenir un rendiment millorat.</translation>
 <translation id="6581867098636731226">Ves al menú de Chrome &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="SYSTEM_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> &gt; Xarxa i Internet &gt; Servidor intermediari i, tot seguit, desselecciona Detecta la configuració automàticament.</translation>
 <translation id="7230956101631259640">Estàs consultant una pàgina segura de Chrome</translation>
+<translation id="7641448682796883218">Consell de Chrome: Navegació segura millorada</translation>
 <translation id="8232971017369963250">Chrome és possible gràcies al projecte de codi obert de <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome també és possible gràcies a un altre <ph name="BEGIN_LINK_OSS" />programari lliure<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome està provant de modificar la configuració per emplenar les formes de pagament.</translation>

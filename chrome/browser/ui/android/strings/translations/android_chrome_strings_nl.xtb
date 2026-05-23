@@ -493,6 +493,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3067505415088964188">Prijs is laag</translation>
 <translation id="3070005020161560471">Automatisch vertalen</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> wordt geopend in Chrome. Als je doorgaat, ga je akkoord met de <ph name="BEGIN_LINK1" />Servicevoorwaarden van Google<ph name="END_LINK1" /> en met de <ph name="BEGIN_LINK2" />Aanvullende servicevoorwaarden van Google Chrome en Chrome OS<ph name="END_LINK2" />. Het <ph name="BEGIN_LINK3" />Privacybeleid<ph name="END_LINK3" /> is ook van toepassing.</translation>
+<translation id="3080375898390966733">Tabblad doorzoeken met Google Lens</translation>
 <translation id="3080525922482950719">Je kunt pagina's opslaan en later of offline lezen</translation>
 <translation id="3087734570205094154">Onderaan</translation>
 <translation id="3091010850649238832">Content op het klembord bekijken</translation>
@@ -550,6 +551,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="3384347053049321195">Afbeelding delen</translation>
 <translation id="3385749568468586663">Gemini is niet beschikbaar in de incognitomodus</translation>
 <translation id="3387650086002190359">Downloaden van <ph name="FILE_NAME" /> is mislukt door fouten in het bestandssysteem.</translation>
+<translation id="3391311825344469964">Je kunt je vensters beheren in Vensterbeheer van Chrome</translation>
 <translation id="3417835166382867856">Tabbladen zoeken</translation>
 <translation id="3430670036890315772">Als je de profielvergrendeling uitzet, worden je opgeslagen gegevens verwijderd</translation>
 <translation id="3435575784518354875">Als je toegang wilt houden tot je wachtwoorden, exporteer je ze nu, update je Google Play-services en importeer je ze terug naar Google Wachtwoordmanager. <ph name="BEGIN_LINK" />Bekijk de volledige instructies<ph name="END_LINK" />.</translation>
@@ -1015,6 +1017,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, vastgezet incognitotabblad voor content delen</translation>
 <translation id="5375374982898812658">Je raakt meteen de toegang tot de tabbladgroep <ph name="GROUP_NAME" /> kwijt en de groep wordt verwijderd van al je apparaten</translation>
 <translation id="5375577065097716013">Afbeelding zoeken met Google Lens <ph name="BEGIN_NEW" />Nieuw<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Opslaan en delen</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> wil persoonlijke informatie uit je digitale portemonnee gebruiken. Ga alleen door als je deze site vertrouwt. Op gevaarlijke sites kun je worden misleid om bijvoorbeeld je officiële naam of ID-nummer bekend te maken.</translation>
 <translation id="5395376160638294582">Zorg dat je de Chrome-gegevens in je Google-account altijd kunt gebruiken</translation>
 <translation id="539881862970320163">Sterk wachtwoord voorgesteld. Toetsenbord verborgen.</translation>
@@ -1069,6 +1072,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5628604359369369630">Ongelezen: offline beschikbaar</translation>
 <translation id="5631483240431073854">Geopende tabbladen beheren</translation>
 <translation id="5632485077360054581">Laten zien</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> heeft je toestemming nodig om <ph name="EXTENSION_NAME" /> uit te voeren</translation>
 <translation id="564121214411935612">Ingelogd als <ph name="USER_NAME" />. Fout in Google-account. Hiermee worden de instellingen geopend.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Zoekgeschiedenis<ph name="END_LINK1" /> en <ph name="BEGIN_LINK2" />andere vormen van activiteit<ph name="END_LINK2" /> kunnen worden opgeslagen in je Google-account</translation>
 <translation id="5648166631817621825">Afgelopen 7 dagen</translation>
@@ -1098,6 +1102,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5763514718066511291">Tik om de URL voor deze app te kopiëren</translation>
 <translation id="5765517223145864268">Vertel ons wat je ervan vindt. Of <ph name="BEGIN_LINK" />wijzig je instellingen<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Onbelangrijke gegevens</translation>
+<translation id="5788665823391532892">Een probleem melden…</translation>
 <translation id="5793665092639000975">Er wordt <ph name="SPACE_USED" /> van de <ph name="SPACE_AVAILABLE" /> gebruikt</translation>
 <translation id="5797949256525811424">Geblokkeerd onderwerp</translation>
 <translation id="580893287573699959">Beheer de onderwerpen en sites waarin je bent geïnteresseerd</translation>
@@ -1875,6 +1880,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />verwijder je de Ch
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome heeft een zwak wachtwoord gevonden dat je kunt verbeteren}other{Chrome heeft # zwakke wachtwoorden gevonden die je kunt verbeteren}}</translation>
 <translation id="8766529642647037772">Wil je een gemarkeerde link zoals deze maken?</translation>
 <translation id="8769783688897433958">Sitegegevens en -rechten bekijken</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> heeft je toestemming nodig om <ph name="COUNT" /> extensies uit te voeren</translation>
 <translation id="8788265440806329501">Navigatiegeschiedenis is gesloten</translation>
 <translation id="8790193082819560975">Tik om in een nieuw tabblad te zoeken naar koopopties voor het product.</translation>
 <translation id="8798449543960971550">Gelezen</translation>

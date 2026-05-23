@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">விலை குறைந்துள்ளது</translation>
 <translation id="3070005020161560471">தானாக மொழிபெயர்க்க வேண்டியவை</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chromeமில் திறக்கப்படும். தொடர்வதன் மூலம் <ph name="BEGIN_LINK1" />Google சேவை விதிமுறைகள்<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />Google Chrome &amp; ChromeOS தொடர்பான கூடுதல் சேவை விதிமுறைகள்<ph name="END_LINK2" /> ஆகியவற்றை ஏற்கிறீர்கள். <ph name="BEGIN_LINK3" />தனியுரிமைக் கொள்கையையும்<ph name="END_LINK3" /> ஏற்கிறீர்கள்.</translation>
+<translation id="3080375898390966733">Google Lens மூலம் பக்கத்தைத் தேடு</translation>
 <translation id="3080525922482950719">பின்னரோ ஆஃப்லைனிலோ படிப்பதற்கு பக்கங்களைச் சேமிக்கலாம்</translation>
 <translation id="3087734570205094154">கீழே</translation>
 <translation id="3091010850649238832">கிளிப்போர்டில் உள்ளவற்றைக் காட்டும்</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">படத்தைப் பகிர்</translation>
 <translation id="3385749568468586663">மறைநிலை மோடில் Gemini கிடைக்காது</translation>
 <translation id="3387650086002190359">ஃபைல் முறைமைப் பிழைகளால் <ph name="FILE_NAME" />ஐப் பதிவிறக்க முடியவில்லை.</translation>
+<translation id="3391311825344469964">Chromeமின் சாளர நிர்வாகியில் உங்கள் சாளரங்களை நிர்வகிக்கலாம்</translation>
 <translation id="3417835166382867856">தாவல்களைத் தேடும்</translation>
 <translation id="3430670036890315772">உங்கள் சுயவிவரப் பூட்டை முடக்கினால் சேமிக்கப்பட்டுள்ள தரவு அகற்றப்படும்</translation>
 <translation id="3435575784518354875">உங்கள் கடவுச்சொற்களைத் தொடர்ந்து அணுக, இப்போதே அவற்றைப் பதிவிறக்கி Google Play சேவைகளைப் புதுப்பித்துவிட்டு, மீண்டும் அவற்றை Google Password Managerரில் பதிவேற்றவும். <ph name="BEGIN_LINK" />எல்லா வழிமுறைகளையும் காட்டு<ph name="END_LINK" />.</translation>
@@ -1015,6 +1017,7 @@
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, பின் செய்யப்பட்ட பகிரப்படுகின்ற மறைநிலைப் பக்கம்</translation>
 <translation id="5375374982898812658">“<ph name="GROUP_NAME" />” பக்கக் குழுவிற்கான அணுகலை உடனடியாக இழந்துவிடுவீர்கள். அத்துடன், உங்களின் எல்லாச் சாதனங்களில் இருந்தும் இது நீக்கப்படும்.</translation>
 <translation id="5375577065097716013">Google Lens மூலம் படத்தைத் தேடு <ph name="BEGIN_NEW" />புதிது<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">சேமித்துப் பகிர்</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> உங்கள் டிஜிட்டல் வாலட்டில் உள்ள தனிப்பட்ட தகவல்களைப் பயன்படுத்த விரும்புகிறது. இந்தத் தளத்தை நீங்கள் நம்பினால் மட்டுமே தொடரவும். உங்கள் சட்டப்பூர்வப் பெயர், ஐடி எண் போன்ற தகவல்களைத் தெரிந்துகொள்வதற்காக ஆபத்தான தளங்கள் உங்களை ஏமாற்றக்கூடும்.</translation>
 <translation id="5395376160638294582">உங்கள் Google கணக்கில் எப்போதும் Chrome தரவைப் பயன்படுத்த முடிவதை உறுதிசெய்துகொள்ளவும்</translation>
 <translation id="539881862970320163">வலிமையான கடவுச்சொல் பரிந்துரைக்கப்பட்டது. கீபோர்டு மறைக்கப்பட்டுள்ளது.</translation>
@@ -1069,6 +1072,7 @@
 <translation id="5628604359369369630">படிக்காதவை - ஆஃப்லைனில் படிக்கலாம்</translation>
 <translation id="5631483240431073854">திறந்துள்ள பக்கங்களை நிர்வகிக்கலாம்</translation>
 <translation id="5632485077360054581">எப்படி எனக் காட்டு</translation>
+<translation id="5639031457248936693"><ph name="EXTENSION_NAME" /> நீட்டிப்பை இயக்க <ph name="WEBSITE" /> தளத்திற்கு உங்கள் அனுமதி தேவை</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> கணக்கில் உள்நுழைந்துள்ளீர்கள். Google கணக்குப் பிழை. அமைப்புகளைத் திறக்கும்.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />இதுவரை தேடியவையும்<ph name="END_LINK1" /> <ph name="BEGIN_LINK2" />பிற வகையான செயல்பாடுகளும்<ph name="END_LINK2" /> உங்கள் Google கணக்கில் சேமிக்கப்பட்டிருக்கலாம்</translation>
 <translation id="5648166631817621825">கடந்த 7 நாட்கள்</translation>
@@ -1098,6 +1102,7 @@
 <translation id="5763514718066511291">இந்த ஆப்ஸின் URLஐ நகலெடுக்க, தட்டவும்</translation>
 <translation id="5765517223145864268">உங்கள் அனுபவத்தை எங்களுடன் பகிரலாம். அல்லது <ph name="BEGIN_LINK" />அமைப்புகளை மாற்றலாம்<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">முக்கியமில்லாத தரவு</translation>
+<translation id="5788665823391532892">சிக்கலைப் புகாரளி...</translation>
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> இல் <ph name="SPACE_USED" /> பயன்படுத்தப்படுகிறது</translation>
 <translation id="5797949256525811424">தடுக்கப்பட்ட தலைப்பு</translation>
 <translation id="580893287573699959">உங்களுக்கு ஆர்வமுள்ள தலைப்புகளையும் தளங்களையும் நிர்வகிக்கலாம்</translation>
@@ -1875,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{ஒரு வலுவற்ற கடவுச்சொல்லை Chrome கண்டறிந்துள்ளது, அதை நீங்கள் மேம்படுத்தலாம்}other{# வலுவற்ற கடவுச்சொற்களை Chrome கண்டறிந்துள்ளது, அவற்றை நீங்கள் மேம்படுத்தலாம்}}</translation>
 <translation id="8766529642647037772">இதைப் போன்று ஹைலைட் செய்யப்பட்ட இணைப்பை உருவாக்க வேண்டுமா?</translation>
 <translation id="8769783688897433958">தளத் தகவல்களையும் அனுமதிகளையும் காட்டு</translation>
+<translation id="8786293874273448556"><ph name="COUNT" /> நீட்டிப்புகளை இயக்க <ph name="WEBSITE" /> தளத்திற்கு உங்கள் அனுமதி தேவை</translation>
 <translation id="8788265440806329501">வழிசெலுத்தல் வரலாறு மூடப்பட்டுள்ளது</translation>
 <translation id="8790193082819560975">தயாரிப்பை வாங்குவதற்கான விருப்பங்களைப் புதிய பக்கத்தில் தேட தட்டலாம்.</translation>
 <translation id="8798449543960971550">படித்தவை</translation>

@@ -287,7 +287,6 @@ Orri honek espero bezala funtzionatzen ez badu, eman optimizatzeko baimena.</tra
 <translation id="3885770153807205175">Hizkuntza-hautatzailea</translation>
 <translation id="3889417619312448367">Desinstalatu Google Chrome</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
-<translation id="3893985792899396936">Chrome-ri buruzko aholkua: bilatu Lens bidez</translation>
 <translation id="3941890832296813527">Instalazio-errorea: instalatzailearen fitxategi-izenak ez du balio edo ez da onartzen.</translation>
 <translation id="395904275706073188">Babestutako orriak ezin dira irakurri. Probatu beste orri batekin.</translation>
 <translation id="3968962723676998462">Chrome-ko datuak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>
@@ -505,7 +504,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Fitxa honek baliabide gehiago erabiltzen ditu. Errendimendua hobetzeko, eman fitxa inaktibo ezartzeko baimena Chrome-ri.</translation>
 <translation id="6182736845697986886">Instalazioak huts egin du, eguneratze-zerbitzariak barneko errore bat izan duelako.</translation>
-<translation id="6187085551300363958">Chrome-rako aholkua: gorde pasahitzak</translation>
 <translation id="6192058120268468905">Zure kontua Chrome-n</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> bazkideak Chrome-ren funtzionamenduari agian eragingo dion luzapen bat gehitu du.
 
@@ -652,7 +650,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="7627609214560473136">Datuak babesteko, eman azkenaldian bisitatu ez dituzun webguneei baimenak kentzeko baimena Chrome-ri.</translation>
 <translation id="7629695634924605473">Chrome-k abisatu egingo dizu pasahitzak inoiz arriskuan badaude</translation>
 <translation id="7641148173327520642">Sistemaren administratzailearen konfigurazioaren arabera, Google Chrome-k <ph name="ALTERNATIVE_BROWSER_NAME" /> arakatzailea ireki behar du <ph name="TARGET_URL_HOSTNAME" /> helbidera joateko.</translation>
-<translation id="7641448682796883218">Chrome-rako aholkua: arakatze seguru hobetua</translation>
 <translation id="7649070708921625228">Laguntza</translation>
 <translation id="7651907282515937834">Chrome Enterprise logotipoa</translation>
 <translation id="76531479118467370">Chrome-k deskarga hau blokeatu du, Arakatze segurua desaktibatu duzulako eta fitxategia egiaztatu ezin delako</translation>

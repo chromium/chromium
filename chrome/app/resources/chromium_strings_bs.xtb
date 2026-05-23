@@ -88,7 +88,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="193439633299369377">ChromiumOS treba ponovo pokrenuti da se primijeni ažuriranje.</translation>
 <translation id="1951406923938785464">Chromium je blokirao ovo preuzimanje jer se ta vrsta fajla ne preuzima često i fajl je možda opasan</translation>
 <translation id="1953553007165777902">Preuzimanje… Preostalo je <ph name="MINUTE" /> min</translation>
-<translation id="1965068424387304464">Savjet za Chromium: sačuvajte lozinke</translation>
 <translation id="1966382378801805537">Chromium ne može odrediti ili postaviti zadani preglednik</translation>
 <translation id="1990262977744080398">Informacije o tome zašto Chromium blokira neke fajlove; otvara se na novoj kartici</translation>
 <translation id="1999715455684970349">Održava softver Chromiuma ažurnim. Ako se ova usluga onemogući ili zaustavi, softver Chromiuma se neće moći održavati ažurnim, što će značiti da se sigurnosne ranjivosti koje mogu nastati neće moći riješiti i da funkcije možda neće funkcionirati. Ova usluga se sama deinstalira kada ne postoji softver Chromiuma koji je koristi.</translation>
@@ -264,7 +263,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3802055581630249637">Chromium predučitava stranice za koje postoji vjerovatnoća da ćete ih posjetiti kako bi se brže učitavale prilikom posjete</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3823384748599722168">Da koristite sačuvane lozinke, slijedite QR kôd, preuzmite Chromium za iOS i prijavite se na Google račun</translation>
-<translation id="3837584850181228767">Savjet za Chromium: poboljšano Sigurno pregledanje</translation>
 <translation id="3846683726093018685">**Sažmi:** u jednoj rečenici od najviše 30 riječi opiši primarnu temu i svrhu sadržaja na snimku ekrana.
 
           **Predloži pitanja:** generiraj listu s 3–5 pitanja koja potiču na razmišljanje i koja korisnik može postaviti da bolje razumije snimak ekrana. Ova pitanja trebaju uključivati najmanje jedno pitanje koje se konkretno odnosi na vizuelni objekat, njegov dizajn ili položaj.</translation>
@@ -751,7 +749,6 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="9148058034647219655">Izađi</translation>
 <translation id="9155105544013854680">Nastavite gdje ste stali: Chromium može vratiti kartice svaki put kada ga ponovo pokrenete. Da uključite ovo, idite u</translation>
 <translation id="9158494823179993217">Vaš administrator sistema je konfigurirao Chromium da otvori alternativni preglednik za pristup URL-u<ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="9183331186620388872">Savjet za Chromium: pretražujte putem Objektiva</translation>
 <translation id="9185526690718004400">Ponovo pokrenite da ažurirate &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Prilagodite Chromium sebi</translation>

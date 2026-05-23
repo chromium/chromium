@@ -288,7 +288,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3885770153807205175">Language picker</translation>
 <translation id="3889417619312448367">Uninstall Google Chrome</translation>
 <translation id="3892148308691398805">Copy text</translation>
-<translation id="3893985792899396936">Chrome tip: Search with Lens</translation>
 <translation id="3941890832296813527">Install error: The installer filename is invalid or unsupported.</translation>
 <translation id="395904275706073188">Protected pages can't be read. Try a different page.</translation>
 <translation id="3968962723676998462">Enter your passphrase to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -506,7 +505,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">This tab is using extra resources. To improve your performance, let Chrome make it inactive.</translation>
 <translation id="6182736845697986886">Installation failed because of an update server internal error.</translation>
-<translation id="6187085551300363958">Chrome tip: Save passwords</translation>
 <translation id="6192058120268468905">Your account in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> has added an extension that may change the way that Chrome works.
 
@@ -653,7 +651,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7627609214560473136">To protect your data, let Chrome remove permissions from sites that you haven't visited recently.</translation>
 <translation id="7629695634924605473">Chrome lets you know if your passwords are ever compromised</translation>
 <translation id="7641148173327520642">Your system administrator has configured Google Chrome to open <ph name="ALTERNATIVE_BROWSER_NAME" /> to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Chrome tip: Enhanced Safe Browsing</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7651907282515937834">Chrome Enterprise logo</translation>
 <translation id="76531479118467370">Chrome blocked this download because you turned Safe Browsing off and the file can't be verified</translation>
@@ -754,6 +751,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Search language list</translation>
 <translation id="8575047640889685742">Use your <ph name="BEGIN_LINK" />own passphrase<ph name="END_LINK" /> to encrypt all the Chrome data in your Google Account. Payment methods and addresses from Google Pay won't be encrypted. Browsing history from Chrome won't sync.</translation>
+<translation id="8590782867495422699">Reopen Google Search AI Mode</translation>
 <translation id="8601359445272098721">New! You can translate both text and images on your screen by selecting the 'translate screen' button</translation>
 <translation id="8614913330719544658">Google Chrome is unresponsive. Relaunch now?</translation>
 <translation id="861702415419836452">Chrome needs permission to access your camera to create a 3D map of your surroundings</translation>

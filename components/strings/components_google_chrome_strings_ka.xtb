@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">ეს გვერდები განკუთვნილია Chrome დეველოპერების მიერ გამოყენებისთვის და მათი აქტიურად შენარჩუნება ან ტესტირება დაუშვებელია. მათ ჩასართავად გახსენით <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, დააწკაპუნეთ ღილაკზე გვერდების გამართვის ჩასართავად და შემდეგ ისევ გადადით ამ გვერდზე.</translation>
 <translation id="3875312571075912821">თქვენი ქსელის დაცვის ან ანტივირუსის პარამეტრებში, მიეცით Chrome-ს ქსელზე წვდომის
           უფლება.</translation>
+<translation id="3893985792899396936">მინიშნება Chrome-ისთვის: Lens-ით ძიება</translation>
 <translation id="4949828774841497663">გახსენით: აპები &gt; სისტემის პარამეტრები &gt; ქსელი, აირჩიეთ
           აქტიური ქსელი, დააწკაპუნეთ ღილაკზე „დეტალები...“ და გააუქმეთ ნებისმიერი პროქსი-სერვერის
           არჩევა.</translation>
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           და დარწმუნდით, რომ თქვენი კონფიგურაცია დაყენებულია „არა პროქსი“ ან „პირდაპირზე“.</translation>
+<translation id="6187085551300363958">Chrome მინიშნება: პაროლების შენახვა</translation>
 <translation id="6341737370356890233">გადადით
         Chrome-ის მენიუში &gt;
         <ph name="SETTINGS_TITLE" />
@@ -43,6 +45,7 @@
           ქსელი და ინტერნეტი &gt; პროქსი-სერვერი
           და გააუქმეთ არჩევა „პარამეტრების ავტომატური ამოცნობა“.</translation>
 <translation id="7230956101631259640">თქვენ ათვალიერებთ დაცულ გვერდს Chrome-ში</translation>
+<translation id="7641448682796883218">Chrome მინიშნება: გაძლიერებული Safe Browsing</translation>
 <translation id="8232971017369963250">Chrome არსებობს <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />-ის ღია კოდის პროექტის წყალობით.</translation>
 <translation id="8279509328145658601">Chrome, ასევე, მუშაობს <ph name="BEGIN_LINK_OSS" />ღია კოდის სხვა პროგრამული უზრუნველყოფის<ph name="END_LINK_OSS" /> დამსახურებით.</translation>
 <translation id="8544217240017914508">Google Chrome ცდილობს გადახდის მეთოდების შევსების პარამეტრების შეცვლას.</translation>

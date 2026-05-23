@@ -287,7 +287,6 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="3885770153807205175">Outil de sélection de langue</translation>
 <translation id="3889417619312448367">Désinstaller Google Chrome</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
-<translation id="3893985792899396936">Astuce Chrome : recherchez avec Lens</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom de fichier du programme d'installation est incorrect ou non compatible.</translation>
 <translation id="395904275706073188">Impossible de lire les pages protégées. Essayez une autre page.</translation>
 <translation id="3968962723676998462">Saisissez votre phrase secrète pour utiliser et enregistrer des données Chrome dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
@@ -505,7 +504,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Bêta</translation>
 <translation id="6180522807229584611">Cet onglet utilise des ressources supplémentaires. Pour améliorer les performances, autorisez Chrome à le désactiver.</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
-<translation id="6187085551300363958">Astuce Chrome : enregistrez vos mots de passe</translation>
 <translation id="6192058120268468905">Votre compte dans Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> a ajouté une extension qui pourrait modifier le fonctionnement de Chrome.
 
@@ -652,7 +650,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7627609214560473136">Pour protéger vos données, autorisez Chrome à supprimer les autorisations des sites que vous n'avez pas consultés récemment.</translation>
 <translation id="7629695634924605473">Chrome vous indique si vos mots de passe ont été piratés</translation>
 <translation id="7641148173327520642">Votre administrateur système a configuré Google Chrome de sorte que <ph name="ALTERNATIVE_BROWSER_NAME" /> s'ouvre pour accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Astuce Chrome : navigation sécurisée avec protection renforcée</translation>
 <translation id="7649070708921625228">Aide</translation>
 <translation id="7651907282515937834">Logo Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome a bloqué ce téléchargement, car vous avez désactivé la navigation sécurisée et le fichier ne peut pas être validé</translation>

@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">這些頁面的適用對象為 Chrome 開發人員，可能不會主動維護或測試。如要啟用，請前往 <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />，按一下按鈕啟用偵錯頁面，再返回此頁面。</translation>
 <translation id="3875312571075912821">在防火牆或防毒軟件設定中允許 Chrome 存取
           網絡。</translation>
+<translation id="3893985792899396936">Chrome 提示：使用「智能鏡頭」搜尋</translation>
 <translation id="4949828774841497663">前往 [應用程式] &gt; [系統設定] &gt; [網絡]，選取有效的網絡，然後按一下「詳細資料…」按鈕，並取消選取任何可能已選取的 Proxy。</translation>
 <translation id="5005121315113832363">Chrome 已封鎖此頁面</translation>
 <translation id="6011049234605203654">前往
@@ -22,6 +23,7 @@
           &gt;
           [<ph name="PROXIES_TITLE" />]
           並確認您的設定為 [不使用 Proxy] 或 [直接連線]。</translation>
+<translation id="6187085551300363958">Chrome 提示：儲存密碼</translation>
 <translation id="6341737370356890233">前往
         [Chrome 選單] &gt;
         [<ph name="SETTINGS_TITLE" />]
@@ -41,6 +43,7 @@
           [網絡和互聯網] &gt; [Proxy]，
           然後取消選取 [自動偵測設定]。</translation>
 <translation id="7230956101631259640">您正在查看安全的 Chrome 頁面</translation>
+<translation id="7641448682796883218">Chrome 提示：強化安全瀏覽</translation>
 <translation id="8232971017369963250">Chrome 得以面世，有賴 <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> 開放原始碼項目。</translation>
 <translation id="8279509328145658601">Chrome 的開發亦有賴其他<ph name="BEGIN_LINK_OSS" />開放原始碼軟件<ph name="END_LINK_OSS" />。</translation>
 <translation id="8544217240017914508">Google Chrome 正嘗試修改填入付款方法的設定。</translation>

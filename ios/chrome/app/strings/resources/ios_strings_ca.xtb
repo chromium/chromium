@@ -69,6 +69,7 @@
 <translation id="1253032109800629289">Amaga Rep notificacions de seguiment de preus</translation>
 <translation id="1254424942107648268">Cerca l'anterior</translation>
 <translation id="1258491128795710625">Novetats</translation>
+<translation id="126093867734601535">Reajusta l'alçada del full.</translation>
 <translation id="1262724000444746916">Amaga l'opció Afegeix a Adreces d'interès</translation>
 <translation id="1263231323834454256">Llista de lectura</translation>
 <translation id="1263433075299269530">La darrera pestanya oberta</translation>
@@ -677,6 +678,7 @@
 <translation id="340669334496430859">Darrera modificació</translation>
 <translation id="3409785640040772790">Maps</translation>
 <translation id="3416023309465857378">25 d'octubre de 2023</translation>
+<translation id="3426715535827854458">Amaga la barra d'eines</translation>
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3441673211568148613">Mantén la navegació privada</translation>
 <translation id="3443810440409579745">S'ha rebut una pestanya.</translation>
@@ -979,6 +981,7 @@
 <translation id="4489536976005181779">{count,plural, =1{La pàgina s'ha afegit a la llista de lectura del teu compte, {email}}other{Les pàgines s'han afegit a la llista de lectura del teu compte, {email}}}</translation>
 <translation id="4493604894403585654">Has iniciat la sessió com a <ph name="USER_EMAIL" />. Pots aturar la sincronització en qualsevol moment a la configuració. És possible que Google personalitzi la Cerca i altres serveis en funció del teu historial.</translation>
 <translation id="4502423230170890588">Suprimeix d'aquest dispositiu</translation>
+<translation id="4508486880075514067">Amplia a pantalla completa</translation>
 <translation id="4508750114462689118">Tanca la promoció d'inici de sessió</translation>
 <translation id="4509345063551561634">Ubicació:</translation>
 <translation id="4517684186578051919">Informació del dispositiu</translation>
@@ -1212,6 +1215,7 @@
 <translation id="5242899254250321823">Canvia la contrasenya al lloc web</translation>
 <translation id="5248640482715684545">Aquest lloc web està provant d'obrir una altra aplicació.</translation>
 <translation id="5250371859659394278">Des d'una font desconeguda</translation>
+<translation id="525510229763628836">Minimitzat</translation>
 <translation id="5269913829202614649">Personalitza la pàgina d'inici</translation>
 <translation id="5271265092610673171">{count,plural, =1{Un camp obligatori és buit. Emplena'l abans de desar.}other{Alguns camps obligatoris són buits. Emplena'ls abans de desar.}}</translation>
 <translation id="5271549068863921519">Desa la contrasenya</translation>
@@ -1667,6 +1671,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6746338529702829275">Revisa les dades del compte</translation>
 <translation id="6750456911389438250">{count,plural, =1{S'ha importat {count} element de l'historial}other{S'han importat {count} elements de l'historial}}</translation>
 <translation id="6755200887046212842">Gestiona els comptes</translation>
+<translation id="6757899787818440812">Alçada mitjana</translation>
 <translation id="6759709389246683070">Pots mantenir premuda aquesta pestanya i configurar un recordatori per comprovar-la més tard</translation>
 <translation id="6761393919622941301">Àudio</translation>
 <translation id="6770452996697898492">[RESERVAT]</translation>
@@ -2129,6 +2134,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8368001212524806591">Fes un seguiment del preu</translation>
 <translation id="8368198938968349418">Activa l'Emplenament automàtic…</translation>
 <translation id="8370406443343902172">Ves a Configuració...</translation>
+<translation id="8370929854657845191">Amplia a alçada mitjana</translation>
 <translation id="8372471489238799313">{count,plural, =1{Suprimeix l'adreça}other{Suprimeix les adreces}}</translation>
 <translation id="8378714024927312812">Gestionat per la teva organització</translation>
 <translation id="8385363453480067273">Cerca el que veus amb Google Lens</translation>

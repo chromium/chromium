@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">‏هذه الصفحات مخصّصة لمطوّري Chrome، وقد لا تم صيانتها أو اختبارها بشكلٍ منتظم. لتفعيلها، يُرجى الانتقال إلى <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> والنقر على زر تفعيل صفحات تصحيح الأخطاء، ثم الانتقال إلى هذه الصفحة مرة أخرى.</translation>
 <translation id="3875312571075912821">‏اسمح لمتصفح Chrome بالدخول إلى الشبكة من خلال إعدادات جدار الحماية أو
         برنامج مكافحة الفيروسات.</translation>
+<translation id="3893985792899396936">‏نصيحة من Chrome: البحث باستخدام "عدسة Google"</translation>
 <translation id="4949828774841497663">‏يُرجى الانتقال إلى "التطبيقات" (Applications) &gt; "إعدادات النظام" (System Settings) &gt; "الشبكة" (Network)، ثم اختيار
           الشبكة النشطة، والنقر على زر "التفاصيل…" (Details…‎) وإلغاء اختيار أي خوادم وكيلة
           سبق اختيارها.</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           وتأكد من ضبط الإعداد على "بلا خادم وكيل" أو "مباشر."</translation>
+<translation id="6187085551300363958">‏نصيحة من Chrome: حفظ كلمات المرور أولوية</translation>
 <translation id="6341737370356890233">‏انتقل إلى
         قائمة Chrome &gt;
         <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@
           الشبكة والإنترنت &gt; الخادم الوكيل
           وإلغاء اختيار "رصد الإعدادات تلقائيًا".</translation>
 <translation id="7230956101631259640">‏أنت تعرض صفحة Chrome آمنة.</translation>
+<translation id="7641448682796883218">‏نصيحة من Chrome: حان وقت "الحماية المحسّنة للتصفّح الآمن"</translation>
 <translation id="8232971017369963250">‏أصبح Chrome متاحًا من خلال مشروع <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> المفتوح المصدر.</translation>
 <translation id="8279509328145658601">‏أصبح Chrome متاحًا أيضًا من خلال <ph name="BEGIN_LINK_OSS" />برنامج آخر مفتوح المصدر<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">‏يحاول Google Chrome تعديل إعدادات ميزة "الملء التلقائي" لبيانات طُرق الدفع.</translation>

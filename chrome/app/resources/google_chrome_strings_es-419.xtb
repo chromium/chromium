@@ -284,7 +284,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="3885770153807205175">Selector de idioma</translation>
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
-<translation id="3893985792899396936">Sugerencia de Chrome: Busca con Lens</translation>
 <translation id="3941890832296813527">Error de instalación: El nombre de archivo del instalador no es válido o no es compatible.</translation>
 <translation id="395904275706073188">No se pueden leer las páginas protegidas. Prueba con otra página.</translation>
 <translation id="3968962723676998462">Ingresa tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -498,7 +497,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Versión Beta de Google Chrome</translation>
 <translation id="6180522807229584611">Esta pestaña está usando recursos adicionales. Para mejorar el rendimiento, permite que Chrome la desactive.</translation>
 <translation id="6182736845697986886">No se pudo completar la instalación debido a un error interno del servidor de actualización.</translation>
-<translation id="6187085551300363958">Sugerencia de Chrome: Guardar contraseñas</translation>
 <translation id="6192058120268468905">Tu cuenta en Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> agregó una extensión que puede cambiar el funcionamiento de Chrome.
 
@@ -645,7 +643,6 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="7627609214560473136">Para proteger tus datos, permite que Chrome quite permisos de los sitios que no visitaste recientemente.</translation>
 <translation id="7629695634924605473">Chrome te informará si tus contraseñas se ven comprometidas</translation>
 <translation id="7641148173327520642">El administrador del sistema configuró Google Chrome de manera que se abriera <ph name="ALTERNATIVE_BROWSER_NAME" /> para acceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Sugerencia de Chrome: Navegación segura mejorada</translation>
 <translation id="7649070708921625228">Ayuda</translation>
 <translation id="7651907282515937834">Logotipo de Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome bloqueó esta descarga porque desactivaste la Navegación segura y no se puede verificar el archivo</translation>

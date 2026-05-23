@@ -12,9 +12,11 @@
 <translation id="3444832043240812445">Diese Seite zeigt nur Informationen zu deinen letzten Abstürzen, wenn du die <ph name="BEGIN_LINK" />Absturzberichtsfunktion aktivierst<ph name="END_LINK" />.</translation>
 <translation id="3512634283363927263">Diese Seiten sind für Chrome-Entwickler gedacht und werden möglicherweise nicht aktiv gepflegt oder getestet. Wenn du sie aktivieren möchtest, gehe zu <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> und klicke auf den Button zum Aktivieren von Debugging-Seiten. Rufe diese Seite dann noch einmal auf.</translation>
 <translation id="3875312571075912821">Erlaube Chrome in deinen Firewall- und Virenschutzeinstellungen den Zugriff auf das Netzwerk.</translation>
+<translation id="3893985792899396936">Chrome-Tipp: Mit Lens suchen</translation>
 <translation id="4949828774841497663">Gehe zu „Anwendungen“ &gt; „Systemeinstellungen“ &gt; „Netzwerk“ und wähle das aktive Netzwerk aus. Klicke auf den Button „Details“ und deaktiviere alle ausgewählten Proxys.</translation>
 <translation id="5005121315113832363">Diese Seite wurde von Chrome blockiert</translation>
 <translation id="6011049234605203654">Gehe zum Chrome-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="ADVANCED_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ und vergewissere dich, dass in deiner Konfiguration die Einstellung „Kein Proxy“ oder „Direkt“ verwendet wird.</translation>
+<translation id="6187085551300363958">Chrome-Tipp: Passwörter speichern</translation>
 <translation id="6341737370356890233">Öffne
           das Chrome-Menü &gt;
           <ph name="SETTINGS_TITLE" />
@@ -25,6 +27,7 @@
           diese Option für eine verbesserte Leistung wieder zu aktivieren.</translation>
 <translation id="6581867098636731226">Öffne das Chrome-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="SYSTEM_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ &gt; „Netzwerk und Internet“ &gt; „Proxy“ und hebe die Auswahl von „Einstellungen automatisch erkennen“ auf.</translation>
 <translation id="7230956101631259640">Dies ist eine sichere Chrome-Seite</translation>
+<translation id="7641448682796883218">Chrome-Tipp: erweitertes Safe Browsing</translation>
 <translation id="8232971017369963250">Chrome wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ermöglicht.</translation>
 <translation id="8279509328145658601">Chrome wird auch durch andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
 <translation id="8544217240017914508">Google Chrome versucht, die Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>

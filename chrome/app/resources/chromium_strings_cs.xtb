@@ -87,7 +87,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="193439633299369377">Aktualizace se použije po restartování systému ChromiumOS.</translation>
 <translation id="1951406923938785464">Prohlížeč Chromium toto stahování zablokoval, protože tento typ souboru se běžně nestahuje a může být nebezpečný</translation>
 <translation id="1953553007165777902">Stahování… Počet zbývajících minut: <ph name="MINUTE" /></translation>
-<translation id="1965068424387304464">Tip pro Chromium: Ukládání hesel</translation>
 <translation id="1966382378801805537">Chromium nemůže určit ani nastavit výchozí prohlížeč</translation>
 <translation id="1990262977744080398">Proč Chromium některé soubory blokuje, otevře se na nové kartě</translation>
 <translation id="1999715455684970349">Udržuje software Chromium aktuální. V případě zakázání nebo zastavení té služby se software Chromium nebude aktualizovat, což znamená, že nebude možné opravit případné chyby zabezpečení a funkce nemusí fungovat. Pokud tuto službu žádný software Chromium nepoužívá, sama se odinstaluje.</translation>
@@ -263,7 +262,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3802055581630249637">Chromium předběžně načítá stránky, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji</translation>
 <translation id="3810973564298564668">Spravovat</translation>
 <translation id="3823384748599722168">Pokud chcete používat svá uložená hesla, naskenujte QR kód, stáhněte si Chromium pro iOS a přihlaste se ke svému účtu Google</translation>
-<translation id="3837584850181228767">Tip pro Chromium: Vylepšené Bezpečné prohlížení</translation>
 <translation id="3846683726093018685">**Shrň obsah:** V jedné větě do 30 slov popiš hlavní téma a účel obsahu na snímku obrazovky.
 
           **Navrhni otázky:** Vygeneruj seznam 3–5 otázek, které by uživatelé mohli položit s cílem lépe snímku obrazovky porozumět. Alespoň jedna z otázek by se měla týkat konkrétního vizuálního objektu, jeho designu nebo umístění.</translation>
@@ -750,7 +748,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="9148058034647219655">Ukončit</translation>
 <translation id="9155105544013854680">Pokračujte od stavu, ve kterém jste skončili: Chromium může při každém restartu obnovit karty. Tuto funkci můžete zapnout v</translation>
 <translation id="9158494823179993217">Administrátor systému nakonfiguroval prohlížeč Chromium tak, aby pro přístup k adrese <ph name="TARGET_URL_HOSTNAME" /> otevřel alternativní prohlížeč.</translation>
-<translation id="9183331186620388872">Tip pro Chromium: Vyhledávejte pomocí Lens</translation>
 <translation id="9185526690718004400">Znovu spustit a aktualizovat &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Přizpůsobte si Chromium</translation>

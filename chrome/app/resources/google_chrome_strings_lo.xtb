@@ -288,7 +288,6 @@
 <translation id="3885770153807205175">ຕົວເລືອກພາສາ</translation>
 <translation id="3889417619312448367">ຖອນຕິດຕັ້ງ Google Chrome</translation>
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
-<translation id="3893985792899396936">ເຄັດລັບສຳລັບ Chrome: ຊອກຫາດ້ວຍ Lens</translation>
 <translation id="3941890832296813527">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຊື່ໄຟລ໌ຂອງຕົວຕິດຕັ້ງບໍ່ຖືກຕ້ອງ ຫຼື ລະບົບບໍ່ຮອງຮັບ.</translation>
 <translation id="395904275706073188">ບໍ່ສາມາດອ່ານໜ້າທີ່ມີການປ້ອງກັນໄດ້. ລອງໃຊ້ໜ້າອື່ນ.</translation>
 <translation id="3968962723676998462">ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -506,7 +505,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">ແຖບນີ້ກຳລັງໃຊ້ຊັບພະຍາກອນເພີ່ມເຕີມ. ເພື່ອປັບປຸງປະສິດທິພາບຂອງທ່ານ, ໃຫ້ Chrome ຊ່ວຍເຮັດໃຫ້ມັນບໍ່ເຮັດວຽກ.</translation>
 <translation id="6182736845697986886">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກເຊີບເວີອັບເດດເກີດຂໍ້ຜິດພາດພາຍໃນ.</translation>
-<translation id="6187085551300363958">ເຄັດລັບ Chrome: ບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="6192058120268468905">ບັນຊີຂອງທ່ານໃນ Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ໄດ້ເພີ່ມສ່ວນຂະຫຍາຍທີ່ອາດປ່ຽນວິທີການເຮັດວຽກຂອງ Chrome.
 
@@ -653,7 +651,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7627609214560473136">ເພື່ອປົກປ້ອງຂໍ້ມູນຂອງທ່ານ, ກະລຸນາອະນຸຍາດໃຫ້ Chrome ລຶບການອະນຸຍາດອອກຈາກເວັບໄຊທີ່ທ່ານບໍ່ໄດ້ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້.</translation>
 <translation id="7629695634924605473">Chrome ແຈ້ງໃຫ້ທ່ານຮູ້ຖ້າມີຄົນຮູ້ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="7641148173327520642">ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານໄດ້ກຳນົດຄ່າໃຫ້ Google Chrome ເປີດ <ph name="ALTERNATIVE_BROWSER_NAME" /> ເພື່ອເຂົ້າເຖິງ <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">ເຄັດລັບ Chrome: Safe Browsing ທີ່ປັບປຸງດີຂຶ້ນ</translation>
 <translation id="7649070708921625228">ຊ່ວຍ​ເຫຼືອ</translation>
 <translation id="7651907282515937834">ໂລໂກ້ Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome ບລັອກການດາວໂຫຼດນີ້ ເນື່ອງຈາກທ່ານປິດ Safe Browsing ແລະ ເຮັດໃຫ້ບໍ່ສາມາດຢັ້ງຢືນໄຟລ໌ໄດ້</translation>

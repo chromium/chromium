@@ -2999,6 +2999,13 @@ Esta política solo se puede establecer como política del usuario basada en la 
 <translation id="2866726566162790531">Lista de orígenes que permiten todas las autenticaciones de HTTP</translation>
 <translation id="2868756546751652023">Permitir que los usuarios utilicen la conexión instantánea mediante dispositivo móvil</translation>
 <translation id="286898786908566256">Permitir que los usuarios envíen números de teléfono desde Chrome a sus dispositivos Android</translation>
+<translation id="287087426320717057">Esta política permite que los usuarios inicien cualquier tipo de actualización de firmware.
+
+      Si habilitas la política o no la estableces, los usuarios, como el propietario del dispositivo, podrán iniciar actualizaciones de firmware.
+
+      Si inhabilitas la política, los usuarios no podrán aplicar actualizaciones de firmware.
+
+      Esta política se aplica al firmware para actualizaciones de firmware de periféricos externos y actualizaciones de firmware de los componentes internos de los dispositivos <ph name="PRODUCT_OS_FLEX_NAME" />. Esta política no afecta las actualizaciones de firmware de los componentes internos de los dispositivos <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="2872098849906555324">Inhabilitar la sincronización de Google Drive</translation>
 <translation id="2872189563975139803">Configuración de separación de perfiles de empresa</translation>
 <translation id="2872961005593481000">Cerrar</translation>

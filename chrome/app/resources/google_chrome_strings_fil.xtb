@@ -288,7 +288,6 @@ Kung hindi gumagana ang page na ito gaya ng inaasahan, subukang payagan ang pag-
 <translation id="3885770153807205175">Picker ng wika</translation>
 <translation id="3889417619312448367">I-uninstall ang Google Chrome</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
-<translation id="3893985792899396936">Tip sa Chrome: Maghanap Gamit ang Lens</translation>
 <translation id="3941890832296813527">Error sa pag-install: Invalid o hindi sinusuportahan ang filename ng installer.</translation>
 <translation id="395904275706073188">Hindi mababasa ang mga pinoprotektahang page. Sumubok ng ibang page.</translation>
 <translation id="3968962723676998462">Ilagay ang iyong passphrase para magamit at ma-save ang data sa Chrome sa account mo, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -506,7 +505,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Gumagamit ang tab na ito ng mga karagdagang resource. Para pahusayin ang iyong performance, hayaan ang Chrome na gawin itong hindi aktibo.</translation>
 <translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
-<translation id="6187085551300363958">Tip sa Chrome: Mag-save ng Mga Password</translation>
 <translation id="6192058120268468905">Iyong Account sa Chrome</translation>
 <translation id="6220551899604141979">Nagdagdag ang <ph name="PARTNER_NAME" /> ng extension na posibleng bumago sa paraan ng paggana ng Chrome.
 
@@ -653,7 +651,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7627609214560473136">Para protektahan ang iyong data, hayaan ang Chrome na mag-alis ng mga pahintulot sa mga site na hindi mo binisita kamakailan.</translation>
 <translation id="7629695634924605473">Ipinapaalam sa iyo ng Chrome kung nakompromiso ang mga password mo</translation>
 <translation id="7641148173327520642">Na-configure ng iyong system administrator ang Google Chrome para buksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /> para ma-access ang <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Tip sa Chrome: Pinahusay na Ligtas na Pag-browse</translation>
 <translation id="7649070708921625228">Tulong</translation>
 <translation id="7651907282515937834">Logo ng Chrome Enterprise</translation>
 <translation id="76531479118467370">Na-block ng Chrome ang pag-download na ito dahil in-off mo ang Ligtas na Pag-browse at hindi ma-verify ang file</translation>

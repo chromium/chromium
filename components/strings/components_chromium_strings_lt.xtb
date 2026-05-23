@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="130631256467250065">Pakeitimai įsigalios kitą kartą iš naujo paleidus įrenginį.</translation>
+<translation id="1965068424387304464">„Chromium“ patarimas: išsaugokite slaptažodžius</translation>
 <translation id="261308610302996111">Eikite į
           „Chromium“ meniu &gt;
           <ph name="SETTINGS_TITLE" />
@@ -14,6 +15,7 @@
 <translation id="3064346599913645280">Peržiūrite saugų „Chromium“ puslapį</translation>
 <translation id="3255926992597692024">„Chromium“ bando keisti mokėjimo metodų pildymo nustatymus.</translation>
 <translation id="358997566136285270">„Chromium“ logotipas</translation>
+<translation id="3837584850181228767">„Chromium“ patarimas: Sustiprintas saugus naršymas</translation>
 <translation id="4050599136622776556">„Chromium“ bando redaguoti mokėjimo metodus.</translation>
 <translation id="4365115785552740256">„Chromium“ pasiekiama naudojant <ph name="BEGIN_LINK_CHROMIUM" />„Chromium“<ph name="END_LINK_CHROMIUM" /> atvirojo šaltinio projektą ir kitą <ph name="BEGIN_LINK_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_OSS" />.</translation>
 <translation id="4622039161600275920">Šį puslapį užblokavo „Chromium“</translation>
@@ -48,4 +50,5 @@
         kad pagerėtų našumas.</translation>
 <translation id="8597726643333341451">Peržiūrite saugų „Chrome for Testing“ puslapį</translation>
 <translation id="8684913864886094367">„Chromium“ netinkamai išsijungė.</translation>
+<translation id="9183331186620388872">„Chromium“ patarimas: ieškokite naudodami „Lens“</translation>
 </translationbundle>

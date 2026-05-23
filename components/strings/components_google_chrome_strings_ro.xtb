@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">Aceste pagini sunt destinate dezvoltatorilor Chrome și este posibil să nu fie întreținute sau testate în mod activ. Pentru a le activa, accesează <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, dă clic pe butonul pentru a activa paginile de remediere a erorilor, apoi accesează din nou această pagină.</translation>
 <translation id="3875312571075912821">Din setările pentru firewall sau antivirus, permite browserului Chrome să acceseze
           rețeaua.</translation>
+<translation id="3893985792899396936">Sfat pentru Chrome: caută cu Lens</translation>
 <translation id="4949828774841497663">Accesează Aplicații &gt; Setări de sistem &gt; Rețea, selectează rețeaua
           activă, dă clic pe butonul Detalii... și debifează orice proxy
           care ar fi fost selectat.</translation>
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           și asigurați-vă că aveți configurația setată la „fără proxy” sau „direct”.</translation>
+<translation id="6187085551300363958">Sfat pentru Chrome: salvează parolele</translation>
 <translation id="6341737370356890233">Accesează
           meniul Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -43,6 +45,7 @@
           Rețea și internet &gt; Proxy
           și debifează opțiunea Detectează automat setările.</translation>
 <translation id="7230956101631259640">Se afișează o pagină Chrome securizată</translation>
+<translation id="7641448682796883218">Sfat pentru Chrome: Navigarea sigură îmbunătățită</translation>
 <translation id="8232971017369963250">Chrome există datorită proiectului open source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome funcționează și datorită altor <ph name="BEGIN_LINK_OSS" />programe software open source<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome încearcă să modifice setările pentru completarea metodelor de plată.</translation>

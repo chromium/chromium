@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Странициве се наменети за да ги користат програмерите на Chrome и може да не се одржуваат или тестираат активно. За да ги овозможите, одете на <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, кликнете го копчето за да ги овозможите страниците за отстранување грешки, па одете на страницава повторно.</translation>
 <translation id="3875312571075912821">Дозволете Chromе да пристапи на мрежата во поставките за
         заштитен ѕид или антивирус.</translation>
+<translation id="3893985792899396936">Совет за Chrome: Пребарувајте со Lens</translation>
 <translation id="4949828774841497663">Одете во „Applications &gt; System Settings &gt; Network“, изберете ја
           активната мрежа, кликнете го копчето Details… и поништете го изборот на сите прокси-сервери
           што може да се избрани.</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           и погрижете се конфигурацијата да ви е поставена на „нема прокси“ или „директно“.</translation>
+<translation id="6187085551300363958">Совет за Chrome: Зачувувајте ги лозинките</translation>
 <translation id="6341737370356890233">Одете во
         менито на Chrome &gt;
         <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@
           Мрежа и интернет &gt; Прокси“
           и поништете го изборот на „Автоматско откривање поставки“.</translation>
 <translation id="7230956101631259640">Вие сте на безбедна страница на Chrome</translation>
+<translation id="7641448682796883218">Совет за Chrome: Подобрено безбедно прелистување</translation>
 <translation id="8232971017369963250">Chrome го овозможува проектот за софтвер со отворен код на <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome го овозможува и друг <ph name="BEGIN_LINK_OSS" />софтвер со отворен код<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome се обидува да ги измени поставките за пополнување на начините на плаќање.</translation>

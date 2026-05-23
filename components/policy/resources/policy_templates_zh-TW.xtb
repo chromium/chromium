@@ -2818,6 +2818,13 @@ PAC 樣式的字串：
 <translation id="2866726566162790531">允許所有 HTTP 驗證機制的來源清單</translation>
 <translation id="2868756546751652023">允許使用者使用即時網路共用功能</translation>
 <translation id="286898786908566256">允許使用者將電話號碼從 Chrome 傳送到自己的 Android 裝置</translation>
+<translation id="287087426320717057">這項政策可讓使用者啟動任何類型的韌體更新。
+
+      如果將這項政策設為啟用或未設定，使用者 (例如裝置擁有者) 就能啟動韌體更新。
+
+      如果將這項政策設為停用，所有使用者都無法套用韌體更新。
+
+      這項政策適用於 <ph name="PRODUCT_OS_FLEX_NAME" /> 裝置的外部周邊裝置韌體更新和內部元件韌體更新，不會影響 <ph name="PRODUCT_OS_NAME" /> 裝置的內部元件韌體更新。</translation>
 <translation id="2872098849906555324">停用 Google 雲端硬碟同步功能</translation>
 <translation id="2872189563975139803">企業設定檔區隔設定</translation>
 <translation id="2872961005593481000">關閉</translation>

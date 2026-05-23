@@ -284,7 +284,6 @@
 <translation id="3885770153807205175">انتخاب‌گر زبان</translation>
 <translation id="3889417619312448367">‏حذف نصب Google Chrome</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
-<translation id="3893985792899396936">‏نکته Chrome: جستجو کردن با «لنز»</translation>
 <translation id="3941890832296813527">خطای نصب: نام فایل نصب‌کننده نامعتبر است یا از آن پشتیبانی نمی‌شود.</translation>
 <translation id="395904275706073188">صفحه‌های محافظت‌شده خوانده نمی‌شوند. صفحه دیگری را امتحان کنید.</translation>
 <translation id="3968962723676998462">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
@@ -498,7 +497,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">‏این زبانه از منابع اضافی استفاده می‌کند. برای بهبود عملکرد، اجازه دهید Chrome آن را غیرفعال کند.</translation>
 <translation id="6182736845697986886">نصب به‌دلیل وجود خطای داخلی در سرور به‌روزرسانی انجام نشد.</translation>
-<translation id="6187085551300363958">‏نکته Chrome: گذرواژه‌ها را ذخیره کنید</translation>
 <translation id="6192058120268468905">‏حساب شما در Chrome</translation>
 <translation id="6220551899604141979">‏‫<ph name="PARTNER_NAME" /> افزونه‌ای اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.
 
@@ -644,7 +642,6 @@
 <translation id="7627609214560473136">‏برای محافظت از داده‌هایتان، به Chrome اجازه داده می‌شود اجازه‌های سایت‌هایی را که اخیراً از آن‌ها بازدید نکرده‌اید حذف کند.</translation>
 <translation id="7629695634924605473">‏Chrome می‌تواند، اگر گذرواژه‌هایتان در معرض خطر باشد، مطلعتان کند</translation>
 <translation id="7641148173327520642">‏سرپرست سیستم برای باز شدن <ph name="ALTERNATIVE_BROWSER_NAME" /> جهت دسترسی به <ph name="TARGET_URL_HOSTNAME" />، Google Chrome را پیکربندی کرده است.</translation>
-<translation id="7641448682796883218">‏نکته Chrome: «مرور ایمن پیشرفته»</translation>
 <translation id="7649070708921625228">راهنما</translation>
 <translation id="7651907282515937834">‏نشان‌واره Chrome Enterprise</translation>
 <translation id="76531479118467370">‏‫Chrome این بارگیری را مسدود کرد زیرا «مرور ایمن» خاموش است و نمی‌توان فایل را تأیید کرد</translation>

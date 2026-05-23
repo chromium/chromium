@@ -287,7 +287,6 @@ Als deze pagina niet werkt zoals verwacht, kun je optimalisatie toestaan.</trans
 <translation id="3885770153807205175">Taalkiezer</translation>
 <translation id="3889417619312448367">Google Chrome verwijderen</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
-<translation id="3893985792899396936">Chrome-tip: Zoeken met Lens</translation>
 <translation id="3941890832296813527">Installatiefout: De bestandsnaam van het installatieprogramma is ongeldig of wordt niet ondersteund.</translation>
 <translation id="395904275706073188">Beschermde pagina's kunnen niet worden gelezen. Probeer een andere pagina.</translation>
 <translation id="3968962723676998462">Voer je wachtwoordzin in om Chrome-gegevens in je account <ph name="ACCOUNT_EMAIL" /> te gebruiken en op te slaan</translation>
@@ -503,7 +502,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Bèta</translation>
 <translation id="6180522807229584611">Dit tabblad gebruikt extra resources. Sta toe dat Chrome het inactief maakt om de prestaties te verbeteren.</translation>
 <translation id="6182736845697986886">De installatie is mislukt vanwege een interne fout met de updateserver.</translation>
-<translation id="6187085551300363958">Chrome-tip: Wachtwoorden opslaan</translation>
 <translation id="6192058120268468905">Je account in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> heeft een extensie toegevoegd die de manier kan wijzigen waarop Chrome werkt.
 
@@ -650,7 +648,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="7627609214560473136">Ter bescherming van je gegevens kun je Chrome de rechten laten verwijderen voor sites die je niet recent hebt bezocht.</translation>
 <translation id="7629695634924605473">Chrome laat het je weten als je wachtwoorden mogelijk niet veilig meer zijn</translation>
 <translation id="7641148173327520642">Je systeembeheerder heeft Google Chrome geconfigureerd om <ph name="ALTERNATIVE_BROWSER_NAME" /> te openen voor toegang tot <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Chrome-tip: Uitgebreide versie van Safe Browsing</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7651907282515937834">Chrome Enterprise-logo</translation>
 <translation id="76531479118467370">Chrome heeft deze download geblokkeerd, omdat je Safe Browsing hebt uitgezet en het bestand niet kan worden geverifieerd</translation>
@@ -751,6 +748,7 @@ Je kunt pas nieuwe bookmarks opslaan in je account als je er een paar hebt verwi
 <translation id="8555465886620020932">Servicefout: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="856656450041460113">Zoeken in lijst met talen</translation>
 <translation id="8575047640889685742">Gebruik je <ph name="BEGIN_LINK" />eigen wachtwoordzin<ph name="END_LINK" /> om alle Chrome-gegevens in je Google-account te versleutelen. Betaalmethoden en adressen van Google Pay worden niet versleuteld. De browsegeschiedenis in Chrome wordt niet gesynchroniseerd.</translation>
+<translation id="8590782867495422699">AI-modus in Google Zoeken opnieuw openen</translation>
 <translation id="8601359445272098721">Nieuw! Je kunt zowel tekst als afbeeldingen op je scherm vertalen door de knop Scherm vertalen te selecteren</translation>
 <translation id="8614913330719544658">Google Chrome reageert niet meer. Nu opnieuw starten?</translation>
 <translation id="861702415419836452">Chrome heeft toegangsrechten voor de camera nodig om een 3D-kaart van je omgeving te maken.</translation>

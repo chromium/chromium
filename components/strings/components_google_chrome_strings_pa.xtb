@@ -12,6 +12,7 @@
 <translation id="3444832043240812445">ਇਹ ਪੰਨਾ ਕੇਵਲ ਤੁਹਾਡੇ ਮੌਜੂਦਾ ਕ੍ਰੈਸ਼ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦਿਖਾਉਂਦਾ ਹੈ ਜੇਕਰ ਤੁਸੀਂ <ph name="BEGIN_LINK" />ਕ੍ਰੈਸ਼ ਰਿਪੋਰਟ ਨੂੰ ਚਾਲੂ<ph name="END_LINK" /> ਕਰਦੇ ਹੋ।</translation>
 <translation id="3512634283363927263">ਇਹ ਪੰਨੇ Chrome ਵਿਕਾਸਕਾਰਾਂ ਵੱਲੋਂ ਵਰਤੋਂ ਕਰਨ ਲਈ ਬਣਾਏ ਗਏ ਹਨ ਅਤੇ ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਇਨ੍ਹਾਂ ਦੀ ਸਮੇਂ-ਸਮੇਂ 'ਤੇ ਸਾਂਭ-ਸੰਭਾਲ ਜਾਂ ਜਾਂਚ ਨਾ ਕੀਤੀ ਜਾਂਦੀ ਹੋਵੇ। ਉਨ੍ਹਾਂ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> 'ਤੇ ਜਾਓ, ਡੀਬੱਗ ਪੰਨਿਆਂ ਦੀ ਸੈਟਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰਨ ਲਈ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਫਿਰ ਇਸ ਪੰਨੇ 'ਤੇ ਦੁਬਾਰਾ ਜਾਓ।</translation>
 <translation id="3875312571075912821">Chrome ਨੂੰ ਆਪਣੀਆਂ ਫ਼ਾਇਰਵਾਲ ਜਾਂ ਐਂਟੀਵਾਇਰਸ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਨੈੱਟਵਰਕ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਦਿਓ।</translation>
+<translation id="3893985792899396936">Chrome ਦਾ ਨੁਕਤਾ: Lens ਰਾਹੀਂ ਖੋਜੋ</translation>
 <translation id="4949828774841497663">ਐਪਲੀਕੇਸ਼ਨਾਂ &gt; ਸਿਸਟਮ ਸੈਟਿੰਗਾਂ &gt; ਨੈੱਟਵਰਕ 'ਤੇ ਜਾਓ, ਕਿਰਿਆਸ਼ੀਲ ਨੈੱਟਵਰਕ ਦੀ ਚੋਣ ਕਰੋ, ਵੇਰਵੇ... ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰੋ ਅਤੇ ਚੁਣੀ ਗਈ ਕਿਸੇ ਵੀ ਪ੍ਰੌਕਸੀ ਨੂੰ ਅਣ-ਚੁਣਿਆ ਕਰੋ।</translation>
 <translation id="5005121315113832363">ਇਸ ਪੰਨੇ ਨੂੰ Chrome ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="6011049234605203654">ਇਸ 'ਤੇ ਜਾਓ
@@ -22,6 +23,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ਅਤੇ ਪੱਕਾ ਕਰੋ ਕਿ ਤੁਹਾਡਾ ਸੰਰੂਪਣ "ਕੋਈ ਪ੍ਰੌਕਸੀ ਨਹੀਂ" ਜਾਂ "ਡਾਇਰੈਕਟ" 'ਤੇ ਸੈੱਟ ਹੈ।</translation>
+<translation id="6187085551300363958">Chrome ਨੁਕਤਾ: ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6341737370356890233">Chrome ਮੀਨੂ&gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -39,6 +41,7 @@
           ਨੈੱਟਵਰਕ ਅਤੇ ਇੰਟਰਨੈੱਟ &gt; ਪ੍ਰੌਕਸੀ
           ਅਤੇ "ਸੈਟਿੰਗਾਂ ਦਾ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਪਤਾ ਲਗਾਓ" ਨੂੰ ਅਣ-ਚੁਣਿਆ ਕਰੋ।</translation>
 <translation id="7230956101631259640">ਤੁਸੀਂ ਇੱਕ ਸੁਰੱਖਿਅਤ Chrome ਪੰਨਾ ਦੇਖ ਰਹੇ ਹੋ</translation>
+<translation id="7641448682796883218">Chrome ਨੁਕਤਾ: ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ</translation>
 <translation id="8232971017369963250">Chrome ਨੂੰ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਪ੍ਰੋਜੈਕਟ ਦੀ ਮਦਦ ਨਾਲ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="8279509328145658601">Chrome ਨੂੰ ਹੋਰ <ph name="BEGIN_LINK_OSS" />ਖੁੱਲ੍ਹੇ ਸਰੋਤ ਸਾਫ਼ਟਵੇਅਰ<ph name="END_LINK_OSS" /> ਦੀ ਮਦਦ ਨਾਲ ਵੀ ਸੰਭਵ ਬਣਾਇਆ ਗਿਆ ਹੈ।</translation>
 <translation id="8544217240017914508">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਨੂੰ ਭਰਨ ਲਈ Google Chrome ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸੋਧ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਿਹਾ ਹੈ।</translation>

@@ -493,6 +493,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3067505415088964188">Mababa ang presyo</translation>
 <translation id="3070005020161560471">Awtomatikong isalin</translation>
 <translation id="3072980200212375806">Bubukas ang <ph name="APP_NAME" /> sa Chrome. Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_LINK1" />Mga Tuntunin ng Serbisyo ng Google<ph name="END_LINK1" />, at sa <ph name="BEGIN_LINK2" />Mga Karagdagang Tuntunin ng Serbisyo ng Google Chrome at ChromeOS<ph name="END_LINK2" />. Nalalapat din ang <ph name="BEGIN_LINK3" />Patakaran sa Privacy<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Maghanap sa tab gamit ang Google Lens</translation>
 <translation id="3080525922482950719">Puwede kang mag-save ng mga page para basahin sa ibang pagkakataon o nang offline</translation>
 <translation id="3087734570205094154">Sa ilalim</translation>
 <translation id="3091010850649238832">Ipakita ang mga content ng clipboard</translation>
@@ -550,6 +551,7 @@ Ang taong may passphrase mo lang ang makakabasa ng iyong naka-encrypt na data. H
 <translation id="3384347053049321195">Magbahagi ng larawan</translation>
 <translation id="3385749568468586663">Hindi available ang Gemini sa Incognito mode</translation>
 <translation id="3387650086002190359">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga error sa file system.</translation>
+<translation id="3391311825344469964">Puwede mong pamahalaan ang iyong mga window sa Window Manager ng Chrome</translation>
 <translation id="3417835166382867856">Maghanap sa mga tab</translation>
 <translation id="3430670036890315772">Kapag in-off ang iyong lock ng profile, maaalis ang naka-save na impormasyon mo</translation>
 <translation id="3435575784518354875">Para mapanatili ang access sa iyong mga password, i-export na ngayon ang mga ito, i-update ang Mga Serbisyo ng Google Play, at pagkatapos ay i-import ulit ang mga ito sa Google Password Manager. <ph name="BEGIN_LINK" />Tingnan ang mga kumpletong tagubilin<ph name="END_LINK" />.</translation>
@@ -1015,6 +1017,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, Naka-pin at Nagshe-share na Tab na Incognito</translation>
 <translation id="5375374982898812658">Mawawalan ka kaagad ng access sa grupo ng tab na “<ph name="GROUP_NAME" />,” at ide-delete ito sa lahat ng device mo</translation>
 <translation id="5375577065097716013">Hanapin sa Google Lens <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">I-save at i-share</translation>
 <translation id="5390367025924544771">Gustong gamitin ng <ph name="WEBSITE_ORIGIN" /> ang personal na impormasyon mula sa iyong digital wallet. Magpatuloy lang kung pinagkakatiwalaan mo ang site na ito. Posibleng linlangin ka ng mga mapanganib na site na magbunyag ng mga bagay tulad ng iyong legal na pangalan o numero ng ID.</translation>
 <translation id="5395376160638294582">Tiyaking magagamit mo sa anumang oras ang data ng Chrome sa iyong Google Account</translation>
 <translation id="539881862970320163">Iminumungkahi ang malakas na password. Naka-hide ang keyboard.</translation>
@@ -1098,6 +1101,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5763514718066511291">I-tap upang kopyahin ang URL para sa app na ito</translation>
 <translation id="5765517223145864268">Sabihin sa amin ang iyong karanasan. O <ph name="BEGIN_LINK" />baguhin ang iyong mga setting<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Hindi mahalagang data</translation>
+<translation id="5788665823391532892">Mag-ulat ng isyu...</translation>
 <translation id="5793665092639000975">Gumagamit ng <ph name="SPACE_USED" /> ng <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Na-block ang paksa</translation>
 <translation id="580893287573699959">Pamahalaan ang mga paksa at site kung saan ka interesado</translation>

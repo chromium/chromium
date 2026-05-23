@@ -13,6 +13,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3512634283363927263">Mae'r tudalennau hyn wedi'u bwriadu i'w defnyddio gan ddatblygwyr Chrome, ac mae'n bosib na fyddant yn cael eu cynnal na'u profi'n weithredol. Er mwyn eu galluogi, llywiwch i <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, cliciwch ar y botwm i alluogi tudalennau dadfygio, ac yna llywiwch i'r dudalen hon eto.</translation>
 <translation id="3875312571075912821">Caniatewch i Chrome gael mynediad at y rhwydwaith yn eich gosodiadau wal dân neu 
          wrthfeirysau.</translation>
+<translation id="3893985792899396936">Awgrym Chrome: Chwilio â Lens</translation>
 <translation id="4949828774841497663">Ewch i Apiau &gt; Gosodiadau System &gt; Rhwydwaith, dewiswch y
           rhwydwaith gweithredol, cliciwch ar y botwm Manylion... a dad-ddewiswch unrhyw ddirprwyon gweinydd
           a allai fod wedi cael eu dewis.</translation>
@@ -25,6 +26,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
           &gt;
           <ph name="PROXIES_TITLE" />
           a gwnewch yn siŵr bod eich ffurfweddiad wedi'i osod i "dim dirprwy weinydd" neu i "uniongyrchol."</translation>
+<translation id="6187085551300363958">Awgrym Chrome: Cadw Cyfrineiriau</translation>
 <translation id="6341737370356890233">Ewch i'r
           ddewislen Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
           Rhwydwaith a rhyngrwyd &gt; Dirprwy weinydd
           a dad-ddewis "Canfod gosodiadau yn awtomatig".</translation>
 <translation id="7230956101631259640">Rydych yn edrych ar dudalen Chrome ddiogel</translation>
+<translation id="7641448682796883218">Awgrym Chrome: Gwell Pori'n Ddiogel</translation>
 <translation id="8232971017369963250">Mae Chrome yn bosib oherwydd y prosiect ffynhonnell agored <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Mae Chrome hefyd yn bosib oherwydd <ph name="BEGIN_LINK_OSS" />feddalwedd ffynhonnell agored<ph name="END_LINK_OSS" /> eraill.</translation>
 <translation id="8544217240017914508">Mae Google Chrome yn ceisio addasu gosodiadau ar gyfer llenwi dulliau talu.</translation>

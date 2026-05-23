@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
 <translation id="130631256467250065">O‘zgartirishlar qurimla qaytadan ishga tushirilganda kuchga kiradi.</translation>
+<translation id="1965068424387304464">Chromium maslahati: Parollarni saqlang</translation>
 <translation id="261308610302996111">Bularni oching:
           Chromium menyusi &gt;
           <ph name="SETTINGS_TITLE" />
@@ -15,6 +16,7 @@
 <translation id="3064346599913645280">Xavfsiz Chromium sahifasini ko‘rmoqdasiz.</translation>
 <translation id="3255926992597692024">Chromium toʻlov usuli kiritilishi sozlamasini oʻzgaritishga urinmoqda.</translation>
 <translation id="358997566136285270">Chromium logotipi</translation>
+<translation id="3837584850181228767">Chromium maslahati: Saytlarni kuchaytirilgan rejimda xavfsiz kezish</translation>
 <translation id="4050599136622776556">Chromium toʻlov usullarini oʻzgartirishga urinmoqda.</translation>
 <translation id="4365115785552740256">Chromium yaratilishida <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ochiq kodli loyiha va boshqa <ph name="BEGIN_LINK_OSS" />ochiq kodli dasturiy ta’minotning<ph name="END_LINK_OSS" /> katta o‘rni bor.</translation>
 <translation id="4622039161600275920">Bu sahifa Chromium tomonidan bloklandi</translation>
@@ -48,4 +50,5 @@
           yana shu parametrni tanlashni tavsiya qilamiz.</translation>
 <translation id="8597726643333341451">Xavfsiz Chrome for Testing sahifasidasiz.</translation>
 <translation id="8684913864886094367">Chromium faoliyati noto‘g‘ri yakunlandi.</translation>
+<translation id="9183331186620388872">Chromium maslahati: Lens bilan qidiring</translation>
 </translationbundle>

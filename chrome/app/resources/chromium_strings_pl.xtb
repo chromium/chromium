@@ -85,7 +85,6 @@
 <translation id="193439633299369377">Zastosowanie aktualizacji wymaga ponownego uruchomienia systemu operacyjnego Chromium.</translation>
 <translation id="1951406923938785464">Pobieranie zostało zablokowane przez Chromium, ponieważ ten typ pliku nie jest często pobierany i może być niebezpieczny</translation>
 <translation id="1953553007165777902">Pobieram… Pozostało: <ph name="MINUTE" /> min</translation>
-<translation id="1965068424387304464">Wskazówka od Chromium: zapisuj hasła</translation>
 <translation id="1966382378801805537">Chromium nie może określić ani ustawić domyślnej przeglądarki</translation>
 <translation id="1990262977744080398">Dowiedz się, dlaczego Chromium blokuje niektóre pliki; link otwiera się w nowej karcie</translation>
 <translation id="1999715455684970349">Aktualizuje na bieżąco oprogramowanie Chromium. Jeśli ta usługa jest wyłączona lub zatrzymana, oprogramowanie Chromium nie będzie aktualizowane, co oznacza, że zauważone luki w zabezpieczeniach nie mogą być naprawiane, a funkcje mogą nie działać. Ta usługa odinstalowuje się samoczynnie, gdy żadne oprogramowanie Chromium z niej nie korzysta.</translation>
@@ -259,7 +258,6 @@
 <translation id="3802055581630249637">Chromium wstępnie wczytuje strony, które prawdopodobnie odwiedzisz, aby w razie potrzeby szybciej się ładowały</translation>
 <translation id="3810973564298564668">Zarządzaj</translation>
 <translation id="3823384748599722168">Aby korzystać z zapisanych haseł, użyj kodu QR, pobierz Chromium na iOS i zaloguj się na konto Google</translation>
-<translation id="3837584850181228767">Wskazówka od Chromium: Ulepszone bezpieczne przeglądanie</translation>
 <translation id="3846683726093018685">**Podsumuj:** w jednym zdaniu zawierającym mniej niż 30 słów opisz główny temat i cel treści na zrzucie ekranu.
 
           **Zasugeruj pytania:** wygeneruj listę 3–5 pytań pobudzających do myślenia, które użytkownik może zadać, aby lepiej zrozumieć zrzut ekranu. Te pytania powinny zawierać co najmniej 1 pytanie dotyczące konkretnego obiektu wizualnego, jego wyglądu lub umiejscowienia.</translation>
@@ -746,7 +744,6 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="9148058034647219655">Zakończ</translation>
 <translation id="9155105544013854680">Wznawianie przeglądania od tego samego miejsca: Chromium może po każdym ponownym uruchomieniu przywracać karty. Aby włączyć tę funkcję, otwórz</translation>
 <translation id="9158494823179993217">Administrator systemu skonfigurował Chromium w taki sposób, by strona <ph name="TARGET_URL_HOSTNAME" /> otwierała się w alternatywnej przeglądarce.</translation>
-<translation id="9183331186620388872">Wskazówka dotycząca Chromium: wyszukuj za pomocą Obiektywu</translation>
 <translation id="9185526690718004400">Uruchom ponownie, aby zaktualizować &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
 <translation id="924957577793602335">Dostosuj Chromium do swoich potrzeb</translation>

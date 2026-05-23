@@ -164,6 +164,7 @@
 <translation id="1104098698795583187">このタブグループに直ちにアクセスできなくなり、すべてのデバイスから削除されます</translation>
 <translation id="1106270460549661906">Gemini との共有を解除</translation>
 <translation id="1106350001632362876">しきい値を引き上げ</translation>
+<translation id="1107300737351978027">同じ数字を繰り返すことはできません</translation>
 <translation id="110850812463801904">OneDrive に手動で接続</translation>
 <translation id="1108600514891325577">停止(&amp;S)</translation>
 <translation id="1108938384783527433">履歴の同期</translation>
@@ -268,6 +269,7 @@
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1174073918202301297">ショートカットを追加しました</translation>
 <translation id="1174366174291287894">接続は常に保護されます（保護されない場合は通知されます）</translation>
+<translation id="1174759280027683968">Chrome に移動する</translation>
 <translation id="1175131936083782305">この機能は管理者が無効にしています。</translation>
 <translation id="1175277108283187866">サイトにアクセスするか、アドレスバーで検索を開始します</translation>
 <translation id="1175364870820465910">印刷(&amp;P)...</translation>
@@ -952,7 +954,6 @@
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{タブとグループを削除しますか？}=1{タブとグループを削除しますか？}other{タブとグループを削除しますか？}}</translation>
 <translation id="1636212173818785548">OK</translation>
 <translation id="163712950892155760"><ph name="BEGIN_PARAGRAPH1" />アプリのデータとは、（デベロッパーの設定に基づいて）アプリが保存したデータのことで、連絡先、メッセージ、写真などのデータが含まれます。バックアップ データは、ドライブの保存容量にはカウントされません。<ph name="END_PARAGRAPH1" /><ph name="BEGIN_PARAGRAPH2" />このサービスは [設定] で無効にできます。<ph name="END_PARAGRAPH2" /></translation>
-<translation id="1637224376458524414">このブックマークは iPhone でも使用できます</translation>
 <translation id="1637765355341780467">プロフィールを開こうとして問題が発生しました。一部の機能を使用できない可能性があります。</translation>
 <translation id="1639239467298939599">読み込んでいます</translation>
 <translation id="1641113438599504367">セーフ ブラウジング</translation>
@@ -1786,7 +1787,6 @@
 <translation id="221297410904507041">履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="2213410656650624348">適度</translation>
 <translation id="2214018885812055163">共有フォルダ</translation>
-<translation id="2214453882118345682">カメラを使って、見たものを購入、翻訳、特定できます。</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 行が非表示です&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> 行が非表示です&gt;}}</translation>
 <translation id="2215070081105889450">音声を共有するには、タブまたは画面を共有してください</translation>
 <translation id="2217208085547223783">信頼状態</translation>
@@ -2696,7 +2696,6 @@
 <translation id="2813765525536183456">新しいプロフィールを追加(&amp;A)</translation>
 <translation id="281390819046738856">リクエストに署名できませんでした。</translation>
 <translation id="2814489978934728345">このページの読み込みを停止します</translation>
-<translation id="2815693974042551705">ブックマーク フォルダ</translation>
 <translation id="2816319641769218778">パスワードを Google アカウントに保存するには、同期を有効にします。</translation>
 <translation id="2817435998497102771">壁紙とスタイルを設定</translation>
 <translation id="2817861546829549432">「トラッキング拒否」を有効にすると、リクエストが閲覧トラフィックに組み込まれます。その効果は、ウェブサイトがリクエストに応じるかどうか、およびリクエストがどう解釈されるかによって異なります。たとえば、一部のウェブサイトでは、その閲覧者のウェブサイト アクセス履歴を基にした広告表示を行わない、という対応をしています。トラッキングを拒否しても、多くのウェブサイトではユーザーの閲覧データが収集され利用されるのが現状です。たとえば、セキュリティの強化、コンテンツ、サービス、広告、ウェブサイトのおすすめ情報の提供、レポート統計情報の作成などにこれらのデータが利用されます。</translation>
@@ -2810,7 +2809,6 @@
 <translation id="2893318819023133318">ビューを反転</translation>
 <translation id="2894596417096093634">障害レポート ID</translation>
 <translation id="2894757982205307093">グループにタブを追加</translation>
-<translation id="2895244606836384727">リマインダー: タブグループ</translation>
 <translation id="289695669188700754">キー ID: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">このカスタム設定はシークレット ウィンドウをすべて閉じると削除されます</translation>
 <translation id="2897878306272793870"><ph name="TAB_COUNT" /> 個のタブが開きます。本当によろしいですか？</translation>
@@ -4440,7 +4438,6 @@
 <translation id="4007064749990466867">{GROUP_COUNT,plural, =1{この操作を行うとデバイスからグループが完全に削除されます。}other{この操作を行うとデバイスからグループが完全に削除されます。}}</translation>
 <translation id="4010036441048359843">ハイライト表示をオンにする</translation>
 <translation id="4010746393007464819">Debian 12（Bookworm）へのアップグレードが利用可能です</translation>
-<translation id="4010917659463429001">ブックマークをモバイル デバイスで使用できるようにするには、<ph name="GET_IOS_APP_LINK" />してください。</translation>
 <translation id="4011073493055408531">市街の上空で紫色と緑色の模様を成すオーロラ。</translation>
 <translation id="4011897773956589748">次回 Gemini がこのアカウントにアクセスする際は、再度アクセスの許可が必要になります。</translation>
 <translation id="4012509903424054869">PDF が自動変換され、テキストの検索や選択が可能になります</translation>
@@ -5340,7 +5337,6 @@
 <translation id="4660465405448977105">{COUNT,plural, =1{画像}other{# 件の画像}}</translation>
 <translation id="4660540330091848931">サイズを変更しています</translation>
 <translation id="4662373422909645029">ニックネームに数字を含めることはできません</translation>
-<translation id="4662788913887017617">このブックマークは iPhone と共有できます</translation>
 <translation id="4663373278480897665">カメラを使用できます</translation>
 <translation id="4665014895760275686">メーカー</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> で保存されたすべてのデータが削除されます。</translation>
@@ -5385,7 +5381,6 @@
 <translation id="4688176403504673761"><ph name="MANAGER" /> がこのデバイスを以前のバージョンに戻しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="4688870304423708920">インターネット接続を確認して、Gemini をもう一度お試しください</translation>
 <translation id="4689235506267737042">デモ設定の選択</translation>
-<translation id="4689421377817139245">このブックマークは iPhone と同期できます</translation>
 <translation id="4690091457710545971">&lt;Intel Wi-Fi ファームウェアにより生成された 4 つのファイル: csr.lst、fh_regs.lst、radio_reg.lst、monitor.lst.sysmon。最初の 3 つはレジスタダンプを含むバイナリ ファイルで、個人情報や端末を特定できる情報を一切含まないことが Intel により表明されています。最後の 1 つは Intel ファームウェアからの実行トレースで、個人情報や端末を特定できる情報は除かれていますが、サイズが大きいためここには表示できません。これらのファイルはご使用の端末で最近発生した Wi-Fi の問題への応答として生成されたもので、問題を調査するために Intel と共有されます。&gt;</translation>
 <translation id="4691995778017338841">写真をイメージどおりに加工します</translation>
 <translation id="4692342362587775867">このサイトからの通知は閲覧の妨げになる可能性があります</translation>
@@ -5635,7 +5630,6 @@
 <translation id="4864805589453749318">学校用アカウントを追加する権限を付与している保護者を選択してください。</translation>
 <translation id="4864905533117889071"><ph name="SENSOR_NAME" />（ブロック中）</translation>
 <translation id="486505726797718946">思い出を保存しました</translation>
-<translation id="4865063548323785458">パスワードを保存し、サイトやアプリに自動入力して簡単にログインできます</translation>
 <translation id="486635084936119914">ダウンロード後に特定の種類のファイルを自動的に開きます</translation>
 <translation id="4867272607148176509">保護者はアプリの承認とブロック、利用時間の上限の設定、ウェブ ブラウジングの制御を行えます。学校のリソースのほとんどにアクセスするための学校用アカウントは、後で追加できます。</translation>
 <translation id="486796517585164369">· 最近使用したタブ</translation>
@@ -5742,6 +5736,7 @@
 <translation id="4931387733184123331">日食</translation>
 <translation id="4932733599132424254">日付</translation>
 <translation id="4933484234309072027"><ph name="URL" /> に埋め込まれたページ</translation>
+<translation id="4934763315031217818">連続する数字を含めることはできません</translation>
 <translation id="4936042273057045735">通知の同期は、仕事用プロファイルが設定されているスマートフォンには対応していません</translation>
 <translation id="4937676329899947885">Wi-Fi ネットワークを受信しています</translation>
 <translation id="4938052313977274277">速度</translation>
@@ -6709,7 +6704,6 @@
 <translation id="5624120631404540903">パスワードを管理</translation>
 <translation id="5624959475330585145">安全でない接続を使用する前に確認する</translation>
 <translation id="5625225435499354052">Google Pay で編集</translation>
-<translation id="5626134646977739690">名前:</translation>
 <translation id="5626172233890210551">代わりにパスワードを使用</translation>
 <translation id="5627832140542566187">ディスプレイの向き</translation>
 <translation id="5628434207686266338">デバイスのパスワードを設定</translation>
@@ -6855,7 +6849,6 @@
 <translation id="5740709157181662145"><ph name="DEVICE_OS" /> ハードウェアのサポートと安定性</translation>
 <translation id="574104302965107104">ディスプレイ ミラーリング</translation>
 <translation id="574209121243317957">高さ</translation>
-<translation id="5742787970423162234">機能強化されたパッケージ化ウェブ アプリケーション。<ph name="BEGIN_LINK_LEARN_MORE" />詳細<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="5743501966138291117">自動ロック解除を使用するには、12 桁以内の PIN を指定してください</translation>
 <translation id="5746169159649715125">PDF に保存</translation>
 <translation id="5747785204778348146">Dev - 不安定</translation>
@@ -7368,6 +7361,7 @@
 <translation id="6096326118418049043">X.500 名</translation>
 <translation id="6097480669505687979">空き領域を確保しない場合、ユーザーとデータが自動的に削除される可能性があります。</translation>
 <translation id="6097600385983390082">音声検索が閉じられました</translation>
+<translation id="60980640539386483"><ph name="BUTTON_TEXT" />、<ph name="TOOLTIP_TEXT" /></translation>
 <translation id="609892108553214365">このカードを iPhone で使用</translation>
 <translation id="609942571968311933"><ph name="DEVICE_NAME" /> からテキストがコピーされました</translation>
 <translation id="6099766472403716061"><ph name="HOST" /> による MIDI デバイスの操作と再プログラムを常に許可する</translation>
@@ -7887,7 +7881,6 @@
 <translation id="6464825623202322042">このデバイス</translation>
 <translation id="6465841119675156448">インターネットを使用しない</translation>
 <translation id="6466258437571594570">通知を送信するかどうかをサイトが確認できないようにします</translation>
-<translation id="6466988389784393586">すべてのブックマークを開く(&amp;O)</translation>
 <translation id="6467230443178397264"><ph name="FILE_NAME" /> をスキャン</translation>
 <translation id="6467304607960172345">動画の全画面表示を最適化</translation>
 <translation id="6467377768028664108"><ph name="DEVICE_TYPE" /> で次の操作を実行できます。</translation>
@@ -8720,6 +8713,7 @@
 <translation id="7030695672997239647">タブを右クリックして [タブをグループに追加]、[新しいグループ] の順に選択します</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" /> - シリアルポートを接続しました</translation>
 <translation id="7033616203784997570">62 文字以下で入力してください</translation>
+<translation id="7033731598469029604">自動ブラウジング</translation>
 <translation id="7034692021407794547">「お支払いの管理」権限のある管理者は、まず管理コンソールの [Google Meet ハードウェア] で Google Meet ハードウェアの利用規約に同意する必要があります。</translation>
 <translation id="70356134210715500">パスキーを設定</translation>
 <translation id="7036550011779986598"><ph name="RP_ID" /> でアカウントのパスキーが作成されました。パスキーを使用すると、すばやく安全にログインできます。パスキーは <ph name="USER" /> の Google パスワード マネージャーに保存されます。<ph name="LEARN_MORE" /></translation>
@@ -9487,7 +9481,6 @@
 <translation id="7582582252461552277">このネットワークを優先する</translation>
 <translation id="7582844466922312471">モバイル データ</translation>
 <translation id="7583948862126372804">数</translation>
-<translation id="7584287158780898016">価格トラッキングのアラートを有効にする</translation>
 <translation id="7585106857920830898">組織のセキュリティ ポリシーに沿ってチェックしています…</translation>
 <translation id="7585490016012953607">再設定パスワード - 最大 3 か月間一時的に保存されます</translation>
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
@@ -10505,6 +10498,7 @@
 <translation id="8265018477030547118">保存先: このデバイスのみ</translation>
 <translation id="826511437356419340">ウィンドウ概観モードに切り替わりました。移動するにはスワイプするか、キーボードの場合は Tab キーを押してください。</translation>
 <translation id="8266430295499893285">パスワードにアクセスするには、本人確認が必要です</translation>
+<translation id="8266751606569906450"><ph name="MINIMUM" /> 桁以上で指定してください</translation>
 <translation id="8266947622852630193">すべての入力方法</translation>
 <translation id="8267539814046467575">プリンタの追加</translation>
 <translation id="826905130698769948">クライアント証明書が無効です</translation>
@@ -10650,7 +10644,6 @@
 <translation id="8363277452449582220">海</translation>
 <translation id="8366396658833131068">ネットワーク接続が復元されました。キオスク アプリを起動するには、別のネットワークを選択するか、下の [続行] ボタンを押してください。</translation>
 <translation id="8366694425498033255">選択キー</translation>
-<translation id="8368859634510605990">すべてのブックマークを開く(&amp;O)</translation>
 <translation id="8370294614544004647">ノートパソコンを閉じたときにスリープ状態にする</translation>
 <translation id="8370419414641876532">[パスワードと自動入力] をクリックします</translation>
 <translation id="8371695176452482769">お話しください</translation>
@@ -11317,7 +11310,6 @@
 <translation id="881799181680267069">ほかを隠す</translation>
 <translation id="8818152010000655963">壁紙</translation>
 <translation id="8818988764764862764">ウィンドウを左に移動しました</translation>
-<translation id="8819155700324279105">オンラインの脅威に対する保護を強化</translation>
 <translation id="8819510664278523111">デバイスの EID は <ph name="EID_NUMBER" />、デバイスの IMEI は <ph name="IMEI_NUMBER" />、デバイスのシリアル番号は <ph name="SERIAL_NUMBER" /> です。これらの番号を使用して、サービスを有効にできます。</translation>
 <translation id="8820817407110198400">ブックマーク</translation>
 <translation id="8821045908425223359">IP アドレスを自動的に設定</translation>
@@ -11573,7 +11565,6 @@
 <translation id="8987321822984361516">ブラウザは組織によって管理され、プロファイルは <ph name="PROFILE_DOMAIN" /> によって管理されています</translation>
 <translation id="8987736167266086032">同じところから再開</translation>
 <translation id="8987927404178983737">月</translation>
-<translation id="8988539543012086784">このページは <ph name="BOOKMARK_FOLDER" /> に保存されています</translation>
 <translation id="8989359959810288806">テザリング ステータスを更新</translation>
 <translation id="8989779557457435460">デフォルトで現在のタブを共有する</translation>
 <translation id="8990243615717080992">パスワードまたはその他の復元方法でログインできます</translation>

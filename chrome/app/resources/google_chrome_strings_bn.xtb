@@ -286,7 +286,6 @@
 <translation id="3885770153807205175">ভাষা বাছাইকারী</translation>
 <translation id="3889417619312448367">Google Chrome আনইনস্টল করুন</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
-<translation id="3893985792899396936">Chrome সম্পর্কিত পরামর্শ: Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="3941890832296813527">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার ফাইলের নাম ভুল বা সেটি কাজ করে না।</translation>
 <translation id="395904275706073188">সুরক্ষিত পৃষ্ঠা পড়া যাবে না। অন্য কোনও পৃষ্ঠা পড়ার চেষ্টা করুন।</translation>
 <translation id="3968962723676998462">আপনার অ্যাকাউন্ট, <ph name="ACCOUNT_EMAIL" />-এ Chrome ডেটা ব্যবহার এবং সেভ করার জন্য পাসফ্রেজ লিখুন</translation>
@@ -502,7 +501,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome বিটা</translation>
 <translation id="6180522807229584611">এই ট্যাব অতিরিক্ত রিসোর্ট ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chrome-কে এটি নিষ্ক্রিয় করতে দিন।</translation>
 <translation id="6182736845697986886">ইনস্টলেশন করা যায়নি, কারণ আপডেট সার্ভারের ইন্টার্নাল সমস্যা আছে।</translation>
-<translation id="6187085551300363958">Chrome সম্পর্কিত পরামর্শ: পাসওয়ার্ড সেভ করুন</translation>
 <translation id="6192058120268468905">Chrome-এ আপনার অ্যাকাউন্ট</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> এমন একটি এক্সটেনশন যোগ করেছে যেটি Chrome কাজ করার পদ্ধতি পরিবর্তন করতে পারে।
 
@@ -649,7 +647,6 @@
 <translation id="7627609214560473136">আপনার ডেটা সুরক্ষিত রাখতে, আপনি সম্প্রতি ভিজিট করেননি এমন সাইট থেকে Chrome-কে অনুমতি সরাতে দিন।</translation>
 <translation id="7629695634924605473">আপনার পাসওয়ার্ড কখনও চুরি হলে তা Chrome আপনাকে জানিয়ে দেবে</translation>
 <translation id="7641148173327520642"><ph name="TARGET_URL_HOSTNAME" /> অ্যাক্সেস করতে <ph name="ALTERNATIVE_BROWSER_NAME" /> ব্যবহার করার জন্য আপনার সিস্টেম অ্যাডমিনিস্ট্রেটর Google Chrome কনফিগার করেছে।</translation>
-<translation id="7641448682796883218">Chrome সম্পর্কিত পরামর্শ: উন্নত Safe Browsing</translation>
 <translation id="7649070708921625228">সহায়তা</translation>
 <translation id="7651907282515937834">Chrome এন্টারপ্রাইজ লোগো</translation>
 <translation id="76531479118467370">আপনি Safe Browsing ফিচারটি বন্ধ করে দেওয়ার ফলে ফাইলটি যাচাই করা যাচ্ছে না, তাই Chrome এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
@@ -749,6 +746,7 @@
 <translation id="8555465886620020932">পরিষেবায় সমস্যা হয়েছে: <ph name="SERVICE_ERROR" />।</translation>
 <translation id="856656450041460113">ভাষার তালিকা সার্চ করুন</translation>
 <translation id="8575047640889685742">আপনার Google অ্যাকাউন্টের সব Chrome ডেটা এনক্রিপ্ট করতে <ph name="BEGIN_LINK" />নিজের পাসফ্রেজ<ph name="END_LINK" /> ব্যবহার করুন। Google Pay থেকে পাওয়া পেমেন্ট পদ্ধতি ও ঠিকানা এনক্রিপ্ট করা হবে না। Chrome থেকে ব্রাউজিং ইতিহাস সিঙ্ক হবে না।</translation>
+<translation id="8590782867495422699">Google Search AI মোড আবার খুলুন</translation>
 <translation id="8601359445272098721">নতুন! "স্ক্রিন অনুবাদ করুন" বোতাম বেছে নিয়ে আপনি স্ক্রিনে টেক্সট ও ছবি দুটিই অনুবাদ করতে পারেন</translation>
 <translation id="8614913330719544658">Google Chrome প্রতিক্রিয়া করছে না৷ এখনই পুনঃলঞ্চ করবেন?</translation>
 <translation id="861702415419836452">আপনার আশেপাশের 3D ম্যাপ তৈরি করতে এই সাইটটির জন্য Chrome-কে আপনার ক্যামেরা অ্যাক্সেস করার অনুমতি দিতে হবে</translation>

@@ -493,6 +493,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3067505415088964188">Prezo baixo</translation>
 <translation id="3070005020161560471">Traducir automaticamente</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> abrirase en Chrome. Ao continuar, aceptas as <ph name="BEGIN_LINK1" />Condicións de servizo de Google<ph name="END_LINK1" />, así como as <ph name="BEGIN_LINK2" />Condicións de servizo adicionais de Google Chrome e Chrome OS<ph name="END_LINK2" />. Tamén é aplicable a <ph name="BEGIN_LINK3" />Política de privacidade<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Buscar pestana con Google Lens</translation>
 <translation id="3080525922482950719">Podes gardar páxinas para lelas máis tarde ou sen conexión</translation>
 <translation id="3087734570205094154">Parte inferior</translation>
 <translation id="3091010850649238832">Mostrar contido do portapapeis</translation>
@@ -550,6 +551,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3384347053049321195">Compartir imaxe</translation>
 <translation id="3385749568468586663">Gemini non está dispoñible no modo de incógnito</translation>
 <translation id="3387650086002190359">Produciuse un erro ao descargar <ph name="FILE_NAME" /> debido a erros no sistema de ficheiros.</translation>
+<translation id="3391311825344469964">Podes xestionar as ventás no Xestor de ventás de Chrome</translation>
 <translation id="3417835166382867856">Realizar buscas nas pestanas</translation>
 <translation id="3430670036890315772">Se desactivas o bloqueo do perfil, quitarase a información gardada</translation>
 <translation id="3435575784518354875">Para poder acceder aos contrasinais, expórtaos agora, actualiza os servizos de Google Play e despois volve importalos no xestor de contrasinais de Google. <ph name="BEGIN_LINK" />Ver as instrucións completas.<ph name="END_LINK" /></translation>
@@ -1015,6 +1017,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, pestana do modo de incógnito de uso compartido fixada</translation>
 <translation id="5375374982898812658">Perderás inmediatamente o acceso ao grupo de pestanas "<ph name="GROUP_NAME" />", que se eliminará de todos os dispositivos</translation>
 <translation id="5375577065097716013">Buscar imaxe con Google Lens <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Gardar e compartir</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> quere usar información persoal do teu moedeiro dixital. Continúa só se confías neste sitio. Os sitios perigosos poderían enganarte para que reveles información como o teu nome legal ou número de documento de identidade.</translation>
 <translation id="5395376160638294582">Asegúrate de poder usar sempre os datos de Chrome na túa Conta de Google</translation>
 <translation id="539881862970320163">Suxestión de contrasinal seguro. Teclado oculto.</translation>
@@ -1098,6 +1101,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5763514718066511291">Tocar para copiar o URL para esta aplicación</translation>
 <translation id="5765517223145864268">Coméntanos a túa experiencia. Tamén podes <ph name="BEGIN_LINK" />cambiar a configuración<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Datos non importantes</translation>
+<translation id="5788665823391532892">Informar dun problema...</translation>
 <translation id="5793665092639000975">Espazo utilizado: <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Tema bloqueado</translation>
 <translation id="580893287573699959">Xestiona os temas e os sitios que che interesan</translation>

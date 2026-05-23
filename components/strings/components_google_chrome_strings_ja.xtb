@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">これらのページは Chrome デベロッパーが使用することを目的としたもので、積極的なメンテナンスやテストが行われていない可能性があります。これらのページを有効にするには、<ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> でデバッグページを有効にするボタンをクリックしてから、このページに戻ります。</translation>
 <translation id="3875312571075912821">ファイアウォールやウイルス対策の設定で、Chrome からネットワークへのアクセスを
         許可します。</translation>
+<translation id="3893985792899396936">Chrome のヒント: レンズで検索</translation>
 <translation id="4949828774841497663">[アプリケーション] &gt; [システム設定] &gt; [ネットワーク] に移動し、アクティブなネットワークを選択したあと、[詳細] ボタンをクリックして、選択されているプロキシがあれば選択を解除します。</translation>
 <translation id="5005121315113832363">このページは Chrome によってブロックされています</translation>
 <translation id="6011049234605203654">このオプションを無効にするには:
@@ -22,6 +23,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           の順に移動して、設定が [プロキシなし] または [直接] になっていることを確認します。</translation>
+<translation id="6187085551300363958">Chrome のヒント: パスワードを保存</translation>
 <translation id="6341737370356890233">Chrome メニュー &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -39,6 +41,7 @@
           [ネットワークとインターネット] &gt; [プロキシ]
           に移動して、[設定を自動的に検出する] の選択を解除します。</translation>
 <translation id="7230956101631259640">保護された Chrome ページを表示しています</translation>
+<translation id="7641448682796883218">Chrome のヒント: セーフ ブラウジング保護強化機能</translation>
 <translation id="8232971017369963250">Chrome は <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> のオープンソース プロジェクトによって実現しました。</translation>
 <translation id="8279509328145658601">Chrome の実現には、他の<ph name="BEGIN_LINK_OSS" />オープンソース ソフトウェア<ph name="END_LINK_OSS" />もかかわっています。</translation>
 <translation id="8544217240017914508">Google Chrome がお支払い方法の入力の設定を変更しようとしています。</translation>

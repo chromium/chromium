@@ -2875,6 +2875,13 @@ PAC 样式的字符串：
 <translation id="2866726566162790531">允许所有 HTTP 身份验证的来源列表</translation>
 <translation id="2868756546751652023">允许用户使用“即时网络共享”功能</translation>
 <translation id="286898786908566256">允许用户将电话号码从 Chrome 发送到 Android 设备</translation>
+<translation id="287087426320717057">此政策允许用户启动任何类型的固件更新。
+
+      如果此政策已启用或未设置，设备所有者等用户便能启动固件更新。
+
+      如果此政策已停用，所有用户都将无法应用固件更新。
+
+      此政策适用于 <ph name="PRODUCT_OS_FLEX_NAME" /> 设备的外围设备固件更新和内部组件固件更新。<ph name="PRODUCT_OS_NAME" /> 设备的内部组件固件更新不受此政策的影响。</translation>
 <translation id="2872098849906555324">停用 Google 云端硬盘同步功能</translation>
 <translation id="2872189563975139803">企业资料分离设置</translation>
 <translation id="2872961005593481000">关机</translation>

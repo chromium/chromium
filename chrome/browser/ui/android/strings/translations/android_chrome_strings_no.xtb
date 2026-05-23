@@ -493,6 +493,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3070005020161560471">Oversett automatisk</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> åpnes i Chrome. Ved å fortsette samtykker du i <ph name="BEGIN_LINK1" />Googles vilkår for bruk<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />tilleggsvilkårene for bruk av Google Chrome og ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Personvernreglene<ph name="END_LINK3" /> gjelder også.</translation>
+<translation id="3080375898390966733">Utfør fanesøk med Google Lens</translation>
 <translation id="3080525922482950719">Du kan lagre sider for å lese dem senere eller uten nett</translation>
 <translation id="3087734570205094154">Bunn</translation>
 <translation id="3091010850649238832">Vis innholdet på utklippstavlen</translation>
@@ -550,6 +551,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3384347053049321195">Del bildet</translation>
 <translation id="3385749568468586663">Gemini er ikke tilgjengelig i inkognitomodus</translation>
 <translation id="3387650086002190359">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt på grunn av filsystemfeil.</translation>
+<translation id="3391311825344469964">Du kan administrere vinduene dine i Window Manager for Chrome</translation>
 <translation id="3417835166382867856">Søk i faner</translation>
 <translation id="3430670036890315772">Hvis du slår av profillåsen, fjernes den lagrede informasjonen din</translation>
 <translation id="3435575784518354875">For å beholde tilgangen til passordene dine, eksporter dem nå, oppdater Google Play-tjenester, og importer dem til Google Passordlagring igjen. <ph name="BEGIN_LINK" />Se fullstendige instruksjoner.<ph name="END_LINK" /></translation>
@@ -1015,6 +1017,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, festet inkognitofane for deling</translation>
 <translation id="5375374982898812658">Du mister umiddelbart tilgangen til fanegruppen «<ph name="GROUP_NAME" />», og den blir slettet fra alle enhetene dine</translation>
 <translation id="5375577065097716013">Søk etter bildet med Google Lens <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Lagre og del</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vil bruke personopplysninger fra den digitale lommeboken din. Fortsett bare hvis du stoler på dette nettstedet. Farlige nettsteder kan lure deg til å oppgi ting som juridisk navn eller ID-nummer.</translation>
 <translation id="5395376160638294582">Sørg for at du alltid kan bruke Chrome-dataene i Google-kontoen din</translation>
 <translation id="539881862970320163">Et sterkt passord er foreslått. Tastaturet er skjult.</translation>
@@ -1069,6 +1072,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5628604359369369630">Ulest – tilgjengelig uten nett</translation>
 <translation id="5631483240431073854">Administrer åpne faner</translation>
 <translation id="5632485077360054581">Vis meg hvordan</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> trenger tillatelse fra deg for å kjøre <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Logget på som <ph name="USER_NAME" />. Feil med Google-kontoen. Åpner innstillinger.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Søkeloggen<ph name="END_LINK1" /> og <ph name="BEGIN_LINK2" />annen typer aktivitet<ph name="END_LINK2" /> kan lagres i Google-kontoen din.</translation>
 <translation id="5648166631817621825">Siste 7 dager</translation>
@@ -1098,6 +1102,7 @@ Google-kontoen din kan ha andre former for nettleserlogger, for eksempel søk og
 <translation id="5763514718066511291">Trykk for å kopiere nettadressen for denne appen</translation>
 <translation id="5765517223145864268">Fortell oss om opplevelsen din. Eller <ph name="BEGIN_LINK" />endre innstillingene<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Uviktige data</translation>
+<translation id="5788665823391532892">Rapporter et problem ...</translation>
 <translation id="5793665092639000975">Bruker <ph name="SPACE_USED" /> av <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5797949256525811424">Blokkert emne</translation>
 <translation id="580893287573699959">Administrer emnene og nettstedene du er interessert i</translation>
@@ -1875,6 +1880,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />slett Chrome-dataene i
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome fant et svakt passord du kan forbedre}other{Chrome fant # svake passord du kan forbedre}}</translation>
 <translation id="8766529642647037772">Vil du opprette en fremhevet link som denne?</translation>
 <translation id="8769783688897433958">Se nettstedsinformasjon og -tillatelser</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> trenger tillatelse fra deg for å kjøre <ph name="COUNT" /> utvidelser</translation>
 <translation id="8788265440806329501">Navigasjonsloggen er lukket</translation>
 <translation id="8790193082819560975">Trykk for å søke etter kjøpsalternativer for produktet på en ny fane.</translation>
 <translation id="8798449543960971550">Lest</translation>

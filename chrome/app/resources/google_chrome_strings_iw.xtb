@@ -284,7 +284,6 @@
 <translation id="3885770153807205175">הכלי לבחירת שפה</translation>
 <translation id="3889417619312448367">‏הסרת Google Chrome</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
-<translation id="3893985792899396936">‏טיפ ל-Chrome: חיפוש באמצעות Lens</translation>
 <translation id="3941890832296813527">שגיאת התקנה: שם הקובץ של מנהל ההתקנה לא תקין או לא נתמך.</translation>
 <translation id="395904275706073188">לא ניתן לקרוא דפים מוגנים. כדאי לנסות דף אחר.</translation>
 <translation id="3968962723676998462">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
@@ -498,7 +497,6 @@
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת ביטא</translation>
 <translation id="6180522807229584611">‏בכרטיסייה הזו נעשה שימוש במשאבים נוספים. כדי לשפר את הביצועים, כדאי לאפשר ל-Chrome להשבית אותה.</translation>
 <translation id="6182736845697986886">ההתקנה נכשלה עקב שגיאה פנימית בשרת העדכון.</translation>
-<translation id="6187085551300363958">‏טיפ ל-Chrome: שמירת סיסמאות</translation>
 <translation id="6192058120268468905">‏החשבון שלך ב-Chrome</translation>
 <translation id="6220551899604141979">‏התוסף התווסף על ידי <ph name="PARTNER_NAME" /> ויכול לשנות את אופן הפעולה של Chrome.
 
@@ -645,7 +643,6 @@
 <translation id="7627609214560473136">‏כדי להגן על הנתונים שלך, כדאי לאפשר ל-Chrome להסיר הרשאות מאתרים שלא נכנסת אליהם לאחרונה.</translation>
 <translation id="7629695634924605473">‏Chrome מודיע לך אם הסיסמאות שלך נמצאות בסיכון</translation>
 <translation id="7641148173327520642">‏לפי הגדרת מנהל המערכת, Google Chrome יפתח את <ph name="ALTERNATIVE_BROWSER_NAME" /> כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">‏טיפ ל-Chrome: הגרסה המשופרת של הגלישה הבטוחה</translation>
 <translation id="7649070708921625228">עזרה</translation>
 <translation id="7651907282515937834">‏לוגו של Chrome Enterprise</translation>
 <translation id="76531479118467370">‏Chrome חס את ההורדה הזאת כי השבתת את הגלישה הבטוחה ואי אפשר לאמת את הקובץ</translation>

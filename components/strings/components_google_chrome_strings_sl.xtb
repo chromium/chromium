@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Te strani so namenjene razvijalcem za Chrome in morda niso aktivno vzdrževane ali preizkušane. Če jih želite omogočiti, odprite <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, kliknite gumb, da omogočite strani za odpravljanje napak, in se znova pomaknite na to stran.</translation>
 <translation id="3875312571075912821">V nastavitvah požarnega zidu ali protivirusnega programa omogočite Chromu dostop do
         omrežja.</translation>
+<translation id="3893985792899396936">Nasvet za Chrome: Iščite z Googlom Lens</translation>
 <translation id="4949828774841497663">Odprite »Aplikacije &gt; Sistemske nastavitve &gt; Omrežje«, izberite
           aktivno omrežje, kliknite gumb »Podrobnosti …« in počistite vse strežnike proxy,
           ki so morda izbrani.</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           in poskrbite, da je konfiguracija nastavljena na »brez namestniškega strežnika« ali »neposredno«.</translation>
+<translation id="6187085551300363958">Nasvet za Chrome: Shranite gesla</translation>
 <translation id="6341737370356890233">Odprite
         Chromov meni &gt;
         <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@
           Omrežje in internet &gt; Strežnik proxy
           in počistite izbiro možnosti »Samodejno zaznaj nastavitve«.</translation>
 <translation id="7230956101631259640">Ogledujete si varno stran Chroma.</translation>
+<translation id="7641448682796883218">Nasvet za Chrome: Izboljšano varno brskanje</translation>
 <translation id="8232971017369963250">Chrome omogoča odprtokodni projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome omogoča tudi druga <ph name="BEGIN_LINK_OSS" />odprtokodna programska oprema<ph name="END_LINK_OSS" />.</translation>
 <translation id="8544217240017914508">Google Chrome poskuša spremeniti nastavitve za izpolnjevanje podatkov plačilnih sredstev.</translation>

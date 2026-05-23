@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">এইসব পৃষ্ঠা Chrome ডেভেলপারদের ব্যবহার করার উদ্দেশ্যে তৈরি এবং এগুলি হয়ত সক্রিয়ভাবে রক্ষণাবেক্ষণ বা পরীক্ষা করা হয় না। এগুলি চালু করতে <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> লিঙ্কে যান, ডিবাগ পৃষ্ঠা চালু করতে বোতামে ক্লিক করে আবার এই পৃষ্ঠায় নেভিগেট করুন।</translation>
 <translation id="3875312571075912821">আপনার ফায়ারওয়াল বা অ্যান্টিভাইরাস সেটিংসে Chrome কে নেটওয়ার্ক অ্যাক্সেস 
         করতে অনুমতি দিন।</translation>
+<translation id="3893985792899396936">Chrome সম্পর্কিত পরামর্শ: Lens-এর মাধ্যমে সার্চ করুন</translation>
 <translation id="4949828774841497663">'অ্যাপ্লিকেশন &gt; সিস্টেম সেটিংস &gt; নেটওয়ার্ক'-এ যান, চালু নেটওয়ার্ক
           বেছে নিন, 'বিবরণ'... বোতামে ক্লিক করুন এবং যেকোনও প্রক্সি যা হয়ত বেছে নেওয়া হয়েছে সেটির
           থেকে টিকচিহ্ন সরান।</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           এবং আপনার কনফিগারেশন "প্রক্সি নয়" বা "সরাসরি" তে সেট আছে কি না নিশ্চিত করুন৷</translation>
+<translation id="6187085551300363958">Chrome সম্পর্কিত পরামর্শ: পাসওয়ার্ড সেভ করুন</translation>
 <translation id="6341737370356890233">Chrome মেনুতে
         যান &gt;
         <ph name="SETTINGS_TITLE" />
@@ -43,6 +45,7 @@
           নেটওয়ার্ক ও ইন্টারনেট &gt; প্রক্সি
           বিকল্পে যান এবং "সেটিংস অটোমেটিক শনাক্ত করো" বিকল্প থেকে টিকচিহ্ন সরিয়ে দিন।</translation>
 <translation id="7230956101631259640">আপনি একটি নিরাপদ Chrome পৃষ্ঠা দেখছেন</translation>
+<translation id="7641448682796883218">Chrome সম্পর্কিত পরামর্শ: উন্নত Safe Browsing</translation>
 <translation id="8232971017369963250">এছাড়াও Chrome <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> ওপেন সোর্স প্রোজেক্ট দ্বারা পরিচালিত।</translation>
 <translation id="8279509328145658601">এছাড়াও Chrome অন্য <ph name="BEGIN_LINK_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_OSS" /> দ্বারা পরিচালিত।</translation>
 <translation id="8544217240017914508">পেমেন্ট পদ্ধতি পূরণের জন্য Google Chrome, সেটিংস পরিবর্তন করার চেষ্টা করছে।</translation>

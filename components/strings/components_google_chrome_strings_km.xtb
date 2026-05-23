@@ -14,6 +14,7 @@
 <translation id="3875312571075912821">អនុញ្ញាតឲ្យ Chrome ចូលប្រើបណ្តាញនៅក្នុងការកំណត់ firewall ឬកម្មវិធីកម្ចាត់មេរោគ
 
           របស់អ្នក។</translation>
+<translation id="3893985792899396936">គន្លឹះ Chrome៖ ស្វែងរក​ដោយប្រើ Lens</translation>
 <translation id="4949828774841497663">ចូល​ទៅកាន់ កម្មវិធី &gt; ការកំណត់​ប្រព័ន្ធ &gt; បណ្ដាញ ជ្រើសរើស​បណ្តាញ​ដែលកំពុង​ដំណើរការ ចុច​ប៊ូតុង​ព័ត៌មានលម្អិត រួច​ដក​ការ​ជ្រើសរើស​ប្រូកស៊ីដែលអាច​ត្រូវបាន​ជ្រើសរើស។</translation>
 <translation id="5005121315113832363">ទំព័រ​នេះ​ត្រូវបាន​ទប់ស្កាត់ដោយ Chrome</translation>
 <translation id="6011049234605203654">ទៅកាន់
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           ហើយត្រូវប្រាកដថាការតំឡើងរបស់អ្នកកំណត់ទៅ "គ្មានប្រូកស៊ី" ឬ "ដោយផ្ទាល់។"</translation>
+<translation id="6187085551300363958">គន្លឹះ Chrome៖ រក្សាទុក​ពាក្យ​សម្ងាត់</translation>
 <translation id="6341737370356890233">ទៅកាន់
         ម៉ឺនុយ Chrome &gt;
         <ph name="SETTINGS_TITLE" />
@@ -42,6 +44,7 @@
           បណ្ដាញ និង​អ៊ីនធឺណិត &gt; ប្រូកស៊ី
           ហើយ​ដក​ការ​ជ្រើសរើស "ចាប់ដឹងការកំណត់​ដោយ​ស្វ័យប្រវត្តិ"។</translation>
 <translation id="7230956101631259640">អ្នក​កំពុង​មើល​ទំព័រ Chrome ដែល​មាន​សុវត្ថិភាព</translation>
+<translation id="7641448682796883218">គន្លឹះ Chrome៖ ការរុករក​ដោយសុវត្ថិភាពបន្ថែម</translation>
 <translation id="8232971017369963250">Chrome អាច​បង្កើតឡើង​បាន​ដោយគម្រោង​កូដ​ចំហ <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />។</translation>
 <translation id="8279509328145658601">Chrome អាច​បង្កើត​ឡើង​បាន​ដោយ<ph name="BEGIN_LINK_OSS" />កម្មវិធីកូដ​ចំហ<ph name="END_LINK_OSS" />ផ្សេងទៀត​ផងដែរ។</translation>
 <translation id="8544217240017914508">Google Chrome កំពុងព្យាយាម​កែប្រែ​ការកំណត់​សម្រាប់​ការបំពេញ​វិធីបង់ប្រាក់។</translation>

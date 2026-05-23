@@ -13,6 +13,7 @@
 <translation id="3512634283363927263">Các trang này dành cho nhà phát triển Chrome sử dụng và có thể không được duy trì hoặc kiểm tra liên tục. Để kích hoạt các trang này, hãy chuyển đến <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" />, nhấp vào nút để kích hoạt trang gỡ lỗi, rồi chuyển đến trang này một lần nữa.</translation>
 <translation id="3875312571075912821">Cho phép Chrome truy cập mạng trong cài đặt tường lửa hoặc diệt vi-rút
           của bạn.</translation>
+<translation id="3893985792899396936">Mẹo dùng Chrome: Tìm kiếm bằng Ống kính</translation>
 <translation id="4949828774841497663">Chuyển đến phần Ứng dụng &gt; Cài đặt hệ thống &gt; Mạng, chọn
           mạng đang hoạt động, nhấp vào nút Chi tiết..., rồi bỏ chọn mọi máy chủ proxy
           có thể đã được chọn.</translation>
@@ -25,6 +26,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
           và đảm bảo cấu hình của bạn được đặt thành "không có proxy" hoặc "trực tiếp".</translation>
+<translation id="6187085551300363958">Mẹo khi dùng Chrome: Lưu mật khẩu</translation>
 <translation id="6341737370356890233">Chuyển đến
           menu Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -44,6 +46,7 @@
           Mạng và Internet &gt; Proxy
           rồi bỏ chọn "Tự động phát hiện chế độ cài đặt".</translation>
 <translation id="7230956101631259640">Bạn đang xem trang Chrome an toàn</translation>
+<translation id="7641448682796883218">Mẹo khi dùng Chrome: Duyệt web an toàn có tăng cường bảo vệ</translation>
 <translation id="8232971017369963250">Chrome được cung cấp thông qua dự án nguồn mở <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome cũng được cung cấp thông qua <ph name="BEGIN_LINK_OSS" />phần mềm nguồn mở<ph name="END_LINK_OSS" /> khác.</translation>
 <translation id="8544217240017914508">Google Chrome đang cố gắng sửa đổi chế độ cài đặt cho việc điền phương thức thanh toán.</translation>

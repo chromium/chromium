@@ -288,7 +288,6 @@ Ako ova stranica ne funkcionira kako se očekuje, pokušajte dozvoliti optimizac
 <translation id="3885770153807205175">Birač jezika</translation>
 <translation id="3889417619312448367">Deinstalirajte Google Chrome</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
-<translation id="3893985792899396936">Savjet za Chrome: pretražujte putem Objektiva</translation>
 <translation id="3941890832296813527">Greška prilikom instaliranja: naziv fajla programa za instaliranje nije važeći ili nije podržan.</translation>
 <translation id="395904275706073188">Zaštićene stranice se ne mogu čitati. Pokušajte s drugom stranicom.</translation>
 <translation id="3968962723676998462">Unesite pristupni izraz da koristite i sačuvate podatke Chromea na računu <ph name="ACCOUNT_EMAIL" /></translation>
@@ -506,7 +505,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Kartica koristi dodatne resurse. Da poboljšate performanse, dozvolite Chromeu da je deaktivira.</translation>
 <translation id="6182736845697986886">Instalacija nije uspjela zbog interne greške na serveru za ažuriranje.</translation>
-<translation id="6187085551300363958">Savjet za Chrome: sačuvajte lozinke</translation>
 <translation id="6192058120268468905">Vaš račun u Chromeu</translation>
 <translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> je dodao ekstenziju koja će možda promijeniti funkcioniranje Chromea.
 
@@ -653,7 +651,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="7627609214560473136">Da zaštitite podatke, omogućite Chromeu da ukloni odobrenja s web lokacija koje u posljednje vrijeme niste posjetili.</translation>
 <translation id="7629695634924605473">Chrome vas obavještava ako sigurnost vaših lozinki bude ugrožena</translation>
 <translation id="7641148173327520642">Administrator sistema je konfigurirao da se Google Chrome otvara u pregledniku <ph name="ALTERNATIVE_BROWSER_NAME" /> da bi pristupio linku <ph name="TARGET_URL_HOSTNAME" />.</translation>
-<translation id="7641448682796883218">Savjet za Chrome: poboljšano Sigurno pregledanje</translation>
 <translation id="7649070708921625228">Pomoć</translation>
 <translation id="7651907282515937834">Logotip Chrome Enterprise</translation>
 <translation id="76531479118467370">Chrome je blokirao ovo preuzimanje jer ste isključili Sigurno pregledanje i fajl se ne može potvrditi</translation>

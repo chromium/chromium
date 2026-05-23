@@ -287,7 +287,6 @@
 <translation id="3885770153807205175">Інструмент выбару мовы</translation>
 <translation id="3889417619312448367">Выдаленне Google Chrome</translation>
 <translation id="3892148308691398805">Скапіраваць тэкст</translation>
-<translation id="3893985792899396936">Парада ад Chrome: шукайце з дапамогай функцыі "Аб’ектыў"</translation>
 <translation id="3941890832296813527">Адбылася памылка. Назва файла ўсталёўшчыка несапраўдная ці не падтрымліваецца.</translation>
 <translation id="395904275706073188">Немагчыма прачытаць абароненыя старонкі. Паспрабуйце іншую старонку.</translation>
 <translation id="3968962723676998462">Каб выкарыстоўваць і захоўваць даныя Chrome ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />, увядзіце фразу-пароль</translation>
@@ -505,7 +504,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome (бэта-версія)</translation>
 <translation id="6180522807229584611">Гэта ўкладка выкарыстоўвае дадатковыя рэсурсы. Дазвольце Chrome адключыць яе, каб павысіць прадукцыйнасць працы.</translation>
 <translation id="6182736845697986886">Выканаць усталяванне не ўдалося з-за ўнутранай памылкі сервера абнаўленняў.</translation>
-<translation id="6187085551300363958">Парада ад Chrome: захоўвайце паролі</translation>
 <translation id="6192058120268468905">Ваш уліковы запіс у Chrome</translation>
 <translation id="6220551899604141979">Праграма "<ph name="PARTNER_NAME" />" дадала пашырэнне, якое можа змяніць працу Chrome.
 
@@ -652,7 +650,6 @@
 <translation id="7627609214560473136">Каб абараніць свае даныя, дазвольце Chrome адклікаць дазволы ў сайтаў, якія вы не наведвалі ў апошні час.</translation>
 <translation id="7629695634924605473">Chrome апавяшчае вас у выпадку ўзлому вашых пароляў</translation>
 <translation id="7641148173327520642">Ваш сістэмны адміністратар наладзіў Google Chrome так, каб для доступу да <ph name="TARGET_URL_HOSTNAME" /> адкрываць <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
-<translation id="7641448682796883218">Парада ад Chrome: уключыце Палепшаны Бяспечны прагляд</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7651907282515937834">Лагатып Chrome Enterprise</translation>
 <translation id="76531479118467370">Браўзер Chrome заблакіраваў спампоўку, бо вы выключылі Бяспечны прагляд і гэты файл нельга праверыць</translation>

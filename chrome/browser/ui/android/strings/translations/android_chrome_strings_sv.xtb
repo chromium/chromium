@@ -493,6 +493,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3067505415088964188">Priset är lågt</translation>
 <translation id="3070005020161560471">Översätt automatiskt</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> öppnas i Chrome. Genom att fortsätta godkänner du <ph name="BEGIN_LINK1" />Googles användarvillkor<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />de ytterligare användarvillkoren för Google Chrome och ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Integritetspolicyn<ph name="END_LINK3" /> gäller också.</translation>
+<translation id="3080375898390966733">Sök på fliken med Google Lens</translation>
 <translation id="3080525922482950719">Du kan spara sidor som du vill läsa senare eller offline</translation>
 <translation id="3087734570205094154">Nederst</translation>
 <translation id="3091010850649238832">Visa innehållet i Urklipp</translation>
@@ -550,6 +551,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3384347053049321195">Dela bild</translation>
 <translation id="3385749568468586663">Gemini är inte tillgänglig i inkognitoläget</translation>
 <translation id="3387650086002190359">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av filsystemfel.</translation>
+<translation id="3391311825344469964">Du kan hantera dina fönster i Chromes fönsterhanterare</translation>
 <translation id="3417835166382867856">Sök bland flikar</translation>
 <translation id="3430670036890315772">Om du inaktiverar profillåset tas dina sparade uppgifter bort</translation>
 <translation id="3435575784518354875">Om du vill behålla åtkomsten till dina lösenord kan du exportera dem nu, uppdatera Google Play-tjänster och sedan importera dem till Google Lösenordshantering. <ph name="BEGIN_LINK" />Se fullständiga instruktioner<ph name="END_LINK" />.</translation>
@@ -1016,6 +1018,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5370504953185181057"><ph name="TAB_TITLE" />, fäst inkognitoflik som delas</translation>
 <translation id="5375374982898812658">Du förlorar omedelbart åtkomst till flikgruppen <ph name="GROUP_NAME" /> och den raderas från alla dina enheter</translation>
 <translation id="5375577065097716013">Bildsökning med Google Lens <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
+<translation id="537865165090710757">Spara och dela</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vill använda personliga uppgifter från din digitala plånbok. Fortsätt bara om du litar på den här webbplatsen. Farliga webbplatser kan lura dig att avslöja sådant som ditt officiella namn eller personnummer.</translation>
 <translation id="5395376160638294582">Se till att du alltid kan använda Chrome-data i Google-kontot</translation>
 <translation id="539881862970320163">Ett starkt lösenord har föreslagits. Tangentbordet är dolt.</translation>
@@ -1099,6 +1102,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5763514718066511291">Tryck om du vill kopiera webbadressen till appen</translation>
 <translation id="5765517223145864268">Berätta vad du tycker. Eller <ph name="BEGIN_LINK" />ändra dina inställningar<ph name="END_LINK" />.</translation>
 <translation id="5776970333778123608">Oviktig data</translation>
+<translation id="5788665823391532892">Rapportera ett problem …</translation>
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> av <ph name="SPACE_AVAILABLE" /> används</translation>
 <translation id="5797949256525811424">Blockerat ämne</translation>
 <translation id="580893287573699959">Hantera ämnen och webbplatser som du är intresserad av</translation>

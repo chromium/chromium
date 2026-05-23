@@ -12,6 +12,7 @@
 <translation id="3512634283363927263">මෙම පිටු Chrome සංවර්ධකයින් විසින් භාවිතා කිරීමට අදහස් කර ඇති අතර, ක්‍රියාකාරීව නඩත්තු කිරීම හෝ පරීක්ෂා කිරීම නොකළ හැක. ඒවා සබල කිරීමට, <ph name="BEGIN_LINK" />chrome://chrome-urls<ph name="LINK_END" /> වෙත සංචාලනය කරන්න, නිදොස් කිරීමේ පිටු සබල කිරීමට බොත්තම ක්ලික් කර, ඉන්පසු මෙම පිටුවට නැවත සංචාලනය කරන්න.</translation>
 <translation id="3875312571075912821">ඔබගේ ෆයර් වෝල හා ප්‍රතිවයිරස සැකසීම් තුළ Chrome හට ජාලයට පිවිසීමට
           අවසර දෙන්න.</translation>
+<translation id="3893985792899396936">Chrome ඉඟිය: Lens සමග සොයන්න</translation>
 <translation id="4949828774841497663">යෙදුම් &gt; පද්ධති සැකසීම් &gt; ජාලය වෙත ගොස්,
           ක්‍රියාකාරී ජාලය තෝරන්න, විස්තර... බොත්තම ක්ලික් කරන්න, සහ තෝරාගෙන තිබිය හැකි ඕනෑම ප්‍රොක්සි
           තේරීම ඉවත් කරන්න.</translation>
@@ -24,6 +25,7 @@
           &gt;
           <ph name="PROXIES_TITLE" />
          ඔබේ වින්‍යාසය "ප්‍රොක්සි නැත" හෝ"සෘජු " ලෙස සකසා ඇති බවට තහවුරු කර ගන්න.</translation>
+<translation id="6187085551300363958">Chrome ඉඟිය: මුරපද සුරකින්න</translation>
 <translation id="6341737370356890233">මුලින්ම
         Chrome මෙනුව වෙත ගොස්&gt;
         <ph name="SETTINGS_TITLE" />
@@ -41,6 +43,7 @@
           ජාලය සහ අන්තර්ජාලය &gt; ප්‍රොක්සිය
           සහ "ස්වයංක්‍රීයව සැකසීම් හඳුනා ගන්න" වෙත ගොස් තේරීම ඉවත් කරන්න.</translation>
 <translation id="7230956101631259640">ඔබගේ ආරක්ෂිත Google Chrome පිටුවක් බලමින් සිටී</translation>
+<translation id="7641448682796883218">Chrome ඉඟිය: ඉහළ නැංවූ සුරක්ෂිත පිරික්සුම</translation>
 <translation id="8232971017369963250">Chrome හට <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> විවෘත මූලාශ්‍ර මෘදුකාංගය මගින් හැකියාව සලසා ඇත</translation>
 <translation id="8279509328145658601">Chrome හට වෙනත් <ph name="BEGIN_LINK_OSS" />විවෘත මූලාශ්‍ර මෘදුකාංග<ph name="END_LINK_OSS" /> මගින් ද හැකියාව සලසා ඇත</translation>
 <translation id="8544217240017914508">Google Chrome ගෙවීම් ක්‍රම පිරවීම සඳහා සැකසීම් වෙනස් කිරීමට උත්සාහ දරයි.</translation>

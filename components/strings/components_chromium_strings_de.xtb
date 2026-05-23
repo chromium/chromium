@@ -2,11 +2,13 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
 <translation id="130631256467250065">Deine Änderungen werden beim nächsten Neustart wirksam.</translation>
+<translation id="1965068424387304464">Chromium-Tipp: Passwörter speichern</translation>
 <translation id="261308610302996111">Öffne das Chromium-Menü &gt; „<ph name="SETTINGS_TITLE" />“ &gt; „<ph name="SYSTEM_TITLE" />“ &gt; „<ph name="PROXIES_TITLE" />“ und prüfe, ob in deiner Konfiguration die Einstellung „Kein Proxy“ oder „Direkt“ verwendet wird.</translation>
 <translation id="275588974610408078">Absturzberichte sind in Chromium nicht verfügbar.</translation>
 <translation id="3064346599913645280">Dies ist eine sichere Chromium-Seite</translation>
 <translation id="3255926992597692024">Chromium versucht, Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="358997566136285270">Chromium-Logo</translation>
+<translation id="3837584850181228767">Chromium-Tipp: erweitertes Safe Browsing</translation>
 <translation id="4050599136622776556">Chromium versucht, Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="4365115785552740256">Chromium wird durch das Open-Source-Projekt <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> und andere <ph name="BEGIN_LINK_OSS" />Open-Source-Software<ph name="END_LINK_OSS" /> ermöglicht.</translation>
 <translation id="4622039161600275920">Diese Seite wurde von Chromium blockiert</translation>
@@ -28,4 +30,5 @@
           diese Option für eine verbesserte Leistung wieder zu aktivieren.</translation>
 <translation id="8597726643333341451">Du siehst eine sichere Chrome for Testing-Seite</translation>
 <translation id="8684913864886094367">Chromium wurde nicht richtig beendet.</translation>
+<translation id="9183331186620388872">Chromium-Tipp: Mit Lens suchen</translation>
 </translationbundle>
