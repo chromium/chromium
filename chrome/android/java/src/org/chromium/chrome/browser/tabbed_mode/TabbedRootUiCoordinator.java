@@ -57,8 +57,6 @@ import org.chromium.chrome.browser.ChromeInactivityTracker.InactivityObserver;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
-import org.chromium.chrome.browser.actor.ActorTaskHelper;
-import org.chromium.chrome.browser.actor.ui.ActorControlCoordinator;
 import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
@@ -115,6 +113,7 @@ import org.chromium.chrome.browser.glic.GlicKeyedService.GlicInvocationSource;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceHandler;
 import org.chromium.chrome.browser.glic.GlicNavigationUtils;
 import org.chromium.chrome.browser.glic.GlicPromoCoordinator;
+import org.chromium.chrome.browser.glic.GlicUiCoordinator;
 import org.chromium.chrome.browser.history.HistoryManagerUtils;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
@@ -174,7 +173,6 @@ import org.chromium.chrome.browser.tab.RequestDesktopUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
 import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewsZoomControl;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
@@ -367,9 +365,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             new OneshotSupplierImpl<>();
     private @Nullable ViewMarginAdjusterForSideUi mSecondaryUiContainerMarginAdjuster;
     private @Nullable ContextualTasksBridge mContextualTasksBridge;
-    private @Nullable ActorOverlayCoordinator mActorOverlayCoordinator;
-    private @Nullable ActorControlCoordinator mActorControlCoordinator;
-    private @Nullable ActorTaskHelper mActorTaskHelper;
+    private @Nullable GlicUiCoordinator mGlicUiCoordinator;
     private @Nullable ForcedSigninController mForcedSigninController;
 
     // Activity tab observer that updates the current tab used by various UI components.
@@ -891,20 +887,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mCrossDeviceSettingImporter.destroy();
         }
 
-        if (mActorOverlayCoordinator != null) {
-            mActorOverlayCoordinator.destroy();
-            mActorOverlayCoordinator = null;
-        }
-
-        if (mActorControlCoordinator != null) {
-            mActorControlCoordinator.destroy();
-            mActorControlCoordinator = null;
-        }
-
-        if (mActorTaskHelper != null) {
-            mActorTaskHelper.onDestroy();
-            mActorTaskHelper.destroy();
-            mActorTaskHelper = null;
+        if (mGlicUiCoordinator != null) {
+            mGlicUiCoordinator.destroy();
+            mGlicUiCoordinator = null;
         }
 
         if (mGestureUserEducationIphController != null) {
@@ -1218,31 +1203,22 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (GlicEnabling.isEnabledByFlags() && mTabBottomSheetManager != null) {
             GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
-            mActorControlCoordinator =
-                    new ActorControlCoordinator(
+            ViewStub actorOverlayStub = mActivity.findViewById(R.id.actor_overlay_stub);
+            mGlicUiCoordinator =
+                    new GlicUiCoordinator(
                             mActivity,
                             mTabBottomSheetManager,
                             mProfileSupplier,
                             mActivityTabProvider.asObservable(),
-                            (tabId) -> {
-                                TabModelUtils.selectTabById(
-                                        mTabModelSelectorSupplier.asNonNull().get(),
-                                        tabId,
-                                        TabSelectionType.FROM_USER);
-                            });
-
-            ViewStub stub = mActivity.findViewById(R.id.actor_overlay_stub);
-            mActorOverlayCoordinator =
-                    new ActorOverlayCoordinator(
-                            stub,
-                            mTabModelSelectorSupplier.asNonNull().get(),
+                            mTabModelSelectorSupplier,
                             mBrowserControlsManager,
                             mTabObscuringHandlerSupplier.get(),
                             assumeNonNull(mSnackbarManagerSupplier.get()),
                             mBackPressManager,
                             mLayoutManagerSupplier,
-                            mProfileSupplier,
-                            assertNonNull(getBottomSheetController()));
+                            actorOverlayStub,
+                            assertNonNull(getBottomSheetController()),
+                            mActivityLifecycleDispatcher);
         }
 
         mForcedSigninController =
@@ -1285,15 +1261,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     protected void initProfileDependentFeatures(Profile currentlySelectedProfile) {
         super.initProfileDependentFeatures(currentlySelectedProfile);
         Profile originalProfile = currentlySelectedProfile.getOriginalProfile();
-
-        if (mActorTaskHelper == null && GlicEnabling.isEnabledByFlags()) {
-            mActorTaskHelper =
-                    new ActorTaskHelper(
-                            mActivity,
-                            mProfileSupplier,
-                            mTabModelSelectorSupplier,
-                            mActivityLifecycleDispatcher);
-        }
 
         if (ChromeFeatureList.sChromeNativeUrlOverriding.isEnabled()) {
             ExtensionsUrlOverrideRegistryManagerFactory.getForProfile(originalProfile);
@@ -2207,7 +2174,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     public @Nullable ActorOverlayCoordinator getActorOverlayCoordinatorForTesting() {
-        return mActorOverlayCoordinator;
+        return mGlicUiCoordinator != null
+                ? mGlicUiCoordinator.getActorOverlayCoordinatorForTesting() // IN-TEST
+                : null;
     }
 
     public @Nullable TabBottomSheetManager getTabBottomSheetManagerForTesting() {
