@@ -248,6 +248,12 @@ void Geolocation::getCurrentPositionForBindings(
                       WebFeature::kGeolocationGetCurrentPositionHighAccuracy);
   }
 
+  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled() &&
+      options->accuracyMode().AsEnum() == V8AccuracyMode::Enum::kApproximate) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kGeolocationAccuracyModeApproximate);
+  }
+
   if (!GetFrame())
     return;
 
@@ -291,6 +297,12 @@ int Geolocation::watchPositionForBindings(
   if (options->enableHighAccuracy()) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kGeolocationWatchPositionHighAccuracy);
+  }
+
+  if (RuntimeEnabledFeatures::ApproximateGeolocationWebVisibleAPIEnabled() &&
+      options->accuracyMode().AsEnum() == V8AccuracyMode::Enum::kApproximate) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kGeolocationAccuracyModeApproximate);
   }
 
   if (!GetFrame())
