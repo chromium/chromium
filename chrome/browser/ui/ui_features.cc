@@ -143,8 +143,7 @@ BASE_FEATURE(kProcessIsolationSettings, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kShowTabGroupsMacSystemMenu, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsShowTabGroupsMacSystemMenuEnabled() {
-  return base::FeatureList::IsEnabled(kDesktopGlowUp) ||
-         base::FeatureList::IsEnabled(kShowTabGroupsMacSystemMenu);
+  return base::FeatureList::IsEnabled(kShowTabGroupsMacSystemMenu);
 }
 #endif  // BUILDFLAG(IS_MAC)
 
