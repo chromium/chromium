@@ -9634,6 +9634,7 @@ test("unit_tests") {
       "../common/extensions/permissions/permission_set_unittest.cc",
       "../common/extensions/permissions/permissions_data_unittest.cc",
       "../common/extensions/permissions/settings_override_permission_unittest.cc",
+      "../common/extensions/sync_type_unittest.cc",
     ]
     deps += [
       "//base",
@@ -9707,7 +9708,6 @@ test("unit_tests") {
       "../common/extensions/api/extension_action/browser_action_manifest_unittest.cc",
       "../common/extensions/chrome_extensions_client_unittest.cc",
       "../common/extensions/extension_unittest.cc",
-      "../common/extensions/sync_type_unittest.cc",
     ]
 
     # Side panel is not yet supported on desktop Android.
