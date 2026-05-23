@@ -100,13 +100,6 @@ LocationIconView::LocationIconView(
     slide_animation_->SetSlideDuration(kAnimationDuration);
     slide_animation_->SetCurrentValue(0.0f);
 
-    std::optional<std::vector<uint8_t>> lottie_bytes =
-        ui::ResourceBundle::GetSharedInstance().GetLottieData(
-            IDR_PAGE_INFO_OPEN_LOTTIE);
-    CHECK(lottie_bytes.has_value());
-    scoped_refptr<cc::SkottieWrapper> skottie =
-        cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
-    page_info_open_animation_ = std::make_unique<lottie::Animation>(skottie);
   }
 
   UpdateBorder();
@@ -182,8 +175,18 @@ void LocationIconView::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void LocationIconView::SetAnimatedPageInfoIcon(float progress_value) {
-  CHECK(page_info_open_animation_);
   const int icon_size = GetLayoutConstant(LayoutConstant::kLocationBarIconSize);
+
+  if (!page_info_open_animation_) {
+    std::optional<std::vector<uint8_t>> lottie_bytes =
+        ui::ResourceBundle::GetSharedInstance().GetLottieData(
+            IDR_PAGE_INFO_OPEN_LOTTIE);
+    CHECK(lottie_bytes.has_value());
+    scoped_refptr<cc::SkottieWrapper> skottie =
+        cc::SkottieWrapper::UnsafeCreateSerializable(std::move(*lottie_bytes));
+    page_info_open_animation_ = std::make_unique<lottie::Animation>(skottie);
+  }
+
   ui::ImageModel model = ui::ImageModel::FromImageSkia(
       gfx::CanvasImageSource::MakeImageSkia<LottieIconSource>(
           page_info_open_animation_.get(), progress_value, icon_size,
@@ -247,7 +250,22 @@ bool LocationIconView::GetShowText() const {
 
 void LocationIconView::MaybeAnimateIcon(bool show) {
   if (features::IsToolbarGlowUpEnabled()) {
-    show ? slide_animation_->Show() : slide_animation_->Hide();
+    ui::ImageModel icon = delegate_->GetLocationIcon(
+        base::DoNothingAs<void(const gfx::Image&)>());
+
+    const bool is_page_info_icon =
+        icon.IsVectorIcon() &&
+        icon.GetVectorIcon().vector_icon() == &omnibox::kPageInfoIcon;
+
+    if (!is_page_info_icon) {
+      return;
+    }
+
+    if (show) {
+      slide_animation_->Show();
+    } else {
+      slide_animation_->Hide();
+    }
   }
 }
 
@@ -315,14 +333,10 @@ void LocationIconView::UpdateIcon() {
     return;
   }
 
-  const bool is_page_info_icon =
-      icon.IsVectorIcon() &&
-      icon.GetVectorIcon().vector_icon() ==
-          &(features::IsRoundedIconsEnabled()
-                ? omnibox::kPageInfoIcon
-                : omnibox::kSecurePageInfoChromeRefreshOldIcon);
-
-  if (features::IsToolbarGlowUpEnabled() && !is_page_info_icon) {
+  if (slide_animation_) {
+    // UpdateIcon() calls are for icon updates not related to the page info
+    // animation. We reset the page info icon animation for the next time
+    // we animate the page info icon.
     slide_animation_->Reset(0.0f);
   }
 
