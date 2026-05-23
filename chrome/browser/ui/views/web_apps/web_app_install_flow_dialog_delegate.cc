@@ -674,7 +674,9 @@ WebAppInstallFlowDialogDelegate::Show(
 
   std::u16string title = install_info->title.value();
   GURL start_url = install_info->start_url();
-  std::u16string description = install_info->description.value();
+  const std::u16string description = gfx::TruncateString(
+      install_info->description.value(), webapps::kMaximumDescriptionLength,
+      gfx::CHARACTER_BREAK);
 
   url::Origin initiating_origin;
   if (show_initiating_origin) {
