@@ -33,6 +33,7 @@
 #include "ui/events/test/event_generator.h"
 #include "ui/events/test/test_event_handler.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/test/views_test_utils.h"
@@ -826,10 +827,14 @@ TEST_F(ImmersiveFullscreenControllerTest, Focus) {
   views::View* child_view = new views::View();
   child_view->SetBounds(0, 0, 10, 10);
   child_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  child_view->GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  child_view->GetViewAccessibility().SetName(u"Child View");
   top_container()->AddChildViewRaw(child_view);
   views::View* unrelated_view = new views::View();
   unrelated_view->SetBounds(0, 100, 10, 10);
   unrelated_view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  unrelated_view->GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  unrelated_view->GetViewAccessibility().SetName(u"Unrelated View");
   top_container()->parent()->AddChildViewRaw(unrelated_view);
   views::FocusManager* focus_manager =
       top_container()->GetWidget()->GetFocusManager();
@@ -937,9 +942,13 @@ TEST_F(ImmersiveFullscreenControllerTest, Bubbles) {
 
   // Add views to the view hierarchy to which we will anchor bubbles.
   views::View* child_view = new views::View();
+  child_view->GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  child_view->GetViewAccessibility().SetName(u"Child View");
   child_view->SetBounds(0, 0, 10, 10);
   top_container()->AddChildViewRaw(child_view);
   views::View* unrelated_view = new views::View();
+  unrelated_view->GetViewAccessibility().SetRole(ax::mojom::Role::kStaticText);
+  unrelated_view->GetViewAccessibility().SetName(u"Unrelated View");
   unrelated_view->SetBounds(0, 100, 10, 10);
   top_container()->parent()->AddChildViewRaw(unrelated_view);
 
