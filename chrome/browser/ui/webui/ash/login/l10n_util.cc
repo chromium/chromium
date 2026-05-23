@@ -28,10 +28,10 @@
 #include "base/values.h"
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/fjord_oobe/fjord_oobe_util.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/ime/ash/component_extension_ime_manager.h"
 #include "ui/base/ime/ash/input_method_descriptor.h"
@@ -526,8 +526,7 @@ base::ListValue GetAndActivateOobeInputMethods(
   const std::vector<std::string>& hardware_input_methods =
       util->GetHardwareInputMethodIds();
 
-  DCHECK(
-      ProfileHelper::IsSigninProfile(ProfileManager::GetActiveUserProfile()));
+  DCHECK(IsSigninBrowserContext(ProfileManager::GetActiveUserProfile()));
   input_method_manager->GetActiveIMEState()->EnableOobeInputMethods(
       locale, hardware_input_methods);
 
