@@ -83,17 +83,26 @@ class PipewireCaptureStream : public CaptureStream {
   void RemoveCursorObserver(CursorObserver* observer);
 
   // Called by the callback proxy.
-  void OnFrameCaptureStart();
-  void OnCaptureResult(webrtc::DesktopCapturer::Result result,
+  void OnFrameCaptureStart(int capture_session_token);
+  void OnCaptureResult(int capture_session_token,
+                       webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame);
-  void OnCursorPositionChanged();
-  void OnCursorShapeChanged();
+  void OnCursorPositionChanged(int capture_session_token);
+  void OnCursorShapeChanged(int capture_session_token);
 
   int pipewire_fd_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::uint32_t pipewire_node_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   webrtc::DesktopSize resolution_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool video_capture_started_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
+  // Tracks the current active video capture session. Incremented on every
+  // StartVideoCapture() call. This serves as a token to invalidate stale,
+  // in-flight frame-capturing tasks that are already posted to the
+  // `callback_sequence_` task runner but should be discarded across stream
+  // restarts (e.g. after resizing or memory factory reconfiguration).
+  int capture_session_token_ GUARDED_BY_CONTEXT(sequence_checker_) = 0;
+
   std::string mapping_id_ GUARDED_BY_CONTEXT(sequence_checker_);
   webrtc::ScreenId screen_id_ GUARDED_BY_CONTEXT(sequence_checker_) = -1;
   base::WeakPtr<webrtc::DesktopCapturer::Callback> callback_

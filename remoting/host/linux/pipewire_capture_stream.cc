@@ -18,6 +18,7 @@
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "remoting/base/logging.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
@@ -46,7 +47,7 @@ class PipewireCaptureStream::CallbackProxy
   explicit CallbackProxy(base::WeakPtr<PipewireCaptureStream> parent);
   ~CallbackProxy() override;
 
-  void Start();
+  void Start(int capture_session_token);
   void Stop();
 
   // Callback interface
@@ -71,6 +72,7 @@ class PipewireCaptureStream::CallbackProxy
   // delivered before any frames received from the SharedScreenCastStream.
   base::Lock lock_;
   bool started_ GUARDED_BY(lock_) = false;
+  int capture_session_token_ GUARDED_BY(lock_) = 0;
   scoped_refptr<base::SequencedTaskRunner> callback_sequence_ =
       base::SequencedTaskRunner::GetCurrentDefault();
   base::WeakPtr<PipewireCaptureStream> parent_;
@@ -82,9 +84,10 @@ PipewireCaptureStream::CallbackProxy::CallbackProxy(
 
 PipewireCaptureStream::CallbackProxy::~CallbackProxy() = default;
 
-void PipewireCaptureStream::CallbackProxy::Start() {
+void PipewireCaptureStream::CallbackProxy::Start(int capture_session_token) {
   base::AutoLock lock(lock_);
   started_ = true;
+  capture_session_token_ = capture_session_token;
 }
 
 void PipewireCaptureStream::CallbackProxy::Stop() {
@@ -98,8 +101,8 @@ void PipewireCaptureStream::CallbackProxy::OnFrameCaptureStart() {
     return;
   }
   callback_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PipewireCaptureStream::OnFrameCaptureStart, parent_));
+      FROM_HERE, base::BindOnce(&PipewireCaptureStream::OnFrameCaptureStart,
+                                parent_, capture_session_token_));
 }
 
 void PipewireCaptureStream::CallbackProxy::OnCaptureResult(
@@ -110,8 +113,9 @@ void PipewireCaptureStream::CallbackProxy::OnCaptureResult(
     return;
   }
   callback_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&PipewireCaptureStream::OnCaptureResult,
-                                parent_, result, std::move(frame)));
+      FROM_HERE,
+      base::BindOnce(&PipewireCaptureStream::OnCaptureResult, parent_,
+                     capture_session_token_, result, std::move(frame)));
 }
 
 void PipewireCaptureStream::CallbackProxy::OnCursorPositionChanged() {
@@ -120,8 +124,8 @@ void PipewireCaptureStream::CallbackProxy::OnCursorPositionChanged() {
     return;
   }
   callback_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PipewireCaptureStream::OnCursorPositionChanged, parent_));
+      FROM_HERE, base::BindOnce(&PipewireCaptureStream::OnCursorPositionChanged,
+                                parent_, capture_session_token_));
 }
 
 void PipewireCaptureStream::CallbackProxy::OnCursorShapeChanged() {
@@ -130,8 +134,8 @@ void PipewireCaptureStream::CallbackProxy::OnCursorShapeChanged() {
     return;
   }
   callback_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PipewireCaptureStream::OnCursorShapeChanged, parent_));
+      FROM_HERE, base::BindOnce(&PipewireCaptureStream::OnCursorShapeChanged,
+                                parent_, capture_session_token_));
 }
 
 void PipewireCaptureStream::CallbackProxy::OnDesktopFrameChanged() {}
@@ -175,6 +179,10 @@ void PipewireCaptureStream::StartVideoCapture() {
   if (video_capture_started_) {
     return;
   }
+  capture_session_token_++;
+  if (callback_) {
+    callback_proxy_->Start(capture_session_token_);
+  }
   stream_->StartScreenCastStream(pipewire_node_, pipewire_fd_,
                                  resolution_.width(), resolution_.height(),
                                  false, callback_proxy_.get());
@@ -187,6 +195,8 @@ void PipewireCaptureStream::StopVideoCapture() {
     return;
   }
   stream_->StopScreenCastStream();
+  callback_proxy_->Stop();
+  is_capturing_frame_ = false;
   video_capture_started_ = false;
 }
 
@@ -202,7 +212,7 @@ void PipewireCaptureStream::SetCallback(
 
   auto self = weak_ptr_factory_.GetWeakPtr();
   // RecaptureLatestFrameAsDirty() must be called before
-  // callback_proxy_.Initialize(), since calling the latter will immediately
+  // callback_proxy_->Start(), since calling the latter will immediately
   // start pumping frames to `PipewireCaptureStream` and can potentially cause
   // race conditions (an old frame is delivered after the current frame).
   RecaptureLatestFrameAsDirty();
@@ -210,7 +220,7 @@ void PipewireCaptureStream::SetCallback(
   // current stack frame and could potentially delete `this`, so we should only
   // access class members if the weak pointer remains valid.
   if (self) {
-    callback_proxy_->Start();
+    callback_proxy_->Start(capture_session_token_);
   }
 }
 
@@ -236,7 +246,18 @@ void PipewireCaptureStream::SetMaxFrameRate(std::uint32_t frame_rate) {
 void PipewireCaptureStream::SetSharedMemoryFactory(
     std::unique_ptr<webrtc::SharedMemoryFactory> shared_memory_factory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool was_started = video_capture_started_;
+  if (was_started) {
+    // Stop and restart the video capture stream to flush and recreate the
+    // PipeWire stream buffers using the new shared memory factory, preventing
+    // memory region mismatches.
+    StopVideoCapture();
+  }
   stream_->SetSharedMemoryFactory(std::move(shared_memory_factory));
+  if (was_started) {
+    HOST_LOG << "Video capture restarted due to shared memory factory change.";
+    StartVideoCapture();
+  }
 }
 
 std::unique_ptr<webrtc::MouseCursor> PipewireCaptureStream::CaptureCursor() {
@@ -291,7 +312,7 @@ void PipewireCaptureStream::RecaptureLatestFrameAsDirty() {
     return;
   }
   auto self = weak_ptr_factory_.GetWeakPtr();
-  OnFrameCaptureStart();
+  OnFrameCaptureStart(capture_session_token_);
   // While unlikely, OnFrameCaptureStart() runs `callback_` in the current stack
   // frame and could potentially delete `this`, so we should only access class
   // members if the weak pointer remains valid.
@@ -305,9 +326,11 @@ void PipewireCaptureStream::RecaptureLatestFrameAsDirty() {
     // Mark the entire frame as dirty.
     frame->mutable_updated_region()->SetRect(
         webrtc::DesktopRect::MakeSize(frame->size()));
-    OnCaptureResult(webrtc::DesktopCapturer::Result::SUCCESS, std::move(frame));
+    OnCaptureResult(capture_session_token_,
+                    webrtc::DesktopCapturer::Result::SUCCESS, std::move(frame));
   } else {
-    OnCaptureResult(webrtc::DesktopCapturer::Result::ERROR_TEMPORARY, nullptr);
+    OnCaptureResult(capture_session_token_,
+                    webrtc::DesktopCapturer::Result::ERROR_TEMPORARY, nullptr);
   }
 }
 
@@ -316,8 +339,11 @@ void PipewireCaptureStream::RemoveCursorObserver(CursorObserver* observer) {
   cursor_observers_.RemoveObserver(observer);
 }
 
-void PipewireCaptureStream::OnFrameCaptureStart() {
+void PipewireCaptureStream::OnFrameCaptureStart(int capture_session_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (capture_session_token != capture_session_token_) {
+    return;
+  }
   is_capturing_frame_ = true;
   if (callback_) {
     callback_->OnFrameCaptureStart();
@@ -325,9 +351,15 @@ void PipewireCaptureStream::OnFrameCaptureStart() {
 }
 
 void PipewireCaptureStream::OnCaptureResult(
+    int capture_session_token,
     webrtc::DesktopCapturer::Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (capture_session_token != capture_session_token_) {
+    return;
+  }
+
   is_capturing_frame_ = false;
 
   if (frame) {
@@ -365,13 +397,19 @@ void PipewireCaptureStream::OnCaptureResult(
   }
 }
 
-void PipewireCaptureStream::OnCursorPositionChanged() {
+void PipewireCaptureStream::OnCursorPositionChanged(int capture_session_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (capture_session_token != capture_session_token_) {
+    return;
+  }
   cursor_observers_.Notify(&CursorObserver::OnCursorPositionChanged, this);
 }
 
-void PipewireCaptureStream::OnCursorShapeChanged() {
+void PipewireCaptureStream::OnCursorShapeChanged(int capture_session_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (capture_session_token != capture_session_token_) {
+    return;
+  }
   cursor_observers_.Notify(&CursorObserver::OnCursorShapeChanged, this);
 }
 
