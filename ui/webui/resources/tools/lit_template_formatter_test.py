@@ -103,6 +103,27 @@ class LitTemplateFormatterTest(unittest.TestCase):
   def testWhitespaceSensitiveSiblings(self):
     self._run_test("test_whitespace_sensitive_siblings.html.ts")
 
+  def testDryRunModeFormatted(self):
+    filename = "test_basic_expressions.html.ts"
+    expected_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
+                                 "expected", filename)
+    dest_path = os.path.join(self._out_dir, filename)
+    shutil.copy(expected_path, dest_path)
+    # Should not throw
+    self._run_formatter(["--dry-run", dest_path])
+
+  def testDryRunModeUnformatted(self):
+    filename = "test_basic_expressions.html.ts"
+    src_path = os.path.join(_HERE_DIR, "tests", "lit_template_formatter",
+                            filename)
+    dest_path = os.path.join(self._out_dir, filename)
+    shutil.copy(src_path, dest_path)
+    # Should throw because it is not formatted
+    with self.assertRaises(RuntimeError) as context:
+      self._run_formatter(["--dry-run", dest_path])
+    self.assertIn("is not formatted", str(context.exception))
+    self.assertIn("exit=2", str(context.exception))
+
   def testJsUnitTests(self):
     test_script = os.path.join(_HERE_DIR, "lit_template_formatter",
                                "lit_template_formatter_test.js")
