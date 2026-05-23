@@ -31,6 +31,14 @@ class FormTrackerTestApi {
     return form_tracker_->provisionally_saved_form();
   }
 
+  void FireFormSubmission(
+      mojom::SubmissionSource source,
+      std::optional<blink::WebFormElement> submitted_form_element,
+      bool reset_last_interacted_elements) {
+    form_tracker_->FormTracker::FireFormSubmission(
+        source, submitted_form_element, reset_last_interacted_elements);
+  }
+
  private:
   const raw_ref<FormTracker> form_tracker_;
 };
