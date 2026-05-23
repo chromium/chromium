@@ -50,8 +50,11 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      * POD-type that holds the info about the Side UI specs to be used by a {@link SideUiObserver}.
      * Specifically, this holds the widths (in px) for the two parent ViewGroups (one for
      * start-anchored UI and one for end-anchored UI) that hold a {@link SideUiContainer}'s View,
-     * based on the SideUiContainer's specified {@link AnchorSide}. TODO(crbug.com/489808658): Move
-     * to SideUiStateProvider.
+     * based on the SideUiContainer's specified {@link AnchorSide}.
+     *
+     * <p><strong>Note:</strong> This is a passive data spec and does not guarantee that these specs
+     * are currently applied to the active UI. To query the actual active UI state, use {@link
+     * SideUiStateProvider} instead.
      */
     final class SideUiSpecs {
         /** A {@link SideUiSpecs} with a startContainerWidth and endContainerWidth of 0. */
@@ -71,14 +74,6 @@ public interface SideUiCoordinator extends SideUiStateProvider {
             if (!(obj instanceof SideUiSpecs that)) return false;
             return (this.mStartContainerWidth == that.mStartContainerWidth)
                     && (this.mEndContainerWidth == that.mEndContainerWidth);
-        }
-
-        public boolean isStartContainerShowing() {
-            return mStartContainerWidth > 0;
-        }
-
-        public boolean isEndContainerShowing() {
-            return mEndContainerWidth > 0;
         }
 
         @Override

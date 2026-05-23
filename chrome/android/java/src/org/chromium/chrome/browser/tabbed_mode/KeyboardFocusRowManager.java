@@ -178,11 +178,8 @@ import java.util.function.Supplier;
         // The next item in the focus cycle order is the SIDE_PANEL, if it is shown.
         if (AndroidSidePanelEnabledFn.isEnabled()) {
             var sideUiStateProvider = mSideUiStateProviderSupplier.get();
-            if (sideUiStateProvider != null
-                    && sideUiStateProvider.getCurrentSideUiSpecs() != null) {
-                if (sideUiStateProvider.getCurrentSideUiSpecs().isEndContainerShowing()) {
-                    keyboardFocusRows.add(KeyboardFocusRow.SIDE_PANEL);
-                }
+            if (sideUiStateProvider != null && sideUiStateProvider.isEndContainerShowing()) {
+                keyboardFocusRows.add(KeyboardFocusRow.SIDE_PANEL);
             }
         }
 
