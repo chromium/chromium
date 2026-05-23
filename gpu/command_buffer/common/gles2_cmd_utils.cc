@@ -569,15 +569,18 @@ uint32_t GLES2Util::ElementsPerGroup(int format, int type) {
     case GL_RGB:
     case GL_RGB_INTEGER:
     case GL_SRGB_EXT:
+    case GL_RGB16_EXT:
       return 3;
     case GL_LUMINANCE_ALPHA:
     case GL_RG_EXT:
     case GL_RG_INTEGER:
+    case GL_RG16_EXT:
       return 2;
     case GL_RGBA:
     case GL_RGBA_INTEGER:
     case GL_BGRA_EXT:
     case GL_SRGB_ALPHA_EXT:
+    case GL_RGBA16_EXT:
       return 4;
     case GL_ALPHA:
     case GL_LUMINANCE:
@@ -589,6 +592,7 @@ uint32_t GLES2Util::ElementsPerGroup(int format, int type) {
     case GL_DEPTH_STENCIL_OES:
     case GL_RED_EXT:
     case GL_RED_INTEGER:
+    case GL_R16_EXT:
       return 1;
     default:
       return 0;
