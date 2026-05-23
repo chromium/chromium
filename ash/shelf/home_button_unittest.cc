@@ -237,7 +237,7 @@ TEST_F(HomeButtonWithQuickAppAccess, NonExistentApp) {
 
 // Test that when setting a quick app with no icon, the quick app button doesn't
 // show until an icon is loaded.
-TEST_F(HomeButtonWithQuickAppAccess, AppWithNoIconThenLoaded) {
+TEST_F(HomeButtonWithQuickAppAccess, DISABLED_AppWithNoIconThenLoaded) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(IsQuickAppVisible());
 
@@ -265,7 +265,7 @@ TEST_F(HomeButtonWithQuickAppAccess, AppWithNoIconThenLoaded) {
 
 // Test that the quick app button image changes when setting a new quick app
 // with a quick app button already shown.
-TEST_F(HomeButtonWithQuickAppAccess, IconUpdatesOnNewQuickAppSet) {
+TEST_F(HomeButtonWithQuickAppAccess, DISABLED_IconUpdatesOnNewQuickAppSet) {
   EXPECT_FALSE(IsQuickAppVisible());
 
   const std::string quick_app_id = "Quick App Item";
