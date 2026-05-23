@@ -80,9 +80,7 @@ AppListTestModel::AppListTestModel()
 AppListTestModel::~AppListTestModel() = default;
 
 AppListItem* AppListTestModel::AddItem(AppListItem* item) {
-  AppListModel::AddItem(base::WrapUnique(item));
-  SetItemName(item, item->name());
-  return item;
+  return AppListModel::AddItem(base::WrapUnique(item));
 }
 
 void AppListTestModel::RequestPositionUpdate(
