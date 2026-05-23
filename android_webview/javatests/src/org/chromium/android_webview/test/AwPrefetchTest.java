@@ -908,6 +908,83 @@ public class AwPrefetchTest extends AwParameterizedTest {
     }
 
     /**
+     * Tests that if PrePrefetch fails the request falls back to a standard UI thread Prefetch
+     * request.
+     */
+    @Test
+    @LargeTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add({
+        ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1",
+        "enable-features=PrefetchOffTheMainThread,WebViewPrefetchOffTheMainThread"
+    })
+    public void testPrefetchFallbackWhenPrePrefetchFails() throws Throwable {
+        final String profileName = "TestProfile";
+        final String testUrl = getUrl(BASIC_PREFETCH_RELATIVE_PATH);
+
+        // Intentionally DO NOT inject hints. This guarantees `PrePrefetchService`
+        // will experience a cache miss and return `NO_PREFETCH_KEY`, forcing a fallback.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> AwPrefetchTestUtil.clearLatestPrefetchInfoForTesting());
+
+        AwBrowserContext context =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> AwBrowserContextStore.getNamedContext(profileName, true));
+        AwPrefetchManager prefetchManager = context.getPrefetchManager();
+
+        TestAwPrefetchCallback callback = new TestAwPrefetchCallback();
+        CountDownLatch prefetchStartedLatch = new CountDownLatch(1);
+
+        // Check that the Prefetch was called instead of PrePrefetch.
+        // Note that `WORKER_THREAD_PREFETCH_SUCCESS` represents for both 1) normal
+        // "Prefetch success" (`PrefetchOffTheMainThread` disabled) and 2) PrePrefetch fail but
+        // "Prefetch success" (`PrefetchOffTheMainThread` enabled) currently.
+        HistogramWatcher fallbackHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                "Android.WebView.Profile.Prefetch.ApiCallResult",
+                                AwPrefetchManager.ApiCallResult.WORKER_THREAD_PREFETCH_SUCCESS)
+                        .build();
+
+        prefetchManager.startPrefetchRequestAsync(
+                SystemClock.uptimeMillis(),
+                testUrl,
+                getAwPrefetchParameters(),
+                callback,
+                Runnable::run,
+                prefetchKey -> {
+                    callback.setPrefetchKey(prefetchKey);
+                    prefetchStartedLatch.countDown();
+                });
+
+        Assert.assertTrue(
+                "Prefetch should invoke key listener",
+                prefetchStartedLatch.await(5, TimeUnit.SECONDS));
+
+        // Wait for completion.
+        callback.mOnStatusUpdatedHelper.waitForNext();
+        fallbackHistogramWatcher.assertExpected();
+        Assert.assertEquals(
+                "Fallback prefetch should complete successfully.",
+                AwPrefetchCallback.StatusCode.PREFETCH_RESPONSE_COMPLETED,
+                callback.getOnStatusUpdatedHelper().getStatusCode());
+
+        // Load the same URL in a WebView and verify consumption.
+        final AwTestContainerView testContainerView =
+                mActivityTestRule.createAwTestContainerViewOnMainSync(
+                        mContentsClient, false, null, context);
+        final AwContents awContents = testContainerView.getAwContents();
+        mActivityTestRule.loadUrlSync(
+                awContents, mContentsClient.getOnPageFinishedHelper(), testUrl);
+
+        // Verify that the server did NOT receive a second request.
+        Assert.assertEquals(
+                "Server should NOT have received a second request.",
+                1,
+                mTestServer.getRequestCountForUrl(BASIC_PREFETCH_RELATIVE_PATH));
+    }
+
+    /**
      * Tests that a Prefetch/PrePrefetch request correctly includes the "X-Requested-With" header.
      */
     @Test
