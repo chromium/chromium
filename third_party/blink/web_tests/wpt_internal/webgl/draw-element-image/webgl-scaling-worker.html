@@ -3,10 +3,10 @@
   <head>
     <title>texElementImage2D scaling</title>
     <link rel="help" href="https://github.com/WICG/html-in-canvas">
-    <link rel="match" href="scale-ref.html">
+    <link rel="match" href="webgl-scaling-ref.html">
     <link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
-    <script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
     <script src="/common/reftest-wait.js"></script>
+    <script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
     <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
     <meta name="assert" value="Scaling content via destRect">
     <meta name="fuzzy" content="maxDifference=0-100; totalPixels=0-2000" />
@@ -83,7 +83,6 @@
         return new Promise((resolve, reject) => {
           worker.onmessage = (e) => {
             if (e.data !== 'done') {
-              console.error(e.data);
               reject(new Error(e.data));
             } else {
               resolve();
@@ -92,9 +91,7 @@
           const elementImage = cvs.captureElementImage(target);
           worker.postMessage({ elementImage: elementImage, args: args }, [elementImage]);
         });
-      })).catch(e => {
-        console.error("Test failed:", e);
-      }).finally(async () => {
+      })).finally(async () => {
         // Wait for the worker thread to update before taking a screenshot.
         await waitForCanvasPaint(document.querySelector("canvas"));
         takeScreenshot();

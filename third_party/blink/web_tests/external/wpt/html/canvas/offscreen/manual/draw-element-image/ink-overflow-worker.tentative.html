@@ -1,19 +1,21 @@
 <!DOCTYPE html>
 <html class="reftest-wait">
-<title>drawElementImage with scaling, in a worker thread.</title>
+<title>drawElementImage with ink overflow, in a worker thread.</title>
 <meta charset="utf-8" />
 <link rel="help" href="https://github.com/WICG/html-in-canvas" />
-<link rel="match" href="scale-ref.html" />
-<link rel="stylesheet" href="/wpt_internal/resources/canvas-draw-element/styles.css" />
-<script src="/wpt_internal/resources/canvas-draw-element/color-grid.js"></script>
+<link rel="match" href="ink-overflow-worker-ref.html" />
+<link rel="stylesheet" href="/html/canvas/resources/draw-element-image-styles.css" />
+<script src="/html/canvas/resources/color-grid-component.js"></script>
+<script src="/html/canvas/resources/wait-for-canvas-paint.js"></script>
 <script src="/common/reftest-wait.js"></script>
-<script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
 
 <style>
   body {
     display: grid;
     grid: 256px / 1fr 1fr 1fr;
     align-items: start;
+    --blur-radius: 20px;
+    --spread: 10px;
   }
 
   canvas {
@@ -25,40 +27,51 @@
     width: 100px;
     height: 100px;
   }
+
+  .box-shadow {
+    box-shadow: 0px 0px var(--blur-radius) var(--spread) hotpink;
+  }
+
+  .outline {
+    outline: 5px solid salmon;
+  }
 </style>
 
 <canvas layoutsubtree>
-  <div class="draw-element-wrapper">
-    <div class="css-is-awesome"></div>
-  </div>
-</canvas>
-
-<canvas layoutsubtree>
-  <div class="draw-element-wrapper" xscale="1" yscale="1">
+  <div class="draw-element-wrapper box-shadow" outset="50" offset="20">
     <color-grid></color-grid>
   </div>
 </canvas>
 
 <canvas layoutsubtree>
-  <div class="draw-element-wrapper" xscale="0.5" yscale="0.5">
+  <div class="draw-element-wrapper box-shadow" outset="50" offset="-50">
     <color-grid></color-grid>
   </div>
 </canvas>
 
 <canvas layoutsubtree>
-  <div class="draw-element-wrapper" xscale="2" yscale="2">
+  <div class="draw-element-wrapper outline" xscale="1" yscale="1" outset="10" offset="30">
     <color-grid></color-grid>
   </div>
 </canvas>
 
 <canvas layoutsubtree>
-  <div class="draw-element-wrapper" xscale="2" yscale="0.5">
+  <div class="draw-element-wrapper outline" outset="10" offset="-10">
+    <color-grid></color-grid>
+  </div>
+</canvas>
+
+<canvas layoutsubtree>
+  <div class="draw-element-wrapper outline" outset="-10" offset="20">
     <color-grid></color-grid>
   </div>
 </canvas>
 
 <script type="module">
-  import { resizeToPixelGrid, computeScaledDestinationSize } from "/wpt_internal/resources/canvas-draw-element/util.js";
+  import {
+    computeScaledDestinationSize,
+    resizeToPixelGrid
+  } from "/html/canvas/resources/draw-element-image-utils.js";
 
   const workerCode = `
     let ctx;
@@ -67,12 +80,14 @@
         ctx = e.data.canvas.getContext('2d');
       }
       if (e.data.elementImage) {
-        if (e.data.args.length === 4) {
+        if (e.data.args.length === 8) {
           ctx.drawElementImage(e.data.elementImage,
-            e.data.args[0], e.data.args[1], e.data.args[2], e.data.args[3]);
+            e.data.args[0], e.data.args[1], e.data.args[2], e.data.args[3],
+            e.data.args[4], e.data.args[5], e.data.args[6], e.data.args[7]);
         } else {
           ctx.drawElementImage(e.data.elementImage,
-            e.data.args[0], e.data.args[1]);
+            e.data.args[0], e.data.args[1], e.data.args[2], e.data.args[3],
+            e.data.args[4], e.data.args[5]);
         }
         self.postMessage('done');
       }
@@ -85,17 +100,29 @@
     for (const cvs of document.querySelectorAll("canvas")) {
       await resizeToPixelGrid(cvs);
       await new Promise(setTimeout);
+
       const target = cvs.firstElementChild;
+      const targetStyle = getComputedStyle(target);
+      const targetWidth = Number.parseFloat(targetStyle.width);
+      const targetHeight = Number.parseFloat(targetStyle.height);
+
+      // `outset` is in CSS pixels, `offset` is in canvas grid
+      const outset = Number.parseFloat(target.getAttribute("outset") || "0");
+      const offset = Number.parseFloat(target.getAttribute("offset") || "0");
 
       let args = [];
       if (target.hasAttribute("xscale") && target.hasAttribute("yscale")) {
         const scaleX = Number.parseFloat(target.getAttribute("xscale"));
         const scaleY = Number.parseFloat(target.getAttribute("yscale"));
         const [destWidth, destHeight] =
-          computeScaledDestinationSize(cvs, target, scaleX, scaleY);
-        args = [0, 0, destWidth, destHeight];
+          computeScaledDestinationSize(cvs, target, scaleX, scaleY, 2 * outset, 2 * outset);
+        args = [-outset, -outset,
+        targetWidth + 2 * outset, targetHeight + 2 * outset,
+          offset, offset, destWidth, destHeight];
       } else {
-        args = [0, 0];
+        args = [-outset, -outset,
+        targetWidth + 2 * outset, targetHeight + 2 * outset,
+          offset, offset];
       }
 
       const offscreen = cvs.transferControlToOffscreen();
@@ -114,4 +141,5 @@
     await waitForCanvasPaint(document.querySelector("canvas"));
     takeScreenshot();
   });
+
 </script>

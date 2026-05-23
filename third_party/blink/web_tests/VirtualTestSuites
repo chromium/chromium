@@ -2882,11 +2882,11 @@
       "external/wpt/css/css-ui/caret-shape-block-color-001.html",
       "wpt_internal/html/canvas/drawElementImage/ink-overflow.html",
       "wpt_internal/html/canvas/drawElementImage/scale.html",
-      "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
-      "wpt_internal/html/canvas/drawElementImage/webgl-ink-overflow.html",
-      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
       "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
-      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html"
+      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html",
+      "wpt_internal/webgl/draw-element-image/webgl-css-transform-on-div.html",
+      "wpt_internal/webgl/draw-element-image/webgl-ink-overflow.html",
+      "wpt_internal/webgl/draw-element-image/webgl-scaling.html"
     ],
     "exclusive_tests": [
       "fast/hidpi/static"
@@ -2928,11 +2928,11 @@
       "external/wpt/css/css-ui/caret-shape-block-color-001.html",
       "wpt_internal/html/canvas/drawElementImage/ink-overflow.html",
       "wpt_internal/html/canvas/drawElementImage/scale.html",
-      "wpt_internal/html/canvas/drawElementImage/webgl-css-transform-on-div.html",
-      "wpt_internal/html/canvas/drawElementImage/webgl-ink-overflow.html",
-      "wpt_internal/html/canvas/drawElementImage/webgl-scaling.html",
       "wpt_internal/html/canvas/drawElementImage/get-element-transform.html",
       "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix.html",
+      "wpt_internal/webgl/draw-element-image/webgl-css-transform-on-div.html",
+      "wpt_internal/webgl/draw-element-image/webgl-ink-overflow.html",
+      "wpt_internal/webgl/draw-element-image/webgl-scaling.html",
       "svg/dom/getScreenCTM-getBoundingClientRect-parity.html",
       "svg/dom/getBBox-getBoundingClientRect-consistency.html",
       "svg/dom/getCTM-zoom-invariance.html",
@@ -5407,7 +5407,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
       "wpt_internal/html/canvas/drawElementImage/video.html",
-      "wpt_internal/html/canvas/drawElementImage/video-worker.html"
+      "external/wpt/html/canvas/offscreen/manual/draw-element-image/video-worker.tentative.html"
     ],
     "args": ["--use-gpu-in-tests", "--enable-threaded-compositing"],
     "expires": "never"
