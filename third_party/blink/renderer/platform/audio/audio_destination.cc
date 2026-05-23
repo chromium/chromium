@@ -69,7 +69,7 @@ namespace {
 // to play audio via Web Audio API.
 constexpr uint32_t kFIFOSize = 128 * 128;
 
-const String DeviceStateToString(AudioDestination::DeviceState state) {
+const char* DeviceStateToString(AudioDestination::DeviceState state) {
   switch (state) {
     case AudioDestination::kRunning:
       return "running";

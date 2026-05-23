@@ -19,13 +19,13 @@ namespace blink {
 
 namespace {
 
-String GetContextTypeEnum(BaseAudioContext* context) {
+const char* GetContextTypeEnum(BaseAudioContext* context) {
   return context->HasRealtimeConstraint()
       ? protocol::WebAudio::ContextTypeEnum::Realtime
       : protocol::WebAudio::ContextTypeEnum::Offline;
 }
 
-String GetContextStateEnum(BaseAudioContext* context) {
+const char* GetContextStateEnum(BaseAudioContext* context) {
   switch (context->ContextState()) {
     case V8AudioContextState::Enum::kSuspended:
       return protocol::WebAudio::ContextStateEnum::Suspended;

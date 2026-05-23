@@ -130,7 +130,7 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   }
 
   NodeType GetNodeType() const { return node_type_; }
-  String NodeTypeName() const;
+  const char* NodeTypeName() const;
 
   // This object has been connected to another object. This might have
   // existing connections from others.

@@ -79,7 +79,7 @@ class MODULES_EXPORT AudioNode : public EventTarget,
   AudioHandler& Handler() const;
 
   void HandleChannelOptions(const AudioNodeOptions*, ExceptionState&);
-  String GetNodeName() const;
+  const char* GetNodeName() const;
 
   AudioNode* connect(AudioNode*,
                      unsigned output_index,

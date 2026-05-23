@@ -140,7 +140,7 @@ void AudioNode::HandleChannelOptions(const AudioNodeOptions* options,
   }
 }
 
-String AudioNode::GetNodeName() const {
+const char* AudioNode::GetNodeName() const {
   return Handler().NodeTypeName();
 }
 
@@ -206,13 +206,16 @@ AudioNode* AudioNode::connect(AudioNode* destination,
   }
 
   SendLogMessage(
-      __func__, String::Format(
-                    "({output=[index:%u, type:%s, handler:0x%" PRIXPTR "]} --> "
-                    "{input=[index:%u, type:%s, handler:0x%" PRIXPTR "]})",
-                    output_index, Handler().NodeTypeName().Utf8().c_str(),
-                    reinterpret_cast<uintptr_t>(&Handler()), input_index,
-                    destination->Handler().NodeTypeName().Utf8().c_str(),
-                    reinterpret_cast<uintptr_t>(&destination->Handler())));
+      __func__,
+      StrCat(
+          {"({output=[index:", String::Number(output_index),
+           ", type:", Handler().NodeTypeName(), ", handler:0x",
+           String::Format("%" PRIXPTR, reinterpret_cast<uintptr_t>(&Handler())),
+           "]} --> {input=[index:", String::Number(input_index),
+           ", type:", destination->Handler().NodeTypeName(), ", handler:0x",
+           String::Format("%" PRIXPTR,
+                          reinterpret_cast<uintptr_t>(&destination->Handler())),
+           "]})"}));
 
   AudioNodeWiring::Connect(Handler().Output(output_index),
                            destination->Handler().Input(input_index));
