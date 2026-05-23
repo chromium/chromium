@@ -51,21 +51,9 @@ found in the LICENSE file.
         android:icon="@drawable/travel_trip"
         android:summary="@string/autofill_and_passwords_travel_summary"/>
 
-    <!-- TODO(crbug.com/513452611): Update to use correct icon once
-    defined. -->
-    <!-- TODO(crbug.com/513452611): Remove android:visible="false" once
-    launched. -->
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="autofill_and_passwords_shopping"
-        android:order="6"
-        android:title="@string/autofill_shopping_title"
-        android:icon="@drawable/ic_shoppingmode_24dp"
-        android:summary="@string/autofill_and_passwords_shopping_summary"
-        android:visible="false"/>
-
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="autofill_and_passwords_settings"
-        android:order="7"
+        android:order="6"
         android:title="@string/autofill_settings_title"
         android:icon="@drawable/ic_settings_24dp"
         android:summary="@string/autofill_and_passwords_settings_summary"/>
