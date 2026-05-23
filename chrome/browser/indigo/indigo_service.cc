@@ -6,13 +6,16 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_extension_utils.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
+#include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -22,6 +25,31 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace indigo {
+
+namespace {
+
+base::flat_map<std::string, std::string> LoadPromptsFromDisk(
+    const base::FilePath& file_path) {
+  base::flat_map<std::string, std::string> prompts;
+  std::string binary_data;
+  if (!base::ReadFileToString(file_path, &binary_data)) {
+    VLOG(1) << "Failed to read prompts file: " << file_path;
+    return prompts;
+  }
+
+  chrome::aix::indigo::IndigoPrompts proto;
+  if (!proto.ParseFromString(binary_data)) {
+    VLOG(1) << "Failed to parse prompts proto";
+    return prompts;
+  }
+
+  for (const auto& prompt : proto.prompts()) {
+    prompts[prompt.key()] = prompt.prompt();
+  }
+  return prompts;
+}
+
+}  // namespace
 
 CombinedEligibility::CombinedEligibility() = default;
 CombinedEligibility::CombinedEligibility(const CombinedEligibility&) = default;
@@ -172,6 +200,20 @@ void IndigoService::UpdateLocalEligibilityAndNotify() {
 
 void IndigoService::OnIndigoComponentReady() {
   UpdateLocalEligibilityAndNotify();
+
+  if (!prompts_loaded_) {
+    std::optional<base::FilePath> install_dir =
+        component_updater::GetIndigoComponentInstallDir();
+    if (install_dir.has_value()) {
+      base::FilePath prompts_path =
+          install_dir->Append(FILE_PATH_LITERAL("indigo_prompts.bin"));
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+          base::BindOnce(&LoadPromptsFromDisk, prompts_path),
+          base::BindOnce(&IndigoService::OnPromptsLoaded,
+                         weak_ptr_factory_.GetWeakPtr()));
+    }
+  }
 }
 
 void IndigoService::GetCombinedEligibility(
@@ -247,6 +289,29 @@ void IndigoService::OnRemoteEligibilityReceived(
 void IndigoService::SetRemoteEligibilityFetcherForTesting(
     RemoteEligibilityFetcher fetcher) {
   remote_eligibility_fetcher_ = std::move(fetcher);
+}
+
+void IndigoService::SetPromptsLoadedCallbackForTesting(
+    base::OnceClosure callback) {
+  prompts_loaded_callback_for_testing_ = std::move(callback);
+}
+
+void IndigoService::OnPromptsLoaded(
+    base::flat_map<std::string, std::string> prompts) {
+  prompts_ = std::move(prompts);
+  prompts_loaded_ = true;
+  if (prompts_loaded_callback_for_testing_) {
+    std::move(prompts_loaded_callback_for_testing_).Run();
+  }
+}
+
+std::optional<std::string> IndigoService::GetPrompt(
+    const std::string& key) const {
+  auto it = prompts_.find(key);
+  if (it == prompts_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 }  // namespace indigo

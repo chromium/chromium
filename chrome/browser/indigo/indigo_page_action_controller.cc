@@ -225,6 +225,17 @@ void IndigoPageActionController::ContinueInvoke(
           glic::mojom::InvocationSource::kIndigoPageAction);
 
       std::string prompt = features::kIndigoGlicPrompt.Get();
+      if (prompt.empty()) {
+        std::string prompt_key = features::kIndigoGlicPromptKey.Get();
+        if (!prompt_key.empty() && indigo_service_) {
+          std::optional<std::string> proto_prompt =
+              indigo_service_->GetPrompt(prompt_key);
+          if (proto_prompt.has_value()) {
+            prompt = *proto_prompt;
+          }
+        }
+      }
+
       if (!prompt.empty()) {
         options.prompts.push_back(std::move(prompt));
         glic_keyed_service->InvokeWithAutoSubmit(

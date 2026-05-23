@@ -7,12 +7,15 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -23,6 +26,7 @@
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/indigo/onboarding/indigo_onboarding_dialog.h"
+#include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -215,6 +219,34 @@ class IndigoPageActionControllerTest : public testing::Test {
         can_use_model_execution_features);
     identity_test_env_adaptor_->identity_test_env()
         ->UpdateAccountInfoForAccount(account_info);
+  }
+
+  void SetupComponentWithPrompts(
+      const base::FilePath& temp_dir_path,
+      const std::vector<std::pair<std::string, std::string>>& prompts) {
+    chrome::aix::indigo::IndigoPrompts proto;
+    for (const auto& [key, prompt_text] : prompts) {
+      auto* prompt = proto.add_prompts();
+      prompt->set_key(key);
+      prompt->set_prompt(prompt_text);
+    }
+
+    base::FilePath prompts_path =
+        temp_dir_path.Append(FILE_PATH_LITERAL("indigo_prompts.bin"));
+    std::string serialized;
+    ASSERT_TRUE(proto.SerializeToString(&serialized));
+    ASSERT_TRUE(base::WriteFile(prompts_path, serialized));
+
+    base::test::TestFuture<void> prompts_loaded_future;
+    IndigoServiceFactory::GetForProfile(profile_.get())
+        ->SetPromptsLoadedCallbackForTesting(
+            prompts_loaded_future.GetCallback());
+
+    component_updater::IndigoComponentInstallerPolicy policy;
+    policy.ComponentReady(base::Version("1.0"), temp_dir_path,
+                          base::DictValue());
+
+    EXPECT_TRUE(prompts_loaded_future.Wait());
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -661,6 +693,90 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicForSuggestionChip) {
         url2, tab_interface_->GetContents());
     navigation2->Commit();
   }
+
+  controller_->InvokeAction();
+}
+
+TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithProtoPrompt) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+  SetupComponentWithPrompts(temp_dir.GetPath(), {{"v5", "proto test prompt"}});
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt_key", "v5"}});
+
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(_, HasGlicPrompt("proto test prompt")))
+      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  controller_->InvokeAction();
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       InvokeActionOpensGlicWithOverridePromptPrecedence) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+  SetupComponentWithPrompts(temp_dir.GetPath(), {{"v5", "proto test prompt"}});
+
+  base::test::ScopedFeatureList local_feature_list;
+  // Both override and key are set. Override should win.
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt", "override prompt"},
+                                  {"indigo_glic_prompt_key", "v5"}});
+
+  EXPECT_CALL(*mock_glic_keyed_service_,
+              InvokeWithAutoSubmit(_, HasGlicPrompt("override prompt")))
+      .WillOnce(::testing::Return(base::WeakPtr<glic::GlicInstance>()));
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
+
+  controller_->InvokeAction();
+}
+
+TEST_F(IndigoPageActionControllerTest,
+       InvokeActionDoesNotOpenGlicIfPromptNotFound) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  CreateController();
+  SetupEligibleAndOnboarded();
+  SetupComponentWithPrompts(temp_dir.GetPath(), {});
+
+  base::test::ScopedFeatureList local_feature_list;
+  local_feature_list.InitAndEnableFeatureWithParameters(
+      features::kIndigoOpenGlic, {{"indigo_glic_prompt_key", "v5"}});
+
+  // Expect NO call to InvokeWithAutoSubmit.
+  EXPECT_CALL(*mock_glic_keyed_service_, InvokeWithAutoSubmit(_, _)).Times(0);
+
+  GURL url("https://example.com");
+  ExpectOptimizationGuideDecision(url, OptimizationGuideDecision::kTrue);
+  EXPECT_CALL(*page_action_controller_, ShowAnchoredMessage(_, _));
+
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      url, tab_interface_->GetContents());
+  navigation->Commit();
 
   controller_->InvokeAction();
 }

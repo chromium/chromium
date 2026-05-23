@@ -1193,6 +1193,8 @@ const base::FeatureParam<std::string> kIndigoScopes{
 BASE_FEATURE(kIndigoOpenGlic, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kIndigoGlicPrompt{
     &kIndigoOpenGlic, "indigo_glic_prompt", ""};
+const base::FeatureParam<std::string> kIndigoGlicPromptKey{
+    &kIndigoOpenGlic, "indigo_glic_prompt_key", ""};
 
 #if !BUILDFLAG(IS_ANDROID)
 // A feature that controls whether Instant uses a spare renderer.

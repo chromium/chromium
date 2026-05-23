@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "base/check.h"
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -109,6 +110,8 @@ class IndigoService : public KeyedService,
   // This may require contacting the service.
   void GetCombinedEligibility(CombinedEligibilityCallback callback);
 
+  // Returns the prompt for the given key if available.
+  std::optional<std::string> GetPrompt(const std::string& key) const;
 
   // KeyedService:
   void Shutdown() override;
@@ -119,6 +122,7 @@ class IndigoService : public KeyedService,
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
 
   void SetRemoteEligibilityFetcherForTesting(RemoteEligibilityFetcher fetcher);
+  void SetPromptsLoadedCallbackForTesting(base::OnceClosure callback);
 
  private:
   LocalEligibility ComputeLocalEligibility() const;
@@ -126,6 +130,7 @@ class IndigoService : public KeyedService,
   void OnRemoteEligibilityReceived(
       base::expected<RemoteEligibility, std::string> eligibility_or_error);
   void TriggerRemoteEligibilityFetch();
+  void OnPromptsLoaded(base::flat_map<std::string, std::string> prompts);
 
   raw_ptr<Profile> profile_;
   raw_ptr<signin::IdentityManager> identity_manager_;
@@ -156,6 +161,13 @@ class IndigoService : public KeyedService,
 
   // Callbacks waiting for the current remote eligibility fetch to complete.
   std::vector<CombinedEligibilityCallback> pending_callbacks_;
+
+  base::flat_map<std::string, std::string> prompts_;
+  bool prompts_loaded_ = false;
+
+  base::OnceClosure prompts_loaded_callback_for_testing_;
+
+  base::WeakPtrFactory<IndigoService> weak_ptr_factory_{this};
 
   // Weak pointer factory used specifically for remote eligibility fetches to
   // allow invalidation of in-flight requests.

@@ -5,6 +5,8 @@
 #include "chrome/browser/indigo/indigo_service.h"
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
@@ -12,6 +14,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/component_updater/indigo_component_installer.h"
 #include "chrome/browser/indigo/indigo_prefs.h"
+#include "chrome/browser/indigo/proto/indigo_prompts.pb.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -281,6 +284,49 @@ TEST_F(IndigoServiceNoScriptTest, DynamicComponentReady) {
   // It should transition to kNotSignedIn (since we are not signed in).
   EXPECT_EQ(future.Take(), LocalEligibility::kNotSignedIn);
   EXPECT_EQ(service_->GetLocalEligibility(), LocalEligibility::kNotSignedIn);
+}
+
+TEST_F(IndigoServiceTest, LoadPrompts) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Create a test proto.
+  chrome::aix::indigo::IndigoPrompts proto;
+  auto* prompt1 = proto.add_prompts();
+  prompt1->set_key("v5");
+  prompt1->set_prompt("Test prompt v5");
+  auto* prompt2 = proto.add_prompts();
+  prompt2->set_key("v6");
+  prompt2->set_prompt("Test prompt v6");
+
+  // Serialize to file.
+  base::FilePath prompts_path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("indigo_prompts.bin"));
+  std::string serialized;
+  ASSERT_TRUE(proto.SerializeToString(&serialized));
+  ASSERT_TRUE(base::WriteFile(prompts_path, serialized));
+
+  CreateService();
+
+  // Initially prompts should not be loaded.
+  EXPECT_EQ(service_->GetPrompt("v5"), std::nullopt);
+
+  base::test::TestFuture<void> prompts_loaded_future;
+  service_->SetPromptsLoadedCallbackForTesting(
+      prompts_loaded_future.GetCallback());
+
+  // Simulate component ready with the temp dir.
+  component_updater::IndigoComponentInstallerPolicy policy;
+  policy.ComponentReady(base::Version("1.0"), temp_dir.GetPath(),
+                        base::DictValue());
+
+  // Wait for the background task to load prompts.
+  EXPECT_TRUE(prompts_loaded_future.Wait());
+
+  // Verify prompts are loaded.
+  EXPECT_EQ(service_->GetPrompt("v5"), "Test prompt v5");
+  EXPECT_EQ(service_->GetPrompt("v6"), "Test prompt v6");
+  EXPECT_EQ(service_->GetPrompt("non_existent"), std::nullopt);
 }
 
 }  // namespace indigo

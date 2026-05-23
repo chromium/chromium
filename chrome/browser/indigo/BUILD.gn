@@ -4,6 +4,12 @@
 
 assert(!is_android)
 
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("indigo_prompts_proto") {
+  sources = [ "proto/indigo_prompts.proto" ]
+}
+
 source_set("indigo") {
   sources = [
     "api_client.h",
@@ -51,6 +57,7 @@ source_set("impl") {
 
   deps = [
     ":indigo",
+    ":indigo_prompts_proto",
     "//base",
     "//chrome/app:branded_strings",
     "//chrome/browser:global_features",
@@ -107,6 +114,7 @@ source_set("unit_tests") {
   deps = [
     ":impl",
     ":indigo",
+    ":indigo_prompts_proto",
     ":test_support",
     "//base/test:test_support",
     "//chrome/browser/component_updater",
