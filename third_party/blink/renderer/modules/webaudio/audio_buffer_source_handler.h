@@ -114,6 +114,15 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
                        unsigned& write_index,
                        double& virtual_read_index);
 
+  void ProcessInterpolatedPath(double virtual_delta_frames,
+                               double virtual_end_frame,
+                               uint32_t buffer_length,
+                               unsigned number_of_channels,
+                               double computed_playback_rate,
+                               int& frames_to_process,
+                               unsigned& write_index,
+                               double& virtual_read_index);
+
   // Render silence starting from "index" frame in AudioBus.
   inline bool RenderSilenceAndFinishIfNotLooping(unsigned index,
                                                  uint32_t frames_to_process);
