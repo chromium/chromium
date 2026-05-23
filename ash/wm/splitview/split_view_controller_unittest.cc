@@ -4630,7 +4630,8 @@ class SplitViewDraggingTest : public SplitViewControllerTest {
         CreateWindowWithAppType(AppType::BROWSER);
     source_window->ClearProperty(ash::kIsDraggingTabsKey);
     drag_window->SetProperty(ash::kIsDraggingTabsKey, true);
-    drag_window->SetProperty(ash::kTabDraggingSourceWindowKey, source_window);
+    drag_window->SetProperty(ash::kTabDraggingSourceWindowKey,
+                             source_window->GetWeakPtrAsWindow());
     return std::make_pair(CreateWindowResizer(drag_window.get(), HTCAPTION),
                           std::move(drag_window));
   }
