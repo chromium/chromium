@@ -269,6 +269,7 @@ src/webgpu/api/validation/buffer/threading.spec.ts
 src/webgpu/api/validation/capability_checks/limits/limit_utils.ts
 src/webgpu/api/validation/capability_checks/features/clip_distances.spec.ts
 src/webgpu/api/validation/capability_checks/features/query_types.spec.ts
+src/webgpu/api/validation/capability_checks/features/subgroup_size_control.spec.ts
 src/webgpu/api/validation/capability_checks/features/texture_component_swizzle.spec.ts
 src/webgpu/util/create_elements.ts
 src/webgpu/api/validation/capability_checks/features/texture_formats.spec.ts
