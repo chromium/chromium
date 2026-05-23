@@ -375,10 +375,15 @@ void WebUILocationBar::UpdateLhsChipsState(bool icon_known) {
     }
   }
 
+  auto accessibility_state = location_bar::GetSecurityChipAccessibilityState(
+      model, is_editing_or_empty, security_chip_text);
+
   auto lhs_chips_state = toolbar_ui_api::mojom::LhsChipsState::New(
       toolbar_ui_api::mojom::SecurityChipState::New(
-          location_icon_, mojo_security_level, security_chip_text, is_clickable,
-          is_text_dangerous, !ShouldChipOverrideLocationIcon()),
+          location_icon_, mojo_security_level, security_chip_text,
+          toolbar_ui_api::mojom::SecurityChipAccessibilityState::New(
+              accessibility_state.name, accessibility_state.description),
+          is_clickable, is_text_dangerous, !ShouldChipOverrideLocationIcon()),
       std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
       permission_dashboard_->GetState());
 

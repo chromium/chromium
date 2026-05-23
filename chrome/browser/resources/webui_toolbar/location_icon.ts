@@ -19,7 +19,7 @@ import type {SecurityChipState} from './toolbar_ui_api_data_model.mojom-webui.js
 
 export interface LocationIconElement {
   $: {
-    container: HTMLElement,
+    container: HTMLButtonElement,
   };
 }
 
@@ -65,6 +65,10 @@ export class LocationIconElement extends CrLitElement {
     icon: {handleId: 0n},
     securityLevel: 0,
     text: '',
+    accessibilityState: {
+      label: '',
+      description: '',
+    },
     isClickable: false,
     isTextDangerous: false,
     isVisible: true,

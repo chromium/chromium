@@ -55,8 +55,13 @@ CreateValidNavigationControlsState() {
           toolbar_ui_api::mojom::LhsChipsState::New(
               toolbar_ui_api::mojom::SecurityChipState::New(
                   toolbar_ui_api::IconHandle(),
-                  toolbar_ui_api::mojom::SecurityLevel::kNone, std::u16string(),
-                  /*is_clickable=*/false, /*is_text_dangerous=*/false,
+                  toolbar_ui_api::mojom::SecurityLevel::kNone,
+                  /*text=*/std::u16string(),
+                  toolbar_ui_api::mojom::SecurityChipAccessibilityState::New(
+                      /*label=*/std::u16string(),
+                      /*description=*/std::u16string()),
+                  /*is_clickable=*/false,
+                  /*is_text_dangerous=*/false,
                   /*is_visible=*/true),
               std::vector<toolbar_ui_api::mojom::ContentSettingImageStatePtr>(),
               /*permission_dashboard=*/nullptr)),

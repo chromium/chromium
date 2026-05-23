@@ -64,6 +64,9 @@ class TestLocationBarModel : public LocationBarModel {
   void set_secure_display_text(std::u16string secure_display_text) {
     secure_display_text_ = secure_display_text;
   }
+  void set_secure_accessibility_text(std::u16string secure_accessibility_text) {
+    secure_accessibility_text_ = secure_accessibility_text;
+  }
   void set_should_prevent_elision(bool should_prevent_elision) {
     should_prevent_elision_ = should_prevent_elision;
   }
@@ -85,6 +88,7 @@ class TestLocationBarModel : public LocationBarModel {
   bool should_display_url_ = false;
   bool offline_page_ = false;
   std::u16string secure_display_text_ = std::u16string();
+  std::u16string secure_accessibility_text_ = std::u16string();
   bool should_prevent_elision_ = false;
   metrics::OmniboxEventProto::PageClassification page_classification_ =
       metrics::OmniboxEventProto::OTHER;
