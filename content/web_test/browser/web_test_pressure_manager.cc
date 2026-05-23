@@ -7,7 +7,6 @@
 #include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
-#include "services/device/public/mojom/pressure_update.mojom.h"
 
 namespace content {
 
@@ -60,24 +59,23 @@ void WebTestPressureManager::RemoveVirtualPressureSource(
   std::move(callback).Run();
 }
 
-void WebTestPressureManager::UpdateVirtualPressureSourceData(
+void WebTestPressureManager::UpdateVirtualPressureSourceState(
     device::mojom::PressureSource source,
     device::mojom::PressureState state,
-    double own_contribution_estimate,
-    UpdateVirtualPressureSourceDataCallback callback) {
+    UpdateVirtualPressureSourceStateCallback callback) {
   auto it = pressure_source_overrides_.find(source);
   if (it == pressure_source_overrides_.end()) {
     std::move(callback).Run(
-        blink::test::mojom::UpdateVirtualPressureSourceDataResult::
+        blink::test::mojom::UpdateVirtualPressureSourceStateResult::
             kSourceTypeNotOverridden);
     return;
   }
 
-  it->second->UpdateVirtualPressureSourceData(
-      state, own_contribution_estimate,
-      base::BindOnce(
-          std::move(callback),
-          blink::test::mojom::UpdateVirtualPressureSourceDataResult::kSuccess));
+  it->second->UpdateVirtualPressureSourceState(
+      state,
+      base::BindOnce(std::move(callback),
+                     blink::test::mojom::
+                         UpdateVirtualPressureSourceStateResult::kSuccess));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebTestPressureManager);

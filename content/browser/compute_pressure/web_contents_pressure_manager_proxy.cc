@@ -140,16 +140,14 @@ base::UnguessableToken ScopedVirtualPressureSourceForDevTools::token() const {
   return token_;
 }
 
-void ScopedVirtualPressureSourceForDevTools::UpdateVirtualPressureSourceData(
+void ScopedVirtualPressureSourceForDevTools::UpdateVirtualPressureSourceState(
     device::mojom::PressureState state,
-    double own_contribution_estimate,
-    device::mojom::PressureManager::UpdateVirtualPressureSourceDataCallback
+    device::mojom::PressureManager::UpdateVirtualPressureSourceStateCallback
         callback) {
   if (web_contents_pressure_manager_proxy_) {
     web_contents_pressure_manager_proxy_->GetPressureManager()
-        ->UpdateVirtualPressureSourceData(token_, source_, state,
-                                          own_contribution_estimate,
-                                          std::move(callback));
+        ->UpdateVirtualPressureSourceState(token_, source_, state,
+                                           std::move(callback));
   }
 }
 

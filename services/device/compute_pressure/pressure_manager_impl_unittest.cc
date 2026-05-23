@@ -150,11 +150,10 @@ class PressureManagerImplTest : public DeviceServiceTestBase {
 
   bool UpdateVirtualPressureSource(const base::UnguessableToken& token,
                                    mojom::PressureSource source,
-                                   mojom::PressureState state,
-                                   double own_contribution_estimate) {
+                                   mojom::PressureState state) {
     base::test::TestFuture<void> future;
-    manager_->UpdateVirtualPressureSourceData(
-        token, source, state, own_contribution_estimate, future.GetCallback());
+    manager_->UpdateVirtualPressureSourceState(token, source, state,
+                                               future.GetCallback());
     return future.Wait();
   }
 
@@ -280,8 +279,7 @@ TEST_F(PressureManagerImplTest, OneClientOneVirtual) {
       mojom::PressureManagerAddClientResult::kOk);
 
   EXPECT_TRUE(UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu,
-                                          mojom::PressureState::kCritical,
-                                          /*own_pressure_estimate=*/0.5));
+                                          mojom::PressureState::kCritical));
 
   FakePressureClient::WaitForUpdates({&client, &virtual_client});
 
@@ -314,8 +312,7 @@ TEST_F(PressureManagerImplTest, UpdateVirtualClientWithNoVirtualClient) {
   client.SetNextUpdateCallback(base::BindOnce(
       []() { FAIL() << "The update callback should not have been called"; }));
   EXPECT_TRUE(UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu,
-                                          mojom::PressureState::kCritical,
-                                          /*own_pressure_estimate=*/0.5));
+                                          mojom::PressureState::kCritical));
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(client.updates().empty());
 }
@@ -343,9 +340,8 @@ TEST_F(PressureManagerImplTest, OneVirtualClient) {
   for (size_t i = 0; i < static_cast<size_t>(mojom::PressureState::kMaxValue);
        ++i) {
     mojom::PressureState state = static_cast<mojom::PressureState>(i);
-    EXPECT_TRUE(UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu,
-                                            state,
-                                            /*own_pressure_estimate=*/0.5));
+    EXPECT_TRUE(
+        UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu, state));
 
     virtual_client.WaitForUpdate();
 
@@ -361,8 +357,7 @@ TEST_F(PressureManagerImplTest, OneVirtualClient) {
 
   // Pressure source was removed.
   EXPECT_TRUE(UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu,
-                                          mojom::PressureState::kCritical,
-                                          /*own_pressure_estimate=*/0.5));
+                                          mojom::PressureState::kCritical));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(virtual_client.updates().size(), update_count);
 }
@@ -380,9 +375,8 @@ TEST_F(PressureManagerImplTest, ContinuousUpdateReports) {
 
   const mojom::PressureState state = mojom::PressureState::kSerious;
 
-  EXPECT_TRUE(UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu,
-                                          state,
-                                          /*own_pressure_estimate=*/0.5));
+  EXPECT_TRUE(
+      UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu, state));
 
   virtual_client.WaitForUpdate();
   virtual_client.WaitForUpdate();
@@ -407,16 +401,14 @@ TEST_F(PressureManagerImplTest, SameStateUpdatesAreNotDropped) {
 
   const mojom::PressureState state = mojom::PressureState::kSerious;
 
-  EXPECT_TRUE(UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu,
-                                          state,
-                                          /*own_pressure_estimate=*/0.5));
+  EXPECT_TRUE(
+      UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu, state));
 
   virtual_client.WaitForUpdate();
   ASSERT_EQ(virtual_client.updates().size(), 1U);
 
-  EXPECT_TRUE(UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu,
-                                          state,
-                                          /*own_pressure_estimate=*/0.5));
+  EXPECT_TRUE(
+      UpdateVirtualPressureSource(token, mojom::PressureSource::kCpu, state));
 
   virtual_client.WaitForUpdate();
   ASSERT_EQ(virtual_client.updates().size(), 2U);

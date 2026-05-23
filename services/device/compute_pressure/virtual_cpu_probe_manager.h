@@ -33,12 +33,6 @@ class VirtualCpuProbeManager final : public CpuProbeManager {
   // |desired_state| to be reported.
   void SetPressureState(mojom::PressureState desired_state);
 
-  // Set the own_contribution_estimate to desired_estimate.
-  // The CpuSample instance will eventually reach
-  // CpuProbeManager::OnCpuSampleAvailable() and cause |desired_estimate| to be
-  // reported.
-  void SetOwnContributionEstimate(double desired_estimate);
-
  private:
   VirtualCpuProbeManager(
       base::TimeDelta sampling_interval,
@@ -47,9 +41,6 @@ class VirtualCpuProbeManager final : public CpuProbeManager {
   // Handles break calibration mitigation and conversion from PressureSample
   // to PressureState.
   device::CpuPressureConverter converter_;
-
-  // Virtual own_contribution_estimate.
-  double own_contribution_estimate_;
 };
 
 }  // namespace device

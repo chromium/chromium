@@ -74,12 +74,11 @@ class PressureManagerImpl : public mojom::PressureManager {
       const base::UnguessableToken& token,
       mojom::PressureSource source,
       RemoveVirtualPressureSourceCallback callback) override;
-  void UpdateVirtualPressureSourceData(
+  void UpdateVirtualPressureSourceState(
       const ::base::UnguessableToken& token,
       mojom::PressureSource source,
       mojom::PressureState state,
-      double own_contribution_estimate,
-      UpdateVirtualPressureSourceDataCallback callback) override;
+      UpdateVirtualPressureSourceStateCallback callback) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
