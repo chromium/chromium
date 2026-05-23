@@ -5,16 +5,50 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@macro/default_bg_color">
 
-    <TextView
-        android:id="@+id/tab_title"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="@style/TextAppearance.Headline.Primary"
-        android:layout_gravity="center"
-        android:textAlignment="center"/>
-</FrameLayout>
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tab_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.Headline.Primary"
+            android:layout_marginBottom="16dp"
+            android:textAlignment="viewStart"/>
+
+        <TextView
+            android:id="@+id/dev_link"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Link"
+            android:autoLink="all"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/filler_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:layout_marginBottom="16dp"/>
+
+
+        <EditText
+            android:id="@+id/dev_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:layout_marginTop="16dp"
+            tools:ignore="LabelFor"/>
+
+    </LinearLayout>
+</ScrollView>
