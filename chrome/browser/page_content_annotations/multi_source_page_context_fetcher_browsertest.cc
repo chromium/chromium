@@ -548,7 +548,8 @@ IN_PROC_BROWSER_TEST_F(WebpMultiSourcePageContextFetcherBrowserTest,
 }
 
 class PasswordRedactionMultiSourcePageContextFetcherBrowserTest
-    : public MultiSourcePageContextFetcherBrowserTest {
+    : public MultiSourcePageContextFetcherBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   PasswordRedactionMultiSourcePageContextFetcherBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features{
@@ -559,11 +560,19 @@ class PasswordRedactionMultiSourcePageContextFetcherBrowserTest
              {"screenshot_timeout_ms", "30s"},
          }},
         {optimization_guide::features::kGetAIPageContentMainFrameTimeoutEnabled,
-         {{"timeout", "30s"}}
+         {{"timeout", "30s"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
 
-        }};
+    if (use_tracked_elements()) {
+      enabled_features.push_back(
+          {blink::features::kAIPageContentTrackedElementsPassword, {}});
+    } else {
+      disabled_features.push_back(
+          blink::features::kAIPageContentTrackedElementsPassword);
+    }
+
     features_.InitWithFeaturesAndParameters(enabled_features,
-                                            /*disabled_features=*/{});
+                                            disabled_features);
   }
 
   ~PasswordRedactionMultiSourcePageContextFetcherBrowserTest() override =
@@ -574,11 +583,22 @@ class PasswordRedactionMultiSourcePageContextFetcherBrowserTest
     MultiSourcePageContextFetcherBrowserTest::SetUp();
   }
 
+  bool use_tracked_elements() const { return GetParam(); }
+
  private:
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "PasswordTrackedElementsEnabled"
+                        : "PasswordTrackedElementsDisabled";
+    });
+
+IN_PROC_BROWSER_TEST_P(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
     BasicRedaction) {
   base::HistogramTester histograms;
@@ -617,7 +637,7 @@ IN_PROC_BROWSER_TEST_F(
                                 true, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
     DISABLED_BasicRedactionInIframe) {
   base::HistogramTester histograms;
@@ -684,7 +704,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_RedactionWhenScreenshotReceivedFirst \
   RedactionWhenScreenshotReceivedFirst
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     PasswordRedactionMultiSourcePageContextFetcherBrowserTest,
     MAYBE_RedactionWhenScreenshotReceivedFirst) {
   base::HistogramTester histograms;
@@ -736,7 +756,8 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 class SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest
-    : public MultiSourcePageContextFetcherBrowserTest {
+    : public MultiSourcePageContextFetcherBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features{
@@ -750,11 +771,19 @@ class SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest
              {"screenshot_timeout_ms", "30s"},
          }},
         {optimization_guide::features::kGetAIPageContentMainFrameTimeoutEnabled,
-         {{"timeout", "30s"}}
+         {{"timeout", "30s"}}}};
+    std::vector<base::test::FeatureRef> disabled_features;
 
-        }};
+    if (use_tracked_elements()) {
+      enabled_features.push_back(
+          {blink::features::kAIPageContentTrackedElementsPassword, {}});
+    } else {
+      disabled_features.push_back(
+          blink::features::kAIPageContentTrackedElementsPassword);
+    }
+
     features_.InitWithFeaturesAndParameters(enabled_features,
-                                            /*disabled_features=*/{});
+                                            disabled_features);
   }
 
   ~SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest()
@@ -765,11 +794,22 @@ class SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest
     MultiSourcePageContextFetcherBrowserTest::SetUp();
   }
 
+  bool use_tracked_elements() const { return GetParam(); }
+
  private:
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "PasswordTrackedElementsEnabled"
+                        : "PasswordTrackedElementsDisabled";
+    });
+
+IN_PROC_BROWSER_TEST_P(
     SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
     BasicRedaction) {
   base::HistogramTester histograms;
@@ -812,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(
                                 true, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
     BasicRedactionInIframe) {
   base::HistogramTester histograms;
@@ -885,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(
 #define MAYBE_RedactionWhenScreenshotReceivedFirst \
   RedactionWhenScreenshotReceivedFirst
 #endif
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     SensitivePaymentRedactionMultiSourcePageContextFetcherBrowserTest,
     MAYBE_RedactionWhenScreenshotReceivedFirst) {
   base::HistogramTester histograms;
@@ -983,7 +1023,8 @@ IN_PROC_BROWSER_TEST_F(MultiSourcePageContextFetcherBrowserTest,
 }
 
 class ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest
-    : public MultiSourcePageContextFetcherBrowserTest {
+    : public MultiSourcePageContextFetcherBrowserTest,
+      public testing::WithParamInterface<bool> {
  public:
   ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features{
@@ -996,8 +1037,18 @@ class ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest
         {optimization_guide::features::kGetAIPageContentMainFrameTimeoutEnabled,
          {{"timeout", "30s"}}},
         {blink::features::kAIPageContentElementCSSRedaction, {}}};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (use_tracked_elements()) {
+      enabled_features.push_back(
+          {blink::features::kAIPageContentTrackedElementsPassword, {}});
+    } else {
+      disabled_features.push_back(
+          blink::features::kAIPageContentTrackedElementsPassword);
+    }
+
     features_.InitWithFeaturesAndParameters(enabled_features,
-                                            /*disabled_features=*/{});
+                                            disabled_features);
   }
 
   ~ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest() override =
@@ -1008,11 +1059,22 @@ class ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest
     MultiSourcePageContextFetcherBrowserTest::SetUp();
   }
 
+  bool use_tracked_elements() const { return GetParam(); }
+
  private:
   base::test::ScopedFeatureList features_;
 };
 
-IN_PROC_BROWSER_TEST_F(
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest,
+    testing::Bool(),
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "PasswordTrackedElementsEnabled"
+                        : "PasswordTrackedElementsDisabled";
+    });
+
+IN_PROC_BROWSER_TEST_P(
     ElementCSSRedactionMultiSourcePageContextFetcherBrowserTest,
     BasicRedaction) {
   base::HistogramTester histograms;

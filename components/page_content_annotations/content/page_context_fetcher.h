@@ -253,10 +253,16 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   void RunCallbackIfComplete();
 
+  void ProcessTrackedElementRects(
+      const viz::TrackedElementRects& tracked_element_rects);
+
   void CollectTrackedElementRectsForIframes(
       const viz::TrackedElementRects& tracked_element_rects);
 
   void MaybeAddIframeInfoToAPC();
+
+  void CollectTrackedElementRectsForPassword(
+      const viz::TrackedElementRects& tracked_element_rects);
 
   base::WeakPtr<PageContextFetcher> GetWeakPtr();
 
@@ -267,7 +273,8 @@ class PageContextFetcher : public content::WebContentsObserver {
 
   // screenshot processing dependencies.
   std::optional<SkBitmap> screenshot_bitmap_;
-  bool screenshot_needs_redaction_ = false;
+  bool screenshot_needs_redaction_using_apc_ = false;
+  std::vector<gfx::Rect> tracked_element_bounds_for_screenshot_redaction_;
 
   std::vector<optimization_guide::proto::IframeInfo> iframe_info_;
 

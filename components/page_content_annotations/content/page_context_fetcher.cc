@@ -434,8 +434,14 @@ void PageContextFetcher::FetchStart(content::WebContents& aweb_contents,
     if (progress_listener_) {
       progress_listener_->BeginAPC();
     }
+    const bool use_tracked_elements_for_password_screenshot_redaction =
+        base::FeatureList::IsEnabled(
+            blink::features::kAIPageContentTrackedElementsPassword) &&
+        options.screenshot_options &&
+        !options.screenshot_options->use_paint_preview();
     ai_page_content_options->include_passwords_for_redaction =
-        base::FeatureList::IsEnabled(kGlicScreenshotPasswordRedaction);
+        base::FeatureList::IsEnabled(kGlicScreenshotPasswordRedaction) &&
+        !use_tracked_elements_for_password_screenshot_redaction;
     ai_page_content_options->include_sensitive_payments_for_redaction =
         base::FeatureList::IsEnabled(kGlicScreenshotSensitivePaymentRedaction);
     // OTP redaction reuses the shared APC Autofill feature gate because there
@@ -446,7 +452,7 @@ void PageContextFetcher::FetchStart(content::WebContents& aweb_contents,
         base::FeatureList::IsEnabled(
             optimization_guide::features::
                 kAnnotatedPageContentAutofillOtpRedactions);
-    screenshot_needs_redaction_ =
+    screenshot_needs_redaction_using_apc_ =
         ai_page_content_options->include_passwords_for_redaction ||
         ai_page_content_options->include_sensitive_payments_for_redaction ||
         ai_page_content_options->include_otps_for_redaction;
@@ -723,7 +729,7 @@ void PageContextFetcher::ReceivedViewportBitmapOrError(
     if (progress_listener_) {
       progress_listener_->ScreenshotCaptured(*bitmap);
     }
-    CollectTrackedElementRectsForIframes(tracked_element_rects);
+    ProcessTrackedElementRects(tracked_element_rects);
     MaybeAddIframeInfoToAPC();
     RedactAndEncodeScreenshotIfNeeded();
   } else {
@@ -775,8 +781,9 @@ void PageContextFetcher::RedactAndEncodeScreenshotIfNeeded() {
     return;
   }
 
-  if (!screenshot_needs_redaction_) {
-    RedactAndEncodeScreenshot({});
+  if (!screenshot_needs_redaction_using_apc_) {
+    RedactAndEncodeScreenshot(
+        std::move(tracked_element_bounds_for_screenshot_redaction_));
     return;
   }
 
@@ -785,14 +792,22 @@ void PageContextFetcher::RedactAndEncodeScreenshotIfNeeded() {
     return;
   }
 
+  std::vector<gfx::Rect> visible_bounding_boxes_for_redaction =
+      std::move(tracked_element_bounds_for_screenshot_redaction_);
+
   // Once APC is done, any requested password, OTP, or sensitive-payment
   // redaction implies we have final bounding boxes to redact.
   CHECK(pending_result_);
   CHECK(pending_result_->annotated_page_content_result.has_value());
 
-  std::vector<gfx::Rect> visible_bounding_boxes_for_redaction =
+  const std::vector<gfx::Rect>& visible_bounding_boxes_for_redaction_from_apc =
       pending_result_->annotated_page_content_result
           ->visible_bounding_boxes_for_redaction;
+  visible_bounding_boxes_for_redaction.insert(
+      visible_bounding_boxes_for_redaction.end(),
+      visible_bounding_boxes_for_redaction_from_apc.begin(),
+      visible_bounding_boxes_for_redaction_from_apc.end());
+
   RedactAndEncodeScreenshot(std::move(visible_bounding_boxes_for_redaction));
 }
 
@@ -892,13 +907,13 @@ void PageContextFetcher::ReceivedAnnotatedPageContent(
   if (has_result) {
     pending_result_->annotated_page_content_result.emplace(
         std::move(content.value()));
-    screenshot_needs_redaction_ =
+    screenshot_needs_redaction_using_apc_ =
         !pending_result_->annotated_page_content_result
              ->visible_bounding_boxes_for_redaction.empty();
   } else {
     pending_result_->annotated_page_content_result =
         base::unexpected(content.error());
-    screenshot_needs_redaction_ = false;
+    screenshot_needs_redaction_using_apc_ = false;
   }
   annotated_page_content_done_ = true;
   base::UmaHistogramTimes("Glic.PageContextFetcher.GetAnnotatedPageContent",
@@ -947,6 +962,12 @@ void PageContextFetcher::RunCallbackIfComplete() {
   }
 
   std::move(callback_).Run(base::ok(std::move(pending_result_)));
+}
+
+void PageContextFetcher::ProcessTrackedElementRects(
+    const viz::TrackedElementRects& tracked_element_rects) {
+  CollectTrackedElementRectsForIframes(tracked_element_rects);
+  CollectTrackedElementRectsForPassword(tracked_element_rects);
 }
 
 void PageContextFetcher::CollectTrackedElementRectsForIframes(
@@ -1036,6 +1057,25 @@ void PageContextFetcher::MaybeAddIframeInfoToAPC() {
           ->mutable_screenshot_info();
   for (const auto& iframe_info : iframe_info_) {
     *screenshot_info->add_iframe_info() = iframe_info;
+  }
+}
+
+void PageContextFetcher::CollectTrackedElementRectsForPassword(
+    const viz::TrackedElementRects& tracked_element_rects) {
+  if (!(base::FeatureList::IsEnabled(kGlicScreenshotPasswordRedaction) &&
+        base::FeatureList::IsEnabled(
+            blink::features::kAIPageContentTrackedElementsPassword))) {
+    return;
+  }
+
+  auto it =
+      tracked_element_rects.find(viz::TrackedElementFeature::kPasswordTracking);
+  if (it == tracked_element_rects.end()) {
+    return;
+  }
+  for (const viz::TrackedElementRect& rect : it->second) {
+    tracked_element_bounds_for_screenshot_redaction_.push_back(
+        rect.visible_bounds);
   }
 }
 
