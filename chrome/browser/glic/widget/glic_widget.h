@@ -55,10 +55,12 @@ class GlicWidget : public views::Widget, public ThemeServiceObserver {
       bool user_resizable);
 
   // Create a widget with the given bounds.
-  static std::unique_ptr<GlicWidget> Create(views::WidgetDelegate* delegate,
-                                            Profile* profile,
-                                            const gfx::Rect& initial_bounds,
-                                            bool user_resizable);
+  static std::unique_ptr<GlicWidget> Create(
+      views::WidgetDelegate* delegate,
+      Profile* profile,
+      const gfx::Rect& initial_bounds,
+      bool user_resizable,
+      gfx::NativeWindow context = gfx::NativeWindow());
 
   // Get the most-overlapping display.
   display::Display GetDisplay();

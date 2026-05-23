@@ -590,6 +590,7 @@ source_set("unit_tests") {
       "service/metrics/metrics_types_unittest.cc",
       "suggestions/caching_zero_state_suggestions_manager_unittest.cc",
       "widget/glic_view_unittest.cc",
+      "widget/glic_widget_unittest.cc",
     ]
 
     deps += [
