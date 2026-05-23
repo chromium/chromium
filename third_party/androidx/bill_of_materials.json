@@ -117,7 +117,7 @@
     {
         "name": "browser",
         "group": "androidx.browser",
-        "version": "1.10.0"
+        "version": "1.11.0-SNAPSHOT"
     },
     {
         "name": "app",

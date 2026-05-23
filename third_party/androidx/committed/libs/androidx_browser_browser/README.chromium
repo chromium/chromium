@@ -1,7 +1,7 @@
 Name: Browser
 Short Name: browser
-URL: https://dl.google.com/dl/android/maven2/androidx/browser/browser/1.10.0/browser-1.10.0.aar
-Version: 1.10.0
+URL: https://androidx.dev/snapshots/builds/15483269/artifacts/repository/androidx/browser/browser/1.11.0-SNAPSHOT/browser-1.11.0-20260523.022205-1.aar
+Version: 1.11.0-SNAPSHOT
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
@@ -13,7 +13,7 @@ License Android Compatible: yes
 Description:
 Provides support for embedding Custom Tabs in an app.
 
-See also: https://developer.android.com/jetpack/androidx/releases/browser#1.10.0
+See also: https://developer.android.com/jetpack/androidx/releases/browser#1.11.0-SNAPSHOT
 
 
 Local Modifications:
