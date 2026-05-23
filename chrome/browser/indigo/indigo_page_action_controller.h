@@ -38,6 +38,28 @@ class IndigoOnboardingDialog;
 struct OnboardingResult;
 class IndigoService;
 
+// LINT.IfChange(IndigoTransformationResult)
+
+// Results of Indigo action invocation.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class IndigoTransformationResult {
+  kUnknown = 0,
+  kSuccess = 1,
+  kNotSignedIn = 2,
+  kMissingCapabilities = 3,
+  kDisabledByPolicy = 4,
+  kMissingScript = 5,
+  kRemoteStatusMissing = 6,
+  kServiceNotSupported = 7,
+  kMissingUserImage = 8,
+  kNotOnboarded = 9,
+  kGenerateImageError = 10,
+  kMaxValue = kGenerateImageError,
+};
+
+// LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)
+
 // Manages the Indigo page action and its various entry points, ensuring they
 // are correctly displayed.
 class IndigoPageActionController : public tabs::ContentsObservingTabFeature,

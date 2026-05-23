@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
@@ -43,6 +44,44 @@ namespace {
 const char kForceIndigoSwitch[] = "force-indigo";
 const char kForceIndigoOnboardingSwitch[] = "force-indigo-onboarding";
 const char kForceIndigoToolbarSwitch[] = "force-indigo-toolbar";
+
+void RecordTransformationResultCannotGenerateImage(
+    const CombinedEligibility& eligibility) {
+  DCHECK(!eligibility.CanGenerateImage());
+  IndigoTransformationResult result;
+
+  if (eligibility.local_eligibility != LocalEligibility::kEligible) {
+    switch (eligibility.local_eligibility) {
+      case LocalEligibility::kNotSignedIn:
+        result = IndigoTransformationResult::kNotSignedIn;
+        break;
+      case LocalEligibility::kMissingCapabilities:
+        result = IndigoTransformationResult::kMissingCapabilities;
+        break;
+      case LocalEligibility::kDisabledByPolicy:
+        result = IndigoTransformationResult::kDisabledByPolicy;
+        break;
+      case LocalEligibility::kMissingScript:
+        result = IndigoTransformationResult::kMissingScript;
+        break;
+      case LocalEligibility::kEligible:
+        NOTREACHED();
+    }
+  } else if (!eligibility.remote_eligibility.has_value()) {
+    result = IndigoTransformationResult::kRemoteStatusMissing;
+  } else if (!eligibility.remote_eligibility
+                  ->is_service_supported_for_account) {
+    result = IndigoTransformationResult::kServiceNotSupported;
+  } else if (!eligibility.remote_eligibility->has_user_image) {
+    result = IndigoTransformationResult::kMissingUserImage;
+  } else if (!eligibility.has_onboarded_pref) {
+    result = IndigoTransformationResult::kNotOnboarded;
+  } else {
+    result = IndigoTransformationResult::kUnknown;
+  }
+
+  base::UmaHistogramEnumeration("Indigo.Transformation.Result", result);
+}
 }  // namespace
 
 DEFINE_USER_DATA(IndigoPageActionController);
@@ -130,6 +169,7 @@ void IndigoPageActionController::CheckEligibilityForOnboarding(
 
   // Show onboarding if the user is ready to onboard, or if it's forced.
   if (eligibility.ReadyToOnboard() || force_onboarding) {
+    base::RecordAction(base::UserMetricsAction("Indigo.Onboarding.Trigger"));
     std::string onboarding_url =
         command_line->GetSwitchValueASCII(kForceIndigoOnboardingSwitch);
     if (onboarding_url.empty()) {
@@ -164,11 +204,14 @@ void IndigoPageActionController::ContinueInvoke(
     // image and aren't ready to onboard.
     LOG(WARNING)
         << "Indigo not eligible for generation and not ready to onboard";
+    RecordTransformationResultCannotGenerateImage(eligibility);
     return;
   }
 
   if (IndigoAgentHost::GetOrCreateForPage(web_contents->GetPrimaryPage())
           ->Invoke()) {
+    base::RecordAction(
+        base::UserMetricsAction("Indigo.Transformation.Trigger"));
     return;
   }
 
@@ -345,6 +388,7 @@ void IndigoPageActionController::OnOnboardingDialogClosed(
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     profile->GetPrefs()->SetBoolean(prefs::kIndigoHasOnboarded, true);
+    base::RecordAction(base::UserMetricsAction("Indigo.Onboarding.Complete"));
 
     if (indigo_service_) {
       indigo_service_->InvalidateRemoteEligibility();

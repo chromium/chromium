@@ -7,6 +7,8 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/user_metrics.h"
 #include "chrome/browser/indigo/api_client.h"
 #include "chrome/browser/indigo/indigo_image_replacement.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
@@ -180,12 +182,21 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
 
   if (!result.has_value()) {
     LOG(ERROR) << "Generate image failed: " << result.error().message;
+    base::UmaHistogramEnumeration(
+        "Indigo.Transformation.Result",
+        IndigoTransformationResult::kGenerateImageError);
+    base::RecordAction(
+        base::UserMetricsAction("Indigo.Transformation.Failure"));
     ResetAllReplacements();
     return;
   }
 
   CHECK(result->image_url.is_valid());
   generated_image_url_ = result->image_url;
+
+  base::UmaHistogramEnumeration("Indigo.Transformation.Result",
+                                IndigoTransformationResult::kSuccess);
+  base::RecordAction(base::UserMetricsAction("Indigo.Transformation.Success"));
 
   for (auto& [_, image_replacement] : receivers_.GetAllContexts()) {
     image_replacement->ReplacementImageURLReady();
