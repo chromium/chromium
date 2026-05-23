@@ -13,12 +13,12 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/test/data/webui/chromeos/settings/os_people_page/password_settings_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/chromeos/settings/os_people_page/pin_settings_api.test-mojom-test-utils.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/impl/auth_surface_registry.h"
 #include "chromeos/ash/components/osauth/public/auth_engine_api.h"
@@ -101,7 +101,10 @@ class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
 
   PrefService& Prefs() {
     PrefService* service =
-        ProfileHelper::Get()->GetProfileByAccountId(GetAccountId())->GetPrefs();
+        Profile::FromBrowserContext(
+            BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                GetAccountId()))
+            ->GetPrefs();
     CHECK(service);
     return *service;
   }

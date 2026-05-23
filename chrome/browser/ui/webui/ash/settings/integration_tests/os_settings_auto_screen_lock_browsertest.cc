@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/constants/ash_pref_names.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
@@ -28,7 +28,10 @@ class OSSettingsAutoScreenLockTest
   // preferences.
   bool IsAutoScreenLockPrefEnabled() {
     PrefService* service =
-        ProfileHelper::Get()->GetProfileByAccountId(GetAccountId())->GetPrefs();
+        Profile::FromBrowserContext(
+            BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                GetAccountId()))
+            ->GetPrefs();
     CHECK(service);
     return service->GetBoolean(prefs::kEnableAutoScreenLock);
   }

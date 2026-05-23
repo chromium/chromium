@@ -55,6 +55,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/webui/ash/settings/test_support",
     "//chrome/common:constants",
     "//chrome/test/data/webui/chromeos/settings:test_api_mojom",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/osauth/impl",
     "//chromeos/ash/components/osauth/public",
     "//components/policy/core/browser",
