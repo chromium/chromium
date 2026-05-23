@@ -4,13 +4,15 @@
 
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/browser.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/native_theme/native_theme.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -42,6 +44,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
 
   ProcessManager* manager = ProcessManager::Get(profile());
   ExtensionHost* host = FindHostWithPath(manager, "/backgroundpage.html", 1);
+  ASSERT_TRUE(host);
 
   TestWebContentsObserver observer(host->host_contents());
 
