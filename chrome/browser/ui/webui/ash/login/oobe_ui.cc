@@ -41,7 +41,6 @@
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -153,6 +152,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/oobe_resources.h"
 #include "chrome/grit/oobe_resources_map.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/services/auth_factor_config/in_process_instances.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom.h"
@@ -413,9 +413,7 @@ bool OobeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
   bool is_running_test = command_line->HasSwitch(ash::switches::kTestName) ||
                          command_line->HasSwitch(::switches::kTestType);
 
-  return ash::ProfileHelper::IsSigninProfile(
-             Profile::FromBrowserContext(browser_context)) ||
-         is_running_test;
+  return IsSigninBrowserContext(browser_context) || is_running_test;
 }
 
 void OobeUI::ConfigureOobeDisplay() {
