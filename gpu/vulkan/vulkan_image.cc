@@ -246,6 +246,7 @@ bool VulkanImage::BindMemory(size_t plane,
     if (result != VK_SUCCESS) {
       DLOG(ERROR) << "Failed to bind memory to external VkImage plane= "
                   << plane << " :" << result;
+      memory->Destroy();
       return false;
     }
 
@@ -259,6 +260,7 @@ bool VulkanImage::BindMemory(size_t plane,
   if (result != VK_SUCCESS) {
     DLOG(ERROR) << "Failed to bind memory to external VkImage plane= " << plane
                 << " :" << result;
+    memory->Destroy();
     return false;
   }
 
