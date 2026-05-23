@@ -69,7 +69,9 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
   AddItemWithStringIdAndIcon(
       kContextualCueingEditPromptCommand,
       IDS_CONTEXTUAL_CUEING_MENU_EDIT_PROMPT,
-      ui::ImageModel::FromVectorIcon(vector_icons::kEditSquareIcon,
+      ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                         ? vector_icons::kEditSquareIcon
+                                         : vector_icons::kEditSquareOldIcon,
                                      ui::kColorMenuIcon, 16));
   AddSeparator(ui::NORMAL_SEPARATOR);
   AddItemWithStringIdAndIcon(

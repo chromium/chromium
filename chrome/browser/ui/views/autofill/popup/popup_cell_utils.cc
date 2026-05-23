@@ -457,7 +457,9 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
                                       kIconSize);
 #endif
     case Suggestion::Icon::kGoogleCalendar:
-      return ImageModelFromVectorIcon(vector_icons::kCalendarTodayIcon,
+      return ImageModelFromVectorIcon(::features::IsRoundedIconsEnabled()
+                                          ? vector_icons::kCalendarTodayIcon
+                                          : vector_icons::kCalendarTodayOldIcon,
                                       kIconSize);
     case Suggestion::Icon::kError:
       return ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
