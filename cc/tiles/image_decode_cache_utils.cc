@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "base/byte_size.h"
 #include "base/system/sys_info.h"
 #endif
 
@@ -28,8 +29,8 @@ size_t ImageDecodeCacheUtils::GetWorkingSetBytesForImageDecode(
     constexpr base::ByteCount kImageDecodeMemoryThreshold = base::GiB(4);
     if (using_low_memory_policy) {
       decoded_image_working_set_budget = base::MiB(32);
-    } else if (base::SysInfo::AmountOfPhysicalMemory() >=
-               kImageDecodeMemoryThreshold) {
+    } else if (base::SysInfo::AmountOfTotalPhysicalMemory()
+                   .AsDeprecatedByteCount() >= kImageDecodeMemoryThreshold) {
       decoded_image_working_set_budget = base::MiB(256);
     }
   }
