@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 
+#include "base/byte_size.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
@@ -286,7 +287,7 @@ bool ClassicPendingScript::IsEligibleForLowPriorityAsyncScriptExecution()
       base::FeatureList::IsEnabled(
           features::kLowPriorityAsyncScriptExecution) &&
       !base::SysInfo::IsLowEndDevice() &&
-      (base::SysInfo::AmountOfPhysicalMemory().InGiBF() >=
+      (base::SysInfo::AmountOfTotalPhysicalMemory().InGiBF() >=
        features::kMinimumPhysicalMemoryForLowPriorityAsyncScriptExecution
            .Get());
   if (!feature_enabled) {

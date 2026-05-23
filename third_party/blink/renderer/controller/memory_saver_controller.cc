@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/controller/memory_saver_controller.h"
 
+#include "base/byte_size.h"
 #include "base/system/sys_info.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
@@ -25,7 +26,7 @@ MemorySaverController::MemorySaverController() {
       Thread::MainThread()->Scheduler()->ToMainThreadScheduler();
   DCHECK(scheduler);
   sample_timer_.SetTaskRunner(scheduler->NonWakingTaskRunner());
-  if (base::SysInfo::AmountOfPhysicalMemory() >= base::MiB(4000)) {
+  if (base::SysInfo::AmountOfTotalPhysicalMemory() >= base::MiBU(4000)) {
     return;
   }
   if (base::FeatureList::IsEnabled(features::kMemorySaverModeRenderTuning)) {

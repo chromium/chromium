@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/device_memory/approximated_device_memory.h"
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/system/sys_info.h"
@@ -20,7 +21,7 @@ void ApproximatedDeviceMemory::Initialize() {
   if (approximated_device_memory_gb_ > 0.0)
     return;
   DCHECK_EQ(0, physical_memory_mb_);
-  physical_memory_mb_ = ::base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  physical_memory_mb_ = ::base::SysInfo::AmountOfTotalPhysicalMemory().InMiB();
   CalculateAndSetApproximatedDeviceMemory();
 }
 
