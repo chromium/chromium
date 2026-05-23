@@ -18,7 +18,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 
 class BrowserWindowInterface;
-class BrowserWindow;
 class ExtensionsMenuCoordinator;
 
 class WebUIToolbarExtensionsContainer
@@ -29,7 +28,7 @@ class WebUIToolbarExtensionsContainer
  public:
   WebUIToolbarExtensionsContainer(
       BrowserWindowInterface& browser,
-      BrowserWindow& window,
+      views::Widget* widget,
       base::WeakPtr<content::WebContents> web_contents);
   ~WebUIToolbarExtensionsContainer() override;
 
@@ -95,7 +94,7 @@ class WebUIToolbarExtensionsContainer
   void OnContextMenuClosedFromToolbar();
 
   const raw_ref<BrowserWindowInterface> browser_;
-  const raw_ref<BrowserWindow> window_;
+  const raw_ptr<views::Widget> widget_;
   const base::WeakPtr<content::WebContents> web_contents_;
   const raw_ref<ToolbarActionsModel> model_;
   base::ScopedObservation<ToolbarActionsModel, ToolbarActionsModel::Observer>

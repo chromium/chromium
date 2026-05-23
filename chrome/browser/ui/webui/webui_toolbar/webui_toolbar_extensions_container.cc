@@ -62,8 +62,7 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
 
   ExtensionActionViewModel* model() { return model_.get(); }
 
-  extensions_bar::mojom::ExtensionActionInfoPtr ToMojo(
-      BrowserWindow& window) const {
+  extensions_bar::mojom::ExtensionActionInfoPtr ToMojo() const {
     content::WebContents* web_contents =
         browser_->GetTabStripModel()->GetActiveWebContents();
     auto result = extensions_bar::mojom::ExtensionActionInfo::New();
@@ -79,10 +78,10 @@ class WebUIToolbarExtensionsContainer::ActionInfo {
           model_->GetIcon(web_contents, gfx::Size(20, 20));
       if (!model_->IsEnabled(web_contents)) {
         icon_model = ui::GetDefaultDisabledIconFromImageModel(
-            icon_model, window.GetColorProvider());
+            icon_model, extensions_container_->widget_->GetColorProvider());
       }
       result->data_url_for_icon = GetDataUrlForImageModel(
-          icon_model, extensions_container_->window_->GetColorProvider(),
+          icon_model, extensions_container_->widget_->GetColorProvider(),
           extensions_container_->web_contents_);
     } else {
       result->data_url_for_icon = GURL("data:,");
@@ -170,10 +169,10 @@ class WebUIToolbarExtensionsContainer::ContextMenu {
 
 WebUIToolbarExtensionsContainer::WebUIToolbarExtensionsContainer(
     BrowserWindowInterface& browser,
-    BrowserWindow& window,
+    views::Widget* widget,
     base::WeakPtr<content::WebContents> web_contents)
     : browser_(browser),
-      window_(window),
+      widget_(widget),
       web_contents_(web_contents),
       model_(*ToolbarActionsModel::Get(browser.GetProfile())),
       extensions_menu_coordinator_(
@@ -357,7 +356,7 @@ void WebUIToolbarExtensionsContainer::NotifyOfAllActions() {
 
   std::vector<extensions_bar::mojom::ExtensionActionInfoPtr> updates;
   for (const auto& [_, action] : actions_) {
-    updates.push_back(action->ToMojo(*window_));
+    updates.push_back(action->ToMojo());
   }
   page_->ActionsAddedOrUpdated(std::move(updates));
 }
@@ -374,7 +373,7 @@ void WebUIToolbarExtensionsContainer::NotifyOfOneAction(
   }
 
   std::vector<extensions_bar::mojom::ExtensionActionInfoPtr> update;
-  update.push_back(actions_[id]->ToMojo(*window_));
+  update.push_back(actions_[id]->ToMojo());
   page_->ActionsAddedOrUpdated(std::move(update));
 }
 
@@ -386,7 +385,7 @@ WebUIToolbarExtensionsContainer::GetExtensionsMenuButtonAnchor() const {
 }
 
 views::Widget* WebUIToolbarExtensionsContainer::GetWidget() const {
-  return views::Widget::GetWidgetForNativeWindow(window_->GetNativeWindow());
+  return widget_;
 }
 
 void WebUIToolbarExtensionsContainer::NotifyActionPoppedOut(

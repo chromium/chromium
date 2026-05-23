@@ -144,7 +144,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(Browser* browser) : browser_(browser) {
 
   modal_dialog_host_ = std::make_unique<WebUIBrowserModalDialogHost>(this);
   extensions_container_ = std::make_unique<WebUIToolbarExtensionsContainer>(
-      *browser_, *this, ui_web_contents->GetWeakPtr());
+      *browser_, widget_.get(), ui_web_contents->GetWeakPtr());
   scoped_extensions_container_user_data_ =
       std::make_unique<ui::ScopedUnownedUserData<ExtensionsContainer>>(
           browser_->GetUnownedUserDataHost(), *extensions_container_);
