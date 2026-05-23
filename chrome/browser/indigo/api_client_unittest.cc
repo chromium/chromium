@@ -147,14 +147,22 @@ TEST_F(IndigoApiClientTest, GetStatusSuccess) {
   EXPECT_EQ(pending_request->request.url, GURL(kTestStatusUrl));
 
   std::string request_body = network::GetUploadData(pending_request->request);
-  EXPECT_EQ(request_body, "{}");
+  std::optional<base::Value> request_json =
+      base::JSONReader::Read(request_body, 0);
+  ASSERT_TRUE(request_json.has_value());
+  ASSERT_TRUE(request_json->is_dict());
+  EXPECT_TRUE(request_json->GetDict()
+                  .FindBool("fetchAccountEligibility")
+                  .value_or(false));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      pending_request->request.url.spec(), R"({"hasUserImage": true})");
+      pending_request->request.url.spec(),
+      R"({"hasUserImage": true, "accountEligibleForTryOn": true})");
 
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_TRUE(result.value().has_user_image);
+  EXPECT_TRUE(result.value().is_service_supported_for_account);
 }
 
 TEST_F(IndigoApiClientTest, GetStatusFalse) {
@@ -173,11 +181,38 @@ TEST_F(IndigoApiClientTest, GetStatusFalse) {
   ASSERT_TRUE(pending_request);
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      pending_request->request.url.spec(), R"({"hasUserImage": false})");
+      pending_request->request.url.spec(),
+      R"({"hasUserImage": false, "accountEligibleForTryOn": false})");
 
   auto result = future.Get();
   ASSERT_TRUE(result.has_value());
   EXPECT_FALSE(result.value().has_user_image);
+  EXPECT_FALSE(result.value().is_service_supported_for_account);
+}
+
+TEST_F(IndigoApiClientTest, GetStatusMixed) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  base::test::TestFuture<base::expected<StatusResult, StatusError>> future;
+  client.GetStatus(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  test_url_loader_factory_.WaitForRequest(GURL(kTestStatusUrl));
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(),
+      R"({"hasUserImage": true, "accountEligibleForTryOn": false})");
+
+  auto result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result.value().has_user_image);
+  EXPECT_FALSE(result.value().is_service_supported_for_account);
 }
 
 TEST_F(IndigoApiClientTest, GetStatusHttpError) {

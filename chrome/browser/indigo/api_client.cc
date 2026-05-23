@@ -182,7 +182,7 @@ class GetStatusRequest : public google_apis::UrlFetchRequestBase {
   bool GetContentData(std::string* upload_content_type,
                       std::string* upload_content) override {
     *upload_content_type = "application/json";
-    *upload_content = "{}";
+    *upload_content = R"({"fetchAccountEligibility":true})";
     return true;
   }
 
@@ -224,8 +224,12 @@ class GetStatusRequest : public google_apis::UrlFetchRequestBase {
 
     const auto& dict = parse_result->GetDict();
     std::optional<bool> has_user_image = dict.FindBool("hasUserImage");
+    std::optional<bool> account_eligible_for_try_on =
+        dict.FindBool("accountEligibleForTryOn");
     return complete(
-        StatusResult{.has_user_image = has_user_image.value_or(false)});
+        StatusResult{.has_user_image = has_user_image.value_or(false),
+                     .is_service_supported_for_account =
+                         account_eligible_for_try_on.value_or(false)});
   }
 
   void RunCallbackOnPrematureFailure(google_apis::ApiErrorCode code) override {
