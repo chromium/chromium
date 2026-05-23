@@ -133,9 +133,6 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    // This element is disconnected when the user exits text annotation mode.
-    // Send the current annotation to the backend.
-    this.commitTextAnnotation();
     this.eventTracker_.removeAll();
   }
 
