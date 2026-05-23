@@ -4,7 +4,7 @@
 
 #include "chromeos/constants/chromeos_features.h"
 
-#include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
@@ -434,8 +434,8 @@ bool IsRoundedWindowsEnabled() {
 }
 
 bool IsSystemBlurEnabled() {
-  constexpr base::ByteCount kMinimumMemoryThreshold = base::GiB(4);  // 4GB
-  return base::SysInfo::AmountOfPhysicalMemory() > kMinimumMemoryThreshold;
+  constexpr base::ByteSize kMinimumMemoryThreshold = base::GiBU(4);  // 4GB
+  return base::SysInfo::AmountOfTotalPhysicalMemory() > kMinimumMemoryThreshold;
 }
 
 bool IsFeatureManagementHistoryEmbeddingEnabled() {

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/memory/swap_configuration.h"
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -65,9 +66,9 @@ void ConfigureResourcedPressureThreshold(bool arc_enabled) {
   const int kRatioToBps = 10000;
   // limit_bps = (limit_mb / total_mb) * ratio_to_bps, rearrange the
   // multiplication to avoid floating point arithmetic.
-  int protected_threshold_limit_bps =
-      static_cast<uint32_t>(kProtectedThresholdLimitMb * kRatioToBps /
-                            base::SysInfo::AmountOfPhysicalMemory().InMiB());
+  int protected_threshold_limit_bps = static_cast<uint32_t>(
+      kProtectedThresholdLimitMb * kRatioToBps /
+      base::SysInfo::AmountOfTotalPhysicalMemory().InMiB());
   if (arc_enabled) {
     experiment_enabled =
         base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudyArc);
