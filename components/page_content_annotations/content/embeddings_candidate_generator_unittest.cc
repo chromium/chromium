@@ -51,7 +51,8 @@ TEST_P(EmbeddingsCandidateGeneratorTest, GenerateEmbeddingsCandidatesForAPC) {
 
   auto candidates = GenerateEmbeddingsCandidates(
       base::MakeRefCounted<RefCountedAnnotatedPageContent>(apc),
-      /*page_content_passages_to_generate=*/0u);
+      /*page_content_passages_to_generate=*/0u, "Page Title",
+      "https://example.com/");
 
   // We expect kTitle and kTitleAndUrl candidates.
   // Content candidates are 0 because we passed 0 as the limit.
@@ -98,7 +99,8 @@ TEST_P(EmbeddingsCandidateGeneratorTest,
 
   auto candidates = GenerateEmbeddingsCandidates(
       base::MakeRefCounted<RefCountedAnnotatedPageContent>(apc),
-      /*page_content_passages_to_generate=*/10u);
+      /*page_content_passages_to_generate=*/10u, "Page Title",
+      "https://example.com/");
 
   ASSERT_EQ(candidates.size(), 5u);
 
@@ -131,7 +133,7 @@ TEST_P(EmbeddingsCandidateGeneratorTest, GenerateEmbeddingsCandidatesForPDF) {
 
   auto candidates = GenerateEmbeddingsCandidates(
       base::MakeRefCounted<RefCountedPDFText>(pdf_text),
-      /*page_content_passages_to_generate=*/10u);
+      /*page_content_passages_to_generate=*/10u, /*title=*/"", /*url=*/"");
 
   if (IsParamFeatureEnabled()) {
     ASSERT_EQ(candidates.size(), 3u);
@@ -162,16 +164,23 @@ TEST_P(EmbeddingsCandidateGeneratorTest,
   // the value of `MaxPassagesFromPDF` feature param.
   auto candidates = GenerateEmbeddingsCandidates(
       base::MakeRefCounted<RefCountedPDFText>(pdf_text),
-      /*page_content_passages_to_generate=*/2u);
+      /*page_content_passages_to_generate=*/2u, /*title=*/"title",
+      /*url=*/"url");
 
   if (IsParamFeatureEnabled()) {
-    ASSERT_EQ(candidates.size(), 2u);
+    ASSERT_EQ(candidates.size(), 4u);
 
     EXPECT_EQ(candidates[0].first, "This is the first paragraph.");
     EXPECT_EQ(candidates[0].second, EmbeddingPassageType::kPageContent);
 
     EXPECT_EQ(candidates[1].first, "This is the second paragraph.");
     EXPECT_EQ(candidates[1].second, EmbeddingPassageType::kPageContent);
+
+    EXPECT_EQ(candidates[2].first, "title");
+    EXPECT_EQ(candidates[2].second, EmbeddingPassageType::kTitle);
+
+    EXPECT_EQ(candidates[3].first, "title - url");
+    EXPECT_EQ(candidates[3].second, EmbeddingPassageType::kTitleAndUrl);
   } else {
     EXPECT_TRUE(candidates.empty());
   }
@@ -184,7 +193,7 @@ TEST_P(EmbeddingsCandidateGeneratorTest,
   std::string pdf_text{" \n \n\t \r \n\n \r \t\t\r \t   "};
   auto candidates = GenerateEmbeddingsCandidates(
       base::MakeRefCounted<RefCountedPDFText>(pdf_text),
-      /*page_content_passages_to_generate=*/10u);
+      /*page_content_passages_to_generate=*/10u, /*title=*/"", /*url=*/"");
 
   EXPECT_TRUE(candidates.empty());
 }
@@ -203,7 +212,7 @@ TEST_P(EmbeddingsCandidateGeneratorTest,
       "This is the first paragraph. This is the second paragraph."};
   auto candidates = GenerateEmbeddingsCandidates(
       base::MakeRefCounted<RefCountedPDFText>(pdf_text),
-      /*page_content_passages_to_generate=*/10u);
+      /*page_content_passages_to_generate=*/10u, /*title=*/"", /*url=*/"");
 
   EXPECT_TRUE(candidates.empty());
 }

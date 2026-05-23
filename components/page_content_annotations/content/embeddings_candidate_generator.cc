@@ -195,7 +195,9 @@ std::vector<std::string> CreatePassagesFromPDFText(
 
 std::vector<std::pair<std::string, EmbeddingPassageType>>
 GenerateEmbeddingsCandidates(const PageContent& page_content,
-                             size_t page_content_passages_to_generate) {
+                             size_t page_content_passages_to_generate,
+                             const std::string& title,
+                             const std::string& url) {
   if (IsPDFTextPtr(page_content) &&
       !base::FeatureList::IsEnabled(
           passage_embeddings::kPDFEmbeddingsGeneration)) {
@@ -236,18 +238,13 @@ GenerateEmbeddingsCandidates(const PageContent& page_content,
   // bookmark in embeddings candidates.
   // TODO(b/504577256): Once PDF accessibility info extraction is supported,
   // include the bookmark in embeddings candidates.
-  // For AnnotatedPageContent, also add candidates using the title and URL.
-  if (RefCountedAnnotatedPageContentPtr apc_ptr =
-          GetAnnotatedPageContentPtrFromPageContent(page_content)) {
-    // Push back title candidate.
-    candidates.emplace_back(apc_ptr->data.main_frame_data().title(),
-                            EmbeddingPassageType::kTitle);
-
-    // Push back title and URL candidate.
-    candidates.emplace_back(
-        base::StrCat({apc_ptr->data.main_frame_data().title(), " - ",
-                      apc_ptr->data.main_frame_data().url()}),
-        EmbeddingPassageType::kTitleAndUrl);
+  // Add candidates using the title and URL.
+  if (!title.empty()) {
+    candidates.emplace_back(title, EmbeddingPassageType::kTitle);
+  }
+  if (!title.empty() && !url.empty()) {
+    candidates.emplace_back(base::StrCat({title, " - ", url}),
+                            EmbeddingPassageType::kTitleAndUrl);
   }
 
   return candidates;

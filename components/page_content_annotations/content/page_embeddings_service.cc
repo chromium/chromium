@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/page_content_annotations/content/embeddings_candidate_generator.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
@@ -310,7 +311,9 @@ void PageEmbeddingsService::OnPageContentExtracted(content::Page& page,
                          [](RefCountedPDFTextPtr) {
                            return passage_embeddings::kMaxPassagesFromPDF.Get();
                          }},
-                     page_content));
+                     page_content),
+          base::UTF16ToUTF8(web_contents->GetTitle()),
+          web_contents->GetLastCommittedURL().spec());
 
   if (!pending_passages.empty()) {
     state.embeddings_state = Pending{.passages = std::move(pending_passages)};

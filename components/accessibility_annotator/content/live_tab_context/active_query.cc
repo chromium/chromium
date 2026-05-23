@@ -189,7 +189,9 @@ void ActiveQuery::PageSearch::OnTimeout() {
   std::vector<std::string> passages = base::ToVector(
       page_content_annotations::GenerateEmbeddingsCandidates(
           page_content_result.page_content,
-          features::kAccessibilityAnnotatorLiveTabContextPassagesPerPage.Get()),
+          features::kAccessibilityAnnotatorLiveTabContextPassagesPerPage.Get(),
+          page_content_result.page_content->data.main_frame_data().title(),
+          page_content_result.page_content->data.main_frame_data().url()),
       [](auto& pair) { return std::move(pair.first); });
   Finish(FindPassagesByKeywordMatching(*query_, passages));
 }

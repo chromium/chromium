@@ -64,7 +64,8 @@ class HistoryEmbeddingsInteractiveTest
 
     const auto generate_embeddings_candidates =
         [](const page_content_annotations::PageContent&,
-           size_t page_content_passages_to_generate) {
+           size_t page_content_passages_to_generate, const std::string& title,
+           const std::string& url) {
           return std::vector<std::pair<
               std::string, page_content_annotations::EmbeddingPassageType>>{
               std::make_pair("A a B C b a 2 D",

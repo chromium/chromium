@@ -37,7 +37,9 @@ namespace page_content_annotations {
 using Candidates = std::vector<std::pair<std::string, EmbeddingPassageType>>;
 
 Candidates GenerateCandidates(const PageContent& page_content,
-                              size_t page_content_passages_to_generate) {
+                              size_t page_content_passages_to_generate,
+                              const std::string& title,
+                              const std::string& url) {
   if (!IsPageContentValid(page_content)) {
     return Candidates{};
   }

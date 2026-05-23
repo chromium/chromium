@@ -20,7 +20,9 @@ namespace page_content_annotations {
 // `page_content_passages_to_generate` for the page content passage type.
 std::vector<std::pair<std::string, EmbeddingPassageType>>
 GenerateEmbeddingsCandidates(const PageContent& page_content,
-                             size_t page_content_passages_to_generate);
+                             size_t page_content_passages_to_generate,
+                             const std::string& title,
+                             const std::string& url);
 
 }  // namespace page_content_annotations
 
