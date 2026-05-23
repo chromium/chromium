@@ -286,7 +286,7 @@ public class ToolbarManager
                 TabObscuringHandler.Observer {
     private final IncognitoStateProvider mIncognitoStateProvider;
     private final ToolbarThemeColorProvider mToolbarThemeColorProvider;
-    private final @Nullable ToolbarThemeColorProvider mAdjustedTopUiThemeColorProvider;
+    private final @Nullable ToolbarThemeColorProvider mAdjustedToolbarThemeColorProvider;
     private final MonotonicObservableSupplier<EphemeralTabCoordinator>
             mEphemeralTabCoordinatorSupplier;
     private AppThemeColorProvider mAppThemeColorProvider;
@@ -690,7 +690,7 @@ public class ToolbarManager
      * @param compositorViewHolder Class that holds a {@link CompositorView}.
      * @param urlFocusChangedCallback The callback to be notified when the URL focus changes.
      * @param toolbarThemeColorProvider The ThemeColorProvider object for the toolbar.
-     * @param adjustedTopUiThemeColorProvider The ThemeColorProvider object for top UI which may
+     * @param adjustedToolbarThemeColorProvider The ThemeColorProvider object for top UI which may
      *     adjust tint colors.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param shareDelegateSupplier Supplier for ShareDelegate.
@@ -750,7 +750,7 @@ public class ToolbarManager
             CompositorViewHolder compositorViewHolder,
             Callback<Boolean> urlFocusChangedCallback,
             ToolbarThemeColorProvider toolbarThemeColorProvider,
-            @Nullable ToolbarThemeColorProvider adjustedTopUiThemeColorProvider,
+            @Nullable ToolbarThemeColorProvider adjustedToolbarThemeColorProvider,
             BottomUiThemeColorProvider bottomUiThemeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
             TabObscuringHandler tabObscuringHandler,
@@ -902,9 +902,9 @@ public class ToolbarManager
         mBottomUiThemeColorProvider = bottomUiThemeColorProvider;
         mToolbarThemeColorProvider = toolbarThemeColorProvider;
         mToolbarThemeColorProvider.addThemeColorObserver(this);
-        mAdjustedTopUiThemeColorProvider = adjustedTopUiThemeColorProvider;
-        if (mAdjustedTopUiThemeColorProvider != null) {
-            mAdjustedTopUiThemeColorProvider.addThemeColorObserver(this);
+        mAdjustedToolbarThemeColorProvider = adjustedToolbarThemeColorProvider;
+        if (mAdjustedToolbarThemeColorProvider != null) {
+            mAdjustedToolbarThemeColorProvider.addThemeColorObserver(this);
         }
 
         final boolean isDefaultDisplay = DisplayUtil.isContextInDefaultDisplay(mActivity);
@@ -2844,8 +2844,8 @@ public class ToolbarManager
             mToolbarThemeColorProvider.removeThemeColorObserver(this);
         }
 
-        if (mAdjustedTopUiThemeColorProvider != null) {
-            mAdjustedTopUiThemeColorProvider.removeThemeColorObserver(this);
+        if (mAdjustedToolbarThemeColorProvider != null) {
+            mAdjustedToolbarThemeColorProvider.removeThemeColorObserver(this);
         }
 
         if (mAppThemeColorProvider != null) {
@@ -3724,12 +3724,12 @@ public class ToolbarManager
     }
 
     /**
-     * Returns the mAdjustedTopUiThemeColorProvider if non-null, otherwise returns the
+     * Returns the mAdjustedToolbarThemeColorProvider if non-null, otherwise returns the
      * mToolbarThemeColorProvider.
      */
-    private ToolbarThemeColorProvider getAdjustedTopUiThemeColorProvider() {
-        return mAdjustedTopUiThemeColorProvider != null
-                ? mAdjustedTopUiThemeColorProvider
+    private ToolbarThemeColorProvider getAdjustedToolbarThemeColorProvider() {
+        return mAdjustedToolbarThemeColorProvider != null
+                ? mAdjustedToolbarThemeColorProvider
                 : mToolbarThemeColorProvider;
     }
 
@@ -3739,11 +3739,11 @@ public class ToolbarManager
     }
 
     /**
-     * Returns mAppThemeColorProvider for tablets or getAdjustedTopUiThemeColorProvider() for
+     * Returns mAppThemeColorProvider for tablets or getAdjustedToolbarThemeColorProvider() for
      * non-tablets.
      */
     private ThemeColorProvider getBrowsingModeThemeColorProviderWithAdjustableTint() {
-        return mIsTablet ? mAppThemeColorProvider : getAdjustedTopUiThemeColorProvider();
+        return mIsTablet ? mAppThemeColorProvider : getAdjustedToolbarThemeColorProvider();
     }
 
     private OnLongClickListener createTabSwitcherLongClickListener(

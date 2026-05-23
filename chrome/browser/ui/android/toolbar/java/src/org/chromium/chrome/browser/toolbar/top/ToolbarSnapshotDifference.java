@@ -39,6 +39,7 @@ import java.lang.annotation.RetentionPolicy;
     ToolbarSnapshotDifference.RELOAD_BUTTON,
     ToolbarSnapshotDifference.MINIMIZE_BUTTON,
     ToolbarSnapshotDifference.CONTROLS_POSITION,
+    ToolbarSnapshotDifference.THEME_COLOR,
     ToolbarSnapshotDifference.NUM_ENTRIES
 })
 @Retention(RetentionPolicy.SOURCE)
@@ -65,6 +66,7 @@ public @interface ToolbarSnapshotDifference {
     int RELOAD_BUTTON = 18;
     int MINIMIZE_BUTTON = 19;
     int CONTROLS_POSITION = 20;
+    int THEME_COLOR = 21;
 
-    int NUM_ENTRIES = 21;
+    int NUM_ENTRIES = 22;
 }

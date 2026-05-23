@@ -28,11 +28,13 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -50,7 +52,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class TopToolbarOverlayMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Context mContext;
+    private Context mContext;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
@@ -81,6 +83,8 @@ public class TopToolbarOverlayMediatorTest {
 
     @Before
     public void beforeTest() {
+        mContext = ContextUtils.getApplicationContext();
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         TopToolbarOverlayMediator.setToolbarBackgroundColorForTesting(Color.RED);
         TopToolbarOverlayMediator.setUrlBarColorForTesting(Color.BLUE);
         TopToolbarOverlayMediator.setIsTabletForTesting(false);
@@ -123,6 +127,7 @@ public class TopToolbarOverlayMediatorTest {
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         verify(mBrowserControlsStateProvider).addObserver(mBrowserControlsObserverCaptor.capture());
         verify(mLayoutStateProvider).addObserver(mLayoutObserverCaptor.capture());
+        verify(mToolbarThemeColorProvider).addThemeColorObserver(mMediator);
 
         mLayoutObserverCaptor.getValue().onStartedShowing(LayoutType.BROWSING);
     }
@@ -370,6 +375,7 @@ public class TopToolbarOverlayMediatorTest {
 
         mMediator.destroy();
 
+        verify(mToolbarThemeColorProvider).removeThemeColorObserver(mMediator);
         assertFalse(mTabSupplier.hasObservers());
         assertFalse(mBottomToolbarControlsOffsetSupplier.hasObservers());
         assertFalse(mSuppressToolbarSceneLayerSupplier.hasObservers());
@@ -491,5 +497,19 @@ public class TopToolbarOverlayMediatorTest {
         assertEquals(
                 newOffsetTag.getBottomControlsOffsetTag(),
                 mModel.get(TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG));
+    }
+
+    @Test
+    public void testThemeColorChanged() {
+        // Clear testing overrides to allow mock invocation
+        TopToolbarOverlayMediator.setToolbarBackgroundColorForTesting(null);
+        TopToolbarOverlayMediator.setUrlBarColorForTesting(null);
+
+        int color = Color.GREEN;
+        when(mToolbarThemeColorProvider.getToolbarBackgroundColor(mTab)).thenReturn(color);
+
+        mMediator.onThemeColorChanged(color, false);
+
+        assertEquals(color, mModel.get(TopToolbarOverlayProperties.TOOLBAR_BACKGROUND_COLOR));
     }
 }

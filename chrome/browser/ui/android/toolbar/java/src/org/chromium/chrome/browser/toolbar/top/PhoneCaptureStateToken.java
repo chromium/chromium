@@ -25,6 +25,7 @@ import java.util.Objects;
 @NullMarked
 class PhoneCaptureStateToken {
     private final @ColorInt int mTint;
+    private final @ColorInt int mThemeColor;
     private final int mTabCount;
     private final int mOptionalButtonDataHashCode;
     private final @VisualState int mVisualState;
@@ -40,6 +41,7 @@ class PhoneCaptureStateToken {
 
     public PhoneCaptureStateToken(
             @ColorInt int tint,
+            @ColorInt int themeColor,
             int tabCount,
             @Nullable ButtonData optionalButtonData,
             @VisualState int visualState,
@@ -54,6 +56,7 @@ class PhoneCaptureStateToken {
             @ControlsPosition int controlsPosition,
             int urlBarWidth) {
         mTint = tint;
+        mThemeColor = themeColor;
         mTabCount = tabCount;
         mOptionalButtonDataHashCode = Objects.hashCode(optionalButtonData);
         mVisualState = visualState;
@@ -85,6 +88,8 @@ class PhoneCaptureStateToken {
             return ToolbarSnapshotDifference.NULL;
         } else if (current.mTint != next.mTint) {
             return ToolbarSnapshotDifference.TINT;
+        } else if (current.mThemeColor != next.mThemeColor) {
+            return ToolbarSnapshotDifference.THEME_COLOR;
         } else if (current.mTabCount != next.mTabCount) {
             return ToolbarSnapshotDifference.TAB_COUNT;
         } else if (current.mOptionalButtonDataHashCode != next.mOptionalButtonDataHashCode) {

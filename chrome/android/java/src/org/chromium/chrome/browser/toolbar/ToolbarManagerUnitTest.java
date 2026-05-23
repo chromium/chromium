@@ -10,7 +10,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
@@ -479,5 +481,17 @@ public class ToolbarManagerUnitTest {
                 View.GONE,
                 homeButton.getVisibility());
         mToolbarManager.destroy();
+    }
+
+    @Test
+    public void testThemeColorObserverRegistration() {
+        // Verify registration in setUp() / constructor
+        verify(mToolbarThemeColorProvider).addThemeColorObserver(mToolbarManager);
+        verify(mAdjustedToolbarThemeColorProvider).addThemeColorObserver(eq(mToolbarManager));
+
+        // Verify unregistration in destroy()
+        mToolbarManager.destroy();
+        verify(mToolbarThemeColorProvider).removeThemeColorObserver(mToolbarManager);
+        verify(mAdjustedToolbarThemeColorProvider).removeThemeColorObserver(eq(mToolbarManager));
     }
 }

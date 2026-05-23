@@ -324,6 +324,7 @@ public class ToolbarPhone extends ToolbarLayout
     // Added due to https://crbug.com/323888159 to mark the loading phase while navigating from NTP
     // to webpages.
     private boolean mIsInLoadingPhaseFromNtpToWebpage;
+    private boolean mTabOrModelChanged;
 
     // The following are some properties used during animation.  We use explicit property classes
     // to avoid the cost of reflection for each animation setup.
@@ -953,7 +954,10 @@ public class ToolbarPhone extends ToolbarLayout
                 if (mIsInLoadingPhaseFromNtpToWebpage) {
                     return mToolbarBackgroundColorForNtp;
                 }
-                return ChromeColors.getDefaultThemeColor(getContext(), /* isIncognito= */ false);
+                if (urlHasFocus()) {
+                    return getToolbarDefaultColor(/* shouldUseFocusColor= */ false);
+                }
+                return getToolbarDataProvider().getPrimaryColor();
             case VisualState.INCOGNITO:
                 return ChromeColors.getDefaultThemeColor(getContext(), /* isIncognito= */ true);
             case VisualState.BRAND_COLOR:
@@ -2020,6 +2024,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         return new PhoneCaptureStateToken(
                 getTint().getDefaultColor(),
+                mToolbarBackground.getColor(),
                 mTabCountSupplier == null ? 0 : mTabCountSupplier.get(),
                 mButtonData,
                 mVisualState,
@@ -2940,9 +2945,12 @@ public class ToolbarPhone extends ToolbarLayout
 
     @Override
     public void onTabOrModelChanged() {
+        mIsInLoadingPhaseFromNtpToWebpage = false;
+        mTabOrModelChanged = true;
         super.onTabOrModelChanged();
         updateNtpAnimationState();
         updateVisualsForLocationBarState();
+        mTabOrModelChanged = false;
     }
 
     /** Called when the tab model changes. */
@@ -2979,15 +2987,14 @@ public class ToolbarPhone extends ToolbarLayout
                 isLocationBarShownInGeneralNtp()
                         ? mToolbarBackgroundColorForNtp
                         : getToolbarDataProvider().getPrimaryColor();
+
+        // The loading phase is finished, even if the final color matches the initial color.
+        mIsInLoadingPhaseFromNtpToWebpage = false;
+
         if (initialColor == finalColor) return;
 
         final @ColorInt int initialLocationBarColor =
                 getLocationBarColorForToolbarColor(initialColor);
-
-        // When the webpage finishes loading during the NTP phase, the process should halt at this
-        // point because the tab's color is updated, and the initial color of the location bar is
-        // established for the upcoming navigation animation.
-        mIsInLoadingPhaseFromNtpToWebpage = false;
 
         final @ColorInt int finalLocationBarColor = getLocationBarColorForToolbarColor(finalColor);
 
@@ -3347,6 +3354,7 @@ public class ToolbarPhone extends ToolbarLayout
      * manner.
      */
     private void startLoadingPhaseFromNtpToWebpage(@VisualState int newVisualState) {
+        if (mTabOrModelChanged) return;
         boolean isStartLoadingPhaseFromNtpToWebpage =
                 (mVisualState == VisualState.NEW_TAB_NORMAL
                                 || mVisualState == VisualState.NEW_TAB_SEARCH_ENGINE_NO_LOGO)
@@ -3720,6 +3728,7 @@ public class ToolbarPhone extends ToolbarLayout
     @Override
     public void onTransitionEnd() {
         mInLayoutTransition = false;
+        mIsInLoadingPhaseFromNtpToWebpage = false;
         updateToolbarBackgroundFromState(mVisualState);
     }
 

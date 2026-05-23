@@ -83,6 +83,16 @@ public class PhoneCaptureStateTokenTest {
     }
 
     @Test
+    public void testDifferentThemeColor() {
+        PhoneCaptureStateToken otherPhoneCaptureStateToken =
+                new PhoneCustomTabCaptureStateTokenBuilder().setThemeColor(Color.RED).build();
+        assertEquals(
+                ToolbarSnapshotDifference.THEME_COLOR,
+                PhoneCaptureStateToken.getAnyDifference(
+                        mDefaultPhoneCaptureStateToken, otherPhoneCaptureStateToken));
+    }
+
+    @Test
     public void testDifferentTabCount() {
         PhoneCaptureStateToken otherPhoneCaptureStateToken =
                 new PhoneCustomTabCaptureStateTokenBuilder().setTabCount(2).build();
@@ -366,6 +376,7 @@ public class PhoneCaptureStateTokenTest {
 
     private class PhoneCustomTabCaptureStateTokenBuilder {
         private @ColorInt int mTint = DEFAULT_TINT;
+        private @ColorInt int mThemeColor = DEFAULT_TINT;
         private int mTabCount = DEFAULT_TAB_COUNT;
         private ButtonData mOptionalButtonData = DEFAULT_BUTTON_DATA;
         private @VisualState int mVisualState = DEFAULT_VISUAL_STATE;
@@ -384,6 +395,11 @@ public class PhoneCaptureStateTokenTest {
 
         public PhoneCustomTabCaptureStateTokenBuilder setTint(@ColorInt int tint) {
             mTint = tint;
+            return this;
+        }
+
+        public PhoneCustomTabCaptureStateTokenBuilder setThemeColor(@ColorInt int themeColor) {
+            mThemeColor = themeColor;
             return this;
         }
 
@@ -469,6 +485,7 @@ public class PhoneCaptureStateTokenTest {
             VisibleUrlText visibleUrlText = new VisibleUrlText(mUrlText, mVisibleTextPrefixHint);
             return new PhoneCaptureStateToken(
                     mTint,
+                    mThemeColor,
                     mTabCount,
                     mOptionalButtonData,
                     mVisualState,

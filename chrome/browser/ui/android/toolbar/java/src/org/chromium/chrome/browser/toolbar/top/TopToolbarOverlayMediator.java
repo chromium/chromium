@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.theme.ThemeColorProvider.ThemeColorObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
@@ -45,7 +46,7 @@ import java.util.function.Supplier;
 
 /** The business logic for controlling the top toolbar's cc texture. */
 @NullMarked
-public class TopToolbarOverlayMediator {
+public class TopToolbarOverlayMediator implements ThemeColorObserver {
     // LINT.IfChange(InvalidContentOffset)
     static final float INVALID_CONTENT_OFFSET = -10001.f;
     // LINT.ThenChange(//chrome/browser/android/compositor/layer/toolbar_layer.cc:InvalidContentOffset)
@@ -357,6 +358,8 @@ public class TopToolbarOverlayMediator {
             progressBar.addObserver(mProgressBarObserver);
         }
 
+        mToolbarThemeColorProvider.addThemeColorObserver(this);
+
         mIsBrowserControlsAndroidViewVisible =
                 mBrowserControlsStateProvider.getAndroidControlsVisibility() == View.VISIBLE;
     }
@@ -457,6 +460,15 @@ public class TopToolbarOverlayMediator {
         mModel.set(TopToolbarOverlayProperties.URL_BAR_COLOR, getUrlBarBackgroundColor(tab, color));
     }
 
+    // ThemeColorObserver implementation.
+    @Override
+    public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {
+        Tab tab = mTabSupplier.get();
+        if (tab != null) {
+            updateThemeColor(tab);
+        }
+    }
+
     /**
      * @param tab The tab to get the background color for.
      * @return The background color.
@@ -536,6 +548,8 @@ public class TopToolbarOverlayMediator {
     /** Clean up any state and observers. */
     void destroy() {
         mTabObserver.destroy();
+
+        mToolbarThemeColorProvider.removeThemeColorObserver(this);
 
         mBottomToolbarControlsOffsetSupplier.removeObserver(mOnBottomToolbarControlsOffsetChanged);
         mSuppressToolbarSceneLayerSupplier.removeObserver(mOnSuppressToolbarSceneLayerChanged);
@@ -695,12 +709,12 @@ public class TopToolbarOverlayMediator {
         ResettersForTesting.register(() -> sIsTabletForTesting = null);
     }
 
-    static void setToolbarBackgroundColorForTesting(@ColorInt int color) {
+    static void setToolbarBackgroundColorForTesting(@Nullable Integer color) {
         sToolbarBackgroundColorForTesting = color;
         ResettersForTesting.register(() -> sToolbarBackgroundColorForTesting = null);
     }
 
-    static void setUrlBarColorForTesting(@ColorInt int color) {
+    static void setUrlBarColorForTesting(@Nullable Integer color) {
         sUrlBarColorForTesting = color;
         ResettersForTesting.register(() -> sUrlBarColorForTesting = null);
     }
