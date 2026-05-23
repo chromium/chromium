@@ -1307,13 +1307,6 @@
       }
     },
     {
-      name: "ComputePressureOwnContributionEstimate",
-      status: {
-        "Android": "",
-        "default": "experimental",
-      }
-    },
-    {
       // When enabled, providing developers control over the resources loaded
       // into their pages' contexts and the endpoints to which their pages can
       // make requests.

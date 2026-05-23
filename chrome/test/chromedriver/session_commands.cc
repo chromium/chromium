@@ -1763,24 +1763,15 @@ Status ExecuteUpdateVirtualPressureSource(Session* session,
     return Status(kInvalidArgument, "'type' must be a string");
   }
 
-  const std::string* state = params.FindString("sample");
-  if (!state) {
+  const std::string* sample = params.FindString("sample");
+  if (!sample) {
     return Status(kInvalidArgument, "'sample' must be a string");
   }
 
   base::DictValue body;
   body.Set("source", *type);
-  body.Set("state", *state);
-
-  std::optional<double> maybe_estimate =
-      params.FindDouble("own_contribution_estimate");
-  if (!maybe_estimate.has_value()) {
-    body.Set("ownContributionEstimate", -1.0);
-  } else {
-    body.Set("ownContributionEstimate", maybe_estimate.value());
-  }
-
-  return web_view->SendCommand("Emulation.setPressureDataOverride", body);
+  body.Set("state", *sample);
+  return web_view->SendCommand("Emulation.setPressureStateOverride", body);
 }
 
 Status ExecuteRemoveVirtualPressureSource(Session* session,

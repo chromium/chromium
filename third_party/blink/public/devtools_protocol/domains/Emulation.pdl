@@ -436,7 +436,6 @@ domain Emulation
       PressureSource source
       optional PressureMetadata metadata
 
-  # TODO: OBSOLETE: To remove when setPressureDataOverride is merged.
   # Provides a given pressure state that will be processed and eventually be
   # delivered to PressureObserver users. |source| must have been previously
   # overridden by setPressureSourceOverrideEnabled.
@@ -444,15 +443,6 @@ domain Emulation
     parameters
       PressureSource source
       PressureState state
-
-  # Provides a given pressure data set that will be processed and eventually be
-  # delivered to PressureObserver users. |source| must have been previously
-  # overridden by setPressureSourceOverrideEnabled.
-  experimental command setPressureDataOverride
-    parameters
-      PressureSource source
-      PressureState state
-      optional number ownContributionEstimate
 
   # Overrides the Idle state.
   command setIdleOverride

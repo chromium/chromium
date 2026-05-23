@@ -425,8 +425,8 @@
   }
 
   window.test_driver_internal.update_virtual_pressure_source = function(
-      source_type, state, own_contribution_estimate = -1.0) {
-    return internals.updateVirtualPressureSource(source_type, state, own_contribution_estimate);
+      source_type, sample) {
+    return internals.updateVirtualPressureSource(source_type, sample);
   }
 
   window.test_driver_internal.remove_virtual_pressure_source = function(

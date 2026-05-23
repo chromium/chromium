@@ -9,10 +9,9 @@
         enabled: true,
       }));
 
-  testRunner.log(await dp.Emulation.setPressureDataOverride({
+  testRunner.log(await dp.Emulation.setPressureStateOverride({
     source: 'cpu',
     state: 'critical',
-    ownContributionEstimate: 0.2,
   }));
 
   testRunner.log('Navigating to a different URL');
@@ -28,7 +27,7 @@
         const observer = new PressureObserver(records => {
           const flattenedRecords = [];
           records.forEach(record => {
-            flattenedRecords.push([record.source, record.state, record.ownContributionEstimate]);
+            flattenedRecords.push([record.source, record.state]);
           });
           resolve(flattenedRecords);
         });

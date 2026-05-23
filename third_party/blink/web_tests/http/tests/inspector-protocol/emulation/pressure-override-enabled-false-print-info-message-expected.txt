@@ -5,7 +5,6 @@ PASS: Set pressure state override
     [0] : [
         [0] : cpu
         [1] : serious
-        [2] : 0.2
     ]
 ]
 PASS: Removing pressure source override

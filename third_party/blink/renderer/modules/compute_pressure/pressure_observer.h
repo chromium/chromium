@@ -69,7 +69,6 @@ class MODULES_EXPORT PressureObserver final : public ScriptWrappable {
   void OnUpdate(ExecutionContext*,
                 V8PressureSource::Enum,
                 V8PressureState::Enum,
-                double own_contribution_estimate,
                 DOMHighResTimeStamp);
 
   // Called by PressureObserverManager.
@@ -86,9 +85,7 @@ class MODULES_EXPORT PressureObserver final : public ScriptWrappable {
   bool PassesRateTest(V8PressureSource::Enum, const DOMHighResTimeStamp&) const;
 
   // Verifies if there is data change in between last update and new one.
-  bool ShouldDispatch(V8PressureSource::Enum,
-                      V8PressureState::Enum,
-                      double own_contribution_estimate) const;
+  bool ShouldDispatch(V8PressureSource::Enum, V8PressureState::Enum) const;
 
   // Verifies if there is data changes in a defined time span is not too high.
   bool PassesRateObfuscation(V8PressureSource::Enum) const;

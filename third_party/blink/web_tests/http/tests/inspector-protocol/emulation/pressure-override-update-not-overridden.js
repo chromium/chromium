@@ -4,10 +4,9 @@
 
   testRunner.expectedError(
       'Setting state override fails',
-      await dp.Emulation.setPressureDataOverride({
+      await dp.Emulation.setPressureStateOverride({
         source: 'cpu',
         state: 'critical',
-        ownContributionEstimate: 0.2
       }));
 
   testRunner.completeTest();
