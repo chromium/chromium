@@ -651,6 +651,10 @@ inline constexpr char kLastBackgroundedTime[] = "ios.last_backgrounded_time";
 // browser policy.
 inline constexpr char kLastSigninTimestamp[] = "signin.last_signin_timestamp";
 
+// Timestamp tracking when a sign-out was triggered due to age mismatch.
+inline constexpr char kAgeMismatchSignoutTimestamp[] =
+    "ios.signin.age_mismatch_signout_timestamp";
+
 // Bool that represents whether iCloud backups are allowed by policy.
 inline constexpr char kAllowChromeDataInBackups[] =
     "ios.allow_chrome_data_in_backups";

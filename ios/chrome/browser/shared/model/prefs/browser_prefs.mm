@@ -390,6 +390,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEulaAccepted, false);
   registry->RegisterBooleanPref(metrics::prefs::kMetricsReportingEnabled,
                                 false);
+  registry->RegisterTimePref(prefs::kAgeMismatchSignoutTimestamp, base::Time());
 
   // Deprecated 07/2025 (migrated to profile prefs).
   registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);

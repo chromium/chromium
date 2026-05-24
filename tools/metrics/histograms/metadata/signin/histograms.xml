@@ -813,6 +813,23 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.AgeMismatchSignout.TimeToProperSignin" units="ms"
+    expires_after="2027-05-01">
+  <owner>ddac@chromium.org</owner>
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the total time duration from the first age-mismatch sign-out until
+    the user successfully signs in with the can_sign_in_to_chrome capability
+    confirmed as true. The timestamp is stored in Local State (app-level), so
+    the duration is measured across all profiles. The timestamp is not updated
+    on subsequent consecutive age-mismatch sign-outs, representing the total
+    continuous time spent without a valid/eligible account. Logged on iOS when
+    the user successfully signs in with the can_sign_in_to_chrome capability
+    true.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Android.FRESigninEvents" enum="FRESigninEvents"
     expires_after="2026-09-27">
   <owner>mthiesse@chromium.org</owner>

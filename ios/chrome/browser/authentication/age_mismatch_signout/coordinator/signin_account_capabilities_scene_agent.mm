@@ -12,10 +12,12 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/not_fatal_until.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "base/timer/timer.h"
+#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_capabilities.h"
@@ -35,6 +37,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -56,20 +59,20 @@
 
 // Called once the sign-out is done.
 // `identity` is the primary identity before sign-out.
-- (void)signOutDoneFromIdentity:(id<SystemIdentity>)identity;
+- (void)ageMismatchSignOutDoneFromIdentity:(id<SystemIdentity>)identity;
 
 @end
 
 namespace {
 
 // Called once the sign-out is done. It calls
-// `-[SigninAccountCapabilitiesSceneAgent signOutDoneFromIdentity:]` to continue
-// the workflow.
+// `-[SigninAccountCapabilitiesSceneAgent
+// ageMismatchSignOutDoneFromIdentity:]` to continue the workflow.
 void SignOutDoneForSceneState(id<SystemIdentity> identity,
                               SceneState* scene_state) {
   SigninAccountCapabilitiesSceneAgent* scene_agent =
       [SigninAccountCapabilitiesSceneAgent agentFromScene:scene_state];
-  [scene_agent signOutDoneFromIdentity:identity];
+  [scene_agent ageMismatchSignOutDoneFromIdentity:identity];
 }
 
 }  //  namespace
@@ -123,6 +126,7 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
+    [self checkPrimaryAccountCanSignInToChromeCapability];
   }
 }
 
@@ -131,6 +135,9 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   [self notifyProviderReadyIfUIAvailable];
+  if (level == SceneActivationLevelForegroundActive) {
+    [self checkPrimaryAccountCanSignInToChromeCapability];
+  }
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
@@ -168,6 +175,7 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                                 self);
+    [self checkPrimaryAccountCanSignInToChromeCapability];
   }
   [self notifyProviderReadyIfUIAvailable];
 }
@@ -178,14 +186,14 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(
           self.sceneState.profileState.profile);
-  CoreAccountInfo primaryAccountInfo =
-      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (info.gaia != primaryAccountInfo.gaia) {
+  CHECK(identityManager);
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return;
   }
-
-  if (info.capabilities.can_sign_in_to_chrome() == signin::Tribool::kFalse) {
-    [self handleAgeMismatchSignout];
+  CoreAccountInfo primaryAccountInfo =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (info.gaia == primaryAccountInfo.gaia) {
+    [self checkPrimaryAccountCanSignInToChromeCapability];
   }
 }
 
@@ -241,6 +249,54 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
 }
 
 #pragma mark - Private
+
+// Checks if the primary account has the capability set to false and triggers
+// sign-out if so. If the capability is true, records the age mismatch sign-out
+// to proper sign-in duration histogram if applicable.
+- (void)checkPrimaryAccountCanSignInToChromeCapability {
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(
+          self.sceneState.profileState.profile);
+  if (!identityManager) {
+    return;
+  }
+  CoreAccountInfo primaryAccountInfo =
+      identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (primaryAccountInfo.IsEmpty()) {
+    return;
+  }
+
+  AccountInfo accountInfo = identityManager->FindExtendedAccountInfoByAccountId(
+      primaryAccountInfo.account_id);
+  switch (accountInfo.capabilities.can_sign_in_to_chrome()) {
+    case signin::Tribool::kUnknown:
+      break;
+    case signin::Tribool::kFalse: {
+      __weak __typeof(self) weakSelf = self;
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(
+                         [](__typeof(self) strong_self) {
+                           [strong_self handleAgeMismatchSignout];
+                         },
+                         weakSelf));
+      break;
+    }
+    case signin::Tribool::kTrue: {
+      PrefService* localState = GetApplicationContext()->GetLocalState();
+      CHECK(localState);
+      base::Time signoutTime =
+          localState->GetTime(prefs::kAgeMismatchSignoutTimestamp);
+      if (!signoutTime.is_null()) {
+        base::TimeDelta duration = base::Time::Now() - signoutTime;
+        base::UmaHistogramCustomTimes(
+            "Signin.AgeMismatchSignout.TimeToProperSignin", duration,
+            base::Seconds(1), base::Days(14), 50);
+        localState->ClearPref(prefs::kAgeMismatchSignoutTimestamp);
+      }
+      break;
+    }
+  }
+}
 
 - (void)notifyProviderReadyIfUIAvailable {
   if ([self isUIAvailableToShowIOSPrompt]) {
@@ -330,7 +386,12 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
   return YES;
 }
 
-- (void)signOutDoneFromIdentity:(id<SystemIdentity>)identity {
+- (void)ageMismatchSignOutDoneFromIdentity:(id<SystemIdentity>)identity {
+  PrefService* localState = GetApplicationContext()->GetLocalState();
+  CHECK(localState);
+  if (localState->GetTime(prefs::kAgeMismatchSignoutTimestamp).is_null()) {
+    localState->SetTime(prefs::kAgeMismatchSignoutTimestamp, base::Time::Now());
+  }
   if (_isAgeMismatchSignoutInProgress) {
     // This case is when there was no profile switching during sign-out.
     // This method is called on the scene agent who triggered the sign-out flow.
