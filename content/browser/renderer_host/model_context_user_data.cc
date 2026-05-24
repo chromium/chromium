@@ -112,10 +112,10 @@ void ModelContextUserData::RegisterScriptTool(
   }
 
   for (const auto& origin : tool->exposed_origins) {
-    if (origin.scheme() != url::kHttpsScheme) {
+    if (!network::IsOriginPotentiallyTrustworthy(origin)) {
       bad_message::ReceivedBadMessage(
           render_frame_host().GetProcess(),
-          bad_message::RFHI_WEBMCP_EXPOSED_NON_HTTPS_ORIGIN);
+          bad_message::RFHI_WEBMCP_EXPOSED_UNTRUSTWORTHY_ORIGIN);
       return;
     }
   }

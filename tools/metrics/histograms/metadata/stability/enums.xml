@@ -516,7 +516,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="345" label="RFHI_WEBMCP_REGISTER_DUPLICATE_TOOL_NAME"/>
   <int value="346" label="RFHI_WEBMCP_DUPLICATE_BIND"/>
   <int value="347" label="RFHI_WEBMCP_DUPLICATE_SET_RECEIVER"/>
-  <int value="348" label="RFHI_WEBMCP_EXPOSED_NON_HTTPS_ORIGIN"/>
+  <int value="348" label="RFHI_WEBMCP_EXPOSED_UNTRUSTWORTHY_ORIGIN"/>
   <int value="349" label="RFHI_SYNCHONOUS_COMMIT_ORIGIN_MISMATCH"/>
   <int value="350" label="RFHI_WEBMCP_INVALID_TOOL_OWNER"/>
   <int value="351" label="NR_BAD_ORIGIN_HEADER"/>
