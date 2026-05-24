@@ -346,7 +346,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1529789484829130889">Tabakaja 8</translation>
 <translation id="1530707389502320859">Sajti ku sapo u përpoqe të hyje duket i rremë. Sulmuesit ndonjëherë i imitojnë sajtet duke bërë tek URL-ja ndryshime të vogla që janë të vështira për t'u shikuar.</translation>
 <translation id="1532118530259321453">Kjo faqe thotë</translation>
-<translation id="1533966801397200693">Profili në të cilin je identifikuar është një profil i menaxhuar. Administratori yt mund të bëjë ndryshime në cilësimet e profilit tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
+<translation id="1533966801397200693">Profili në të cilin je i identifikuar është një profil i menaxhuar. Administratori yt mund të bëjë ndryshime në cilësimet e profilit tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="1536390784834419204">Përkthe faqen</translation>
 <translation id="1539840569003678498">Raporti u dërgua:</translation>
 <translation id="1542105669288201090">Edukim për biznesin</translation>
@@ -483,7 +483,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1732445923934584865">Pyete personalisht më mirë</translation>
 <translation id="1733064249834771892">fontet</translation>
 <translation id="1733631169686303142">Pajisje audio</translation>
-<translation id="1733762317901693627">Edhe sajtet që janë zakonisht të sigurta, ndonjëherë kompromentohen nga sulmuesit. Vizito <ph name="BEGIN_LINK" />këtë sajt të pasigurt<ph name="END_LINK" /> vetëm nëse je i sigurt që i kupton rreziqet.</translation>
+<translation id="1733762317901693627">Edhe sajtet që janë zakonisht të sigurta, ndonjëherë komprometohen nga sulmuesit. Vizito <ph name="BEGIN_LINK" />këtë sajt të pasigurt<ph name="END_LINK" /> vetëm nëse je i sigurt që i kupton rreziqet.</translation>
 <translation id="1734864079702812349">Amex</translation>
 <translation id="1734878702283171397">Provo të kontaktosh me administratorin e sistemit.</translation>
 <translation id="1736163675982669961"><ph name="CARD_NICKNAME" />, <ph name="CARD_NETWORK_NAME" />, <ph name="CARD_LAST_FOUR_DIGITS" />, skadon më <ph name="CARD_EXPIRATION" /></translation>
@@ -844,7 +844,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2292556288342944218">Qasja jote në internet është bllokuar</translation>
 <translation id="2295831393422400053">Aktivizo cilësimin "Përmirëso kërkimet dhe shfletimin" për të përdorur "Më ndihmo të shkruaj"</translation>
 <translation id="2296244067976588032">Çelësi i kalimit • iCloud Keychain</translation>
-<translation id="2296331629987861142">Paguaj në këste të lehta (objekt i kualifikimit; zbatohen tarifa)</translation>
+<translation id="2296331629987861142">Paguaj në këste të lehta (subjekt i kualifikueshmërisë; zbatohen tarifa)</translation>
 <translation id="2300306941146563769">Pa ngarkuar</translation>
 <translation id="2301098101308036335">Cilat uebsajte vizitohen dhe kur.</translation>
 <translation id="2302571905116831849">Plotëso automatikisht kartën e besnikërisë</translation>
@@ -943,7 +943,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
             <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
             <ph name="LIST_ITEM" />Informacionet e futura në formularë
           <ph name="END_LIST" /></translation>
-<translation id="2448295565072560657">Pajisjet periferike të montuara në këtë pajisje ndërkohë që je i/e identifikuar</translation>
+<translation id="2448295565072560657">Pajisjet periferike të montuara në këtë pajisje ndërkohë që je i identifikuar</translation>
 <translation id="2450019289047528273">Mënyrat e pagesës dhe informacione të tjera nga "Portofoli i Google"</translation>
 <translation id="2451201933352935301"><ph name="URL" /> lejohen të menaxhojnë dritaret në të gjitha ekranet e tua</translation>
 <translation id="2451607499823206582">Po monitorohet</translation>
@@ -1780,7 +1780,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="3748647055058832337">Nuk ofrohet për këtë tregtar</translation>
 <translation id="3749600200023337912">Mënyra jote e ruajtur e pagesës automatike mund të përdoret për këtë pagesë. Për të çaktivizuar portofolat elektronikë ose aplikacionin për pagesë në Chrome, shko te <ph name="BEGIN_LINK1" />cilësimet e pagesës<ph name="END_LINK1" /></translation>
 <translation id="3752181611900535304">Të ruhet adresa te llogaria?</translation>
-<translation id="3752543821772132562">Shpërfillur sepse politika <ph name="POLICY_NAME" /> nuk është caktuar.</translation>
+<translation id="3752543821772132562">Shpërfillur sepse politika (<ph name="POLICY_NAME" />) nuk është caktuar.</translation>
 <translation id="3754210790023674521">Dil nga "Figura brenda figurës"</translation>
 <translation id="3754664361823138853">&amp;Hap faqen e "Historikut"</translation>
 <translation id="3757511311058373406">Filtrat e shfletimit automatik</translation>
@@ -2338,7 +2338,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4642296966515958616">Për t'u bashkuar në këtë grup skedash, përditëso Chrome</translation>
 <translation id="464342062220857295">Veçoritë e kërkimit</translation>
 <translation id="4643958597583594452">Chrome i përpunon titujt e faqeve dhe URL-të në pajisjen tënde ose në një hapësirë private në renë kompjuterike</translation>
-<translation id="4644567637638438744">Skedarët mund të ngarkohen vetëm nëse je identifikuar në Microsoft OneDrive</translation>
+<translation id="4644567637638438744">Skedarët mund të ngarkohen vetëm nëse je i identifikuar në Microsoft OneDrive</translation>
 <translation id="4644670975240021822">Renditja e kundërt e kthyer poshtë</translation>
 <translation id="4648262692072505866">Vlera hash duhet të jenë në formatin SHA-256.</translation>
 <translation id="4652266463001779298">Nuk lejohet</translation>
@@ -3665,7 +3665,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="6688775486821967877">Karta virtuale nuk ofrohet për momentin, provo përsëri më vonë</translation>
 <translation id="6688851075017682769">Adresa e testimit sipas shtetit</translation>
 <translation id="6689249931105087298">Relative me ngjeshjen e pikës së zezë</translation>
-<translation id="6689271823431384964">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet. Emri i mbajtësit të kartës vjen nga llogaria jote.</translation>
+<translation id="6689271823431384964">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je i identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet. Emri i mbajtësit të kartës vjen nga llogaria jote.</translation>
 <translation id="6690688090329768424">"<ph name="PROXY_INVALID_DESTINATION" />" nuk është një motiv i vlefshëm destinacioni.</translation>
 <translation id="6691397311652656001">Liro më shumë se <ph name="REQUIRED_FREE_DISK_SPACE" /> hapësirë</translation>
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të përdorur "Gjej pajisjen tënde" me "Llogarinë tënde të Google"</translation>
@@ -4627,7 +4627,7 @@ Detaje shtesë:
 <translation id="8169175551046720804">Çelësat "<ph name="DATA_CONTROLS_KEYS" />" nuk mund të caktohen në të njëjtin fjalor</translation>
 <translation id="8174047975335711832">Informacioni i pajisjes</translation>
 <translation id="8175053171643471349">Menaxho kartat e besnikërisë</translation>
-<translation id="8175796834047840627">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet.</translation>
+<translation id="8175796834047840627">Chrome po ofron që të ruash kartat e tua në "Llogarinë tënde të Google" sepse je i identifikuar. Mund ta ndryshosh këtë sjellje te cilësimet.</translation>
 <translation id="8176440868214972690">Administratori i kësaj pajisjeje ka dërguar disa informacione te sajtet e mëposhtme të uebit, si p.sh. cilësime ose politika.</translation>
 <translation id="817820454357658398">Produkte të higjienës për femrat</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> është bllokuar për shkak të përmbajtjes}other{<ph name="FILE_COUNT" /> skedarë janë bllokuar për shkak të përmbajtjes}}</translation>
