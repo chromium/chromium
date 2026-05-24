@@ -36,7 +36,7 @@
 #include "media/cast/constants.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 #include "third_party/opus/src/include/opus.h"
-#include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 
 #if BUILDFLAG(IS_APPLE)
 #include <AudioToolbox/AudioToolbox.h>
@@ -174,7 +174,6 @@ class AudioEncoder::ImplBase
       audio_frame->capture_end_time = frame_capture_time_;
 
       TRACE_EVENT_BEGIN("cast.stream", "Audio Encode",
-                        perfetto::Track::FromPointer(audio_frame.get()),
                         "frame_id", frame_id_.lower_32_bits(), "rtp_timestamp",
                         frame_rtp_timestamp_.lower_32_bits());
 
@@ -184,9 +183,8 @@ class AudioEncoder::ImplBase
         // by the signal duration.
         audio_frame->encoder_utilization =
             (base::TimeTicks::Now() - start_time) / frame_duration_;
-        TRACE_EVENT_END(
-            "cast.stream", perfetto::Track::FromPointer(audio_frame.get()),
-            "encoder_utilization", audio_frame->encoder_utilization);
+        TRACE_EVENT_END("cast.stream", "encoder_utilization",
+                        audio_frame->encoder_utilization);
 
         audio_frame->encode_completion_time = cast_environment_->NowTicks();
         cast_environment_->PostTask(
@@ -194,6 +192,8 @@ class AudioEncoder::ImplBase
             base::BindOnce(callback_, std::move(audio_frame),
                            samples_dropped_from_buffer_));
         samples_dropped_from_buffer_ = 0;
+      } else {
+        TRACE_EVENT_END("cast.stream");
       }
 
       // Reset the internal buffer, frame ID, and timestamps for the next frame.
