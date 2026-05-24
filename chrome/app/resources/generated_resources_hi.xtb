@@ -5739,6 +5739,7 @@
 <translation id="4910241725741323970">यह ऐप्लिकेशन पहले से इंस्टॉल है</translation>
 <translation id="4912643508233590958">इस्तेमाल नहीं किए जा रहे प्रोसेसर को जगाना</translation>
 <translation id="4913209098186576320">यह फ़ाइल खतरनाक हो सकती है<ph name="LINE_BREAK" />इस जांच में सामान्य से ज़्यादा समय लग रहा है...</translation>
+<translation id="4913573660390710463">बेहतर सुविधाओं वाले पैकेज किए गए वेब ऐप्लिकेशन ऐक्सेस करें. <ph name="BEGIN_LINK_LEARN_MORE" />ज़्यादा जानें<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">ऐप्लिकेशन का डेटा नहीं मिला</translation>
 <translation id="4915961947098019832">इमेज दिखाने की अनुमति है</translation>
 <translation id="491779113051926205">ChromeOS के ट्रैफ़िक काउंटर</translation>
@@ -9772,6 +9773,7 @@
 <translation id="7753735457098489144">स्टोरेज के लिए बची जगह कम होने की वजह से इंस्टॉल नहीं किया जा सका. जगह खाली करने के लिए, डिवाइस की मेमोरी से फ़ाइलें मिटाएं.</translation>
 <translation id="7754704193130578113">डाउनलोड करने से पहले, हर फ़ाइल को सेव करने की जगह के बारे में पूछें</translation>
 <translation id="7757592200364144203">डिवाइस का नाम बदलें</translation>
+<translation id="7757735653610827848">"<ph name="SELECTION" />" को कॉपी करें (&amp;C)</translation>
 <translation id="7757739382819740102">आस-पास मौजूद संपर्क, आपके साथ फ़ाइलें शेयर कर सकते हैं. इसके लिए, आपकी अनुमति की ज़रूरत होगी.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> से टेक्स्ट शेयर किया गया</translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -11354,6 +11356,7 @@
 <translation id="8819510664278523111">आपके डिवाइस का ईआईडी <ph name="EID_NUMBER" /> है, डिवाइस का IMEI <ph name="IMEI_NUMBER" />, और डिवाइस का सीरियल नंबर <ph name="SERIAL_NUMBER" /> है. सेवा चालू करने के लिए, इन नंबरों का इस्तेमाल किया जा सकता है.</translation>
 <translation id="8820817407110198400">बुकमार्क</translation>
 <translation id="8821045908425223359">आईपी पता अपने आप कॉन्फ़िगर होने दें</translation>
+<translation id="8821206216942230957">आपके खाते से, Chrome में Gemini को ऐक्सेस नहीं किया जा सकता</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> इस्तेमाल के लिए तैयार है.</translation>
 <translation id="882204272221080310">अतिरिक्त सुरक्षा के लिए फ़र्मवेयर अपडेट करें.</translation>
 <translation id="8823514049557262177">लिंक ले&amp;ख को कॉपी करें</translation>

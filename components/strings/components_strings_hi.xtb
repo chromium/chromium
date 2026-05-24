@@ -141,6 +141,7 @@
 <translation id="121201262018556460">आपने <ph name="DOMAIN" /> तक पहुंचने का प्रयास किया, लेकिन लेकिन सर्वर ने कमज़ोर कुंजी वाला प्रमाणपत्र प्रस्‍तुत किया. संभवत: हमलावर ने निजी कुंजी का पता लगा लिया है, और हो सकता है कि सर्वर आपका अपेक्षित सर्वर न हो (हो सकता है कि आप किसी हमलावर से बातचीत कर रहे हों).</translation>
 <translation id="1212527389003717329">डाउनलोड शुरू हो गया है. इसे देखने के लिए, |<ph name="ACCELERATOR" />| दबाकर रखें.</translation>
 <translation id="1215738931000958575">पासवर्ड, पासकी, पते, पेमेंट के तरीके, और अन्य जानकारी ऑटोमैटिक तरीके से भरने के लिए, अपने Google खाते में सेव की गई जानकारी का इस्तेमाल करें</translation>
+<translation id="1216257595811043403">टैब अपने-आप शेयर करने की सुविधा चालू करें</translation>
 <translation id="1219129156119358924">सिस्‍टम सुरक्षा</translation>
 <translation id="1219134100826635117">आपके एडमिन ने इस कार्रवाई को ब्लॉक कर दिया है</translation>
 <translation id="1221024147024329929">RSA सुरक्षित करने के तरीके के साथ PKCS #1 MD2</translation>
@@ -1133,6 +1134,7 @@
 <translation id="2719233594187778789">अनदेखा किया गया नॉन-यूनीक यूआरएल: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">अनुरोध कामयाब रहा</translation>
 <translation id="2722622039067384533">लिविंग रूम फ़र्नीचर</translation>
+<translation id="2723284907371508295">'अन्य डिवाइसों के और टैब देखें' बटन, अन्य डिवाइसों के और टैब देखने के लिए Enter दबाएं</translation>
 <translation id="2723669454293168317">Chrome की सेटिंग में, सुरक्षा जांच करें</translation>
 <translation id="2725492561136085792">इस कार्रवाई को चालू करने के लिए, Enter दबाएं.</translation>
 <translation id="2725927759457695883">पूरा नाम भरें</translation>
@@ -2245,6 +2247,7 @@
 <translation id="4434045419905280838">पॉप-अप और रीडायरेक्ट</translation>
 <translation id="443673843213245140">प्रॉक्‍सी का उपयोग अक्षम है लेकिन कोई स्‍पष्ट प्रॉक्‍सी कॉन्फ़िगरेशन दर्ज किया गया है.</translation>
 <translation id="4438821706955556403">औसत कीमत</translation>
+<translation id="4439687924334332880">अगर इस विंडो में खुले हुए टैब इस थ्रेड से जुड़े हुए हैं, तो उन्हें अपने-आप शेयर होने दें और ज़्यादा सटीक जवाब पाएं. सेटिंग में जाकर, इसे सभी थ्रेड के लिए चालू किया जा सकता है.</translation>
 <translation id="4441832193888514600">अनदेखा किया गया है, क्योंकि इस नीति को सिर्फ़ क्लाउड की उपयोगकर्ता नीति के तौर पर सेट किया जा सकता है.</translation>
 <translation id="4444062564459679679">आपके <ph name="DEVICE_NAME" /> पर Chrome में पहले ही भेजा जा चुका है</translation>
 <translation id="4445133368066241428">लोकप्रिय विषय</translation>
@@ -3228,6 +3231,7 @@
 <translation id="5995727681868049093">Google खाते में अपनी जानकारी, निजता, और सुरक्षा को मैनेज करें</translation>
 <translation id="5996255674476750320">वाहन के शो</translation>
 <translation id="5997247540087773573">आपने अभी जो पासवर्ड इस्तेमाल किया है वह डेटा के गलत इस्तेमाल की वजह से लीक हो चुका है. Google Password Manager आपको यह सुझाव देता है कि आप तुरंत इस पासवर्ड को बदलें और सेव किए गए पासवर्ड की जांच करें. ऐसा करने से, आपके खाते सुरक्षित रहेंगे.</translation>
+<translation id="5997915162652837008">सभी थ्रेड के लिए, टैब अपने-आप शेयर होने की सुविधा चालू करके अपना समय बचाया जा सकता है. इसके बारे में ज़्यादा जानें</translation>
 <translation id="6000528814684428358">हार्ड रॉक और प्रोग्रेसिव</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' के लिए <ph name="RESULT_COUNT" /> नतीजे मिले हैं</translation>
 <translation id="6002122790816966947">आपके डिवाइस</translation>
@@ -3373,6 +3377,7 @@
 <translation id="6203231073485539293">अपना इंटरनेट कनेक्शन जांचे</translation>
 <translation id="6205314730813004066">विज्ञापन से जुड़ी निजता सेटिंग</translation>
 <translation id="6212314149070368045">यूएस फ़ैनफ़ोल्ड</translation>
+<translation id="6213685130162740188">नोन ट्रैवलर नंबर</translation>
 <translation id="6215936431492593050">मेटल (सैटिन)</translation>
 <translation id="6217950634729714357">किचन और डाइनिंग फ़र्नीचर</translation>
 <translation id="6218305986815100395">वर्चुअल कार्ड को चालू नहीं किया जा सकता</translation>
@@ -3468,6 +3473,7 @@
 <translation id="6351658970066645919">ब्राउज़िंग डेटा मिटाएं</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किया गया) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए, सिंक किए गए) # पासवर्ड}}</translation>
 <translation id="6354918092619878358">SECG अंडाकार वक्र secp256r1 (अर्थात ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />, अन्य डिवाइसों के और टैब देखने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="6355392890578844978">यह ब्राउज़र, कोई कंपनी या दूसरा संगठन मैनेज नहीं करता. इस डिवाइस की गतिविधि को Chromium के बाहर मैनेज किया जा सकता है. <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" और "<ph name="GROUP_TITLE_2" />" टैब ग्रुप अब मौजूद नहीं हैं</translation>
 <translation id="6358088212770985041">पेमेंट के तरीकों में बदलाव करें</translation>
@@ -3799,11 +3805,13 @@
 <translation id="6874604403660855544">&amp;जोड़ना फिर से करें</translation>
 <translation id="6875873347995743859">Assistant को भेजें</translation>
 <translation id="6875894866901426843">आपका एडमिन <ph name="DATE_TIME" /> बजे, आपकी लोकल फ़ाइलें मिटा देगा. इनमें ट्रैश में भेजी गई फ़ाइलें भी शामिल हैं.</translation>
+<translation id="6880812263216766325">क्या आपको बेहतर जवाब पाने के लिए, खुले हुए टैब हमेशा शेयर करने हैं?</translation>
 <translation id="6880941331070119097">ज़्यादा कीमत वाला विकल्प</translation>
 <translation id="6881240511396774766">जल्दी से नया Google दस्तावेज़ बनाएं</translation>
 <translation id="6883221904761970440">सुरक्षित पेमेंट करने के लिए, क्रेडेंशियल की पुष्टि करने की शीट बंद है</translation>
 <translation id="6883745783646124431">ऑफ़िस का पता</translation>
 <translation id="6886283082988906333">ZIP फ़ॉर्मैट वाला संग्रह</translation>
+<translation id="6886431827310382613">काम के टैब शेयर करें</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">जगह की जानकारी चालू करें</translation>
 <translation id="6888584790432772780">Chrome इस पेज को रीडर मोड में दिखा रहा है, ताकि इसे आसानी से पढ़ा जा सके. Chrome ने एक असुरक्षित कनेक्शन पर मूल पेज काे फिर से पा लिया है.</translation>
@@ -4096,6 +4104,7 @@
 <translation id="7337706099755338005">आपके प्लेटफ़ॉर्म पर उपलब्ध नहीं है.</translation>
 <translation id="733923710415886693">प्रमाणपत्र पारदर्शिता के माध्यम से सर्वर के प्रमाणपत्र को प्रकट नहीं किया गया.</translation>
 <translation id="73398226265793546">एआई मोड का बटन. Google Search के एआई मोड में सवाल पूछने के लिए टैप करें</translation>
+<translation id="7343620778718789463">आईडी कार्ड</translation>
 <translation id="7346048084945669753">जुड़ा हुआ है या नहीं:</translation>
 <translation id="7346062987309535530">खाने के बर्तन</translation>
 <translation id="7346081071264046066">"शादी के इस न्योते का जश्न मनाने के लिए, 'हां' में जवाब दें"</translation>
@@ -4274,6 +4283,7 @@
 <translation id="7569490014721427265">गोल्फ़</translation>
 <translation id="7569952961197462199">Chrome से क्रेडिट कार्ड निकालें?</translation>
 <translation id="7569983096843329377">काला</translation>
+<translation id="7570862164055912832">रिड्रेस नंबर</translation>
 <translation id="7571813784389228510">Google का एआई मोड</translation>
 <translation id="7574998639136359461">विंटर स्पोर्ट्स के इक्विपमेंट</translation>
 <translation id="7575207903026901870">सुझाव बटन हटाएं, इस सुझाव को हटाने के लिए Enter दबाएं</translation>
@@ -4792,6 +4802,7 @@
 <translation id="8381674639488873545">ये शुल्क एक बार लगने वाले या बार-बार लगने वाले हो सकते हैं और हो सकता है कि इनके बारे में साफ़ तौर पर न बताया जाए. <ph name="BEGIN_LINK" />फिर भी दिखाएं<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">फ़ुल स्क्रीन मोड अपने-आप चालू होने की सेटिंग</translation>
 <translation id="838307841291975086">स्टेशन वैगन</translation>
+<translation id="838953173259347825">अगर इस विंडो में खुले हुए टैब इस थ्रेड से जुड़े हुए हैं, तो उन्हें अपने-आप शेयर होने दें और ज़्यादा सटीक जवाब पाएं. इसे सभी थ्रेड के लिए यहां जाकर चालू किया जा सकता है</translation>
 <translation id="8389532092404711541">आम तौर पर <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">कस्टमाइज़ किए गए और खास परफ़ॉर्मेंस वाले वाहन</translation>
 <translation id="8390725133630534698"><ph name="ORIGIN_NAME" /> से <ph name="VM_NAME" /> पर क्लिपबोर्ड डेटा शेयर करने की सुविधा को आपके एडमिन ने ब्लॉक कर दिया है</translation>
@@ -5079,6 +5090,7 @@
 <translation id="8861482055962701239">इस जानकारी को आपके Google Wallet में सेव नहीं किया जा सका. यह जानकारी, इस डिवाइस पर Chrome में सेव की गई है. Chrome, अगली बार इसका इस्तेमाल करने पर, इसे Wallet में सेव करने का विकल्प देगा.</translation>
 <translation id="8863218129525348270">अगली बार तेज़ी से पैसे चुकाने के लिए, कार्ड को डिवाइस पर सेव करें</translation>
 <translation id="8864939224504814334">ऑफ़िस जैसी जगहों पर पहने जाने वाले कपड़े और सूट</translation>
+<translation id="8865650218866129025">क्या आपको इस थ्रेड में बेहतर जवाब पाने के लिए, खुले हुए टैब अपने-आप शेयर होने की सुविधा चालू करनी है?</translation>
 <translation id="8866132857352163524">साउंडट्रैक</translation>
 <translation id="8866481888320382733">नीति सेटिंग पार्स करने में गड़बड़ी</translation>
 <translation id="8866928039507595380">फ़ोल्ड</translation>
@@ -5328,6 +5340,7 @@
 <translation id="955429569736351433">वीआर इस्तेमाल करने की अनुमति दी गई</translation>
 <translation id="955627189349169688"><ph name="BEGIN_LINK" />Chrome सिंक की सेटिंग<ph name="END_LINK" /> में जाकर, इस नीति से ऑप्ट आउट किया जा सकता है.</translation>
 <translation id="95721182352849470">येलो 2</translation>
+<translation id="958952958906914932">अन्य डिवाइसों के और टैब देखें</translation>
 <translation id="961372935451193190">टैब और फ़ाइलें</translation>
 <translation id="961663415146723894">नीचे की ओर बाइंड</translation>
 <translation id="961856697154696964">ब्राउज़िंग डेटा मिटाएं</translation>

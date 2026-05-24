@@ -670,6 +670,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1453561711872398978">Envia <ph name="BEGIN_LINK" />registres de depuració<ph name="END_LINK" /> (opció recomanada)</translation>
 <translation id="1454223536435069390">Fes una c&amp;aptura de pantalla</translation>
 <translation id="145432137617179457">Idiomes del corrector ortogràfic</translation>
+<translation id="1454523475536875350">Obre l'enllaç a la vista inferior</translation>
 <translation id="1455009947184333152">S'ha suprimit l'habilitat</translation>
 <translation id="1455119378540982311">Mides predefinides de les finestres</translation>
 <translation id="1456849775870359518">Les pestanyes es tornaran a obrir</translation>
@@ -811,6 +812,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1547123415014299762">Les galetes de tercers estan permeses</translation>
 <translation id="1547808936554660006">Entenc que els perfils eSIM instal·lats no se suprimiran en fer un executar la funció Powerwash</translation>
 <translation id="1547936895218027488">Fes clic a la icona del tauler lateral per obrir-lo</translation>
+<translation id="1548265680751768570">Gemini a Chrome no està disponible</translation>
 <translation id="1549275686094429035">L'ARC està activat</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vol accedir a <ph name="VOLUME_NAME" />. És possible que modifiqui o suprimeixi els fitxers.</translation>
 <translation id="1549966883323105187">Accedeix a les contrasenyes desades més ràpidament</translation>
@@ -971,6 +973,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1648528859488547844">Utilitza una xarxa Wi‑Fi o mòbil per determinar la ubicació</translation>
 <translation id="164936512206786300">Desvincula el dispositiu Bluetooth</translation>
 <translation id="1650407365859096313">S'obre en una pestanya nova. El permís és <ph name="PERMISSION_STATE" />.</translation>
+<translation id="1650723160137517362">Obre l'enllaç a la vista inferior</translation>
 <translation id="1650801028905250434">Els fitxers de La meva unitat se sincronitzaran automàticament amb el Chromebook perquè hi puguis accedir sense connexió a Internet. Pots canviar aquesta opció en qualsevol moment a Configuració &gt; Fitxers.</translation>
 <translation id="1651008383952180276">Has d'escriure la mateixa frase de contrasenya dues vegades</translation>
 <translation id="1651609627703324721">Aquesta pestanya està mostrant contingut de realitat virtual en un visor</translation>
@@ -1163,6 +1166,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1784849162047402014">Queda poc espai de disc del dispositiu</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Si desinstal·les <ph name="APP_NAME" />, també es desinstal·larà aquesta aplicació:}other{Si desinstal·les <ph name="APP_NAME" />, també es desinstal·laran aquestes aplicacions:}}</translation>
 <translation id="1786290960428378411">S'està sol·licitant llegir i canviar</translation>
+<translation id="179021551944139249">Afegeix l'enllaç a la llista de lectura</translation>
 <translation id="1790976235243700817">Suprimeix l'accés</translation>
 <translation id="1791662854739702043">Instal·lat</translation>
 <translation id="1792619191750875668">Pantalla ampliada</translation>
@@ -1991,6 +1995,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2341392013052489530">S'ha desinstal·lat la versió <ph name="VERSION" />; motiu: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">El teu fill pot utilitzar un número (PIN) en lloc d'una contrasenya per desbloquejar aquest dispositiu. Per definir el PIN més endavant, ves a Configuració.</translation>
 <translation id="2342666982755031076">Fluïdesa</translation>
+<translation id="2343005971389581619">Obre l'enllaç a la vista superior</translation>
 <translation id="2343160676229467122">Les extensions no es permeten a <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parc nacional de les muntanyes Rocoses</translation>
 <translation id="2343747224442182863">Posa el focus en aquesta pestanya</translation>
@@ -4204,6 +4209,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3854348409770521214">Pintura a l'oli</translation>
 <translation id="3854967233147778866">Proposa traduir els llocs web en altres idiomes</translation>
 <translation id="3854976556788175030">La safata de sortida està plena</translation>
+<translation id="3855324045699437362">Gemini a Chrome s'està ampliant a diferents ubicacions, però no està disponible a tot arreu.</translation>
 <translation id="3855441664322950881">Empaqueta l'extensió</translation>
 <translation id="3855676282923585394">Importa les adreces d'interès i la configuració...</translation>
 <translation id="3856023744577163821">Les pestanyes que s'obren des d'un xat o una pestanya compartida també es comparteixen amb Gemini.</translation>
@@ -5949,6 +5955,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir el zoom.</translation>
 <translation id="5088427648965532275">Proveïdor de Passpoint</translation>
 <translation id="5090637338841444533">Sense permís per fer un seguiment de la posició de la càmera</translation>
 <translation id="5091636240353511739">Mostra el PIN</translation>
+<translation id="5092567114307895466">Comprova que compleixes els requisits</translation>
 <translation id="5093447877601682598">Envia suggeriments sobre la barra de pestanyes</translation>
 <translation id="5093477827231450397">Llista de llocs web que has bloquejat i que no vols que suggereixin anuncis a altres llocs web</translation>
 <translation id="5093569275467863761">Submarc d'incògnit desat a la memòria cau endavant/enrere: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7830,6 +7837,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6427752304227226701">Informa d'un lloc web no segur...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{No hi ha cap contrasenya desada.}=1{S'està comprovant {COUNT} contrasenya...}other{S'estan comprovant {COUNT} contrasenyes…}}</translation>
 <translation id="6429384232893414837">Error d'actualització</translation>
+<translation id="6430202563517028640">Afegeix l'enllaç a la llista de lectura</translation>
 <translation id="6430814529589430811">ASCII codificat en Base64, certificat únic</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurarà les actualitzacions automàtiques per a tots els usuaris d'aquest equip.</translation>
 <translation id="6434104957329207050">Velocitat de la cerca per punt</translation>
@@ -10305,6 +10313,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8137559199583651773">Gestiona les extensions</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Revisa 1 extensió que podria no ser segura}other{Revisa {NUM_EXTENSIONS} d'extensions que podrien no ser segures}}</translation>
 <translation id="8138217203226449454">Volies canviar el proveïdor de cerca?</translation>
+<translation id="813858113027420189">Obre l'enllaç a la vista superior</translation>
 <translation id="8138997515734480534">Estat de la màquina virtual <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Acceleració del cursor</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

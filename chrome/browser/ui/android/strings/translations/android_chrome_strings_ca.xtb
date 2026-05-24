@@ -1069,6 +1069,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5628604359369369630">No llegits - Disponible sense connexió</translation>
 <translation id="5631483240431073854">Gestiona les pestanyes obertes</translation>
 <translation id="5632485077360054581">Mostra'm com</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> necessita el teu permís per executar <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Has iniciat la sessió com a <ph name="USER_NAME" />. Error del Compte de Google. Obre la configuració.</translation>
 <translation id="5641456720590409793">És possible que l'<ph name="BEGIN_LINK1" />historial de cerques<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />altres tipus d'activitats<ph name="END_LINK2" /> es desin al teu Compte de Google</translation>
 <translation id="5648166631817621825">7 darrers dies</translation>
@@ -1876,6 +1877,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome ha trobat una contrasenya poc segura que podries millorar}other{Chrome ha trobat # contrasenyes poc segures que podries millorar}}</translation>
 <translation id="8766529642647037772">Vols crear un enllaç destacat com aquest?</translation>
 <translation id="8769783688897433958">Mostra la informació i els permisos del lloc web</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> necessita el teu permís per executar <ph name="COUNT" /> extensions</translation>
 <translation id="8788265440806329501">L'historial de navegació està tancat</translation>
 <translation id="8790193082819560975">Toca per cercar opcions de compra del producte en una pestanya nova.</translation>
 <translation id="8798449543960971550">Llegits</translation>

@@ -1070,6 +1070,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5628604359369369630">Уншаагүй - Офлайнаар боломжтой</translation>
 <translation id="5631483240431073854">Нээлттэй табуудыг удирдана уу</translation>
 <translation id="5632485077360054581">Надад хэрхэн хийхийг харуулна уу</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" />-д <ph name="EXTENSION_NAME" />-г ажиллуулахад таны зөвшөөрөл шаардлагатай</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" />-р нэвтэрсэн. Google Бүртгэлийн алдаа гарлаа. Тохиргоог нээнэ.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Хайлтын түүх<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />бусад төрлийн үйл ажиллагааг<ph name="END_LINK2" /> Google Бүртгэлд тань хадгалж магадгүй</translation>
 <translation id="5648166631817621825">Сүүлийн 7 хоног</translation>
@@ -1877,6 +1878,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome таны сайжруулж болох сул нууц үг оллоо}other{Chrome таны сайжруулж болох # сул нууц үг оллоо}}</translation>
 <translation id="8766529642647037772">Үүнтэй адил тодруулсан холбоос үүсгэх үү?</translation>
 <translation id="8769783688897433958">Сайтын мэдээлэл, зөвшөөрлийг харах</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" />-д <ph name="COUNT" /> өргөтгөлийг ажиллуулахад таны зөвшөөрөл шаардлагатай</translation>
 <translation id="8788265440806329501">Навигацын түүх хаалттай байна</translation>
 <translation id="8790193082819560975">Бүтээгдэхүүнийг худалдан авах сонголтыг шинэ табаас хайхын тулд товшино уу.</translation>
 <translation id="8798449543960971550">Унших</translation>

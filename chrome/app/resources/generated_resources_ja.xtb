@@ -674,6 +674,7 @@
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />デバッグログ<ph name="END_LINK" />を送信する（推奨）</translation>
 <translation id="1454223536435069390">スクリーンショットを撮る(&amp;A)</translation>
 <translation id="145432137617179457">スペルチェックの言語</translation>
+<translation id="1454523475536875350">下のビューでリンクを開く</translation>
 <translation id="1455009947184333152">スキルを削除しました</translation>
 <translation id="1455119378540982311">プリセットのウィンドウ サイズ</translation>
 <translation id="1456849775870359518">タブが再度開きます</translation>
@@ -815,6 +816,7 @@
 <translation id="1547123415014299762">サードパーティの Cookie が許可されています</translation>
 <translation id="1547808936554660006">eSIM プロファイルは Powerwash で削除されないことを理解しました</translation>
 <translation id="1547936895218027488">サイドパネル アイコンをクリックして開きます</translation>
+<translation id="1548265680751768570">Gemini in Chrome は利用できません</translation>
 <translation id="1549275686094429035">ARC は有効になっています</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」が <ph name="VOLUME_NAME" /> へのアクセスを求めています。ファイルが変更または削除される可能性があります。</translation>
 <translation id="1549966883323105187">保存したパスワードにすばやくアクセスできます</translation>
@@ -974,6 +976,7 @@
 <translation id="1648528859488547844">Wi‑Fi またはモバイル ネットワークを使用して現在地を特定する</translation>
 <translation id="164936512206786300">Bluetooth デバイスのペア設定の解除</translation>
 <translation id="1650407365859096313">新しいタブで開きます。権限は <ph name="PERMISSION_STATE" /> です</translation>
+<translation id="1650723160137517362">下のビューでリンクを開く</translation>
 <translation id="1650801028905250434">マイドライブ内のファイルは Chromebook に自動的に同期されるので、インターネット接続がなくてもアクセスできます。これは [設定] &gt; [ファイル] でいつでも変更できます。</translation>
 <translation id="1651008383952180276">同じパスフレーズを 2 回入力する必要があります</translation>
 <translation id="1651609627703324721">このタブはヘッドセットに VR コンテンツを配信しています</translation>
@@ -1166,6 +1169,7 @@
 <translation id="1784849162047402014">デバイスのディスク空き領域が少なくなっています</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{「<ph name="APP_NAME" />」をアンインストールすると、次のアプリもアンインストールされます。}other{「<ph name="APP_NAME" />」をアンインストールすると、次のアプリもアンインストールされます。}}</translation>
 <translation id="1786290960428378411">読み取りと変更をリクエストしています</translation>
+<translation id="179021551944139249">リーディング リストにリンクを追加</translation>
 <translation id="1790976235243700817">アクセスを削除</translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792619191750875668">拡張ディスプレイ</translation>
@@ -1990,6 +1994,7 @@
 <translation id="2341392013052489530">バージョン <ph name="VERSION" /> をアンインストールしました（理由: <ph name="REASON" />）</translation>
 <translation id="2342180549977909852">お子様はパスワードではなく数字（PIN）を使用してデバイスのロックを解除することができます。後で PIN を設定する場合は、[設定] に移動してください。</translation>
 <translation id="2342666982755031076">滑らかさ</translation>
+<translation id="2343005971389581619">上のビューでリンクを開く</translation>
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> では拡張機能が許可されていません</translation>
 <translation id="2343390523044483367">ロッキー マウンテン国立公園</translation>
 <translation id="2343747224442182863">このタブをフォーカス</translation>
@@ -4203,6 +4208,7 @@
 <translation id="3854348409770521214">油絵</translation>
 <translation id="3854967233147778866">他の言語のウェブサイトで翻訳するかどうかを尋ねる</translation>
 <translation id="3854976556788175030">排紙トレイがいっぱいです</translation>
+<translation id="3855324045699437362">Gemini in Chrome は提供地域を拡大中ですが、一部の地域ではご利用いただけません。</translation>
 <translation id="3855441664322950881">拡張機能をパッケージ化</translation>
 <translation id="3855676282923585394">ブックマークと設定をインポート...</translation>
 <translation id="3856023744577163821">チャットまたは共有タブから開いたタブも Gemini と共有されます。</translation>
@@ -5948,6 +5954,7 @@
 <translation id="5088427648965532275">Passpoint プロバイダ</translation>
 <translation id="5090637338841444533">カメラ位置の追跡を許可しないサイト</translation>
 <translation id="5091636240353511739">PIN を表示</translation>
+<translation id="5092567114307895466">利用要件を満たしていることを確認してください</translation>
 <translation id="5093447877601682598">タブバーに関するフィードバックを送信</translation>
 <translation id="5093477827231450397">他のサイトに広告を提案しないようブロックしたウェブサイトのリスト</translation>
 <translation id="5093569275467863761">バックフォワード キャッシュのシークレット サブフレーム: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7827,6 +7834,7 @@
 <translation id="6427752304227226701">安全でないサイトを報告(&amp;U)...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{保存されているパスワードはありません。}=1{{COUNT} 件のパスワードを確認しています...}other{{COUNT} 件のパスワードを確認しています...}}</translation>
 <translation id="6429384232893414837">更新エラー</translation>
+<translation id="6430202563517028640">リーディング リストにリンクを追加</translation>
 <translation id="6430814529589430811">Base64 エンコード ASCII 形式の単一の証明書</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> は、このコンピュータのすべてのユーザーに対して自動更新を設定します。</translation>
 <translation id="6434104957329207050">ポイントのスキャン速度</translation>
@@ -10305,6 +10313,7 @@
 <translation id="8137559199583651773">拡張機能を管理</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{安全でない可能性がある 1 件の拡張機能を確認する}other{安全でない可能性がある {NUM_EXTENSIONS} 件の拡張機能を確認する}}</translation>
 <translation id="8138217203226449454">検索プロバイダを変更するつもりでしたか？</translation>
+<translation id="813858113027420189">上のビューでリンクを開く</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ステータス</translation>
 <translation id="8139440916039659819">カーソル アクセラレーション</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />、<ph name="SECOND_DEVICE" /></translation>
