@@ -143,7 +143,7 @@ void HTMLFormControlElement::AttributeChanged(
     const AttributeModificationParams& params) {
   if (RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
     if (HTMLFormElement* form = Form()) {
-      form->ScheduleWebMCPSchemaUpdate();
+      form->ScheduleWebMCPSchemaUpdateIfActive();
     }
   }
   HTMLElement::AttributeChanged(params);

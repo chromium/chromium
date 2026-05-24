@@ -58,7 +58,7 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
   // queue a task to register a new tool if `this` already has an existing
   // `active_webmcp_tool_`, and if the form control change impacts the tool's
   // generated input schema.
-  void ScheduleWebMCPSchemaUpdate();
+  void ScheduleWebMCPSchemaUpdateIfActive();
   enum RelAttribute {
     kNone = 0,
     kNoReferrer = 1 << 0,

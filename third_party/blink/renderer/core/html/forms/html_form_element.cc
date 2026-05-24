@@ -1178,7 +1178,7 @@ void HTMLFormElement::Associate(ListedElement& e) {
   listed_elements_for_autofill_.clear();
   if (e.ToHTMLElement().FastHasAttribute(html_names::kFormAttr))
     has_elements_associated_by_form_attribute_ = true;
-  ScheduleWebMCPSchemaUpdate();
+  ScheduleWebMCPSchemaUpdateIfActive();
 }
 
 void HTMLFormElement::Disassociate(ListedElement& e) {
@@ -1187,7 +1187,7 @@ void HTMLFormElement::Disassociate(ListedElement& e) {
   listed_elements_for_autofill_are_dirty_ = true;
   listed_elements_for_autofill_.clear();
   RemoveFromPastNamesMap(e.ToHTMLElement());
-  ScheduleWebMCPSchemaUpdate();
+  ScheduleWebMCPSchemaUpdateIfActive();
 }
 
 bool HTMLFormElement::IsURLAttribute(const Attribute& attribute) const {
@@ -1683,7 +1683,7 @@ void HTMLFormElement::UseCountPropertyAccess(
           : WebFeature::kDOMClobberedNotShadowedFormPropertyAccessed);
 }
 
-void HTMLFormElement::ScheduleWebMCPSchemaUpdate() {
+void HTMLFormElement::ScheduleWebMCPSchemaUpdateIfActive() {
   if (!RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
     return;
   }

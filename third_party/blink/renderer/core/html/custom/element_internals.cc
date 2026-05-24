@@ -168,7 +168,7 @@ void ElementInternals::setToolParamSchema(const String& schema) {
   }
   tool_param_schema_ = schema;
   if (auto* owner_form = Form()) {
-    owner_form->ScheduleWebMCPSchemaUpdate();
+    owner_form->ScheduleWebMCPSchemaUpdateIfActive();
   }
 }
 
