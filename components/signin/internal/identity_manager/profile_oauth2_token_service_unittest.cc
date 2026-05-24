@@ -37,6 +37,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "components/signin/public/base/binding_key_registration_token_result.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 namespace {
 
 // A testing consumer that retries on error.
@@ -981,3 +986,28 @@ TEST_F(ProfileOAuth2TokenServiceTest, FixAccountErrorIfPossible) {
   EXPECT_EQ(0, consumer_.number_of_successful_tokens_);
   EXPECT_EQ(1, consumer_.number_of_errors_);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(ProfileOAuth2TokenServiceTest, GenerateBindingKeyRegistrationToken) {
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future;
+  EXPECT_FALSE(oauth2_service_->GenerateBindingKeyRegistrationToken(
+      "ES256", "test_code", future.GetCallback()));
+
+  delegate_ptr_->EnableTokenBindingRegistration();
+  EXPECT_TRUE(oauth2_service_->GenerateBindingKeyRegistrationToken(
+      "ES256", "test_code", future.GetCallback()));
+  EXPECT_FALSE(future.IsReady());
+
+  delegate_ptr_->IssueTokenBindingRegistrationTokenForAuthCode(
+      "test_code", signin::BindingKeyRegistrationTokenResult(
+                       unexportable_keys::UnexportableKeyId(), {1, 2, 3},
+                       "test_registration_token"));
+
+  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ(future.Get()->wrapped_binding_key, std::vector<uint8_t>({1, 2, 3}));
+  EXPECT_EQ(future.Get()->registration_token, "test_registration_token");
+}
+#endif

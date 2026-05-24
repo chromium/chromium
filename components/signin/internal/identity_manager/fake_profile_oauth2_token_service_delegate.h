@@ -23,6 +23,11 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "components/signin/public/base/binding_key_registration_token_result.h"
+#include "components/unexportable_keys/unexportable_key_id.h"
+#endif
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -61,6 +66,16 @@ class FakeProfileOAuth2TokenServiceDelegate
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  bool GenerateBindingKeyRegistrationToken(
+      std::string_view supported_algorithms,
+      std::string_view auth_code,
+      base::OnceCallback<void(
+          std::optional<signin::BindingKeyRegistrationTokenResult>)> callback)
+      override;
+  void EnableTokenBindingRegistration();
+  void IssueTokenBindingRegistrationTokenForAuthCode(
+      std::string_view auth_code,
+      std::optional<signin::BindingKeyRegistrationTokenResult> result);
   bool IsRefreshTokenBoundToKey(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
@@ -82,6 +97,9 @@ class FakeProfileOAuth2TokenServiceDelegate
 
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;
+
+  FakeProfileOAuth2TokenServiceDelegate*
+  AsFakeProfileOAuth2TokenServiceDelegateForTesting() override;
 
   bool FixAccountErrorIfPossible() override;
 
@@ -126,6 +144,14 @@ class FakeProfileOAuth2TokenServiceDelegate
   std::map<CoreAccountId, std::string> refresh_tokens_;
 
   std::map<CoreAccountId, std::vector<uint8_t>> wrapped_binding_keys_;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  bool is_token_binding_registration_enabled_ = false;
+  std::map<std::string,
+           base::OnceCallback<void(
+               std::optional<signin::BindingKeyRegistrationTokenResult>)>>
+      pending_token_binding_callbacks_;
+#endif
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;

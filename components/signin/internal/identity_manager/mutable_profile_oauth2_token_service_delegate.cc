@@ -28,6 +28,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
 #include "components/signin/internal/identity_manager/token_binding_oauth2_access_token_fetcher.h"
+#include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_client.h"
@@ -460,6 +461,21 @@ bool MutableProfileOAuth2TokenServiceDelegate::
   auto iter = refresh_tokens_.find(account_id);
   return iter != refresh_tokens_.end() && iter->second.mtls_token_binding &&
          base::FeatureList::IsEnabled(switches::kEnableMtlsTokenBinding);
+}
+
+bool MutableProfileOAuth2TokenServiceDelegate::
+    GenerateBindingKeyRegistrationToken(
+        std::string_view supported_algorithms,
+        std::string_view auth_code,
+        base::OnceCallback<
+            void(std::optional<signin::BindingKeyRegistrationTokenResult>)>
+            callback) {
+  if (!token_binding_helper_) {
+    return false;
+  }
+  token_binding_helper_->GenerateBindingKeyRegistrationToken(
+      supported_algorithms, auth_code, std::move(callback));
+  return true;
 }
 
 bool MutableProfileOAuth2TokenServiceDelegate::IsRefreshTokenBoundToKey(

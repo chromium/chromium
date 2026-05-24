@@ -18,6 +18,10 @@
 #include "google_apis/gaia/gaia_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "components/signin/public/base/session_binding_utils.h"
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 FakeProfileOAuth2TokenServiceDelegate::FakeProfileOAuth2TokenServiceDelegate()
     : ProfileOAuth2TokenServiceDelegate(/*use_backoff=*/true),
       shared_factory_(test_url_loader_factory_.GetSafeWeakWrapper()) {}
@@ -62,6 +66,35 @@ bool FakeProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailableOnDevice(
 #endif  //  BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+bool FakeProfileOAuth2TokenServiceDelegate::GenerateBindingKeyRegistrationToken(
+    std::string_view supported_algorithms,
+    std::string_view auth_code,
+    base::OnceCallback<void(
+        std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {
+  if (!is_token_binding_registration_enabled_) {
+    return false;
+  }
+  pending_token_binding_callbacks_[std::string(auth_code)] =
+      std::move(callback);
+  return true;
+}
+
+void FakeProfileOAuth2TokenServiceDelegate::EnableTokenBindingRegistration() {
+  is_token_binding_registration_enabled_ = true;
+}
+
+void FakeProfileOAuth2TokenServiceDelegate::
+    IssueTokenBindingRegistrationTokenForAuthCode(
+        std::string_view auth_code,
+        std::optional<signin::BindingKeyRegistrationTokenResult> result) {
+  auto it = pending_token_binding_callbacks_.find(std::string(auth_code));
+  CHECK(it != pending_token_binding_callbacks_.end());
+  auto callback = std::move(it->second);
+  pending_token_binding_callbacks_.erase(it);
+
+  std::move(callback).Run(std::move(result));
+}
+
 bool FakeProfileOAuth2TokenServiceDelegate::IsRefreshTokenBoundToKey(
     const CoreAccountId& account_id) const {
   auto it = wrapped_binding_keys_.find(account_id);
@@ -225,6 +258,11 @@ void FakeProfileOAuth2TokenServiceDelegate::ExtractCredentialsInternal(
 scoped_refptr<network::SharedURLLoaderFactory>
 FakeProfileOAuth2TokenServiceDelegate::GetURLLoaderFactory() const {
   return shared_factory_;
+}
+
+FakeProfileOAuth2TokenServiceDelegate* FakeProfileOAuth2TokenServiceDelegate::
+    AsFakeProfileOAuth2TokenServiceDelegateForTesting() {
+  return this;
 }
 
 bool FakeProfileOAuth2TokenServiceDelegate::FixAccountErrorIfPossible() {

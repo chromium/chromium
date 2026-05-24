@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -37,6 +38,7 @@
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
+#include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/device_id_helper.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -2505,6 +2507,37 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   // Should not crash when passing an empty key or call anything on the mock.
   oauth2_service_delegate_->AddBindingKeyToService({});
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       GenerateBindingKeyRegistrationTokenNoTokenBindingHelper) {
+  oauth2_service_delegate_ =
+      CreateOAuth2ServiceDelegate(/*token_binding_helper=*/nullptr);
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future;
+  EXPECT_FALSE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
+      "ES256", "test_code", future.GetCallback()));
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       GenerateBindingKeyRegistrationTokenWithTokenBindingHelper) {
+  testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
+      mock_unexportable_key_service;
+  // Set up a key generation failure for simplicity.
+  EXPECT_CALL(mock_unexportable_key_service, GenerateSigningKeySlowlyAsync)
+      .WillOnce(base::test::RunOnceCallback<2>(
+          base::unexpected(unexportable_keys::ServiceError::kCryptoApiFailed)));
+  oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
+      std::make_unique<TokenBindingHelper>(mock_unexportable_key_service));
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future;
+  EXPECT_TRUE(oauth2_service_delegate_->GenerateBindingKeyRegistrationToken(
+      "ES256", "test_code", future.GetCallback()));
+  EXPECT_FALSE(future.Get().has_value());
+}
+#endif
 
 class MutableProfileOAuth2TokenServiceDelegateGarbageCollectionTest
     : public MutableProfileOAuth2TokenServiceDelegateTest,

@@ -414,6 +414,11 @@ void ProfileOAuth2TokenServiceDelegate::ResetBackOffEntry() {
   backoff_entry_->Reset();
 }
 
+FakeProfileOAuth2TokenServiceDelegate* ProfileOAuth2TokenServiceDelegate::
+    AsFakeProfileOAuth2TokenServiceDelegateForTesting() {
+  return nullptr;
+}
+
 void ProfileOAuth2TokenServiceDelegate::
     SetRefreshTokenAvailableFromSourceCallback(
         RefreshTokenAvailableFromSourceCallback callback) {

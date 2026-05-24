@@ -21,6 +21,10 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "google_apis/gaia/gaia_id.h"
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "components/signin/public/base/binding_key_registration_token_result.h"
+#endif
+
 class FakeProfileOAuth2TokenService;
 class IdentityTestEnvironmentBrowserStateAdaptor;
 class IdentityTestEnvironmentProfileAdaptor;
@@ -239,6 +243,13 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver,
   // When this is set, access token requests will be automatically granted with
   // an access token value of "access_token".
   void SetAutomaticIssueOfAccessTokens(bool grant);
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void EnableTokenBindingRegistration();
+  void IssueTokenBindingRegistrationTokenForAuthCode(
+      std::string_view auth_code,
+      std::optional<signin::BindingKeyRegistrationTokenResult> result);
+#endif
 
   // Issues |token| in response to any access token request that either has (a)
   // already occurred and has not been matched by a previous call to this or

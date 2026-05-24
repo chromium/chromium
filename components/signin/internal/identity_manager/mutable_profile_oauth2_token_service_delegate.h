@@ -21,6 +21,7 @@
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
+#include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/webdata/token_service_table.h"
@@ -128,6 +129,12 @@ class MutableProfileOAuth2TokenServiceDelegate
   std::string GetTokenForMultilogin(
       const CoreAccountId& account_id) const override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
+  bool GenerateBindingKeyRegistrationToken(
+      std::string_view supported_algorithms,
+      std::string_view auth_code,
+      base::OnceCallback<void(
+          std::optional<signin::BindingKeyRegistrationTokenResult>)> callback)
+      override;
   bool IsRefreshTokenBoundToKey(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;

@@ -521,6 +521,19 @@ void IdentityTestEnvironment::SetAutomaticIssueOfAccessTokens(bool grant) {
   fake_token_service()->set_auto_post_fetch_response_on_message_loop(grant);
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+void IdentityTestEnvironment::EnableTokenBindingRegistration() {
+  fake_token_service()->EnableTokenBindingRegistration();
+}
+
+void IdentityTestEnvironment::IssueTokenBindingRegistrationTokenForAuthCode(
+    std::string_view auth_code,
+    std::optional<signin::BindingKeyRegistrationTokenResult> result) {
+  fake_token_service()->IssueTokenBindingRegistrationTokenForAuthCode(
+      auth_code, std::move(result));
+}
+#endif
+
 void IdentityTestEnvironment::
     WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
         const std::string& token,

@@ -6,13 +6,20 @@
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_PROFILE_OAUTH2_TOKEN_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "google_apis/gaia/fake_oauth2_access_token_manager.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "components/signin/public/base/binding_key_registration_token_result.h"
+#endif
 
 // Helper class to simplify writing unittests that depend on an instance of
 // ProfileOAuth2TokenService.
@@ -90,8 +97,16 @@ class FakeProfileOAuth2TokenService : public ProfileOAuth2TokenService {
 
   bool IsFakeProfileOAuth2TokenServiceForTesting() const override;
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void EnableTokenBindingRegistration();
+  void IssueTokenBindingRegistrationTokenForAuthCode(
+      std::string_view auth_code,
+      std::optional<signin::BindingKeyRegistrationTokenResult> result);
+#endif
+
  private:
   FakeOAuth2AccessTokenManager* GetFakeAccessTokenManager();
+  FakeProfileOAuth2TokenServiceDelegate* GetFakeDelegate();
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_FAKE_PROFILE_OAUTH2_TOKEN_SERVICE_H_
