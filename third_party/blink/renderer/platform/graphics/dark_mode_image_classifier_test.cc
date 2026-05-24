@@ -492,4 +492,15 @@ TEST_F(DarkModeImageClassifierTest,
             DarkModeResult::kDoNotApplyFilter);
 }
 
+TEST_F(DarkModeImageClassifierTest, SyntheticImageWithMutedChromaticColors) {
+  // Colorful, limited-palette image with muted mid-tone colors (chroma in
+  // [20, 80), luma < 96).
+  constexpr SkColor kMutedTeal = SkColorSetRGB(60, 100, 80);
+  SkBitmap bitmap = MakeStripedBitmap(kMutedTeal, kMutedTeal, 0, 0);
+  SkPixmap pixmap;
+  ASSERT_TRUE(bitmap.peekPixels(&pixmap));
+  EXPECT_EQ(image_classifier()->Classify(pixmap, bitmap.bounds()),
+            DarkModeResult::kDoNotApplyFilter);
+}
+
 }  // namespace blink

@@ -29,6 +29,14 @@ constexpr int kHighLightnessThreshold = 96;
 // typical photographic colors which usually have chroma below 60.
 constexpr int kHighSaturationThreshold = 80;
 
+// Per-pixel chroma at or above which the pixel is considered chromatic
+// (i.e. not effectively gray). Set well below kHighSaturationThreshold so
+// that muted / mid-tone colors found in illustrated assets (olive, teal,
+// maroon, pastels) are still counted as chromatic. Anti-aliased fringes
+// around grayscale text and minor JPEG chroma noise typically stay below
+// chroma ~15, so this floor still excludes them.
+constexpr int kChromaticThreshold = 20;
+
 // Decision tree thresholds for classifying images
 
 // Lower and upper color thresholds for grayscale and color images.
@@ -52,6 +60,13 @@ constexpr float kFeatureHighSaturationRatioThreshold = 0.3f;
 // where the dominant light pixels pull the overall saturated_pixel_ratio
 // below kFeatureHighSaturationRatioThreshold.
 constexpr float kFeatureLowSaturationRatioThreshold = 0.1f;
+
+// Chromatic pixel ratio threshold above which a limited-palette colorful
+// image is considered to carry semantic color information end-to-end
+// (rather than being a near-grayscale icon with a tiny color accent) and
+// is skipped from inversion. Tuned so dark / grayscale text with
+// anti-aliased fringes or minor chroma noise stays below this floor.
+constexpr float kFeatureChromaticPixelRatioThreshold = 0.5f;
 
 bool IsColorGray(const SkColor& color) {
   return abs(static_cast<int>(SkColorGetR(color)) -
@@ -82,6 +97,17 @@ bool IsColorSaturated(const SkColor& color) {
   int b = SkColorGetB(color);
   int chroma = std::max({r, g, b}) - std::min({r, g, b});
   return chroma >= kHighSaturationThreshold;
+}
+
+bool IsColorChromatic(const SkColor& color) {
+  // Same chroma metric as IsColorSaturated() but with a much lower
+  // threshold, so muted / mid-tone colors are still counted as carrying
+  // hue information.
+  int r = SkColorGetR(color);
+  int g = SkColorGetG(color);
+  int b = SkColorGetB(color);
+  int chroma = std::max({r, g, b}) - std::min({r, g, b});
+  return chroma >= kChromaticThreshold;
 }
 
 }  // namespace
@@ -229,6 +255,7 @@ DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
   int color_pixels = 0;
   int high_luma_pixels = 0;
   int saturated_pixels = 0;
+  int chromatic_pixels = 0;
   for (const SkColor& sample : sampled_pixels) {
     if (!IsColorGray(sample)) {
       color_pixels++;
@@ -240,6 +267,10 @@ DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
 
     if (IsColorSaturated(sample)) {
       saturated_pixels++;
+    }
+
+    if (IsColorChromatic(sample)) {
+      chromatic_pixels++;
     }
   }
 
@@ -257,6 +288,8 @@ DarkModeImageClassifier::Features DarkModeImageClassifier::ComputeFeatures(
       static_cast<float>(high_luma_pixels) / samples_count;
   features.saturated_pixel_ratio =
       static_cast<float>(saturated_pixels) / samples_count;
+  features.chromatic_pixel_ratio =
+      static_cast<float>(chromatic_pixels) / samples_count;
 
   return features;
 }
@@ -351,6 +384,17 @@ DarkModeResult DarkModeImageClassifier::ClassifyUsingDecisionTree(
           kFeatureHighColorCountThreshold[features.is_colorful] &&
       features.high_luminance_ratio > kFeatureHighLuminanceThreshold &&
       features.saturated_pixel_ratio > kFeatureLowSaturationRatioThreshold) {
+    return DarkModeResult::kDoNotApplyFilter;
+  }
+
+  // Skip limited-palette colorful images whose pixels are mostly chromatic
+  // (muted / mid-tone hues), e.g. emotes, stickers, or character art. Their
+  // semantic hue must be preserved. Grayscale text and JPEG chroma noise
+  // stay below |kFeatureChromaticPixelRatioThreshold| and are still inverted.
+  if (features.is_colorful &&
+      features.color_buckets_ratio <
+          kFeatureHighColorCountThreshold[features.is_colorful] &&
+      features.chromatic_pixel_ratio > kFeatureChromaticPixelRatioThreshold) {
     return DarkModeResult::kDoNotApplyFilter;
   }
 

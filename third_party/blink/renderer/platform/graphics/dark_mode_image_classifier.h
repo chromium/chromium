@@ -47,6 +47,13 @@ class PLATFORM_EXPORT DarkModeImageClassifier {
     // image. Used to detect images dominated by vivid flat colors whose
     // colors carry meaning and should be preserved rather than inverted.
     float saturated_pixel_ratio;
+
+    // Ratio of chromatic (non-near-gray) pixels to all sampled pixels in the
+    // image. Uses a low chroma threshold so it counts both vivid colors and
+    // muted / mid-tone colors that still carry hue information. Distinct
+    // from |saturated_pixel_ratio|, which counts only highly saturated
+    // pixels.
+    float chromatic_pixel_ratio;
   };
 
   DarkModeResult Classify(const SkPixmap& pixmap, const SkIRect& src) const;
