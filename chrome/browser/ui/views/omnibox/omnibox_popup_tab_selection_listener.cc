@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_tab_selection_listener.h"
 
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
+
 OmniboxPopupTabSelectionListener::OmniboxPopupTabSelectionListener(
-    base::WeakPtr<WebUIContentsWrapper::Host> host,
+    base::WeakPtr<OmniboxPopupWebUIBaseContent> host,
     TabStripModel* tab_strip_model)
     : host_(std::move(host)) {
   CHECK(tab_strip_model);
@@ -23,6 +25,6 @@ void OmniboxPopupTabSelectionListener::OnTabStripModelChanged(
   }
 
   if (host_) {
-    host_->CloseUI();
+    host_->OnActiveTabChanged(selection.new_contents);
   }
 }

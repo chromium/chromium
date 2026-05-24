@@ -10,10 +10,12 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 
+class OmniboxPopupWebUIBaseContent;
+
 class OmniboxPopupTabSelectionListener : public TabStripModelObserver {
  public:
   OmniboxPopupTabSelectionListener(
-      base::WeakPtr<WebUIContentsWrapper::Host> host,
+      base::WeakPtr<OmniboxPopupWebUIBaseContent> host,
       TabStripModel* tab_strip_model);
   OmniboxPopupTabSelectionListener(const OmniboxPopupTabSelectionListener&) =
       delete;
@@ -28,7 +30,7 @@ class OmniboxPopupTabSelectionListener : public TabStripModelObserver {
       const TabStripSelectionChange& selection) override;
 
  private:
-  base::WeakPtr<WebUIContentsWrapper::Host> host_;
+  base::WeakPtr<OmniboxPopupWebUIBaseContent> host_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_TAB_SELECTION_LISTENER_H_

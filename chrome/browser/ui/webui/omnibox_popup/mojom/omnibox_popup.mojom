@@ -26,4 +26,9 @@ interface Page {
 
   // Called when the context menu is closed.
   OnContextMenuClosed();
+
+  // Called by the browser to update the input text in the full WebUI Omnibox,
+  // for example during tab switches to restore saved input or fallback
+  // to permanent text.
+  SetInputText(string input);
 };

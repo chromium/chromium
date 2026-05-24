@@ -240,8 +240,8 @@ void OmniboxPopupUI::BindInterface(
 void OmniboxPopupUI::CreatePageHandler(
     mojo::PendingRemote<omnibox_popup::mojom::Page> page,
     mojo::PendingReceiver<omnibox_popup::mojom::PageHandler> receiver) {
-  popup_handler_ = std::make_unique<OmniboxPopupHandler>(std::move(receiver),
-                                                         std::move(page));
+  popup_handler_ = std::make_unique<OmniboxPopupHandler>(
+      std::move(receiver), std::move(page), web_ui()->GetWebContents());
   popup_handler_->set_embedder(embedder());
 }
 

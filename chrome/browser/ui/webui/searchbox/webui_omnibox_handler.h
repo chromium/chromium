@@ -84,6 +84,7 @@ class WebuiOmniboxHandler : public ContextualSearchboxHandler,
   void OnCharTyped(base::TimeTicks timestamp) override;
   void OnMatchIconUpdated(size_t index) override {}
   void OnContentsChanged() override {}
+  void StopAutocomplete(bool clear_result) override;
 
   // TabListInterfaceObserver:
   void OnActiveTabChanged(TabListInterface& tab_list,

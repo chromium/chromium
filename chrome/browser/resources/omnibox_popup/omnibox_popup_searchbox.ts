@@ -5,20 +5,22 @@
 import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '//resources/cr_components/searchbox/searchbox_input.js';
 
-import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PageCallbackRouter, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-
-import {getCss} from './omnibox_popup_searchbox.css.js';
-import {getHtml} from './omnibox_popup_searchbox.html.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import type {SearchboxInputElement} from '//resources/cr_components/searchbox/searchbox_input.js';
 import type {SearchboxMixinInterface} from '//resources/cr_components/searchbox/searchbox_mixin.js';
 import {SearchboxMixin} from '//resources/cr_components/searchbox/searchbox_mixin.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerInterface as SearchboxPageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+
+import {browserProxyFactory} from './omnibox_popup.mojom-webui.js';
+import type {PageCallbackRouter as PopupPageCallbackRouter} from './omnibox_popup.mojom-webui.js';
+import {getCss} from './omnibox_popup_searchbox.css.js';
+import {getHtml} from './omnibox_popup_searchbox.html.js';
 
 export interface OmniboxPopupSearchboxElement {
   $: {
@@ -90,33 +92,43 @@ export class OmniboxPopupSearchboxElement extends
       loadTimeData.getBoolean('searchboxLensSearch');
   protected accessor useWebkitSearchIcons_: boolean = false;
 
-  private pageHandler_: PageHandlerInterface;
-  private callbackRouter_: PageCallbackRouter;
-  private autocompleteResultChangedListenerId_: number|null = null;
+  private searchboxPageHandler_: SearchboxPageHandlerInterface;
+  private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
+  private popupCallbackRouter_: PopupPageCallbackRouter;
+  private listenerIds_: number[] = [];
+  private popupListenerIds_: number[] = [];
 
   constructor() {
     super();
-    const browserProxy = SearchboxBrowserProxy.getInstance();
-    this.pageHandler_ = browserProxy.handler;
-    this.callbackRouter_ = browserProxy.callbackRouter;
+    const searchboxBrowserProxy = SearchboxBrowserProxy.getInstance();
+    this.searchboxPageHandler_ = searchboxBrowserProxy.handler;
+    this.searchboxCallbackRouter_ = searchboxBrowserProxy.callbackRouter;
+    const popupBrowserProxy = browserProxyFactory.getInstance();
+    this.popupCallbackRouter_ = popupBrowserProxy.callbackRouter;
   }
 
   override connectedCallback() {
     super.connectedCallback();
     // TODO(crbug.com/497883783): Move autocompleteResultChangedListenerId_
     // property to SearchboxMixin.
-    this.autocompleteResultChangedListenerId_ =
-        this.callbackRouter_.autocompleteResultChanged.addListener(
-            this.onAutocompleteResultChanged.bind(this));
+    this.listenerIds_ = [
+      this.searchboxCallbackRouter_.autocompleteResultChanged.addListener(
+          this.onAutocompleteResultChanged.bind(this)),
+    ];
+    this.popupListenerIds_ = [
+      this.popupCallbackRouter_.setInputText.addListener(
+          (input: string) => this.$.input.setInputText(input)),
+    ];
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    if (this.autocompleteResultChangedListenerId_ !== null) {
-      this.callbackRouter_.removeListener(
-          this.autocompleteResultChangedListenerId_);
-      this.autocompleteResultChangedListenerId_ = null;
-    }
+    this.listenerIds_.forEach(
+        id => this.searchboxCallbackRouter_.removeListener(id));
+    this.listenerIds_ = [];
+    this.popupListenerIds_.forEach(
+        id => this.popupCallbackRouter_.removeListener(id));
+    this.popupListenerIds_ = [];
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -152,8 +164,8 @@ export class OmniboxPopupSearchboxElement extends
     return this.$.inputWrapper;
   }
 
-  override pageHandler(): PageHandlerInterface {
-    return this.pageHandler_;
+  override pageHandler(): SearchboxPageHandlerInterface {
+    return this.searchboxPageHandler_;
   }
 
   isInputEmpty(): boolean {
@@ -180,9 +192,8 @@ export class OmniboxPopupSearchboxElement extends
   //========================================================================
   // Event handlers
   //========================================================================
-
   protected onInputFocusin_() {
-    this.pageHandler_.onFocusChanged(true);
+    this.searchboxPageHandler_.onFocusChanged(true);
   }
 
   protected computePlaceholderText_(): string {

@@ -373,6 +373,14 @@ void WebuiOmniboxHandler::OnActiveTabChanged(TabListInterface& tab_list,
   ContextualSearchboxHandler::OnActiveTabChanged(tab_list, tab);
 }
 
+void WebuiOmniboxHandler::StopAutocomplete(bool clear_result) {
+  if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxFullPopupV2) &&
+      clear_result) {
+    controller_->edit_model()->Revert();
+  }
+  ContextualSearchboxHandler::StopAutocomplete(clear_result);
+}
+
 void WebuiOmniboxHandler::OnTabWillDetach(
     tabs::TabInterface* tab,
     tabs::TabInterface::DetachReason reason) {
