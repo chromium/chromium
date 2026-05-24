@@ -275,4 +275,22 @@ TEST_F(BindingKeyRegistrationTokenHelperTest, SignatureFailure) {
       /*expected_bucket_count=*/1);
 }
 
+TEST_F(BindingKeyRegistrationTokenHelperTest, DeletionWhileInProgress) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  base::test::TestFuture<
+      std::optional<BindingKeyRegistrationTokenHelper::Result>>
+      future;
+  auto helper = std::make_unique<BindingKeyRegistrationTokenHelper>(
+      unexportable_key_service(), base::ToVector(kAcceptableAlgorithms));
+  helper->GenerateForTokenBinding("test_client_id", "test_auth_code",
+                                  GURL("https://accounts.google.com/Register"),
+                                  future.GetCallback());
+  // Destroy the helper before running background tasks.
+  helper.reset();
+  RunBackgroundTasks();
+  // Verify that the callback was invoked with nullopt.
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
 }  // namespace signin

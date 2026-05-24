@@ -45,7 +45,16 @@ std::unique_ptr<UnexportableKeyLoader> UnexportableKeyLoader::CreateWithNewKey(
   return loader;
 }
 
-UnexportableKeyLoader::~UnexportableKeyLoader() = default;
+UnexportableKeyLoader::~UnexportableKeyLoader() {
+  std::vector<
+      base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>>
+      callbacks;
+  callbacks.swap(on_load_callbacks_);
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(
+        base::unexpected(ServiceError::kOperationCancelled));
+  }
+}
 
 void UnexportableKeyLoader::InvokeCallbackAfterKeyLoaded(
     base::OnceCallback<void(ServiceErrorOr<UnexportableSigningKeyId>)>

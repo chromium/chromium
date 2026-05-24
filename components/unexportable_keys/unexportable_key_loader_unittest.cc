@@ -205,4 +205,23 @@ TEST_F(UnexportableKeyLoaderTest, SignDataAfterLoading) {
   EXPECT_OK(sign_future.Get());
 }
 
+TEST_F(UnexportableKeyLoaderTest, DeletionWhileLoading) {
+  auto key_loader = UnexportableKeyLoader::CreateWithNewKey(
+      service(), kAcceptableAlgorithms, kTaskPriority);
+  EXPECT_EQ(key_loader->GetStateForTesting(),
+            UnexportableKeyLoader::State::kLoading);
+
+  base::test::TestFuture<ServiceErrorOr<UnexportableSigningKeyId>>
+      on_load_future;
+  key_loader->InvokeCallbackAfterKeyLoaded(on_load_future.GetCallback());
+  EXPECT_FALSE(on_load_future.IsReady());
+
+  key_loader.reset();
+  EXPECT_TRUE(on_load_future.IsReady());
+  EXPECT_THAT(on_load_future.Get(), ErrorIs(ServiceError::kOperationCancelled));
+
+  // Run pending background tasks to avoid dangling references on test teardown.
+  RunBackgroundTasks();
+}
+
 }  // namespace unexportable_keys

@@ -402,3 +402,76 @@ TEST_F(TokenBindingHelperTest,
   ASSERT_TRUE(future_2.Get().has_value());
   EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
 }
+
+TEST_F(TokenBindingHelperTest,
+       SetLastBindingKeyToEmptyClearsRegistrationTokenHelper) {
+  CoreAccountId account_id_1 =
+      CoreAccountId::FromGaiaId(GaiaId("test_gaia_id_1"));
+  CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("test_gaia_id_2"));
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewSigningKey());
+  helper().SetBindingKey(account_id_1, wrapped_key);
+  helper().SetBindingKey(account_id_2, wrapped_key);
+
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future_1;
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future_2;
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future_3;
+
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_1",
+                                               future_1.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_TRUE(future_1.Get().has_value());
+  EXPECT_EQ(future_1.Get()->wrapped_binding_key, wrapped_key);
+
+  // Setting the second-to-last key to empty should not clear the helper or
+  // change key selection.
+  helper().SetBindingKey(account_id_1, {});
+
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_2",
+                                               future_2.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_TRUE(future_2.Get().has_value());
+  EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
+
+  // Setting the last key to empty should clear the helper.
+  helper().SetBindingKey(account_id_2, {});
+
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_3",
+                                               future_3.GetCallback());
+  RunBackgroundTasks();
+  ASSERT_TRUE(future_3.Get().has_value());
+  EXPECT_NE(future_2.Get()->binding_key_id, future_3.Get()->binding_key_id);
+}
+
+TEST_F(TokenBindingHelperTest,
+       SetBindingKeyToEmptyDoesNotClearRegistrationTokenHelper) {
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future_1;
+  base::test::TestFuture<
+      std::optional<signin::BindingKeyRegistrationTokenResult>>
+      future_2;
+
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_1",
+                                               future_1.GetCallback());
+
+  // Adding an unbound token (setting binding key to empty for an account that
+  // didn't have a binding key) should not clear the in-progress registration
+  // token helper.
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  helper().SetBindingKey(account_id, {});
+
+  helper().GenerateBindingKeyRegistrationToken("ES256", "auth_code_2",
+                                               future_2.GetCallback());
+  RunBackgroundTasks();
+
+  ASSERT_TRUE(future_1.Get().has_value());
+  ASSERT_TRUE(future_2.Get().has_value());
+  EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
+}

@@ -45,8 +45,13 @@ BindingKeyRegistrationTokenHelper::BindingKeyRegistrationTokenHelper(
     : unexportable_key_service_(unexportable_key_service),
       key_init_param_(std::move(key_init_param)) {}
 
-BindingKeyRegistrationTokenHelper::~BindingKeyRegistrationTokenHelper() =
-    default;
+BindingKeyRegistrationTokenHelper::~BindingKeyRegistrationTokenHelper() {
+  // Explicitly teardown `key_loader_` before `weak_ptr_factory_` gets
+  // destroyed.
+  // This ensures that active weak pointers remain valid when `key_loader_`
+  // signals cancellation, allowing completion callbacks to execute cleanly.
+  key_loader_.reset();
+}
 
 void BindingKeyRegistrationTokenHelper::GenerateForSessionBinding(
     std::string_view challenge,

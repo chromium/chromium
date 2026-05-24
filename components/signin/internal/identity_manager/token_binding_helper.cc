@@ -90,7 +90,17 @@ void TokenBindingHelper::SetBindingKey(
     base::span<const uint8_t> wrapped_binding_key) {
   if (wrapped_binding_key.empty()) {
     // No need in storing an empty key, just remove the entry if any.
-    binding_keys_.erase(account_id);
+    auto it = binding_keys_.find(account_id);
+    if (it == binding_keys_.end()) {
+      return;
+    }
+
+    binding_keys_.erase(it);
+    if (binding_keys_.empty()) {
+      // Make sure that any new binding key registration starts using a new key
+      // after the latest binding key is removed.
+      registration_token_helper_.reset();
+    }
     return;
   }
 
@@ -105,6 +115,7 @@ bool TokenBindingHelper::HasBindingKey(const CoreAccountId& account_id) const {
 
 void TokenBindingHelper::ClearAllKeys() {
   binding_keys_.clear();
+  registration_token_helper_.reset();
 }
 
 void TokenBindingHelper::GenerateBindingKeyRegistrationToken(
