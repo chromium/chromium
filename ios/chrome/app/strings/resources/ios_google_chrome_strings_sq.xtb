@@ -69,7 +69,7 @@ Gjëra për të pasur parasysh:
 <translation id="2342919707875585281">Chrome e ndan vendndodhjen tënde me sajtet që lejon ti.</translation>
 <translation id="2347208864470321755">Kur ky funksion është i aktivizuar, Chrome do të ofrojë që të përkthejë faqet e shkruara në gjuhë të tjera duke përdorur "Përkthe me Google". <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2423077901494354337">Tani do të përfitosh më shumë nga Chrome në pajisjen tënde.</translation>
-<translation id="2427791862912929107">Chrome ka funksione që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt je në gjendje të ngarkosh faqet e uebit.
+<translation id="2427791862912929107">Chrome ka veçori që të ndihmojnë të menaxhosh të dhënat e internetit dhe sa shpejt je në gjendje të ngarkosh faqet e uebit.
 <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="2464852008153767546">{THRESHOLD,plural, =1{Kjo ndodh kur Chrome nuk përdoret për {THRESHOLD} minutë. Kjo mund të përfshijë historikun dhe plotësimin automatik.}other{Kjo ndodh kur Chrome nuk përdoret për {THRESHOLD} minuta. Kjo mund të përfshijë historikun dhe plotësimin automatik.}}</translation>
 <translation id="2531823184391665648">Hape Chrome më shpejt kur të jesh gati të shfletosh në iPad.</translation>
@@ -174,7 +174,7 @@ Faqeshënuesit e rinj nuk mund të ruhen në llogarinë tënde derisa të fshish
 <translation id="5172049865623113551">Hap Chrome menjëherë kur je në iPhone</translation>
 <translation id="5179095426828744632">Qasu më shpejt në Chrome nga stacioni</translation>
 <translation id="5184329579814168207">Hape në Chrome</translation>
-<translation id="5190139289262548459">Organizata jote, <ph name="DOMAIN" />, menaxhon llogarinë ku je identifikuar dhe se si përdoret Chrome.</translation>
+<translation id="5190139289262548459">Organizata jote, <ph name="DOMAIN" />, menaxhon llogarinë ku je i identifikuar dhe se si përdoret Chrome.</translation>
 <translation id="5209238444239954363">Chrome nuk mund të kontrollonte për përditësime. Provo përsëri më vonë.</translation>
 <translation id="5305440589062022504">Hap "Menaxherin e fjalëkalimeve" në Chrome</translation>
 <translation id="5310957470610282541">Disa nga të dhënat e tua të Chrome nuk janë ruajtur ende në "Llogarinë tënde të Google".
@@ -226,14 +226,14 @@ Provo të presësh për disa minuta para se të ndërrosh llogaritë. Nëse i nd
 <translation id="6247557882553405851">Menaxheri i fjalëkalimeve i Google</translation>
 <translation id="6272822675004864999">Për të marrë njoftime nga Chrome, aktivizo njoftimet në "Cilësimet" e iOS.</translation>
 <translation id="6299253454218177732">Këshillë për Chrome: Merr fjalëkalimet e tua</translation>
-<translation id="630693926528731525">Fjalëkalimi yt nuk është ndarë. Kontrollo lidhjen e internetit dhe sigurohu që të jesh identifikuar në Chrome. Më pas provo përsëri.</translation>
+<translation id="630693926528731525">Fjalëkalimi yt nuk është ndarë. Kontrollo lidhjen e internetit dhe sigurohu që të jesh i identifikuar në Chrome. Më pas provo përsëri.</translation>
 <translation id="6348855835728304880">Qasu te fjalëkalimet e tua të Chrome dhe më shumë nëpër aplikacione të tjera në këtë pajisje.</translation>
 <translation id="6373751563207403289">"Kontrolli i sigurisë" të mban të sigurt nga nxjerrjet e paautorizuara të të dhënave, uebsajtet e pasigurta etj. Merr sinjalizime për çdo problem të privatësisë ose sigurisë që Chrome zbulon për ty.</translation>
 <translation id="6389317667633680932">Eksploro veçori të reja që të ndihmojnë të përfitosh sa më shumë nga Chrome.</translation>
 <translation id="6412673304250309937">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome. Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd, ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë po ashtu "Shfletimit të sigurt" URL-të, duke përfshirë pjesë të përmbajtjes së faqes.</translation>
 <translation id="6427126399757991875">Organizata jote po konfiguron Chrome...</translation>
 <translation id="6481963882741794338">Lidh Chrome dhe shërbimet e tjera të Google për personalizimin dhe qëllime të tjera</translation>
-<translation id="6484712497741564393">Identifikuar si <ph name="EMAIL" />.
+<translation id="6484712497741564393">I identifikuar si <ph name="EMAIL" />.
 
 Të dhënat e tua janë të enkriptuara me frazën tënde të kalimit. Fute atë për të përdorur dhe ruajtur të dhënat e Chrome në "Llogarinë tënde të Google".</translation>
 <translation id="6511034852811155835">Merre Chrome me vete</translation>

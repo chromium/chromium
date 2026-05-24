@@ -186,7 +186,7 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="8747048596626351634">Seanca u ndërpre aksidentalisht ose nisja e saj dështoi. Nëse ~/.chrome-remote-desktop-session ekziston në kompjuterin në distancë, sigurohu që të nisë një proces të gjatë në plan të parë të tillë si mjedis desktopi ose menaxher dritaresh.</translation>
 <translation id="8804164990146287819">Politika e privatësisë</translation>
 <translation id="8906511416443321782">Nevojitet qasja në mikrofon për të regjistruar audion dhe për ta transmetuar atë te klienti i "Desktopit në distancë të Chrome"</translation>
-<translation id="9111855907838866522">Je lidhur me pajisjen tënde në largësi. Për të hapur menynë, trokit tek ekrani me katër gishta.</translation>
+<translation id="9111855907838866522">Je i lidhur me pajisjen tënde në largësi. Për të hapur menynë, trokit tek ekrani me katër gishta.</translation>
 <translation id="9126115402994542723">Mos kërko më për kod PIN kur lidhesh me këtë strehues nga kjo pajisje.</translation>
 <translation id="916856682307586697">Nis XSession të parazgjedhur</translation>
 <translation id="9187628920394877737">Jepi autorizim "Regjistrimit të ekranit" në <ph name="PRODUCT_NAME" /></translation>
