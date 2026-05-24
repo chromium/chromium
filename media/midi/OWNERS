@@ -1,6 +1,8 @@
 # Following reviewers should be able to review all code under //media/midi.
 # But it would be a good idea to involve {yukawa,agoode}@chromium.org if
 # they are the original author of files you are touching.
+hongchan@chromium.org
+mjwilson@chromium.org
 toyoshim@chromium.org
 
 per-file *.mojom=set noparent

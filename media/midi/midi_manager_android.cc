@@ -76,15 +76,21 @@ void MidiManagerAndroid::DispatchSendMidiData(MidiManagerClient* client,
                                               uint32_t port_index,
                                               const std::vector<uint8_t>& data,
                                               base::TimeTicks timestamp) {
-  if (port_index >= all_output_ports_.size()) {
-    // |port_index| is provided by a renderer so we can't believe that it is
-    // in the valid range.
-    return;
+  MidiOutputPortAndroid* port = nullptr;
+  {
+    base::AutoLock auto_lock(lock_);
+    if (port_index >= all_output_ports_.size()) {
+      // |port_index| is provided by a renderer so we can't believe that it is
+      // in the valid range.
+      return;
+    }
+    port = all_output_ports_[port_index];
   }
+
   if (GetOutputPortState(port_index) == PortState::CONNECTED) {
     // We treat send call as implicit open.
     // TODO(yhirano): Implement explicit open operation from the renderer.
-    if (all_output_ports_[port_index]->Open()) {
+    if (port->Open()) {
       SetOutputPortState(port_index, PortState::OPENED);
     } else {
       // We cannot open the port. It's useless to send data to such a port.
@@ -99,7 +105,7 @@ void MidiManagerAndroid::DispatchSendMidiData(MidiManagerClient* client,
   service()->task_service()->PostBoundDelayedTask(
       TaskService::kDefaultRunnerId,
       base::BindOnce(&MidiOutputPortAndroid::Send,
-                     base::Unretained(all_output_ports_[port_index]), data),
+                     base::Unretained(port), data),
       delay);
   service()->task_service()->PostBoundDelayedTask(
       TaskService::kDefaultRunnerId,
@@ -111,9 +117,14 @@ void MidiManagerAndroid::DispatchSendMidiData(MidiManagerClient* client,
 void MidiManagerAndroid::OnReceivedData(MidiInputPortAndroid* port,
                                         base::span<const uint8_t> data,
                                         base::TimeTicks timestamp) {
-  const auto i = input_port_to_index_.find(port);
-  DCHECK(input_port_to_index_.end() != i);
-  ReceiveMidiData(i->second, data, timestamp);
+  size_t index = 0;
+  {
+    base::AutoLock auto_lock(lock_);
+    const auto i = input_port_to_index_.find(port);
+    DCHECK(input_port_to_index_.end() != i);
+    index = i->second;
+  }
+  ReceiveMidiData(index, data, timestamp);
 }
 
 void MidiManagerAndroid::OnInitialized(JNIEnv* env,
@@ -141,6 +152,7 @@ void MidiManagerAndroid::OnAttached(JNIEnv* env,
 
 void MidiManagerAndroid::OnDetached(JNIEnv* env,
                                     const JavaRef<jobject>& raw_device) {
+  base::AutoLock auto_lock(lock_);
   for (auto& device : devices_) {
     if (device->HasRawDevice(env, raw_device)) {
       for (auto& port : device->input_ports()) {
@@ -160,6 +172,7 @@ void MidiManagerAndroid::OnDetached(JNIEnv* env,
 }
 
 void MidiManagerAndroid::AddDevice(std::unique_ptr<MidiDeviceAndroid> device) {
+  base::AutoLock auto_lock(lock_);
   for (auto& port : device->input_ports()) {
     // We implicitly open input ports here, because there are no signal
     // from the renderer when to open.
