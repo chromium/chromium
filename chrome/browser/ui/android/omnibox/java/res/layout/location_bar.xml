@@ -25,6 +25,7 @@ small devices.
         android:layout="@layout/optional_button_layout"
         android:layout_height="match_parent"
         android:layout_width="52dp"
+        android:layout_marginEnd="4dp"
         android:visibility="gone" />
 
     <include layout="@layout/url_action_container"/>

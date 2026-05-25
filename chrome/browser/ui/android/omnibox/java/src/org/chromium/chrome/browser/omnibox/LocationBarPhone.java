@@ -36,6 +36,7 @@ class LocationBarPhone extends LocationBarLayout {
     private final int mCenteringSpacePx;
     private final int mUrlCenteringSafetyMarginPx;
     private final int mMinUrlWidthPx;
+    private final int mNonCenteredUrlBarEndPaddingPx;
     private LocationBarDataProvider.@Nullable Observer mUrlObserver;
 
     private @FuseboxState int mFuseboxState = FuseboxState.DISABLED;
@@ -65,6 +66,7 @@ class LocationBarPhone extends LocationBarLayout {
         mUrlCenteringSafetyMarginPx =
                 res.getDimensionPixelSize(R.dimen.location_bar_url_centering_safety_margin);
         mMinUrlWidthPx = res.getDimensionPixelSize(R.dimen.location_bar_min_url_width);
+        mNonCenteredUrlBarEndPaddingPx = res.getDimensionPixelSize(R.dimen.url_bar_end_padding);
     }
 
     @Override
@@ -205,6 +207,13 @@ class LocationBarPhone extends LocationBarLayout {
             // Break the constraint from back button to status view to prevent the back button
             // from moving when the centered clump shifts due to width changes.
             backButtonParams.endToStart = ConstraintLayout.LayoutParams.UNSET;
+
+            // Remove end padding to let text extend to the edge of the view.
+            mUrlBar.setPaddingRelative(
+                    mUrlBar.getPaddingStart(),
+                    mUrlBar.getPaddingTop(),
+                    0,
+                    mUrlBar.getPaddingBottom());
         } else {
             // Restore original constraints to fill space between barriers.
             statusParams.startToStart = ConstraintLayout.LayoutParams.UNSET;
@@ -221,6 +230,13 @@ class LocationBarPhone extends LocationBarLayout {
 
             // Restore back button link to status view.
             backButtonParams.endToStart = R.id.location_bar_status;
+
+            // Restore original end padding.
+            mUrlBar.setPaddingRelative(
+                    mUrlBar.getPaddingStart(),
+                    mUrlBar.getPaddingTop(),
+                    mNonCenteredUrlBarEndPaddingPx,
+                    mUrlBar.getPaddingBottom());
         }
 
         mLocationBarStatusView.setLayoutParams(statusParams);

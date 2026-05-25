@@ -16,7 +16,7 @@ found in the LICENSE file.
     app:tint="@color/default_icon_color_tint_list"
     android:padding="0dp"
     android:background="@null"
-    android:layout_marginStart="8dp"
+    android:layout_marginStart="12dp"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toStartOf="@id/location_bar_status"
     app:layout_constraintTop_toTopOf="parent"
