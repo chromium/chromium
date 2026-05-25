@@ -24766,6 +24766,31 @@
             ]
         }
     ],
+    "V8SqrtAllocationLimits": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "sqrt_allocation_limits_factor": "50",
+                        "sqrt_allocation_limits_minimal_factor": "20"
+                    },
+                    "enable_features": [
+                        "V8Flag_sqrt_allocation_limits"
+                    ],
+                    "disable_benchmarking": true
+                }
+            ]
+        }
+    ],
     "V8Turbolev": [
         {
             "platforms": [
