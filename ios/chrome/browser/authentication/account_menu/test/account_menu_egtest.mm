@@ -4,6 +4,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/authentication/account_menu/public/account_menu_constants.h"
@@ -306,6 +307,11 @@ id<GREYMatcher> identityDiscMatcher() {
 
 // Tests that the add account button opens the add account view.
 - (void)testAddAccount {
+  // TODO(crbug.com/516431613): Re-enable this flaky test on iOS below 26.
+  if (!base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS below 26.");
+  }
+
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   [self selectIdentityDisc];
   for (NSString* cancelButtonId in
@@ -333,6 +339,11 @@ id<GREYMatcher> identityDiscMatcher() {
 
 // Tests the enter passphrase button.
 - (void)testAddPassphrase {
+  // TODO(crbug.com/516431613): Re-enable this flaky test on iOS below 26.
+  if (!base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS below 26.");
+  }
+
   [SigninEarlGrey signinWithFakeIdentity:kPrimaryIdentity];
   // Encrypt synced data with a passphrase to enable passphrase encryption for
   // the signed in account.
