@@ -13,6 +13,7 @@ android_resources("java_resources") {
     "java/res/layout/bottom_bar_list_menu_template.xml",
   ]
   deps = [
+    "//chrome/browser/ui/android/bars_common:java_resources",
     "//chrome/browser/ui/android/toolbar:java_resources",
     "//components/browser_ui/styles/android:java_resources",
     "//components/browser_ui/widget/android:java_resources",

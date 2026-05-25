@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.bottombar;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
@@ -15,6 +17,7 @@ import android.widget.ImageView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.actions.ActionId;
 import org.chromium.chrome.browser.ui.actions.DelegatingActionView;
 
 /**
@@ -44,6 +47,13 @@ public class BottomBarButtonContainer extends FrameLayout implements DelegatingA
     public View getTargetView() {
         assert mTargetView != null : "Target view wasn't set.";
         return mTargetView;
+    }
+
+    /*package*/ void inflateStub(@ActionId int actionId) {
+        inflateStub();
+        if (actionId == ActionId.APP_MENU) {
+            assumeNonNull(mTargetView).setTag(R.id.is_bottom_bar_menu_anchor, true);
+        }
     }
 
     /** Inflates the child ViewStub. */

@@ -372,13 +372,14 @@ class AppMenu implements OnKeyListener {
         // Make sure that the popup window will be closed when touch outside of it.
         popup.setOutsideTouchable(true);
 
+        boolean isFromBottomBar = isAnchorFromBottomBar(anchorView);
         if (!isByPermanentButton) {
             popup.setAnimationStyle(
                     isMenuIconAtStart
                             ? R.style.StartIconMenuAnim
-                            : (controlsPosition == ControlsPosition.TOP
-                                    ? R.style.EndIconMenuAnim
-                                    : R.style.EndIconMenuAnimBottom));
+                            : (isFromBottomBar || controlsPosition == ControlsPosition.BOTTOM
+                                    ? R.style.EndIconMenuAnimBottom
+                                    : R.style.EndIconMenuAnim));
         }
 
         // Turn off window animations for low end devices.
@@ -474,18 +475,21 @@ class AppMenu implements OnKeyListener {
                         anchorView,
                         anchorViewOffset);
 
-        popup.setHeight(calculateMenuHeight());
+        int popupHeight = calculateMenuHeight();
+        popup.setHeight(popupHeight);
 
         int[] popupPosition =
                 getPopupPosition(
                         mTempLocation,
                         mIsByPermanentButton,
+                        isFromBottomBar,
                         mNegativeSoftwareVerticalOffset,
                         mCurrentScreenRotation,
                         visibleDisplayFrame,
                         padding,
                         anchorView,
                         popupWidth,
+                        popupHeight,
                         anchorView.getRootView().getLayoutDirection());
         popup.setContentView(contentView);
 
@@ -609,12 +613,14 @@ class AppMenu implements OnKeyListener {
     static int[] getPopupPosition(
             int[] tempLocation,
             boolean isByPermanentButton,
+            boolean isFromBottomBar,
             int negativeSoftwareVerticalOffset,
             int screenRotation,
             Rect appRect,
             Rect padding,
             View anchorView,
             int popupWidth,
+            int popupHeight,
             int viewLayoutDirection) {
         anchorView.getLocationInWindow(tempLocation);
         int anchorViewX = tempLocation[0];
@@ -643,17 +649,32 @@ class AppMenu implements OnKeyListener {
             // The menu is displayed above the anchored view, so shift the menu up by the bottom
             // padding of the background.
             offsets[1] = -padding.bottom;
+            int xPos = anchorViewX + offsets[0];
+            int yPos = anchorViewY + offsets[1];
+            return new int[] {xPos, yPos};
+        } else if (isFromBottomBar) {
+            int margin =
+                    anchorView
+                            .getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.bottom_bar_app_menu_lateral_margin);
+            // Adjust xPos by lateral padding so the visible menu boundary aligns with the margin.
+            int xPos =
+                    (viewLayoutDirection == View.LAYOUT_DIRECTION_RTL)
+                            ? appRect.left + margin - padding.left
+                            : appRect.right - margin - popupWidth + padding.right;
+            // Shift yPos down by bottom padding to align the visible menu with the anchor view.
+            int yPos = anchorViewY - popupHeight + padding.bottom;
+            return new int[] {xPos, yPos};
         } else {
             offsets[1] = -negativeSoftwareVerticalOffset;
             if (viewLayoutDirection != View.LAYOUT_DIRECTION_RTL) {
                 offsets[0] = anchorView.getWidth() - popupWidth;
             }
+            int xPos = anchorViewX + offsets[0];
+            int yPos = anchorViewY + offsets[1];
+            return new int[] {xPos, yPos};
         }
-
-        int xPos = anchorViewX + offsets[0];
-        int yPos = anchorViewY + offsets[1];
-        int[] position = {xPos, yPos};
-        return position;
     }
 
     /** Marks whether an item was selected prior to dismissal. */
@@ -960,5 +981,15 @@ class AppMenu implements OnKeyListener {
             // http://crbug.com/41379062 & https://crbug.com/40706027.
             return;
         }
+    }
+
+    // TODO(crbug.com/516522346): Pass this value down in the call stack.
+    private static boolean isAnchorFromBottomBar(@Nullable View anchorView) {
+        if (anchorView != null
+                && anchorView.getTag(R.id.is_bottom_bar_menu_anchor)
+                        instanceof Boolean isBottomBarMenuAnchor) {
+            return isBottomBarMenuAnchor;
+        }
+        return false;
     }
 }
