@@ -89,4 +89,22 @@ public class NewTabAnimationUtilsUnitTest {
         assertEquals(expectedInitialRect, initialRect);
         assertEquals(expectedFinalRect, finalRect);
     }
+
+    @Test
+    public void testUpdateRects_bottomCenterAligned() {
+        Rect initialRect = new Rect();
+        Rect finalRect = new Rect(-30, -10, 40, 30);
+
+        NewTabAnimationUtils.updateRects(
+                NewTabAnimationUtils.RectStart.BOTTOM_CENTER,
+                /* isRtl= */ false,
+                initialRect,
+                finalRect);
+
+        Rect expectedInitialRect = new Rect(-2, 22, 12, 30);
+        Rect expectedFinalRect = new Rect(-33, -14, 44, 30);
+
+        assertEquals(expectedInitialRect, initialRect);
+        assertEquals(expectedFinalRect, finalRect);
+    }
 }

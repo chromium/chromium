@@ -65,6 +65,9 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.ToolbarPositionController;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.browser.ui.android.bars_common.TabSwitcherButtonView;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.TopInsetProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
@@ -466,6 +469,10 @@ public class NewTabAnimationLayout extends Layout {
             return RectStart.CENTER;
         }
 
+        if (BottomBarConfigUtils.isBottomBarEnabled(getContext())) {
+            return RectStart.BOTTOM_CENTER;
+        }
+
         boolean oldTabHasTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(oldTab);
         boolean newTabHasTopToolbar = ToolbarPositionController.shouldShowToolbarOnTop(newTab);
 
@@ -478,6 +485,50 @@ public class NewTabAnimationLayout extends Layout {
         } else {
             return RectStart.BOTTOM_TOOLBAR;
         }
+    }
+
+    private int getBottomControlsHeightForTab(
+            @Nullable Tab tab, @Nullable EdgeToEdgeController edgeToEdgeController) {
+        if (tab == null || tab.getUrl() == null) {
+            return 0;
+        }
+
+        boolean isNtp = UrlUtilities.isNtpUrl(tab.getUrl()) && !tab.isIncognitoBranded();
+
+        int height = 0;
+        boolean hasBottomBar = false;
+        if (BottomBarConfigUtils.isBottomBarEnabled(getContext())) {
+            // On NTP, bottom bar is only disabled if shouldDisableOnNtp() is true.
+            boolean disabledOnNtp = isNtp && BottomBarConfigUtils.shouldDisableOnNtp();
+            if (!disabledOnNtp) {
+                height +=
+                        getContext()
+                                .getResources()
+                                .getDimensionPixelSize(R.dimen.bottom_bar_height);
+                hasBottomBar = true;
+            }
+        }
+        // Bottom toolbar is always relocated to the top on NTP.
+        boolean hasBottomToolbar = false;
+        if (!isNtp && !ToolbarPositionController.shouldShowToolbarOnTop(tab)) {
+            height +=
+                    getContext()
+                            .getResources()
+                            .getDimensionPixelSize(R.dimen.control_container_height);
+            hasBottomToolbar = true;
+        }
+
+        // Edge-to-Edge Bottom Chin Height
+        if (edgeToEdgeController != null && edgeToEdgeController.isDrawingToEdge()) {
+            boolean isTabOptedIn = EdgeToEdgeUtils.isPageOptedIntoEdgeToEdge(tab);
+            boolean othersAreVisible = hasBottomBar || hasBottomToolbar;
+            // Stacker shows the chin if the page is not opted in, OR if other layers are visible
+            // (VISIBLE_IF_OTHERS_VISIBLE resolves to true when othersAreVisible is true).
+            if (!isTabOptedIn || othersAreVisible) {
+                height += edgeToEdgeController.getSystemBottomInsetPx();
+            }
+        }
+        return height;
     }
 
     /**
@@ -552,6 +603,15 @@ public class NewTabAnimationLayout extends Layout {
         mAnimationHostView.getGlobalVisibleRect(hostViewRect);
         @RectStart int rectStart = getForegroundRectStart(oldTab, newTab);
 
+        EdgeToEdgeController edgeToEdgeController =
+                mToolbarManager.getEdgeToEdgeControllerSupplier() != null
+                        ? mToolbarManager.getEdgeToEdgeControllerSupplier().get()
+                        : null;
+
+        int oldTabHeight = getBottomControlsHeightForTab(oldTab, edgeToEdgeController);
+        int newTabHeight = getBottomControlsHeightForTab(newTab, edgeToEdgeController);
+        int heightDifference = oldTabHeight - newTabHeight;
+
         if (rectStart != RectStart.CENTER) {
             RectF compositorViewportRectf = new RectF();
             mCompositorViewHolder.getVisibleViewport(compositorViewportRectf);
@@ -563,13 +623,19 @@ public class NewTabAnimationLayout extends Layout {
             if (rectStart == RectStart.TOP || rectStart == RectStart.TOP_TOOLBAR) {
                 startRadii[0] = 0;
                 mCompositorViewHolder.getWindowViewport(compositorViewportRectf);
-                finalRect.bottom = Math.round(compositorViewportRectf.bottom);
+                finalRect.bottom = Math.round(compositorViewportRectf.bottom) - newTabHeight;
                 finalRect.top = rectStart == RectStart.TOP ? -1 : finalRect.top - 1;
             } else {
                 startRadii[2] = 0;
+                if (rectStart == RectStart.BOTTOM_CENTER || rectStart == RectStart.BOTTOM_TOOLBAR) {
+                    startRadii[3] = 0;
+                }
+                if (rectStart == RectStart.BOTTOM_CENTER || rectStart == RectStart.BOTTOM_TOOLBAR) {
+                    finalRect.bottom += heightDifference;
+                }
                 finalRect.bottom =
                         rectStart == RectStart.BOTTOM
-                                ? hostViewRect.bottom + 1
+                                ? hostViewRect.bottom + 1 - newTabHeight
                                 : finalRect.bottom + 1;
 
                 // 0 instead of -1 since the rect is not expanding from this corner.
@@ -607,6 +673,12 @@ public class NewTabAnimationLayout extends Layout {
         }
 
         NewTabAnimationUtils.updateRects(rectStart, isRtl, initialRect, finalRect);
+
+        if (rectStart == RectStart.BOTTOM_CENTER
+                || rectStart == RectStart.BOTTOM_TOOLBAR
+                || rectStart == RectStart.BOTTOM) {
+            initialRect.offset(0, -heightDifference);
+        }
 
         float scaleFactor = (float) initialRect.width() / finalRect.width();
         int[] endRadii = new int[4];

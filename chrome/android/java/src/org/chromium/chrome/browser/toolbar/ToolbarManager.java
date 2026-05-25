@@ -3130,6 +3130,13 @@ public class ToolbarManager
         return mLocationBarModel.getPrimaryColor();
     }
 
+    /**
+     * @return The {@link EdgeToEdgeController} supplier.
+     */
+    public Supplier<EdgeToEdgeController> getEdgeToEdgeControllerSupplier() {
+        return mEdgeToEdgeControllerSupplier;
+    }
+
     /** Sets the visibility of the Toolbar shadow. */
     public void setToolbarShadowVisibility(int visibility) {
         if (mToolbarHairline != null) mToolbarHairline.setVisibility(visibility);
