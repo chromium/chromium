@@ -37,6 +37,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "v8/include/v8.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -47,6 +48,13 @@ namespace {
 
 class ProxyResolverV8TracingTest : public testing::Test {
  public:
+  static void SetUpTestSuite() {
+    // Set the flag to expose garbage collection. This must be done before V8
+    // is initialized.
+    static constexpr char kExposeGc[] = "--expose-gc";
+    v8::V8::SetFlagsFromString(kExposeGc);
+  }
+
   void TearDown() override {
     // Drain any pending messages, which may be left over from cancellation.
     // This way they get reliably run as part of the current test, rather than
@@ -150,21 +158,92 @@ class MockBindings {
   net::EventWaiter<Event> waiter_;
 };
 
-std::unique_ptr<ProxyResolverV8Tracing> CreateResolver(
+// Helper function to create and initialize a ProxyResolverV8Tracing instance
+// directly from net::PacFileData without requiring an external file.
+std::unique_ptr<ProxyResolverV8Tracing> CreateResolverWithScriptData(
     std::unique_ptr<ProxyResolverV8Tracing::Bindings> bindings,
-    const char* filename) {
+    scoped_refptr<net::PacFileData> script_data) {
   std::unique_ptr<ProxyResolverV8Tracing> resolver;
   std::unique_ptr<ProxyResolverV8TracingFactory> factory(
       ProxyResolverV8TracingFactory::Create());
   net::TestCompletionCallback callback;
   std::unique_ptr<net::ProxyResolverFactory::Request> request;
-  factory->CreateProxyResolverV8Tracing(LoadScriptData(filename),
-                                        std::move(bindings), &resolver,
-                                        callback.callback(), &request);
+  factory->CreateProxyResolverV8Tracing(script_data, std::move(bindings),
+                                        &resolver, callback.callback(),
+                                        &request);
   EXPECT_THAT(callback.WaitForResult(), IsOk());
   EXPECT_TRUE(resolver);
   return resolver;
 }
+
+std::unique_ptr<ProxyResolverV8Tracing> CreateResolver(
+    std::unique_ptr<ProxyResolverV8Tracing::Bindings> bindings,
+    const char* filename) {
+  return CreateResolverWithScriptData(std::move(bindings),
+                                      LoadScriptData(filename));
+}
+
+// A mock ProxyHostResolver that allows intercepting and deferring the
+// completion of a specific DNS resolution request ("second"), allowing tests to
+// coordinate the exact timing of worker thread unparking.
+class DeferredProxyHostResolver : public ProxyHostResolver {
+ public:
+  DeferredProxyHostResolver() = default;
+  ~DeferredProxyHostResolver() override = default;
+
+  class RequestImpl : public Request {
+   public:
+    RequestImpl(DeferredProxyHostResolver* resolver,
+                const std::string& hostname)
+        : resolver_(resolver),
+          hostname_(hostname),
+          results_({net::IPAddress(127, 0, 0, 1)}) {}
+    ~RequestImpl() override = default;
+
+    int Start(net::CompletionOnceCallback callback) override {
+      if (hostname_ == "second") {
+        resolver_->second_callback_ = std::move(callback);
+        if (resolver_->on_second_request_) {
+          std::move(resolver_->on_second_request_).Run();
+        }
+        return net::ERR_IO_PENDING;
+      }
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), net::OK));
+      return net::ERR_IO_PENDING;
+    }
+
+    const std::vector<net::IPAddress>& GetResults() const override {
+      return results_;
+    }
+
+   private:
+    raw_ptr<DeferredProxyHostResolver> resolver_;
+    std::string hostname_;
+    std::vector<net::IPAddress> results_;
+  };
+
+  std::unique_ptr<Request> CreateRequest(
+      const std::string& hostname,
+      net::ProxyResolveDnsOperation operation,
+      const net::NetworkAnonymizationKey& network_anonymization_key) override {
+    return std::make_unique<RequestImpl>(this, hostname);
+  }
+
+  void ResolveSecond() {
+    if (second_callback_) {
+      std::move(second_callback_).Run(net::OK);
+    }
+  }
+
+  void SetOnSecondRequest(base::OnceClosure callback) {
+    on_second_request_ = std::move(callback);
+  }
+
+ private:
+  net::CompletionOnceCallback second_callback_;
+  base::OnceClosure on_second_request_;
+};
 
 TEST_F(ProxyResolverV8TracingTest, Simple) {
   MockProxyHostResolver host_resolver;
@@ -1116,6 +1195,81 @@ TEST_F(ProxyResolverV8TracingTest, MyIPAddressWithNetworkAnonymizationKey) {
   // myIpAddress() and myIpAddressEx(), and using a hardcoded ".test:99" suffix.
   EXPECT_EQ("[1.2.3.4-5.6.7.8.test:99]",
             proxy_info.proxy_chain().ToDebugString());
+}
+
+// Verifies that FinalizationRegistry cleanup tasks posted from one resolver
+// do not execute in the context of another resolver after the original context
+// has been disposed.
+TEST_F(ProxyResolverV8TracingTest, FinalizationRegistryCleanup) {
+  DeferredProxyHostResolver host_resolver;
+  MockBindings mock_bindings_b(&host_resolver);
+  MockBindings mock_bindings_a(&host_resolver);
+
+  base::RunLoop run_loop_second;
+  host_resolver.SetOnSecondRequest(run_loop_second.QuitClosure());
+
+  // Step 1: Create resolver B. Its worker thread becomes the shared gin
+  // IsolateHolder's foreground task runner.
+  scoped_refptr<net::PacFileData> script_b = net::PacFileData::FromUTF8(
+      "function FindProxyForURL(url, host) {\n"
+      "  dnsResolve('first');\n"
+      "  dnsResolve('second');\n"
+      "  return 'DIRECT';\n"
+      "}\n");
+  std::unique_ptr<ProxyResolverV8Tracing> resolver_b =
+      CreateResolverWithScriptData(mock_bindings_b.CreateBindings(), script_b);
+
+  // Step 2: Start a PAC request on resolver B. The script initiates two DNS
+  // resolves. The second resolve is deferred by DeferredProxyHostResolver,
+  // causing resolver B's worker thread to park while unlocked.
+  net::TestCompletionCallback callback_b;
+  net::ProxyInfo proxy_info_b;
+  std::unique_ptr<net::ProxyResolver::Request> req_b;
+  resolver_b->GetProxyForURL(
+      GURL("http://foo/"), net::NetworkAnonymizationKey(), &proxy_info_b,
+      callback_b.callback(), &req_b, mock_bindings_b.CreateBindings());
+
+  run_loop_second.Run();
+
+  // Step 3: Create resolver A. The PAC script registers a target object with
+  // FinalizationRegistry, severs its reference (globalTarget = null), and uses
+  // a deeply recursive function (deepClobber) to clobber any residual stack
+  // frames or temporary registers in the V8 interpreter. This ensures the
+  // target object becomes completely unreachable before forcing garbage
+  // collection. The resulting cleanup task is posted to the shared foreground
+  // task runner (resolver B's worker thread queue, behind the parked DNS
+  // resolve).
+  scoped_refptr<net::PacFileData> script_a = net::PacFileData::FromUTF8(
+      "let registry = new FinalizationRegistry((val) => {\n"
+      "  alert(val);\n"
+      "});\n"
+      "let globalTarget = {};\n"
+      "registry.register(globalTarget, 'foo');\n"
+      "globalTarget = null;\n"
+      "function deepClobber(n) {\n"
+      "  if (n <= 0) return 0;\n"
+      "  let a = 1, b = 2, c = 3, d = 4, e = 5;\n"
+      "  return a + b + c + d + e + deepClobber(n - 1);\n"
+      "}\n"
+      "deepClobber(100);\n"
+      "gc();\n"
+      "function FindProxyForURL(url, host) {\n"
+      "  return 'DIRECT';\n"
+      "}\n");
+  std::unique_ptr<ProxyResolverV8Tracing> resolver_a =
+      CreateResolverWithScriptData(mock_bindings_a.CreateBindings(), script_a);
+
+  // Step 4: Destroy resolver A. This disposes of its C++ Context.
+  resolver_a.reset();
+
+  // Step 5: Complete the deferred DNS resolve for resolver B. This unparks
+  // resolver B's worker thread, allowing it to drain its task queue and execute
+  // the pending FinalizationRegistry cleanup task.
+  host_resolver.ResolveSecond();
+
+  // Step 6: Wait for resolver B's request to complete. Verify that the cleanup
+  // task does not attempt to access the disposed context.
+  EXPECT_THAT(callback_b.WaitForResult(), IsOk());
 }
 
 }  // namespace
