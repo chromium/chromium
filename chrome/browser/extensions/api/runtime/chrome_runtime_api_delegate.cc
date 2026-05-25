@@ -459,6 +459,10 @@ void ChromeRuntimeAPIDelegate::OpenOptionsPage(
         [](scoped_refptr<const Extension> extension,
            base::OnceCallback<void(bool)> complete_callback,
            BrowserWindowInterface* new_browser) {
+          if (!new_browser) {
+            std::move(complete_callback).Run(false);
+            return;
+          }
           std::move(complete_callback)
               .Run(extensions::ExtensionTabUtil::OpenOptionsPage(
                   extension.get(), new_browser));
