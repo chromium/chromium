@@ -107,6 +107,13 @@ def __filegroups(ctx):
         },
     }
 
+def _find_tsconfig(cmd, gen_dir, default_name):
+    for out in cmd.outputs:
+        base = path.base(out)
+        if base.startswith("tsconfig") and base.endswith(".json"):
+            return out
+    return path.join(gen_dir, default_name)
+
 def _ts_library(ctx, cmd):
     in_files = []
     deps = []
@@ -148,7 +155,7 @@ def _ts_library(ctx, cmd):
     tsconfig["files"] = [path.join(root_dir, f) for f in in_files]
     tsconfig["files"].extend(definitions)
     tsconfig["references"] = [{"path": dep} for dep in deps]
-    tsconfig_path = path.join(gen_dir, "tsconfig.json")
+    tsconfig_path = _find_tsconfig(cmd, gen_dir, "tsconfig.json")
     deps = tsc.scandeps(ctx, tsconfig_path, tsconfig)
     for m in path_mappings:
         _, _, pathname = m.partition("|")
@@ -181,7 +188,7 @@ def _ts_definitions(ctx, cmd):
     out_dir = path.rel(gen_dir, out_dir)
     gen_dir = ctx.fs.canonpath(gen_dir)
     tsconfig["files"] = [path.join(root_dir, f) for f in js_files]
-    tsconfig_path = path.join(gen_dir, "tsconfig.definitions.json")
+    tsconfig_path = _find_tsconfig(cmd, gen_dir, "tsconfig.definitions.json")
     deps = tsc.scandeps(ctx, tsconfig_path, tsconfig)
     print("_ts_definitions: tsconfig=%s, deps=%s" % (tsconfig, deps))
     ctx.actions.fix(inputs = cmd.inputs + deps)

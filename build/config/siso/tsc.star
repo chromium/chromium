@@ -1,4 +1,7 @@
 # -*- bazel-starlark -*-
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 load("@builtin//encoding.star", "json")
 load("@builtin//path.star", "path")
 load("@builtin//struct.star", "module")
@@ -14,13 +17,7 @@ def _paths(ctx, tsconfig_path, tsconfig, loaded):
     paths = [tsconfig_path]
     tsconfig_dir = path.dir(tsconfig_path)
     if "files" in tsconfig:
-        for file in tsconfig["files"]:
-            paths.append(path.join(tsconfig_dir, file))
-            if file.endswith(".js"):
-                # Add if d.ts version of the file exists.
-                file_dts = path.join(tsconfig_dir, file[:-2] + "d.ts")
-                if ctx.fs.exists(file_dts):
-                    paths.append(file_dts)
+        paths.extend([path.join(tsconfig_dir, file) for file in tsconfig["files"]])
     return paths
 
 def _scan_inputs(ctx, tsconfig_path, tsconfig, loaded, scanned):

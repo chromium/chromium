@@ -30,14 +30,11 @@ def __step_config(ctx, step_config):
         ],
     })
 
-    # TODO: b/308405411 - Enable remote-devtools-frontend-typescript by default.
-    remote_run = config.get(ctx, "googlechrome") and config.get(ctx, "remote-devtools-frontend-typescript")
     step_config["rules"].extend([
         {
             "name": "devtools-frontend/typescript/ts_library",
             "command_prefix": "python3 ../../third_party/devtools-frontend/src/third_party/typescript/ts_library.py",
-            "remote": remote_run,
-            "handler": "devtools_frontend/typescript_ts_library",
+            "remote": False,
             "output_local": True,
             "timeout": "2m",
         },
@@ -126,8 +123,6 @@ def _ts_library(ctx, cmd):
 devtools_frontend = module(
     "devtools_frontend",
     step_config = __step_config,
-    handlers = {
-        "devtools_frontend/typescript_ts_library": _ts_library,
-    },
+    handlers = {},
     filegroups = __filegroups,
 )
