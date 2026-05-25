@@ -115,12 +115,18 @@ void RunSavePackageScanningCallback(download::DownloadItem* item,
     std::move(data->callback).Run(allowed);
 }
 
-bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
+bool IsAffiliated(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS)
   const user_manager::User* user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   return user && user->IsAffiliated();
 #else
+  return enterprise_util::IsProfileAffiliated(profile);
+#endif
+}
+
+bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
+#if !BUILDFLAG(IS_CHROMEOS)
   // A browser managed through the device can send device info.
   if (!per_profile) {
     return true;
@@ -130,11 +136,10 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
   if (!policy::GetDMToken(profile).is_valid()) {
     return false;
   }
-
+#endif
   // A managed device can share its info with the profile if they are
   // affiliated.
-  return enterprise_util::IsProfileAffiliated(profile);
-#endif
+  return IsAffiliated(profile);
 }
 
 std::string GetProfileEmail(Profile* profile) {

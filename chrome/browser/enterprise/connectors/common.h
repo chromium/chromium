@@ -55,6 +55,10 @@ policy::BrowserPolicyConnector* GetBrowserPolicyConnector();
 // `allowed` if there is one.
 void RunSavePackageScanningCallback(download::DownloadItem* item, bool allowed);
 
+// Returns whether the profile is affiliated. This will only return true if both
+// the device and profile are managed, and if both share affiliation IDs.
+bool IsAffiliated(Profile* profile);
+
 // Returns whether device info should be reported for the profile.
 bool IncludeDeviceInfo(Profile* profile, bool per_profile);
 

@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/browser_management/management_identity.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
@@ -48,20 +49,13 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
-#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/common/constants.h"
 #else
-#include "chrome/browser/enterprise/util/affiliation.h"
 #include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
-#endif
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-#include "chrome/browser/enterprise/connectors/common.h"
 #endif
 
 namespace enterprise_connectors {
@@ -79,17 +73,6 @@ std::string GetClientId(Profile* profile) {
   client_id = policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
 #endif
   return client_id;
-}
-
-// TODO(alshawwa): Refactor IncludeDeviceInfo() to call this function.
-bool IsAffiliated(Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS)
-  const user_manager::User* user =
-      ash::ProfileHelper::Get()->GetUserByProfile(profile);
-  return user && user->IsAffiliated();
-#else
-  return enterprise_util::IsProfileAffiliated(profile);
-#endif
 }
 
 std::string GetDeviceClientId(Profile* profile) {
