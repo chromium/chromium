@@ -3313,7 +3313,6 @@ ci.builder(
             ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_14.chrome_public_test_apk.filter",
                     "--emulator-debug-tags=all,-qemud,-sensors",
                 ],
                 swarming = targets.swarming(
@@ -3674,7 +3673,6 @@ ci.builder(
             ),
             "chrome_public_test_apk": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_15.chrome_public_test_apk.filter",
                     "--emulator-debug-tags=all",
                 ],
                 swarming = targets.swarming(
