@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.components.browser_ui.settings.BlankUiTestActivitySettingsTestRule;
 import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -56,7 +57,8 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
 @Features.DisableFeatures({
     ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_V2,
-    ContentFeatureList.SMART_ZOOM
+    ContentFeatureList.SMART_ZOOM,
+    DomDistillerFeatures.READER_MODE_TOGGLE_LINKS,
 })
 public class AccessibilitySettingsPageZoomTest {
     @ParameterAnnotations.ClassParameter

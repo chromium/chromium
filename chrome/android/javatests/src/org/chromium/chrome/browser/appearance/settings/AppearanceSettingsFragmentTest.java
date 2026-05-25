@@ -33,11 +33,12 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -67,6 +68,8 @@ import java.util.Set;
 /** Tests for {@link AppearanceSettingsFragment}. */
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
+@EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR + ":show_bookmark_bar/true")
+@DisableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
 public class AppearanceSettingsFragmentTest {
 
     @Rule
@@ -115,12 +118,6 @@ public class AppearanceSettingsFragmentTest {
         doAnswer(runCallbackWithValueAtIndex(mBookmarkBarSettingSupplier::set, 1))
                 .when(mPrefService)
                 .setBoolean(eq(Pref.SHOW_BOOKMARK_BAR), anyBoolean());
-
-        // Explicitly override FeatureParam for consistency.
-        FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
-        overrides =
-                overrides.param(ChromeFeatureList.ANDROID_BOOKMARK_BAR, "show_bookmark_bar", true);
-        overrides.apply();
     }
 
     @AfterClass

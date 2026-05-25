@@ -688,6 +688,7 @@ public class FirstRunIntegrationTest {
     @Test
     @MediumTest
     @Restriction({DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @DisabledTest(message = "crbug.com/430594808")
     public void managedAccountContinueButtonClickShowsManagementNotice() {
         mSigninTestRule.addAccount(TestAccounts.MANAGED_ACCOUNT);
         initializePreferences(new FirstRunPagesTestCase().setShouldShowHistorySyncPromo(true));

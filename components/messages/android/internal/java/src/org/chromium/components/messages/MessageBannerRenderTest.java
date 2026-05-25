@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 
+import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
 import org.junit.AfterClass;
@@ -342,6 +343,7 @@ public class MessageBannerRenderTest {
                             model.set(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Reset");
                             return view;
                         });
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         View mainContent = getMainContent(result);
         mRenderTestRule.render(mainContent, "message_banner_basic_with_reset_primary_button_text");
     }
