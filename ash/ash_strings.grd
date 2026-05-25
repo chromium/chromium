@@ -9784,7 +9784,7 @@ To shut down the device, press and hold the power button on the device again.
         Retry
       </message>
       <message name="IDS_BRUSCHETTA_SHUT_DOWN_LINUX_MENU_ITEM" desc="Text shown in the context menu for the Bruschetta terminal app, allowing users to shut down the Linux virtual machine.">
-        Shut down <ph name="VM_NAME">$1<ex>Bruschetta</ex></ph>
+        Shut down Bruschetta
       </message>
 
       <!-- Floating Workspace -->

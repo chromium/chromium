@@ -156,10 +156,7 @@ std::u16string AppServiceShelfContextMenu::GetLabelForCommandId(
         << "; submenu items count = " << submenu_->GetItemCount();
     return l10n_util::GetStringUTF16(launch_new_string_id_);
   } else if (command_id == ash::SHUTDOWN_BRUSCHETTA_OS) {
-    return l10n_util::GetStringFUTF16(
-        IDS_BRUSCHETTA_SHUT_DOWN_LINUX_MENU_ITEM,
-        base::UTF8ToUTF16(
-            bruschetta::GetBruschettaDisplayName(controller()->profile())));
+    return l10n_util::GetStringUTF16(IDS_BRUSCHETTA_SHUT_DOWN_LINUX_MENU_ITEM);
   }
   return ShelfContextMenu::GetLabelForCommandId(command_id);
 }

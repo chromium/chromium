@@ -474,10 +474,9 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
   EXPECT_GT(menu_section->command_index, 0u);
   EXPECT_FALSE(
       menu_section->menu_model->GetSubmenuModelAt(menu_section->command_index));
-  EXPECT_NE(menu_section->menu_model->GetLabelAt(menu_section->command_index)
-                .find(base::ASCIIToUTF16(bruschetta::GetBruschettaDisplayName(
-                    browser()->profile()))),
-            std::string::npos);
+  EXPECT_EQ(menu_section->menu_model->GetLabelAt(menu_section->command_index),
+            u"Shut down Bruschetta");
+
   EXPECT_EQ(menu_section->menu_model->GetIconAt(menu_section->command_index)
                 .GetVectorIcon()
                 .vector_icon(),
