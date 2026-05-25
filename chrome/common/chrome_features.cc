@@ -994,6 +994,8 @@ BASE_FEATURE(kPrivacyGuideForceAvailable, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPdfGlicSummarize, base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<int> kPdfGlicSummarizeArm{&kPdfGlicSummarize, "arm",
                                                    3};
+const base::FeatureParam<bool> kPdfGlicSummarizeUseLongButtonText{
+    &kPdfGlicSummarize, "use_long_button_text", false};
 BASE_FEATURE(kPdfGlicSummarizeFre, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 

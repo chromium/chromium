@@ -89,6 +89,16 @@ base::DictValue GetCommonStrings() {
   return dict;
 }
 
+// Returns the resource id for the glic summarize button label, honoring the
+// experiment param that swaps in a longer "Summarize with Gemini" label.
+int GetGlicSummarizeButtonLabelId() {
+  if (base::FeatureList::IsEnabled(features::kPdfGlicSummarize) &&
+      features::kPdfGlicSummarizeUseLongButtonText.Get()) {
+    return IDS_PDF_GLIC_SUMMARIZE_WITH_GEMINI;
+  }
+  return IDS_PDF_GLIC_SUMMARIZE;
+}
+
 // Gets strings that are used only by the stand-alone PDF Viewer.
 base::DictValue GetPdfViewerStrings() {
   static constexpr webui::LocalizedString kPdfResources[] = {
@@ -97,7 +107,6 @@ base::DictValue GetPdfViewerStrings() {
       {"bookmarks", IDS_PDF_BOOKMARKS},
       {"downloadEdited", IDS_PDF_DOWNLOAD_EDITED},
       {"downloadOriginal", IDS_PDF_DOWNLOAD_ORIGINAL},
-      {"glicSummarize", IDS_PDF_GLIC_SUMMARIZE},
       {"glicSummarizeTooltip", IDS_PDF_GLIC_SUMMARIZE_TOOLTIP},
       {"labelPageNumber", IDS_PDF_LABEL_PAGE_NUMBER},
       {"moreActions", IDS_DOWNLOAD_MORE_ACTIONS},
@@ -236,6 +245,9 @@ base::DictValue GetPdfViewerStrings() {
   for (const auto& resource : kPdfResources) {
     dict.Set(resource.name, l10n_util::GetStringUTF16(resource.id));
   }
+
+  dict.Set("glicSummarize",
+           l10n_util::GetStringUTF16(GetGlicSummarizeButtonLabelId()));
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
   std::u16string edit_string = l10n_util::GetStringUTF16(IDS_EDIT);

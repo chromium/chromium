@@ -3701,6 +3701,15 @@ const FeatureEntry::FeatureParam kGlicWarmingShorterDelays[] = {
 const FeatureEntry::FeatureVariation kGlicWarmingVariations[] = {
     {"with shorter delays", kGlicWarmingShorterDelays, nullptr}};
 
+#if BUILDFLAG(ENABLE_PDF)
+const FeatureEntry::FeatureParam kPdfGlicSummarizeLongButtonText[] = {
+    {"use_long_button_text", "true"}};
+
+const FeatureEntry::FeatureVariation kPdfGlicSummarizeVariations[] = {
+    {"with \"Summarize with Gemini\" button text",
+     kPdfGlicSummarizeLongButtonText, nullptr}};
+#endif  // BUILDFLAG(ENABLE_PDF)
+
 const FeatureEntry::FeatureParam kGlicActorTransientTasksForceTransient[] = {
     {"force_transient", "true"}};
 
@@ -10596,7 +10605,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if !BUILDFLAG(IS_ANDROID)
     {"glic-pdf-summarize", flag_descriptions::kGlicPdfSummarizeName,
      flag_descriptions::kGlicPdfSummarizeDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kPdfGlicSummarize)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kPdfGlicSummarize,
+                                    kPdfGlicSummarizeVariations,
+                                    "GlicPdfSummarize")},
 #endif
 
     {"glic-pre-warming", flag_descriptions::kGlicWarmingName,

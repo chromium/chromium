@@ -711,6 +711,8 @@ extern const base::FeatureParam<int> kGlicGuestUrlPresetType;
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPdfGlicSummarize);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kPdfGlicSummarizeArm;
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool> kPdfGlicSummarizeUseLongButtonText;
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kPdfGlicSummarizeFre);
 #endif
 
