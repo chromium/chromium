@@ -9537,7 +9537,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.WebTransport.NegotiatedHttpDatagramVersion"
-    enum="NegotiatedHttpDatagramVersion" expires_after="2026-06-02">
+    enum="NegotiatedHttpDatagramVersion" expires_after="2027-05-24">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
