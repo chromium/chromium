@@ -591,6 +591,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
             // assertions, and to match the semantics of Robolectric's runners.
             BaseChromiumAndroidJUnitRunner.sInstance.runOnMainSync(
                     ResettersForTesting::afterHooksDidExecute);
+            JniTestInstancesSnapshot.restoreSnapshotForTesting(mJniZeroSnapshot);
             clearJobSchedulerJobs();
         } finally {
             Bundle b = new Bundle();
