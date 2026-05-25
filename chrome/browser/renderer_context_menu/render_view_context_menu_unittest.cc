@@ -1998,7 +1998,13 @@ class RenderViewContextMenuReadAnythingTest
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_P(RenderViewContextMenuReadAnythingTest, AppendPageItems) {
+// TODO(crbug.com/516289866): Disabled on ChromeOS due to flakiness.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AppendPageItems DISABLED_AppendPageItems
+#else
+#define MAYBE_AppendPageItems AppendPageItems
+#endif
+TEST_P(RenderViewContextMenuReadAnythingTest, MAYBE_AppendPageItems) {
   const auto& params = GetParam();
   const std::string& group = std::get<0>(params);
 
