@@ -3,16 +3,22 @@
 // found in the LICENSE file.
 
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_window_occlusion_helper_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace {
 
@@ -64,6 +70,16 @@ class OcclusionStateWaiter {
 class AutoPictureInPictureWindowOcclusionInteractiveUiTest
     : public InProcessBrowserTest {
  public:
+  void SetUp() override {
+#if BUILDFLAG(IS_MAC)
+    int version = base::mac::MacOSVersion();
+    if ((version >= 130000 && version < 130300) || version >= 260000) {
+      GTEST_SKIP() << "Manual window occlusion detection is not supported on this macOS version.";
+    }
+#endif
+    InProcessBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
