@@ -42,7 +42,8 @@ class CONTENT_EXPORT PrerenderHandleImpl final
   bool IsValid() const override;
   bool IsWaitingForResponseHeaders() const override;
   void AddOnResponseHeadersReceivedCallback(
-      base::OnceClosure callback) override;
+      base::OnceCallback<void(PrerenderLifecycleStatus result)> callback)
+      override;
 
   // PrerenderHost::Observer:
   void OnActivated() override;
@@ -67,7 +68,8 @@ class CONTENT_EXPORT PrerenderHandleImpl final
 
   std::vector<base::OnceClosure> activation_callbacks_;
   std::vector<base::OnceClosure> error_callbacks_;
-  std::vector<base::OnceClosure> on_headers_received_callbacks_;
+  std::vector<base::OnceCallback<void(PrerenderLifecycleStatus result)>>
+      on_headers_received_callbacks_;
 
   base::ScopedObservation<PrerenderHost, PrerenderHandleImpl> obs_{this};
 

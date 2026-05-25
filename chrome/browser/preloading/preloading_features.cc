@@ -51,6 +51,12 @@ BASE_FEATURE_PARAM(int,
                    "min_memory_threshold_mb",
                    kDSEPrearmDefaultMemoryThresholdMb);
 
+BASE_FEATURE_PARAM(int,
+                   kMaxBlackoutDurationSeconds,
+                   &kPrewarm,
+                   "max_blackout_duration_seconds",
+                   86400);
+
 BASE_FEATURE(kPrerender2WarmUpCompositorForBookmarkBar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kPrerender2WarmUpCompositorForNewTabPage,

@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <optional>
 
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/preloading.h"
@@ -17,6 +18,21 @@
 class GURL;
 
 namespace content {
+
+// PrerenderLifecycleStatus represents status of the lifecycle events of a
+// prerender handle.
+enum class PrerenderLifecycleStatus {
+  // Headers were received successfully.
+  kHTTPSuccessResponse,
+  // Failed due to a bad HTTP response (e.g. 4xx, 5xx).
+  kHttpBadResponse,
+  // Failed because the prerender was destroyed before headers were received.
+  kDestroyed,
+  // Failed because prerendering was stopped.
+  kStop,
+  // Failed due to other reasons.
+  kOtherFailure
+};
 
 // PrerenderHandle is the class used to encapsulate prerender resources in
 // content/. In its destructor, the resource is expected to be released.
@@ -40,6 +56,9 @@ class PrerenderHandle {
   virtual void SetPreloadingAttemptFailureReason(
       PreloadingFailureReason reason) = 0;
 
+  // TODO(crbug.com/515551195): Merge the callback events AddActivationCallback,
+  // AddErrorCallback and AddOnResponseHeadersReceivedCallback into one single
+  // observer.
   // Adds a callback to be called on activation. This can be called multiple
   // times.
   virtual void AddActivationCallback(base::OnceClosure activation_callback) = 0;
@@ -54,11 +73,13 @@ class PrerenderHandle {
   // Returns true if the prerender is still waiting for its response headers.
   virtual bool IsWaitingForResponseHeaders() const = 0;
 
-  // Adds a callback to be called when the response headers are received.
-  // The caller should call this only when IsWaitingForResponseHeaders() returns
-  // true.
+  // Adds a callback to be called when the response headers are received or
+  // when prerendering fails.
+  // The callback receives a PrerenderLifecycleStatus indicating the
+  // outcome. The caller should call this only when
+  // IsWaitingForResponseHeaders() returns true.
   virtual void AddOnResponseHeadersReceivedCallback(
-      base::OnceClosure callback) = 0;
+      base::OnceCallback<void(PrerenderLifecycleStatus result)> callback) = 0;
 };
 
 }  // namespace content

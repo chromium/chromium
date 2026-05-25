@@ -1290,6 +1290,40 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   EXPECT_FALSE(service->IsOnGoingSearchPrewarm(host_id));
 }
 
+IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
+                       DisableFeatureOn404) {
+  // Navigate to an initial page.
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+
+  auto* profile =
+      Profile::FromBrowserContext(GetActiveWebContents()->GetBrowserContext());
+  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+  ASSERT_TRUE(service);
+  EXPECT_FALSE(service->ShouldBlockPrewarm());
+
+  auto* prerender_manager =
+      PrerenderManager::FromWebContents(GetActiveWebContents());
+  ASSERT_TRUE(prerender_manager);
+
+  // Set a prewarm URL that will return 404.
+  GURL url_404 = embedded_test_server()->GetURL("search.example.com",
+                                                "/non-existent.html");
+  prerender_manager->SetPrewarmUrlForTesting(url_404);
+
+  SearchPrewarmProgressTestObserver observer(service);
+
+  // Start prewarm.
+  EXPECT_TRUE(prerender_manager->MaybeStartPrewarmSearchResult());
+
+  // Wait for it to finish.
+  observer.WaitForNotification();
+
+  // Verify that the feature is now disabled.
+  EXPECT_TRUE(service->ShouldBlockPrewarm());
+  EXPECT_FALSE(prerender_manager->MaybeStartPrewarmSearchResult());
+}
+
 // Tests that if the `PrerenderManager` is destroyed (by closing the tab) while
 // a search prewarm is ongoing, the registered callbacks on
 // `SearchPrewarmProgressService` will be correctly triggered.

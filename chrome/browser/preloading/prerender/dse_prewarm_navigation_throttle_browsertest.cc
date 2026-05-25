@@ -9,6 +9,7 @@
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_test_utils.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -143,7 +144,8 @@ IN_PROC_BROWSER_TEST_F(DSEPrewarmNavigationThrottleBrowserTest,
 
   // Simulate prewarm finishing. This should trigger the callback to Resume()
   // the throttle.
-  service->OnSearchPrewarmFinished(dummy_host_id);
+  service->OnSearchPrewarmFinished(
+      dummy_host_id, content::PrerenderLifecycleStatus::kHTTPSuccessResponse);
   deferred_throttle->WaitForResume();
   EXPECT_FALSE(service->HasOnGoingSearchPrewarm());
 }

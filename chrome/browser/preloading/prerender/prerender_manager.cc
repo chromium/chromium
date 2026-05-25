@@ -43,6 +43,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_features.h"
 #include "net/base/url_util.h"
+#include "net/http/http_response_headers.h"
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -176,7 +177,7 @@ class PrerenderManager::SearchPrerenderTask {
 
 PrerenderManager::~PrerenderManager() {
   if (is_search_prewarm_ongoing_) {
-    NotifySearchPrewarmFinished();
+    NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus::kDestroyed);
   }
 }
 
@@ -305,7 +306,8 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
   return search_prewarm_handle_ != nullptr;
 }
 
-void PrerenderManager::NotifySearchPrewarmFinished() {
+void PrerenderManager::NotifySearchPrewarmFinished(
+    content::PrerenderLifecycleStatus result) {
   CHECK(is_search_prewarm_ongoing_);
   is_search_prewarm_ongoing_ = false;
   auto* profile =
@@ -313,13 +315,13 @@ void PrerenderManager::NotifySearchPrewarmFinished() {
   auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
   if (service) {
     service->OnSearchPrewarmFinished(
-        search_prewarm_handle_->GetPrerenderHostId());
+        search_prewarm_handle_->GetPrerenderHostId(), result);
   }
 }
 
 void PrerenderManager::StopPrewarmSearchResultForTesting() {
   if (is_search_prewarm_ongoing_) {
-    NotifySearchPrewarmFinished();
+    NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus::kStop);
   }
   search_prewarm_handle_.reset();
 }
@@ -470,6 +472,11 @@ PrerenderManager::PrewarmDecision PrerenderManager::ShouldPrewarm(
   }
   if (!base::FeatureList::IsEnabled(features::kPrewarm)) {
     return PrewarmDecision::kDisabled;
+  }
+  auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+  if (service && service->ShouldBlockPrewarm()) {
+    return PrewarmDecision::kDisabledByBlackout;
   }
   if (static_cast<uint64_t>(features::kMinMemoryThresholdMb.Get()) >
       base::SysInfo::AmountOfTotalPhysicalMemory().InMiB()) {

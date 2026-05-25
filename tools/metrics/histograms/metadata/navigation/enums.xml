@@ -1836,6 +1836,7 @@ chromium-metrics-reviews@google.com.
   <int value="10" label="Running in Isolated Web App"/>
   <int value="11" label="Running in Kiosk Session"/>
   <int value="12" label="Low memory device"/>
+  <int value="13" label="Disabled by blackout"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/preloading/prerender/prerender_manager.h:PrewarmDecision) -->

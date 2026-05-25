@@ -7,6 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/preloading/prerender/search_prewarm_progress_test_utils.h"
+#include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/prerender_host_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,8 +15,9 @@ class SearchPrewarmProgressServiceTest : public testing::Test {
  public:
   SearchPrewarmProgressServiceTest() = default;
 
- private:
-  base::test::TaskEnvironment task_environment_;
+ protected:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 TEST_F(SearchPrewarmProgressServiceTest, InitialState) {
@@ -31,7 +33,8 @@ TEST_F(SearchPrewarmProgressServiceTest, StartAndFinish) {
   EXPECT_TRUE(service.HasOnGoingSearchPrewarm());
   EXPECT_TRUE(service.IsOnGoingSearchPrewarm(host_id));
 
-  service.OnSearchPrewarmFinished(host_id);
+  service.OnSearchPrewarmFinished(
+      host_id, content::PrerenderLifecycleStatus::kHTTPSuccessResponse);
   EXPECT_FALSE(service.HasOnGoingSearchPrewarm());
   EXPECT_FALSE(service.IsOnGoingSearchPrewarm(host_id));
 }
@@ -47,12 +50,14 @@ TEST_F(SearchPrewarmProgressServiceTest, MultiplePrewarms) {
   EXPECT_TRUE(service.IsOnGoingSearchPrewarm(host_id1));
   EXPECT_TRUE(service.IsOnGoingSearchPrewarm(host_id2));
 
-  service.OnSearchPrewarmFinished(host_id1);
+  service.OnSearchPrewarmFinished(
+      host_id1, content::PrerenderLifecycleStatus::kHTTPSuccessResponse);
   EXPECT_TRUE(service.HasOnGoingSearchPrewarm());
   EXPECT_FALSE(service.IsOnGoingSearchPrewarm(host_id1));
   EXPECT_TRUE(service.IsOnGoingSearchPrewarm(host_id2));
 
-  service.OnSearchPrewarmFinished(host_id2);
+  service.OnSearchPrewarmFinished(
+      host_id2, content::PrerenderLifecycleStatus::kHTTPSuccessResponse);
   EXPECT_FALSE(service.HasOnGoingSearchPrewarm());
   EXPECT_FALSE(service.IsOnGoingSearchPrewarm(host_id1));
   EXPECT_FALSE(service.IsOnGoingSearchPrewarm(host_id2));
@@ -72,13 +77,27 @@ TEST_F(SearchPrewarmProgressServiceTest, CallbacksNotifiedOnFinish) {
   EXPECT_FALSE(observer1.was_notified());
   EXPECT_FALSE(observer2.was_notified());
 
-  service.OnSearchPrewarmFinished(host_id1);
+  service.OnSearchPrewarmFinished(
+      host_id1, content::PrerenderLifecycleStatus::kHTTPSuccessResponse);
 
   EXPECT_FALSE(observer1.was_notified());
   EXPECT_FALSE(observer2.was_notified());
 
-  service.OnSearchPrewarmFinished(host_id2);
+  service.OnSearchPrewarmFinished(
+      host_id2, content::PrerenderLifecycleStatus::kHTTPSuccessResponse);
 
   EXPECT_TRUE(observer1.was_notified());
   EXPECT_TRUE(observer2.was_notified());
+}
+
+TEST_F(SearchPrewarmProgressServiceTest, DisableFeature) {
+  SearchPrewarmProgressService service;
+  EXPECT_FALSE(service.ShouldBlockPrewarm());
+
+  service.EnterBlackoutPeriod();
+  EXPECT_TRUE(service.ShouldBlockPrewarm());
+
+  // Advance time by 1 day.
+  task_environment_.FastForwardBy(base::Days(1));
+  EXPECT_FALSE(service.ShouldBlockPrewarm());
 }

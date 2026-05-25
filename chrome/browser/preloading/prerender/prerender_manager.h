@@ -128,7 +128,8 @@ class PrerenderManager : public content::WebContentsObserver,
     kInIsolatedWebApp = 10,
     kInKioskSession = 11,
     kLowMemory = 12,
-    kMaxValue = kLowMemory,
+    kDisabledByBlackout = 13,
+    kMaxValue = kDisabledByBlackout,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:PrerenderPrewarmDecision)
 
@@ -146,7 +147,7 @@ class PrerenderManager : public content::WebContentsObserver,
   void OnSearchPrewarmPrerenderNavigationHandle(
       content::NavigationHandle& navigation_handle);
 
-  void NotifySearchPrewarmFinished();
+  void NotifySearchPrewarmFinished(content::PrerenderLifecycleStatus result);
 
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
   bool is_search_prewarm_ongoing_ = false;

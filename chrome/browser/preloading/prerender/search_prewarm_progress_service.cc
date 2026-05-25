@@ -51,12 +51,27 @@ void SearchPrewarmProgressService::OnSearchPrewarmStarted(
 }
 
 void SearchPrewarmProgressService::OnSearchPrewarmFinished(
-    content::PrerenderHostId host_id) {
+    content::PrerenderHostId host_id,
+    content::PrerenderLifecycleStatus status) {
   CHECK(IsOnGoingSearchPrewarm(host_id));
   ongoing_prewarms_.erase(host_id);
+
+  if (status == content::PrerenderLifecycleStatus::kHttpBadResponse) {
+    EnterBlackoutPeriod();
+  }
+
   if (HasOnGoingSearchPrewarm()) {
     return;
   }
 
   callbacks_.Notify();
+}
+
+void SearchPrewarmProgressService::EnterBlackoutPeriod() {
+  disabled_until_ = base::TimeTicks::Now() +
+                    base::Seconds(features::kMaxBlackoutDurationSeconds.Get());
+}
+
+bool SearchPrewarmProgressService::ShouldBlockPrewarm() const {
+  return base::TimeTicks::Now() < disabled_until_;
 }

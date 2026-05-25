@@ -82,8 +82,8 @@ TEST_F(PrerenderHandleImplTest, OnResponseHeadersReceived) {
   EXPECT_TRUE(handle->IsWaitingForResponseHeaders());
 
   bool callback_triggered = false;
-  handle->AddOnResponseHeadersReceivedCallback(
-      base::BindLambdaForTesting([&]() { callback_triggered = true; }));
+  handle->AddOnResponseHeadersReceivedCallback(base::BindLambdaForTesting(
+      [&](PrerenderLifecycleStatus result) { callback_triggered = true; }));
 
   PrerenderHost* host = registry().FindNonReservedHostById(prerender_host_id);
   ASSERT_TRUE(host);
@@ -109,8 +109,8 @@ TEST_F(PrerenderHandleImplTest, CallbackCalledOnFailure) {
 
   EXPECT_TRUE(handle->IsWaitingForResponseHeaders());
   bool callback_triggered = false;
-  handle->AddOnResponseHeadersReceivedCallback(
-      base::BindLambdaForTesting([&]() { callback_triggered = true; }));
+  handle->AddOnResponseHeadersReceivedCallback(base::BindLambdaForTesting(
+      [&](PrerenderLifecycleStatus result) { callback_triggered = true; }));
 
   bool error_called = false;
   handle->AddErrorCallback(

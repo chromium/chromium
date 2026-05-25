@@ -10,6 +10,7 @@
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading_data.h"
 #include "content/public/browser/preloading_trigger_type.h"
 #include "url/gurl.h"
@@ -146,6 +147,20 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
   }
 }
 
+PrerenderLifecycleStatus ToPrerenderLifecycleStatus(
+    PrerenderFinalStatus status) {
+  switch (status) {
+    case PrerenderFinalStatus::kNavigationBadHttpStatus:
+      return PrerenderLifecycleStatus::kHttpBadResponse;
+    case PrerenderFinalStatus::kDestroyed:
+      return PrerenderLifecycleStatus::kDestroyed;
+    case PrerenderFinalStatus::kStop:
+      return PrerenderLifecycleStatus::kStop;
+    default:
+      return PrerenderLifecycleStatus::kOtherFailure;
+  }
+}
+
 }  // namespace
 
 PrerenderHandleImpl::PrerenderHandleImpl(
@@ -230,7 +245,7 @@ bool PrerenderHandleImpl::IsWaitingForResponseHeaders() const {
 }
 
 void PrerenderHandleImpl::AddOnResponseHeadersReceivedCallback(
-    base::OnceClosure callback) {
+    base::OnceCallback<void(PrerenderLifecycleStatus result)> callback) {
   CHECK(IsWaitingForResponseHeaders());
   on_headers_received_callbacks_.push_back(std::move(callback));
 }
@@ -262,8 +277,9 @@ void PrerenderHandleImpl::OnFailed(PrerenderFinalStatus status) {
   // Call the header callbacks to unthrottle other requests anyway.
   // If the header has already been received, on_headers_received_callbacks_
   // will be empty.
+  PrerenderLifecycleStatus result = ToPrerenderLifecycleStatus(status);
   for (auto& callback : on_headers_received_callbacks_) {
-    std::move(callback).Run();
+    std::move(callback).Run(result);
   }
   on_headers_received_callbacks_.clear();
 
@@ -300,7 +316,7 @@ void PrerenderHandleImpl::OnHeadersReceived(
   state_ = State::kReady;
 
   for (auto& callback : on_headers_received_callbacks_) {
-    std::move(callback).Run();
+    std::move(callback).Run(PrerenderLifecycleStatus::kHTTPSuccessResponse);
   }
   on_headers_received_callbacks_.clear();
 }

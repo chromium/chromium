@@ -9,7 +9,9 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/prerender_host_id.h"
 
 // SearchPrewarmProgressService is a keyed service that tracks the progress of
@@ -45,11 +47,20 @@ class SearchPrewarmProgressService : public KeyedService {
   // Called when a search prewarm request finishes (i.e. receives its headers,
   // or fails/is cancelled). If there are no more ongoing prewarms, it will
   // notify all observers.
-  void OnSearchPrewarmFinished(content::PrerenderHostId host_id);
+  void OnSearchPrewarmFinished(content::PrerenderHostId host_id,
+                               content::PrerenderLifecycleStatus status);
+
+  // Disables the feature for a duration determined by feature parameters.
+  void EnterBlackoutPeriod();
+
+  // Returns true if prewarm should be blocked (e.g. due to bad HTTP response).
+  bool ShouldBlockPrewarm() const;
 
  private:
   base::flat_set<content::PrerenderHostId> ongoing_prewarms_;
   base::RepeatingClosureList callbacks_;
+
+  base::TimeTicks disabled_until_;
 
   base::WeakPtrFactory<SearchPrewarmProgressService> weak_factory_{this};
 };
