@@ -83,7 +83,7 @@ cr-action-menu[non-modal]::part(dialog) {
   display: grid;
   font-size: 12px;
   font-weight: 400;
-  padding-left: 20px;
+  padding-inline-start: 20px;
 }
 
 .error-message {
