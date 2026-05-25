@@ -39,17 +39,6 @@ def main():
   parser.add_argument('--export-fortesting-java-symbols',
                       action='store_true',
                       help='Export Java_*_ForTesting JNI methods')
-  parser.add_argument(
-      '--export-symbol-allowlist-file',
-      action='append',
-      default=[],
-      dest='allowlists',
-      help='Path to an input file containing an allowlist of extra symbols to '
-      'export, one symbol per line. Multiple files may be specified.')
-  parser.add_argument(
-      '--export-feature-registrations',
-      action='store_true',
-      help='Export JNI_OnLoad_* methods')
   options = parser.parse_args()
 
   # JNI_OnLoad is always exported.
@@ -83,17 +72,6 @@ def main():
     symbol_list.append('Java_*[^e]st')
     symbol_list.append('Java_*[^s]t')
     symbol_list.append('Java_*[^gt]')
-
-  if options.export_feature_registrations:
-    symbol_list.append('JNI_OnLoad_*')
-
-  for allowlist in options.allowlists:
-    with open(allowlist, 'rt', encoding='utf-8') as f:
-      for line in f:
-        line = line.strip()
-        if not line or line[0] == '#':
-          continue
-        symbol_list.append(line)
 
   script_content = [_SCRIPT_HEADER]
   for symbol in symbol_list:

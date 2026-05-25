@@ -12,10 +12,6 @@ if (build_with_chromium) {
 # "-Wl,--version-script=<path>" ldflags.
 #
 # Variables:
-#    export_java_symbols: Optional. If true, also export all Java_* symbols
-#      exported for JNI.
-#    export_symbol_allowlist_files: Optional. List of paths to input files containing
-#      lists of symbols to export.
 #    linker_script: Path to output linker version script.
 #
 template("generate_linker_version_script") {
@@ -31,21 +27,6 @@ template("generate_linker_version_script") {
     }
     if (enable_jni_multiplexing) {
       args += [ "--jni-multiplexing" ]
-    }
-
-    if (defined(invoker.export_feature_registrations) &&
-        invoker.export_feature_registrations) {
-      args += [ "--export-feature-registrations" ]
-    }
-
-    if (defined(invoker.export_symbol_allowlist_files)) {
-      foreach(file_, invoker.export_symbol_allowlist_files) {
-        inputs += [ file_ ]
-        args += [
-          "--export-symbol-allowlist-file",
-          rebase_path(file_, root_build_dir),
-        ]
-      }
     }
   }
 }

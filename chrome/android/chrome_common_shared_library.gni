@@ -38,7 +38,6 @@ template("chrome_common_shared_library") {
     # requirements.
     generate_linker_version_script(_linker_script_target) {
       linker_script = _linker_script
-      export_feature_registrations = true
     }
   }
 
