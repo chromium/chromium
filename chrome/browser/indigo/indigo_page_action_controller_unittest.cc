@@ -155,6 +155,8 @@ class IndigoPageActionControllerTest : public testing::Test {
 
     tab_interface_ =
         std::make_unique<page_actions::FakeTabInterface>(profile_.get());
+    tabs::TabLookupFromWebContents::CreateForWebContents(
+        tab_interface_->GetContents(), tab_interface_.get());
     ON_CALL(*tab_interface_, GetUnownedUserDataHost())
         .WillByDefault(testing::ReturnRef(unowned_user_data_host_));
 

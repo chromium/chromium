@@ -61,6 +61,11 @@ enum class IndigoTransformationResult {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)
 
+enum class ResetType {
+  kResetReplacementsAndContentScript,
+  kResetReplacementsOnly,
+};
+
 // Manages the Indigo page action and its various entry points, ensuring they
 // are correctly displayed.
 class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
@@ -87,6 +92,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
 
   // Shows the toolbar at the specified rectangle in the web contents view.
   void ShowToolbarInside(const gfx::Rect& rect);
+
+  // Resets all image replacements and hides the toolbar.
+  void Reset(ResetType reset_type);
 
   // content::WebContentsObserver:
   void DidFinishNavigation(
@@ -153,6 +161,9 @@ class IndigoPageActionController : public tabs::ContentsObservingTabFeature,
   // the tab is currently invisible (backgrounded) or has no active browser
   // window.
   views::View* GetIndigoOverlayView() const;
+
+  // Hides the toolbar if it is currently shown.
+  void HideToolbar();
 
   // `page_action_controller_` is owned by the same `TabFeatures` that owns
   // `this`. Since `page_action_controller_` is initialized before `this` and

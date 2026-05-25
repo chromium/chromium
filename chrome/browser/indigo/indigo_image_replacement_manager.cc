@@ -5,6 +5,7 @@
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/indigo/indigo_service.h"
 #include "chrome/browser/indigo/indigo_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/page.h"
@@ -33,6 +35,9 @@ namespace indigo {
 IndigoImageReplacementManager::IndigoImageReplacementManager(
     content::Page& page)
     : content::PageUserData<IndigoImageReplacementManager>(page) {
+  CHECK(base::FeatureList::IsEnabled(features::kIndigo));
+  CHECK(tabs::TabInterface::GetFromContents(
+      content::WebContents::FromRenderFrameHost(&page.GetMainDocument())));
   CHECK(page.IsPrimary());
   receivers_.set_disconnect_handler(base::BindRepeating(
       &IndigoImageReplacementManager::OnReceiverDisconnected,
@@ -48,7 +53,9 @@ void IndigoImageReplacementManager::RegisterImageReplacement(
     if (primary_registered_) {
       // Registering a new primary replacement (when one was previously
       // registered) triggers a reset of all existing replacements.
-      ResetAllReplacements();
+      // Note: We don't want to reset the content script here as we're reacting
+      // to it registering a new primary replacement.
+      Reset(ResetType::kResetReplacementsOnly);
     }
     primary_registered_ = true;
   } else if (!primary_registered_) {
@@ -78,7 +85,8 @@ IndigoImageReplacementManager::GetImageReplacementForFrame(
   return nullptr;
 }
 
-void IndigoImageReplacementManager::ResetAllReplacements() {
+void IndigoImageReplacementManager::ResetAllReplacements(
+    base::PassKey<IndigoPageActionController>) {
   receivers_.Clear();
   primary_registered_ = false;
   generated_image_url_ = GURL();
@@ -182,7 +190,7 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
         IndigoTransformationResult::kGenerateImageError);
     base::RecordAction(
         base::UserMetricsAction("Indigo.Transformation.Failure"));
-    ResetAllReplacements();
+    Reset(ResetType::kResetReplacementsAndContentScript);
     return;
   }
 
@@ -200,10 +208,10 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
   if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    if (auto* controller = indigo::IndigoPageActionController::From(tab)) {
-      if (!primary_bounds_.IsEmpty()) {
-        controller->ShowToolbarInside(primary_bounds_);
-      }
+    auto* controller = indigo::IndigoPageActionController::From(tab);
+    CHECK(controller);
+    if (!primary_bounds_.IsEmpty()) {
+      controller->ShowToolbarInside(primary_bounds_);
     }
   }
 }
@@ -215,7 +223,17 @@ void IndigoImageReplacementManager::OnReceiverDisconnected() {
   if (replacement.is_primary() && generated_image_url_.is_empty()) {
     LOG(ERROR) << "Primary image replacement disconnected before receiving "
                   "generated image";
-    ResetAllReplacements();
+    Reset(ResetType::kResetReplacementsAndContentScript);
+  }
+}
+
+void IndigoImageReplacementManager::Reset(ResetType reset_type) {
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+    auto* controller = indigo::IndigoPageActionController::From(tab);
+    CHECK(controller);
+    controller->Reset(reset_type);
   }
 }
 

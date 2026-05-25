@@ -4,15 +4,19 @@
 
 #include "chrome/browser/indigo/indigo_image_replacement_manager.h"
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/indigo/fake_api.h"
+#include "chrome/browser/indigo/indigo_agent_host.h"
 #include "chrome/browser/indigo/indigo_page_action_controller.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/indigo/indigo.mojom.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
@@ -24,16 +28,62 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace indigo {
 
 namespace {
+
+class FakeIndigoAgent : public chrome::mojom::IndigoAgent {
+ public:
+  FakeIndigoAgent() = default;
+  ~FakeIndigoAgent() override = default;
+
+  void InjectScript(
+      const std::string& script_content,
+      const GURL& script_url,
+      const url::Origin& origin,
+      mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost> host,
+      InjectScriptCallback callback) override {
+    std::move(callback).Run();
+  }
+
+  void Invoke(InvokeCallback callback) override {
+    std::move(callback).Run();
+    invoke_called_future_.SetValue();
+  }
+
+  void Reset(ResetCallback callback) override {
+    reset_called_ = true;
+    std::move(callback).Run();
+    reset_called_future_.SetValue();
+  }
+
+  void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
+    receivers_.Add(this,
+                   mojo::PendingAssociatedReceiver<chrome::mojom::IndigoAgent>(
+                       std::move(handle)));
+  }
+
+  void WaitForInvoke() { EXPECT_TRUE(invoke_called_future_.Wait()); }
+
+  void WaitForReset() { EXPECT_TRUE(reset_called_future_.Wait()); }
+
+  bool reset_called() const { return reset_called_; }
+
+ private:
+  mojo::AssociatedReceiverSet<chrome::mojom::IndigoAgent> receivers_;
+  base::test::TestFuture<void> invoke_called_future_;
+  base::test::TestFuture<void> reset_called_future_;
+  bool reset_called_ = false;
+};
 
 // 1x1 red pixel in image/webp.
 const std::vector<uint8_t> kImageBytes = {
@@ -158,7 +208,15 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
         {{features::kIndigoGenerateUrl.name, fake_api_.GetGenerateUrl().spec()},
          {features::kIndigoDeleteUrl.name, fake_api_.GetDeleteUrl().spec()}});
 
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    script_path_ = temp_dir_.GetPath().AppendASCII("test_script.js");
+    ASSERT_TRUE(base::WriteFile(script_path_, ""));
+
     InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitchPath("indigo-script", script_path_);
   }
 
   void SetUpOnMainThread() override {
@@ -181,10 +239,25 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
         SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
   }
 
+  std::unique_ptr<FakeIndigoAgent> SetupAndInvokeIndigoAgent(
+      content::RenderFrameHost* rfh) {
+    auto fake_agent = std::make_unique<FakeIndigoAgent>();
+    rfh->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
+        chrome::mojom::IndigoAgent::Name_,
+        base::BindRepeating(&FakeIndigoAgent::Bind,
+                            base::Unretained(fake_agent.get())));
+    IndigoAgentHost* host = IndigoAgentHost::GetOrCreateForPage(rfh->GetPage());
+    EXPECT_TRUE(host->Invoke());
+    fake_agent->WaitForInvoke();
+    return fake_agent;
+  }
+
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
   FakeApi fake_api_;
   base::test::ScopedFeatureList feature_list_;
+  base::ScopedTempDir temp_dir_;
+  base::FilePath script_path_;
 };
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -356,6 +429,10 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
 
+  // Set up IndigoAgent host.
+  std::unique_ptr<FakeIndigoAgent> fake_agent =
+      SetupAndInvokeIndigoAgent(main_rfh.get());
+
   IndigoImageReplacementManager* manager =
       IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
   ASSERT_TRUE(manager);
@@ -372,6 +449,9 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   fake_api_.SendErrorResponse();
 
   mock_replacement.WaitForDisconnect();
+
+  // IndigoAgentHost::Reset should have been called.
+  fake_agent->WaitForReset();
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -410,6 +490,10 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
 
+  // Set up IndigoAgent host.
+  std::unique_ptr<FakeIndigoAgent> fake_agent =
+      SetupAndInvokeIndigoAgent(main_rfh.get());
+
   IndigoImageReplacementManager* manager =
       IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
   ASSERT_TRUE(manager);
@@ -429,6 +513,9 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   mock_replacement1.WaitForDisconnect();
   mock_replacement2.WaitForStartReplacement();
+
+  // IndigoAgentHost::Reset should not have been called.
+  EXPECT_FALSE(fake_agent->reset_called());
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -439,6 +526,10 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  // Set up IndigoAgent host.
+  std::unique_ptr<FakeIndigoAgent> fake_agent =
+      SetupAndInvokeIndigoAgent(main_rfh.get());
 
   IndigoImageReplacementManager* manager =
       IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
@@ -463,6 +554,9 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
 
   // Second non-primary replacement should be disconnected as well.
   mock_replacement2.WaitForDisconnect();
+
+  // IndigoAgentHost::Reset should have been called.
+  fake_agent->WaitForReset();
 }
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,

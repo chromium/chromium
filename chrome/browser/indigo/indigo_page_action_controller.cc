@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notimplemented.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -141,10 +142,7 @@ IndigoPageActionController::~IndigoPageActionController() {
   // If there is a toolbar, hide it before anything else. This makes sure that
   // the OnClose delegate function isn't called after some members have been
   // destroyed.
-  if (toolbar_) {
-    toolbar_->Hide();
-    toolbar_.reset();
-  }
+  HideToolbar();
 }
 
 // static
@@ -280,6 +278,26 @@ void IndigoPageActionController::ShowToolbarInside(const gfx::Rect& rect) {
   toolbar_->ShowInside(parent_view, rect);
 }
 
+void IndigoPageActionController::Reset(ResetType reset_type) {
+  HideToolbar();
+
+  content::WebContents* web_contents = tab().GetContents();
+  if (!web_contents) {
+    return;
+  }
+
+  content::Page& primary_page = web_contents->GetPrimaryPage();
+  if (auto* manager = IndigoImageReplacementManager::GetForPage(primary_page)) {
+    manager->ResetAllReplacements(base::PassKey<IndigoPageActionController>());
+  }
+
+  if (reset_type == ResetType::kResetReplacementsAndContentScript) {
+    if (auto* host = IndigoAgentHost::GetForPage(primary_page)) {
+      host->Reset();
+    }
+  }
+}
+
 void IndigoPageActionController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   ContentsObservingTabFeature::DidFinishNavigation(navigation_handle);
@@ -294,10 +312,7 @@ void IndigoPageActionController::DidFinishNavigation(
     return;
   }
 
-  if (toolbar_) {
-    toolbar_->Hide();
-    toolbar_.reset();
-  }
+  HideToolbar();
 
   // TODO: b/508219600 Consider closing the onboarding dialog if navigates away.
 
@@ -338,22 +353,7 @@ void IndigoPageActionController::TabDidBecomeVisible(tabs::TabInterface* tab) {
 }
 
 void IndigoPageActionController::OnClose(IndigoToolbar* toolbar) {
-  if (toolbar_) {
-    toolbar_->Hide();
-    toolbar_.reset();
-  }
-  content::WebContents* web_contents = tab().GetContents();
-  if (web_contents) {
-    auto* host = IndigoAgentHost::GetForPage(web_contents->GetPrimaryPage());
-    if (host) {
-      host->Reset();
-    }
-    auto* manager = IndigoImageReplacementManager::GetForPage(
-        web_contents->GetPrimaryPage());
-    if (manager) {
-      manager->ResetAllReplacements();
-    }
-  }
+  Reset(ResetType::kResetReplacementsAndContentScript);
 }
 
 void IndigoPageActionController::OnRegenerate(IndigoToolbar* toolbar) {
@@ -370,22 +370,7 @@ void IndigoPageActionController::OnDeleteOriginalPhoto(IndigoToolbar* toolbar) {
     return;
   }
 
-  if (toolbar_) {
-    toolbar_->Hide();
-    toolbar_.reset();
-  }
-  content::WebContents* web_contents = tab().GetContents();
-  if (web_contents) {
-    auto* host = IndigoAgentHost::GetForPage(web_contents->GetPrimaryPage());
-    if (host) {
-      host->Reset();
-    }
-    auto* manager = IndigoImageReplacementManager::GetForPage(
-        web_contents->GetPrimaryPage());
-    if (manager) {
-      manager->ResetAllReplacements();
-    }
-  }
+  Reset(ResetType::kResetReplacementsAndContentScript);
 
   indigo_service_->GetApiClient().Delete(
       base::BindOnce(&IndigoPageActionController::OnDeleteOriginalPhotoComplete,
@@ -501,6 +486,13 @@ views::View* IndigoPageActionController::GetIndigoOverlayView() const {
   CHECK(contents_container);
 
   return contents_container->indigo_overlay_view();
+}
+
+void IndigoPageActionController::HideToolbar() {
+  if (toolbar_) {
+    toolbar_->Hide();
+    toolbar_.reset();
+  }
 }
 
 }  // namespace indigo
