@@ -15,6 +15,7 @@
 #include "base/strings/string_split.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"
+#include "crypto/hash.h"
 #include "crypto/obsolete/md5.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/scheme_registry.h"
@@ -35,13 +36,18 @@ uint32_t MD5Hash32ForBackgroundTracingHelper(std::string_view string) {
   return base::U32FromBigEndian(base::span(digest).first<4u>());
 }
 
+uint64_t SHA256Hash64ForBackgroundTracingHelper(std::string_view string) {
+  auto digest = crypto::hash::Sha256(string);
+  return base::U64FromBigEndian(base::span(digest).first<8u>());
+}
+
 namespace {
 
-// Converts `chars` to a 1-8 character hash. If successful the parsed hash is
+// Converts `chars` to a 1-16 character hash. If successful the parsed hash is
 // returned.
-std::optional<uint32_t> ConvertToHashInteger(std::string_view chars) {
+std::optional<uint64_t> ConvertToHashInteger(std::string_view chars) {
   // Fail if the hash string is too long or empty.
-  if (chars.size() == 0 || chars.size() > 8) {
+  if (chars.size() == 0 || chars.size() > 16) {
     return std::nullopt;
   }
   for (auto c : chars) {
@@ -49,8 +55,8 @@ std::optional<uint32_t> ConvertToHashInteger(std::string_view chars) {
       return std::nullopt;
     }
   }
-  return HexCharactersToUInt(base::as_byte_span(chars), NumberParsingOptions(),
-                             nullptr);
+  return HexCharactersToUInt64(base::as_byte_span(chars),
+                               NumberParsingOptions(), nullptr);
 }
 
 static constexpr char kTriggerPrefix[] = "trigger:";
@@ -101,12 +107,14 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
   // hashing in the Finch list).
   String this_site = EncodeWithUrlEscapeSequences(origin->Domain());
   std::string this_site_ascii = this_site.Ascii();
-  uint32_t this_site_hash = MD5Hash32(this_site_ascii);
+  uint32_t this_site_hash_32 = MD5Hash32(this_site_ascii);
+  uint64_t this_site_hash_64 = SHA256Hash64(this_site_ascii);
 
   // We only need the site information if it's allowed by the allow list.
-  if (GetSiteHashSet().Contains(this_site_hash)) {
+  if (GetSiteHashSet().Contains(this_site_hash_64) ||
+      GetSiteHashSet().Contains(this_site_hash_32)) {
     site_ = this_site_ascii;
-    site_hash_ = this_site_hash;
+    site_hash_ = this_site_hash_32;
   }
 
   // Extract a unique ID for the ExecutionContext, using the UnguessableToken
@@ -232,6 +240,11 @@ BackgroundTracingHelper::SplitMarkNameAndId(StringView mark_name) {
 // static
 uint32_t BackgroundTracingHelper::MD5Hash32(std::string_view string) {
   return MD5Hash32ForBackgroundTracingHelper(string);
+}
+
+// static
+uint64_t BackgroundTracingHelper::SHA256Hash64(std::string_view string) {
+  return SHA256Hash64ForBackgroundTracingHelper(string);
 }
 
 // static

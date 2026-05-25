@@ -28,7 +28,7 @@ class PerformanceMark;
 class CORE_EXPORT BackgroundTracingHelper final
     : public GarbageCollected<BackgroundTracingHelper> {
  public:
-  using SiteHashSet = HashSet<uint32_t>;
+  using SiteHashSet = HashSet<uint64_t>;
 
   explicit BackgroundTracingHelper(ExecutionContext* context);
   ~BackgroundTracingHelper();
@@ -73,6 +73,10 @@ class CORE_EXPORT BackgroundTracingHelper final
   // base/hash/md5_constexpr.h. This uses std::string_view because it is
   // interacting with Finch code, which doesn't use WTF primitives.
   static uint32_t MD5Hash32(std::string_view string);
+
+  // Generates a 64-bit SHA-256 hash of the given string piece.
+  // Returns the first 8 bytes of the SHA-256 hash as a uint64_t.
+  static uint64_t SHA256Hash64(std::string_view string);
 
   // Returns true if `mark_name` has "trigger:" prefix.
   static bool MarkNameIsTrigger(StringView mark_name);

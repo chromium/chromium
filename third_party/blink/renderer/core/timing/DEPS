@@ -2,6 +2,7 @@ specific_include_rules = {
     "background_tracing_helper.cc": [
         "+base/strings/string_split.h",
         "+crypto/obsolete/md5.h",
+        "+crypto/hash.h",
         "+url/url_constants.h",
     ],
     ".*test\.cc": [

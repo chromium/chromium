@@ -27,6 +27,10 @@ class BackgroundTracingHelperTest : public testing::Test {
     return BackgroundTracingHelper::MD5Hash32(string);
   }
 
+  static uint64_t SHA256Hash64(std::string_view string) {
+    return BackgroundTracingHelper::SHA256Hash64(string);
+  }
+
   static std::pair<StringView, std::optional<uint32_t>> SplitMarkNameAndId(
       StringView mark_name) {
     return BackgroundTracingHelper::SplitMarkNameAndId(mark_name);
@@ -68,6 +72,16 @@ TEST_F(BackgroundTracingHelperTest, MD5Hash32) {
       "the quick fox jumps over the lazy brown dog";
   static constexpr uint32_t kQuickFoxHash = 0x01275c33;
   EXPECT_EQ(kQuickFoxHash, MD5Hash32(kQuickFox));
+}
+
+TEST_F(BackgroundTracingHelperTest, SHA256Hash64) {
+  static constexpr char kFoo[] = "foo";
+  static constexpr uint64_t kFooHash = 0x2c26b46b68ffc68fULL;
+  EXPECT_EQ(kFooHash, SHA256Hash64(kFoo));
+
+  static constexpr char kBar[] = "bar";
+  static constexpr uint64_t kBarHash = 0xfcde2b2edba56bf4ULL;
+  EXPECT_EQ(kBarHash, SHA256Hash64(kBar));
 }
 
 TEST_F(BackgroundTracingHelperTest, MarkNameIsTrigger) {
@@ -118,8 +132,9 @@ TEST_F(BackgroundTracingHelperTest, GetMarkHashAndSequenceNumber) {
 }
 
 TEST_F(BackgroundTracingHelperTest, ParsePerformanceMarkSiteHashes) {
-  // A list with an too long site hash is invalid.
-  EXPECT_EQ(SiteHashSet{}, ParsePerformanceMarkSiteHashes("00deadc0de"));
+  // A list with a hash too long (> 16 chars) is invalid.
+  EXPECT_EQ(SiteHashSet{},
+            ParsePerformanceMarkSiteHashes("000011112222333344"));
 
   // A list with a non-hex mark hash is invalid.
   EXPECT_EQ(SiteHashSet{}, ParsePerformanceMarkSiteHashes("deadc0de,nothex"));
@@ -132,20 +147,37 @@ TEST_F(BackgroundTracingHelperTest, ParsePerformanceMarkSiteHashes) {
   {
     auto hashes = ParsePerformanceMarkSiteHashes(",abcd,");
     EXPECT_EQ(1u, hashes.size());
-    EXPECT_TRUE(hashes.Contains(0x0000abcd));
+    EXPECT_TRUE(hashes.Contains(0x0000abcdULL));
   }
 
   {
     auto hashes = ParsePerformanceMarkSiteHashes("aabbccdd");
     EXPECT_EQ(1u, hashes.size());
-    EXPECT_TRUE(hashes.Contains(0xaabbccdd));
+    EXPECT_TRUE(hashes.Contains(0xaabbccddULL));
   }
 
   {
-    auto hashes = ParsePerformanceMarkSiteHashes("bcd,aabbccdd");
-    EXPECT_EQ(2u, hashes.size());
-    EXPECT_TRUE(hashes.Contains(0x00000bcd));
-    EXPECT_TRUE(hashes.Contains(0xaabbccdd));
+    // 10 chars is valid now (64-bit)
+    auto hashes = ParsePerformanceMarkSiteHashes("00deadc0de");
+    EXPECT_EQ(1u, hashes.size());
+    EXPECT_TRUE(hashes.Contains(0x00deadc0deULL));
+  }
+
+  {
+    // 16 chars is valid (64-bit)
+    auto hashes = ParsePerformanceMarkSiteHashes("123456789abcdef0");
+    EXPECT_EQ(1u, hashes.size());
+    EXPECT_TRUE(hashes.Contains(0x123456789abcdef0ULL));
+  }
+
+  {
+    // Mixed 32-bit and 64-bit
+    auto hashes =
+        ParsePerformanceMarkSiteHashes("bcd,aabbccdd,123456789abcdef0");
+    EXPECT_EQ(3u, hashes.size());
+    EXPECT_TRUE(hashes.Contains(0x00000bcdULL));
+    EXPECT_TRUE(hashes.Contains(0xaabbccddULL));
+    EXPECT_TRUE(hashes.Contains(0x123456789abcdef0ULL));
   }
 }
 
