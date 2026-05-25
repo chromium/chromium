@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/borealis/borealis_survey_handler.h"
 
 #include "ash/strings/grit/ash_strings.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -93,7 +94,7 @@ base::flat_map<std::string, std::string> BorealisSurveyHandler::GetSurveyData(
       {"specs",
        base::StringPrintf(
            "%ldGB; %s",
-           (long)(base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() /
+           (long)(base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() /
                   (1000 * 1000 * 1000)),
            base::SysInfo::CPUModelName().c_str())},
       {"monitorsInternal", base::NumberToString(internal_displays)},

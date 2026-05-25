@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/byte_size.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
@@ -54,7 +55,7 @@ TEST_F(BorealisSurveyHandlerTest, GetSurveyDataReturnsCorrectData) {
       {"specs",
        base::StringPrintf(
            "%ldGB; %s",
-           (long)(base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() /
+           (long)(base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() /
                   (1000 * 1000 * 1000)),
            base::SysInfo::CPUModelName().c_str())},
       {"monitorsInternal", "0"},

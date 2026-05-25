@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
+
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
@@ -54,7 +56,7 @@ void PeriodicMetricsService::RecordPeriodicMetrics() {
 void PeriodicMetricsService::RecordRamUsage() const {
   int64_t available_ram =
       base::SysInfo::AmountOfAvailablePhysicalMemory().InBytes();
-  int64_t total_ram = base::SysInfo::AmountOfPhysicalMemory().InBytes();
+  int64_t total_ram = base::SysInfo::AmountOfTotalPhysicalMemory().InBytes();
   ReportUsedPercentage(kKioskRamUsagePercentageHistogram, available_ram,
                        total_ram);
 }

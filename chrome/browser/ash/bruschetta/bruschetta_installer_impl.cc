@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
@@ -97,7 +98,8 @@ void BruschettaInstallerImpl::Install(std::string vm_name,
                                       std::string config_id) {
   if (!base::FeatureList::IsEnabled(
           ash::features::kDisableBruschettaInstallChecks)) {
-    base::ByteCount physical_memory = base::SysInfo::AmountOfPhysicalMemory();
+    base::ByteCount physical_memory =
+        base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount();
     // Physical memory reporting never lines up with exact GB definitions, allow
     // for some wiggle room.
     if (physical_memory.InBytes() <

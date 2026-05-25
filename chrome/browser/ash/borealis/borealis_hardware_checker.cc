@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/borealis/borealis_hardware_checker.h"
 
 #include "ash/constants/ash_features.h"
+#include "base/byte_size.h"
 #include "base/cpu.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -76,7 +77,7 @@ bool CpuRegexMatches(const std::string& cpu_regex) {
 }
 
 bool HasMemory(uint64_t mem_bytes) {
-  return base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() >= mem_bytes;
+  return base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() >= mem_bytes;
 }
 
 bool HasSufficientHardware(const std::string& cpu_regex) {
