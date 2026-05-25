@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <optional>
+#include <set>
 
 #include "base/callback_list.h"
 #include "base/functional/callback_helpers.h"
@@ -30,6 +31,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
@@ -834,6 +836,13 @@ class DraggableView : public views::View {
 
   bool CanDrop(const OSExchangeData& data) override { return true; }
 
+  bool GetDropFormats(
+      int* formats,
+      std::set<ui::ClipboardFormatType>* format_types) override {
+    *formats = ui::OSExchangeData::STRING;
+    return true;
+  }
+
   gfx::Point last_drag_position() const { return last_drag_position_; }
 
  private:
@@ -861,6 +870,15 @@ class DragInteractiveUiTest : public InteractiveBrowserTest {
     test_widget_->Show();
   }
 
+  void TearDownOnMainThread() override {
+    draggable_view_ = nullptr;
+    if (test_widget_) {
+      test_widget_->CloseNow();
+      test_widget_.reset();
+    }
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
+
   auto CheckLastDragPosition(gfx::Point expected_pos) {
     return Do([&, expected_pos]() {
       EXPECT_EQ(draggable_view_->last_drag_position(), expected_pos);
@@ -872,13 +890,23 @@ class DragInteractiveUiTest : public InteractiveBrowserTest {
   raw_ptr<DraggableView> draggable_view_ = nullptr;
 };
 
-// A simple test that verifies widget dragging works by dragging a view that
-// records the location of drag events.
+// A simple test that verifies widget dragging works by moving a view around.
+// The bounds of the view are expected to change as the mouse moves.
 // TODO(crbug.com/40249472): Dragging views does not work on all platforms.
-IN_PROC_BROWSER_TEST_F(DragInteractiveUiTest, DISABLED_DragView) {
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DragView DragView
+#else
+#define MAYBE_DragView DISABLED_DragView
+#endif
+IN_PROC_BROWSER_TEST_F(DragInteractiveUiTest, MAYBE_DragView) {
   RunTestSequence(
-      InAnyContext(MoveMouseTo(kDraggableViewId)),
-      Log("Start drag to (100, 100)"), DragMouseTo(gfx::Point(100, 100), false),
+      InAnyContext(MoveMouseTo(kDraggableViewId)), Log("Start drag"),
+      DragMouseTo(gfx::Point(50, 50), false),
+      // The initial drag movement isn't checked because some platforms consume
+      // the initial input event, preventing the view from getting the "drag
+      // update".
+
+      Log("Continue drag to (100, 100)"), MoveMouseTo(gfx::Point(100, 100)),
       CheckLastDragPosition({100, 100}), Log("Continue drag to (400, 400)"),
       MoveMouseTo(gfx::Point(400, 400)), CheckLastDragPosition({400, 400}),
       Log("Continue drag to (200, 200)"), MoveMouseTo(gfx::Point(200, 200)),

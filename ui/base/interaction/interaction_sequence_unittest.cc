@@ -6331,4 +6331,217 @@ TEST_F(InteractionSequenceAsyncTest, AbortOnHideBetweenTriggerAndStage) {
       });
 }
 
+TEST_P(InteractionSequenceTest, ManualTransitionAsync) {
+  base::MockOnceClosure step1_start;
+  base::MockOnceClosure step2_start;
+
+  test::TestElement el1(kTestIdentifier1, kTestContext1);
+  el1.Show();
+
+  InteractionSequence::StepTransitionHandle transition_closure;
+
+  auto sequence =
+      Builder()
+          .SetContext(kTestContext1)
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             transition_closure =
+                                 seq->SeizeStepTransitionControl();
+                             step1_start.Run();
+                           }))
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             step2_start.Run();
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_ASYNC_CALL_IN_SCOPE(step1_start, Run, sequence->Start());
+  EXPECT_TRUE(transition_closure);
+
+  // Step 2 should not have started yet.
+  EXPECT_ASYNC_CALL_IN_SCOPE(step2_start, Run,
+                             std::move(transition_closure).Proceed(true));
+}
+
+TEST_P(InteractionSequenceTest, ManualTransitionSync) {
+  base::MockOnceClosure step1_start;
+  base::MockOnceClosure step2_start;
+
+  test::TestElement el1(kTestIdentifier1, kTestContext1);
+  el1.Show();
+
+  auto sequence =
+      Builder()
+          .SetContext(kTestContext1)
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             seq->SeizeStepTransitionControl().Proceed(true);
+                             step1_start.Run();
+                           }))
+
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             step2_start.Run();
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_ASYNC_CALLS_IN_SCOPE_2(step1_start, Run, step2_start, Run,
+                                sequence->Start());
+}
+
+TEST_P(InteractionSequenceTest, ManualTransitionAbort) {
+  base::MockOnceClosure step1_start;
+  base::MockOnceClosure step2_start;
+  base::MockOnceCallback<void(const InteractionSequence::AbortedData&)> aborted;
+
+  test::TestElement el1(kTestIdentifier1, kTestContext1);
+  el1.Show();
+
+  InteractionSequence::StepTransitionHandle transition_closure;
+
+  auto sequence =
+      Builder()
+          .SetContext(kTestContext1)
+          .SetAbortedCallback(aborted.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             transition_closure =
+                                 seq->SeizeStepTransitionControl();
+                             step1_start.Run();
+                           }))
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             step2_start.Run();
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_ASYNC_CALL_IN_SCOPE(step1_start, Run, sequence->Start());
+
+  // Abort the sequence.
+  EXPECT_ASYNC_CALL_IN_SCOPE(aborted, Run(testing::_), sequence.reset());
+
+  // Running the transition closure after the sequence is destroyed should do
+  // nothing.
+  EXPECT_CALL(step2_start, Run()).Times(0);
+  std::move(transition_closure).Proceed(true);
+}
+
+TEST_P(InteractionSequenceTest, ManualTransitionFailure) {
+  base::MockOnceClosure step1_start;
+  base::MockOnceClosure step2_start;
+  base::MockOnceCallback<void(const InteractionSequence::AbortedData&)> aborted;
+
+  test::TestElement el1(kTestIdentifier1, kTestContext1);
+  el1.Show();
+
+  InteractionSequence::StepTransitionHandle transition_closure;
+
+  auto sequence =
+      Builder()
+          .SetContext(kTestContext1)
+          .SetAbortedCallback(aborted.Get())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             transition_closure =
+                                 seq->SeizeStepTransitionControl();
+                             step1_start.Run();
+                           }))
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             step2_start.Run();
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_ASYNC_CALL_IN_SCOPE(step1_start, Run, sequence->Start());
+
+  // Fail the sequence.
+  EXPECT_ASYNC_CALL_IN_SCOPE(
+      aborted,
+      Run(test::SequenceAbortedMatcher(
+          1, testing::_, kTestIdentifier1,
+          InteractionSequence::StepType::kShown,
+          InteractionSequence::AbortedReason::kFailedForTesting)),
+      std::move(transition_closure).Proceed(false));
+
+  // Step 2 should not have started.
+  EXPECT_CALL(step2_start, Run()).Times(0);
+}
+
+TEST_P(InteractionSequenceTest, MultipleManualTransitions) {
+  base::MockOnceClosure step1_start;
+  base::MockOnceClosure step2_start;
+  base::MockOnceClosure step3_start;
+
+  test::TestElement el1(kTestIdentifier1, kTestContext1);
+  el1.Show();
+
+  InteractionSequence::StepTransitionHandle transition_closure1;
+  InteractionSequence::StepTransitionHandle transition_closure2;
+
+  auto sequence =
+      Builder()
+          .SetContext(kTestContext1)
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             transition_closure1 =
+                                 seq->SeizeStepTransitionControl();
+                             step1_start.Run();
+                           }))
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             transition_closure2 =
+                                 seq->SeizeStepTransitionControl();
+                             step2_start.Run();
+                           }))
+                       .Build())
+          .AddStep(InteractionSequence::StepBuilder()
+                       .SetElementID(kTestIdentifier1)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](InteractionSequence* seq, TrackedElement* el) {
+                             step3_start.Run();
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_ASYNC_CALL_IN_SCOPE(step1_start, Run, sequence->Start());
+  EXPECT_TRUE(transition_closure1);
+  EXPECT_FALSE(transition_closure2);
+
+  EXPECT_ASYNC_CALL_IN_SCOPE(step2_start, Run,
+                             std::move(transition_closure1).Proceed(true));
+  EXPECT_TRUE(transition_closure2);
+
+  EXPECT_ASYNC_CALL_IN_SCOPE(step3_start, Run,
+                             std::move(transition_closure2).Proceed(true));
+}
+
 }  // namespace ui

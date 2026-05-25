@@ -404,108 +404,146 @@ bool InteractionTestUtilMouse::GetTouchMode() const {
   return touch_mode_;
 }
 
-bool InteractionTestUtilMouse::PerformGesturesImpl(const GestureParams& params,
-                                                   MouseGestures gestures) {
+void InteractionTestUtilMouse::PerformGesturesImpl(
+    base::OnceCallback<void(bool)> on_complete,
+    const GestureParams& params,
+    MouseGestures gestures) {
   CHECK(!gestures.empty());
   CHECK(!performing_gestures_);
-  base::AutoReset<bool> performing_gestures(&performing_gestures_, true);
+  performing_gestures_ = true;
+  on_complete_ = std::move(on_complete);
   canceled_ = false;
-  for (auto& gesture : gestures) {
-    if (canceled_) {
-      break;
-    }
 
-    base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
-    if (MouseButtonGesture* const button =
-            std::get_if<MouseButtonGesture>(&gesture)) {
-      switch (button->button_state) {
-        case ui_controls::UP: {
-          CHECK(buttons_down_.erase(button->button));
-          base::OnceClosure on_complete =
-              params.force_async ? base::DoNothing() : run_loop.QuitClosure();
-          if (ShouldCancelDrag()) {
-            // This will bail out of any nested drag-drop run loop, allowing
-            // the code to proceed even if the drag somehow starts while the
-            // mouse-up is being processed.
-            on_complete = std::move(on_complete)
+  PerformNextGesture(params, std::move(gestures));
+}
+
+bool InteractionTestUtilMouse::PerformGesturesImpl(const GestureParams& params,
+                                                   MouseGestures gestures) {
+  base::RunLoop run_loop{base::RunLoop::Type::kNestableTasksAllowed};
+  PerformGesturesImpl(base::IgnoreArgs<bool>(run_loop.QuitClosure()), params,
+                      std::move(gestures));
+  run_loop.Run();
+  return !canceled_;
+}
+
+void InteractionTestUtilMouse::PerformNextGesture(const GestureParams& params,
+                                                  MouseGestures gestures) {
+  if (canceled_ || gestures.empty()) {
+    performing_gestures_ = false;
+    if (on_complete_) {
+      std::move(on_complete_).Run(!canceled_);
+    }
+    return;
+  }
+
+  MouseGesture gesture = std::move(gestures.front());
+  gestures.pop_front();
+  const bool is_last_gesture = gestures.empty();
+
+  // If the gestures should be executed asynchronously, then the next gesture
+  // will be sent immediately after sending the current one. Therefore,
+  // defer `on_complete_` until all gestures have been sent.
+  //
+  // TODO(crbug.com/40249472): The `force_async` should eventually be removed
+  // altogether. The current blocker is the "click" gesture. Specifically, on
+  // MacOS 12 and earlier, which uses Carbon rather than Cocoa, the mouse down
+  // and up events must be close together to be considered a "click"; otherwise
+  // context menus will be prematurely dismissed for right-clicks. Executing
+  // the inputs sequentially (i.e. with `force_async = false`) incurs too
+  // long of a delay.
+  base::OnceClosure perform_next_gesture = base::BindOnce(
+      &InteractionTestUtilMouse::PerformNextGesture,
+      weak_ptr_factory_.GetWeakPtr(), params, std::move(gestures));
+  base::OnceClosure step_complete = base::DoNothing();
+  if (!params.force_async || is_last_gesture) {
+    step_complete = std::move(perform_next_gesture);
+  }
+
+  if (MouseButtonGesture* const button =
+          std::get_if<MouseButtonGesture>(&gesture)) {
+    switch (button->button_state) {
+      case ui_controls::UP: {
+        CHECK(buttons_down_.erase(button->button));
+        if (ShouldCancelDrag()) {
+          // This will bail out of any nested drag-drop run loop, allowing
+          // the code to proceed even if the drag somehow starts while the
+          // mouse-up is being processed.
+          step_complete = std::move(step_complete)
                               .Then(base::BindOnce(
                                   &InteractionTestUtilMouse::CancelFutureDrag,
                                   weak_ptr_factory_.GetWeakPtr()));
-          }
-#if defined(USE_AURA)
-          dragging_ = false;
-#endif
-          if (!SendButtonPress(*button, params, std::move(on_complete))) {
-            LOG(ERROR) << "Mouse button " << button->button << " up failed.";
-            return false;
-          }
-          if (!params.force_async) {
-            run_loop.Run();
-          }
-          break;
         }
-        case ui_controls::DOWN:
-#if TOUCH_INPUT_SUPPORTED
-          CHECK(!touch_mode_ || buttons_down_.empty())
-              << "In touch mode, only one set of fingers may be down at any "
-                 "given time.";
-#endif
-          CHECK(buttons_down_.insert(button->button).second);
-#if BUILDFLAG(IS_MAC)
-          if (!params.force_async && button->button == ui_controls::RIGHT) {
-            LOG(WARNING)
-                << "InteractionTestUtilMouse::PerformGestures() - "
-                   "Important note:\n"
-                << "Because right-clicking on Mac typically results in a "
-                   "context menu, and because some (but not all) context menus "
-                   "on Mac are native and take over the main message loop, "
-                   "right-clicking could cause the test to hang.\n"
-                << "If you notice your test hangs on Mac, use "
-                   "MayInvolveNativeContextMenu() and minimize the number of "
-                   "test "
-                   "steps performed while the context menu is open.";
-          }
-#endif
-          CancelDragNow();
-          if (!SendButtonPress(*button, params,
-                               params.force_async ? base::DoNothing()
-                                                  : run_loop.QuitClosure())) {
-            LOG(ERROR) << "Mouse button " << button->button << " down failed.";
-            return false;
-          }
-
-          if (!params.force_async) {
-            run_loop.Run();
-          }
-          break;
-      }
-    } else {
-      const auto& move = std::get<MouseMoveGesture>(gesture);
 #if defined(USE_AURA)
-      if (!buttons_down_.empty()) {
-        CHECK(buttons_down_.contains(ui_controls::LEFT));
-        dragging_ = true;
-      }
+        dragging_ = false;
 #endif
-      if (!SendMove(move, params,
-                    params.force_async ? base::DoNothing()
-                                       : run_loop.QuitClosure())) {
-        LOG(ERROR) << "Mouse move to " << move.ToString() << " failed.";
-        return false;
+        if (!SendButtonPress(*button, params, std::move(step_complete))) {
+          LOG(ERROR) << "Mouse button " << button->button << " up failed.";
+          CancelAllGestures();
+          return;
+        }
+        break;
       }
-
-      if (!params.force_async) {
-        run_loop.Run();
-      }
+      case ui_controls::DOWN:
+#if TOUCH_INPUT_SUPPORTED
+        CHECK(!touch_mode_ || buttons_down_.empty())
+            << "In touch mode, only one set of fingers may be down at any "
+               "given time.";
+#endif
+        CHECK(buttons_down_.insert(button->button).second);
+#if BUILDFLAG(IS_MAC)
+        if (!params.force_async && button->button == ui_controls::RIGHT) {
+          LOG(WARNING)
+              << "InteractionTestUtilMouse::PerformGestures() - "
+                 "Important note:\n"
+              << "Because right-clicking on Mac typically results in a "
+                 "context menu, and because some (but not all) context menus "
+                 "on Mac are native and take over the main message loop, "
+                 "right-clicking could cause the test to hang.\n"
+              << "If you notice your test hangs on Mac, use "
+                 "MayInvolveNativeContextMenu() and minimize the number of "
+                 "test "
+                 "steps performed while the context menu is open.";
+        }
+#endif
+        CancelDragNow();
+        if (!SendButtonPress(*button, params, std::move(step_complete))) {
+          LOG(ERROR) << "Mouse button " << button->button << " down failed.";
+          CancelAllGestures();
+          return;
+        }
+        break;
+    }
+  } else {
+    const auto& move = std::get<MouseMoveGesture>(gesture);
+#if defined(USE_AURA)
+    if (!buttons_down_.empty()) {
+      CHECK(buttons_down_.contains(ui_controls::LEFT));
+      dragging_ = true;
+    }
+#endif
+    if (!SendMove(move, params, std::move(step_complete))) {
+      LOG(ERROR) << "Mouse move to " << move.ToString() << " failed.";
+      CancelAllGestures();
+      return;
     }
   }
 
-  return !canceled_;
+  // Run the next gesture if it hasn't been passed as a callback to the
+  // gesture that was just performed (i.e. for async gestures).
+  if (perform_next_gesture) {
+    PostTask(std::move(perform_next_gesture));
+  }
 }
 
 void InteractionTestUtilMouse::CancelAllGestures() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   canceled_ = true;
+  if (performing_gestures_) {
+    performing_gestures_ = false;
+    if (on_complete_) {
+      std::move(on_complete_).Run(false);
+    }
+  }
 
 #if TOUCH_INPUT_SUPPORTED
   if (touch_mode_ && !buttons_down_.empty()) {
