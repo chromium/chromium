@@ -52,7 +52,8 @@ namespace enterprise_reporting {
 namespace {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-BASE_FEATURE(kAlwaysUploadExtensionInfo, base::FEATURE_DISABLED_BY_DEFAULT);
+// TODO(b/516458264): Clean up feature and deprecate condition which used it.
+BASE_FEATURE(kAlwaysUploadExtensionInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 
