@@ -2693,6 +2693,11 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 // the add credential flow, the VC auto scrolls to the newly created or the
 // updated entry.
 - (void)testAutoScroll {
+  // TODO(crbug.com/460743577): Flaky on iPad on iOS below 26.
+  if ([ChromeEarlGrey isIPadIdiom] && !base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPad on iOS below 26.");
+  }
+
   for (int i = 0; i < 20; i++) {
     NSString* username = [NSString stringWithFormat:@"username %d", i];
     NSString* password = [NSString stringWithFormat:@"password %d", i];
