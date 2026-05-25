@@ -400,6 +400,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Customization button on NTP for tablet"/>
 </enum>
 
+<enum name="NtpCustomizationThemeTipButtonType">
+  <summary>Click actions on the NTP theme tip bottom sheet.</summary>
+  <int value="0" label="Customize"/>
+  <int value="1" label="Cancel"/>
+</enum>
+
 <enum name="NtpCustomizationThemeUploadImagePreviewInteractions">
   <summary/>
   <int value="0" label="Cancel"/>

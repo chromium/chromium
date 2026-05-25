@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.tip.NtpThemeTipCoordinator.ThemeTipButtonType;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -90,6 +91,10 @@ public class NtpCustomizationMetricsUtils {
     @VisibleForTesting
     static final String HISTOGRAM_CHROME_COLOR_TURN_ON_DAILY_REFRESH =
             HISTOGRAM_THEME_CHROME_COLOR + ".TurnOnDailyRefresh";
+
+    @VisibleForTesting
+    static final String HISTOGRAM_THEME_TIP_BOTTOM_SHEET_CLICK =
+            HISTOGRAM_NTP_CUSTOMIZATION_PREFIX + ".ThemeTip.BottomSheet.Click";
 
     /**
      * Records the type of theme selected for the New Tab Page background. This is logged once on
@@ -260,5 +265,15 @@ public class NtpCustomizationMetricsUtils {
             RecordHistogram.recordSparseHistogram(
                     HISTOGRAM_THEME_COLLECTION_DAILY_REFRESH_OFF, themeCollectionHash);
         }
+    }
+
+    /**
+     * Records user click event on the theme tip bottom sheet.
+     *
+     * @param buttonType The type of button clicked by the user on the theme tip bottom sheet.
+     */
+    public static void recordThemeTipBottomSheetClick(@ThemeTipButtonType int buttonType) {
+        RecordHistogram.recordEnumeratedHistogram(
+                HISTOGRAM_THEME_TIP_BOTTOM_SHEET_CLICK, buttonType, ThemeTipButtonType.NUM_ENTRIES);
     }
 }

@@ -27,8 +27,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ntp_customization.BottomSheetDelegate;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.tip.NtpThemeTipCoordinator.ThemeTipButtonType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link NtpThemeTipCoordinator}. */
@@ -75,17 +77,27 @@ public class NtpThemeTipCoordinatorUnitTest {
 
     @Test
     public void testCustomizeButton() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.ThemeTip.BottomSheet.Click",
+                        ThemeTipButtonType.CUSTOMIZE);
         View customizeButton = mView.findViewById(R.id.customize_button);
         assertNotNull(customizeButton);
         customizeButton.performClick();
         verify(mOnClickListener).onClick(eq(customizeButton));
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testCancelButton() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "NewTabPage.Customization.ThemeTip.BottomSheet.Click",
+                        ThemeTipButtonType.CANCEL);
         View cancelButton = mView.findViewById(R.id.cancel_button);
         assertNotNull(cancelButton);
         cancelButton.performClick();
         verify(mDismissBottomSheet).run();
+        histogramWatcher.assertExpected();
     }
 }
