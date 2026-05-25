@@ -98,4 +98,10 @@ void MemoryConsumerRegistration::OnBeforeMemoryConsumerRegistryDestroyed() {
   registry_ = nullptr;
 }
 
+ByteSize ScaleByMemoryLimit(ByteSize baseline, int memory_limit) {
+  // Use int64_t here in order to get saturating behaviour if we get too big.
+  const int64_t tmp = static_cast<int64_t>(baseline.InBytes());
+  return ByteSize(static_cast<uint64_t>(ScaleByMemoryLimit(tmp, memory_limit)));
+}
+
 }  // namespace base

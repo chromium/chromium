@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
@@ -226,6 +227,8 @@ T ScaleByMemoryLimit(T baseline, int memory_limit) {
   double ratio = memory_limit / 100.0;
   return base::saturated_cast<T>(baseline * ratio);
 }
+
+ByteSize ScaleByMemoryLimit(ByteSize baseline, int memory_limit);
 
 }  // namespace base
 
