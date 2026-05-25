@@ -34,7 +34,6 @@ class IndigoInternalsPageHandler
   // indigo_internals::mojom::PageHandler:
   void GetLocalEligibility(GetLocalEligibilityCallback callback) override;
   void GetCombinedEligibility(GetCombinedEligibilityCallback callback) override;
-  void InvalidateRemoteEligibility() override;
   void GetOptimizationGuideStatus(
       GetOptimizationGuideStatusCallback callback) override;
 

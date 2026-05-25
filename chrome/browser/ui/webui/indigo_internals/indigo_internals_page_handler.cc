@@ -109,12 +109,6 @@ void IndigoInternalsPageHandler::GetCombinedEligibility(
       },
       std::move(callback)));
 }
-void IndigoInternalsPageHandler::InvalidateRemoteEligibility() {
-  indigo::IndigoService* service =
-      indigo::IndigoServiceFactory::GetForProfile(profile_);
-  CHECK(service);
-  service->InvalidateRemoteEligibility();
-}
 
 void IndigoInternalsPageHandler::GetOptimizationGuideStatus(
     GetOptimizationGuideStatusCallback callback) {

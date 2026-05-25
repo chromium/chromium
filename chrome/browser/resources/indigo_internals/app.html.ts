@@ -32,7 +32,6 @@ export function getHtml(this: IndigoInternalsAppElement) {
         <span class="status-label">Combined Eligibility</span>
         <div class="status-value-group">
           <cr-button @click="${this.onFetchCombinedClick_}">Fetch</cr-button>
-          <cr-button @click="${this.onInvalidateClick_}">Invalidate</cr-button>
         </div>
       </div>
 

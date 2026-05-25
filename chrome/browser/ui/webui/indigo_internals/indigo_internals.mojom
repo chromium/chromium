@@ -55,13 +55,8 @@ interface PageHandler {
   GetLocalEligibility() => (LocalEligibility status);
 
   // Fetches the full combined eligibility status. This may trigger an
-  // asynchronous network request to fetch remote eligibility if it is not
-  // already cached.
+  // asynchronous network request to fetch remote eligibility.
   GetCombinedEligibility() => (CombinedEligibility status);
-
-  // Triggers invalidation of the remote eligibility cache. This is used
-  // to force a refresh of the status when testing.
-  InvalidateRemoteEligibility();
 
   // Fetches the optimization guide status (see above).
   GetOptimizationGuideStatus() => (OptimizationGuideStatus status);

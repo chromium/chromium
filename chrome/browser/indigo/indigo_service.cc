@@ -189,12 +189,6 @@ void IndigoService::GetCombinedEligibility(
     return;
   }
 
-  if (remote_eligibility_.has_value()) {
-    status.remote_eligibility = remote_eligibility_.value();
-    std::move(callback).Run(status);
-    return;
-  }
-
   pending_callbacks_.push_back(std::move(callback));
   if (remote_eligibility_fetch_in_progress_) {
     return;
@@ -229,20 +223,10 @@ void IndigoService::TriggerRemoteEligibilityFetch() {
       std::move(on_rpc_status_received)));
 }
 
-void IndigoService::InvalidateRemoteEligibility() {
-  remote_eligibility_.reset();
-  remote_eligibility_fetch_in_progress_ = false;
-  remote_eligibility_weak_factory_.InvalidateWeakPtrs();
-
-  if (!pending_callbacks_.empty()) {
-    TriggerRemoteEligibilityFetch();
-  }
-}
 
 void IndigoService::OnRemoteEligibilityReceived(
     base::expected<RemoteEligibility, std::string> eligibility_or_error) {
   remote_eligibility_fetch_in_progress_ = false;
-  remote_eligibility_ = std::move(eligibility_or_error);
 
   std::vector<CombinedEligibilityCallback> callbacks;
   callbacks.swap(pending_callbacks_);
@@ -253,7 +237,7 @@ void IndigoService::OnRemoteEligibilityReceived(
     status.has_onboarded_pref =
         pref_service_->GetBoolean(prefs::kIndigoHasOnboarded);
   }
-  status.remote_eligibility = remote_eligibility_.value();
+  status.remote_eligibility = std::move(eligibility_or_error);
 
   for (auto& callback : callbacks) {
     std::move(callback).Run(status);

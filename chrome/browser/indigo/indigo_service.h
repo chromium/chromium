@@ -109,9 +109,6 @@ class IndigoService : public KeyedService,
   // This may require contacting the service.
   void GetCombinedEligibility(CombinedEligibilityCallback callback);
 
-  // Invalidate the cached or in-flight status fetch from the server, so it will
-  // be refetched when GetCombinedEligibility is called next.
-  void InvalidateRemoteEligibility();
 
   // KeyedService:
   void Shutdown() override;
@@ -156,11 +153,6 @@ class IndigoService : public KeyedService,
   // Overrides the server fetch for testing purposes.
   RemoteEligibilityFetcher remote_eligibility_fetcher_;
 
-  // The cached result of the last remote eligibility fetch (or error
-  // description). It is empty if no fetch has succeeded yet or if it was
-  // invalidated.
-  std::optional<base::expected<RemoteEligibility, std::string>>
-      remote_eligibility_;
 
   // Callbacks waiting for the current remote eligibility fetch to complete.
   std::vector<CombinedEligibilityCallback> pending_callbacks_;
