@@ -446,6 +446,11 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Opens the add account screen and then cancels it by opening a new tab.
 // Ensures that the add account screen is correctly dismissed. crbug.com/462200
 - (void)testSignInCancelAddAccount {
+  // TODO(crbug.com/429403548): Re-enable this flaky test on iOS below 26.
+  if (!base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS below 26.");
+  }
+
   // Add an identity to avoid arriving on the Add Account screen when opening
   // sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
