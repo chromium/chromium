@@ -45,6 +45,7 @@
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -542,7 +543,11 @@ IN_PROC_BROWSER_TEST_P(PolicyUITest, LogsPageRedirectsOnChromeOS) {
   EXPECT_TRUE(content::WaitForLoadStop(contents));
 
 #if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_EQ(contents->GetLastCommittedURL(), policy_url);
+  if (policy::PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+    EXPECT_EQ(contents->GetLastCommittedURL(), logs_url);
+  } else {
+    EXPECT_EQ(contents->GetLastCommittedURL(), policy_url);
+  }
 #else
   EXPECT_EQ(contents->GetLastCommittedURL(), logs_url);
 #endif

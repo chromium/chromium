@@ -164,6 +164,8 @@ class POLICY_EXPORT PolicyLogger {
 
   static PolicyLogger* GetInstance();
 
+  static bool IsPolicyLoggingEnabled();
+
   PolicyLogger();
   PolicyLogger(const PolicyLogger&) = delete;
   PolicyLogger& operator=(const PolicyLogger&) = delete;
@@ -174,9 +176,6 @@ class POLICY_EXPORT PolicyLogger {
 
   // Returns the logs in the mojo format.
   std::vector<policy::mojom::LogPtr> GetAsMojoList();
-
-  // Checks if browser is running on Android.
-  bool IsPolicyLoggingEnabled() const;
 
   // Sets `is_log_deletion_enabled_` to allow scheduling old log deletion.
   void EnableLogDeletion();

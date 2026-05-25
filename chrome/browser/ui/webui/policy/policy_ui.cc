@@ -29,6 +29,7 @@
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/policy_loader_common.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_utils.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -181,10 +182,10 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
   source->AddString("versionInfo",
                     base::WriteJson(GetVersionInfo()).value_or(""));
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
-  source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
-#endif
+  if (policy::PolicyLogger::IsPolicyLoggingEnabled()) {
+    source->AddResourcePath("logs/", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
+    source->AddResourcePath("logs", IDR_POLICY_LOGS_POLICY_LOGS_HTML);
+  }
 
   const bool allow_policy_test_page = PolicyUI::ShouldLoadTestPage(profile);
   if (allow_policy_test_page) {
@@ -242,12 +243,13 @@ void CreateAndAddPolicyUIHtmlSource(Profile* profile) {
     source->AddLocalizedStrings(kPolicyTestTypes);
   }
 
-#if BUILDFLAG(IS_CHROMEOS)
-  source->AddString("acceptedPaths", allow_policy_test_page ? "/|/test" : "/");
-#else
-  source->AddString("acceptedPaths",
-                    allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
-#endif
+  if (policy::PolicyLogger::IsPolicyLoggingEnabled()) {
+    source->AddString("acceptedPaths",
+                      allow_policy_test_page ? "/|/test|/logs" : "/|/logs");
+  } else {
+    source->AddString("acceptedPaths",
+                      allow_policy_test_page ? "/|/test" : "/");
+  }
   webui::SetupWebUIDataSource(source, kPolicyResources, IDR_POLICY_POLICY_HTML);
 
   webui::EnableTrustedTypesCSP(source);

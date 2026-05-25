@@ -18,10 +18,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/build_config.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "components/version_info/version_info.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/channel/channel_info.h"
+#endif
 
 namespace policy {
 
@@ -155,9 +158,30 @@ PolicyLogger::Log::Log(const Severity log_severity,
       file_(file),
       line_(line),
       timestamp_(base::Time::Now()) {}
+
+// static
 PolicyLogger* PolicyLogger::GetInstance() {
   static base::NoDestructor<PolicyLogger> instance;
   return instance.get();
+}
+
+// static
+bool PolicyLogger::IsPolicyLoggingEnabled() {
+#if BUILDFLAG(IS_CHROMEOS)
+  // All choices are explicit to ensure that new channels added in the future
+  // will need to be explicitly handled here and follow the right logic.
+  switch (ash::GetChannel()) {
+    case version_info::Channel::STABLE:
+      return false;
+    case version_info::Channel::BETA:
+    case version_info::Channel::DEV:
+    case version_info::Channel::CANARY:
+    case version_info::Channel::UNKNOWN:
+      return true;
+  }
+#else
+  return true;
+#endif
 }
 
 PolicyLogger::LogHelper::LogHelper(
@@ -175,7 +199,7 @@ PolicyLogger::LogHelper::LogHelper(
       line_(line) {}
 
 PolicyLogger::LogHelper::~LogHelper() {
-  if (PolicyLogger::GetInstance()->IsPolicyLoggingEnabled()) {
+  if (PolicyLogger::IsPolicyLoggingEnabled()) {
     PolicyLogger::GetInstance()->AddLog(PolicyLogger::Log(
         log_severity_, log_source_, message_buffer_.str(), file_, line_));
   }
@@ -289,14 +313,6 @@ std::vector<policy::mojom::LogPtr> PolicyLogger::GetAsMojoList() {
   std::ranges::transform(logs_, std::back_inserter(all_logs_list),
                          &PolicyLogger::Log::GetAsMojoLog);
   return all_logs_list;
-}
-
-bool PolicyLogger::IsPolicyLoggingEnabled() const {
-#if BUILDFLAG(IS_CHROMEOS)
-  return false;
-#else
-  return true;
-#endif
 }
 
 void PolicyLogger::EnableLogDeletion() {

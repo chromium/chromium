@@ -338,6 +338,7 @@ source_set("internal") {
   }
   if (is_chromeos) {
     deps += [
+      "//chromeos/ash/components/channel",
       "//chromeos/ash/components/policy/device_local_account",
       "//chromeos/ash/components/system",
     ]
