@@ -267,12 +267,14 @@ public class LogoMediator implements TemplateUrlServiceObserver {
             mOnLogoClickUrl = assumeNonNull(cachedDoodle).onClickUrl;
             mAnimatedLogoUrl = assumeNonNull(cachedDoodle).animatedLogoUrl;
             updateModelWithLogo(cachedDoodle);
-            RecordHistogram.recordEnumeratedHistogram(
-                    LOGO_SHOWN_FROM_CACHE_UMA_NAME,
-                    assumeNonNull(cachedDoodle).animatedLogoUrl == null
+            int logoType =
+                    mAnimatedLogoUrl == null
                             ? LogoShownId.STATIC_LOGO_SHOWN
-                            : LogoShownId.CTA_IMAGE_SHOWN,
-                    LogoShownId.LOGO_SHOWN_COUNT);
+                            : LogoShownId.CTA_IMAGE_SHOWN;
+            RecordHistogram.recordEnumeratedHistogram(
+                    LOGO_SHOWN_UMA_NAME, logoType, LogoShownId.LOGO_SHOWN_COUNT);
+            RecordHistogram.recordEnumeratedHistogram(
+                    LOGO_SHOWN_FROM_CACHE_UMA_NAME, logoType, LogoShownId.LOGO_SHOWN_COUNT);
             return;
         }
 

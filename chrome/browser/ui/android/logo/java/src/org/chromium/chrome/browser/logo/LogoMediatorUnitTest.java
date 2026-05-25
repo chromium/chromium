@@ -36,6 +36,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
@@ -175,7 +176,39 @@ public class LogoMediatorUnitTest {
         Logo cachedLogo = mock(Logo.class);
         when(mDoodleCache.getCachedDoodle(any())).thenReturn(cachedLogo);
 
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("NewTabPage.LogoShown", 0)
+                        .expectIntRecord("NewTabPage.LogoShown.FromCache", 0)
+                        .build();
+
         logoMediator.updateVisibility(/* animationEnabled= */ true);
+
+        histogramWatcher.assertExpected();
+
+        // Should use cached logo and not call bridge
+        verify(mLogoBridge, never()).getCurrentLogo(any());
+        assertEquals(cachedLogo, mLogoModel.get(LogoProperties.LOGO));
+        // Animation should be disabled when loading from cache
+        Assert.assertFalse(mLogoModel.get(LogoProperties.ANIMATION_ENABLED));
+    }
+
+    @Test
+    public void testLoadAnimatedLogoFromCache() {
+        LogoMediator logoMediator = createMediator();
+        logoMediator.setHasLogoLoadedForCurrentSearchEngineForTesting(false);
+        Logo cachedLogo = new Logo(null, TEST_CLICK_URL, null, TEST_ANIMATED_LOGO_URL);
+        when(mDoodleCache.getCachedDoodle(any())).thenReturn(cachedLogo);
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("NewTabPage.LogoShown", 1)
+                        .expectIntRecord("NewTabPage.LogoShown.FromCache", 1)
+                        .build();
+
+        logoMediator.updateVisibility(/* animationEnabled= */ true);
+
+        histogramWatcher.assertExpected();
 
         // Should use cached logo and not call bridge
         verify(mLogoBridge, never()).getCurrentLogo(any());
