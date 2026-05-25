@@ -441,6 +441,8 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest,
       : widget_(new Widget),
         native_widget_mac_(new MockNativeWidgetMac(widget_.get())) {
     observation_.Observe(widget_.get());
+
+    ui::CATransactionCoordinator::Get().DisableForTesting();
   }
 
   explicit BridgedNativeWidgetTestBase(SkipInitialization tag)
@@ -540,6 +542,9 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest,
   Widget::InitParams::ShadowType shadow_type_ =
       Widget::InitParams::ShadowType::kDefault;
 
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
+
  private:
   TestViewsDelegate test_views_delegate_;
 
@@ -633,9 +638,6 @@ class BridgedNativeWidgetTest : public BridgedNativeWidgetTestBase,
   NSTextView* __strong dummy_text_view_;
 
   HandleKeyEventCallback handle_key_event_callback_;
-
-  base::test::SingleThreadTaskEnvironment task_environment_{
-      base::test::SingleThreadTaskEnvironment::MainThreadType::UI};
 };
 
 // Class that counts occurrences of a VKEY_RETURN accelerator, marking them
