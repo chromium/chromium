@@ -523,8 +523,21 @@ def _PrintMemUsageSummary(num_processes, total_pss, total_uss, summary_metrics):
   print('Total USS (private clean+dirty): %d KB (%.1f MB)' %
         (total_uss, total_uss / 1024.0))
   print('\nApp Summary Totals (PSS):')
+
+  mmap_val = summary_metrics.get('Code', 0) + summary_metrics.get('System', 0)
+
+  # The App Summary's "Code" value actually only reports private memory
+  # for code/resources, and the "System" bucket was capturing PSS of
+  # shared code.
+  # Combining Code & System in the final summary makes more sense, since
+  # this is the "memory from mmap'ed files".
   for metric, value in summary_metrics.items():
-    print('  %-15s: %d KB (%.1f MB)' % (metric, value, value / 1024.0))
+    if metric in ('Code', 'System'):
+      continue
+    print('  %-20s: %d KB (%.1f MB)' % (metric, value, value / 1024.0))
+
+  print('  %-20s: %d KB (%.1f MB)' %
+        ('mmap (Code+System)', mmap_val, mmap_val / 1024.0))
 
 
 def _RunMemUsage(devices, package_name, query_app=False):
@@ -536,7 +549,7 @@ def _RunMemUsage(devices, package_name, query_app=False):
     ret = []
     for process in sorted(_GetPackageProcesses(d, package_name)):
       meminfo = d.RunShellCommand(cmd_args + [str(process.pid)])
-      ret.append((process.name, '\n'.join(meminfo)))
+      ret.append((process.name, process.pid, '\n'.join(meminfo)))
     return ret
 
   parallel_devices = device_utils.DeviceUtils.parallel(devices)
@@ -557,9 +570,13 @@ def _RunMemUsage(devices, package_name, query_app=False):
           'Private Other': 0,
           'System': 0,
       }
-      for name, usage in sorted(result):
+      for name, pid, usage in sorted(result):
         print(_Colorize('==== Output of "dumpsys meminfo %s" ====' % name,
                         colorama.Fore.GREEN))
+        if 'MEMINFO in pid' not in usage:
+          # dumpsys meminfo prints the pids for java processes, but not for
+          # native ones. Add it in since it can be helpful.
+          print('Native Process PID=%d' % pid)
         print(usage)
         parsed = _ParseMeminfo(usage)
         if parsed:
