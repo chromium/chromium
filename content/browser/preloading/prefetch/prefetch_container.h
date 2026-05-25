@@ -314,6 +314,8 @@ class CONTENT_EXPORT PrefetchContainer
     return resource_request_.get();
   }
 
+  const GURL& GetActivationBeaconUrl() const { return activation_beacon_url_; }
+
   base::WeakPtr<PrefetchContainer> GetWeakPtr() {
     return weak_method_factory_.GetWeakPtr();
   }
@@ -879,6 +881,9 @@ class CONTENT_EXPORT PrefetchContainer
   // Set via `SetPrefetchMatchMissedTimeForMetrics()` which can be called during
   // prefetch start (`PrefetchService::StartSinglePrefetch()`).
   std::optional<base::TimeTicks> time_prefetch_match_missed_;
+
+  // The resolved and validated full URL for the activation beacon.
+  GURL activation_beacon_url_;
 
   PrefetchContainerMetrics prefetch_container_metrics_;
 

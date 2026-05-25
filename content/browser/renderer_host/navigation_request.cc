@@ -78,6 +78,7 @@
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
+#include "content/browser/preloading/preload_activation_report_manager.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/preloading/prerender/prerender_navigation_utils.h"
@@ -8880,6 +8881,13 @@ void NavigationRequest::DidCommitNavigation(
   TRACE_EVENT_INSTANT(
       "navigation", "BeforeUnloadExecutionMode", "BeforeUnloadExecutionMode",
       BeforeUnloadExecutionModeToString(GetBeforeUnloadExecutionMode()));
+
+  if (!activation_beacon_url_.is_empty()) {
+    auto* manager =
+        PreloadActivationReportManager::GetOrCreateForBrowserContext(
+            GetWebContents()->GetBrowserContext());
+    manager->ReportActivation(activation_beacon_url_, GetWebContents());
+  }
 
   // DO NOT ADD CODE after this.
   // UnblockPendingSubframeNavigationRequestsIfNeeded() resumes throttles, which

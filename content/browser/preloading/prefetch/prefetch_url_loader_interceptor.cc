@@ -311,6 +311,15 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   NavigationRequest* navigation_request = frame_tree_node->navigation_request();
   bool bypass_redirect_checks = false;
 
+  // For prerendered pages, the page is not presented to the user
+  // when it is commitred. The activation beacon will be sent on the
+  // PrerenderHost activation.
+  if (prefetch_container && navigation_request &&
+      !navigation_request->IsInPrerenderedMainFrame()) {
+    navigation_request->set_activation_beacon_url(
+        prefetch_container->GetActivationBeaconUrl());
+  }
+
   if (GetPrefetchCompleteCallbackForTesting()) {
     GetPrefetchCompleteCallbackForTesting().Run(prefetch_container);  // IN-TEST
   }

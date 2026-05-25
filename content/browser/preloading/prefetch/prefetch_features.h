@@ -112,6 +112,10 @@ CONTENT_EXPORT extern const base::FeatureParam<size_t>
 // To enable this, also enable `kPrefetchOffTheMainThread`.
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchOffTheMainThreadForceForTesting);
 
+// If enabled, prefetch activation beacon will be sent when a prefetch is
+// activated.
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kPrefetchActivationBeacon);
+
 }  // namespace features
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_FEATURES_H_

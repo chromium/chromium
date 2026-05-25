@@ -1064,6 +1064,19 @@ PrefetchContainer::OnPrefetchResponseStartedInternal(
     return PrefetchErrorOnResponseReceived::kFailedInvalidHeaders;
   }
 
+  if (base::FeatureList::IsEnabled(features::kPrefetchActivationBeacon) &&
+      head->parsed_headers &&
+      head->parsed_headers->prefetch_activation_beacon_endpoint.has_value()) {
+    const GURL& endpoint =
+        *head->parsed_headers->prefetch_activation_beacon_endpoint;
+    // TODO(crbug.com/499814382): Report to DevTools console when the endpoint
+    // specified by the header is not in the same origin for debuggability.
+    if (endpoint.is_valid() && url::Origin::Create(endpoint).IsSameOriginWith(
+                                   url::Origin::Create(GetCurrentURL()))) {
+      activation_beacon_url_ = endpoint;
+    }
+  }
+
   RecordPrefetchProxyPrefetchMainframeTotalTime(head);
   RecordPrefetchProxyPrefetchMainframeConnectTime(head);
 

@@ -4,6 +4,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
@@ -11,6 +12,7 @@
 #include "content/browser/back_forward_cache_test_util.h"
 #include "content/browser/preloading/prefetch/pre_prefetch_service_impl.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -30,6 +32,7 @@
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
@@ -773,6 +776,117 @@ IN_PROC_BROWSER_TEST_F(PrePrefetchBrowserTest, PrePrefetchConsumption) {
   // is still equal to 1, which means that the PrePrefetch request was served.
   EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
   EXPECT_EQ(GetRequestCount(prefetch_url), 1);
+}
+
+class PrefetchActivationBeaconBrowserTest : public NavPrefetchBrowserTest {
+ public:
+  PrefetchActivationBeaconBrowserTest() {
+    feature_list_.InitAndEnableFeature(features::kPrefetchActivationBeacon);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrefetchActivationBeaconBrowserTest,
+                       ActivationBeaconSent) {
+  GURL referrer_url = GetUrl("a.test", "/empty.html");
+  GURL prefetch_url = GetUrl("a.test", "/prefetch");
+  GURL beacon_url = GetUrl("a.test", "/beacon");
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop prefetch_run_loop;
+  base::RunLoop beacon_run_loop;
+  bool beacon_seen = false;
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url == prefetch_url) {
+          // Serve prefetch response with header.
+          std::string headers =
+              "HTTP/1.1 200 OK\r\n"
+              "Content-Type: text/html\r\n"
+              "on-prefetch-activation: /beacon\r\n\r\n";
+          URLLoaderInterceptor::WriteResponse(headers, "content",
+                                              params->client.get(),
+                                              std::nullopt, prefetch_url);
+          prefetch_run_loop.Quit();
+          return true;
+        }
+        if (params->url_request.url == beacon_url) {
+          beacon_seen = true;
+          EXPECT_EQ(params->url_request.method, "HEAD");
+          URLLoaderInterceptor::WriteResponse("", "", params->client.get());
+          beacon_run_loop.Quit();
+          return true;
+        }
+        return false;
+      }));
+
+  // Prefetch the page.
+  StartPrefetch(prefetch_url);
+  prefetch_run_loop.Run();
+
+  // Navigate to the prefetched page.
+  RenderFrameHostImpl* rfh = &GetPrimaryMainFrameHost();
+  TestFrameNavigationObserver nav_observer(rfh);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(rfh, prefetch_url));
+
+  // Wait for the beacon request.
+  beacon_run_loop.Run();
+
+  // The navigation should now succeed.
+  nav_observer.Wait();
+  EXPECT_EQ(nav_observer.last_committed_url(), prefetch_url);
+  EXPECT_TRUE(beacon_seen);
+}
+
+IN_PROC_BROWSER_TEST_F(PrefetchActivationBeaconBrowserTest,
+                       ActivationBeaconCrossOriginNotSent) {
+  GURL referrer_url = GetUrl("a.test", "/empty.html");
+  GURL prefetch_url = GetUrl("a.test", "/prefetch");
+  GURL beacon_url = GetUrl("b.test", "/beacon");
+
+  ASSERT_TRUE(NavigateToURL(shell(), referrer_url));
+
+  base::RunLoop prefetch_run_loop;
+  bool beacon_seen = false;
+
+  URLLoaderInterceptor interceptor(base::BindLambdaForTesting(
+      [&](URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url == prefetch_url) {
+          // Serve prefetch response with cross-origin header.
+          std::string headers =
+              "HTTP/1.1 200 OK\r\n"
+              "Content-Type: text/html\r\n"
+              "on-prefetch-activation: " +
+              beacon_url.spec() + "\r\n\r\n";
+          URLLoaderInterceptor::WriteResponse(headers, "content",
+                                              params->client.get(),
+                                              std::nullopt, prefetch_url);
+          prefetch_run_loop.Quit();
+          return true;
+        }
+        if (params->url_request.url == beacon_url) {
+          beacon_seen = true;
+          return true;
+        }
+        return false;
+      }));
+
+  // Prefetch the page.
+  StartPrefetch(prefetch_url);
+  prefetch_run_loop.Run();
+
+  // Navigate to the prefetched page.
+  RenderFrameHostImpl* rfh = &GetPrimaryMainFrameHost();
+  TestFrameNavigationObserver nav_observer(rfh);
+  ASSERT_TRUE(BeginNavigateToURLFromRenderer(rfh, prefetch_url));
+
+  // The navigation should now succeed.
+  nav_observer.Wait();
+  EXPECT_FALSE(beacon_seen);
 }
 
 }  // namespace

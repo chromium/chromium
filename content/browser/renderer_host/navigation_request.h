@@ -1841,6 +1841,10 @@ class CONTENT_EXPORT NavigationRequest
     before_unload_execution_mode_ = mode;
   }
 
+  void set_activation_beacon_url(const GURL& url) {
+    activation_beacon_url_ = url;
+  }
+
  private:
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
@@ -3678,6 +3682,9 @@ class CONTENT_EXPORT NavigationRequest
   // WebUI page (and is not itself a valid initial WebUI navigation). Such
   // navigations are invalid and should be cancelled in BeginNavigation().
   bool should_cancel_on_leaving_initial_webui_ = false;
+
+  // The resolved and validated full URL for the activation beacon.
+  GURL activation_beacon_url_;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };
