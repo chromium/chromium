@@ -7,9 +7,11 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/memory/scoped_refptr.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_requestorusvstringsequence_usvstring.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
@@ -129,11 +131,24 @@ scoped_refptr<BlobDataHandle> ExtractBlobHandle(
 // Returns true if Background Fetch is permitted in the current execution
 // context. Usage within Service Worker contexts is restricted.
 bool IsBackgroundFetchAllowedForContext(ExecutionContext* execution_context) {
-  // If the context is not a Service Worker, or if the restriction feature
-  // is disabled, the restriction does not apply.
-  if (!execution_context->IsServiceWorkerGlobalScope() ||
-      !base::FeatureList::IsEnabled(
-          blink::features::kRestrictBackgroundFetchFromServiceWorker)) {
+  // If the context is not a Service Worker, the restriction does not apply.
+  if (!execution_context->IsServiceWorkerGlobalScope()) {
+    return true;
+  }
+
+  bool restrict_background_fetch_from_service_worker =
+      base::FeatureList::IsEnabled(
+          blink::features::kRestrictBackgroundFetchFromServiceWorker);
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(
+          blink::switches::kRestrictBackgroundFetchFromServiceWorker)) {
+    std::string switch_value = command_line->GetSwitchValueASCII(
+        blink::switches::kRestrictBackgroundFetchFromServiceWorker);
+    restrict_background_fetch_from_service_worker = (switch_value == "true");
+  }
+
+  if (!restrict_background_fetch_from_service_worker) {
     return true;
   }
 

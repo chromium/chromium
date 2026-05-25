@@ -188,5 +188,10 @@ const char kDisableReduceAcceptLanguage[] = "disable-reduce-accept-language";
 // A switch that controls XSLT availability via enterprise policy.
 const char kXSLTEnabledPolicy[] = "xslt-enabled-policy";
 
+// A switch that controls RestrictBackgroundFetchFromServiceWorker availability
+// via enterprise policy.
+const char kRestrictBackgroundFetchFromServiceWorker[] =
+    "restrict-background-fetch-from-service-worker";
+
 }  // namespace switches
 }  // namespace blink
