@@ -85,6 +85,7 @@ class RecentActivityBubbleCoordinator;
 class BrowserSelectFileDialogController;
 class ScrimViewController;
 class SearchboxContextData;
+class SessionServiceBrowserHelper;
 class SidePanelCoordinator;
 class SidePanelRegistry;
 class SidePanelUI;
@@ -612,6 +613,8 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<tab_groups::SessionServiceTabGroupSyncObserver>
       session_service_tab_group_sync_observer_;
+
+  std::unique_ptr<SessionServiceBrowserHelper> session_service_browser_helper_;
 
   std::unique_ptr<ttc::AiOverlayDialogController> ai_overlay_dialog_controller_;
 

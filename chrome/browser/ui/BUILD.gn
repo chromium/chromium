@@ -1004,6 +1004,7 @@ static_library("ui") {
       "//chrome/browser:zero_suggest_prefetch_tab_helper",
       "//chrome/browser/accessibility/phrase_segmentation",
       "//chrome/browser/profile_resetter",
+      "//chrome/browser/ui/sessions",
       "//chrome/browser/ui/views/drive_picker_host",
       "//chrome/browser/ui/web_modal:browser_window_modal_dialog_delegate",
       "//chrome/browser/ui/webui/image",

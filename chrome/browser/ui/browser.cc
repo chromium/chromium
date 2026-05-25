@@ -376,23 +376,7 @@ std::pair<bool, bool> IsLastWindow(const Browser& browser) {
   return {last_window, last_window_for_profile};
 }
 
-void UpdateTabGroupSessionMetadata(Browser* browser,
-                                   const tab_groups::TabGroupId& group_id) {
-  SessionService* const session_service =
-      SessionServiceFactory::GetForProfile(browser->profile());
-  if (!session_service) {
-    return;
-  }
 
-  const tab_groups::TabGroupVisualData* visual_data =
-      browser->tab_strip_model()
-          ->group_model()
-          ->GetTabGroup(group_id)
-          ->visual_data();
-
-  session_service->SetTabGroupMetadata(browser->session_id(), group_id,
-                                       visual_data);
-}
 
 }  // namespace
 
@@ -1475,11 +1459,8 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
       }
       break;
     }
-    case TabStripModelChange::kMoved: {
-      auto* move = change.GetMove();
-      OnTabMoved(move->from_index, move->to_index);
+    case TabStripModelChange::kMoved:
       break;
-    }
     case TabStripModelChange::kReplaced: {
       auto* replace = change.GetReplace();
       OnTabReplacedAt(replace->old_contents, replace->new_contents,
@@ -1501,147 +1482,12 @@ void Browser::OnTabStripModelChanged(TabStripModel* tab_strip_model,
   OnActiveTabChanged(change, selection);
 }
 
-void Browser::OnTabGroupChanged(const TabGroupChange& change) {
-  // If apps ever get tab grouping, this function needs to be updated to
-  // retrieve AppSessionService from the correct factory. Additionally,
-  // AppSessionService doesn't support SetTabGroupMetadata, so some
-  // work to refactor the code to support that into SessionServiceBase
-  // would be the best way to achieve that.
-  DCHECK(!IsRelevantToAppSessionService(type_));
-  DCHECK(tab_strip_model_->group_model());
-
-  if (change.type == TabGroupChange::kVisualsChanged) {
-    UpdateTabGroupSessionMetadata(this, change.group);
-  } else if (change.type == TabGroupChange::kCreated &&
-             change.GetCreateChange()->reason() ==
-                 TabGroupChange::TabGroupCreationReason::
-                     kInsertedFromAnotherTabstrip) {
-    // When a detached group is inserted, we need to update the group of all the
-    // corresponding detached tab in session service.
-    for (tabs::TabInterface* tab :
-         change.GetCreateChange()->GetDetachedTabs()) {
-      UpdateTabGroupSessionDataForTab(tab, change.group);
-    }
-  } else if (change.type == TabGroupChange::kClosed &&
-             change.GetCloseChange()->reason() ==
-                 TabGroupChange::TabGroupClosureReason::kGroupClosed) {
-    // When a group is detached, we do not need to add the information for all
-    // the detached tabs in tab restore service.
-    sessions::TabRestoreService* tab_restore_service =
-        TabRestoreServiceFactory::GetForProfile(profile());
-    if (tab_restore_service) {
-      tab_restore_service->GroupClosed(change.group);
-    }
-  }
-}
-
-void Browser::OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) {
-  // See comment in Browser::OnTabGroupChanged
-  DCHECK(!IsRelevantToAppSessionService(type_));
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfileIfExisting(profile());
-  if (session_service) {
-    session_service->SetPinnedState(
-        session_id(), sessions::SessionTabHelper::IdForTab(tab->GetContents()),
-        tab->IsPinned());
-  }
-}
-
-void Browser::TabGroupedStateChanged(
-    TabStripModel* tab_strip_model,
-    std::optional<tab_groups::TabGroupId> old_group,
-    std::optional<tab_groups::TabGroupId> new_group,
-    tabs::TabInterface* tab,
-    int index) {
-  UpdateTabGroupSessionDataForTab(tab, new_group);
-}
-
-void Browser::UpdateTabGroupSessionDataForTab(
-    tabs::TabInterface* tab,
-    std::optional<tab_groups::TabGroupId> group) {
-  // See comment in Browser::OnTabGroupChanged
-  DCHECK(!IsRelevantToAppSessionService(type_));
-  SessionService* const session_service =
-      SessionServiceFactory::GetForProfile(profile_);
-  if (!session_service) {
-    return;
-  }
-
-  session_service->SetTabGroup(
-      session_id(), sessions::SessionTabHelper::IdForTab(tab->GetContents()),
-      std::move(group));
-}
 
 void Browser::TabStripEmpty() {
   // Note: even though the tab strip is empty, the call to Close() may not
   // result in closing this Browser. This can happen in the case of closing
   // the last Browser with ongoing downloads.
   window_->Close();
-}
-
-void Browser::OnSplitTabChanged(const SplitTabChange& change) {
-  switch (change.type) {
-    case SplitTabChange::Type::kAdded: {
-      for (std::pair<tabs::TabInterface*, int> split_tabs :
-           change.GetAddedChange()->tabs()) {
-        UpdateSplitTabSessionData(split_tabs.first, change.split_id);
-      }
-
-      UpdateSplitTabSessionVisualData(change.split_id);
-      break;
-    }
-
-    case SplitTabChange::Type::kVisualsChanged: {
-      // Intermediate ratio updates from dragging shouldn't spam the session
-      // storage. They are saved when the drag completes.
-      if (!change.GetVisualsChange()->is_intermediate()) {
-        UpdateSplitTabSessionVisualData(change.split_id);
-      }
-      break;
-    }
-
-    case SplitTabChange::Type::kContentsChanged: {
-      // No need to do anything here since split is still present and no visual
-      // information changed.
-      break;
-    }
-
-    case SplitTabChange::Type::kRemoved: {
-      for (std::pair<tabs::TabInterface*, int> split_tabs :
-           change.GetRemovedChange()->tabs()) {
-        UpdateSplitTabSessionData(split_tabs.first, std::nullopt);
-      }
-      break;
-    }
-  }
-}
-
-void Browser::UpdateSplitTabSessionData(
-    tabs::TabInterface* tab,
-    std::optional<split_tabs::SplitTabId> split_id) {
-  DCHECK(!IsRelevantToAppSessionService(type_));
-  SessionService* const session_service =
-      SessionServiceFactory::GetForProfile(profile_);
-  if (!session_service) {
-    return;
-  }
-
-  session_service->SetSplitTab(
-      session_id(), sessions::SessionTabHelper::IdForTab(tab->GetContents()),
-      std::move(split_id));
-}
-
-void Browser::UpdateSplitTabSessionVisualData(
-    const split_tabs::SplitTabId& split_id) {
-  SessionService* const session_service =
-      SessionServiceFactory::GetForProfile(profile());
-  if (!session_service) {
-    return;
-  }
-
-  const split_tabs::SplitTabVisualData* visual_data =
-      tab_strip_model()->GetSplitData(split_id)->visual_data();
-  session_service->SetSplitTabData(session_id(), split_id, visual_data);
 }
 
 void Browser::SetTopControlsShownRatio(content::WebContents* web_contents,
@@ -2849,26 +2695,11 @@ void Browser::OnTabInsertedAt(WebContents* contents, int index) {
     contents->SetIgnoreZoomGestures(true);
   }
 
-  sessions::SessionTabHelper::FromWebContents(contents)->SetWindowID(
-      session_id());
-
-  SyncHistoryWithTabs(index);
-
   // Make sure the loading state is updated correctly, otherwise the throbber
   // won't start if the page is loading. Note that we don't want to
   // ScheduleUIUpdate() because the tab may not have been inserted in the UI
   // yet if this function is called before TabStripModel::TabInsertedAt().
   UpdateWindowForLoadingStateChanged(contents, true);
-
-  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
-
-  if (service) {
-    service->TabInserted(contents);
-    int new_active_index = tab_strip_model_->active_index();
-    if (index < new_active_index) {
-      service->SetSelectedTabInWindow(session_id(), new_active_index);
-    }
-  }
 }
 
 void Browser::OnTabClosing(tabs::TabInterface* tab,
@@ -2897,25 +2728,12 @@ void Browser::OnTabClosing(tabs::TabInterface* tab,
   metrics_observer->WebContentsWillSoonBeDestroyed();
 
   browser_window_features()->exclusive_access_manager()->OnTabClosing(contents);
-  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
-
-  if (service) {
-    service->TabClosing(contents);
-  }
 }
 
 void Browser::OnTabDetached(tabs::TabInterface* tab,
                             bool was_active,
                             bool had_active_modal_dialog) {
   WebContents* contents = tab->GetContents();
-  if (!tab_strip_model_->closing_all()) {
-    SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(this);
-    if (service) {
-      service->SetSelectedTabInWindow(session_id(),
-                                      tab_strip_model_->active_index());
-    }
-  }
-
   TabDetachedAtImpl(contents, was_active, DetachType::kDetach);
 
   window_->OnTabDetached(contents, was_active);
@@ -3063,28 +2881,11 @@ void Browser::OnActiveTabChanged(const TabStripModelChange& change,
         selection.new_contents);
   }
 
-  // Update sessions (selected tab index and last active time). Don't force
-  // creation of sessions. If sessions doesn't exist, the change will be picked
-  // up by sessions when created.
-  SessionServiceBase* service = GetAppropriateSessionServiceIfExisting(this);
-  if (service && !tab_strip_model_->closing_all()) {
-    service->SetSelectedTabInWindow(session_id(),
-                                    tab_strip_model_->active_index());
-    service->SetLastActiveTime(
-        session_id(),
-        sessions::SessionTabHelper::IdForTab(selection.new_contents),
-        base::Time::Now());
-  }
 
   SearchTabHelper::FromWebContents(selection.new_contents)->OnTabActivated();
   did_active_tab_change_callback_list_.Notify(this);
 }
 
-void Browser::OnTabMoved(int from_index, int to_index) {
-  DCHECK(from_index >= 0 && to_index >= 0);
-  // Notify the history service.
-  SyncHistoryWithTabs(std::min(from_index, to_index));
-}
 
 void Browser::OnTabReplacedAt(WebContents* old_contents,
                               WebContents* new_contents,
@@ -3096,11 +2897,6 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
   TabDetachedAtImpl(old_contents, was_active, DetachType::kReplace);
   browser_window_features()->exclusive_access_manager()->OnTabClosing(
       old_contents);
-  SessionServiceBase* session_service =
-      GetAppropriateSessionServiceForProfile(this);
-  if (session_service) {
-    session_service->TabClosing(old_contents);
-  }
   OnTabInsertedAt(new_contents, index);
 
   if (!new_contents->GetController().IsInitialBlankNavigation()) {
@@ -3108,13 +2904,6 @@ void Browser::OnTabReplacedAt(WebContents* old_contents,
     int entry_count = new_contents->GetController().GetEntryCount();
     new_contents->GetController().NotifyEntryChanged(
         new_contents->GetController().GetEntryAtIndex(entry_count - 1));
-  }
-
-  if (session_service) {
-    // The new_contents may end up with a different navigation stack. Force
-    // the session service to update itself.
-    session_service->TabRestored(new_contents,
-                                 tab_strip_model_->IsTabPinned(index));
   }
 }
 
@@ -3324,43 +3113,6 @@ chrome::BrowserCommandController* Browser::GetCommandController() {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Session restore functions (private):
 
-void Browser::SyncHistoryWithTabs(int index) {
-  SessionServiceBase* service = GetAppropriateSessionServiceForProfile(this);
-
-  SessionService* session_service =
-      SessionServiceFactory::GetForProfileIfExisting(profile());
-
-  if (!service && !session_service) {
-    return;
-  }
-
-  if (index >= GetTabStripModel()->count()) {
-    return;
-  }
-
-  int current_index = index;
-  for (tabs::TabCollection::TabIterator it(
-           GetTabStripModel()->GetTabAtIndex(index));
-       it != GetTabStripModel()->end(); ++it) {
-    WebContents* web_contents = it->GetContents();
-    if (web_contents) {
-      SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
-      if (service) {
-        service->SetPinnedState(session_id(), tab_id, it->IsPinned());
-      }
-
-      if (!IsRelevantToAppSessionService(type_) && session_service) {
-        session_service->SetTabIndexInWindow(session_id(), tab_id,
-                                             current_index);
-
-        std::optional<tab_groups::TabGroupId> group_id =
-            tab_strip_model_->GetTabGroupForTab(current_index);
-        session_service->SetTabGroup(session_id(), tab_id, std::move(group_id));
-      }
-    }
-    current_index++;
-  }
-}
 
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, In-progress download termination handling (private):
@@ -3478,9 +3230,6 @@ void Browser::TabDetachedAtImpl(content::WebContents* contents,
       }
     }
 
-    if (!tab_strip_model_->closing_all()) {
-      SyncHistoryWithTabs(0);
-    }
   }
 
   SetAsDelegate(contents, false);

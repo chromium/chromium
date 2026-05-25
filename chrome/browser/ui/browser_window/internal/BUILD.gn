@@ -89,6 +89,7 @@ source_set("internal") {
       "//chrome/browser/ui/fullscreen",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/performance_controls",
+      "//chrome/browser/ui/sessions",
       "//chrome/browser/ui/sharing_hub",
       "//chrome/browser/ui/signin",
       "//chrome/browser/ui/sync",

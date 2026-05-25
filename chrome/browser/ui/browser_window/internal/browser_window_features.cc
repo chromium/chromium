@@ -77,6 +77,7 @@
 #include "chrome/browser/ui/omnibox/ai_mode_page_action_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_bubble_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
+#include "chrome/browser/ui/sessions/session_service_browser_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_window_controller.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/signin/signin_view_controller.h"
@@ -296,6 +297,11 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   bookmark_bar_controller_ =
       GetUserDataFactory().CreateInstance<BookmarkBarController>(
           *browser, *browser, *browser->GetTabStripModel());
+
+  session_service_browser_helper_ =
+      std::make_unique<SessionServiceBrowserHelper>(
+          browser->GetTabStripModel(), browser->GetSessionID(),
+          browser->GetType(), browser->GetProfile());
 
   tab_strip_model_ = browser->GetTabStripModel();
   tab_list_bridge_ = std::make_unique<TabListBridge>(

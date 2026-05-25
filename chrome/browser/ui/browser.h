@@ -632,15 +632,7 @@ class Browser : public TabStripModelObserver,
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
-  void OnTabGroupChanged(const TabGroupChange& change) override;
-  void OnTabPinnedStateChanged(tabs::TabInterface* tab, int index) override;
-  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
-                              std::optional<tab_groups::TabGroupId> old_group,
-                              std::optional<tab_groups::TabGroupId> new_group,
-                              tabs::TabInterface* tab,
-                              int index) override;
   void TabStripEmpty() override;
-  void OnSplitTabChanged(const SplitTabChange& change) override;
 
   // Overridden from content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;
@@ -1053,11 +1045,7 @@ class Browser : public TabStripModelObserver,
 
   chrome::BrowserCommandController* GetCommandController();
 
-  // Session restore functions ////////////////////////////////////////////////
 
-  // Notifies the history database of the index for all tabs whose index is
-  // >= index.
-  void SyncHistoryWithTabs(int index);
 
   // In-progress download termination handling /////////////////////////////////
 
@@ -1120,15 +1108,7 @@ class Browser : public TabStripModelObserver,
       const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace);
 
-  void UpdateTabGroupSessionDataForTab(
-      tabs::TabInterface* tab,
-      std::optional<tab_groups::TabGroupId> group);
 
-  void UpdateSplitTabSessionData(
-      tabs::TabInterface* tab,
-      std::optional<split_tabs::SplitTabId> split_id);
-
-  void UpdateSplitTabSessionVisualData(const split_tabs::SplitTabId& split_id);
 
   // Create `FindBarController` if it does not exist.
   // TODO(crbug.com/423956131): Convert to `GetFindBarController` which returns

@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("sessions") {
+  public = [ "session_service_browser_helper.h" ]
+
+  sources = [ "session_service_browser_helper.cc" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    "//components/sessions:session_id",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/sessions",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/sessions",
+    "//components/split_tabs",
+    "//components/tabs:public",
+    "//content/public/browser",
+  ]
+}
