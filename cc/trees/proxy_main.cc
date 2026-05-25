@@ -149,7 +149,8 @@ void ProxyMain::BeginMainFrame(
   if (record_metrics) {
     timer.emplace();
   }
-  auto begin_main_frame_reason = begin_main_frame_reason_;
+  auto begin_main_frame_reason =
+      begin_main_frame_reason_ | begin_main_frame_state->reason;
   absl::Cleanup maybe_record_metrics_and_idle = [&] {
     if (record_metrics) {
       constexpr size_t num_buckets = 1 << begin_main_frame_reason.size();
@@ -158,7 +159,7 @@ void ProxyMain::BeginMainFrame(
       UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
           "Compositing.BeginMainFrame.TimeUs", timer->Elapsed(),
           base::Microseconds(1), base::Seconds(10), 50);
-      UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.BMFReason2",
+      UMA_HISTOGRAM_ENUMERATION("Compositing.BeginMainFrame.BMFReason3",
                                 begin_main_frame_reason.to_ulong(),
                                 num_buckets);
       if (reason == CommitEarlyOutReason::kFinishedNoUpdates) {
@@ -166,7 +167,7 @@ void ProxyMain::BeginMainFrame(
             "Compositing.BeginMainFrame.TimeUs.NoUpdate", timer->Elapsed(),
             base::Microseconds(1), base::Seconds(10), 50);
         UMA_HISTOGRAM_ENUMERATION(
-            "Compositing.BeginMainFrame.BMFReason2.NoUpdate",
+            "Compositing.BeginMainFrame.BMFReason3.NoUpdate",
             begin_main_frame_reason.to_ulong(), num_buckets);
       }
     }
@@ -1054,7 +1055,8 @@ bool ProxyMain::SendCommitRequestToImplThreadIfNeeded(
   }
   ImplThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ProxyImpl::SetNeedsCommitOnImpl,
-                                base::Unretained(proxy_impl_.get()), urgent));
+                                base::Unretained(proxy_impl_.get()),
+                                BeginMainFrameReason::kOther, urgent));
   layer_tree_host_->OnCommitRequested();
   has_sent_urgent_commit_request_ |= urgent;
   return true;

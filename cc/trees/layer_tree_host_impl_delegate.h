@@ -10,6 +10,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/presentation_time_callback_buffer.h"
@@ -42,7 +43,8 @@ class LayerTreeHostImplDelegate {
   // LayerTreeHostImpl's SetNeedsRedraw() and SetNeedsOneBeginImplFrame().
   virtual void SetNeedsRedrawOnImplThread() = 0;
   virtual void SetNeedsOneBeginImplFrameOnImplThread() = 0;
-  virtual void SetNeedsCommitOnImplThread(bool urgent = false) = 0;
+  virtual void SetNeedsCommitOnImplThread(BeginMainFrameReason reason,
+                                          bool urgent = false) = 0;
   virtual void SetNeedsPrepareTilesOnImplThread() = 0;
   virtual void SetVideoNeedsBeginFrames(bool needs_begin_frames) = 0;
   virtual void DidChangeBeginFrameSourcePaused(bool paused) = 0;

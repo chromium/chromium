@@ -13,6 +13,7 @@
 #include "cc/input/actively_scrolling_type.h"
 #include "cc/input/browser_controls_offset_tag_modifications.h"
 #include "cc/input/browser_controls_state.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/paint/element_id.h"
@@ -171,7 +172,8 @@ class CompositorDelegateForInput {
       base::TimeDelta delayed_by,
       ElementId element_id) const = 0;
   virtual bool HasAnimatedScrollbars() const = 0;
-  virtual void SetNeedsCommit() = 0;
+  virtual void SetNeedsCommit(
+      BeginMainFrameReason reason = BeginMainFrameReason::kOther) = 0;
   virtual void SetNeedsFullViewportRedraw() = 0;
   virtual void SetDeferBeginMainFrame(bool defer_begin_main_frame) const = 0;
   virtual void DidUpdateScrollAnimationCurve() = 0;

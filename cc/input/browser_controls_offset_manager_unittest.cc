@@ -107,7 +107,7 @@ class MockBrowserControlsOffsetManagerClient
     return top_controls_shown_ratio_;
   }
 
-  void SetNeedsCommit() override {}
+  void SetNeedsCommit(BeginMainFrameReason) override {}
 
   LayerImpl* rootScrollLayer() { return root_scroll_layer_.get(); }
 

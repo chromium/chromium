@@ -5,6 +5,8 @@
 #ifndef CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_CLIENT_H_
 #define CC_INPUT_BROWSER_CONTROLS_OFFSET_MANAGER_CLIENT_H_
 
+#include "cc/metrics/begin_main_frame_metrics.h"
+
 namespace gfx {
 class PointF;
 }
@@ -25,7 +27,8 @@ class CC_EXPORT BrowserControlsOffsetManagerClient {
   virtual void DidChangeBrowserControlsPosition() = 0;
   virtual bool OnlyExpandTopControlsAtPageTop() const = 0;
   virtual bool HaveRootScrollNode() const = 0;
-  virtual void SetNeedsCommit() = 0;
+  virtual void SetNeedsCommit(
+      BeginMainFrameReason reason = BeginMainFrameReason::kOther) = 0;
   virtual base::TimeDelta CurrentFrameInterval() const = 0;
   virtual float DeviceScaleFactor() const = 0;
 

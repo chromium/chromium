@@ -545,7 +545,8 @@ void SingleThreadProxy::SetNeedsPrepareTilesOnImplThread() {
     scheduler_on_impl_thread_->SetNeedsPrepareTiles();
 }
 
-void SingleThreadProxy::SetNeedsCommitOnImplThread(bool urgent) {
+void SingleThreadProxy::SetNeedsCommitOnImplThread(BeginMainFrameReason reason,
+                                                   bool urgent) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
   single_thread_delegate_->ScheduleAnimationForWebTests();
@@ -678,7 +679,8 @@ void SingleThreadProxy::NotifyImageDecodeRequestFinished(
       DebugScopedSetMainThread main_thread(task_runner_provider_);
       IssueImageDecodeFinishedCallbacks();
     } else {
-      SetNeedsCommitOnImplThread(/* urgent = */ false);
+      SetNeedsCommitOnImplThread(BeginMainFrameReason::kOther,
+                                 /* urgent = */ false);
     }
   }
 }

@@ -13,6 +13,7 @@
 
 #include "base/types/id_type.h"
 #include "cc/cc_export.h"
+#include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
 #include "cc/trees/begin_main_frame_trace_id.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -34,6 +35,8 @@ struct CC_EXPORT BeginMainFrameAndCommitState {
   ActiveFrameSequenceTrackers active_sequence_trackers = 0;
   bool evicted_ui_resources = false;
   BeginMainFrameTraceId trace_id;
+  // Bitset of BeginMainFrameReason, used for metrics only.
+  std::bitset<BeginMainFrameReasonSize> reason;
 };
 
 }  // namespace cc

@@ -1430,7 +1430,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
 }
 
 void LayerTreeHostImpl::DidAnimateScrollOffset() {
-  SetNeedsCommit();
+  SetNeedsCommit(BeginMainFrameReason::kScroll);
   RenewTreePriority();
 }
 
@@ -3755,9 +3755,9 @@ bool LayerTreeHostImpl::HaveRootScrollNode() const {
   return InnerViewportScrollNode();
 }
 
-void LayerTreeHostImpl::SetNeedsCommit() {
+void LayerTreeHostImpl::SetNeedsCommit(BeginMainFrameReason reason) {
   if (!settings_.trees_in_viz_in_viz_process) {
-    delegate_->SetNeedsCommitOnImplThread();
+    delegate_->SetNeedsCommitOnImplThread(reason);
   }
 }
 

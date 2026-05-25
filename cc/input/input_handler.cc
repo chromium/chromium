@@ -1710,7 +1710,7 @@ Viewport& InputHandler::GetViewport() const {
 }
 
 void InputHandler::SetNeedsCommit() {
-  compositor_delegate_->SetNeedsCommit();
+  compositor_delegate_->SetNeedsCommit(BeginMainFrameReason::kScroll);
 }
 
 LayerTreeImpl& InputHandler::ActiveTree() {
