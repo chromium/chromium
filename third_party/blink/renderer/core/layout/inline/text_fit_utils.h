@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FIT_TEXT_UTILS_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FIT_TEXT_UTILS_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_FIT_UTILS_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_FIT_UTILS_H_
 
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
-#include "third_party/blink/renderer/core/style/fit_text.h"
+#include "third_party/blink/renderer/core/style/text_fit.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 
@@ -72,4 +72,4 @@ class LineFitter {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FIT_TEXT_UTILS_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_FIT_UTILS_H_

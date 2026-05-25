@@ -8,7 +8,6 @@
 
 #include "base/containers/adapters.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
-#include "third_party/blink/renderer/core/layout/inline/fit_text_scale.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_box_state.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_child_layout_context.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/logical_line_item.h"
 #include "third_party/blink/renderer/core/layout/inline/ruby_utils.h"
+#include "third_party/blink/renderer/core/layout/inline/text_fit_scale.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/logical_box_fragment.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FIT_TEXT_SCALE_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FIT_TEXT_SCALE_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_FIT_SCALE_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_FIT_SCALE_H_
 
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -48,4 +48,4 @@ struct FitTextBlockScale {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_FIT_TEXT_SCALE_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_TEXT_FIT_SCALE_H_
