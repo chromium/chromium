@@ -35,11 +35,8 @@ template("android_clang_toolchain") {
     # generate_linker_map=true.
     enable_linker_map = true
 
-    if (use_mold) {
-      use_mold_separate_debug_file = true
-    } else {
-      strip = rebase_path("$clang_base_path/bin/llvm-strip", root_build_dir)
-    }
+    use_mold_separate_debug_file = true
+    strip = rebase_path("$clang_base_path/bin/llvm-strip", root_build_dir)
 
     use_unstripped_as_runtime_outputs = android_unstripped_runtime_outputs
 
