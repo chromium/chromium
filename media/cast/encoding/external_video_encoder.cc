@@ -441,8 +441,7 @@ class ExternalVideoEncoder::VEAClientImpl final
       std::ostringstream().swap(stream_header_);
       data.append(output_buffer_memory, metadata.payload_size_bytes);
       encoded_frame->data =
-          base::HeapArray<uint8_t>::CopiedFrom(UNSAFE_TODO(base::span(
-              reinterpret_cast<const uint8_t*>(data.c_str()), data.size())));
+          base::HeapArray<uint8_t>::CopiedFrom(base::as_byte_span(data));
 
       // If FRAME_DURATION metadata was provided in the source VideoFrame,
       // compute the utilization metrics.
