@@ -189,7 +189,8 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
 
   // RenderWidgetTargeter::Delegate:
   RenderWidgetHostViewInput* FindViewFromFrameSinkId(
-      const viz::FrameSinkId& frame_sink_id) const override;
+      const viz::FrameSinkId& frame_sink_id,
+      RenderWidgetHostViewInput* ancestor_to_verify = nullptr) const override;
   bool ShouldContinueHitTesting(
       RenderWidgetHostViewInput* target_view) const override;
 
