@@ -3601,7 +3601,6 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 <translation id="3229163415739929305">Se a política for ativada ou deixada sem definição, a busca de metadados para carregamento de página e dos modelos de aprendizado de máquina que melhoram a experiência de navegação serão ativados.
       Se a política for desativada, é possível que alguns recursos não funcionem corretamente.</translation>
 <translation id="3231311173895401135">Deixar o navegador decidir o suporte</translation>
-<translation id="3231684792162319504">Não permitir o acionamento experimental do Gemini.</translation>
 <translation id="3231837273069128027">A definição da política configura a disponibilidade e o comportamento das atualizações de firmware para <ph name="TPM_FIRMWARE_UPDATE_TPM" />.
 
       Especifique configurações individuais nas propriedades JSON:
@@ -5375,7 +5374,6 @@ Se você definir a política, os usuários não poderão mudá-la no <ph name="P
 <translation id="4435032708588431506">Permitir o protocolo QUIC</translation>
 <translation id="443665821428652897">Remover dados do site ao fechar o navegador (obsoleto)</translation>
 <translation id="4436941175475497595">Desativar a visualização de impressão</translation>
-<translation id="4436992815485865052">Permitir o acionamento experimental do Gemini.</translation>
 <translation id="4439336120285389675">Especificar uma lista de recursos de uso suspenso da plataforma Web para reativar temporariamente.
 
       Esta política permite que aos administradores reativem recursos de uso suspenso da plataforma Web por um período limitado. Os recursos são identificados por uma tag de string, e os que correspondem às tags incluídas na lista especificada por esta política são reativados.
@@ -6836,7 +6834,6 @@ Observação: esse recurso ainda não está disponível para o público geral. P
 <translation id="5255790642269910630">A definição da política faz com que cada tela gire para a orientação especificada em todas as reinicializações e na primeira vez que ela for conectada depois que o valor da política mudar. O usuário pode mudar a rotação da tela na página de configurações depois de fazer login, mas as mudanças serão revertidas após a próxima reinicialização. Esta política se aplica às telas primária e secundária.
 
 Se ela não for definida, o valor padrão será 0 graus e o usuário poderá mudá-lo. Neste caso, o valor padrão não será reaplicado após a reinicialização.</translation>
-<translation id="5256792633540454282">Controla o acionamento experimental do Gemini</translation>
 <translation id="5257395339965216304">Dados dos apps hospedados</translation>
 <translation id="5258445772095084618">Permitir que usuários não afiliados usem máquinas virtuais necessárias para apps do Linux</translation>
 <translation id="5258651513421638932">Permitir a conexão de cartões inteligentes por Apps Isolados</translation>
@@ -7862,7 +7859,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 
       Esta política está suspensa. Use a <ph name="PRINTERS_BULK_BLOCKLIST" />.</translation>
 <translation id="591088232153082363">Carregamento adaptável com base no padrão de uso da bateria.</translation>
-<translation id="5911656389795271430">Esta é uma política experimental.</translation>
 <translation id="5913506885872855604">A política pode ser usada para tratar determinados intervalos de endereços internos como "públicos" e, portanto, não sujeitos a verificações de <ph name="LOCAL_NETWORK_ACCES" />. Da mesma maneira, pode ser usada para tratar determinados intervalos de endereços públicos com possível uso interno como endereços "locais" para que fiquem protegidos por verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
 
 As substituições de espaço de endereço IP têm duas formas:

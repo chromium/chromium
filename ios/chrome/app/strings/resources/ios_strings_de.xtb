@@ -81,7 +81,6 @@
 <translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1279024913354609713">Nicht zulassen</translation>
 <translation id="1285320974508926690">Diese Website nie übersetzen</translation>
-<translation id="1287229685519872919">Daten in Google Workspace</translation>
 <translation id="1291506870746876680">Die Berechtigungen für <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" /> werden zurückgesetzt und damit deaktiviert, wenn du diese Website verlässt.</translation>
 <translation id="1293491796138057740">Deine Informationen werden im Google Wallet-Konto von <ph name="USER_EMAIL" /> gespeichert. Du kannst sie in allen Google-Produkten verwenden, um Formulare schneller auszufüllen.</translation>
 <translation id="1293556467332435079">Dateien</translation>
@@ -168,7 +167,6 @@
 <translation id="1547610699249301703">Passwörter teilen</translation>
 <translation id="1554043146674176775">KI‑Modus deaktivieren</translation>
 <translation id="1554477036522844996">Neues Fenster</translation>
-<translation id="1554605811306591212">Es gelten unsere <ph name="TERMS" />, die <ph name="KOREAN_LOCATION_TERMS" /> und die <ph name="PRIVACY_NOTICE" />. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen.</translation>
 <translation id="1558391695376153246">Inkognitotabs schließen</translation>
 <translation id="1565371473877914088">Neuer Inkognitotab</translation>
 <translation id="1567960978791353852">Lesemodus anzeigen</translation>
@@ -374,6 +372,7 @@
 <translation id="2251686759395008410">Menü → Verlauf</translation>
 <translation id="2252378061043785266">Diese Website nie anzeigen</translation>
 <translation id="2252749852083403809">Wird in Google Drive für <ph name="USER_EMAIL" /> gespeichert.</translation>
+<translation id="225614027745146050">Willkommen</translation>
 <translation id="2256933947031277845">Deine Organisation lässt die Anmeldung nur mit bestimmten Konten zu.</translation>
 <translation id="2257567812274161158">Synchronisierung funktioniert nicht.</translation>
 <translation id="2258326562203545455">{count,plural, =1{Du kannst dein Lesezeichen in deinem Google-Konto {email} speichern.}other{Du kannst deine Lesezeichen in deinem Google-Konto {email} speichern.}}</translation>
@@ -434,7 +433,6 @@
 <translation id="2468444275314013497">Dein Browser sieht sicher aus</translation>
 <translation id="2473876017985765807">Du hast bereits ein Passwort für <ph name="WEBSITE" /> gespeichert</translation>
 <translation id="247430852844518481">Du kannst eine Erinnerung festlegen, um später noch einmal auf diese Seite zuzugreifen</translation>
-<translation id="2478246185006364308">Google-Nutzungsbedingungen</translation>
 <translation id="2479148705183875116">Zu den Einstellungen</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2484459871750294497">Wie aktiviere ich diese Funktion?</translation>
@@ -827,7 +825,6 @@
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} Tab schließen}other{{COUNT} Tabs schließen}}</translation>
 <translation id="3946483119107054883">Im CSV-Format herunterladen</translation>
 <translation id="3948600256434252210">Wische zum Surfen im Inkognitomodus nach rechts.</translation>
-<translation id="3949712484278252781">Deine Unterhaltungen mit Gemini und deine <ph name="GOOGLE_WORKSPACE_DATA" /> werden nicht manuell überprüft und auch nicht verwendet, um generative KI-Modelle zu optimieren.</translation>
 <translation id="3950479158728806902">Für eine schnellere Anmeldung Passkey automatisch erstellen lassen</translation>
 <translation id="3950820424414687140">Anmelden</translation>
 <translation id="395377504920307820">Ohne Konto verwenden</translation>
@@ -848,7 +845,6 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Statusanzeige für den Seitenaufbau, <ph name="EMAIL" /> geladen.</translation>
 <translation id="3997522473364371632">Das Teilen von Passwörtern wurde von deinem Administrator deaktiviert.</translation>
-<translation id="4000707564769984863">Ansehen: <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4004204301268239848">Passwörter werden in deinem Google-Konto gespeichert, sodass du sie auf jedem Gerät verwenden kannst.</translation>
 <translation id="4007463141047732631">Gruppe bearbeiten</translation>
@@ -879,7 +875,6 @@
 <translation id="4129768137228347731">„<ph name="ENTITY_TYPE" />“ speichern?</translation>
 <translation id="4133139945030148655">Einrichtung abgeschlossen</translation>
 <translation id="4133265950310064865">Erweitertes Safe Browsing</translation>
-<translation id="4142372594294312814">5 wichtige Fakten über generative KI</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148023517926189160">Diese Website möchte eine Datei herunterladen und zu deinem Kalender hinzufügen.</translation>
@@ -961,7 +956,6 @@
 <translation id="441218095371040430">Tastatur verwenden</translation>
 <translation id="4415276339145661267">Google-Konto verwalten</translation>
 <translation id="4416582610654027550">Gib eine gültige URL ein</translation>
-<translation id="441868831736628555">Datenschutzhinweise</translation>
 <translation id="4420409367264901497">Lesezeichen bearbeiten</translation>
 <translation id="4425365312778464779">Dieses Konto ist verwaltet</translation>
 <translation id="443008484043213881">Tools</translation>
@@ -1241,7 +1235,6 @@
 <translation id="5329451663851195956">Zum Aktualisieren nach unten ziehen.</translation>
 <translation id="5336910966955551309">Halte deine bevorzugten Websites gedrückt, um sie anzupinnen</translation>
 <translation id="5338512273860059533">Anmeldung läuft.</translation>
-<translation id="5340148832014094861">Es gelten die <ph name="GOOGLE_TERMS" /> und die <ph name="GEMINI_APPS_PRIVACY" />. Gemini ist eine KI und kann Fehler machen, auch bei Informationen über Personen.</translation>
 <translation id="5343472494710226394">Nachrichten, Sport und Inhalte, die deinen Interessen entsprechen.</translation>
 <translation id="5352128922772839949">Datei speichern</translation>
 <translation id="5355191726083956201">Erweitertes Safe Browsing ist aktiviert</translation>
@@ -1532,7 +1525,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6327249202318869726">Gemini ist für dein Konto deaktiviert. Weitere Informationen erhältst du von deinem Administrator.</translation>
 <translation id="6331836477476466332">Ein sicherer und leistungsstarker Browser für dich</translation>
 <translation id="6337234675334993532">Verschlüsselung</translation>
-<translation id="6337313937331295309">Datenschutzhinweise für Gemini-Apps</translation>
 <translation id="633809752005859102">Es ist ein schwerwiegendes Problem aufgetreten. Wir arbeiten daran.</translation>
 <translation id="6339793034470834130">Wenn du den Web Inspector verwenden möchtest, musst du auf einem Computer mithilfe eines Kabels eine Verbindung zu Safari herstellen und über das Menü „Entwickler“ auf das iPhone zugreifen. Du kannst das Menü „Entwickler“ im Bereich „Erweitert“ in den Safari-Einstellungen auf deinem Computer aktivieren.</translation>
 <translation id="6340285871011301182">Teilweise Übersetzung ist nicht verfügbar.</translation>
@@ -1812,7 +1804,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7261217796641151584">Gruppe freigeben</translation>
 <translation id="7266578100016339897">So behältst du den Überblick. Das kannst du in den Einstellungen jederzeit ändern.</translation>
 <translation id="7272437679830969316">Deine Identität konnte nicht bestätigt werden. Das Passwort wurde nicht kopiert.</translation>
-<translation id="7275307913765547631">Standortnutzungsbedingungen für Korea</translation>
 <translation id="728025568708172005">Tour starten</translation>
 <translation id="7280980607183752256">Datei kann nicht importiert werden</translation>
 <translation id="7282197670900591579">Zitronengelbes Design</translation>
@@ -1887,7 +1878,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7512909159512473473">Passphrase eingeben…</translation>
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7514530647142300459">Verwende weiterhin die Passwörter in deinem Google-Konto <ph name="EMAIL" /></translation>
-<translation id="7522587739845660862">Informationen zu deinem Standort</translation>
 <translation id="7522948500476882302">Wenn du eine Datei herunterlädst, kannst du festlegen, dass sie in 1 Monat automatisch gelöscht wird</translation>
 <translation id="7524055474074101597">App-übergreifend auf Passwörter und mehr zugreifen.</translation>
 <translation id="7525067979554623046">Erstellen</translation>
@@ -1904,7 +1894,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7582666837709186351">Du kannst Text in deinen Fotos oder in deiner Umgebung übersetzen lassen.</translation>
 <translation id="7582857256643797524">Diese Einstellung ist auf deinem Gerät aktiviert</translation>
 <translation id="7583004045319035904">Nutze <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um deine Inkognitotabs zu entsperren.</translation>
-<translation id="7588149553568293500">Hier erfährst du mehr über deine Auswahlmöglichkeiten.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{{COUNT} inaktiven Tab schließen?}other{{COUNT} inaktive Tabs schließen?}}</translation>
 <translation id="7598439272585186139">Mehr Sicherheit</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
@@ -2030,7 +2019,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7996239959906074962">Einrichten…</translation>
 <translation id="800361585186029508">Öffnet die eingegebenen URLs in Google Chrome.</translation>
 <translation id="8005666035647241369">Im Google Passwortmanager auf diesem Gerät</translation>
-<translation id="8006265839264939135">Nutzungsbedingungen</translation>
 <translation id="8010488806779226127">Entdecke Funktionen, die dich beim Surfen unterstützen</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Identität bestätigen, um vertrauliche Daten automatisch ausfüllen zu lassen</translation>
@@ -2353,7 +2341,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="9066097352053395362">„Lesezeichen bearbeiten“ ausblenden</translation>
 <translation id="9070824521421603770">Du wirst abgemeldet und Tabs werden geschlossen</translation>
 <translation id="9072837124205571418">Tabgruppen von allen Geräten</translation>
-<translation id="9075970015528364598">Chats werden geprüft und zur Verbesserung von Google AI verwendet. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> werden auch in deinen Aktivitäten gespeichert.</translation>
 <translation id="9081058212938299310">Passwort für <ph name="USERNAME" /> aktualisieren?</translation>
 <translation id="9083838294503912307">Aktiviere die Synchronisierung, um geräteübergreifend zu synchronisieren und zu personalisieren.</translation>
 <translation id="9084367296493549256">{count,plural, =1{Du nutzt {count} schwaches Passwort, das deine Sicherheit gefährden könnte. Ändere es jetzt, um dich bestmöglich zu schützen.}other{Du nutzt {count} schwache Passwörter, die deine Sicherheit gefährden könnten. Ändere sie jetzt, um dich bestmöglich zu schützen.}}</translation>

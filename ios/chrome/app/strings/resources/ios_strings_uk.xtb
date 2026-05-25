@@ -81,7 +81,6 @@
 <translation id="1275718070701477396">Вибрано</translation>
 <translation id="1279024913354609713">Не дозволяти</translation>
 <translation id="1285320974508926690">Ніколи не перекладати цей сайт</translation>
-<translation id="1287229685519872919">дані Google Workspace</translation>
 <translation id="1291506870746876680">Коли ви закриєте сайт <ph name="BEGIN_BOLD" /><ph name="SITE_NAME" /><ph name="END_BOLD" />, усі дозволи для нього буде скинуто.</translation>
 <translation id="1293491796138057740">Ваша інформація зберігається в Google Гаманці для облікового запису <ph name="USER_EMAIL" />. Ви можете використовувати її в продуктах Google, щоб швидше заповнювати форми.</translation>
 <translation id="1293556467332435079">Файли</translation>
@@ -168,7 +167,6 @@
 <translation id="1547610699249301703">Діліться паролями</translation>
 <translation id="1554043146674176775">Вимкнути режим ШІ</translation>
 <translation id="1554477036522844996">Нове вікно</translation>
-<translation id="1554605811306591212">Діють <ph name="TERMS" />, <ph name="KOREAN_LOCATION_TERMS" /> і <ph name="PRIVACY_NOTICE" />. Gemini – це штучний інтелект, і він може припускатися помилок (зокрема щодо людей).</translation>
 <translation id="1558391695376153246">Закрити анонімні вкладки</translation>
 <translation id="1565371473877914088">Нова анонімна вкладка</translation>
 <translation id="1567960978791353852">Показувати режим читання</translation>
@@ -374,6 +372,7 @@
 <translation id="2251686759395008410">Меню → Історія</translation>
 <translation id="2252378061043785266">Ніколи не показувати цей сайт</translation>
 <translation id="2252749852083403809">Зберігання на Диску для облікового запису <ph name="USER_EMAIL" />.</translation>
+<translation id="225614027745146050">Вітаємо!</translation>
 <translation id="2256933947031277845">Ваша організація дозволяє входити лише в певні облікові записи.</translation>
 <translation id="2257567812274161158">Синхронізація не працює.</translation>
 <translation id="2258326562203545455">{count,plural, =1{Ви можете зберегти цю закладку у своєму обліковому записі Google ({email}).}one{Ви можете зберегти ці закладки у своєму обліковому записі Google ({email}).}few{Ви можете зберегти ці закладки у своєму обліковому записі Google ({email}).}many{Ви можете зберегти ці закладки у своєму обліковому записі Google ({email}).}other{Ви можете зберегти ці закладки у своєму обліковому записі Google ({email}).}}</translation>
@@ -434,7 +433,6 @@
 <translation id="2468444275314013497">Ваш вебпереглядач у безпеці</translation>
 <translation id="2473876017985765807">Ви вже зберегли пароль для сайту <ph name="WEBSITE" /></translation>
 <translation id="247430852844518481">Ви можете створити нагадування, щоб повернутися на цю сторінку пізніше</translation>
-<translation id="2478246185006364308">Загальні положення й умови Google</translation>
 <translation id="2479148705183875116">Перейти в налаштування</translation>
 <translation id="2482878487686419369">Сповіщення</translation>
 <translation id="2484459871750294497">Як увімкнути цю функцію?</translation>
@@ -827,7 +825,6 @@
 <translation id="3941941395924123592">{COUNT,plural, =1{Закрити {COUNT} вкладку}one{Закрити {COUNT} вкладку}few{Закрити {COUNT} вкладки}many{Закрити {COUNT} вкладок}other{Закрити {COUNT} вкладки}}</translation>
 <translation id="3946483119107054883">Завантажити у форматі CSV</translation>
 <translation id="3948600256434252210">Щоб переглядати веб-сторінки в анонімному режимі, проведіть пальцем праворуч по екрану.</translation>
-<translation id="3949712484278252781">Ані ваші розмови з Gemini, ані <ph name="GOOGLE_WORKSPACE_DATA" /> не будуть перевірятися спеціалістами Google або використовуватися для покращення моделей генеративного штучного інтелекту.</translation>
 <translation id="3950479158728806902">Автоматично створювати ключі доступу, щоб швидше входити в обліковий запис</translation>
 <translation id="3950820424414687140">Вхід</translation>
 <translation id="395377504920307820">Використовувати без облікового запису</translation>
@@ -848,7 +845,6 @@
 <translation id="3994911892367422121">OK</translation>
 <translation id="3995521777587992544">Індикатор перебігу завантаження сторінки. Завантажено <ph name="EMAIL" />.</translation>
 <translation id="3997522473364371632">Адміністратор вимкнув надсилання паролів.</translation>
-<translation id="4000707564769984863">Переглянути відео за посиланням <ph name="WATCH_LINK" /></translation>
 <translation id="4002066346123236978">Назва</translation>
 <translation id="4004204301268239848">Паролі зберігаються в обліковому записі Google, щоб ви могли користуватися ними на будь-якому пристрої.</translation>
 <translation id="4007463141047732631">Редагувати групу</translation>
@@ -879,7 +875,6 @@
 <translation id="4129768137228347731">Зберегти такі дані: <ph name="ENTITY_TYPE" />?</translation>
 <translation id="4133139945030148655">Усе готово</translation>
 <translation id="4133265950310064865">Покращений захист</translation>
-<translation id="4142372594294312814">5 речей, які варто знати про генеративний штучний інтелект</translation>
 <translation id="4145507240503767005"><ph name="SEARCH_ENGINE_NAME" />, <ph name="SEARCH_ENGINE_DOMAIN" /></translation>
 <translation id="4147897805161313378">Google Фото</translation>
 <translation id="4148023517926189160">Цей веб-сайт просить дозвіл завантажити файл і додати його у ваш календар.</translation>
@@ -961,7 +956,6 @@
 <translation id="441218095371040430">Скористатися клавіатурою</translation>
 <translation id="4415276339145661267">Керувати обліковим записом Google</translation>
 <translation id="4416582610654027550">Введіть дійсну URL-адресу</translation>
-<translation id="441868831736628555">Примітка про конфіденційність</translation>
 <translation id="4420409367264901497">Редагувати закладку</translation>
 <translation id="4425365312778464779">Обліковим записом керує адміністратор</translation>
 <translation id="443008484043213881">Інструменти</translation>
@@ -1241,7 +1235,6 @@
 <translation id="5329451663851195956">Щоб оновити сторінку, проведіть пальцем униз по екрану.</translation>
 <translation id="5336910966955551309">Натисніть і утримуйте, щоб закріпити улюблені сайти</translation>
 <translation id="5338512273860059533">Виконується вхід.</translation>
-<translation id="5340148832014094861">Застосовуються <ph name="GOOGLE_TERMS" /> і <ph name="GEMINI_APPS_PRIVACY" />. Gemini – це штучний інтелект, і він може припускатися помилок (зокрема щодо людей).</translation>
 <translation id="5343472494710226394">Новини, спортивні події і контент на основі ваших інтересів.</translation>
 <translation id="5352128922772839949">Зберегти файл</translation>
 <translation id="5355191726083956201">Покращений захист увімкнено</translation>
@@ -1532,7 +1525,6 @@
 <translation id="6327249202318869726">Gemini вимкнено для вашого облікового запису. Щоб дізнатися більше, зверніться до свого адміністратора.</translation>
 <translation id="6331836477476466332">Безпечніший і потужніший вебпереглядач</translation>
 <translation id="6337234675334993532">Шифрування</translation>
-<translation id="6337313937331295309">Примітка про конфіденційність додатків Gemini</translation>
 <translation id="633809752005859102">Сталася помилка. Ми виправимо її.</translation>
 <translation id="6339793034470834130">Щоб скористатися додатком Web Inspector, підключіться до Safari на комп’ютері за допомогою кабелю й відкрийте пристрій iPhone через меню "Розробка". Ви можете ввімкнути меню "Розробка" в розділі "Експертні" в налаштуваннях Safari на комп’ютері.</translation>
 <translation id="6340285871011301182">Частковий переклад недоступний.</translation>
@@ -1812,7 +1804,6 @@
 <translation id="7261217796641151584">Поділитися групою</translation>
 <translation id="7266578100016339897">Так ви зможете краще впорядкувати роботу. Це можна будь-коли змінити в налаштуваннях.</translation>
 <translation id="7272437679830969316">Не вдалося підтвердити особу. Пароль не скопійовано.</translation>
-<translation id="7275307913765547631">Умови використання геоданих у Кореї</translation>
 <translation id="728025568708172005">Почати ознайомлення</translation>
 <translation id="7280980607183752256">Не вдалось імпортувати цей файл</translation>
 <translation id="7282197670900591579">Лимонна тема</translation>
@@ -1887,7 +1878,6 @@
 <translation id="7512909159512473473">Ввести парольну фразу…</translation>
 <translation id="7514365320538308">Завантажити</translation>
 <translation id="7514530647142300459">Продовжуйте використовувати паролі в обліковому записі Google <ph name="EMAIL" /></translation>
-<translation id="7522587739845660862">Інформація про ваше місцезнаходження</translation>
 <translation id="7522948500476882302">Завантажуючи файл, можна налаштувати його автоматичне видалення через 1 місяць</translation>
 <translation id="7524055474074101597">Отримуйте доступ до паролів тощо в додатках.</translation>
 <translation id="7525067979554623046">Створити</translation>
@@ -1904,7 +1894,6 @@
 <translation id="7582666837709186351">Перекладайте текст на фотографіях або навколишніх об’єктах за допомогою камери.</translation>
 <translation id="7582857256643797524">Це налаштування ввімкнено на вашому пристрої</translation>
 <translation id="7583004045319035904">Використовуйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, щоб розблоковувати анонімні вкладки.</translation>
-<translation id="7588149553568293500">Дізнайтеся про варіанти, які можна вибрати.</translation>
 <translation id="7596103009408415410">{COUNT,plural, =1{Закрити {COUNT} неактивну вкладку?}one{Закрити {COUNT} неактивну вкладку?}few{Закрити {COUNT} неактивні вкладки?}many{Закрити {COUNT} неактивних вкладок?}other{Закрити {COUNT} неактивної вкладки?}}</translation>
 <translation id="7598439272585186139">Увімкніть додатковий захист</translation>
 <translation id="7600965453749440009">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
@@ -2030,7 +2019,6 @@
 <translation id="7996239959906074962">Налаштування…</translation>
 <translation id="800361585186029508">Відкриває введені URL-адреси в Google Chrome.</translation>
 <translation id="8005666035647241369">У Менеджері паролів Google на цьому пристрої</translation>
-<translation id="8006265839264939135">Умови</translation>
 <translation id="8010488806779226127">Дізнайтеся про функції, які допоможуть вам ефективніше працювати в Інтернеті</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8014007212279733632">Підтверджувати особу під час автоматичного заповнення чутливої інформації</translation>
@@ -2353,7 +2341,6 @@
 <translation id="9066097352053395362">Сховати опцію "Редагувати закладку"</translation>
 <translation id="9070824521421603770">Ви вийдете з облікового запису, а вкладки буде закрито</translation>
 <translation id="9072837124205571418">Групи вкладок з усіх пристроїв</translation>
-<translation id="9075970015528364598">Ми переглядаємо чати й використовуємо їх для покращення ШІ від Google. <ph name="LEARN_ABOUT_CHOICES" /> <ph name="INFO_ABOUT_LOCATION" /> також зберігається в історії дій.</translation>
 <translation id="9081058212938299310">Оновити пароль для <ph name="USERNAME" />?</translation>
 <translation id="9083838294503912307">Щоб синхронізувати й персоналізувати дані на всіх своїх пристроях, увімкніть синхронізацію.</translation>
 <translation id="9084367296493549256">{count,plural, =1{У вас є {count} ненадійний пароль, який може загрожувати вашій безпеці. Змініть його, щоб захистити свої дані.}one{У вас є {count} ненадійний пароль, який може загрожувати вашій безпеці. Змініть їх, щоб захистити свої дані.}few{У вас є {count} ненадійні паролі, які можуть загрожувати вашій безпеці. Змініть їх, щоб захистити свої дані.}many{У вас є {count} ненадійних паролів, які можуть загрожувати вашій безпеці. Змініть їх, щоб захистити свої дані.}other{У вас є {count} ненадійного пароля, які можуть загрожувати вашій безпеці. Змініть їх, щоб захистити свої дані.}}</translation>
