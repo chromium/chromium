@@ -67,6 +67,7 @@
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/plain_text_range.h"
+#include "third_party/blink/renderer/core/editing/position_units.h"
 #include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -809,10 +810,22 @@ void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(Text* text_node,
     return;
 
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-  VisiblePosition visible_upstream_pos =
-      CreateVisiblePosition(Position(text_node, upstream));
-  VisiblePosition visible_downstream_pos =
-      CreateVisiblePosition(Position(text_node, downstream));
+
+  bool is_start_of_paragraph;
+  bool is_end_of_paragraph;
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    Position upstream_pos(text_node, upstream);
+    Position downstream_pos(text_node, downstream);
+    is_start_of_paragraph = IsStartOfParagraph(upstream_pos);
+    is_end_of_paragraph = IsEndOfParagraph(downstream_pos);
+  } else {
+    VisiblePosition visible_upstream_pos =
+        CreateVisiblePosition(Position(text_node, upstream));
+    VisiblePosition visible_downstream_pos =
+        CreateVisiblePosition(Position(text_node, downstream));
+    is_start_of_paragraph = IsStartOfParagraph(visible_upstream_pos);
+    is_end_of_paragraph = IsEndOfParagraph(visible_downstream_pos);
+  }
 
   StringView string = text.subview(upstream, length);
   // FIXME: Because of the problem mentioned at the top of this function, we
@@ -826,11 +839,10 @@ void CompositeEditCommand::RebalanceWhitespaceOnTextSubstring(Text* text_node,
       next_text_node && next_text_node->data().length() &&
       !IsWhitespace(next_text_node->data()[0]);
   const bool should_emit_nbs_pbefore_end =
-      (IsEndOfParagraph(visible_downstream_pos) ||
-       (unsigned)downstream == text.length()) &&
+      (is_end_of_paragraph || (unsigned)downstream == text.length()) &&
       !next_sibling_is_text_node;
   String rebalanced_string = StringWithRebalancedWhitespace(
-      string, IsStartOfParagraph(visible_upstream_pos) || !upstream,
+      string, is_start_of_paragraph || !upstream,
       should_emit_nbs_pbefore_end);
 
   if (string != rebalanced_string) {
