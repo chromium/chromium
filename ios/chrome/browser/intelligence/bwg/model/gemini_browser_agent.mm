@@ -1324,6 +1324,7 @@ GeminiConfiguration* GeminiBrowserAgent::CreateGeminiConfiguration(
     config.shouldShowGeminiLiveIPH = NO;
     config.shouldShowGeminiLiveNewBadge = NO;
   }
+  config.geminiLiveIPHText = l10n_util::GetNSString(IDS_IOS_GEMINI_LIVE_IPH);
 
   config.geminiLocationPermissionState =
       ios::provider::GeminiLocationPermissionState::kUnknown;

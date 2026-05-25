@@ -3303,6 +3303,9 @@
       <message name="IDS_IOS_GEMINI_LIVE_INTRO_TTS" desc="The intro text spoken by TTS when the user enters a Gemini Live session.">
         Hi, I'm Gemini. We're about to go live, where you can ask questions about the page you're on just by talking. But before we get started, take a quick look at this important information.
       </message>
+      <message name="IDS_IOS_GEMINI_LIVE_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can talk to Gemini in Live mode about the current page.">
+        Go Live with Gemini to ask about a page, brainstorm out loud, and talk back and forth.
+      </message>
       <message name="IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_DETAIL" desc="Detail message of modal dialog shown when the user tries to start Gemini Live but has not allowed microphone access. This body instructs the user to enable the microphone in Settings.">
         To use Live, give Chrome access to your microphone in settings
       </message>
