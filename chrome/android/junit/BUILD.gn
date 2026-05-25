@@ -317,7 +317,6 @@ if (is_android) {
       "//components/password_manager/core/browser:password_manager_java_enums",
       "//components/payments/content/android:full_java",
       "//components/payments/content/android:java",
-      "//components/payments/content/android:service_impl_java",
       "//components/payments/content/android:service_java",
       "//components/payments/content/android/ui:java",
       "//components/payments/mojom:mojom_java",

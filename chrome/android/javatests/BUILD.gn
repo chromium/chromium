@@ -601,7 +601,6 @@ android_library("chrome_test_java_org.chromium.chrome.browser.autofill") {
     ":chrome_test_java_helper",
     "//chrome/browser/ui/android/autofill/internal:java",
     "//chrome/browser/ui/android/autofill/internal:javatests",
-    "//components/payments/content/android:service_impl_java",
   ]
 }
 
@@ -1151,11 +1150,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.payments") {
     ]
   }
 
-  deps = [
-    ":chrome_test_java_helper",
-    "//components/payments/content/android:service_impl_java",
-    "//components/payments/content/android:service_java",
-  ]
+  deps = [ ":chrome_test_java_helper" ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.permissions") {

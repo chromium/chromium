@@ -635,7 +635,6 @@ if (_is_default_toolchain) {
       "//components/payments/content/android:feature_list_java",
       "//components/payments/content/android:full_java",
       "//components/payments/content/android:minimal_java",
-      "//components/payments/content/android:service_impl_java",
       "//components/payments/content/android:service_java",
       "//components/payments/mojom:mojom_java",
       "//components/policy/android:policy_java",

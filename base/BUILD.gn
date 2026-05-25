@@ -5030,7 +5030,6 @@ if (is_android) {
       ":promise_java",
       ":resetters_java",
       ":screen_state_receiver_java",
-      ":split_compat_java",
       ":stream_util_java",
       ":supplier_java",
       ":sys_utils_java",
@@ -5147,14 +5146,6 @@ if (is_android) {
       ":wrapped_class_loader_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
-    ]
-  }
-
-  android_library("split_compat_java") {
-    sources = [ "android/java/src/org/chromium/base/SplitCompatService.java" ]
-    deps = [
-      ":bundle_utils_java",
-      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
 

@@ -16,10 +16,7 @@ import org.chromium.build.annotations.Nullable;
 /**
  * Service base class which will call through to the given {@link Impl}. This class must be present
  * in the base module, while the Impl can be in the chrome or on_demand module.
- *
- * @deprecated Use {@link org.chromium.base.SplitCompatService} instead.
  */
-@Deprecated
 @NullMarked
 public class SplitCompatService extends Service {
     private final String mServiceClassName;
