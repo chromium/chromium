@@ -1118,7 +1118,7 @@ void remote_surface_activate(wl_client* client,
                              wl_resource* resource,
                              uint32_t serial) {
   ShellSurfaceBase* shell_surface = GetUserDataAs<ShellSurfaceBase>(resource);
-  shell_surface->Activate();
+  shell_surface->RequestActivation();
 }
 
 void remote_surface_maximize(wl_client* client, wl_resource* resource) {
