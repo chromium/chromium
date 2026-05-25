@@ -4,6 +4,7 @@
 
 #include "storage/browser/quota/quota_device_info_helper.h"
 
+#include "base/byte_size.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace storage {
@@ -18,7 +19,7 @@ int64_t QuotaDeviceInfoHelper::AmountOfTotalDiskSpace(
 }
 
 uint64_t QuotaDeviceInfoHelper::AmountOfPhysicalMemory() const {
-  return base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned();
+  return base::SysInfo::AmountOfTotalPhysicalMemory().InBytes();
 }
 
 }  // namespace storage

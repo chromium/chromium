@@ -9,6 +9,7 @@
 #include <numeric>
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -85,7 +86,7 @@ BlobStorageLimits CalculateBlobStorageLimitsImpl(
   uint64_t memory_size =
       optional_memory_size_for_testing
           ? optional_memory_size_for_testing.value()
-          : base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned();
+          : base::SysInfo::AmountOfTotalPhysicalMemory().InBytes();
   if (disk_enabled && CreateBlobDirectory(storage_dir) == base::File::FILE_OK)
     disk_size = base::SysInfo::AmountOfTotalDiskSpace(storage_dir).value_or(-1);
 
