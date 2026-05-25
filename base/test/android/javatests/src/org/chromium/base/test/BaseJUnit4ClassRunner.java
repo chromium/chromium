@@ -45,11 +45,13 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.base.test.util.TestAnimations;
+import org.chromium.base.test.util.TestLocale;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.ServiceLoader;
 
 /**
@@ -533,15 +535,30 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         CommandLineFlags.reset(testClass.getAnnotations(), null);
         TestAnimations.reset(testClass, null);
 
+        // Allows tests to set the locale before the feature list is initialized.
+        applyTestLocale();
+        // Allows tests to set the command-line before the feature list is initialized.
+        // The main side-effect being triggered is feature lists.
+        if (ContextUtils.sDoFeatureListInitHookForTesting != null) {
+            ThreadUtils.runOnUiThreadBlocking(ContextUtils.sDoFeatureListInitHookForTesting);
+            ContextUtils.sDoFeatureListInitHookForTesting = null;
+        }
+
         Context targetContext = InstrumentationRegistry.getTargetContext();
         for (ClassHook hook : getPreClassHooks()) {
             hook.run(targetContext, testClass);
         }
+    }
 
-        // Allows test classes to set the command-line before feature list is initialized.
-        if (ContextUtils.sDoFeatureListInitHookForTesting != null) {
-            ThreadUtils.runOnUiThreadBlocking(ContextUtils.sDoFeatureListInitHookForTesting);
-            ContextUtils.sDoFeatureListInitHookForTesting = null;
+    // Allows test classes to set the locale before the feature list is initialized.
+    private void applyTestLocale() {
+        Class<?> testClass = getTestClass().getJavaClass();
+        TestLocale localeAnnotation = testClass.getAnnotation(TestLocale.class);
+        if (localeAnnotation != null) {
+            Locale prevLocale = Locale.getDefault();
+            String localeLanguageTag = localeAnnotation.value();
+            Locale.setDefault(Locale.forLanguageTag(localeLanguageTag));
+            ResettersForTesting.register(() -> Locale.setDefault(prevLocale));
         }
     }
 
