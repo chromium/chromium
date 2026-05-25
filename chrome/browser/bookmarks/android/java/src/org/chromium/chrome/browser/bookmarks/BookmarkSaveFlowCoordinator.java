@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CancelableRunnable;
 import org.chromium.base.lifetime.DestroyChecker;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -59,6 +60,7 @@ public class BookmarkSaveFlowCoordinator {
     private final BookmarkModel mBookmarkModel;
     private final UserEducationHelper mUserEducationHelper;
     private boolean mClosedViaRunnable;
+    private @Nullable CancelableRunnable mAutoDismissTask;
 
     /**
      * @param context The {@link Context} associated with this coordinator.
@@ -229,12 +231,21 @@ public class BookmarkSaveFlowCoordinator {
     }
 
     private void setupAutodismiss() {
-        PostTask.postDelayedTask(TaskTraits.UI_USER_VISIBLE, this::close, AUTO_DISMISS_TIME_MS);
+        mAutoDismissTask = new CancelableRunnable(this::close);
+        PostTask.postDelayedTask(
+                TaskTraits.UI_USER_VISIBLE, mAutoDismissTask, AUTO_DISMISS_TIME_MS);
     }
 
     @SuppressWarnings("NullAway")
     private void destroy() {
         mDestroyChecker.destroy();
+
+        // Cancel the auto-dismiss task so it stops retaining this coordinator (and the
+        // activity it transitively holds) via the static TaskRunnerImpl task queue.
+        if (mAutoDismissTask != null) {
+            mAutoDismissTask.cancel();
+            mAutoDismissTask = null;
+        }
 
         // The bottom sheet was closed by a means other than one of the edit actions.
         if (mClosedViaRunnable) {
