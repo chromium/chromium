@@ -80,6 +80,7 @@ void DisplayCALayerTree::UpdateCALayerTree(gfx::CALayerParams ca_layer_params) {
   }
 #endif
 
+#if BUILDFLAG(IS_MAC)
   // Remote layers are the most common case.
   if (ca_layer_params.ca_context_id) {
     if (ca_layer_params.ca_context_fence_mach_port.is_valid()) {
@@ -100,6 +101,7 @@ void DisplayCALayerTree::UpdateCALayerTree(gfx::CALayerParams ca_layer_params) {
     GotCALayerFrame(ca_layer_params.ca_context_id);
     return;
   }
+#endif
 
   // IOSurfaces can be sent from software compositing, or if remote layers are
   // manually disabled.

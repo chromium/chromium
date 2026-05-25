@@ -181,8 +181,8 @@ void CALayerTreeCoordinator::EnsureCAContextAndRootLayer() {
     }];
 #endif
     ca_context_.layer = root_ca_layer_;
-  }
 #endif  // !BUILDFLAG(IS_IOS) || BUILDFLAG(IS_IOS_TVOS)
+  }
 }
 
 void CALayerTreeCoordinator::CommitPresentedFrameToCA(
