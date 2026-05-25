@@ -110,7 +110,6 @@ import java.util.function.Supplier;
 /** Coordinator for a {@link TabSwitcherPaneBase}'s UI. */
 @NullMarked
 public class TabSwitcherPaneCoordinator implements BackPressHandler {
-    static final String COMPONENT_NAME = "GridTabSwitcher";
     static final int XR_FADING_EDGE_LENGTH_PX = 24;
     static final boolean CONTEXT_MENU_FOCUSABLE = true;
 
@@ -445,7 +444,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             this::getPriceWelcomeMessageController,
                             parentView,
                             /* attachToParent= */ false,
-                            COMPONENT_NAME,
+                            TabComponentId.GRID_TAB_SWITCHER,
                             /* onModelTokenChange= */ null,
                             /* emptyViewParent= */ supportsEmptyState ? parentView : null,
                             supportsEmptyState ? emptyImageResId : Resources.ID_NULL,

@@ -216,7 +216,7 @@ public class SelectableTabListEditorTest {
                                     CreationMode.FULL_SCREEN,
                                     /* itemPickerSelectionHandler= */ null,
                                     /* undoBarExplicitTrigger= */ null,
-                                    /* componentName= */ null,
+                                    /* componentId= */ null,
                                     TabListEditorCoordinator.UNLIMITED_SELECTION,
                                     /* isSingleContextMode= */ false);
 

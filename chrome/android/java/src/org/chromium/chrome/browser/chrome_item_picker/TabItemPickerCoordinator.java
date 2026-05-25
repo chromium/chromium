@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
@@ -668,7 +669,7 @@ public class TabItemPickerCoordinator {
                         CreationMode.ITEM_PICKER,
                         mNavigationProvider,
                         /* undoBarExplicitTrigger= */ null,
-                        /* componentName= */ "TabItemPickerCoordinator",
+                        TabComponentId.TAB_LIST_EDITOR,
                         mAllowedSelectionCount,
                         mIsSingleContextMode);
 

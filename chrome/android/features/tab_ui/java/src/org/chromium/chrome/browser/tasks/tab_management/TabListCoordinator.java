@@ -193,9 +193,8 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
      *     PriceWelcomeMessage.
      * @param parentView {@link ViewGroup} The root view of the UI.
      * @param attachToParent Whether the UI should attach to root view.
-     * @param componentName A unique string uses to identify different components for UMA recording.
-     *     Recommended to use the class name or make sure the string is unique through actions.xml
-     *     file.
+     * @param componentId The {@link TabComponentId} identifying the parent UI container hosting
+     *     this tab list.
      * @param onModelTokenChange Callback to invoke whenever a model changes. Only currently
      *     respected in TabListMode.STRIP mode.
      * @param emptyViewParent {@link ViewGroup} The root view of the empty state view.
@@ -224,7 +223,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     priceWelcomeMessageControllerSupplier,
             ViewGroup parentView,
             boolean attachToParent,
-            String componentName,
+            @TabComponentId int componentId,
             @Nullable Callback<Object> onModelTokenChange,
             @Nullable ViewGroup emptyViewParent,
             @DrawableRes int emptyImageResId,
@@ -359,7 +358,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                         gridCardOnClickListenerProvider,
                         dialogHandler,
                         priceWelcomeMessageControllerSupplier,
-                        componentName,
+                        componentId,
                         initialTabActionState,
                         dataSharingTabManager,
                         onTabGroupCreation,

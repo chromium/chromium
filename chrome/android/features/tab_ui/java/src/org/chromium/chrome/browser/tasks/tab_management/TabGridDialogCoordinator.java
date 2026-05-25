@@ -86,11 +86,6 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogController {
-    static final String COMPONENT_NAME_PREFIX = "TabGridDialog";
-    private static final String FROM_STRIP_COMPONENT_NAME = COMPONENT_NAME_PREFIX + "FromStrip";
-    private static final String IN_SWITCHER_COMPONENT_NAME = COMPONENT_NAME_PREFIX + "InSwitcher";
-
-    private final String mComponentName;
     private final TabListCoordinator mTabListCoordinator;
     private final TabGridDialogMediator mMediator;
     private final PropertyModel mModel;
@@ -141,10 +136,10 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             Callback<@Nullable View> attachViewCallback) {
         try (TraceEvent e = TraceEvent.scoped("TabGridDialogCoordinator.constructor")) {
             mActivity = activity;
-            mComponentName =
+            int componentId =
                     animationSourceViewProvider == null
-                            ? FROM_STRIP_COMPONENT_NAME
-                            : IN_SWITCHER_COMPONENT_NAME;
+                            ? TabComponentId.TAB_GRID_DIALOG_FROM_STRIP
+                            : TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER;
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mModalDialogManager = modalDialogManager;
             mCurrentTabModelSupplier = currentTabModelSupplier;
@@ -230,7 +225,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             mBottomSheetController,
                             mSharedImageTilesCoordinator,
                             dataSharingTabManager,
-                            mComponentName,
+                            componentId,
                             showColorPickerPopupRunnable,
                             modalDialogManager,
                             desktopWindowStateManager,
@@ -256,7 +251,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             /* priceWelcomeMessageControllerSupplier= */ null,
                             mDialogView,
                             /* attachToParent= */ false,
-                            mComponentName,
+                            componentId,
                             /* onModelTokenChange= */ null,
                             /* emptyViewParent= */ null,
                             /* emptyImageResId= */ Resources.ID_NULL,
@@ -381,7 +376,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             CreationMode.DIALOG,
                             /* itemPickerSelectionHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
-                            /* componentName= */ null,
+                            /* componentId= */ null,
                             TabListEditorCoordinator.UNLIMITED_SELECTION,
                             /* isSingleContextMode= */ false);
         }

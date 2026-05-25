@@ -73,7 +73,6 @@ import java.util.function.Supplier;
  */
 @NullMarked
 public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, TabGroupUi {
-    static final String COMPONENT_NAME = "TabStrip";
 
     /** Set by {@code mMediator}, but owned by the coordinator so access is safe pre-native. */
     private final SettableNonNullObservableSupplier<Boolean> mHandleBackPressChangedSupplier =
@@ -223,7 +222,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             /* priceWelcomeMessageControllerSupplier= */ null,
                             mTabListContainerView,
                             /* attachToParent= */ true,
-                            COMPONENT_NAME,
+                            TabComponentId.TAB_STRIP,
                             tabStripTokenSupplier::set,
                             /* emptyViewParent= */ null,
                             /* emptyImageResId= */ Resources.ID_NULL,

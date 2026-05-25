@@ -447,7 +447,9 @@ public class TabGroupUiMediator implements BackPressHandler {
                                     TabLaunchType.FROM_TAB_GROUP_UI,
                                     parentTabToAttach);
                     RecordUserAction.record(
-                            "MobileNewTabOpened." + TabGroupUiCoordinator.COMPONENT_NAME);
+                            "MobileNewTabOpened."
+                                    + TabUiMetricsHelper.getComponentNameForMetrics(
+                                            TabComponentId.TAB_STRIP));
                 };
         mModel.set(NEW_TAB_BUTTON_ON_CLICK_LISTENER, newTabButtonOnClickListener);
     }

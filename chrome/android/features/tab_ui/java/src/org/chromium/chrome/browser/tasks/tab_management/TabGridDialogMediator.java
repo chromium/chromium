@@ -236,7 +236,7 @@ public class TabGridDialogMediator
     private final BottomSheetController mBottomSheetController;
     private final @Nullable SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     private final DataSharingTabManager mDataSharingTabManager;
-    private final String mComponentName;
+    private final @TabComponentId int mComponentId;
     private final Runnable mShowColorPickerPopupRunnable;
     private final Profile mOriginalProfile;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
@@ -274,7 +274,7 @@ public class TabGridDialogMediator
             BottomSheetController bottomSheetController,
             @Nullable SharedImageTilesCoordinator sharedImageTilesCoordinator,
             DataSharingTabManager dataSharingTabManager,
-            String componentName,
+            @TabComponentId int componentId,
             Runnable showColorPickerPopupRunnable,
             @Nullable ModalDialogManager modalDialogManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
@@ -292,7 +292,7 @@ public class TabGridDialogMediator
         mBottomSheetController = bottomSheetController;
         mSharedImageTilesCoordinator = sharedImageTilesCoordinator;
         mDataSharingTabManager = dataSharingTabManager;
-        mComponentName = componentName;
+        mComponentId = componentId;
         mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
         TabModel currentTabModel = mCurrentTabModelSupplier.get();
         assumeNonNull(currentTabModel);
@@ -1017,7 +1017,9 @@ public class TabGridDialogMediator
                     urlConstantResolver.getNtpUrl(),
                     tabsInGroup.get(tabsInGroup.size() - 1).getId(),
                     TabLaunchType.FROM_TAB_GROUP_UI);
-            RecordUserAction.record("MobileNewTabOpened." + mComponentName);
+            RecordUserAction.record(
+                    "MobileNewTabOpened."
+                            + TabUiMetricsHelper.getComponentNameForMetrics(mComponentId));
         };
     }
 

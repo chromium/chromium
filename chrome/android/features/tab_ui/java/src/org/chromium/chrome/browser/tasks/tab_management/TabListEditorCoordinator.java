@@ -78,7 +78,6 @@ public class TabListEditorCoordinator {
         int ITEM_PICKER = 2;
     }
 
-    static final String COMPONENT_NAME = "TabListEditor";
     public static final int UNLIMITED_SELECTION = 0;
 
     // TODO(crbug.com/41467140): Unify similar interfaces in other components that used the
@@ -341,7 +340,7 @@ public class TabListEditorCoordinator {
     private final ModalDialogManager mModalDialogManager;
     private final @Nullable MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final @Nullable UndoBarExplicitTrigger mUndoBarExplicitTrigger;
-    private final String mComponentName;
+    private final @TabComponentId int mComponentId;
     private final int mAllowedSelectionCount;
     private final boolean mIsSingleContextMode;
     private final SnackbarManager mSnackbarManager;
@@ -374,9 +373,8 @@ public class TabListEditorCoordinator {
      * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @param creationMode Mode in which list is created e.g. full screen mode or in a dialog.
      * @param undoBarExplicitTrigger Used to explicitly trigger the undo bar closure snackbar.
-     * @param componentName A unique string used to identify the parent component. Null if the
-     *     originating component is not important and the current component name is preferred.
-     *     Recommended to use the class name or make sure the string is unique.
+     * @param componentId The {@link TabComponentId} identifying the parent UI container hosting
+     *     this tab list.
      * @param allowedSelectionCount The maximum number of tabs that can be selected at once. If
      *     equal to UNLIMITED_SELECTION, then unlimited.
      * @param isSingleContextMode Whether the picker is operating in a mode where only one item can
@@ -405,7 +403,7 @@ public class TabListEditorCoordinator {
             @CreationMode int creationMode,
             @Nullable ItemPickerSelectionHandler itemPickerSelectionHandler,
             @Nullable UndoBarExplicitTrigger undoBarExplicitTrigger,
-            @Nullable String componentName,
+            @TabComponentId @Nullable Integer componentId,
             int allowedSelectionCount,
             boolean isSingleContextMode) {
         try (TraceEvent e = TraceEvent.scoped("TabListEditorCoordinator.constructor")) {
@@ -425,7 +423,7 @@ public class TabListEditorCoordinator {
             mModalDialogManager = modalDialogManager;
             mEdgeToEdgeSupplier = edgeToEdgeSupplier;
             mUndoBarExplicitTrigger = undoBarExplicitTrigger;
-            mComponentName = componentName == null ? COMPONENT_NAME : componentName;
+            mComponentId = componentId == null ? TabComponentId.TAB_LIST_EDITOR : componentId;
             mAllowedSelectionCount = allowedSelectionCount;
             mIsSingleContextMode = isSingleContextMode;
 
@@ -651,7 +649,7 @@ public class TabListEditorCoordinator {
                         /* priceWelcomeMessageControllerSupplier= */ null,
                         mTabListEditorLayout,
                         /* attachToParent= */ false,
-                        mComponentName,
+                        mComponentId,
                         /* onModelTokenChange= */ null,
                         /* emptyViewParent= */ emptyViewParent,
                         /* emptyImageResId= */ emptyImageResId,

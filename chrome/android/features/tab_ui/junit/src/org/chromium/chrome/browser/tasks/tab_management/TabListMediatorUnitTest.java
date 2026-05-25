@@ -1305,7 +1305,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabAddition_TabGridDialog_delayAdd() {
-        mMediator.setComponentNameForTesting(TabGridDialogCoordinator.COMPONENT_NAME_PREFIX);
+        mMediator.setComponentIdForTesting(TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER);
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -1351,7 +1351,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabAddition_Gts_delayAdd() {
-        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -1404,7 +1404,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void tabAddition_Gts_delayAdd_WithUnexpectedUpdate() {
-        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
         initAndAssertAllProperties();
 
         Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
@@ -1706,7 +1706,7 @@ public class TabListMediatorUnitTest {
                         mGridCardOnClickListenerProvider,
                         null,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabActionState.CLOSABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -3501,7 +3501,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -3539,7 +3539,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -3739,7 +3739,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         null,
-                        ArchivedTabsDialogCoordinator.COMPONENT_NAME,
+                        TabComponentId.ARCHIVED_TABS_DIALOG,
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -4065,7 +4065,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabProperties.TabActionState.SELECTABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -4116,7 +4116,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabProperties.TabActionState.SELECTABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -4167,7 +4167,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabProperties.TabActionState.SELECTABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -4351,7 +4351,7 @@ public class TabListMediatorUnitTest {
     @Test
     @EnableFeatures({ChromeFeatureList.DATA_SHARING})
     public void testIsTabGroup_TabSwitcher() {
-        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
 
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
@@ -4373,7 +4373,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testIsTabPinned_TabSwitcher() {
-        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
 
         List<Tab> tabsInModel = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); i++) {
@@ -4407,7 +4407,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testOnTabPinnedStateChanged() {
-        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
 
         List<Tab> tabsInModel = new ArrayList<>();
         for (int i = 0; i < mTabModel.getCount(); i++) {
@@ -4439,7 +4439,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testOnTabPinnedStateChanged_MovesTab() {
-        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
 
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         doReturn(false).when(mTab1).getIsPinned();
@@ -4520,7 +4520,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testOnTabPinnedStateChanged_MovesTab_OutOfBounds() {
-        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+        mMediator.setComponentIdForTesting(TabComponentId.GRID_TAB_SWITCHER);
 
         Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
         // Start with tab1 pinned, others not.
@@ -4901,7 +4901,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -5255,7 +5255,7 @@ public class TabListMediatorUnitTest {
                         null,
                         null,
                         null,
-                        ArchivedTabsDialogCoordinator.COMPONENT_NAME,
+                        TabComponentId.ARCHIVED_TABS_DIALOG,
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -5322,7 +5322,7 @@ public class TabListMediatorUnitTest {
                         mGridCardOnClickListenerProvider,
                         null,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -5561,7 +5561,7 @@ public class TabListMediatorUnitTest {
                         /* gridCardOnClickListenerProvider= */ null,
                         /* dialogHandler= */ null,
                         /* priceWelcomeMessageControllerSupplier= */ null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         TabProperties.TabActionState.CLOSABLE,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -5961,7 +5961,7 @@ public class TabListMediatorUnitTest {
                         mGridCardOnClickListenerProvider,
                         handler,
                         null,
-                        getClass().getSimpleName(),
+                        TabComponentId.GRID_TAB_SWITCHER,
                         tabActionState,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,

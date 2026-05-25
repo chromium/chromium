@@ -2026,7 +2026,7 @@ public class TabGridDialogMediatorUnitTest {
                         mBottomSheetController,
                         mSharedImageTilesCoordinator,
                         mDataSharingTabManager,
-                        /* componentName= */ "",
+                        /* componentId= */ TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER,
                         mShowColorPickerPopupRunnable,
                         mModalDialogManager,
                         mDesktopWindowStateManager,

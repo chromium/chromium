@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
+import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator;
@@ -38,9 +39,6 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 /** Coordinator to manage and display the Vertical Tab List. */
 @NullMarked
 public class VerticalTabListCoordinator {
-    // TODO(crbug.com/515138646): Refactor this loose String component name to a unified @IntDef
-    // enum system once TabListMediator's constructor and UMA logging are updated to support it.
-    static final String COMPONENT_NAME = "VerticalTabs";
     static final int DEFAULT_GRID_SPAN_COUNT = 4;
     private final ViewGroup mContainerView;
     private final TabListFaviconProvider mTabListFaviconProvider;
@@ -182,7 +180,7 @@ public class VerticalTabListCoordinator {
                         /* gridCardOnClickListenerProvider */ new VerticalTabListClickHandler(),
                         /* dialogHandler */ null,
                         /* priceWelcomeMessageControllerSupplier */ null,
-                        COMPONENT_NAME,
+                        TabComponentId.VERTICAL_TABS,
                         TabProperties.TabActionState.CLOSABLE,
                         /* dataSharingTabManager */ null,
                         /* onTabGroupCreation */ null,

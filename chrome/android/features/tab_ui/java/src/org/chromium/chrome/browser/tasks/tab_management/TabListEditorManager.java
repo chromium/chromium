@@ -150,7 +150,7 @@ public class TabListEditorManager {
                             CreationMode.FULL_SCREEN,
                             /* itemPickerSelectionHandler= */ null,
                             /* undoBarExplicitTrigger= */ null,
-                            /* componentName= */ null,
+                            /* componentId= */ null,
                             TabListEditorCoordinator.UNLIMITED_SELECTION,
                             false);
             mControllerSupplier.set(mTabListEditorCoordinator.getController());

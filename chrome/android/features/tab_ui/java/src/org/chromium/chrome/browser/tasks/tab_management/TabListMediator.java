@@ -312,7 +312,8 @@ public class TabListMediator implements TabListNotificationHandler {
     @IntDef({
         TabClosedFrom.TAB_STRIP,
         TabClosedFrom.GRID_TAB_SWITCHER,
-        TabClosedFrom.GRID_TAB_SWITCHER_GROUP
+        TabClosedFrom.GRID_TAB_SWITCHER_GROUP,
+        TabClosedFrom.VERTICAL_TABS
     })
     @Retention(RetentionPolicy.SOURCE)
     private @interface TabClosedFrom {
@@ -320,6 +321,7 @@ public class TabListMediator implements TabListNotificationHandler {
         // int TAB_GRID_SHEET = 1;  // Obsolete
         int GRID_TAB_SWITCHER = 2;
         int GRID_TAB_SWITCHER_GROUP = 3;
+        int VERTICAL_TABS = 4;
     }
 
     private static final String TAG = "TabListMediator";
@@ -355,7 +357,7 @@ public class TabListMediator implements TabListNotificationHandler {
     private int mNextTabId = Tab.INVALID_TAB_ID;
     private int mLastSelectedTabListModelIndex = TabList.INVALID_TAB_INDEX;
     private boolean mActionsOnAllRelatedTabs;
-    private String mComponentName;
+    private @TabComponentId int mComponentId;
     private @TabActionState int mTabActionState;
     private @Nullable Profile mOriginalProfile;
     private @Nullable TabGroupSyncService mTabGroupSyncService;
@@ -444,7 +446,9 @@ public class TabListMediator implements TabListNotificationHandler {
                  * components other than TabSwitcher.
                  */
                 private void recordUserSwitchedTab() {
-                    RecordUserAction.record("MobileTabSwitched." + mComponentName);
+                    RecordUserAction.record(
+                            "MobileTabSwitched."
+                                    + TabUiMetricsHelper.getComponentNameForMetrics(mComponentId));
                 }
             };
 
@@ -1015,7 +1019,8 @@ public class TabListMediator implements TabListNotificationHandler {
      * @param dialogHandler A handler to handle requests about updating TabGridDialog.
      * @param priceWelcomeMessageControllerSupplier A supplier of a controller to show
      *     PriceWelcomeMessage.
-     * @param componentName This is a unique string to identify different components.
+     * @param componentId The {@link TabComponentId} identifying the parent UI container hosting
+     *     this tab list.
      * @param initialTabActionState The initial {@link TabActionState} to use for the shown tabs.
      *     Must always be CLOSABLE for TabListMode.STRIP.
      * @param dataSharingTabManager The service used to initiate data sharing.
@@ -1039,7 +1044,7 @@ public class TabListMediator implements TabListNotificationHandler {
             @Nullable TabGridDialogHandler dialogHandler,
             @Nullable Supplier<@Nullable PriceWelcomeMessageController>
                     priceWelcomeMessageControllerSupplier,
-            String componentName,
+            @TabComponentId int componentId,
             @TabActionState int initialTabActionState,
             @Nullable DataSharingTabManager dataSharingTabManager,
             @Nullable Runnable onTabGroupCreation,
@@ -1060,7 +1065,7 @@ public class TabListMediator implements TabListNotificationHandler {
         mGridCardOnClickListenerProvider = gridCardOnClickListenerProvider;
         mTabGridDialogHandler = dialogHandler;
         mPriceWelcomeMessageControllerSupplier = priceWelcomeMessageControllerSupplier;
-        mComponentName = componentName;
+        mComponentId = componentId;
         mTabActionState = initialTabActionState;
         mDataSharingTabManager = dataSharingTabManager;
         mOnTabGroupCreation = onTabGroupCreation;
@@ -1128,6 +1133,9 @@ public class TabListMediator implements TabListNotificationHandler {
                                 case TabClosedFrom.GRID_TAB_SWITCHER_GROUP:
                                     RecordUserAction.record("GridTabSwitcher.UndoCloseTabGroup");
                                     break;
+                                case TabClosedFrom.VERTICAL_TABS:
+                                    RecordUserAction.record("VerticalTabs.UndoCloseTab");
+                                    break;
                                 default:
                                     assert false
                                             : "tabClosureUndone for tab that closed from an unknown"
@@ -1172,15 +1180,18 @@ public class TabListMediator implements TabListNotificationHandler {
                         addObserversForTab(tab);
 
                         // Check if we need to delay tab addition to model.
+                        boolean isSupportedLaunchType =
+                                type == TabLaunchType.FROM_TAB_SWITCHER_UI
+                                        || type == TabLaunchType.FROM_TAB_GROUP_UI;
+                        boolean isGridOrDialogComponent =
+                                mComponentId == TabComponentId.GRID_TAB_SWITCHER
+                                        || mComponentId == TabComponentId.TAB_GRID_DIALOG_FROM_STRIP
+                                        || mComponentId
+                                                == TabComponentId.TAB_GRID_DIALOG_IN_SWITCHER;
                         boolean delayAdd =
-                                (type == TabLaunchType.FROM_TAB_SWITCHER_UI
-                                                || type == TabLaunchType.FROM_TAB_GROUP_UI)
+                                isSupportedLaunchType
                                         && markedForSelection
-                                        && (mComponentName.equals(
-                                                        TabSwitcherPaneCoordinator.COMPONENT_NAME)
-                                                || mComponentName.startsWith(
-                                                        TabGridDialogCoordinator
-                                                                .COMPONENT_NAME_PREFIX));
+                                        && isGridOrDialogComponent;
                         if (delayAdd) {
                             mTabToAddDelayed = tab;
                             return;
@@ -1287,7 +1298,7 @@ public class TabListMediator implements TabListNotificationHandler {
                             return;
                         }
 
-                        onTabClosedFrom(tabId, mComponentName);
+                        onTabClosedFrom(tabId, mComponentId);
                         Tab currentTab = TabModelUtils.getCurrentTab(tabModel);
                         Tab nextTab = currentTab == closingTab ? getNextTab(tabId) : null;
                         boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(triggeringMotion);
@@ -1303,7 +1314,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         tabModel.getTabRemover()
                                 .closeTabs(closureParams, /* allowDialog= */ true, listener);
 
-                        if (mComponentName.equals(ArchivedTabsDialogCoordinator.COMPONENT_NAME)
+                        if (mComponentId == TabComponentId.ARCHIVED_TABS_DIALOG
                                 && mUndoBarExplicitTrigger != null) {
                             mUndoBarExplicitTrigger.triggerSnackbarForTab(closingTab);
                         }
@@ -1420,7 +1431,7 @@ public class TabListMediator implements TabListNotificationHandler {
                         () -> assertNonNull(mCurrentTabModelSupplier.get()),
                         swipeSafeTabActionListener,
                         mTabGridDialogHandler,
-                        mComponentName,
+                        TabUiMetricsHelper.getComponentNameForMetrics(componentId),
                         mActionsOnAllRelatedTabs,
                         mMode,
                         onDragStateChangedListener);
@@ -1542,20 +1553,24 @@ public class TabListMediator implements TabListNotificationHandler {
         }
     }
 
-    private void onTabClosedFrom(int tabId, String fromComponent) {
+    private void onTabClosedFrom(int tabId, @TabComponentId int componentId) {
         @TabClosedFrom int from;
-        if (fromComponent.equals(TabGroupUiCoordinator.COMPONENT_NAME)) {
+        if (componentId == TabComponentId.TAB_STRIP) {
             from = TabClosedFrom.TAB_STRIP;
-        } else if (fromComponent.equals(TabSwitcherPaneCoordinator.COMPONENT_NAME)) {
+        } else if (componentId == TabComponentId.GRID_TAB_SWITCHER) {
             from = TabClosedFrom.GRID_TAB_SWITCHER;
+        } else if (componentId == TabComponentId.VERTICAL_TABS) {
+            from = TabClosedFrom.VERTICAL_TABS;
         } else {
-            Log.w(TAG, "Attempting to close tab from Unknown UI");
+            Log.w(TAG, "Attempting to close tab from Unknown UI: " + componentId);
             return;
         }
         sTabClosedFromMap.put(tabId, from);
     }
 
     private void onGroupClosedFrom(int tabId) {
+        // TODO(crbug.com/509226293): Support tracking group closure source for Vertical Tabs
+        // when group-level actions are supported.
         sTabClosedFromMap.put(tabId, TabClosedFrom.GRID_TAB_SWITCHER_GROUP);
     }
 
@@ -2340,7 +2355,7 @@ public class TabListMediator implements TabListNotificationHandler {
         TextResolver contentDescriptionResolver =
                 (context) -> {
                     if (!isInTabGroup) {
-                        if (mComponentName.equals(ArchivedTabsDialogCoordinator.COMPONENT_NAME)) {
+                        if (mComponentId == TabComponentId.ARCHIVED_TABS_DIALOG) {
                             return context.getString(
                                     R.string.accessibility_restore_tab, tab.getTitle());
                         }
@@ -3297,7 +3312,9 @@ public class TabListMediator implements TabListNotificationHandler {
                 return;
             }
 
-            RecordUserAction.record("MobileTabClosed." + mComponentName);
+            RecordUserAction.record(
+                    "MobileTabClosed."
+                            + TabUiMetricsHelper.getComponentNameForMetrics(mComponentId));
 
             // Special case in defense of a group not being completely closed. We need to find the
             // group by the tab's old root ID.
@@ -3515,10 +3532,10 @@ public class TabListMediator implements TabListNotificationHandler {
         return mTabToAddDelayed;
     }
 
-    void setComponentNameForTesting(String name) {
-        var oldValue = mComponentName;
-        mComponentName = name;
-        ResettersForTesting.register(() -> mComponentName = oldValue);
+    void setComponentIdForTesting(@TabComponentId int componentId) {
+        var oldValueId = mComponentId;
+        mComponentId = componentId;
+        ResettersForTesting.register(() -> mComponentId = oldValueId);
     }
 
     void setActionOnAllRelatedTabsForTesting(boolean actionOnAllRelatedTabs) {
