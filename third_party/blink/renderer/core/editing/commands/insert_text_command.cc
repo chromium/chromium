@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/editing/visible_units.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_span_element.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -113,14 +114,18 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
   // link are selected, then we shouldn't be retaining the link with just one
   // character because the user wouldn't be able to edit the link if it has only
   // one character.
-  Position start = EndingVisibleSelection().Start();
+  Position start = RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()
+                       ? EndingSelection().Start()
+                       : EndingVisibleSelection().Start();
   Element* enclosing_anchor = EnclosingAnchorElement(start);
   if (enclosing_anchor && text.length() <= 1) {
     VisiblePosition first_in_anchor =
         VisiblePosition::FirstPositionInNode(*enclosing_anchor);
     VisiblePosition last_in_anchor =
         VisiblePosition::LastPositionInNode(*enclosing_anchor);
-    Position end = EndingVisibleSelection().End();
+    Position end = RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()
+                       ? EndingSelection().End()
+                       : EndingVisibleSelection().End();
     if (first_in_anchor.DeepEquivalent() == start &&
         last_in_anchor.DeepEquivalent() == end)
       return false;
@@ -137,7 +142,9 @@ bool InsertTextCommand::PerformTrivialReplace(const String& text) {
                                       end_position);
   SetEndingSelection(SelectionForUndoStep::From(
       SelectionInDOMTree::Builder()
-          .Collapse(EndingVisibleSelection().End())
+          .Collapse(RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()
+                        ? EndingSelection().End()
+                        : EndingVisibleSelection().End())
           .Build()));
   return true;
 }
@@ -147,10 +154,18 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
 
   // TODO(editing-dev): We shouldn't construct an InsertTextCommand with none or
   // invalid selection.
-  const VisibleSelection& visible_selection = EndingVisibleSelection();
-  if (visible_selection.IsNone() ||
-      !visible_selection.IsValidFor(GetDocument()))
-    return;
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    const SelectionForUndoStep& selection = EndingSelection();
+    if (selection.IsNone() || !selection.IsValidFor(GetDocument())) {
+      return;
+    }
+  } else {
+    const VisibleSelection& visible_selection = EndingVisibleSelection();
+    if (visible_selection.IsNone() ||
+        !visible_selection.IsValidFor(GetDocument())) {
+      return;
+    }
+  }
 
   // Delete the current selection.
   // FIXME: This delete operation blows away the typing style.
@@ -158,8 +173,14 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
     if (PerformTrivialReplace(text_))
       return;
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
-    bool end_of_selection_was_at_start_of_block =
-        IsStartOfBlock(EndingVisibleSelection().VisibleEnd());
+    bool end_of_selection_was_at_start_of_block;
+    if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+      end_of_selection_was_at_start_of_block =
+          IsStartOfBlock(EndingSelection().End());
+    } else {
+      end_of_selection_was_at_start_of_block =
+          IsStartOfBlock(EndingVisibleSelection().VisibleEnd());
+    }
     if (!DeleteSelection(editing_state, DeleteSelectionOptions::Builder()
                                             .SetMergeBlocksAfterDelete(true)
                                             .Build()))
@@ -188,7 +209,10 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
   if (!RuntimeEnabledFeatures::
           UsePositionIfIsVisuallyEquivalentCandidateEnabled()) {
     // Reached by InsertTextCommandTest.NoVisibleSelectionAfterDeletingSelection
-    ABORT_EDITING_COMMAND_IF(EndingVisibleSelection().IsNone());
+    ABORT_EDITING_COMMAND_IF(
+        RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()
+            ? EndingSelection().IsNone()
+            : EndingVisibleSelection().IsNone());
   }
 
   Position start_position(EndingVisibleSelection().Start());
@@ -279,16 +303,28 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
     }
   }
 
+  TextAffinity selection_affinity;
+  Position selection_end;
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    const SelectionForUndoStep& end_selection = EndingSelection();
+    selection_affinity = end_selection.Affinity();
+    selection_end = end_selection.End();
+  } else {
+    const VisibleSelection& selection = EndingVisibleSelection();
+    selection_affinity = selection.Affinity();
+    selection_end = selection.End();
+  }
+
   SelectionInDOMTree::Builder builder;
-  const VisibleSelection& selection = EndingVisibleSelection();
   if (RuntimeEnabledFeatures::CaretWithTextAffinityUpstreamEnabled() &&
       text_ == " " && !IsRichlyEditablePosition(start_position)) {
     builder.SetAffinity(TextAffinity::kUpstreamIfPossible);
   } else {
-    builder.SetAffinity(selection.Affinity());
+    builder.SetAffinity(selection_affinity);
   }
-  if (selection.End().IsNotNull())
-    builder.Collapse(selection.End());
+  if (selection_end.IsNotNull()) {
+    builder.Collapse(selection_end);
+  }
   SetEndingSelection(SelectionForUndoStep::From(builder.Build()));
 }
 
