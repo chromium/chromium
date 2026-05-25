@@ -19,6 +19,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/aggregated_journal_render_frame_binder.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_metrics.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
@@ -157,7 +158,7 @@ ObservationDelayController::ObservationDelayController(
       GURL::EmptyGURL(), task_id, "ObservationDelay: Created",
       JournalDetailsBuilder().Add("May Use PageStability", true).Build());
 
-  journal.EnsureJournalBound(target_frame);
+  AggregatedJournalRenderFrameBinder::EnsureBound(journal, target_frame);
 
   // Note: It's important that the PageStabilityMonitor be created on the same
   // interface as tool invocation since it relies on being created before a

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_H_
 #define CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_H_
 
+#include <memory>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -15,15 +16,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "base/supports_user_data.h"
+#include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "chrome/common/actor.mojom.h"
 #include "components/actor/core/task_id.h"
 #include "url/gurl.h"
-
-namespace content {
-class RenderFrameHost;
-}
 
 namespace google::protobuf {
 class MessageLite;
@@ -31,9 +29,16 @@ class MessageLite;
 
 namespace actor {
 
-// A class that amalgamates all the journal entries from various RenderFrames.
+class AggregatedJournalRenderFrameBinder;
+
+// A class that amalgamates all the journal entries across frames in a page.
 class AggregatedJournal {
  public:
+  static base::PassKey<AggregatedJournal> CreatePassKey(
+      base::PassKey<AggregatedJournalRenderFrameBinder>) {
+    return base::PassKey<AggregatedJournal>();
+  }
+
   AggregatedJournal();
   ~AggregatedJournal();
 
@@ -149,10 +154,9 @@ class AggregatedJournal {
                                TaskId task_id,
                                base::span<const uint8_t> data);
 
-  void EnsureJournalBound(content::RenderFrameHost& rfh);
-  void AppendJournalEntries(content::RenderFrameHost& rfh,
+  void AppendJournalEntries(const GURL& url,
                             std::vector<mojom::JournalEntryPtr> entries);
-  EntryBuffer::Iterator Items() { return entries_.Begin(); }
+  EntryBuffer::Iterator Items() const { return entries_.Begin(); }
   base::SafeRef<AggregatedJournal> GetSafeRef();
   base::WeakPtr<AggregatedJournal> GetWeakPtr();
   void AddEndEvent(base::PassKey<AggregatedJournal>,
@@ -162,10 +166,11 @@ class AggregatedJournal {
                    std::vector<mojom::JournalDetailsPtr> details);
 
  private:
-  void AddEntry(std::unique_ptr<Entry>);
+  void AddEntry(std::unique_ptr<Entry> new_entry);
 
   base::ObserverList<Observer> observers_;
   EntryBuffer entries_;
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<AggregatedJournal> weak_ptr_factory_{this};
 };
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/actor/actor_tab_data.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/aggregated_journal_render_frame_binder.h"
 #include "chrome/browser/actor/execution_engine.h"
 #include "chrome/browser/actor/tools/observation_delay_controller.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
@@ -535,7 +536,7 @@ void PageTool::Invoke(ToolCallback callback) {
   RenderFrameHost& frame = *GetFrame();
   invoke_callback_ = std::move(callback);
 
-  journal().EnsureJournalBound(frame);
+  AggregatedJournalRenderFrameBinder::EnsureBound(journal(), frame);
 
   if (base::FeatureList::IsEnabled(
           features::kGlicActorSplitValidateAndExecute) &&

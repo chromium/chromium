@@ -12,6 +12,8 @@
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/aggregated_journal.h"
+#include "chrome/browser/actor/aggregated_journal_render_frame_binder.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "components/actor/core/actor_features.h"
@@ -128,7 +130,7 @@ void ScriptToolHost::Invoke(ToolCallback callback) {
   auto* frame = target_document_.AsRenderFrameHostIfValid();
   CHECK(frame);
 
-  journal().EnsureJournalBound(*frame);
+  AggregatedJournalRenderFrameBinder::EnsureBound(journal(), *frame);
 
   tool_done_callback_ = std::move(callback);
 

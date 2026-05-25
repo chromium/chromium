@@ -121,6 +121,8 @@ source_set("impl") {
     "aggregated_journal.cc",
     "aggregated_journal_file_serializer.cc",
     "aggregated_journal_in_memory_serializer.cc",
+    "aggregated_journal_render_frame_binder.cc",
+    "aggregated_journal_render_frame_binder.h",
     "aggregated_journal_serializer.cc",
     "execution_engine.cc",
     "site_policy.cc",
