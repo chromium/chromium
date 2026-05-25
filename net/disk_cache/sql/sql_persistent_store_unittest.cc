@@ -333,6 +333,7 @@ class SqlPersistentStoreTestBase : public testing::Test {
     base::test::TestFuture<SqlPersistentStore::ResIdOrError> future;
     store_->WriteEntryData(key, res_id, old_body_end, std::move(buffer),
                            truncate, /*doomed_new_entry=*/false,
+                           /*sparse_write=*/false, /*header_size=*/0,
                            future.GetCallback());
     auto result = future.Take();
     return result.error_or(SqlPersistentStore::Error::kOk);
@@ -3535,6 +3536,7 @@ TEST_P(SqlPersistentStoreTest, WriteEntryDataCreatesNew) {
   store_->WriteEntryData(kKey, kTime, /*old_body_end=*/0,
                          EntryWriteBuffer(write_buffer, kData.size(), 0),
                          /*truncate=*/false, /*doomed_new_entry=*/false,
+                         /*sparse_write=*/false, /*header_size=*/0,
                          future.GetCallback());
 
   auto result = future.Take();
@@ -3561,6 +3563,7 @@ TEST_P(SqlPersistentStoreTest, WriteEntryDataCreatesNewDoomed) {
   store_->WriteEntryData(kKey, kTime, /*old_body_end=*/0,
                          EntryWriteBuffer(write_buffer, kData.size(), 0),
                          /*truncate=*/false, /*doomed_new_entry=*/true,
+                         /*sparse_write=*/false, /*header_size=*/0,
                          future.GetCallback());
 
   auto result = future.Take();
@@ -4094,6 +4097,7 @@ TEST_P(SqlPersistentStoreTest, WriteDataCallbackNotRunOnStoreDestruction) {
       kKey, res_id, /*old_body_end=*/0,
       EntryWriteBuffer(std::move(write_buffer), kData.size(), 0),
       /*truncate=*/false, /*doomed_new_entry=*/false,
+      /*sparse_write=*/false, /*header_size=*/0,
       base::BindLambdaForTesting(
           [&](SqlPersistentStore::ResIdOrError) { callback_run = true; }));
   store_.reset();

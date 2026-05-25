@@ -373,6 +373,7 @@ int SqlEntryImpl::WriteDataInternal(int64_t offset,
   return backend_->WriteEntryData(
       key_, db_handle_, old_body_end, body_end_,
       EntryWriteBuffer(buf, buf_len, offset), truncate, last_used_,
+      sparse_write, head_ ? head_->size() : 0,
       /*copy_buffer_for_optimistic_write=*/true, std::move(callback));
 }
 
@@ -410,10 +411,13 @@ void SqlEntryImpl::FlushBuffer(bool force_flush_for_creation) {
 
   // We pass copy_buffer_for_optimistic_write=false because we are passing
   // ownership of the write buffer to the backend.
+  // Setting `sparse_write` to false, as FlushBuffer only flushes non-sparse
+  // data.
   backend_->WriteEntryData(
       key_, db_handle_, /*old_body_end=*/offset,
       /*body_end=*/body_end_, std::move(buffer),
       /*truncate=*/false, last_used_,
+      /*sparse_write=*/false, head_ ? head_->size() : 0,
       /*copy_buffer_for_optimistic_write=*/false,
       base::DoNothingWithBoundArgs(std::move(reservation)));
 }

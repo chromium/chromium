@@ -159,6 +159,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
                      EntryWriteBuffer buffer,
                      bool truncate,
                      base::Time last_used,
+                     bool sparse_write,
+                     int64_t header_size,
                      bool copy_buffer_for_optimistic_write,
                      CompletionOnceCallback callback);
 
@@ -411,6 +413,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       EntryWriteBuffer buffer,
       bool truncate,
       base::Time last_used,
+      bool sparse_write,
+      int64_t header_size,
       SqlPersistentStore::ResIdOrErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
@@ -425,6 +429,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
       EntryWriteBuffer buffer,
       bool truncate,
       base::Time last_used,
+      bool sparse_write,
+      int64_t header_size,
       SqlPersistentStore::ResIdOrErrorCallback callback,
       PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);

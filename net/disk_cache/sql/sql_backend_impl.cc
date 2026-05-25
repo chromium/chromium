@@ -1170,6 +1170,8 @@ int SqlBackendImpl::WriteEntryData(
     EntryWriteBuffer buffer,
     bool truncate,
     base::Time last_used,
+    bool sparse_write,
+    int64_t header_size,
     bool copy_buffer_for_optimistic_write,
     CompletionOnceCallback callback) {
   if (db_handle->GetError().has_value()) {
@@ -1206,7 +1208,7 @@ int SqlBackendImpl::WriteEntryData(
         base::BindOnce(
             &SqlBackendImpl::HandleOptimisticWriteEntryDataOperation,
             weak_factory_.GetWeakPtr(), key, db_handle, old_body_end,
-            std::move(buffer), truncate, last_used,
+            std::move(buffer), truncate, last_used, sparse_write, header_size,
             WrapCallbackWithAbortError<SqlPersistentStore::ResIdOrError>(
                 MakeUpdateDbHandleCallback(db_handle)
                     .Then(base::BindOnce(
@@ -1225,17 +1227,18 @@ int SqlBackendImpl::WriteEntryData(
   auto sync_result_receiver =
       base::MakeRefCounted<SyncResultReceiver<int>>(std::move(callback));
   exclusive_operation_coordinator_.PostOrRunNormalOperation(
-      key, base::BindOnce(
-               &SqlBackendImpl::HandleWriteEntryDataOperation,
-               weak_factory_.GetWeakPtr(), key, db_handle, old_body_end,
-               std::move(buffer), truncate, last_used,
-               WrapCallbackWithAbortError<SqlPersistentStore::ResIdOrError>(
-                   MakeUpdateDbHandleCallback(db_handle)
-                       .Then(MakeResIdOrErrorToIntCallback(buf_len))
-                       .Then(sync_result_receiver->GetCallback()),
-                   base::unexpected(SqlPersistentStore::Error::kAborted)),
-               PushInFlightEntryModification(
-                   key, InFlightEntryModification(db_handle, body_end))));
+      key,
+      base::BindOnce(
+          &SqlBackendImpl::HandleWriteEntryDataOperation,
+          weak_factory_.GetWeakPtr(), key, db_handle, old_body_end,
+          std::move(buffer), truncate, last_used, sparse_write, header_size,
+          WrapCallbackWithAbortError<SqlPersistentStore::ResIdOrError>(
+              MakeUpdateDbHandleCallback(db_handle)
+                  .Then(MakeResIdOrErrorToIntCallback(buf_len))
+                  .Then(sync_result_receiver->GetCallback()),
+              base::unexpected(SqlPersistentStore::Error::kAborted)),
+          PushInFlightEntryModification(
+              key, InFlightEntryModification(db_handle, body_end))));
   auto sync_result = sync_result_receiver->FinishSyncCall();
   return sync_result ? std::move(*sync_result) : net::ERR_IO_PENDING;
 }
@@ -1247,6 +1250,8 @@ void SqlBackendImpl::HandleWriteEntryDataOperation(
     EntryWriteBuffer buffer,
     bool truncate,
     base::Time last_used,
+    bool sparse_write,
+    int64_t header_size,
     SqlPersistentStore::ResIdOrErrorCallback callback,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
@@ -1263,6 +1268,7 @@ void SqlBackendImpl::HandleWriteEntryDataOperation(
           ? SqlPersistentStore::ResIdOrTime(*db_handle->GetResId())
           : SqlPersistentStore::ResIdOrTime(last_used),
       old_body_end, std::move(buffer), truncate, db_handle->doomed(),
+      sparse_write, header_size,
       std::move(callback)
           .Then(OnceClosureWithBoundArgs(
               std::move(pop_in_flight_entry_modification)))
@@ -1281,6 +1287,8 @@ void SqlBackendImpl::HandleOptimisticWriteEntryDataOperation(
     EntryWriteBuffer buffer,
     bool truncate,
     base::Time last_used,
+    bool sparse_write,
+    int64_t header_size,
     SqlPersistentStore::ResIdOrErrorCallback callback,
     PopInFlightEntryModificationRunner pop_in_flight_entry_modification,
     std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle) {
@@ -1300,6 +1308,7 @@ void SqlBackendImpl::HandleOptimisticWriteEntryDataOperation(
           ? SqlPersistentStore::ResIdOrTime(*optional_res_id)
           : SqlPersistentStore::ResIdOrTime(last_used),
       old_body_end, std::move(buffer), truncate, db_handle->doomed(),
+      sparse_write, header_size,
       base::BindOnce(
           &SqlBackendImpl::OnOptimisticWriteFinished,
           weak_factory_.GetWeakPtr(), key, optional_res_id, std::move(callback),

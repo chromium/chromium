@@ -344,7 +344,8 @@ inline constexpr const char kWriteEntryData_UpdateResource[] =
         "res_id=? "                   // 2
     "RETURNING "
         "body_end,"                   // 0
-        "doomed";                     // 1
+        "doomed,"                     // 1
+        "bytes_usage";                // 2
 // clang-format on
 
 inline constexpr const char kTrimOverlappingBlobs_DeleteContained[] =

@@ -89,6 +89,9 @@ class SqlPersistentStore::BackendShard {
                       EntryWriteBuffer buffer,
                       bool truncate,
                       bool doomed_new_entry,
+                      bool sparse_write,
+                      int64_t header_size,
+                      int64_t max_sparse_data_size,
                       ResIdOrErrorCallback callback);
   void ReadEntryData(const CacheEntryKey& key,
                      ResId res_id,
