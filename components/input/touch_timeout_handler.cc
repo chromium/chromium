@@ -11,7 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "components/input/passthrough_touch_event_queue.h"
-#include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point_f.h"
 
@@ -93,18 +93,21 @@ bool TouchTimeoutHandler::ConfirmTouchEvent(
       return false;
     case PENDING_ACK_ORIGINAL_EVENT:
       if (AckedTimeoutEventRequiresCancel(ack_result)) {
-        TRACE_EVENT_INSTANT("input", "PendingAckOriginalEvent-RequiresCancel");
+        TRACE_EVENT_INSTANT("input", "PendingAckOriginalEvent-RequiresCancel",
+                            perfetto::Flow::FromPointer(this));
         SetPendingAckState(PENDING_ACK_CANCEL_EVENT);
         touch_queue_->SendTouchCancelEventForTouchEvent(timeout_event_);
       } else {
-        TRACE_EVENT_INSTANT("input", "PendingAckOriginalEvent");
+        TRACE_EVENT_INSTANT("input", "PendingAckOriginalEvent",
+                            perfetto::TerminatingFlow::FromPointer(this));
         SetPendingAckState(PENDING_ACK_NONE);
         touch_queue_->UpdateTouchConsumerStates(timeout_event_.event,
                                                 ack_result);
       }
       return true;
     case PENDING_ACK_CANCEL_EVENT:
-      TRACE_EVENT_INSTANT("input", "PendingAckCancelEvent");
+      TRACE_EVENT_INSTANT("input", "PendingAckCancelEvent",
+                          perfetto::TerminatingFlow::FromPointer(this));
       SetPendingAckState(PENDING_ACK_NONE);
       return true;
   }
@@ -151,6 +154,8 @@ void TouchTimeoutHandler::SetUseMobileTimeout(bool use_mobile_timeout) {
 }
 
 void TouchTimeoutHandler::OnTimeOut() {
+  TRACE_EVENT_INSTANT("input", "TouchEventTimeout",
+                      perfetto::TerminatingFlow::FromPointer(this));
   SetPendingAckState(PENDING_ACK_ORIGINAL_EVENT);
   touch_queue_->FlushQueue();
 }
@@ -171,21 +176,15 @@ void TouchTimeoutHandler::SetPendingAckState(
   switch (new_pending_ack_state) {
     case PENDING_ACK_ORIGINAL_EVENT:
       DCHECK_EQ(pending_ack_state_, PENDING_ACK_NONE);
-      TRACE_EVENT_BEGIN("input", "TouchEventTimeout",
-                        perfetto::Track::FromPointer(this));
       break;
     case PENDING_ACK_CANCEL_EVENT:
       DCHECK_EQ(pending_ack_state_, PENDING_ACK_ORIGINAL_EVENT);
       DCHECK(!timeout_monitor_.IsRunning());
       DCHECK(touch_queue_->Empty());
-      TRACE_EVENT_END("input", perfetto::Track::FromPointer(this));
-      TRACE_EVENT_BEGIN("input", "CancelEvent",
-                        perfetto::Track::FromPointer(this));
       break;
     case PENDING_ACK_NONE:
       DCHECK(!timeout_monitor_.IsRunning());
       DCHECK(touch_queue_->Empty());
-      TRACE_EVENT_END("input", perfetto::Track::FromPointer(this));
       break;
   }
   pending_ack_state_ = new_pending_ack_state;
