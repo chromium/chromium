@@ -101,7 +101,9 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.BottomUiThemeColorProvider;
 import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarPositionController.ToolbarPositionAndSource;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator.VisibilityDelegate;
+import org.chromium.chrome.browser.toolbar.settings.AddressBarPreference;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarSceneLayer;
@@ -122,15 +124,18 @@ import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.omnibox.OmniboxFocusReason;
+import org.chromium.components.prefs.PrefService;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.TestActivity;
@@ -224,10 +229,15 @@ public class ToolbarManagerUnitTest {
     @Mock private PropertyModel mActionPropertyModel;
     @Mock private ActorKeyedService mActorKeyedService;
     @Mock private GlicKeyedService mGlicKeyedService;
+    @Mock private PrefService mPrefService;
+    @Mock private TabModel mIncognitoTabModel;
+    @Mock private Profile mIncognitoProfile;
 
     private ActivityController<TestActivity> mActivityController;
     private ToolbarManager mToolbarManager;
     private TopToolbarSceneLayer mTopToolbarSceneLayerInstance;
+    private ActivityTabProvider mActivityTabProvider;
+    private SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier;
 
     @Before
     @SuppressWarnings("unchecked") // Raw CompositorModelChangeProcessor mock.
@@ -249,6 +259,7 @@ public class ToolbarManagerUnitTest {
                 .thenReturn(null);
         LocationBarModelJni.setInstanceForTesting(mLocationBarModelNatives);
         when(mLocationBarModelNatives.init(any())).thenReturn(1L);
+        UserPrefs.setPrefServiceForTesting(mPrefService);
         SceneLayerJni.setInstanceForTesting(mSceneLayerNatives);
         when(mLocationBarModelNatives.getUrlOfVisibleNavigationEntry(anyLong()))
                 .thenReturn(GURL.emptyGURL());
@@ -313,10 +324,9 @@ public class ToolbarManagerUnitTest {
                 .thenReturn(ObservableSuppliers.createNonNull(0));
         when(mTabModelSelector.getCurrentTabSupplier())
                 .thenReturn(ObservableSuppliers.createNullable(mTab));
-        SettableMonotonicObservableSupplier<TabModel> currentTabModelSupplier =
-                ObservableSuppliers.createMonotonic();
-        currentTabModelSupplier.set(mTabModel);
-        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(currentTabModelSupplier);
+        mCurrentTabModelSupplier = ObservableSuppliers.createMonotonic();
+        mCurrentTabModelSupplier.set(mTabModel);
+        when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mCurrentTabModelSupplier);
         when(mLayoutManager.getOverlayPanelManager()).thenReturn(mOverlayPanelManager);
         when(mLayoutManager.createCompositorMCP(any(), any(), any()))
                 .thenReturn(mCompositorModelChangeProcessor);
@@ -369,8 +379,8 @@ public class ToolbarManagerUnitTest {
         SettableNonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier =
                 ObservableSuppliers.createNonNull(false);
 
-        ActivityTabProvider activityTabProvider = new ActivityTabProvider();
-        activityTabProvider.setForTesting(mTab);
+        mActivityTabProvider = new ActivityTabProvider();
+        mActivityTabProvider.setForTesting(mTab);
 
         mToolbarManager =
                 new ToolbarManager(
@@ -389,7 +399,7 @@ public class ToolbarManagerUnitTest {
                         mTabObscuringHandler,
                         shareDelegateSupplier,
                         /* buttonDataProviders= */ new ArrayList<>(),
-                        activityTabProvider,
+                        mActivityTabProvider,
                         mScrimManager,
                         mToolbarActionModeCallback,
                         mFindToolbarManager,
@@ -493,5 +503,43 @@ public class ToolbarManagerUnitTest {
         mToolbarManager.destroy();
         verify(mToolbarThemeColorProvider).removeThemeColorObserver(mToolbarManager);
         verify(mAdjustedToolbarThemeColorProvider).removeThemeColorObserver(eq(mToolbarManager));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR)
+    @DisableFeatures(ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS)
+    public void testBottomToolbarColorWhenSelectedTabIsNull_Incognito() {
+        AppCompatActivity activity = mActivityController.get();
+
+        // 1. Position the toolbar at the bottom by changing the preference
+        AddressBarPreference.setToolbarPositionAndSource(ToolbarPositionAndSource.BOTTOM_SETTINGS);
+
+        // Run pending looper tasks to propagate preference change
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // 2. Mock the incognito TabModel and Profile
+        when(mIncognitoTabModel.getProfile()).thenReturn(mIncognitoProfile);
+        when(mIncognitoProfile.isIncognitoBranded()).thenReturn(true);
+
+        // Mock the selector to return null tab (empty model) and the incognito model/profile
+        when(mTabModelSelector.getCurrentTab()).thenReturn(null);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+
+        // 3. Switch the active model in the supplier to trigger mCurrentTabModelObserver
+        mCurrentTabModelSupplier.set(mIncognitoTabModel);
+
+        // Run pending looper tasks to propagate model change
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // 4. Verify that the primary color matches bottom bar's dark grey incognito color
+        int expectedColor = IncognitoColors.getColorSurfaceContainerHigh(activity, true);
+        int actualColor = mToolbarManager.getLocationBarModelForTesting().getPrimaryColor();
+        assertEquals(
+                "Fallback color for bottom toolbar in incognito should be Surface Container High",
+                expectedColor,
+                actualColor);
+
+        mToolbarManager.destroy();
     }
 }

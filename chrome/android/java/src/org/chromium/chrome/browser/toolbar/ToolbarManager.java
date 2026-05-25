@@ -229,6 +229,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -3397,8 +3398,14 @@ public class ToolbarManager
         // NOTE: Here we're not checking if isIncognitoBranded has changed because it's redundant
         // when we're already checking if tab has changed.
         if (previousTab != tab) {
+            boolean isBottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(mActivity);
+            boolean isBottomPosition = mToolbarPositionSupplier.get() == ControlsPosition.BOTTOM;
             int defaultPrimaryColor =
-                    ChromeColors.getDefaultThemeColor(mActivity, isIncognitoBranded);
+                    (isBottomBarEnabled && isBottomPosition)
+                            ? IncognitoColors.getColorSurfaceContainerHigh(
+                                    mActivity, isIncognitoBranded)
+                            : ChromeColors.getDefaultThemeColor(mActivity, isIncognitoBranded);
+
             int primaryColor =
                     tab != null
                             ? mToolbarThemeColorProvider.getToolbarBackgroundColor(tab)

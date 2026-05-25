@@ -65,6 +65,7 @@ import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.omnibox.LocationBar;
@@ -97,10 +98,12 @@ import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
+import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.IncognitoColors;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -959,7 +962,15 @@ public class ToolbarPhone extends ToolbarLayout
                 }
                 return getToolbarDataProvider().getPrimaryColor();
             case VisualState.INCOGNITO:
-                return ChromeColors.getDefaultThemeColor(getContext(), /* isIncognito= */ true);
+                boolean isBottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(getContext());
+                boolean isBottomPosition =
+                        mBrowserControlsStateProvider != null
+                                && mBrowserControlsStateProvider.getControlsPosition()
+                                        == ControlsPosition.BOTTOM;
+                return (isBottomBarEnabled && isBottomPosition)
+                        ? IncognitoColors.getColorSurfaceContainerHigh(
+                                getContext(), /* isIncognito= */ true)
+                        : ChromeColors.getDefaultThemeColor(getContext(), /* isIncognito= */ true);
             case VisualState.BRAND_COLOR:
                 if (urlHasFocus()) {
                     return getToolbarDefaultColor(/* shouldUseFocusColor= */ false);
