@@ -81,8 +81,15 @@ bool WaitableEvent::TimedWait(TimeDelta wait_delta, const Location& location) {
 
 size_t WaitableEvent::WaitMany(base::span<WaitableEvent*> events) {
   DCHECK(!events.empty()) << "Cannot wait on no events";
+
+  for (size_t i = 0; i < events.size(); ++i) {
+    if (events[i]->IsSignaled()) {
+      return i;
+    }
+  }
+
   internal::ScopedBlockingCallWithBaseSyncPrimitives scoped_blocking_call(
-      FROM_HERE, BlockingType::MAY_BLOCK);
+      FROM_HERE, BlockingType::WILL_BLOCK);
 
   const size_t signaled_id = WaitManyImpl(events);
   WaitableEvent* const signaled_event = events[signaled_id];
