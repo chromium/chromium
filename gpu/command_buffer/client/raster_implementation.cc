@@ -250,8 +250,8 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
       return 0u;
     }
 
-    bool succeeded = entry.Serialize(UNSAFE_TODO(
-        base::span(reinterpret_cast<uint8_t*>(memory), bytes_remaining)));
+    bool succeeded =
+        entry.Serialize(UNSAFE_TODO(base::span(memory, bytes_remaining)));
     DCHECK(succeeded);
     ri_->transfer_cache_.AddTransferCacheEntry(
         entry.UnsafeType(), entry.Id(), buffer->shm_id(),
