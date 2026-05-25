@@ -7,8 +7,8 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/aggregated_journal_file_serializer.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/internals/browser/actor_internals_handler.h"
 #include "components/actor/public/mojom/actor_internals.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

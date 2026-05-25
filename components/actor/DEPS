@@ -1,4 +1,12 @@
 include_rules = [
   "+base",
   "+mojo/public/cpp/bindings",
+  "+third_party/protobuf",
+  "+url",
 ]
+
+specific_include_rules = {
+  ".*_unittest\\.cc": [
+    "+components/optimization_guide/proto",
+  ],
+}

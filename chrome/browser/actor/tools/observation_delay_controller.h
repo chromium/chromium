@@ -14,7 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/actor/aggregated_journal.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/page_content_annotations/content/browser/page_settled_monitor.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"

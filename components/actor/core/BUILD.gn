@@ -14,10 +14,18 @@ source_set("logging") {
 
 source_set("journal") {
   sources = [
+    "aggregated_journal.cc",
+    "aggregated_journal.h",
     "journal_details_builder.cc",
     "journal_details_builder.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    ":core",
+    ":logging",
+    "//base",
+    "//third_party/protobuf:protobuf_lite",
+    "//url",
+  ]
   public_deps = [
     ":task_id",
     "//components/actor/public/mojom:mojo_bindings",
@@ -57,14 +65,17 @@ source_set("core") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "aggregated_journal_unittest.cc",
     "origin_checker_unittest.cc",
     "safety_list_manager_unittest.cc",
     "shared_types_unittest.cc",
   ]
   deps = [
     ":core",
+    ":journal",
     "//base",
     "//base/test:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
     "//testing/gtest",
     "//url",
   ]

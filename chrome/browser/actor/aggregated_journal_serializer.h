@@ -7,7 +7,7 @@
 
 #include <set>
 
-#include "chrome/browser/actor/aggregated_journal.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 
 namespace actor {

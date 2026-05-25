@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_H_
-#define CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_H_
+#ifndef COMPONENTS_ACTOR_CORE_AGGREGATED_JOURNAL_H_
+#define COMPONENTS_ACTOR_CORE_AGGREGATED_JOURNAL_H_
 
 #include <memory>
 #include <string>
@@ -19,8 +19,8 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "chrome/common/actor.mojom.h"
 #include "components/actor/core/task_id.h"
+#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "url/gurl.h"
 
 namespace google::protobuf {
@@ -65,7 +65,7 @@ class AggregatedJournal {
                       uint64_t track_uuid);
     ~PendingAsyncEntry();
 
-    // End an pending entry with additional details. This can only be called
+    // End a pending entry with additional details. This can only be called
     // once and will be automatically called from the destructor if it hasn't
     // been called.
     void EndEntry(std::vector<mojom::JournalDetailsPtr> details);
@@ -176,4 +176,4 @@ class AggregatedJournal {
 
 }  // namespace actor
 
-#endif  // CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_H_
+#endif  // COMPONENTS_ACTOR_CORE_AGGREGATED_JOURNAL_H_

@@ -10,9 +10,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
-#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service_impl.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_autofill_driver_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"

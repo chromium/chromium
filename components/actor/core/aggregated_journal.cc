@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/actor/aggregated_journal.h"
+#include "components/actor/core/aggregated_journal.h"
 
 #include "base/base64.h"
 #include "base/command_line.h"

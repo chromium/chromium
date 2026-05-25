@@ -10,9 +10,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class Profile;

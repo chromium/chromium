@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_RENDER_FRAME_BINDER_H_
 #define CHROME_BROWSER_ACTOR_AGGREGATED_JOURNAL_RENDER_FRAME_BINDER_H_
 
-#include "chrome/browser/actor/aggregated_journal.h"
+#include "components/actor/core/aggregated_journal.h"
 
 namespace content {
 class RenderFrameHost;

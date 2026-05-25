@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_ACTOR_EXPERIMENTAL_ACTOR_API_H_
 
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/common/actor.mojom-forward.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/task_id.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "extensions/browser/extension_function.h"

@@ -10,7 +10,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
-#include "chrome/browser/actor/aggregated_journal.h"
+#include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/sharing_message/proto/glic_experimental_triggering.pb.h"
 
