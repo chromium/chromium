@@ -20,7 +20,7 @@ namespace autofill {
 AtMemoryBottomSheetBridge::AtMemoryBottomSheetBridge(
     ui::WindowAndroid* window_android) {
   CHECK(window_android);
-  java_object_ = Java_AtMemoryBottomSheetBridge_Constructor(
+  java_object_ = Java_AtMemoryBottomSheetBridge_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       window_android->GetJavaObject());
 }
@@ -35,6 +35,14 @@ AtMemoryBottomSheetBridge::~AtMemoryBottomSheetBridge() {
 void AtMemoryBottomSheetBridge::RequestShowContent(
     std::unique_ptr<AtMemoryBottomSheetDelegate> delegate) {
   delegate_ = std::move(delegate);
+
+  if (!java_object_) {
+    if (delegate_) {
+      delegate_->OnDismissed();
+    }
+    ResetDelegate();
+    return;
+  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_AtMemoryBottomSheetBridge_show(env, java_object_);

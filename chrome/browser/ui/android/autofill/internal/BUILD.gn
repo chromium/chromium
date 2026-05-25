@@ -84,6 +84,8 @@ generate_jni("jni_headers") {
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.ui.autofill.internal"
   sources = [
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetBridgeTest.java",
+    "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetMediatorTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryBottomSheetViewTest.java",
     "java/src/org/chromium/chrome/browser/ui/autofill/AtMemoryFlyoutCoordinatorTest.java",

@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -21,36 +22,42 @@ import org.chromium.ui.base.WindowAndroid;
 public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator.Delegate {
     private long mNativeAtMemoryBottomSheetBridge;
     private final AtMemoryBottomSheetCoordinator mCoordinator;
-    private boolean mInitialized;
+
+    private AtMemoryBottomSheetBridge(
+            long nativeAtMemoryBottomSheetBridge,
+            Context context,
+            BottomSheetController bottomSheetController) {
+        mNativeAtMemoryBottomSheetBridge = nativeAtMemoryBottomSheetBridge;
+        mCoordinator = new AtMemoryBottomSheetCoordinator(context, bottomSheetController, this);
+    }
 
     @CalledByNative
-    public AtMemoryBottomSheetBridge(
+    public static @Nullable AtMemoryBottomSheetBridge create(
             long nativeAtMemoryBottomSheetBridge, WindowAndroid windowAndroid) {
-        mNativeAtMemoryBottomSheetBridge = nativeAtMemoryBottomSheetBridge;
-        mCoordinator = new AtMemoryBottomSheetCoordinator();
-
         Context context = windowAndroid.getContext().get();
+        if (context == null) {
+            return null;
+        }
+
         BottomSheetController bottomSheetController =
                 BottomSheetControllerProvider.from(windowAndroid);
-        if (context == null || bottomSheetController == null) return;
+        if (bottomSheetController == null) {
+            return null;
+        }
 
-        mInitialized = true;
-        mCoordinator.initialize(context, bottomSheetController, this);
+        return new AtMemoryBottomSheetBridge(
+                nativeAtMemoryBottomSheetBridge, context, bottomSheetController);
     }
 
     @CalledByNative
     public void show() {
-        if (!mInitialized) {
-            onDismissed();
-            return;
-        }
         mCoordinator.show();
     }
 
     @CalledByNative
     public void destroy() {
         mNativeAtMemoryBottomSheetBridge = 0;
-        mCoordinator.destroy();
+        mCoordinator.hide();
     }
 
     @Override

@@ -7,42 +7,67 @@ package org.chromium.chrome.browser.ui.autofill;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator for the AtMemoryBottomSheet. */
 @NullMarked
 public class AtMemoryBottomSheetCoordinator {
-    private final AtMemoryBottomSheetMediator mMediator = new AtMemoryBottomSheetMediator();
-    private @Nullable AtMemoryBottomSheetView mView;
+    private final AtMemoryBottomSheetContent mContent;
+    private final AtMemoryBottomSheetMediator mMediator;
+    private final BottomSheetController mBottomSheetController;
+
+    private final BottomSheetObserver mBottomSheetObserver =
+            new EmptyBottomSheetObserver() {
+                @Override
+                public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                    super.onSheetClosed(reason);
+                    if (mBottomSheetController.getCurrentSheetContent() != null
+                            && mBottomSheetController.getCurrentSheetContent() == mContent) {
+                        onDismissed();
+                    }
+                }
+            };
 
     /** Delegate to receive events from the bottom sheet. */
-    public interface Delegate {
+    interface Delegate {
         void onDismissed();
     }
 
-    public void initialize(
+    AtMemoryBottomSheetCoordinator(
             Context context, BottomSheetController sheetController, Delegate delegate) {
+        mBottomSheetController = sheetController;
+
         PropertyModel model =
                 new PropertyModel.Builder(AtMemoryBottomSheetProperties.ALL_KEYS)
                         .with(AtMemoryBottomSheetProperties.VISIBLE, false)
                         .build();
 
-        mView = new AtMemoryBottomSheetView(context);
-        AtMemoryBottomSheetContent content = new AtMemoryBottomSheetContent(mView.getContentView());
+        mMediator = new AtMemoryBottomSheetMediator(delegate, model);
 
-        mMediator.initialize(delegate, model, sheetController, content);
+        AtMemoryBottomSheetView view = new AtMemoryBottomSheetView(context);
 
-        PropertyModelChangeProcessor.create(model, mView, AtMemoryBottomSheetViewBinder::bind);
+        mContent = new AtMemoryBottomSheetContent(view.getContentView());
+
+        PropertyModelChangeProcessor.create(model, view, AtMemoryBottomSheetViewBinder::bind);
     }
 
     public void show() {
-        mMediator.show();
+        mBottomSheetController.addObserver(mBottomSheetObserver);
+        if (!mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
+            onDismissed();
+        }
     }
 
-    public void destroy() {
-        mMediator.destroy();
+    public void hide() {
+        mBottomSheetController.hideContent(mContent, /* animate= */ true);
+    }
+
+    private void onDismissed() {
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
+        mMediator.onDismissed();
     }
 }
