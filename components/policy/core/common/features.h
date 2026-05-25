@@ -72,6 +72,10 @@ POLICY_EXPORT BASE_DECLARE_FEATURE(
 // Enables the mojo version of the page handler for chrome://policy.
 POLICY_EXPORT BASE_DECLARE_FEATURE(kPolicyPageMojoMigration);
 
+// If enabled, device signals collection disclaimer will be shown during signin
+// for profiles created before the profile flow with disclaimer was released.
+POLICY_EXPORT BASE_DECLARE_FEATURE(kDeviceSignalsBackfillDisclaimer);
+
 }  // namespace policy::features
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_FEATURES_H_

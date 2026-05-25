@@ -74,4 +74,7 @@ BASE_FEATURE(kBypassURLBlocklistWildcardForInternalChromeUrls,
 
 BASE_FEATURE(kPolicyPageMojoMigration, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDeviceSignalsBackfillDisclaimer,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace policy::features
