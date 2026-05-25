@@ -253,7 +253,8 @@ class QuicPacketPrinter : public QuicFramerVisitorInterface {
     *output_ << "IsValidStatelessResetToken\n";
     return false;
   }
-  void OnAuthenticatedIetfStatelessResetPacket() override {
+  void OnAuthenticatedIetfStatelessResetPacket(
+      const QuicIetfStatelessResetPacket& packet) override {
     *output_ << "OnAuthenticatedIetfStatelessResetPacket\n";
   }
 
