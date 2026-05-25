@@ -351,9 +351,11 @@ std::vector<ManualFillCredentialAndPasswordForm> GetFilteredCredentials(
       const password_manager::PasskeyCredential& passkey = passkeys[i];
 
       NSString* rpId = base::SysUTF8ToNSString(passkey.rp_id());
+      NSString* displayName = base::SysUTF8ToNSString(passkey.display_name());
       ManualFillCredential* passkeyCredential = [[ManualFillCredential alloc]
             initWithUsername:base::SysUTF8ToNSString(passkey.username())
                     password:@""
+                 displayName:displayName
                     siteName:rpId
                         host:rpId
                          URL:_URL

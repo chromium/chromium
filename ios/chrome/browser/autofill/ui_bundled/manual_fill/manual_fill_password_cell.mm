@@ -10,6 +10,7 @@
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/webauthn/ios/features.h"
+#import "components/webauthn/ios/passkey_suggestion_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_cell_utils.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_content_injector.h"
@@ -189,6 +190,9 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   // UIImageView for the custom symbol that replaces the favicon in the cell.
   // Stays nil if not needed.
   UIImageView* _customSymbolImageView;
+
+  // The type of credential.
+  ManualFillCredentialType _credentialType;
 }
 
 #pragma mark - Public
@@ -229,6 +233,7 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
                  credentialType:(ManualFillCredentialType)credentialType {
   _cellIndex = cellIndex;
   _fromAllPasswordsContext = fromAllPasswordsContext;
+  _credentialType = credentialType;
 
   if (self.contentView.subviews.count == 0) {
     [self createViewHierarchy];
@@ -485,13 +490,18 @@ void LogAutofillFormButtonTappedMetrics(BOOL from_all_passwords_context,
   if (self.credential.isBackupCredential) {
     return self.credential.host;
   }
-  NSString* credentialType = nil;
+  NSString* credentialSubtext = nil;
   if (IsConditionalPasskeyLoginEnabled()) {
-    credentialType =
-        l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT);
+    if (_credentialType == ManualFillCredentialType::kPasskey) {
+      credentialSubtext = webauthn::ComputePasskeyDescription(
+          self.credential.displayName, self.credential.displayName);
+    } else {
+      credentialSubtext =
+          l10n_util::GetNSString(IDS_IOS_MANUAL_FALLBACK_PASSWORD_SUBTEXT);
+    }
   }
   return CreateCredentialSubtitle(self.credential.host,
-                                  self.credential.siteName, credentialType);
+                                  self.credential.siteName, credentialSubtext);
 }
 
 @end

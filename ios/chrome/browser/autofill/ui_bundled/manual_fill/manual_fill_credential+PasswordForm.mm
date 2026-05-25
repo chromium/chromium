@@ -21,12 +21,14 @@
   NSString* siteName = base::SysUTF8ToNSString(site_name);
   NSString* username = base::SysUTF16ToNSString(passwordForm.username_value);
   NSString* password = base::SysUTF16ToNSString(passwordForm.password_value);
+  NSString* displayName = base::SysUTF16ToNSString(passwordForm.display_name);
   NSString* credentialHost = base::SysUTF8ToNSString(host);
   if ([credentialHost hasPrefix:@"www."] && credentialHost.length > 4) {
     credentialHost = [credentialHost substringFromIndex:4];
   }
   return [self initWithUsername:username
                        password:password
+                    displayName:displayName
                        siteName:siteName.length ? siteName : credentialHost
                            host:credentialHost
                             URL:passwordForm.url

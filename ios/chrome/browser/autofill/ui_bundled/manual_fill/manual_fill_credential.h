@@ -19,9 +19,13 @@
 // Whether this credential is a backup to a regular one.
 @property(nonatomic, assign) BOOL isBackupCredential;
 
+// The display name related to this credential, if available.
+@property(nonatomic, readonly) NSString* displayName;
+
 // Default init.
 - (instancetype)initWithUsername:(NSString*)username
                         password:(NSString*)password
+                     displayName:(NSString*)displayName
                         siteName:(NSString*)siteName
                             host:(NSString*)host
                              URL:(const GURL&)URL
@@ -29,7 +33,8 @@
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable. Please use
-// `initWithUsername:password:siteName:host:URL:isBackupCredential:`.
+// `initWithUsername:password:displayName:siteName:host:URL:
+// isBackupCredential:`.
 - (instancetype)initWithSiteName:(NSString*)siteName
                             host:(NSString*)host
                              URL:(const GURL&)URL NS_UNAVAILABLE;

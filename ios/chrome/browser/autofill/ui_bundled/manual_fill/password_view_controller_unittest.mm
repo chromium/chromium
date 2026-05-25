@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/password_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/test/scoped_feature_list.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_credential.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_password_cell.h"
@@ -79,6 +81,7 @@ TEST_F(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
   ManualFillCredential* credential =
       [[ManualFillCredential alloc] initWithUsername:@"test@example.com"
                                             password:@""
+                                         displayName:nil
                                             siteName:@""
                                                 host:@""
                                                  URL:GURL("https://example.com")
@@ -110,4 +113,84 @@ TEST_F(PasswordViewControllerTest, CheckNoDataItemsMessageRemoved) {
   EXPECT_EQ(GetTableViewItemType(/*section=*/0,
                                  /*item=*/0),
             kItemTypeSampleTwo);
+}
+
+// Tests that the cell subtitle correctly displays the credential type subtexts
+// when IsConditionalPasskeyLoginEnabled() is enabled.
+TEST_F(PasswordViewControllerTest,
+       CellSubtitleWithConditionalPasskeyLoginEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {kIOSPasskeyShim, kIOSPasskeyConditionalLoginWithShim}, {});
+
+  ManualFillCredential* passwordCredential =
+      [[ManualFillCredential alloc] initWithUsername:@"test@example.com"
+                                            password:@"password"
+                                         displayName:nil
+                                            siteName:@"shrine.com"
+                                                host:@"shrine.com"
+                                                 URL:GURL("https://shrine.com")
+                                  isBackupCredential:NO];
+  ManualFillPasswordCell* passwordCell = [[ManualFillPasswordCell alloc] init];
+  [passwordCell setUpWithCredential:passwordCredential
+                    contentInjector:nil
+                        menuActions:@[]
+                          cellIndex:0
+        cellIndexAccessibilityLabel:@""
+             showAutofillFormButton:NO
+            fromAllPasswordsContext:NO
+                     credentialType:ManualFillCredentialType::kPassword];
+  UILabel* label1 = [passwordCell valueForKey:@"siteNameLabel"];
+  EXPECT_TRUE([label1.attributedText.string containsString:@"Password"]);
+
+  ManualFillCredential* passkeyCredential =
+      [[ManualFillCredential alloc] initWithUsername:@"test@example.com"
+                                            password:@""
+                                         displayName:@"Elisa Beckett"
+                                            siteName:@"shrine.com"
+                                                host:@"shrine.com"
+                                                 URL:GURL("https://shrine.com")
+                                  isBackupCredential:NO];
+  ManualFillPasswordCell* passkeyCell = [[ManualFillPasswordCell alloc] init];
+  [passkeyCell setUpWithCredential:passkeyCredential
+                   contentInjector:nil
+                       menuActions:@[]
+                         cellIndex:0
+       cellIndexAccessibilityLabel:@""
+            showAutofillFormButton:NO
+           fromAllPasswordsContext:NO
+                    credentialType:ManualFillCredentialType::kPasskey];
+  UILabel* label2 = [passkeyCell valueForKey:@"siteNameLabel"];
+  EXPECT_TRUE(
+      [label2.attributedText.string containsString:@"Passkey • Elisa Beckett"]);
+}
+
+// Tests that the cell subtitle does not display any credential type subtexts
+// when IsConditionalPasskeyLoginEnabled() is disabled.
+TEST_F(PasswordViewControllerTest,
+       CellSubtitleWithConditionalPasskeyLoginDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {}, {kIOSPasskeyShim, kIOSPasskeyConditionalLoginWithShim});
+
+  ManualFillCredential* passwordCredential =
+      [[ManualFillCredential alloc] initWithUsername:@"test@example.com"
+                                            password:@"password"
+                                         displayName:nil
+                                            siteName:@"shrine.com"
+                                                host:@"shrine.com"
+                                                 URL:GURL("https://shrine.com")
+                                  isBackupCredential:NO];
+  ManualFillPasswordCell* passwordCell = [[ManualFillPasswordCell alloc] init];
+  [passwordCell setUpWithCredential:passwordCredential
+                    contentInjector:nil
+                        menuActions:@[]
+                          cellIndex:0
+        cellIndexAccessibilityLabel:@""
+             showAutofillFormButton:NO
+            fromAllPasswordsContext:NO
+                     credentialType:ManualFillCredentialType::kPassword];
+  UILabel* label1 = [passwordCell valueForKey:@"siteNameLabel"];
+  EXPECT_FALSE([label1.attributedText.string containsString:@"Password"]);
+  EXPECT_FALSE([label1.attributedText.string containsString:@"Passkey"]);
 }

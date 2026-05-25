@@ -20,6 +20,7 @@ TEST_F(ManualFillCredentialiOSTest, Creation) {
   ManualFillCredential* credential =
       [[ManualFillCredential alloc] initWithUsername:username
                                             password:password
+                                         displayName:nil
                                             siteName:siteName
                                                 host:host
                                                  URL:URL
@@ -42,6 +43,7 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
   ManualFillCredential* credential =
       [[ManualFillCredential alloc] initWithUsername:username
                                             password:password
+                                         displayName:nil
                                             siteName:siteName
                                                 host:host
                                                  URL:URL
@@ -49,6 +51,7 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
   ManualFillCredential* equalCredential =
       [[ManualFillCredential alloc] initWithUsername:username
                                             password:password
+                                         displayName:nil
                                             siteName:siteName
                                                 host:host
                                                  URL:URL
@@ -58,6 +61,7 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
   ManualFillCredential* differentUsernameCredential =
       [[ManualFillCredential alloc] initWithUsername:@"username2"
                                             password:password
+                                         displayName:nil
                                             siteName:siteName
                                                 host:host
                                                  URL:URL
@@ -67,6 +71,7 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
   ManualFillCredential* differentPasswordCredential =
       [[ManualFillCredential alloc] initWithUsername:username
                                             password:@"psswd"
+                                         displayName:nil
                                             siteName:siteName
                                                 host:host
                                                  URL:URL
@@ -76,6 +81,7 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
   ManualFillCredential* differentSiteNameCredential =
       [[ManualFillCredential alloc] initWithUsername:username
                                             password:password
+                                         displayName:nil
                                             siteName:@"notexample.com"
                                                 host:host
                                                  URL:URL
@@ -85,6 +91,7 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
   ManualFillCredential* differentHostCredential =
       [[ManualFillCredential alloc] initWithUsername:username
                                             password:password
+                                         displayName:nil
                                             siteName:siteName
                                                 host:@"other.example.com"
                                                  URL:URL
@@ -94,6 +101,7 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
   ManualFillCredential* differentURLCredential = [[ManualFillCredential alloc]
         initWithUsername:username
                 password:password
+             displayName:nil
                 siteName:siteName
                     host:host
                      URL:GURL("https://www.other.example.com")
@@ -103,9 +111,72 @@ TEST_F(ManualFillCredentialiOSTest, Equality) {
   ManualFillCredential* differentBackupFlag = [[ManualFillCredential alloc]
         initWithUsername:username
                 password:password
+             displayName:nil
                 siteName:siteName
                     host:host
                      URL:GURL("https://www.other.example.com")
       isBackupCredential:YES];
   EXPECT_FALSE([credential isEqual:differentBackupFlag]);
+}
+
+// Tests that a credential is correctly created with a display name.
+TEST_F(ManualFillCredentialiOSTest, CreationWithDisplayName) {
+  NSString* username = @"username@example.com";
+  NSString* password = @"password";
+  NSString* displayName = @"Elisa Beckett";
+  NSString* siteName = @"example.com";
+  NSString* host = @"sub.example.com";
+  GURL URL("https://www.sub.example.com");
+  ManualFillCredential* credential =
+      [[ManualFillCredential alloc] initWithUsername:username
+                                            password:password
+                                         displayName:displayName
+                                            siteName:siteName
+                                                host:host
+                                                 URL:URL
+                                  isBackupCredential:NO];
+  EXPECT_TRUE(credential);
+  EXPECT_NSEQ(username, credential.username);
+  EXPECT_NSEQ(password, credential.password);
+  EXPECT_NSEQ(displayName, credential.displayName);
+  EXPECT_NSEQ(siteName, credential.siteName);
+  EXPECT_NSEQ(host, credential.host);
+  EXPECT_EQ(URL, credential.URL);
+}
+
+// Test equality between credentials with display names.
+TEST_F(ManualFillCredentialiOSTest, EqualityWithDisplayName) {
+  NSString* username = @"username@example.com";
+  NSString* password = @"password";
+  NSString* displayName = @"Elisa Beckett";
+  NSString* siteName = @"example.com";
+  NSString* host = @"sub.example.com";
+  GURL URL("https://www.sub.example.com");
+  ManualFillCredential* credential =
+      [[ManualFillCredential alloc] initWithUsername:username
+                                            password:password
+                                         displayName:displayName
+                                            siteName:siteName
+                                                host:host
+                                                 URL:URL
+                                  isBackupCredential:NO];
+  ManualFillCredential* equalCredential =
+      [[ManualFillCredential alloc] initWithUsername:username
+                                            password:password
+                                         displayName:displayName
+                                            siteName:siteName
+                                                host:host
+                                                 URL:URL
+                                  isBackupCredential:NO];
+  EXPECT_TRUE([credential isEqual:equalCredential]);
+
+  ManualFillCredential* differentDisplayNameCredential =
+      [[ManualFillCredential alloc] initWithUsername:username
+                                            password:password
+                                         displayName:@"Other Name"
+                                            siteName:siteName
+                                                host:host
+                                                 URL:URL
+                                  isBackupCredential:NO];
+  EXPECT_FALSE([credential isEqual:differentDisplayNameCredential]);
 }

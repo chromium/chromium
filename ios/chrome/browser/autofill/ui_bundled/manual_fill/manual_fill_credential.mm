@@ -7,10 +7,21 @@
 #import "base/strings/sys_string_conversions.h"
 #import "url/gurl.h"
 
+namespace {
+
+// Returns whether the strings are the same (including if both are nil) or if
+// both strings have the same contents.
+BOOL stringsAreEqual(NSString* string1, NSString* string2) {
+  return string2 == string1 || [string2 isEqualToString:string1];
+}
+
+}  // namespace
+
 @implementation ManualFillCredential
 
 - (instancetype)initWithUsername:(NSString*)username
                         password:(NSString*)password
+                     displayName:(NSString*)displayName
                         siteName:(NSString*)siteName
                             host:(NSString*)host
                              URL:(const GURL&)URL
@@ -19,6 +30,7 @@
   if (self) {
     _username = [username copy];
     _password = [password copy];
+    _displayName = [displayName copy];
     _isBackupCredential = isBackupCredential;
   }
   return self;
@@ -35,16 +47,19 @@
     return NO;
   }
   ManualFillCredential* otherObject = (ManualFillCredential*)object;
-  if (![otherObject.host isEqualToString:self.host]) {
+  if (!stringsAreEqual(otherObject.host, self.host)) {
     return NO;
   }
-  if (![otherObject.username isEqualToString:self.username]) {
+  if (!stringsAreEqual(otherObject.username, self.username)) {
     return NO;
   }
-  if (![otherObject.password isEqualToString:self.password]) {
+  if (!stringsAreEqual(otherObject.password, self.password)) {
     return NO;
   }
-  if (![otherObject.siteName isEqualToString:self.siteName]) {
+  if (!stringsAreEqual(otherObject.displayName, self.displayName)) {
+    return NO;
+  }
+  if (!stringsAreEqual(otherObject.siteName, self.siteName)) {
     return NO;
   }
   if (otherObject.URL != self.URL) {
@@ -58,17 +73,18 @@
 
 - (NSUInteger)hash {
   return [base::SysUTF8ToNSString(self.URL.spec()) hash] ^
-         [self.username hash] ^ [self.password hash] ^ self.isBackupCredential;
+         [self.username hash] ^ [self.password hash] ^ [self.displayName hash] ^
+         self.isBackupCredential;
 }
 
 - (NSString*)description {
-  return
-      [NSString stringWithFormat:@"<%@ (%p): username: %@, siteName: %@, host: "
-                                 @"%@, URL: %@, isBackupCredential: %d>",
-                                 NSStringFromClass([self class]), self,
-                                 self.username, self.siteName, self.host,
-                                 base::SysUTF8ToNSString(self.URL.spec()),
-                                 self.isBackupCredential];
+  return [NSString
+      stringWithFormat:
+          @"<%@ (%p): username: %@, displayName: %@, siteName: %@, host: "
+          @"%@, URL: %@, isBackupCredential: %d>",
+          NSStringFromClass([self class]), self, self.username,
+          self.displayName, self.siteName, self.host,
+          base::SysUTF8ToNSString(self.URL.spec()), self.isBackupCredential];
 }
 
 @end

@@ -22,28 +22,16 @@ NSArray<FormSuggestion*>* FormSuggestionsFromPasskeyCredentials(
   NSMutableArray<FormSuggestion*>* passkey_suggestions =
       [NSMutableArray arrayWithCapacity:passkeys.size()];
 
-  NSString* passkey_label =
-      l10n_util::GetNSString(IDS_IOS_PASSKEY_SUGGESTION_LABEL);
-
   for (const auto& passkey : passkeys) {
-    NSString* value;
-    NSString* display_description;
-
-    const std::string& display_name = passkey.display_name();
     NSString* username = base::SysUTF8ToNSString(passkey.username());
-
-    if (display_name.empty()) {
-      value = username;
-      display_description = passkey_label;
-    } else {
-      value = base::SysUTF8ToNSString(display_name);
-      display_description =
-          [NSString stringWithFormat:@"%@ • %@", passkey_label, username];
-    }
+    NSString* displayName = base::SysUTF8ToNSString(passkey.display_name());
+    NSString* value = displayName.length ? displayName : username;
+    NSString* displayDescription =
+        ComputePasskeyDescription(username, displayName);
 
     FormSuggestion* suggestion = [FormSuggestion
         suggestionWithValue:value
-         displayDescription:display_description
+         displayDescription:displayDescription
                        icon:nil
                        type:autofill::SuggestionType::kWebauthnCredential
                     payload:autofill::Suggestion::Guid(
@@ -93,6 +81,16 @@ NSArray<FormSuggestion*>* MergePasskeyAndPasswordSuggestions(
 
   return
       [passkey_suggestions arrayByAddingObjectsFromArray:password_suggestions];
+}
+
+NSString* ComputePasskeyDescription(NSString* username,
+                                    NSString* display_name) {
+  NSString* passkey_label =
+      l10n_util::GetNSString(IDS_IOS_PASSKEY_SUGGESTION_LABEL);
+  if (!display_name.length) {
+    return passkey_label;
+  }
+  return [NSString stringWithFormat:@"%@ • %@", passkey_label, username];
 }
 
 }  // namespace webauthn
