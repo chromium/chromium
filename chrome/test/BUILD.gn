@@ -10594,6 +10594,7 @@ test("unit_tests") {
       "../browser/ui/views/permissions/chip/permission_chip_unittest.cc",
       "../browser/ui/views/permissions/chip/permission_dashboard_unittest.cc",
       "../browser/ui/views/permissions/permission_prompt_bubble_one_origin_view_unittest.cc",
+      "../browser/ui/views/picture_in_picture/document_pip_host_unittest.cc",
       "../browser/ui/views/picture_in_picture/picture_in_picture_bounds_change_animation_unittest.cc",
       "../browser/ui/views/picture_in_picture/picture_in_picture_tucker_unittest.cc",
       "../browser/ui/views/qrcode_generator/qrcode_generator_bubble_unittest.cc",
