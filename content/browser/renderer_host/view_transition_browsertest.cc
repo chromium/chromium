@@ -4,6 +4,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/trace_event/trace_config.h"
 #include "build/buildflag.h"
 #include "cc/base/features.h"
 #include "cc/test/pixel_comparator.h"
@@ -17,6 +18,7 @@
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -147,6 +149,57 @@ IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,
   EXPECT_TRUE(ExecJs(
       shell()->web_contents()->GetPrimaryMainFrame(),
       "(async () => { await document.startViewTransition().ready; })()"));
+}
+
+class ViewTransitionEarlyFinalFrameTest : public ViewTransitionBrowserTest {
+ public:
+  ViewTransitionEarlyFinalFrameTest() {
+    feature_list_.InitAndEnableFeature(
+        ::features::kSendEarlyFinalBeginMainFrame);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ViewTransitionEarlyFinalFrameTest,
+                       SendEarlyFinalBeginMainFrameTriggers) {
+  GURL test_url(
+      embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
+
+  ASSERT_TRUE(NavigateToURL(shell()->web_contents(), test_url));
+  WaitForCopyableViewInWebContents(shell()->web_contents());
+
+  // Start tracing for the "cc" category.
+  base::RunLoop tracing_run_loop;
+  base::trace_event::TraceConfig trace_config("cc", "");
+  content::TracingController::GetInstance()->StartTracing(
+      trace_config, tracing_run_loop.QuitClosure());
+  tracing_run_loop.Run();
+
+  // Trigger the cross-document view transition.
+  TestNavigationManager navigation_manager(shell()->web_contents(), test_url);
+  ASSERT_TRUE(
+      ExecJs(shell()->web_contents(), "location.href = location.href;"));
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  // Stop tracing.
+  std::string trace_output;
+  base::RunLoop stop_tracing_run_loop;
+  content::TracingController::GetInstance()->StopTracing(
+      content::TracingController::CreateStringEndpoint(base::BindOnce(
+          [](std::string* output, base::OnceClosure quit,
+             std::unique_ptr<std::string> trace_str) {
+            *output = std::move(*trace_str);
+            std::move(quit).Run();
+          },
+          &trace_output, stop_tracing_run_loop.QuitClosure())));
+  stop_tracing_run_loop.Run();
+
+  // Check that the function which requests an urgent frame was called and
+  // traced.
+  EXPECT_TRUE(trace_output.find("Scheduler::SendEarlyFinalBeginMainFrame") !=
+              std::string::npos);
 }
 
 IN_PROC_BROWSER_TEST_F(ViewTransitionBrowserTest,

@@ -240,6 +240,7 @@ void Scheduler::SendEarlyFinalBeginMainFrame() {
   args.frame_time += args.interval * intervals;
   args.deadline = args.frame_time + args.interval;
   args.on_critical_path = !state_machine_->ImplLatencyTakesPriority();
+  args.frame_id.source_id = viz::BeginFrameArgs::kManualSourceId;
 
   state_machine_->SetUrgentBeginMainFramePending();
 
