@@ -10,6 +10,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.payments.mojom.PaymentDetails;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+import org.chromium.payments.mojom.SecurePaymentConfirmationRequest;
 
 import java.nio.ByteBuffer;
 
@@ -31,10 +32,21 @@ public class PaymentValidator {
         return PaymentValidatorJni.get().validatePaymentValidationErrorsAndroid(errors.serialize());
     }
 
+    public static boolean validateSecurePaymentConfirmationRequest(
+            SecurePaymentConfirmationRequest request) {
+        if (request == null) {
+            return false;
+        }
+        return PaymentValidatorJni.get()
+                .validateSecurePaymentConfirmationRequestAndroid(request.serialize());
+    }
+
     @NativeMethods
     interface Natives {
         boolean validatePaymentDetailsAndroid(ByteBuffer buffer);
 
         boolean validatePaymentValidationErrorsAndroid(ByteBuffer buffer);
+
+        boolean validateSecurePaymentConfirmationRequestAndroid(ByteBuffer buffer);
     }
 }

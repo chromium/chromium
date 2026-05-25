@@ -53,6 +53,7 @@ public class PaymentRequestServiceBuilder implements Delegate {
     private String mFrameOrigin;
     private boolean mIsOriginAllowedToUseWebPaymentApis = true;
     private boolean mIsPaymentDetailsValid = true;
+    private boolean mIsSecurePaymentConfirmationRequestValid = true;
     private PaymentRequestSpec mSpec;
     private final SecurePaymentConfirmationRequest mSecurePaymentConfirmationRequest;
 
@@ -164,6 +165,12 @@ public class PaymentRequestServiceBuilder implements Delegate {
     @Override
     public boolean validatePaymentDetails(PaymentDetails details) {
         return mIsPaymentDetailsValid;
+    }
+
+    @Override
+    public boolean validateSecurePaymentConfirmationRequest(
+            SecurePaymentConfirmationRequest request) {
+        return mIsSecurePaymentConfirmationRequestValid;
     }
 
     @Override
@@ -284,6 +291,11 @@ public class PaymentRequestServiceBuilder implements Delegate {
 
     public PaymentRequestServiceBuilder setIsPaymentDetailsValid(boolean isValid) {
         mIsPaymentDetailsValid = isValid;
+        return this;
+    }
+
+    public PaymentRequestServiceBuilder setSecurePaymentConfirmationRequestValid(boolean isValid) {
+        mIsSecurePaymentConfirmationRequestValid = isValid;
         return this;
     }
 

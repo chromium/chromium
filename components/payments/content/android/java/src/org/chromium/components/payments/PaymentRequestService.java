@@ -42,6 +42,7 @@ import org.chromium.payments.mojom.PaymentResponse;
 import org.chromium.payments.mojom.PaymentShippingOption;
 import org.chromium.payments.mojom.PaymentShippingType;
 import org.chromium.payments.mojom.PaymentValidationErrors;
+import org.chromium.payments.mojom.SecurePaymentConfirmationRequest;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
@@ -290,6 +291,15 @@ public class PaymentRequestService
          */
         default boolean validatePaymentDetails(PaymentDetails details) {
             return PaymentValidator.validatePaymentDetails(details);
+        }
+
+        /**
+         * @param request The SecurePaymentConfirmationRequest to verify.
+         * @return Whether the request is valid.
+         */
+        default boolean validateSecurePaymentConfirmationRequest(
+                SecurePaymentConfirmationRequest request) {
+            return PaymentValidator.validateSecurePaymentConfirmationRequest(request);
         }
 
         /**
@@ -572,6 +582,16 @@ public class PaymentRequestService
         return true;
     }
 
+    /**
+     * Validates that the requested method data and payment options represent a valid
+     * SecurePaymentConfirmation (SPC) request. Checks both structural constraints (e.g. SPC cannot
+     * be combined with shipping/payer requests) and the SPC parameters.
+     *
+     * @param methodData The map of requested payment methods.
+     * @param options The payment options requested by the merchant.
+     * @return True if the request parameters are valid and acceptable to proceed; false if the
+     *     request is malformed or violates API constraints.
+     */
     private boolean isValidSecurePaymentConfirmationRequest(
             Map<String, PaymentMethodData> methodData, PaymentOptions options) {
         if (methodData.size() > 1) return false;
@@ -583,23 +603,13 @@ public class PaymentRequestService
         }
         PaymentMethodData spcMethodData = methodData.get(MethodStrings.SECURE_PAYMENT_CONFIRMATION);
         assumeNonNull(spcMethodData);
-        if (spcMethodData.securePaymentConfirmation == null) return false;
 
-        // TODO(crbug.com/40231121): Update checks to match desktop browser-side logic.
-        if ((spcMethodData.securePaymentConfirmation.payeeOrigin == null
-                        && spcMethodData.securePaymentConfirmation.payeeName == null)
-                || (spcMethodData.securePaymentConfirmation.payeeName != null
-                        && spcMethodData.securePaymentConfirmation.payeeName.isEmpty())) {
-            return false;
-        }
+        // If SPC is disabled, |securePaymentConfirmation| can be null.
+        // This is valid; later on we will fail to create the SPC payment app.
+        if (spcMethodData.securePaymentConfirmation == null) return true;
 
-        if (spcMethodData.securePaymentConfirmation.payeeOrigin != null) {
-            Origin origin = new Origin(spcMethodData.securePaymentConfirmation.payeeOrigin);
-            if (origin.isOpaque()) return false;
-            if (!"https".equals(origin.getScheme())) return false;
-        }
-
-        return true;
+        return mDelegate.validateSecurePaymentConfirmationRequest(
+                spcMethodData.securePaymentConfirmation);
     }
 
     private void startPaymentAppService() {

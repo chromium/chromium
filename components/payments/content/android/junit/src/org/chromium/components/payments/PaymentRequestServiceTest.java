@@ -40,7 +40,6 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.payments.mojom.PaymentOptions;
 import org.chromium.payments.mojom.PaymentRequestClient;
 import org.chromium.payments.mojom.PaymentResponse;
-import org.chromium.url.internal.mojom.Origin;
 import org.chromium.url.mojom.Url;
 
 import java.util.ArrayList;
@@ -774,20 +773,6 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    public void testSpcCanOnlyBeRequestedAlone_failedForNullPayeeNameAndOrigin() {
-        Assert.assertNull(
-                defaultBuilder()
-                        .setPayeeName(null)
-                        .setPayeeOrigin(null)
-                        .setOnlySpcMethodWithoutPaymentOptions()
-                        .build());
-        assertErrorAndReason(
-                ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
-                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
-    }
-
-    @Test
-    @Feature({"Payments"})
     public void testSpcCanOnlyBeRequestedAlone_allowsNullPayeeOrigin() {
         // If a valid payeeName is passed, then payeeOrigin is not needed.
         Assert.assertNotNull(
@@ -800,25 +785,11 @@ public class PaymentRequestServiceTest implements PaymentRequestClient {
 
     @Test
     @Feature({"Payments"})
-    public void testSpcCanOnlyBeRequestedAlone_failedForEmptyPayeeName() {
-        Assert.assertNull(
-                defaultBuilder().setPayeeName("").setOnlySpcMethodWithoutPaymentOptions().build());
-        assertErrorAndReason(
-                ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,
-                PaymentErrorReason.INVALID_DATA_FROM_RENDERER);
-    }
-
-    @Test
-    @Feature({"Payments"})
-    public void testSpcCanOnlyBeRequestedAlone_failedForHttpPayeeOrigin() {
-        Origin payeeOrigin = new Origin();
-        payeeOrigin.scheme = "http";
-        payeeOrigin.host = "www.example.test";
-        payeeOrigin.port = 443;
+    public void testSpcCanOnlyBeRequestedAlone_failedForJniValidationError() {
         Assert.assertNull(
                 defaultBuilder()
-                        .setPayeeOrigin(payeeOrigin)
                         .setOnlySpcMethodWithoutPaymentOptions()
+                        .setSecurePaymentConfirmationRequestValid(false)
                         .build());
         assertErrorAndReason(
                 ErrorStrings.INVALID_PAYMENT_METHODS_OR_DATA,

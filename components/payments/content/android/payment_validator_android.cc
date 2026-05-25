@@ -12,6 +12,7 @@
 #include "base/android/jni_android.h"
 #include "components/payments/content/android/byte_buffer_helper.h"
 #include "components/payments/content/payment_request_converter.h"
+#include "components/payments/content/secure_payment_confirmation_validation.h"
 #include "components/payments/core/payment_details.h"
 #include "components/payments/core/payment_details_validation.h"
 #include "components/payments/core/payments_validators.h"
@@ -47,6 +48,21 @@ static bool JNI_PaymentValidator_ValidatePaymentValidationErrorsAndroid(
   std::string unused_error_message;
   return PaymentsValidators::IsValidPaymentValidationErrorsFormat(
       errors, &unused_error_message);
+}
+
+static bool
+JNI_PaymentValidator_ValidateSecurePaymentConfirmationRequestAndroid(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& buffer) {
+  mojom::SecurePaymentConfirmationRequestPtr request;
+  auto span = base::android::JavaByteBufferToSpan(env, buffer);
+  if (!mojom::SecurePaymentConfirmationRequest::Deserialize(
+          span.data(), span.size(), &request)) {
+    return false;
+  }
+  std::string unused_error_message;
+  return IsValidSecurePaymentConfirmationRequest(request,
+                                                 &unused_error_message);
 }
 
 }  // namespace payments

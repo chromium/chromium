@@ -24,6 +24,7 @@
 #include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
+#include "components/payments/content/secure_payment_confirmation_validation.h"
 #include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
@@ -49,135 +50,7 @@
 namespace payments {
 namespace {
 
-// Arbitrarily chosen limit of 1 hour. Keep in sync with
-// secure_payment_confirmation_helper.cc.
-constexpr int64_t kMaxTimeoutInMilliseconds = 1000 * 60 * 60;
 
-// The maximum size of the payment instrument details string. Arbitrarily chosen
-// while being much larger than any reasonable input.
-constexpr size_t kMaxInstrumentDetailsSize = 4096;
-
-// Determine whether an RP ID is a 'valid domain' as per the URL spec:
-// https://url.spec.whatwg.org/#valid-domain
-//
-// TODO(crbug.com/40858925): This is a workaround to a lack of support for
-// 'valid domain's in the //url code.
-bool IsValidDomain(const std::string& rp_id) {
-  // A valid domain, such as 'site.example', should be a URL host (and nothing
-  // more of the URL!) that is not an IP address.
-  GURL url("https://" + rp_id);
-  return url.is_valid() && url.GetHost() == rp_id && !url.HostIsIPAddress();
-}
-
-bool IsValid(const mojom::SecurePaymentConfirmationRequestPtr& request,
-             std::string* error_message) {
-  // `request` can be null when the feature is disabled in Blink.
-  if (!request)
-    return false;
-
-  // The remaining steps in this method check that the renderer has sent us a
-  // valid SecurePaymentConfirmationRequest, to guard against a compromised
-  // renderer.
-
-  if (request->credential_ids.empty()) {
-    *error_message = errors::kCredentialIdsRequired;
-    return false;
-  }
-
-  for (const auto& credential_id : request->credential_ids) {
-    if (credential_id.empty()) {
-      *error_message = errors::kCredentialIdsRequired;
-      return false;
-    }
-  }
-
-  if (request->timeout.has_value() &&
-      request->timeout.value().InMilliseconds() > kMaxTimeoutInMilliseconds) {
-    *error_message = errors::kTimeoutTooLong;
-    return false;
-  }
-
-  if (request->challenge.empty()) {
-    *error_message = errors::kChallengeRequired;
-    return false;
-  }
-
-  if (!request->instrument) {
-    *error_message = errors::kInstrumentRequired;
-    return false;
-  }
-
-  if (request->instrument->display_name.empty()) {
-    *error_message = errors::kInstrumentDisplayNameRequired;
-    return false;
-  }
-
-  if (!request->instrument->icon.is_valid()) {
-    *error_message = errors::kValidInstrumentIconRequired;
-    return false;
-  }
-
-  if (request->instrument->details.has_value()) {
-    if (!base::IsStringUTF8(*request->instrument->details)) {
-      *error_message = errors::kNonUtf8InstrumentDetailsString;
-      return false;
-    }
-
-    if (request->instrument->details->empty()) {
-      *error_message = errors::kEmptyInstrumentDetailsString;
-      return false;
-    }
-
-    if (request->instrument->details->size() > kMaxInstrumentDetailsSize) {
-      *error_message = errors::kTooLongInstrumentDetailsString;
-      return false;
-    }
-  }
-
-  if (!IsValidDomain(request->rp_id)) {
-    *error_message = errors::kRpIdRequired;
-    return false;
-  }
-
-  if ((!request->payee_origin.has_value() &&
-       !request->payee_name.has_value()) ||
-      (request->payee_name.has_value() && request->payee_name->empty())) {
-    *error_message = errors::kPayeeOriginOrPayeeNameRequired;
-    return false;
-  }
-
-  if (request->payee_origin.has_value() &&
-      request->payee_origin->scheme() != url::kHttpsScheme) {
-    *error_message = errors::kPayeeOriginMustBeHttps;
-    return false;
-  }
-
-  if (!request->payment_entities_logos.empty()) {
-    for (const mojom::PaymentEntityLogoPtr& logo :
-         request->payment_entities_logos) {
-      if (logo.is_null()) {
-        *error_message = errors::kNonNullPaymentEntityLogoRequired;
-        return false;
-      }
-
-      if (!logo->url.is_valid()) {
-        *error_message = errors::kValidLogoUrlRequired;
-        return false;
-      }
-      if (!logo->url.SchemeIsHTTPOrHTTPS() &&
-          !logo->url.SchemeIs(url::kDataScheme)) {
-        *error_message = errors::kValidLogoUrlSchemeRequired;
-        return false;
-      }
-      if (logo->label.empty()) {
-        *error_message = errors::kLogoLabelRequired;
-        return false;
-      }
-    }
-  }
-
-  return true;
-}
 
 struct IconInfo {
   GURL url;
@@ -291,13 +164,16 @@ void SecurePaymentConfirmationAppFactory::Create(
 
   for (const mojom::PaymentMethodDataPtr& method_data : spec->method_data()) {
     if (method_data->supported_method == methods::kSecurePaymentConfirmation) {
-      std::string error_message;
-      if (!IsValid(method_data->secure_payment_confirmation, &error_message)) {
-        if (!error_message.empty())
-          delegate->OnPaymentAppCreationError(error_message);
+      // This can be null if SPC is disabled by flag or finch.
+      if (!method_data->secure_payment_confirmation) {
         delegate->OnDoneCreatingPaymentApps();
         return;
       }
+
+      // PaymentRequest::Init should have already validated the request.
+      std::string unused_error_message;
+      CHECK(IsValidSecurePaymentConfirmationRequest(
+          method_data->secure_payment_confirmation, &unused_error_message));
 
       mojom::SecurePaymentConfirmationRequestPtr spc_request =
           method_data->secure_payment_confirmation.Clone();

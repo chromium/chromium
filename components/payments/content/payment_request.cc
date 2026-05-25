@@ -21,6 +21,7 @@
 #include "components/payments/content/payment_request_converter.h"
 #include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/content/secure_payment_confirmation_transaction_mode.h"
+#include "components/payments/content/secure_payment_confirmation_validation.h"
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/features.h"
@@ -185,6 +186,27 @@ void PaymentRequest::Init(
         "method");
     ResetAndDeleteThis();
     return;
+  }
+
+  for (const mojom::PaymentMethodDataPtr& method_data_entry : method_data) {
+    if (method_data_entry->supported_method ==
+        methods::kSecurePaymentConfirmation) {
+      // If SPC is disabled, |secure_payment_confirmation| can be null.
+      // This is valid; later on we will fail to create the SPC payment app.
+      if (!method_data_entry->secure_payment_confirmation) {
+        continue;
+      }
+
+      std::string error_message;
+      if (!IsValidSecurePaymentConfirmationRequest(
+              method_data_entry->secure_payment_confirmation, &error_message)) {
+        log_.Error(error_message);
+        mojo::ReportBadMessage("Invalid SecurePaymentConfirmationRequest: " +
+                               error_message);
+        ResetAndDeleteThis();
+        return;
+      }
+    }
   }
 
   if (!details || !details->id || !details->total) {
