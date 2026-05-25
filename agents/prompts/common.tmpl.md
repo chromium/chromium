@@ -54,6 +54,9 @@ the user about the reason to skip.
     the edit or write the file.
       * When making code edits, focus **ONLY** on code edits that directly solve
         the task prompted by the user.
+      * **Include Hygiene & IWYU:**
+          * **Cleanup Unused Includes:** Remove unused includes when refactoring.
+          * **No Transitive Includes:** If you use a symbol in a `.cc` file, explicitly include its defining header.
 3.  **Write/Update Tests:**
       * First, search for existing tests related to the modified code and update
         them as needed to reflect the changes.
