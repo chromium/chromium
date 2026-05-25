@@ -168,14 +168,18 @@ using HeapVector = BasicHeapVector<internal::HeapCollectionType::kDisallowNew,
                                    T,
                                    inlineCapacity>;
 static_assert(IsDisallowNew<HeapVector<int>>);
+#if !BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS)
 ASSERT_SIZE(Vector<int>, HeapVector<int>);
+#endif
 
 // GCed version of Vector for referring to GarbageCollected objects.
 template <typename T, wtf_size_t inlineCapacity = 0>
 using GCedHeapVector =
     BasicHeapVector<internal::HeapCollectionType::kGCed, T, inlineCapacity>;
 static_assert(!IsDisallowNew<GCedHeapVector<int>>);
+#if !BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS)
 ASSERT_SIZE(Vector<int>, GCedHeapVector<int>);
+#endif
 
 template <typename T>
 struct VectorTraits<Member<T>> : VectorTraitsBase<Member<T>> {

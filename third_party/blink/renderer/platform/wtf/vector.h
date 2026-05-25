@@ -39,6 +39,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/vector_traits.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 // For ASAN builds, disable inline buffers completely as they cause various
@@ -62,6 +64,12 @@
 #endif
 
 namespace blink {
+
+#if BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS)
+inline constexpr bool kEnableHeapVectorActiveIteratorChecks = true;
+#else
+inline constexpr bool kEnableHeapVectorActiveIteratorChecks = false;
+#endif
 
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 // The allocation pool for nodes is one big chunk that ASAN has no insight
@@ -578,6 +586,17 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") VectorBufferBase {
   int64_t modifications_ = 0;
 #endif
 
+  struct ActiveIteratorCounter {
+    wtf_size_t count = 0;
+  };
+  struct NoActiveIteratorCounter {};
+  NO_UNIQUE_ADDRESS
+  std::conditional_t<Allocator::kIsGarbageCollected &&
+                         kEnableHeapVectorActiveIteratorChecks,
+                     ActiveIteratorCounter,
+                     NoActiveIteratorCounter>
+      active_iterator_state_;
+
  private:
   static constexpr bool NeedsToClearUnusedSlots() {
     // Tracing and finalization access all slots of a vector backing. In case
@@ -629,6 +648,11 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
   }
 
   void DeallocateBuffer(T* buffer_to_deallocate) {
+    if constexpr (Allocator::kIsGarbageCollected &&
+                  kEnableHeapVectorActiveIteratorChecks) {
+      CHECK_EQ(this->active_iterator_state_.count, 0u)
+          << "HeapVector backing freed while iterators are still alive.";
+    }
     Allocator::FreeVectorBacking(buffer_to_deallocate);
   }
 
@@ -746,6 +770,11 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   }
 
   NOINLINE void ReallyDeallocateBuffer(T* buffer_to_deallocate) {
+    if constexpr (Allocator::kIsGarbageCollected &&
+                  kEnableHeapVectorActiveIteratorChecks) {
+      CHECK_EQ(this->active_iterator_state_.count, 0u)
+          << "HeapVector backing freed while iterators are still alive.";
+    }
     Allocator::FreeVectorBacking(buffer_to_deallocate);
   }
 
@@ -1049,7 +1078,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   friend class Deque;
 };
 
-// UncheckedIteraotr<T> is just a wrapper of a T pointer with no bounds
+// UncheckedIterator<T> is just a wrapper of a T pointer with no bounds
 // checking, and the default iterator implementation of blink::Vector.
 template <typename T>
 class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
@@ -1068,15 +1097,92 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
       : current_(cur),
         modifications_ptr_(modifications_ptr),
         captured_modifications_(modifications_ptr ? *modifications_ptr : 0) {}
-#endif
   UncheckedIterator(const UncheckedIterator& other) = default;
+#elif BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS)
+  // Constructor that registers this iterator with the owning Vector's
+  // active_iterators_ count. Used to detect freeing a backing while
+  // iterators are alive.
+  UncheckedIterator(T* cur, wtf_size_t* active_iterator_count)
+      : current_(cur), active_iterator_count_(active_iterator_count) {
+    if (active_iterator_count_) {
+      ++(*active_iterator_count_);
+    }
+  }
+  UncheckedIterator(const UncheckedIterator& other)
+      : current_(other.current_),
+        active_iterator_count_(other.active_iterator_count_) {
+    if (active_iterator_count_) {
+      ++(*active_iterator_count_);
+    }
+  }
+  UncheckedIterator(UncheckedIterator&& other)
+      : current_(other.current_),
+        active_iterator_count_(other.active_iterator_count_) {
+    other.active_iterator_count_ = nullptr;
+  }
+#else
+  UncheckedIterator(const UncheckedIterator& other) = default;
+#endif
   // Allow implicit conversion from a base::CheckedContiguousIterator<T>.
   // NOLINTNEXTLINE(google-explicit-constructor)
   UncheckedIterator(const base::CheckedContiguousIterator<T>& other)
       : current_(base::to_address(other)) {}
-  ~UncheckedIterator() = default;
+  ~UncheckedIterator() {
+#if !DCHECK_IS_ON() && BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS)
+    if (active_iterator_count_) {
+      --(*active_iterator_count_);
+    }
+#endif
+  }
 
+#if DCHECK_IS_ON()
+  UncheckedIterator& operator=(const UncheckedIterator& other) {
+    if (this != &other) {
+      current_ = other.current_;
+      modifications_ptr_ = other.modifications_ptr_;
+      captured_modifications_ = other.captured_modifications_;
+    }
+    return *this;
+  }
+  UncheckedIterator& operator=(UncheckedIterator&& other) {
+    if (this != &other) {
+      current_ = other.current_;
+      modifications_ptr_ = other.modifications_ptr_;
+      captured_modifications_ = other.captured_modifications_;
+      other.modifications_ptr_ = nullptr;
+      other.captured_modifications_ = 0;
+    }
+    return *this;
+  }
+#elif BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS)
+  UncheckedIterator& operator=(const UncheckedIterator& other) {
+    if (this != &other) {
+      if (active_iterator_count_) {
+        --(*active_iterator_count_);
+      }
+      current_ = other.current_;
+      active_iterator_count_ = other.active_iterator_count_;
+      if (active_iterator_count_) {
+        ++(*active_iterator_count_);
+      }
+    }
+    return *this;
+  }
+  UncheckedIterator& operator=(UncheckedIterator&& other) {
+    if (this != &other) {
+      if (active_iterator_count_) {
+        --(*active_iterator_count_);
+      }
+      current_ = other.current_;
+      active_iterator_count_ = other.active_iterator_count_;
+      other.active_iterator_count_ = nullptr;
+    }
+    return *this;
+  }
+#else
   UncheckedIterator& operator=(const UncheckedIterator& other) = default;
+  UncheckedIterator& operator=(UncheckedIterator&& other) = default;
+#endif
 
   friend constexpr bool operator==(const UncheckedIterator& lhs,
                                    const UncheckedIterator& rhs) {
@@ -1175,6 +1281,8 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
 #if DCHECK_IS_ON()
   const int64_t* modifications_ptr_ = nullptr;
   int64_t captured_modifications_ = 0;
+#elif BUILDFLAG(ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS)
+  wtf_size_t* active_iterator_count_ = nullptr;
 #endif
 };
 
@@ -1450,21 +1558,10 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   // the requirements of UNSAFE_BUFFERS. See the macro definition in
   // https://source.chromium.org/chromium/chromium/src/+/main:base/compiler_specific.h
   // for more.
-#if DCHECK_IS_ON()
-  iterator begin() { return iterator(data(), &this->modifications_); }
-  iterator end() { return iterator(DataEnd(), &this->modifications_); }
-  const_iterator begin() const {
-    return const_iterator(data(), &this->modifications_);
-  }
-  const_iterator end() const {
-    return const_iterator(DataEnd(), &this->modifications_);
-  }
-#else
-  iterator begin() { return iterator(data()); }
-  iterator end() { return iterator(DataEnd()); }
-  const_iterator begin() const { return const_iterator(data()); }
-  const_iterator end() const { return const_iterator(DataEnd()); }
-#endif
+  iterator begin() { return MakeIterator(data()); }
+  iterator end() { return MakeIterator(DataEnd()); }
+  const_iterator begin() const { return MakeConstIterator(data()); }
+  const_iterator end() const { return MakeConstIterator(DataEnd()); }
 
   reverse_iterator rbegin() { return reverse_iterator(end()); }
   reverse_iterator rend() { return reverse_iterator(begin()); }
@@ -1753,6 +1850,32 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   const T* const* GetBufferSlot() const { return Base::BufferSlot(); }
 
  private:
+  iterator MakeIterator(T* ptr) {
+#if DCHECK_IS_ON()
+    return iterator(ptr, &this->modifications_);
+#else
+    if constexpr (Allocator::kIsGarbageCollected &&
+                  kEnableHeapVectorActiveIteratorChecks) {
+      return iterator(ptr, &this->active_iterator_state_.count);
+    } else {
+      return iterator(ptr);
+    }
+#endif
+  }
+  const_iterator MakeConstIterator(const T* ptr) const {
+#if DCHECK_IS_ON()
+    return const_iterator(ptr, &this->modifications_);
+#else
+    if constexpr (Allocator::kIsGarbageCollected &&
+                  kEnableHeapVectorActiveIteratorChecks) {
+      return const_iterator(
+          ptr, const_cast<wtf_size_t*>(&this->active_iterator_state_.count));
+    } else {
+      return const_iterator(ptr);
+    }
+#endif
+  }
+
   template <typename, wtf_size_t, typename>
   friend class Vector;
   // Point the next of the last item. We must not dereference the return value.

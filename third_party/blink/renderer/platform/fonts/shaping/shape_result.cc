@@ -81,9 +81,15 @@ struct SameSizeAsHarfBuzzRunGlyphData {
 ASSERT_SIZE(HarfBuzzRunGlyphData, SameSizeAsHarfBuzzRunGlyphData);
 
 struct SameSizeAsRunInfo {
+  STACK_ALLOCATED();
+
+ public:
   struct GlyphDataCollection {
-    Vector<int> glyphs;
-    Vector<int> offsets;
+    STACK_ALLOCATED();
+
+   public:
+    HeapVector<int> glyphs;
+    HeapVector<int> offsets;
   } glyph_data;
   Member<void*> pointer2[2];
   int integers[5];
@@ -99,8 +105,11 @@ struct SameSizeAsShapeResultCharacterData {
 ASSERT_SIZE(ShapeResultCharacterData, SameSizeAsShapeResultCharacterData);
 
 struct SameSizeAsShapeResult {
-  Vector<int> character_position_;
-  Vector<UntracedMember<void*>, 1> runs_;
+  STACK_ALLOCATED();
+
+ public:
+  HeapVector<int> character_position_;
+  HeapVector<Member<ShapeResultRun>, 1> runs_;
   float width;
   unsigned start_index_;
   unsigned bitfields;

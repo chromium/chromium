@@ -12,6 +12,19 @@ import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/config.gni")
 
+declare_args() {
+  # Enable active iterator counting in blink::HeapVector to detect
+  # use-after-free.
+  enable_heap_vector_active_iterator_checks = false
+}
+
+buildflag_header("wtf_buildflags") {
+  header = "wtf_buildflags.h"
+  header_dir = "third_party/blink/renderer/platform/wtf"
+
+  flags = [ "ENABLE_HEAP_VECTOR_ACTIVE_ITERATOR_CHECKS=$enable_heap_vector_active_iterator_checks" ]
+}
+
 visibility = [
   ":*",
   "//:gn_all",
@@ -240,6 +253,7 @@ component("wtf") {
   ]
 
   public_deps = [
+    ":wtf_buildflags",
     "//base",
     "//base/third_party/double_conversion",
     "//components/crash/core/common:crash_key",
