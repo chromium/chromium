@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/common.h"
@@ -339,6 +340,10 @@ void InitializeBinaryUploadRequest(BinaryUploadRequest* request,
   request->set_email(info.email());
   request->set_url(info.url());
   request->set_tab_url(info.tab_url());
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  request->set_is_mobile(true);
+#endif
 
   for (const auto& tag : settings.tags) {
     request->add_tag(tag.first);

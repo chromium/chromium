@@ -8,12 +8,15 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/analysis_test_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/mock_content_analysis_info.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/test_connectors_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -348,6 +351,37 @@ TEST(DeepScanningUtilsTest, BinaryUploadServiceResultToString) {
             enterprise_connectors::BinaryUploadServiceResultToString(
                 enterprise_connectors::ScanRequestUploadResult::kUserCancelled,
                 false));
+}
+
+class FakeBinaryUploadRequest : public BinaryUploadRequest {
+ public:
+  FakeBinaryUploadRequest()
+      : BinaryUploadRequest(
+            base::DoNothing(),
+            CloudOrLocalAnalysisSettings(CloudAnalysisSettings()),
+            base::NullCallback()) {}
+  void GetRequestData(DataCallback callback) override {
+    std::move(callback).Run(ScanRequestUploadResult::kSuccess, Data());
+  }
+};
+
+TEST(DeepScanningUtilsTest, InitializeBinaryUploadRequest_IsMobile) {
+  FakeBinaryUploadRequest request;
+  testing::NiceMock<MockContentAnalysisInfoBase> info;
+  AnalysisSettings settings;
+  GURL url;
+  ON_CALL(info, settings()).WillByDefault(testing::ReturnRef(settings));
+  ON_CALL(info, url()).WillByDefault(testing::ReturnRef(url));
+  ON_CALL(info, tab_url()).WillByDefault(testing::ReturnRef(url));
+
+  InitializeBinaryUploadRequest(&request, info,
+                                /*include_enterprise_only_fields=*/true);
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(request.content_analysis_request().is_mobile());
+#else
+  EXPECT_FALSE(request.content_analysis_request().is_mobile());
+#endif
 }
 
 class CalculateRequestHandlerResultTest : public BaseTest {};

@@ -230,6 +230,8 @@ source_set("test_support") {
 
   if (enterprise_cloud_content_analysis || is_android) {
     sources += [
+      "cloud_content_scanning/mock_content_analysis_info.cc",
+      "cloud_content_scanning/mock_content_analysis_info.h",
       "uploader_test_utils.cc",
       "uploader_test_utils.h",
     ]

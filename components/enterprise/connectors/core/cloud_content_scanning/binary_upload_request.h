@@ -142,6 +142,7 @@ class BinaryUploadRequest {
   void set_clipboard_source_url(const std::string& url);
   void set_password(const std::string& password);
   void set_reason(ContentAnalysisRequest::Reason reason);
+  void set_is_mobile(bool is_mobile);
   void set_require_metadata_verdict(bool require_metadata_verdict);
   void set_is_content_encrypted(bool is_content_encrypted);
   void set_is_content_too_large(bool is_content_too_large);

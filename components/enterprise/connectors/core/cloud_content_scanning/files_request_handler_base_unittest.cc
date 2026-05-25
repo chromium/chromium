@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/mock_content_analysis_info.h"
 #include "components/enterprise/connectors/core/content_analysis_info_base.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
@@ -102,38 +103,6 @@ class MockBinaryUploadService : public BinaryUploadService {
 
  private:
   base::WeakPtrFactory<MockBinaryUploadService> weak_ptr_factory_{this};
-};
-
-// Mock implementation of the ContentAnalysisInfoBase.
-class MockContentAnalysisInfoBase : public ContentAnalysisInfoBase {
- public:
-  MOCK_METHOD(void,
-              InitializeRequest,
-              (BinaryUploadRequest * request,
-               bool include_enterprise_only_fields),
-              (override));
-  MOCK_METHOD(const AnalysisSettings&, settings, (), (const, override));
-  MOCK_METHOD(signin::IdentityManager*,
-              identity_manager,
-              (),
-              (const, override));
-  MOCK_METHOD(int, user_action_requests_count, (), (const, override));
-  MOCK_METHOD(std::string, tab_title, (), (const, override));
-  MOCK_METHOD(std::string, user_action_id, (), (const, override));
-  MOCK_METHOD(std::string, email, (), (const, override));
-  MOCK_METHOD(const GURL&, url, (), (const, override));
-  MOCK_METHOD(const GURL&, tab_url, (), (const, override));
-  MOCK_METHOD(ContentAnalysisRequest::Reason, reason, (), (const, override));
-  MOCK_METHOD(
-      (google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>),
-      referrer_chain,
-      (),
-      (const, override));
-  MOCK_METHOD(google::protobuf::RepeatedPtrField<std::string>,
-              frame_url_chain,
-              (),
-              (const, override));
-  MOCK_METHOD(std::string, GetContentAreaAccountEmail, (), (const, override));
 };
 
 // A fake BinaryUploadRequest for testing.
