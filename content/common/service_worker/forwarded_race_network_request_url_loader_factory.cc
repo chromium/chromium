@@ -9,6 +9,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
@@ -16,6 +18,46 @@ namespace {
 // Kill switch for multiple CreateLoaderAndStart calls.
 BASE_FEATURE(kKillSwitchForRaceNetworkRequestMultipleCreateLoaderAndStartCalls,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature flag to enable/disable proxying the URLLoader control pipe in the
+// browser. Enabled by default. Used as a killswitch.
+BASE_FEATURE(kServiceWorkerRaceNetworkRequestURLLoaderProxy,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// A proxy class that implements URLLoader to intercept and secure control
+// messages from the renderer. It forwards safe messages (like SetPriority) to
+// the actual URLLoader in the network process, and blocks/terminates on
+// unauthorized messages (like FollowRedirect).
+// This prevents renderers from driving redirects on browser-privileged loaders.
+class URLLoaderProxy : public network::mojom::URLLoader {
+ public:
+  explicit URLLoaderProxy(mojo::PendingRemote<network::mojom::URLLoader> remote)
+      : remote_(std::move(remote)) {}
+
+  URLLoaderProxy(const URLLoaderProxy&) = delete;
+  URLLoaderProxy& operator=(const URLLoaderProxy&) = delete;
+  ~URLLoaderProxy() override = default;
+
+  // network::mojom::URLLoader:
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const std::optional<GURL>& new_url) override {
+    // Renderers should never drive redirects for main resource navigations.
+    // Report bad message and terminate the connection.
+    mojo::ReportBadMessage(
+        "URLLoaderProxy: FollowRedirect is forbidden from renderer.");
+  }
+
+  void SetPriority(net::RequestPriority priority,
+                   int32_t intra_priority_value) override {
+    remote_->SetPriority(priority, intra_priority_value);
+  }
+
+ private:
+  mojo::Remote<network::mojom::URLLoader> remote_;
+};
 }  // namespace
 
 ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
@@ -45,13 +87,30 @@ void ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory::
                     "MultipleCalls"}),
       is_data_pipe_fused_);
   if (!is_data_pipe_fused_) {
-    // If the member data pipes are still not fused to mojo endpoints, fuse them
-    // to reuse the response.
+    // We fuse the URLLoaderClient pipes directly. The URLLoaderClient is a data
+    // delivery channel (outgoing from the network process to the renderer). It
+    // only carries response data and metadata (like the Mojo Data Pipe handle
+    // for the body), and does not expose any control methods that the renderer
+    // can use to drive the network process.
     bool result =
         mojo::FusePipes(std::move(client_receiver_), std::move(client));
     CHECK(result) << resource_request.url;
-    result = mojo::FusePipes(std::move(receiver), std::move(loader_));
-    CHECK(result) << resource_request.url;
+    if (is_main_resource_ &&
+        base::FeatureList::IsEnabled(
+            kServiceWorkerRaceNetworkRequestURLLoaderProxy)) {
+      // The URLLoader is a control channel. A renderer could call
+      // FollowRedirect on it to drive redirects on a privileged loader. To
+      // prevent this, we proxy the URLLoader in the browser to intercept and
+      // block FollowRedirect.
+      mojo::MakeSelfOwnedReceiver(
+          std::make_unique<URLLoaderProxy>(std::move(loader_)),
+          std::move(receiver));
+    } else {
+      // For subresources, fuse the control pipe directly as the loader does not
+      // have browser-level privileges.
+      result = mojo::FusePipes(std::move(receiver), std::move(loader_));
+      CHECK(result) << resource_request.url;
+    }
     is_data_pipe_fused_ = true;
   } else {
     SCOPED_CRASH_KEY_STRING1024("ServiceWorker", "race_req_url",
