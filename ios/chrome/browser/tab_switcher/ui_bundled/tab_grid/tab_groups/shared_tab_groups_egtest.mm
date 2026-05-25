@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
 
 #import "base/feature_list.h"
 #import "base/functional/bind.h"
@@ -312,6 +313,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Checks opening the Share flow from the Tab Grid and cancelling.
 - (void)testShareGroupButCancel {
+  // TODO(crbug.com/515680760): Re-enable this flaky test on iPhone simulator.
+#if TARGET_OS_SIMULATOR
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPhone simulator.");
+  }
+#endif
+
   // Open the tab grid.
   [ChromeEarlGreyUI openTabGrid];
 
