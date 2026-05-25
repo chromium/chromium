@@ -19232,6 +19232,21 @@
             ]
         }
     ],
+    "Prerender2MemoryControlsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Treatment_Disabled",
+                    "disable_features": [
+                        "Prerender2MemoryControls"
+                    ]
+                }
+            ]
+        }
+    ],
     "Prerender2WarmUpCompositorForBookmarkBar": [
         {
             "platforms": [
