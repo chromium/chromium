@@ -223,6 +223,11 @@ void VerifySaveNewEntityFlow() {
 // Tests the infobar banner shows and can be tapped. Once tapped, the detailed
 // save entity UI is shown.
 - (void)testSaveEntityUI {
+  // TODO(crbug.com/516443975): Re-enable this flaky test on iOS below 26.
+  if (!base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS below 26.");
+  }
+
   // Simulate a trigger for the infobar.
   [AutofillAppInterface showAutofillAiSaveEntityBubble];
 
