@@ -2808,6 +2808,9 @@ class EnclaveManager::StateMachine {
                 [](base::WeakPtr<StateMachine> machine,
                    GoogleServiceAuthError error,
                    signin::AccessTokenInfo access_token_info) {
+                  base::UmaHistogramEnumeration(
+                      "WebAuthentication.Enclave.GetAccessTokenError",
+                      error.state(), GoogleServiceAuthError::State::NUM_STATES);
                   if (!machine) {
                     return;
                   }

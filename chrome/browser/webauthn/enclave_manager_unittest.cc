@@ -81,6 +81,7 @@
 #include "device/fido/public/public_key_credential_descriptor.h"
 #include "device/fido/public/public_key_credential_params.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_status_code.h"
 #include "services/network/network_service.h"
@@ -706,6 +707,32 @@ TEST_F(EnclaveManagerTest, RegistrationFailureAndRetry) {
                                 .users()
                                 .find(gaia)
                                 ->second.identity_public_key());
+}
+
+TEST_F(EnclaveManagerTest, GetAccessTokenErrorMetric_Success) {
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(Register());
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.GetAccessTokenError",
+      GoogleServiceAuthError::State::NONE, 1);
+}
+
+TEST_F(EnclaveManagerTest, GetAccessTokenErrorMetric_Failure) {
+  base::HistogramTester histogram_tester;
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
+
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
+      GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
+
+  EXPECT_TRUE(register_future.Wait());
+  EXPECT_FALSE(register_future.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "WebAuthentication.Enclave.GetAccessTokenError",
+      GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1);
 }
 
 TEST_F(EnclaveManagerTest, PrimaryUserChange) {
