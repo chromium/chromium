@@ -19,6 +19,7 @@
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/events/test/test_event.h"
 
@@ -26,11 +27,17 @@ namespace extensions {
 
 namespace {
 
-constexpr char16_t kExpectedExtensionName[] = u"Generic MIME Handler Test";
+constexpr char16_t kMimeHandlerExtensionName[] = u"Generic MIME Handler Test";
 constexpr char kTestExtensionDir[] = "generic_mime_handler";
 constexpr char kTestPdfPath[] = "/test.pdf";
 constexpr char kEmptyPath[] = "/empty.html";
 constexpr char kEmbedHostPath[] = "/embed_host.html";
+constexpr char16_t kPdfOwnerExtensionName[] = u"With PDF";
+
+base::FilePath PdfOwnerExtensionDir() {
+  return base::PathService::CheckedGet(chrome::DIR_TEST_DATA)
+      .AppendASCII("pdf/extension_with_pdf");
+}
 
 LocationIconView* GetLocationIconView(const Browser* browser) {
   return BrowserView::GetBrowserViewForBrowser(browser)
@@ -86,7 +93,7 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerChipBrowserTest,
                             embedded_test_server()->GetURL(kTestPdfPath)));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  ExpectExtensionChipShowing(browser(), kExpectedExtensionName);
+  ExpectExtensionChipShowing(browser(), kMimeHandlerExtensionName);
 }
 
 // Navigating away from a MIME-handled page clears the chip label.
@@ -102,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerChipBrowserTest,
   ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
                             embedded_test_server()->GetURL(kEmptyPath)));
 
-  ExpectExtensionChipNotShowing(browser(), kExpectedExtensionName);
+  ExpectExtensionChipNotShowing(browser(), kMimeHandlerExtensionName);
 }
 
 // An embedded MIME handler (inside <embed> or <iframe>) does not
@@ -119,7 +126,70 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerChipBrowserTest,
                             embedded_test_server()->GetURL(kEmbedHostPath)));
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
-  ExpectExtensionChipNotShowing(browser(), kExpectedExtensionName);
+  ExpectExtensionChipNotShowing(browser(), kMimeHandlerExtensionName);
+}
+
+// When the MIME-handled resource is served from `chrome-extension://`,
+// the chip names the URL-owner extension, not the handler extension.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerChipBrowserTest,
+                       IndicatorNamesOwnerExtensionForExtensionServedPdf) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir)));
+  const Extension* owner_extension = LoadExtension(PdfOwnerExtensionDir());
+  ASSERT_TRUE(owner_extension);
+
+  ResultCatcher catcher;
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            owner_extension->GetResourceURL("test.pdf")));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  ExpectExtensionChipShowing(browser(), kPdfOwnerExtensionName);
+}
+
+// When the MIME-handler extension also owns the URL (self-served PDF
+// bundled inside the handler extension itself), the chip names that
+// extension.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerChipBrowserTest,
+                       IndicatorNamesExtensionForSelfServedPdf) {
+  const Extension* handler_extension =
+      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
+  ASSERT_TRUE(handler_extension);
+
+  ResultCatcher catcher;
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            handler_extension->GetResourceURL("test.pdf")));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  ExpectExtensionChipShowing(browser(), kMimeHandlerExtensionName);
+}
+
+// When a chrome-extension:// page embeds a PDF via <iframe> that
+// the MIME handler intercepts, the chip names the URL-owner
+// extension of the top-level frame, not the handler.
+IN_PROC_BROWSER_TEST_F(GenericMimeHandlerChipBrowserTest,
+                       IndicatorNamesOwnerForEmbeddedExtensionPdf) {
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir)));
+
+  TestExtensionDir owner_dir;
+  owner_dir.WriteManifest(R"({
+    "name": "PDF Owner Page",
+    "version": "1.0",
+    "manifest_version": 3
+  })");
+  owner_dir.WriteFile(FILE_PATH_LITERAL("host.html"),
+                      R"(<!DOCTYPE html><iframe src="bundled.pdf"></iframe>)");
+  owner_dir.CopyFileTo(
+      test_data_dir_.AppendASCII(kTestExtensionDir).AppendASCII("test.pdf"),
+      FILE_PATH_LITERAL("bundled.pdf"));
+
+  const Extension* owner_extension = LoadExtension(owner_dir.UnpackedPath());
+  ASSERT_TRUE(owner_extension);
+
+  ResultCatcher catcher;
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            owner_extension->GetResourceURL("host.html")));
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
+
+  ExpectExtensionChipShowing(browser(), u"PDF Owner Page");
 }
 
 // Pressing the chip on a top-level MIME handler page opens the
