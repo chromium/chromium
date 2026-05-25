@@ -4,7 +4,6 @@
 
 #include "chrome/browser/performance_manager/metrics/metrics_provider_common.h"
 
-#include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -68,8 +67,7 @@ MetricsProviderCommon::~MetricsProviderCommon() = default;
 
 void MetricsProviderCommon::RecordAvailableMemoryMetrics() {
   auto available_bytes = base::SysInfo::AmountOfAvailablePhysicalMemory();
-  auto total_bytes = base::ByteSize::FromDeprecatedByteCount(
-      base::SysInfo::AmountOfPhysicalMemory());
+  auto total_bytes = base::SysInfo::AmountOfTotalPhysicalMemory();
 
   base::UmaHistogramMemoryLargeMB("Memory.Experimental.AvailableMemoryMB",
                                   available_bytes.InMiB());

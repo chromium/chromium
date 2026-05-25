@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
@@ -204,7 +205,7 @@ bool LensOverlayEntryPointController::IsEnabled() const {
   }
 
   // Finally, only enable the overlay if user meets our minimum RAM requirement.
-  static int phys_mem_mb = base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  static int phys_mem_mb = base::SysInfo::AmountOfTotalPhysicalMemory().InMiB();
   return phys_mem_mb > lens::features::GetLensOverlayMinRamMb();
 }
 

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/preloading/search_preload/search_preload_features.h"
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
@@ -42,7 +43,8 @@ BASE_FEATURE(kDsePreload2OnSuggestNonDefalutMatch,
 
 bool IsDsePreload2Enabled() {
   return base::FeatureList::IsEnabled(kDsePreload2) &&
-         static_cast<size_t>(base::SysInfo::AmountOfPhysicalMemory().InMiB()) >=
+         static_cast<size_t>(
+             base::SysInfo::AmountOfTotalPhysicalMemory().InMiB()) >=
              kDsePreload2DeviceMemoryThresholdMiB.Get();
 }
 

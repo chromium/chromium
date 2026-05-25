@@ -6,8 +6,10 @@
 
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,10 +57,11 @@ bool SearchPrefetchServicePrefetchingIsEnabled() {
     return false;
   }
 
-  return base::SysInfo::AmountOfPhysicalMemory().InMiB() >
-         base::GetFieldTrialParamByFeatureAsInt(
-             kSearchPrefetchServicePrefetching, "device_memory_threshold_MB",
-             3000);
+  return base::SysInfo::AmountOfTotalPhysicalMemory() >
+         base::MiBU(base::saturated_cast<uint64_t>(
+             base::GetFieldTrialParamByFeatureAsInt(
+                 kSearchPrefetchServicePrefetching,
+                 "device_memory_threshold_MB", 3000)));
 }
 
 base::TimeDelta SearchPrefetchCachingLimit() {

@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/cpu.h"
 #include "base/feature_list.h"
@@ -512,7 +513,8 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
       "Cpu: " + NumberToString(cpu.family()) + "." +
       NumberToString(cpu.model()) + "." + NumberToString(cpu.stepping()) +
       ", x" + NumberToString(base::SysInfo::NumberOfProcessors()) + ", " +
-      NumberToString(base::SysInfo::AmountOfPhysicalMemory().InMiB()) + "MB");
+      NumberToString(base::SysInfo::AmountOfTotalPhysicalMemory().InMiB()) +
+      "MB");
   LogToCircularBuffer("Cpu brand: " + cpu.cpu_brand());
 
   // Computer model
