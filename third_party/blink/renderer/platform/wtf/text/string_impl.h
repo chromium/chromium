@@ -913,7 +913,7 @@ inline string_size_t Find(base::span<const CharType> characters,
   const CharType* end = base::to_address(characters.end());
   const CharType* it = std::find(base::to_address(characters.begin() + index),
                                  end, match_character);
-  return it == end ? kNotFound : std::distance(begin, it);
+  return it == end ? kNotFound : CheckedDistance(begin, it);
 }
 
 ALWAYS_INLINE string_size_t Find(base::span<const UChar> characters,
@@ -949,14 +949,15 @@ inline string_size_t Find(base::span<const CharType> characters,
   const CharType* end = base::to_address(characters.end());
   const CharType* it = std::find_if(
       base::to_address(characters.begin() + index), end, match_function);
-  return it == end ? kNotFound : std::distance(begin, it);
+  return it == end ? kNotFound : CheckedDistance(begin, it);
 }
 
 template <typename CharType>
 inline string_size_t ReverseFind(base::span<const CharType> characters,
                                  CharacterMatchFunctionPtr match_function,
                                  string_size_t index) {
-  const size_t length = characters.size();
+  const string_size_t length =
+      base::checked_cast<string_size_t>(characters.size());
   if (!length) {
     return kNotFound;
   }

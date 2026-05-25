@@ -413,8 +413,9 @@ size_t StringImpl::CopyTo(base::span<UChar> buffer, size_type start) const {
   if (!number_of_characters_to_copy)
     return 0;
   buffer = buffer.first(number_of_characters_to_copy);
-  VisitCharacters(StringView(*this, start, number_of_characters_to_copy),
-                  [buffer](auto chars) { CopyChars(buffer, chars); });
+  VisitCharacters(*this, [&](auto chars) {
+    CopyChars(buffer, chars.subspan(start, number_of_characters_to_copy));
+  });
   return number_of_characters_to_copy;
 }
 
@@ -583,7 +584,7 @@ ALWAYS_INLINE scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
     return this;
   }
 
-  StringBuffer<CharType> data(characters.size());
+  StringBuffer<CharType> data(base::checked_cast<size_type>(characters.size()));
   auto to = data.Span();
   size_t outc = i;
 
@@ -623,7 +624,8 @@ scoped_refptr<StringImpl> StringImpl::Remove(size_type start,
   return VisitCharacters(
       *this, [start, length_to_remove, removed_end](auto chars) {
         using CharType = decltype(chars)::value_type;
-        StringBuffer<CharType> buffer(chars.size() - length_to_remove);
+        StringBuffer<CharType> buffer(
+            base::checked_cast<size_type>(chars.size() - length_to_remove));
         auto [before, after] = buffer.Span().split_at(start);
         CopyChars(before, chars.first(start));
         CopyChars(after, chars.subspan(removed_end));
@@ -681,7 +683,7 @@ inline scoped_refptr<StringImpl> StringImpl::SimplifyMatchedCharactersToSpace(
     return this;
   }
 
-  data.Shrink(outc);
+  data.Shrink(base::checked_cast<size_type>(outc));
   return data.Release();
 }
 
@@ -764,7 +766,8 @@ bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
   if (a.data() == b.data()) {
     return true;
   }
-  return !unicode::Umemcasecmp(a.data(), b.data(), length);
+  return !unicode::Umemcasecmp(a.data(), b.data(),
+                               base::checked_cast<int>(length));
 }
 
 bool DeprecatedEqualIgnoringCase(base::span<const UChar> a,
@@ -817,7 +820,8 @@ ALWAYS_INLINE static string_size_t FindIgnoringCaseInternal(
     string_size_t index) {
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  string_size_t delta = search.size() - match.size();
+  string_size_t delta =
+      base::checked_cast<string_size_t>(search.size() - match.size());
 
   string_size_t i = 0;
   const SearchCharacterType* search_data = search.data();
@@ -869,7 +873,8 @@ ALWAYS_INLINE static string_size_t FindIgnoringAsciiCaseInternal(
     string_size_t index) {
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  string_size_t delta = search.size() - match.size();
+  string_size_t delta =
+      base::checked_cast<string_size_t>(search.size() - match.size());
 
   string_size_t i = 0;
   const SearchCharacterType* search_data = search.data();

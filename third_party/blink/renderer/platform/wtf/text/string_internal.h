@@ -27,6 +27,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_INTERNAL_H_
 
 #include "base/containers/span.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -137,7 +138,7 @@ ALWAYS_INLINE string_size_t FindInternal(base::span<const LChar> search,
     // method.
     if (UNSAFE_BUFFERS(memcmp(current.data(), match.data(),
                               match.size() * sizeof(LChar))) == 0) {
-      return index + (p - search.data());
+      return index + CheckedDistance(search.data(), p);
     }
 
     current = current.subspan(1u);
@@ -234,7 +235,7 @@ template <typename CharType>
 inline string_size_t ReverseFind(base::span<const CharType> chars,
                                  CharType match_character,
                                  string_size_t index) {
-  const size_t length = chars.size();
+  const string_size_t length = base::checked_cast<string_size_t>(chars.size());
   if (!length) {
     return kNotFound;
   }
