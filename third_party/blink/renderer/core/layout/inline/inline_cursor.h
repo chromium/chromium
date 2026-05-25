@@ -7,6 +7,8 @@
 
 #include <unicode/ubidi.h>
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/stack_allocated.h"
@@ -29,10 +31,12 @@ class FragmentItems;
 class InlineBackwardCursor;
 class InlineBreakToken;
 class InlineCursor;
+class InlineItem;
 class InlinePaintContext;
 class LayoutBlockFlow;
 class LayoutInline;
 class LayoutObject;
+class LayoutText;
 class Node;
 class PhysicalBoxFragment;
 class ShapeResultView;
@@ -223,6 +227,13 @@ class CORE_EXPORT InlineCursorPosition {
 
   // True if current position is part of culled inline box |layout_inline|.
   bool IsPartOfCulledInlineBox(const LayoutInline& layout_inline) const;
+
+  // Returns the inline items associated with the given `LayoutText`.
+  // The second element of the pair is true if the items are first-line items,
+  // which are shared among multiple `LayoutText`s and need to be filtered
+  // by the layout object.
+  std::pair<base::span<const Member<InlineItem>>, bool> InlineItemsFor(
+      const LayoutText& layout_text) const;
 
   const FragmentItem* item_ = nullptr;
   ItemsSpan::iterator item_iter_;

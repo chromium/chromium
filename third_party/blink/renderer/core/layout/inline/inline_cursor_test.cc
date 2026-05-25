@@ -163,6 +163,15 @@ TEST_F(InlineCursorTest, BidiLevelSimpleRTL) {
                         "MNO:3", ":1", "jkl:2", ",:1", "123:2"));
 }
 
+TEST_F(InlineCursorTest, BidiLevelFirstLineTextTransform) {
+  InsertStyleElement(
+      "#root { white-space: pre; }"
+      "#root::first-line { text-transform: uppercase; }");
+  InlineCursor cursor = SetupCursor("<div id=root dir=ltr>&szlig;&#9;</div>");
+  Vector<String> list = ToDebugStringListWithBidiLevel(cursor);
+  EXPECT_THAT(list, ElementsAre("#linebox", "SS:0", ":0"));
+}
+
 TEST_F(InlineCursorTest, GetLayoutBlockFlowWithScopedCursor) {
   InlineCursor line = SetupCursor("<div id=root>line1<br>line2</div>");
   ASSERT_TRUE(line.Current().IsLineBox()) << line;

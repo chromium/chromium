@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_SPAN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_INLINE_ITEM_SPAN_H_
 
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_items_data.h"
 
 namespace blink {
@@ -36,6 +37,13 @@ struct InlineItemSpan final {
 
   bool empty() const { return size_ == 0; }
   wtf_size_t size() const { return size_; }
+
+  base::span<const Member<InlineItem>> Items() const {
+    if (empty()) {
+      return {};
+    }
+    return base::span{data_->items}.subspan(begin_, size_);
+  }
 
   InlineItems::const_iterator begin() const {
     return base::span{data_->items}.subspan(begin_, size_).begin();

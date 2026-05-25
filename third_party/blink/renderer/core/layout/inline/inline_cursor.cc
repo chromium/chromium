@@ -8,6 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/html/html_br_element.h"
@@ -15,6 +16,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_span.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/inline/physical_line_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -413,19 +415,24 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
     }
     const auto& layout_text = *To<LayoutText>(GetLayoutObject());
     DCHECK(!layout_text.NeedsLayout()) << this;
-    const auto* const items = layout_text.GetInlineItems();
-    if (!items || items->size() == 0) {
+    const auto [items, check_layout_object] = InlineItemsFor(layout_text);
+    if (items.empty()) {
       // In case of <br>, <wbr>, text-combine-upright, etc.
       return 0;
     }
     const TextOffsetRange offset = TextOffset();
-    const auto item_it = std::ranges::find_if(
-        *items, [offset](const Member<InlineItem>& item_ptr) {
+    const auto item_it =
+        std::ranges::find_if(items, [offset, &layout_text, check_layout_object](
+                                        const Member<InlineItem>& item_ptr) {
           const InlineItem& item = *item_ptr;
+          if (check_layout_object && item.GetLayoutObject() != &layout_text)
+              [[unlikely]] {
+            return false;
+          }
           return item.StartOffset() <= offset.start &&
                  item.EndOffset() >= offset.end;
         });
-    CHECK(item_it != items->end()) << this;
+    CHECK(item_it != items.end()) << this;
     return (*item_it)->BidiLevel();
   }
 
@@ -442,6 +449,26 @@ UBiDiLevel InlineCursorPosition::BidiLevel() const {
   }
 
   NOTREACHED();
+}
+
+std::pair<base::span<const Member<InlineItem>>, bool>
+InlineCursorPosition::InlineItemsFor(const LayoutText& layout_text) const {
+  if (UsesFirstLineStyle() &&
+      RuntimeEnabledFeatures::FirstLineTextTransformEnabled()) [[unlikely]] {
+    if (const LayoutBlockFlow* block_flow =
+            layout_text.FragmentItemsContainer()) {
+      if (const InlineNodeData* node_data = block_flow->GetInlineNodeData()) {
+        if (node_data->HasFirstLineItems()) {
+          return {node_data->ItemsData(true).items, true};
+        }
+      }
+    }
+  }
+  const auto* const items = layout_text.GetInlineItems();
+  if (items && !items->empty()) {
+    return {items->Items(), false};
+  }
+  return {{}, false};
 }
 
 const DisplayItemClient* InlineCursorPosition::GetSelectionDisplayItemClient()
