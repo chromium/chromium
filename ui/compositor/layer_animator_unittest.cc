@@ -3824,4 +3824,55 @@ TEST(LayerAnimatorObserverNotificationOrderTest,
   }
 }
 
+// Regression test for heap-use-after-free in LayerAnimationSequence::Progress.
+class PreemptingDelegate : public TestLayerAnimationDelegate {
+ public:
+  PreemptingDelegate() = default;
+  ~PreemptingDelegate() override = default;
+
+  void set_animator(LayerAnimator* animator) { animator_ = animator; }
+  void Arm() { armed_ = true; }
+
+  void SetBrightnessFromAnimation(float brightness,
+                                  PropertyChangeReason reason) override {
+    TestLayerAnimationDelegate::SetBrightnessFromAnimation(brightness, reason);
+    // Re-enter the animator to stop the sequence and trigger deletion.
+    if (!armed_ || reentered_ ||
+        reason != PropertyChangeReason::FROM_ANIMATION) {
+      return;
+    }
+    reentered_ = true;
+    animator_->StopAnimatingProperty(LayerAnimationElement::BRIGHTNESS);
+  }
+
+ private:
+  raw_ptr<LayerAnimator> animator_ = nullptr;
+  bool armed_ = false;
+  bool reentered_ = false;
+};
+
+TEST(LayerAnimatorTest, ProgressToEndInWhileLoopFreesSequenceUAF) {
+  scoped_refptr<LayerAnimator> animator = CreateDefaultTestAnimator(nullptr);
+  PreemptingDelegate delegate;
+  animator->SetDelegate(&delegate);
+  delegate.set_animator(animator.get());
+
+  // Create a two-element sequence where the first element is finished on
+  // Step().
+  LayerAnimationSequence* seq = new LayerAnimationSequence();
+  seq->AddElement(LayerAnimationElement::CreateBrightnessElement(
+      0.5f, base::Milliseconds(10)));
+  seq->AddElement(LayerAnimationElement::CreateBrightnessElement(
+      1.0f, base::Milliseconds(1000)));
+
+  animator->StartAnimation(seq);
+  ASSERT_TRUE(animator->is_animating());
+
+  base::TimeTicks start_time = animator->last_step_time();
+  delegate.Arm();
+
+  // Step far enough to finish the first element and trigger the UAF path.
+  animator->Step(start_time + base::Milliseconds(50));
+}
+
 }  // namespace ui
