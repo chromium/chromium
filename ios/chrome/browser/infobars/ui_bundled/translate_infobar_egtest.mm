@@ -1013,6 +1013,11 @@ class TestResponseProvider {
 // Test that tapping cancel in the Modal doesn't save changes to source/target
 // languages and doesn't start a Translate
 - (void)testTranslateModalCancel {
+  // TODO(crbug.com/516439940): Re-enable this flaky test on iOS below 26.
+  if (!base::ios::IsRunningOnIOS26OrLater()) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS below 26.");
+  }
+
   // Load a page with French text.
   GURL URL = self.testServer->GetURL(kFrenchPagePath);
   [ChromeEarlGrey loadURL:URL];
