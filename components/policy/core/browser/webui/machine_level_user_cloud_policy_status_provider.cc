@@ -7,11 +7,13 @@
 #include <string>
 
 #include "base/i18n/time_formatting.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/policy/resources/webui/mojom/policy.mojom.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/time_format.h"
 
@@ -43,8 +45,9 @@ MachineLevelUserCloudPolicyStatusProvider::
       extension_install_core_(extension_install_core),
       prefs_(prefs),
       context_(context) {
-  if (core_->store())
+  if (core_->store()) {
     core_->store()->AddObserver(this);
+  }
 
   if (extension_install_core_ && extension_install_core_->store()) {
     extension_install_core_->store()->AddObserver(this);
@@ -53,8 +56,9 @@ MachineLevelUserCloudPolicyStatusProvider::
 
 MachineLevelUserCloudPolicyStatusProvider::
     ~MachineLevelUserCloudPolicyStatusProvider() {
-  if (core_->store())
+  if (core_->store()) {
     core_->store()->RemoveObserver(this);
+  }
   if (extension_install_core_ && extension_install_core_->store()) {
     extension_install_core_->store()->RemoveObserver(this);
   }
@@ -66,11 +70,13 @@ base::DictValue MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
   base::DictValue dict;
   SetPolicyPushAndRefreshStatus(dict, refresh_scheduler);
 
-  if (!context_->enrollmentToken.empty())
+  if (!context_->enrollmentToken.empty()) {
     dict.Set(kEnrollmentTokenKey, context_->enrollmentToken);
+  }
 
-  if (!context_->deviceId.empty())
+  if (!context_->deviceId.empty()) {
     dict.Set(kDeviceIdKey, context_->deviceId);
+  }
 
   CloudPolicyStore* store = core_->store();
   if (store) {
@@ -103,6 +109,51 @@ base::DictValue MachineLevelUserCloudPolicyStatusProvider::GetStatus() {
                                  /*is_extension_install_policy=*/true));
   }
   return dict;
+}
+
+policy::mojom::StatusPtr
+MachineLevelUserCloudPolicyStatusProvider::GetStatusMojo() {
+  CloudPolicyRefreshScheduler* refresh_scheduler = core_->refresh_scheduler();
+
+  policy::mojom::StatusPtr status = policy::mojom::Status::New();
+  if (extension_install_core_ && extension_install_core_->client() != nullptr &&
+      extension_install_core_->client()->HasPolicyTypeToFetch()) {
+    PopulateStatusFromCore(extension_install_core_,
+                           /*is_extension_install_policy=*/true, status);
+  }
+
+  SetPolicyPushAndRefreshStatus(status, refresh_scheduler);
+
+  if (!context_->enrollmentToken.empty()) {
+    status->enrollment_token = context_->enrollmentToken;
+  }
+
+  if (!context_->deviceId.empty()) {
+    status->device_id = context_->deviceId;
+  }
+
+  CloudPolicyStore* store = core_->store();
+  if (store) {
+    status->status =
+        base::UTF16ToUTF8(GetPolicyStatusFromStore(store, core_->client()));
+
+    const enterprise_management::PolicyData* policy = store->policy();
+    if (policy) {
+      status->time_since_last_refresh =
+          base::UTF16ToUTF8(GetTimeSinceLastActionString(
+              refresh_scheduler ? refresh_scheduler->last_refresh()
+                                : base::Time()));
+      status->domain = gaia::ExtractDomainName(policy->username());
+    } else if (store->is_managed()) {
+      status->error = true;
+    }
+  }
+  status->machine = GetMachineName();
+  status->policy_description_key = GetMachineStatusDescriptionKey();
+
+  UpdateLastReportTimestamp(status, prefs_,
+                            context_->lastReportTimestampPrefName);
+  return status;
 }
 
 void MachineLevelUserCloudPolicyStatusProvider::OnStoreLoaded(

@@ -74,8 +74,14 @@ class POLICY_EXPORT PolicyStatusProvider {
   static base::DictValue GetStatusFromCore(
       const CloudPolicyCore* core,
       bool is_extension_install_policy = false);
+  static void PopulateStatusFromCore(const CloudPolicyCore* core,
+                                     bool is_extension_install_policy,
+                                     policy::mojom::StatusPtr& status);
   static base::DictValue GetStatusFromPolicyData(
       const enterprise_management::PolicyData* policy);
+  static void PopulateStatusFromPolicyData(
+      const enterprise_management::PolicyData* policy,
+      policy::mojom::StatusPtr& status);
 
   // Overrides clock in tests. Returned closure removes the override when
   // destroyed.
@@ -100,11 +106,18 @@ class POLICY_EXPORT PolicyStatusProvider {
   static void SetPolicyPushAndRefreshStatus(
       base::DictValue& status,
       const CloudPolicyRefreshScheduler* refresh_scheduler);
+  static void SetPolicyPushAndRefreshStatus(
+      policy::mojom::StatusPtr& status,
+      const CloudPolicyRefreshScheduler* refresh_scheduler);
 
   // Add last report uploaded timestamp into policy `status` dictionary from
   // `prefs`.
   static void UpdateLastReportTimestamp(
       base::DictValue& status,
+      PrefService* prefs,
+      const std::string& report_timestamp_pref_path);
+  static void UpdateLastReportTimestamp(
+      policy::mojom::StatusPtr& status,
       PrefService* prefs,
       const std::string& report_timestamp_pref_path);
 

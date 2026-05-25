@@ -19,6 +19,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -152,6 +153,57 @@ base::DictValue PolicyStatusProvider::GetStatusFromCore(
 }
 
 // static
+void PolicyStatusProvider::PopulateStatusFromCore(
+    const CloudPolicyCore* core,
+    bool is_extension_install_policy,
+    policy::mojom::StatusPtr& status) {
+  const CloudPolicyStore* store = core->store();
+  const CloudPolicyClient* client = core->client();
+  const CloudPolicyRefreshScheduler* refresh_scheduler =
+      core->refresh_scheduler();
+
+  std::string status_str =
+      base::UTF16ToUTF8(GetPolicyStatusFromStore(store, client));
+  const em::PolicyData* policy = store->policy();
+  bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
+                  client->last_dm_status() == DM_STATUS_SUCCESS;
+  base::Time last_refresh_time =
+      policy && policy->has_timestamp()
+          ? base::Time::FromMillisecondsSinceUnixEpoch(policy->timestamp())
+          : base::Time();
+  // In case of ChromeOS device policies, if state keys are supported but not
+  // available, there is no scheduler, see
+  // `DeviceCloudPolicyInitializer::TryToStartConnection` and
+  // `DeviceCloudPolicyManagerAsh::StartConnection`.
+  const base::Time last_fetch_attempted_time =
+      refresh_scheduler ? refresh_scheduler->last_refresh() : base::Time();
+  std::string time_since_last_refresh =
+      base::UTF16ToUTF8(GetTimeSinceLastActionString(last_refresh_time));
+  std::string time_since_last_fetch_attempt = base::UTF16ToUTF8(
+      GetTimeSinceLastActionString(last_fetch_attempted_time));
+
+  if (is_extension_install_policy) {
+    status = policy::mojom::Status::New();
+    status->extension_install_error = !no_error;
+    status->extension_install_status = std::move(status_str);
+    status->extension_install_time_since_last_refresh =
+        std::move(time_since_last_refresh);
+    status->extension_install_time_since_last_fetch_attempt =
+        std::move(time_since_last_fetch_attempt);
+  } else {
+    // Only populate identity and shared status for the main policy core.
+    PopulateStatusFromPolicyData(policy, status);
+    SetPolicyPushAndRefreshStatus(status, refresh_scheduler);
+
+    status->error = !no_error;
+    status->status = std::move(status_str);
+    status->time_since_last_refresh = std::move(time_since_last_refresh);
+    status->time_since_last_fetch_attempt =
+        std::move(time_since_last_fetch_attempt);
+  }
+}
+
+// static
 base::DictValue PolicyStatusProvider::GetStatusFromPolicyData(
     const em::PolicyData* policy) {
   base::DictValue dict;
@@ -181,6 +233,33 @@ base::DictValue PolicyStatusProvider::GetStatusFromPolicyData(
 }
 
 // static
+void PolicyStatusProvider::PopulateStatusFromPolicyData(
+    const em::PolicyData* policy,
+    policy::mojom::StatusPtr& status) {
+  if (!policy) {
+    status->client_id = std::string();
+    status->username = std::string();
+    return;
+  }
+
+  status->client_id = policy->device_id();
+  status->username = policy->username();
+
+  if (policy->has_annotated_asset_id()) {
+    status->asset_id = policy->annotated_asset_id();
+  }
+  if (policy->has_annotated_location()) {
+    status->location = policy->annotated_location();
+  }
+  if (policy->has_directory_api_id()) {
+    status->directory_api_id = policy->directory_api_id();
+  }
+  if (policy->has_gaia_id()) {
+    status->gaia_id = policy->gaia_id();
+  }
+}
+
+// static
 void PolicyStatusProvider::SetPolicyPushAndRefreshStatus(
     base::DictValue& status,
     const CloudPolicyRefreshScheduler* refresh_scheduler) {
@@ -203,6 +282,27 @@ void PolicyStatusProvider::SetPolicyPushAndRefreshStatus(
 }
 
 // static
+void PolicyStatusProvider::SetPolicyPushAndRefreshStatus(
+    policy::mojom::StatusPtr& status,
+    const CloudPolicyRefreshScheduler* refresh_scheduler) {
+  const base::TimeDelta refresh_interval = base::Milliseconds(
+      refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
+                        : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
+
+  const bool is_push_available =
+      refresh_scheduler && refresh_scheduler->invalidations_available();
+
+  status->policies_push_available = is_push_available;
+  // If push is on, policy update will be done via push. Hide policy fetch
+  // interval label to prevent users from misunderstanding.
+  if (!is_push_available) {
+    status->refresh_interval = base::UTF16ToUTF8(
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                               ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  }
+}
+
+// static
 void PolicyStatusProvider::UpdateLastReportTimestamp(
     base::DictValue& status,
     PrefService* prefs,
@@ -215,6 +315,22 @@ void PolicyStatusProvider::UpdateLastReportTimestamp(
                                                       "yyyy-LL-dd HH:mm zzz"));
     status.Set("timeSinceLastCloudReportSent",
                GetTimeSinceLastActionString(last_report_timestamp));
+  }
+}
+
+// static
+void PolicyStatusProvider::UpdateLastReportTimestamp(
+    policy::mojom::StatusPtr& status,
+    PrefService* prefs,
+    const std::string& report_timestamp_pref_path) {
+  if (prefs->HasPrefPath(report_timestamp_pref_path)) {
+    base::Time last_report_timestamp =
+        prefs->GetTime(report_timestamp_pref_path);
+    status->last_cloud_report_sent_timestamp =
+        base::UnlocalizedTimeFormatWithPattern(last_report_timestamp,
+                                               "yyyy-LL-dd HH:mm zzz");
+    status->time_since_last_cloud_report_sent =
+        base::UTF16ToUTF8(GetTimeSinceLastActionString(last_report_timestamp));
   }
 }
 

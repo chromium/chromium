@@ -45,6 +45,7 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStatusProvider
 
   // PolicyStatusProvider implementation.
   base::DictValue GetStatus() override;
+  policy::mojom::StatusPtr GetStatusMojo() override;
 
   // CloudPolicyStore::Observer implementation.
   void OnStoreLoaded(CloudPolicyStore* store) override;
