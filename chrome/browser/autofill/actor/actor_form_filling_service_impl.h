@@ -47,12 +47,9 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
   ~ActorFormFillingServiceImpl() override;
 
   // ActorFormFillingService:
-  void GetSuggestions(
-      const tabs::TabInterface& tab,
-      base::span<const FillRequest> fill_requests,
-      base::OnceCallback<
-          void(base::expected<std::vector<ActorFormFillingRequest>,
-                              ActorFormFillingError>)> callback) override;
+  void GetSuggestions(const tabs::TabInterface& tab,
+                      base::span<const FillRequest> fill_requests,
+                      GetSuggestionsCallback callback) override;
   void FillSuggestions(
       const tabs::TabInterface& tab,
       base::span<const ActorFormFillingSelection> chosen_suggestions,

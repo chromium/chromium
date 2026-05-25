@@ -496,8 +496,7 @@ ActorFormFillingServiceImpl::~ActorFormFillingServiceImpl() = default;
 void ActorFormFillingServiceImpl::GetSuggestions(
     const tabs::TabInterface& tab,
     base::span<const FillRequest> fill_requests,
-    base::OnceCallback<void(base::expected<std::vector<ActorFormFillingRequest>,
-                                           ActorFormFillingError>)> callback) {
+    GetSuggestionsCallback callback) {
   auto callback_with_metrics =
       base::BindOnce(&RecordGetSuggestionsMetrics, base::TimeTicks::Now())
           .Then(std::move(callback));

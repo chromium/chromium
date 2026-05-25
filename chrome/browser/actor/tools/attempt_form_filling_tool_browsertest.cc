@@ -974,7 +974,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, SectionLabelIsPropagated) {
           [&](const tabs::TabInterface&,
               base::span<const autofill::ActorFormFillingService::FillRequest>
                   requests,
-              auto callback) {
+              autofill::ActorFormFillingService::GetSuggestionsCallback
+                  callback) {
             // Return a response that also has the label.
             autofill::ActorFormFillingRequest response;
             response.requested_data = RequestedData::kAddress;

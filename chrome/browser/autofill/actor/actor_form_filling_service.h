@@ -65,12 +65,12 @@ class ActorFormFillingService {
   // The returned suggestions are expected to be shown to the user in a UX,
   // from which the user will make selections (one per fill request). The
   // selected suggestions should subsequently be passed to FillSuggestions().
-  virtual void GetSuggestions(
-      const tabs::TabInterface& tab,
-      base::span<const FillRequest> fill_requests,
-      base::OnceCallback<
-          void(base::expected<std::vector<ActorFormFillingRequest>,
-                              ActorFormFillingError>)> callback) = 0;
+  using GetSuggestionsCallback = base::OnceCallback<void(
+      base::expected<std::vector<ActorFormFillingRequest>,
+                     ActorFormFillingError>)>;
+  virtual void GetSuggestions(const tabs::TabInterface& tab,
+                              base::span<const FillRequest> fill_requests,
+                              GetSuggestionsCallback callback) = 0;
 
   // Attempts to fill the `chosen_suggestions` into their corresponding form
   // sections. The suggestions must have been obtained from a prior call to

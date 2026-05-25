@@ -23,9 +23,7 @@ class MockActorFormFillingService : public ActorFormFillingService {
               GetSuggestions,
               (const tabs::TabInterface& tab,
                base::span<const FillRequest> fill_requests,
-               base::OnceCallback<
-                   void(base::expected<std::vector<ActorFormFillingRequest>,
-                                       ActorFormFillingError>)>),
+               GetSuggestionsCallback callback),
               (override));
 
   MOCK_METHOD(
