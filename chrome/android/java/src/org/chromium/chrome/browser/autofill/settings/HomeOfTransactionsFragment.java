@@ -106,13 +106,13 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                                         getActivity(), /* addToBackStack= */ true));
 
         Preference identityDocsPref = findPreference(PREF_AUTOFILL_IDENTITY_DOCS);
-        identityDocsPref.setVisible(shouldShowIdentityDocs());
+        identityDocsPref.setVisible(shouldShowAutofillAiSettings());
         identityDocsPref.setOnPreferenceClickListener(
                 preference ->
                         SettingsNavigationHelper.showAutofillIdentityDocsSettings(getActivity()));
 
         Preference travelPref = findPreference(PREF_AUTOFILL_TRAVEL);
-        travelPref.setVisible(shouldShowTravel());
+        travelPref.setVisible(shouldShowAutofillAiSettings());
         travelPref.setOnPreferenceClickListener(
                 preference -> SettingsNavigationHelper.showAutofillTravelSettings(getActivity()));
 
@@ -206,14 +206,6 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
         return AnimationType.PROPERTY;
     }
 
-    private static boolean shouldShowIdentityDocs() {
-        return shouldShowAutofillAiSettings();
-    }
-
-    private static boolean shouldShowTravel() {
-        return shouldShowAutofillAiSettings();
-    }
-
     private static boolean shouldShowAutofillAiSettings() {
         return ChromeFeatureList.isEnabled(YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID)
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA);
@@ -265,10 +257,8 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_IDENTITY_DOCS));
                         indexData.removeEntry(getUniqueId(PREF_AUTOFILL_TRAVEL));
                     } else {
-                        if (!shouldShowIdentityDocs()) {
+                        if (!shouldShowAutofillAiSettings()) {
                             indexData.removeEntry(getUniqueId(PREF_AUTOFILL_IDENTITY_DOCS));
-                        }
-                        if (!shouldShowTravel()) {
                             indexData.removeEntry(getUniqueId(PREF_AUTOFILL_TRAVEL));
                         }
                     }
