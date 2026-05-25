@@ -174,7 +174,8 @@ void KeyUploadClientImpl::GetRequest(
   }
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       base::BindOnce(CreateRequest, std::move(private_key), create_certificate),
       std::move(callback));
 }
