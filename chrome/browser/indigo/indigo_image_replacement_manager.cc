@@ -82,6 +82,7 @@ void IndigoImageReplacementManager::ResetAllReplacements() {
   receivers_.Clear();
   primary_registered_ = false;
   generated_image_url_ = GURL();
+  primary_bounds_ = gfx::Rect();
 }
 
 void IndigoImageReplacementManager::ReplacementFrameAttached(
@@ -151,13 +152,7 @@ void IndigoImageReplacementManager::ReplacementFrameAttached(
     return;
   }
 
-  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
-    // TODO(b/493707092): The controls should show up when the transformation
-    // completes, rather than when it starts.
-    if (auto* controller = indigo::IndigoPageActionController::From(tab)) {
-      controller->ShowToolbarInside(bounds_rect);
-    }
-  }
+  primary_bounds_ = bounds_rect;
 
   // Generate a new image based on the original image bytes.
   Profile* profile =
@@ -200,6 +195,16 @@ void IndigoImageReplacementManager::OnReplacementImageGenerated(
 
   for (auto& [_, image_replacement] : receivers_.GetAllContexts()) {
     image_replacement->ReplacementImageURLReady();
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&page().GetMainDocument());
+  if (auto* tab = tabs::TabInterface::GetFromContents(web_contents)) {
+    if (auto* controller = indigo::IndigoPageActionController::From(tab)) {
+      if (!primary_bounds_.IsEmpty()) {
+        controller->ShowToolbarInside(primary_bounds_);
+      }
+    }
   }
 }
 

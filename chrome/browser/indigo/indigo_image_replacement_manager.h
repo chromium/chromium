@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/image_replacement/image_replacement.mojom.h"
 #include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -74,6 +75,8 @@ class IndigoImageReplacementManager
       receivers_;
   bool primary_registered_ = false;
   GURL generated_image_url_;
+  // TODO(b/513370913): Remove this when bounds are no longer needed here.
+  gfx::Rect primary_bounds_;
   base::WeakPtrFactory<IndigoImageReplacementManager> weak_ptr_factory_{this};
 };
 
