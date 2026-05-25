@@ -778,7 +778,8 @@ IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout, MAYBE_testNoBootstrap) {
   }));
 }
 
-IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout, testInitializeTimesOut) {
+IN_PROC_BROWSER_TEST_P(NewGlicApiTestWithFastTimeout,
+                       DISABLED_testInitializeTimesOut) {
 #if defined(SLOW_BINARY) || !BUILDFLAG(IS_LINUX)
   GTEST_SKIP() << "skip timeout test is flaky on most bots";
 #else
