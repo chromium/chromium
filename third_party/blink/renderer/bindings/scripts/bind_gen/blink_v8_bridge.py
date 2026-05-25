@@ -443,7 +443,7 @@ def native_value_tag(idl_type, argument=None, apply_optional_to_last_arg=True):
     return _native_value_tag_impl(idl_type, argument)
 
 
-def _pass_as_span_conversion_arguments(idl_type, support_reentry):
+def _pass_as_span_conversion_arguments(idl_type):
     real_type = idl_type.unwrap(typedef=True)
     types = real_type.flattened_member_types if real_type.is_union else [
         real_type
@@ -481,8 +481,9 @@ def _pass_as_span_conversion_arguments(idl_type, support_reentry):
         "AllowShared" in t.effective_annotations for t in types)
     if allow_shared:
         flags.append("PassAsSpanMarkerBase::Flags::kAllowShared")
-    if support_reentry:
-        flags.append("PassAsSpanMarkerBase::Flags::kSupportReentry")
+    # The actual value should be defined in the operation callback body according
+    # to the needs of the particular operation.
+    flags.append("${kPerformDetachCheckFlag}")
 
     return [
         " | ".join(flags) or "PassAsSpanMarkerBase::Flags::kNone", native_type
@@ -501,11 +502,7 @@ def _native_value_tag_impl(idl_type, argument=None):
 
     if "PassAsSpan" in idl_type.effective_annotations:
         assert argument, "PassAsSpan can only appear on an argument"
-        # TODO(caseq): This works for now. Refine this to check no args
-        # involving JS calls (strings, dicts) is passed after this one.
-        support_reentry = "NoAllocDirectCall" not in argument.owner.extended_attributes
-        conversion_arguments = _pass_as_span_conversion_arguments(
-            idl_type, support_reentry)
+        conversion_arguments = _pass_as_span_conversion_arguments(idl_type)
         return "PassAsSpan<{}>".format(", ".join(conversion_arguments))
 
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string

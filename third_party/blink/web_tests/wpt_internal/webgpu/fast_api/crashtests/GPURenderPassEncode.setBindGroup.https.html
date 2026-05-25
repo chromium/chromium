@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  const adapter = await navigator.gpu.requestAdapter();
+  assert_true(adapter instanceof GPUAdapter, 'Failed to request WebGPU adapter');
+  const device = await adapter.requestDevice();
+  assert_true(device instanceof GPUDevice, 'Failed to request WebGPU device');
+  const buf = device.createBuffer({size: 256, usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST});
+  const bgl = device.createBindGroupLayout({
+    entries: [{binding: 0, visibility: GPUShaderStage.COMPUTE, buffer: {type: 'uniform', hasDynamicOffset: true}}]
+  });
+  const bg = device.createBindGroup({layout: bgl, entries: [{binding: 0, resource: {buffer: buf, offset: 0, size: 256}}]});
+
+  let arrayBuffer = new ArrayBuffer(4, {maxByteLength: 4});
+  let offsets = new Uint32Array(arrayBuffer);
+
+  const startObj = {
+    valueOf() {
+      arrayBuffer.transfer(0);
+      return 0;
+    }
+  };
+
+  const encoder = device.createCommandEncoder();
+  const pass = encoder.beginComputePass();
+
+  assert_throws_js(RangeError, () => pass.setBindGroup(0, bg, offsets, startObj, 1));
+})
+</script>
+</body>
+</html>
