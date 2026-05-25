@@ -1203,8 +1203,10 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   scoped_refptr<ServiceWorkerRegistration> registration =
       context_->GetLiveRegistration(data.registration_id);
-  if (registration)
+  if (registration) {
+    CHECK_EQ(registration->key(), data.key);
     return registration;
+  }
 
   blink::mojom::ServiceWorkerRegistrationOptions options(
       data.scope, data.script_type, data.update_via_cache);
@@ -1218,7 +1220,9 @@ ServiceWorkerRegistry::GetOrCreateRegistration(
 
   scoped_refptr<ServiceWorkerVersion> version =
       context_->GetLiveVersion(data.version_id);
-  if (!version) {
+  if (version) {
+    CHECK_EQ(version->key(), data.key);
+  } else {
     version = base::MakeRefCounted<ServiceWorkerVersion>(
         registration.get(), data.script, data.script_type, data.version_id,
         std::move(version_reference), context_->AsWeakPtr());

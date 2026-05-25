@@ -558,7 +558,11 @@ GetOrCreateSyntheticRegistration(const GURL& client_url,
   data->script = kScript;
   data->script_type = blink::mojom::ScriptType::kModule;
   data->update_via_cache = blink::mojom::ServiceWorkerUpdateViaCache::kNone;
-  data->version_id = blink::mojom::kSyntheticResponseServiceWorkerVersionId;
+  // Use `registration_id` as `version_id` to ensure each distinct StorageKey
+  // gets its own unique ServiceWorkerVersion instance in memory, avoiding
+  // cross-origin collisions in ServiceWorkerContextCore::live_versions_
+  // (crbug.com/513205374).
+  data->version_id = registration_id;
   data->is_active = true;
   data->fetch_handler_type =
       blink::mojom::ServiceWorkerFetchHandlerType::kNoHandler;

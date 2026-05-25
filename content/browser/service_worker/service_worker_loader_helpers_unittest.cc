@@ -349,6 +349,10 @@ TEST(ServiceWorkerLoaderHelpersTest, SyntheticResponseRegistrationCollision) {
   ASSERT_TRUE(resultA_again->registration);
   EXPECT_EQ(resultA->registration->registration_id,
             resultA_again->registration->registration_id);
+  EXPECT_EQ(resultA->registration->version_id,
+            resultA_again->registration->version_id);
+  EXPECT_EQ(resultA->registration->registration_id,
+            resultA->registration->version_id);
 
   // It should automatically get a different ID for a different key.
   const GURL kClientUrlB("https://b.test/search?q=test");
@@ -361,6 +365,10 @@ TEST(ServiceWorkerLoaderHelpersTest, SyntheticResponseRegistrationCollision) {
   // They should have different IDs.
   EXPECT_NE(resultA->registration->registration_id,
             resultB->registration->registration_id);
+  EXPECT_NE(resultA->registration->version_id,
+            resultB->registration->version_id);
+  EXPECT_EQ(resultB->registration->registration_id,
+            resultB->registration->version_id);
 }
 
 class ServiceWorkerLoaderHelpersSyntheticResponseTest
