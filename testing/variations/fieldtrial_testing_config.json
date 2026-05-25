@@ -26091,6 +26091,23 @@
             ]
         }
     ],
+    "WebUIToolbarProcessOverheadStudy": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Control_20260518",
+                    "disable_features": [
+                        "WebUIToolbarProcessOverheadExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebViewBackgroundClassPreloading": [
         {
             "platforms": [
