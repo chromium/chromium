@@ -556,9 +556,11 @@ class CONTENT_EXPORT MediaStreamManager
   void StopDevice(blink::mojom::MediaStreamType type,
                   const base::UnguessableToken& session_id);
 
-  // Used by the native screen capture picker to stop audio for a specific
-  // session ID.
-  void StopAudioForPickerSessionId(DesktopMediaID::Id picker_session_id);
+  // Used by the native screen capture picker to stop application-audio for a
+  // specific session ID. Note: this only affects application audio; if
+  // system-audio is captured, it will not be stopped.
+  void StopApplicationAudioForPickerSessionId(
+      DesktopMediaID::Id picker_session_id);
 
   // Calls the correct capture manager and closes the device with |session_id|.
   // All requests that use the device are updated.

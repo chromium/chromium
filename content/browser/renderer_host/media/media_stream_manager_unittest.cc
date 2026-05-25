@@ -2265,8 +2265,8 @@ TEST_F(MediaStreamManagerTest,
   // 1. Define controls that request both audio and video.
   blink::StreamControls controls(/*request_audio=*/true,
                                  /*request_video=*/true);
-  controls.video.stream_type = MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
-  controls.audio.stream_type = MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE;
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  controls.audio.stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
 
   base::test::TestFuture<const std::string&, const blink::MediaStreamDevice&>
       audio_stopped_future;
@@ -2297,17 +2297,20 @@ TEST_F(MediaStreamManagerTest,
           });
 
   media_stream_manager_->OpenNativeScreenCapturePicker(
-      DesktopMediaID::TYPE_SCREEN, base::DoNothing(), base::DoNothing(),
+      DesktopMediaID::TYPE_WINDOW, base::DoNothing(), base::DoNothing(),
       base::DoNothing(), base::DoNothing());
 
   ASSERT_TRUE(stop_audio_for_picker_session_id_callback);
 
   // 4. Simulate device selection.
   const DesktopMediaID::Id kSessionId = 42;
-  DesktopMediaID media_id(DesktopMediaID::TYPE_SCREEN, kSessionId);
+  DesktopMediaID media_id(DesktopMediaID::TYPE_WINDOW, kSessionId);
 
   SetOpeningState(0, controls);
-  SimulateSelection(label, controls, media_id);
+  SimulateSelection(
+      label, controls, media_id,
+      base::StrCat({media::AudioDeviceDescription::kApplicationLoopbackDeviceId,
+                    ":", base::NumberToString(kSessionId)}));
 
   ASSERT_EQ(media_stream_manager_->GetDevicesOpenedByRequest(label).size(), 2u);
 
@@ -2318,10 +2321,81 @@ TEST_F(MediaStreamManagerTest,
   // 6. Verify the audio device was stopped.
   auto [stopped_label, stopped_device] = audio_stopped_future.Take();
   EXPECT_EQ(stopped_label, label);
-  EXPECT_EQ(stopped_device.type, MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE);
+  EXPECT_EQ(stopped_device.type, MediaStreamType::DISPLAY_AUDIO_CAPTURE);
 
   // 7. Verify the request now only contains the video device.
   EXPECT_EQ(media_stream_manager_->GetDevicesOpenedByRequest(label).size(), 1u);
+
+  media_stream_manager_->CancelRequest(label);
+}
+
+TEST_F(MediaStreamManagerTest,
+       OpenNativeScreenCapturePicker_StopAudioCallbackDoesNotStopSystemAudio) {
+  // 1. Define controls that request both audio and video.
+  blink::StreamControls controls(/*request_audio=*/true,
+                                 /*request_video=*/true);
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  controls.audio.stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+
+  bool stop_audio_called = false;
+  EXPECT_CALL(*media_observer_, OnMediaRequestStateChanged(_, _, _, _, _, _))
+      .Times(testing::AnyNumber());
+
+  // 2. Initiate request and wait for approval.
+  std::string label = GenerateStreamsAndWaitForApproval(
+      controls,
+      base::BindLambdaForTesting([&](const std::string& label,
+                                     const blink::MediaStreamDevice& device) {
+        stop_audio_called = true;
+      }));
+
+  // 3. Mock picker behavior and capture the stop callback.
+  base::OnceCallback<void(DesktopMediaID::Id)>
+      stop_audio_for_picker_session_id_callback;
+  EXPECT_CALL(*video_capture_provider_,
+              OpenNativeScreenCapturePicker(_, _, _, _, _, _))
+      .WillOnce(
+          [&](DesktopMediaID::Type type,
+              base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
+              base::OnceCallback<void(webrtc::DesktopCapturer::Source)>
+                  picker_callback,
+              base::OnceCallback<void()> cancel_callback,
+              base::OnceCallback<void()> error_callback,
+              base::OnceCallback<void(DesktopMediaID::Id)>
+                  stop_audio_for_picker_session_id_cb) {
+            stop_audio_for_picker_session_id_callback =
+                std::move(stop_audio_for_picker_session_id_cb);
+          });
+
+  media_stream_manager_->OpenNativeScreenCapturePicker(
+      DesktopMediaID::TYPE_WINDOW, base::DoNothing(), base::DoNothing(),
+      base::DoNothing(), base::DoNothing());
+
+  ASSERT_TRUE(stop_audio_for_picker_session_id_callback);
+
+  // 4. Simulate device selection.
+  const DesktopMediaID::Id kSessionId = 42;
+  DesktopMediaID media_id(DesktopMediaID::TYPE_WINDOW, kSessionId);
+
+  SetOpeningState(0, controls);
+  // Pass standard loopback audio ID to simulate system audio capture.
+  SimulateSelection(label, controls, media_id,
+                    media::AudioDeviceDescription::kLoopbackInputDeviceId);
+
+  ASSERT_EQ(media_stream_manager_->GetDevicesOpenedByRequest(label).size(), 2u);
+
+  // 5. Execute the stop_audio_for_picker_session_id_callback with the matching
+  // session ID.
+  std::move(stop_audio_for_picker_session_id_callback).Run(kSessionId);
+
+  // Flush tasks to verify callback execution on the IO thread.
+  base::RunLoop run_loop;
+  GetIOThreadTaskRunner({})->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  // 6. Verify the audio device was NOT stopped.
+  EXPECT_FALSE(stop_audio_called);
+  EXPECT_EQ(media_stream_manager_->GetDevicesOpenedByRequest(label).size(), 2u);
 
   media_stream_manager_->CancelRequest(label);
 }

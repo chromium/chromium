@@ -4228,8 +4228,9 @@ void MediaStreamManager::OpenNativeScreenCapturePicker(
   base::OnceCallback<void(DesktopMediaID::Id)> stop_audio_callback =
       base::BindPostTask(
           GetIOThreadTaskRunner({}),
-          base::BindOnce(&MediaStreamManager::StopAudioForPickerSessionId,
-                         weak_ptr_factory_.GetWeakPtr()));
+          base::BindOnce(
+              &MediaStreamManager::StopApplicationAudioForPickerSessionId,
+              weak_ptr_factory_.GetWeakPtr()));
 
   video_capture_manager()->OpenNativeScreenCapturePicker(
       type, std::move(created_callback), std::move(picker_callback),
@@ -4237,7 +4238,7 @@ void MediaStreamManager::OpenNativeScreenCapturePicker(
       std::move(stop_audio_callback));
 }
 
-void MediaStreamManager::StopAudioForPickerSessionId(
+void MediaStreamManager::StopApplicationAudioForPickerSessionId(
     DesktopMediaID::Id picker_session_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -4249,7 +4250,10 @@ void MediaStreamManager::StopAudioForPickerSessionId(
               stream_devices_ptr->video_device->type) &&
           DesktopMediaID::Parse(stream_devices_ptr->video_device->id).id ==
               picker_session_id) {
-        if (stream_devices_ptr->audio_device.has_value()) {
+        if (stream_devices_ptr->audio_device.has_value() &&
+            request->audio_raw_id().has_value() &&
+            media::AudioDeviceDescription::IsApplicationLoopbackDevice(
+                *request->audio_raw_id())) {
           StopDevice(stream_devices_ptr->audio_device->type,
                      stream_devices_ptr->audio_device->session_id());
         }
