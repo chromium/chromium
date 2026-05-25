@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -229,12 +230,23 @@ TEST_F(InsertTextCommandTest, NoVisibleSelectionAfterDeletingSelection) {
   // Shouldn't crash inside
   GetDocument().execCommand("insertText", false, "x", ASSERT_NO_EXCEPTION);
   // This is only for recording the current behavior, which can be changed.
-  EXPECT_EQ(
-      "<div contenteditable>"
-      "  <ruby><strike>x|<navi></navi>"
-      "    </strike></ruby>"
-      "</div>",
-      GetSelectionTextFromBody());
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    // Without MostBackwardCaretPosition canonicalization, the insertion point
+    // stays at the <ruby> level instead of descending into <strike>.
+    EXPECT_EQ(
+        "<div contenteditable>"
+        "  <ruby>x|<strike><navi></navi>"
+        "    </strike></ruby>"
+        "</div>",
+        GetSelectionTextFromBody());
+  } else {
+    EXPECT_EQ(
+        "<div contenteditable>"
+        "  <ruby><strike>x|<navi></navi>"
+        "    </strike></ruby>"
+        "</div>",
+        GetSelectionTextFromBody());
+  }
 }
 
 // http://crbug.com/778901

@@ -215,12 +215,17 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
             : EndingVisibleSelection().IsNone());
   }
 
-  Position start_position(EndingVisibleSelection().Start());
+  Position start_position(
+      RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()
+          ? EndingSelection().Start()
+          : EndingVisibleSelection().Start());
 
   Position placeholder = ComputePlaceholderToCollapseAt(start_position);
 
   // Insert the character at the leftmost candidate.
-  start_position = MostBackwardCaretPosition(start_position);
+  if (!RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    start_position = MostBackwardCaretPosition(start_position);
+  }
 
   // It is possible for the node that contains startPosition to contain only
   // unrendered whitespace, and so deleteInsignificantText could remove it.
@@ -228,8 +233,21 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
   DCHECK(start_position.ComputeContainerNode()) << start_position;
   Position position_before_start_node(
       Position::InParentBeforeNode(*start_position.ComputeContainerNode()));
-  DeleteInsignificantText(start_position,
-                          MostForwardCaretPosition(start_position));
+  if (RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    // Sweep unrendered whitespace on both sides of the caret without
+    // canonicalizing start_position. MostBackward/MostForward only define
+    // the cleanup range; RelocatablePosition recovers start_position after
+    // deletions so the user's insertion point is preserved.
+    Position cleanup_start = MostBackwardCaretPosition(start_position);
+    Position cleanup_end = MostForwardCaretPosition(start_position);
+    auto* relocatable_start =
+        MakeGarbageCollected<RelocatablePosition>(start_position);
+    DeleteInsignificantText(cleanup_start, cleanup_end);
+    start_position = relocatable_start->GetPosition();
+  } else {
+    DeleteInsignificantText(start_position,
+                            MostForwardCaretPosition(start_position));
+  }
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout()
   // needs to be audited.  See http://crbug.com/590369 for more details.
@@ -237,8 +255,11 @@ void InsertTextCommand::DoApply(EditingState* editing_state) {
 
   if (!start_position.IsConnected())
     start_position = position_before_start_node;
-  if (!IsVisuallyEquivalentCandidate(start_position))
-    start_position = MostForwardCaretPosition(start_position);
+  if (!RuntimeEnabledFeatures::EditingUseDomPositionApiEnabled()) {
+    if (!IsVisuallyEquivalentCandidate(start_position)) {
+      start_position = MostForwardCaretPosition(start_position);
+    }
+  }
 
   start_position =
       PositionAvoidingSpecialElementBoundary(start_position, editing_state);
