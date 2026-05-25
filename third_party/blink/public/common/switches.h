@@ -66,6 +66,8 @@ BLINK_COMMON_EXPORT extern const char kDisableStandardizedBrowserZoom[];
 BLINK_COMMON_EXPORT extern const char kWebAudioBypassOutputBufferingOptOut[];
 BLINK_COMMON_EXPORT extern const char kDisableReduceAcceptLanguage[];
 BLINK_COMMON_EXPORT extern const char kXSLTEnabledPolicy[];
+BLINK_COMMON_EXPORT extern const char
+    kRestrictBackgroundFetchFromServiceWorker[];
 }  // namespace switches
 }  // namespace blink
 

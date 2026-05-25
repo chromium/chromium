@@ -202,6 +202,11 @@ inline constexpr char kXSLTEnabled[] = "policy.xslt_enabled";
 inline constexpr char kCSSCustomStateDeprecatedSyntaxEnabled[] =
     "policy.css_custom_state_deprecated_syntax_enabled";
 
+// A boolean pref indicating whether the background fetch restriction is enabled
+// when called from a service worker context.
+inline constexpr char kRestrictBackgroundFetchFromServiceWorkerEnabled[] =
+    "policy.restrict_background_fetch_from_service_worker_enabled";
+
 // A boolean pref indicating whether the new HTML parser for the <select>
 // element is enabled. When enabled, the HTML parser allows more tags to be used
 // inside <select> instead of removing them.

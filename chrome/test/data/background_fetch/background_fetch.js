@@ -190,6 +190,16 @@ function StartFetchFromServiceWorker() {
     .then(filterMessage);
 }
 
+function StartFetchFromServiceWorkerResolve() {
+  const onMessagePromise = new Promise(resolve => {
+    navigator.serviceWorker.addEventListener('message', resolve);
+  });
+  return navigator.serviceWorker.ready
+    .then(reg => reg.active.postMessage('fetch_resolves'))
+    .then(() => onMessagePromise)
+    .then(event => event.data);
+}
+
 function StartFetchFromServiceWorkerNoWait() {
   navigator.serviceWorker.ready.then(
     reg => reg.active.postMessage('fetchnowait'));

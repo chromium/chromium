@@ -19,7 +19,14 @@ self.addEventListener('message', e => {
   if (e.data === 'fetchnowait')
     postToWindowClients('ok');
   else if (e.data === 'fetch')
-    fetchPromise.catch(e => postToWindowClients('permissionerror'));
+    fetchPromise.catch(e => {
+      postToWindowClients('permissionerror');
+    });
+  else if (e.data === 'fetch_resolves')
+    fetchPromise.then(() => postToWindowClients('resolved'))
+                .catch(e => {
+                  postToWindowClients(e.name);
+                });
   else
     postToWindowClients('unexpected message');
 });
