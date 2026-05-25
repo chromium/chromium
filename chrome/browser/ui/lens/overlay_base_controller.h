@@ -181,6 +181,12 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // exist.
   void SetOverlayWebViewOpacity(float opacity);
 
+  // Detaches the overlay views and takes ownership to preserve state.
+  void PreserveOverlayViews();
+
+  // Returns the host view that the overlay should be attached to. Can be null.
+  views::View* GetHostView() const;
+
  protected:
   // Whether the side panel is showing.
   virtual bool IsResultsSidePanelShowing() = 0;
@@ -209,7 +215,7 @@ class OverlayBaseController : public content::WebContentsDelegate,
   virtual int GetToolResourceId() = 0;
 
   // Return the ID of the view we attach this overlay to.
-  virtual ui::ElementIdentifier GetViewContainerId() = 0;
+  virtual ui::ElementIdentifier GetViewContainerId() const = 0;
 
   // The side panel type.
   virtual SidePanelType GetSidePanelType() = 0;
@@ -424,7 +430,7 @@ class OverlayBaseController : public content::WebContentsDelegate,
 
  private:
   // The anchor view to the preselection bubble. This anchor is an invisible
-  // sibling of the the `overlay_view_`, user to always keep the preselection
+  // sibling of the `overlay_view_`, user to always keep the preselection
   // bubble anchored to the top of the screen, while also maintaining focus
   // order.
   raw_ptr<views::View> preselection_widget_anchor_;
@@ -433,6 +439,12 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Used to observe the immersive mode pref on Mac, and the side panel
   // horizontal alignment pref.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Only used for the tab-scoped overlays. Holds the raw_ptr counterparts when
+  // the tab is backgrounded or hidden, preserving state.
+  std::unique_ptr<views::View> owned_preselection_widget_anchor_;
+  std::unique_ptr<views::View> owned_promo_anchor_;
+  std::unique_ptr<views::WebView> owned_overlay_web_view_;
 
   // --------------------Browser window scoped state: END---------------------
   // Must be the last member.

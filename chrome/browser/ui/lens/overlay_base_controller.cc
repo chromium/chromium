@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/pref_names.h"
@@ -78,6 +79,11 @@ OverlayBaseController::~OverlayBaseController() {
   if (overlay_web_view_) {
     // Remove render frame observer.
     overlay_web_view_->GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->RemoveObserver(this);
+  } else if (owned_overlay_web_view_) {
+    owned_overlay_web_view_->GetWebContents()
         ->GetPrimaryMainFrame()
         ->GetProcess()
         ->RemoveObserver(this);
@@ -217,23 +223,29 @@ void OverlayBaseController::RenderProcessExited(
 }
 
 raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
-  views::View* host_view = nullptr;
-
-  // For split views, we may use ContentsContainerViews to look up the ID.
-  if (!IsOverlayViewShared()) {
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(
-        tab_->GetBrowserWindowInterface());
-    if (browser_view) {
-      auto* contents_container =
-          browser_view->GetContentsContainerViewFor(tab_->GetContents());
-      host_view = contents_container->GetViewByElementId(GetViewContainerId());
-    }
-  } else {
-    // Grab the host view for the overlay which is owned by the browser view.
-    host_view = BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
-                    ->GetView(GetViewContainerId());
-  }
+  views::View* host_view = GetHostView();
   CHECK(host_view);
+
+  if (owned_overlay_web_view_) {
+    CHECK(owned_promo_anchor_);
+    CHECK(owned_preselection_widget_anchor_);
+    CHECK_EQ(state_, State::kBackground);
+    CHECK(!IsOverlayViewShared());
+
+    preselection_widget_anchor_ =
+        host_view->AddChildView(std::move(owned_preselection_widget_anchor_));
+    promo_anchor_ = host_view->AddChildView(std::move(owned_promo_anchor_));
+    overlay_web_view_ =
+        host_view->AddChildView(std::move(owned_overlay_web_view_));
+
+    preselection_widget_anchor_->SetVisible(true);
+    promo_anchor_->SetVisible(true);
+    overlay_web_view_->SetVisible(true);
+
+    host_view->InvalidateLayout();
+
+    return host_view;
+  }
 
   // Setup a preselection anchor view. Usually bubbles are anchored to top
   // chrome, but top chrome is not always visible when our overlay is visible.
@@ -278,6 +290,13 @@ raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
   web_view->LoadInitialURL(GetInitialURL());
 
   overlay_web_view_ = host_view->AddChildView(std::move(web_view));
+
+  // Listen to the render process housing out overlay.
+  overlay_web_view_->GetWebContents()
+      ->GetPrimaryMainFrame()
+      ->GetProcess()
+      ->AddObserver(this);
+
   return host_view;
 }
 
@@ -387,6 +406,52 @@ void OverlayBaseController::SetOverlayWebViewOpacity(float opacity) {
   }
 }
 
+void OverlayBaseController::PreserveOverlayViews() {
+  CHECK(overlay_view_);
+  overlay_view_->SetVisible(false);
+  if (preselection_widget_anchor_) {
+    owned_preselection_widget_anchor_ =
+        overlay_view_->RemoveChildViewT(preselection_widget_anchor_);
+    preselection_widget_anchor_ = nullptr;
+  }
+  if (promo_anchor_) {
+    owned_promo_anchor_ = overlay_view_->RemoveChildViewT(promo_anchor_);
+    promo_anchor_ = nullptr;
+  }
+  if (overlay_web_view_) {
+    owned_overlay_web_view_ =
+        overlay_view_->RemoveChildViewT(overlay_web_view_);
+    overlay_web_view_ = nullptr;
+  }
+  tab_contents_view_observer_.Reset();
+  overlay_view_->InvalidateLayout();
+  overlay_view_ = nullptr;
+}
+
+// This is non-virtual because some subclass cannot depend on chrome UI code
+// (circular dependencies).
+views::View* OverlayBaseController::GetHostView() const {
+  views::View* host_view = nullptr;
+  // For tab-scoped overlay, we may use ContentsContainerViews to look up the
+  // ID.
+  if (!IsOverlayViewShared()) {
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(
+        tab_->GetBrowserWindowInterface());
+    if (browser_view) {
+      if (auto* contents_container =
+              browser_view->GetContentsContainerViewFor(tab_->GetContents())) {
+        host_view =
+            contents_container->GetViewByElementId(GetViewContainerId());
+      }
+    }
+  } else {
+    // Grab the host view for the overlay which is owned by the browser view.
+    host_view = BrowserElementsViews::From(tab_->GetBrowserWindowInterface())
+                    ->GetView(GetViewContainerId());
+  }
+  return host_view;
+}
+
 void OverlayBaseController::TriggerOverlayFadeOutAnimation(
     base::OnceClosure callback) {
   if (state_ == State::kOff || IsOverlayClosing()) {
@@ -482,6 +547,12 @@ void OverlayBaseController::TabWillEnterBackground(tabs::TabInterface* tab) {
     // If the overlay UI is showing, hide it.
     if (should_hide && overlay_web_view_ && overlay_web_view_->GetVisible()) {
       HideOverlay();
+      if (!IsOverlayViewShared()) {
+        // Preserve the overlay view and other visual elements for the
+        // tab-scoped overlay. These preserve views will be re-attached to a
+        // different ContentsViewContainer when re-shown.
+        PreserveOverlayViews();
+      }
     }
 
     state_ = State::kBackground;
@@ -652,12 +723,6 @@ void OverlayBaseController::ShowOverlay() {
   // the contents web view to another Chrome UI element before the overlay can
   // take focus.
   contents_web_view->SetEnabled(false);
-
-  // Listen to the render process housing out overlay.
-  overlay_web_view_->GetWebContents()
-      ->GetPrimaryMainFrame()
-      ->GetProcess()
-      ->AddObserver(this);
 }
 
 void OverlayBaseController::HideOverlay() {
@@ -744,7 +809,16 @@ void OverlayBaseController::CloseUI() {
         ->GetPrimaryMainFrame()
         ->GetProcess()
         ->RemoveObserver(this);
+  } else if (owned_overlay_web_view_) {
+    owned_overlay_web_view_->GetWebContents()
+        ->GetPrimaryMainFrame()
+        ->GetProcess()
+        ->RemoveObserver(this);
   }
+
+  owned_preselection_widget_anchor_.reset();
+  owned_promo_anchor_.reset();
+  owned_overlay_web_view_.reset();
 
   tab_contents_view_observer_.Reset();
   scoped_tab_modal_ui_.reset();
@@ -800,12 +874,19 @@ void OverlayBaseController::HideOverlayAndSetHiddenState() {
 }
 
 void OverlayBaseController::SetOverlayRoundedCorner() {
-  CHECK(overlay_view_ && overlay_web_view_);
+  views::WebView* overlay_web_view = nullptr;
+  if (IsOverlayViewShared()) {
+    overlay_web_view = overlay_web_view_.get();
+  } else {
+    overlay_web_view = !!overlay_web_view_ ? overlay_web_view_.get()
+                                           : owned_overlay_web_view_.get();
+  }
+  CHECK(overlay_web_view);
 
   const bool should_round_corner = IsResultsSidePanelShowing();
   const float radius =
       should_round_corner
-          ? overlay_web_view_->GetLayoutProvider()->GetCornerRadiusMetric(
+          ? overlay_web_view->GetLayoutProvider()->GetCornerRadiusMetric(
                 views::ShapeContextTokens::kContentSeparatorRadius)
           : 0;
   const bool right_aligned =
@@ -813,21 +894,34 @@ void OverlayBaseController::SetOverlayRoundedCorner() {
   const gfx::RoundedCornersF radii = gfx::RoundedCornersF{
       right_aligned ? 0 : radius, right_aligned ? radius : 0, 0, 0};
 
-  overlay_web_view_->holder()->SetCornerRadii(radii);
+  overlay_web_view->holder()->SetCornerRadii(radii);
 
-  // If we show the overlay with overlay_view_ being painted to a layer,
-  // there is a visual bug where the background is momentarily transparent,
-  // causing flickering. When we don't want the corner to be rounded,
-  // instead of setting the corner radii to 0, destroy the layer instead.
-  // See crbug.com/437355402.
-  if (!should_round_corner) {
-    overlay_view_->DestroyLayer();
-    return;
+  views::View* overlay_view = nullptr;
+  if (IsOverlayViewShared()) {
+    overlay_view = overlay_view_.get();
+    CHECK(overlay_view);
+  } else {
+    // GetHostView() can return a nullptr for when the overlay is tab-scoped
+    // and when the overlay is in kBackground. The styling will be reapplied
+    // when the tab is foregrounded.
+    overlay_view = !!overlay_view_ ? overlay_view_.get() : GetHostView();
   }
 
-  overlay_view_->SetPaintToLayer();
-  overlay_view_->layer()->SetIsFastRoundedCorner(true);
-  overlay_view_->layer()->SetRoundedCornerRadius(radii);
+  if (overlay_view) {
+    // If we show the overlay with overlay_view being painted to a layer,
+    // there is a visual bug where the background is momentarily transparent,
+    // causing flickering. When we don't want the corner to be rounded,
+    // instead of setting the corner radii to 0, destroy the layer instead.
+    // See crbug.com/437355402.
+    if (!should_round_corner) {
+      overlay_view->DestroyLayer();
+      return;
+    }
+
+    overlay_view->SetPaintToLayer();
+    overlay_view->layer()->SetIsFastRoundedCorner(true);
+    overlay_view->layer()->SetRoundedCornerRadius(radii);
+  }
 }
 
 void OverlayBaseController::ShowPreselectionBubble() {

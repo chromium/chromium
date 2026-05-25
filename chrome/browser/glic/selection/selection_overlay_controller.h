@@ -103,7 +103,7 @@ class SelectionOverlayController
   GURL GetInitialURL() override;
   void NotifyIsOverlayShowing(bool is_showing) override;
   int GetToolResourceId() override;
-  ui::ElementIdentifier GetViewContainerId() override;
+  ui::ElementIdentifier GetViewContainerId() const override;
   SidePanelType GetSidePanelType() override;
   bool ShouldCloseSidePanel() override;
   bool ShouldShowPreselectionBubble() override;

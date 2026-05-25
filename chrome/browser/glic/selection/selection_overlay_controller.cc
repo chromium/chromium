@@ -393,7 +393,7 @@ int SelectionOverlayController::GetToolResourceId() {
   return IDS_GLIC_SELECTION_OVERLAY_RENDERER_LABEL;
 }
 
-ui::ElementIdentifier SelectionOverlayController::GetViewContainerId() {
+ui::ElementIdentifier SelectionOverlayController::GetViewContainerId() const {
   return kGlicSelectionOverlayViewElementId;
 }
 

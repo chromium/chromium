@@ -1354,7 +1354,7 @@ int LensOverlayController::GetToolResourceId() {
   return IDS_LENS_OVERLAY_RENDERER_LABEL;
 }
 
-ui::ElementIdentifier LensOverlayController::GetViewContainerId() {
+ui::ElementIdentifier LensOverlayController::GetViewContainerId() const {
   return kLensOverlayViewElementId;
 }
 
