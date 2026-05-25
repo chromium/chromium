@@ -4,6 +4,7 @@
 
 #include "services/on_device_model/ml/performance_class.h"
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -104,7 +105,7 @@ GetDeviceAndPerformanceInfo(const ChromeML& chrome_ml) {
   const float output_speed = info.output_speed;
   const bool is_integrated_gpu = info.is_integrated_gpu;
 
-  int system_ram = base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  int system_ram = base::SysInfo::AmountOfTotalPhysicalMemory().InMiB();
   base::UmaHistogramMemoryLargeMB(
       base::StrCat({"OnDeviceModel.SystemRAM.",
                     is_integrated_gpu ? "Integrated" : "Discrete"}),

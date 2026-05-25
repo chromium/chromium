@@ -4,7 +4,9 @@
 
 #include "services/on_device_model/public/cpp/cpu.h"
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "services/on_device_model/public/cpp/features.h"
@@ -42,8 +44,8 @@ bool IsCpuCapable() {
   }
   return base::FeatureList::IsEnabled(features::kOnDeviceModelCpuBackend) &&
          (Is64BitProcessor() || !kRequire64BitProcessor.Get()) &&
-         base::SysInfo::AmountOfPhysicalMemory().InMiB() >=
-             kRAMThreshold.Get() &&
+         base::SysInfo::AmountOfTotalPhysicalMemory() >=
+             base::MiBU(base::saturated_cast<uint64_t>(kRAMThreshold.Get())) &&
          base::SysInfo::NumberOfProcessors() >= kProcessorThreshold.Get();
 }
 

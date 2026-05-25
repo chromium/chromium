@@ -4,6 +4,7 @@
 
 #include "services/service_manager/public/cpp/service_executable/service_executable_environment.h"
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/message_loop/message_pump_type.h"
@@ -38,7 +39,7 @@ ServiceExecutableEnvironment::ServiceExecutableEnvironment()
   if (command_line.HasSwitch(sandbox::policy::switches::kServiceSandboxType)) {
     // Warm parts of base in the copy of base in the mojo runner.
     base::RandUint64();
-    base::SysInfo::AmountOfPhysicalMemory();
+    base::SysInfo::AmountOfTotalPhysicalMemory();
     base::SysInfo::NumberOfProcessors();
 
     // Repeat steps normally performed by the zygote.
