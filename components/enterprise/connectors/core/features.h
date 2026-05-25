@@ -53,6 +53,10 @@ BASE_DECLARE_FEATURE(kEnableDownloadEnterpriseScanOnClank);
 // Controls whether cancellation of uploads is enabled for content analysis.
 BASE_DECLARE_FEATURE(kEnableCancelUploadOnContentAnalysis);
 
+// Controls whether the audit-only network request connector policy will be
+// applied if set.
+BASE_DECLARE_FEATURE(kEnableAuditOnlyNetworkRequestConnector);
+
 }  // namespace enterprise_connectors
 
 #endif  // COMPONENTS_ENTERPRISE_CONNECTORS_CORE_FEATURES_H_

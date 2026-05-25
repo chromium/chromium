@@ -51,4 +51,7 @@ BASE_FEATURE(kEnableDownloadEnterpriseScanOnClank,
 BASE_FEATURE(kEnableCancelUploadOnContentAnalysis,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableAuditOnlyNetworkRequestConnector,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace enterprise_connectors
