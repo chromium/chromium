@@ -14,6 +14,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/compositor/layer_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/image/image_skia.h"
@@ -100,6 +101,10 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void ViewHierarchyChanged(
+      const views::ViewHierarchyChangedDetails& details) override;
+  void AddedToWidget() override;
   views::PaintInfo::ScaleType GetPaintScaleType() const override;
   void OnThemeChanged() override;
 
@@ -145,15 +150,23 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
   void SetCrashed(bool crashed);
   bool GetCrashed() const;
 
-  // Creates or destroys the layer according to the current animation state and
-  // whether a layer can be used.
-  void RefreshLayer();
+  // Creates or destroys the throbber according to the current animation state
+  // and whether a layer can be used. Unlike the base TabIcon layer (which
+  // merely reduces composition overhead), this compositor-driven throbber
+  // completely offloads the animation rotation to the compositor thread,
+  // allowing the UI thread to remain idle during page loads.
+  void UpdateThrobber();
 
   gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source);
   gfx::ImageSkia ThemeMonochromeFavicon(const gfx::ImageSkia& source);
 
   // Updates the themed favicon if necessary.
   void UpdateThemedFavicon();
+
+  // The view used to render the compositor-driven throbber. When active, this
+  // child view's layer handles the rotation via a transform animation,
+  // bypassing the need for periodic UI-thread repaints.
+  raw_ptr<views::View> throbber_view_ = nullptr;
 
   raw_ptr<const base::TickClock> clock_;
 

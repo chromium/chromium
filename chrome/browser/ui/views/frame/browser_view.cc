@@ -1795,38 +1795,53 @@ void BrowserView::OnBookmarkBarStateChanged(
 }
 
 void BrowserView::UpdateLoadingAnimations(bool is_visible) {
-  const bool should_animate =
-      is_visible && browser_->tab_strip_model()->TabsNeedLoadingUI();
+  const bool tabs_need_loading_ui =
+      browser_->tab_strip_model()->TabsNeedLoadingUI();
+  const bool should_animate = is_visible && tabs_need_loading_ui;
 
   if (should_animate == IsLoadingAnimationRunning()) {
-    // Early return if the loading animation state doesn't change.
     return;
+  }
+
+  if (should_animate) {
+    loading_animation_start_ = base::TimeTicks::Now();
   }
 
   if (!loading_animation_state_change_closure_.is_null()) {
     std::move(loading_animation_state_change_closure_).Run();
   }
 
-  if (should_animate) {
+  const bool should_use_timer_driven_animation =
+      should_animate &&
+      (!base::FeatureList::IsEnabled(features::kCompositorLoadingThrobber) ||
+       ShouldShowWindowIcon());
+
+  if (should_use_timer_driven_animation) {
+    if (!loading_animation_timer_.IsRunning()) {
 #if BUILDFLAG(IS_CHROMEOS)
-    loading_animation_tracker_.emplace(
-        GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
-    loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
-        base::BindRepeating(&RecordTabLoadingSmoothness)));
+      loading_animation_tracker_.emplace(
+          GetWidget()->GetCompositor()->RequestNewCompositorMetricsTracker());
+      loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
+          base::BindRepeating(&RecordTabLoadingSmoothness)));
 #endif
-    static constexpr base::TimeDelta kAnimationUpdateInterval =
-        base::Milliseconds(30);
-    // Loads are happening, and the animation isn't running, so start it.
-    loading_animation_start_ = base::TimeTicks::Now();
-    loading_animation_timer_.Start(FROM_HERE, kAnimationUpdateInterval, this,
-                                   &BrowserView::LoadingAnimationTimerCallback);
+      static constexpr base::TimeDelta kAnimationUpdateInterval =
+          base::Milliseconds(30);
+      loading_animation_timer_.Start(
+          FROM_HERE, kAnimationUpdateInterval, this,
+          &BrowserView::LoadingAnimationTimerCallback);
+    }
   } else {
-    loading_animation_timer_.Stop();
+    if (loading_animation_timer_.IsRunning()) {
+      loading_animation_timer_.Stop();
 #if BUILDFLAG(IS_CHROMEOS)
-    loading_animation_tracker_->Stop();
+      loading_animation_tracker_->Stop();
 #endif
+    }
+  }
+  if (!should_animate) {
     // Loads are now complete, update the state if a task was scheduled.
     LoadingAnimationCallback(base::TimeTicks::Now());
+    loading_animation_start_ = base::TimeTicks();
   }
 }
 
@@ -1848,7 +1863,7 @@ gfx::Point BrowserView::GetThemeOffsetFromBrowserView() const {
 }
 
 bool BrowserView::IsLoadingAnimationRunning() const {
-  return loading_animation_timer_.IsRunning();
+  return !loading_animation_start_.is_null();
 }
 
 void BrowserView::SetStarredState(bool is_starred) {
@@ -5101,7 +5116,8 @@ void BrowserView::LoadingAnimationCallback(base::TimeTicks timestamp) {
     return;
   }
 
-  if (GetSupportsTabStrip()) {
+  if (GetSupportsTabStrip() &&
+      !base::FeatureList::IsEnabled(features::kCompositorLoadingThrobber)) {
     // Loading animations are shown in the tab for tabbed windows. Update them
     // even if the tabstrip isn't currently visible so they're in the right
     // state when it returns.

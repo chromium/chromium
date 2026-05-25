@@ -21,6 +21,9 @@ namespace features {
 
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
+// Enables a compositor-driven rotation animation for the tab load throbber.
+BASE_DECLARE_FEATURE(kCompositorLoadingThrobber);
+
 BASE_DECLARE_FEATURE(kCreateNewTabGroupAppMenuTopLevel);
 
 BASE_DECLARE_FEATURE(kCtrlTabMru);

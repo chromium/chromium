@@ -6770,6 +6770,24 @@
             ]
         }
     ],
+    "CompositorLoadingThrobber": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CompositorLoadingThrobber"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompressionDictionaryLimitEarlyMatching": [
         {
             "platforms": [
