@@ -381,6 +381,7 @@ WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="ro
         // Initialize mWcax so we can make assertions on it.
         mActivityTestRule.mockWebContentsAccessibilityImpl();
         mActivityTestRule.mWcax = mActivityTestRule.getWebContentsAccessibility();
+        mActivityTestRule.mWcax.setThrottleDelayForTesting(new java.util.HashMap<>());
 
         // Wait for the page to load and for the service to receive a content change.
         waitForPageLoadAndInitialContentChange();
