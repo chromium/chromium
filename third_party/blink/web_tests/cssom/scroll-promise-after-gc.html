@@ -14,28 +14,53 @@
     height: 100px;
   }
 </style>
-<iframe></iframe>
 <div id="scroller">
   <div class="filler"></div>
 </div>
+<iframe id = "iframe1" srcdoc='
+  <!DOCTYPE html>
+  <style>
+    .filler { height: 6000px }
+
+    #scroller {
+      overflow: scroll;
+      height: 100px;
+    }
+  </style>
+  <div id="scroller">
+    <div class="filler"></div>
+  </div>
+'></iframe>
+<iframe id = "iframe2" srcdoc='
+  <!DOCTYPE html>
+  <style>
+    .filler { height: 6000px }
+
+    #scroller {
+      overflow: scroll;
+      height: 100px;
+    }
+  </style>
+'></iframe>
 <script>
   "use strict";
 
   const scroller = document.getElementById("scroller");
 
   async function confirmPromiseSettles(scroll_promise) {
-    return new Promise(resolve => {
-      async function waitForFrames(num) {
-        if (num <= 0) {
-          assert_unreached("Pending scroll promise");
-          resolve();
-          return;
-        }
-        requestAnimationFrame(() => waitForFrames(num-1));
+    async function waitForFrames(num) {
+      while (num--) {
+        await new Promise(requestAnimationFrame);
       }
-      waitForFrames(10);
-      scroll_promise.then(resolve);
-    });
+    }
+
+    // The worst case wait time below is added only to avoid test harness
+    // timeout error which would make it hard to spot the failure point.
+    let val = await Promise.race([scroll_promise, waitForFrames(10)]);
+    // If `scroll_promise` resolves first, `val` will be an object.
+    if (val === undefined) {
+      assert_unreached("unresolved scroll_promise");
+    }
   }
 
   promise_test(async () => {
@@ -66,18 +91,29 @@
   }, "Scroll promise handling after scroller removal and garbage collection");
 
   promise_test(async () => {
-    const iframe = document.getElementsByTagName("iframe")[0];
+    const iframe = document.getElementById("iframe1");
+    const scroller1 = iframe.contentDocument.getElementById("scroller");
 
+    let scroll_promise = scroller1.scrollBy({ top: 1000, behavior: "smooth" });
+    iframe.remove();
+    window.gc();
+
+    await confirmPromiseSettles(scroll_promise);
+  }, "Scroll promise handling after iframe removed and garbage collected");
+
+  // The following test is similar to the above except that the scroller is
+  // appended in the iframe from the main page. Apparently the removed scroller
+  // here is handled differently by window.gc(), so this test passes while the
+  // above one doesn't!
+  promise_test(async () => {
+    const iframe = document.getElementById("iframe2");
     iframe.contentDocument.body.appendChild(scroller);
-    scroller.scrollTop = 0;
-    scroller.style.setProperty("overflow", "scroll");
-    scroller.style.setProperty("height", "100px");
-    scroller.firstElementChild.style.setProperty("height", "6000px");
 
     let scroll_promise = scroller.scrollBy({ top: 1000, behavior: "smooth" });
     iframe.remove();
     window.gc();
 
     await confirmPromiseSettles(scroll_promise);
-  }, "Scroll promise handling after iframe removal and garbage collection");
+  }, "Scroll promise handling after iframe with appended child removed and " +
+        "garbage collected");
 </script>
