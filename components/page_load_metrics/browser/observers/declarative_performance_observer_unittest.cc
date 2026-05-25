@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "components/page_load_metrics/browser/fake_page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/observers/page_load_metrics_observer_content_test_harness.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "services/network/public/cpp/features.h"
@@ -21,13 +22,16 @@ class DeclarativePerformanceObserverTest
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
+    fake_delegate_.web_contents_ = web_contents();
     observer_ = std::make_unique<DeclarativePerformanceObserver>();
+    observer_->SetDelegate(&fake_delegate_);
   }
 
   DeclarativePerformanceObserver* observer() { return observer_.get(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  FakePageLoadMetricsObserverDelegate fake_delegate_;
   std::unique_ptr<DeclarativePerformanceObserver> observer_;
 };
 
@@ -228,6 +232,44 @@ TEST_F(DeclarativePerformanceObserverTest, RecordsVisibilityTransitions) {
   const base::Value& shown_entry = buffer[2];
   ASSERT_TRUE(shown_entry.is_dict());
   EXPECT_EQ(*(shown_entry.GetDict().FindString("name")), "visible");
+}
+
+TEST_F(DeclarativePerformanceObserverTest, RecordsOnComplete) {
+  feature_list_.InitAndEnableFeature(
+      network::features::kDeclarativePerformanceObserver);
+
+  content::MockNavigationHandle handle;
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = "my-endpoint";
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  EXPECT_CALL(handle, GetDeclarativePerformanceObserverPolicy())
+      .WillRepeatedly(testing::Return(policy.get()));
+
+  EXPECT_CALL(handle, NavigationStart())
+      .WillRepeatedly(testing::Return(base::TimeTicks::Now()));
+
+  const GURL kUrl("https://example.com");
+  handle.set_url(kUrl);
+  handle.set_render_frame_host(web_contents()->GetPrimaryMainFrame());
+
+  observer()->OnStart(&handle, kUrl, true);
+  observer()->OnCommit(&handle);
+
+  const base::ListValue& buffer = observer()->buffered_entries_for_testing();
+  ASSERT_EQ(buffer.size(), 1u);
+
+  mojom::PageLoadTiming timing;
+  observer()->OnComplete(timing);
+
+  EXPECT_TRUE(buffer.empty());
+
+  const base::ListValue& flushed = observer()->flushed_entries_for_testing();
+  ASSERT_EQ(flushed.size(), 1u);
+  EXPECT_EQ(*(flushed[0].GetDict().FindString("entryType")),
+            "visibility-state");
+  EXPECT_EQ(*(flushed[0].GetDict().FindString("name")), "visible");
 }
 
 }  // namespace page_load_metrics

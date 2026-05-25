@@ -7,9 +7,12 @@
 
 #include "base/containers/flat_set.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/declarative_performance_observer.mojom.h"
+#include "url/gurl.h"
 
 namespace page_load_metrics {
 
@@ -36,6 +39,7 @@ class DeclarativePerformanceObserver : public PageLoadMetricsObserver {
   ObservePolicy OnCommit(content::NavigationHandle* navigation_handle) override;
   ObservePolicy OnHidden(const mojom::PageLoadTiming& timing) override;
   ObservePolicy OnShown() override;
+  void OnComplete(const mojom::PageLoadTiming& timing) override;
 
   const std::string& reporting_endpoint_for_testing() const {
     return reporting_endpoint_;
@@ -47,15 +51,27 @@ class DeclarativePerformanceObserver : public PageLoadMetricsObserver {
   const base::ListValue& buffered_entries_for_testing() const {
     return buffered_entries_;
   }
+  const base::ListValue& flushed_entries_for_testing() const {
+    return flushed_entries_;
+  }
 
  private:
   void AddEntryToBuffer(base::DictValue entry);
+  void FlushMetrics();
 
   std::string reporting_endpoint_;
   base::flat_set<network::mojom::PerformanceEntryType> enabled_types_;
   base::ListValue buffered_entries_;
+
+  // Stored cloned entries during FlushMetrics() exclusively for testing
+  // purposes, allowing verification of the flushed payload in unit tests.
+  base::ListValue flushed_entries_;
+
   bool started_in_foreground_ = false;
   base::TimeTicks navigation_start_;
+  GURL committed_url_;
+  net::NetworkAnonymizationKey network_anonymization_key_;
+  base::UnguessableToken reporting_source_;
 };
 
 }  // namespace page_load_metrics

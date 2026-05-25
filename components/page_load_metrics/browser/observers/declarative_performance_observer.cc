@@ -7,8 +7,12 @@
 #include "base/feature_list.h"
 #include "base/values.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/declarative_performance_observer.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace page_load_metrics {
 
@@ -75,6 +79,14 @@ DeclarativePerformanceObserver::OnCommit(
       policy->entry_types.begin(), policy->entry_types.end());
 
   navigation_start_ = navigation_handle->NavigationStart();
+  committed_url_ = navigation_handle->GetURL();
+
+  network_anonymization_key_ =
+      navigation_handle->GetIsolationInfo().network_anonymization_key();
+  if (navigation_handle->GetRenderFrameHost()) {
+    reporting_source_ =
+        navigation_handle->GetRenderFrameHost()->GetReportingSource();
+  }
 
   if (enabled_types_.contains(
           network::mojom::PerformanceEntryType::kVisibilityState)) {
@@ -119,6 +131,35 @@ DeclarativePerformanceObserver::OnShown() {
     AddEntryToBuffer(std::move(entry));
   }
   return CONTINUE_OBSERVING;
+}
+
+void DeclarativePerformanceObserver::OnComplete(
+    const mojom::PageLoadTiming& timing) {
+  FlushMetrics();
+}
+
+void DeclarativePerformanceObserver::FlushMetrics() {
+  if (buffered_entries_.empty()) {
+    return;
+  }
+
+  flushed_entries_ = buffered_entries_.Clone();
+
+  base::DictValue body;
+  body.Set("entries", std::move(buffered_entries_));
+
+  buffered_entries_.clear();
+
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
+  if (web_contents && web_contents->GetPrimaryMainFrame()) {
+    content::StoragePartition* storage_partition =
+        web_contents->GetPrimaryMainFrame()->GetStoragePartition();
+    if (storage_partition) {
+      storage_partition->GetNetworkContext()->QueueReport(
+          "performance-observer", reporting_endpoint_, committed_url_,
+          reporting_source_, network_anonymization_key_, std::move(body));
+    }
+  }
 }
 
 void DeclarativePerformanceObserver::AddEntryToBuffer(base::DictValue entry) {
