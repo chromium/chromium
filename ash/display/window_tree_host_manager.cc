@@ -28,6 +28,7 @@
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/window_util.h"
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -985,7 +986,7 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
         kUICompositorLargeDisplayMemoryLimitMB;
   }
 
-  if (base::SysInfo::AmountOfPhysicalMemory() >=
+  if (base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount() >=
       kUICompositorMemoryLimitRamCapacityThreshold) {
     params_with_bounds.compositor_memory_limit_mb =
         kUICompositorLargeRamMemoryLimitMB;
