@@ -182,8 +182,6 @@ class OpenXrRenderLoop : public XRThread,
   struct OutstandingFrame {
     OutstandingFrame();
     ~OutstandingFrame();
-    bool webxr_has_pose_ = false;
-    bool overlay_has_pose_ = false;
     bool webxr_submitted_ = false;
     bool overlay_submitted_ = false;
     bool waiting_for_webxr_ = false;
@@ -281,6 +279,8 @@ class OpenXrRenderLoop : public XRThread,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
   void MaybeRejectSessionCallback();
+
+  bool ShouldDelayGetFrameData() const;
 
   gfx::Transform mojo_from_local() {
     // mojo_from_local is currently identity.

@@ -153,12 +153,7 @@ void OpenXrRenderLoop::GetFrameData(
     return;
   }
 
-  // If we've already given out a pose for the current frame, or aren't visible,
-  // delay giving out a pose until the next frame we are visible.
-  // However, if we aren't visible and the browser is waiting to learn that
-  // WebXR has submitted a frame, we can give out a pose as though we are
-  // visible.
-  if ((!webxr_visible_ && !on_webxr_submitted_) || webxr_has_pose_) {
+  if (ShouldDelayGetFrameData()) {
     // There should only be one outstanding GetFrameData call at a time.  We
     // shouldn't get new ones until this resolves or presentation ends/restarts.
     if (delayed_get_frame_data_callback_) {
@@ -184,7 +179,6 @@ void OpenXrRenderLoop::GetFrameData(
   }
   StartPendingFrame();
   webxr_has_pose_ = true;
-  pending_frame_->webxr_has_pose_ = true;
   pending_frame_->sent_frame_data_time_ = base::TimeTicks::Now();
 
   // TODO(crbug.com/40771470): The lack of frame_data_ here indicates
@@ -631,7 +625,7 @@ void OpenXrRenderLoop::RequestNextOverlayPose(
 
   // Ensure we have a pending frame.
   StartPendingFrame();
-  pending_frame_->overlay_has_pose_ = true;
+
   std::move(callback).Run(pending_frame_->render_info_->Clone());
 }
 
@@ -1243,6 +1237,33 @@ void OpenXrRenderLoop::OnContextProviderCreated(
   context_provider_ = std::move(context_provider);
 
   std::move(start_runtime_callback).Run(true);
+}
+
+bool OpenXrRenderLoop::ShouldDelayGetFrameData() const {
+  // If we've already given out a pose for the current frame, delay.
+  if (webxr_has_pose_) {
+    return true;
+  }
+
+  // If we aren't visible and the browser is not waiting to learn that we've
+  // submitted a frame we should delay. If the browser *is* waiting to learn
+  // that we've submitted a frame though, we can give out a pose as though we
+  // are visible.
+  if (!webxr_visible_ && !on_webxr_submitted_) {
+    return true;
+  }
+
+  // If the pending frame is already used for the last WebXR Frame, we must be
+  // waiting for the overlay texture to be submitted for the last frame. Do
+  // not proceed to next frame until the overlay is submitted, otherwise
+  // we will send null frame_data_ and webxr_has_pose_ will always stay true
+  // so that the loop will get stuck.
+  if (pending_frame_ && !pending_frame_->frame_data_) {
+    DCHECK(pending_frame_->waiting_for_overlay_);
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace device
