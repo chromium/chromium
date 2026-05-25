@@ -282,7 +282,7 @@ vars = {
   # binary available on `PATH`, or absolute path.
   'reapi_credential_helper': Str(''),
   # siso CIPD package version.
-  'siso_version': 'git_revision:37e594382ae2ef7d69461019dc47e15e7b6a127f',
+  'siso_version': 'git_revision:c74a9b09521abc61117b58538cdc0336cb37b182',
 
   # reclient options.
   # download reclient binaries, required for 'use_reclient` gn arg.
