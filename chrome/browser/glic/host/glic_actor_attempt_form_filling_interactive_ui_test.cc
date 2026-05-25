@@ -19,6 +19,7 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/glic/test_support/interactive_test_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -46,10 +47,12 @@ using ::testing::Truly;
 using ::optimization_guide::proto::FormFillingRequest_RequestedData;
 using ::optimization_guide::proto::FormFillingRequest_RequestedData_ADDRESS;
 
-void SetFormFillingAction(optimization_guide::proto::Action* action,
-                          int tab_id,
-                          const DomNode& node,
-                          FormFillingRequest_RequestedData requested_data) {
+void SetFormFillingAction(
+    optimization_guide::proto::Action* action,
+    int tab_id,
+    const DomNode& node,
+    FormFillingRequest_RequestedData requested_data,
+    std::optional<std::string> section_label = std::nullopt) {
   CHECK(action);
   auto* form_filling_action = action->mutable_attempt_form_filling();
 
@@ -62,6 +65,9 @@ void SetFormFillingAction(optimization_guide::proto::Action* action,
       node.document_identifier);
 
   request->set_requested_data(requested_data);
+  if (section_label.has_value()) {
+    request->set_section_label(*section_label);
+  }
 }
 
 // Internal recursive helper to collect text from a subtree.
@@ -177,7 +183,10 @@ class MockExecutionEngine : public ExecutionEngine {
 class GlicActorAttemptFormFillingUiTest : public GlicActorUiTest {
  public:
   GlicActorAttemptFormFillingUiTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kGlicActorAutofill);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kGlicActorAutofill,
+         features::kGlicActorAutofillSectionLabel},
+        {});
   }
 
   void SetUpOnMainThread() override {
@@ -313,6 +322,14 @@ class GlicActorAttemptFormFillingUiTest : public GlicActorUiTest {
         "el => el.textContent", Eq(expected_origin));
   }
 
+  // Generic helper to check the section label in Glic.
+  [[nodiscard]] auto CheckSectionLabelInGlic(
+      int form_index,
+      const std::string& expected_label) {
+    return CheckJsInGlicAt(StringPrintf("#section-label-%d", form_index),
+                           "el => el.textContent", Eq(expected_label));
+  }
+
   // Issues an onFormPresented to the AutofillSelectionDialogRequest on the glic
   // api via the glic test page.
   [[nodiscard]] auto PresentForm(int form_index) {
@@ -426,9 +443,12 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
   const GURL url = embedded_https_test_server().GetURL(
       "example.com", "/autofill/autofill_test_form.html");
 
+  const std::string kSectionLabel = "My Address Section";
+
   std::vector<autofill::ActorFormFillingRequest> requests;
-  ActorSuggestion& suggestion =
-      requests.emplace_back().suggestions.emplace_back();
+  auto& request = requests.emplace_back();
+  request.section_label = kSectionLabel;
+  ActorSuggestion& suggestion = request.suggestions.emplace_back();
   suggestion.id = autofill::ActorSuggestionId(123);
   suggestion.title = "My Address";
   {
@@ -464,16 +484,18 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
       SetupTaskForAttemptFormFilling(kNewActorTabId, task_id, url),
       GetDomNodeForLabel(address_field_node, "Address:"),
       SendExecuteActions(
-          perform_actions_result_handle,
-          base::BindLambdaForTesting([this, &task_id, &address_field_node]() {
+          perform_actions_result_handle, base::BindLambdaForTesting([&] {
             optimization_guide::proto::Actions actions;
             actions.set_task_id(task_id.value());
             SetFormFillingAction(actions.add_actions(), tab_handle_.raw_value(),
                                  address_field_node,
-                                 FormFillingRequest_RequestedData_ADDRESS);
+                                 FormFillingRequest_RequestedData_ADDRESS,
+                                 kSectionLabel);
             return EncodeActionProto(actions);
           })),
       WaitForAutofillDialog(),
+      // Verify the section label is passed all the way to the Glic UI.
+      CheckSectionLabelInGlic(/*form_index=*/0, kSectionLabel),
       // The UI immediately presents the form.
       PresentForm(/*form_index=*/0),
       // The user hovers/focuses the card.
@@ -528,8 +550,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorAttemptFormFillingUiTest,
       SetupTaskForAttemptFormFilling(kNewActorTabId, task_id, url),
       GetDomNodeForLabel(address_field_node, "Address:"),
       SendExecuteActions(
-          perform_actions_result_handle,
-          base::BindLambdaForTesting([this, &task_id, &address_field_node]() {
+          perform_actions_result_handle, base::BindLambdaForTesting([&] {
             optimization_guide::proto::Actions actions;
             actions.set_task_id(task_id.value());
             SetFormFillingAction(actions.add_actions(), tab_handle_.raw_value(),

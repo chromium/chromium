@@ -35,6 +35,15 @@ function handleRequest(request: SelectAutofillSuggestionsDialogRequest) {
     originContainer.appendChild(originValue);
     li_form.appendChild(originContainer);
 
+    const sectionLabelContainer = document.createElement('div');
+    sectionLabelContainer.appendChild(
+        document.createTextNode('Section Label: '));
+    const sectionLabelValue = document.createElement('span');
+    sectionLabelValue.id = `section-label-${formIndex}`;
+    sectionLabelValue.textContent = formFillingRequest.sectionLabel ?? null;
+    sectionLabelContainer.appendChild(sectionLabelValue);
+    li_form.appendChild(sectionLabelContainer);
+
     const notifyFormPresentedBtn = document.createElement('button');
     notifyFormPresentedBtn.textContent = 'Notify Form Presented';
     notifyFormPresentedBtn.id = `notify-form-presented-${formIndex}`;

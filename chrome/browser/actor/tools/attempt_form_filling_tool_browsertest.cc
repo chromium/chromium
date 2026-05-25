@@ -4,6 +4,9 @@
 
 #include "chrome/browser/actor/tools/attempt_form_filling_tool.h"
 
+#include <string>
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_command_line.h"
@@ -50,6 +53,7 @@ namespace actor {
 namespace {
 
 using RequestedData = AttemptFormFillingToolRequest::RequestedData;
+using FormFillingRequest = AttemptFormFillingToolRequest::FormFillingRequest;
 
 // Helper function that returns a composed matcher for ActorSuggestion.
 auto EqActorSuggestion(const autofill::ActorSuggestion& expected) {
@@ -75,11 +79,16 @@ auto EqFormFillingRequest(
 // Helper function that returns a composed matcher for ActorFormFillingRequest.
 template <typename SuggestionsMatcher>
 auto EqActorFormFillingRequest(RequestedData expected_data,
+                               std::string expected_section_label,
                                SuggestionsMatcher suggestions_matcher) {
-  return AllOf(Field(&autofill::ActorFormFillingRequest::requested_data,
-                     Eq(expected_data)),
-               Field(&autofill::ActorFormFillingRequest::suggestions,
-                     suggestions_matcher));
+  return AllOf(
+      Field("requested_data",
+            &autofill::ActorFormFillingRequest::requested_data,
+            Eq(expected_data)),
+      Field("section_label", &autofill::ActorFormFillingRequest::section_label,
+            Eq(expected_section_label)),
+      Field("suggestions", &autofill::ActorFormFillingRequest::suggestions,
+            suggestions_matcher));
 }
 
 // Helper function that returns an ActorFormFillingSelection.
@@ -90,26 +99,30 @@ autofill::ActorFormFillingSelection MakeActorFormFillingSelection(
   return selection;
 }
 
+FormFillingRequest CreateFormFillingRequest(
+    RequestedData requested_data,
+    std::vector<PageTarget> trigger_fields,
+    std::string section_label = "") {
+  FormFillingRequest request;
+  request.requested_data = requested_data;
+  request.trigger_fields = std::move(trigger_fields);
+  request.section_label = std::move(section_label);
+  return request;
+}
+
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     const tabs::TabInterface& tab,
-    std::vector<std::pair<std::vector<PageTarget>, RequestedData>>
-        requests_in) {
-  std::vector<AttemptFormFillingToolRequest::FormFillingRequest> requests_out;
-  for (auto& [trigger_fields, request_data] : requests_in) {
-    AttemptFormFillingToolRequest::FormFillingRequest request;
-    request.trigger_fields = std::move(trigger_fields);
-    request.requested_data = request_data;
-    requests_out.emplace_back(request);
-  }
-  return std::make_unique<AttemptFormFillingToolRequest>(
-      tab.GetHandle(), std::move(requests_out));
+    std::vector<FormFillingRequest> requests) {
+  return std::make_unique<AttemptFormFillingToolRequest>(tab.GetHandle(),
+                                                         std::move(requests));
 }
 
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     const tabs::TabInterface& tab,
     std::vector<PageTarget> trigger_fields) {
   return MakeAttemptFormFillingRequest(
-      tab, {std::pair{std::move(trigger_fields), RequestedData::kUnknown}});
+      tab, {CreateFormFillingRequest(RequestedData::kUnknown,
+                                     std::move(trigger_fields))});
 }
 
 // Gets the dom node or returns nullopt when the node id or document token
@@ -144,6 +157,7 @@ class MockExecutionEngine : public ExecutionEngine {
 
 class AttemptFormFillingToolTest : public ActorToolsTest {
  public:
+  AttemptFormFillingToolTest() = default;
   ~AttemptFormFillingToolTest() override = default;
 
   // Gmock Action for the RequestToShowAutofillSuggestions() call.
@@ -336,10 +350,11 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
       });
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
-      *active_tab(), {std::pair{std::vector{PageTarget(*address_home_line1)},
-                                RequestedData::kHomeAddress},
-                      std::pair{std::vector{PageTarget(*phone_number)},
-                                RequestedData::kContactInformation}});
+      *active_tab(),
+      {CreateFormFillingRequest(RequestedData::kHomeAddress,
+                                {PageTarget(*address_home_line1)}),
+       CreateFormFillingRequest(RequestedData::kContactInformation,
+                                {PageTarget(*phone_number)})});
   actor_task().Act(ToRequestList(action), result.GetCallback());
 
   base::WeakPtr<AutofillSelectionDialogEventHandler> captured_handler =
@@ -726,12 +741,13 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
           base::unexpected(autofill::ActorFormFillingError::kNoSuggestions)));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
-      *active_tab(), {std::pair{std::vector{PageTarget(*address_home_line1)},
-                                RequestedData::kShippingAddress},
-                      std::pair{std::vector{PageTarget(*address_home_line1)},
-                                RequestedData::kCreditCard},
-                      std::pair{std::vector{PageTarget(*address_home_line1)},
-                                RequestedData::kContactInformation}});
+      *active_tab(),
+      {CreateFormFillingRequest(RequestedData::kShippingAddress,
+                                {PageTarget(*address_home_line1)}),
+       CreateFormFillingRequest(RequestedData::kCreditCard,
+                                {PageTarget(*address_home_line1)}),
+       CreateFormFillingRequest(RequestedData::kContactInformation,
+                                {PageTarget(*address_home_line1)})});
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
@@ -766,7 +782,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
   EXPECT_CALL(mock_execution_engine(),
               RequestToShowAutofillSuggestions(
                   ElementsAre(EqActorFormFillingRequest(
-                      request.requested_data,
+                      request.requested_data, /*expected_section_label=*/"",
                       ElementsAre(EqActorSuggestion(request.suggestions[0])))),
                   _, _))
       .WillOnce(RunOnceCallback<2>(MakeAutofillSuggestionsErrorResponse()));
@@ -929,6 +945,61 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, ServiceSplitsRequests) {
       "Autofill.Actor.AutofillSuggestionsPerDialog", 2, 1);
 
   std::move(captured_callback).Run(MakeAutofillSuggestionsErrorResponse());
+  ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);
+}
+
+// Test that the section label is propagated from the tool request to the
+// service and then to the dialog request.
+IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, SectionLabelIsPropagated) {
+  const GURL url = embedded_https_test_server().GetURL(
+      "example.com", "/autofill/autofill_test_form.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+  WaitForTabObservation();
+  std::optional<DomNode> address_home_line1 =
+      GetDomNodeOnPage(*main_frame(), "#ADDRESS_HOME_LINE1");
+  ASSERT_TRUE(address_home_line1);
+
+  const std::string section_label = "My Section Label";
+
+  // Tool should pass the label to the service.
+  EXPECT_CALL(
+      mock_form_filling_service(),
+      GetSuggestions(
+          _,
+          ElementsAre(Field(
+              &autofill::ActorFormFillingService::FillRequest::section_label,
+              Eq(section_label))),
+          _))
+      .WillOnce(
+          [&](const tabs::TabInterface&,
+              base::span<const autofill::ActorFormFillingService::FillRequest>
+                  requests,
+              auto callback) {
+            // Return a response that also has the label.
+            autofill::ActorFormFillingRequest response;
+            response.requested_data = RequestedData::kAddress;
+            response.section_label = requests[0].section_label;
+            autofill::ActorSuggestion suggestion;
+            suggestion.id = autofill::ActorSuggestionId(123);
+            response.suggestions.push_back(suggestion);
+            std::move(callback).Run(std::vector{response});
+          });
+
+  // Tool should pass the label from the service response to the dialog.
+  EXPECT_CALL(
+      mock_execution_engine(),
+      RequestToShowAutofillSuggestions(
+          ElementsAre(Field(&autofill::ActorFormFillingRequest::section_label,
+                            Eq(section_label))),
+          _, _))
+      .WillOnce(RunOnceCallback<2>(MakeAutofillSuggestionsErrorResponse()));
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(), {CreateFormFillingRequest(
+                         RequestedData::kAddress,
+                         {PageTarget(*address_home_line1)}, section_label)});
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);
 }
 

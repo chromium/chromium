@@ -1115,14 +1115,15 @@ void GlicActorClientSession::RequestToShowAutofillSuggestionsDialog(
   autofill_selection_event_handler_ = std::move(event_handler);
 
   std::vector<actor::webui::mojom::FormFillingRequestPtr> mojo_requests;
-  for (const auto& request : requests) {
+  for (const autofill::ActorFormFillingRequest& request : requests) {
     auto mojo_request = actor::webui::mojom::FormFillingRequest::New();
     mojo_request->requested_data = static_cast<int64_t>(request.requested_data);
     mojo_request->formatted_request_origin =
         base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
             request.request_origin,
             url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
-    for (const auto& suggestion : request.suggestions) {
+    mojo_request->section_label = request.section_label;
+    for (const autofill::ActorSuggestion& suggestion : request.suggestions) {
       auto mojo_suggestion = actor::webui::mojom::AutofillSuggestion::New();
       mojo_suggestion->id = base::NumberToString(suggestion.id.value());
       mojo_suggestion->title = suggestion.title;
