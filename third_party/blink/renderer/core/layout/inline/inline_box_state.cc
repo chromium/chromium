@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 #include "third_party/blink/renderer/core/layout/inline/line_box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/inline/line_info.h"
 #include "third_party/blink/renderer/core/layout/inline/line_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
@@ -289,12 +290,12 @@ void InlineLayoutStateStack::Trace(Visitor* visitor) const {
 
 InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
     const InlineNode& node,
-    const ComputedStyle& line_style,
-    const InlineItemResults& line_items,
+    const LineInfo& line_info,
     FontBaseline baseline_type,
     bool line_height_quirk,
     bool should_scale_line_height,
     LogicalLineItems* line_box) {
+  const ComputedStyle& line_style = line_info.LineStyle();
   has_block_in_inline_ = false;
   is_svg_text_ = node.IsSvgText();
   if (stack_.empty()) {
@@ -309,8 +310,7 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
       box.fragment_start = line_box->size();
       if (box.needs_box_fragment) {
         DCHECK_NE(&box, stack_.data());
-        auto text_block_scale = FindTextScale(
-            should_scale_line_height, line_items, 0, stack_.size() - i - 1);
+        FitTextBlockScale text_block_scale{line_info.TextFitScale(), nullptr};
         AddBoxFragmentPlaceholder(&box, text_block_scale, line_box,
                                   baseline_type);
       }
@@ -342,9 +342,7 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
     // Use a "strut" (a zero-width inline box with the element's font and
     // line height properties) as the initial metrics for the line box.
     // https://drafts.csswg.org/css2/visudet.html#strut
-    auto text_scale = FindTextScale(should_scale_line_height, line_items,
-                                    /* start_index */ 0,
-                                    /* initial_nesting_level */ 0);
+    FitTextBlockScale text_scale{line_info.TextFitScale(), nullptr};
     line_box_state.text_fit_scale = text_scale.TotalScale(*line_box_state.font);
     if (!line_height_quirk) {
       line_box_state.ComputeTextMetrics(line_style, *line_box_state.font,

@@ -319,8 +319,7 @@ void InlineLayoutAlgorithm::CheckBoxStates(
                      should_scale_line_height)
       .RebuildBoxStates(line_info, 0u, GetBreakToken()->StartItemIndex());
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
-  rebuilt.OnBeginPlaceItems(Node(), line_info.LineStyle(), line_info.Results(),
-                            baseline_type_, quirks_mode_,
+  rebuilt.OnBeginPlaceItems(Node(), line_info, baseline_type_, quirks_mode_,
                             should_scale_line_height, &line_box);
   DCHECK(box_states_);
   box_states_->CheckSame(rebuilt);
@@ -1350,9 +1349,9 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
         // No fit-text handling here. We call MeasurePerBlockScale() later.
       } else if (ParagraphScale scale = context_->MeasuredScale();
                  scale.scale != 1.0f) {
-        should_scale_line_height =
-            LineFitter(Node(), &line_info)
-                .FitLine(scale.scale, scale.additional_paint_time_scale);
+        LineFitter(Node(), &line_info)
+            .FitLine(scale.scale, scale.additional_paint_time_scale);
+        should_scale_line_height = true;
       } else {
         should_scale_line_height =
             LineFitter(Node(), &line_info).MeasureAndFitLine();

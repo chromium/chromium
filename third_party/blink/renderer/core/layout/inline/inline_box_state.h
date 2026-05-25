@@ -23,6 +23,7 @@ namespace blink {
 class ConstraintSpace;
 class InlineItem;
 class InlineNode;
+class LineInfo;
 class LogicalLineItems;
 class ShapeResultView;
 struct FitTextBlockScale;
@@ -181,8 +182,7 @@ class CORE_EXPORT InlineLayoutStateStack {
   // Initialize the box state stack for a new line.
   // @return The initial box state for the line.
   InlineBoxState* OnBeginPlaceItems(const InlineNode& node,
-                                    const ComputedStyle&,
-                                    const InlineItemResults& line_items,
+                                    const LineInfo& line_info,
                                     FontBaseline,
                                     bool line_height_quirk,
                                     bool should_scale_line_height,

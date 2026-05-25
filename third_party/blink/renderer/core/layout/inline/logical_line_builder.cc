@@ -117,7 +117,7 @@ void LogicalLineBuilder::CreateLine(LineInfo* line_info,
   const ComputedStyle& line_style = line_info->LineStyle();
   box_states_->SetIsEmptyLine(line_info->IsEmptyLine());
   InlineBoxState* box = box_states_->OnBeginPlaceItems(
-      node_, line_style, *line_items, baseline_type_, quirks_mode_,
+      node_, *line_info, baseline_type_, quirks_mode_,
       should_scale_line_height_, line_box);
 #if EXPENSIVE_DCHECKS_ARE_ON()
   if (main_line_helper) {
@@ -808,9 +808,8 @@ void LogicalLineBuilder::RebuildBoxStates(const LineInfo& line_info,
 
   // Create box states for tags that are not closed yet.
   LogicalLineItems& line_box = context_->AcquireTempLogicalLineItems();
-  box_states_->OnBeginPlaceItems(
-      node_, line_info.LineStyle(), line_info.Results(), baseline_type_,
-      quirks_mode_, should_scale_line_height_, &line_box);
+  box_states_->OnBeginPlaceItems(node_, line_info, baseline_type_, quirks_mode_,
+                                 should_scale_line_height_, &line_box);
   for (wtf_size_t i = 0; i < open_items.size(); ++i) {
     const InlineItem* item = open_items[i];
     InlineItemResult item_result;
