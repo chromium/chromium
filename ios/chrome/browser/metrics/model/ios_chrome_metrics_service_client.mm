@@ -62,6 +62,7 @@
 #import "components/metrics/ui/form_factor_metrics_provider.h"
 #import "components/metrics/ui/screen_info_metrics_provider.h"
 #import "components/metrics/version_utils.h"
+#import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/omnibox/browser/omnibox_metrics_provider.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -599,6 +600,14 @@ void IOSChromeMetricsServiceClient::OnHistoryDeleted() {
 void IOSChromeMetricsServiceClient::OnUkmAllowedStateChanged(
     bool must_purge,
     ukm::UkmConsentState previous_consent_state) {
+  // If the metrics consent restructure is enabled, UKM and DWA consent states
+  // are now managed by the metrics reporting level. Changes to these states
+  // are handled in OnMetricsReportingLevelChanged().
+  if (metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure(
+              GetApplicationContext()->GetLocalState())) {
+    return;
+  }
   const ukm::UkmConsentState consent_state = GetUkmConsentState();
   if (ukm_service_) {
     if (must_purge) {
