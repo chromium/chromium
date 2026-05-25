@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_TAB_PAGE_DECORATOR_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
@@ -39,6 +40,16 @@ class TabPageDecorator : public PageNodeObserver,
   // tab. Returns nullptr if `page_node` is not a tab.
   static TabPageDecorator::TabHandle* FromPageNode(const PageNode* page_node);
 
+  // Returns a WeakPtr to the `TabHandle` associated with `page_node`, or
+  // nullptr if `page_node` is not a tab. Although the TabHandle remains
+  // constant during tab discard, observers triggered by the discard might
+  // delete the PageNode which WILL delete the Tabhandle. So any caller that
+  // holds a pointer to a TabHandle during a discard must either observe
+  // OnBeforeTabRemoved() and invalidate the pointer when it's called, or hold a
+  // WeakPtr instead.
+  static base::WeakPtr<TabPageDecorator::TabHandle> WeakHandleFromPageNode(
+      const PageNode* page_node);
+
  private:
   void MaybeTabCreated(const PageNode* page_node);
 
@@ -67,19 +78,26 @@ class TabPageDecorator : public PageNodeObserver,
 // `TabPageObserver::OnBeforeTabRemoved` is called for said `TabHandle` object,
 // and they are guaranteed that `page_node()` will return the `PageNode`
 // associated with the tab.
+//
+// TODO(crbug.com/487681765): Migrate to TabInterface.
 class TabPageDecorator::TabHandle {
  public:
+  ~TabHandle();
+
   const PageNode* page_node() const { return page_node_; }
+
+  base::WeakPtr<TabHandle> GetWeakPtr();
 
  private:
   friend class TabPageDecorator::Data;
   friend class TabPageDecorator;
 
-  explicit TabHandle(const PageNode* page_node) : page_node_(page_node) {}
+  explicit TabHandle(const PageNode* page_node);
 
   void SetPageNode(const PageNode* page_node) { page_node_ = page_node; }
 
   raw_ptr<const PageNode> page_node_;
+  base::WeakPtrFactory<TabHandle> weak_factory_{this};
 };
 
 class TabPageObserver : public base::CheckedObserver {
