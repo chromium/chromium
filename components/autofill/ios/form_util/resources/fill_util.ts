@@ -7,10 +7,18 @@ import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fi
 import {findChildText, hasTagName, isFormControlElement, isSelectElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import {setUniqueIDIfNeeded} from '//components/autofill/ios/form_util/resources/renderer_id.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {generateRandomId, isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
-const autofillFormFeaturesApi =
-    gCrWeb.getRegisteredApi('autofill_form_features');
+/**
+ * Helper to check if an autofill form feature is enabled.
+ */
+function isFeatureEnabled(featureName: string): boolean {
+  if (!gCrWeb.hasRegisteredApi('autofill_form_features')) {
+    return false;
+  }
+  return gCrWeb.getRegisteredApi('autofill_form_features')
+      .getFunction(featureName)();
+}
 
 /**
  * Base class for objects that are intended to be JSON stringified.
@@ -347,8 +355,7 @@ export function sanitizeValueForInputElement(
         proposedValue, element as HTMLInputElement);
   }
   if (inferenceUtil.isDateField(element) &&
-      autofillFormFeaturesApi.getFunction(
-          'isAutofillSupportDateInputEnabled')()) {
+      isFeatureEnabled('isAutofillSupportDateInputEnabled')) {
     return sanitizeValueForDateInputType(proposedValue);
   }
   return proposedValue;
@@ -759,6 +766,21 @@ export function setRemoteFrameToken(token: string) {
 
 export function getRemoteFrameToken(): string|null {
   return document.documentElement.getAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE);
+}
+
+export function getOrCreateRemoteFrameToken(): string {
+  const remoteFrameToken = getRemoteFrameToken();
+  if (remoteFrameToken) {
+    return remoteFrameToken;
+  }
+
+  const newRemoteFrameToken = generateRandomId();
+  // Store the remote token in the DOM. Page content world scripts will be able
+  // to read it and send it in the payload of their messages to the browser. The
+  // browser layer uses remote tokens to map page content world frames to their
+  // isolated world counter parts, which is where the rest of Autofill lives.
+  setRemoteFrameToken(newRemoteFrameToken);
+  return newRemoteFrameToken;
 }
 
 /**
