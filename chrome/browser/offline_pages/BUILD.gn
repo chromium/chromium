@@ -182,5 +182,7 @@ source_set("unit_tests") {
       "android/offline_page_archive_publisher_impl_unittest.cc",
       "android/offline_page_auto_fetcher_service_unittest.cc",
     ]
+
+    deps += [ "//chrome/browser/download:test_support" ]
   }
 }

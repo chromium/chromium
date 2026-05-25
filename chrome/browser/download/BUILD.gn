@@ -76,6 +76,36 @@ source_set("download") {
     "//ui/shell_dialogs",
   ]
 
+  if (is_android) {
+    public += [
+      "android/dangerous_download_dialog_bridge.h",
+      "android/download_callback_validator.h",
+      "android/download_controller.h",
+      "android/download_controller_base.h",
+      "android/download_dialog_bridge.h",
+      "android/download_dialog_utils.h",
+      "android/download_manager_bridge.h",
+      "android/download_manager_service.h",
+      "android/download_message_bridge.h",
+      "android/download_open_source.h",
+      "android/download_startup_utils.h",
+      "android/download_utils.h",
+      "android/duplicate_download_dialog_bridge.h",
+      "android/duplicate_download_dialog_bridge_delegate.h",
+      "android/insecure_download_dialog_bridge.h",
+      "android/new_navigation_observer.h",
+      "android/open_download_dialog_bridge.h",
+      "android/open_download_dialog_bridge_delegate.h",
+      "android/policy_warning_download_dialog_bridge.h",
+      "android/service/download_task_scheduler.h",
+    ]
+
+    public_deps += [
+      "//components/safe_browsing/android:safe_browsing_api_handler",
+      "//components/safe_browsing/android:safe_browsing_api_handler_util",
+    ]
+  }
+
   if (!is_android) {
     public += [
       "default_download_dir_policy_handler.h",
@@ -203,9 +233,39 @@ source_set("impl") {
   ]
 
   if (is_android) {
+    sources += [
+      "android/dangerous_download_dialog_bridge.cc",
+      "android/download_callback_validator.cc",
+      "android/download_controller.cc",
+      "android/download_controller_base.cc",
+      "android/download_dialog_bridge.cc",
+      "android/download_dialog_utils.cc",
+      "android/download_manager_bridge.cc",
+      "android/download_manager_service.cc",
+      "android/download_message_bridge.cc",
+      "android/download_startup_utils.cc",
+      "android/download_utils.cc",
+      "android/duplicate_download_dialog_bridge.cc",
+      "android/duplicate_download_dialog_bridge_delegate.cc",
+      "android/insecure_download_dialog_bridge.cc",
+      "android/items/offline_content_aggregator_factory_android.cc",
+      "android/new_navigation_observer.cc",
+      "android/open_download_dialog_bridge.cc",
+      "android/open_download_dialog_bridge_delegate.cc",
+      "android/policy_warning_download_dialog_bridge.cc",
+      "android/service/download_background_task.cc",
+      "android/service/download_task_scheduler.cc",
+      "android/string_utils.cc",
+    ]
+
     deps += [
+      "//chrome/android:jni_headers",
+      "//chrome/browser:chrome_content_browser_client",
+      "//chrome/browser:profile_key_startup_accessor",
       "//chrome/browser/android:tabs_public",
+      "//chrome/browser/download/android:jni_headers",
       "//chrome/browser/flags:flags_android",
+      "//chrome/browser/offline_pages:impl",
       "//chrome/browser/ui/android/pdf:pdf_jni_headers",
       "//chrome/browser/ui/android/tab_model",
       "//components/safe_browsing/android:safe_browsing_api_handler",
@@ -344,4 +404,18 @@ source_set("status_text_builder_utils") {
     "//chrome/app:generated_resources",
     "//ui/base",
   ]
+}
+
+if (is_android) {
+  source_set("test_support") {
+    testonly = true
+
+    public = [ "android/mock_download_controller.h" ]
+
+    sources = [ "android/mock_download_controller.cc" ]
+
+    public_deps = [ ":download" ]
+
+    deps = [ "//base" ]
+  }
 }
