@@ -685,7 +685,7 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::DoomEntry(
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result = DoomEntryInternal(res_id, corruption_detected);
+  auto result = DoomEntryInternal(key, res_id, corruption_detected);
   RecordTimeAndErrorResultHistogram("DoomEntry", posting_delay, timer.Elapsed(),
                                     result, corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.DoomEntry", "result",
@@ -699,6 +699,7 @@ ErrorAndStoreStatus SqlPersistentStore::Backend::DoomEntry(
 }
 
 Error SqlPersistentStore::Backend::DoomEntryInternal(
+    const CacheEntryKey& key,
     ResId res_id,
     bool& corruption_detected) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
@@ -717,6 +718,7 @@ Error SqlPersistentStore::Backend::DoomEntryInternal(
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE, GetQuery(Query::kDoomEntry_MarkDoomedResources)));
     statement.BindInt64(0, res_id.value());
+    statement.BindString(1, key.string());
     // Iterate through the rows returned by the RETURNING clause.
     while (statement.Step()) {
       // Since we're dooming an entry, its size is subtracted from the total.

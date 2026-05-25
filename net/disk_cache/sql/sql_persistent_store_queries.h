@@ -128,7 +128,8 @@ inline constexpr const char kDoomEntry_MarkDoomedResources[] =
     "SET "
         "doomed=1 "
     "WHERE "
-        "res_id=? AND "  // 0
+        "res_id=? AND "      // 0
+        "cache_key=? AND "   // 1
         "doomed=0 "
     "RETURNING "
         "bytes_usage";       // 0

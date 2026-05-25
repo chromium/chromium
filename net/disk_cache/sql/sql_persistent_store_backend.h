@@ -224,7 +224,9 @@ class SqlPersistentStore::Backend {
                                        base::Time creation_time,
                                        bool run_existance_check,
                                        bool& corruption_detected);
-  Error DoomEntryInternal(ResId res_id, bool& corruption_detected);
+  Error DoomEntryInternal(const CacheEntryKey& key,
+                          ResId res_id,
+                          bool& corruption_detected);
   Error DeleteDoomedEntryInternal(ResId res_id);
   Error DeleteDoomedEntriesInternal(const ResIdList& res_ids_to_delete,
                                     bool& corruption_detected);
