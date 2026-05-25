@@ -3234,24 +3234,6 @@
             ]
         }
     ],
-    "AutofillPopupCheckHtmlFormPopupOverlap": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillPopupCheckHtmlFormPopupOverlap"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillPopupDontAcceptNonVisibleEnoughSuggestion": [
         {
             "platforms": [

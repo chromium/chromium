@@ -853,8 +853,9 @@ BASE_FEATURE(kAutofillPolicyControlledFeatureManualText,
 // If the feature is enabled, Autofill popups perform additional check to
 // detect if they are obscured by top-level HTML form popups (e.g color picker).
 // If so, Autofill Popup won't be shown.
+// TODO(crbug.com/417052041): Remove when launched.
 BASE_FEATURE(kAutofillPopupCheckHtmlFormPopupOverlap,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If the feature is enabled, before triggering suggestion acceptance, the row
 // view checks that a substantial portion of its content was visible for some
