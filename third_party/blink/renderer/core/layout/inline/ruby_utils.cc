@@ -17,11 +17,15 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/fonts/font_height.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/han_kerning.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
 
 namespace blink {
 
 namespace {
+
+constexpr float kHanKerningHalf = 0.5f;
+constexpr float kHanKerningQuarter = 0.25f;
 
 inline bool IsSpaceForRubyOverhang(UChar32 ch) {
   return unicode::Category(ch) == unicode::CharCategory::kSeparator_Space;
@@ -119,6 +123,79 @@ FontHeight ComputeEmHeight(const LogicalLineItem& line_item) {
     }
   }
   return FontHeight();
+}
+
+bool IsFullWidthGlyph(const ShapeResult& text_shape_result,
+                      const SimpleFontData& font,
+                      const String& text_content,
+                      wtf_size_t text_offset) {
+  UChar32 character = text_content.CodePointAtOrZero(text_offset);
+  wtf_size_t code_unit_length = U16_LENGTH(character);
+  const float end_position = text_shape_result.PositionForOffset(
+      text_offset + code_unit_length - text_shape_result.StartIndex());
+  const float start_position = text_shape_result.PositionForOffset(
+      text_offset - text_shape_result.StartIndex());
+  const float glyph_width = std::abs(end_position - start_position);
+  const float advance_min = font.PlatformData().size() * .9;
+  return glyph_width > advance_min;
+}
+
+bool CanTrimHanKerningOpen(const ShapeResult& shape_result,
+                           const ComputedStyle& style,
+                           const String& text_content,
+                           wtf_size_t text_offset) {
+  UChar32 character = text_content.CodePointAtOrZero(text_offset);
+  if (!Character::MaybeHanKerningOpen(character)) {
+    return false;
+  }
+  const SimpleFontData* primary_font = style.GetFont()->PrimaryFont();
+  if (!primary_font || !IsFullWidthGlyph(shape_result, *primary_font,
+                                         text_content, text_offset)) {
+    return false;
+  }
+  const FontDescription& font_description = style.GetFontDescription();
+  HanKerning::FontData font_data = primary_font->HanKerningData(
+      font_description.LocaleOrDefault(), style.IsHorizontalTypographicMode());
+  if (text_offset == 0 ||
+      font_description.GetTextSpacingTrim() == TextSpacingTrim::kSpaceAll) {
+    return true;
+  }
+
+  HanKerningCharType type = HanKerning::GetCharType(character, font_data);
+  UChar32 previous_character =
+      text_content.CodePointAtAndPrevious(0u, text_offset);
+  HanKerningCharType previous_type =
+      HanKerning::GetCharType(previous_character, font_data);
+  return !HanKerning::ShouldKern(type, previous_type);
+}
+
+bool CanTrimHanKerningClose(const ShapeResult& shape_result,
+                            const ComputedStyle& style,
+                            const String& text_content,
+                            wtf_size_t text_offset) {
+  wtf_size_t next_index = text_offset;
+  UChar32 character = text_content.CodePointAtAndNext(next_index);
+  if (!Character::MaybeHanKerningClose(character)) {
+    return false;
+  }
+  const SimpleFontData* primary_font = style.GetFont()->PrimaryFont();
+  if (!primary_font || !IsFullWidthGlyph(shape_result, *primary_font,
+                                         text_content, text_offset)) {
+    return false;
+  }
+  const FontDescription& font_description = style.GetFontDescription();
+  HanKerning::FontData font_data = primary_font->HanKerningData(
+      font_description.LocaleOrDefault(), style.IsHorizontalTypographicMode());
+  if (next_index >= text_content.length() ||
+      font_description.GetTextSpacingTrim() == TextSpacingTrim::kSpaceAll) {
+    return true;
+  }
+
+  HanKerningCharType type = HanKerning::GetCharType(character, font_data);
+  UChar32 next_character = text_content.CodePointAtOrZero(next_index);
+  HanKerningCharType next_type =
+      HanKerning::GetCharType(next_character, font_data);
+  return !HanKerning::ShouldKernLast(/*type=*/next_type, /*last_type=*/type);
 }
 
 wtf_size_t FindPreviousRubyIndex(const InlineItemResults& items,
@@ -301,7 +378,28 @@ AnnotationOverhang GetOverhang(
     }
 
     if (previous_index-- == 0) {
+      previous_index = kNotFound;
       break;
+    }
+  }
+
+  LayoutUnit kerning_overhang;
+  if (previous_index != kNotFound) {
+    const InlineItemResult& previous_item = items[previous_index];
+    if (previous_item.item->Type() == InlineItem::kText &&
+        space_start_offset > previous_item.TextOffset().start) {
+      const ComputedStyle* previous_item_style = previous_item.item->Style();
+      wtf_size_t last_non_space_index = space_start_offset;
+      UChar32 last_non_space_character = text_content.CodePointAtAndPrevious(
+          /*start_offset=*/0u, last_non_space_index);
+      LayoutUnit font_size(previous_item_style->FontSize());
+      if (CanTrimHanKerningClose(*previous_item.item->TextShapeResult(),
+                                 *previous_item_style, text_content,
+                                 last_non_space_index)) {
+        kerning_overhang = LayoutUnit(font_size * kHanKerningHalf);
+      } else if (Character::MaybeHanKerningMiddle(last_non_space_character)) {
+        kerning_overhang = LayoutUnit(font_size * kHanKerningQuarter);
+      }
     }
   }
 
@@ -312,9 +410,8 @@ AnnotationOverhang GetOverhang(
     overhang.end = std::min(space, ruby_base_inset.value() * 2);
     return overhang;
   }
-  // TODO(crbug.com/499042741): Support for overhanging the fullwidth opening,
-  // closing and middle dot punctuation.
-  overhang.start = std::min(ruby_base_inset.value(), space_overhang);
+  overhang.start =
+      std::min(ruby_base_inset.value(), space_overhang + kerning_overhang);
   overhang.start =
       std::min(previous_item_inline_size_sum - previous_ruby_overhang_end,
                overhang.start);
@@ -376,9 +473,11 @@ bool CanApplyStartOverhang(const LineInfo& line_info,
     UChar32 previous_character = text_content.CodePointAtAndPrevious(
         /*start_offset=*/previous_item.TextOffset().start,
         /*i=*/previous_character_index);
-    // TODO(crbug.com/499042741): Support for overhanging the fullwidth opening,
-    // closing and middle dot punctuation.
-    if (!IsSpaceForRubyOverhang(previous_character)) {
+    if (!IsSpaceForRubyOverhang(previous_character) &&
+        !CanTrimHanKerningClose(*previous_item.item->TextShapeResult(),
+                                previous_item_style, text_content,
+                                previous_character_index) &&
+        !Character::MaybeHanKerningMiddle(previous_character)) {
       return false;
     }
     return true;
@@ -482,9 +581,20 @@ LayoutUnit CommitPendingEndOverhang(const InlineItem& text_item,
       space_overhang = LayoutUnit(space_view->Width());
     }
 
-    // TODO(crbug.com/499042741): Support for overhanging the fullwidth opening,
-    // closing and middle dot punctuation.
-    end_overhang = std::min(column_item.pending_end_overhang, space_overhang);
+    LayoutUnit kerning_overhang;
+    if (space_end < text_item.EndOffset()) {
+      LayoutUnit font_size(text_item.Style()->FontSize());
+      if (CanTrimHanKerningOpen(shape_result, *text_item.Style(), text_content,
+                                space_end)) {
+        kerning_overhang = LayoutUnit(font_size * kHanKerningHalf);
+      } else if (Character::MaybeHanKerningMiddle(
+                     text_content.CodePointAtOrZero(space_end))) {
+        kerning_overhang = LayoutUnit(font_size * kHanKerningQuarter);
+      }
+    }
+
+    end_overhang = std::min(column_item.pending_end_overhang,
+                            space_overhang + kerning_overhang);
 
     if (space_end < text_item.EndOffset()) {
       is_exhausted = true;

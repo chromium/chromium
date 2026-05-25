@@ -1020,10 +1020,6 @@ crbug.com/1176323 external/wpt/css/css-counter-styles/counter-style-at-rule/symb
 crbug.com/1168277 external/wpt/css/css-counter-styles/counter-style-at-rule/disclosure-styles.html [ Failure ]
 crbug.com/1176315 external/wpt/css/css-counter-styles/counter-style-at-rule/symbols-function.html [ Failure ]
 
-# [css-ruby-1]
-crbug.com/499042741 external/wpt/css/css-ruby/ruby-overhang-spaces-002.html [ Failure ]
-crbug.com/499042741 external/wpt/css/css-ruby/ruby-overhang-spaces-005.html [ Failure ]
-
 # Maybe WontFix according to the bug
 crbug.com/750992 external/wpt/css/css-overflow/margin-block-end-scroll-area-001.html [ Failure ]
 

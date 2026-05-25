@@ -167,18 +167,6 @@ HanKerning::CharType HanKerning::GetCharType(UChar ch,
   NOTREACHED();
 }
 
-inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
-  return type == CharType::kOpen &&
-         (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
-          last_type == CharType::kClose || last_type == CharType::kOpenNarrow);
-}
-
-inline bool HanKerning::ShouldKernLast(CharType type, CharType last_type) {
-  return last_type == CharType::kClose &&
-         (type == CharType::kClose || type == CharType::kMiddle ||
-          type == CharType::kCloseNarrow);
-}
-
 HanKerning::CharType HanKerning::GetCharTypeWithCache(const String& text,
                                                       wtf_size_t index,
                                                       const FontData& font_data,

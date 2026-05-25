@@ -12,12 +12,13 @@ div {
     border-right: 5px solid;
     width: max-content;
     margin-bottom: 10px;
+    text-spacing-trim: space-all;
 }
 .test { border-color: orange; }
 .measure { border-color: blue; }
 </style>
 <body lang="ja">
 <p>Test passes if orange and blue lines are aligned.
-<div class="test">🍊<ruby>　　あ　　<rt>ああああああああああ</ruby>🍊</div>
-<div class="measure">🍊　　あ　　🍊</div>
+<div class="test">🍊<ruby>）　あ　（<rt>ああああああああ</rt></ruby>🍊</div>
+<div class="measure">🍊）　あ　（🍊</div>
 </body>

@@ -134,6 +134,12 @@ bool Character::MaybeHanKerningCloseSlow(UChar32 ch) {
          type == HanKerningCharType::kCloseQuote;
 }
 
+bool Character::MaybeHanKerningMiddleSlow(UChar32 ch) {
+  // See `HanKerning::GetCharType`.
+  const HanKerningCharType type = Character::GetHanKerningCharType(ch);
+  return type == HanKerningCharType::kMiddle;
+}
+
 bool Character::CanTextDecorationSkipInk(UChar32 codepoint) {
   if (codepoint == uchar::kSolidus || codepoint == uchar::kReverseSolidus ||
       codepoint == uchar::kLowLine) {

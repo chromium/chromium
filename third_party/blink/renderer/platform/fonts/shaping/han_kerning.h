@@ -115,12 +115,16 @@ class PLATFORM_EXPORT HanKerning {
     CharType type_for_semicolon = CharType::kOther;
   };
 
+  static CharType GetCharType(UChar ch, const FontData& font_data);
+
+  static bool ShouldKern(CharType type, CharType last_type);
+  static bool ShouldKernLast(CharType type, CharType last_type);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HanKerningTest, MayApply);
 
   enum class Priority : uint8_t { kText, kCache };
 
-  static CharType GetCharType(UChar ch, const FontData& font_data);
   CharType GetCharType(const String& text,
                        wtf_size_t index,
                        const FontData& font_data,
@@ -129,9 +133,6 @@ class PLATFORM_EXPORT HanKerning {
                                 wtf_size_t index,
                                 const FontData& font_data,
                                 Priority priority);
-
-  static bool ShouldKern(CharType type, CharType last_type);
-  static bool ShouldKernLast(CharType type, CharType last_type);
 
   void ApplyKerning(ShapeResult& result);
 
@@ -158,6 +159,18 @@ inline void HanKerning::DidShapeSegment(ShapeResult& result) {
   if (!changed_indexes_.empty()) [[unlikely]] {
     ApplyKerning(result);
   }
+}
+
+inline bool HanKerning::ShouldKern(CharType type, CharType last_type) {
+  return type == CharType::kOpen &&
+         (last_type == CharType::kOpen || last_type == CharType::kMiddle ||
+          last_type == CharType::kClose || last_type == CharType::kOpenNarrow);
+}
+
+inline bool HanKerning::ShouldKernLast(CharType type, CharType last_type) {
+  return last_type == CharType::kClose &&
+         (type == CharType::kClose || type == CharType::kMiddle ||
+          type == CharType::kCloseNarrow);
 }
 
 }  // namespace blink

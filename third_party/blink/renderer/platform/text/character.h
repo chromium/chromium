@@ -141,6 +141,10 @@ class PLATFORM_EXPORT Character {
   }
   static bool MayNeedEastAsianSpacing(UChar32);
 
+  static bool MaybeHanKerningMiddle(UChar32 ch) {
+    return MaybeHanKerningMiddleSlow(ch);
+  }
+
   // Collapsible white space characters defined in CSS:
   // https://drafts.csswg.org/css-text-3/#collapsible-white-space
   static bool IsCollapsibleSpace(UChar c) {
@@ -277,6 +281,7 @@ class PLATFORM_EXPORT Character {
   static bool IsHangulSlow(UChar32);
   static bool MaybeHanKerningOpenSlow(UChar32);
   static bool MaybeHanKerningCloseSlow(UChar32);
+  static bool MaybeHanKerningMiddleSlow(UChar32);
   static void ApplyPatternAndFreezeIfEmpty(icu::UnicodeSet* unicodeSet,
                                            const char* pattern);
 };
