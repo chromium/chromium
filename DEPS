@@ -784,7 +784,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/buildtools/third_party/mold/mold',
-              'version': 'UH7MA2VLLbNm1J5MO20dbmdn6u2qASOadfH-0Rq5vxYC',
+              'version': 'DqZYuHKetwhgMMzmroTym1IX_LrHul40x0PtR_W5KBYC',
           },
       ],
       'condition': 'host_os == "linux" and non_git_source',

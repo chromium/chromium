@@ -151,10 +151,6 @@ template("single_gcc_toolchain") {
       # sub-toolchain.
       host_toolchain_is_msan = _host_toolchain_is_msan
       host_toolchain_msan_track_origins = _host_toolchain_msan_track_origins
-
-      use_mold = use_mold &&
-          (invoker_toolchain_args.current_cpu == "x64" ||
-           invoker_toolchain_args.current_cpu == "arm64")
     }
 
     # When the invoker has explicitly overridden use_remoteexec or
@@ -331,11 +327,7 @@ template("single_gcc_toolchain") {
 
     use_mold_separate_debug_file =
         defined(invoker.use_mold_separate_debug_file) &&
-        invoker.use_mold_separate_debug_file &&
-        toolchain_args.use_mold
-    if (use_mold_separate_debug_file) {
-      not_needed(invoker, [ "strip" ])
-    }
+        invoker.use_mold_separate_debug_file
 
     # These library switches can apply to all tools below.
     lib_switch = "-l"
@@ -474,7 +466,7 @@ template("single_gcc_toolchain") {
       assert(defined(readelf), "to solink you must have a readelf")
       assert(defined(nm), "to solink you must have an nm")
       strip_switch = ""
-      if (defined(invoker.strip) && !use_mold_separate_debug_file) {
+      if (defined(invoker.strip)) {
         strip_switch = "--strip=${invoker.strip} "
       }
 
@@ -580,7 +572,7 @@ template("single_gcc_toolchain") {
       }
       command += "@\"$rspfile\" {{rlibs}}"
 
-      if (defined(invoker.strip) && !use_mold_separate_debug_file) {
+      if (defined(invoker.strip)) {
         strip_command =
             "${invoker.strip} -o \"$sofile\" \"$sofile_with_symbols\""
         command += " && " + strip_command
@@ -668,7 +660,7 @@ template("single_gcc_toolchain") {
       }
 
       strip_switch = ""
-      if (defined(invoker.strip) && !use_mold_separate_debug_file) {
+      if (defined(invoker.strip)) {
         strip_switch = " --strip=\"${invoker.strip}\" --symbols-file=\"$outfile_with_symbols\""
       }
 
