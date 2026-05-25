@@ -512,8 +512,7 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
     // sub-page, this will surface on Android, and show devices saved to the
     // user's account. For subsequent pairing, we opt in the user after they
     // elect to pair with a device already saved to their account.
-    if (features::IsFastPairSavedDevicesEnabled() &&
-        !features::IsFastPairSavedDevicesStrictOptInEnabled()) {
+    if (features::IsFastPairSavedDevicesEnabled()) {
       CD_LOG(VERBOSE, Feature::FP)
           << __func__ << ": attempting to opt-in the user";
       FastPairRepository::Get()->UpdateOptInStatus(
@@ -547,15 +546,6 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
     return;
   }
 
-  // We want to verify the opt in status if the flag is enabled before we write
-  // an account key.
-  if (features::IsFastPairSavedDevicesEnabled() &&
-      features::IsFastPairSavedDevicesStrictOptInEnabled()) {
-    FastPairRepository::Get()->CheckOptInStatus(
-        base::BindOnce(&FastPairPairerImpl::OnCheckOptInStatus,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
 
   // It's possible that the user has opted to initial pair to a device that
   // already has an account key saved. We check to see if this is the case
@@ -581,27 +571,6 @@ void FastPairPairerImpl::AttemptSendAccountKey() {
     }
     WriteAccountKey();
   }
-}
-
-void FastPairPairerImpl::OnCheckOptInStatus(
-    nearby::fastpair::OptInStatus status) {
-  CD_LOG(VERBOSE, Feature::FP) << __func__;
-
-  if (status != nearby::fastpair::OptInStatus::STATUS_OPTED_IN) {
-    CD_LOG(VERBOSE, Feature::FP)
-        << __func__
-        << ": User is not opted in to save devices to their account";
-    std::move(pairing_procedure_complete_).Run(device_);
-    return;
-  }
-
-  // It's possible that the user has opted to initial pair to a device that
-  // already has an account key saved. We check to see if this is the case
-  // before writing a new account key.
-  FastPairRepository::Get()->IsDeviceSavedToAccount(
-      device_->classic_address().value(),
-      base::BindOnce(&FastPairPairerImpl::OnIsDeviceSavedToAccount,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FastPairPairerImpl::OnIsDeviceSavedToAccount(
@@ -711,8 +680,7 @@ void FastPairPairerImpl::OnWriteAccountKey(
   // sub-page, this will surface on Android, and show devices saved to the
   // user's account. For initial pairing and retroactive pairing, we opt in the
   // user after after we successfully save an account key to their account.
-  if (features::IsFastPairSavedDevicesEnabled() &&
-      !features::IsFastPairSavedDevicesStrictOptInEnabled()) {
+  if (features::IsFastPairSavedDevicesEnabled()) {
     CD_LOG(VERBOSE, Feature::FP)
         << __func__ << ": attempting to opt-in the user";
     FastPairRepository::Get()->UpdateOptInStatus(

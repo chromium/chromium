@@ -500,47 +500,13 @@ TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_Lost) {
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-
-  // Strict interpretation of opt-in status while opted in means that we
-  // expect to be notified of retroactive pairing when the MessageStream
-  // connects after pairing is completed. This test is for the scenario
-  // when we receive both the model id and the BLE address bytes over the
-  // Message Stream.
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  SetMessageStream(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
-}
 
 TEST_F(RetroactivePairingDetectorTest, MessageStream_Ble_ModelId_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   // Without the SavedDevices or StrictOptIn flags, we expect that opt-in
   // status being opted out does not matter and should not impact whether or
@@ -574,7 +540,7 @@ TEST_F(RetroactivePairingDetectorTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
 
   // With the SavedDevices flag but without the StrictOptIn flag, we expect that
   // opt-in status being opted out does not matter and should not impact whether
@@ -602,39 +568,6 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStream_Ble_ModelId_SavedFlagDisabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-
-  // With the StrictOptIn flag but without the SavedDevices flag, we expect that
-  // opt-in status being opted out does not matter and should not impact whether
-  // or not we detect a retroactive pairing scenario. We expect to still receive
-  // the model id and BLE bytes once the Message Stream connects, and be
-  // notified of retroactive pairing found.
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  SetMessageStream(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
-}
 
 TEST_F(RetroactivePairingDetectorTest,
        MessageStream_Ble_ModelId_GuestUserLoggedIn) {
@@ -680,38 +613,6 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStream_GetMessageStream_Ble_ModelId_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-
-  // Strict interpretation of opt-in status while opted in means that we
-  // expect to be notified of retroactive pairing when the Message Stream
-  // connects after pairing is completed. This test is for the scenario
-  // when we receive both the model id and the BLE address bytes over the
-  // Message Stream. The case where we are not notified when opted out is
-  // tested in Notify_OptedOut_* tests below.
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  AddMessageStream(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
-}
 
 TEST_F(RetroactivePairingDetectorTest,
        MessageStream_GetMessageStream_Ble_ModelId_FlagDisabled) {
@@ -723,8 +624,7 @@ TEST_F(RetroactivePairingDetectorTest,
   // found.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -753,70 +653,14 @@ TEST_F(RetroactivePairingDetectorTest,
   // found.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  AddMessageStream(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStream_GetMessageStream_Ble_ModelId_SavedFlagDisabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // With only one flag enabled and the other disabled, the user's opt-in status
-  // of opted out should not impact the notification of a retroactive pairing
-  // found.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  AddMessageStream(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       EnableScenarioIfLoggedInLater_FlagEnabled) {
-  Login(user_manager::UserType::kGuest);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+  base::RunLoop().RunUntilIdle();
+  CreateRetroactivePairingDetector();
+
   EXPECT_FALSE(retroactive_pair_found_);
 
-  CreateRetroactivePairingDetector();
-  base::RunLoop().RunUntilIdle();
-
-  Login(user_manager::UserType::kRegular);
   AddMessageStream(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
@@ -827,6 +671,8 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
   EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
+
+
 
 TEST_F(RetroactivePairingDetectorTest,
        EnableScenarioIfLoggedInLater_FlagDisabled) {
@@ -834,8 +680,7 @@ TEST_F(RetroactivePairingDetectorTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   EXPECT_FALSE(retroactive_pair_found_);
@@ -861,7 +706,7 @@ TEST_F(RetroactivePairingDetectorTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   EXPECT_FALSE(retroactive_pair_found_);
@@ -881,31 +726,6 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
 
-TEST_F(RetroactivePairingDetectorTest,
-       EnableScenarioIfLoggedInLater_SavedFlagDisabled) {
-  Login(user_manager::UserType::kGuest);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  CreateRetroactivePairingDetector();
-  base::RunLoop().RunUntilIdle();
-
-  Login(user_manager::UserType::kRegular);
-  AddMessageStream(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
-}
 
 TEST_F(RetroactivePairingDetectorTest,
        DontEnableScenarioIfLoggedInLaterAsGuest) {
@@ -939,36 +759,6 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStream_GetMessageStream_ModelId_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-
-  // With both SavedDevices and StrictOptIn enabled, we expect to be notified
-  // when the Message Stream is connected before we are notified that the
-  // pairing is complete, and retrieving the model id and BLE address
-  // after the fact by parsing the previous messages received if the user
-  // is opted in to saving devices to their account. The case where we are not
-  // notified when opted out is tested in Notify_OptedOut_* tests below.
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  AddMessageStream(kModelIdBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
 
 TEST_F(RetroactivePairingDetectorTest,
        MessageStream_GetMessageStream_ModelId_FlagDisabled) {
@@ -982,8 +772,7 @@ TEST_F(RetroactivePairingDetectorTest,
   // user is opted out of saving devices to their account.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1012,86 +801,24 @@ TEST_F(RetroactivePairingDetectorTest,
   // retroactive pairing has been found.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  AddMessageStream(kModelIdBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStream_GetMessageStream_ModelId_SavedFlagDisabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // With the StrictOptIn flag enabled but the SavedDevices disabled, we
-  // expect to not consider the user's status of opted out and still be
-  // notified when a MessageStream is connected before we are notified of
-  // pairing, and successfully parse a model id and BLE address to confirm
-  // retroactive pairing has been found.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  AddMessageStream(kModelIdBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStream_Observer_Ble_ModelId_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
-
-  // This test is for the scenario where the Message Stream receives messages
-  // for the BLE address and model id after it is connected and paired, and
-  // the detector should observe these messages and notify us of the device.
   fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   CreateRetroactivePairingDetector();
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  AddMessageStream(kModelIdBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
+  EXPECT_FALSE(retroactive_pair_found_);
 }
+
+
 
 TEST_F(RetroactivePairingDetectorTest,
        MessageStream_Observer_Ble_ModelId_GuestAccount) {
@@ -1115,38 +842,6 @@ TEST_F(RetroactivePairingDetectorTest,
   EXPECT_FALSE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStream_Observer_ModelId_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // With the SavedDevices and StrictOptIn flags enabled, we do not expect
-  // to be notified if we only receive the model id (no BLE address) even if
-  // the user is opted in.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
 
 TEST_F(RetroactivePairingDetectorTest,
        MessageStream_Observer_ModelId_FlagDisabled) {
@@ -1161,8 +856,7 @@ TEST_F(RetroactivePairingDetectorTest,
   // notified.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1197,90 +891,22 @@ TEST_F(RetroactivePairingDetectorTest,
   // notified.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStream_Observer_ModelId_SavedFlagDisabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // With only the SavedDevices flag disabled, we do not expect
-  // to be notified if we only receive the model id (no BLE address) even if
-  // the user is opted out. Opt-in status shouldn't matter for notifying with
-  // the flags disabled, but here, since we don't have the information we need
-  // from the device for retroactive pairing, then we expect to not be
-  // notified.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStreamRemovedOnDestroyed_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::test::ScopedFeatureList feature_list;
-
-  // This test is verifying that we are notified when the MessageStream
-  // is destroyed, and properly remove the MessageStream. The opt-in status
-  // and flags set should not impact this behavior.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
+  fast_pair_repository_->SetOptInStatus(
+      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
   CreateRetroactivePairingDetector();
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  SetMessageStream(kModelIdBleAddressBytes);
+  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
+  base::RunLoop().RunUntilIdle();
 
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  message_stream_.reset();
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
@@ -1299,8 +925,7 @@ TEST_F(RetroactivePairingDetectorTest,
   // and flags set should not impact this behavior.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   base::RunLoop().RunUntilIdle();
   CreateRetroactivePairingDetector();
 
@@ -1332,92 +957,20 @@ TEST_F(RetroactivePairingDetectorTest,
   // and flags set should not impact this behavior.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  SetMessageStream(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  message_stream_.reset();
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStreamRemovedOnDestroyed_SavedFlagDisabled) {
-  Login(user_manager::UserType::kRegular);
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::test::ScopedFeatureList feature_list;
-
-  // This test is verifying that we are notified when the Message Stream
-  // is destroyed, and properly remove the Message Stream. The opt-in status
-  // and flags set should not impact this behavior.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  SetMessageStream(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  message_stream_.reset();
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStreamRemovedOnDisconnect_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // This test is verifying that we are notified when the Message Stream
-  // is destroyed, and properly remove the Message Stream. The opt-in status
-  // and flags set should not impact this behavior.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   CreateRetroactivePairingDetector();
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetErrorReason(
-      device::BluetoothSocket::ErrorReason::kDisconnected);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  message_stream_ =
-      std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
+  SetMessageStream(kModelIdBleAddressBytes);
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
 
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
+  message_stream_.reset();
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
@@ -1434,8 +987,7 @@ TEST_F(RetroactivePairingDetectorTest,
   // and flags set should not impact this behavior.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1474,84 +1026,6 @@ TEST_F(RetroactivePairingDetectorTest,
   // and flags set should not impact this behavior.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  fake_socket_->SetErrorReason(
-      device::BluetoothSocket::ErrorReason::kDisconnected);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  message_stream_ =
-      std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       MessageStreamRemovedOnDisconnect_SavedFlagDisabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // This test is verifying that we are notified when the Message Stream
-  // is destroyed, and properly remove the Message Stream. The opt-in status
-  // and flags set should not impact this behavior.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  fake_socket_->SetErrorReason(
-      device::BluetoothSocket::ErrorReason::kDisconnected);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  message_stream_ =
-      std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest, DontNotify_OptedOut_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // If the SavedDevices and StrictOptIn flags are enabled and the user is
-  // opted out, we expect not to be notified for retroactive pairing even if
-  // a potential one is found.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
@@ -1560,7 +1034,13 @@ TEST_F(RetroactivePairingDetectorTest, DontNotify_OptedOut_FlagEnabled) {
 
   EXPECT_FALSE(retroactive_pair_found_);
 
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
+  fake_socket_->SetErrorReason(
+      device::BluetoothSocket::ErrorReason::kDisconnected);
+  fake_socket_->TriggerReceiveCallback();
+  base::RunLoop().RunUntilIdle();
+
+  message_stream_ =
+      std::make_unique<MessageStream>(kTestDeviceAddress, fake_socket_.get());
   PairFastPairDeviceWithClassicBluetooth(
       /*new_paired_status=*/true, kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
@@ -1568,6 +1048,7 @@ TEST_F(RetroactivePairingDetectorTest, DontNotify_OptedOut_FlagEnabled) {
   NotifyMessageStreamConnected(kTestDeviceAddress);
   base::RunLoop().RunUntilIdle();
 
+  fake_socket_->SetIOBufferFromBytes(kModelIdBytes);
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
@@ -1582,8 +1063,7 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_FlagDisabled) {
   // notified when a retroactive pairing is found even if the user is opted out.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1614,7 +1094,7 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_StrictFlagDisabled) {
   // devices to their account.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1636,44 +1116,13 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_StrictFlagDisabled) {
   EXPECT_TRUE(retroactive_pair_found_);
 }
 
-TEST_F(RetroactivePairingDetectorTest, Notify_OptedOut_SavedFlagDisabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // If the SavedDevices flag is disabled but the StrictOptin flag is enabled,
-  // then we expect to be notified even if the user is opted out of saving
-  // devices to their account.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-}
 
 TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
@@ -1703,70 +1152,9 @@ TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_StrictFlagDisabled) {
   // a retroactive pairing regardless of opt-in status.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest, Notify_OptedIn_SavedFlagDisabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-
-  // When only the SavedDevices flag is disabled, we expect to be notified about
-  // a retroactive pairing regardless of opt-in status.
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{features::kFastPairSavedDevices});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest,
-       DontNotify_OptedOut_OptedIn_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
       /*disabled_features=*/{});
-
-  // Simulate user is opted out.
   fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
+      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
   base::RunLoop().RunUntilIdle();
   CreateRetroactivePairingDetector();
 
@@ -1783,29 +1171,10 @@ TEST_F(RetroactivePairingDetectorTest,
   fake_socket_->TriggerReceiveCallback();
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  // Simulate user is opted in. Now we would expect to be notified of a
-  // retroactive pairing scenario when the flags are enabled for a
-  // strict interpretation of the opt in status.
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-
-  fake_socket_->SetIOBufferFromBytes(kModelIdBleAddressBytes);
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  NotifyMessageStreamConnected(kTestDeviceAddress);
-  base::RunLoop().RunUntilIdle();
-
-  fake_socket_->TriggerReceiveCallback();
-  base::RunLoop().RunUntilIdle();
-
   EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
 }
+
+
 
 TEST_F(RetroactivePairingDetectorTest, DontNotifyIfAlreadySavedToAcount) {
   Login(user_manager::UserType::kRegular);
@@ -1818,8 +1187,7 @@ TEST_F(RetroactivePairingDetectorTest, DontNotifyIfAlreadySavedToAcount) {
   // be notified.
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1854,7 +1222,7 @@ TEST_F(RetroactivePairingDetectorTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1888,7 +1256,7 @@ TEST_F(RetroactivePairingDetectorTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1934,7 +1302,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -1986,7 +1354,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -2038,7 +1406,7 @@ TEST_F(
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -2086,7 +1454,7 @@ TEST_F(RetroactivePairingDetectorTest, NotifyAfterDeviceRepairs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   CreateRetroactivePairingDetector();
@@ -2121,8 +1489,7 @@ TEST_F(RetroactivePairingDetectorTest, NoCrashWhenFootprintsResponseIsSlow) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
   base::RunLoop().RunUntilIdle();
@@ -2152,112 +1519,9 @@ TEST_F(RetroactivePairingDetectorTest, NoCrashWhenFootprintsResponseIsSlow) {
   fast_pair_repository_->TriggerIsDeviceSavedToAccountCallback();
 }
 
-TEST_F(RetroactivePairingDetectorTest, FastPairHID_Success) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn,
-                            floss::features::kFlossEnabled},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
 
-  EXPECT_FALSE(retroactive_pair_found_);
 
-  // Test the normal retroactive pair flow of a BLE HID
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kBleAddress);
-  SetGattServiceClientConnected(true);
-  RunGattClientInitializedCallback(/*pair_failure=*/std::nullopt);
-  RunReadModelIdCallback(/*error_code=*/std::nullopt, kModelIdBytesNoMetadata);
 
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
-}
-
-TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionOpen_Success) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn,
-                            floss::features::kFlossEnabled},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  // If GATT connection already open, we expect a read to Model ID
-  // immediately after.
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kBleAddress,
-      /*test_hid_already_connected=*/true);
-  RunReadModelIdCallback(/*error_code*/ std::nullopt, kModelIdBytesNoMetadata);
-
-  EXPECT_TRUE(retroactive_pair_found_);
-  EXPECT_EQ(retroactive_device_->ble_address(), kBleAddress);
-  EXPECT_EQ(retroactive_device_->metadata_id(), kModelId);
-}
-
-TEST_F(RetroactivePairingDetectorTest, FastPairHID_GattConnectionFailure) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn,
-                            floss::features::kFlossEnabled},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kBleAddress);
-  SetGattServiceClientConnected(true);
-
-  // If we get an error while create the GATT connection, we shouldn't
-  // expect a retroactive pairable device to be found.
-  RunGattClientInitializedCallback(PairFailure::kCreateGattConnection);
-  EXPECT_FALSE(retroactive_pair_found_);
-}
-
-TEST_F(RetroactivePairingDetectorTest, FastPairHID_ReadModelIdFailure) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn,
-                            floss::features::kFlossEnabled},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::RunLoop().RunUntilIdle();
-  CreateRetroactivePairingDetector();
-
-  EXPECT_FALSE(retroactive_pair_found_);
-
-  PairFastPairDeviceWithClassicBluetooth(
-      /*new_paired_status=*/true, kBleAddress);
-  SetGattServiceClientConnected(true);
-  RunGattClientInitializedCallback(/*pair_failure=*/std::nullopt);
-
-  // If we get an error while reading model ID, we shouldn't expect a
-  // retroactive pairable device to be found.
-  RunReadModelIdCallback(
-      /*error_code=*/device::BluetoothGattService::GattErrorCode::kNotSupported,
-      kModelIdBytesNoMetadata);
-  EXPECT_FALSE(retroactive_pair_found_);
-}
 
 TEST_F(RetroactivePairingDetectorTest,
        ClassicBluetoothPairedLEDeviceDoesNotTriggerRetroactivePair) {

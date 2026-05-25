@@ -142,31 +142,8 @@ void FastPairPresenterImpl::OnDiscoveryMetadataRetrieved(
   // mention saving devices to the user account. This is flagged depending if
   // the Fast Pair Saved Devices is enabled and we are using a strict
   // interpretation of the opt-in status.
-  if (features::IsFastPairSavedDevicesEnabled() &&
-      features::IsFastPairSavedDevicesStrictOptInEnabled()) {
-    FastPairRepository::Get()->CheckOptInStatus(base::BindOnce(
-        &FastPairPresenterImpl::OnCheckOptInStatus,
-        weak_pointer_factory_.GetWeakPtr(), device, callback, device_metadata));
-    return;
-  }
-
   // If we don't have SavedDevices flag enabled, then we can ignore the user's
   // opt in status and move forward to showing the User Discovery notification.
-  ShowUserDiscoveryNotification(device, callback, device_metadata);
-}
-
-void FastPairPresenterImpl::OnCheckOptInStatus(
-    scoped_refptr<Device> device,
-    DiscoveryCallback callback,
-    DeviceMetadata* device_metadata,
-    nearby::fastpair::OptInStatus status) {
-  CD_LOG(INFO, Feature::FP) << __func__;
-
-  if (status != nearby::fastpair::OptInStatus::STATUS_OPTED_IN) {
-    ShowGuestDiscoveryNotification(device, callback, device_metadata);
-    return;
-  }
-
   ShowUserDiscoveryNotification(device, callback, device_metadata);
 }
 

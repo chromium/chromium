@@ -132,11 +132,6 @@ class RetroactivePairingDetectorImpl final
   void AttemptRetroactivePairing(const std::string& classic_address,
                                  bool is_device_saved_to_account);
 
-  // FastPairRepository::CheckOptInStatus callback
-  void OnCheckOptInStatus(const std::string& model_id,
-                          const std::string& ble_address,
-                          const std::string& classic_address,
-                          nearby::fastpair::OptInStatus status);
 
   // Converts a Bluetooth device to a Fast Pair Device and notifies observers
   // that a device has been found to retroactively pair to.

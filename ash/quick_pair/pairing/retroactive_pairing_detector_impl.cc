@@ -558,35 +558,8 @@ void RetroactivePairingDetectorImpl::NotifyDeviceFound(
   // to notify a device is found, we can accurately reflect a user's status
   // in the moment. This is flagged on whether the user has the Fast Pair
   // Saved Devices flag enabled.
-  if (features::IsFastPairSavedDevicesEnabled() &&
-      features::IsFastPairSavedDevicesStrictOptInEnabled()) {
-    FastPairRepository::Get()->CheckOptInStatus(
-        base::BindOnce(&RetroactivePairingDetectorImpl::OnCheckOptInStatus,
-                       weak_ptr_factory_.GetWeakPtr(), model_id, ble_address,
-                       classic_address));
-    return;
-  }
-
   // If the SavedDevices flag is not enabled, we don't have to check opt in
   // status and can move forward with verifying the device found.
-  VerifyDeviceFound(model_id, ble_address, classic_address);
-}
-
-void RetroactivePairingDetectorImpl::OnCheckOptInStatus(
-    const std::string& model_id,
-    const std::string& ble_address,
-    const std::string& classic_address,
-    nearby::fastpair::OptInStatus status) {
-  CD_LOG(INFO, Feature::FP) << __func__;
-
-  if (status != nearby::fastpair::OptInStatus::STATUS_OPTED_IN) {
-    CD_LOG(INFO, Feature::FP)
-        << __func__
-        << ": User is not opted in to save devices to their account";
-    RemoveDeviceInformation(classic_address);
-    return;
-  }
-
   VerifyDeviceFound(model_id, ble_address, classic_address);
 }
 

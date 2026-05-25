@@ -1424,53 +1424,13 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Initial_FactoryCreate) {
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 }
 
-TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-
-  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
-                   /*protocol=*/Protocol::kFastPairSubsequent);
-
-  // When pairing starts, if the classic address can't be resolved to
-  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
-  // to return null when queried for the device to mock this behavior.
-  SetGetDeviceNullptr();
-  AddConnectedHandshake();
-  CreatePairer();
-  EXPECT_EQ(GetPairFailure(), std::nullopt);
-  EXPECT_CALL(paired_callback_, Run);
-  SetDecryptPasskeyForSuccess();
-  NotifyConfirmPasskey();
-  EXPECT_CALL(pairing_procedure_complete_, Run);
-  RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), std::nullopt);
-  EXPECT_TRUE(IsDevicePaired());
-  EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  ExpectStepMetrics<FastPairProtocolPairingSteps>(
-      kProtocolPairingStepSubsequent,
-      {FastPairProtocolPairingSteps::kPairingStarted,
-       FastPairProtocolPairingSteps::kPairingComplete,
-       FastPairProtocolPairingSteps::kPasskeyNegotiated,
-       FastPairProtocolPairingSteps::kRecievedPasskeyResponse,
-       FastPairProtocolPairingSteps::kPasskeyValidated,
-       FastPairProtocolPairingSteps::kPasskeyConfirmed,
-       FastPairProtocolPairingSteps::kDeviceConnected});
-}
 
 TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
 
@@ -1500,7 +1460,7 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
 
@@ -1525,56 +1485,13 @@ TEST_F(FastPairPairerImplTest, PairSuccess_Subsequent_StrictFlagDisabled) {
   adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
 }
 
-TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 0);
-  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
-                   /*protocol=*/Protocol::kFastPairInitial);
-  SetPublicKey();
-
-  // When pairing starts, if the classic address can't be resolved to
-  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
-  // to return null when queried for the device to mock this behavior.
-  SetGetDeviceNullptr();
-  AddConnectedHandshake();
-  CreatePairer();
-  EXPECT_EQ(GetPairFailure(), std::nullopt);
-  EXPECT_CALL(paired_callback_, Run);
-  SetDecryptPasskeyForSuccess();
-  NotifyConfirmPasskey();
-  RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), std::nullopt);
-  EXPECT_TRUE(IsDevicePaired());
-  EXPECT_CALL(pairing_procedure_complete_, Run);
-  EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-
-  // Ensure that the account key is not written to the peripheral until the
-  // peripheral is successfully paired.
-  EXPECT_FALSE(IsAccountKeySavedToFootprints());
-  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  RunWriteAccountKeyCallback();
-  EXPECT_TRUE(IsAccountKeySavedToFootprints());
-  EXPECT_TRUE(IsDisplayNameSavedToFootprints());
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 1);
-}
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
 
@@ -1616,7 +1533,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
 
@@ -1768,49 +1685,6 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Initial_Locked) {
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
 
-TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-
-  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
-                   /*protocol=*/Protocol::kFastPairSubsequent);
-
-  // When pairing starts, if the classic address can't be resolved to
-  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
-  // to return null when queried for the device to mock this behavior.
-  SetGetDeviceNullptr();
-  AddConnectedHandshake();
-  CreatePairer();
-  EXPECT_EQ(GetPairFailure(), std::nullopt);
-  EXPECT_CALL(paired_callback_, Run);
-  SetDecryptPasskeyForSuccess();
-  NotifyConfirmPasskey();
-  EXPECT_CALL(pairing_procedure_complete_, Run);
-  RunWritePasskeyCallback(kResponseBytes);
-  EXPECT_EQ(GetPairFailure(), std::nullopt);
-  EXPECT_TRUE(IsDevicePaired());
-  EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-
-  // Ensure that the account key is not written to the peripheral until the
-  // peripheral is successfully paired.
-  EXPECT_FALSE(IsAccountKeySavedToFootprints());
-  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
-
-  // With Subsequent pairing, we expect to save the account key to the
-  // Saved Device registry, but not upload the key to Footprints.
-  EXPECT_TRUE(IsAccountKeySavedToFootprints());
-
-  // With Subsequent pairing, the display name is not saved to Footprints.
-  EXPECT_FALSE(IsDisplayNameSavedToFootprints());
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 0);
-}
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
@@ -1819,8 +1693,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -1863,7 +1736,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
 
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairSubsequent);
@@ -1899,33 +1772,6 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Subsequent_StrictFlagDisabled) {
       kWriteAccountKeyCharacteristicResultMetric, 0);
 }
 
-TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_IN);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 0);
-  CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
-                   /*protocol=*/Protocol::kFastPairRetroactive);
-
-  // When pairing starts, if the classic address can't be resolved to
-  // a device then we pair via address. 'SetGetDeviceNullptr' tells the adapter
-  // to return null when queried for the device to mock this behavior.
-  SetGetDeviceNullptr();
-  AddConnectedHandshake();
-  CreatePairer();
-  EXPECT_CALL(pairing_procedure_complete_, Run);
-  RunWriteAccountKeyCallback();
-  EXPECT_TRUE(IsAccountKeySavedToFootprints());
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 1);
-}
 
 TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
@@ -1934,8 +1780,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -1961,7 +1806,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKey_Retroactive_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -1987,8 +1832,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_GattErrorFailed) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2013,8 +1857,7 @@ TEST_F(FastPairPairerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2039,8 +1882,7 @@ TEST_F(FastPairPairerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2065,8 +1907,7 @@ TEST_F(FastPairPairerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2091,8 +1932,7 @@ TEST_F(FastPairPairerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2117,8 +1957,7 @@ TEST_F(FastPairPairerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2143,8 +1982,7 @@ TEST_F(FastPairPairerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2168,8 +2006,7 @@ TEST_F(FastPairPairerImplTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   Login(user_manager::UserType::kRegular);
 
   histogram_tester().ExpectTotalCount(
@@ -2194,8 +2031,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Initial_NoCancelPairing) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   CreateDevice(DeviceFastPairVersion::kHigherThanV1);
   RunWritePasskeyCallback(kResponseBytes);
@@ -2259,26 +2095,6 @@ TEST_F(FastPairPairerImplTest, FastPairVersionOne_DeviceUnpaired) {
   DeviceUnpaired();
 }
 
-TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_OPTED_OUT);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 0);
-  CreateDevice(DeviceFastPairVersion::kHigherThanV1);
-  EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
-  EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 0);
-  RunWritePasskeyCallback(kResponseBytes);
-}
 
 TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
@@ -2287,8 +2103,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2317,7 +2132,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedIn_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2342,8 +2157,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_FlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2368,7 +2182,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
 
   histogram_tester().ExpectTotalCount(
       kWriteAccountKeyCharacteristicResultMetric, 0);
@@ -2386,35 +2200,13 @@ TEST_F(FastPairPairerImplTest, WriteAccount_OptedOut_StrictFlagDisabled) {
             1);
 }
 
-TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagEnabled) {
-  Login(user_manager::UserType::kRegular);
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFastPairSavedDevices,
-                            features::kFastPairSavedDevicesStrictOptIn},
-      /*disabled_features=*/{});
-  fast_pair_repository_->SetOptInStatus(
-      nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
-
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 0);
-  CreateDevice(DeviceFastPairVersion::kHigherThanV1);
-
-  EXPECT_CALL(pairing_procedure_complete_, Run).Times(1);
-  EXPECT_EQ(DeviceFastPairVersion::kHigherThanV1, device_->version().value());
-  adapter_->NotifyDevicePairedChanged(fake_bluetooth_device_ptr_, true);
-  histogram_tester().ExpectTotalCount(
-      kWriteAccountKeyCharacteristicResultMetric, 0);
-  RunWritePasskeyCallback(kResponseBytes);
-}
 
 TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_FlagDisabled) {
   Login(user_manager::UserType::kRegular);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
 
@@ -2439,7 +2231,7 @@ TEST_F(FastPairPairerImplTest, WriteAccount_StatusUnknown_StrictFlagDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   fast_pair_repository_->SetOptInStatus(
       nearby::fastpair::OptInStatus::STATUS_UNKNOWN);
 
@@ -2481,7 +2273,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_InitialPairing) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
 
   // Start opted out.
   fast_pair_repository_->SetOptInStatus(
@@ -2545,7 +2337,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_RetroactivePairing) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
 
   // Retroactive pair
   histogram_tester().ExpectTotalCount(
@@ -2579,7 +2371,7 @@ TEST_F(FastPairPairerImplTest, UpdateOptInStatus_SubsequentPairing) {
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices,
                             features::kFastPair},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
 
   // Start opted out
   fast_pair_repository_->SetOptInStatus(
@@ -2694,7 +2486,7 @@ TEST_F(FastPairPairerImplTest, RetroactiveNotLoggedToInitial) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{features::kFastPairSavedDevices},
-      /*disabled_features=*/{features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{});
   CreateMockDevice(DeviceFastPairVersion::kHigherThanV1,
                    /*protocol=*/Protocol::kFastPairRetroactive);
 
@@ -2775,8 +2567,7 @@ TEST_F(FastPairPairerImplTest, WriteAccountKeyFailure_Retroactive) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/{},
-      /*disabled_features=*/{features::kFastPairSavedDevices,
-                             features::kFastPairSavedDevicesStrictOptIn});
+      /*disabled_features=*/{features::kFastPairSavedDevices});
 
   // The following code is what's in |CreateDevice()| except protocol is
   // Retroactive instead of Initial.

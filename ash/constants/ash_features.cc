@@ -705,12 +705,6 @@ const base::FeatureParam<std::string> kFastPairPwaCompanionDeviceIds{
 // Enables the "Saved Devices" Fast Pair page in scenario in Bluetooth Settings.
 BASE_FEATURE(kFastPairSavedDevices, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables the "Saved Devices" Fast Pair strict interpretation of opt-in status,
-// meaning that a user's preferences determine if retroactive pairing and
-// subsequent pairing scenarios are enabled.
-BASE_FEATURE(kFastPairSavedDevicesStrictOptIn,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, allows the creation of up to 16 desks (default is 8). This flag
 // is intended to be controlled by the feature management module.
 BASE_FEATURE(kFeatureManagement16Desks, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2593,10 +2587,6 @@ bool IsFastPairPwaCompanionEnabled() {
 
 bool IsFastPairSavedDevicesEnabled() {
   return base::FeatureList::IsEnabled(kFastPairSavedDevices);
-}
-
-bool IsFastPairSavedDevicesStrictOptInEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairSavedDevicesStrictOptIn);
 }
 
 bool IsFilesLocalImageSearchEnabled() {

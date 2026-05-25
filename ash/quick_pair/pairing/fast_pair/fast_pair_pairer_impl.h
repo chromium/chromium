@@ -167,8 +167,6 @@ class FastPairPairerImpl : public FastPairPairer,
   // FastPairRepository::IsDeviceSavedToAccount callback
   void OnIsDeviceSavedToAccount(bool is_device_saved_to_account);
 
-  // FastPairRepository::CheckOptInStatus callback
-  void OnCheckOptInStatus(nearby::fastpair::OptInStatus status);
 
   // FastPairRepository::UpdateOptInStatus callback
   void OnUpdateOptInStatus(bool success);
