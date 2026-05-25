@@ -127,6 +127,11 @@ ExtensionFunction::ResponseAction OffscreenCreateDocumentFunction::Run() {
 }
 
 void OffscreenCreateDocumentFunction::OnBrowserContextShutdown() {
+  // This should never trigger if we've responded to the extension -- only one
+  // of OnBrowserContextShutdown() or SendResponseToExtension() should run,
+  // since they each Release() the reference from Run().
+  CHECK(!did_respond());
+
   // Release dangling lifetime pointers and bail. No point in responding now;
   // the context is shutting down. Reset `host_observer_` first to allay any
   // re-entrancy concerns about the host being destructed at this point.
@@ -152,10 +157,16 @@ void OffscreenCreateDocumentFunction::OnExtensionHostDidStopFirstLoad(
     // ExtensionHost finished its first load. `NotifyPageFailedToLoad()` will
     // delete the extension host, which isn't allowed in the middle of observer
     // iteration.
+    // NOTE: We use a WeakPtr here (and *not* a ref count). We've already added
+    // (exactly) one reference to ensure we respond to the extension function,
+    // either in OnBrowserContextShutdown() or SendResponseToExtension(). Adding
+    // another reference here would potentially allow for both of those paths
+    // to trigger, causing two releases. If that happened and this didn't use a
+    // WeakPtr, the task would run with a deleted function.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(&OffscreenCreateDocumentFunction::NotifyPageFailedToLoad,
-                       this));
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
