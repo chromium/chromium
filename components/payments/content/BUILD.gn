@@ -265,6 +265,7 @@ source_set("payment_content_unit_tests") {
       "payment_request_display_manager_unittest.cc",
       "payment_request_spec_unittest.cc",
       "payment_request_state_unittest.cc",
+      "payment_request_unittest.cc",
       "payment_request_web_contents_manager_unittest.cc",
       "payment_response_helper_unittest.cc",
       "secure_payment_confirmation_controller_unittest.cc",

@@ -42,6 +42,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/features.h"
@@ -167,6 +168,21 @@ void PaymentRequest::Init(
         return !datum || datum->supported_method.empty();
       })) {
     log_.Error(errors::kMethodNameRequired);
+    ResetAndDeleteThis();
+    return;
+  }
+
+  // If SPC is enabled and present, it must be the only payment method. This
+  // should be validated by the renderer, but we double check here in case of a
+  // misbehaving renderer.
+  if (base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation) &&
+      method_data.size() > 1 &&
+      std::ranges::any_of(method_data, [](const auto& datum) {
+        return datum->supported_method == methods::kSecurePaymentConfirmation;
+      })) {
+    mojo::ReportBadMessage(
+        "If present, secure-payment-confirmation must be the only payment "
+        "method");
     ResetAndDeleteThis();
     return;
   }
