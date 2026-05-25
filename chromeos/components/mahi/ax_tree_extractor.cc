@@ -247,7 +247,10 @@ void AXTreeExtractor::ExtractContentFromAXTreeUpdates(
   std::unique_ptr<ui::AXTree> tree = std::make_unique<ui::AXTree>();
   // Unserialize the updates.
   for (const ui::AXTreeUpdate& update : extraction_request->updates.value()) {
-    tree->Unserialize(update);
+    if (!tree->Unserialize(update)) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
   }
 
   std::vector<ui::AXNodeID> content_node_ids;
