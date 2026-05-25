@@ -58,6 +58,7 @@ robolectric_library("junit") {
     "//components/payments/content/android:java_resources",
     "//components/payments/content/android:junit_test_support",
     "//components/payments/content/android:minimal_java",
+    "//components/payments/content/android:service_impl_java",
     "//components/payments/content/android:service_java",
     "//components/payments/content/android/ui:java",
     "//components/payments/content/android/ui:payments_java_test_support",

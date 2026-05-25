@@ -1,8 +1,8 @@
-// Copyright 2020 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.base;
+package org.chromium.base;
 
 import android.app.Service;
 import android.content.Context;
@@ -15,39 +15,30 @@ import org.chromium.build.annotations.Nullable;
 
 /**
  * Service base class which will call through to the given {@link Impl}. This class must be present
- * in the base module, while the Impl can be in the chrome or on_demand module.
- *
- * @deprecated Use {@link org.chromium.base.SplitCompatService} instead.
+ * in the base module, while the Impl can be in a dynamic feature module (split).
  */
-@Deprecated
 @NullMarked
 public class SplitCompatService extends Service {
     private final String mServiceClassName;
-    private final boolean mInOnDemandSplit;
+    private final String mSplitName;
     private Impl mImpl;
 
+    /** Constructor for services residing in the default "chrome" split. */
     public SplitCompatService(String serviceClassName) {
-        this(serviceClassName, /* inOnDemandSplit= */ false);
+        this(serviceClassName, "chrome");
     }
 
-    public SplitCompatService(String serviceClassName, boolean inOnDemandSplit) {
+    /** Constructor specifying a custom split name. */
+    public SplitCompatService(String serviceClassName, String splitName) {
         mServiceClassName = serviceClassName;
-        mInOnDemandSplit = inOnDemandSplit;
+        mSplitName = splitName;
     }
 
     @Override
     protected void attachBaseContext(Context baseContext) {
-        if (mInOnDemandSplit) {
-            mImpl =
-                    (Impl)
-                            SplitCompatUtils.loadClassAndAdjustContextOnDemand(
-                                    baseContext, mServiceClassName);
-        } else {
-            mImpl =
-                    (Impl)
-                            SplitCompatUtils.loadClassAndAdjustContextChrome(
-                                    baseContext, mServiceClassName);
-        }
+        BundleUtils.replaceClassLoader(
+                baseContext, BundleUtils.getOrCreateSplitClassLoader(mSplitName));
+        mImpl = (Impl) BundleUtils.newInstance(mServiceClassName, mSplitName);
         mImpl.setService(this);
         super.attachBaseContext(baseContext);
     }

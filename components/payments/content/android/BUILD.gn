@@ -122,6 +122,11 @@ generate_jni("service_jni") {
 }
 
 android_library("service_java") {
+  sources = [ "java/src/org/chromium/components/payments/PaymentDetailsUpdateService.java" ]
+  deps = [ "//base:base_java" ]
+}
+
+android_library("service_impl_java") {
   sources = [
     "java/src/org/chromium/components/payments/Address.java",
     "java/src/org/chromium/components/payments/PackageManagerDelegate.java",
@@ -129,8 +134,8 @@ android_library("service_java") {
     "java/src/org/chromium/components/payments/PaymentAddressTypeConverter.java",
     "java/src/org/chromium/components/payments/PaymentAppError.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateConnection.java",
-    "java/src/org/chromium/components/payments/PaymentDetailsUpdateService.java",
     "java/src/org/chromium/components/payments/PaymentDetailsUpdateServiceHelper.java",
+    "java/src/org/chromium/components/payments/PaymentDetailsUpdateServiceImpl.java",
     "java/src/org/chromium/components/payments/PaymentRequestUpdateEventListener.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelper.java",
     "java/src/org/chromium/components/payments/intent/WebPaymentIntentHelperType.java",
@@ -139,6 +144,7 @@ android_library("service_java") {
   ]
   deps = [
     ":feature_list_java",
+    ":service_java",
     "//base:base_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_main_dex_java",
@@ -214,6 +220,7 @@ android_library("full_java") {
   deps = [
     ":feature_list_java",
     ":minimal_java",
+    ":service_impl_java",
     ":service_java",
     "//base:base_java",
     "//build/android:build_java",
@@ -267,6 +274,7 @@ android_library("minimal_java") {
     "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
   ]
   deps = [
+    ":service_impl_java",
     ":service_java",
     "//base:base_java",
     "//build/android:build_java",
@@ -349,6 +357,7 @@ robolectric_library("junit_test_support") {
   deps = [
     ":java",
     "//base:base_java",
+    "//components/payments/content/android:service_impl_java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
@@ -379,6 +388,7 @@ robolectric_library("junit") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
+    "//components/payments/content/android:service_impl_java",
     "//components/payments/content/android:service_java",
     "//components/payments/mojom:mojom_java",
     "//content/public/android:content_java",
@@ -403,6 +413,7 @@ android_library("unit_device_javatests") {
   sources = [ "javatests/src/org/chromium/components/payments/AndroidPaymentAppUnitTest.java" ]
   deps = [
     ":java",
+    ":service_impl_java",
     ":service_java",
     "//base:base_java_test_support",
     "//components/payments/content/android/spc:unit_device_javatests",
@@ -433,6 +444,7 @@ android_library("test_support_java") {
   ]
   deps = [
     ":full_java",
+    ":service_impl_java",
     ":service_java",
     "//base:callback_java",
     "//components/payments/content/android:minimal_java",

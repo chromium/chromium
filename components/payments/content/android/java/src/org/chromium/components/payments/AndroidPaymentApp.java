@@ -422,7 +422,7 @@ public class AndroidPaymentApp extends PaymentApp
                                             .getPackageName(),
                                     mPackageName,
                                     mPaymentDetailsUpdateServiceName),
-                            new PaymentDetailsUpdateService().getBinder(),
+                            new PaymentDetailsUpdateServiceImpl().getBinder(),
                             mPaymentDetailsUpdateServiceMaxRetryNumber);
             mPaymentDetailsUpdateConnection.connectToService();
         }

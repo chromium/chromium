@@ -4,85 +4,21 @@
 
 package org.chromium.components.payments;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.Binder;
-import android.os.Bundle;
-import android.os.IBinder;
-
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
+import org.chromium.base.SplitCompatService;
+import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
 
 /**
- * A bound service responsible for receiving change payment method, shipping option, and shipping
- * address calls from an inoked native payment app.
+ * Thin shell for PaymentDetailsUpdateService that resides in the base module. It delegates all
+ * service lifecycles to PaymentDetailsUpdateServiceImpl in the chrome split.
  */
 @NullMarked
-public class PaymentDetailsUpdateService extends Service {
-    // AIDL calls can happen on multiple threads in parallel. The binder uses PostTask for
-    // synchronization since locks are discouraged in Chromium. The UI thread task runner is used
-    // rather than a SequencedTaskRunner since the state of the helper class is also changed by
-    // ChromePaymentRequestService.java, which runs on the UI thread.
-    private final IPaymentDetailsUpdateService.Stub mBinder =
-            new IPaymentDetailsUpdateService.Stub() {
-                @Override
-                public void changePaymentMethod(
-                        Bundle paymentHandlerMethodData,
-                        IPaymentDetailsUpdateServiceCallback callback) {
-                    int callingUid = Binder.getCallingUid();
-                    PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                if (!PaymentDetailsUpdateServiceHelper.getInstance()
-                                        .isCallerAuthorized(callingUid)) {
-                                    return;
-                                }
-                                PaymentDetailsUpdateServiceHelper.getInstance()
-                                        .changePaymentMethod(paymentHandlerMethodData, callback);
-                            });
-                }
+public class PaymentDetailsUpdateService extends SplitCompatService {
+    @SuppressWarnings("FieldCanBeFinal") // @IdentifierNameString requires non-final
+    private static @IdentifierNameString String sImplClassName =
+            "org.chromium.components.payments.PaymentDetailsUpdateServiceImpl";
 
-                @Override
-                public void changeShippingOption(
-                        String shippingOptionId, IPaymentDetailsUpdateServiceCallback callback) {
-                    int callingUid = Binder.getCallingUid();
-                    PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                if (!PaymentDetailsUpdateServiceHelper.getInstance()
-                                        .isCallerAuthorized(callingUid)) {
-                                    return;
-                                }
-                                PaymentDetailsUpdateServiceHelper.getInstance()
-                                        .changeShippingOption(shippingOptionId, callback);
-                            });
-                }
-
-                @Override
-                public void changeShippingAddress(
-                        Bundle shippingAddress, IPaymentDetailsUpdateServiceCallback callback) {
-                    int callingUid = Binder.getCallingUid();
-                    PostTask.runOrPostTask(
-                            TaskTraits.UI_DEFAULT,
-                            () -> {
-                                if (!PaymentDetailsUpdateServiceHelper.getInstance()
-                                        .isCallerAuthorized(callingUid)) {
-                                    return;
-                                }
-                                PaymentDetailsUpdateServiceHelper.getInstance()
-                                        .changeShippingAddress(shippingAddress, callback);
-                            });
-                }
-            };
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        return mBinder;
-    }
-
-    /** Returns the binder that can be passed to the AIDL call. */
-    public IPaymentDetailsUpdateService.Stub getBinder() {
-        return mBinder;
+    public PaymentDetailsUpdateService() {
+        super(sImplClassName);
     }
 }
