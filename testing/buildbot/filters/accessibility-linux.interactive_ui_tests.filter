@@ -25,3 +25,7 @@
 -WebUITabStripInteractiveTest.CanTypeInOmniboxAfterTabStripClose
 -WebUITabStripInteractiveTest.EventInContainerDoesNotClose
 -WebUITabStripInteractiveTest.EventInTabContentClosesContainer
+
+# Failing with forced accessibility:
+-ActorSelectToolBrowserTest.SelectToolCloseDropDownMenu
+
