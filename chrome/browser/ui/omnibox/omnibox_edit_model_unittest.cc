@@ -1667,6 +1667,7 @@ TEST_F(OmniboxEditModelTest, OpenTabMatch) {
       .WillOnce(SaveArg<2>(&disposition));
 
   match.provider = controller()->autocomplete_controller()->search_provider();
+  match.type = AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED;
   match.from_keyword = true;
   model()->OpenMatchForTesting(match, WindowOpenDisposition::CURRENT_TAB,
                                GURL(), std::u16string(), 0);

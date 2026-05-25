@@ -67,10 +67,10 @@ int Score(const AutocompleteInput& input,
            tab.last_shown_time.InSecondsFSinceUnixEpoch();
   }
   // TODO(crbug.com/40211187): The bookmark provider also uses on `query_parser`
-  // and `ScoringFunctor` to compute its scores. However, it uses normalized match
-  //  titles (see `Normalize()` in
+  //  and `ScoringFunctor` to compute its scores. However, it uses normalized
+  //  match titles (see `Normalize()` in
   //  components/bookmarks/browser/titled_url_index.cc). IDK its purpose, but we
-  //  should either verify it's unnecessary here, or do likewise here.
+  //  should either verify it's unnecessary there, or do likewise here.
 
   // Extract query words from the title.
   const std::u16string lower_title = base::i18n::ToLower(tab.title);
@@ -118,8 +118,7 @@ int Score(const AutocompleteInput& input,
 }
 
 bool ShouldRunProvider(AutocompleteProviderClient* client,
-                       const AutocompleteInput& input,
-                       const AutocompleteInput& adjusted_input) {
+                       const AutocompleteInput& input) {
   bool zps_or_empty = input.IsZeroSuggest() || input.text().empty();
   if (is_android) {
     return !zps_or_empty || !client->IsIncognitoProfile();
@@ -145,7 +144,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
   const auto [adjusted_input, template_url] =
       AdjustInputForStarterPackKeyword(input, client_->GetTemplateURLService());
 
-  if (!ShouldRunProvider(client_, input, adjusted_input)) {
+  if (!ShouldRunProvider(client_, input)) {
     return;
   }
 

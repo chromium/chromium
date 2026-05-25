@@ -2898,7 +2898,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   OmniboxAction* action = nullptr;
   if (selection.state == OmniboxPopupSelection::NORMAL &&
       match.takeover_action) {
-    DCHECK(match_selection_timestamp != base::TimeTicks());
+    DCHECK_NE(match_selection_timestamp, base::TimeTicks());
     action = match.takeover_action.get();
   } else if (selection.IsAction()) {
     DCHECK_LT(selection.action_index, match.actions.size());
@@ -2925,8 +2925,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // starter pack's tab search (@tabs) feature, which should open all
   // suggestions in the existing open tab.
   bool is_open_tab_match =
-      match.from_keyword &&
-      match.provider->type() == AutocompleteProvider::TYPE_OPEN_TAB;
+      match.from_keyword && match.type == AutocompleteMatchType::OPEN_TAB;
   // Also switch the window disposition for tab switch actions. The action
   // itself will already open with SWITCH_TO_TAB disposition, but the change
   // is needed earlier for metrics.
