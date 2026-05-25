@@ -37,11 +37,11 @@ export class EmojiCategoryButton extends PolymerElement {
       gifSupport: {type: Boolean, value: false},
     };
   }
-  name: CategoryEnum;
-  icon: string;
-  active: boolean;
-  searchActive: boolean;
-  private gifSupport: boolean;
+  declare name: CategoryEnum;
+  declare icon: string;
+  declare active: boolean;
+  declare searchActive: boolean;
+  declare private gifSupport: boolean;
 
 
   private handleClick(): void {

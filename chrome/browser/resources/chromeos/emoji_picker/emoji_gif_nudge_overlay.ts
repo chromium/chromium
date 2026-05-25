@@ -24,7 +24,7 @@ export class EmojiGifNudgeOverlay extends PolymerElement {
     };
   }
 
-  closeOverlay: () => void;
+  declare closeOverlay: () => void;
 
   onClickLink() {
     EmojiPickerApiProxy.getInstance().openHelpCentreArticle();

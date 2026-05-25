@@ -40,16 +40,16 @@ export class EmojiButton extends PolymerElement {
       tooltip: {type: String, readonly: true},
     };
   }
-  emoji: string;
-  private variant: boolean;
-  private tone?: Tone;
-  private gender?: Gender;
-  private groupedTone = false;
-  private groupedGender = false;
-  private disabled: boolean;
-  private base?: string;
-  private allVariants?: Emoji[];
-  private tooltip?: string;
+  declare emoji: string;
+  declare private variant: boolean;
+  declare private tone?: Tone;
+  declare private gender?: Gender;
+  declare private groupedTone;
+  declare private groupedGender;
+  declare private disabled: boolean;
+  declare private base?: string;
+  declare private allVariants?: Emoji[];
+  declare private tooltip?: string;
 
 
   private onClick(): void {

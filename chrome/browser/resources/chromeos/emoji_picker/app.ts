@@ -74,7 +74,7 @@ export class EmojiPickerApp extends PolymerElement {
   static get properties() {
     return {
       category: {type: String, value: 'emoji', observer: 'onCategoryChanged'},
-      emojiGroupTabs: {type: Array},
+      emojiGroupTabs: {type: Array, value: EMOJI_GROUP_TABS},
       dummyTab: {
         type: Object,
         value: () => ({
@@ -109,34 +109,34 @@ export class EmojiPickerApp extends PolymerElement {
       useMojoSearch: {type: Boolean, value: false},
     };
   }
-  private category: CategoryEnum;
-  private emojiGroupTabs: SubcategoryData[] = EMOJI_GROUP_TABS;
-  private dummyTab: SubcategoryData;
+  declare private category: CategoryEnum;
+  declare private emojiGroupTabs: SubcategoryData[];
+  declare private dummyTab: SubcategoryData;
   private allCategoryTabs: SubcategoryData[] = SUBCATEGORY_TABS;
-  categoriesData: EmojiGroupData;
-  categoriesGroupElements: EmojiGroupElement[];
-  activeInfiniteGroupId: string|null; // null before Trending GIFs are fetched
-  private categoriesHistory: {[index in CategoryEnum]: RecentlyUsedStore|null};
+  declare categoriesData: EmojiGroupData;
+  declare categoriesGroupElements: EmojiGroupElement[];
+  declare activeInfiniteGroupId: string|null; // null before Trending GIFs are fetched
+  declare private categoriesHistory: {[index in CategoryEnum]: RecentlyUsedStore|null};
   private emojiPreferences: EmojiPreferencesStore|null = null;
-  private globalTone: Tone|null = null;
-  private globalGender: Gender|null = null;
-  private pagination: number;
-  private searchLazyIndexing: boolean;
-  private textSubcategoryBarEnabled: boolean;
-  private incognito: boolean;
-  private gifSupport: boolean;
-  private variantGroupingSupport: boolean;
-  private showGifNudgeOverlay: boolean;
+  declare private globalTone: Tone|null;
+  declare private globalGender: Gender|null;
+  declare private pagination: number;
+  declare private searchLazyIndexing: boolean;
+  declare private textSubcategoryBarEnabled: boolean;
+  declare private incognito: boolean;
+  declare private gifSupport: boolean;
+  declare private variantGroupingSupport: boolean;
+  declare private showGifNudgeOverlay: boolean;
   private activeVariant: EmojiGroupComponent|null = null;
   private apiProxy: EmojiPickerApiProxy = EmojiPickerApiProxy.getInstance();
   private autoScrollingToGroup: boolean = false;
   private highlightBarMoving: boolean = false;
-  private nextGifPos: {[key: string]: string};
-  private status: Status|null;
+  declare private nextGifPos: {[key: string]: string};
+  declare private status: Status|null;
   private previousGifValidation: Date;
   private fetchAndProcessDataPromise: Promise<void>|null;
-  private errorMessage: string;
-  private useMojoSearch = false;
+  declare private errorMessage: string;
+  declare private useMojoSearch;
 
   constructor() {
     super();

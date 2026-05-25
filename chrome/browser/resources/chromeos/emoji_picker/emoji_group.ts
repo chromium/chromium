@@ -78,20 +78,20 @@ export class EmojiGroupComponent extends PolymerElement {
       gifSupport: {type: Boolean, value: false},
     };
   }
-  data: EmojiVariants[];
-  group: string|null;
-  private globalTone: Tone|null = null;
-  private globalGender: Gender|null = null;
-  preferred: PreferenceMapping;
-  clearable: boolean;
-  useGroupedPreference: boolean;
-  category: CategoryEnum;
-  layoutType: string|null;
-  showClearRecents: boolean;
-  private focusedEmoji: EmojiVariants|null;
-  private shownEmojiVariantIndex: number|null;
-  private isLangEnglish: boolean;
-  private gifSupport: boolean;
+  declare data: EmojiVariants[];
+  declare group: string|null;
+  declare private globalTone: Tone|null;
+  declare private globalGender: Gender|null;
+  declare preferred: PreferenceMapping;
+  declare clearable: boolean;
+  declare useGroupedPreference: boolean;
+  declare category: CategoryEnum;
+  declare layoutType: string|null;
+  declare showClearRecents: boolean;
+  declare private focusedEmoji: EmojiVariants|null;
+  declare private shownEmojiVariantIndex: number|null;
+  declare private isLangEnglish: boolean;
+  declare private gifSupport: boolean;
 
   constructor() {
     super();

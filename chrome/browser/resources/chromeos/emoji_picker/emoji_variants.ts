@@ -67,13 +67,13 @@ export class EmojiVariants extends PolymerElement {
       tooltip: {type: String},
     };
   }
-  variants: Emoji[];
-  private groupedTone = false;
-  private groupedGender = false;
-  private baseEmoji: string;
-  private showSkinTones: boolean;
-  private showBaseEmoji: boolean;
-  private tooltip: string;
+  declare variants: Emoji[];
+  declare private groupedTone;
+  declare private groupedGender;
+  declare private baseEmoji: string;
+  declare private showSkinTones: boolean;
+  declare private showBaseEmoji: boolean;
+  declare private tooltip: string;
 
   override ready() {
     super.ready();

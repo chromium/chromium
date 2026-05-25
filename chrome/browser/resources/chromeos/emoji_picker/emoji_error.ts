@@ -26,8 +26,8 @@ export class EmojiErrorComponent extends PolymerElement {
       errorMessage: {type: String},
     };
   }
-  private status: Status;
-  private errorMessage: string;
+  declare private status: Status;
+  declare private errorMessage: string;
 
   isGifInHttpErrorState(status: Status): boolean {
     return status === Status.kHttpError;

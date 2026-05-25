@@ -31,12 +31,12 @@ export class EmojiGroupButton extends PolymerElement {
     };
   }
 
-  active: boolean;
-  customTabIndex: number;
-  disabled: boolean;
-  groupId: string;
-  icon: string;
-  name: string;
+  declare active: boolean;
+  declare customTabIndex: number;
+  declare disabled: boolean;
+  declare groupId: string;
+  declare icon: string;
+  declare name: string;
 
   handleClick(): void {
     this.dispatchEvent(

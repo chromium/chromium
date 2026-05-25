@@ -31,15 +31,15 @@ export class EmojiImageComponent extends PolymerElement {
     };
   }
 
-  index: number;
-  item: EmojiVariants;
+  declare index: number;
+  declare item: EmojiVariants;
   loading: boolean = true;
 
-  showTooltip: (e: MouseEvent|FocusEvent) => void;
-  emojiClick: (e: MouseEvent) => void;
+  declare showTooltip: (e: MouseEvent|FocusEvent) => void;
+  declare emojiClick: (e: MouseEvent) => void;
 
-  clearable: boolean;
-  showClearButton: boolean;
+  declare clearable: boolean;
+  declare showClearButton: boolean;
 
   private handleMouseEnter(event: MouseEvent): void {
     this.showTooltip(event);

@@ -28,11 +28,11 @@ export class TextGroupButton extends PolymerElement {
       customTabIndex: {type: Number, value: -1},
     };
   }
-  name: string;
-  groupId: string;
-  active: boolean;
-  disabled: boolean;
-  customTabIndex: number;
+  declare name: string;
+  declare groupId: string;
+  declare active: boolean;
+  declare disabled: boolean;
+  declare customTabIndex: number;
 
   constructor() {
     super();

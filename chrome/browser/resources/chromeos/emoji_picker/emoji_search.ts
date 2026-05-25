@@ -54,18 +54,18 @@ export class EmojiSearch extends PolymerElement {
       globalGender: {type: Number, value: null, readonly: true},
     };
   }
-  categoriesData: EmojiGroupData;
-  categoryMetadata: CategoryData[];
-  lazyIndexing: boolean;
-  private searchResults: EmojiGroupData;
-  private needIndexing: boolean;
-  private gifSupport: boolean;
-  private status: Status|null;
-  private closeGifNudgeOverlay: () => void;
-  private useMojoSearch = false;
-  private useGroupedPreference: boolean;
-  private globalTone: Tone|null = null;
-  private globalGender: Gender|null = null;
+  declare categoriesData: EmojiGroupData;
+  declare categoryMetadata: CategoryData[];
+  declare lazyIndexing: boolean;
+  declare private searchResults: EmojiGroupData;
+  declare private needIndexing: boolean;
+  declare private gifSupport: boolean;
+  declare private status: Status|null;
+  declare private closeGifNudgeOverlay: () => void;
+  declare private useMojoSearch;
+  declare private useGroupedPreference: boolean;
+  declare private globalTone: Tone|null;
+  declare private globalGender: Gender|null;
 
   // TODO(b/235419647): Update the config to use extended search.
   private fuseConfig: Fuse.IFuseOptions<EmojiVariants> = {
@@ -78,9 +78,9 @@ export class EmojiSearch extends PolymerElement {
         ],
   };
   private fuseInstances = new Map<CategoryEnum, Fuse<EmojiVariants>>();
-  private nextGifPos: string;  // This variable ensures that we get the correct
+  declare private nextGifPos: string;  // This variable ensures that we get the correct
                                // set of GIFs when fetching more.
-  private errorMessage: string;
+  declare private errorMessage: string;
   private scrollTimeout: number|null;
 
   static get observers() {
