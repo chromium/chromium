@@ -19,6 +19,10 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/mojom/data_pipe_getter.mojom.h"
 
+namespace network {
+class ResourceRequestBody;
+}  // namespace network
+
 namespace enterprise_connectors {
 
 // This class implements mojom::DataPipeGetter for:
@@ -82,8 +86,9 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
 #endif
 
   // Each constructor takes either a MemoryMappedFile representing an
-  // uploaded/downloaded file, or a ReadOnlySharedMemoryMapping representing a
-  // printed page. In both cases, the memory handle is assumed to be valid.
+  // uploaded/downloaded file, a ReadOnlySharedMemoryMapping representing a
+  // printed page, or a network::ResourceRequestBody representing a network
+  // request. In any case, the memory handle is assumed to be valid.
   ConnectorDataPipeGetter(const std::string& boundary,
                           const std::string& metadata,
                           std::unique_ptr<InternalMemoryMappedFile> file,
@@ -91,6 +96,10 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   ConnectorDataPipeGetter(const std::string& boundary,
                           const std::string& metadata,
                           base::ReadOnlySharedMemoryMapping page);
+  ConnectorDataPipeGetter(
+      const std::string& boundary,
+      const std::string& metadata,
+      scoped_refptr<network::ResourceRequestBody> request_body);
   ~ConnectorDataPipeGetter() override;
 
   // network::mojom::DataPipeGetter:
@@ -131,6 +140,10 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   static std::unique_ptr<ConnectorDataPipeGetter> CreateResumablePipeGetter(
       base::ReadOnlySharedMemoryRegion page);
 
+  // Returns nullptr if `request_body` is null or invalid.
+  static std::unique_ptr<ConnectorDataPipeGetter> CreateResumablePipeGetter(
+      scoped_refptr<network::ResourceRequestBody> request_body);
+
   // Resets `pipe_`, `watcher_`, and `write_position_` so future calls to Read
   // can work correctly.
   void Reset();
@@ -143,14 +156,17 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   // populated.
   bool is_file_data_pipe() const;
   bool is_page_data_pipe() const;
+  bool is_network_request_data_pipe() const;
 
  private:
-  // Private constructor that shares initialization logics across file and page
-  // data pipes.
-  ConnectorDataPipeGetter(const std::string& boundary,
-                          const std::string& metadata,
-                          std::unique_ptr<InternalMemoryMappedFile> file,
-                          base::ReadOnlySharedMemoryMapping page);
+  // Private constructor that shares initialization logics across file, page and
+  // network request data pipes.
+  ConnectorDataPipeGetter(
+      const std::string& boundary,
+      const std::string& metadata,
+      std::unique_ptr<InternalMemoryMappedFile> file,
+      base::ReadOnlySharedMemoryMapping page,
+      scoped_refptr<network::ResourceRequestBody> request_body);
 
   // Callback used by `watcher_`.
   void MojoReadyCallback(MojoResult result,
@@ -182,17 +198,22 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   std::string last_boundary_;
 
   // This class uses a memory mapped file or memory mapping to avoid blocking
-  // calls on the main thread. Only one of `file_` or `page_` will be populated
-  // for a given data pipe getter.
+  // calls on the main thread. Only populated for file data pipe getters.
   std::unique_ptr<InternalMemoryMappedFile> file_;
 
-  base::ReadOnlySharedMemoryMapping page_;
-  int64_t write_position_ = 0;
-
-  // Indicates if this data pipe streams a pipe. If false, it streams a page.
-  bool file_data_pipe_;
-
+  // Provides deobfuscated data chunks while `file_` is obfuscated for
+  // downloads. Only non-null for obfuscated file data pipe getters.
   std::unique_ptr<enterprise_obfuscation::DownloadObfuscator> deobfuscator_;
+
+  // Printed page data. Only populated for printed page data pipe getters.
+  base::ReadOnlySharedMemoryMapping page_;
+
+  // Body of a network request to be be scanned. Only populated for network
+  // request data pipe getters.
+  scoped_refptr<network::ResourceRequestBody> request_body_;
+
+  // The current write position used by `Read()`.
+  int64_t write_position_ = 0;
 
   mojo::ScopedDataPipeProducerHandle pipe_;
   std::unique_ptr<mojo::SimpleWatcher> watcher_;

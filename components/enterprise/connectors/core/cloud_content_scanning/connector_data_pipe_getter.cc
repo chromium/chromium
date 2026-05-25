@@ -17,6 +17,7 @@
 #include "base/task/thread_pool.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/cpp/resource_request_body.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
@@ -203,6 +204,19 @@ ConnectorDataPipeGetter::CreateResumablePipeGetter(
                                                    std::move(mapping));
 }
 
+// static
+std::unique_ptr<ConnectorDataPipeGetter>
+ConnectorDataPipeGetter::CreateResumablePipeGetter(
+    scoped_refptr<network::ResourceRequestBody> request_body) {
+  if (!request_body) {
+    return nullptr;
+  }
+
+  return std::make_unique<ConnectorDataPipeGetter>(/*boundary*/ std::string(),
+                                                   /*metadata*/ std::string(),
+                                                   std::move(request_body));
+}
+
 ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
@@ -211,8 +225,8 @@ ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     : ConnectorDataPipeGetter(boundary,
                               metadata,
                               std::move(file),
-                              base::ReadOnlySharedMemoryMapping()) {
-  file_data_pipe_ = true;
+                              /*page=*/base::ReadOnlySharedMemoryMapping(),
+                              /*request_body=*/nullptr) {
   CHECK(file_->IsValid());
 
   if (is_obfuscated) {
@@ -225,17 +239,35 @@ ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
     base::ReadOnlySharedMemoryMapping page)
-    : ConnectorDataPipeGetter(boundary, metadata, nullptr, std::move(page)) {
-  file_data_pipe_ = false;
+    : ConnectorDataPipeGetter(boundary,
+                              metadata,
+                              /*file=*/nullptr,
+                              std::move(page),
+                              /*request_body=*/nullptr) {
   CHECK(page_.IsValid());
 }
 
 ConnectorDataPipeGetter::ConnectorDataPipeGetter(
     const std::string& boundary,
     const std::string& metadata,
+    scoped_refptr<network::ResourceRequestBody> request_body)
+    : ConnectorDataPipeGetter(boundary,
+                              metadata,
+                              /*file=*/nullptr,
+                              /*page=*/base::ReadOnlySharedMemoryMapping(),
+                              std::move(request_body)) {
+  CHECK(request_body_);
+}
+
+ConnectorDataPipeGetter::ConnectorDataPipeGetter(
+    const std::string& boundary,
+    const std::string& metadata,
     std::unique_ptr<InternalMemoryMappedFile> file,
-    base::ReadOnlySharedMemoryMapping page)
-    : file_(std::move(file)), page_(std::move(page)) {
+    base::ReadOnlySharedMemoryMapping page,
+    scoped_refptr<network::ResourceRequestBody> request_body)
+    : file_(std::move(file)),
+      page_(std::move(page)),
+      request_body_(std::move(request_body)) {
   if (!boundary.empty() && !metadata.empty()) {
     PrepareMultipartRequestFormat(boundary, metadata);
   }
@@ -247,7 +279,7 @@ void ConnectorDataPipeGetter::Read(mojo::ScopedDataPipeProducerHandle pipe,
                                    ReadCallback callback) {
   Reset();
 
-  if (deobfuscator_ && file_data_pipe_) {
+  if (deobfuscator_ && is_file_data_pipe()) {
     CHECK(file_->IsValid());
     auto overhead =
         deobfuscator_->CalculateDeobfuscationOverhead(file_->bytes());
@@ -445,11 +477,15 @@ int64_t ConnectorDataPipeGetter::FullSize() {
 }
 
 bool ConnectorDataPipeGetter::is_file_data_pipe() const {
-  return file_data_pipe_;
+  return file_.get();
 }
 
 bool ConnectorDataPipeGetter::is_page_data_pipe() const {
-  return !file_data_pipe_;
+  return page_.data();
+}
+
+bool ConnectorDataPipeGetter::is_network_request_data_pipe() const {
+  return request_body_.get();
 }
 
 }  // namespace enterprise_connectors
