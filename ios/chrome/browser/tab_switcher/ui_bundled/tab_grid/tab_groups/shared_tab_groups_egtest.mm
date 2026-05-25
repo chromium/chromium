@@ -274,6 +274,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleAttackerPage(
 
 // Tests that the user education is shown in the grid only once.
 - (void)testUserEducationInGrid {
+#if TARGET_OS_SIMULATOR
+  // TODO(crbug.com/515080596): Re-enable this flaky test on iPhone simulator.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iPhone simulator.");
+  }
+#endif
+
   [ChromeEarlGrey
       removeUserDefaultsObjectForKey:kSharedTabGroupUserEducationShownOnceKey];
 
