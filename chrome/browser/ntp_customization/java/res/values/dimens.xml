@@ -55,4 +55,5 @@ found in the LICENSE file.
   <dimen name="ntp_customization_theme_tip_sheet_circles_bg_height">112dp</dimen>
   <dimen name="ntp_customization_theme_tip_sheet_circles_bg_max_width">352dp</dimen>
   <dimen name="ntp_customization_theme_tip_sheet_circles_margin_vertical">36dp</dimen>
+  <dimen name="ntp_customization_theme_tip_circles_bg_elevation">4dp</dimen>
 </resources>

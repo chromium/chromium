@@ -41,6 +41,7 @@ found in the LICENSE file.
         android:layout_marginVertical="@dimen/ntp_customization_ntp_cards_title_margin"
         app:layout_constraintWidth_max="@dimen/ntp_customization_theme_tip_sheet_circles_bg_max_width"
         android:background="@drawable/home_surface_ui_background"
+        android:elevation="@dimen/ntp_customization_theme_tip_circles_bg_elevation"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

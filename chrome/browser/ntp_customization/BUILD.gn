@@ -195,7 +195,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/color-night/ntp_customization_bottom_sheet_list_item_selected_inner_border_color.xml",
     "java/res/color/ntp_customization_bottom_sheet_list_item_selected_inner_border_color.xml",
-    "java/res/drawable-nodpi/zoom_bloom_barbet.png",
     "java/res/drawable/blue_color_palette.xml",
     "java/res/drawable/chrome_color_icon_bottom_left.xml",
     "java/res/drawable/chrome_color_icon_bottom_right.xml",
@@ -221,6 +220,7 @@ android_resources("java_resources") {
     "java/res/drawable/pink_color_palette.xml",
     "java/res/drawable/upload_an_image_icon_for_theme_bottom_sheet.xml",
     "java/res/drawable/viridian_color_palette.xml",
+    "java/res/drawable/zoom_bloom_barbet.xml",
     "java/res/layout/bottom_sheet_list_item_view.xml",
     "java/res/layout/ntp_customization_background_image_layout.xml",
     "java/res/layout/ntp_customization_bottom_sheet.xml",
