@@ -158,6 +158,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kBackgroundCodeCacheDecoderStart);
 
+// A kill switch to background fetch from the service worker environment. If
+// enabled, `backgroundFetch.fetch()` from the service worker will throw an
+// exception.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kRestrictBackgroundFetchFromServiceWorker);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kBackgroundFetchFromServiceWorkerAllowListStr);
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBakedGamutMapping);
 
 // Used to configure a per-origin allowlist of performance.mark events that are

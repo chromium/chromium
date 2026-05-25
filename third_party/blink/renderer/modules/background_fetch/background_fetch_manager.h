@@ -56,6 +56,9 @@ class MODULES_EXPORT BackgroundFetchManager final
   // ExecutionContextLifecycleObserver interface
   void ContextDestroyed() override;
 
+  static HashSet<scoped_refptr<const SecurityOrigin>> ParseAllowlist(
+      const std::string& allowlist_str);
+
  private:
   friend class BackgroundFetchManagerTest;
 

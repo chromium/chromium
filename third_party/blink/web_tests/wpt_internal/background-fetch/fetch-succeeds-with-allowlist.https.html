@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>BackgroundFetchManager.fetch() succeeds in ServiceWorker with allowlist</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  await test_driver.set_permission({name: 'background-fetch'}, 'granted');
+
+  const script = 'resources/fetch-worker.js';
+  const scope = 'resources/fetch-scope-allowed';
+  const registration = await service_worker_unregister_and_register(t, script, scope);
+  await wait_for_state(t, registration.installing, 'activated');
+
+  const sw = registration.active;
+  const messageWatcher = new EventWatcher(t, navigator.serviceWorker, ['message']);
+
+  sw.postMessage('fetch');
+  const event = await messageWatcher.wait_for('message');
+
+  assert_equals(event.data.result, 'success', 'fetch() in SW should succeed, but got error: ' + event.data.errorName + ': ' + event.data.errorMessage);
+  assert_equals(event.data.errorName, null, 'No error expected');
+  assert_equals(event.data.errorMessage, null, 'No error message expected');
+
+}, 'Verify BackgroundFetchManager.fetch() succeeds in ServiceWorker when origin is in allowlist');
+</script>

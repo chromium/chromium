@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>BackgroundFetchManager.fetch() throws in ServiceWorker</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  const script = 'resources/fetch-worker.js';
+  const scope = 'resources/fetch-scope';
+  const registration = await service_worker_unregister_and_register(t, script, scope);
+  await wait_for_state(t, registration.installing, 'activated');
+
+  const sw = registration.active;
+  const messageWatcher = new EventWatcher(t, navigator.serviceWorker, ['message']);
+
+  sw.postMessage('fetch');
+  const event = await messageWatcher.wait_for('message');
+
+  assert_equals(event.data.result, 'error', 'fetch() in ServiceWorker should fail with an error');
+  assert_equals(event.data.errorName, 'NotAllowedError', 'fetch() in ServiceWorker should throw NotAllowedError');
+  assert_true(event.data.errorMessage.includes('not allowed in service worker environments'),
+              'Error message should indicate it is not allowed in service worker environments');
+
+}, 'Verify BackgroundFetchManager.fetch() raises NotAllowedError in ServiceWorker by default');
+</script>
