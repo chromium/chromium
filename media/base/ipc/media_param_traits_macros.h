@@ -122,7 +122,9 @@ IPC_ENUM_TRAITS_MAX_VALUE(media::VideoDecoderType,
 IPC_ENUM_TRAITS_MAX_VALUE(media::AudioDecoderType,
                           media::AudioDecoderType::kMaxValue)
 
-IPC_ENUM_TRAITS_MAX_VALUE(media::VideoPixelFormat, media::PIXEL_FORMAT_MAX)
+IPC_ENUM_TRAITS_VALIDATE(
+    media::VideoPixelFormat,
+    media::IsValidVideoPixelFormat(static_cast<media::VideoPixelFormat>(value)))
 
 IPC_ENUM_TRAITS_MAX_VALUE(media::VideoRotation, media::VIDEO_ROTATION_MAX)
 

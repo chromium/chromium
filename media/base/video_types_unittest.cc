@@ -32,4 +32,27 @@ TEST(VideoTypesTest, FourccToStringHasUnprintableChar) {
   EXPECT_EQ("0x66616b00", FourccToString(0x66616b00));
 }
 
+TEST(VideoTypesTest, IsValidVideoPixelFormat) {
+  // Valid formats
+  EXPECT_TRUE(IsValidVideoPixelFormat(PIXEL_FORMAT_UNKNOWN));
+  EXPECT_TRUE(IsValidVideoPixelFormat(PIXEL_FORMAT_I420));
+  EXPECT_TRUE(IsValidVideoPixelFormat(PIXEL_FORMAT_YV12));
+  EXPECT_TRUE(IsValidVideoPixelFormat(PIXEL_FORMAT_P410LE));
+
+  // Deprecated formats (cast to VideoPixelFormat since they are commented out)
+  EXPECT_FALSE(IsValidVideoPixelFormat(
+      static_cast<VideoPixelFormat>(13)));  // PIXEL_FORMAT_RGB32
+  EXPECT_FALSE(IsValidVideoPixelFormat(
+      static_cast<VideoPixelFormat>(15)));  // PIXEL_FORMAT_MT21
+  EXPECT_FALSE(IsValidVideoPixelFormat(
+      static_cast<VideoPixelFormat>(16)));  // PIXEL_FORMAT_YUV420P9
+  EXPECT_FALSE(IsValidVideoPixelFormat(
+      static_cast<VideoPixelFormat>(25)));  // PIXEL_FORMAT_Y8
+
+  // Out of bounds formats
+  EXPECT_FALSE(IsValidVideoPixelFormat(static_cast<VideoPixelFormat>(-1)));
+  EXPECT_FALSE(IsValidVideoPixelFormat(
+      static_cast<VideoPixelFormat>(PIXEL_FORMAT_MAX + 1)));
+}
+
 }  // namespace media

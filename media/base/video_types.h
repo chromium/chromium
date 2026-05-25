@@ -132,6 +132,9 @@ MEDIA_EXPORT std::string VideoChromaSamplingToString(
 // Returns the name of a Format as a string.
 MEDIA_EXPORT std::string VideoPixelFormatToString(VideoPixelFormat format);
 
+// Returns true if `format` is a valid (non-deprecated) VideoPixelFormat.
+MEDIA_EXPORT bool IsValidVideoPixelFormat(VideoPixelFormat format);
+
 // Stream operator of Format for logging etc.
 MEDIA_EXPORT std::ostream& operator<<(std::ostream& os,
                                       VideoPixelFormat format);
