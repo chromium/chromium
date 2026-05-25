@@ -29,6 +29,7 @@ namespace {
 
 constexpr char kTestGenerateUrl[] = "https://example.com/generate";
 constexpr char kTestStatusUrl[] = "https://example.com/status";
+constexpr char kTestDeleteUrl[] = "https://example.com/delete";
 constexpr uint8_t kTestBytes[] = {1, 2, 3};
 constexpr char kTestDataUrl[] =
     "data:image/png;base64,"
@@ -69,7 +70,8 @@ class IndigoApiClientTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kIndigo,
         {{features::kIndigoGenerateUrl.name, kTestGenerateUrl},
-         {features::kIndigoStatusUrl.name, kTestStatusUrl}});
+         {features::kIndigoStatusUrl.name, kTestStatusUrl},
+         {features::kIndigoDeleteUrl.name, kTestDeleteUrl}});
   }
 
   void WaitForAccessTokenRequestIfNecessaryAndRespondWithToken() {
@@ -538,6 +540,161 @@ TEST_F(IndigoApiClientTest, GenerateImageTooLarge) {
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().message, "Product image is too large (> 4MB)");
+}
+
+TEST_F(IndigoApiClientTest, DeleteSuccess) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  base::test::TestFuture<base::expected<void, DeleteError>> future;
+  client.Delete(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  test_url_loader_factory_.WaitForRequest(GURL(kTestDeleteUrl));
+  auto* pending_request = test_url_loader_factory_.GetPendingRequest(0);
+  ASSERT_TRUE(pending_request);
+  EXPECT_EQ(pending_request->request.url, GURL(kTestDeleteUrl));
+
+  std::string request_body = network::GetUploadData(pending_request->request);
+  EXPECT_EQ(request_body, "{}");
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(), "{}");
+
+  auto result = future.Get();
+  EXPECT_TRUE(result.has_value());
+}
+
+TEST_F(IndigoApiClientTest, DeleteHttpError) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(kTestDeleteUrl, "",
+                                       net::HTTP_INTERNAL_SERVER_ERROR);
+
+  base::test::TestFuture<base::expected<void, DeleteError>> future;
+  client.Delete(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message, "HTTP error: HTTP_INTERNAL_SERVER_ERROR");
+}
+
+TEST_F(IndigoApiClientTest, DeleteMalformedJson) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(kTestDeleteUrl, "invalid json");
+
+  base::test::TestFuture<base::expected<void, DeleteError>> future;
+  client.Delete(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message,
+            "Invalid JSON response from https://example.com/delete: line 1, "
+            "column 1: expected value at line 1 column 1");
+}
+
+TEST_F(IndigoApiClientTest, DeleteNotADictionary) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(kTestDeleteUrl, "[]");
+
+  base::test::TestFuture<base::expected<void, DeleteError>> future;
+  client.Delete(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message,
+            "Invalid JSON response from https://example.com/delete: not a "
+            "dictionary");
+}
+
+TEST_F(IndigoApiClientTest, DeleteUnexpectedNonEmptyResponse) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(kTestDeleteUrl, R"({"foo": "bar"})");
+
+  base::test::TestFuture<base::expected<void, DeleteError>> future;
+  client.Delete(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(
+      result.error().message,
+      "Unexpected non-empty JSON response from https://example.com/delete");
+}
+
+TEST_F(IndigoApiClientTest, DeleteApiError) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(
+      kTestDeleteUrl, R"({"error": {"message": "Resource not found"}})");
+
+  base::test::TestFuture<base::expected<void, DeleteError>> future;
+  client.Delete(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message, "Resource not found");
+}
+
+TEST_F(IndigoApiClientTest, DeleteNoUser) {
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  base::test::TestFuture<base::expected<void, DeleteError>> future;
+  client.Delete(future.GetCallback());
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message, "No signed in user");
+}
+
+TEST_F(IndigoApiClientTest, DeleteEmptyResponse) {
+  identity_test_env_.MakePrimaryAccountAvailable("test@example.com",
+                                                 signin::ConsentLevel::kSignin);
+
+  ApiClient client(identity_test_env_.identity_manager(),
+                   shared_url_loader_factory_);
+
+  test_url_loader_factory_.AddResponse(kTestDeleteUrl, "");
+
+  base::test::TestFuture<base::expected<void, DeleteError>> future;
+  client.Delete(future.GetCallback());
+  WaitForAccessTokenRequestIfNecessaryAndRespondWithToken();
+
+  auto result = future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().message,
+            "Unexpected empty response from https://example.com/delete");
 }
 
 }  // namespace

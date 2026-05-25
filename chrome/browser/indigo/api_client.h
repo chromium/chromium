@@ -49,6 +49,10 @@ struct StatusError {
   std::string message;
 };
 
+struct DeleteError {
+  std::string message;
+};
+
 class ApiClient : public signin::IdentityManager::Observer {
  public:
   ApiClient(signin::IdentityManager* identity_manager,
@@ -68,6 +72,11 @@ class ApiClient : public signin::IdentityManager::Observer {
       base::OnceCallback<void(base::expected<StatusResult, StatusError>)>;
   void GetStatus(StatusCallback callback);
 
+  // Sends a request to the delete endpoint.
+  using DeleteCallback =
+      base::OnceCallback<void(base::expected<void, DeleteError>)>;
+  void Delete(DeleteCallback callback);
+
  private:
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(
@@ -79,6 +88,7 @@ class ApiClient : public signin::IdentityManager::Observer {
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const GURL generate_url_;
   const GURL status_url_;
+  const GURL delete_url_;
 
   // Null when the profile has no primary account.
   std::unique_ptr<google_apis::RequestSender> request_sender_;
