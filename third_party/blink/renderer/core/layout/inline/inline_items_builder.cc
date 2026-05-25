@@ -384,6 +384,17 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
               // If the original string starts with a collapsible space, it may
               // be collapsed.
               return false;
+            case uchar::kIdeographicSpace:
+              // Under `text-transform: full-width`, the collapsed space is
+              // U+3000. Bail out only when this layout would also emit
+              // U+3000 as the collapsed space.
+              if (RuntimeEnabledFeatures::
+                      OffsetMappingReuseFullWidthSpaceFixEnabled() &&
+                  GetCollapsedSpaceChar(&new_style) ==
+                      uchar::kIdeographicSpace) {
+                return false;
+              }
+              break;
             case uchar::kLineFeed:
               // Collapsible spaces immediately before a preserved newline
               // should be removed to be consistent with
@@ -461,9 +472,15 @@ bool InlineItemsBuilderTemplate<MappingBuilder>::AppendTextReusing(
     }
 
   } else if (collapse_spaces) {
-    // If the original string starts with a collapsible space, it may be
-    // collapsed because it is now a leading collapsible space.
-    if (original_string[old_item0.StartOffset()] == uchar::kSpace) {
+    // A leading collapsible space may be collapsed. Under
+    // `text-transform: full-width` that space is U+3000, so treat U+3000
+    // the same as U+0020 only when this layout emits U+3000.
+    const UChar leading_char = original_string[old_item0.StartOffset()];
+    const bool full_width_fix_applies =
+        RuntimeEnabledFeatures::OffsetMappingReuseFullWidthSpaceFixEnabled() &&
+        GetCollapsedSpaceChar(&new_style) == uchar::kIdeographicSpace;
+    if (leading_char == uchar::kSpace ||
+        (leading_char == uchar::kIdeographicSpace && full_width_fix_applies)) {
       return false;
     }
   }

@@ -6,11 +6,18 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
+#include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
@@ -626,6 +633,34 @@ TEST_F(InlineItemsBuilderTest, OpenCloseRubyColumns) {
   orphan_rt->Destroy();
   rt->Destroy();
   ruby->Destroy();
+}
+
+TEST_F(InlineItemsBuilderTest,
+       OffsetMappingStaysConsistentUnderFullWidthTransform) {
+  // Under `text-transform: full-width`, the layout pass and the on-demand
+  // OffsetMapping pass must produce the same `text_content`. The fast
+  // reuse path used to keep a leading U+3000 that the slow path then
+  // collapsed, yielding a null mapping.
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" style="text-transform: full-width"><span id="prefix">x</span><span id="target"> foo</span></div>
+  )HTML");
+
+  Element* prefix = GetElementById("prefix");
+  Element* container = GetElementById("container");
+  ASSERT_TRUE(prefix);
+  ASSERT_TRUE(container);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  // Invalidate prefix only; target's items stay valid, so the next
+  // layout reaches `AppendTextReusing` for target with a cached
+  // text_content that starts with U+3000.
+  To<Text>(prefix->firstChild())->setData("x ");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* block = To<LayoutBlockFlow>(container->GetLayoutObject());
+  ASSERT_TRUE(block);
+  EXPECT_NE(nullptr, InlineNode(block).ComputeOffsetMappingIfNeeded());
 }
 
 }  // namespace blink

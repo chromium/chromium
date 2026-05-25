@@ -4126,6 +4126,11 @@
       status: "stable",
     },
     {
+      //See crbug.com/512385682
+      name: "OffsetMappingReuseFullWidthSpaceFix",
+      status: "stable",
+    },
+    {
       // Kill switch for a fix to offset-path transform invalidation for
       // https://crbug.com/463409688.
       name: "OffsetPathTransformUpdateFix",
