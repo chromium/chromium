@@ -376,8 +376,7 @@ mojom::DomCode DomCodeToMojom(const ui::DomCode code) {
 }
 
 // Not using an EnumTraits here because the mapping is not 1:1.
-std::optional<mojom::NamedDomKey> NamedDomKeyToMojom(
-    const ui::DomKey::Base& key) {
+std::optional<mojom::NamedDomKey> NamedDomKeyToMojom(const ui::DomKey& key) {
   switch (key) {
     case ui::DomKey::ALT:
       return mojom::NamedDomKey::kAlt;

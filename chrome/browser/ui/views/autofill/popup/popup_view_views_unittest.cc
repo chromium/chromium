@@ -2664,7 +2664,7 @@ TEST_F(PopupViewViewsTest, SearchBar_PressedKeysPassedToController) {
 
   EXPECT_CALL(controller(),
               HandleKeyPressEvent(Field(&input::NativeWebKeyboardEvent::dom_key,
-                                        ui::DomKey::Key::ARROW_DOWN)));
+                                        ui::DomKey::ARROW_DOWN)));
 
   generator().PressAndReleaseKey(ui::VKEY_DOWN);
 }

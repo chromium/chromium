@@ -79,16 +79,14 @@ class DomKey {
                 "suspicious representation change");
 
  public:
-  static constexpr Base NONE = 0;
+  static const DomKey NONE;
 
 // |dom_key_data.inc| describes the non-printable DomKey values, and is
-// included here to create constants for them in the DomKey:: scope.
-#define DOM_KEY_MAP_DECLARATION_START enum Key : Base {
-#define DOM_KEY_UNI(key, id, value) id = (TYPE_UNICODE | (value)),
-#define DOM_KEY_MAP(key, id, value) id = (TYPE_NON_UNICODE | (value)),
-#define DOM_KEY_MAP_DECLARATION_END \
-  }                                 \
-  ;
+// included here to declare constants for them in the DomKey:: scope.
+#define DOM_KEY_MAP_DECLARATION_START
+#define DOM_KEY_UNI(key, id, value) static const DomKey id;
+#define DOM_KEY_MAP(key, id, value) static const DomKey id;
+#define DOM_KEY_MAP_DECLARATION_END
 #include "ui/events/keycodes/dom/dom_key_data.inc"
 #undef DOM_KEY_MAP_DECLARATION_START
 #undef DOM_KEY_MAP
@@ -97,21 +95,6 @@ class DomKey {
 
   // Create a DomKey, with the undefined-value sentinel DomKey::NONE.
   constexpr DomKey() = default;
-
-  // Create a DomKey from an encoded integer value. This is implicit so
-  // that DomKey::NAME constants don't need to be explicitly converted
-  // to DomKey.
-  // After switching to C++17, this can be replaced by inline constexpr,
-  // so can be private. On runtime, FromBase is preferred.
-  constexpr DomKey(Base value) : value_(value) {}
-
-  // Factory that returns a DomKey for the specified value. Returns nullopt if
-  // |value| is not a valid value (or NONE).
-  static std::optional<DomKey> FromBase(Base value) {
-    if (value != 0 && !IsValidValue(value))
-      return std::nullopt;
-    return Base(value);
-  }
 
   // Obtain the encoded integer representation of the DomKey.
   constexpr operator Base() const { return value_; }
@@ -156,11 +139,32 @@ class DomKey {
     return DomKey(TYPE_DEAD | combining_character);
   }
 
- private:
-  static bool IsValidValue(Base value) { return (value & TYPE_MASK) != 0; }
+  // Create a DomKey from an encoded integer value.
+  constexpr explicit DomKey(Base value) : value_(value) {}
 
-  Base value_ = NONE;
+ private:
+  constexpr static bool IsValidValue(Base value) {
+    return (value & TYPE_MASK) != 0;
+  }
+
+  Base value_ = 0;
 };
+
+inline constexpr DomKey DomKey::NONE(0);
+
+// |dom_key_data.inc| is included again here to define the constants
+// declared above in the DomKey:: scope.
+#define DOM_KEY_MAP_DECLARATION_START
+#define DOM_KEY_UNI(key, id, value) \
+  inline constexpr DomKey DomKey::id(TYPE_UNICODE | (value));
+#define DOM_KEY_MAP(key, id, value) \
+  inline constexpr DomKey DomKey::id(TYPE_NON_UNICODE | (value));
+#define DOM_KEY_MAP_DECLARATION_END
+#include "ui/events/keycodes/dom/dom_key_data.inc"
+#undef DOM_KEY_MAP_DECLARATION_START
+#undef DOM_KEY_MAP
+#undef DOM_KEY_UNI
+#undef DOM_KEY_MAP_DECLARATION_END
 
 }  // namespace ui
 

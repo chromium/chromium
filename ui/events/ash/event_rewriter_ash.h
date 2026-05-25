@@ -54,7 +54,7 @@ class EventRewriterAsh : public EventRewriter {
     explicit MutableKeyState(const KeyEvent* key_event);
     constexpr MutableKeyState(int input_flags,
                               DomCode input_code,
-                              DomKey::Base input_key,
+                              DomKey input_key,
                               KeyboardCode input_key_code)
         : flags(input_flags),
           code(input_code),
@@ -66,7 +66,7 @@ class EventRewriterAsh : public EventRewriter {
 
     int flags = 0;
     DomCode code = DomCode::NONE;
-    DomKey::Base key = 0;
+    DomKey key = DomKey::NONE;
     KeyboardCode key_code = KeyboardCode::VKEY_NONAME;
   };
 

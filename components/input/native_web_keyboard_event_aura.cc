@@ -87,7 +87,7 @@ class TranslatedKeyEvent : public ui::KeyEvent {
         type, static_cast<ui::KeyboardCode>(web_event.windows_key_code),
         ui::KeycodeConverter::NativeKeycodeToDomCode(web_event.native_key_code),
         WebEventModifiersToEventFlags(web_event.GetModifiers()),
-        web_event.dom_key, web_event.TimeStamp(), is_char);
+        ui::DomKey(web_event.dom_key), web_event.TimeStamp(), is_char);
   }
 
   // Event:

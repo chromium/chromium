@@ -394,10 +394,10 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
       if (!event.ReadKeyData<ui::mojom::KeyDataPtr>(&key_data))
         return false;
 
-      std::optional<ui::DomKey> dom_key =
-          ui::DomKey::FromBase(key_data->dom_key);
-      if (!dom_key)
+      const ui::DomKey dom_key(key_data->dom_key);
+      if (dom_key != ui::DomKey::NONE && !dom_key.IsValid()) {
         return false;
+      }
 
       if (!key_data->is_char &&
           (key_data->key_code < 0 || key_data->key_code > 255)) {
@@ -418,7 +418,7 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
               ? ui::EventType::kKeyPressed
               : ui::EventType::kKeyReleased;
       *out = std::make_unique<ui::KeyEvent>(event_type, key_code, dom_code,
-                                            event.flags(), *dom_key, time_stamp,
+                                            event.flags(), dom_key, time_stamp,
                                             key_data->is_char);
       break;
     }

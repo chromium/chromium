@@ -1904,8 +1904,8 @@ TEST_P(SideVolumeButtonAcceleratorTest, FlipSideVolumeButtonAction) {
   user_action_tester.ResetCounts();
 
   ui::KeyEvent event(ui::EventType::kKeyPressed, ui::VKEY_VOLUME_DOWN,
-                     ui::DomCode::VOLUME_DOWN, /*flags=*/0, /*dom_key=*/2099727,
-                     base::TimeTicks::Now());
+                     ui::DomCode::VOLUME_DOWN, /*flags=*/0,
+                     ui::DomKey::AUDIO_VOLUME_DOWN, base::TimeTicks::Now());
   event.set_source_device_id(kSideVolumeButtonId);
   const ui::Accelerator volume_down_from_side_volume_button(event);
   ProcessInController(volume_down_from_side_volume_button);

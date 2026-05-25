@@ -374,7 +374,7 @@ bool DevToolsEventForwarder::ForwardEvent(
   base::DictValue event_data;
   event_data.Set("type", event_type);
   event_data.Set("key", ui::KeycodeConverter::DomKeyToKeyString(
-                            static_cast<ui::DomKey>(event.dom_key)));
+                            ui::DomKey(event.dom_key)));
   event_data.Set("code", ui::KeycodeConverter::DomCodeToCodeString(
                              static_cast<ui::DomCode>(event.dom_code)));
   event_data.Set("keyCode", key_code);

@@ -265,7 +265,7 @@ struct TestKey {
           {}) {
     return {ui::EventType::kKeyPressed,
             code,
-            (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key,
+            ui::DomKey((flags & ui::EF_SHIFT_DOWN) ? shifted_key : key),
             keycode,
             flags | modifier_flag,
             kNoScanCode,
@@ -280,7 +280,7 @@ struct TestKey {
     // Note: modifier flag should not be present on release events.
     return {ui::EventType::kKeyReleased,
             code,
-            (flags & ui::EF_SHIFT_DOWN) ? shifted_key : key,
+            ui::DomKey((flags & ui::EF_SHIFT_DOWN) ? shifted_key : key),
             keycode,
             flags,
             kNoScanCode,

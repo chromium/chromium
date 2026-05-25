@@ -183,7 +183,7 @@ TEST(KeycodeConverter, DomCode) {
 
 TEST(KeycodeConverter, DomKey) {
   const struct {
-    ui::DomKey::Base key;
+    ui::DomKey key;
     bool is_character;
     bool is_dead;
     bool test_to_string;
@@ -240,7 +240,7 @@ TEST(KeycodeConverter, DomKey) {
   }
   // Round-trip test all UI Events KeyboardEvent.key strings, and check
   // that encodings are distinct.
-  std::set<ui::DomKey::Base> keys;
+  std::set<ui::DomKey> keys;
   const char* s = nullptr;
   for (size_t i = 0;
        (s = ui::KeycodeConverter::DomKeyStringForTest(i)) != nullptr; ++i) {

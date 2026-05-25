@@ -608,8 +608,8 @@ TEST_F(TextInputTest, InsertCharNumpadEqual) {
 
   // NUMPAD_EQUAL is set key_code to VKEY_UNKNOWN, but code t- NUMPAD_EQUAL.
   ui::KeyEvent ev(ui::EventType::kKeyPressed, ui::VKEY_UNKNOWN,
-                  ui::DomCode::NUMPAD_EQUAL, /*flags=*/0, /*key=*/0,
-                  base::TimeTicks());
+                  ui::DomCode::NUMPAD_EQUAL, /*flags=*/0,
+                  /*key=*/ui::DomKey::NONE, base::TimeTicks());
   ev.set_character(u'=');
 
   // InsertChar should ignore it (because it is not consumed by IME),

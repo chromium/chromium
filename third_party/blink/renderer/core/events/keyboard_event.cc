@@ -115,8 +115,8 @@ KeyboardEvent::KeyboardEvent(const WebKeyboardEvent& key,
       // TODO(crbug.com/482880): Fix this initialization to lazy initialization.
       code_(FromUtf8(ui::KeycodeConverter::DomCodeToCodeString(
           static_cast<ui::DomCode>(key.dom_code)))),
-      key_(FromUtf8(ui::KeycodeConverter::DomKeyToKeyString(
-          static_cast<ui::DomKey>(key.dom_key)))),
+      key_(FromUtf8(
+          ui::KeycodeConverter::DomKeyToKeyString(ui::DomKey(key.dom_key)))),
       location_(GetKeyLocationCode(key)),
       is_composing_(HasCurrentComposition(dom_window)) {
   InitLocationModifiers(location_);

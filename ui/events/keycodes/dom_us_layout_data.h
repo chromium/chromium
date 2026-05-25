@@ -95,7 +95,7 @@ const struct PrintableCodeEntry {
 // interpretation when there is no other way to map a physical key.
 const struct NonPrintableCodeEntry {
   DomCode dom_code;
-  DomKey::Base dom_key;
+  DomKey dom_key;
 } kNonPrintableCodeMap[] = {
     {DomCode::ABORT, DomKey::CANCEL},
     {DomCode::AGAIN, DomKey::AGAIN},
@@ -256,7 +256,7 @@ const struct NonPrintableCodeEntry {
 
 // This table maps a DomKey to a non-located KeyboardCode.
 const struct DomKeyToKeyboardCodeEntry {
-  DomKey::Base dom_key;
+  DomKey dom_key;
   KeyboardCode key_code;
 } kDomKeyToKeyboardCodeMap[] = {
     // No value.

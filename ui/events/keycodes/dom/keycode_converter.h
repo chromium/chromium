@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <ostream>
 #include <string>
 #include <string_view>
 
@@ -150,6 +151,9 @@ class KeycodeConverter {
   static const KeycodeMapEntry* GetKeycodeMapForTest();
   static const char* DomKeyStringForTest(size_t index);
 };
+
+// Stream operator to print DomKey in tests.
+std::ostream& operator<<(std::ostream& os, const DomKey& dom_key);
 
 }  // namespace ui
 

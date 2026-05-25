@@ -538,4 +538,8 @@ uint32_t KeycodeConverter::DomCodeToUsbKeycode(DomCode dom_code) {
   return InvalidUsbKeycode();
 }
 
+std::ostream& operator<<(std::ostream& os, const DomKey& dom_key) {
+  return os << KeycodeConverter::DomKeyToKeyString(dom_key);
+}
+
 }  // namespace ui

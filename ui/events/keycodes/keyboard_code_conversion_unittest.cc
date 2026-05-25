@@ -19,7 +19,7 @@ namespace {
 
 struct Meaning {
   bool defined;
-  ui::DomKey::Base dom_key;
+  ui::DomKey dom_key;
   ui::KeyboardCode key_code;
 };
 

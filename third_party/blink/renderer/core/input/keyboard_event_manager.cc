@@ -250,8 +250,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   // - not to be a modifier event
   // https://crbug.com/709765
   bool is_modifier = ui::KeycodeConverter::IsDomKeyForModifier(
-      static_cast<ui::DomKey>(initial_key_event.dom_key));
-
+      ui::DomKey(initial_key_event.dom_key));
   if (!is_modifier && initial_key_event.dom_key != ui::DomKey::ESCAPE &&
       (initial_key_event.GetType() == WebInputEvent::Type::kKeyDown ||
        initial_key_event.GetType() == WebInputEvent::Type::kRawKeyDown)) {
