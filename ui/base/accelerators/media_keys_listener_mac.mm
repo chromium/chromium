@@ -6,12 +6,16 @@
 
 #include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
+#include <IOKit/hidsystem/IOHIDLib.h>
 #include <IOKit/hidsystem/ev_keymap.h>
 
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/thread_pool.h"
 #include "ui/base/accelerators/accelerator.h"
 
 namespace ui {
@@ -21,6 +25,10 @@ namespace {
 // The media keys subtype. No official docs found, but widely known.
 // http://lists.apple.com/archives/cocoa-dev/2007/Aug/msg00499.html
 const int kSystemDefinedEventMediaKeysSubtype = 8;
+
+IOHIDAccessType CheckPostEventAccess() {
+  return IOHIDCheckAccess(kIOHIDRequestTypePostEvent);
+}
 
 KeyboardCode MediaKeyCodeToKeyboardCode(int key_code) {
   switch (key_code) {
@@ -62,13 +70,19 @@ class MediaKeysListenerImpl : public MediaKeysListener {
   // Internal methods to create or remove the event tap.
   void StartEventTapIfNecessary();
   void StopEventTapIfNecessary();
+  void ScheduleEventTapPermissionCheck();
+  void OnEventTapPermissionCheckCompleted(IOHIDAccessType access);
 
   raw_ptr<MediaKeysListener::Delegate> delegate_;
   const Scope scope_;
   // Event tap for intercepting mac media keys.
   base::apple::ScopedCFTypeRef<CFMachPortRef> event_tap_;
   base::apple::ScopedCFTypeRef<CFRunLoopSourceRef> event_tap_source_;
+  // Throttles permission checks so bursts of input events only keep one
+  // IOHIDCheckAccess() task in flight.
+  bool event_tap_permission_check_pending_ = false;
   base::flat_set<KeyboardCode> key_codes_;
+  base::WeakPtrFactory<MediaKeysListenerImpl> weak_factory_{this};
 };
 
 MediaKeysListenerImpl::MediaKeysListenerImpl(
@@ -116,6 +130,7 @@ void MediaKeysListenerImpl::StartEventTapIfNecessary() {
       kCFAllocatorDefault, event_tap_.get(), /*order=*/0));
   if (!event_tap_source_) {
     LOG(ERROR) << "Error: failed to create new run loop source.";
+    event_tap_.reset();
     return;
   }
 
@@ -124,6 +139,9 @@ void MediaKeysListenerImpl::StartEventTapIfNecessary() {
 }
 
 void MediaKeysListenerImpl::StopEventTapIfNecessary() {
+  event_tap_permission_check_pending_ = false;
+  weak_factory_.InvalidateWeakPtrs();
+
   if (!event_tap_) {
     return;
   }
@@ -139,6 +157,38 @@ void MediaKeysListenerImpl::StopEventTapIfNecessary() {
 
   // Release the event tap source.
   event_tap_source_.reset();
+}
+
+void MediaKeysListenerImpl::ScheduleEventTapPermissionCheck() {
+  if (!event_tap_ || event_tap_permission_check_pending_) {
+    return;
+  }
+
+  event_tap_permission_check_pending_ =
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::MayBlock()}, base::BindOnce(&CheckPostEventAccess),
+          base::BindOnce(
+              &MediaKeysListenerImpl::OnEventTapPermissionCheckCompleted,
+              weak_factory_.GetWeakPtr()));
+}
+
+void MediaKeysListenerImpl::OnEventTapPermissionCheckCompleted(
+    IOHIDAccessType access) {
+  event_tap_permission_check_pending_ = false;
+
+  if (!event_tap_) {
+    return;
+  }
+
+  if (access == kIOHIDAccessTypeGranted) {
+    return;
+  }
+
+  LOG(WARNING) << "Accessibility permission unavailable while media key "
+               << "event tap is running, stopping tap. IOHID access="
+               << static_cast<int>(access);
+
+  StopEventTapIfNecessary();
 }
 
 void MediaKeysListenerImpl::OnMediaKeyEvent(KeyboardCode key_code) {
@@ -159,6 +209,12 @@ CGEventRef MediaKeysListenerImpl::EventTapCallback(CGEventTapProxy proxy,
                                                    void* refcon) {
   MediaKeysListenerImpl* shortcut_listener =
       static_cast<MediaKeysListenerImpl*>(refcon);
+
+  // IOHIDCheckAccess() may block while TCC/IOHID state is being updated, so do
+  // the actual permission check on a worker thread and handle the result back
+  // on this sequence. Only keep one in-flight check to avoid queueing work for
+  // bursts of input events.
+  shortcut_listener->ScheduleEventTapPermissionCheck();
 
   const bool is_active = [NSApp isActive];
 

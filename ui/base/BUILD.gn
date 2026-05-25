@@ -603,6 +603,7 @@ component("base") {
       "Carbon.framework",
       "CoreVideo.framework",
       "Foundation.framework",
+      "IOKit.framework",
       "QuartzCore.framework",
       "UniformTypeIdentifiers.framework",
     ]
