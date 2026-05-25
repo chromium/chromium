@@ -5,12 +5,29 @@
 #ifndef EXTENSIONS_BROWSER_UI_UTIL_H_
 #define EXTENSIONS_BROWSER_UI_UTIL_H_
 
+#include "build/build_config.h"
 #include "extensions/common/manifest.h"
+
+namespace content {
+class WebContents;
+}
 
 namespace extensions {
 class Extension;
 
 namespace ui_util {
+
+#if !BUILDFLAG(IS_ANDROID)
+// Returns the extension rendering the primary main frame of
+// `web_contents` as a top-level generic MIME handler, or nullptr if no
+// such extension is active. Returns nullptr for embedded (`<embed>` /
+// `<iframe>`) handlers, allowlisted plugin extensions
+// (`MimeTypesHandler::IsPluginExtension`, which covers built-in PDF),
+// and extensions that have been uninstalled or disabled since the
+// stream was dispatched.
+const Extension* GetTopLevelMimeHandlerExtension(
+    content::WebContents& web_contents);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Returns true if an extension with the given `type` and `location` should be
 // displayed in the extension settings page (e.g. chrome://extensions).

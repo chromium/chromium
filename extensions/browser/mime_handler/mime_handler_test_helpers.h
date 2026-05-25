@@ -21,7 +21,8 @@ namespace extensions::mime_handler {
 // `container_number` is used as the tab ID and appended to the extension ID
 // and all URLs.
 std::unique_ptr<extensions::StreamContainer> GenerateSampleStreamContainer(
-    int container_number);
+    int container_number,
+    bool embedded = true);
 
 // `mojo::DataPipeDrainer::Client` that accumulates received bytes into a
 // string and flips a flag on EOF. Drives consumer reads in tests via

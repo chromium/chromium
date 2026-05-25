@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("page_info") {
   public = [
     "page_info_bubble_view.h",
@@ -43,9 +45,13 @@ source_set("impl") {
     "//components/strings:components_strings_grit",
     "//components/strings:privacy_sandbox_strings_grit",
     "//content/public/browser",
-    "//extensions/common:common_constants",
+    "//extensions/buildflags",
     "//ui/base",
     "//ui/gfx",
     "//ui/views",
   ]
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions" ]
+  }
 }

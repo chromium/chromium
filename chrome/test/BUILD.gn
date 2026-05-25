@@ -5274,6 +5274,7 @@ if (!is_android) {
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.cc",
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.h",
         "../browser/ui/views/extensions/extensions_request_access_hover_card_coordinator_browsertest.cc",
+        "../browser/ui/views/extensions/generic_mime_handler_chip_browsertest.cc",
         "../browser/ui/views/extensions/security_dialog_tracker_browsertest.cc",
         "../browser/ui/views/external_protocol_dialog_browsertest.cc",
         "../browser/ui/views/file_system_access/file_system_access_browsertest.cc",

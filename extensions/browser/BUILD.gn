@@ -696,6 +696,10 @@ source_set("browser_sources") {
     deps += [ "//rlz:rlz_lib" ]
   }
 
+  if (!is_android) {
+    deps += [ "//extensions/browser/mime_handler" ]
+  }
+
   public_deps = [
     "//base",
     "//components/safe_browsing/core/browser/db:v4_protocol_config",

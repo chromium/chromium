@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+
+#include "base/files/file_path.h"
+#include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -22,7 +27,6 @@
 #include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_features.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_handlers/mime_types_handler.h"
 #include "extensions/test/result_catcher.h"
 #include "net/dns/mock_host_resolver.h"
@@ -31,7 +35,11 @@
 namespace extensions {
 
 namespace {
+
 constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kTestExtensionDir[] = "generic_mime_handler";
+constexpr char kTestPdfPath[] = "/test.pdf";
+
 }  // namespace
 
 class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
@@ -46,8 +54,15 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    embedded_test_server()->ServeFilesFromSourceDirectory(
-        "chrome/test/data/pdf");
+    const base::FilePath test_data_dir =
+        base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
+    // Serve the real test.pdf so the MIME handler routing sees an actual
+    // application/pdf payload, and the extension's host pages (handler.html,
+    // embed_host.html, empty.html) from the extension's fixture directory.
+    embedded_test_server()->ServeFilesFromDirectory(
+        test_data_dir.AppendASCII("pdf"));
+    embedded_test_server()->ServeFilesFromDirectory(
+        test_data_dir_.AppendASCII(kTestExtensionDir));
     ASSERT_TRUE(StartEmbeddedTestServer());
   }
 
@@ -94,7 +109,6 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  ScopedCurrentChannel channel_{version_info::Channel::UNKNOWN};
 };
 
 // Verifies that navigating to an application/pdf URL handled by a generic
@@ -102,7 +116,7 @@ class GenericMimeHandlerBrowserTest : public ExtensionApiTest {
 // chrome.mimeHandler.getStreamInfo() returns correct stream metadata.
 IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
   const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("generic_mime_handler"));
+      LoadExtension(test_data_dir_.AppendASCII(kTestExtensionDir));
   ASSERT_TRUE(extension);
 
   // Verify the extension registered as a generic MIME handler.
@@ -111,8 +125,8 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
   auto* registry = MimeHandlerRegistry::Get(profile());
   ASSERT_TRUE(registry);
   ASSERT_FALSE(handler->IsPluginExtension());
-  ASSERT_EQ(extension->id(),
-            registry->GetHandlerForMimeType("application/pdf"));
+  ASSERT_TRUE(handler->CanEmbedMimeType(kPdfMimeType));
+  ASSERT_EQ(extension->id(), registry->GetHandlerForMimeType(kPdfMimeType));
 
   // Set up ResultCatcher before navigation so it catches the extension's
   // chrome.test.succeed() call.
@@ -120,8 +134,8 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
 
   // Navigate to an application/pdf resource. The throttle should intercept
   // this and route it through the generic MIME handler's OOPIF path.
-  GURL pdf_url = embedded_test_server()->GetURL("/test.pdf");
-  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), pdf_url));
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            embedded_test_server()->GetURL(kTestPdfPath)));
 
   // The handler.js in the extension calls chrome.test.succeed() after
   // verifying getStreamInfo fields and fetching the stream data.
@@ -132,8 +146,8 @@ IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest, GetStreamInfo) {
 // for top-level navigations but bypassed for embedded loads.
 IN_PROC_BROWSER_TEST_F(GenericMimeHandlerBrowserTest,
                        EmbeddedLoadHonorsCanEmbed) {
-  const Extension* extension =
-      LoadExtension(test_data_dir_.AppendASCII("generic_mime_handler"));
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("generic_mime_handler_no_embed"));
   ASSERT_TRUE(extension);
 
   EXPECT_EQ(extension->id(),

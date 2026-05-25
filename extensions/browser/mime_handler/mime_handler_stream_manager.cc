@@ -240,6 +240,27 @@ bool MimeHandlerStreamManager::IsExtensionHost(
                                     render_frame_host->GetFrameTreeNodeId());
 }
 
+std::optional<ExtensionId>
+MimeHandlerStreamManager::GetTopLevelHandlerExtensionId() const {
+  content::RenderFrameHost* main_rfh = web_contents()->GetPrimaryMainFrame();
+  CHECK(main_rfh);
+  const extensions::StreamInfo* info = GetClaimedStreamInfo(main_rfh);
+  if (!info || !info->stream()) {
+    return std::nullopt;
+  }
+  if (info->stream()->embedded()) {
+    return std::nullopt;
+  }
+  // It's possible to have multiple `extensions::StreamContainer`s under the
+  // same frame tree node ID. Verify the original URL in the stream container
+  // to avoid a potential URL spoof -- the same guard `GetStreamContainer()`
+  // applies.
+  if (main_rfh->GetLastCommittedURL() != info->stream()->original_url()) {
+    return std::nullopt;
+  }
+  return info->stream()->extension_id();
+}
+
 bool MimeHandlerStreamManager::IsExtensionFrameTreeNodeId(
     const content::RenderFrameHost* embedder_host,
     content::FrameTreeNodeId frame_tree_node_id) const {

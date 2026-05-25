@@ -245,7 +245,8 @@ int LocationIconView::GetMinimumLabelTextWidth() const {
 
 bool LocationIconView::GetShowText() const {
   return location_bar::ShouldShowSecurityChipText(
-      delegate_->GetLocationBarModel(), delegate_->IsEditingOrEmpty());
+      delegate_->GetLocationBarModel(), delegate_->GetWebContents(),
+      delegate_->IsEditingOrEmpty());
 }
 
 void LocationIconView::MaybeAnimateIcon(bool show) {

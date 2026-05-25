@@ -1201,4 +1201,67 @@ TEST_F(MimeHandlerStreamManagerTest,
       manager->TakeCachedFallbackBody(content::FrameTreeNodeId()).has_value());
 }
 
+// `MimeHandlerStreamManager::GetTopLevelHandlerExtensionId()` returns nullopt
+// when no stream is registered for the WebContents.
+TEST_F(MimeHandlerStreamManagerTest,
+       GetTopLevelHandlerExtensionIdEmptyWithoutStream) {
+  // Create the manager but register no streams.
+  MimeHandlerStreamManager::Create(
+      content::RenderViewHostTestHarness::web_contents());
+
+  EXPECT_FALSE(mime_handler_stream_manager()
+                   ->GetTopLevelHandlerExtensionId()
+                   .has_value());
+}
+
+// `MimeHandlerStreamManager::GetTopLevelHandlerExtensionId()` returns nullopt
+// after the claimed stream has been deleted.
+TEST_F(MimeHandlerStreamManagerTest,
+       GetTopLevelHandlerExtensionIdEmptyAfterStreamDeleted) {
+  auto stream_container = GenerateSampleStreamContainer(/*container_number=*/1,
+                                                        /*embedded=*/false);
+  const GURL original_url = stream_container->original_url();
+  const ExtensionId expected_extension_id = stream_container->extension_id();
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), original_url);
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      std::move(stream_container),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  EXPECT_THAT(manager->GetTopLevelHandlerExtensionId(),
+              testing::Optional(expected_extension_id));
+
+  // Navigating away tears down the claimed stream.
+  NavigateAndCommit(main_rfh(), GURL(kOriginalUrl2));
+
+  EXPECT_FALSE(mime_handler_stream_manager()
+                   ->GetTopLevelHandlerExtensionId()
+                   .has_value());
+}
+
+// `MimeHandlerStreamManager::GetTopLevelHandlerExtensionId()` returns nullopt
+// when the claimed stream's `original_url()` does not match the primary main
+// frame's last committed URL -- the URL-spoof guard.
+TEST_F(MimeHandlerStreamManagerTest,
+       GetTopLevelHandlerExtensionIdEmptyOnUrlMismatch) {
+  // Install a stream whose `original_url()` is `kOriginalUrl1`
+  // ("https://original_url1") but commit the main frame to a different
+  // URL.
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), GURL(kOriginalUrl2));
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_host->GetFrameTreeNodeId(), "internal_id",
+      extensions::mime_handler::GenerateSampleStreamContainer(
+          /*container_number=*/1, /*embedded=*/false),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>());
+  manager->ClaimStreamInfoForTesting(embedder_host);
+
+  EXPECT_FALSE(manager->GetTopLevelHandlerExtensionId().has_value());
+}
+
 }  // namespace extensions::mime_handler

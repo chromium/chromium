@@ -19,7 +19,6 @@ chrome.test.runTests([
 
     chrome.test.assertEq('application/pdf', info.mimeType);
     chrome.test.assertTrue(info.tabId >= 0);
-    chrome.test.assertFalse(info.embedded);
     chrome.test.assertTrue(info.originalUrl.length > 0);
     chrome.test.assertTrue(info.streamUrl.length > 0);
 

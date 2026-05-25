@@ -37,6 +37,7 @@ class StreamInfo {
   const std::string& internal_id() const { return internal_id_; }
 
   StreamContainer* stream() { return stream_.get(); }
+  const StreamContainer* stream() const { return stream_.get(); }
 
   MimeHandlerStreamDelegate* delegate() { return delegate_.get(); }
   const MimeHandlerStreamDelegate* delegate() const { return delegate_.get(); }

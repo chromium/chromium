@@ -20,7 +20,8 @@
 namespace extensions::mime_handler {
 
 std::unique_ptr<extensions::StreamContainer> GenerateSampleStreamContainer(
-    int container_number) {
+    int container_number,
+    bool embedded) {
   const std::string container_number_string =
       base::NumberToString(container_number);
   const GURL handler_url =
@@ -37,7 +38,7 @@ std::unique_ptr<extensions::StreamContainer> GenerateSampleStreamContainer(
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/2 200 OK");
 
   return std::make_unique<extensions::StreamContainer>(
-      /*tab_id=*/container_number, /*embedded=*/true, handler_url, extension_id,
+      /*tab_id=*/container_number, embedded, handler_url, extension_id,
       std::move(transferrable_loader), original_url);
 }
 

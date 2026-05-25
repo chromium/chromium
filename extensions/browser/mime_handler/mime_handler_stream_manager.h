@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/mime_handler/stream_info.h"
+#include "extensions/common/extension_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "url/gurl.h"
@@ -216,6 +217,16 @@ class MimeHandlerStreamManager
   // Set whether the handler plugin should handle save events.
   void SetPluginCanSave(content::RenderFrameHost* embedder_host,
                         bool plugin_can_save);
+
+  // If the WebContents this manager is attached to is currently rendering a
+  // top-level MIME-handled resource via a registered extension, returns that
+  // extension's id. Returns nullopt otherwise.
+  //
+  // "Top-level" means the embedder for the claimed stream is the primary
+  // main frame of the WebContents AND `StreamContainer::embedded() == false`.
+  // Embedded `<embed>` / `<iframe>` MIME handlers do not satisfy this
+  // predicate.
+  std::optional<ExtensionId> GetTopLevelHandlerExtensionId() const;
 
   // Returns whether there's an unclaimed stream info with the default embedder
   // host info.

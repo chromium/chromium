@@ -1,11 +1,11 @@
 {
-  "name": "Generic MIME Handler Test",
+  "name": "Generic MIME Handler Test (no embed)",
   "version": "1.0",
   "manifest_version": 3,
   "mime_types_handler": {
     "application/pdf": {
       "handler_url": "handler.html",
-      "can_embed": true
+      "can_embed": false
     }
   }
 }

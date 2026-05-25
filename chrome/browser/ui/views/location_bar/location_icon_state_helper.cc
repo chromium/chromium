@@ -50,15 +50,15 @@ std::u16string GetSecurityChipText(const LocationBarModel* model,
     return l10n_util::GetStringUTF16(IDS_OMNIBOX_READER_MODE);
   }
 
+  // On ChromeOS, this can be called using web_contents from
+  // SimpleWebViewDialog::GetWebContents() which always returns null.
+  // TODO(crbug.com/40501128) Remove the null check and make
+  // SimpleWebViewDialog::GetWebContents return the proper web contents
+  // instead.
   if (web_contents) {
-    // On ChromeOS, this can be called using web_contents from
-    // SimpleWebViewDialog::GetWebContents() which always returns null.
-    // TODO(crbug.com/40501128) Remove the null check and make
-    // SimpleWebViewDialog::GetWebContents return the proper web contents
-    // instead.
     const std::u16string extension_name =
-        extensions::ui_util::GetEnabledExtensionNameForUrl(
-            model->GetURL(), web_contents->GetBrowserContext());
+        extensions::ui_util::GetEnabledExtensionNameForUrl(model->GetURL(),
+                                                           *web_contents);
     if (!extension_name.empty()) {
       return extension_name;
     }
@@ -68,6 +68,7 @@ std::u16string GetSecurityChipText(const LocationBarModel* model,
 }
 
 bool ShouldShowSecurityChipText(const LocationBarModel* model,
+                                content::WebContents* web_contents,
                                 bool is_editing_or_empty) {
   if (is_editing_or_empty) {
     return false;
@@ -80,6 +81,16 @@ bool ShouldShowSecurityChipText(const LocationBarModel* model,
       url.SchemeIs(dom_distiller::kDomDistillerScheme) ||
       (model->IsContextualTasksPage() &&
        contextual_tasks::ShouldShowExpandedSecurityChip())) {
+    return true;
+  }
+
+  // Generic MIME handler indicator: show the chip even when no security
+  // text is available, so the chip can carry the extension name. The
+  // chrome-extension:// scheme is already covered by the scheme test above;
+  // this branch covers https:// URLs handled by a generic MIME handler.
+  if (web_contents &&
+      !extensions::ui_util::GetEnabledExtensionNameForUrl(url, *web_contents)
+           .empty()) {
     return true;
   }
 

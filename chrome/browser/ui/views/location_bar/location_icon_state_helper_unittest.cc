@@ -46,8 +46,8 @@ TEST_F(SecurityChipStateHelperTest, HidesTextWhenEditing) {
   EXPECT_TRUE(
       GetSecurityChipText(model(), nullptr, /*is_editing_or_empty=*/true)
           .empty());
-  EXPECT_FALSE(
-      ShouldShowSecurityChipText(model(), /*is_editing_or_empty=*/true));
+  EXPECT_FALSE(ShouldShowSecurityChipText(model(), /*web_contents=*/nullptr,
+                                          /*is_editing_or_empty=*/true));
 }
 
 TEST_F(SecurityChipStateHelperTest, ShowsFileScheme) {
@@ -56,8 +56,8 @@ TEST_F(SecurityChipStateHelperTest, ShowsFileScheme) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_FILE),
       GetSecurityChipText(model(), nullptr, /*is_editing_or_empty=*/false));
-  EXPECT_TRUE(
-      ShouldShowSecurityChipText(model(), /*is_editing_or_empty=*/false));
+  EXPECT_TRUE(ShouldShowSecurityChipText(model(), /*web_contents=*/nullptr,
+                                         /*is_editing_or_empty=*/false));
 }
 
 TEST_F(SecurityChipStateHelperTest, ShowsChromeUIScheme) {
@@ -66,8 +66,8 @@ TEST_F(SecurityChipStateHelperTest, ShowsChromeUIScheme) {
   EXPECT_EQ(
       l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME),
       GetSecurityChipText(model(), nullptr, /*is_editing_or_empty=*/false));
-  EXPECT_TRUE(
-      ShouldShowSecurityChipText(model(), /*is_editing_or_empty=*/false));
+  EXPECT_TRUE(ShouldShowSecurityChipText(model(), /*web_contents=*/nullptr,
+                                         /*is_editing_or_empty=*/false));
 }
 
 TEST_F(SecurityChipStateHelperTest, ShowsSecureTextFallback) {
@@ -76,8 +76,8 @@ TEST_F(SecurityChipStateHelperTest, ShowsSecureTextFallback) {
 
   EXPECT_EQ(u"Not Secure", GetSecurityChipText(model(), nullptr,
                                                /*is_editing_or_empty=*/false));
-  EXPECT_TRUE(
-      ShouldShowSecurityChipText(model(), /*is_editing_or_empty=*/false));
+  EXPECT_TRUE(ShouldShowSecurityChipText(model(), /*web_contents=*/nullptr,
+                                         /*is_editing_or_empty=*/false));
 }
 
 TEST_F(SecurityChipStateHelperTest, ShouldAnimateTextChange) {
