@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_cueing/cue_target.h"
 #include "components/optimization_guide/proto/features/contextual_cueing.pb.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class BrowserWindowInterface;
@@ -111,6 +112,10 @@ class ContextualCueingController
 
   // Returns true if the user is subject to age restrictions.
   bool IsUserSubjectToAgeRestrictions();
+
+  // Returns the active tab's ukm::SourceId, or ukm::kInvalidSourceId if there
+  // is no active tab.
+  ukm::SourceId GetActiveTabSourceId() const;
 
   void ShowCue(CueTargetType cue_type,
                const CueTarget& target,

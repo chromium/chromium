@@ -47,6 +47,8 @@ void RecordCueShownMetrics(ukm::SourceId source_id,
       .SetNavigatedAwayTabCount(
           BucketTabCount(tab_metrics.navigated_away_count))
       .SetProactiveCueLatencyAfterPageLoad(latency.InMilliseconds())
+      .SetProactiveCueDecision(
+          static_cast<int64_t>(ContextualCueingDecision::kSuccess))
       .Record(ukm_recorder);
 }
 
@@ -68,6 +70,23 @@ void RecordContextualCueingInteraction(
       .SetProactiveCueShownDuration(ukm::GetExponentialBucketMinForUserTiming(
           shown_duration.InMilliseconds()))
       .Record(ukm_recorder);
+}
+
+void RecordContextualCueingDecision(
+    ukm::SourceId source_id,
+    ContextualCueingDecision contextual_cueing_decision) {
+  base::UmaHistogramEnumeration("ContextualCueing.V2.Decision",
+                                contextual_cueing_decision);
+
+  // If the decision is kSuccess, RecordCueShownMetrics will record the
+  // ProactiveCueDecision UKM instead.
+  if (contextual_cueing_decision != ContextualCueingDecision::kSuccess) {
+    auto* ukm_recorder = ukm::UkmRecorder::Get();
+    ukm::builders::ContextualCueing_CueShown(source_id)
+        .SetProactiveCueDecision(
+            static_cast<int64_t>(contextual_cueing_decision))
+        .Record(ukm_recorder);
+  }
 }
 
 }  // namespace contextual_cueing

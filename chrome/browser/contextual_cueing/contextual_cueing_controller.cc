@@ -78,12 +78,6 @@ const char kHomepagePathRegex[] =
     "(?i)(/(en\\/)?((index|default|home|homepage|main|welcome)(\\.[^/"
     "?;]+)?)?)?";
 
-void RecordContextualCueingDecision(
-    ContextualCueingDecision contextual_cueing_decision) {
-  base::UmaHistogramEnumeration("ContextualCueing.V2.Decision",
-                                contextual_cueing_decision);
-}
-
 std::optional<CueTargetType> GetTargetType(
     optimization_guide::proto::ContextualCueingResponse::FulfillmentSurfaceCase
         fulfillment_surface_case) {
@@ -202,15 +196,17 @@ void ContextualCueingController::OnPageContentAnnotated(
       tab_list_interface_->GetActiveTab()
           ? tab_list_interface_->GetActiveTab()->GetContents()
           : nullptr;
+  ukm::SourceId source_id = GetActiveTabSourceId();
   if (!active_web_contents ||
       visit.url != active_web_contents->GetLastCommittedURL()) {
-    CUEING_LOG(
-        base::StringPrintf("%s ineligible for cue: No longer active tab after "
-                           "category classification.",
-                           active_web_contents->GetLastCommittedURL().spec()));
+    CUEING_LOG(base::StringPrintf(
+        "%s ineligible for cue: No longer active tab after "
+        "category classification.",
+        active_web_contents ? active_web_contents->GetLastCommittedURL().spec()
+                            : "unknown"));
     RecordContextualCueingDecision(
-        ContextualCueingDecision::
-            kNoLongerActiveTabAfterCategoryClassification);
+        source_id, ContextualCueingDecision::
+                       kNoLongerActiveTabAfterCategoryClassification);
     return;
   }
 
@@ -218,7 +214,8 @@ void ContextualCueingController::OnPageContentAnnotated(
     CUEING_LOG(
         base::StringPrintf("%s ineligible for cue: URL is ineligible.",
                            active_web_contents->GetLastCommittedURL().spec()));
-    RecordContextualCueingDecision(ContextualCueingDecision::kUrlNotEligible);
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kUrlNotEligible);
     return;
   }
 
@@ -227,7 +224,7 @@ void ContextualCueingController::OnPageContentAnnotated(
         base::StringPrintf("%s ineligible for cue: No eligible cue surfaces.",
                            active_web_contents->GetLastCommittedURL().spec()));
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kNoEligibleCueSurfaces);
+        source_id, ContextualCueingDecision::kNoEligibleCueSurfaces);
     return;
   }
 
@@ -265,7 +262,7 @@ void ContextualCueingController::OnPageContentAnnotated(
         "%s ineligible for cue: Failed category classification.",
         active_web_contents->GetLastCommittedURL().spec()));
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kFailedCategoryClassification);
+        source_id, ContextualCueingDecision::kFailedCategoryClassification);
     return;
   }
 
@@ -276,7 +273,7 @@ void ContextualCueingController::OnPageContentAnnotated(
         base::StringPrintf("%s ineligible for cue with reason: %d.",
                            active_web_contents->GetLastCommittedURL().spec(),
                            static_cast<int>(decision)));
-    RecordContextualCueingDecision(decision);
+    RecordContextualCueingDecision(source_id, decision);
     return;
   }
 
@@ -288,18 +285,20 @@ void ContextualCueingController::OnPageContentAnnotated(
 }
 
 void ContextualCueingController::InitiateModelExecutionRequest() {
-  if (!optimization_guide_keyed_service_) {
-    RecordContextualCueingDecision(
-        ContextualCueingDecision::kModelExecutionUnavailable);
-    return;
-  }
-
-  optimization_guide::proto::ContextualCueingRequest request;
   content::WebContents* active_web_contents =
       tab_list_interface_->GetActiveTab()
           ? tab_list_interface_->GetActiveTab()->GetContents()
           : nullptr;
   CHECK(active_web_contents);
+  ukm::SourceId source_id = GetActiveTabSourceId();
+
+  if (!optimization_guide_keyed_service_) {
+    RecordContextualCueingDecision(
+        source_id, ContextualCueingDecision::kModelExecutionUnavailable);
+    return;
+  }
+
+  optimization_guide::proto::ContextualCueingRequest request;
   request.mutable_active_tab_page_context()->set_url(
       active_web_contents->GetLastCommittedURL().spec());
   request.mutable_active_tab_page_context()->set_title(
@@ -365,6 +364,8 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   tabs::TabInterface* current_active_tab = tab_list_interface_->GetActiveTab();
+  ukm::SourceId source_id = GetActiveTabSourceId();
+
   if (!current_active_tab || !current_active_tab->GetContents() ||
       !AreTabsEqual(active_tab, GetTabProtoFromWebContents(
                                     current_active_tab->GetContents()))) {
@@ -372,6 +373,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
         "Model execution returned but tab for generated cue is no longer "
         "active.");
     RecordContextualCueingDecision(
+        source_id,
         ContextualCueingDecision::kNoLongerActiveTabAfterModelExecution);
     return;
   }
@@ -379,7 +381,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   if (!result.response.has_value()) {
     CUEING_LOG("Model execution to generate cue failed.");
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kModelExecutionFailed);
+        source_id, ContextualCueingDecision::kModelExecutionFailed);
     return;
   }
 
@@ -390,6 +392,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   if (!response) {
     CUEING_LOG("Model execution to generate cue failed: couldn't parse proto.");
     RecordContextualCueingDecision(
+        source_id,
         ContextualCueingDecision::kModelExecutionResponseFailedToParse);
     return;
   }
@@ -401,7 +404,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
         "Model execution to generate cue failed: missing anchored message "
         "text.");
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kMissingAnchoredMessageText);
+        source_id, ContextualCueingDecision::kMissingAnchoredMessageText);
     return;
   }
 
@@ -410,7 +413,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
   if (!target_type) {
     CUEING_LOG("Unknown fulfillment surface");
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kUnknownFulfillmentSurface);
+        source_id, ContextualCueingDecision::kUnknownFulfillmentSurface);
     return;
   }
 
@@ -419,13 +422,13 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     CUEING_LOG(base::StringPrintf("No CueTarget registered for '%s'",
                                   GetName(*target_type)));
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kTargetFeatureNotRegistered);
+        source_id, ContextualCueingDecision::kTargetFeatureNotRegistered);
     return;
   }
 
   if (IsUserSubjectToAgeRestrictions()) {
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kAgeRestrictionEnforced);
+        source_id, ContextualCueingDecision::kAgeRestrictionEnforced);
     return;
   }
 
@@ -433,7 +436,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     CUEING_LOG(base::StringPrintf("Not eligible for '%s' cues",
                                   GetName(*target_type)));
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kTargetFeatureNotEligible);
+        source_id, ContextualCueingDecision::kTargetFeatureNotEligible);
     return;
   }
 
@@ -464,6 +467,14 @@ bool ContextualCueingController::IsUserSubjectToAgeRestrictions() {
          signin::Tribool::kTrue;
 }
 
+ukm::SourceId ContextualCueingController::GetActiveTabSourceId() const {
+  tabs::TabInterface* active_tab = tab_list_interface_->GetActiveTab();
+  return active_tab ? active_tab->GetContents()
+                          ->GetPrimaryMainFrame()
+                          ->GetPageUkmSourceId()
+                    : ukm::kInvalidSourceId;
+}
+
 bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return false;
@@ -482,12 +493,15 @@ bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
 }
 
 bool ContextualCueingController::IsAllowedToShowCue() {
+  ukm::SourceId source_id = GetActiveTabSourceId();
+
   if (!sync_service_ ||
       !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kHistory)) {
     CUEING_LOG("History sync is off.");
     // If history sync is off, we cannot proceed to generate or show the cue.
-    RecordContextualCueingDecision(ContextualCueingDecision::kHistorySyncOff);
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kHistorySyncOff);
     return false;
   }
 
@@ -502,7 +516,8 @@ bool ContextualCueingController::IsAllowedToShowCue() {
     CUEING_LOG(
         "Not attempting to show/generate cue because user has opted out of "
         "contextual cues.");
-    RecordContextualCueingDecision(ContextualCueingDecision::kUserOptedOut);
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kUserOptedOut);
     return false;
   }
 
@@ -515,7 +530,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
         "Not attempting to show/generate cue because enterprise policy has "
         "disabled contextual cues.");
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kDisabledByEnterprisePolicy);
+        source_id, ContextualCueingDecision::kDisabledByEnterprisePolicy);
     return false;
   }
 
@@ -528,7 +543,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
         "Not attempting to show/generate cue because a feature promo is "
         "active.");
     RecordContextualCueingDecision(
-        ContextualCueingDecision::kFeaturePromoActive);
+        source_id, ContextualCueingDecision::kFeaturePromoActive);
     return false;
   }
 #endif
@@ -538,7 +553,8 @@ bool ContextualCueingController::IsAllowedToShowCue() {
   if (infobar_manager && !infobar_manager->infobars().empty()) {
     CUEING_LOG(
         "Not attempting to show/generate cue because infobar is visible.");
-    RecordContextualCueingDecision(ContextualCueingDecision::kInfobarVisible);
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kInfobarVisible);
     return false;
   }
 
@@ -547,7 +563,8 @@ bool ContextualCueingController::IsAllowedToShowCue() {
       side_panel_ui && side_panel_ui->IsSidePanelShowing()) {
     CUEING_LOG(
         "Not attempting to show/generate cue because side panel is visible.");
-    RecordContextualCueingDecision(ContextualCueingDecision::kSidePanelShowing);
+    RecordContextualCueingDecision(source_id,
+                                   ContextualCueingDecision::kSidePanelShowing);
     return false;
   }
 
@@ -574,9 +591,8 @@ void ContextualCueingController::ShowCue(
     show_latency = base::Time::Now() - page_load_time;
   }
 
-  RecordCueShownMetrics(
-      tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId(),
-      response.suggested_cuj(), tab_metrics, show_latency);
+  RecordCueShownMetrics(GetActiveTabSourceId(), response.suggested_cuj(),
+                        tab_metrics, show_latency);
 
   cue_shown_time_ = base::TimeTicks::Now();
 #if BUILDFLAG(IS_ANDROID)
@@ -599,7 +615,8 @@ void ContextualCueingController::ShowCue(
   page_actions::PageActionController* page_action_controller =
       tab->GetTabFeatures()->page_action_controller();
   if (!page_action_controller) {
-    RecordContextualCueingDecision(ContextualCueingDecision::kNoActiveTab);
+    RecordContextualCueingDecision(GetActiveTabSourceId(),
+                                   ContextualCueingDecision::kNoActiveTab);
     return;
   }
 
@@ -640,7 +657,8 @@ void ContextualCueingController::ShowCue(
   base::UmaHistogramSparse("ContextualCueing.ShownCueCUJ",
                            base::HashMetricName(response.suggested_cuj()));
 
-  RecordContextualCueingDecision(ContextualCueingDecision::kSuccess);
+  RecordContextualCueingDecision(GetActiveTabSourceId(),
+                                 ContextualCueingDecision::kSuccess);
 }
 
 void ContextualCueingController::OnCueHidden() {
@@ -691,10 +709,7 @@ void ContextualCueingController::OnCueInteraction(
     CueActionData data) {
   base::TimeDelta shown_duration = ExtractCueShownDuration();
 
-  tabs::TabInterface* tab = tab_list_interface_->GetActiveTab();
-  ukm::SourceId source_id =
-      tab ? tab->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId()
-          : ukm::kInvalidSourceId;
+  ukm::SourceId source_id = GetActiveTabSourceId();
 
   RecordContextualCueingInteraction(interaction_type, current_cuj_, source_id,
                                     shown_duration);

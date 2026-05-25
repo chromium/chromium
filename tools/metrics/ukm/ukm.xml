@@ -8324,6 +8324,12 @@ be describing additional metrics about the same event.
       was received. Exponentially bucketed.
     </summary>
   </metric>
+  <metric name="ProactiveCueDecision" enum="ContextualCueingDecision">
+    <summary>
+      Records kSuccess when a cue is shown, or a different value indicating the
+      reason why the cue was not shown.
+    </summary>
+  </metric>
   <metric name="ProactiveCueLatencyAfterPageLoad">
     <summary>
       Duration in milliseconds between page load

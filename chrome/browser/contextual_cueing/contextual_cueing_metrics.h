@@ -13,6 +13,7 @@
 namespace contextual_cueing {
 
 enum class ContextualCueingInteraction;
+enum class ContextualCueingDecision;
 
 // Counts of tabs received from the contextual cue server and whether they are
 // still relevant, or why they aren't.
@@ -32,6 +33,10 @@ void RecordContextualCueingInteraction(
     const std::string& cuj,
     ukm::SourceId source_id,
     base::TimeDelta shown_duration);
+
+void RecordContextualCueingDecision(
+    ukm::SourceId source_id,
+    ContextualCueingDecision contextual_cueing_decision);
 
 }  // namespace contextual_cueing
 
