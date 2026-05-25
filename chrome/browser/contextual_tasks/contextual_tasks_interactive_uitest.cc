@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
@@ -857,8 +858,17 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
           lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE));
 }
 
+// TODO(crbug.com/516333831): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AddAndSubmitMultipleContextsFromComposebox \
+  DISABLED_AddAndSubmitMultipleContextsFromComposebox
+#else
+#define MAYBE_AddAndSubmitMultipleContextsFromComposebox \
+  AddAndSubmitMultipleContextsFromComposebox
+#endif
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       AddAndSubmitMultipleContextsFromComposebox) {
+                       MAYBE_AddAndSubmitMultipleContextsFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
   const GURL kGenericPageUrl1 = embedded_test_server()->GetURL("/title1.html");
   const GURL kGenericPageUrl2 = embedded_test_server()->GetURL("/title2.html");
@@ -969,8 +979,16 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
                                        /*expected_added_input_names=*/{}));
 }
 
+// TODO(crbug.com/516333831): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox \
+  DISABLED_AddAndSubmitMultipleContextsWithTextFromComposebox
+#else
+#define MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox \
+  AddAndSubmitMultipleContextsWithTextFromComposebox
+#endif
 IN_PROC_BROWSER_TEST_F(ContextualTasksInteractiveUiTest,
-                       AddAndSubmitMultipleContextsWithTextFromComposebox) {
+                       MAYBE_AddAndSubmitMultipleContextsWithTextFromComposebox) {
   const GURL kInterceptionUrl("https://www.google.com/search?udm=50");
   const GURL kGenericPageUrl1 = embedded_test_server()->GetURL("/title1.html");
   const GURL kGenericPageUrl2 = embedded_test_server()->GetURL("/title2.html");
