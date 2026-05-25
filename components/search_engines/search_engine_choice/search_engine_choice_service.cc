@@ -820,33 +820,19 @@ void SearchEngineChoiceService::RecordChoiceMade(
     TemplateURLService* template_url_service) {
   CHECK_NE(choice_location, ChoiceMadeLocation::kOther);
 
-  auto is_in_choice_screen_region =
-      regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion();
-
   // TODO(https://crbug.com/435638443): Add regression test to check that
   // choices made after restore detection are properly recorded.
-  bool should_keep_existing_choice_record = false;
+  // Tri-bool, `nullopt` means there is no choice to keep nor wipe.
+  std::optional<bool> should_keep_existing_choice_record = std::nullopt;
   if (auto completion_metadata = GetChoiceCompletionMetadata(*profile_prefs_);
       completion_metadata.has_value()) {
-    std::optional<SearchEngineChoiceWipeReason> record_wipe_reason =
-        std::nullopt;
     if (IsChoiceImported(completion_metadata.value(),
                          CHECK_DEREF(client_.get()), profile_prefs_.get(),
                          /* include_previous_just_in_time_detection= */ true)) {
       // Clear sentinel data associated with the previous choice being renewed.
-      record_wipe_reason =
-          SearchEngineChoiceWipeReason::kChoiceRemadeAfterImport;
-    } else if (regional_capabilities_service_->GetSerializedActiveProgram() !=
-                   completion_metadata->serialized_program &&
-               // Don't wipe pre-existing choices outside of choice program
-               // regions.
-               is_in_choice_screen_region) {
-      record_wipe_reason = SearchEngineChoiceWipeReason::kProgramChanged;
-    }
-
-    if (record_wipe_reason.has_value()) {
-      WipeSearchEngineChoicePrefs(*profile_prefs_, *record_wipe_reason);
+      should_keep_existing_choice_record = false;
     } else {
+      // Don't modify the prefs if they were already set.
       should_keep_existing_choice_record = true;
     }
   }
@@ -855,15 +841,17 @@ void SearchEngineChoiceService::RecordChoiceMade(
   // is part of that logic.
   ClearSearchEngineChoiceInvalidation(*profile_prefs_);
 
-  if (should_keep_existing_choice_record) {
-    // There is an existing record AND we should keep it. In this case, being
-    // called from a choice screen is not expected.
-    CHECK_NE(choice_location, ChoiceMadeLocation::kChoiceScreen,
-             base::NotFatalUntil::M153);
-    return;
+  if (should_keep_existing_choice_record.has_value()) {
+    if (should_keep_existing_choice_record.value()) {
+      return;
+    }
+
+    WipeSearchEngineChoicePrefs(
+        *profile_prefs_,
+        SearchEngineChoiceWipeReason::kChoiceRemadeAfterImport);
   }
 
-  if (!is_in_choice_screen_region) {
+  if (!regional_capabilities_service_->IsInSearchEngineChoiceScreenRegion()) {
     return;
   }
 
@@ -929,9 +917,6 @@ void SearchEngineChoiceService::MaybeRecordChoiceScreenDisplayState(
       // we should wipe any pending one from that previous session & program.
       profile_prefs_->ClearPref(
           prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState);
-
-      // TODO(crbug.com/515743795): Check whether this also ends up being
-      // unreachable, using the histogram below.
       base::UmaHistogramEnumeration(
           "Search.ChoicePrefsCheck.PendingChoiceScreenDisplayStateStatus",
           PendingDisplayStateStatus::kProgramMismatch);
@@ -1057,10 +1042,6 @@ SearchEngineChoiceService::GetChoiceRenewalReasons(
     const regional_capabilities::ChoiceScreenEligibilityConfig&
         eligibility_config,
     const ChoiceCompletionMetadata& completion_metadata) const {
-  // TODO(crbug.com/515743795): Refactor implementation to ensure consistency
-  // with `RecordChoiceMade`, as it has a similar logic to decide whether to
-  // overwrite previous choices.
-
   ChoiceRenewalReasons reasons;
 
   if (!eligibility_config.should_preserve_imported_choice &&

@@ -138,9 +138,8 @@ enum class SearchEngineChoiceWipeReason {
   kInvalidMetadata = 6,
   kMissingDefaultSearchEngine = 7,
   kChoiceRemadeAfterImport = 8,
-  kProgramChanged = 9,
 
-  kMaxValue = kProgramChanged,
+  kMaxValue = kChoiceRemadeAfterImport,
 };
 
 // Exposed for testing.
