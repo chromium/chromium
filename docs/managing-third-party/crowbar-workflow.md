@@ -1,5 +1,7 @@
 # Using Crowbar Workflow to manage third-party dependencies
 
+[TOC]
+
 Crowbar workflow is intended to replace the current practice of writing bespoke
 `update.sh` scripts that clone a repository, apply patches, then check-in the
 result into Chromium. It's useful if any of the following applies:
@@ -92,4 +94,3 @@ If we can verify the steps your document in `crowbar.txt` produces the contents
 of `src/` directory, no actions will be required from you. Otherwise, our team
 will reach out for more information.
 ***
-

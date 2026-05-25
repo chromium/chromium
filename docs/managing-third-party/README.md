@@ -1,5 +1,6 @@
-Managing third-party dependencies
-===
+# Managing third-party dependencies
+
+[TOC]
 
 Before reading documentation in this directory, please check the general
 policies in
