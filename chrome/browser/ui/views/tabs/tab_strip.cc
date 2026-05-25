@@ -2438,7 +2438,9 @@ void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
     return;
   }
 
-  if (active && selected_tabs_.active().has_value()) {
+  if (active && selected_tabs_.active().has_value() &&
+      !base::FeatureList::IsEnabled(
+          features::kTabStripSkipSelectionEventOnActivation)) {
     // When the browser window is activated, set the accessible selection and
     // fire a selection event on the currently active tab, to help enable
     // per-tab modes in assistive technologies.
