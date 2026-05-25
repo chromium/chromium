@@ -7,18 +7,23 @@
 <body>
 <input id="in1" type="text" value="abcde">
 <script>
-  function go() {
-    const inp = document.getElementById('in1');
-    inp.focus();
-    inp.setSelectionRange(0, 0);
-    setTimeout(() => {
+  const go_passes = [
+    () => {
+      const inp = document.getElementById('in1');
+      inp.focus();
+      inp.setSelectionRange(0, 0);
+    },
+    () => {
+      const inp = document.getElementById('in1');
       inp.setSelectionRange(1, 1);
-      setTimeout(() => {
-        inp.blur();
-        inp.value = 'end'; // Trigger test end.
-      }, 50);
-    }, 50);
-}
+    }
+  ];
+
+  let current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
 </script>
 </body>
 </html>

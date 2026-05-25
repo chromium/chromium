@@ -8,16 +8,29 @@
 <!DOCTYPE html>
 <html>
 <body>
-<div id="a" aria-label="a" role="alert" style="display:none">This is an alert</div>
+<div id="a" aria-label="a" role="alert" style="display:none">This is alert #1</div>
 <div id="b" aria-label="b" role="alertdialog" aria-live="polite" style="display:none">This is an alert dialog</div>
-<div id="c" aria-label="c" role="alert" aria-hidden="true">This is an alert</div>
+<div id="c" aria-label="c" role="alert" aria-hidden="true">This is alert #2</div>
 <div id="d" aria-label="d" role="alert" aria-hidden="true">This alert shouldn't fire an event</div>
 <script>
+  const go_passes = [
+    () => {
+      document.getElementById('a').style.display = "block";
+    },
+    () => {
+      document.getElementById('b').style.display = "block";
+    },
+    () => {
+      document.getElementById('c').setAttribute('aria-hidden', 'false');
+    }
+  ];
+
+  let current_pass = 0;
   function go() {
-    document.getElementById('a').style.display = "block";
-    document.getElementById('b').style.display = "block";
-    document.getElementById('c').setAttribute('aria-hidden', 'false');
-}
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
+
 </script>
 </body>
 </html>

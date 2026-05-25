@@ -151,12 +151,12 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
     @DisableFeatures(ContentFeatureList.ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE)
     @EnableFeatures({
         ContentFeatureList.ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE,
         ContentFeatureList.ACCESSIBILITY_ATOMIC_LIVE_REGIONS
     })
-    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_addAlert() {
         performTest("add-alert.html", "add-alert-expected-android.txt");
     }
@@ -698,21 +698,18 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretHide() {
         performTest("caret-hide.html", "caret-hide-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretMoveHiddenInput() {
         performTest("caret-move-hidden-input.html", "caret-move-hidden-input-expected-android.txt");
     }
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1186376")
     public void test_caretMove() {
         performTest("caret-move.html", "caret-move-expected-android.txt");
     }

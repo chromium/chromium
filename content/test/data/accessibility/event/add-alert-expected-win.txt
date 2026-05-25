@@ -1,3 +1,5 @@
 EVENT_SYSTEM_ALERT on <div#a> role=ROLE_SYSTEM_ALERT name="a"
+=== Start Continuation ===
 EVENT_SYSTEM_ALERT on <div#b> role=ROLE_SYSTEM_DIALOG name="b"
+=== Start Continuation ===
 EVENT_SYSTEM_ALERT on <div#c> role=ROLE_SYSTEM_ALERT name="c"

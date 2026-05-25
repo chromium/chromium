@@ -8,17 +8,24 @@
 <input id="in1" type="text" value="abcde">
 <input id="btn" type="submit">
 <script>
-  function go() {
-    const inp = document.getElementById('in1');
-    inp.focus();
-    inp.setSelectionRange(0, 0);
-    setTimeout(() => {
+  const go_passes = [
+    () => {
+      const inp = document.getElementById('in1');
+      inp.focus();
+      inp.setSelectionRange(0, 0);
+    },
+    () => {
       document.getElementById('btn').focus();
-      setTimeout(() => {
-        inp.value = 'end'; // Trigger test end.
-      }, 50);
-    }, 50);
-}
+      const inp = document.getElementById('in1');
+      inp.value = 'end';
+    }
+  ];
+
+  let current_pass = 0;
+  function go() {
+    go_passes[current_pass++].call();
+    return current_pass < go_passes.length;
+  }
 </script>
 </body>
 </html>
