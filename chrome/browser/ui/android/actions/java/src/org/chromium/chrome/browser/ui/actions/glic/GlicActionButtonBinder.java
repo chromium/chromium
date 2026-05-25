@@ -40,18 +40,16 @@ public class GlicActionButtonBinder {
     }
 
     private static void updateImageForState(ImageView imageView, int state) {
-        // TODO(crbug.com/491509952): Update icons suggested specifically for Glic bottom bar
-        // button.
         Context context = imageView.getContext();
         if (state == GlicState.WORKING) {
-            int sparkResId = R.drawable.ic_spark_24dp;
+            int sparkResId = R.drawable.ic_spark_filled_24dp;
             Drawable sparkIcon = AppCompatResources.getDrawable(context, sparkResId);
             Drawable drawable = GlicUiHelper.createWorkingDrawable(context, sparkIcon);
             imageView.setImageDrawable(drawable);
         } else if (state == GlicState.NEEDS_REVIEW || state == GlicState.DONE) {
-            imageView.setImageResource(R.drawable.glic_dirty_dot_spark);
+            imageView.setImageResource(R.drawable.glic_dirty_dot_filled_spark_24dp);
         } else {
-            imageView.setImageResource(R.drawable.ic_spark_24dp);
+            imageView.setImageResource(R.drawable.ic_spark_filled_24dp);
         }
     }
 }
