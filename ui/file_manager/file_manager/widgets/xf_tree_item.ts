@@ -231,7 +231,7 @@ export class XfTreeItem extends XfBase {
           class="tree-children"
           role="group"
         >
-          <slot @slotchange=${this.onSlotChanged_}></slot>
+          <slot role="none" @slotchange=${this.onSlotChanged_}></slot>
         </ul>
       </li>
     `;

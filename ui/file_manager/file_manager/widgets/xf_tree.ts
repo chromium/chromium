@@ -105,7 +105,7 @@ export class XfTree extends XfBase {
         aria-setsize=${this.ariaSetSize_}
         @tree_item_collapsed=${this.onTreeItemCollapsed_}
       >
-        <slot @slotchange=${this.onSlotChanged_}></slot>
+        <slot role="none" @slotchange=${this.onSlotChanged_}></slot>
       </ul>
     `;
   }
