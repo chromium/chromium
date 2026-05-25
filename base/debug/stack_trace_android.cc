@@ -12,6 +12,7 @@
 #include <ostream>
 
 #include "base/compiler_specific.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/debug/proc_maps_linux.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
@@ -24,8 +25,16 @@
 #define FMT_ADDR "0x%08x"
 #endif
 
+#if BUILDFLAG(EXCLUDE_UNWIND_TABLES) && \
+    BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#define UNWIND_WITH_FRAME_POINTERS 1
+#else
+#define UNWIND_WITH_FRAME_POINTERS 0
+#endif
+
 namespace {
 
+#if !UNWIND_WITH_FRAME_POINTERS
 struct StackCrawlState {
   StackCrawlState(uintptr_t* frames, size_t max_depth)
       : frames(frames),
@@ -55,6 +64,7 @@ _Unwind_Reason_Code TraceStackFrame(_Unwind_Context* context, void* arg) {
   }
   return _URC_NO_REASON;
 }
+#endif  // !UNWIND_WITH_FRAME_POINTERS
 
 bool EndsWith(const std::string& s, const std::string& suffix) {
   return s.size() >= suffix.size() &&
@@ -78,10 +88,15 @@ bool EnableInProcessStackDumping() {
 }
 
 size_t CollectStackTrace(span<const void*> trace) {
+#if UNWIND_WITH_FRAME_POINTERS
+  return TraceStackFramePointers(trace, 0);
+#else
   StackCrawlState state(reinterpret_cast<uintptr_t*>(trace.data()),
                         trace.size());
   _Unwind_Backtrace(&TraceStackFrame, &state);
   return state.frame_count;
+#endif
+#undef UNWIND_WITH_FRAME_POINTERS
 }
 
 // static

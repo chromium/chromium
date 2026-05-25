@@ -499,7 +499,6 @@ config("compiler") {
         "-fno-asynchronous-unwind-tables",
       ]
       rustflags += [ "-Cforce-unwind-tables=no" ]
-      defines += [ "NO_UNWIND_TABLES" ]
     } else {
       cflags += [ "-funwind-tables" ]
       rustflags += [ "-Cforce-unwind-tables=yes" ]

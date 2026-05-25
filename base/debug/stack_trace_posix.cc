@@ -31,6 +31,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/cstring_view.h"
 #include "build/build_config.h"
@@ -699,7 +700,7 @@ class SandboxSymbolizeHelper {
   int GetFileDescriptor(const char* file_path) {
     int fd = -1;
 
-#if !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
+#if !defined(OFFICIAL_BUILD) || !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
     if (file_path) {
       // The assumption here is that iterating over std::map<std::string,
       // base::ScopedFD> does not allocate dynamic memory, hence it is
@@ -719,7 +720,7 @@ class SandboxSymbolizeHelper {
         fd = -1;
       }
     }
-#endif  // !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
+#endif  // !defined(OFFICIAL_BUILD) || !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
 
     return fd;
   }
@@ -898,7 +899,7 @@ class SandboxSymbolizeHelper {
     // Pre-opening and caching the file descriptors of all loaded modules is
     // not safe for production builds.  Hence it is only done in non-official
     // builds.  For more details, take a look at: http://crbug.com/341966.
-#if !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
+#if !defined(OFFICIAL_BUILD) || !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
     // Open the object files for all read-only executable regions and cache
     // their file descriptors.
     std::vector<MappedMemoryRegion>::const_iterator it;
@@ -934,7 +935,7 @@ class SandboxSymbolizeHelper {
         }
       }
     }
-#endif  // !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
+#endif  // !defined(OFFICIAL_BUILD) || !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
   }
 
   // Initializes and installs the symbolization callback.
@@ -956,20 +957,20 @@ class SandboxSymbolizeHelper {
 
   // Closes all file descriptors owned by this instance.
   void CloseObjectFiles() {
-#if !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
+#if !defined(OFFICIAL_BUILD) || !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
     modules_.clear();
-#endif  // !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
+#endif  // !defined(OFFICIAL_BUILD) || !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
   }
 
   // Set to true upon successful initialization.
   bool is_initialized_ = false;
 
-#if !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
+#if !defined(OFFICIAL_BUILD) || !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
   // Mapping from file name to file descriptor.  Includes file descriptors
   // for all successfully opened object files and the file descriptor for
   // /proc/self/maps.  This code is not safe for production builds.
   std::map<std::string, base::ScopedFD> modules_;
-#endif  // !defined(OFFICIAL_BUILD) || !defined(NO_UNWIND_TABLES)
+#endif  // !defined(OFFICIAL_BUILD) || !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
 
   // Cache for the process memory regions.  Produced by parsing the contents
   // of /proc/self/maps cache.
@@ -1040,7 +1041,8 @@ size_t CollectStackTrace(span<const void*> trace) {
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
-#if defined(NO_UNWIND_TABLES) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#if BUILDFLAG(EXCLUDE_UNWIND_TABLES) && \
+    BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   // If we do not have unwind tables, then try tracing using frame pointers.
   return base::debug::TraceStackFramePointers(trace, 0);
 #elif defined(HAVE_BACKTRACE)

@@ -5,6 +5,7 @@
 #include "components/crash/core/common/crash_key.h"
 
 #include "base/debug/crash_logging.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/debug/stack_trace.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -81,7 +82,7 @@ TEST_F(CrashKeyStringTest, FormatStackTrace64) {
 
 // In certain build configurations, StackTrace will produce an
 // empty result, which will cause the test to fail.
-#if !defined(OFFICIAL_BUILD) && !defined(NO_UNWIND_TABLES)
+#if !defined(OFFICIAL_BUILD) && !BUILDFLAG(EXCLUDE_UNWIND_TABLES)
 TEST_F(CrashKeyStringTest, SetStackTrace) {
   static CrashKeyString<1024> key("test-trace");
 
