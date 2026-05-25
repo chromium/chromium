@@ -267,7 +267,9 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                               views::Separator::Orientation::kHorizontal)
                           .SetColorId(ui::kColorSysDivider)
                           .SetProperty(views::kMarginsKey,
-                                       gfx::Insets::VH(kToolbarPadding, 0)),
+                                       gfx::Insets::VH(kToolbarPadding, 0))
+                          // TODO(b/512246764): Make this visible.
+                          .SetVisible(false),
                       views::Builder<views::Button>(
                           CreateExpandedButton(
                               l10n_util::GetStringUTF16(
@@ -277,7 +279,9 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                                   &IndigoToolbar::OnRegenerateButtonClicked,
                                   base::Unretained(this))))
                           .SetProperty(views::kElementIdentifierKey,
-                                       kRegenerateButtonElementId),
+                                       kRegenerateButtonElementId)
+                          // TODO(b/512246764): Make this visible.
+                          .SetVisible(false),
                       views::Builder<views::Separator>()
                           .SetOrientation(
                               views::Separator::Orientation::kHorizontal)
@@ -293,7 +297,9 @@ std::unique_ptr<views::View> IndigoToolbar::CreateToolbarView() {
                                   &IndigoToolbar::OnReplacePhotoClicked,
                                   base::Unretained(this))))
                           .SetProperty(views::kElementIdentifierKey,
-                                       kReplacePhotoButtonElementId),
+                                       kReplacePhotoButtonElementId)
+                          // TODO(b/512245645): Make this visible.
+                          .SetVisible(false),
                       views::Builder<views::Button>(
                           CreateExpandedButton(
                               l10n_util::GetStringUTF16(
