@@ -6,12 +6,9 @@
 
 #import <AVFoundation/AVFoundation.h>
 
-#import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
-#import "components/variations/service/variations_service.h"
-#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator.h"
@@ -22,7 +19,6 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_consent_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/gemini_fre_wrapper_view_controller.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -31,7 +27,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -109,14 +104,16 @@
   _helpCommandsHandler = HandlerForProtocol(dispatcher, HelpCommands);
 
   _mediator = [[GeminiFirstRunMediator alloc]
-      initWithPrefService:_prefService
-             webStateList:self.browser->GetWebStateList()
-       baseViewController:self.baseViewController
-            geminiService:GeminiServiceFactory::GetForProfile(self.profile)
-          identityManager:IdentityManagerFactory::GetForProfile(self.profile)
-                  tracker:_tracker
-               entryPoint:_entryPoint
-        completionHandler:_completion];
+        initWithPrefService:_prefService
+               webStateList:self.browser->GetWebStateList()
+         baseViewController:self.baseViewController
+              geminiService:GeminiServiceFactory::GetForProfile(self.profile)
+      authenticationService:AuthenticationServiceFactory::GetForProfile(
+                                self.profile)
+            identityManager:IdentityManagerFactory::GetForProfile(self.profile)
+                    tracker:_tracker
+                 entryPoint:_entryPoint
+          completionHandler:_completion];
   _mediator.sceneHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), SceneCommands);
 
@@ -124,17 +121,8 @@
 
   [self prepareAIHubIPH];
 
-  variations::VariationsService* variations_service =
-      GetApplicationContext()->GetVariationsService();
-  std::string country =
-      variations_service
-          ? base::ToLowerASCII(variations_service->GetStoredPermanentCountry())
-          : "";
-  NSString* nsCountry = base::SysUTF8ToNSString(country);
   GeminiConsentConfiguration* consentConfig =
-      [_mediator consentConfigurationForFREType:_FREType
-                               isManagedAccount:[self isManagedAccount]
-                                        country:nsCountry];
+      [_mediator consentConfigurationForFREType:_FREType];
   _viewController = [[GeminiFREWrapperViewController alloc]
              initWithPromo:_mediator.shouldShowPromo
                    FREType:_FREType
@@ -318,13 +306,6 @@
     [self.baseViewController dismissViewControllerAnimated:YES
                                                 completion:completion];
   }
-}
-
-// Returns YES if the account is managed.
-- (BOOL)isManagedAccount {
-  raw_ptr<AuthenticationService> authService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-  return authService->HasPrimaryIdentityManaged();
 }
 
 // Returns the currently active WebState's Gemini tab helper.

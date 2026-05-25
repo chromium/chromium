@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 
 @protocol SceneCommands;
+class AuthenticationService;
 class GeminiService;
 class PrefService;
 class WebStateList;
@@ -41,17 +42,15 @@ class IdentityManager;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                       geminiService:(GeminiService*)geminiService
+              authenticationService:(AuthenticationService*)authService
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
                   completionHandler:(void (^)(BOOL success))completion;
 
-// Returns the consent configuration for the given FRE type, managed status, and
-// country.
-- (GeminiConsentConfiguration*)
-    consentConfigurationForFREType:(GeminiFREType)FREType
-                  isManagedAccount:(BOOL)isManagedAccount
-                           country:(NSString*)country;
+// Returns the consent configuration for the given FRE type.
+- (GeminiConsentConfiguration*)consentConfigurationForFREType:
+    (GeminiFREType)FREType;
 
 // Aborts the flow due to mic permission denial without resetting consent.
 - (void)didRefuseLiveMicPermission;

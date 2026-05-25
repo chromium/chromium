@@ -14,6 +14,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/gemini_first_run_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
@@ -23,10 +24,12 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
 #import "url/gurl.h"
@@ -67,6 +70,9 @@ const CGFloat kPromoMaxImpressionCount = 3;
   // The identity manager.
   raw_ptr<signin::IdentityManager> _identityManager;
 
+  // The authentication service.
+  raw_ptr<AuthenticationService> _authService;
+
   // The entry point the mediator was initialized from.
   gemini::EntryPoint _entryPoint;
 }
@@ -75,6 +81,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                       geminiService:(GeminiService*)geminiService
+              authenticationService:(AuthenticationService*)authService
                     identityManager:(signin::IdentityManager*)identityManager
                             tracker:(feature_engagement::Tracker*)tracker
                          entryPoint:(gemini::EntryPoint)entryPoint
@@ -84,6 +91,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
     _prefService = prefService;
     _webStateList = webStateList;
     _geminiService = geminiService;
+    _authService = authService;
     _tracker = tracker;
     _entryPoint = entryPoint;
     _FRECompletion = completion;
@@ -108,15 +116,23 @@ const CGFloat kPromoMaxImpressionCount = 3;
   return ShouldForceBWGPromo() || !promoImpressionsExhausted;
 }
 
-- (GeminiConsentConfiguration*)
-    consentConfigurationForFREType:(GeminiFREType)FREType
-                  isManagedAccount:(BOOL)isManagedAccount
-                           country:(NSString*)country {
+- (GeminiConsentConfiguration*)consentConfigurationForFREType:
+    (GeminiFREType)FREType {
+  variations::VariationsService* variationsService =
+      GetApplicationContext()->GetVariationsService();
+  std::string country =
+      variationsService
+          ? base::ToLowerASCII(variationsService->GetStoredPermanentCountry())
+          : "";
+  NSString* nsCountry = base::SysUTF8ToNSString(country);
+
+  BOOL isManagedAccount =
+      _authService && _authService->HasPrimaryIdentityManaged();
   return [GeminiConsentConfiguration
       configurationForManaged:isManagedAccount
                        strict:[self useStrictLegalConsent]
                          type:FREType
-                      country:country];
+                      country:nsCountry];
 }
 
 #pragma mark - Private
