@@ -215,8 +215,17 @@ RenderFrameAudioOutputStreamFactory::~RenderFrameAudioOutputStreamFactory() {
 
 void RenderFrameAudioOutputStreamFactory::
     SetAuthorizedDeviceIdForGlobalMediaControls(std::string hashed_device_id) {
-  core_->SetAuthorizedDeviceIdForGlobalMediaControls(
-      std::move(hashed_device_id));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // base::Unretained(core_.get()) is safe here because |core_| is owned by
+  // RenderFrameAudioOutputStreamFactory and the
+  // RenderFrameAudioOutputStreamFactory destructor posts a task to delete
+  // |core_| on the IO thread. Since both tasks are posted to IO thread, the
+  // task posted here will always execute before the destruction task.
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&Core::SetAuthorizedDeviceIdForGlobalMediaControls,
+                     base::Unretained(core_.get()),
+                     std::move(hashed_device_id)));
 }
 
 size_t
@@ -265,6 +274,7 @@ void RenderFrameAudioOutputStreamFactory::Core::Init(
 
 void RenderFrameAudioOutputStreamFactory::Core::
     SetAuthorizedDeviceIdForGlobalMediaControls(std::string hashed_device_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   authorization_handler_.SetAuthorizedDeviceIdForGlobalMediaControls(
       std::move(hashed_device_id));
 }

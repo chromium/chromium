@@ -229,6 +229,7 @@ void AudioOutputAuthorizationHandler::OverridePermissionsForTesting(
 
 void AudioOutputAuthorizationHandler::
     SetAuthorizedDeviceIdForGlobalMediaControls(std::string hashed_device_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
   hashed_device_id_for_global_media_controls_ = std::move(hashed_device_id);
 }
 
