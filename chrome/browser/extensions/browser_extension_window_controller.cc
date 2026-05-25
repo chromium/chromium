@@ -38,6 +38,8 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"  // nogncheck
+#include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"  // nogncheck
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #endif
@@ -137,7 +139,9 @@ void BrowserExtensionWindowController::SetFullscreenMode(
   NOTIMPLEMENTED();
 #else
   if (window()->IsFullscreen() != is_fullscreen) {
-    GetBrowser()->ToggleFullscreenModeWithExtension(extension_url);
+    browser_->GetExclusiveAccessManager()
+        ->fullscreen_controller()
+        ->ToggleBrowserFullscreenModeWithExtension(extension_url);
   }
 #endif
 }

@@ -252,8 +252,11 @@ void ExclusiveAccessTest::EnterExtensionInitiatedFullscreen() {
   ui_test_utils::FullscreenWaiter waiter(browser(),
                                          {.browser_fullscreen = true});
   static const char kExtensionId[] = "extension-id";
-  browser()->ToggleFullscreenModeWithExtension(
-      extensions::Extension::GetBaseURLFromExtensionId(kExtensionId));
+  browser()
+      ->GetExclusiveAccessManager()
+      ->fullscreen_controller()
+      ->ToggleBrowserFullscreenModeWithExtension(
+          extensions::Extension::GetBaseURLFromExtensionId(kExtensionId));
   waiter.Wait();
 }
 

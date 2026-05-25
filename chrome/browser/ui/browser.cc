@@ -1343,13 +1343,6 @@ void Browser::OnFindBarVisibilityChanged() {
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Assorted browser commands:
 
-void Browser::ToggleFullscreenModeWithExtension(const GURL& extension_url) {
-  browser_window_features()
-      ->exclusive_access_manager()
-      ->fullscreen_controller()
-      ->ToggleBrowserFullscreenModeWithExtension(extension_url);
-}
-
 bool Browser::SupportsWindowFeature(WindowFeature feature) const {
   return WindowFeatureController::From(this)->SupportsWindowFeature(feature);
 }
@@ -1362,10 +1355,6 @@ void Browser::OpenFile() {
   GetFeatures().browser_select_file_dialog_controller()->OpenFile(
       tab_strip_model_->GetActiveWebContents(), window_->GetNativeWindow(),
       base::BindOnce(&Browser::OnFileSelectedFromDialog, AsWeakPtr()));
-}
-
-bool Browser::CanSaveContents(content::WebContents* web_contents) const {
-  return chrome::CanSavePage(this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

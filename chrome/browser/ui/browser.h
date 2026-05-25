@@ -599,10 +599,6 @@ class Browser : public TabStripModelObserver,
   // NOTE: Within each of the following sections, the IDs are ordered roughly by
   // how they appear in the GUI/menus (left to right, top to bottom, etc.).
 
-  // See the description of
-  // FullscreenController::ToggleFullscreenModeWithExtension.
-  void ToggleFullscreenModeWithExtension(const GURL& extension_url);
-
   // Deprecated: Use capabilities()->SupportsWindowFeature instead.
   bool SupportsWindowFeature(WindowFeature feature) const;
 
@@ -611,10 +607,6 @@ class Browser : public TabStripModelObserver,
 
   // Show various bits of UI
   void OpenFile();
-
-  // Whether the specified WebContents can be saved.
-  // Saving can be disabled e.g. for the DevTools window.
-  bool CanSaveContents(content::WebContents* web_contents) const;
 
   /////////////////////////////////////////////////////////////////////////////
 
