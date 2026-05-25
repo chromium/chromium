@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_message.h"
 
+const CGFloat kGeminiActorSnackbarBottomOffset = 95.0;
+
 namespace {
 
 // Task state strings.
@@ -62,8 +64,8 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
 }  // namespace
 
 @implementation SnackbarActorTaskUpdatesObserver {
-  // Command dispatcher handler for showing snackbars.
-  __weak id<SnackbarCommands> _snackbarCommands;
+  // Command dispatcher handler for showing Gemini Actor snackbars.
+  __weak id<GeminiActorSnackbarCommands> _geminiSnackbarHandler;
   // The title of the actor task.
   NSString* _taskTitle;
   // The latest update string describing the task execution.
@@ -80,9 +82,11 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
             browser_list_utils::GetMostActiveSceneBrowser(browserList);
         if (browser) {
           CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-          if ([dispatcher dispatchingForProtocol:@protocol(SnackbarCommands)]) {
-            _snackbarCommands =
-                HandlerForProtocol(dispatcher, SnackbarCommands);
+          if ([dispatcher
+                  dispatchingForProtocol:@protocol(
+                                             GeminiActorSnackbarCommands)]) {
+            _geminiSnackbarHandler =
+                HandlerForProtocol(dispatcher, GeminiActorSnackbarCommands);
           }
         }
       }
@@ -96,18 +100,19 @@ NSString* DisplayedStateStringForActorTaskState(actor::ActorTaskState state) {
 // Shows a snackbar message configured with the current task title, last task
 // update, and the given `leafSubtitle`.
 - (void)showSnackbarWithLeafSubtitle:(NSString*)leafSubtitle {
-  if (_snackbarCommands) {
-    NSString* titleText =
-        _taskTitle.length > 0 ? _taskTitle : kDefaultTaskTitle;
-    NSString* subtitleText = _lastTaskUpdate.length > 0 ? _lastTaskUpdate : nil;
-
-    SnackbarMessage* message =
-        [[SnackbarMessage alloc] initWithTitle:titleText];
-    message.subtitle = subtitleText;
-    message.secondarySubtitle = leafSubtitle;
-
-    [_snackbarCommands showSnackbarMessage:message];
+  if (!_geminiSnackbarHandler) {
+    return;
   }
+  NSString* titleText = _taskTitle.length > 0 ? _taskTitle : kDefaultTaskTitle;
+  NSString* subtitleText = _lastTaskUpdate.length > 0 ? _lastTaskUpdate : nil;
+
+  SnackbarMessage* message = [[SnackbarMessage alloc] initWithTitle:titleText];
+  message.subtitle = subtitleText;
+  message.secondarySubtitle = leafSubtitle;
+
+  [_geminiSnackbarHandler
+      showGeminiActorSnackbarMessage:message
+              additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
 }
 
 #pragma mark - ActorTaskUpdatesObserver

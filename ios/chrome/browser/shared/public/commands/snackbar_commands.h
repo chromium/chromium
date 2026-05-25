@@ -70,4 +70,16 @@
 
 @end
 
+// Protocol for temporary Gemini Actor snackbar commands.
+// TODO(crbug.com/512521102): Remove when the agent prototype is cleaned up.
+@protocol GeminiActorSnackbarCommands <NSObject>
+
+// Shows a snackbar displaying `message` above the Gemini floaty UI without
+// hiding the floaty. `offset` is an additional bottom offset in points added
+// to the default base offset (e.g. to prevent overlapping the floaty UI).
+- (void)showGeminiActorSnackbarMessage:(SnackbarMessage*)message
+                additionalBottomOffset:(CGFloat)offset;
+
+@end
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_SNACKBAR_COMMANDS_H_

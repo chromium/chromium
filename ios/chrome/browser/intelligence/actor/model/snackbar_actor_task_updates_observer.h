@@ -5,11 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_SNACKBAR_ACTOR_TASK_UPDATES_OBSERVER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_MODEL_SNACKBAR_ACTOR_TASK_UPDATES_OBSERVER_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 
 class ProfileIOS;
+
+// The additional bottom offset to position the snackbar above the Gemini
+// floaty.
+extern const CGFloat kGeminiActorSnackbarBottomOffset;
 
 // TODO(crbug.com/512521102): Remove this temporary observer implementation once
 // native UI for actor tasks is implemented.
