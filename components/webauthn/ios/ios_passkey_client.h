@@ -6,8 +6,10 @@
 #define COMPONENTS_WEBAUTHN_IOS_IOS_PASSKEY_CLIENT_H_
 
 #include <cstdint>
+#import <optional>
 #include <string>
 
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/webauthn/ios/passkey_types.h"
 
 @protocol IOSPasskeyClientCommands;
@@ -20,7 +22,10 @@ class IOSPasskeyClient {
  public:
   // Provides information used by bottom sheets to fulfill passkey requests.
   struct RequestInfo {
-    RequestInfo(std::string frame_id, std::string request_id);
+    RequestInfo(std::string frame_id,
+                std::string request_id,
+                std::optional<autofill::RemoteFrameToken> remote_frame_id =
+                    std::nullopt);
     RequestInfo(const RequestInfo& other);
     RequestInfo& operator=(const RequestInfo& other);
     RequestInfo(RequestInfo&& other);
@@ -33,6 +38,8 @@ class IOSPasskeyClient {
     std::string frame_id;
     // The request id associated with a PublicKeyCredential promise.
     std::string request_id;
+    // The remote frame token used by ChildFrameRegistrar.
+    std::optional<autofill::RemoteFrameToken> remote_frame_id;
   };
 
   using InterstitialCallback = base::OnceCallback<void(bool)>;

@@ -5,6 +5,8 @@
 #import "components/webauthn/ios/passkey_request_parser.h"
 
 #import "base/base64url.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/webauthn/core/browser/webauthn_security_utils.h"
 #import "device/fido/fido_user_verification_requirement.h"
 #import "device/fido/public/fido_constants.h"
@@ -35,6 +37,9 @@ constexpr char kRequestId[] = "requestId";
 
 // Frame ID for handle* events.
 constexpr char kFrameId[] = "frameId";
+
+// Remote frame ID (token) for handle* events.
+constexpr char kRemoteFrameId[] = "remoteFrameId";
 
 // Common parameters of "handleGetRequest" and "handleCreateRequest" events.
 constexpr char kRequest[] = "request";
@@ -432,7 +437,17 @@ BuildRequestInfo(const base::DictValue& dict) {
     return base::unexpected(request_id.error());
   }
 
-  return IOSPasskeyClient::RequestInfo(*frame_id, *request_id);
+  const std::string* remote_frame_id = dict.FindString(kRemoteFrameId);
+  std::optional<autofill::RemoteFrameToken> remote_frame_token;
+  if (remote_frame_id && !remote_frame_id->empty()) {
+    if (std::optional<base::UnguessableToken> unguessable_token =
+            autofill::DeserializeJavaScriptFrameId(*remote_frame_id)) {
+      remote_frame_token = autofill::RemoteFrameToken(*unguessable_token);
+    }
+  }
+
+  return IOSPasskeyClient::RequestInfo(*frame_id, *request_id,
+                                       remote_frame_token);
 }
 
 base::expected<AssertionRequestParams, PasskeysParsingError>

@@ -197,9 +197,10 @@ TEST_F(PasskeyControllerJavaScriptTest,
 
   NSDictionary* body = message_handler().lastReceivedMessage.body;
   NSArray* allKeys = body.allKeys;
-  EXPECT_EQ(allKeys.count, 7ul);
+  EXPECT_EQ(allKeys.count, 8ul);
   EXPECT_TRUE([allKeys containsObject:@"event"]);
   EXPECT_TRUE([allKeys containsObject:@"frameId"]);
+  EXPECT_TRUE([allKeys containsObject:@"remoteFrameId"]);
   EXPECT_TRUE([allKeys containsObject:@"requestId"]);
   EXPECT_TRUE([allKeys containsObject:@"request"]);
   EXPECT_TRUE([allKeys containsObject:@"rpEntity"]);

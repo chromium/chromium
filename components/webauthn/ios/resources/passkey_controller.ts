@@ -7,6 +7,7 @@
  * the renderer by shimming the `navigator.credentials` API.
  */
 
+import {getOrCreateRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {generateRandomId, sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
@@ -875,6 +876,7 @@ function createAssertionRequest(
   sendWebKitMessage(HANDLER_NAME, {
     'event': 'handleGetRequest',
     'frameId': gCrWeb.getFrameId(),
+    'remoteFrameId': getOrCreateRemoteFrameToken(),
     'requestId': deferredPromise.id,
     'request': extractRequestInformation(publicKeyOptions, isConditional),
     'rpEntity': extractRelyingPartyEntity(publicKeyOptions),

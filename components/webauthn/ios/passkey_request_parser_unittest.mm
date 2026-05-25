@@ -5,6 +5,8 @@
 #import "components/webauthn/ios/passkey_request_parser.h"
 
 #import "base/base64url.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "device/fido/public/fido_constants.h"
 #import "testing/platform_test.h"
@@ -101,8 +103,10 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   return output;
 }
 
-base::DictValue BuildRequestInfoDict(const std::string* frame_id,
-                                     const std::string* request_id) {
+base::DictValue BuildRequestInfoDict(
+    const std::string* frame_id,
+    const std::string* request_id,
+    const std::string* remote_frame_id = nullptr) {
   base::DictValue request_info_dict;
 
   if (frame_id) {
@@ -111,6 +115,10 @@ base::DictValue BuildRequestInfoDict(const std::string* frame_id,
 
   if (request_id) {
     request_info_dict.Set(kRequestId, *request_id);
+  }
+
+  if (remote_frame_id) {
+    request_info_dict.Set("remoteFrameId", *remote_frame_id);
   }
 
   return request_info_dict;
@@ -337,6 +345,31 @@ TEST_F(PasskeyRequestParserTest, MissingRequestId) {
 TEST_F(PasskeyRequestParserTest, EmptyRequestId) {
   VerifyRequestInfoError(BuildRequestInfoDict(&kFrameId, &kEmpty),
                          PasskeysParsingError::kEmptyRequestId);
+}
+
+// Tests that RequestInfo is successfully parsed with remoteFrameId.
+TEST_F(PasskeyRequestParserTest, RequestInfoWithRemoteFrameId) {
+  const std::string remote_frame_id = std::string(32, 'b');
+  auto request_info = BuildRequestInfo(
+      BuildRequestInfoDict(&kFrameId, &kRequestId, &remote_frame_id));
+  ASSERT_TRUE(request_info.has_value());
+  EXPECT_EQ(request_info->frame_id, kFrameId);
+  EXPECT_EQ(request_info->request_id, kRequestId);
+  std::optional<autofill::RemoteFrameToken> expected_token =
+      autofill::RemoteFrameToken(
+          *autofill::DeserializeJavaScriptFrameId(remote_frame_id));
+  EXPECT_EQ(request_info->remote_frame_id, expected_token);
+}
+
+// Tests that RequestInfo ignores malformed remoteFrameId.
+TEST_F(PasskeyRequestParserTest, RequestInfoWithMalformedRemoteFrameId) {
+  const std::string remote_frame_id = "remote_frame_id_123";
+  auto request_info = BuildRequestInfo(
+      BuildRequestInfoDict(&kFrameId, &kRequestId, &remote_frame_id));
+  ASSERT_TRUE(request_info.has_value());
+  EXPECT_EQ(request_info->frame_id, kFrameId);
+  EXPECT_EQ(request_info->request_id, kRequestId);
+  EXPECT_EQ(request_info->remote_frame_id, std::nullopt);
 }
 
 // Tests that an error is returned on a missing request.

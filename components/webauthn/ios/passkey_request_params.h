@@ -8,6 +8,7 @@
 #import <set>
 #import <vector>
 
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/webauthn/core/browser/passkey_model_utils.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "device/fido/public/public_key_credential_descriptor.h"
@@ -64,6 +65,9 @@ class PasskeyRequestParams {
 
   // Returns the web::WebFrame's identifier.
   const std::string& FrameId() const;
+
+  // Returns the remote frame token used by ChildFrameRegistrar.
+  const std::optional<autofill::RemoteFrameToken>& RemoteFrameId() const;
 
   // Returns the request id associated with a PublicKeyCredential promise.
   const std::string& RequestId() const;

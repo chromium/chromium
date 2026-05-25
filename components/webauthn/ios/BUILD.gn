@@ -29,6 +29,8 @@ source_set("ios") {
     ":passkey_types",
     "//base",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:passkey_credential",
     "//components/webauthn/core/browser:client_data",
@@ -74,6 +76,7 @@ optimize_ts("passkey_controller_js") {
   sources = [ "resources/passkey_controller.ts" ]
 
   deps = [
+    "//components/autofill/ios/form_util:fill_js_dependencies",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -116,6 +119,7 @@ source_set("unit_tests") {
     ":utils",
     "//base/test:test_support",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/ios",
     "//components/strings",
