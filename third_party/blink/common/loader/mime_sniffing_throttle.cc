@@ -39,40 +39,30 @@ void MimeSniffingThrottle::WillProcessResponse(
   if (response_head->did_mime_sniff)
     return;
 
-  bool blocked_sniffing_mime = false;
-  if (response_head->headers) {
-    if (std::optional<std::string> content_type_options =
-            response_head->headers->GetNormalizedHeader(
-                "x-content-type-options")) {
-      blocked_sniffing_mime =
-          base::EqualsCaseInsensitiveASCII(*content_type_options, "nosniff");
-    }
+  if (!net::ShouldSniffMimeType(response_url, response_head->headers.get(),
+                                response_head->mime_type)) {
+    return;
   }
 
-  if (!blocked_sniffing_mime &&
-      net::ShouldSniffMimeType(response_url, response_head->mime_type)) {
-    // Pause the response until the mime type becomes ready.
-    *defer = true;
+  // Pause the response until the mime type becomes ready.
+  *defer = true;
 
-    mojo::PendingRemote<network::mojom::URLLoader> new_remote;
-    mojo::PendingReceiver<network::mojom::URLLoaderClient> new_receiver;
-    mojo::PendingRemote<network::mojom::URLLoader> source_loader;
-    mojo::PendingReceiver<network::mojom::URLLoaderClient>
-        source_client_receiver;
-    mojo::ScopedDataPipeConsumerHandle body;
-    MimeSniffingURLLoader* mime_sniffing_loader;
-    std::tie(new_remote, new_receiver, mime_sniffing_loader) =
-        MimeSniffingURLLoader::CreateLoader(
-            weak_factory_.GetWeakPtr(), response_url, response_head->Clone(),
-            task_runner_ ? task_runner_
-                         : base::SingleThreadTaskRunner::GetCurrentDefault());
-    delegate_->InterceptResponse(std::move(new_remote), std::move(new_receiver),
-                                 &source_loader, &source_client_receiver,
-                                 &body);
-    mime_sniffing_loader->Start(std::move(source_loader),
-                                std::move(source_client_receiver),
-                                std::move(body));
-  }
+  mojo::PendingRemote<network::mojom::URLLoader> new_remote;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> new_receiver;
+  mojo::PendingRemote<network::mojom::URLLoader> source_loader;
+  mojo::PendingReceiver<network::mojom::URLLoaderClient> source_client_receiver;
+  mojo::ScopedDataPipeConsumerHandle body;
+  MimeSniffingURLLoader* mime_sniffing_loader;
+  std::tie(new_remote, new_receiver, mime_sniffing_loader) =
+      MimeSniffingURLLoader::CreateLoader(
+          weak_factory_.GetWeakPtr(), response_url, response_head->Clone(),
+          task_runner_ ? task_runner_
+                       : base::SingleThreadTaskRunner::GetCurrentDefault());
+  delegate_->InterceptResponse(std::move(new_remote), std::move(new_receiver),
+                               &source_loader, &source_client_receiver, &body);
+  mime_sniffing_loader->Start(std::move(source_loader),
+                              std::move(source_client_receiver),
+                              std::move(body));
 }
 
 const char* MimeSniffingThrottle::NameForLoggingWillProcessResponse() {

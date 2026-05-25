@@ -14,6 +14,10 @@
 
 class GURL;
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 // -----------------------------------------------------------------------------
 // When the MIME type of a resource is sniffed, it will potentially be used in
 // a manner other than that the server-provided Content-Type indicated it should
@@ -45,11 +49,16 @@ enum class ForceSniffFileUrlsForHtml {
 // Examine the URL and the mime_type and decide whether to sniff a replacement
 // mime type from the content.
 //
-// |url| is the URL from which the content was obtained.
-// |mime_type| is the current mime type, e.g. from the Content-Type header.
+// `http_response_headers` are the headers associated with the response. They're
+//   checked for the "nosniff" header. It may be null. Per spec, only the first
+//   X-Content-Type-Options header is checked.
+// `url` is the URL from which the content was obtained.
+// `mime_type` is the current mime type, e.g. from the Content-Type header.
 // Returns true if the mime type should be sniffed.
-NET_EXPORT bool ShouldSniffMimeType(const GURL& url,
-                                    std::string_view mime_type);
+NET_EXPORT bool ShouldSniffMimeType(
+    const GURL& url,
+    const HttpResponseHeaders* http_response_headers,
+    std::string_view mime_type);
 
 // Guess a mime type from the first few bytes of content an its URL.  Always
 // assigns |result| with its best guess of a mime type.

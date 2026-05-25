@@ -4,7 +4,12 @@
 
 #include "net/base/mime_sniffer.h"
 
+#include <string>
+#include <string_view>
+
+#include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -34,33 +39,73 @@ static std::string SniffMimeType(std::string_view content,
 }
 
 TEST(MimeSnifferTest, SniffableSchemes) {
-  struct {
+  const struct {
     const char* scheme;
     bool sniffable;
   } kTestCases[] = {
-    {url::kAboutScheme, false},
-    {url::kBlobScheme, false},
+      {url::kAboutScheme, false},     {url::kBlobScheme, false},
 #if BUILDFLAG(IS_ANDROID)
-    {url::kContentScheme, true},
+      {url::kContentScheme, true},
 #else
-    {url::kContentScheme, false},
+      {url::kContentScheme, false},
 #endif
-    {url::kContentIDScheme, false},
-    {url::kDataScheme, false},
-    {url::kFileScheme, true},
-    {url::kFileSystemScheme, true},
-    {url::kFtpScheme, false},
-    {url::kHttpScheme, true},
-    {url::kHttpsScheme, true},
-    {url::kJavaScriptScheme, false},
-    {url::kMailToScheme, false},
-    {url::kWsScheme, false},
-    {url::kWssScheme, false}
+      {url::kContentIDScheme, false}, {url::kDataScheme, false},
+      {url::kFileScheme, true},       {url::kFileSystemScheme, true},
+      {url::kFtpScheme, false},       {url::kHttpScheme, true},
+      {url::kHttpsScheme, true},      {url::kJavaScriptScheme, false},
+      {url::kMailToScheme, false},    {url::kWsScheme, false},
+      {url::kWssScheme, false}};
+
+  for (const auto& test_case : kTestCases) {
+    GURL url(std::string(test_case.scheme) + "://host/path/whatever");
+    EXPECT_EQ(test_case.sniffable,
+              ShouldSniffMimeType(url, /*http_response_headers=*/nullptr, ""));
+  }
+}
+
+TEST(MimeSnifferTest, SniffableHeaders) {
+  const GURL kSniffableUrl("https://test/");
+  constexpr std::string_view kXContentTypeOptions = "x-content-type-options";
+  const struct {
+    scoped_refptr<HttpResponseHeaders> headers;
+    bool sniffable;
+  } kTestCases[] = {
+      {nullptr, true},
+      {HttpResponseHeaders::Builder(/*version=*/{1, 1}, /*status=*/"200 OK")
+           .Build(),
+       true},
+      {HttpResponseHeaders::Builder(/*version=*/{1, 1}, /*status=*/"200 OK")
+           .AddHeader(kXContentTypeOptions, "foo")
+           .Build(),
+       true},
+      {HttpResponseHeaders::Builder(/*version=*/{1, 1}, /*status=*/"200 OK")
+           .AddHeader(kXContentTypeOptions, "nosniff")
+           .Build(),
+       false},
+      {HttpResponseHeaders::Builder(/*version=*/{1, 1}, /*status=*/"200 OK")
+           .AddHeader(kXContentTypeOptions, "NosNiFF")
+           .Build(),
+       false},
+      {HttpResponseHeaders::Builder(/*version=*/{1, 1}, /*status=*/"200 OK")
+           .AddHeader(kXContentTypeOptions, "nosniff")
+           .AddHeader(kXContentTypeOptions, "nosniff")
+           .Build(),
+       false},
+      {HttpResponseHeaders::Builder(/*version=*/{1, 1}, /*status=*/"200 OK")
+           .AddHeader(kXContentTypeOptions, "nosniff")
+           .AddHeader(kXContentTypeOptions, "sniff")
+           .Build(),
+       false},
+      {HttpResponseHeaders::Builder(/*version=*/{1, 1}, /*status=*/"200 OK")
+           .AddHeader(kXContentTypeOptions, "sniff")
+           .AddHeader(kXContentTypeOptions, "nosniff")
+           .Build(),
+       true},
   };
 
-  for (const auto test_case : kTestCases) {
-    GURL url(std::string(test_case.scheme) + "://host/path/whatever");
-    EXPECT_EQ(test_case.sniffable, ShouldSniffMimeType(url, ""));
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.sniffable,
+              ShouldSniffMimeType(kSniffableUrl, test_case.headers.get(), ""));
   }
 }
 

@@ -243,18 +243,8 @@ mojom::ReferrerPolicy ParseReferrerPolicy(
 
 bool ShouldSniffContent(const GURL& url,
                         const mojom::URLResponseHead& response) {
-  std::string content_type_options;
-  if (response.headers) {
-    content_type_options =
-        response.headers->GetNormalizedHeader("x-content-type-options")
-            .value_or(std::string());
-  }
-  bool sniffing_blocked =
-      base::EqualsCaseInsensitiveASCII(content_type_options, "nosniff");
-  bool we_would_like_to_sniff =
-      net::ShouldSniffMimeType(url, response.mime_type);
-
-  return !sniffing_blocked && we_would_like_to_sniff;
+  return net::ShouldSniffMimeType(url, response.headers.get(),
+                                  response.mime_type);
 }
 
 bool IsSuccessfulStatus(int status) {
