@@ -9,8 +9,10 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/metrics/desktop_session_duration/audible_contents_tracker.h"
 #include "chrome/browser/metrics/desktop_session_duration/chrome_visibility_observer.h"
+#include "ui/events/types/event_type.h"
 
 namespace metrics {
 
@@ -43,7 +45,7 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
       const DesktopSessionDurationTracker&) = delete;
 
   // Called when user interaction with the browser is caught.
-  void OnUserEvent();
+  void OnUserEvent(base::optional_ref<const ui::EventType> event);
 
   // Called when visibility of the browser changes. These events can be delayed
   // due to timeout logic, the extent of which can be communicated via
@@ -52,6 +54,9 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
 
   bool is_visible() const { return is_visible_; }
   bool in_session() const { return in_session_; }
+  bool waiting_for_first_interactive_session() const {
+    return waiting_for_first_interactive_session_;
+  }
   bool is_audio_playing() const { return is_audio_playing_; }
 
   void SetInactivityTimeoutForTesting(base::TimeDelta inactivity_timeout) {
@@ -98,6 +103,12 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
   // Used for marking start if the session.
   base::TimeTicks session_start_;
 
+  // This variable either stores the session start time for first interactive
+  // session of an OS launched instance, or falls back to `session_start_` if
+  // those two conditions are not met (not an OS launched instance or not the
+  // first interactive session).
+  base::TimeTicks interactive_session_start_time_;
+
   // Used for marking last user interaction.
   base::TimeTicks last_user_event_;
 
@@ -106,6 +117,11 @@ class DesktopSessionDurationTracker : public AudibleContentsTracker::Observer {
   bool in_session_ = false;
   bool is_audio_playing_ = false;
   bool is_first_session_ = true;
+
+  // Stores whether we are waiting for the first interactive session to start.
+  // This should be false for non-OS launched instances, while in the first
+  // interactive session, or after the first interactive session has ended.
+  bool waiting_for_first_interactive_session_ = true;
 
   // Timeout for waiting for user interaction.
   base::TimeDelta inactivity_timeout_;

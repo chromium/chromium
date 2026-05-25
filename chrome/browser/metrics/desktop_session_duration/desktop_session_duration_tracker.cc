@@ -4,6 +4,7 @@
 
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
@@ -12,7 +13,9 @@
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/common/chrome_switches.h"
 #include "components/activity_reporter/activity_reporter.h"
+#include "ui/events/types/event_type.h"
 
 namespace metrics {
 
@@ -20,6 +23,25 @@ namespace {
 
 DesktopSessionDurationTracker* g_desktop_session_duration_tracker_instance =
     nullptr;
+
+// List of events which should not start a session if the instance was
+// auto-launched by the OS.
+constexpr ui::EventType kNonInteractiveEvents[] = {
+    ui::EventType::kMouseMoved,  ui::EventType::kMouseEntered,
+    ui::EventType::kMouseExited, ui::EventType::kKeyPressed,
+    ui::EventType::kKeyReleased,
+};
+
+// Returns whether this instance was launched automatically by the OS as part of
+// its startup.
+bool IsAutoLaunchedByOs() {
+#if BUILDFLAG(IS_WIN)
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kStartupForegroundLaunch);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_WIN)
+}
 
 }  // namespace
 
@@ -53,7 +75,9 @@ void DesktopSessionDurationTracker::OnVisibilityChanged(
   is_visible_ = visible;
   if (is_visible_ && !is_first_session_) {
     DCHECK(time_ago.is_zero());
-    OnUserEvent();
+    // We're not considering visibility changes as explicit input events sent
+    // to Chrome.
+    OnUserEvent(std::nullopt);
   } else if (in_session_ && !is_audio_playing_) {
     DCHECK(!visible);
     DVLOG(4) << "Ending session due to visibility change";
@@ -69,7 +93,8 @@ void DesktopSessionDurationTracker::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void DesktopSessionDurationTracker::OnUserEvent() {
+void DesktopSessionDurationTracker::OnUserEvent(
+    base::optional_ref<const ui::EventType> event) {
   if (!is_visible_)
     return;
 
@@ -78,6 +103,16 @@ void DesktopSessionDurationTracker::OnUserEvent() {
   if (!in_session_) {
     DVLOG(4) << "Starting session due to user event";
     StartSession();
+  }
+
+  DCHECK(in_session_);
+
+  const bool is_interactive =
+      event.has_value() && !std::ranges::contains(kNonInteractiveEvents, event);
+
+  if (is_interactive && waiting_for_first_interactive_session_) {
+    waiting_for_first_interactive_session_ = false;
+    interactive_session_start_time_ = base::TimeTicks::Now();
   }
 }
 
@@ -144,6 +179,20 @@ void DesktopSessionDurationTracker::StartSession() {
   in_session_ = true;
   is_first_session_ = false;
   session_start_ = base::TimeTicks::Now();
+
+  // We should not wait for an interactive event if this is a user-launched
+  // instance.
+  if (!IsAutoLaunchedByOs()) {
+    waiting_for_first_interactive_session_ = false;
+  }
+
+  // If we are not waiting for an interactive event (not OS-launched or
+  // an interactive session has already started in the past)
+  // `interactive_session_start_time_` should be the same as `session_start_`.
+  if (!waiting_for_first_interactive_session_) {
+    interactive_session_start_time_ = session_start_;
+  }
+
   StartTimer(inactivity_timeout_);
 
   for (Observer& observer : observer_list_)
@@ -158,8 +207,8 @@ void DesktopSessionDurationTracker::EndSession(
   // Cancel the inactivity timer, to prevent the session from ending a second
   // time when it expires.
   timer_.Stop();
-
-  base::TimeDelta delta = base::TimeTicks::Now() - session_start_;
+  base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeDelta delta = now - session_start_;
 
   // Trim any timeouts from the session length and lower bound to a session of
   // length 0.
@@ -175,6 +224,20 @@ void DesktopSessionDurationTracker::EndSession(
   // Note: This metric is recorded separately for Android in
   // UmaSessionStats::UmaEndSession.
   UMA_HISTOGRAM_LONG_TIMES("Session.TotalDuration", delta);
+
+  // This will log duration of the first interactive session for OS-launched
+  // instances, or the same duration as `Session.TotalDuration` in all other
+  // cases.
+  if (!waiting_for_first_interactive_session_) {
+    base::TimeDelta interactive_delta =
+        now - interactive_session_start_time_ - time_to_discount;
+    if (interactive_delta.is_negative()) {
+      interactive_delta = base::TimeDelta();
+    }
+    UMA_HISTOGRAM_LONG_TIMES(
+        "Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions",
+        interactive_delta);
+  }
 
   // Records true each time Session.TotalDuration is supposed to be recorded
   // in a PUMA histogram. Allowing for the count to be collected.

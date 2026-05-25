@@ -137,7 +137,7 @@ class ProfileActivityMetricsRecorderTest : public testing::Test {
   }
 
   void SimulateUserEvent() {
-    metrics::DesktopSessionDurationTracker::Get()->OnUserEvent();
+    metrics::DesktopSessionDurationTracker::Get()->OnUserEvent(std::nullopt);
   }
 
   // Method to test the recording of the Profile.UserAction.PerProfile

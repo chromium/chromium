@@ -5,9 +5,13 @@
 #include "chrome/browser/metrics/desktop_session_duration/desktop_session_duration_tracker.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
+#include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace metrics {
 namespace {
@@ -114,7 +118,7 @@ TEST_F(DesktopSessionDurationTrackerTest, TestVisibility) {
   histogram_tester_.ExpectTotalCount(
       "PUMA.RegionalCapabilities.Session.TotalDuration.Recorded", 0);
 
-  instance_.OnUserEvent();
+  instance_.OnUserEvent(std::nullopt);
   EXPECT_TRUE(instance_.in_session());
   EXPECT_TRUE(instance_.is_visible());
   EXPECT_FALSE(instance_.is_audio_playing());
@@ -124,8 +128,8 @@ TEST_F(DesktopSessionDurationTrackerTest, TestVisibility) {
 
   // Even if there is a recent user event visibility change should end the
   // session.
-  instance_.OnUserEvent();
-  instance_.OnUserEvent();
+  instance_.OnUserEvent(std::nullopt);
+  instance_.OnUserEvent(std::nullopt);
   instance_.OnVisibilityChanged(false, kZeroTime);
   EXPECT_FALSE(instance_.in_session());
   EXPECT_FALSE(instance_.is_visible());
@@ -158,14 +162,14 @@ TEST_F(DesktopSessionDurationTrackerTest, TestUserEvent) {
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
 
   // User event doesn't go through if nothing is visible.
-  instance_.OnUserEvent();
+  instance_.OnUserEvent(std::nullopt);
   EXPECT_FALSE(instance_.in_session());
   EXPECT_FALSE(instance_.is_visible());
   EXPECT_FALSE(instance_.is_audio_playing());
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
 
   instance_.OnVisibilityChanged(true, kZeroTime);
-  instance_.OnUserEvent();
+  instance_.OnUserEvent(std::nullopt);
   EXPECT_TRUE(instance_.in_session());
   EXPECT_TRUE(instance_.is_visible());
   EXPECT_FALSE(instance_.is_audio_playing());
@@ -216,7 +220,7 @@ TEST_F(DesktopSessionDurationTrackerTest, TestAudioEvent) {
 TEST_F(DesktopSessionDurationTrackerTest, TestInputTimeoutDiscount) {
   instance_.OnVisibilityChanged(true, kZeroTime);
   base::TimeTicks before_session_start = base::TimeTicks::Now();
-  instance_.OnUserEvent();  // This should start the session
+  instance_.OnUserEvent(std::nullopt);  // This should start the session
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
 
   // Wait until the session expires.
@@ -232,7 +236,7 @@ TEST_F(DesktopSessionDurationTrackerTest, TestInputTimeoutDiscount) {
 TEST_F(DesktopSessionDurationTrackerTest, TestVisibilityTimeoutDiscount) {
   instance_.OnVisibilityChanged(true, kZeroTime);
   base::TimeTicks before_session_start = base::TimeTicks::Now();
-  instance_.OnUserEvent();  // This should start the session
+  instance_.OnUserEvent(std::nullopt);  // This should start the session
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
 
   // Sleep a little while.
@@ -261,7 +265,7 @@ TEST_F(DesktopSessionDurationTrackerTest, TestObserver) {
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
 
   instance_.OnVisibilityChanged(true, kZeroTime);
-  instance_.OnUserEvent();
+  instance_.OnUserEvent(std::nullopt);
   EXPECT_TRUE(instance_.in_session());
   EXPECT_TRUE(instance_.is_visible());
   EXPECT_EQ(observer_.session_ended_count(), 0);
@@ -290,7 +294,7 @@ TEST_F(DesktopSessionDurationTrackerTest, TestNoDoubleEndSession) {
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 0);
 
   instance_.OnVisibilityChanged(true, kZeroTime);
-  instance_.OnUserEvent();
+  instance_.OnUserEvent(std::nullopt);
   EXPECT_TRUE(instance_.in_session());
   EXPECT_TRUE(instance_.is_visible());
   EXPECT_EQ(observer_.session_ended_count(), 0);
@@ -312,5 +316,100 @@ TEST_F(DesktopSessionDurationTrackerTest, TestNoDoubleEndSession) {
   EXPECT_EQ(observer_.session_started_count(), 1);
   histogram_tester_.ExpectTotalCount("Session.TotalDuration", 1);
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(DesktopSessionDurationTrackerTest, TestNoAutoLaunchHistogram) {
+  instance_.OnVisibilityChanged(true, kZeroTime);
+  instance_.OnUserEvent(ui::EventType::kMouseMoved);
+
+  instance_.OnVisibilityChanged(false, kZeroTime);
+
+  histogram_tester_.ExpectTotalCount("Session.TotalDuration", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions", 1);
+}
+
+class DesktopSessionDurationTrackerInteractiveSessionTest
+    : public DesktopSessionDurationTrackerTest {
+  void SetUp() override {
+    DesktopSessionDurationTrackerTest::SetUp();
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        switches::kStartupForegroundLaunch);
+  }
+
+ private:
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+TEST_F(DesktopSessionDurationTrackerInteractiveSessionTest,
+       TestInteractiveEventStart) {
+  instance_.OnVisibilityChanged(true, kZeroTime);
+  // Start session with a non-interactive event (e.g. mouse move).
+  instance_.OnUserEvent(ui::EventType::kMouseMoved);
+  EXPECT_TRUE(instance_.in_session());
+  EXPECT_TRUE(instance_.waiting_for_first_interactive_session());
+
+  // Send an interactive event (e.g. mouse click).
+  instance_.OnUserEvent(ui::EventType::kMousePressed);
+  EXPECT_FALSE(instance_.waiting_for_first_interactive_session());
+
+  // End session
+  instance_.OnVisibilityChanged(false, kZeroTime);
+
+  // Verify that the histogram is recorded
+  histogram_tester_.ExpectTotalCount("Session.TotalDuration", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions", 1);
+}
+
+TEST_F(DesktopSessionDurationTrackerInteractiveSessionTest,
+       TestNoInteractiveEventNoHistogram) {
+  instance_.OnVisibilityChanged(true, kZeroTime);
+  instance_.OnUserEvent(ui::EventType::kMouseMoved);
+
+  instance_.OnVisibilityChanged(false, kZeroTime);
+
+  histogram_tester_.ExpectTotalCount("Session.TotalDuration", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions", 0);
+}
+
+TEST_F(DesktopSessionDurationTrackerInteractiveSessionTest,
+       TestMultipleVisibilityChangesNoInteractiveEvent) {
+  instance_.OnVisibilityChanged(true, kZeroTime);
+  instance_.OnUserEvent(ui::EventType::kMouseMoved);
+  instance_.OnVisibilityChanged(false, kZeroTime);
+
+  instance_.OnVisibilityChanged(true, kZeroTime);
+  instance_.OnUserEvent(ui::EventType::kMouseMoved);
+  instance_.OnVisibilityChanged(false, kZeroTime);
+
+  histogram_tester_.ExpectTotalCount("Session.TotalDuration", 2);
+  histogram_tester_.ExpectTotalCount(
+      "Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions", 0);
+}
+
+TEST_F(DesktopSessionDurationTrackerInteractiveSessionTest,
+       TestSecondSessionDoesNotWaitForInteractiveEvent) {
+  instance_.OnVisibilityChanged(true, kZeroTime);
+  // Start first session with an interactive event.
+  instance_.OnUserEvent(ui::EventType::kMousePressed);
+  instance_.OnVisibilityChanged(false, kZeroTime);
+
+  // Verify first session recorded.
+  histogram_tester_.ExpectTotalCount("Session.TotalDuration", 1);
+  histogram_tester_.ExpectTotalCount(
+      "Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions", 1);
+
+  // Second session should start with only a visibility change.
+  instance_.OnVisibilityChanged(true, kZeroTime);
+  instance_.OnVisibilityChanged(false, kZeroTime);
+
+  // Verify second session also recorded to both histograms.
+  histogram_tester_.ExpectTotalCount("Session.TotalDuration", 2);
+  histogram_tester_.ExpectTotalCount(
+      "Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions", 2);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace metrics

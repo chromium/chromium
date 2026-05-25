@@ -474,6 +474,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Session.TotalDuration.IgnoreNonInteractiveTimeForOSLaunchedSessions"
+    units="ms" expires_after="2026-10-25">
+  <owner>atharvmaan@google.com</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    The length of a desktop session (launch/foregrounding to
+    quitting/backgrounding) in milliseconds, recorded at the end of the session.
+
+    For the first session of an OS-launched Chrome instance, the start time is
+    considered to be the time of the first interactive user event rather than
+    the actual start of the session. This excludes the time Chrome spent running
+    without user interaction. For all other sessions, the start time is the
+    actual session start time.
+
+    This histogram is similar to Session.TotalDuration, but filters out
+    non-interactive time at the beginning of OS-launched sessions. Unlike
+    Session.TotalDuration, it is only recorded on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="Session.TotalDuration.NotOptedInToSyncWithAccount" units="ms"
     expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->

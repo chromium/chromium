@@ -83,7 +83,7 @@ class SessionStatsTrackerTestBase : public ::testing::Test {
     metrics::DesktopSessionDurationTracker::Get()->OnVisibilityChanged(
         true, base::TimeDelta());
     task_environment_.RunUntilIdle();
-    metrics::DesktopSessionDurationTracker::Get()->OnUserEvent();
+    metrics::DesktopSessionDurationTracker::Get()->OnUserEvent(std::nullopt);
   }
 
   void EndSession() {
