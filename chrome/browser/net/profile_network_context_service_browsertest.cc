@@ -289,10 +289,10 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,
   CheckCacheResetStatus(&histograms_, false);
 
   // At this point, we have already called the initialization.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
+  // Verify that we have the correct values in the profile preferences.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
   DCHECK_EQ(
-      local_state->GetString(
+      profile_prefs->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
       "None None None None");
 }
@@ -303,10 +303,10 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheSameBrowsertest,
   CheckCacheResetStatus(&histograms_, false);
 
   // At this point, we have already called the initialization.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
+  // Verify that we have the correct values in the profile preferences.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
   DCHECK_EQ(
-      local_state->GetString(
+      profile_prefs->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
       "None None None None");
 }
@@ -334,14 +334,14 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
   CheckCacheResetStatus(&histograms_, false);
 
   // At this point, we have already called the initialization.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
+  // Verify that we have the correct values in the profile preferences.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
   DCHECK_EQ(
-      local_state->GetString(
+      profile_prefs->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
       "scoped_feature_list_trial_group None None None");
   // Set the local state for the next test.
-  local_state->SetString(
+  profile_prefs->SetString(
       "profile_network_context_service.http_cache_finch_experiment_groups",
       "None None None None");
 }
@@ -354,10 +354,10 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
   CheckCacheResetStatus(&histograms_, true);
 
   // At this point, we have already called the initialization once.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
+  // Verify that we have the correct values in the profile preferences.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
   DCHECK_EQ(
-      local_state->GetString(
+      profile_prefs->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
       "scoped_feature_list_trial_group None None None");
 }
@@ -384,14 +384,14 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
   CheckCacheResetStatus(&histograms_, false);
 
   // At this point, we have already called the initialization.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
+  // Verify that we have the correct values in the profile preferences.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
   DCHECK_EQ(
-      local_state->GetString(
+      profile_prefs->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
       "None None None scoped_feature_list_trial_group");
   // Set the local state for the next test.
-  local_state->SetString(
+  profile_prefs->SetString(
       "profile_network_context_service.http_cache_finch_experiment_groups",
       "None None None None");
 }
@@ -404,10 +404,10 @@ IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
   CheckCacheResetStatus(&histograms_, true);
 
   // At this point, we have already called the initialization once.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
+  // Verify that we have the correct values in the profile preferences.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
   DCHECK_EQ(
-      local_state->GetString(
+      profile_prefs->GetString(
           "profile_network_context_service.http_cache_finch_experiment_groups"),
       "None None None scoped_feature_list_trial_group");
 }
@@ -452,14 +452,14 @@ IN_PROC_BROWSER_TEST_P(
   CheckCacheResetStatus(&histograms_, false);
 
   // At this point, we have already called the initialization.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK_EQ(local_state->GetString("profile_network_context_service.http_"
-                                   "cache_finch_experiment_groups"),
+  // Verify that we have the correct values in the profile preferences.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  DCHECK_EQ(profile_prefs->GetString("profile_network_context_service.http_"
+                                     "cache_finch_experiment_groups"),
             "None None None None scoped_feature_list_trial_group");
 
   // Set the local state for the next test.
-  local_state->SetString(
+  profile_prefs->SetString(
       "profile_network_context_service.http_cache_finch_experiment_groups",
       "None None None None");
 }
@@ -473,10 +473,10 @@ IN_PROC_BROWSER_TEST_P(
   CheckCacheResetStatus(&histograms_, true);
 
   // At this point, we have already called the initialization.
-  // Verify that we have the correct values in the local_state.
-  PrefService* local_state = g_browser_process->local_state();
-  DCHECK_EQ(local_state->GetString("profile_network_context_service.http_"
-                                   "cache_finch_experiment_groups"),
+  // Verify that we have the correct values in the profile preferences.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  DCHECK_EQ(profile_prefs->GetString("profile_network_context_service.http_"
+                                     "cache_finch_experiment_groups"),
             "None None None None scoped_feature_list_trial_group");
 }
 

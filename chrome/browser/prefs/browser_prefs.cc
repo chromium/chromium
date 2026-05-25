@@ -1023,6 +1023,10 @@ constexpr char kShouldShowRemoteAnnotatorFirstRunInfo[] =
     "accessibility_annotator.should_show_remote_annotator_first_run_info";
 
 // Deprecated 05/2026.
+constexpr char kHttpCacheFinchExperimentGroups[] =
+    "profile_network_context_service.http_cache_finch_experiment_groups";
+
+// Deprecated 05/2026.
 constexpr char kContextualCueingEnterprisePolicyAllowedDeprecated[] =
     "optimization_guide.model_execution.contextual_cueing_enterprise_policy_"
     "allowed";
@@ -1141,6 +1145,9 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   // Deprecated 04/2026.
   registry->RegisterBooleanPref(kHasSeenWebFeed, false);
   registry->RegisterTimePref(kLastBadgeAnimationTime, base::Time());
+
+  // Deprecated 05/2026.
+  registry->RegisterStringPref(kHttpCacheFinchExperimentGroups, "");
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -2453,6 +2460,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 04/2026.
   local_state->ClearPref(kHasSeenWebFeed);
   local_state->ClearPref(kLastBadgeAnimationTime);
+
+  // Added 05/2026
+  local_state->ClearPref(kHttpCacheFinchExperimentGroups);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

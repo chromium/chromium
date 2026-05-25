@@ -433,7 +433,7 @@ bool MaybeAddCertWithConstraints(
 constexpr std::string_view kDiskCacheExperimentNameSeparator = " ";
 constexpr std::string_view kDiskCacheExperimentNameNone = "None";
 
-bool GetHttpCacheBackendResetParam(PrefService* local_state) {
+bool GetHttpCacheBackendResetParam(PrefService* profile_prefs) {
   // Get the field trial groups.  If the server cannot be reached, then
   // this corresponds to "None" for each experiment.
   base::FieldTrial* isolation_key_field_trial =
@@ -471,9 +471,9 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
       base::JoinString(experiment_parts, kDiskCacheExperimentNameSeparator);
 
   const std::string previous_field_trial_status =
-      local_state->GetString(kHttpCacheFinchExperimentGroups);
-  local_state->SetString(kHttpCacheFinchExperimentGroups,
-                         current_field_trial_status);
+      profile_prefs->GetString(kHttpCacheFinchExperimentGroups);
+  profile_prefs->SetString(kHttpCacheFinchExperimentGroups,
+                           current_field_trial_status);
 
   return !previous_field_trial_status.empty() &&
          current_field_trial_status != previous_field_trial_status;
@@ -622,6 +622,9 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kCACertificatesWithConstraints);
   registry->RegisterListPref(prefs::kCADistrustedCertificates);
   registry->RegisterListPref(prefs::kCAHintCertificates);
+  // For information about whether to reset the HTTP Cache or not, defaults
+  // to the empty string, which does not prompt a reset.
+  registry->RegisterStringPref(kHttpCacheFinchExperimentGroups, "");
 #if !BUILDFLAG(IS_CHROMEOS)
   // Include user added platform certs by default.
   registry->RegisterBooleanPref(prefs::kCAPlatformIntegrationEnabled, true);
@@ -642,10 +645,6 @@ void ProfileNetworkContextService::RegisterLocalStatePrefs(
   registry->RegisterIntegerPref(
       prefs::kAmbientAuthenticationInPrivateModesEnabled,
       static_cast<int>(net::AmbientAuthAllowedProfileTypes::kRegularOnly));
-
-  // For information about whether to reset the HTTP Cache or not, defaults
-  // to the empty string, which does not prompt a reset.
-  registry->RegisterStringPref(kHttpCacheFinchExperimentGroups, "");
 }
 
 void ProfileNetworkContextService::DisableQuicIfNotAllowed() {
@@ -1522,7 +1521,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 
   network_context_params->reset_http_cache_backend =
-      GetHttpCacheBackendResetParam(g_browser_process->local_state());
+      GetHttpCacheBackendResetParam(profile_->GetPrefs());
 
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
   // Enable encrypted HTTP cache if the enterprise policy is set.
