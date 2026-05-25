@@ -166,6 +166,9 @@ SeedSimulationResult ComputeDifferences(
     const std::vector<ProcessedStudy>& processed_studies,
     const VariationsLayers& layers,
     const EntropyProviders& entropy_providers) {
+  // TODO(crbug.com/482450632): Consider reusing logic from
+  // VariationsSeedProcessor::CreateTrialFromStudy().
+
   // Fill in |current_state| with the current process' active field trials, as a
   // map of trial names to group names.
   std::map<std::string, std::string> current_state;

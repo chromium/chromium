@@ -66,6 +66,13 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
                             const VariationsLayers& layers,
                             base::FeatureList* feature_list);
 
+  scoped_refptr<base::FieldTrial> CreateTrialFromStudyForTesting(
+      const ProcessedStudy& processed_study,
+      const EntropyProviders& entropy_providers,
+      const VariationsLayers& layers,
+      base::FeatureList* feature_list,
+      bool simulated = false);
+
  private:
   friend void CreateTrialFromStudyFuzzer(const Study& study);
 
@@ -74,11 +81,24 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedProcessor {
   // (Otherwise, forcing_flag and variation_id are mutually exclusive.)
   bool AllowVariationIdWithForcingFlag(const Study& study);
 
-  // Creates and registers a field trial from the |processed_study| data.
-  void CreateTrialFromStudy(const ProcessedStudy& processed_study,
-                            const EntropyProviders& entropy_providers,
-                            const VariationsLayers& layers,
-                            base::FeatureList* feature_list);
+  // Creates and registers a field trial from the `processed_study` data. If
+  // the trial is successfully created, returns a pointer to the trial.
+  // Otherwise (e.g. a trial with the same name that does not match the passed
+  // `processed_study` already exists), returns nullptr.
+  // `simulated` can be set to simulate what group would be selected for a given
+  // study. In this case, this function will have no side effects: the trial
+  // created will NOT be registered, `feature_list` will NOT be modified (i.e.
+  // no feature overrides will be registered), no params will be registered,
+  // and no variation IDs will be registered. Since the trial will not be
+  // registered, the caller will have the only pointer to the returned trial
+  // and hence have full ownership (as opposed to when `simulated` is false,
+  // where the trial is registered with FieldTrialList and ownership is shared).
+  scoped_refptr<base::FieldTrial> CreateTrialFromStudy(
+      const ProcessedStudy& processed_study,
+      const EntropyProviders& entropy_providers,
+      const VariationsLayers& layers,
+      base::FeatureList* feature_list,
+      bool simulated = false);
 
   // Used to manage studies that use sticky activation, to determine which ones
   // should be activated on startup per their prior state.

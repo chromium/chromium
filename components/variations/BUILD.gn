@@ -299,6 +299,7 @@ source_set("unit_tests") {
     "//base:build_time",
     "//base/test:test_support",
     "//components/crash/core/common:crash_key",
+    "//components/metrics",
     "//components/prefs:test_support",
     "//components/variations/field_trial_config",
     "//net:test_support",

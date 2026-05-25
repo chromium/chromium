@@ -23,6 +23,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_list_including_low_anonymity.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -32,6 +33,7 @@
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/metrics/entropy_state.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/processed_study.h"
 #include "components/variations/proto/study.pb.h"
@@ -1908,6 +1910,259 @@ TYPED_TEST(VariationsSeedProcessorTest,
       GetActiveFieldTrialGroupsForTesting(
           &active_groups_including_low_anonymity);
   EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
+}
+
+TYPED_TEST(VariationsSeedProcessorTest, SimulateCreateTrialFromStudy_Basic) {
+  // Create a seed with a single study, which in turn has 100 Enabled groups
+  // (Enabled0, Enabled1, ..., Enabled99).
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  const char kStudyName[] = "SimulationStudy";
+  study->set_name(kStudyName);
+  study->set_consistency(Study_Consistency_PERMANENT);
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("Default", 0, study);
+  for (int i = 0; i < 100; ++i) {
+    Study::Experiment* enabled_exp = AddExperiment(
+        base::StrCat({"Enabled", base::NumberToString(i)}), 1, study);
+    enabled_exp->set_google_web_experiment_id(i);
+    Study::Experiment::Param* param = enabled_exp->add_param();
+    param->set_name("param");
+    param->set_value(base::NumberToString(i));
+    enabled_exp->mutable_feature_association()->add_enable_feature(
+        kDisabled.name);
+  }
+
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+  EntropyProviders entropy_providers(
+      /*high_entropy_source=*/"client_id",
+      /*low_entropy_source=*/{123, metrics::EntropyState::kMaxLowEntropySize},
+      /*limited_entropy_source=*/"limited");
+  VariationsLayers layers(seed, entropy_providers);
+  ProcessedStudy processed_study;
+  ASSERT_TRUE(processed_study.Init(study));
+
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor seed_processor(sticky_activation_manager);
+
+  // Run the simulation.
+  scoped_refptr<base::FieldTrial> simulated_trial =
+      seed_processor.CreateTrialFromStudyForTesting(
+          processed_study, entropy_providers, layers, feature_list.get(),
+          /*simulated=*/true);
+  ASSERT_TRUE(simulated_trial);
+  EXPECT_EQ(simulated_trial->trial_name(), kStudyName);
+  std::string simulated_group_name =
+      simulated_trial->GetGroupNameWithoutActivation();
+  EXPECT_EQ(simulated_group_name, "Enabled11");
+
+  // Verify NO side effects:
+  // 1. Not registered in field trial list.
+  EXPECT_EQ(base::FieldTrialList::Find(kStudyName), nullptr);
+  // 2. No variation IDs registered.
+  EXPECT_EQ(GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, kStudyName,
+                                 simulated_group_name),
+            EMPTY_ID);
+  // 3. No params registered.
+  EXPECT_EQ(base::GetFieldTrialParamValue(kStudyName, "param"), "");
+  // 4. Feature overrides are not registered/active.
+  {
+    base::test::ScopedFeatureList base_scoped_feature_list;
+    base_scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+    EXPECT_FALSE(base::FeatureList::IsEnabled(kDisabled));
+  }
+
+  // Now, do the trial assignment for real -- we should end up in the same group
+  // we simulated.
+  feature_list = std::make_unique<base::FeatureList>();
+  seed_processor.CreateTrialFromStudyForTesting(
+      processed_study, entropy_providers, layers, feature_list.get());
+  // 1. Registered in field trial list.
+  ASSERT_TRUE(base::FieldTrialList::Find(kStudyName));
+  EXPECT_EQ(base::FieldTrialList::Find(kStudyName)->group_name(),
+            simulated_group_name);
+  // 2. Variation IDs registered.
+  EXPECT_EQ(GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, kStudyName,
+                                 simulated_group_name),
+            11);
+  // 3. Params registered.
+  EXPECT_EQ(base::GetFieldTrialParamValue(kStudyName, "param"), "11");
+  // 4. Feature overrides are registered/active.
+  {
+    base::test::ScopedFeatureList base_scoped_feature_list;
+    base::FeatureList* feature_list_ptr = feature_list.get();
+    base_scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+    EXPECT_TRUE(base::FeatureList::IsEnabled(kDisabled));
+
+    // For good measure, also try a simulation with a finalized FeatureList.
+    // As simulations have no side-effects, the FeatureList should not be
+    // modified (DCHECKs would be triggered if it were).
+    simulated_trial = seed_processor.CreateTrialFromStudyForTesting(
+        processed_study, entropy_providers, layers, feature_list_ptr,
+        /*simulated=*/true);
+    ASSERT_TRUE(simulated_trial);
+    EXPECT_EQ(simulated_trial->GetGroupNameWithoutActivation(),
+              simulated_group_name);
+  }
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           SimulateCreateTrialFromStudy_ExistingTrial) {
+  // Create a seed with a single study, which in turn has a single Enabled
+  // group.
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  const char kStudyName[] = "SimulationStudy";
+  study->set_name(kStudyName);
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("Default", 0, study);
+  Study::Experiment* enabled_exp = AddExperiment("Enabled", 100, study);
+  enabled_exp->set_google_web_experiment_id(kExperimentId);
+  Study::Experiment::Param* param = enabled_exp->add_param();
+  param->set_name("x");
+  param->set_value("y");
+  enabled_exp->mutable_feature_association()->add_enable_feature(
+      kDisabled.name);
+
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+  EntropyProviders entropy_providers(
+      /*high_entropy_source=*/"client_id",
+      /*low_entropy_source=*/{123, metrics::EntropyState::kMaxLowEntropySize},
+      /*limited_entropy_source=*/"limited");
+  VariationsLayers layers(seed, entropy_providers);
+  ProcessedStudy processed_study;
+  ASSERT_TRUE(processed_study.Init(study));
+
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor seed_processor(sticky_activation_manager);
+
+  // Do a real trial assignment for the study.
+  seed_processor.CreateTrialFromStudyForTesting(
+      processed_study, entropy_providers, layers, feature_list.get());
+  // 1. Registered in field trial list.
+  ASSERT_TRUE(base::FieldTrialList::Find(kStudyName));
+  std::string group_name = base::FieldTrialList::Find(kStudyName)->group_name();
+  EXPECT_EQ(group_name, "Enabled");
+  // 2. Variation IDs registered.
+  EXPECT_EQ(GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, kStudyName,
+                                 group_name),
+            kExperimentId);
+  // 3. Params registered.
+  EXPECT_EQ(base::GetFieldTrialParamValue(kStudyName, "x"), "y");
+  // 4. Feature overrides are registered/active.
+  base::test::ScopedFeatureList base_scoped_feature_list;
+  base::FeatureList* feature_list_ptr = feature_list.get();
+  base_scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kDisabled));
+
+  // Create a new seed with the the same study, but this time with only a
+  // Disabled group. Simulate a trial assignment, and verify that the existing
+  // trial is not modified and does not influence the simulation.
+  VariationsSeed seed2;
+  Study* study2 = seed2.add_study();
+  study2->set_name(kStudyName);
+  study2->set_consistency(Study_Consistency_PERMANENT);
+  study2->set_default_experiment_name("Default");
+  study2->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("Default", 0, study2);
+  Study::Experiment* disabled_exp = AddExperiment("Disabled", 100, study2);
+  disabled_exp->set_google_web_experiment_id(kExperimentId + 1);
+  Study::Experiment::Param* param2 = disabled_exp->add_param();
+  param2->set_name("x");
+  param2->set_value("z");
+  Study::Experiment::Param* param3 = disabled_exp->add_param();
+  param3->set_name("y");
+  param3->set_value("z");
+  disabled_exp->mutable_feature_association()->add_disable_feature(
+      kDisabled.name);
+
+  ProcessedStudy processed_study2;
+  ASSERT_TRUE(processed_study2.Init(study2));
+  scoped_refptr<base::FieldTrial> simulated_trial =
+      seed_processor.CreateTrialFromStudyForTesting(
+          processed_study2, entropy_providers, layers, feature_list_ptr,
+          /*simulated=*/true);
+
+  ASSERT_TRUE(simulated_trial);
+  EXPECT_EQ(simulated_trial->trial_name(), kStudyName);
+  std::string simulated_group_name =
+      simulated_trial->GetGroupNameWithoutActivation();
+  EXPECT_EQ(simulated_group_name, "Disabled");
+
+  // Verify that simulation did NOT register new study params, variation IDs, or
+  // feature overrides to the existing trial.
+  EXPECT_EQ(base::FieldTrialList::Find(kStudyName)->group_name(), group_name);
+  EXPECT_EQ(GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, kStudyName,
+                                 group_name),
+            kExperimentId);
+  EXPECT_EQ(GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, kStudyName,
+                                 simulated_group_name),
+            EMPTY_ID);
+  EXPECT_EQ(base::GetFieldTrialParamValue(kStudyName, "x"), "y");
+  EXPECT_EQ(base::GetFieldTrialParamValue(kStudyName, "y"), "");
+  EXPECT_TRUE(base::FeatureList::IsEnabled(kDisabled));
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           SimulateCreateTrialFromStudy_ForcingFeatureOrFlag) {
+  // Force via switch.
+  const char kForcingSwitch[] = "simulation-forcing-flag";
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(kForcingSwitch);
+
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  const char kStudyName[] = "SimulationStudy";
+  study->set_name(kStudyName);
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+
+  // Create a default experiment group with 100% probability.
+  AddExperiment("Default", 100, study);
+
+  // Create a forcing group with 0% probability. Under normal circumstances,
+  // this group would never be selected. However, as we specify the forcing
+  // switch in the command line, this group should be forcibly selected.
+  Study::Experiment* forced_exp = AddExperiment("ForcedGroup", 0, study);
+  forced_exp->set_forcing_flag(kForcingSwitch);
+  forced_exp->set_google_web_experiment_id(kExperimentId);
+  Study::Experiment::Param* param = forced_exp->add_param();
+  param->set_name("x");
+  param->set_value("y");
+
+  std::unique_ptr<base::FeatureList> feature_list =
+      std::make_unique<base::FeatureList>();
+  EntropyProviders entropy_providers(
+      /*high_entropy_source=*/"client_id",
+      /*low_entropy_source=*/{123, metrics::EntropyState::kMaxLowEntropySize},
+      /*limited_entropy_source=*/"limited");
+  VariationsLayers layers(seed, entropy_providers);
+  ProcessedStudy processed_study;
+  ASSERT_TRUE(processed_study.Init(study));
+
+  StickyActivationManager sticky_activation_manager(/*local_state=*/nullptr);
+  VariationsSeedProcessor seed_processor(sticky_activation_manager);
+
+  // Run simulation.
+  scoped_refptr<base::FieldTrial> simulated_trial =
+      seed_processor.CreateTrialFromStudyForTesting(
+          processed_study, entropy_providers, layers, feature_list.get(),
+          /*simulated=*/true);
+  ASSERT_TRUE(simulated_trial);
+  EXPECT_EQ(simulated_trial->trial_name(), kStudyName);
+  std::string simulated_group_name =
+      simulated_trial->GetGroupNameWithoutActivation();
+  EXPECT_EQ(simulated_trial->GetGroupNameWithoutActivation(), "ForcedGroup");
+
+  // Verify NO side effects.
+  EXPECT_EQ(base::FieldTrialList::Find(kStudyName), nullptr);
+  EXPECT_EQ(GetGoogleVariationID(GOOGLE_WEB_PROPERTIES_ANY_CONTEXT, kStudyName,
+                                 simulated_group_name),
+            EMPTY_ID);
+  EXPECT_EQ(base::GetFieldTrialParamValue(kStudyName, "x"), "");
 }
 
 }  // namespace variations
