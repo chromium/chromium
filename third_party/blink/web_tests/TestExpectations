@@ -200,8 +200,8 @@ crbug.com/1357443 external/wpt/dom/nodes/NodeList-static-length-getter-tampered-
 
 # Slow tests that timeout often. The same tests run on the V8 CQ, so we can skip
 # them here without losing coverage.
-external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Skip Timeout ]
-external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Skip Timeout ]
+crbug.com/516003955 external/wpt/wasm/core/simd/simd_f32x4_pmin_pmax.wast.js.html [ Failure Skip Timeout ]
+crbug.com/516003955 external/wpt/wasm/core/simd/simd_f64x2_pmin_pmax.wast.js.html [ Failure Skip Timeout ]
 
 # ====== Synchronous, budgeted HTML parser tests to here ========================
 
