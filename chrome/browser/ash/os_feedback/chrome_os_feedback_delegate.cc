@@ -119,10 +119,6 @@ constexpr char kFeedbackUserConsentGrantedValue[] = "true";
 // Consent value matches JavaScript: `String(false)`.
 constexpr char kFeedbackUserConsentDeniedValue[] = "false";
 constexpr char kExtraDiagnosticsKey[] = "EXTRA_DIAGNOSTICS";
-constexpr char kLinkCrossDeviceDogfoodFeedbackWithBluetoothLogs[] =
-    "linkCrossDeviceDogfoodFeedbackWithBluetoothLogs";
-constexpr char kLinkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs[] =
-    "linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs";
 
 }  // namespace
 
@@ -206,24 +202,6 @@ std::optional<std::string> ChromeOsFeedbackDelegate::GetSignedInUserEmail()
   // Browser sync consent is not required to use feedback.
   return identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
       .email;
-}
-
-std::optional<std::string>
-ChromeOsFeedbackDelegate::GetLinkedPhoneMacAddress() {
-  CHECK(features::IsLinkCrossDeviceDogfoodFeedbackEnabled());
-
-  auto* multidevice_setup_client =
-      ash::multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
-          profile_);
-  if (!multidevice_setup_client) {
-    return std::nullopt;
-  }
-  std::optional<multidevice::RemoteDeviceRef> remote_device_ref =
-      multidevice_setup_client->GetHostStatus().second;
-  if (!remote_device_ref.has_value()) {
-    return std::nullopt;
-  }
-  return remote_device_ref.value().bluetooth_public_address();
 }
 
 bool ChromeOsFeedbackDelegate::IsWifiDebugLogsAllowed() const {
@@ -378,26 +356,6 @@ void ChromeOsFeedbackDelegate::SendReport(
       base::BindOnce(&ChromeOsFeedbackDelegate::OnSendFeedbackDone,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 
-  //  Only get and set the mac address if all the following are true:
-  //  1. The flag is enabled,
-  //  2. It is an internal account,
-  //  3. Category tag has a value, and
-  //  4. The value of the category tag is
-  //     kLinkCrossDeviceDogfoodFeedbackWithBluetoothLogs or
-  //     kLinkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs.
-  bool is_linked_cross_device_feedback_report =
-      feedback_context->category_tag.has_value() &&
-      (feedback_context->category_tag.value() ==
-           kLinkCrossDeviceDogfoodFeedbackWithBluetoothLogs ||
-       feedback_context->category_tag.value() ==
-           kLinkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs);
-
-  if (features::IsLinkCrossDeviceDogfoodFeedbackEnabled() &&
-      feedback_context->is_internal_account &&
-      feedback_context->category_tag.has_value() &&
-      is_linked_cross_device_feedback_report) {
-    feedback_data->set_mac_address(GetLinkedPhoneMacAddress());
-  }
 }
 
 void ChromeOsFeedbackDelegate::OnSendFeedbackDone(SendReportCallback callback,

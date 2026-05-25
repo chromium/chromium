@@ -50,7 +50,6 @@ class ChromeOsFeedbackDelegate : public OsFeedbackDelegate {
   std::string GetApplicationLocale() override;
   std::optional<GURL> GetLastActivePageUrl() override;
   std::optional<std::string> GetSignedInUserEmail() const override;
-  std::optional<std::string> GetLinkedPhoneMacAddress() override;
   bool IsWifiDebugLogsAllowed() const override;
   int GetPerformanceTraceId() override;
   void GetScreenshotPng(GetScreenshotPngCallback callback) override;

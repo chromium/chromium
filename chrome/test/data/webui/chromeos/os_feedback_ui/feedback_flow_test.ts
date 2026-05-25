@@ -8,7 +8,7 @@ import 'chrome://os-feedback/share_data_page.js';
 import 'chrome://webui-test/chromeos/mojo_webui_test_support.js';
 
 import type {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
-import {fakeFeedbackContext, fakeFeedbackContextWithoutLinkedCrossDevicePhone, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
+import {fakeFeedbackContext, fakeInternalUserFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-feedback/fake_data.js';
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import type {FeedbackFlowButtonClickEvent, FeedbackFlowElement} from 'chrome://os-feedback/feedback_flow.js';
@@ -21,7 +21,6 @@ import {SearchPageElement} from 'chrome://os-feedback/search_page.js';
 import type {ShareDataPageElement} from 'chrome://os-feedback/share_data_page.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
-import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -112,13 +111,6 @@ suite('FeedbackFlowTestSuite', () => {
     feedbackServiceProvider = new FakeFeedbackServiceProvider();
     feedbackServiceProvider.setFakeFeedbackContext(
         fakeInternalUserFeedbackContext);
-    setFeedbackServiceProviderForTesting(feedbackServiceProvider);
-  }
-
-  function setupTestWithoutLinkedCrossDevicePhone() {
-    feedbackServiceProvider = new FakeFeedbackServiceProvider();
-    feedbackServiceProvider.setFakeFeedbackContext(
-        fakeFeedbackContextWithoutLinkedCrossDevicePhone);
     setFeedbackServiceProviderForTesting(feedbackServiceProvider);
   }
 
@@ -513,239 +505,6 @@ suite('FeedbackFlowTestSuite', () => {
     await flushTasks();
 
     assertTrue(page.getShouldShowWifiDebugLogsCheckboxForTesting());
-  });
-
-  // Test the "Link Cross Device Dogfood Feedback" checkbox will show up if
-  // logged with internal account and input description is related.
-  test(
-      'ShowLinkCrossDeviceDogfoodFeedbackCheckboxsWithRelatedDescription',
-      async () => {
-        testWithInternalAccount();
-        await initializePage();
-
-        // Check the "Link Cross Device Dogfood Feedback" checkbox component is
-        // hidden when input is not related to cross device.
-        let activePage = getActivePage();
-        assertTrue(!!activePage);
-        assertEquals('searchPage', activePage.id);
-
-        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
-            .value = 'abc';
-        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        loadTimeData.overrideValues(
-            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
-
-        activePage = getActivePage();
-        assertEquals('shareDataPage', activePage.id);
-        const linkCrossDeviceDogfoodFeedbackCheckbox =
-            activePage.shadowRoot!.querySelector(
-                '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
-        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
-        assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
-
-        strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        loadTimeData.overrideValues(
-            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
-
-        // Go back to search page and set description input related to cross
-        // device.
-        activePage = getActivePage();
-        assertTrue(!!activePage);
-        assertEquals('searchPage', activePage.id);
-
-        // Testing tetherRegEx
-        let descriptionElement = strictQuery(
-            'textarea', activePage.shadowRoot, HTMLTextAreaElement);
-        descriptionElement.value = 'hotspot';
-
-        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        activePage = getActivePage();
-        assertTrue(!!activePage);
-        assertEquals('shareDataPage', activePage.id);
-
-        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
-        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
-
-        strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        loadTimeData.overrideValues(
-            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
-
-        // Go back to search page and set description input related to cross
-        // device.
-        activePage = getActivePage();
-        assertTrue(!!activePage);
-        assertEquals('searchPage', activePage.id);
-
-        // Testing phoneHubRegEx
-        descriptionElement = strictQuery(
-            'textarea', activePage.shadowRoot, HTMLTextAreaElement);
-        descriptionElement.value = 'appstream';
-
-        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        activePage = getActivePage();
-        assertTrue(!!activePage);
-        assertEquals('shareDataPage', activePage.id);
-
-        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
-        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
-
-        strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        loadTimeData.overrideValues(
-            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
-
-        // Go back to search page and set description input related to cross
-        // device.
-        activePage = getActivePage();
-        assertTrue(!!activePage);
-        assertEquals('searchPage', activePage.id);
-
-        // Testing phoneHubRegEx variation.
-        descriptionElement = strictQuery(
-            'textarea', activePage.shadowRoot, HTMLTextAreaElement);
-        descriptionElement.value = 'camera roll';
-
-        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        activePage = getActivePage();
-        assertTrue(!!activePage);
-        assertEquals('shareDataPage', activePage.id);
-
-        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
-        assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
-      });
-
-  // Test the "Link Cross Device Dogfood Feedback" checkbox will not show up if
-  // not logged with an Internal google account.
-  test(
-      'LinkCrossDeviceDogfoodFeedbackHiddenWithoutInternalAccount',
-      async () => {
-        await initializePage();
-
-        // Enable flag.
-        loadTimeData.overrideValues(
-            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
-
-        // Set input description related to cross device.
-        let activePage = getActivePage();
-        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
-            .value = 'phone';
-        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        activePage = getActivePage();
-        assertEquals('shareDataPage', activePage.id);
-        const linkCrossDeviceDogfoodFeedbackCheckbox =
-            activePage.shadowRoot!.querySelector(
-                '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
-        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
-        assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
-      });
-
-  // Test the "Link Cross Device Dogfood Feedback" checkbox will not show up if
-  // the ChromeOs device is not linked to a phone.
-  test(
-      'LinkCrossDeviceDogfoodFeedbackHiddenWithoutLinkedCrossDevicePhone',
-      async () => {
-        setupTestWithoutLinkedCrossDevicePhone();
-
-        await initializePage();
-
-        // Enable flag.
-        loadTimeData.overrideValues(
-            {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
-
-        // Set input description related to cross device.
-        let activePage = getActivePage();
-
-        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement)
-            .value = 'phone';
-        strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-            .click();
-        await flushTasks();
-
-        activePage = getActivePage();
-        assertEquals('shareDataPage', activePage.id);
-        const linkCrossDeviceDogfoodFeedbackCheckbox =
-            activePage.shadowRoot!.querySelector(
-                '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
-        assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
-        assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
-      });
-
-  // Test the "Link Cross Device Dogfood Feedback" checkbox will only show up
-  // when 'enableLinkCrossDeviceDogfoodFeedbackFlag' is enabled.
-  test('LinkCrossDeviceDogfoodFeedbackTestingFlag', async () => {
-    testWithInternalAccount();
-    await initializePage();
-
-    // Enable flag and check that the checkbox appears.
-    loadTimeData.overrideValues(
-        {'enableLinkCrossDeviceDogfoodFeedbackFlag': true});
-
-    // Set input description related to cross device.
-    let activePage = getActivePage();
-
-    strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement).value =
-        'phone';
-    strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-        .click();
-    await flushTasks();
-
-    activePage = getActivePage();
-    assertEquals('shareDataPage', activePage.id);
-    const linkCrossDeviceDogfoodFeedbackCheckbox =
-        activePage.shadowRoot!.querySelector(
-            '#linkCrossDeviceDogfoodFeedbackCheckboxContainer');
-    assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
-    assertTrue(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
-
-    strictQuery('#buttonBack', activePage.shadowRoot, CrButtonElement).click();
-    await flushTasks();
-
-    // Go back to search page and set description input related to cross device.
-    activePage = getActivePage();
-    assertTrue(!!activePage);
-    assertEquals('searchPage', activePage.id);
-
-    const descriptionElement =
-        strictQuery('textarea', activePage.shadowRoot, HTMLTextAreaElement);
-    descriptionElement.value = 'phone';
-
-    // Disable flag and check that the checkbox doesn't appear.
-    loadTimeData.overrideValues(
-        {'enableLinkCrossDeviceDogfoodFeedbackFlag': false});
-
-    strictQuery('#buttonContinue', activePage.shadowRoot, CrButtonElement)
-        .click();
-    await flushTasks();
-
-    activePage = getActivePage();
-    assertTrue(!!activePage);
-    assertEquals('shareDataPage', activePage.id);
-
-    assertTrue(!!linkCrossDeviceDogfoodFeedbackCheckbox);
-    assertFalse(isVisible(linkCrossDeviceDogfoodFeedbackCheckbox));
   });
 
   // Test the sys info and metrics checkbox will not be checked if
@@ -1184,7 +943,6 @@ suite('FeedbackFlowTestSuite', () => {
             '"descriptionPlaceholder":"fake description placeholder",' +
             '"fromAutofill": true, ' +
             '"settingsSearchDoNotRecordMetrics": true, ' +
-            '"hasLinkedCrossDevicePhone": true, ' +
             '"isInternalAccount": true, ' +
             '"pageUrl":"chrome://flags/",' +
             '"systemInformation":[' +
@@ -1209,7 +967,6 @@ suite('FeedbackFlowTestSuite', () => {
         '{"fake key1":"fake value1"}', feedbackContext.autofillMetadata);
     assertTrue(feedbackContext.fromAutofill);
     assertTrue(feedbackContext.settingsSearchDoNotRecordMetrics);
-    assertTrue(feedbackContext.hasLinkedCrossDevicePhone);
     assertTrue(feedbackContext.isInternalAccount);
 
     assertEquals('fake description', page.getDescriptionTemplateForTesting());
@@ -1247,7 +1004,6 @@ suite('FeedbackFlowTestSuite', () => {
         assertFalse(feedbackContext.fromAutofill);
         assertFalse(feedbackContext.settingsSearchDoNotRecordMetrics);
         assertFalse(feedbackContext.isInternalAccount);
-        assertFalse(feedbackContext.hasLinkedCrossDevicePhone);
 
         assertTrue(!page.getDescriptionTemplateForTesting());
         assertTrue(!page.getDescriptionPlaceholderTextForTesting());

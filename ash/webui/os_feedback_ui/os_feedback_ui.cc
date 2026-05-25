@@ -120,19 +120,12 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
       {"wifiDebugLogsInfo", IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_CHECKBOX},
       {"wifiDebugLogsMessage", IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_MESSAGE},
       {"wifiDebugLogsTitle", IDS_FEEDBACK_TOOL_WIFI_DEBUG_LOGS_TITLE},
-      {"linkCrossDeviceDogfoodFeedbackInfo",
-       IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_INFO},
-      {"linkCrossDeviceDogfoodFeedbackMessage",
-       IDS_FEEDBACK_TOOL_LINK_CROSS_DEVICE_DOGFOOD_FEEDBACK_MESSAGE},
       {"includeAutofillCheckboxLabel",
        IDS_FEEDBACK_TOOL_AUTOFILL_LOGS_CHECKBOX},
   };
 
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
-
-  source->AddBoolean("enableLinkCrossDeviceDogfoodFeedbackFlag",
-                     features::IsLinkCrossDeviceDogfoodFeedbackEnabled());
 }
 
 }  // namespace

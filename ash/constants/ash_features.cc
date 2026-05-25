@@ -1200,12 +1200,6 @@ BASE_FEATURE(kLocalFactorsPasswordComplexity, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables local authentication controller with PIN support.
 BASE_FEATURE(kLocalAuthenticationWithPin, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables cross device supported reports within the feedback tool.
-// (This feature is only available for dogfooders)
-BASE_FEATURE(kLinkCrossDeviceDogfoodFeedback,
-             "LinkCrossDeviceDogFoodFeedback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables nearby-internals logs to be automatically saved to disk and attached
 // to feedback reports.
 BASE_FEATURE(kLinkCrossDeviceInternals, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -2812,10 +2806,6 @@ bool IsLauncherContinueSectionWithRecentsEnabled() {
   return base::FeatureList::IsEnabled(kLauncherContinueSectionWithRecents) ||
          base::FeatureList::IsEnabled(
              kLauncherContinueSectionWithRecentsRollout);
-}
-
-bool IsLinkCrossDeviceDogfoodFeedbackEnabled() {
-  return base::FeatureList::IsEnabled(kLinkCrossDeviceDogfoodFeedback);
 }
 
 bool IsLinkCrossDeviceInternalsEnabled() {

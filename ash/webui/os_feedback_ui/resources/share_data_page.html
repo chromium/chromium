@@ -327,14 +327,6 @@
               inner-h-t-m-l="[[getWifiDebugLogsCheckboxLabel()]]"></div>
         </cr-checkbox>
       </div>
-      <!-- Link Cross Device Doogfood Feedback (Googler Internal Only) -->
-      <div id="linkCrossDeviceDogfoodFeedbackCheckboxContainer" class="checkbox-field-container"
-          hidden="[[!shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox]]">
-        <cr-checkbox id="linkCrossDeviceDogfoodFeedbackCheckbox" aria-labelledby="linkCrossDeviceDogfoodFeedbackInfoLabel" checked>
-          <div id="linkCrossDeviceDogfoodFeedbackInfoLabel" class="checkbox-label"
-              inner-h-t-m-l="[[getLinkCrossDeviceDogfoodFeedbackCheckboxLabel()]]"></div>
-        </cr-checkbox>
-      </div>
       <!-- Performance trace -->
       <div id="performanceTraceContainer" class="checkbox-field-container"
           hidden="[[!shouldShowPerformanceTraceCheckbox(feedbackContext)]]">
@@ -405,17 +397,6 @@
   <div slot="button-container">
     <cr-button id="wifiDebugLogsDialogDoneButton" class="action-button"
         on-click="handleCloseWifiDebugLogsDialogClicked">
-      [[i18n('buttonDone')]]
-    </cr-button>
-  </div>
-</cr-dialog>
-<cr-dialog id="linkCrossDeviceDogfoodFeedbackDialog">
-  <div slot="body">
-    [[i18n('linkCrossDeviceDogfoodFeedbackMessage')]]
-  </div>
-  <div slot="button-container">
-    <cr-button id="linkCrossDeviceDogfoodFeedbackDialogDoneButton" class="action-button"
-        on-click="handleCloseLinkCrossDeviceDogfoodFeedbackDialogClicked">
       [[i18n('buttonDone')]]
     </cr-button>
   </div>

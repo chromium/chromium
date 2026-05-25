@@ -55,8 +55,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       screenshotUrl: {type: String, readOnly: false, notify: true},
       shouldShowBluetoothCheckbox:
           {type: Boolean, readOnly: false, notify: true},
-      shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox:
-          {type: Boolean, readOnly: false, notify: true},
       shouldShowAutofillCheckbox:
           {type: Boolean, readOnly: false, notify: true},
     };
@@ -66,7 +64,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
   screenshotUrl: string;
   shouldShowBluetoothCheckbox: boolean;
   shouldShowWifiDebugLogsCheckbox: boolean;
-  shouldShowLinkCrossDeviceDogfoodFeedbackCheckbox: boolean;
   shouldShowAutofillCheckbox: boolean;
   private feedbackServiceProvider: FeedbackServiceProviderInterface;
 
@@ -82,7 +79,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     this.setSysInfoCheckboxAttributes();
     this.setBluetoothLogsAttributes();
     this.setWifiDebugLogsAttributes();
-    this.setLinkCrossDeviceDogfoodFeedbackAttributes();
     this.setAutofillAttributes();
     // Set the aria description works the best for screen reader.
     // It reads the description when the checkbox is focused, and when it is
@@ -234,30 +230,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         .close();
   }
 
-  protected handleOpenLinkCrossDeviceDogfoodFeedbackInfoDialog(e: Event): void {
-    // The default behavior of clicking on an anchor tag
-    // with href="#" is a scroll to the top of the page.
-    // This link opens a dialog, so we want to prevent
-    // this default behavior.
-    e.preventDefault();
-
-    strictQuery(
-        '#linkCrossDeviceDogfoodFeedbackDialog', this.shadowRoot,
-        CrDialogElement)
-        .showModal();
-    strictQuery(
-        '#linkCrossDeviceDogfoodFeedbackDialogDoneButton', this.shadowRoot,
-        CrButtonElement)
-        .focus();
-  }
-
-  protected handleCloseLinkCrossDeviceDogfoodFeedbackDialogClicked(): void {
-    strictQuery(
-        '#linkCrossDeviceDogfoodFeedbackDialog', this.shadowRoot,
-        CrDialogElement)
-        .close();
-  }
-
   protected handleBackButtonClicked(e: Event): void {
     e.stopPropagation();
 
@@ -293,7 +265,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
         pageUrl: null,
         fromAutofill: false,
         autofillMetadata: '{}',
-        hasLinkedCrossDevicePhone: false,
         categoryTag: '',
         email: '',
         extraDiagnostics: '',
@@ -354,34 +325,17 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
       report.feedbackContext.categoryTag = this.feedbackContext.categoryTag;
     }
 
-    const isLinkCrossDeviceIssue =
-        !strictQuery(
-             '#linkCrossDeviceDogfoodFeedbackCheckboxContainer',
-             this.shadowRoot, HTMLElement)
-             .hidden &&
-        strictQuery(
-            '#linkCrossDeviceDogfoodFeedbackCheckbox', this.shadowRoot,
-            CrCheckboxElement)
-            .checked;
-
     if (!strictQuery(
              '#bluetoothCheckboxContainer', this.shadowRoot, HTMLElement)
              .hidden &&
         strictQuery(
             '#bluetoothLogsCheckbox', this.shadowRoot, CrCheckboxElement)
             .checked) {
-      report.feedbackContext.categoryTag = isLinkCrossDeviceIssue ?
-          'linkCrossDeviceDogfoodFeedbackWithBluetoothLogs' :
-          'BluetoothReportWithLogs';
+      report.feedbackContext.categoryTag = 'BluetoothReportWithLogs';
       report.sendBluetoothLogs = true;
     } else {
-      if (isLinkCrossDeviceIssue) {
-        report.feedbackContext.categoryTag =
-            'linkCrossDeviceDogfoodFeedbackWithoutBluetoothLogs';
-      }
       report.sendBluetoothLogs = false;
     }
-
     if (this.feedbackContext.fromAutofill &&
         !strictQuery('#autofillCheckboxContainer', this.shadowRoot, HTMLElement)
              .hidden &&
@@ -466,11 +420,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     return this.i18nAdvanced('wifiDebugLogsInfo', {attrs: ['id']});
   }
 
-  protected getLinkCrossDeviceDogfoodFeedbackCheckboxLabel(): TrustedHTML {
-    return this.i18nAdvanced(
-        'linkCrossDeviceDogfoodFeedbackInfo', {attrs: ['id']});
-  }
-
   protected getPrivacyNote(): TrustedHTML {
     if (this.isUserLoggedIn()) {
       return this.i18nAdvanced('privacyNote', {attrs: ['id']});
@@ -541,18 +490,6 @@ export class ShareDataPageElement extends ShareDataPageElementBase {
     wifiDebugLogsLink.setAttribute('href', '#');
     wifiDebugLogsLink.addEventListener(
         'click', (e: Event) => void this.handleOpenWifiDebugLogsInfoDialog(e));
-  }
-
-  private setLinkCrossDeviceDogfoodFeedbackAttributes(): void {
-    const linkCrossDeviceDogfoodFeedbackLink = strictQuery(
-        '#linkCrossDeviceDogfoodFeedbackInfoLink', this.shadowRoot,
-        HTMLAnchorElement);
-    // Setting href causes <a> tag to display as link.
-    linkCrossDeviceDogfoodFeedbackLink.setAttribute('href', '#');
-    linkCrossDeviceDogfoodFeedbackLink.addEventListener(
-        'click',
-        (e: Event) =>
-            void this.handleOpenLinkCrossDeviceDogfoodFeedbackInfoDialog(e));
   }
 
   private onFeedbackContextChanged(): void {

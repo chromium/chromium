@@ -43,19 +43,6 @@ constexpr char kZipExt[] = ".zip";
 constexpr char kPngMimeType[] = "image/png";
 constexpr char kArbitraryMimeType[] = "application/octet-stream";
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Keep in sync with
-// google3/java/com/google/wireless/android/tools/betterbug/protos/uploadfeedbackreport.proto.
-constexpr char kIsCrossDeviceIssueKey[] = "is_cross_device_issue";
-constexpr char kIsCrossDeviceIssueTrueValue[] = "true";
-constexpr char kTargetDeviceIdKey[] = "target_device_id";
-constexpr char kTargetDeviceIdTypeKey[] = "target_device_id_type";
-constexpr char kInitiatingDeviceName[] = "initiating_device_name";
-// Enum value for MAC_ADDRESS type.
-constexpr char kTargetDeviceIdTypeMacAddressValue[] = "1";
-constexpr char kInitiatingDeviceNameValue[] = "Chromebook";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 constexpr char kIsOffensiveOrUnsafeKey[] = "is_offensive_or_unsafe";
 
 // Determine if the given feedback value is small enough to not need to
@@ -221,19 +208,6 @@ void FeedbackCommon::PrepareReport(
 
   if (category_tag().size())
     feedback_data->set_bucket(category_tag());
-#if BUILDFLAG(IS_CHROMEOS)
-  if (ash::features::IsLinkCrossDeviceDogfoodFeedbackEnabled() &&
-      gaia::IsGoogleInternalAccountEmail(user_email()) &&
-      mac_address_.has_value()) {
-    AddFeedbackData(feedback_data, kIsCrossDeviceIssueKey,
-                    kIsCrossDeviceIssueTrueValue);
-    AddFeedbackData(feedback_data, kTargetDeviceIdKey, mac_address_.value());
-    AddFeedbackData(feedback_data, kTargetDeviceIdTypeKey,
-                    kTargetDeviceIdTypeMacAddressValue);
-    AddFeedbackData(feedback_data, kInitiatingDeviceName,
-                    kInitiatingDeviceNameValue);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (is_offensive_or_unsafe_.has_value()) {
     AddFeedbackData(feedback_data, kIsOffensiveOrUnsafeKey,
