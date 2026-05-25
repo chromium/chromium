@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
@@ -300,7 +301,7 @@ void SignedExchangeHandler::DidReadHeader(bool completed_syncly,
   }
 
   header_read_buf_->DidConsume(read_result);
-  exchange_header_length_ += read_result;
+  exchange_header_length_ += base::ByteSize(base::as_unsigned(read_result));
   if (header_read_buf_->BytesRemaining() == 0) {
     SignedExchangeLoadResult result = SignedExchangeLoadResult::kSuccess;
     switch (state_) {

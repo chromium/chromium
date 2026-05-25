@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -117,7 +118,9 @@ class CONTENT_EXPORT SignedExchangeHandler {
 
   virtual ~SignedExchangeHandler();
 
-  int64_t GetExchangeHeaderLength() const { return exchange_header_length_; }
+  base::ByteSize GetExchangeHeaderLength() const {
+    return exchange_header_length_;
+  }
 
   // Called to get the following information about the loaded signed exchange:
   //   - Header integrity value
@@ -179,7 +182,7 @@ class CONTENT_EXPORT SignedExchangeHandler {
   scoped_refptr<net::IOBuffer> header_buf_;
   // Wrapper around |header_buf_| to progressively read fixed-size data.
   scoped_refptr<net::DrainableIOBuffer> header_read_buf_;
-  int64_t exchange_header_length_ = 0;
+  base::ByteSize exchange_header_length_;
 
   signed_exchange_prologue::BeforeFallbackUrl prologue_before_fallback_url_;
   signed_exchange_prologue::FallbackUrlAndAfter

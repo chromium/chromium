@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/byte_size.h"
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
 #include "content/browser/web_package/signed_exchange_error.h"
@@ -177,8 +178,8 @@ class CONTENT_EXPORT SignedExchangeLoader final
   std::optional<GURL> inner_request_url_;
 
   struct OuterResponseLengthInfo {
-    int64_t encoded_data_length;
-    int64_t decoded_body_length;
+    base::ByteSize encoded_data_length;
+    base::ByteSize decoded_body_length;
   };
   // Set when URLLoaderClient::OnComplete() is called.
   std::optional<OuterResponseLengthInfo> outer_response_length_info_;
