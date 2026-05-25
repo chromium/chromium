@@ -4068,7 +4068,6 @@ if (!is_android) {
       "../browser/unload_browsertest.cc",
       "../browser/web_applications/isolated_web_apps/browser_navigator_iwa_browsertest.cc",
       "../browser/webauthn/chrome_webauthn_browsertest.cc",
-      "../browser/webauthn/chrome_webauthn_iwa_remote_desktop_override_browsertest.cc",
       "../browser/webauthn/passkey_unlock_manager_browsertest.cc",
       "../common/chrome_paths_browsertest.cc",
       "../common/time_format_browsertest.cc",
@@ -4222,7 +4221,10 @@ if (!is_android) {
     }
 
     if (is_win || is_mac || is_linux || is_chromeos) {
-      sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
+      sources += [
+        "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc",
+        "../browser/webauthn/chrome_webauthn_iwa_remote_desktop_override_browsertest.cc",
+      ]
     }
 
     if (is_win || is_mac || is_linux) {

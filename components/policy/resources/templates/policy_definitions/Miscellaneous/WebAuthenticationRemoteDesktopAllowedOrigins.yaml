@@ -9,6 +9,8 @@ desc: |-
   Only valid HTTPS origins are allowed. Wildcards are not supported.
   Any invalid entries are ignored.
 
+  This policy only applies to affiliated users.
+
 features:
   dynamic_refresh: true
   per_profile: true

@@ -1,12 +1,19 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+// This test is not executed on Android because Isolated Web Apps (IWAs)
+// are not supported on Android.
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -129,6 +136,29 @@ class WebAuthnIWARemoteDesktopOverrideBrowserTest :
   }
 #endif
 
+  void SetUpOnMainThread() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    policy::DevicePolicyCrosBrowserTest::SetUpOnMainThread();
+#else
+    InProcessBrowserTest::SetUpOnMainThread();
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS)
+    const base::flat_set<std::string> affiliation_ids =
+        GetParam() ? base::flat_set<std::string>({"test-affiliation-id"})
+                   : base::flat_set<std::string>();
+    browser_policy_connector()->SetDeviceAffiliatedIdsForTesting(
+        affiliation_ids);
+    profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+        affiliation_ids);
+#endif
+  }
+
+  policy::ChromeBrowserPolicyConnector* browser_policy_connector() {
+    return static_cast<policy::ChromeBrowserPolicyConnector*>(
+        g_browser_process->browser_policy_connector());
+  }
+
   Profile* profile() {
 #if BUILDFLAG(IS_CHROMEOS)
     return ::ash::ProfileHelper::Get()->GetProfileByAccountId(
@@ -146,6 +176,7 @@ class WebAuthnIWARemoteDesktopOverrideBrowserTest :
     EXPECT_TRUE(user->is_logged_in());
 #else
     ASSERT_TRUE(profile());
+    EXPECT_EQ(GetParam(), enterprise_util::IsProfileAffiliated(profile()));
 #endif
   }
 
@@ -242,27 +273,16 @@ IN_PROC_BROWSER_TEST_P(WebAuthnIWARemoteDesktopOverrideBrowserTest,
     EXPECT_EQ("webauthn: OK",
               content::EvalJs(app_frame, kGetAssertionCredID1234ExampleCom));
   } else {
-#if BUILDFLAG(IS_CHROMEOS)
-    // Not allowed to use remoteDesktopClientOverride due to missing
-    // affiliation, CrOS only
+    // Not allowed to use remoteDesktopClientOverride due to missing affiliation
     EXPECT_EQ(
         "error NotAllowedError: This origin is not permitted to use the "
         "'remoteDesktopClientOverride' extension.",
         content::EvalJs(app_frame, kMakeCredentialCrossDomainIWA));
 
-    // Not allowed to use remoteDesktopClientOverride due to missing
-    // affiliation. CrOS only
     EXPECT_EQ(
         "error NotAllowedError: This origin is not permitted to use the "
         "'remoteDesktopClientOverride' extension.",
         content::EvalJs(app_frame, kGetAssertionCredID1234ExampleCom));
-#else
-    EXPECT_EQ("webauthn: OK",
-              content::EvalJs(app_frame, kMakeCredentialCrossDomainIWA));
-
-    EXPECT_EQ("webauthn: OK",
-              content::EvalJs(app_frame, kGetAssertionCredID1234ExampleCom));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 }
 

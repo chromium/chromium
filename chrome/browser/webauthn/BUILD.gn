@@ -268,12 +268,11 @@ source_set("chrome_web_authentication_delegate") {
     ]
 
     if (is_chromeos) {
-      deps += [
-        "//chromeos/components/webauthn",
-        "//components/user_manager",
-      ]
+      deps += [ "//chromeos/components/webauthn" ]
     }
   }
+
+  deps += [ "//chrome/browser/enterprise" ]
 }
 
 if (!is_android) {

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/notimplemented.h"
 #include "build/buildflag.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
@@ -15,11 +16,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/webapps/isolated_web_apps/scheme.h"
 #include "device/fido/public/features.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
-#endif
 
 namespace {
 
@@ -68,18 +64,11 @@ bool IsGoogleCorpCrdOrigin(content::BrowserContext* browser_context,
 bool RemoteDesktopClientOverrideAllowedByPolicy(
     content::BrowserContext* browser_context,
     const url::Origin& caller_origin) {
-  const Profile* profile = Profile::FromBrowserContext(browser_context);
-#if BUILDFLAG(IS_CHROMEOS)
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetActiveUser();
-  if (!user || !user->IsAffiliated()) {
-    // On ChromeOS, if the user is not affiliated with the device's
-    // managing organization, the origin isn't allowed to use the
-    // remoteDesktopClientOverride.
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+
+  if (!enterprise_util::IsProfileAffiliated(profile)) {
     return false;
   }
-#endif
-
   const PrefService* prefs = profile->GetPrefs();
   const base::ListValue& allowed_origins =
       prefs->GetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins);

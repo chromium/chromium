@@ -10,6 +10,10 @@
 
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/util/affiliation.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
+#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
@@ -17,13 +21,6 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "device/fido/public/features.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
-#include "components/account_id/account_id.h"
-#include "components/user_manager/scoped_user_manager.h"
-#endif
 
 namespace {
 
@@ -42,10 +39,10 @@ class OriginMayUseRemoteDesktopClientOverrideTest
 
   static constexpr char kExampleOrigin[] = "https://example.com";
   static constexpr char kAnotherExampleOrigin[] = "https://another.example.com";
-
-#if BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
   static constexpr char kTestIsolatedAppOrigin[] =
       "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
+#endif
   static constexpr std::string_view kTestAtExampleDotCom = "test@example.com";
 
   void SetUp() override {
@@ -53,45 +50,23 @@ class OriginMayUseRemoteDesktopClientOverrideTest
     SetupUserAffiliation(true, kTestAtExampleDotCom);
   }
 
-  void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
-
   void SetupUserAffiliation(bool is_affiliated, std::string_view email) {
-    AccountId account_id = AccountId::FromUserEmail(email);
-    const user_manager::User* user = scoped_user_manager_->FindUser(account_id);
-    if (user) {
-      scoped_user_manager_->AddUserWithAffiliationAndTypeAndProfile(
-          account_id, is_affiliated, user_manager::UserType::kRegular,
-          profile());
-    } else {
-      user = scoped_user_manager_->AddUserWithAffiliation(account_id,
-                                                          is_affiliated);
-      ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                   profile());
-    }
-    scoped_user_manager_->LoginUser(account_id);
-    scoped_user_manager_->SwitchActiveUser(account_id);
+    const base::flat_set<std::string> affiliation_ids =
+        is_affiliated ? base::flat_set<std::string>({"test-affiliation-id"})
+                      : base::flat_set<std::string>();
+
+    g_browser_process->browser_policy_connector()
+        ->SetDeviceAffiliatedIdsForTesting(affiliation_ids);
+
+    profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+        affiliation_ids);
   }
 
-  bool LogOutUser(std::string_view email) {
-    AccountId account_id = AccountId::FromUserEmail(email);
-    const user_manager::User* user = scoped_user_manager_->FindUser(account_id);
-    if (!user) {
-      return false;
-    }
-    if (scoped_user_manager_->IsUserLoggedIn() &&
-        scoped_user_manager_->GetActiveUser() == user) {
-      // No direct "logout" in FakeChromeUserManager, just remove.
-      // Active user will become null if this is the only user.
-      scoped_user_manager_->RemoveUserFromList(account_id);
-      return true;
-    }
-    return false;
+  void LogOutUser(std::string_view email) {
+    g_browser_process->browser_policy_connector()
+        ->SetDeviceAffiliatedIdsForTesting({});
+    profile()->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting({});
   }
-
-  user_manager::TypedScopedUserManager<chromeos::FakeChromeUserManager>
-      scoped_user_manager_{std::make_unique<chromeos::FakeChromeUserManager>()};
-
-#endif
 };
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -218,10 +193,9 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
       url::Origin::Create(GURL("https://very.other.example.com"))));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
-       AdditionalOriginSwitch_WithAllowedOriginsPolicy_ChromeOsNoAffiliation) {
-  // Version of a test case above but for non-affiliated user on ChromeOS
+       AdditionalOriginSwitch_WithAllowedOriginsPolicy_NoAffiliation) {
+  // Version of a test case above but for non-affiliated user
   ChromeWebAuthenticationDelegateBase delegate;
   base::test::ScopedCommandLine scoped_command_line;
   scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
@@ -229,7 +203,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
       kExampleOrigin);
 
   // Log user out, no affiliated user exists for this test
-  ASSERT_TRUE(LogOutUser(kTestAtExampleDotCom));
+  LogOutUser(kTestAtExampleDotCom);
 
   // Set the allowed origins pref to include another origin.
   PrefService* prefs =
@@ -256,7 +230,6 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
       browser_context(),
       url::Origin::Create(GURL("https://very.other.example.com"))));
 }
-#endif
 
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AdditionalOriginSwitch_WithExplicitlyEmptyAllowedOriginsPolicy) {
@@ -283,7 +256,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
       browser_context(), url::Origin::Create(GURL(kExampleOrigin))));
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)  // IWAs aren't supported on Android
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AllowedOriginsPolicy_IWAAccepted) {
   ChromeWebAuthenticationDelegateBase delegate;
@@ -327,9 +300,8 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   PrefService* prefs =
       Profile::FromBrowserContext(GetBrowserContext())->GetPrefs();
 
-  base::ListValue list = base::ListValue().Append(kTestIsolatedAppOrigin);
   prefs->SetList(webauthn::pref_names::kRemoteDesktopAllowedOrigins,
-                 std::move(list));
+                 base::ListValue().Append(kTestIsolatedAppOrigin));
 
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
@@ -344,7 +316,7 @@ TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
   EXPECT_FALSE(delegate.OriginMayUseRemoteDesktopClientOverride(
       browser_context(), url::Origin::Create(GURL(kTestIsolatedAppOrigin))));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(OriginMayUseRemoteDesktopClientOverrideTest,
        AllowedOriginsPolicy_InvalidURLs) {
