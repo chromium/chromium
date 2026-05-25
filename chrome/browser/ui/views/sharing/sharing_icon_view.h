@@ -11,10 +11,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace views {
-// TODO(ellyjones): Remove this.
-class BubbleDialogDelegateView;
-}  // namespace views
 
 // The location bar icon to show the sharing features bubble.
 class SharingIconView : public PageActionIconView {
@@ -25,7 +21,7 @@ class SharingIconView : public PageActionIconView {
       base::RepeatingCallback<SharingUiController*(content::WebContents*)>;
 
   using GetBubbleCallback =
-      base::RepeatingCallback<views::BubbleDialogDelegateView*(SharingDialog*)>;
+      base::RepeatingCallback<views::BubbleDialogDelegate*(SharingDialog*)>;
 
   SharingIconView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
                   PageActionIconView::Delegate* page_action_icon_delegate,

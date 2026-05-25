@@ -108,7 +108,10 @@ class SharingIconViewTest : public ChromeViewsTestBase {
           return static_cast<SharingUiController*>(
               ClickToCallUiController::GetOrCreateFromWebContents(contents));
         }),
-        base::BindRepeating(SharingDialogView::GetAsBubbleForClickToCall)));
+        base::BindRepeating(
+            [](SharingDialog* dialog) -> views::BubbleDialogDelegate* {
+              return SharingDialogView::GetAsBubbleForClickToCall(dialog);
+            })));
 
     widget_->Show();
   }
@@ -131,7 +134,10 @@ class SharingIconViewTest : public ChromeViewsTestBase {
               SmsRemoteFetcherUiController::GetOrCreateFromWebContents(
                   contents));
         }),
-        base::BindRepeating(SharingDialogView::GetAsBubbleForClickToCall)));
+        base::BindRepeating(
+            [](SharingDialog* dialog) -> views::BubbleDialogDelegate* {
+              return SharingDialogView::GetAsBubbleForClickToCall(dialog);
+            })));
   }
 
   TestSharingIconView* view() { return view_; }
