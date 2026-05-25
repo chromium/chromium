@@ -14,7 +14,7 @@ import android.view.View;
 
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -120,13 +120,12 @@ public class PageInfoViewDarkModeTest {
         mStartingPage = mActivityTestRule.startOnBlankPage();
     }
 
-    @After
-    public void tearDown() {
+    @AfterClass
+    public static void tearDownAfterActivityDestroyed() {
+        // Flip the night-mode pref only after the activity is gone; otherwise the live
+        // activity recreates and strands entries in AsyncTabParamsManager.
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    ChromeNightModeTestUtils.setUpNightModeForChromeActivity(
-                            /* nightModeEnabled= */ false);
-                });
+                ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
     }
 
     /** Tests the PageInfo UI on a secure website in dark mode. */

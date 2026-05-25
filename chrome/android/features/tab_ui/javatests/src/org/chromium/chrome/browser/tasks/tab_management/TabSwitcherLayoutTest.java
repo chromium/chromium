@@ -63,6 +63,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -163,12 +164,18 @@ public class TabSwitcherLayoutTest {
     @After
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
-                ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
-        ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(null));
         if (mModalDialogManagerSupplier != null) {
             dismissAllModalDialogs();
         }
+    }
+
+    @AfterClass
+    public static void tearDownAfterActivityDestroyed() {
+        // Flip the night-mode pref only after the activity is gone; otherwise the live
+        // activity recreates and strands entries in AsyncTabParamsManager.
+        ThreadUtils.runOnUiThreadBlocking(
+                ChromeNightModeTestUtils::tearDownNightModeAfterChromeActivityDestroyed);
     }
 
     /**
