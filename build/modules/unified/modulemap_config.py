@@ -111,6 +111,7 @@ def headers(os):
       AllowedHeader('linux/futex.h'),
       # See above comment about limits.h
       Header('linux/limits.h', textual=True),
+      AllowedHeader('linux/posix_types.h'),
       AllowedHeader('linux/random.h'),
       Header('linux/types.h'),
       Header('locale.h'),
