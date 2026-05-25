@@ -1540,7 +1540,7 @@ SpeculationData* WindowPerformance::getSpeculations() {
   if (!window || !window->document()) {
     return MakeGarbageCollected<SpeculationData>(
         HeapVector<Member<PreloadData>>(),
-        HeapVector<Member<SpeculationNavigationData>>());
+        HeapVector<Member<SpeculationNavigationData>>(), KURL());
   }
 
   Document* document = window->document();
@@ -1573,8 +1573,8 @@ SpeculationData* WindowPerformance::getSpeculations() {
     }
   }
 
-  return MakeGarbageCollected<SpeculationData>(std::move(preloads),
-                                               std::move(navigations));
+  return MakeGarbageCollected<SpeculationData>(
+      std::move(preloads), std::move(navigations), navigation_destination_url_);
 }
 
 uint64_t WindowPerformance::interactionCount() const {

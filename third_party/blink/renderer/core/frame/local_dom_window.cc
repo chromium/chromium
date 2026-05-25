@@ -995,6 +995,12 @@ void LocalDOMWindow::DispatchPagehideEvent(
     return;
   }
 
+  // The navigation that triggered this pagehide is past the point of being
+  // canceled (beforeunload has run without canceling). Promote any pending
+  // navigationDestinationURL stashed during the navigate event so that JS
+  // pagehide handlers can observe it via performance.getSpeculations().
+  DOMWindowPerformance::performance(*this)->PromoteNavigationDestinationURL();
+
   DispatchEvent(
       *PageTransitionEvent::Create(event_type_names::kPagehide, persistence),
       document_.Get());

@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
@@ -21,11 +23,15 @@ class SpeculationData final : public ScriptWrappable {
 
  public:
   SpeculationData(HeapVector<Member<PreloadData>> preloads,
-                  HeapVector<Member<SpeculationNavigationData>> navigations);
+                  HeapVector<Member<SpeculationNavigationData>> navigations,
+                  const KURL& navigation_destination_url);
 
   const HeapVector<Member<PreloadData>>& preloads() const { return preloads_; }
   const HeapVector<Member<SpeculationNavigationData>>& navigations() const {
     return navigations_;
+  }
+  String navigationDestinationURL() const {
+    return navigation_destination_url_.GetString();
   }
 
   void Trace(Visitor* visitor) const override;
@@ -33,6 +39,7 @@ class SpeculationData final : public ScriptWrappable {
  private:
   HeapVector<Member<PreloadData>> preloads_;
   HeapVector<Member<SpeculationNavigationData>> navigations_;
+  const KURL navigation_destination_url_;
 };
 
 }  // namespace blink

@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_info.h"
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -910,6 +911,25 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
       AbortOngoingNavigation(script_state);
     }
     return DispatchResult::kAbort;
+  }
+
+  // Stash the destination URL for
+  // performance.getSpeculations().navigationDestinationURL. We only do this
+  // once handlers have run without canceling and without calling intercept()
+  // (which would convert this into a same-document navigation). The explainer
+  // restricts exposure to non-same-document, same-origin navigations.
+  //
+  // The URL is stashed as "pending" here and only promoted to the public
+  // value once pagehide is about to be dispatched, so that a later
+  // cancellation (e.g. by beforeunload, by a network error before commit, or
+  // by another navigation preempting this one) does not leave a stale URL
+  // exposed.
+  if (params->event_type == NavigateEventType::kCrossDocument &&
+      !navigate_event->HasNavigationActions() &&
+      window_->GetSecurityOrigin()->IsSameOriginWith(
+          SecurityOrigin::Create(params->url).get())) {
+    DOMWindowPerformance::performance(*window_)
+        ->SetPendingNavigationDestinationURL(params->url);
   }
 
   if (navigate_event->HasNavigationActions()) {

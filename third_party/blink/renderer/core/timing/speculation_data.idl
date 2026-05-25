@@ -11,4 +11,5 @@
 interface SpeculationData {
     readonly attribute FrozenArray<PreloadData> preloads;
     readonly attribute FrozenArray<SpeculationNavigationData> navigations;
+    readonly attribute USVString? navigationDestinationURL;
 };

@@ -9597,6 +9597,7 @@ interface SourceBufferList : EventTarget
     setter onremovesourcebuffer
 interface SpeculationData
     attribute @@toStringTag
+    getter navigationDestinationURL
     getter navigations
     getter preloads
     method constructor
