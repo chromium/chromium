@@ -366,7 +366,15 @@ void MenuButtonController::DecrementPressedLocked() {
       desired_state = Button::STATE_HOVERED;
       delegate()->GetInkDrop()->SetHovered(true);
     }
+    // SetState() can trigger callbacks (e.g., ButtonObserver::OnStateChanged,
+    // OnPropertyChanged) that may destroy the button's widget and ultimately
+    // this controller. Guard against use-after-free by checking a weak
+    // pointer after the call.
+    auto weak_this = weak_factory_.GetWeakPtr();
     button()->SetState(desired_state);
+    if (!weak_this) {
+      return;
+    }
     // The widget may be null during shutdown. If so, it doesn't make sense to
     // try to add an ink drop effect.
     if (button()->GetWidget() &&

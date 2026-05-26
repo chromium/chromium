@@ -4,9 +4,13 @@
 
 #include "ui/views/controls/button/menu_button_controller.h"
 
+#include <memory>
+
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget.h"
 
 namespace views {
 
@@ -67,6 +71,34 @@ TEST_F(MenuButtonControllerTest, NotifyClickInvokePressedCallback) {
   EXPECT_FALSE(button()->pressed());
   button()->button_controller()->NotifyClick();
   EXPECT_TRUE(button()->pressed());
+}
+
+// Verify DecrementPressedLocked doesn't crash if the controller is destroyed
+// during SetState(). This can happen on macOS when a state-change callback
+// cascade closes a widget and tears down the controller re-entrantly.
+TEST_F(MenuButtonControllerTest,
+       DecrementPressedLockedSurvivesControllerDestructionDuringSetState) {
+  auto* controller =
+      static_cast<MenuButtonController*>(button()->button_controller());
+
+  auto lock = controller->TakeLock();
+  EXPECT_EQ(Button::STATE_PRESSED, button()->GetState());
+
+  // When the button state changes, replace the controller. This destroys the
+  // old controller while DecrementPressedLocked is still on the stack.
+  base::CallbackListSubscription subscription =
+      button()->AddStateChangedCallback(base::BindRepeating(
+          [](Button* btn) {
+            btn->SetButtonController(std::make_unique<MenuButtonController>(
+                btn, Button::PressedCallback(),
+                std::make_unique<Button::DefaultButtonControllerDelegate>(
+                    btn)));
+          },
+          button()));
+
+  // Releasing the lock triggers old controller destroyed.
+  // The WeakPtr check prevents the use-after-free.
+  lock.reset();
 }
 
 }  // namespace views
