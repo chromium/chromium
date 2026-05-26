@@ -776,6 +776,7 @@ android_resources("ui_junit_resources") {
     "junit/res/layout/layout_view_builder_test.xml",
     "junit/res/layout/list_menu_button_unittest.xml",
     "junit/res/layout/main_view.xml",
+    "junit/res/layout/main_view_with_inflated_id.xml",
     "junit/res/values/strings.xml",
     "junit/res/values/styles.xml",
   ]

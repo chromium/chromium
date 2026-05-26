@@ -5,11 +5,15 @@
 package org.chromium.ui;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
+
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -30,19 +34,24 @@ import java.util.concurrent.atomic.AtomicInteger;
         manifest = Config.NONE,
         shadows = {ShadowAsyncLayoutInflater.class})
 public class AsyncViewStubTest {
+    private LinearLayout mMainView;
     private AsyncViewStub mAsyncViewStub;
     private final AtomicInteger mEventCount = new AtomicInteger();
-    private static final int MAIN_LAYOUT_RESOURCE_ID = R.layout.main_view;
-    private static final int INFLATE_LAYOUT_RESOURCE_ID = R.layout.inflated_view;
-    private static final int STUB_ID = R.id.view_stub;
+    private static final @LayoutRes int MAIN_LAYOUT_RESOURCE_ID = R.layout.main_view;
+    private static final @LayoutRes int MAIN_WITH_INFLATED_ID_LAYOUT_RESOURCE_ID =
+            R.layout.main_view_with_inflated_id;
+    private static final @LayoutRes int INFLATE_LAYOUT_RESOURCE_ID = R.layout.inflated_view;
+    private static final @IdRes int STUB_ID = R.id.view_stub;
+    private static final @IdRes int STUB_WITH_INFLATED_ID_ID = R.id.view_stub_with_inflated_id;
+    private static final @IdRes int INFLATED_ID_FROM_XML = R.id.inflated_id_from_xml;
 
     @Before
     public void setUp() {
-        LinearLayout mainView =
+        mMainView =
                 (LinearLayout)
                         LayoutInflater.from(RuntimeEnvironment.application)
                                 .inflate(MAIN_LAYOUT_RESOURCE_ID, null);
-        mAsyncViewStub = mainView.findViewById(STUB_ID);
+        mAsyncViewStub = mMainView.findViewById(STUB_ID);
         mAsyncViewStub.setLayoutResource(INFLATE_LAYOUT_RESOURCE_ID);
         mAsyncViewStub.setShouldInflateOnBackgroundThread(true);
         mEventCount.set(0);
@@ -79,5 +88,39 @@ public class AsyncViewStubTest {
         mAsyncViewStub.inflate();
         RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         assertEquals(1, mEventCount.get());
+    }
+
+    @Test
+    public void testInflatedIdProgrammatic() {
+        int inflatedId = View.generateViewId();
+        mAsyncViewStub.setInflatedId(inflatedId);
+        assertEquals(inflatedId, mAsyncViewStub.getInflatedId());
+
+        mAsyncViewStub.inflate();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        View inflatedView = mMainView.findViewById(inflatedId);
+        assertNotNull(inflatedView);
+        assertEquals(mAsyncViewStub.getInflatedView(), inflatedView);
+    }
+
+    @Test
+    public void testInflatedIdFromXml() {
+        LinearLayout mainView =
+                (LinearLayout)
+                        LayoutInflater.from(RuntimeEnvironment.application)
+                                .inflate(MAIN_WITH_INFLATED_ID_LAYOUT_RESOURCE_ID, null);
+        AsyncViewStub asyncViewStub = mainView.findViewById(STUB_WITH_INFLATED_ID_ID);
+        asyncViewStub.setLayoutResource(INFLATE_LAYOUT_RESOURCE_ID);
+        asyncViewStub.setShouldInflateOnBackgroundThread(true);
+
+        assertEquals(INFLATED_ID_FROM_XML, asyncViewStub.getInflatedId());
+
+        asyncViewStub.inflate();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        View inflatedView = mainView.findViewById(INFLATED_ID_FROM_XML);
+        assertNotNull(inflatedView);
+        assertEquals(asyncViewStub.getInflatedView(), inflatedView);
     }
 }

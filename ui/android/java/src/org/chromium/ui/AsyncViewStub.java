@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 import androidx.asynclayoutinflater.view.AsyncLayoutInflater;
 
 import org.chromium.base.Callback;
@@ -31,7 +33,8 @@ import org.chromium.build.annotations.Nullable;
  */
 @NullMarked
 public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflateFinishedListener {
-    private int mLayoutResource;
+    private @LayoutRes int mLayoutResource;
+    private @IdRes int mInflatedId;
     private @Nullable View mInflatedView;
 
     private final AsyncLayoutInflater mAsyncLayoutInflater;
@@ -43,6 +46,7 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
         super(context, attrs);
         final TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.AsyncViewStub);
         mLayoutResource = a.getResourceId(R.styleable.AsyncViewStub_layout, 0);
+        mInflatedId = a.getResourceId(R.styleable.AsyncViewStub_inflatedId, View.NO_ID);
         a.recycle();
 
         setVisibility(GONE);
@@ -52,13 +56,28 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
     }
 
     /**
-     * Specifies the layout resource to inflate when {@link #inflate()} is invoked. The View
-     * created by inflating the layout resource is used to replace this AsyncViewStub in its parent.
+     * Specifies the layout resource to inflate when {@link #inflate()} is invoked. The View created
+     * by inflating the layout resource is used to replace this AsyncViewStub in its parent.
      *
      * @param layoutResource A valid layout resource identifier (different from 0.)
      */
-    public void setLayoutResource(int layoutResource) {
+    public void setLayoutResource(@LayoutRes int layoutResource) {
         mLayoutResource = layoutResource;
+    }
+
+    /** Returns the id taken by the inflated view. */
+    public @IdRes int getInflatedId() {
+        return mInflatedId;
+    }
+
+    /**
+     * Defines the id taken by the inflated view.
+     *
+     * @param inflatedId A positive integer used to identify the inflated view or {@link
+     *     View#NO_ID}.
+     */
+    public void setInflatedId(@IdRes int inflatedId) {
+        mInflatedId = inflatedId;
     }
 
     @Override
@@ -74,8 +93,11 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
     protected void dispatchDraw(Canvas canvas) {}
 
     @Override
-    public void onInflateFinished(View view, int resId, @Nullable ViewGroup parent) {
+    public void onInflateFinished(View view, @LayoutRes int resId, @Nullable ViewGroup parent) {
         assert parent != null;
+        if (mInflatedId != View.NO_ID) {
+            view.setId(mInflatedId);
+        }
         mInflatedView = view;
         replaceSelfWithView(view, parent);
         callListeners(view);
