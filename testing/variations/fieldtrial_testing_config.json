@@ -1555,6 +1555,33 @@
             ]
         }
     ],
+    "AndroidTipsNotificationsV2": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_V2_EcosystemLockIn",
+                    "params": {
+                        "ecosystem_lock_in": "true"
+                    },
+                    "enable_features": [
+                        "AndroidTipsNotificationsV2"
+                    ]
+                },
+                {
+                    "name": "Enabled_V2_UtilityAndOrganization",
+                    "params": {
+                        "utility_and_organization": "true"
+                    },
+                    "enable_features": [
+                        "AndroidTipsNotificationsV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidUseCorrectDisplayWorkArea": [
         {
             "platforms": [
