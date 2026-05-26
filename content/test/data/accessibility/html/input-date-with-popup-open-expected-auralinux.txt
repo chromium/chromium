@@ -15,7 +15,8 @@
 ++++++++++++[section]
 ++++++++++++++[section]
 ++++++++++++++++[push button] name='September 2008' description='Show month selection panel' description:Show month selection panel description-from:aria-description
-++++++++++++++++++[static] name='September 2008'
+++++++++++++++++++[section]
+++++++++++++++++++++[static] name='September 2008' member-of=[section]
 ++++++++++++++++++[image]
 ++++++++++++++[push button] name='Show previous month' description='Show previous month' description-from:tooltip
 ++++++++++++++++[image]

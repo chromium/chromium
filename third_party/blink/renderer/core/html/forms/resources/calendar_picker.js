@@ -3300,6 +3300,8 @@ class MonthPopupButton extends View {
      */
     this.labelElement = createElement(
         'span', MonthPopupButton.ClassNameMonthPopupButtonLabel, '-----');
+    this.labelElement.setAttribute('aria-live', 'polite');
+    this.labelElement.setAttribute('aria-atomic', 'true');
     this.element.appendChild(this.labelElement);
 
     /**

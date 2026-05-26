@@ -26,9 +26,10 @@ UNKNOWN focusable
 ++++++++++++++++UNKNOWN
 ++++++++++++++++++UNKNOWN hidden
 ++++++++++++++++++++UNKNOWN
-++++++++++++++++++++++BUTTON focusable label='September 2008' actions='{DEFAULT}' secondary_label='Show month selection panel'
-++++++++++++++++++++++++STATIC_TEXT label='September 2008'
-++++++++++++++++++++++++++UNKNOWN label='September 2008'
+++++++++++++++++++++++BUTTON focusable label='Show month selection panel' actions='{DEFAULT}'
+++++++++++++++++++++++++UNKNOWN
+++++++++++++++++++++++++++STATIC_TEXT label='September 2008'
+++++++++++++++++++++++++++++UNKNOWN label='September 2008'
 ++++++++++++++++++++++++IMAGE
 ++++++++++++++++++++BUTTON focusable label='Show previous month' actions='{DEFAULT}' secondary_label='Show previous month'
 ++++++++++++++++++++++IMAGE
