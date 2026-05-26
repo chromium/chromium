@@ -16,11 +16,8 @@ import org.chromium.ui.util.ClickWithMetaStateCallback;
 @NullMarked
 public class HomeActionButtonBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        view = ActionButtonBinder.resolveView(view);
-        assert view instanceof ListMenuButton : "View must be a ListMenuButton";
-        ListMenuButton listMenuButton = (ListMenuButton) view;
-
         if (propertyKey == HomeActionProperties.LONG_PRESS_MENU_DELEGATE) {
+            ListMenuButton listMenuButton = resolveListMenuButton(view);
             listMenuButton.setDelegate(
                     model.get(HomeActionProperties.LONG_PRESS_MENU_DELEGATE), false);
             listMenuButton.setOnLongClickListener(
@@ -32,11 +29,18 @@ public class HomeActionButtonBinder {
                         return true;
                     });
         } else if (propertyKey == HomeActionProperties.CLICK_WITH_META_CALLBACK) {
+            ListMenuButton listMenuButton = resolveListMenuButton(view);
             ClickWithMetaStateCallback callback =
                     model.get(HomeActionProperties.CLICK_WITH_META_CALLBACK);
             listMenuButton.setClickCallback(callback);
         } else {
             ActionButtonBinder.bind(model, view, propertyKey);
         }
+    }
+
+    private static ListMenuButton resolveListMenuButton(View view) {
+        View targetView = ActionButtonBinder.resolveView(view);
+        assert targetView instanceof ListMenuButton : "View must be a ListMenuButton";
+        return (ListMenuButton) targetView;
     }
 }

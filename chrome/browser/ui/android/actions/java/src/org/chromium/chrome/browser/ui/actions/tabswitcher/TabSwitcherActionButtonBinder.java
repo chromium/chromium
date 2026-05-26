@@ -20,22 +20,27 @@ public class TabSwitcherActionButtonBinder {
      * PropertyKey}.
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        view = ActionButtonBinder.resolveView(view);
-        assert view instanceof TabSwitcherButtonView : "View must be TabSwitcherButtonView";
-        TabSwitcherButtonView tabSwitcherButtonView = (TabSwitcherButtonView) view;
-
         if (propertyKey == TabSwitcherActionProperties.TAB_COUNT
                 || propertyKey == TabSwitcherActionProperties.IS_INCOGNITO) {
+            TabSwitcherButtonView tabSwitcherButtonView = resolveTabSwitcherButtonView(view);
             tabSwitcherButtonView.setTabCount(
                     model.get(TabSwitcherActionProperties.TAB_COUNT),
                     model.get(TabSwitcherActionProperties.IS_INCOGNITO));
         } else if (propertyKey == TabSwitcherActionProperties.HAS_NOTIFICATION_DOT) {
+            TabSwitcherButtonView tabSwitcherButtonView = resolveTabSwitcherButtonView(view);
             tabSwitcherButtonView.setNotificationDotVisible(
                     model.get(TabSwitcherActionProperties.HAS_NOTIFICATION_DOT));
         } else if (propertyKey == TabSwitcherActionProperties.SHOW_TAB_SWITCHER_TRIGGER) {
+            TabSwitcherButtonView tabSwitcherButtonView = resolveTabSwitcherButtonView(view);
             tabSwitcherButtonView.endRippleAnimation();
         } else {
             ActionButtonBinder.bind(model, view, propertyKey);
         }
+    }
+
+    private static TabSwitcherButtonView resolveTabSwitcherButtonView(View view) {
+        View targetView = ActionButtonBinder.resolveView(view);
+        assert targetView instanceof TabSwitcherButtonView : "View must be TabSwitcherButtonView";
+        return (TabSwitcherButtonView) targetView;
     }
 }

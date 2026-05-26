@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.actions;
 
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnLongClickListener;
@@ -41,7 +42,11 @@ public class ActionButtonBinder {
             }
         } else if (ActionProperties.ICON_TINT == propertyKey) {
             if (targetView instanceof ImageView imageView) {
-                ImageViewCompat.setImageTintList(imageView, model.get(ActionProperties.ICON_TINT));
+                ColorStateList tint = model.get(ActionProperties.ICON_TINT);
+                if (tint == null && view instanceof TintedActionView tintedView) {
+                    tint = tintedView.getIconTint();
+                }
+                ImageViewCompat.setImageTintList(imageView, tint);
             }
         } else if (ActionProperties.CONTENT_DESCRIPTION_RESOLVER == propertyKey) {
             TextResolver resolver = model.get(ActionProperties.CONTENT_DESCRIPTION_RESOLVER);

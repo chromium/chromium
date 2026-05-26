@@ -82,6 +82,28 @@ public class ActionButtonBinderUnitTest {
         }
     }
 
+    private static class TestTintedDelegatingView extends ImageView
+            implements DelegatingActionView, TintedActionView {
+        private final View mTarget;
+        private final ColorStateList mDefaultTint;
+
+        public TestTintedDelegatingView(Context context, View target, ColorStateList defaultTint) {
+            super(context);
+            mTarget = target;
+            mDefaultTint = defaultTint;
+        }
+
+        @Override
+        public View getTargetView() {
+            return mTarget;
+        }
+
+        @Override
+        public ColorStateList getIconTint() {
+            return mDefaultTint;
+        }
+    }
+
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
@@ -114,6 +136,10 @@ public class ActionButtonBinderUnitTest {
         ColorStateList tint = ColorStateList.valueOf(Color.BLUE);
         mModel.set(ActionProperties.ICON_TINT, tint);
         assertEquals(tint, mView.getImageTintList());
+
+        // Verify setting to null clears the tint.
+        mModel.set(ActionProperties.ICON_TINT, null);
+        assertNull(mView.getImageTintList());
     }
 
     @Test
@@ -381,6 +407,27 @@ public class ActionButtonBinderUnitTest {
 
         assertNotNull(targetView.getDrawable());
         assertNull(delegatingView.getDrawable());
+    }
+
+    @Test
+    @SmallTest
+    public void testIconTint_RestoresDefaultTintFromTintedActionView() {
+        ImageView targetView = new ImageView(mActivity);
+        ColorStateList defaultTint = ColorStateList.valueOf(Color.GREEN);
+        TestTintedDelegatingView delegatingView =
+                new TestTintedDelegatingView(mActivity, targetView, defaultTint);
+
+        PropertyModel model = new PropertyModel.Builder(ActionProperties.ALL_KEYS).build();
+        PropertyModelChangeProcessor.create(model, delegatingView, ActionButtonBinder::bind);
+
+        // 1. Apply an override tint.
+        ColorStateList overrideTint = ColorStateList.valueOf(Color.BLUE);
+        model.set(ActionProperties.ICON_TINT, overrideTint);
+        assertEquals(overrideTint, targetView.getImageTintList());
+
+        // 2. Clear the override tint (set to null) -> should restore default tint.
+        model.set(ActionProperties.ICON_TINT, null);
+        assertEquals(defaultTint, targetView.getImageTintList());
     }
 
     @Test

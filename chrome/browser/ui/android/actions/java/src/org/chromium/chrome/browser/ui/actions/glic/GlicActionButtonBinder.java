@@ -27,11 +27,10 @@ public class GlicActionButtonBinder {
      * PropertyKey}.
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        view = ActionButtonBinder.resolveView(view);
-
         if (propertyKey == GlicActionProperties.GLIC_STATE) {
+            View targetView = ActionButtonBinder.resolveView(view);
             int state = model.get(GlicActionProperties.GLIC_STATE);
-            if (view instanceof ImageView imageView) {
+            if (targetView instanceof ImageView imageView) {
                 updateImageForState(imageView, state);
             }
         } else {
