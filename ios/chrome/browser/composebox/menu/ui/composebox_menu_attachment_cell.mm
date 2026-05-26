@@ -52,6 +52,7 @@ const CGFloat kPointerInteractionRadius = 20.0;
 
   self.accessibilityIdentifier =
       AccessibilityIdentifierForMenuItemType(item.type);
+  self.accessibilityTraits |= UIAccessibilityTraitButton;
 
   if (item.disabled) {
     if (item.favicon) {

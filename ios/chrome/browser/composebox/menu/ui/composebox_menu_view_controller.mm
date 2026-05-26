@@ -88,6 +88,19 @@ ComposeboxMenuItemType MenuItemTypeForTool(ComposeboxMode mode) {
   }
 }
 
+// Returns YES if the menu item type represents a tool (which can be toggled).
+BOOL IsToolType(ComposeboxMenuItemType type) {
+  switch (type) {
+    case ComposeboxMenuItemType::kAIM:
+    case ComposeboxMenuItemType::kCreateImage:
+    case ComposeboxMenuItemType::kDeepSearch:
+    case ComposeboxMenuItemType::kCanvas:
+      return YES;
+    default:
+      return NO;
+  }
+}
+
 // Maps a tool mode to its corresponding icon.
 UIImage* IconForTool(ComposeboxMode mode) {
   switch (mode) {
@@ -615,6 +628,14 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   configuration.text = item.title;
   configuration.image = item.image;
   cell.accessibilityLabel = item.title;
+  cell.isAccessibilityElement = YES;
+  cell.accessibilityTraits |= UIAccessibilityTraitButton;
+
+  if (IsToolType(item.type)) {
+    cell.accessibilityTraits |= UIAccessibilityTraitToggleButton;
+  } else {
+    cell.accessibilityTraits &= ~UIAccessibilityTraitToggleButton;
+  }
 
   if (item.disabled) {
     configuration.textProperties.color =
@@ -623,14 +644,12 @@ UIImage* IconForModel(ComposeboxModelOption option) {
         [UIColor colorNamed:kTextSecondaryColor];
     cell.userInteractionEnabled = NO;
     cell.accessibilityTraits |= UIAccessibilityTraitNotEnabled;
-    cell.isAccessibilityElement = YES;
   } else {
     configuration.textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
     configuration.imageProperties.tintColor =
         [UIColor colorNamed:kTextPrimaryColor];
     cell.userInteractionEnabled = YES;
     cell.accessibilityTraits &= ~UIAccessibilityTraitNotEnabled;
-    cell.isAccessibilityElement = YES;
   }
 
   cell.contentConfiguration = configuration;

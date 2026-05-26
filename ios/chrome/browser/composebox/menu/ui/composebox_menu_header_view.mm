@@ -16,8 +16,8 @@ const CGFloat kHeaderLabelVerticalPadding = 10.0f;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.accessibilityTraits |= UIAccessibilityTraitHeader;
     _label = [[UILabel alloc] init];
+    _label.accessibilityTraits |= UIAccessibilityTraitHeader;
     _label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     _label.adjustsFontForContentSizeCategory = YES;
     _label.textColor = [UIColor colorNamed:kTextPrimaryColor];
