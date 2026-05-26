@@ -1215,8 +1215,8 @@
   },
   {
     "name": "bookmark-tab-group-conversion",
-    "owners": [ "yuhengh@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 150
+    "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 155
   },
   {
     "name": "bookmarks-bar-ntp",
@@ -1984,7 +1984,7 @@
       "dominicaustria@google.com",
       "yuhengh@chromium.org",
       "top-chrome-desktop-ui@google.com"],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "credential-management-third-party-web-api-request-forwarding",
@@ -6666,7 +6666,7 @@
   {
     "name": "new-tab-adds-to-active-group",
     "owners": [ "dominicaustria@google.com", "top-chrome-desktop-ui@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "new-tab-page-customization-theme-sync",
@@ -8581,8 +8581,8 @@
   },
   {
     "name": "show-tab-groups-mac-system-menu",
-    "owners": ["top-chrome-desktop-ui@google.com"],
-    "expiry_milestone": 150
+    "owners": ["dominicaustria@google.com", "top-chrome-desktop-ui@google.com"],
+    "expiry_milestone": 155
   },
   {
     "name": "show-tab-list-animations",
