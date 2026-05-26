@@ -588,6 +588,11 @@ ci.thin_tester(
                 mixins = "mac_15_arm64",
                 remove_mixins = "mac_15_vm_optional",
             ),
+            # https://crbug.com/514242886: Perf tests should not run in VMs
+            "components_perftests": targets.per_test_modification(
+                mixins = "mac_15_arm64",
+                remove_mixins = "mac_15_vm_optional",
+            ),
             # TODO(crbug.com/436628295): tests are <3x slower on VM
             "content_browsertests": targets.per_test_modification(
                 mixins = "mac_15_arm64",
