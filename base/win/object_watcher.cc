@@ -121,10 +121,8 @@ bool ObjectWatcher::StartWatchingInternal(HANDLE object,
 
   // DoneWaiting can be synchronously called from RegisterWaitForSingleObject,
   // so set up all state now.
-  callback_ = BindRepeating(&ObjectWatcher::Signal, weak_factory_.GetWeakPtr(),
-                            // For all non-test usages, the delegate's lifetime
-                            // exceeds object_watcher's. This should be safe.
-                            base::UnsafeDanglingUntriaged(delegate));
+  delegate_ = delegate;
+  callback_ = BindRepeating(&ObjectWatcher::Signal, weak_factory_.GetWeakPtr());
   object_ = object;
 
   TRACE_EVENT("base", "RegisterWaitForSingleObject");
@@ -138,10 +136,11 @@ bool ObjectWatcher::StartWatchingInternal(HANDLE object,
   return true;
 }
 
-void ObjectWatcher::Signal(Delegate* delegate) {
+void ObjectWatcher::Signal() {
   // Signaling the delegate may result in our destruction or a nested call to
   // StartWatching(). As a result, we save any state we need and clear previous
   // watcher state before signaling the delegate.
+  Delegate* delegate = delegate_;
   HANDLE object = object_;
   if (run_once_) {
     StopWatching();
@@ -153,6 +152,7 @@ void ObjectWatcher::Reset() {
   callback_.Reset();
   location_ = {};
   object_ = nullptr;
+  delegate_ = nullptr;
   wait_object_ = nullptr;
   task_runner_ = nullptr;
   run_once_ = true;
