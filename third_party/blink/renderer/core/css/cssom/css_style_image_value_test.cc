@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/css/cssom/css_style_image_value.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/css_url_data.h"
+#include "third_party/blink/renderer/core/css/cssom/css_url_image_value.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -67,6 +70,20 @@ TEST(CSSStyleImageValueTest, ValidLoadedImage) {
   EXPECT_EQ(style_image_value->intrinsicHeight(is_null), 120);
   EXPECT_EQ(style_image_value->intrinsicRatio(is_null), 4);
   EXPECT_FALSE(is_null);
+}
+
+TEST(CSSURLImageValueTest, GetSourceImageForCanvasSetsStatus) {
+  auto* url_data = MakeGarbageCollected<CSSUrlData>(
+      AtomicString("https://example.com/image.png"));
+  auto* css_image_value = MakeGarbageCollected<CSSImageValue>(*url_data);
+  auto* url_image_value =
+      MakeGarbageCollected<CSSURLImageValue>(*css_image_value);
+
+  SourceImageStatus status = kNormalSourceImageStatus;
+  url_image_value->GetSourceImageForCanvas(&status, gfx::SizeF(100, 100));
+  // Since the image is not loaded, GetImage() returns null, and status should
+  // be kInvalidSourceImageStatus.
+  EXPECT_EQ(status, kInvalidSourceImageStatus);
 }
 
 }  // namespace blink

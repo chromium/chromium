@@ -2443,7 +2443,7 @@ CanvasPattern* Canvas2DRecorderContext::createPattern(
     return nullptr;
   }
 
-  SourceImageStatus status;
+  SourceImageStatus status = kInvalidSourceImageStatus;
 
   gfx::SizeF default_object_size(Width(), Height());
   scoped_refptr<Image> image_for_rendering =

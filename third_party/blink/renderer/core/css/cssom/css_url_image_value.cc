@@ -35,9 +35,11 @@ ResourceStatus CSSURLImageValue::Status() const {
 }
 
 scoped_refptr<Image> CSSURLImageValue::GetSourceImageForCanvas(
-    SourceImageStatus*,
+    SourceImageStatus* status,
     const gfx::SizeF&) {
-  return GetImage();
+  scoped_refptr<Image> image = GetImage();
+  *status = image ? kNormalSourceImageStatus : kInvalidSourceImageStatus;
+  return image;
 }
 
 scoped_refptr<Image> CSSURLImageValue::GetImage() const {
