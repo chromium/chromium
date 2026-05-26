@@ -44,6 +44,10 @@ class RequestDesktopSiteWebContentsObserverAndroid
   // The display size threshold in inches for enabling desktop user agent on
   // connected displays.
   static constexpr double kDesktopSiteDisplaySizeThresholdInches = 10.0;
+  // Default display Id for primary display.
+  // https://developer.android.com/reference/android/view/Display#DEFAULT_DISPLAY
+  static constexpr int64_t kPrimaryDisplayId = 0;
+
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 

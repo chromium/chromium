@@ -150,7 +150,7 @@ bool RequestDesktopSiteWebContentsObserverAndroid::ShouldAllowOnExternalDisplay(
   double diagonal_inches =
       std::sqrt(std::pow(width_inches, 2) + std::pow(height_inches, 2));
   bool is_on_eligible_external_display =
-      display.id() != display::kDefaultDisplayId &&
+      display.id() != kPrimaryDisplayId &&
       diagonal_inches >= kDesktopSiteDisplaySizeThresholdInches;
   if (!is_on_eligible_external_display) {
     return false;

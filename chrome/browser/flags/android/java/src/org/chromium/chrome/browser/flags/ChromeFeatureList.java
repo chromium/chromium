@@ -929,7 +929,7 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sDesktopUAOnConnectedDisplay =
             newCachedFlag(
                     DESKTOP_UA_ON_CONNECTED_DISPLAY,
-                    /* defaultValue= */ false,
+                    /* defaultValue= */ true,
                     /* defaultValueInTests= */ true);
     public static final CachedFlag sDisablePartnerHomepageAndroid =
             newCachedFlag(
