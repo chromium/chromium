@@ -6,6 +6,8 @@ package org.chromium.net;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import android.os.Build;
+
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.SmallTest;
 
@@ -44,10 +46,14 @@ public final class HostnameTest {
         // Note the strategic use of ß as our test character, which is handled differently based on
         // which version of IDNA is used - see Unicode Technical Standard #46.
         final var IDN_UNICODE = "example-idn-begin-ß-end";
-        // Cronet currently uses IDNA2003, under which "ß" is mapped to "ss".
-        // TODO(https://crbug.com/513446116): ideally, Cronet should use IDNA2008, which is the
-        // recommended version and the one used by modern browsers.
-        final var EXPECTED_IDN_ASCII = "example-idn-begin-ss-end";
+        // On Android API <24 Cronet uses IDNA2003, under which "ß" is mapped to "ss".
+        // On Android API 24+ Cronet uses IDNA2008, under which "ß" is preserved and triggers
+        // punycode conversion.
+        // See also https://crbug.com/513446116.
+        final var EXPECTED_IDN_ASCII =
+                (Build.VERSION.SDK_INT < Build.VERSION_CODES.N)
+                        ? "example-idn-begin-ss-end"
+                        : "xn--example-idn-begin--end-71b";
 
         var testFramework = mTestRule.getTestFramework();
         testFramework.applyEngineBuilderPatch(

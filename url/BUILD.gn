@@ -214,6 +214,9 @@ test("url_unittests") {
   if (use_platform_icu_alternatives) {
     # Unit tests that are not supported by the current ICU alternatives on
     # Android.
+    # TODO(https://crbug.com/513446116): revisit this - in Android >=24 we now
+    # use android.icu.text.IDNA which implements IDNA2008 and should therefore
+    # be consistent with ICU.
     if (is_android) {
       sources -= [
         "url_canon_icu_unittest.cc",
