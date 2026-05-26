@@ -220,6 +220,9 @@ found in the LICENSE file.
     <color name="spark_blue_gradient_end">#4E9FFF</color>
     <color name="spark_blue_gradient_last">#4FA0FF</color>
 
+    <!-- Colors used for the Glic solid spark icon. -->
+    <color name="glic_solid_spark_blue">@color/baseline_primary_40</color>
+
     <!-- Colors used for the tab bottom sheet. -->
     <color name="glic_dark_theme_background">#141414</color>
 </resources>

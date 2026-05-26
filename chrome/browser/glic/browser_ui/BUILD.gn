@@ -45,6 +45,9 @@ source_set("browser_ui") {
       "//components/actor/core:task_id",
       "//ui/base/unowned_user_data",
     ]
+  } else {
+    sources += [ "glic_toast.h" ]
+    deps += [ "//components/messages/android" ]
   }
 }
 
@@ -66,6 +69,8 @@ source_set("impl") {
       "glic_tab_indicator_helper.cc",
       "glic_vector_icon_manager.cc",
     ]
+  } else {
+    sources += [ "glic_toast.cc" ]
   }
 
   deps = [
@@ -100,6 +105,8 @@ source_set("impl") {
       "//content/public/browser",
       "//ui/strings:ui_strings__strings_grit",
     ]
+  } else {
+    deps += [ "//components/messages/android" ]
   }
 
   public_deps = [ "//chrome/browser/glic" ]
