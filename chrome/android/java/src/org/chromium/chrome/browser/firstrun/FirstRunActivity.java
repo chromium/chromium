@@ -31,6 +31,7 @@ import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Promise;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.Initializer;
@@ -964,6 +965,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public static void setObserverForTest(FirstRunActivityObserver observer) {
         assert sObserver == null;
         sObserver = observer;
+        ResettersForTesting.register(() -> sObserver = null);
     }
 
     public static void disableAnimationForTesting(boolean isAnimationDisabled) {
