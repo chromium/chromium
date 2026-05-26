@@ -745,12 +745,12 @@ CanvasRenderingContext2D::PaintRenderingResultsToResource(
 }
 
 const std::optional<cc::PaintRecord>&
-CanvasRenderingContext2D::GetLastRecordingForCanvas2D() {
+CanvasRenderingContext2D::GetLastRecording() {
   auto* provider = GetResourceProvider();
   if (!provider) {
     return empty_recording_;
   }
-  return provider->LastRecordingForCanvas2D();
+  return provider->LastRecording();
 }
 
 bool CanvasRenderingContext2D::CanCreateResourceProvider() {

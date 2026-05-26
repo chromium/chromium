@@ -151,8 +151,7 @@ Canvas2DResourceProviderBitmap::Canvas2DResourceProviderBitmap(
                              alpha_type,
                              color_space,
                              delegate) {
-  recorder_for_canvas_2d_ =
-      std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+  recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
 }
 
 scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderBitmap::Snapshot(
@@ -700,8 +699,8 @@ base::ByteSize Canvas2DResourceProviderSharedImage::EstimatedSizeInBytes()
 }
 
 void Canvas2DResourceProviderSharedImage::OnContextDestroyed() {
-  if (skia_canvas_for_canvas_2d_) {
-    skia_canvas_for_canvas_2d_->reset_image_provider();
+  if (skia_canvas_) {
+    skia_canvas_->reset_image_provider();
   }
   canvas_2d_image_provider_.reset();
   if (image_pool_) {
@@ -1176,8 +1175,7 @@ void CanvasNon2DResourceProviderSharedImage::OnDestroyRecyclableCanvasResource(
 
 void Canvas2DResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
-  if (recorder_for_canvas_2d_->getRecordingCanvas().IsCachingImage(
-          content_id)) {
+  if (recorder_->getRecordingCanvas().IsCachingImage(content_id)) {
     Flush();
   }
   if (cached_snapshot_ &&
@@ -1701,10 +1699,10 @@ CanvasResourceProvider::~CanvasResourceProvider() {
 std::unique_ptr<MemoryManagedPaintRecorder>
 CanvasResourceProvider::ReleaseRecorder() {
   // When releasing the recorder, we swap it with a new, valid one. This way,
-  // the `recorder_for_canvas_2d_` member is guarantied to be always valid.
+  // the `recorder_` member is guarantied to be always valid.
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
-  recorder_for_canvas_2d_->SetClient(nullptr);
-  recorder_for_canvas_2d_.swap(recorder);
+  recorder_->SetClient(nullptr);
+  recorder_.swap(recorder);
   DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
   return recorder;
 }
@@ -1712,7 +1710,7 @@ CanvasResourceProvider::ReleaseRecorder() {
 void CanvasResourceProvider::SetRecorder(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
   recorder->SetClient(this);
-  recorder_for_canvas_2d_ = std::move(recorder);
+  recorder_ = std::move(recorder);
   DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
 }
 
@@ -1722,9 +1720,9 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   if (IsPrinting() && clear_frame_for_canvas2d_) {
     return;
   }
-  if (recorder_for_canvas_2d_->ReleasableOpBytesUsed() >
+  if (recorder_->ReleasableOpBytesUsed() >
           max_recorded_op_bytes_for_canvas_2d_ ||
-      recorder_for_canvas_2d_->ReleasableImageBytesUsed() >
+      recorder_->ReleasableImageBytesUsed() >
           max_pinned_image_bytes_for_canvas_2d_) [[unlikely]] {
     Flush(FlushReason::kOther);
   }
@@ -1785,7 +1783,7 @@ void CanvasResourceProvider::RecordingCleared() {
 
 MemoryManagedPaintCanvas&
 CanvasResourceProvider::GetCanvasForCanvas2DForTesting() {
-  return recorder_for_canvas_2d_->getRecordingCanvas();
+  return recorder_->getRecordingCanvas();
 }
 
 scoped_refptr<UnacceleratedStaticBitmapImage>
@@ -1932,7 +1930,7 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
 
 std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
     FlushReason reason /*=FlushReason::kOther*/) {
-  if (!recorder_for_canvas_2d_->HasReleasableDrawOps()) {
+  if (!recorder_->HasReleasableDrawOps()) {
     return std::nullopt;
   }
   auto timer = CreateScopedRasterTimerForCanvas2D();
@@ -1945,7 +1943,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   // printing.
   clear_frame_for_canvas2d_ = false;
   cc::PaintRecord recording;
-  recording = recorder_for_canvas_2d_->ReleaseMainRecording();
+  recording = recorder_->ReleaseMainRecording();
   RasterRecordForCanvas2D(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
@@ -1953,7 +1951,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
     canvas_2d_image_provider_->ReleaseLockedImages();
   }
 
-  last_recording_for_canvas2d_ =
+  last_recording_ =
       preserve_recording ? std::optional(recording) : std::nullopt;
 
   return recording;
@@ -1963,12 +1961,12 @@ void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
     cc::PaintRecord last_recording) {
   CHECK(!IsAccelerated());
 
-  if (!skia_canvas_for_canvas_2d_) {
-    skia_canvas_for_canvas_2d_ = std::make_unique<cc::SkiaPaintCanvas>(
+  if (!skia_canvas_) {
+    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
         GetSkSurface()->getCanvas(),
         GetOrCreateSWCanvasImageProviderForCanvas2D());
   }
-  skia_canvas_for_canvas_2d_->drawPicture(std::move(last_recording));
+  skia_canvas_->drawPicture(std::move(last_recording));
 }
 
 void Canvas2DResourceProviderSharedImage::NotifyGpuContextLostTask(
@@ -2009,8 +2007,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
       is_accelerated_(is_accelerated),
       is_software_(false),
       context_provider_wrapper_(std::move(context_provider_wrapper)) {
-  recorder_for_canvas_2d_ =
-      std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+  recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (context_provider_wrapper_) {
     context_provider_wrapper_->AddObserver(this);
     raster_context_provider_ = base::WrapRefCounted(
@@ -2022,7 +2019,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
         gpu::kGpuFeatureStatusEnabled) {
       max_recorded_op_bytes_for_canvas_2d_ =
           static_cast<size_t>(kMaxRecordedOpGraphiteKB.Get()) * 1024;
-      recorder_for_canvas_2d_->DisableLineDrawingAsPaths();
+      recorder_->DisableLineDrawingAsPaths();
     }
   }
 
@@ -2111,8 +2108,7 @@ Canvas2DResourceProviderSharedImage::Canvas2DResourceProviderSharedImage(
           shared_image_interface_provider
               ? shared_image_interface_provider->GetWeakPtr()
               : nullptr) {
-  recorder_for_canvas_2d_ =
-      std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
+  recorder_ = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   if (shared_image_interface_provider_) {
     shared_image_interface_provider_->AddGpuChannelLostObserver(this);
     if (auto* sii = shared_image_interface_provider_->SharedImageInterface()) {
@@ -2519,10 +2515,10 @@ bool CanvasResourceProvider::UnacceleratedWritePixels(
   CHECK(!IsAccelerated());
 
   DCHECK(IsValid());
-  DCHECK(!recorder_for_canvas_2d_->HasRecordedDrawOps());
+  DCHECK(!recorder_->HasRecordedDrawOps());
 
-  if (!skia_canvas_for_canvas_2d_) {
-    skia_canvas_for_canvas_2d_ = std::make_unique<cc::SkiaPaintCanvas>(
+  if (!skia_canvas_) {
+    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
         GetSkSurface()->getCanvas(),
         GetOrCreateSWCanvasImageProviderForCanvas2D());
   }
@@ -2532,9 +2528,9 @@ bool CanvasResourceProvider::UnacceleratedWritePixels(
 
   if (wrote_pixels) {
     // WritePixels content is not saved in recording. Calling WritePixels
-    // therefore invalidates `last_recording_for_canvas2d_` because it's now
+    // therefore invalidates `last_recording_` because it's now
     // missing that information.
-    last_recording_for_canvas2d_ = std::nullopt;
+    last_recording_ = std::nullopt;
   }
   return wrote_pixels;
 }

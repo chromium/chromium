@@ -273,7 +273,7 @@ class CORE_EXPORT CanvasRenderingContext
   virtual int LayerCount() const { return 0; }
   virtual void DisableAccelerationForCanvas2D() { NOTREACHED(); }
 
-  virtual const std::optional<cc::PaintRecord>& GetLastRecordingForCanvas2D() {
+  virtual const std::optional<cc::PaintRecord>& GetLastRecording() {
     return empty_recording_;
   }
   virtual bool Is2DCanvasAccelerated() const { NOTREACHED(); }

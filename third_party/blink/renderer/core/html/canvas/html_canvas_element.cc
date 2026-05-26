@@ -1207,7 +1207,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     // `FlushRecording` might be a no-op if a flush already happened before.
     // Fortunately, the last flush recording was kept by the context.
     const std::optional<cc::PaintRecord>& last_recording =
-        RenderingContext()->GetLastRecordingForCanvas2D();
+        RenderingContext()->GetLastRecording();
     if (last_recording.has_value() &&
         filter_quality_ != cc::PaintFlags::FilterQuality::kNone) {
       context.Canvas()->save();
