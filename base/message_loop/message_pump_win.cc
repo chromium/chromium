@@ -56,7 +56,6 @@ DWORD GetSleepTimeoutMs(TimeTicks next_task_time,
   return saturated_cast<DWORD>(timeout_ms);
 }
 
-bool g_ui_pump_improvements_win = false;
 bool g_pump_peek_message_with_observer = false;
 
 }  // namespace
@@ -73,7 +72,6 @@ MessagePumpWin::~MessagePumpWin() = default;
 
 // static
 void MessagePumpWin::InitializeFeatures() {
-  g_ui_pump_improvements_win = FeatureList::IsEnabled(kUIPumpImprovementsWin);
   g_pump_peek_message_with_observer =
       FeatureList::IsEnabled(base::features::kPumpPeekMessageWithObserver);
 }
@@ -112,8 +110,7 @@ void MessagePumpForUI::ScheduleWork() {
   // This is the only MessagePumpForUI method which can be called outside of
   // |bound_thread_|.
 
-  if (g_ui_pump_improvements_win &&
-      !in_nested_native_loop_with_application_tasks_) {
+  if (!in_nested_native_loop_with_application_tasks_) {
     // The pump is running using `event_` as its chrome-side synchronization
     // variable. In this case, no deduplication is done, since the event has its
     // own state.
@@ -260,8 +257,7 @@ void MessagePumpForUI::DoRunLoop() {
     in_nested_native_loop_with_application_tasks_ = false;
     bool more_work_is_plausible = false;
 
-    if (!g_ui_pump_improvements_win ||
-        wakeup_state_ != WakeupState::kApplicationTask) {
+    if (wakeup_state_ != WakeupState::kApplicationTask) {
       more_work_is_plausible |= ProcessNextWindowsMessage();
       // We can end up in native loops which allow application tasks outside of
       // DoWork() when Windows calls back a Win32 message window owned by some
@@ -328,27 +324,16 @@ void MessagePumpForUI::WaitForWork(Delegate::NextWorkInfo next_work_info) {
     base::debug::Alias(&delay);
     base::debug::Alias(&wait_flags);
     DWORD result;
-    if (g_ui_pump_improvements_win) {
-      HANDLE event_handle = event_.handle();
-      result = MsgWaitForMultipleObjectsEx(1, &event_handle, delay, QS_ALLINPUT,
-                                           wait_flags);
-      DPCHECK(WAIT_FAILED != result);
-      if (result == WAIT_OBJECT_0) {
-        wakeup_state_ = WakeupState::kApplicationTask;
-      } else if (result == WAIT_OBJECT_0 + 1) {
-        wakeup_state_ = WakeupState::kNative;
-      } else {
-        wakeup_state_ = WakeupState::kInactive;
-      }
+    HANDLE event_handle = event_.handle();
+    result = MsgWaitForMultipleObjectsEx(1, &event_handle, delay, QS_ALLINPUT,
+                                         wait_flags);
+    DPCHECK(WAIT_FAILED != result);
+    if (result == WAIT_OBJECT_0) {
+      wakeup_state_ = WakeupState::kApplicationTask;
+    } else if (result == WAIT_OBJECT_0 + 1) {
+      wakeup_state_ = WakeupState::kNative;
     } else {
-      result = MsgWaitForMultipleObjectsEx(0, nullptr, delay, QS_ALLINPUT,
-                                           wait_flags);
-      DPCHECK(WAIT_FAILED != result);
-      if (result == WAIT_OBJECT_0) {
-        wakeup_state_ = WakeupState::kNative;
-      } else {
-        wakeup_state_ = WakeupState::kInactive;
-      }
+      wakeup_state_ = WakeupState::kInactive;
     }
 
     if (wakeup_state_ == WakeupState::kApplicationTask) {
@@ -478,10 +463,8 @@ void MessagePumpForUI::HandleTimerMessage() {
 void MessagePumpForUI::ScheduleNativeTimer(
     Delegate::NextWorkInfo next_work_info) {
   DCHECK(!next_work_info.is_immediate());
-  // We should only ScheduleNativeTimer() under the new pump implementation
-  // while nested with application tasks.
-  DCHECK(!g_ui_pump_improvements_win ||
-         in_nested_native_loop_with_application_tasks_);
+  // We should only ScheduleNativeTimer() while nested with application tasks.
+  DCHECK(in_nested_native_loop_with_application_tasks_);
 
   // Do not redundantly set the same native timer again if it was already set.
   // This can happen when a nested native loop goes idle with pending delayed

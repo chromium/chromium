@@ -58,14 +58,12 @@ class BASE_EXPORT MessagePumpWin : public MessagePump {
   // True iff:
   //   * MessagePumpForUI: there's a kMsgDoWork message pending in the Windows
   //     Message queue. i.e. when:
-  //      a. The pump is about to wakeup from idle and kUIPumpImprovementsWin
-  //         is not enabled.
-  //      b. The pump is about to enter a nested native loop and a
+  //      a. The pump is about to enter a nested native loop and a
   //         `ScopedAllowApplicationTasksInNativeNestedLoop` was instantiated to
   //         allow application tasks to execute in that nested loop
   //         (`ScopedAllowApplicationTasksInNativeNestedLoop` invokes
   //         ScheduleWork()).
-  //      c. While in a native (nested) loop : HandleWorkMessage() =>
+  //      b. While in a native (nested) loop : HandleWorkMessage() =>
   //         ProcessPumpReplacementMessage() invokes ScheduleWork() before
   //         processing a native message to guarantee this pump will get another
   //         time slice if it goes into native Windows code and enters a native
@@ -186,8 +184,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
   // redundant timers.
   std::optional<TimeTicks> installed_native_timer_;
 
-  // This is used to wake up the pump when the UIPumpImprovementsWin experiment
-  // is enabled.
+  // This is used to wake up the pump.
   WaitableEvent event_{WaitableEvent::ResetPolicy::AUTOMATIC};
 
   // This is set when HandleNestedNativeLoopWithApplicationTasks(true) was
@@ -211,8 +208,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePumpWin {
     kInactive,
   };
   // Used to keep track of what the pump knows about the state of its work
-  // sources at wakeup for the experiment 'UIPumpImprovementsWin'. Its value is
-  // `kInactive` at construction, but set to `kRunning` on entry to DoRunLoop().
+  // sources at wakeup. Its value is `kInactive` at construction, but set to
+  // `kRunning` on entry to DoRunLoop().
   WakeupState wakeup_state_ = WakeupState::kInactive;
 
   raw_ptr<NativeEventObserver> native_event_observer_ = nullptr;
