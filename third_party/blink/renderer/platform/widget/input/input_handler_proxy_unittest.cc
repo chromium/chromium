@@ -144,7 +144,6 @@ class TestInputHandlerProxy : public InputHandlerProxy {
                       reasons & cc::MainThreadScrollingReason::kRepaintReasons);
   }
 
-  MOCK_METHOD0(SetNeedsAnimateInput, void());
 
   EventDisposition HitTestTouchEventForTest(
       const WebTouchEvent& touch_event,
@@ -969,24 +968,73 @@ void InputHandlerProxyTest::FlingAndSnap() {
   EXPECT_EQ(expected_disposition_,
             HandleInputEventWithLatencyInfo(input_handler_.get(), gesture_));
 
-  // The event should be dropped if InputHandler decides to snap.
-  expected_disposition_ = InputHandlerProxy::DROP_EVENT;
+  // 1st GSU (momentum) - should not snap yet.
+  expected_disposition_ = InputHandlerProxy::DID_HANDLE;
   VERIFY_AND_RESET_MOCKS();
 
   gesture_.SetType(WebInputEvent::Type::kGestureScrollUpdate);
-  gesture_.data.scroll_update.delta_y =
-      -40;  // -Y means scroll down - i.e. in the +Y direction.
+  gesture_.data.scroll_update.delta_y = -40;
   gesture_.data.scroll_update.inertial_phase =
       WebGestureEvent::InertialPhaseState::kMomentum;
+
+  cc::InputHandlerScrollResult scroll_result_did_scroll;
+  scroll_result_did_scroll.did_scroll = true;
+  EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+      .WillOnce(Return(scroll_result_did_scroll));
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(0);
+  if (!::features::IsCCSlimmingEnabled()) {
+    EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
+        .Times(1)
+        .WillOnce(testing::Return(cc::ElementId()));
+  }
+  EXPECT_CALL(mock_input_handler_,
+              GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
+      .Times(0);
+
+  EXPECT_EQ(expected_disposition_,
+            HandleInputEventWithLatencyInfo(input_handler_.get(), gesture_));
+  VERIFY_AND_RESET_MOCKS();
+
+  // 2nd GSU (momentum, decaying) - should snap.
+  expected_disposition_ = InputHandlerProxy::DROP_EVENT;
+
+  gesture_.data.scroll_update.delta_y = -32;  // Decaying (32 < 40)
+
   EXPECT_CALL(mock_input_handler_,
               GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
       .WillOnce(DoAll(testing::SetArgPointee<2>(gfx::PointF(0, 0)),
                       testing::SetArgPointee<3>(gfx::PointF(0, 100)),
                       testing::Return(true)));
   EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(1);
-  EXPECT_SET_NEEDS_ANIMATE_INPUT(1);
-  EXPECT_EQ(expected_disposition_,
-            HandleInputEventWithLatencyInfo(input_handler_.get(), gesture_));
+
+  int expected_animate_calls =
+      (GetHandlerType() == HandlerType::kSynchronous) ? 1 : 2;
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+      .Times(expected_animate_calls);
+
+  if (!::features::IsCCSlimmingEnabled()) {
+    EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
+        .Times(1)
+        .WillOnce(testing::Return(cc::ElementId()));
+  }
+
+  input_handler_->HandleInputEventWithLatencyInfo(
+      std::make_unique<WebCoalescedInputEvent>(gesture_.Clone(),
+                                               ui::LatencyInfo()),
+      nullptr,
+      base::BindLambdaForTesting(
+          [this](
+              InputHandlerProxy::EventDisposition disposition,
+              std::unique_ptr<blink::WebCoalescedInputEvent> event,
+              std::unique_ptr<InputHandlerProxy::DidOverscrollParams> callback,
+              const WebInputEventAttribution& attribution,
+              std::unique_ptr<cc::EventMetrics> metrics) {
+            EXPECT_EQ(expected_disposition_, disposition);
+          }));
+
+  if (GetHandlerType() == HandlerType::kNormal) {
+    input_handler_->DispatchQueuedInputEventsHelper();
+  }
   VERIFY_AND_RESET_MOCKS();
 }
 
@@ -1034,7 +1082,7 @@ TEST_P(InputHandlerProxyTest, FlingHitsConstraintCompletesEarly) {
 
   EXPECT_CALL(mock_input_handler_,
               GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
-      .WillOnce(testing::Return(false));
+      .Times(0);
 
   cc::InputHandlerScrollResult scroll_result;
   scroll_result.did_scroll = false;
@@ -1355,19 +1403,23 @@ TEST_P(InputHandlerProxyEventQueueTest, AckTouchActionNonBlockingForFling) {
       Mock::VerifyAndClearExpectations(&mock_input_handler_);
     }
 
-    // Start a fling - ScrollUpdate with momentum
+    // Start a fling - 1st ScrollUpdate with momentum
     {
       cc::InputHandlerScrollResult scroll_result_did_scroll;
       scroll_result_did_scroll.did_scroll = true;
       EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
           .WillOnce(Return(scroll_result_did_scroll));
       EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(1);
-      EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
-          .Times(::features::IsCCSlimmingEnabled() ? 1 : 2)
-          .WillRepeatedly(testing::Return(cc::ElementId()));
+      if (!::features::IsCCSlimmingEnabled()) {
+        EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
+            .Times(1)
+            .WillOnce(testing::Return(cc::ElementId()));
+      }
+      // GetSnapFlingInfoAndSetAnimatingSnapTarget should NOT be called on 1st
+      // GSU.
       EXPECT_CALL(mock_input_handler_,
                   GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
-          .WillOnce(Return(false));
+          .Times(0);
 
       auto gsu_fling = CreateGestureScrollPinch(
           WebInputEvent::Type::kGestureScrollUpdate,
@@ -1378,9 +1430,44 @@ TEST_P(InputHandlerProxyEventQueueTest, AckTouchActionNonBlockingForFling) {
           WebGestureEvent::InertialPhaseState::kMomentum;
       InjectInputEvent(std::move(gsu_fling));
       // Advance time and provide it to DeliverInputForBeginFrame
+      tick_clock.Advance(base::Milliseconds(8));
+      DeliverInputForBeginFrame(tick_clock.NowTicks());
+      Mock::VerifyAndClearExpectations(&mock_input_handler_);
+    }
+
+    // 2nd ScrollUpdate with momentum (decaying)
+    {
+      float decaying_delta = 8;  // 8 < 10
+      cc::InputHandlerScrollResult scroll_result_did_scroll;
+      scroll_result_did_scroll.did_scroll = true;
+      EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _))
+          .WillOnce(Return(scroll_result_did_scroll));
+      EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(1);
+      if (!::features::IsCCSlimmingEnabled()) {
+        EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
+            .Times(1)
+            .WillOnce(testing::Return(cc::ElementId()));
+      }
+      // GetSnapFlingInfoAndSetAnimatingSnapTarget should be called on 2nd
+      // decaying GSU.
+      EXPECT_CALL(mock_input_handler_,
+                  GetSnapFlingInfoAndSetAnimatingSnapTarget(_, _, _, _))
+          .WillOnce(Return(false));
+
+      auto gsu_fling =
+          CreateGestureScrollPinch(WebInputEvent::Type::kGestureScrollUpdate,
+                                   WebGestureDevice::kTouchscreen,
+                                   NowTimestampForEvents(), decaying_delta,
+                                   /*x=*/0, /*y=*/0);
+      static_cast<WebGestureEvent*>(gsu_fling.get())
+          ->data.scroll_update.inertial_phase =
+          WebGestureEvent::InertialPhaseState::kMomentum;
+      InjectInputEvent(std::move(gsu_fling));
+      // Advance time and provide it to DeliverInputForBeginFrame
       // to ensure the fling state is set before the next event.
       tick_clock.Advance(base::Milliseconds(8));
       DeliverInputForBeginFrame(tick_clock.NowTicks());
+      Mock::VerifyAndClearExpectations(&mock_input_handler_);
     }
   }
 
@@ -1415,6 +1502,9 @@ TEST_P(InputHandlerProxyEventQueueTest, AckTouchActionNonBlockingForFling) {
     EXPECT_CALL(mock_client_, SetAllowedTouchAction(TouchAction::kAuto))
         .WillOnce(Return());
     EXPECT_CALL(mock_input_handler_, SetIsHandlingTouchSequence(true));
+    EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
+        .Times(1)
+        .WillOnce(testing::Return(cc::ElementId()));
 
     InjectInputEvent(std::move(touch_start));
   }

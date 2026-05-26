@@ -5,6 +5,8 @@
 #ifndef CC_INPUT_SNAP_FLING_CURVE_H_
 #define CC_INPUT_SNAP_FLING_CURVE_H_
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -24,9 +26,14 @@ class CC_EXPORT SnapFlingCurve {
 
   virtual ~SnapFlingCurve();
 
-  // Estimate the total distance that will be scrolled given the first GSU's
-  // delta
-  static gfx::Vector2dF EstimateDisplacement(const gfx::Vector2dF& first_delta);
+  // Estimate the total distance that will be scrolled given the current GSU's
+  // delta and the previous GSU's delta. Returns std::nullopt if the estimate
+  // cannot be determined (e.g. when decay prediction is enabled and we don't
+  // have enough data yet).
+  static std::optional<gfx::Vector2dF> EstimateDisplacement(
+      const gfx::Vector2dF& current_delta,
+      const std::optional<gfx::Vector2dF>& previous_delta,
+      bool allow_slow_decay);
 
   // Returns the delta that should be scrolled at |time|.
   virtual gfx::Vector2dF GetScrollDelta(base::TimeTicks time);

@@ -234,6 +234,10 @@ CC_BASE_EXPORT BASE_DECLARE_FEATURE(kOverscrollEffectOnNonRootScrollers);
 // curve as a regular scroller.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSnapFlingNearExtremes);
 
+// When enabled, SnapFlingController uses decay-based prediction for snap
+// flings.
+CC_BASE_EXPORT BASE_DECLARE_FEATURE(kSnapFlingDecayPrediction);
+
 // When enabled, the V4 scroll jank metric will be emitted.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kScrollJankV4Metric);
 CC_BASE_EXPORT BASE_DECLARE_FEATURE_PARAM(

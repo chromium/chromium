@@ -6,6 +6,7 @@
 #define CC_INPUT_SNAP_FLING_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -108,6 +109,8 @@ class CC_EXPORT SnapFlingController {
   raw_ptr<SnapFlingClient> client_;
   State state_ = State::kIdle;
   std::unique_ptr<SnapFlingCurve> curve_;
+  std::optional<gfx::Vector2dF> last_inertial_delta_;
+  int consecutive_decay_frames_ = 0;
 };
 
 }  // namespace cc

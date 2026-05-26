@@ -6,9 +6,18 @@
 
 #include <utility>
 
+#include "cc/base/features.h"
 #include "cc/input/snap_fling_curve.h"
 
 namespace cc {
+namespace {
+
+// If the inertial scroll doesn't decay below the threshold for this many
+// updates we predict the scroll using the current decay. This ensures that even
+// if our minimum decay is not low enough we still apply a prediction.
+constexpr int kMaxFramesToWaitForDecay = 3;
+
+}  // namespace
 
 SnapFlingController::SnapFlingController(SnapFlingClient* client)
     : client_(client), state_(State::kIdle) {}
@@ -36,6 +45,8 @@ void SnapFlingController::ClearSnapFling() {
     client_->ScrollEndForSnapFling(false /* did_finish */);
 
   curve_.reset();
+  last_inertial_delta_.reset();
+  consecutive_decay_frames_ = 0;
   state_ = State::kIdle;
 }
 
@@ -52,15 +63,31 @@ bool SnapFlingController::HandleGestureScrollUpdate(
     const SnapFlingController::GestureScrollUpdateInfo& info) {
   DCHECK(state_ == State::kIdle || state_ == State::kIgnored);
   if (!info.is_in_inertial_phase || info.is_overscroll) {
+    last_inertial_delta_.reset();
+    consecutive_decay_frames_ = 0;
     return false;
   }
 
-  gfx::Vector2dF ending_displacement =
-      SnapFlingCurve::EstimateDisplacement(info.delta);
+  if (last_inertial_delta_.has_value() &&
+      info.delta.LengthSquared() < last_inertial_delta_->LengthSquared()) {
+    consecutive_decay_frames_++;
+  } else {
+    consecutive_decay_frames_ = 0;
+  }
+  bool allow_slow_decay = consecutive_decay_frames_ >= kMaxFramesToWaitForDecay;
+
+  std::optional<gfx::Vector2dF> ending_displacement =
+      SnapFlingCurve::EstimateDisplacement(info.delta, last_inertial_delta_,
+                                           allow_slow_decay);
+  last_inertial_delta_ = info.delta;
+
+  if (!ending_displacement.has_value()) {
+    return false;
+  }
 
   gfx::PointF target_offset, start_offset;
   if (!client_->GetSnapFlingInfoAndSetAnimatingSnapTarget(
-          info.delta, ending_displacement, &start_offset, &target_offset)) {
+          info.delta, *ending_displacement, &start_offset, &target_offset)) {
     state_ = State::kIgnored;
     return false;
   }
