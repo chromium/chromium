@@ -682,6 +682,7 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
           responseHTMLString:(NSString*)responseHTMLString {
   NSURLRequest* request =
       [[NSURLRequest alloc] initWithURL:net::NSURLWithGURL(URL)];
+  [self ensureWebViewCreated];
   [self.webView loadSimulatedRequest:request
                   responseHTMLString:responseHTMLString];
 }
@@ -696,7 +697,7 @@ BOOL ExtractInteractionState(NSData* data, NSData** interactionState) {
                                 MIMEType:MIMEType
                    expectedContentLength:responseData.length
                         textEncodingName:nil];
-
+  [self ensureWebViewCreated];
   [self.webView loadSimulatedRequest:request
                             response:response
                         responseData:responseData];
