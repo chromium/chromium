@@ -1,0 +1,35 @@
+From 86951e62ddbf3667683d10387f3667683d10387f Mon Sep 17 00:00:00 2001
+From: Andrew Paseltiner <apaseltiner@chromium.org>
+Date: Mon, 20 Apr 2026 08:45:04 -0400
+Subject: [PATCH] Verify dictionary ownership before aliasing attribute text content
+
+A potential double-free vulnerability exists in libxslt when handling
+whitespace-only text nodes within xsl:attribute elements that have
+xml:space="preserve" set. The text content bypasses dictionary interning
+but is later fast-copied via pointer aliasing, causing the same heap
+buffer to be freed twice during cleanup.
+
+This patch adds a check to ensure that the content is actually owned by
+the dictionary before performing the fast-path pointer aliasing.
+
+Bug: 503627446
+---
+ third_party/libxslt/src/libxslt/attributes.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/libxslt/src/libxslt/attributes.c b/third_party/libxslt/src/libxslt/attributes.c
+index 86f3768b..3667683d 100644
+--- a/libxslt/attributes.c
++++ b/libxslt/attributes.c
+@@ -1038,7 +1038,8 @@ xsltAttribute(xsltTransformContextPtr ctxt, xmlNodePtr node,
+ 	*/
+ 	if (ctxt->internalized &&
+ 	    (ctxt->insert->doc != NULL) &&
+-	    (ctxt->insert->doc->dict == ctxt->dict))
++	    (ctxt->insert->doc->dict == ctxt->dict) &&
++	    xmlDictOwns(ctxt->dict, inst->children->content))
+ 	{
+ 	    copyTxt = xmlNewText(NULL);
+ 	    if (copyTxt == NULL) /* TODO: report error */
+-- 
+2.50.0.rc0.642.g800a2b2222-goog
