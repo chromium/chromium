@@ -905,6 +905,7 @@ void HTMLDocumentParser::ConstructTreeFromToken(AtomicHTMLToken& atomic_token) {
   // Check whether we've exited the header.
   if (!task_runner_state_->HaveExitedHeader()) {
     if (GetDocument()->body()) {
+      TRACE_EVENT_INSTANT("blink", "HTMLDocumentParser::SetExitedHeader");
       task_runner_state_->SetExitedHeader();
     }
   }
