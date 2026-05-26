@@ -27,12 +27,10 @@ namespace ui {
 // to compute all of the possible IAccessible2 relations and reverse
 // relations given the internal relation id attributes.
 class AXPlatformRelationWin : public SequenceAffineComObjectRoot,
-                              public IAccessibleRelation,
-                              public IFastRundown {
+                              public IAccessibleRelation {
  public:
   BEGIN_COM_MAP(AXPlatformRelationWin)
   COM_INTERFACE_ENTRY(IAccessibleRelation)
-  COM_INTERFACE_ENTRY(IFastRundown)
   END_COM_MAP()
 
   AXPlatformRelationWin();

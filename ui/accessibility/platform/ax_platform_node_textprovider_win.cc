@@ -47,12 +47,8 @@ void AXPlatformNodeTextProviderWin::CreateIUnknown(AXPlatformNodeWin* owner,
                                                    IUnknown** unknown) {
   Microsoft::WRL::ComPtr<AXPlatformNodeTextProviderWin> text_provider(
       Create(owner));
-  if (!text_provider) {
-    *unknown = nullptr;
-    return;
-  }
-  ITextEditProvider* provider_ptr = text_provider.Detach();
-  *unknown = provider_ptr;
+  if (text_provider)
+    *unknown = text_provider.Detach();
 }
 
 //
