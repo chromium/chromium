@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_OBSERVATION_DELAY_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_OBSERVATION_DELAY_CONTROLLER_H_
 
+#import <memory>
 #import <ostream>
 #import <string_view>
 #import <vector>
@@ -26,6 +27,7 @@ class NavigationContext;
 namespace actor {
 
 class AggregatedJournal;
+class PageStabilityMonitor;
 
 // Observes a page during tool-use and determines when the page has settled
 // after an action and is ready for an observation.
@@ -94,6 +96,9 @@ class ObservationDelayController : public web::WebStateObserver {
       State new_state,
       base::TimeDelta delay = base::TimeDelta());
 
+  // Uses the PageStabilityMonitor to wait for the page to be stable.
+  void WaitForPageStability();
+
   // CHECKs that the transition from `old_state` to `new_state` is valid.
   void CheckStateTransition(State old_state, State new_state);
   // These are needed to support CheckStateTransition.
@@ -109,6 +114,8 @@ class ObservationDelayController : public web::WebStateObserver {
   State state_ = State::kInitial;
   std::vector<State> state_history_ = {state_};
   Result result_ = Result::kOk;
+
+  std::unique_ptr<PageStabilityMonitor> page_stability_monitor_;
 
   StateChangeTestingCallback state_change_testing_callback_;
 
