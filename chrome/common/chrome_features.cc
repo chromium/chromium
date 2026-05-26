@@ -252,7 +252,7 @@ BASE_FEATURE(kGlicHandoffButtonHideWhenOmniboxPopupOpened,
 
 // If enabled, the magic cursor is shown during actuation for mouse movements
 // and clicks.
-BASE_FEATURE(kGlicActorUiMagicCursor, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicActorUiMagicCursor, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Default: 1.5 pixels per millisecond
 const base::FeatureParam<double> kGlicActorUiMagicCursorSpeed{
