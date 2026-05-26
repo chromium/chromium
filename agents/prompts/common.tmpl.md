@@ -35,6 +35,19 @@ the user about the reason to skip.
     is a non-negotiable prerequisite for all coding tasks.
       * **a. Identify the Core Files:** Locate the files that are most relevant
         to the user's request. All analysis starts from these files.
+          * **Prompt Files:** If a core file is a prompt file (e.g., `common.md`)
+            and a `.tmpl.md` counterpart exists, you MUST edit BOTH the
+            `.tmpl.md` file and make an identical change to the `.md` file
+            directly (to mimic `process_prompts.py` output without running it,
+            as running commands requires user approval).
+<!--
+NOTE: We manually update both .tmpl.md and .md files instead of running
+process_prompts.py directly because running the script requires user
+approval in the current environment. This instruction should be
+updated if process_prompts.py is allowed to run automatically (e.g.
+if it is moved outside the sandbox or allowed without explicit
+approval).
+-->
       * **b. Conduct a Full Audit:**
         i. Read the full source of **EVERY** core file.
         ii. For each core file, summarize the control flow and ownership
