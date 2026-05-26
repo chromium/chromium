@@ -95,9 +95,6 @@ sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
 
   sdjwt::Payload payload;
   payload.email = email;
-  // TODO(crbug.com/380367784): check if `render_frame_host_` isn't an
-  // opaque origin, or any other validation that might be
-  // necessary.
   payload.aud = render_frame_host_->GetLastCommittedOrigin().Serialize();
   payload.exp = expiration;
   payload.iat = now;
@@ -383,8 +380,6 @@ void EmailVerificationRequest::OnAccountStatusFetched(
   network_manager_->SendTokenRequest(
       well_known->data->issuance_endpoint,
       "request_token=" + request_token.value(),
-      // TODO(crbug.com/380367784): figure out how to measure the feature
-      // here.
       base::BindOnce(&EmailVerificationRequest::OnTokenRequestComplete,
                      weak_ptr_factory_.GetWeakPtr(), nonce, issuer_origin,
                      std::move(private_key), std::move(callback)));
