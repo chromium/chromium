@@ -1108,7 +1108,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.CpuTimeSecondsPerProcessType2" enum="ShortProcessType"
-    expires_after="2026-11-15">
+    expires_after="2026-11-22">
   <owner>eseckler@chromium.org</owner>
   <owner>skyostil@chromium.org</owner>
   <owner>woa-performance@google.com</owner>

@@ -255,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.ChromeExtensionUpdateIPAddressSpace"
-    enum="ServiceWorkerIPAddressSpace" expires_after="2026-09-22">
+    enum="ServiceWorkerIPAddressSpace" expires_after="2026-11-22">
   <owner>hchao@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
   <owner>chrome-secure-web-and-net@google.com</owner>
@@ -2073,7 +2073,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.BypassRedirectChecks"
-    enum="Boolean" expires_after="2026-09-20">
+    enum="Boolean" expires_after="2026-11-22">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>
@@ -2173,7 +2173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ServiceWorker.SyntheticResponse.ReloadReason"
-    enum="SyntheticResponseReloadReason" expires_after="2026-09-20">
+    enum="SyntheticResponseReloadReason" expires_after="2026-11-22">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

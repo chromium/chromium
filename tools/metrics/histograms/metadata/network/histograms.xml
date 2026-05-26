@@ -4961,7 +4961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Network.SyntheticResponse.IsHeaderConsistent" enum="Boolean"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-worker@google.com</owner>
   <summary>

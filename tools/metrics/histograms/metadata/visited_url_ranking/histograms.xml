@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GroupSuggestionsService.SuggestionsCount" units="counts"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GroupSuggestionsService.SuggestionsCountAfterThrottling"
-    units="counts" expires_after="2026-09-20">
+    units="counts" expires_after="2026-11-22">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -74,7 +74,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GroupSuggestionsService.SuggestionUiEvent"
-    enum="SuggestionUiEvent" expires_after="2026-09-20">
+    enum="SuggestionUiEvent" expires_after="2026-11-22">
   <owner>mfiaz@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <owner>salg@google.com</owner>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GroupSuggestionsService.TopSuggestionReason"
-    enum="GroupSuggestionReason" expires_after="2026-09-20">
+    enum="GroupSuggestionReason" expires_after="2026-11-22">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
@@ -173,7 +173,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GroupSuggestionsService.TopSuggestionTabCount" units="counts"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>ssid@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>

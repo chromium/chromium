@@ -523,7 +523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.Timeout.ActiveProviderCount"
-    units="count" expires_after="2026-09-17">
+    units="count" expires_after="2026-11-22">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -713,14 +713,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ContextMenu.ImagePreviewDisplayed" enum="BooleanSuccess"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>olivierrobin@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>Whether the loading of the image preview succeeded.</summary>
 </histogram>
 
 <histogram name="IOS.ContextMenu.PreviewImageMemoryFootprint" units="KB"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>olivierrobin@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -1185,7 +1185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SyncedStore" enum="Boolean"
-    expires_after="2026-09-17">
+    expires_after="2026-11-22">
   <owner>rgod@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1609,7 +1609,7 @@ chromium-metrics-reviews@google.com.
 <!-- TODO(crbug.com/401551080) Mark this "expires-never" after validating it works as intended. -->
 
 <histogram name="IOS.DefaultStatusAPI.IsDefaultBrowser" enum="Boolean"
-    expires_after="2026-11-15">
+    expires_after="2026-11-22">
   <owner>gujen@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
@@ -2978,7 +2978,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Session.CancellationReason"
-    enum="IOSGeminiSessionCancellationReason" expires_after="2026-09-13">
+    enum="IOSGeminiSessionCancellationReason" expires_after="2026-11-22">
   <owner>fbeauchamp@google.com</owner>
   <owner>bling-alchemy@google.com</owner>
   <summary>Records the reason a gemini session was cancelled.</summary>
@@ -4472,7 +4472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notification.Dismissed" enum="NotificationType"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -4482,7 +4482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notification.Interaction" enum="NotificationType"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -4492,7 +4492,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notification.Received" enum="NotificationType"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -7977,7 +7977,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Web.ErrorPagePresentationFailed"
-    enum="IOSErrorPagePresentationFailed" expires_after="2026-09-20">
+    enum="IOSErrorPagePresentationFailed" expires_after="2026-11-22">
   <owner>michaeldo@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>

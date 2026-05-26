@@ -1993,7 +1993,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Embeddings.Embedder.QueryEmbeddingsGenerationDuration"
-    units="ms" expires_after="2026-09-20">
+    units="ms" expires_after="2026-11-22">
   <owner>sophiechang@chromium.org</owner>
   <owner>zekunjiang@google.com</owner>
   <summary>
@@ -2814,7 +2814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.VisitedLinks.AdditionCausedBy404" enum="Boolean"
-    expires_after="2026-09-23">
+    expires_after="2026-11-22">
   <owner>svend@chromium.org</owner>
   <owner>kyraseevers@chromium.org</owner>
   <summary>

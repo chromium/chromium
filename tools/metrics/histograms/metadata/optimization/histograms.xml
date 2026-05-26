@@ -2286,7 +2286,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.AutomaticOnLoad.OverallLatency"
-    units="ms" expires_after="2026-09-16">
+    units="ms" expires_after="2026-11-22">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2455,7 +2455,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.PageContentExtraction.TriggerSource"
     enum="OptimizationGuidePageContentExtractionTriggerSource"
-    expires_after="2026-09-16">
+    expires_after="2026-11-22">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

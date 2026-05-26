@@ -1107,7 +1107,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 
 <histogram
     name="Extensions.DeclarativeNetRequest.AddRulesetCalledTwiceInSuccession"
-    enum="BooleanSuccess" expires_after="2026-09-20">
+    enum="BooleanSuccess" expires_after="2026-11-22">
   <owner>kelvinjiang@chromium.org</owner>
   <owner>src/extensions/OWNERS</owner>
   <summary>
@@ -2073,7 +2073,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ExtensionInstalled.NewFromWebstore" units="count"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>jlulejian@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

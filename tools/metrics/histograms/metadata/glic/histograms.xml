@@ -317,7 +317,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Api.StatusCounts.Inactive" enum="GlicHostApiRequestType"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>birnie@google.com</owner>
@@ -1493,7 +1493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.ZoomChangeCount" units="count"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>cuianthony@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -2900,7 +2900,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.YoutubeSummarizeVideoZSS.Events"
-    enum="GlicYoutubeSummarizeVideoZSSResult" expires_after="2026-09-20">
+    enum="GlicYoutubeSummarizeVideoZSSResult" expires_after="2026-11-22">
   <owner>basiaz@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
@@ -2912,7 +2912,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.ZoomAction" enum="GlicZoomAction"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>cuianthony@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>

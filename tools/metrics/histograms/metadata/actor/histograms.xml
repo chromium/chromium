@@ -960,7 +960,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Task.StoppedReason" enum="StoppedReasonEnum"
-    expires_after="2026-09-17">
+    expires_after="2026-11-22">
   <owner>dtapuska@google.com</owner>
   <owner>bokan@google.com</owner>
   <owner>chrome-synapse-team@google.com</owner>
@@ -1082,7 +1082,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Actor.Tools.TimeOfUseValidation" enum="TimeOfUseResult"
-    expires_after="2026-09-17">
+    expires_after="2026-11-22">
   <owner>mfoltz@google.com</owner>
   <owner>rodneyding@google.com</owner>
   <summary>
