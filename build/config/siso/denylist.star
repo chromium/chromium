@@ -42,8 +42,6 @@ def __step_config(ctx, step_config):
         "components/vector_icons/aggregate_vector_icons.py",
         "components/zucchini/fuzzers/generate_fuzzer_data.py",
         "mojo/public/tools/bindings/minify_with_terser.py",
-        "remoting/tools/build/remoting_copy_locales.py",
-        "remoting/tools/build/remoting_localize.py",
         "testing/libfuzzer/fuzzers/generate_v8_inspector_fuzzer_corpus.py",
         "testing/libfuzzer/research/domatolpm/fuzzer_generator.py",
         "testing/libfuzzer/research/domatolpm/generator.py",

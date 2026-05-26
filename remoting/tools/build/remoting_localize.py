@@ -37,6 +37,12 @@ import os
 import sys
 from string import Template
 
+# Put third_party in the path so we can import jinja2.
+sys.path.insert(1, os.path.join(os.path.dirname(__file__), '..', '..', '..',
+                                'third_party'))
+import jinja2
+import jinja2.ext
+
 
 # Win32 primary languages IDs.
 _LANGUAGE_PRIMARY = {
@@ -686,21 +692,10 @@ def Localize(source, locales, options):
   template = None
 
   if source:
-    # Load jinja2 library.
-    if options.jinja2:
-      jinja2_path = os.path.normpath(options.jinja2)
-    else:
-      jinja2_path = os.path.normpath(
-          os.path.join(os.path.abspath(__file__),
-                       '../../../../third_party/jinja2'))
-    # Insert after main module and before system modules.
-    sys.path.insert(1, os.path.dirname(jinja2_path))
-    from jinja2 import Environment, FileSystemLoader
-
     # Create jinja2 environment.
     (template_path, template_name) = os.path.split(source)
-    env = Environment(loader=FileSystemLoader(template_path),
-                      extensions=['jinja2.ext.do', 'jinja2.ext.i18n'])
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(template_path),
+                             extensions=['jinja2.ext.do', 'jinja2.ext.i18n'])
 
     # Register custom filters.
     env.filters['GetCodepage'] = GetCodepage

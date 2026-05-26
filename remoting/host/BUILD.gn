@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/linux/pkg_config.gni")
+import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/util/process_version.gni")
 import("//remoting/build/config/remoting_build.gni")
@@ -1100,7 +1101,7 @@ if (enable_me2me_host) {
     }
   }
 
-  action_foreach("remoting_native_messaging_manifests") {
+  action_foreach_with_pydeps("remoting_native_messaging_manifests") {
     if (is_mac) {
       me2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$native_messaging_host_bundle_name/Contents/MacOS/native_messaging_host"
       it2me_host_path = "/Library/PrivilegedHelperTools/$me2me_host_bundle_name/Contents/MacOS/$remote_assistance_host_bundle_name/Contents/MacOS/remote_assistance_host"
@@ -1180,13 +1181,18 @@ if (enable_me2me_host) {
   }
 
   if (is_mac) {
-    action_foreach("remoting_infoplist_strings") {
+    action_foreach_with_pydeps("remoting_infoplist_strings") {
       sources = [
         "installer/mac/uninstaller/remoting_uninstaller-InfoPlist.strings.jinja2",
         "it2me/remote_assistance_host-InfoPlist.strings.jinja2",
         "remoting_me2me_host-InfoPlist.strings.jinja2",
         "setup/native_messaging_host-InfoPlist.strings.jinja2",
       ]
+
+      inputs = [ branding_path ]
+      foreach(locale, remoting_locales_with_underscores) {
+        inputs += [ "${resources_locale_dir}/${locale}/messages.json" ]
+      }
 
       script = "//remoting/tools/build/remoting_localize.py"
       args = [

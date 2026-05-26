@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/python.gni")
+
 # Calls the remoting_localize script with a jinja2 template.
 #
 # Arguments
@@ -33,7 +35,7 @@
 #   deps (optional)
 #   visibility (optional)
 template("remoting_localize") {
-  action_foreach(target_name) {
+  action_foreach_with_pydeps(target_name) {
     if (defined(invoker.visibility)) {
       visibility = invoker.visibility
     }
@@ -41,6 +43,14 @@ template("remoting_localize") {
     script = "//remoting/tools/build/remoting_localize.py"
 
     sources = invoker.sources
+
+    inputs = []
+    if (defined(invoker.locale_dir)) {
+      foreach(locale, invoker.locale_list) {
+        locale_underscore = string_replace(locale, "-", "_")
+        inputs += [ "${invoker.locale_dir}/${locale_underscore}/messages.json" ]
+      }
+    }
 
     if (defined(invoker.output)) {
       outputs = [ invoker.output ]

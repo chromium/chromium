@@ -2605,6 +2605,8 @@ _GENERIC_PYDEPS_FILES = [
     'components/policy/tools/template_writers/template_formatter.pydeps',
     'content/public/android/generate_child_service.pydeps',
     'fuchsia_web/av_testing/av_sync_tests.pydeps',
+    'remoting/tools/build/remoting_copy_locales.pydeps',
+    'remoting/tools/build/remoting_localize.pydeps',
     'testing/scripts/run_isolated_script_test.pydeps',
     'testing/merge_scripts/standard_isolated_script_merge.pydeps',
     'testing/merge_scripts/standard_gtest_merge.pydeps',
