@@ -546,6 +546,29 @@ TEST_F(RenderWidgetHostInputEventRouterTest, EnsureDroppedTouchEventsAreAcked) {
   EXPECT_EQ(view_root_->last_id_for_touch_ack(), 2lu);
 }
 
+// Tests that FindViewFromFrameSinkId correctly verifies the descendant
+// relationship when an expected ancestor is provided. It should return
+// nullptr if the found view is not a descendant of the expected ancestor.
+TEST_F(RenderWidgetHostInputEventRouterTest,
+       FindViewFromFrameSinkIdWithAncestorVerification) {
+  ChildViewState child1 = MakeChildView(view_root_.get());
+  ChildViewState child2 = MakeChildView(view_root_.get());
+
+  // child2 is NOT a descendant of child1.
+  EXPECT_EQ(nullptr, rwhier()->FindViewFromFrameSinkId(
+                         child2.view->GetFrameSinkId(), child1.view.get()));
+
+  // child2 IS a descendant of view_root_.
+  EXPECT_EQ(child2.view.get(),
+            rwhier()->FindViewFromFrameSinkId(child2.view->GetFrameSinkId(),
+                                              view_root_.get()));
+
+  // child1 IS a descendant of view_root_.
+  EXPECT_EQ(child1.view.get(),
+            rwhier()->FindViewFromFrameSinkId(child1.view->GetFrameSinkId(),
+                                              view_root_.get()));
+}
+
 TEST_F(RenderWidgetHostInputEventRouterTest, DoNotCoalesceTouchEvents) {
   // We require the presence of a child view, otherwise targeting is short
   // circuited.

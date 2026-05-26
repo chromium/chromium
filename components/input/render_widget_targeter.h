@@ -75,7 +75,8 @@ class RenderWidgetTargeter {
     virtual void SetEventsBeingFlushed(bool events_being_flushed) = 0;
 
     virtual RenderWidgetHostViewInput* FindViewFromFrameSinkId(
-        const viz::FrameSinkId& frame_sink_id) const = 0;
+        const viz::FrameSinkId& frame_sink_id,
+        RenderWidgetHostViewInput* ancestor_to_verify = nullptr) const = 0;
 
     // Returns true if a further asynchronous query should be sent to the
     // candidate RenderWidgetHostView.
@@ -214,9 +215,8 @@ class RenderWidgetTargeter {
       base::WeakPtr<RenderWidgetHostViewInput> last_request_target,
       const gfx::PointF& last_target_location);
 
-  void OnInputTargetDisconnect(
-      base::WeakPtr<RenderWidgetHostViewInput> target,
-      const gfx::PointF& location);
+  void OnInputTargetDisconnect(base::WeakPtr<RenderWidgetHostViewInput> target,
+                               const gfx::PointF& location);
 
   HitTestResultsMatch GetHitTestResultsMatchBucket(
       RenderWidgetHostViewInput* target,

@@ -315,9 +315,9 @@ void RenderWidgetTargeter::FlushEventQueue() {
       delegate_->SetEventsBeingFlushed(true);
       events_being_flushed = true;
     }
-      ResolveTargetingRequest(std::move(request));
+    ResolveTargetingRequest(std::move(request));
   }
-    delegate_->SetEventsBeingFlushed(false);
+  delegate_->SetEventsBeingFlushed(false);
 }
 
 void RenderWidgetTargeter::FoundFrameSinkId(
@@ -348,16 +348,22 @@ void RenderWidgetTargeter::FoundFrameSinkId(
       ->input_target_client()
       .set_disconnect_handler(base::OnceClosure());
 
-  auto* view = delegate_->FindViewFromFrameSinkId(frame_sink_id);
-  if (!view) {
-    view = target.get();
-  }
+  // Ensure the returned view is a valid descendant of the frame we queried
+  // (|target.get()|) to prevent a compromised renderer from redirecting input.
+  RenderWidgetHostViewInput* resolved_view =
+      delegate_->FindViewFromFrameSinkId(frame_sink_id, target.get());
+
+  // Compute final target and location.
+  RenderWidgetHostViewInput* final_view =
+      resolved_view ? resolved_view : target.get();
+  gfx::PointF final_location =
+      resolved_view ? transformed_location : target_location;
 
   // If a client returned an embedded target, then it might be necessary to
   // continue asking the clients until a client claims an event for itself.
-  if (view == target.get() ||
-      unresponsive_views_.find(view) != unresponsive_views_.end() ||
-      !delegate_->ShouldContinueHitTesting(view)) {
+  if (final_view == target.get() ||
+      unresponsive_views_.find(final_view) != unresponsive_views_.end() ||
+      !delegate_->ShouldContinueHitTesting(final_view)) {
     // Reduced scope is required since FoundTarget can trigger another query
     // which would end up linked to the current query.
     {
@@ -368,13 +374,13 @@ void RenderWidgetTargeter::FoundFrameSinkId(
 
     if (request.IsWebInputEventRequest() &&
         IsMouseMiddleClick(*request.GetEvent())) {
-      middle_click_result_ = {view, /*should_query_view=*/false,
-                              transformed_location};
+      middle_click_result_ = {final_view, /*should_query_view=*/false,
+                              final_location};
     }
 
-    FoundTarget(view, transformed_location, &request);
+    FoundTarget(final_view, final_location, &request);
   } else {
-    QueryClient(view, transformed_location, target.get(), target_location,
+    QueryClient(final_view, final_location, target.get(), target_location,
                 std::move(request));
   }
 }
