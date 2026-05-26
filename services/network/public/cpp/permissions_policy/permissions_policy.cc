@@ -377,7 +377,7 @@ const PermissionsPolicy::Allowlist PermissionsPolicy::GetAllowlistForFeature(
 std::optional<const PermissionsPolicy::Allowlist>
 PermissionsPolicy::GetAllowlistForFeatureIfExists(
     network::mojom::PermissionsPolicyFeature feature) const {
-  // Return an empty allowlist when disabled through inheritance.
+  // Return nullopt when disabled through inheritance.
   if (!IsFeatureEnabledByInheritedPolicy(feature)) {
     return std::nullopt;
   }
