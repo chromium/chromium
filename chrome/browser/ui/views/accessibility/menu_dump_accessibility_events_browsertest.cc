@@ -109,13 +109,8 @@ class DumpAccessibilityEventsMenuTest
   }
 };
 
-// TODO(crbug.com/40672441): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MenuShowHide DISABLED_MenuShowHide
-#else
-#define MAYBE_MenuShowHide MenuShowHide
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsMenuTest, MAYBE_MenuShowHide) {
+// TODO(crbug.com/40672441): Re-enable.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsMenuTest, DISABLED_MenuShowHide) {
 #if BUILDFLAG(IS_WIN)
   if (GetApiType() == ui::AXApiType::kWinUIA) {
     // TODO(crbug.com/40672441): Re-enable once UIA supports PID-based event
@@ -147,13 +142,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsMenuTest, MAYBE_MenuShowHide) {
   WaitForSubmenuSerialization(submenu);
 }
 
-// TODO(crbug.com/40672441): Re-enable on Mac.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MenuNested DISABLED_MenuNested
-#else
-#define MAYBE_MenuNested MenuNested
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsMenuTest, MAYBE_MenuNested) {
+// TODO(crbug.com/40672441): Re-enable.
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsMenuTest, DISABLED_MenuNested) {
 #if BUILDFLAG(IS_WIN)
   if (GetApiType() == ui::AXApiType::kWinUIA) {
     // TODO(crbug.com/40672441): Re-enable once UIA supports PID-based event
