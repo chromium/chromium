@@ -1273,17 +1273,11 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
 
   _portraitOrientationConstraints = @[
     [_locationBarContainer.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:_leadingStackView.trailingAnchor
-                                    constant:
-                                        kLocationBarStackViewMarginPortrait],
-    [_trailingStackView.leadingAnchor
-        constraintGreaterThanOrEqualToAnchor:_locationBarContainer
-                                                 .trailingAnchor
-                                    constant:
-                                        kLocationBarStackViewMarginPortrait],
-    [_locationBarContainer.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-    widthConstraint,
+        constraintEqualToAnchor:_leadingStackView.trailingAnchor
+                       constant:kLocationBarStackViewMarginPortrait],
+    [_locationBarContainer.trailingAnchor
+        constraintEqualToAnchor:_trailingStackView.leadingAnchor
+                       constant:-kLocationBarStackViewMarginPortrait],
   ];
 
   CGFloat regularMargin = kLocationBarStackViewMarginRegularRegular;
@@ -1297,6 +1291,7 @@ constexpr CGFloat kOuterSeparatorVerticalOffset = 4;
                                     constant:regularMargin],
     [_locationBarContainer.centerXAnchor
         constraintEqualToAnchor:self.view.centerXAnchor],
+
     widthConstraint,
   ];
 
