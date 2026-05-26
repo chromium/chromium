@@ -126,6 +126,10 @@ static_library("shared") {
 
   deps = [ "//third_party/wayland:wayland_client_lib" ]
 
+  if (!use_system_libwayland) {
+    deps += [ "//third_party/wayland:wayland_server_protocol" ]
+  }
+
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
