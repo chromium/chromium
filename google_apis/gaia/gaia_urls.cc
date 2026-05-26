@@ -115,6 +115,7 @@ const char kMtlsOAuth2TokenUrlSuffix[] = "token";
 
 // API calls from oauthaccountmanager.googleapis.com
 const char kOAuth2IssueTokenUrlSuffix[] = "v1/issuetoken";
+const char kOAuth2UpgradeTokenUrlSuffix[] = "v1/upgradetoken";
 
 // API calls from accountcapabilities-pa.googleapis.com
 const char kAccountCapabilitiesBatchGetUrlSuffix[] =
@@ -342,6 +343,10 @@ const GURL& GaiaUrls::mtls_oauth2_issue_token_url() const {
   return mtls_oauth2_issue_token_url_;
 }
 
+const GURL& GaiaUrls::oauth2_upgrade_token_url() const {
+  return oauth2_upgrade_token_url_;
+}
+
 const GURL& GaiaUrls::oauth2_token_info_url() const {
   return oauth2_token_info_url_;
 }
@@ -509,6 +514,9 @@ void GaiaUrls::InitializeDefault() {
   ResolveURLIfInvalid(&oauth2_issue_token_url_,
                       oauth_account_manager_origin_url_,
                       kOAuth2IssueTokenUrlSuffix);
+  ResolveURLIfInvalid(&oauth2_upgrade_token_url_,
+                      oauth_account_manager_origin_url_,
+                      kOAuth2UpgradeTokenUrlSuffix);
 
   // URLs from |google_apis_mtls_origin_url_|.
   ResolveURLIfInvalid(&mtls_oauth2_token_url_, oauth2_mtls_origin_url_,
@@ -582,6 +590,7 @@ void GaiaUrls::InitializeFromConfig() {
   config->GetURLIfExists(URL_KEY_AND_PTR(mtls_oauth2_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_issue_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(mtls_oauth2_issue_token_url));
+  config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_upgrade_token_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_token_info_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(oauth2_revoke_url));
   config->GetURLIfExists(URL_KEY_AND_PTR(reauth_api_url));

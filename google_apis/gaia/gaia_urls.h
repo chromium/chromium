@@ -63,6 +63,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   const GURL& mtls_oauth2_token_url() const;
   const GURL& oauth2_issue_token_url() const;
   const GURL& mtls_oauth2_issue_token_url() const;
+  const GURL& oauth2_upgrade_token_url() const;
   const GURL& oauth2_token_info_url() const;
   const GURL& oauth2_revoke_url() const;
   const GURL& reauth_api_url() const;
@@ -137,6 +138,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) GaiaUrls {
   GURL mtls_oauth2_token_url_;
   GURL oauth2_issue_token_url_;
   GURL mtls_oauth2_issue_token_url_;
+  GURL oauth2_upgrade_token_url_;
   GURL oauth2_token_info_url_;
   GURL oauth2_revoke_url_;
 
