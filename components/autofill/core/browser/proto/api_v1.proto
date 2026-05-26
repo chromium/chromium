@@ -96,9 +96,6 @@ message AutofillQueryResponse {
           SOURCE_PASSWORDS_DEFAULT = 2;
           // The prediction came from an override list.
           SOURCE_OVERRIDE = 3;
-          // The autofill prediction came from the experiment which combines all
-          // approved experiments.
-          SOURCE_ALL_APPROVED_EXPERIMENTS = 4;
           // The autofill prediction came from the experiment which considers
           // fields ranks.
           SOURCE_FIELD_RANKS = 5;
@@ -115,7 +112,7 @@ message AutofillQueryResponse {
           SOURCE_AUTOFILL_AI_CROWDSOURCING = 9;
 
           // Experiments with signatures.
-          reserved 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20;
+          reserved 4, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20;
         }
 
         // The predicted field type.

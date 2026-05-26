@@ -101,7 +101,6 @@ FieldPrediction::Source ToSafeFieldPredictionSource(
     case FieldPrediction::SOURCE_UNSPECIFIED:
     case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
     case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
-    case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
     case FieldPrediction::SOURCE_FIELD_RANKS:
     case FieldPrediction::SOURCE_OVERRIDE:
     case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
@@ -720,7 +719,6 @@ std::optional<FieldSuggestion> GetFieldSuggestion(
           case FieldPrediction::SOURCE_UNSPECIFIED:
           case FieldPrediction::SOURCE_AUTOFILL_DEFAULT:
           case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
-          case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
           case FieldPrediction::SOURCE_FIELD_RANKS:
           case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
             return std::ranges::all_of(suggestion->predictions(),
@@ -923,7 +921,6 @@ void ClearSmallAddressFormPredictions(
         break;  // Continue below to check if this is an address prediction.
       case FieldPrediction::SOURCE_UNSPECIFIED:
       case FieldPrediction::SOURCE_PASSWORDS_DEFAULT:
-      case FieldPrediction::SOURCE_ALL_APPROVED_EXPERIMENTS:
       case FieldPrediction::SOURCE_OVERRIDE:
       case FieldPrediction::SOURCE_MANUAL_OVERRIDE:
       case FieldPrediction::SOURCE_AUTOFILL_COMBINED_TYPES:
