@@ -57,6 +57,7 @@
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
@@ -3695,6 +3696,155 @@ TEST_F(PaymentsDataManagerTest, RecordLocalCardAdded) {
       "Autofill.PaymentsDataManager.LocalCardAdded", true, 1);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Tests that unlinked eWallet creation options are successfully loaded from the
+// WebDatabase and cached in the PaymentsDataManager when Refresh() is called.
+TEST_P(PaymentsDataManagerServerTest,
+       GetEwalletCreationOptions_EwalletCreationOptionsCacheUpdated) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::payments::facilitated::kEnableEwalletNewAccountLinking);
+
+  // Create an eWallet payment creation option.
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+
+  sync_pb::EwalletCreationOption* ewallet_option =
+      creation_option.mutable_ewallet_creation_option();
+  ewallet_option->set_issuer_display_name("ShopeePay");
+  ewallet_option->add_supported_payment_link_uris("shopeepay://.*");
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option}));
+
+  EXPECT_THAT(payments_data_manager().GetEwalletCreationOptions(),
+              testing::IsEmpty());
+
+  // We need to call `Refresh()` to ensure that the eWallet creation options
+  // are loaded again from the WebDatabase.
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_THAT(payments_data_manager().GetEwalletCreationOptions(),
+              testing::UnorderedElementsAre(Ewallet(
+                  /*instrument_id=*/0, /*nickname=*/u"",
+                  /*display_icon_url=*/GURL(), /*ewallet_name=*/u"ShopeePay",
+                  /*account_display_name=*/u"",
+                  /*supported_payment_link_uris=*/{u"shopeepay://.*"},
+                  /*is_fido_enrolled=*/false)));
+}
+
+// Tests that no unlinked eWallet creation options are cached in the
+// PaymentsDataManager if the eWallet sync/caching feature is disabled.
+TEST_P(PaymentsDataManagerServerTest,
+       GetEwalletCreationOptions_FlagDisabled_EwalletCreationOptionsNotCached) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      ::payments::facilitated::kEnableEwalletNewAccountLinking);
+
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+  creation_option.mutable_ewallet_creation_option()->set_issuer_display_name(
+      "ShopeePay");
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option}));
+
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_THAT(payments_data_manager().GetEwalletCreationOptions(),
+              testing::IsEmpty());
+}
+
+// Tests that calling ClearAllServerDataForTesting() clears all cached unlinked
+// eWallet creation options.
+TEST_P(PaymentsDataManagerServerTest,
+       ClearAllServerData_ClearsEwalletCreationOptions) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::payments::facilitated::kEnableEwalletNewAccountLinking);
+
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+  creation_option.mutable_ewallet_creation_option()->set_issuer_display_name(
+      "ShopeePay");
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option}));
+
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  ASSERT_THAT(payments_data_manager().GetEwalletCreationOptions(),
+              testing::Not(testing::IsEmpty()));
+
+  payments_data_manager().ClearAllServerDataForTesting();
+
+  EXPECT_THAT(payments_data_manager().GetEwalletCreationOptions(),
+              testing::IsEmpty());
+}
+
+// This test ensures that if the server accidentally returns duplicate unlinked
+// eWallet issuers it is handled gracefully in Chrome.
+TEST_P(PaymentsDataManagerServerTest,
+       GetEwalletCreationOptions_DuplicateIssuers) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::payments::facilitated::kEnableEwalletNewAccountLinking);
+
+  // Create an eWallet payment creation option.
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+
+  sync_pb::EwalletCreationOption* ewallet_option =
+      creation_option.mutable_ewallet_creation_option();
+  ewallet_option->set_issuer_display_name("ShopeePay");
+  ewallet_option->add_supported_payment_link_uris("shopeepay://.*");
+
+  sync_pb::PaymentInstrumentCreationOption creation_option_2 = creation_option;
+  creation_option_2.set_id("5678");
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option, creation_option_2}));
+
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  EXPECT_THAT(payments_data_manager().GetEwalletCreationOptions(),
+              testing::UnorderedElementsAre(Ewallet(
+                  /*instrument_id=*/0, /*nickname=*/u"",
+                  /*display_icon_url=*/GURL(), /*ewallet_name=*/u"ShopeePay",
+                  /*account_display_name=*/u"",
+                  /*supported_payment_link_uris=*/{u"shopeepay://.*"},
+                  /*is_fido_enrolled=*/false)));
+}
+
+// Tests that eWallet creation options are not returned if the
+// overall payment methods preference is disabled.
+TEST_P(PaymentsDataManagerServerTest,
+       GetEwalletCreationOptions_PaymentMethodsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      ::payments::facilitated::kEnableEwalletNewAccountLinking);
+
+  sync_pb::PaymentInstrumentCreationOption creation_option;
+  creation_option.set_id("1234");
+  creation_option.mutable_ewallet_creation_option()->set_issuer_display_name(
+      "ShopeePay");
+
+  ASSERT_TRUE(GetServerDataTable()->SetPaymentInstrumentCreationOptions(
+      {creation_option}));
+
+  payments_data_manager().Refresh();
+  WaitForOnPaymentsDataChanged();
+
+  ASSERT_THAT(payments_data_manager().GetEwalletCreationOptions(),
+              testing::Not(testing::IsEmpty()));
+
+  // Disable overall payment methods pref.
+  prefs::SetAutofillPaymentMethodsEnabled(prefs_.get(), false);
+
+  EXPECT_THAT(payments_data_manager().GetEwalletCreationOptions(),
+              testing::IsEmpty());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 TEST_P(

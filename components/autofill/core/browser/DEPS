@@ -5,6 +5,7 @@ include_rules = [
   "+components/browser_ui/device_lock/android",
   "+components/consent_auditor",
   "+components/device_reauth/device_authenticator.h",
+  "+components/facilitated_payments/core/features",
   "+components/feature_engagement",
   "+components/google/core/common/google_util.h",
   "+components/grit/components_scaled_resources.h",
