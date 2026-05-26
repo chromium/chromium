@@ -292,6 +292,12 @@ import {WebviewEventManager} from './webview_event_manager.js';
       this.verifiedAccessChallenge_ = null;
 
       /**
+       * Url of the IdP that issued the device attestation challenge.
+       * @private {?string}
+       */
+      this.verifiedAccessChallengeUrl_ = null;
+
+      /**
        * Response for a device attestation challenge.
        * @private {?string}
        */
@@ -501,6 +507,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
 
       this.deviceAttestationStage_ = SamlHandler.DeviceAttestationStage.NONE;
       this.verifiedAccessChallenge_ = null;
+      this.verifiedAccessChallengeUrl_ = null;
       this.verifiedAccessChallengeResponse_ = null;
 
       this.apiInitialized_ = false;
@@ -717,13 +724,15 @@ import {WebviewEventManager} from './webview_event_manager.js';
         // Ask backend to compute response for device attestation challenge.
         this.dispatchEvent(new CustomEvent('challengeMachineKeyRequired', {
           detail: {
-            url: details.url,
+            sourceUrl: this.verifiedAccessChallengeUrl_,
+            destinationUrl: details.url,
             challenge: this.verifiedAccessChallenge_,
             callback: this.continueDelayedRedirect_.bind(this, details.url),
           },
         }));
 
         this.verifiedAccessChallenge_ = null;
+        this.verifiedAccessChallengeUrl_ = null;
 
         // Cancel redirect by changing destination to javascript:void(0).
         // That will produce 'loadabort' event that should be ignored.
@@ -847,6 +856,7 @@ import {WebviewEventManager} from './webview_event_manager.js';
           this.deviceAttestationStage_ =
               SamlHandler.DeviceAttestationStage.CHALLENGE_RECEIVED;
           this.verifiedAccessChallenge_ = header.value;
+          this.verifiedAccessChallengeUrl_ = details.url;
         }
       }
 

@@ -1386,7 +1386,8 @@ export class Authenticator extends EventTarget {
    * @private
    */
   onChallengeMachineKeyRequired_(e) {
-    sendWithPromise('samlChallengeMachineKey', e.detail.url, e.detail.challenge)
+    sendWithPromise('samlChallengeMachineKey', e.detail.sourceUrl,
+                    e.detail.destinationUrl, e.detail.challenge)
         .then(e.detail.callback);
   }
 

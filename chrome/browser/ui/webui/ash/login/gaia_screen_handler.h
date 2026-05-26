@@ -277,7 +277,8 @@ class GaiaScreenHandler final
   void HandleUsingSAMLAPI(bool is_third_party_idp);
   void HandleRecordSAMLProvider(const std::string& x509certificate);
   void HandleSamlChallengeMachineKey(const std::string& callback_id,
-                                     const std::string& url,
+                                     const std::string& source_url,
+                                     const std::string& destination_url,
                                      const std::string& challenge);
   void HandleSamlChallengeMachineKeyResult(base::Value callback_id,
                                            base::DictValue result);

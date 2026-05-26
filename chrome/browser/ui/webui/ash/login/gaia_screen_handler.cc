@@ -1100,14 +1100,15 @@ void GaiaScreenHandler::HandleRecordSAMLProvider(
 
 void GaiaScreenHandler::HandleSamlChallengeMachineKey(
     const std::string& callback_id,
-    const std::string& url,
+    const std::string& source_url,
+    const std::string& destination_url,
     const std::string& challenge) {
   CreateSamlChallengeKeyHandler();
   saml_challenge_key_handler_->Run(
       Profile::FromWebUI(web_ui()),
       base::BindOnce(&GaiaScreenHandler::HandleSamlChallengeMachineKeyResult,
                      weak_factory_.GetWeakPtr(), base::Value(callback_id)),
-      GURL(url), challenge);
+      GURL(source_url), GURL(destination_url), challenge);
 }
 
 void GaiaScreenHandler::HandleSamlChallengeMachineKeyResult(
