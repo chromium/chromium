@@ -138,20 +138,6 @@ bool IsPairedDeviceBluetooth(IMMDeviceEnumerator* enumerator,
     return false;
   }
 
-  // Fast-path: Skip the Computer Container
-  // ({00000000-0000-0000-FFFF-FFFFFFFFFFFF}). All internal motherboard devices
-  // (Intel SST, Realtek, etc.) share this ID. Since it is impossible for the
-  // Computer Container to be a Bluetooth peripheral, we can safely bypass the
-  // opposite flow scan to avoid unnecessary COM topology traversal.
-  const GUID kComputerContainerId = {
-      0x00000000,
-      0x0000,
-      0x0000,
-      {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
-  if (target_container_id == kComputerContainerId) {
-    return false;
-  }
-
   // Retrieve the number of active devices on the opposite flow.
   UINT count = 0;
   opposite_collection->GetCount(&count);
@@ -200,27 +186,44 @@ std::string GetDeviceSuffixWithFallback(
     IMMDeviceEnumerator* enumerator,
     const std::string& device_instance_id,
     EDataFlow data_flow,
-    bool* opposite_collection_fetched,
-    Microsoft::WRL::ComPtr<IMMDeviceCollection>* opposite_collection) {
+    bool& opposite_collection_fetched,
+    Microsoft::WRL::ComPtr<IMMDeviceCollection>& opposite_collection) {
   std::string suffix = GetDeviceSuffixWin(device_instance_id);
 
-  if (suffix.empty()) {
-    // Defer enumerating the opposite flow until it is actually needed.
-    // This prevents expensive COM calls on machines where all devices
-    // resolve their suffixes natively.
-    if (!*opposite_collection_fetched) {
-      EDataFlow opposite_flow = (data_flow == eCapture) ? eRender : eCapture;
-      enumerator->EnumAudioEndpoints(opposite_flow, DEVICE_STATE_ACTIVE,
-                                     &(*opposite_collection));
-      *opposite_collection_fetched = true;
-    }
+  // OPTIMIZATION 1: Only apply the fallback for input devices (eCapture).
+  // Intel SST intercepts microphones for hardware voice processing, but
+  // output devices generally retain their native BTHENUM identity.
+  // This prevents slow input driver enumerations from hanging output
+  // device authorization.
+  if (suffix.empty() && data_flow == eCapture) {
+    GUID container_id;
 
-    if (*opposite_collection) {
-      GUID container_id;
-      if (GetDeviceContainerId(audio_device, &container_id) &&
-          IsPairedDeviceBluetooth(enumerator, opposite_collection->Get(),
-                                  container_id)) {
-        suffix = " (Bluetooth)";
+    if (GetDeviceContainerId(audio_device, &container_id)) {
+      // OPTIMIZATION 2: Fast-path skip the Computer Container
+      // ({00000000-0000-0000-FFFF-FFFFFFFFFFFF}). All internal motherboard
+      // devices (Intel SST, Realtek, etc.) share this ID. Since it is
+      // impossible for the Computer Container to be a Bluetooth peripheral, we
+      // can safely bypass the opposite flow scan to avoid unnecessary COM
+      // topology traversal.
+      const GUID kComputerContainerId = {
+          0x00000000,
+          0x0000,
+          0x0000,
+          {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF}};
+
+      if (container_id != kComputerContainerId) {
+        // Safe to lazily fetch the opposite collection (which is eRender)
+        if (!opposite_collection_fetched) {
+          enumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE,
+                                         &opposite_collection);
+          opposite_collection_fetched = true;
+        }
+
+        if (opposite_collection &&
+            IsPairedDeviceBluetooth(enumerator, opposite_collection.Get(),
+                                    container_id)) {
+          suffix = " (Bluetooth)";
+        }
       }
     }
   }
@@ -352,7 +355,7 @@ static bool GetDeviceNamesWinImpl(
     } else {
       device.device_name += GetDeviceSuffixWithFallback(
           audio_device.Get(), enumerator.Get(), device_instance_id, data_flow,
-          &opposite_collection_fetched, &opposite_collection);
+          opposite_collection_fetched, opposite_collection);
     }
 
     // Add combination of user-friendly and unique name to the output list.
