@@ -1327,6 +1327,77 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
+                       Disposition_SwitchToTab_ChromePages) {
+  // 1. Open 3 windows.
+  // Window 1: chrome://flags (inactive), about:blank (active)
+  const GURL flags_url("chrome://flags");
+  NavigateParams params1(browser_window_, flags_url, ui::PAGE_TRANSITION_TYPED);
+  params1.disposition = WindowOpenDisposition::CURRENT_TAB;
+  Navigate(&params1);
+  content::TestNavigationObserver observer1(web_contents_);
+  observer1.Wait();
+
+  NavigateParams params2(browser_window_, GURL("about:blank"),
+                         ui::PAGE_TRANSITION_TYPED);
+  params2.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params2);
+  EXPECT_EQ(2, tab_list_->GetTabCount());
+  EXPECT_EQ(1, tab_list_->GetActiveIndex());
+
+  // Window 2: title2.html (inactive), about:blank (active)
+  BrowserWindowInterface* window2 = CreateNormalBrowserWindow();
+  TabListInterface* tab_list2 = TabListInterface::From(window2);
+  const GURL title2_url = embedded_test_server()->GetURL("/title2.html");
+  NavigateParams params3(window2, title2_url, ui::PAGE_TRANSITION_TYPED);
+  params3.disposition = WindowOpenDisposition::CURRENT_TAB;
+  Navigate(&params3);
+  content::TestNavigationObserver observer3(
+      tab_list2->GetActiveTab()->GetContents());
+  observer3.Wait();
+
+  NavigateParams params4(window2, GURL("about:blank"),
+                         ui::PAGE_TRANSITION_TYPED);
+  params4.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&params4);
+  EXPECT_EQ(2, tab_list2->GetTabCount());
+  EXPECT_EQ(1, tab_list2->GetActiveIndex());
+
+  // Window 3: about:blank (active)
+  BrowserWindowInterface* window3 = CreateNormalBrowserWindow();
+  TabListInterface* tab_list3 = TabListInterface::From(window3);
+  NavigateParams params5(window3, GURL("about:blank"),
+                         ui::PAGE_TRANSITION_TYPED);
+  params5.disposition = WindowOpenDisposition::CURRENT_TAB;
+  Navigate(&params5);
+  EXPECT_EQ(1, tab_list3->GetTabCount());
+  EXPECT_EQ(0, tab_list3->GetActiveIndex());
+
+  // 2. Call SWITCH_TO_TAB requesting to go to title2.html
+  NavigateParams switch_params1(window3, title2_url,
+                                ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  switch_params1.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  Navigate(&switch_params1);
+
+  // 3. Assert that the window containing title2.html is the active tab
+  EXPECT_EQ(window2, switch_params1.browser);
+  EXPECT_EQ(0, tab_list2->GetActiveIndex());
+  EXPECT_EQ(title2_url,
+            tab_list2->GetActiveTab()->GetContents()->GetLastCommittedURL());
+
+  // 4. Call SWITCH_TO_TAB requesting to go to the chrome://flags page
+  NavigateParams switch_params2(window2, flags_url,
+                                ui::PAGE_TRANSITION_AUTO_BOOKMARK);
+  switch_params2.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+  Navigate(&switch_params2);
+
+  // 5. Assert that the window containing chrome://flags is the newly active tab
+  EXPECT_EQ(browser_window_, switch_params2.browser);
+  EXPECT_EQ(0, tab_list_->GetActiveIndex());
+  EXPECT_EQ(flags_url,
+            tab_list_->GetActiveTab()->GetContents()->GetLastCommittedURL());
+}
+
+IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Navigate_WithExplicitTabstripIndex) {
   const GURL url1 = StartAtURL("/title1.html");
   // Create 2 extra tabs to establish a list: [Tab0, Tab1, Tab2].
