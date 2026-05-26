@@ -75,53 +75,8 @@ class SaasUsageReportUploaderDesktopTest : public testing::Test {
   void CreateProfile(bool is_managed,
                      bool is_affiliated,
                      bool create_reporting_client) {
-    TestingProfile::Builder builder;
-
-    if (is_managed) {
-      auto store = std::make_unique<policy::MockUserCloudPolicyStore>(
-          policy::dm_protocol::GetChromeUserPolicyType());
-      auto policy_data = std::make_unique<enterprise_management::PolicyData>();
-      policy_data->set_request_token("user_dm_token");
-      store->set_policy_data_for_testing(std::move(policy_data));
-
-      auto manager = std::make_unique<policy::UserCloudPolicyManager>(
-          std::move(store),
-          /*extension_install_store=*/nullptr, base::FilePath(),
-          std::make_unique<
-              testing::NiceMock<policy::MockCloudExternalDataManager>>(),
-          base::SingleThreadTaskRunner::GetCurrentDefault(),
-          base::BindRepeating([]() -> network::NetworkConnectionTracker* {
-            return network::TestNetworkConnectionTracker::GetInstance();
-          }));
-      builder.SetUserCloudPolicyManager(std::move(manager));
-    }
-
-    builder.SetProfileName("test_profile");
-    auto profile = builder.Build();
-    profile_ = profile.get();
-
-    if (is_affiliated) {
-      profile_->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
-          {"affiliation_id"});
-      TestingBrowserProcess::GetGlobal()
-          ->browser_policy_connector()
-          ->SetDeviceAffiliatedIdsForTesting({"affiliation_id"});
-    }
-
-    // Register the profile with the ProfileManager so that it can be found by
-    // the uploader.
-    profile_manager_->profile_manager()->RegisterTestingProfile(
-        std::move(profile), /*add_to_storage=*/true);
-
-    // Register the mock factory for the RealtimeReportingClient.
-    if (create_reporting_client) {
-      enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
-          ->SetTestingFactory(
-              profile_,
-              base::BindRepeating(&SaasUsageReportUploaderDesktopTest::
-                                      BuildMockRealtimeReportingClient,
-                                  base::Unretained(this)));
-    }
+    profile_ = CreateProfileWithName("test_profile", is_managed, is_affiliated,
+                                     create_reporting_client, "user_dm_token");
   }
 
   void TearDown() override {
@@ -136,10 +91,67 @@ class SaasUsageReportUploaderDesktopTest : public testing::Test {
     return std::make_unique<MockRealtimeReportingClient>(context);
   }
 
-  MockRealtimeReportingClient* GetMockClient() {
+  MockRealtimeReportingClient* GetMockClientForProfile(Profile* profile) {
     return static_cast<MockRealtimeReportingClient*>(
         enterprise_connectors::RealtimeReportingClientFactory::GetForProfile(
-            profile_));
+            profile));
+  }
+
+  MockRealtimeReportingClient* GetMockClient() {
+    return GetMockClientForProfile(profile_);
+  }
+
+  TestingProfile* CreateProfileWithName(const std::string& profile_name,
+                                        bool is_managed,
+                                        bool is_affiliated,
+                                        bool create_reporting_client,
+                                        const std::string& user_dm_token) {
+    TestingProfile::Builder builder;
+
+    if (is_managed) {
+      auto store = std::make_unique<policy::MockUserCloudPolicyStore>(
+          policy::dm_protocol::GetChromeUserPolicyType());
+      auto policy_data = std::make_unique<enterprise_management::PolicyData>();
+      policy_data->set_request_token(user_dm_token);
+      store->set_policy_data_for_testing(std::move(policy_data));
+
+      auto manager = std::make_unique<policy::UserCloudPolicyManager>(
+          std::move(store),
+          /*extension_install_store=*/nullptr, base::FilePath(),
+          std::make_unique<
+              testing::NiceMock<policy::MockCloudExternalDataManager>>(),
+          base::SingleThreadTaskRunner::GetCurrentDefault(),
+          base::BindRepeating([]() -> network::NetworkConnectionTracker* {
+            return network::TestNetworkConnectionTracker::GetInstance();
+          }));
+      builder.SetUserCloudPolicyManager(std::move(manager));
+    }
+
+    builder.SetProfileName(profile_name);
+    auto profile = builder.Build();
+    auto* profile_ptr = profile.get();
+
+    if (is_affiliated) {
+      profile_ptr->GetProfilePolicyConnector()->SetUserAffiliationIdsForTesting(
+          {"affiliation_id"});
+      TestingBrowserProcess::GetGlobal()
+          ->browser_policy_connector()
+          ->SetDeviceAffiliatedIdsForTesting({"affiliation_id"});
+    }
+    // Register the profile with the ProfileManager so that it can be found by
+    // the uploader.
+    profile_manager_->profile_manager()->RegisterTestingProfile(
+        std::move(profile), /*add_to_storage=*/true);
+    // Register the mock factory for the RealtimeReportingClient.
+    if (create_reporting_client) {
+      enterprise_connectors::RealtimeReportingClientFactory::GetInstance()
+          ->SetTestingFactory(
+              profile_ptr,
+              base::BindRepeating(&SaasUsageReportUploaderDesktopTest::
+                                      BuildMockRealtimeReportingClient,
+                                  base::Unretained(this)));
+    }
+    return profile_ptr;
   }
 
   ::chrome::cros::reporting::proto::SaasUsageReportEvent BuildReportEvent() {
@@ -200,12 +212,9 @@ TEST_P(SaasUsageReportUploaderDesktopParamTest, UploadReport) {
 
   // Verify ReportEvent is called with the expected settings.
   if (param.expect_report_upload) {
-    EXPECT_CALL(*GetMockClient(), ReportSaasUsageEvent(_, _, _, _))
-        .WillOnce([&param](auto event, bool per_profile, std::string dm_token,
-                           auto callback) {
-          EXPECT_EQ(dm_token, param.expected_dm_token);
-          EXPECT_EQ(per_profile, param.expected_per_profile);
-        });
+    EXPECT_CALL(*GetMockClient(),
+                ReportSaasUsageEvent(_, param.expected_per_profile,
+                                     param.expected_dm_token, _));
   } else if (param.create_reporting_client) {
     EXPECT_CALL(*GetMockClient(), ReportSaasUsageEvent(_, _, _, _)).Times(0);
   }
@@ -305,5 +314,62 @@ INSTANTIATE_TEST_SUITE_P(
         SaasUsageReportUploaderDesktopParamTest::ParamType>& info) {
       return info.param.test_name;
     });
+
+TEST_F(SaasUsageReportUploaderDesktopTest, UploadBrowserReport_MultiProfile) {
+  scoped_feature_list_.InitAndEnableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+  SetBrowserManaged(true);
+
+  CreateProfileWithName("profile1", /*is_managed=*/true,
+                        /*is_affiliated=*/false,
+                        /*create_reporting_client=*/true, "user_dm_token_1");
+  CreateProfileWithName("profile2", /*is_managed=*/true,
+                        /*is_affiliated=*/false,
+                        /*create_reporting_client=*/true, "user_dm_token_2");
+
+  std::vector<Profile*> loaded_profiles =
+      profile_manager_->profile_manager()->GetLoadedProfiles();
+  ASSERT_EQ(loaded_profiles.size(), 2u);
+
+  auto* active_mock_client = GetMockClientForProfile(loaded_profiles[0]);
+  auto* ignored_mock_client = GetMockClientForProfile(loaded_profiles[1]);
+
+  // The browser uploader selects the first loaded profile's client.
+  // Verify it correctly passes `per_profile = false` and the machine-level
+  // Browser DM Token, ensuring no profile-specific auth or tokens are used.
+  EXPECT_CALL(
+      *active_mock_client,
+      ReportSaasUsageEvent(_, /*per_profile=*/false, "browser_dm_token", _));
+
+  EXPECT_CALL(*ignored_mock_client, ReportSaasUsageEvent(_, _, _, _)).Times(0);
+
+  auto uploader = std::make_unique<SaasUsageBrowserReportUploaderDesktop>();
+  uploader->UploadReport(BuildReportEvent(), base::DoNothing());
+}
+
+TEST_F(SaasUsageReportUploaderDesktopTest, UploadProfileReport_MultiProfile) {
+  scoped_feature_list_.InitAndEnableFeature(
+      policy::kUploadRealtimeReportingEventsUsingProto);
+  TestingProfile* profile1 = CreateProfileWithName(
+      "profile1", /*is_managed=*/true, /*is_affiliated=*/false,
+      /*create_reporting_client=*/true, "user_dm_token_1");
+  TestingProfile* profile2 = CreateProfileWithName(
+      "profile2", /*is_managed=*/true, /*is_affiliated=*/false,
+      /*create_reporting_client=*/true, "user_dm_token_2");
+
+  auto* mock_client1 = GetMockClientForProfile(profile1);
+  auto* mock_client2 = GetMockClientForProfile(profile2);
+
+  // Verify that the profile uploader for profile1 strictly uses profile1's
+  // client and passes profile1's user DM token, completely ignoring profile2.
+  EXPECT_CALL(*mock_client1, ReportSaasUsageEvent(_, /*per_profile=*/true,
+                                                  "user_dm_token_1", _));
+
+  EXPECT_CALL(*mock_client2, ReportSaasUsageEvent(_, _, _, _)).Times(0);
+
+  auto uploader =
+      std::make_unique<SaasUsageProfileReportUploaderDesktop>(profile1);
+  uploader->UploadReport(BuildReportEvent(), base::DoNothing());
+}
 
 }  // namespace enterprise_reporting
