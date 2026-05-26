@@ -65,7 +65,7 @@ bool IsExtensionInstallBlockedByPolicy(
 
   // Extension is allowed by wildcard or update_url, checks required permissions
   // and manifest type.
-  if (manifest_type != Manifest::Type::TYPE_UNKNOWN &&
+  if (manifest_type != Manifest::Type::kUnknown &&
       !extension_management_client->IsAllowedManifestType(manifest_type,
                                                           extension_id)) {
     return true;
@@ -120,7 +120,7 @@ ExtensionInstallStatus PerformSynchronousChecks(
       !supervised_user_extensions_delegate->CanSkipExtensionParentApprovals() &&
       !prefs->GetDict(prefs::kSupervisedUserApprovedExtensions)
            .contains(extension_id) &&
-      manifest_type != Manifest::Type::TYPE_THEME) {
+      manifest_type != Manifest::Type::kTheme) {
     return kCustodianApprovalRequiredForInstallation;
   }
   // Check if parent approval is needed for a supervised user to enable
@@ -245,7 +245,7 @@ ExtensionInstallStatus GetWebstoreExtensionInstallStatus(
   // We don't know the extension's version, so we can't check
   // ExtensionInstallPolicyService. Only perform the other checks.
   return PerformSynchronousChecks(extension_id, browser_context,
-                                  Manifest::Type::TYPE_UNKNOWN, PermissionSet(),
+                                  Manifest::Type::kUnknown, PermissionSet(),
                                   /*manifest_version=*/3);
 }
 

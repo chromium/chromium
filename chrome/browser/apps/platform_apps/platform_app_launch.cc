@@ -176,7 +176,7 @@ bool OpenExtensionApplicationWithReenablePrompt(
   }
 #endif
 
-  RecordCmdLineAppHistogram(extensions::Manifest::TYPE_PLATFORM_APP);
+  RecordCmdLineAppHistogram(extensions::Manifest::Type::kPlatformApp);
   apps::AppLaunchParams params(
       app_id, apps::LaunchContainer::kLaunchContainerNone,
       WindowOpenDisposition::NEW_WINDOW, apps::LaunchSource::kFromCommandLine);
@@ -201,7 +201,7 @@ content::WebContents* OpenExtensionAppShortcutWindow(Profile* profile,
   } else {
     extensions::RecordAppLaunchType(
         extension_misc::APP_LAUNCH_CMD_LINE_APP_LEGACY,
-        extensions::Manifest::TYPE_HOSTED_APP);
+        extensions::Manifest::Type::kHostedApp);
   }
 
   return ::OpenAppShortcutWindow(profile, url);

@@ -97,7 +97,7 @@ ExtensionInstallPrompt::Prompt::~Prompt() = default;
 void ExtensionInstallPrompt::Prompt::AddPermissionSet(
     const PermissionSet& permissions) {
   Manifest::Type type =
-      extension_ ? extension_->GetType() : Manifest::TYPE_UNKNOWN;
+      extension_ ? extension_->GetType() : Manifest::Type::kUnknown;
   prompt_permissions_.LoadFromPermissionSet(&permissions, type);
   if (!permissions.effective_hosts().is_empty()) {
     is_requesting_host_permissions_ = true;

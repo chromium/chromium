@@ -38,26 +38,26 @@ bool IsSyncable(const Extension* extension) {
   }
 
   switch (extension->GetType()) {
-    case Manifest::TYPE_EXTENSION:
-    case Manifest::TYPE_HOSTED_APP:
-    case Manifest::TYPE_LEGACY_PACKAGED_APP:
-    case Manifest::TYPE_PLATFORM_APP:
-    case Manifest::TYPE_THEME:
+    case Manifest::Type::kExtension:
+    case Manifest::Type::kHostedApp:
+    case Manifest::Type::kLegacyPackagedApp:
+    case Manifest::Type::kPlatformApp:
+    case Manifest::Type::kTheme:
       return true;
 
-    case Manifest::TYPE_USER_SCRIPT:
+    case Manifest::Type::kUserScript:
       // We only want to sync user scripts with gallery update URLs.
       if (ManifestURL::UpdatesFromGallery(extension))
         return true;
       return false;
 
-    case Manifest::TYPE_UNKNOWN:
-    case Manifest::TYPE_SHARED_MODULE:
-    case Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
-    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+    case Manifest::Type::kUnknown:
+    case Manifest::Type::kSharedModule:
+    case Manifest::Type::kLoginScreenExtension:
+    case Manifest::Type::kChromeOSSystemExtension:
       return false;
 
-    case Manifest::NUM_LOAD_TYPES:
+    case Manifest::Type::kNumLoadTypes:
       NOTREACHED();
   }
   NOTREACHED();

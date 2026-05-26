@@ -1376,7 +1376,7 @@ TEST_F(ForceInstalledMetricsTest,
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   // Hosted app is not a valid extension type, so this should report an error.
   install_stage_tracker()->ReportExtensionType(kExtensionId2,
-                                               Manifest::Type::TYPE_HOSTED_APP);
+                                               Manifest::Type::kHostedApp);
   install_stage_tracker()->ReportCrxInstallError(
       kExtensionId2,
       InstallStageTracker::FailureReason::CRX_INSTALL_ERROR_DECLINED,
@@ -1404,7 +1404,7 @@ TEST_F(ForceInstalledMetricsTest,
   scoped_refptr<const Extension> ext1 = CreateNewExtension(
       kExtensionName1, kExtensionId1, ExtensionStatus::kLoaded);
   install_stage_tracker()->ReportExtensionType(kExtensionId2,
-                                               Manifest::Type::TYPE_EXTENSION);
+                                               Manifest::Type::kExtension);
   install_stage_tracker()->ReportCrxInstallError(
       kExtensionId2,
       InstallStageTracker::FailureReason::CRX_INSTALL_ERROR_DECLINED,

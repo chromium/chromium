@@ -256,7 +256,7 @@ TEST_F(StandardManagementPolicyProviderTest, ThemeExtension) {
                        .Build();
   std::u16string error16;
 
-  EXPECT_EQ(extension->GetType(), Manifest::TYPE_THEME);
+  EXPECT_EQ(extension->GetType(), Manifest::Type::kTheme);
   EXPECT_TRUE(provider_.UserMayLoad(extension.get(), &error16));
   EXPECT_EQ(std::u16string(), error16);
 

@@ -445,7 +445,7 @@ void ExternalCacheImpl::CheckCache() {
             id, update_url,
             extensions::mojom::ManifestLocation::kExternalPolicy, false, 0,
             extensions::DownloadFetchPriority::kBackground,
-            base::Version(version), extensions::Manifest::TYPE_UNKNOWN,
+            base::Version(version), extensions::Manifest::Type::kUnknown,
             std::string()));
       }
     }

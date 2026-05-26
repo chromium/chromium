@@ -178,7 +178,7 @@ void ExtensionWebContentsObserver::SetUpRenderFrameHost(
   //
   // Note: Keep this logic in sync with related logic in
   // ChromeContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories.
-  if (type == Manifest::TYPE_EXTENSION ||
+  if (type == Manifest::Type::kExtension ||
       type == Manifest::Type::kLegacyPackagedApp) {
     util::InitializeFileSchemeAccessForExtension(
         render_frame_host->GetProcess()->GetID(), extension->id(),

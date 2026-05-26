@@ -751,7 +751,7 @@ TEST(PermissionsTest,
                              URLPatternSet(), URLPatternSet());
 
   EXPECT_FALSE(PermissionMessageProvider::Get()->IsPrivilegeIncrease(
-      permissions1, permissions2, Manifest::TYPE_EXTENSION));
+      permissions1, permissions2, Manifest::Type::kExtension));
 }
 
 TEST(PermissionsTest, PermissionMessages) {
@@ -941,7 +941,7 @@ TEST(PermissionsTest, FileSystemPermissionMessages) {
   PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                             URLPatternSet(), URLPatternSet());
   EXPECT_TRUE(
-      PermissionSetProducesMessage(permissions, Manifest::TYPE_PLATFORM_APP,
+      PermissionSetProducesMessage(permissions, Manifest::Type::kPlatformApp,
                                    MakePermissionIDSet(api_permissions)));
 }
 
@@ -952,7 +952,7 @@ TEST(PermissionsTest, HiddenFileSystemPermissionMessages) {
   PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                             URLPatternSet(), URLPatternSet());
   EXPECT_TRUE(
-      PermissionSetProducesMessage(permissions, Manifest::TYPE_PLATFORM_APP,
+      PermissionSetProducesMessage(permissions, Manifest::Type::kPlatformApp,
                                    MakePermissionIDSet(api_permissions)));
 }
 
@@ -968,7 +968,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               ManifestPermissionSet(), std::move(hosts),
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         MakePermissionIDSet(APIPermissionID::kTab, APIPermissionID::kFavicon)));
   }
   {
@@ -981,7 +981,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
     PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                               std::move(hosts), URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         MakePermissionIDSet(APIPermissionID::kHistory,
                             APIPermissionID::kFavicon)));
   }
@@ -995,7 +995,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               ManifestPermissionSet(), std::move(hosts),
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         MakePermissionIDSet(APIPermissionID::kHostsAll,
                             APIPermissionID::kTab)));
   }
@@ -1009,7 +1009,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               ManifestPermissionSet(), std::move(hosts),
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         MakePermissionIDSet(APIPermissionID::kHostsAll,
                             APIPermissionID::kTopSites)));
   }
@@ -1023,7 +1023,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
                               ManifestPermissionSet(), std::move(hosts),
                               URLPatternSet());
     EXPECT_TRUE(PermissionSetProducesMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         MakePermissionIDSet(APIPermissionID::kHostsAll,
                             APIPermissionID::kDeclarativeWebRequest)));
   }
@@ -1038,7 +1038,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
     PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                               URLPatternSet(), URLPatternSet());
     EXPECT_TRUE(
-        PermissionSetProducesMessage(permissions, Manifest::TYPE_EXTENSION,
+        PermissionSetProducesMessage(permissions, Manifest::Type::kExtension,
                                      MakePermissionIDSet(api_permissions)));
   }
   {
@@ -1051,7 +1051,7 @@ TEST(PermissionsTest, SuppressedPermissionMessages) {
     PermissionSet permissions(api_permissions.Clone(), ManifestPermissionSet(),
                               URLPatternSet(), URLPatternSet());
     EXPECT_TRUE(
-        PermissionSetProducesMessage(permissions, Manifest::TYPE_EXTENSION,
+        PermissionSetProducesMessage(permissions, Manifest::Type::kExtension,
                                      MakePermissionIDSet(api_permissions)));
   }
 }
@@ -1066,7 +1066,7 @@ TEST(PermissionsTest, AccessToDevicesMessages) {
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
     EXPECT_TRUE(VerifyOnePermissionMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_SERIAL)));
   }
   {
@@ -1078,7 +1078,7 @@ TEST(PermissionsTest, AccessToDevicesMessages) {
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
     EXPECT_TRUE(VerifyOnePermissionMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_SERIAL)));
   }
   {
@@ -1123,25 +1123,25 @@ TEST(PermissionsTest, MergedFileSystemPermissionComparison) {
   const PermissionMessageProvider* provider = PermissionMessageProvider::Get();
   EXPECT_FALSE(provider->IsPrivilegeIncrease(write_directory_permissions,
                                              write_permissions,
-                                             Manifest::TYPE_PLATFORM_APP));
+                                             Manifest::Type::kPlatformApp));
   EXPECT_FALSE(provider->IsPrivilegeIncrease(write_directory_permissions,
                                              directory_permissions,
-                                             Manifest::TYPE_PLATFORM_APP));
+                                             Manifest::Type::kPlatformApp));
   EXPECT_TRUE(provider->IsPrivilegeIncrease(write_permissions,
                                             write_directory_permissions,
-                                            Manifest::TYPE_PLATFORM_APP));
+                                            Manifest::Type::kPlatformApp));
   EXPECT_TRUE(provider->IsPrivilegeIncrease(directory_permissions,
                                             write_directory_permissions,
-                                            Manifest::TYPE_PLATFORM_APP));
+                                            Manifest::Type::kPlatformApp));
   // Tricky case: going from kFileSystemWrite to kFileSystemDirectory (or vice
   // versa). A warning is only shown if *both* kFileSystemWrite and
   // kFileSystemDirectory are present. Even though kFileSystemWrite is not in
   // the new set of permissions, it will still be a granted permission.
   // Therefore, we should consider this a privilege increase.
   EXPECT_TRUE(provider->IsPrivilegeIncrease(
-      write_permissions, directory_permissions, Manifest::TYPE_PLATFORM_APP));
+      write_permissions, directory_permissions, Manifest::Type::kPlatformApp));
   EXPECT_TRUE(provider->IsPrivilegeIncrease(
-      directory_permissions, write_permissions, Manifest::TYPE_PLATFORM_APP));
+      directory_permissions, write_permissions, Manifest::Type::kPlatformApp));
 }
 
 TEST(PermissionsTest, GetWarningMessages_ManyHosts) {
@@ -1205,7 +1205,7 @@ TEST(PermissionsTest, GetWarningMessages_CombinedSessions) {
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
     EXPECT_TRUE(VerifyOnePermissionMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         l10n_util::GetStringUTF16(
             IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ_ON_ALL_DEVICES)));
   }
@@ -1221,7 +1221,7 @@ TEST(PermissionsTest, GetWarningMessages_CombinedSessions) {
                               ManifestPermissionSet(), URLPatternSet(),
                               URLPatternSet());
     EXPECT_TRUE(VerifyOnePermissionMessage(
-        permissions, Manifest::TYPE_EXTENSION,
+        permissions, Manifest::Type::kExtension,
         l10n_util::GetStringUTF16(
             IDS_EXTENSION_PROMPT_WARNING_HISTORY_WRITE_ON_ALL_DEVICES)));
   }
@@ -1649,28 +1649,28 @@ TEST(PermissionsTest, IsHostPrivilegeIncrease) {
         {URLPattern::SCHEME_HTTP, "http://www.google.com/path"}},
        {{URLPattern::SCHEME_HTTP, "http://www.google.com/path"},
         {URLPattern::SCHEME_HTTP, "http://www.google.com.hk/path"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        false,
        false},
       // Paths are ignored.
       {{{URLPattern::SCHEME_HTTP, "http://www.google.com.hk/path"},
         {URLPattern::SCHEME_HTTP, "http://www.google.com/path"}},
        {{URLPattern::SCHEME_HTTP, "http://www.google.com/*"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        false,
        false},
       // RCDs are ignored.
       {{{URLPattern::SCHEME_HTTP, "http://www.google.com.hk/path"},
         {URLPattern::SCHEME_HTTP, "http://www.google.com/path"}},
        {{URLPattern::SCHEME_HTTP, "http://www.google.com.hk/*"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        false,
        false},
       // Subdomain wildcards are handled properly.
       {{{URLPattern::SCHEME_HTTP, "http://www.google.com.hk/path"},
         {URLPattern::SCHEME_HTTP, "http://www.google.com/path"}},
        {{URLPattern::SCHEME_HTTP, "http://*.google.com.hk/*"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        true,
        false},
       // Different domains count as different hosts.
@@ -1678,14 +1678,14 @@ TEST(PermissionsTest, IsHostPrivilegeIncrease) {
         {URLPattern::SCHEME_HTTP, "http://www.google.com/path"}},
        {{URLPattern::SCHEME_HTTP, "http://www.google.com/path"},
         {URLPattern::SCHEME_HTTP, "http://www.example.org/path"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        true,
        false},
       // Different subdomains count as different hosts.
       {{{URLPattern::SCHEME_HTTP, "http://www.google.com.hk/path"},
         {URLPattern::SCHEME_HTTP, "http://www.google.com/path"}},
        {{URLPattern::SCHEME_HTTP, "http://mail.google.com/*"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        true,
        true},
       // Moving from all subdomains to the domain should not be
@@ -1695,14 +1695,14 @@ TEST(PermissionsTest, IsHostPrivilegeIncrease) {
          "*://*.google.com/*"}},
        {{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS,
          "*://google.com/*"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        false,
        true},
       // Platform apps should not have host permissions increases.
       {{{URLPattern::SCHEME_HTTP, "http://www.google.com.hk/path"},
         {URLPattern::SCHEME_HTTP, "http://www.google.com/path"}},
        {{URLPattern::SCHEME_HTTP, "http://mail.google.com/*"}},
-       Manifest::TYPE_PLATFORM_APP,
+       Manifest::Type::kPlatformApp,
        false,
        false},
       // Test that subdomain wildcard matching from crbug.com://65337
@@ -1713,21 +1713,21 @@ TEST(PermissionsTest, IsHostPrivilegeIncrease) {
          "*://mail.google.com/"}},
        {{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS,
          "*://inbox.google.com/"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        false,
        true},
       // Test the "all_urls" meta-pattern.
       {{{URLPattern::SCHEME_ALL, "<all_urls>"}},
        {{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS,
          "*://inbox.google.com/"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        false,
        true},
       // Test expanding from any .com host to any host in any TLD.
       // TODO(crbug.com/40579475): Should this really be a permissions increase?
       {{{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS, "*://*.com/*"}},
        {{URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS, "*://*/*"}},
-       Manifest::TYPE_EXTENSION,
+       Manifest::Type::kExtension,
        true,
        false},
   });
@@ -1840,7 +1840,7 @@ TEST(PermissionsTest, ChromeURLs) {
                             std::move(allowed_hosts), URLPatternSet());
   PermissionMessageProvider::Get()->GetPermissionMessages(
       PermissionMessageProvider::Get()->GetAllPermissionIDs(
-          permissions, Manifest::TYPE_EXTENSION));
+          permissions, Manifest::Type::kExtension));
 }
 
 TEST(PermissionsTest, IsPrivilegeIncrease_DeclarativeWebRequest) {

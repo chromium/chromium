@@ -330,21 +330,21 @@ scoped_refptr<Extension> CreateExtension(const base::FilePath& base_dir,
   source.SetByDottedPath(extensions::manifest_keys::kVersion, "0.0.0.0");
   source.SetByDottedPath(extensions::manifest_keys::kManifestVersion, 2);
   switch (type) {
-    case Manifest::TYPE_EXTENSION:
+    case Manifest::Type::kExtension:
       // Do nothing.
       break;
-    case Manifest::TYPE_THEME:
+    case Manifest::Type::kTheme:
       source.SetByDottedPath(extensions::manifest_keys::kTheme,
                              base::DictValue());
       break;
-    case Manifest::TYPE_HOSTED_APP:
-    case Manifest::TYPE_LEGACY_PACKAGED_APP:
+    case Manifest::Type::kHostedApp:
+    case Manifest::Type::kLegacyPackagedApp:
       source.SetByDottedPath(extensions::manifest_keys::kApp,
                              base::DictValue());
       source.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
                              "http://www.example.com");
       break;
-    case Manifest::TYPE_PLATFORM_APP: {
+    case Manifest::Type::kPlatformApp: {
       source.SetByDottedPath(extensions::manifest_keys::kApp,
                              base::DictValue());
       source.SetByDottedPath(extensions::manifest_keys::kPlatformAppBackground,

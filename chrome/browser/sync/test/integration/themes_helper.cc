@@ -82,7 +82,7 @@ bool ThemeIsPendingInstall(Profile* profile, const std::string& id) {
 
 void UseCustomTheme(Profile* profile, int index) {
   SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile, MakeName(index), extensions::Manifest::TYPE_THEME);
+      profile, MakeName(index), extensions::Manifest::Type::kTheme);
 }
 
 void UseGrayscaleTheme(Profile* profile) {

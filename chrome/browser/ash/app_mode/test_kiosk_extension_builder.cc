@@ -52,11 +52,11 @@ scoped_refptr<const extensions::Extension> TestKioskExtensionBuilder::Build()
       "scripts", base::Value(base::ListValue().Append("background.js"))));
 
   switch (type_) {
-    case extensions::Manifest::TYPE_PLATFORM_APP:
+    case extensions::Manifest::Type::kPlatformApp:
       manifest_builder.Set(
           "app", base::DictValue().Set("background", std::move(background)));
       break;
-    case extensions::Manifest::TYPE_EXTENSION:
+    case extensions::Manifest::Type::kExtension:
       manifest_builder.Set("background", std::move(background));
       break;
     default:

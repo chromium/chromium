@@ -181,7 +181,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldFailIfPrimaryAppNotInstalled) {
 }
 
 TEST_F(ChromeKioskAppLauncherTest, ShouldFailIfSecondaryAppNotInstalled) {
-  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+  TestKioskExtensionBuilder primary_app_builder(Manifest::Type::kPlatformApp,
                                                 kTestPrimaryAppId);
   primary_app_builder.set_version("1.0");
   primary_app_builder.AddSecondaryExtension(kSecondaryAppId);
@@ -198,7 +198,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldFailIfSecondaryAppNotInstalled) {
 
 TEST_F(ChromeKioskAppLauncherTest,
        ShouldReportNetworkMissingIfAppNotOfflineEnabled) {
-  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+  TestKioskExtensionBuilder primary_app_builder(Manifest::Type::kPlatformApp,
                                                 kTestPrimaryAppId);
   primary_app_builder.set_version("1.0");
   primary_app_builder.set_offline_enabled(false);
@@ -214,7 +214,7 @@ TEST_F(ChromeKioskAppLauncherTest,
 }
 
 TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedIfNetworkAvailable) {
-  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+  TestKioskExtensionBuilder primary_app_builder(Manifest::Type::kPlatformApp,
                                                 kTestPrimaryAppId);
   primary_app_builder.set_version("1.0");
   scoped_refptr<const extensions::Extension> primary_app =
@@ -236,7 +236,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedIfNetworkAvailable) {
 }
 
 TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
-  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+  TestKioskExtensionBuilder primary_app_builder(Manifest::Type::kPlatformApp,
                                                 kTestPrimaryAppId);
   primary_app_builder.set_version("1.0");
   primary_app_builder.AddSecondaryExtension(kSecondaryAppId);
@@ -246,7 +246,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
       primary_app_builder.Build();
   registrar()->AddExtension(primary_app.get());
 
-  TestKioskExtensionBuilder secondary_app_builder(Manifest::TYPE_PLATFORM_APP,
+  TestKioskExtensionBuilder secondary_app_builder(Manifest::Type::kPlatformApp,
                                                   kSecondaryAppId);
   secondary_app_builder.set_kiosk_enabled(false);
   scoped_refptr<const extensions::Extension> secondary_app =
@@ -254,7 +254,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
   registrar()->AddExtension(secondary_app.get());
 
   TestKioskExtensionBuilder extra_secondary_app_builder(
-      Manifest::TYPE_PLATFORM_APP, kExtraSecondaryAppId);
+      Manifest::Type::kPlatformApp, kExtraSecondaryAppId);
   extra_secondary_app_builder.set_kiosk_enabled(false);
   scoped_refptr<const extensions::Extension> extra_secondary_app =
       extra_secondary_app_builder.Build();
@@ -277,7 +277,7 @@ TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithSecondaryApp) {
 }
 
 TEST_F(ChromeKioskAppLauncherTest, ShouldSucceedWithAppService) {
-  TestKioskExtensionBuilder primary_app_builder(Manifest::TYPE_PLATFORM_APP,
+  TestKioskExtensionBuilder primary_app_builder(Manifest::Type::kPlatformApp,
                                                 kTestPrimaryAppId);
   primary_app_builder.set_version("1.0");
   scoped_refptr<const extensions::Extension> primary_app =

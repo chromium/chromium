@@ -62,9 +62,9 @@ bool DeviceLocalAccountManagementPolicyProvider::UserMayLoad(
     case policy::DeviceLocalAccountType::kArcvmKioskApp:
       // For single-app kiosk sessions, allow platform apps, extensions and
       // shared modules.
-      if (extension->GetType() == extensions::Manifest::TYPE_PLATFORM_APP ||
-          extension->GetType() == extensions::Manifest::TYPE_SHARED_MODULE ||
-          extension->GetType() == extensions::Manifest::TYPE_EXTENSION) {
+      if (extension->GetType() == extensions::Manifest::Type::kPlatformApp ||
+          extension->GetType() == extensions::Manifest::Type::kSharedModule ||
+          extension->GetType() == extensions::Manifest::Type::kExtension) {
         return true;
       }
       break;

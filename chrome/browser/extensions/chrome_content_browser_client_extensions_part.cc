@@ -305,7 +305,7 @@ bool ChromeContentBrowserClientExtensionsPart::ShouldUseProcessPerSite(
   // permission, or that does not allow JavaScript access to the background
   // page, we want to give each instance its own process to improve
   // responsiveness.
-  if (extension->GetType() == Manifest::TYPE_HOSTED_APP) {
+  if (extension->GetType() == Manifest::Type::kHostedApp) {
     if (!extension->permissions_data()->HasAPIPermission(
             mojom::APIPermissionID::kBackground) ||
         !BackgroundInfo::AllowJSAccess(extension)) {

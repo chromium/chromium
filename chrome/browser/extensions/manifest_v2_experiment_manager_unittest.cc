@@ -530,7 +530,7 @@ TEST_F(ManifestV2ExperimentManagerDisableWithReEnableAndPolicyUnitTest,
     ExtensionId extension_id = crx_file::id_util::GenerateId(test_case.name);
 
     EXPECT_TRUE(experiment_manager()->ShouldBlockExtensionInstallation(
-        extension_id, /*manifest_version=*/2, Manifest::TYPE_EXTENSION,
+        extension_id, /*manifest_version=*/2, Manifest::Type::kExtension,
         test_case.manifest_location, HashedExtensionId(extension_id)));
   }
 }
@@ -576,7 +576,7 @@ TEST_F(
     EXPECT_EQ(
         test_case.should_block_install,
         experiment_manager()->ShouldBlockExtensionInstallation(
-            extension_id, /*manifest_version=*/2, Manifest::TYPE_EXTENSION,
+            extension_id, /*manifest_version=*/2, Manifest::Type::kExtension,
             test_case.manifest_location, HashedExtensionId(extension_id)));
   }
 }

@@ -46,7 +46,7 @@ void CoreAppLauncherHandler::RecordAppLaunchByUrl(
   }
 
   extensions::RecordAppLaunchType(bucket,
-                                  extensions::Manifest::TYPE_HOSTED_APP);
+                                  extensions::Manifest::Type::kHostedApp);
 }
 
 void CoreAppLauncherHandler::RegisterMessages() {

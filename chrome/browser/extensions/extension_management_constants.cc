@@ -50,7 +50,7 @@ Manifest::Type GetManifestType(std::string_view name) {
   if (iter != kAllowedTypesMap.end()) {
     return iter->second;
   }
-  return Manifest::TYPE_UNKNOWN;
+  return Manifest::Type::kUnknown;
 }
 
 

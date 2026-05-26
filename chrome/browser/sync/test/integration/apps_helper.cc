@@ -105,13 +105,14 @@ bool AllProfilesHaveSameApps() {
 
 std::string InstallHostedApp(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
-      profile, CreateFakeAppName(index), extensions::Manifest::TYPE_HOSTED_APP);
+      profile, CreateFakeAppName(index),
+      extensions::Manifest::Type::kHostedApp);
 }
 
 std::string InstallPlatformApp(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
       profile, CreateFakeAppName(index),
-      extensions::Manifest::TYPE_PLATFORM_APP);
+      extensions::Manifest::Type::kPlatformApp);
 }
 
 std::string InstallHostedAppForAllProfiles(int index) {

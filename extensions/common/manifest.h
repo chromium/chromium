@@ -44,19 +44,6 @@ class Manifest final {
 
     // New enum values must go above here.
     kNumLoadTypes,
-
-    // TODO(crbug.com/420858216): Remove these legacy values/names.
-    TYPE_UNKNOWN = kUnknown,
-    TYPE_EXTENSION = kExtension,
-    TYPE_THEME = kTheme,
-    TYPE_USER_SCRIPT = kUserScript,
-    TYPE_HOSTED_APP = kHostedApp,
-    TYPE_LEGACY_PACKAGED_APP = kLegacyPackagedApp,
-    TYPE_PLATFORM_APP = kPlatformApp,
-    TYPE_SHARED_MODULE = kSharedModule,
-    TYPE_LOGIN_SCREEN_EXTENSION = kLoginScreenExtension,
-    TYPE_CHROMEOS_SYSTEM_EXTENSION = kChromeOSSystemExtension,
-    NUM_LOAD_TYPES = kNumLoadTypes
   };
 
   // Given two install sources, return the one which should take priority

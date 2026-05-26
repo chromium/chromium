@@ -146,7 +146,7 @@ AppInfo SecondaryApp1() {
   return AppInfo{
       /*id=*/"elbhpkeieolijdlflcplbbabceggjknh",
       /*version=*/"1.0.0",
-      /*type=*/extensions::Manifest::TYPE_PLATFORM_APP,
+      /*type=*/extensions::Manifest::Type::kPlatformApp,
   };
 }
 
@@ -157,7 +157,7 @@ AppInfo SecondaryApp2() {
   return AppInfo{
       /*id=*/"coamgmmgmjeeaodkbpdajekljacgfhkc",
       /*version=*/"1.0.0",
-      /*type=*/extensions::Manifest::TYPE_PLATFORM_APP,
+      /*type=*/extensions::Manifest::Type::kPlatformApp,
   };
 }
 
@@ -168,7 +168,7 @@ AppInfo SecondaryApp3() {
   return AppInfo{
       /*id=*/"miccbahcahimnejpdoaafjeolookhoem",
       /*version=*/"1.0.0",
-      /*type=*/extensions::Manifest::TYPE_PLATFORM_APP,
+      /*type=*/extensions::Manifest::Type::kPlatformApp,
   };
 }
 
@@ -179,7 +179,7 @@ AppInfo SecondaryExtension1() {
   return AppInfo{
       /*id=*/"pegeblegnlhnpgghhjblhchdllfijodp",
       /*version=*/"1.0.0",
-      /*type=*/extensions::Manifest::TYPE_EXTENSION,
+      /*type=*/extensions::Manifest::Type::kExtension,
   };
 }
 
@@ -190,7 +190,7 @@ AppInfo SharedModuleAppV1() {
   return AppInfo{
       /*id=*/"hpanhkopkhnkpcmnedlnjmkfafmlamak",
       /*version=*/"1.0.0",
-      /*type=*/extensions::Manifest::TYPE_SHARED_MODULE,
+      /*type=*/extensions::Manifest::Type::kSharedModule,
   };
 }
 
@@ -206,7 +206,7 @@ AppInfo SecondaryAppV1() {
   return AppInfo{
       /*id=*/"ffceghmcpipkneddgikbgoagnheejdbf",
       /*version=*/"1.0.0",
-      /*type=*/extensions::Manifest::TYPE_PLATFORM_APP,
+      /*type=*/extensions::Manifest::Type::kPlatformApp,
   };
 }
 
@@ -222,7 +222,7 @@ AppInfo SecondaryExtension() {
   return AppInfo{
       /*id=*/"meaknlbicgahoejcchpnkenkmbekcddf",
       /*version=*/"1.0.0",
-      /*type=*/extensions::Manifest::TYPE_EXTENSION,
+      /*type=*/extensions::Manifest::Type::kExtension,
   };
 }
 

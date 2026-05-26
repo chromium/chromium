@@ -58,10 +58,10 @@ ash::VideoConferenceAppType GetAppType(content::WebContents* contents) {
                   ->GetExtensionForWebContents(contents);
   if (ext) {
     auto type = ext->GetType();
-    if (type == extensions::Manifest::TYPE_EXTENSION) {
+    if (type == extensions::Manifest::Type::kExtension) {
       return ash::VideoConferenceAppType::kChromeExtension;
     }
-    if (type == extensions::Manifest::TYPE_PLATFORM_APP) {
+    if (type == extensions::Manifest::Type::kPlatformApp) {
       return ash::VideoConferenceAppType::kChromeApp;
     }
 

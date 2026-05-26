@@ -14,7 +14,7 @@ namespace extensions {
 void RecordAppLaunchType(extension_misc::AppLaunchBucket bucket,
                          extensions::Manifest::Type app_type) {
   DCHECK_LT(bucket, extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
-  if (app_type == extensions::Manifest::TYPE_PLATFORM_APP) {
+  if (app_type == extensions::Manifest::Type::kPlatformApp) {
     UMA_HISTOGRAM_ENUMERATION("Apps.AppLaunch", bucket,
                               extension_misc::APP_LAUNCH_BUCKET_BOUNDARY);
   } else {
@@ -45,7 +45,7 @@ void RecordAppListMainLaunch(const extensions::Extension* extension) {
 
 void RecordWebStoreLaunch() {
   RecordAppLaunchType(extension_misc::APP_LAUNCH_NTP_WEBSTORE,
-                      extensions::Manifest::TYPE_HOSTED_APP);
+                      extensions::Manifest::Type::kHostedApp);
 }
 
 }  // namespace extensions

@@ -354,16 +354,16 @@ scoped_refptr<Extension> CreateExtension(const std::u16string& name,
   manifest.Set(extensions::manifest_keys::kName, name);
   manifest.Set(extensions::manifest_keys::kManifestVersion, 2);
   switch (type) {
-    case extensions::Manifest::TYPE_THEME:
+    case extensions::Manifest::Type::kTheme:
       manifest.Set(extensions::manifest_keys::kTheme, base::DictValue());
       break;
-    case extensions::Manifest::TYPE_HOSTED_APP:
+    case extensions::Manifest::Type::kHostedApp:
       manifest.SetByDottedPath(extensions::manifest_keys::kLaunchWebURL,
                                "http://www.google.com");
       manifest.Set(extensions::manifest_keys::kUpdateURL,
                    "http://clients2.google.com/service/update2/crx");
       break;
-    case extensions::Manifest::TYPE_EXTENSION:
+    case extensions::Manifest::Type::kExtension:
       // do nothing
       break;
     default:
@@ -528,7 +528,7 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
 
   scoped_refptr<Extension> theme = CreateExtension(
       u"example1", temp_dir.GetPath(), ManifestLocation::kUnpacked,
-      extensions::Manifest::TYPE_THEME, false);
+      extensions::Manifest::Type::kTheme, false);
   service()->FinishInstallationForTest(theme.get());
   waiter.WaitForThemeChanged();
 
@@ -536,27 +536,28 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
 
   scoped_refptr<Extension> ext2 = CreateExtension(
       u"example2", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
+      ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
+      false);
   registrar()->AddExtension(ext2.get());
   // Component extensions and policy-managed extensions shouldn't be disabled.
   scoped_refptr<Extension> ext3 = CreateExtension(
       u"example3", base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
-      ManifestLocation::kComponent, extensions::Manifest::TYPE_EXTENSION,
+      ManifestLocation::kComponent, extensions::Manifest::Type::kExtension,
       false);
   registrar()->AddExtension(ext3.get());
   scoped_refptr<Extension> ext4 = CreateExtension(
       u"example4", base::FilePath(FILE_PATH_LITERAL("//nonexistent3")),
       ManifestLocation::kExternalPolicyDownload,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      extensions::Manifest::Type::kExtension, false);
   registrar()->AddExtension(ext4.get());
   scoped_refptr<Extension> ext5 = CreateExtension(
       u"example5", base::FilePath(FILE_PATH_LITERAL("//nonexistent4")),
       ManifestLocation::kExternalComponent,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      extensions::Manifest::Type::kExtension, false);
   registrar()->AddExtension(ext5.get());
   scoped_refptr<Extension> ext6 = CreateExtension(
       u"example6", base::FilePath(FILE_PATH_LITERAL("//nonexistent5")),
-      ManifestLocation::kExternalPolicy, extensions::Manifest::TYPE_EXTENSION,
+      ManifestLocation::kExternalPolicy, extensions::Manifest::Type::kExtension,
       false);
   registrar()->AddExtension(ext6.get());
   EXPECT_EQ(6u, registry()->enabled_extensions().size());
@@ -575,12 +576,14 @@ TEST_F(ProfileResetterTest, ResetExtensionsByDisabling) {
 TEST_F(ProfileResetterTest, ResetExtensionsByDisablingNonOrganic) {
   scoped_refptr<Extension> ext2 = CreateExtension(
       u"example2", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
+      ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
+      false);
   registrar()->AddExtension(ext2.get());
   // Components and external policy extensions shouldn't be deleted.
   scoped_refptr<Extension> ext3 = CreateExtension(
       u"example3", base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
+      ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
+      false);
   registrar()->AddExtension(ext3.get());
   EXPECT_EQ(2u, registry()->enabled_extensions().size());
 
@@ -604,7 +607,7 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
 
   scoped_refptr<Extension> ext1 = CreateExtension(
       u"example1", temp_dir.GetPath(), ManifestLocation::kUnpacked,
-      extensions::Manifest::TYPE_THEME, false);
+      extensions::Manifest::Type::kTheme, false);
   service()->FinishInstallationForTest(ext1.get());
   waiter.WaitForThemeChanged();
 
@@ -612,12 +615,14 @@ TEST_F(ProfileResetterTest, ResetExtensionsAndDefaultApps) {
 
   scoped_refptr<Extension> ext2 = CreateExtension(
       u"example2", base::FilePath(FILE_PATH_LITERAL("//nonexistent2")),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
+      ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
+      false);
   registrar()->AddExtension(ext2.get());
 
   scoped_refptr<Extension> ext3 = CreateExtension(
       u"example2", base::FilePath(FILE_PATH_LITERAL("//nonexistent3")),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_HOSTED_APP, true);
+      ManifestLocation::kUnpacked, extensions::Manifest::Type::kHostedApp,
+      true);
   registrar()->AddExtension(ext3.get());
   EXPECT_EQ(3u, registry()->enabled_extensions().size());
 
@@ -639,7 +644,7 @@ TEST_F(ProfileResetterTest, ResetExtensionsByReenablingExternalComponents) {
   scoped_refptr<Extension> ext = CreateExtension(
       u"example", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
       ManifestLocation::kExternalComponent,
-      extensions::Manifest::TYPE_EXTENSION, false);
+      extensions::Manifest::Type::kExtension, false);
   registrar()->AddExtension(ext.get());
 
   registrar()->DisableExtension(
@@ -796,7 +801,8 @@ TEST_F(ProfileResetterTest, CheckSnapshots) {
 
   scoped_refptr<Extension> ext = CreateExtension(
       u"example", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
+      ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
+      false);
   ASSERT_TRUE(ext.get());
   registrar()->AddExtension(ext.get());
 
@@ -880,7 +886,8 @@ TEST_F(ProfileResetterTest, FeedbackSerializationAsProtoTest) {
 
   scoped_refptr<Extension> ext = CreateExtension(
       u"example", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
+      ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
+      false);
   ASSERT_TRUE(ext.get());
   registrar()->AddExtension(ext.get());
 
@@ -940,7 +947,8 @@ struct FeedbackCapture {
 TEST_F(ProfileResetterTest, GetReadableFeedback) {
   scoped_refptr<Extension> ext = CreateExtension(
       u"Tiësto", base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      ManifestLocation::kUnpacked, extensions::Manifest::TYPE_EXTENSION, false);
+      ManifestLocation::kUnpacked, extensions::Manifest::Type::kExtension,
+      false);
   ASSERT_TRUE(ext.get());
   registrar()->AddExtension(ext.get());
 

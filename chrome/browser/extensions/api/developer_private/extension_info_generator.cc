@@ -94,25 +94,25 @@ namespace {
 developer::ExtensionType GetExtensionType(Manifest::Type manifest_type) {
   developer::ExtensionType type = developer::ExtensionType::kExtension;
   switch (manifest_type) {
-    case Manifest::TYPE_EXTENSION:
+    case Manifest::Type::kExtension:
       type = developer::ExtensionType::kExtension;
       break;
-    case Manifest::TYPE_THEME:
+    case Manifest::Type::kTheme:
       type = developer::ExtensionType::kTheme;
       break;
-    case Manifest::TYPE_HOSTED_APP:
+    case Manifest::Type::kHostedApp:
       type = developer::ExtensionType::kHostedApp;
       break;
-    case Manifest::TYPE_LEGACY_PACKAGED_APP:
+    case Manifest::Type::kLegacyPackagedApp:
       type = developer::ExtensionType::kLegacyPackagedApp;
       break;
-    case Manifest::TYPE_PLATFORM_APP:
+    case Manifest::Type::kPlatformApp:
       type = developer::ExtensionType::kPlatformApp;
       break;
-    case Manifest::TYPE_SHARED_MODULE:
+    case Manifest::Type::kSharedModule:
       type = developer::ExtensionType::kSharedModule;
       break;
-    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+    case Manifest::Type::kChromeOSSystemExtension:
       type = developer::ExtensionType::kExtension;
       break;
     default:

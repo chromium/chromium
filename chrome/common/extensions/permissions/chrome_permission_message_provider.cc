@@ -146,8 +146,9 @@ void ChromePermissionMessageProvider::AddHostPermissions(
   // access user data on other domains, so there's no need to prompt.
   // Note: this must remain consistent with IsHostPrivilegeIncrease.
   // See crbug.com/40323545.
-  if (extension_type == Manifest::TYPE_PLATFORM_APP)
+  if (extension_type == Manifest::Type::kPlatformApp) {
     return;
+  }
 
   if (permissions.ShouldWarnAllHosts()) {
     permission_ids->insert(APIPermissionID::kHostsAll);
@@ -218,8 +219,9 @@ bool ChromePermissionMessageProvider::IsHostPrivilegeIncrease(
     Manifest::Type extension_type) const {
   // Platform apps host permission changes do not count as privilege increases.
   // Note: this must remain consistent with AddHostPermissions.
-  if (extension_type == Manifest::TYPE_PLATFORM_APP)
+  if (extension_type == Manifest::Type::kPlatformApp) {
     return false;
+  }
 
   // If the granted permission set can access any host, then it can't be
   // elevated.

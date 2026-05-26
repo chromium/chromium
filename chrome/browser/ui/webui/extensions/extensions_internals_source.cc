@@ -37,27 +37,27 @@ namespace {
 
 const char* TypeToString(extensions::Manifest::Type type) {
   switch (type) {
-    case extensions::Manifest::TYPE_UNKNOWN:
+    case extensions::Manifest::Type::kUnknown:
       return "TYPE_UNKNOWN";
-    case extensions::Manifest::TYPE_EXTENSION:
+    case extensions::Manifest::Type::kExtension:
       return "TYPE_EXTENSION";
-    case extensions::Manifest::TYPE_THEME:
+    case extensions::Manifest::Type::kTheme:
       return "TYPE_THEME";
-    case extensions::Manifest::TYPE_USER_SCRIPT:
+    case extensions::Manifest::Type::kUserScript:
       return "TYPE_USER_SCRIPT";
-    case extensions::Manifest::TYPE_HOSTED_APP:
+    case extensions::Manifest::Type::kHostedApp:
       return "TYPE_HOSTED_APP";
-    case extensions::Manifest::TYPE_LEGACY_PACKAGED_APP:
+    case extensions::Manifest::Type::kLegacyPackagedApp:
       return "TYPE_LEGACY_PACKAGED_APP";
-    case extensions::Manifest::TYPE_PLATFORM_APP:
+    case extensions::Manifest::Type::kPlatformApp:
       return "TYPE_PLATFORM_APP";
-    case extensions::Manifest::TYPE_SHARED_MODULE:
+    case extensions::Manifest::Type::kSharedModule:
       return "TYPE_SHARED_MODULE";
-    case extensions::Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
+    case extensions::Manifest::Type::kLoginScreenExtension:
       return "TYPE_LOGIN_SCREEN_EXTENSION";
-    case extensions::Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+    case extensions::Manifest::Type::kChromeOSSystemExtension:
       return "TYPE_CHROMEOS_SYSTEM_EXTENSION";
-    case extensions::Manifest::NUM_LOAD_TYPES:
+    case extensions::Manifest::Type::kNumLoadTypes:
       break;
   }
   NOTREACHED();

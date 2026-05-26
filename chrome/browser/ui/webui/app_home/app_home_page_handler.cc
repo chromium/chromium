@@ -184,7 +184,7 @@ void AppHomePageHandler::LaunchAppInternal(
   // different more restrictive filter should likely be used instead.
   if (registrar.AppMatches(app_id,
                            web_app::WebAppFilter::IsAppSurfaceableToUser())) {
-    type = extensions::Manifest::Type::TYPE_HOSTED_APP;
+    type = extensions::Manifest::Type::kHostedApp;
     full_launch_url = registrar.GetAppStartUrl(app_id);
     launch_container = web_app::ConvertDisplayModeToAppLaunchContainer(
         registrar.GetAppEffectiveDisplayMode(app_id));

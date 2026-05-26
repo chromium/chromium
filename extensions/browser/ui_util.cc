@@ -79,7 +79,7 @@ bool ShouldDisplayInExtensionSettings(Manifest::Type type,
   // are needed for packaged and platform apps. For example, inspecting
   // background pages. See http://crbug.com/40162419.
   if (!Manifest::IsUnpackedLocation(location) &&
-      type == Manifest::TYPE_HOSTED_APP) {
+      type == Manifest::Type::kHostedApp) {
     return false;
   }
 

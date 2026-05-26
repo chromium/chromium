@@ -65,9 +65,9 @@ bool MV2DeprecationImpactChecker::IsExtensionAffected(
   // Only extensions (not platform apps, etc). User scripts are treated as
   // extensions for the sake of APIs and in presentation to the user, so we
   // include them here.
-  if (manifest_type != Manifest::TYPE_EXTENSION &&
-      manifest_type != Manifest::TYPE_LOGIN_SCREEN_EXTENSION &&
-      manifest_type != Manifest::TYPE_USER_SCRIPT) {
+  if (manifest_type != Manifest::Type::kExtension &&
+      manifest_type != Manifest::Type::kLoginScreenExtension &&
+      manifest_type != Manifest::Type::kUserScript) {
     return false;
   }
 

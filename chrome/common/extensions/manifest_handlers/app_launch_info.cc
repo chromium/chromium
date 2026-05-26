@@ -273,7 +273,7 @@ bool AppLaunchManifestHandler::Parse(Extension* extension,
 }
 
 bool AppLaunchManifestHandler::AlwaysParseForType(Manifest::Type type) const {
-  return type == Manifest::TYPE_LEGACY_PACKAGED_APP;
+  return type == Manifest::Type::kLegacyPackagedApp;
 }
 
 base::span<const char* const> AppLaunchManifestHandler::Keys() const {

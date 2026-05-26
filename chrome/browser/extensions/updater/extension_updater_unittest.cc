@@ -367,7 +367,7 @@ class TestDownloaderFactory {
 
 bool ShouldInstallExtensionsOnly(const Extension* extension,
                                  content::BrowserContext* context) {
-  return extension->GetType() == Manifest::TYPE_EXTENSION;
+  return extension->GetType() == Manifest::Type::kExtension;
 }
 
 bool ShouldInstallThemesOnly(const Extension* extension,

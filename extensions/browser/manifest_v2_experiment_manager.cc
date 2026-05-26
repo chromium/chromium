@@ -525,8 +525,8 @@ void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
       return;
     }
 
-    if (extension.GetType() != Manifest::TYPE_EXTENSION &&
-        extension.GetType() != Manifest::TYPE_LOGIN_SCREEN_EXTENSION) {
+    if (extension.GetType() != Manifest::Type::kExtension &&
+        extension.GetType() != Manifest::Type::kLoginScreenExtension) {
       return;
     }
 

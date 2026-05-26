@@ -515,7 +515,7 @@ TEST_P(MV2DeprecationImpactCheckerUnitTest, UserScriptsAreAffected) {
           .SetManifestVersion(2)
           .SetManifestKey("converted_from_user_script", true)
           .Build();
-  ASSERT_EQ(Manifest::TYPE_USER_SCRIPT, user_script->GetType());
+  ASSERT_EQ(Manifest::Type::kUserScript, user_script->GetType());
 
   bool expected_affected = policy_level() != MV2PolicyLevel::kAllowed;
   EXPECT_EQ(expected_affected,

@@ -306,7 +306,7 @@ class ExtensionSettingsSyncTest : public testing::Test {
 
 TEST_F(ExtensionSettingsSyncTest, NoDataDoesNotInvokeSync) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_EXTENSION;
+  Manifest::Type type = Manifest::Type::kExtension;
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     EXPECT_EQ(0u, GetAllSyncData(data_type).size());
@@ -336,7 +336,7 @@ TEST_F(ExtensionSettingsSyncTest, NoDataDoesNotInvokeSync) {
 
 TEST_F(ExtensionSettingsSyncTest, InSyncDataDoesNotInvokeSync) {
   syncer::DataType data_type = syncer::APP_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_LEGACY_PACKAGED_APP;
+  Manifest::Type type = Manifest::Type::kLegacyPackagedApp;
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
@@ -385,7 +385,7 @@ TEST_F(ExtensionSettingsSyncTest, InSyncDataDoesNotInvokeSync) {
 
 TEST_F(ExtensionSettingsSyncTest, LocalDataWithNoSyncDataIsPushedToSync) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_EXTENSION;
+  Manifest::Type type = Manifest::Type::kExtension;
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
@@ -416,7 +416,7 @@ TEST_F(ExtensionSettingsSyncTest, LocalDataWithNoSyncDataIsPushedToSync) {
 
 TEST_F(ExtensionSettingsSyncTest, AnySyncDataOverwritesLocalData) {
   syncer::DataType data_type = syncer::APP_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_LEGACY_PACKAGED_APP;
+  Manifest::Type type = Manifest::Type::kLegacyPackagedApp;
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
@@ -459,7 +459,7 @@ TEST_F(ExtensionSettingsSyncTest, AnySyncDataOverwritesLocalData) {
 
 TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_EXTENSION;
+  Manifest::Type type = Manifest::Type::kExtension;
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
@@ -532,7 +532,7 @@ TEST_F(ExtensionSettingsSyncTest, ProcessSyncChanges) {
 
 TEST_F(ExtensionSettingsSyncTest, PushToSync) {
   syncer::DataType data_type = syncer::APP_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_LEGACY_PACKAGED_APP;
+  Manifest::Type type = Manifest::Type::kLegacyPackagedApp;
 
   base::Value value1("fooValue");
   base::Value value2(base::Value::Type::LIST);
@@ -666,10 +666,10 @@ TEST_F(ExtensionSettingsSyncTest, ExtensionAndAppSettingsSyncSeparately) {
   value2.GetList().Append("barValue");
 
   // storage1 is an extension, storage2 is an app.
-  ValueStore* storage1 = AddExtensionAndGetStorage(
-      "s1", Manifest::TYPE_EXTENSION);
-  ValueStore* storage2 = AddExtensionAndGetStorage(
-      "s2", Manifest::TYPE_LEGACY_PACKAGED_APP);
+  ValueStore* storage1 =
+      AddExtensionAndGetStorage("s1", Manifest::Type::kExtension);
+  ValueStore* storage2 =
+      AddExtensionAndGetStorage("s2", Manifest::Type::kLegacyPackagedApp);
 
   PostOnBackendSequenceAndWait(FROM_HERE, [&, this]() {
     storage1->Set(DEFAULTS, "foo", value1);
@@ -717,7 +717,7 @@ TEST_F(ExtensionSettingsSyncTest, ExtensionAndAppSettingsSyncSeparately) {
 
 TEST_F(ExtensionSettingsSyncTest, FailingStartSyncingDisablesSync) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_EXTENSION;
+  Manifest::Type type = Manifest::Type::kExtension;
 
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
@@ -904,7 +904,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
   // The test above tests a failing ProcessSyncChanges too, but here test with
   // an initially passing MergeDataAndStartSyncing.
   syncer::DataType data_type = syncer::APP_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_LEGACY_PACKAGED_APP;
+  Manifest::Type type = Manifest::Type::kLegacyPackagedApp;
 
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
@@ -996,7 +996,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingProcessChangesDisablesSync) {
 
 TEST_F(ExtensionSettingsSyncTest, FailingGetAllSyncDataDoesntStopSync) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_EXTENSION;
+  Manifest::Type type = Manifest::Type::kExtension;
 
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
@@ -1044,7 +1044,7 @@ TEST_F(ExtensionSettingsSyncTest, FailingGetAllSyncDataDoesntStopSync) {
 
 TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
   syncer::DataType data_type = syncer::APP_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_LEGACY_PACKAGED_APP;
+  Manifest::Type type = Manifest::Type::kLegacyPackagedApp;
 
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
@@ -1134,7 +1134,7 @@ TEST_F(ExtensionSettingsSyncTest, FailureToReadChangesToPushDisablesSync) {
 
 TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalStateDisablesSync) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_EXTENSION;
+  Manifest::Type type = Manifest::Type::kExtension;
 
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
@@ -1213,7 +1213,7 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalStateDisablesSync) {
 
 TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalChangeDisablesSync) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_EXTENSION;
+  Manifest::Type type = Manifest::Type::kExtension;
 
   base::Value fooValue("fooValue");
   base::Value barValue("barValue");
@@ -1298,7 +1298,7 @@ TEST_F(ExtensionSettingsSyncTest, FailureToPushLocalChangeDisablesSync) {
 TEST_F(ExtensionSettingsSyncTest,
        LargeOutgoingChangeRejectedButIncomingAccepted) {
   syncer::DataType data_type = syncer::APP_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_LEGACY_PACKAGED_APP;
+  Manifest::Type type = Manifest::Type::kLegacyPackagedApp;
 
   // This value should be larger than the limit in sync_storage_backend.cc.
   base::Value large_value(std::string(10000, 'a'));
@@ -1342,7 +1342,7 @@ TEST_F(ExtensionSettingsSyncTest,
 
 TEST_F(ExtensionSettingsSyncTest, Dots) {
   syncer::DataType data_type = syncer::EXTENSION_SETTINGS;
-  Manifest::Type type = Manifest::TYPE_EXTENSION;
+  Manifest::Type type = Manifest::Type::kExtension;
 
   ValueStore* storage = AddExtensionAndGetStorage("ext", type);
 
@@ -1423,7 +1423,7 @@ TEST_F(ExtensionSettingsSyncTest, UnlimitedStorageForLocalButNotSync) {
   permissions.insert("unlimitedStorage");
   scoped_refptr<const Extension> extension =
       settings_test_util::AddExtensionWithIdAndPermissions(
-          profile_.get(), id, Manifest::TYPE_EXTENSION, permissions);
+          profile_.get(), id, Manifest::Type::kExtension, permissions);
 
   frontend_->RunWithStorage(extension, settings_namespace::SYNC,
                             base::BindOnce(&UnlimitedSyncStorageTestCallback));

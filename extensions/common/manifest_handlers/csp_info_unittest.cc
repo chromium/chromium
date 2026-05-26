@@ -515,12 +515,12 @@ TEST_F(CSPInfoUnitTest, UserScriptStrictCSP) {
   scoped_refptr<const Extension> extension =
       LoadAndExpectSuccess(manifest_data);
   ASSERT_TRUE(extension);
-  ASSERT_EQ(Manifest::TYPE_USER_SCRIPT, extension->GetType());
+  ASSERT_EQ(Manifest::Type::kUserScript, extension->GetType());
 
   // Should receive default secure manifest CSP.
   EXPECT_EQ("script-src 'self';",
             CSPInfo::GetExtensionPagesCSP(extension.get()));
-  // Like items with Manifest::TYPE_EXTENSION, TYPE_USER_SCRIPT items should
+  // Like items with Manifest::Type::kExtension, TYPE_USER_SCRIPT items should
   // also get a "minimum CSP" to append to the list of CSPs. This ensures every
   // item has at least a minimally-strict CSP that rejects remotely-hosted
   // code.

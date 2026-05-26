@@ -77,7 +77,7 @@ class ChromePermissionMessageProviderUnittest : public ChromeManifestTest {
                       granted_hosts.Clone(), URLPatternSet()),
         PermissionSet(requested_permissions.Clone(), ManifestPermissionSet(),
                       requested_hosts.Clone(), URLPatternSet()),
-        Manifest::TYPE_EXTENSION);
+        Manifest::Type::kExtension);
   }
 
   ChromePermissionMessageProvider* message_provider() {
@@ -103,7 +103,7 @@ TEST_F(ChromePermissionMessageProviderUnittest,
     APIPermissionSet permissions;
     permissions.insert(APIPermissionID::kTab);
     PermissionMessages messages =
-        GetMessages(permissions, Manifest::TYPE_PLATFORM_APP);
+        GetMessages(permissions, Manifest::Type::kPlatformApp);
     ASSERT_EQ(1U, messages.size());
     EXPECT_EQ(
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ),
@@ -113,7 +113,7 @@ TEST_F(ChromePermissionMessageProviderUnittest,
     APIPermissionSet permissions;
     permissions.insert(APIPermissionID::kTopSites);
     PermissionMessages messages =
-        GetMessages(permissions, Manifest::TYPE_PLATFORM_APP);
+        GetMessages(permissions, Manifest::Type::kPlatformApp);
     ASSERT_EQ(1U, messages.size());
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_TOPSITES),
               messages.front().message());
@@ -123,7 +123,7 @@ TEST_F(ChromePermissionMessageProviderUnittest,
     permissions.insert(APIPermissionID::kTab);
     permissions.insert(APIPermissionID::kTopSites);
     PermissionMessages messages =
-        GetMessages(permissions, Manifest::TYPE_PLATFORM_APP);
+        GetMessages(permissions, Manifest::Type::kPlatformApp);
     ASSERT_EQ(1U, messages.size());
     EXPECT_EQ(
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ),
@@ -152,7 +152,7 @@ TEST_F(ChromePermissionMessageProviderUnittest,
   permissions.insert(std::move(usb));
 
   PermissionMessages messages =
-      GetMessages(permissions, Manifest::TYPE_EXTENSION);
+      GetMessages(permissions, Manifest::Type::kExtension);
 
   ASSERT_EQ(2U, messages.size());
   auto it = messages.begin();
@@ -184,7 +184,7 @@ TEST_F(ChromePermissionMessageProviderUnittest,
 
   PermissionMessages messages = message_provider()->GetPermissionMessages(
       message_provider()->GetAllPermissionIDs(permissions,
-                                              Manifest::TYPE_EXTENSION));
+                                              Manifest::Type::kExtension));
 
   ASSERT_EQ(1U, messages.size());
   EXPECT_EQ(l10n_util::GetStringFUTF16(IDS_EXTENSION_PROMPT_WARNING_2_HOSTS,
@@ -199,7 +199,7 @@ TEST_F(ChromePermissionMessageProviderUnittest, PowerfulPermissions) {
     APIPermissionSet permissions;
     permissions.insert(APIPermissionID::kTab);
     PermissionMessages messages = GetManagementUIPermissionIDs(
-        permissions, ManifestPermissionSet(), Manifest::TYPE_EXTENSION);
+        permissions, ManifestPermissionSet(), Manifest::Type::kExtension);
     ASSERT_EQ(1U, messages.size());
     EXPECT_EQ(
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ),
@@ -209,7 +209,7 @@ TEST_F(ChromePermissionMessageProviderUnittest, PowerfulPermissions) {
     APIPermissionSet permissions;
     permissions.insert(APIPermissionID::kBookmark);
     PermissionMessages messages = GetManagementUIPermissionIDs(
-        permissions, ManifestPermissionSet(), Manifest::TYPE_EXTENSION);
+        permissions, ManifestPermissionSet(), Manifest::Type::kExtension);
     ASSERT_EQ(0U, messages.size());
   }
   {
@@ -217,7 +217,7 @@ TEST_F(ChromePermissionMessageProviderUnittest, PowerfulPermissions) {
     permissions.insert(APIPermissionID::kTab);
     permissions.insert(APIPermissionID::kBookmark);
     PermissionMessages messages = GetManagementUIPermissionIDs(
-        permissions, ManifestPermissionSet(), Manifest::TYPE_EXTENSION);
+        permissions, ManifestPermissionSet(), Manifest::Type::kExtension);
     ASSERT_EQ(1U, messages.size());
     EXPECT_EQ(
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_HISTORY_READ),
@@ -236,7 +236,7 @@ TEST_F(ChromePermissionMessageProviderUnittest, PowerfulPermissions) {
     permissions.insert(APIPermissionID::kBookmark);
     permissions.insert(APIPermissionID::kDebugger);
     PermissionMessages messages = GetManagementUIPermissionIDs(
-        permissions, manifest_permissions, Manifest::TYPE_EXTENSION);
+        permissions, manifest_permissions, Manifest::Type::kExtension);
     ASSERT_EQ(2U, messages.size());
     EXPECT_EQ(l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_WARNING_DEBUGGER),
               messages.front().message());

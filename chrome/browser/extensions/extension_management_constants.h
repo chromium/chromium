@@ -59,16 +59,16 @@ extern const char kBlockedInstallMessage[];
 
 inline constexpr auto kAllowedTypesMap =
     base::MakeFixedFlatMap<std::string_view, Manifest::Type>({
-        {"extension", Manifest::TYPE_EXTENSION},
-        {"theme", Manifest::TYPE_THEME},
-        {"user_script", Manifest::TYPE_USER_SCRIPT},
-        {"hosted_app", Manifest::TYPE_HOSTED_APP},
-        {"legacy_packaged_app", Manifest::TYPE_LEGACY_PACKAGED_APP},
-        {"platform_app", Manifest::TYPE_PLATFORM_APP},
-        {"chromeos_system_extension", Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION},
+        {"extension", Manifest::Type::kExtension},
+        {"theme", Manifest::Type::kTheme},
+        {"user_script", Manifest::Type::kUserScript},
+        {"hosted_app", Manifest::Type::kHostedApp},
+        {"legacy_packaged_app", Manifest::Type::kLegacyPackagedApp},
+        {"platform_app", Manifest::Type::kPlatformApp},
+        {"chromeos_system_extension", Manifest::Type::kChromeOSSystemExtension},
     });
 
-// Return the `Manifest::Type` for `name`, or `Manifest::TYPE_UNKNOWN` if
+// Return the `Manifest::Type` for `name`, or `Manifest::Type::kUnknown` if
 // invalid.
 Manifest::Type GetManifestType(std::string_view name);
 

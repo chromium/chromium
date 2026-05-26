@@ -48,7 +48,7 @@ bool AllProfilesHaveSameExtensions() {
 std::string InstallExtension(Profile* profile, int index) {
   return SyncExtensionHelper::GetInstance()->InstallExtension(
       profile, CreateFakeExtensionName(index),
-      extensions::Manifest::TYPE_EXTENSION);
+      extensions::Manifest::Type::kExtension);
 }
 
 std::string InstallExtensionForAllProfiles(int index) {

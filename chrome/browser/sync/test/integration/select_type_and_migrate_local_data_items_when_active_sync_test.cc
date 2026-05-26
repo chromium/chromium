@@ -127,7 +127,7 @@ class SelectTypeAndMigrateLocalDataItemsWhenActiveTest : public SyncTest {
   extensions::ExtensionId SaveLocalExtension() {
     return SyncExtensionHelper::GetInstance()->InstallExtension(
         GetProfile(0), "simple_with_file",
-        extensions::Manifest::TYPE_EXTENSION);
+        extensions::Manifest::Type::kExtension);
   }
 
   std::vector<const AutofillProfile*> GetLocalAddresses() {
