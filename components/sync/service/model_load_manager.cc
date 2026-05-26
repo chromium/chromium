@@ -161,6 +161,11 @@ void ModelLoadManager::StopDatatypeImpl(
 }
 
 void ModelLoadManager::LoadDesiredTypes() {
+  // Invalidate any previously-registered LoadModelsForType() callbacks (e.g.
+  // from a previous Configure() call) to avoid calling LoadModelsForType()
+  // multiple times for the same type.
+  load_models_weak_ptr_factory_.InvalidateWeakPtrs();
+
   // Note: `preferred_types_without_errors_` might be modified during iteration
   // (e.g. in ModelLoadCallback()), so make a copy.
   const DataTypeSet types = preferred_types_without_errors_;
@@ -178,8 +183,8 @@ void ModelLoadManager::LoadDesiredTypes() {
       // If the datatype is already STOPPING, we wait for it to stop before
       // starting it up again.
       auto stop_callback =
-          base::BindRepeating(&ModelLoadManager::LoadModelsForType,
-                              weak_ptr_factory_.GetWeakPtr(), dtc);
+          base::BindOnce(&ModelLoadManager::LoadModelsForType,
+                         load_models_weak_ptr_factory_.GetWeakPtr(), dtc);
       dtc->Stop(SyncStopMetadataFate::KEEP_METADATA, std::move(stop_callback));
     }
   }
@@ -196,6 +201,7 @@ void ModelLoadManager::LoadDesiredTypes() {
 void ModelLoadManager::Stop(SyncStopMetadataFate metadata_fate) {
   // Ignore callbacks from controllers.
   weak_ptr_factory_.InvalidateWeakPtrs();
+  load_models_weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Stop all data types. Note that stop is also called on data types that are
   // already stopped to allow clearing the metadata.
@@ -300,14 +306,11 @@ void ModelLoadManager::LoadModelsForType(DataTypeController* dtc) {
     return;
   }
 
-  // TODO(crbug.com/41492467): Avoid calling LoadModelsForType() multiple times
-  // upon stop, and re-introduce a CHECK for state to be NOT_RUNNING only.
-  if (dtc->state() == DataTypeController::NOT_RUNNING) {
-    dtc->LoadModels(
-        *configure_context_,
-        base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
-                            weak_ptr_factory_.GetWeakPtr(), dtc->type()));
-  }
+  CHECK_EQ(dtc->state(), DataTypeController::NOT_RUNNING);
+  dtc->LoadModels(
+      *configure_context_,
+      base::BindRepeating(&ModelLoadManager::ModelLoadCallback,
+                          weak_ptr_factory_.GetWeakPtr(), dtc->type()));
 }
 
 }  // namespace syncer

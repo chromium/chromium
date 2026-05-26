@@ -131,6 +131,11 @@ class ModelLoadManager {
 
   bool delegate_waiting_for_ready_for_configure_ = false;
 
+  // Used for LoadModelsForType callbacks registered during LoadDesiredTypes().
+  // Invalidated at the start of each LoadDesiredTypes() call and in Stop(),
+  // to ensure LoadModelsForType() is called at most once per type.
+  base::WeakPtrFactory<ModelLoadManager> load_models_weak_ptr_factory_{this};
+
   base::WeakPtrFactory<ModelLoadManager> weak_ptr_factory_{this};
 };
 
