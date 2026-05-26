@@ -198,13 +198,13 @@ void IdentityGetAuthTokenFunction::OnAccessTokenForDeviceAccountFetchCompleted(
 IdentityGetAuthTokenFunction::IdentityGetAuthTokenFunction() = default;
 
 IdentityGetAuthTokenFunction::~IdentityGetAuthTokenFunction() {
-  TRACE_EVENT_END("identity", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("identity", IdentityMintRequestQueue::GetRequestTrack(this));
 }
 
 ExtensionFunction::ResponseAction IdentityGetAuthTokenFunction::Run() {
   TRACE_EVENT_BEGIN("identity", "IdentityGetAuthTokenFunction",
-                    perfetto::Track::FromPointer(this), "extension",
-                    extension()->id());
+                    IdentityMintRequestQueue::GetRequestTrack(this),
+                    "extension", extension()->id());
 
   if (GetProfile()->IsOffTheRecord()) {
     IdentityGetAuthTokenError error(
@@ -384,7 +384,7 @@ void IdentityGetAuthTokenFunction::CompleteFunctionWithResult(
 void IdentityGetAuthTokenFunction::CompleteFunctionWithError(
     const IdentityGetAuthTokenError& error) {
   TRACE_EVENT_INSTANT("identity", "CompleteFunctionWithError",
-                      perfetto::Track::FromPointer(this), "error",
+                      IdentityMintRequestQueue::GetRequestTrack(this), "error",
                       error.ToString());
   RecordFunctionResult(error, remote_consent_approved_);
   CompleteAsyncRun(Error(error.ToString()));
@@ -460,7 +460,8 @@ void IdentityGetAuthTokenFunction::StartMintTokenFlow(
       << "No Refresh token!";
 #endif
   TRACE_EVENT_BEGIN("identity", "MintTokenFlow",
-                    perfetto::Track::FromPointer(this), "type", type);
+                    IdentityMintRequestQueue::GetRequestTrack(this), "type",
+                    type);
 
   mint_token_flow_type_ = type;
 
@@ -491,7 +492,7 @@ void IdentityGetAuthTokenFunction::StartMintTokenFlow(
 }
 
 void IdentityGetAuthTokenFunction::CompleteMintTokenFlow() {
-  TRACE_EVENT_END("identity", perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END("identity", IdentityMintRequestQueue::GetRequestTrack(this));
 
   IdentityMintRequestQueue::MintType type = mint_token_flow_type_;
 
@@ -504,7 +505,8 @@ void IdentityGetAuthTokenFunction::CompleteMintTokenFlow() {
 void IdentityGetAuthTokenFunction::StartMintToken(
     IdentityMintRequestQueue::MintType type) {
   TRACE_EVENT_INSTANT("identity", "StartMintToken",
-                      perfetto::Track::FromPointer(this), "type", type);
+                      IdentityMintRequestQueue::GetRequestTrack(this), "type",
+                      type);
 
   DCHECK(extension());
   const auto& oauth2_info = OAuth2ManifestHandler::GetOAuth2Info(*extension());
@@ -595,7 +597,7 @@ void IdentityGetAuthTokenFunction::StartMintToken(
 void IdentityGetAuthTokenFunction::OnMintTokenSuccess(
     const OAuth2MintTokenFlow::MintTokenResult& result) {
   TRACE_EVENT_INSTANT("identity", "OnMintTokenSuccess",
-                      perfetto::Track::FromPointer(this));
+                      IdentityMintRequestQueue::GetRequestTrack(this));
 
   IdentityTokenCacheValue token = IdentityTokenCacheValue::CreateToken(
       result.access_token, result.granted_scopes, result.time_to_live);
@@ -611,7 +613,7 @@ void IdentityGetAuthTokenFunction::OnMintTokenSuccess(
 void IdentityGetAuthTokenFunction::OnMintTokenFailure(
     const GoogleServiceAuthError& error) {
   TRACE_EVENT_INSTANT("identity", "OnMintTokenFailure",
-                      perfetto::Track::FromPointer(this), "error",
+                      IdentityMintRequestQueue::GetRequestTrack(this), "error",
                       error.ToString());
   CompleteMintTokenFlow();
   switch (error.state()) {
@@ -634,7 +636,7 @@ void IdentityGetAuthTokenFunction::OnMintTokenFailure(
 void IdentityGetAuthTokenFunction::OnRemoteConsentSuccess(
     const RemoteConsentResolutionData& resolution_data) {
   TRACE_EVENT_INSTANT("identity", "OnRemoteConsentSuccess",
-                      perfetto::Track::FromPointer(this));
+                      IdentityMintRequestQueue::GetRequestTrack(this));
 
   IdentityAPI::GetFactoryInstance()
       ->Get(GetProfile())
@@ -699,7 +701,7 @@ void IdentityGetAuthTokenFunction::OnPrimaryAccountChanged(
   }
 
   TRACE_EVENT_INSTANT("identity", "OnPrimaryAccountChanged (set)",
-                      perfetto::Track::FromPointer(this));
+                      IdentityMintRequestQueue::GetRequestTrack(this));
 
   const CoreAccountInfo& primary_account_info =
       event_details.GetCurrentState().primary_account;
@@ -715,7 +717,7 @@ void IdentityGetAuthTokenFunction::OnPrimaryAccountChanged(
 
 void IdentityGetAuthTokenFunction::SigninFailed() {
   TRACE_EVENT_INSTANT("identity", "SigninFailed",
-                      perfetto::Track::FromPointer(this));
+                      IdentityMintRequestQueue::GetRequestTrack(this));
   CompleteFunctionWithError(IdentityGetAuthTokenError(
       IdentityGetAuthTokenError::State::kSignInFailed));
 }
@@ -768,7 +770,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowApproved(
     const std::string& consent_result,
     const GaiaId& gaia_id) {
   TRACE_EVENT_INSTANT("identity", "OnGaiaRemoteConsentFlowApproved",
-                      perfetto::Track::FromPointer(this));
+                      IdentityMintRequestQueue::GetRequestTrack(this));
   DCHECK(!consent_result.empty());
   remote_consent_approved_ = true;
 
@@ -821,12 +823,13 @@ void IdentityGetAuthTokenFunction::OnGetAccessTokenComplete(
 #endif
   DCHECK(!token_key_account_access_token_fetcher_);
   if (access_token) {
-    TRACE_EVENT_END("identity", perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END("identity",
+                    IdentityMintRequestQueue::GetRequestTrack(this));
 
     StartGaiaRequest(access_token.value());
   } else {
-    TRACE_EVENT_END("identity", perfetto::Track::FromPointer(this), "error",
-                    error.ToString());
+    TRACE_EVENT_END("identity", IdentityMintRequestQueue::GetRequestTrack(this),
+                    "error", error.ToString());
 
     CompleteMintTokenFlow();
     if (TryRecoverFromServiceAuthError(error)) {
@@ -870,7 +873,7 @@ void IdentityGetAuthTokenFunction::OnIdentityAPIShutdown() {
 
 void IdentityGetAuthTokenFunction::StartTokenKeyAccountAccessTokenRequest() {
   TRACE_EVENT_BEGIN("identity", "GetAccessToken",
-                    perfetto::Track::FromPointer(this));
+                    IdentityMintRequestQueue::GetRequestTrack(this));
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(GetProfile());
   token_key_account_access_token_fetcher_ =

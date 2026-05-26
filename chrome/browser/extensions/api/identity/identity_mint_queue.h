@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/api/identity/extension_token_key.h"
 #include "extensions/buildflags/buildflags.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
@@ -42,6 +43,8 @@ class IdentityMintRequestQueue {
     virtual ~Request() = default;
     virtual void StartMintToken(IdentityMintRequestQueue::MintType type) = 0;
   };
+
+  static perfetto::NamedTrack GetRequestTrack(Request* request);
 
   // Adds a request to the queue specified by the token key.
   void RequestStart(IdentityMintRequestQueue::MintType type,
