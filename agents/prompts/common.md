@@ -22,6 +22,9 @@ instructions. Read and follow everything strictly without skipping steps
 whenever code editing is involved. Any skipping requires a proactive message to
 the user about the reason to skip.
 
+0.  **Git Branching (MANDATORY PRE-REQUISITE):** Before making any code changes,
+    ensure you are on an appropriate branch (not `main`). Refer to
+    [git_operations.md](templates/git_operations.md) for Chromium-specific git constraints.
 1.  **Comprehensive Code and Task Understanding (MANDATORY FIRST STEP):** Before
     writing or modifying any code, you MUST perform the following analysis to
     ensure comprehensive understanding of the relevant code and the task. This
