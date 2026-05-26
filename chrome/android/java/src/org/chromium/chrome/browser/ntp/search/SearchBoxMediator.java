@@ -27,12 +27,11 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.ntp.NewTabPageManager;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxFeatureUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.components.omnibox.AutocompleteRequestType;
-import org.chromium.components.omnibox.OmniboxCapabilities;
-import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -164,11 +163,8 @@ class SearchBoxMediator implements DestroyObserver {
     private void updateStartIcon() {
         mModel.set(
                 SearchBoxProperties.PLUS_BUTTON_VISIBILITY,
-                OmniboxFeatures.isMultimodalInputEnabled(mContext)
-                        && OmniboxFeatures.sShowNtpPlusButton.getValue()
-                        && OmniboxCapabilities.isFuseboxSupportedDeviceType()
-                        && ComposeplateUtils.isComposeplateEnabled(mProfile)
-                        && mTemplateUrlService.isDefaultSearchEngineGoogle());
+                FuseboxFeatureUtils.shouldShowNtpPlusButton(
+                        mContext, mProfile, mTemplateUrlService));
     }
 
     private void onTemplateURLServiceChanged() {

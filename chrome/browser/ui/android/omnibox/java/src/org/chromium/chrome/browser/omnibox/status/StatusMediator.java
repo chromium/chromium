@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils.SearchEngineIconObserver;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxFeatureUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
@@ -205,6 +206,7 @@ public class StatusMediator
                     mSearchEngineUtils = SearchEngineUtils.getForProfile(p);
                     mSearchEngineUtils.addIconObserver(this);
                     mImageSupplier.setProfile(p);
+                    updateLocationBarIcon(IconTransitionType.CROSSFADE);
                 });
 
         updateColorTheme();
@@ -489,6 +491,15 @@ public class StatusMediator
                 && mLocationBarDataProvider.getNewTabPageDelegate().isCurrentlyVisible();
     }
 
+    private boolean shouldShowNtpPlusButton() {
+        Profile profile = mProfileSupplier.get();
+        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        return isNtpVisible()
+                && !mUrlHasFocus
+                && FuseboxFeatureUtils.shouldShowNtpPlusButton(
+                        mContext, profile, templateUrlService);
+    }
+
     /**
      * Returns whether the Incognito NewTabPage is currently shown to the user.
      *
@@ -558,7 +569,8 @@ public class StatusMediator
             clickListener = mFuseboxOnPlusButtonClicked;
             descRes = R.string.accessibility_omnibox_open_context_popup;
             doubleTapDescriptionRes = Resources.ID_NULL;
-        } else if (mFuseboxStateSupplier.get() == FuseboxState.COMPACT) {
+        } else if (mFuseboxStateSupplier.get() == FuseboxState.COMPACT
+                || shouldShowNtpPlusButton()) {
             mPermissionStatusHandler.reset(/* shouldDismissNativePrompt= */ false);
             tintRes = mNavigationIconTintRes;
             iconRes = R.drawable.ic_add_round_20dp_with_inset;
@@ -909,6 +921,7 @@ public class StatusMediator
             }
             mLastTabId = currentTab.getId();
         }
+        updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
 
     public void onTabCrashed() {
