@@ -55,7 +55,7 @@ WebSocketHandshakeStreamCreateHelper::CreateHttp2Stream(
   std::vector<std::string> extensions(
       1, "permessage-deflate; client_max_window_bits");
   auto stream = std::make_unique<WebSocketHttp2HandshakeStream>(
-      session, connect_delegate_, requested_subprotocols_,
+      std::move(session), connect_delegate_, requested_subprotocols_,
       std::move(extensions), request_, std::move(dns_aliases));
   request_->OnHttp2HandshakeStreamCreated(stream.get());
   return stream;

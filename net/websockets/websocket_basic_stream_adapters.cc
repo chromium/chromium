@@ -64,7 +64,9 @@ WebSocketSpdyStreamAdapter::WebSocketSpdyStreamAdapter(
     base::WeakPtr<SpdyStream> stream,
     Delegate* delegate,
     NetLogWithSource net_log)
-    : stream_(stream), delegate_(delegate), net_log_(net_log) {
+    : stream_(std::move(stream)),
+      delegate_(delegate),
+      net_log_(std::move(net_log)) {
   stream_->SetDelegate(this);
 }
 

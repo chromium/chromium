@@ -51,10 +51,10 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     std::vector<std::string> requested_extensions,
     WebSocketStreamRequestAPI* request,
     std::set<std::string> dns_aliases)
-    : session_(session),
+    : session_(std::move(session)),
       connect_delegate_(connect_delegate),
-      requested_sub_protocols_(requested_sub_protocols),
-      requested_extensions_(requested_extensions),
+      requested_sub_protocols_(std::move(requested_sub_protocols)),
+      requested_extensions_(std::move(requested_extensions)),
       stream_request_(request),
       dns_aliases_(std::move(dns_aliases)) {
   DCHECK(connect_delegate);
