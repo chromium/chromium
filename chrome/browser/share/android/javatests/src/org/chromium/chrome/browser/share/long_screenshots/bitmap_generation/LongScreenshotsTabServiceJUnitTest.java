@@ -129,4 +129,36 @@ public class LongScreenshotsTabServiceJUnitTest {
         mLongScreenshotsTabService.longScreenshotsClosed();
         verify(mLongScreenshotsTabServiceJniMock, never()).longScreenshotsClosedAndroid(anyInt());
     }
+
+    /** Verifies clearCaptureProcessor clears the registration when it matches. */
+    @Test
+    public void testClearCaptureProcessor_clearIfMatch() {
+        // setUp already registered mProcessor.
+        mLongScreenshotsTabService.clearCaptureProcessor(mProcessor);
+
+        // A subsequent response should not reach the cleared processor.
+        final long fakeAddr = 456L;
+        mLongScreenshotsTabService.processPaintPreviewResponse(fakeAddr);
+        assertFalse(mProcessor.getProcessCapturedTabCalled());
+        verify(mLongScreenshotsTabServiceJniMock, times(1)).releaseCaptureResultPtr(eq(fakeAddr));
+    }
+
+    /**
+     * Verifies clearCaptureProcessor does NOT clear when the expected processor no longer matches.
+     */
+    @Test
+    public void testClearCaptureProcessor_notClearIfNoMatch() {
+        // setUp registered mProcessor. A newer caller registers a different processor.
+        TestCaptureProcessor newerProcessor = new TestCaptureProcessor();
+        mLongScreenshotsTabService.setCaptureProcessor(newerProcessor);
+
+        // The original caller now tries to clear — should be a no-op because it no longer
+        // owns the registration.
+        mLongScreenshotsTabService.clearCaptureProcessor(mProcessor);
+
+        // newerProcessor should still receive responses.
+        mLongScreenshotsTabService.processCaptureTabStatus(Status.OK);
+        assertTrue(newerProcessor.getProcessCapturedTabCalled());
+        assertFalse(mProcessor.getProcessCapturedTabCalled());
+    }
 }

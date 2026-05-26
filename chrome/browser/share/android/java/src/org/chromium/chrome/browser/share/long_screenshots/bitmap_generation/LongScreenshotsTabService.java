@@ -44,8 +44,16 @@ public class LongScreenshotsTabService implements NativePaintPreviewServiceProvi
     }
 
     // Set the object responsible for processing the results after a tab capture.
-    public void setCaptureProcessor(CaptureProcessor captureProcessor) {
+    public void setCaptureProcessor(@Nullable CaptureProcessor captureProcessor) {
         mCaptureProcessor = captureProcessor;
+    }
+
+    // Clears the capture processor only if it is currently set to {@code expected}, so a
+    // destroyed caller does not remove a newer caller's registration.
+    public void clearCaptureProcessor(CaptureProcessor expected) {
+        if (mCaptureProcessor == expected) {
+            mCaptureProcessor = null;
+        }
     }
 
     @CalledByNative

@@ -154,6 +154,9 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
             mCompositor = null;
         }
         if (mTabService != null) {
+            // Unregister from the long-lived service so it does not keep this generator and
+            // the tab it references alive.
+            mTabService.clearCaptureProcessor(this);
             mTabService.longScreenshotsClosed();
         }
     }
