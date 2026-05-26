@@ -164,6 +164,23 @@ TEST_F(AccountCapabilitiesTest, CanSignInToChrome) {
   mutator.set_can_sign_in_to_chrome(false);
   EXPECT_EQ(capabilities.can_sign_in_to_chrome(), signin::Tribool::kFalse);
 }
+
+TEST_F(AccountCapabilitiesTest, MustSkipAppleAgeRangeInChrome) {
+  base::test::ScopedFeatureList feature_list{
+      switches::kEnforceMustSkipAppleAgeRangeInChromeCapability};
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.must_skip_apple_age_range_in_chrome(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_must_skip_apple_age_range_in_chrome(true);
+  EXPECT_EQ(capabilities.must_skip_apple_age_range_in_chrome(),
+            signin::Tribool::kTrue);
+
+  mutator.set_must_skip_apple_age_range_in_chrome(false);
+  EXPECT_EQ(capabilities.must_skip_apple_age_range_in_chrome(),
+            signin::Tribool::kFalse);
+}
 #endif  // BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_IOS)

@@ -72,6 +72,9 @@ class AccountCapabilitiesTestMutator {
       bool value);
   void set_is_subject_to_enterprise_features(bool value);
   void set_is_subject_to_parental_controls(bool value);
+#if BUILDFLAG(IS_IOS)
+  void set_must_skip_apple_age_range_in_chrome(bool value);
+#endif
   // keep-sorted end
 
   // Modifies all supported capabilities at once.

@@ -195,4 +195,11 @@ ACCOUNT_CAPABILITY_F(kFakeCapabilityForTestingName,
                      switches::kEnableFakeCapabilityForTesting)
 #endif
 
+#if BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY_F(kMustSkipAppleAgeRangeInChromeCapabilityName,
+                     MUST_SKIP_APPLE_AGE_RANGE_IN_CHROME_CAPABILITY_NAME,
+                     "accountcapabilities/gi2tqnbnmnqxa",
+                     switches::kEnforceMustSkipAppleAgeRangeInChromeCapability)
+#endif
+
 // keep-sorted end

@@ -212,6 +212,14 @@ void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
       value;
 }
 
+#if BUILDFLAG(IS_IOS)
+void AccountCapabilitiesTestMutator::set_must_skip_apple_age_range_in_chrome(
+    bool value) {
+  capabilities_
+      ->capabilities_map_[kMustSkipAppleAgeRangeInChromeCapabilityName] = value;
+}
+#endif
+
 // keep-sorted end
 
 void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {
