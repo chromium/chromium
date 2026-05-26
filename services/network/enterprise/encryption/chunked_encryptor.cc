@@ -88,8 +88,8 @@ base::expected<EncryptionContext, EncryptionError> ParseHeader(
 
 ChunkedEncryptor::ChunkedEncryptor(const EncryptionContext& encryption_context)
     : nonce_prefix_(encryption_context.nonce_prefix),
-      aead_(crypto::Aead::AES_256_GCM_SIV) {
-  aead_.Init(base::as_byte_span(encryption_context.derived_key.secure_value()));
+      aead_(crypto::Aead::AES_256_GCM_SIV,
+            base::as_byte_span(encryption_context.derived_key.secure_value())) {
 }
 
 ChunkedEncryptor::~ChunkedEncryptor() = default;
