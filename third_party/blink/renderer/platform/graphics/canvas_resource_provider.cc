@@ -720,7 +720,7 @@ Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
       return nullptr;
     }
 
-    FlushCanvas2D(reason);
+    Flush(reason);
 
     // Note that the resource *must* be a CanvasResourceSharedImage as this
     // class creates CanvasResourceSharedImage instances exclusively.
@@ -738,7 +738,7 @@ Canvas2DResourceProviderSharedImage::ProduceCanvasResource(FlushReason reason) {
   // backing SharedImage). Hence, we must make sure that the SI is updated to
   // reflect the ops made in the current write access (if any) and give up any
   // such write access.
-  FlushCanvas2D(reason);
+  Flush(reason);
   EndWriteAccess();
 
   return resource_;
@@ -952,7 +952,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DResourceProviderSharedImage::Snapshot(
   }
 
   if (!cached_snapshot_) {
-    FlushCanvas2D(FlushReason::kOther);
+    Flush(FlushReason::kOther);
     EndWriteAccess();
     cached_snapshot_ = resource_->Bitmap();
 
@@ -1178,7 +1178,7 @@ void Canvas2DResourceProviderSharedImage::OnFlushForImage(
     cc::PaintImage::ContentId content_id) {
   if (recorder_for_canvas_2d_->getRecordingCanvas().IsCachingImage(
           content_id)) {
-    FlushCanvas2D();
+    Flush();
   }
   if (cached_snapshot_ &&
       cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
@@ -1716,7 +1716,7 @@ void CanvasResourceProvider::SetRecorder(
   DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
 }
 
-void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
+void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
   // When printing we avoid flushing if it is still possible to print in
   // vector mode.
   if (IsPrinting() && clear_frame_for_canvas2d_) {
@@ -1726,7 +1726,7 @@ void CanvasResourceProvider::FlushIfRecordingLimitExceededForCanvas2D() {
           max_recorded_op_bytes_for_canvas_2d_ ||
       recorder_for_canvas_2d_->ReleasableImageBytesUsed() >
           max_pinned_image_bytes_for_canvas_2d_) [[unlikely]] {
-    FlushCanvas2D();
+    Flush(FlushReason::kOther);
   }
 }
 
@@ -1793,7 +1793,7 @@ CanvasResourceProvider::UnacceleratedSnapshot(ImageOrientation orientation) {
   if (!IsValid())
     return nullptr;
 
-  FlushCanvas2D();
+  Flush();
 
   cc::PaintImage paint_image;
 
@@ -1930,7 +1930,7 @@ void CanvasNon2DResourceProviderSharedImage::FlushRecording(
   }
 }
 
-std::optional<cc::PaintRecord> CanvasResourceProvider::FlushCanvas2D(
+std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
     FlushReason reason /*=FlushReason::kOther*/) {
   if (!recorder_for_canvas_2d_->HasReleasableDrawOps()) {
     return std::nullopt;

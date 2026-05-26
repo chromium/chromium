@@ -490,7 +490,7 @@ TEST_F(CanvasResourceProviderTest,
 
   // Resource updated after draw.
   provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kWhite);
-  provider->FlushCanvas2D(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
   new_image = provider->Snapshot();
   EXPECT_NE(new_image->GetSharedImage(), image->GetSharedImage());
 
@@ -498,7 +498,7 @@ TEST_F(CanvasResourceProviderTest,
   auto original_shared_image = image->GetSharedImage();
   image.reset();
   provider->GetCanvasForCanvas2DForTesting().clear(SkColors::kBlack);
-  provider->FlushCanvas2D(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
   EXPECT_EQ(original_shared_image, provider->Snapshot()->GetSharedImage());
 }
 
@@ -711,7 +711,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllReleasableOps) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
 
   // `FlushCanvas` releases all ops, leaving the canvas clean.
-  provider->FlushCanvas2D(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
 }
@@ -737,7 +737,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_TRUE(provider->Recorder().HasSideRecording());
 
-  provider->FlushCanvas2D(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
   EXPECT_TRUE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_TRUE(provider->Recorder().HasSideRecording());
@@ -752,7 +752,7 @@ TEST_F(CanvasResourceProviderTest, FlushCanvasReleasesAllOpsOutsideLayers) {
   EXPECT_TRUE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_FALSE(provider->Recorder().HasSideRecording());
 
-  provider->FlushCanvas2D(FlushReason::kOther);
+  provider->Flush(FlushReason::kOther);
   EXPECT_FALSE(provider->Recorder().HasRecordedDrawOps());
   EXPECT_FALSE(provider->Recorder().HasReleasableDrawOps());
   EXPECT_FALSE(provider->Recorder().HasSideRecording());

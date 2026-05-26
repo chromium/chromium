@@ -142,8 +142,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
 
   MemoryManagedPaintCanvas& GetCanvasForCanvas2DForTesting();
-  std::optional<cc::PaintRecord> FlushCanvas2D(
-      FlushReason = FlushReason::kOther);
+  std::optional<cc::PaintRecord> Flush(FlushReason = FlushReason::kOther);
   virtual ScopedRasterTimer CreateScopedRasterTimerForCanvas2D();
 
   virtual bool IsAccelerated() const = 0;
@@ -172,7 +171,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   ResourceProviderType GetType() const { return type_; }
 
-  void FlushIfRecordingLimitExceededForCanvas2D();
+  void FlushIfRecordingLimitExceeded();
 
   const MemoryManagedPaintRecorder& Recorder() const {
     return *recorder_for_canvas_2d_;

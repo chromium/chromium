@@ -136,7 +136,7 @@ void OffscreenCanvasRenderingContext2D::FinalizeFrame(FlushReason reason) {
   if (!GetOrCreateResourceProvider()) {
     return;
   }
-  resource_provider_->FlushCanvas2D(reason);
+  resource_provider_->Flush(reason);
   Host()->NotifyCachesOfSwitchingFrame();
 }
 
@@ -417,7 +417,7 @@ void OffscreenCanvasRenderingContext2D::WillDraw(
 
   if (layer_count_ == 0 && resource_provider_ != nullptr) [[likely]] {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
-    resource_provider_->FlushIfRecordingLimitExceededForCanvas2D();
+    resource_provider_->FlushIfRecordingLimitExceeded();
   }
 }
 
@@ -459,7 +459,7 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
     return false;
   }
 
-  resource_provider_->FlushCanvas2D();
+  resource_provider_->Flush();
 
   // Short-circuit out if an error occurred while flushing the recording.
   if (!resource_provider_->IsValid()) {
@@ -501,8 +501,7 @@ bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {
 
 std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
     FlushReason reason) {
-  return resource_provider_ ? resource_provider_->FlushCanvas2D(reason)
-                            : std::nullopt;
+  return resource_provider_ ? resource_provider_->Flush(reason) : std::nullopt;
 }
 
 OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()
