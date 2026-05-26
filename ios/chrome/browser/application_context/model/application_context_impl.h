@@ -24,6 +24,7 @@ class AutoDeletionService;
 namespace base {
 class CommandLine;
 class SequencedTaskRunner;
+class MemoryPressureListenerRegistry;
 }  // namespace base
 
 class ApplicationBreadcrumbsLogger;
@@ -202,6 +203,9 @@ class ApplicationContextImpl : public ApplicationContext {
 
   std::unique_ptr<optimization_guide::OptimizationGuideGlobalState>
       optimization_guide_global_state_;
+
+  std::unique_ptr<base::MemoryPressureListenerRegistry>
+      memory_pressure_listener_registry_;
 
   // Must be the last member variable.
   base::WeakPtrFactory<ApplicationContextImpl> weak_ptr_factory_{this};
