@@ -34,6 +34,7 @@ enum class ServiceWorkerUpdateViaCache;
 namespace content {
 
 class BrowserContext;
+class ServiceWorkerContextCore;
 
 namespace service_worker_loader_helpers {
 
@@ -119,7 +120,8 @@ bool IsEligibleForSyntheticResponseInternal(
 bool IsSyntheticResponseDryRunModeEnabled();
 
 CONTENT_EXPORT storage::mojom::ServiceWorkerFindRegistrationResultPtr
-GetOrCreateSyntheticRegistration(const GURL& client_url,
+GetOrCreateSyntheticRegistration(ServiceWorkerContextCore* context,
+                                 const GURL& client_url,
                                  const blink::StorageKey& key);
 }  // namespace service_worker_loader_helpers
 

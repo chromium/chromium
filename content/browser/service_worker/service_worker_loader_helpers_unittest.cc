@@ -4,6 +4,9 @@
 
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 
+#include "content/browser/service_worker/embedded_worker_test_helper.h"
+#include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -339,12 +342,13 @@ TEST(ServiceWorkerLoaderHelpersTest, SyntheticResponseRegistrationCollision) {
   const GURL kClientUrlA("https://a.test/search?q=test");
   const blink::StorageKey kKeyA =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kClientUrlA));
-  auto resultA = GetOrCreateSyntheticRegistration(kClientUrlA, kKeyA);
+  auto resultA = GetOrCreateSyntheticRegistration(nullptr, kClientUrlA, kKeyA);
   ASSERT_TRUE(resultA);
   ASSERT_TRUE(resultA->registration);
 
   // Subsequent call for the same storage key should return the same registration ID.
-  auto resultA_again = GetOrCreateSyntheticRegistration(kClientUrlA, kKeyA);
+  auto resultA_again =
+      GetOrCreateSyntheticRegistration(nullptr, kClientUrlA, kKeyA);
   ASSERT_TRUE(resultA_again);
   ASSERT_TRUE(resultA_again->registration);
   EXPECT_EQ(resultA->registration->registration_id,
@@ -358,7 +362,7 @@ TEST(ServiceWorkerLoaderHelpersTest, SyntheticResponseRegistrationCollision) {
   const GURL kClientUrlB("https://b.test/search?q=test");
   const blink::StorageKey kKeyB =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kClientUrlB));
-  auto resultB = GetOrCreateSyntheticRegistration(kClientUrlB, kKeyB);
+  auto resultB = GetOrCreateSyntheticRegistration(nullptr, kClientUrlB, kKeyB);
   ASSERT_TRUE(resultB);
   ASSERT_TRUE(resultB->registration);
 
@@ -369,6 +373,58 @@ TEST(ServiceWorkerLoaderHelpersTest, SyntheticResponseRegistrationCollision) {
             resultB->registration->version_id);
   EXPECT_EQ(resultB->registration->registration_id,
             resultB->registration->version_id);
+}
+
+TEST(ServiceWorkerLoaderHelpersTest, SyntheticResponseFirstPathScope) {
+  content::BrowserTaskEnvironment task_environment;
+
+  const GURL kClientUrl("https://example.test/foo/bar/baz?q=test");
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kClientUrl));
+  auto result = GetOrCreateSyntheticRegistration(nullptr, kClientUrl, kKey);
+  ASSERT_TRUE(result);
+  ASSERT_TRUE(result->registration);
+
+  // Expected scope is derived from the first path segment.
+  EXPECT_EQ(result->registration->scope, GURL("https://example.test/foo"));
+}
+
+TEST(ServiceWorkerLoaderHelpersTest, SyntheticResponseScopeMismatchEviction) {
+  content::BrowserTaskEnvironment task_environment;
+  EmbeddedWorkerTestHelper helper{base::FilePath()};
+
+  const GURL kClientUrlA("https://example.test/foo/bar?q=test");
+  const blink::StorageKey kKey =
+      blink::StorageKey::CreateFirstParty(url::Origin::Create(kClientUrlA));
+  auto resultA =
+      GetOrCreateSyntheticRegistration(helper.context(), kClientUrlA, kKey);
+  ASSERT_TRUE(resultA);
+  ASSERT_TRUE(resultA->registration);
+  EXPECT_EQ(resultA->registration->scope, GURL("https://example.test/foo"));
+
+  // Store the live registration in the context to simulate an active
+  // registration in memory.
+  scoped_refptr<ServiceWorkerRegistration> live_reg =
+      ServiceWorkerRegistration::Create(
+          blink::mojom::ServiceWorkerRegistrationOptions(
+              resultA->registration->scope, resultA->registration->script_type,
+              resultA->registration->update_via_cache),
+          resultA->registration->key, resultA->registration->registration_id,
+          helper.context()->AsWeakPtr(),
+          resultA->registration->ancestor_frame_type);
+
+  // Subsequent request for a completely different path segment under the same
+  // origin.
+  const GURL kClientUrlB("https://example.test/baz?q=test");
+  auto resultB =
+      GetOrCreateSyntheticRegistration(helper.context(), kClientUrlB, kKey);
+  ASSERT_TRUE(resultB);
+  ASSERT_TRUE(resultB->registration);
+  EXPECT_EQ(resultB->registration->scope, GURL("https://example.test/baz"));
+
+  // Verify that the cached ID was evicted and replaced due to scope mismatch.
+  EXPECT_NE(resultA->registration->registration_id,
+            resultB->registration->registration_id);
 }
 
 class ServiceWorkerLoaderHelpersSyntheticResponseTest
