@@ -19,7 +19,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/metrics/log_decoder.h"
-#include "components/metrics/metrics_log.h"
+#include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -241,6 +242,11 @@ UkmService::UkmService(PrefService* pref_service,
       task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   DCHECK(pref_service_);
   DCHECK(client_);
+
+  SetShouldUseMetricsConsentRestructure(
+      metrics::MetricsReportingChoiceService::
+          ShouldUseMetricsConsentRestructure(pref_service));
+
   DVLOG(DebuggingLogLevel::Rare) << "UkmService::Constructor";
   reporting_service_.Initialize();
 

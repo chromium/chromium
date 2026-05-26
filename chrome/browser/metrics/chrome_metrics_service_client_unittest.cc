@@ -376,16 +376,16 @@ TEST_F(ChromeMetricsServiceClientTest, GetUploadSigningKey_CanSignLogs) {
 }
 
 TEST_F(ChromeMetricsServiceClientTest, UkmAndDwaAllowedWithChoiceService) {
-  std::unique_ptr<TestChromeMetricsServiceClient>
-      chrome_metrics_service_client = TestChromeMetricsServiceClient::Create(
-          metrics_state_manager_.get(), synthetic_trial_registry_.get());
-
   PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
 
   // Set up MetricsReportingChoiceService to be active.
   local_state->SetBoolean(
       metrics::prefs::kMetricsConsentRestructureFeatureState, true);
   local_state->SetBoolean(metrics::prefs::kMetricsReportingMigrationDone, true);
+
+  std::unique_ptr<TestChromeMetricsServiceClient>
+      chrome_metrics_service_client = TestChromeMetricsServiceClient::Create(
+          metrics_state_manager_.get(), synthetic_trial_registry_.get());
 
   // Case 1: Level is kNone. UKM/DWA should be disallowed.
   local_state->SetInteger(

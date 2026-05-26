@@ -12,6 +12,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "components/metrics/android_metrics_helper.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/ukm/ukm_pref_names.h"
@@ -57,6 +58,9 @@ class ChromeAndroidMetricsProviderTest
         task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()) {
     ChromeAndroidMetricsProvider::RegisterPrefs(pref_service_.registry());
     ukm::UkmService::RegisterPrefs(pref_service_.registry());
+    metrics::MetricsReportingChoiceService::RegisterPrefs(
+        pref_service_.registry());
+    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
   }
   ~ChromeAndroidMetricsProviderTest() override {
     // In case the test played with the activity type, restore it to what it

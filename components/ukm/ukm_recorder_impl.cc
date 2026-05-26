@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -271,6 +272,18 @@ UkmRecorderImpl::GetDocumentToNavigationUrlsMap(
 bool UkmRecorderImpl::IsSamplingConfigured() const {
   return sampling_forced_for_testing_ ||
          base::FeatureList::IsEnabled(kUkmSamplingRateFeature);
+}
+
+bool UkmRecorderImpl::recording_enabled(ukm::UkmConsentType type) const {
+  if (use_metrics_consent_restructure_) {
+    // TODO(heychirag): In the new model, we don't filter metrics out based on
+    // UkmConsentState. During cleanup, this method should be removed completely.
+    // Note: Since we don't have access to `local_state`,
+    // `use_metrics_consent_restructure_` will only be set to `true` in the next
+    // restart after the migration finishes.
+    return recording_enabled();
+  }
+  return recording_state_.Has(type);
 }
 
 void UkmRecorderImpl::Purge() {

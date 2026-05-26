@@ -240,16 +240,17 @@ TEST_F(IOSChromeMetricsServiceClientTest, GetUploadSigningKey_CanSignLogs) {
 
 TEST_F(IOSChromeMetricsServiceClientTest,
        UkmAndDwaAllowed_IsAdvancedReportingEnabled) {
-  std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
-      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
-                                            synthetic_trial_registry_.get());
-
   PrefService* local_state = GetApplicationContext()->GetLocalState();
 
   // Set up MetricsReportingChoiceService to be active.
   local_state->SetBoolean(
       metrics::prefs::kMetricsConsentRestructureFeatureState, true);
   local_state->SetBoolean(metrics::prefs::kMetricsReportingMigrationDone, true);
+  metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
+
+  std::unique_ptr<IOSChromeMetricsServiceClient> chrome_metrics_service_client =
+      IOSChromeMetricsServiceClient::Create(metrics_state_manager_.get(),
+                                            synthetic_trial_registry_.get());
 
   // Case 1: Level is kNone. UKM/DWA should be disallowed.
   local_state->SetInteger(

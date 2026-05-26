@@ -34,6 +34,7 @@
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_reporting_choice_service.h"
 #include "components/metrics/test/test_metrics_provider.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
@@ -236,6 +237,8 @@ class UkmServiceTest : public testing::Test {
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
+    metrics::MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
+    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
     ClearPrefs();
   }
 
@@ -246,6 +249,9 @@ class UkmServiceTest : public testing::Test {
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
     prefs_.ClearPref(prefs::kUkmUnsentLogStore);
+    prefs_.ClearPref(metrics::prefs::kMetricsReportingLevel);
+    prefs_.ClearPref(metrics::prefs::kMetricsReportingMigrationDone);
+    prefs_.ClearPref(metrics::prefs::kMetricsConsentRestructureFeatureState);
   }
 
   int GetPersistedLogCount() { return ukm::GetPersistedLogCount(prefs_); }
@@ -281,6 +287,8 @@ class UkmReduceAddEntryIpcTest : public testing::Test {
  public:
   UkmReduceAddEntryIpcTest() {
     UkmService::RegisterPrefs(prefs_.registry());
+    metrics::MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
+    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
     ClearPrefs();
     scoped_feature_list_.InitAndEnableFeature(ukm::kUkmReduceAddEntryIPC);
   }
@@ -292,6 +300,9 @@ class UkmReduceAddEntryIpcTest : public testing::Test {
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
     prefs_.ClearPref(prefs::kUkmUnsentLogStore);
+    prefs_.ClearPref(metrics::prefs::kMetricsReportingLevel);
+    prefs_.ClearPref(metrics::prefs::kMetricsReportingMigrationDone);
+    prefs_.ClearPref(metrics::prefs::kMetricsConsentRestructureFeatureState);
   }
 
  protected:
@@ -1052,6 +1063,48 @@ TEST_F(UkmServiceTest, SystemProfileTest) {
   Report proto_report = GetPersistedReport();
   EXPECT_EQ(metrics::TestMetricsServiceClient::kBrandForTesting,
             proto_report.system_profile().brand_code());
+}
+
+TEST_F(UkmServiceTest, RecordingEnabledWithoutConsentRestructure) {
+  // 1. Consent restructure is NOT enabled.
+  prefs_.SetBoolean(metrics::prefs::kMetricsConsentRestructureFeatureState,
+                    false);
+  prefs_.SetBoolean(metrics::prefs::kMetricsReportingMigrationDone, false);
+  metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
+
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  service.Initialize();
+
+  // MSBB consented, APPS not consented.
+  service.UpdateRecording({MSBB});
+  service.EnableRecording();
+  EXPECT_TRUE(service.recording_enabled(MSBB));
+  EXPECT_FALSE(service.recording_enabled(APPS));
+}
+
+TEST_F(UkmServiceTest, RecordingEnabledWithConsentRestructure) {
+  // 2. Consent restructure is enabled.
+  prefs_.SetBoolean(metrics::prefs::kMetricsConsentRestructureFeatureState,
+                    true);
+  prefs_.SetBoolean(metrics::prefs::kMetricsReportingMigrationDone, true);
+  metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
+
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  service.Initialize();
+
+  // Even if only MSBB is consented, both should be enabled if service
+  // recording is enabled.
+  service.UpdateRecording({MSBB});
+  service.EnableRecording();
+  EXPECT_TRUE(service.recording_enabled(MSBB));
+  EXPECT_TRUE(service.recording_enabled(APPS));
+
+  // If service recording is disabled, both should be disabled.
+  service.DisableRecording();
+  EXPECT_FALSE(service.recording_enabled(MSBB));
+  EXPECT_FALSE(service.recording_enabled(APPS));
 }
 
 TEST_F(UkmServiceTest, AddUserDemograhicsWhenAvailableAndFeatureEnabled) {
@@ -2129,6 +2182,8 @@ class UkmServiceTestWithIndependentAppKM
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
+    metrics::MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
+    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
 
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);
@@ -2221,6 +2276,8 @@ class UkmServiceTestWithIndependentAppKMFullConsent
       : task_runner_(new base::TestSimpleTaskRunner),
         task_runner_current_default_handle_(task_runner_) {
     UkmService::RegisterPrefs(prefs_.registry());
+    metrics::MetricsReportingChoiceService::RegisterPrefs(prefs_.registry());
+    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
 
     prefs_.ClearPref(prefs::kUkmClientId);
     prefs_.ClearPref(prefs::kUkmSessionId);

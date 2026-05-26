@@ -30,6 +30,7 @@ class TestingMetricsReportingHandler : public MetricsReportingHandler {
 class MetricsReportingHandlerTest : public testing::Test {
  public:
   MetricsReportingHandlerTest() {
+    metrics::MetricsReportingChoiceService::ClearCachedFeatureStateForTesting();
     handler_ = std::make_unique<TestingMetricsReportingHandler>();
     handler_->set_web_ui(&test_web_ui_);
   }
