@@ -154,8 +154,13 @@ BASE_FEATURE(kNtpSharepointModule, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kNtpShortcuts, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the Tab Resumption module will be shown.
+// TODO(b/516245005): Enable Tab Resumption Module for Android.
 BASE_FEATURE(kNtpMostRelevantTabResumptionModule,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
              base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
 
 // If enabled, the Tab Resumption module will be allowed to fallback to the
 // favicon server when fetching favicons for displayed continuation suggestions.
