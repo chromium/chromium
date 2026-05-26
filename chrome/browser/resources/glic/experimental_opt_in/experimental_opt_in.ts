@@ -11,13 +11,21 @@ import {ExperimentalOptInPageHandler} from './glic_experimental_opt_in.mojom-web
 
 const handler = ExperimentalOptInPageHandler.getRemote();
 
-function init() {
+async function init() {
   const webview = getRequiredElement<chrome.webviewTag.WebView>('webview');
 
   webview.addEventListener('sizechanged', (e: Event) => {
     const sizeEvent = e as unknown as chrome.webviewTag.SizeChangedEvent;
     window.resizeTo(sizeEvent.newWidth, sizeEvent.newHeight);
   });
+
+  // Wait for cookie sync to complete before setting src
+  const {success} = await handler.syncCookies();
+  if (!success) {
+    // TODO(b/513344047): Show failure UI.
+    console.error('Failed to sync cookies for glic webview');
+    return;
+  }
 
   const url = loadTimeData.getString('glicExperimentalTriggeringOptInURL');
   webview.setAttribute('src', url);

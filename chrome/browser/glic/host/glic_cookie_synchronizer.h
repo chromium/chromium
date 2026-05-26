@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GLIC_HOST_GLIC_COOKIE_SYNCHRONIZER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -17,6 +18,7 @@
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/storage_partition_config.h"
 
 namespace content {
 class BrowserContext;
@@ -42,8 +44,16 @@ class GlicCookieSynchronizer
   // underlying multilogin operation hangs.
   static constexpr base::TimeDelta kCookieSyncDefaultTimeout = base::Seconds(7);
 
+  // Create with the default glic storage partition as the target storage
+  // partition.
   GlicCookieSynchronizer(content::BrowserContext* context,
                          signin::IdentityManager* identity_manager);
+
+  // Create with the provided target storage partition.
+  GlicCookieSynchronizer(
+      content::BrowserContext* context,
+      signin::IdentityManager* identity_manager,
+      content::StoragePartitionConfig target_storage_partition_config);
   GlicCookieSynchronizer(const GlicCookieSynchronizer&) = delete;
   GlicCookieSynchronizer& operator=(const GlicCookieSynchronizer&) = delete;
   ~GlicCookieSynchronizer() override;
@@ -105,6 +115,7 @@ class GlicCookieSynchronizer
   bool has_cleared_cookies_ = false;
   const raw_ptr<content::BrowserContext> context_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
+  content::StoragePartitionConfig target_storage_partition_config_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       observation_{this};

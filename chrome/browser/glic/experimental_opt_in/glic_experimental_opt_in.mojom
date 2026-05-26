@@ -11,4 +11,9 @@ interface ExperimentalOptInPageHandler {
 
   // Rejects the experimental opt-in.
   Reject();
+
+  // Sync necessary cookies to the webview partition. Returns true if cookies
+  // were synced successfully, false otherwise. When false is returned, it's not
+  // appropriate to show the webview.
+  SyncCookies() => (bool success);
 };

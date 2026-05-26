@@ -11,7 +11,10 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/storage_partition_config.h"
 
 namespace glic {
 
@@ -21,7 +24,15 @@ GlicExperimentalOptInPageHandler::GlicExperimentalOptInPageHandler(
     mojo::PendingReceiver<mojom::ExperimentalOptInPageHandler> receiver)
     : receiver_(this, std::move(receiver)),
       profile_(profile),
-      required_state_(required_state) {}
+      required_state_(required_state),
+      cookie_synchronizer_(std::make_unique<GlicCookieSynchronizer>(
+          profile_,
+          IdentityManagerFactory::GetForProfile(profile_),
+          content::StoragePartitionConfig::Create(
+              profile_,
+              chrome::kChromeUIGlicExperimentalOptInHost,
+              /*partition_name=*/"glicexperimentalpart",
+              /*in_memory=*/true))) {}
 
 GlicExperimentalOptInPageHandler::~GlicExperimentalOptInPageHandler() = default;
 
@@ -55,6 +66,12 @@ void GlicExperimentalOptInPageHandler::Accept() {
 
 void GlicExperimentalOptInPageHandler::Reject() {
   GetGlicService()->opt_in_controller().CloseDialog(false);
+}
+
+void GlicExperimentalOptInPageHandler::SyncCookies(
+    SyncCookiesCallback callback) {
+  cookie_synchronizer_->CopyCookiesToWebviewStoragePartition(
+      std::move(callback));
 }
 
 }  // namespace glic

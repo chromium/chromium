@@ -22,6 +22,7 @@
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -54,20 +55,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
 // This ensures a fresh cookie state after restart.
 BASE_FEATURE(kGlicClearCookiesOnFirstSync, base::FEATURE_ENABLED_BY_DEFAULT);
 
-content::StoragePartitionConfig GetGlicMainStoragePartitionConfig(
-    content::BrowserContext* browser_context) {
-  // This storage partition must match the partition attribute in
-  // chrome/browser/resources/glic/glic.html: "persist:glicpart".
-  return content::StoragePartitionConfig::Create(browser_context, "glic",
-                                                 /*partition_name=*/"glicpart",
-                                                 /*in_memory=*/false);
-}
-
-content::StoragePartitionConfig GetGlicStoragePartitionConfig(
-    content::BrowserContext* browser_context) {
-  return GetGlicMainStoragePartitionConfig(browser_context);
-}
-
 }  // namespace
 
 class GlicCookieSynchronizer::ClearCookiesTask {
@@ -96,9 +83,13 @@ class GlicCookieSynchronizer::ClearCookiesTask {
 // won't be part of the launched feature.
 class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
  public:
-  SyncCookiesForDevelopmentTask(content::BrowserContext* browser_context,
-                                base::OnceCallback<void(bool)> callback)
+  SyncCookiesForDevelopmentTask(
+      content::BrowserContext* browser_context,
+      content::StoragePartitionConfig target_storage_partition_config,
+      base::OnceCallback<void(bool)> callback)
       : browser_context_(browser_context),
+        target_storage_partition_config_(
+            std::move(target_storage_partition_config)),
         callback_(std::move(callback)) {
     network::mojom::CookieManager* cookie_manager =
         browser_context_->GetDefaultStoragePartition()
@@ -141,8 +132,7 @@ class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
       const std::vector<::net::CookieWithAccessResult>& excluded_cookies) {
     --get_cookie_list_request_count_;
     content::StoragePartition* webview_storage =
-        browser_context_->GetStoragePartition(
-            GetGlicStoragePartitionConfig(browser_context_));
+        browser_context_->GetStoragePartition(target_storage_partition_config_);
     network::mojom::CookieManager* webview_cookie_manager =
         webview_storage->GetCookieManagerForBrowserProcess();
 
@@ -192,6 +182,7 @@ class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
   }
 
   const raw_ptr<content::BrowserContext> browser_context_;
+  content::StoragePartitionConfig target_storage_partition_config_;
   base::OnceCallback<void(bool)> callback_;
   int set_cookie_request_count_ = 0;
   int get_cookie_list_request_count_ = 0;
@@ -202,12 +193,31 @@ class GlicCookieSynchronizer::SyncCookiesForDevelopmentTask {
 GlicCookieSynchronizer::GlicCookieSynchronizer(
     content::BrowserContext* context,
     signin::IdentityManager* identity_manager)
-    : context_(context), identity_manager_(identity_manager) {
+    : GlicCookieSynchronizer(
+          context,
+          identity_manager,
+          content::StoragePartitionConfig::Create(context,
+                                                  chrome::kChromeUIGlicHost,
+                                                  /*partition_name=*/"glicpart",
+                                                  /*in_memory=*/false)) {}
+
+GlicCookieSynchronizer::GlicCookieSynchronizer(
+    content::BrowserContext* context,
+    signin::IdentityManager* identity_manager,
+    content::StoragePartitionConfig target_storage_partition_config)
+    : context_(context),
+      identity_manager_(identity_manager),
+      target_storage_partition_config_(
+          std::move(target_storage_partition_config)) {
   CHECK(context_);
   observation_.Observe(identity_manager);
 }
 
-GlicCookieSynchronizer::~GlicCookieSynchronizer() = default;
+GlicCookieSynchronizer::~GlicCookieSynchronizer() {
+  if (!callbacks_.empty()) {
+    CompleteAuth(/*is_success=*/false);
+  }
+}
 
 std::unique_ptr<GaiaAuthFetcher>
 GlicCookieSynchronizer::CreateGaiaAuthFetcherForPartition(
@@ -267,7 +277,7 @@ void GlicCookieSynchronizer::CopyCookiesToWebviewStoragePartition(
       IsPrimaryAccountGoogleInternal(*identity_manager_)) {
     sync_cookies_for_development_task_ =
         std::make_unique<SyncCookiesForDevelopmentTask>(
-            context_,
+            context_, target_storage_partition_config_,
             base::BindOnce(
                 &GlicCookieSynchronizer::SyncCookiesForDevelopmentComplete,
                 GetWeakPtr()));
@@ -364,7 +374,7 @@ void GlicCookieSynchronizer::CompleteAuth(bool is_success) {
 
 content::StoragePartition* GlicCookieSynchronizer::GetStoragePartition() {
   content::StoragePartition* partition =
-      context_->GetStoragePartition(GetGlicStoragePartitionConfig(context_));
+      context_->GetStoragePartition(target_storage_partition_config_);
   return partition;
 }
 
