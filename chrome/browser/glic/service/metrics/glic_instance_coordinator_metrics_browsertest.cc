@@ -30,13 +30,9 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
 
 // Detach is not supported on Android, and multiple windows/tabs don't work
 // yet in Android browsertests, preventing concurrent visibility testing.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ConcurrentVisibility DISABLED_ConcurrentVisibility
-#else
-#define MAYBE_ConcurrentVisibility ConcurrentVisibility
-#endif
+// TODO(crbug.com/512686943): Test is also causing a UAF on Linux.
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
-                       MAYBE_ConcurrentVisibility) {
+                       DISABLED_ConcurrentVisibility) {
   GlicHistogramTester histogram_tester;
 
   // 1. Open Glic for active tab and detach it (making it floating).
