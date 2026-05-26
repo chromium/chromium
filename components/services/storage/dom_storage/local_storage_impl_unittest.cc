@@ -1340,18 +1340,8 @@ TEST_P(LocalStorageImplTest, CorruptionOnDisk) {
 TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
   base::HistogramTester histograms;
 
-  std::optional<base::RunLoop> open_loop;
-  std::optional<base::RunLoop> destruction_loop;
-  size_t num_database_open_requests = 0;
-  context()->SetDatabaseOpenCallbackForTesting(base::BindLambdaForTesting([&] {
-    ++num_database_open_requests;
-    open_loop->Quit();
-  }));
-
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
-
-  open_loop.emplace();
 
   // Open three connections to the database. Two to the same StorageKey, and a
   // third to a different StorageKey.
@@ -1368,7 +1358,7 @@ TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
   context()->BindStorageArea(
       blink::StorageKey::CreateFromStringForTesting("http://example.com"),
       area3.BindNewPipeAndPassReceiver());
-  open_loop->Run();
+  WaitForDatabaseOpen();
 
   // Add observers to the first two connections.
   TestStorageAreaObserver observer1;
@@ -1376,61 +1366,43 @@ TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
   TestStorageAreaObserver observer2;
   area2->AddObserver(observer2.Bind());
 
-  // Verify one attempt was made to open the database.
-  ASSERT_EQ(1u, num_database_open_requests);
-
   // This loop will be Quit if and when the current database instance is
   // destroyed, which should happen after many commit failures.
-  destruction_loop.emplace();
-
+  base::RunLoop destruction_loop;
   bool first_database_destroyed = false;
   context()->GetDatabaseForTesting()->database().PostTaskWithThisObject(
       base::BindLambdaForTesting([&](DomStorageDatabase* db) {
         db->MakeAllCommitsFailForTesting();
         db->SetDestructionCallbackForTesting(base::BindLambdaForTesting([&] {
           first_database_destroyed = true;
-          destruction_loop->Quit();
+          destruction_loop.Quit();
         }));
       }));
 
-  // Also prepare for another database connection, this time without making
-  // commits fail.
-  open_loop.emplace();
-  num_database_open_requests = 0;
-  context()->SetDatabaseOpenCallbackForTesting(base::BindLambdaForTesting([&] {
-    ++num_database_open_requests;
-    open_loop->Quit();
-  }));
-
-  // Start a put operation on the third connection before starting to commit
-  // a lot of data on the first StorageKey. This put operation should result in
-  // a pending commit that will get cancelled when the database is destroyed.
-  area3->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-             base::BindOnce([](bool success) { EXPECT_TRUE(success); }));
-
-  // Repeatedly write data to the database, to trigger enough commit errors.
+  // Write data to trigger commit errors and force recovery. Recovery must
+  // fire after exactly kCommitErrorThreshold + 1 failing commits.
   size_t values_written = 0;
-  while (area1.is_connected()) {
+  for (int i = 0; i <= kCommitErrorThreshold; ++i) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
     value[0]++;
+    // Ensure the Put cb runs before incrementing `values_written`.
+    base::test::TestFuture<bool> put_future;
     area1->Put(key, value, std::nullopt, test::MakeStorageAreaSource(),
-               base::BindLambdaForTesting([&](bool success) {
-                 EXPECT_TRUE(success);
-                 values_written++;
-               }));
-    area1.FlushForTesting();
-    // And we need to flush after every change. Otherwise changes get batched up
-    // and only one commit is done some time later.
-    context()->FlushStorageKeyForTesting(blink::StorageKey(
-        blink::StorageKey::CreateFromStringForTesting("http://foobar.com")));
+               put_future.GetCallback());
+    EXPECT_TRUE(put_future.Take());
+    ++values_written;
+    // Commit this iteration's write to the DB sequence. The reply may fire
+    // recovery if it pushes `commit_error_count_` past `kCommitErrorThreshold`.
+    context()->FlushStorageKeyForTesting(
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
   }
+  // Ensure all commits have been processed on the DB sequence.
+  WaitForDatabaseTasks();
   area1.reset();
 
-  // Wait for LocalStorageImpl to try to reconnect to the database, and
-  // Enough commit failures should happen during this loop to cause the database
-  // to be destroyed.
-  destruction_loop->Run();
+  // Wait for the old database to be destroyed as part of recovery.
+  destruction_loop.Run();
   EXPECT_TRUE(first_database_destroyed);
 
   // The connection to the second area should end up closed as well.
@@ -1446,11 +1418,6 @@ TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
   area1->AddObserver(observer3.Bind());
   area1->Delete(key, std::nullopt, test::MakeStorageAreaSource(),
                 delete_loop.QuitClosure());
-
-  // The new database should be ready to go.
-  open_loop->Run();
-  ASSERT_EQ(1u, num_database_open_requests);
-
   delete_loop.Run();
   area1.reset();
 
@@ -1494,16 +1461,6 @@ TEST_P(LocalStorageImplTest, RecreateOnCommitFailure) {
 TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   base::HistogramTester histograms;
 
-  // Ensure that the opened database always fails on write.
-  std::optional<base::RunLoop> open_loop;
-  size_t num_database_open_requests = 0;
-  size_t num_databases_destroyed = 0;
-  context()->SetDatabaseOpenCallbackForTesting(base::BindLambdaForTesting([&] {
-    ++num_database_open_requests;
-    open_loop->Quit();
-  }));
-  open_loop.emplace();
-
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
 
@@ -1512,53 +1469,49 @@ TEST_P(LocalStorageImplTest, DontRecreateOnRepeatedCommitFailure) {
   context()->BindStorageArea(
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
       area.BindNewPipeAndPassReceiver());
-  open_loop->Run();
+  WaitForDatabaseOpen();
 
   // Ensure that all commits fail on the database, and that we observe its
   // destruction.
+  base::RunLoop destruction_loop;
+  size_t num_databases_destroyed = 0;
   context()->GetDatabaseForTesting()->database().PostTaskWithThisObject(
       base::BindLambdaForTesting([&](DomStorageDatabase* db) {
         db->MakeAllCommitsFailForTesting();
-        db->SetDestructionCallbackForTesting(
-            base::BindLambdaForTesting([&] { ++num_databases_destroyed; }));
+        db->SetDestructionCallbackForTesting(base::BindLambdaForTesting([&] {
+          ++num_databases_destroyed;
+          destruction_loop.Quit();
+        }));
       }));
 
-  // Verify one attempt was made to open the database.
-  ASSERT_EQ(1u, num_database_open_requests);
-
-  // Setup a new RunLoop so we can wait until LocalStorageImpl tries to
-  // reconnect to the database, which should happen after several commit
-  // errors.
-  open_loop.emplace();
-
-  // Repeatedly write data to the database, to trigger enough commit errors.
+  // Write data to trigger commit errors and force recovery. Recovery must
+  // fire after exactly kCommitErrorThreshold + 1 failing commits.
   std::optional<std::vector<uint8_t>> old_value;
-  while (area.is_connected()) {
+  for (int i = 0; i <= kCommitErrorThreshold; ++i) {
     // Every write needs to be different to make sure there actually is a
     // change to commit.
     value[0]++;
+    // Wait for the Put cb to fire before scheduling the next commit.
+    base::test::TestFuture<bool> put_future;
     area->Put(key, value, old_value, test::MakeStorageAreaSource(),
-              base::BindLambdaForTesting(
-                  [&](bool success) { EXPECT_TRUE(success); }));
+              put_future.GetCallback());
+    EXPECT_TRUE(put_future.Take());
     old_value = std::vector<uint8_t>(value);
-    area.FlushForTesting();
-    // And we need to flush after every change. Otherwise changes get batched up
-    // and only one commit is done some time later.
-    context()->FlushStorageKeyForTesting(blink::StorageKey(
-        blink::StorageKey::CreateFromStringForTesting("http://foobar.com")));
+    // Commit this iteration's write to the DB sequence. The reply may fire
+    // recovery if it pushes `commit_error_count_` past `kCommitErrorThreshold`.
+    context()->FlushStorageKeyForTesting(
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
   }
+  // Ensure all commits have been processed on the DB sequence.
+  WaitForDatabaseTasks();
   area.reset();
 
-  // Wait for LocalStorageImpl to try to reconnect to the database, and
-  // connect that new request with a database implementation that always fails
-  // on write.
-  context()->SetDatabaseOpenCallbackForTesting(base::BindLambdaForTesting([&] {
-    ++num_database_open_requests;
-    open_loop->Quit();
-  }));
-  open_loop->Run();
-  EXPECT_EQ(2u, num_database_open_requests);
+  // Wait for the old database to be destroyed as part of recovery, then for
+  // the post-recovery database to be fully connected before proceeding.
+  destruction_loop.Run();
   EXPECT_EQ(1u, num_databases_destroyed);
+  WaitForDatabaseOpen();
+
   context()->GetDatabaseForTesting()->database().PostTaskWithThisObject(
       base::BindOnce(
           [](DomStorageDatabase* db) { db->MakeAllCommitsFailForTesting(); }));
@@ -1636,53 +1589,38 @@ TEST_F(LocalStorageImplFakeDbTest, TransientErrorsAfterRecovery) {
             return fake;
           }));
 
-  std::optional<base::RunLoop> open_loop;
-  size_t num_database_open_requests = 0;
-
   InitializeStorage(storage_path());
-
-  context()->SetDatabaseOpenCallbackForTesting(base::BindLambdaForTesting([&] {
-    ++num_database_open_requests;
-    open_loop->Quit();
-  }));
-  open_loop.emplace();
-
-  // Wait for the first database to open, then bind a storage area.
-  open_loop->Run();
-  ASSERT_EQ(1u, num_database_open_requests);
+  WaitForDatabaseOpen();
   mojo::Remote<blink::mojom::StorageArea> area;
   context()->BindStorageArea(
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com"),
       area.BindNewPipeAndPassReceiver());
 
-  // Setup a new RunLoop to wait for the database to be recreated as part of
-  // recovery.
-  open_loop.emplace();
-  context()->SetDatabaseOpenCallbackForTesting(base::BindLambdaForTesting([&] {
-    ++num_database_open_requests;
-    open_loop->Quit();
-  }));
-
-  // Repeatedly write data to trigger enough commit errors for recovery.
+  // Write data to trigger commit errors and force recovery. Recovery must
+  // fire after exactly kCommitErrorThreshold + 1 failing commits.
   auto key = StdStringToUint8Vector("key");
   auto value = StdStringToUint8Vector("value");
   std::optional<std::vector<uint8_t>> old_value;
-  while (area.is_connected()) {
+  for (int i = 0; i <= kCommitErrorThreshold; ++i) {
     value[0]++;
+    // Wait for the Put cb to fire before scheduling the next commit.
+    base::test::TestFuture<bool> put_future;
     area->Put(key, value, old_value, test::MakeStorageAreaSource(),
-              base::BindLambdaForTesting(
-                  [&](bool success) { EXPECT_TRUE(success); }));
+              put_future.GetCallback());
+    EXPECT_TRUE(put_future.Take());
     old_value = std::vector<uint8_t>(value);
-    area.FlushForTesting();
-    context()->FlushStorageKeyForTesting(blink::StorageKey(
-        blink::StorageKey::CreateFromStringForTesting("http://foobar.com")));
+    // Commit this iteration's write to the DB sequence. The reply may fire
+    // recovery if it pushes `commit_error_count_` past `kCommitErrorThreshold`.
+    context()->FlushStorageKeyForTesting(
+        blink::StorageKey::CreateFromStringForTesting("http://foobar.com"));
   }
+  // Ensure all commits have been processed on the DB sequence.
+  WaitForDatabaseTasks();
   area.reset();
 
-  // Wait for the database to be recreated. The second database's UpdateMaps
-  // also returns IOError (set at creation above).
-  open_loop->Run();
-  EXPECT_EQ(2u, num_database_open_requests);
+  // Wait for the post-recovery database to be fully connected. The second
+  // database's UpdateMaps also returns IOError (set at creation above).
+  WaitForDatabaseOpen();
 
   // Reconnect and write a few times to accumulate some errors (fewer than the
   // threshold).
