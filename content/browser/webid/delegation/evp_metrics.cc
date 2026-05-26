@@ -9,7 +9,8 @@
 
 namespace content::webid {
 
-void RecordEvpRequestStatus(EvpRequestStatus status) {
+void RecordEvpRequestStatus(
+    blink::mojom::EmailVerificationRequestResult status) {
   base::UmaHistogramEnumeration("Blink.Evp.Status.Request", status);
 }
 

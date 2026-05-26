@@ -561,6 +561,38 @@ experimental domain Audits
       InvalidAccountsResponse
       NoReturningUserFromFetchedAccounts
 
+  type EmailVerificationRequestIssueDetails extends object
+    properties
+      EmailVerificationRequestIssueReason emailVerificationRequestIssueReason
+
+  # Represents the failure reason when an email verification request fails.
+  # Should be updated alongside EmailVerificationRequestResult in
+  # third_party/blink/public/mojom/devtools/inspector_issue.mojom.
+  type EmailVerificationRequestIssueReason extends string
+    enum
+      InvalidEmail
+      DnsFetchFailed
+      DnsInvalidRecord
+      WellKnownHttpNotFound
+      WellKnownNoResponse
+      WellKnownInvalidResponse
+      WellKnownListEmpty
+      WellKnownInvalidContentType
+      WellKnownMissingIssuanceEndpoint
+      WellKnownIssuanceEndpointCrossOrigin
+      WellKnownUnsupportedSigningAlgorithm
+      TokenHttpNotFound
+      TokenNoResponse
+      TokenInvalidResponse
+      TokenInvalidContentType
+      TokenMalformedSdJwt
+      TokenInvalidSdJwt
+      KeyBindingSigningFailed
+      RpOriginIsOpaque
+      WellKnownMissingAccountsEndpoint
+      UserLoggedOut
+      WellKnownAccountsEndpointCrossOrigin
+
   # This issue tracks client hints related issues. It's used to deprecate old
   # features, encourage the use of new ones, and provide general guidance.
   type ClientHintIssueDetails extends object
@@ -744,6 +776,7 @@ experimental domain Audits
       PermissionElementIssue
       PerformanceIssue
       SelectivePermissionsInterventionIssue
+      EmailVerificationRequestIssue
 
   # This struct holds a list of optional fields with additional information
   # specific to the kind of issue. When adding a new issue code, please also
@@ -779,6 +812,7 @@ experimental domain Audits
       optional PermissionElementIssueDetails permissionElementIssueDetails
       optional PerformanceIssueDetails performanceIssueDetails
       optional SelectivePermissionsInterventionIssueDetails selectivePermissionsInterventionIssueDetails
+      optional EmailVerificationRequestIssueDetails emailVerificationRequestIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.
   # exceptions, CDP message, console messages, etc.) to reference an issue.

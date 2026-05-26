@@ -23,9 +23,12 @@
 #include "crypto/keypair.h"
 #include "crypto/sha2.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "url/origin.h"
 
 namespace content::webid {
+
+using blink::mojom::EmailVerificationRequestResult;
 
 std::optional<std::string> GetDomainFromEmail(const std::string& email) {
   auto parts = base::RSplitStringOnce(email, "@");
@@ -118,7 +121,7 @@ void EmailVerificationRequest::Send(
       !IsSameOriginWithAncestors(render_frame_host_->GetLastCommittedOrigin(),
                                  &(*render_frame_host_))) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kRpOriginIsOpaque);
+                    EmailVerificationRequestResult::kRpOriginIsOpaque);
     return;
   }
 
@@ -130,7 +133,7 @@ void EmailVerificationRequest::Send(
   std::optional<std::string> domain = GetDomainFromEmail(email);
   if (!domain) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kInvalidEmail);
+                    EmailVerificationRequestResult::kInvalidEmail);
     return;
   }
   std::string hostname = "_email-verification." + *domain;
@@ -150,7 +153,7 @@ void EmailVerificationRequest::OnDnsRequestComplete(
   // parses the TXT record to extract the issuer's origin.
   if (!text_records || text_records->size() != 1) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kDnsFetchFailed);
+                    EmailVerificationRequestResult::kDnsFetchFailed);
     return;
   }
 
@@ -158,14 +161,14 @@ void EmailVerificationRequest::OnDnsRequestComplete(
   static constexpr char kIssPrefix[] = "iss=";
   if (!base::StartsWith(record, kIssPrefix, base::CompareCase::SENSITIVE)) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kDnsInvalidRecord);
+                    EmailVerificationRequestResult::kDnsInvalidRecord);
     return;
   }
 
   std::string iss = record.substr(sizeof(kIssPrefix) - 1);
   if (iss.empty()) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kDnsInvalidRecord);
+                    EmailVerificationRequestResult::kDnsInvalidRecord);
     return;
   }
 
@@ -204,7 +207,8 @@ void EmailVerificationRequest::OnDnsRequestComplete(
   // unnecessarily. We only stop if we explicitly know the user is logged out.
   bool is_logged_in = login_status.value_or(true);
   if (!is_logged_in) {
-    accounts->data = base::unexpected(EvpRequestStatus::kUserLoggedOut);
+    accounts->data =
+        base::unexpected(EmailVerificationRequestResult::kUserLoggedOut);
     barrier.Run();
     return;
   }
@@ -246,15 +250,15 @@ void EmailVerificationRequest::OnWebIdentityWellKnownFetched(
   }
 
   if (well_known.accounts.is_empty()) {
-    accounts->data =
-        base::unexpected(EvpRequestStatus::kWellKnownMissingAccountsEndpoint);
+    accounts->data = base::unexpected(
+        EmailVerificationRequestResult::kWellKnownMissingAccountsEndpoint);
     barrier.Run();
     return;
   }
 
   if (!issuer.IsSameOriginWith(well_known.accounts)) {
     accounts->data = base::unexpected(
-        EvpRequestStatus::kWellKnownAccountsEndpointCrossOrigin);
+        EmailVerificationRequestResult::kWellKnownAccountsEndpointCrossOrigin);
     barrier.Run();
     return;
   }
@@ -304,14 +308,16 @@ void EmailVerificationRequest::OnAccountStatusFetched(
   // Step 3.3: when the .well-known/email-verification file is fetched,
   // the browser checks that the issuance_endpoint is present.
   if (well_known->data->issuance_endpoint.is_empty()) {
-    CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kWellKnownMissingIssuanceEndpoint);
+    CompleteRequest(
+        std::move(callback), std::nullopt,
+        EmailVerificationRequestResult::kWellKnownMissingIssuanceEndpoint);
     return;
   }
 
   if (!issuer_origin.IsSameOriginWith(well_known->data->issuance_endpoint)) {
-    CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kWellKnownIssuanceEndpointCrossOrigin);
+    CompleteRequest(
+        std::move(callback), std::nullopt,
+        EmailVerificationRequestResult::kWellKnownIssuanceEndpointCrossOrigin);
     return;
   }
 
@@ -325,7 +331,7 @@ void EmailVerificationRequest::OnAccountStatusFetched(
 
   if (!email_matched) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kUserLoggedOut);
+                    EmailVerificationRequestResult::kUserLoggedOut);
     return;
   }
 
@@ -354,8 +360,9 @@ void EmailVerificationRequest::OnAccountStatusFetched(
   }
 
   if (!private_key) {
-    CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kWellKnownUnsupportedSigningAlgorithm);
+    CompleteRequest(
+        std::move(callback), std::nullopt,
+        EmailVerificationRequestResult::kWellKnownUnsupportedSigningAlgorithm);
     return;
   }
 
@@ -400,7 +407,7 @@ void EmailVerificationRequest::OnTokenRequestComplete(
 
   if (!result.token || !result.token->is_string()) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kTokenInvalidResponse);
+                    EmailVerificationRequestResult::kTokenInvalidResponse);
     return;
   }
 
@@ -413,7 +420,7 @@ void EmailVerificationRequest::OnTokenRequestComplete(
 
   if (!token) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kTokenMalformedSdJwt);
+                    EmailVerificationRequestResult::kTokenMalformedSdJwt);
     return;
   }
 
@@ -421,7 +428,7 @@ void EmailVerificationRequest::OnTokenRequestComplete(
 
   if (!sd_jwt) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kTokenInvalidSdJwt);
+                    EmailVerificationRequestResult::kTokenInvalidSdJwt);
     return;
   }
 
@@ -455,7 +462,7 @@ void EmailVerificationRequest::OnTokenRequestComplete(
 
   if (!kb_jwt.Sign(std::move(signer))) {
     CompleteRequest(std::move(callback), std::nullopt,
-                    EvpRequestStatus::kKeyBindingSigningFailed);
+                    EmailVerificationRequestResult::kKeyBindingSigningFailed);
     return;
   }
 
@@ -467,15 +474,33 @@ void EmailVerificationRequest::OnTokenRequestComplete(
   CompleteRequest(std::move(callback),
                   EmailVerifier::Result{sd_jwt_kb.Serialize(),
                                         net::SchemefulSite(issuer.GetURL())},
-                  EvpRequestStatus::kSuccess);
+                  EmailVerificationRequestResult::kSuccess);
 }
 
 void EmailVerificationRequest::CompleteRequest(
     EmailVerifier::OnEmailVerifiedCallback callback,
     std::optional<EmailVerifier::Result> response,
-    EvpRequestStatus status) {
+    EmailVerificationRequestResult status) {
   RecordEvpRequestStatus(status);
+  if (status != EmailVerificationRequestResult::kSuccess) {
+    AddDevToolsIssue(status);
+  }
   std::move(callback).Run(std::move(response));
+}
+
+void EmailVerificationRequest::AddDevToolsIssue(
+    EmailVerificationRequestResult status) {
+  DCHECK_NE(status, EmailVerificationRequestResult::kSuccess);
+
+  auto details = blink::mojom::InspectorIssueDetails::New();
+  auto email_verification_request_details =
+      blink::mojom::EmailVerificationRequestIssueDetails::New(status);
+  details->email_verification_request_details =
+      std::move(email_verification_request_details);
+  render_frame_host_->ReportInspectorIssue(
+      blink::mojom::InspectorIssueInfo::New(
+          blink::mojom::InspectorIssueCode::kEmailVerificationRequestIssue,
+          std::move(details)));
 }
 
 }  // namespace content::webid

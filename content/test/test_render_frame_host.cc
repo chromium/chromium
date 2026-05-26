@@ -164,6 +164,10 @@ void TestRenderFrameHost::ReportInspectorIssue(
                                 kFederatedAuthUserInfoRequestIssue) {
     ++federated_auth_user_info_counts_
         [issue->details->federated_auth_user_info_request_details->status];
+  } else if (issue->code ==
+             blink::mojom::InspectorIssueCode::kEmailVerificationRequestIssue) {
+    ++email_verification_request_counts_
+        [issue->details->email_verification_request_details->status];
   }
   RenderFrameHostImpl::ReportInspectorIssue(std::move(issue));
 }
@@ -324,6 +328,23 @@ int TestRenderFrameHost::GetFederatedAuthUserInfoRequestIssueCount(
 
   auto it = federated_auth_user_info_counts_.find(*status_type);
   if (it == federated_auth_user_info_counts_.end()) {
+    return 0;
+  }
+  return it->second;
+}
+
+int TestRenderFrameHost::GetEmailVerificationRequestIssueCount(
+    std::optional<blink::mojom::EmailVerificationRequestResult> status_type) {
+  if (!status_type) {
+    int total = 0;
+    for (const auto& [result, count] : email_verification_request_counts_) {
+      total += count;
+    }
+    return total;
+  }
+
+  auto it = email_verification_request_counts_.find(*status_type);
+  if (it == email_verification_request_counts_.end()) {
     return 0;
   }
   return it->second;

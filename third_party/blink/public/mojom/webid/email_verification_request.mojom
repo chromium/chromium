@@ -1,0 +1,37 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Represents the fetch result from an email verification request. Should
+// be updated alongside EmailVerificationRequestIssueReason in
+// third_party/blink/public/devtools_protocol/domains/Audits.pdl, which includes
+// all cases except for kSuccess.
+// LINT.IfChange(EmailVerificationRequestResult)
+enum EmailVerificationRequestResult {
+  kSuccess = 0,
+  kInvalidEmail = 1,
+  kDnsFetchFailed = 2,
+  kDnsInvalidRecord = 3,
+  kWellKnownHttpNotFound = 4,
+  kWellKnownNoResponse = 5,
+  kWellKnownInvalidResponse = 6,
+  kWellKnownListEmpty = 7,
+  kWellKnownInvalidContentType = 8,
+  kWellKnownMissingIssuanceEndpoint = 9,
+  kWellKnownIssuanceEndpointCrossOrigin = 10,
+  kWellKnownUnsupportedSigningAlgorithm = 11,
+  kTokenHttpNotFound = 12,
+  kTokenNoResponse = 13,
+  kTokenInvalidResponse = 14,
+  kTokenInvalidContentType = 15,
+  kTokenMalformedSdJwt = 16,
+  kTokenInvalidSdJwt = 17,
+  kKeyBindingSigningFailed = 18,
+  kRpOriginIsOpaque = 19,
+  kWellKnownMissingAccountsEndpoint = 20,
+  kUserLoggedOut = 21,
+  kWellKnownAccountsEndpointCrossOrigin = 22,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpRequestStatus)

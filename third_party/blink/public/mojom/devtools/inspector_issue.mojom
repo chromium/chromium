@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/blocked_by_response_reason.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
+import "third_party/blink/public/mojom/webid/email_verification_request.mojom";
 import "url/mojom/url.mojom";
 
 // A code that uniquely identifies an issue. This type should be descriptive
@@ -29,6 +30,7 @@ enum InspectorIssueCode {
   kPartitioningBlobURLIssue,
   kUserReidentificationIssue,
   kPerformanceIssue,
+  kEmailVerificationRequestIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -286,6 +288,10 @@ struct FederatedAuthUserInfoRequestIssueDetails {
   FederatedAuthUserInfoRequestResult status;
 };
 
+struct EmailVerificationRequestIssueDetails {
+  EmailVerificationRequestResult status;
+};
+
 struct BounceTrackingIssueDetails {
   array<string> tracking_sites;
 };
@@ -386,6 +392,7 @@ struct InspectorIssueDetails {
       federated_auth_user_info_request_details;
   UserReidentificationIssueDetails? user_reidentification_issue_details;
   PerformanceIssueDetails? performance_issue_details;
+  EmailVerificationRequestIssueDetails? email_verification_request_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };
 

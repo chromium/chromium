@@ -6,12 +6,12 @@
 #define CONTENT_BROWSER_WEBID_DELEGATION_EVP_METRICS_H_
 
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/webid/email_verification_request.mojom-forward.h"
 
 namespace content::webid {
 
-enum class EvpRequestStatus;
-
-CONTENT_EXPORT void RecordEvpRequestStatus(EvpRequestStatus status);
+CONTENT_EXPORT void RecordEvpRequestStatus(
+    blink::mojom::EmailVerificationRequestResult status);
 
 }  // namespace content::webid
 

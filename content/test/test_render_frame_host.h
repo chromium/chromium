@@ -172,6 +172,12 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
       std::optional<blink::mojom::FederatedAuthUserInfoRequestResult>
           status_type);
 
+  // Returns the number of FedCM issues of EmailVerificationRequestResult
+  // type `status_type` sent to DevTools. If `status_type` is std::nullopt,
+  // returns the total number of FedCM issues of any type sent to DevTools.
+  int GetEmailVerificationRequestIssueCount(
+      std::optional<blink::mojom::EmailVerificationRequestResult> status_type);
+
   // If set, navigations will appear to have cleared the history list in the
   // RenderFrame (DidCommitProvisionalLoadParams::history_list_was_cleared).
   // False by default.
@@ -329,6 +335,11 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // Keeps a count of getUserInfo() issues sent to ReportInspectorIssue.
   std::unordered_map<blink::mojom::FederatedAuthUserInfoRequestResult, int>
       federated_auth_user_info_counts_;
+
+  // Keeps a count of email verification request issues sent to
+  // ReportInspectorIssue.
+  std::unordered_map<blink::mojom::EmailVerificationRequestResult, int>
+      email_verification_request_counts_;
 
   TestRenderFrameHostCreationObserver child_creation_observer_;
 

@@ -250,6 +250,7 @@ mojom("mojom_platform") {
     "web_launch/web_launch.mojom",
     "webaudio/audio_context_manager.mojom",
     "webid/digital_identity_request.mojom",
+    "webid/email_verification_request.mojom",
     "webid/federated_auth_request.mojom",
     "webpreferences/web_preferences.mojom",
     "webrtc/rtc_logging.mojom",

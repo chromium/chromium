@@ -19,6 +19,7 @@
 #include "content/public/browser/webid/email_verifier.h"
 #include "content/public/browser/webid/identity_request_account.h"
 #include "crypto/keypair.h"
+#include "third_party/blink/public/mojom/webid/email_verification_request.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -31,38 +32,6 @@ class RenderFrameHostImpl;
 
 namespace content::webid {
 
-// This enum describes the status of an Email Verification Protocol (EVP)
-// request. These values are persisted to logs. Entries should not be renumbered
-// and numeric values should never be reused.
-// LINT.IfChange(EvpRequestStatus)
-enum class EvpRequestStatus {
-  kSuccess = 0,
-  kInvalidEmail = 1,
-  kDnsFetchFailed = 2,
-  kDnsInvalidRecord = 3,
-  kWellKnownHttpNotFound = 4,
-  kWellKnownNoResponse = 5,
-  kWellKnownInvalidResponse = 6,
-  kWellKnownListEmpty = 7,
-  kWellKnownInvalidContentType = 8,
-  kWellKnownMissingIssuanceEndpoint = 9,
-  kWellKnownIssuanceEndpointCrossOrigin = 10,
-  kWellKnownUnsupportedSigningAlgorithm = 11,
-  kTokenHttpNotFound = 12,
-  kTokenNoResponse = 13,
-  kTokenInvalidResponse = 14,
-  kTokenInvalidContentType = 15,
-  kTokenMalformedSdJwt = 16,
-  kTokenInvalidSdJwt = 17,
-  kKeyBindingSigningFailed = 18,
-  kRpOriginIsOpaque = 19,
-  kWellKnownMissingAccountsEndpoint = 20,
-  kUserLoggedOut = 21,
-  kWellKnownAccountsEndpointCrossOrigin = 22,
-  kMaxValue = kWellKnownAccountsEndpointCrossOrigin
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpRequestStatus)
-
 // For a given email address, returns the domain. Returns std::nullopt if the
 // email is not valid.
 // e.g. "test@example.com" -> "example.com"
@@ -71,9 +40,10 @@ CONTENT_EXPORT std::optional<std::string> GetDomainFromEmail(
 
 using WellKnownOrError = base::RefCountedData<
     base::expected<EmailVerifierNetworkRequestManager::WellKnown,
-                   EvpRequestStatus>>;
+                   blink::mojom::EmailVerificationRequestResult>>;
 using AccountsOrError = base::RefCountedData<
-    base::expected<std::vector<IdentityRequestAccountPtr>, EvpRequestStatus>>;
+    base::expected<std::vector<IdentityRequestAccountPtr>,
+                   blink::mojom::EmailVerificationRequestResult>>;
 
 // Performs the email verification process, which involves making a DNS TXT
 // record request to determine the issuer, and then fetching a token from the
@@ -141,7 +111,8 @@ class CONTENT_EXPORT EmailVerificationRequest {
 
   void CompleteRequest(EmailVerifier::OnEmailVerifiedCallback callback,
                        std::optional<EmailVerifier::Result> response,
-                       EvpRequestStatus status);
+                       blink::mojom::EmailVerificationRequestResult status);
+  void AddDevToolsIssue(blink::mojom::EmailVerificationRequestResult status);
 
   std::unique_ptr<DnsRequest> dns_request_;
   std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager_;

@@ -24,6 +24,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/test/test_render_frame_host.h"
 #include "crypto/sha2.h"
 #include "net/base/schemeful_site.h"
 #include "services/network/test/test_network_context.h"
@@ -40,6 +41,8 @@ using testing::Return;
 using testing::WithArgs;
 
 namespace content::webid {
+
+using blink::mojom::EmailVerificationRequestResult;
 
 // Mock DnsRequest for testing
 class MockDnsRequest : public DnsRequest {
@@ -253,8 +256,10 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &sd_hash_expected);
   ASSERT_EQ(kb_payload->sd_hash.value(), sd_hash_expected);
-  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.Request",
-                                      EvpRequestStatus::kSuccess, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Request", EmailVerificationRequestResult::kSuccess, 1);
+  EXPECT_EQ(0, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(std::nullopt));
 }
 
 TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
@@ -335,7 +340,11 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
   EXPECT_FALSE(result.has_value());
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Status.Request",
-      EvpRequestStatus::kWellKnownIssuanceEndpointCrossOrigin, 1);
+      EmailVerificationRequestResult::kWellKnownIssuanceEndpointCrossOrigin, 1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       blink::mojom::EmailVerificationRequestResult::
+                           kWellKnownIssuanceEndpointCrossOrigin));
 }
 
 TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
@@ -413,8 +422,13 @@ TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
   std::optional<EmailVerifier::Result> token = future.Get();
   EXPECT_FALSE(token.has_value());
 
-  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.Request",
-                                      EvpRequestStatus::kUserLoggedOut, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Request",
+      EmailVerificationRequestResult::kUserLoggedOut, 1);
+  EXPECT_EQ(
+      1, static_cast<TestRenderFrameHost*>(main_rfh())
+             ->GetEmailVerificationRequestIssueCount(
+                 blink::mojom::EmailVerificationRequestResult::kUserLoggedOut));
 }
 
 TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
@@ -495,7 +509,11 @@ TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
 
   histogram_tester.ExpectUniqueSample(
       "Blink.Evp.Status.Request",
-      EvpRequestStatus::kWellKnownUnsupportedSigningAlgorithm, 1);
+      EmailVerificationRequestResult::kWellKnownUnsupportedSigningAlgorithm, 1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       blink::mojom::EmailVerificationRequestResult::
+                           kWellKnownUnsupportedSigningAlgorithm));
 }
 
 TEST_F(EmailVerificationRequestTest, WebIdentityWellKnownHttpNotFound) {
@@ -558,7 +576,12 @@ TEST_F(EmailVerificationRequestTest, WebIdentityWellKnownHttpNotFound) {
   EXPECT_FALSE(token.has_value());
 
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request", EvpRequestStatus::kWellKnownHttpNotFound, 1);
+      "Blink.Evp.Status.Request",
+      EmailVerificationRequestResult::kWellKnownHttpNotFound, 1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       blink::mojom::EmailVerificationRequestResult::
+                           kWellKnownHttpNotFound));
 }
 
 TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
@@ -590,8 +613,14 @@ TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
   email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
   std::optional<EmailVerifier::Result> result = future.Get();
   EXPECT_FALSE(result.has_value());
-  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.Request",
-                                      EvpRequestStatus::kRpOriginIsOpaque, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Request",
+      EmailVerificationRequestResult::kRpOriginIsOpaque, 1);
+  EXPECT_EQ(
+      1,
+      static_cast<TestRenderFrameHost*>(main_rfh())
+          ->GetEmailVerificationRequestIssueCount(
+              blink::mojom::EmailVerificationRequestResult::kRpOriginIsOpaque));
 }
 
 TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
@@ -622,8 +651,14 @@ TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
   email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
   std::optional<EmailVerifier::Result> result_inner = future.Get();
   EXPECT_FALSE(result_inner.has_value());
-  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.Request",
-                                      EvpRequestStatus::kDnsFetchFailed, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Request",
+      EmailVerificationRequestResult::kDnsFetchFailed, 1);
+  EXPECT_EQ(
+      1,
+      static_cast<TestRenderFrameHost*>(main_rfh())
+          ->GetEmailVerificationRequestIssueCount(
+              blink::mojom::EmailVerificationRequestResult::kDnsFetchFailed));
 }
 
 TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
@@ -697,7 +732,12 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
   std::optional<EmailVerifier::Result> result_inner = future.Get();
   EXPECT_FALSE(result_inner.has_value());
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request", EvpRequestStatus::kWellKnownHttpNotFound, 1);
+      "Blink.Evp.Status.Request",
+      EmailVerificationRequestResult::kWellKnownHttpNotFound, 1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       blink::mojom::EmailVerificationRequestResult::
+                           kWellKnownHttpNotFound));
 }
 
 TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
@@ -783,7 +823,12 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
   std::optional<EmailVerifier::Result> result_inner = future.Get();
   EXPECT_FALSE(result_inner.has_value());
   histogram_tester.ExpectUniqueSample(
-      "Blink.Evp.Status.Request", EvpRequestStatus::kTokenInvalidResponse, 1);
+      "Blink.Evp.Status.Request",
+      EmailVerificationRequestResult::kTokenInvalidResponse, 1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(main_rfh())
+                   ->GetEmailVerificationRequestIssueCount(
+                       blink::mojom::EmailVerificationRequestResult::
+                           kTokenInvalidResponse));
 }
 
 TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
@@ -852,6 +897,7 @@ TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
 }
 
 TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
+  base::HistogramTester histogram_tester;
   NavigateAndCommit(GURL("https://rp.example.com"));
 
   RenderFrameHost* same_origin_iframe =
@@ -909,10 +955,18 @@ TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
   email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
   std::optional<EmailVerifier::Result> token = future.Get();
   EXPECT_FALSE(token.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Request",
+      EmailVerificationRequestResult::kWellKnownInvalidResponse, 1);
+  EXPECT_EQ(1, static_cast<TestRenderFrameHost*>(same_origin_iframe)
+                   ->GetEmailVerificationRequestIssueCount(
+                       blink::mojom::EmailVerificationRequestResult::
+                           kWellKnownInvalidResponse));
 }
 
 TEST_F(EmailVerificationRequestTest,
        SameOriginFrameNestedInCrossOriginFrameRejected) {
+  base::HistogramTester histogram_tester;
   NavigateAndCommit(GURL("https://rp.example.com"));
 
   // Main Frame: https://rp.example.com
@@ -949,6 +1003,14 @@ TEST_F(EmailVerificationRequestTest,
   email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
   std::optional<EmailVerifier::Result> token = future.Get();
   EXPECT_FALSE(token.has_value());
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Request",
+      EmailVerificationRequestResult::kRpOriginIsOpaque, 1);
+  EXPECT_EQ(
+      1,
+      static_cast<TestRenderFrameHost*>(iframe_a)
+          ->GetEmailVerificationRequestIssueCount(
+              blink::mojom::EmailVerificationRequestResult::kRpOriginIsOpaque));
 }
 
 TEST(EmailVerificationRequestStaticTest, ValidEmail) {

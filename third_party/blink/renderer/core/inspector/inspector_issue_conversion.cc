@@ -61,6 +61,7 @@ blink::protocol::String InspectorIssueCodeValue(
     case mojom::blink::InspectorIssueCode::kHeavyAdIssue:
     case mojom::blink::InspectorIssueCode::kFederatedAuthRequestIssue:
     case mojom::blink::InspectorIssueCode::kFederatedAuthUserInfoRequestIssue:
+    case mojom::blink::InspectorIssueCode::kEmailVerificationRequestIssue:
     case mojom::blink::InspectorIssueCode::kBounceTrackingIssue:
     case mojom::blink::InspectorIssueCode::kPartitioningBlobURLIssue:
     case mojom::blink::InspectorIssueCode::kCookieDeprecationMetadataIssue:

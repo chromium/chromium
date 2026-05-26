@@ -25,6 +25,8 @@ using FederatedApiPermissionStatus =
 
 namespace content::webid {
 
+using blink::mojom::EmailVerificationRequestResult;
+
 std::vector<std::string> DisclosureFieldsToStringList(
     const std::vector<IdentityRequestDialogDisclosureField>& fields) {
   std::vector<std::string> list;
@@ -281,34 +283,35 @@ IdAssertionFetchStatusToRequestResultAndTokenStatus(FetchStatus status) {
   }
 }
 
-EvpRequestStatus WellKnownParseStatusToEvpRequestStatus(
+EmailVerificationRequestResult WellKnownParseStatusToEvpRequestStatus(
     ParseStatus parse_status) {
   switch (parse_status) {
     case ParseStatus::kHttpNotFoundError:
-      return EvpRequestStatus::kWellKnownHttpNotFound;
+      return EmailVerificationRequestResult::kWellKnownHttpNotFound;
     case ParseStatus::kNoResponseError:
-      return EvpRequestStatus::kWellKnownNoResponse;
+      return EmailVerificationRequestResult::kWellKnownNoResponse;
     case ParseStatus::kInvalidResponseError:
-      return EvpRequestStatus::kWellKnownInvalidResponse;
+      return EmailVerificationRequestResult::kWellKnownInvalidResponse;
     case ParseStatus::kEmptyListError:
-      return EvpRequestStatus::kWellKnownListEmpty;
+      return EmailVerificationRequestResult::kWellKnownListEmpty;
     case ParseStatus::kInvalidContentTypeError:
-      return EvpRequestStatus::kWellKnownInvalidContentType;
+      return EmailVerificationRequestResult::kWellKnownInvalidContentType;
     case ParseStatus::kSuccess:
       NOTREACHED();
   }
 }
 
-EvpRequestStatus TokenParseStatusToEvpRequestStatus(ParseStatus parse_status) {
+EmailVerificationRequestResult TokenParseStatusToEvpRequestStatus(
+    ParseStatus parse_status) {
   switch (parse_status) {
     case ParseStatus::kHttpNotFoundError:
-      return EvpRequestStatus::kTokenHttpNotFound;
+      return EmailVerificationRequestResult::kTokenHttpNotFound;
     case ParseStatus::kNoResponseError:
-      return EvpRequestStatus::kTokenNoResponse;
+      return EmailVerificationRequestResult::kTokenNoResponse;
     case ParseStatus::kInvalidResponseError:
-      return EvpRequestStatus::kTokenInvalidResponse;
+      return EmailVerificationRequestResult::kTokenInvalidResponse;
     case ParseStatus::kInvalidContentTypeError:
-      return EvpRequestStatus::kTokenInvalidContentType;
+      return EmailVerificationRequestResult::kTokenInvalidContentType;
     case ParseStatus::kEmptyListError:
     case ParseStatus::kSuccess:
       NOTREACHED();
