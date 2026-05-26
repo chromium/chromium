@@ -34,8 +34,9 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier.SupplierFlow;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
-import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
@@ -335,8 +336,8 @@ final class SigninBridge {
             BottomSheetSigninAndHistorySyncConfig config = builder.build();
             BottomSheetSigninAndHistorySyncCoordinator coordinator =
                     assertNonNull(
-                            WebSigninAndHistorySyncCoordinatorSupplier.getValueOrNullFrom(
-                                    windowAndroid));
+                            BottomSheetSigninAndHistorySyncCoordinatorSupplier.getValueForFlow(
+                                    windowAndroid, SupplierFlow.WEB_SIGNIN));
             coordinator.startSigninFlow(
                     config, new SigninDelegateContext(tab.getId(), continueUrl));
             return;

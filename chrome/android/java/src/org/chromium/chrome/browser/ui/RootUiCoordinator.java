@@ -212,7 +212,8 @@ import org.chromium.chrome.browser.ui.lens.LensOverlayInvocationSource;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
-import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier.SupplierFlow;
 import org.chromium.chrome.browser.ui.signin.account_picker.WebSigninAccountPickerDelegate;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
@@ -304,6 +305,10 @@ public class RootUiCoordinator
 
     private final SettableMonotonicObservableSupplier<WebSigninRedirectCoordinator>
             mWebSigninRedirectCoordinatorSupplier = ObservableSuppliers.createMonotonic();
+
+    private final SettableMonotonicObservableSupplier<BottomSheetSigninAndHistorySyncCoordinator>
+            mExtensionsSigninAndHistorySyncCoordinatorSupplier =
+                    ObservableSuppliers.createMonotonic();
 
     protected final SettableMonotonicObservableSupplier<ReadAloudController>
             mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
@@ -1087,11 +1092,11 @@ public class RootUiCoordinator
             contextualSearchManager.destroy();
         }
 
-        BottomSheetSigninAndHistorySyncCoordinator signinAndHistorySyncCoordinator =
+        BottomSheetSigninAndHistorySyncCoordinator webSigninAndHistorySyncCoordinator =
                 mWebSigninAndHistorySyncCoordinatorSupplier.get();
         mWebSigninAndHistorySyncCoordinatorSupplier.destroy();
-        if (signinAndHistorySyncCoordinator != null) {
-            signinAndHistorySyncCoordinator.destroy();
+        if (webSigninAndHistorySyncCoordinator != null) {
+            webSigninAndHistorySyncCoordinator.destroy();
         }
 
         WebSigninRedirectCoordinator webSigninRedirectCoordinator =
@@ -1099,6 +1104,13 @@ public class RootUiCoordinator
         mWebSigninRedirectCoordinatorSupplier.destroy();
         if (webSigninRedirectCoordinator != null) {
             webSigninRedirectCoordinator.destroy();
+        }
+
+        BottomSheetSigninAndHistorySyncCoordinator extensionsSigninAndHistorySyncCoordinator =
+                mExtensionsSigninAndHistorySyncCoordinatorSupplier.get();
+        mExtensionsSigninAndHistorySyncCoordinatorSupplier.destroy();
+        if (extensionsSigninAndHistorySyncCoordinator != null) {
+            extensionsSigninAndHistorySyncCoordinator.destroy();
         }
 
         if (mEdgeToEdgeController != null) {
@@ -1168,10 +1180,14 @@ public class RootUiCoordinator
                 userDataHost, mDeviceLockActivityLauncherSupplier);
         ContextualSearchManagerSupplier.attach(userDataHost, mContextualSearchManagerSupplier);
         ReadAloudControllerSupplier.attach(userDataHost, mReadAloudControllerSupplier);
-        WebSigninAndHistorySyncCoordinatorSupplier.attach(
-                userDataHost, mWebSigninAndHistorySyncCoordinatorSupplier);
+        BottomSheetSigninAndHistorySyncCoordinatorSupplier.attachForFlow(
+                userDataHost, mWebSigninAndHistorySyncCoordinatorSupplier, SupplierFlow.WEB_SIGNIN);
         WebSigninRedirectCoordinatorSupplier.attach(
                 userDataHost, mWebSigninRedirectCoordinatorSupplier);
+        BottomSheetSigninAndHistorySyncCoordinatorSupplier.attachForFlow(
+                userDataHost,
+                mExtensionsSigninAndHistorySyncCoordinatorSupplier,
+                SupplierFlow.EXTENSIONS);
     }
 
     private void destroyUnownedUserDataSuppliers() {
@@ -1180,9 +1196,11 @@ public class RootUiCoordinator
         DeviceLockActivityLauncherSupplier.destroy(mDeviceLockActivityLauncherSupplier);
         ContextualSearchManagerSupplier.destroy(mContextualSearchManagerSupplier);
         ReadAloudControllerSupplier.destroy(mReadAloudControllerSupplier);
-        WebSigninAndHistorySyncCoordinatorSupplier.destroy(
-                mWebSigninAndHistorySyncCoordinatorSupplier);
+        BottomSheetSigninAndHistorySyncCoordinatorSupplier.destroyForFlow(
+                mWebSigninAndHistorySyncCoordinatorSupplier, SupplierFlow.WEB_SIGNIN);
         WebSigninRedirectCoordinatorSupplier.destroy(mWebSigninRedirectCoordinatorSupplier);
+        BottomSheetSigninAndHistorySyncCoordinatorSupplier.destroyForFlow(
+                mExtensionsSigninAndHistorySyncCoordinatorSupplier, SupplierFlow.EXTENSIONS);
     }
 
     @Override
@@ -1515,7 +1533,7 @@ public class RootUiCoordinator
         }
 
         if (SigninFeatureMap.getInstance().isActivitylessSigninAllEntryPointEnabled()) {
-            initBottomSheetSigninAndHistorySyncController(originalProfile);
+            initBottomSheetSigninAndHistorySyncControllers(originalProfile);
         }
 
         // Setup IncognitoReauthController as early as possible, to show the re-auth screen.
@@ -1620,7 +1638,7 @@ public class RootUiCoordinator
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMessageDispatcher);
     }
 
-    private void initBottomSheetSigninAndHistorySyncController(Profile profile) {
+    private void initBottomSheetSigninAndHistorySyncControllers(Profile profile) {
         // SigninAndHistorySyncActivityLauncher requires a OneshotSupplier<Profile>.
         // A local supplier is created here to wrap the provided profile and satisfy the API.
         OneshotSupplierImpl<Profile> profileSupplier = new OneshotSupplierImpl<>();
@@ -1641,6 +1659,19 @@ public class RootUiCoordinator
                                 mModalDialogManagerSupplier.get(),
                                 mSnackbarManagerSupplier.get(),
                                 SigninAccessPoint.WEB_SIGNIN));
+        mExtensionsSigninAndHistorySyncCoordinatorSupplier.set(
+                SigninAndHistorySyncActivityLauncherImpl.get()
+                        .createBottomSheetSigninCoordinatorAndObserveAddAccountResult(
+                                mWindowAndroid,
+                                mActivity,
+                                mActivityResultTracker,
+                                new BottomSheetSigninAndHistorySyncCoordinator.Delegate() {},
+                                assertNonNull(mDeviceLockActivityLauncherSupplier.get()),
+                                profileSupplier,
+                                getBottomSheetControllerSupplier().asNonNull(),
+                                mModalDialogManagerSupplier.get(),
+                                mSnackbarManagerSupplier.get(),
+                                SigninAccessPoint.EXTENSIONS));
     }
 
     private void initIncognitoReauthController(Profile profile) {

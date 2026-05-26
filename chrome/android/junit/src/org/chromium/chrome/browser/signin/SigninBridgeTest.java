@@ -53,8 +53,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier;
 import org.chromium.chrome.browser.ui.signin.DelegateContext;
-import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
 import org.chromium.chrome.browser.ui.signin.account_picker.SigninDelegateContext;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -123,7 +123,7 @@ public class SigninBridgeTest {
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManagerMock);
         IdentityServicesProvider.setIdentityManagerForTesting(mIdentityManager);
         SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsJniMock);
-        WebSigninAndHistorySyncCoordinatorSupplier.setInstanceForTesting(
+        BottomSheetSigninAndHistorySyncCoordinatorSupplier.setInstanceForTesting(
                 mWebSigninAndHistorySyncCoordinatorSupplier);
         mWebSigninAndHistorySyncCoordinatorSupplier.set(mCoordinatorMock);
     }

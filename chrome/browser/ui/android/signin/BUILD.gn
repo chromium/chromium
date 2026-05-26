@@ -64,6 +64,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncConfig.java",
     "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/BottomSheetSigninAndHistorySyncCoordinatorSupplier.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConfirmManagedSyncDataDialogCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/ConsentTextTracker.java",
     "java/src/org/chromium/chrome/browser/ui/signin/DelegateContext.java",
@@ -86,7 +87,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/SigninUtils.java",
     "java/src/org/chromium/chrome/browser/ui/signin/SignoutButtonPreference.java",
     "java/src/org/chromium/chrome/browser/ui/signin/StartupSigninStateCheckController.java",
-    "java/src/org/chromium/chrome/browser/ui/signin/WebSigninAndHistorySyncCoordinatorSupplier.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/account_picker/AccountPickerBottomSheetProperties.java",

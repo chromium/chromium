@@ -85,8 +85,9 @@ import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinatorSupplier.SupplierFlow;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLauncher;
-import org.chromium.chrome.browser.ui.signin.WebSigninAndHistorySyncCoordinatorSupplier;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
@@ -339,7 +340,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
         Assert.assertEquals(
                 "Coordinator retrieved from supplier should match the one created by the launcher",
                 coordinatorMock,
-                WebSigninAndHistorySyncCoordinatorSupplier.getValueOrNullFrom(mWindowAndroid));
+                BottomSheetSigninAndHistorySyncCoordinatorSupplier.getValueForFlow(
+                        mWindowAndroid, SupplierFlow.WEB_SIGNIN));
     }
 
     @Test
