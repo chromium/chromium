@@ -47,6 +47,7 @@
 #include "components/enterprise/common/proto/synced/browser_events.pb.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -976,11 +977,17 @@ class DeepScanningAPPRequestTest : public DeepScanningRequestTest {};
 class TestCancellationFakeBinaryUploadService : public FakeBinaryUploadService {
  public:
   void set_synchronous_cancel(bool sync) { synchronous_cancel_ = sync; }
+  void SetQuitOnUploadCallback(base::OnceClosure closure) {
+    quit_on_upload_ = std::move(closure);
+  }
 
   void MaybeUploadForDeepScanning(
       std::unique_ptr<enterprise_connectors::BinaryUploadRequest> request)
       override {
     pending_request_ = std::move(request);
+    if (quit_on_upload_) {
+      std::move(quit_on_upload_).Run();
+    }
   }
 
   void MaybeCancelRequests(
@@ -998,6 +1005,7 @@ class TestCancellationFakeBinaryUploadService : public FakeBinaryUploadService {
  private:
   std::unique_ptr<enterprise_connectors::BinaryUploadRequest> pending_request_;
   bool synchronous_cancel_ = false;
+  base::OnceClosure quit_on_upload_;
 };
 
 class TouchObserver : public DeepScanningRequest::Observer {
@@ -2659,6 +2667,86 @@ TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
   validator_run_loop.Run();
 
   EXPECT_EQ(DownloadCheckResult::SAFE, last_result_);
+}
+
+TEST_P(DeepScanningReportingSourceTypeTest, CancelledByUser) {
+  if (GetParam() != MetadataSourceType::kDownloadItem) {
+    return;
+  }
+
+  for (bool enabled : {true, false}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    if (enabled) {
+      scoped_feature_list.InitAndEnableFeature(
+          enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+    } else {
+      scoped_feature_list.InitAndDisableFeature(
+          enterprise_connectors::kEnableCancelUploadOnContentAnalysis);
+    }
+
+    // Use TestCancellationFakeBinaryUploadService to support synchronous cancel
+    // callbacks.
+    TestCancellationFakeBinaryUploadService cancel_upload_service;
+    cancel_upload_service.set_synchronous_cancel(true);
+    download_protection_service_.set_binary_upload_service(
+        &cancel_upload_service);
+
+    DeepScanningRequest request(
+        CreateMetadata(),
+        DownloadItemWarningData::DeepScanTrigger::TRIGGER_POLICY,
+        DownloadCheckResult::SAFE, base::DoNothing(),
+        &download_protection_service_, settings().value(),
+        /*password=*/std::nullopt);
+
+    // Set the download item state to CANCELLED.
+    EXPECT_CALL(item_, GetState())
+        .WillRepeatedly(testing::Return(download::DownloadItem::CANCELLED));
+
+    enterprise_connectors::test::EventReportValidator validator(client_.get());
+    base::RunLoop validator_run_loop;
+    validator.SetDoneClosure(validator_run_loop.QuitClosure());
+
+    auto expected_event = CreateUnscannedFileEvent(
+        /*profile_identifier=*/profile_->GetPath().AsUTF8Unsafe(),
+        /*user_name=*/kUserName,
+        /*file_name=*/download_path_.AsUTF8Unsafe(),
+        /*sha256=*/
+        "76E00EB33811F5778A5EE557512C30D9341D4FEB07646BCE3E4DB13F9428573C",
+        /*content_type=*/"application/octet-stream",
+        /*content_size=*/std::string("download contents").size(),
+        /*reason=*/
+        chrome::cros::reporting::proto::UnscannedFileEvent::USER_CANCELLED,
+        /*event_result=*/
+        enabled
+            ? chrome::cros::reporting::proto::EventResult::
+                  EVENT_RESULT_CANCELLED_BY_USER
+            : chrome::cros::reporting::proto::EventResult::EVENT_RESULT_ALLOWED,
+        /*include_referrer=*/true);
+
+    expected_event.clear_scan_id();
+
+    validator.ExpectUnscannedFileEvent(std::move(expected_event));
+
+    base::RunLoop upload_run_loop;
+    cancel_upload_service.SetQuitOnUploadCallback(
+        upload_run_loop.QuitClosure());
+
+    request.Start();
+
+    upload_run_loop.Run();
+
+    // Simulate the download being cancelled by the user, which notifies
+    // observers via OnDownloadUpdated.
+    request.OnDownloadUpdated(&item_);
+
+    // Trigger OnDownloadDestroyed which launches upload cancellation and
+    // resolves reporting.
+    request.OnDownloadDestroyed(&item_);
+
+    validator_run_loop.Run();
+
+    download_protection_service_.set_binary_upload_service(nullptr);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(

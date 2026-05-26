@@ -335,6 +335,10 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   // User action id for the scanning.
   std::string user_action_id_;
 
+  // Set to true if the download has been destroyed, indicating that the deep
+  // scan request has been cancelled.
+  bool is_cancelled_ = false;
+
   base::WeakPtrFactory<DeepScanningRequest> weak_ptr_factory_;
 };
 

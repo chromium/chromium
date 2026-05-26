@@ -20,8 +20,6 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
-#include "chrome/grit/generated_resources.h"
-#include "ui/base/l10n/l10n_util.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
@@ -34,12 +32,14 @@
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/file_opening_job.h"
 #include "components/enterprise/connectors/core/common.h"
+#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -52,6 +52,7 @@
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/download_item_utils.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog_controller.h"
@@ -864,6 +865,10 @@ void DeepScanningRequest::OnDownloadUpdated(download::DownloadItem* download) {
       StartSavePackageScan();
     }
   }
+
+  if (download->GetState() == download::DownloadItem::CANCELLED) {
+    is_cancelled_ = true;
+  }
 }
 
 void DeepScanningRequest::OnDownloadDestroyed(
@@ -1036,6 +1041,10 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
       // type known before deep scanning since the UI will never be updated
       // based on `result`.
       event_result = metadata_->GetPreScanEventResult(pre_scan_danger_type_);
+    } else if (is_cancelled_ && base::FeatureList::IsEnabled(
+                                    enterprise_connectors::
+                                        kEnableCancelUploadOnContentAnalysis)) {
+      event_result = enterprise_connectors::EventResult::CANCELLED;
     } else {
       Profile* profile =
           Profile::FromBrowserContext(metadata_->GetBrowserContext());
