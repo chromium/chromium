@@ -15,7 +15,9 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -44,11 +46,14 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.signin.WebSigninRedirectCoordinator;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.browser.WebSigninTrackerResult;
+import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.RunnableTimer;
 import org.chromium.url.GURL;
 
@@ -69,6 +74,7 @@ public class WebSigninLoadingDialogTest {
     @Mock private WebSigninBridge.Natives mWebSigninBridgeMocks;
     @Mock private RunnableTimer mMockShowDialogTimer;
     @Mock private RunnableTimer mMockMinDialogVisibleTimer;
+    @Mock private WebContents mMockWebContents;
 
     @Captor private ArgumentCaptor<Callback<Integer>> mCallbackCaptor;
 
@@ -294,5 +300,135 @@ public class WebSigninLoadingDialogTest {
         // Dialog should be dismissed.
         Assert.assertNull(mCoordinator.getDialogModelForTesting());
         watcher.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    public void testRedirectWhenUrlMatches() {
+        when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), mCallbackCaptor.capture()))
+                .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
+        Tab spyTab = spy(mActivityTestRule.getActivityTab());
+        when(spyTab.getWebContents()).thenReturn(mMockWebContents);
+        when(mMockWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://initial.url"));
+        doReturn(null).when(spyTab).loadUrl(any(LoadUrlParams.class));
+
+        mCoordinator = new WebSigninRedirectCoordinator();
+        mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.initializeWebSigninAndRedirect(
+                            spyTab,
+                            "test@gmail.com",
+                            /* continueUrl */ new GURL("https://continue.url"),
+                            /* initialTabURL */ new GURL("https://initial.url"));
+                    // Result returns.
+                    mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
+                });
+
+        ArgumentCaptor<LoadUrlParams> captor = ArgumentCaptor.forClass(LoadUrlParams.class);
+        verify(spyTab).loadUrl(captor.capture());
+        Assert.assertEquals("https://continue.url/", captor.getValue().getUrl());
+    }
+
+    @Test
+    @MediumTest
+    public void testNoRedirectWhenUrlMismatches() {
+        when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), mCallbackCaptor.capture()))
+                .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
+        Tab spyTab = spy(mActivityTestRule.getActivityTab());
+        when(spyTab.getWebContents()).thenReturn(mMockWebContents);
+        when(mMockWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://mismatch.url"));
+        doReturn(null).when(spyTab).loadUrl(any(LoadUrlParams.class));
+
+        mCoordinator = new WebSigninRedirectCoordinator();
+        mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.initializeWebSigninAndRedirect(
+                            spyTab,
+                            "test@gmail.com",
+                            /* continueUrl */ new GURL("https://continue.url"),
+                            /* initialTabURL */ new GURL("https://initial.url"));
+                    // Result returns.
+                    mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
+                });
+
+        verify(spyTab, never()).loadUrl(any(LoadUrlParams.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testCoordinatorReUseResetsState() {
+        when(mWebSigninBridgeMocks.createWithEmail(any(), anyString(), mCallbackCaptor.capture()))
+                .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
+        Tab spyTab = spy(mActivityTestRule.getActivityTab());
+        when(spyTab.getWebContents()).thenReturn(mMockWebContents);
+        when(mMockWebContents.getLastCommittedUrl()).thenReturn(new GURL("https://initial.url"));
+        doReturn(null).when(spyTab).loadUrl(any(LoadUrlParams.class));
+
+        mCoordinator = new WebSigninRedirectCoordinator();
+        // Use a 0ms delay to show the dialog immediately by running the runnable passed to
+        // startTimer.
+        mCoordinator.setShowDialogTimerForTesting(mMockShowDialogTimer);
+        doAnswer(
+                        invocation -> {
+                            Runnable runnable = invocation.getArgument(1);
+                            runnable.run();
+                            return null;
+                        })
+                .when(mMockShowDialogTimer)
+                .startTimer(anyLong(), any(Runnable.class));
+
+        mCoordinator.setMinDialogVisibleTimerForTesting(mMockMinDialogVisibleTimer);
+        final ArgumentCaptor<Runnable> minShowTimeRunnableCaptor =
+                ArgumentCaptor.forClass(Runnable.class);
+        doAnswer(
+                        invocation -> {
+                            // Do nothing immediately, just capture the runnable.
+                            return null;
+                        })
+                .when(mMockMinDialogVisibleTimer)
+                .startTimer(anyLong(), minShowTimeRunnableCaptor.capture());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.initializeWebSigninAndRedirect(
+                            spyTab,
+                            "test@gmail.com",
+                            /* continueUrl */ new GURL("https://continue.url"),
+                            /* initialTabURL */ new GURL("https://initial.url"));
+                });
+
+        // Dialog should be shown now.
+        Assert.assertNotNull(mCoordinator.getDialogModelForTesting());
+
+        // The minShowTime fires and then WebSigninTrackerResult is returned.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    minShowTimeRunnableCaptor.getValue().run();
+                });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCallbackCaptor.getValue().onResult(WebSigninTrackerResult.SUCCESS);
+                });
+
+        // Dialog should be dismissed.
+        Assert.assertNull(mCoordinator.getDialogModelForTesting());
+
+        // Reuse the coordinator. This could happen if the user signs out and uses the same window
+        // to sign in again.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCoordinator.initializeWebSigninAndRedirect(
+                            spyTab,
+                            "test@gmail.com",
+                            /* continueUrl */ new GURL("https://continue.url"),
+                            /* initialTabURL */ new GURL("https://initial.url"));
+                });
+
+        // Dialog should be shown again.
+        Assert.assertNotNull(mCoordinator.getDialogModelForTesting());
     }
 }
