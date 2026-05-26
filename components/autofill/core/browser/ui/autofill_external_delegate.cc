@@ -430,8 +430,8 @@ void AutofillExternalDelegate::AttemptToDisplayAutofillSuggestions(
     if (!manager_->client().IsAndroidLargeFormFactor() ||
         !base::FeatureList::IsEnabled(
             features::kAutofillAndroidKeyboardAccessoryDynamicPositioning)) {
-      manager_->client().HideAutofillSuggestions(
-          SuggestionHidingReason::kNoSuggestions);
+      manager_->client().HideSuggestions(SuggestionHidingReason::kNoSuggestions,
+                                         /*product=*/std::nullopt);
       return;
     }
   }
@@ -831,8 +831,9 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       const base::optional_ref<const EntityInstance> entity =
           GetEntityInstance(suggestion);
       if (!entity || !autofill_field || !form_structure) {
-        manager_->client().HideAutofillSuggestions(
-            SuggestionHidingReason::kAcceptSuggestion);
+        manager_->client().HideSuggestions(
+            SuggestionHidingReason::kAcceptSuggestion,
+            FillingProduct::kAutofillAi);
         return;
       }
       const bool will_fill_sensitive_info = WillFillSensitiveAttributes(
@@ -984,8 +985,8 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
     return;
   }
 
-  manager_->client().HideAutofillSuggestions(
-      SuggestionHidingReason::kAcceptSuggestion);
+  manager_->client().HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                     /*product=*/std::nullopt);
 }
 
 void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
@@ -1100,8 +1101,8 @@ bool AutofillExternalDelegate::RemoveSuggestion(const Suggestion& suggestion) {
 }
 
 void AutofillExternalDelegate::DidEndTextFieldEditing() {
-  manager_->client().HideAutofillSuggestions(
-      SuggestionHidingReason::kEndEditing);
+  manager_->client().HideSuggestions(SuggestionHidingReason::kEndEditing,
+                                     /*product=*/std::nullopt);
 }
 
 void AutofillExternalDelegate::OnTabSelected(TabbedPaneTabType tab_type) {
@@ -1180,8 +1181,8 @@ void AutofillExternalDelegate::OnEntityInstanceFetched(
     manager_->client().ShowAutofillAiFetchFromWalletFailureNotification();
   }
 
-  manager_->client().HideAutofillSuggestions(
-      SuggestionHidingReason::kAcceptSuggestion);
+  manager_->client().HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                                     FillingProduct::kAutofillAi);
 }
 
 void AutofillExternalDelegate::PreviewAddressFieldByFieldFillingSuggestion(

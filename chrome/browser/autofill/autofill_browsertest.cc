@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -131,7 +132,8 @@ class AutofillTest : public InProcessBrowserTest {
         web_contents()->GetPrimaryMainFrame())
         ->GetAutofillManager()
         .client()
-        .HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
+        .HideSuggestions(SuggestionHidingReason::kTabGone,
+                         /*product=*/std::nullopt);
     InProcessBrowserTest::TearDownOnMainThread();
   }
 

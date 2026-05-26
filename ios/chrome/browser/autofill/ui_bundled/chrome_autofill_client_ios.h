@@ -48,6 +48,7 @@ class WebState;
 namespace autofill {
 
 class AutofillAiSaveEntityInfoBarDelegateIOS;
+class AutofillSuggestionDelegate;
 class LogRouter;
 
 enum class SuggestionType;
@@ -136,7 +137,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
   void UpdateAutofillDataListValues(
       base::span<const autofill::SelectOption> datalist) override;
-  void HideAutofillSuggestions(SuggestionHidingReason reason) override;
+  void HideSuggestions(SuggestionHidingReason reason,
+                       std::optional<FillingProduct> product) override;
   bool IsAutofillEnabled() const override;
   bool IsAutofillProfileEnabled() const override;
   bool IsWalletPublicPassStorageEnabled() const override;
@@ -224,6 +226,10 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   __weak UIViewController* base_view_controller_;
 
   __weak id<AutofillCommands> commands_handler_;
+
+  // Holds a weak reference to the delegate driving the active suggestions
+  // popup.
+  base::WeakPtr<AutofillSuggestionDelegate> active_suggestion_delegate_;
 
   // If this is true, we consider the form to be secure.
   // Only use this for testing purposes!

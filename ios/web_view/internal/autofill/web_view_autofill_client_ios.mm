@@ -16,6 +16,7 @@
 #import "components/autofill/core/browser/form_import/form_data_importer.h"
 #import "components/autofill/core/browser/logging/log_router.h"
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
+#import "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
 #import "components/autofill/ios/browser/autofill_util.h"
@@ -84,7 +85,7 @@ WebViewAutofillClientIOS::WebViewAutofillClientIOS(
       log_router_(log_router) {}
 
 WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
-  HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
+  HideSuggestions(SuggestionHidingReason::kTabGone, /*product=*/std::nullopt);
   if (web_state()) {
     // If web_state() is still valid, WebStateDestroyed() possibly hasn't been
     // called yet. To meet the AutofillClientIOS contract, we call it. See the
@@ -244,7 +245,9 @@ AutofillClient::SuggestionUiSessionId
 WebViewAutofillClientIOS::ShowAutofillSuggestions(
     const AutofillClient::PopupOpenArgs& open_args,
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
-  [bridge_ showAutofillPopup:open_args.suggestions suggestionDelegate:delegate];
+  active_suggestion_delegate_ = std::move(delegate);
+  [bridge_ showAutofillPopup:open_args.suggestions
+          suggestionDelegate:active_suggestion_delegate_];
   return SuggestionUiSessionId();
 }
 
@@ -253,8 +256,16 @@ void WebViewAutofillClientIOS::UpdateAutofillDataListValues(
   // No op. ios/web_view does not support display datalist.
 }
 
-void WebViewAutofillClientIOS::HideAutofillSuggestions(
-    SuggestionHidingReason reason) {
+void WebViewAutofillClientIOS::HideSuggestions(
+    SuggestionHidingReason reason,
+    std::optional<FillingProduct> product) {
+  // If a `product` filter is specified, only hide if it matches the active
+  // popup.
+  if (product && active_suggestion_delegate_ &&
+      product != active_suggestion_delegate_->GetMainFillingProduct()) {
+    return;
+  }
+  active_suggestion_delegate_.reset();
   [bridge_ hideAutofillPopup];
 }
 

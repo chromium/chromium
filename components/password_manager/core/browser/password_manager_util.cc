@@ -117,9 +117,10 @@ void UserTriggeredManualGenerationFromContextMenu(
     password_manager::PasswordManagerClient* password_manager_client,
     autofill::AutofillClient* autofill_client) {
   if (autofill_client) {
-    autofill_client->HideAutofillSuggestions(
+    autofill_client->HideSuggestions(
         autofill::SuggestionHidingReason::
-            kOverlappingWithPasswordGenerationPopup);
+            kOverlappingWithPasswordGenerationPopup,
+        /*product=*/std::nullopt);
     autofill_client->HideAutofillFieldIph();
   }
   password_manager_client->GeneratePassword(PasswordGenerationType::kManual);
