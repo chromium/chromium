@@ -103,6 +103,9 @@ void RecordProfilePolicyStatus(const em::ChromeProfileReportRequest& request,
 
   base::UmaHistogramEnumeration(
       "Enterprise.CloudReportingPolicyStatus.Profile." + mode_str, status);
+  base::UmaHistogramCounts100(
+      "Enterprise.CloudReportingProfileCount.Profile." + mode_str,
+      request.browser_report().chrome_user_profile_infos_size());
 }
 
 }  // namespace

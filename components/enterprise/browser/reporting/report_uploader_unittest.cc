@@ -479,6 +479,17 @@ class ReportUploaderPolicyStatusTest
         return "Enterprise.CloudReportingPolicyStatus.Profile.SignalsOnly";
     }
   }
+
+  std::string GetProfileCountHistogramName() {
+    switch (GetParam()) {
+      case SecuritySignalsMode::kNoSignals:
+        return "Enterprise.CloudReportingProfileCount.Profile.NoSignals";
+      case SecuritySignalsMode::kSignalsAttached:
+        return "Enterprise.CloudReportingProfileCount.Profile.SignalsAttached";
+      case SecuritySignalsMode::kSignalsOnly:
+        return "Enterprise.CloudReportingProfileCount.Profile.SignalsOnly";
+    }
+  }
 };
 
 TEST_P(ReportUploaderPolicyStatusTest, NoPolicySet) {
@@ -497,6 +508,7 @@ TEST_P(ReportUploaderPolicyStatusTest, NoPolicySet) {
   EXPECT_TRUE(has_responded_);
   histogram_tester_.ExpectUniqueSample(GetHistogramName(), 0 /* kNoPolicySet */,
                                        1);
+  histogram_tester_.ExpectUniqueSample(GetProfileCountHistogramName(), 1, 1);
 }
 
 TEST_P(ReportUploaderPolicyStatusTest, UserCloudPolicySetOnly) {
@@ -515,6 +527,7 @@ TEST_P(ReportUploaderPolicyStatusTest, UserCloudPolicySetOnly) {
   EXPECT_TRUE(has_responded_);
   histogram_tester_.ExpectUniqueSample(GetHistogramName(),
                                        1 /* kUserCloudPolicySetOnly */, 1);
+  histogram_tester_.ExpectUniqueSample(GetProfileCountHistogramName(), 1, 1);
 }
 
 TEST_P(ReportUploaderPolicyStatusTest, OtherPolicySetOnly) {
@@ -533,6 +546,7 @@ TEST_P(ReportUploaderPolicyStatusTest, OtherPolicySetOnly) {
   EXPECT_TRUE(has_responded_);
   histogram_tester_.ExpectUniqueSample(GetHistogramName(),
                                        2 /* kOtherPolicySetOnly */, 1);
+  histogram_tester_.ExpectUniqueSample(GetProfileCountHistogramName(), 1, 1);
 }
 
 TEST_P(ReportUploaderPolicyStatusTest, BothPolicySet) {
@@ -551,6 +565,7 @@ TEST_P(ReportUploaderPolicyStatusTest, BothPolicySet) {
   EXPECT_TRUE(has_responded_);
   histogram_tester_.ExpectUniqueSample(GetHistogramName(),
                                        3 /* kBothPolicySet */, 1);
+  histogram_tester_.ExpectUniqueSample(GetProfileCountHistogramName(), 1, 1);
 }
 
 TEST_P(ReportUploaderPolicyStatusTest, MergedUserCloudPolicy) {
@@ -569,6 +584,7 @@ TEST_P(ReportUploaderPolicyStatusTest, MergedUserCloudPolicy) {
   EXPECT_TRUE(has_responded_);
   histogram_tester_.ExpectUniqueSample(GetHistogramName(),
                                        3 /* kBothPolicySet */, 1);
+  histogram_tester_.ExpectUniqueSample(GetProfileCountHistogramName(), 1, 1);
 }
 
 TEST_P(ReportUploaderPolicyStatusTest, MergedOtherPolicy) {
@@ -587,6 +603,7 @@ TEST_P(ReportUploaderPolicyStatusTest, MergedOtherPolicy) {
   EXPECT_TRUE(has_responded_);
   histogram_tester_.ExpectUniqueSample(GetHistogramName(),
                                        2 /* kOtherPolicySetOnly */, 1);
+  histogram_tester_.ExpectUniqueSample(GetProfileCountHistogramName(), 1, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(
