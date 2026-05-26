@@ -27,6 +27,7 @@
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_string_util.h"
 #include "net/base/session_usage.h"
@@ -1682,7 +1683,8 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                         /*disable_cert_verification_network_fetches=*/true),
+                         /*disable_cert_verification_network_fetches=*/true,
+                         handles::kInvalidNetworkHandle),
           /* enable_ip_based_pooling_for_h2 = */ false,
           /* is_websocket = */ false, NetLogWithSource()));
   EXPECT_FALSE(
@@ -1691,7 +1693,8 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-                         /*disable_cert_verification_network_fetches=*/true),
+                         /*disable_cert_verification_network_fetches=*/true,
+                         handles::kInvalidNetworkHandle),
           /* enable_ip_based_pooling_for_h2 = */ false,
           /* is_websocket = */ false, NetLogWithSource()));
 }
@@ -1768,7 +1771,8 @@ TEST_P(HttpProxyConnectJobTest, SpdyInadequateTransportSecurity) {
                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                         /*disable_cert_verification_network_fetches=*/true),
+                         /*disable_cert_verification_network_fetches=*/true,
+                         handles::kInvalidNetworkHandle),
           /*enable_ip_based_pooling_for_h2=*/false,
           /*is_websocket=*/false, NetLogWithSource()));
 }
@@ -1817,7 +1821,8 @@ TEST_P(HttpProxyConnectJobTest, SpdyValidAlps) {
                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                         /*disable_cert_verification_network_fetches=*/true),
+                         /*disable_cert_verification_network_fetches=*/true,
+                         handles::kInvalidNetworkHandle),
           /*enable_ip_based_pooling_for_h2=*/false,
           /*is_websocket=*/false, NetLogWithSource()));
 }
@@ -1854,7 +1859,8 @@ TEST_P(HttpProxyConnectJobTest, SpdyInvalidAlpsCheckEnabled) {
                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                         /*disable_cert_verification_network_fetches=*/true),
+                         /*disable_cert_verification_network_fetches=*/true,
+                         handles::kInvalidNetworkHandle),
           /*enable_ip_based_pooling_for_h2=*/false,
           /*is_websocket=*/false, NetLogWithSource()));
 }
@@ -1899,7 +1905,8 @@ TEST_P(HttpProxyConnectJobTest, SpdyInvalidAlpsCheckDisabled) {
                          PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
                          SessionUsage::kProxy, SocketTag(),
                          NetworkAnonymizationKey(), SecureDnsPolicy::kDisable,
-                         /*disable_cert_verification_network_fetches=*/true),
+                         /*disable_cert_verification_network_fetches=*/true,
+                         handles::kInvalidNetworkHandle),
           /*enable_ip_based_pooling_for_h2=*/false,
           /*is_websocket=*/false, NetLogWithSource()));
 }

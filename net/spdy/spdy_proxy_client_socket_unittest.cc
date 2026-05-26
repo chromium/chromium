@@ -19,6 +19,7 @@
 #include "net/base/address_list.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_timing_info.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/session_usage.h"
@@ -238,7 +239,8 @@ SpdyProxyClientSocketTest::SpdyProxyClientSocketTest()
           SocketTag(),
           NetworkAnonymizationKey(),
           SecureDnsPolicy::kAllow,
-          /*disable_cert_verification_network_fetches=*/false),
+          /*disable_cert_verification_network_fetches=*/false,
+          handles::kInvalidNetworkHandle),
       ssl_(SYNCHRONOUS, OK) {
   session_deps_.net_log = NetLog::Get();
 }

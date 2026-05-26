@@ -381,7 +381,8 @@ class Http2HandshakeStreamTestSetup : public HandshakeStreamTestSetup {
         HostPortPair::FromURL(kUrl), PRIVACY_MODE_DISABLED,
         ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
-        /*disable_cert_verification_network_fetches=*/false);
+        /*disable_cert_verification_network_fetches=*/false,
+        handles::kInvalidNetworkHandle);
     spdy_session_ =
         CreateSpdySession(http_network_session_.get(), key, NetLogWithSource());
 

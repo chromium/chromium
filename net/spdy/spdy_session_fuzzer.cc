@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/base/session_usage.h"
 #include "net/cert/x509_certificate.h"
@@ -133,7 +134,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       net::ProxyChain::Direct(), net::SessionUsage::kDestination,
       net::SocketTag(), net::NetworkAnonymizationKey(),
       net::SecureDnsPolicy::kAllow,
-      /*disable_cert_verification_network_fetches=*/false);
+      /*disable_cert_verification_network_fetches=*/false,
+      net::handles::kInvalidNetworkHandle);
   base::WeakPtr<net::SpdySession> spdy_session(net::CreateSpdySession(
       http_session.get(), session_key, net_log_with_source));
 

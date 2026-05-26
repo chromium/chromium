@@ -16,6 +16,7 @@
 #include "net/base/load_timing_info.h"
 #include "net/base/load_timing_info_test_util.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_handle.h"
 #include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_request_info.h"
@@ -246,7 +247,8 @@ class BidirectionalStreamSpdyImplTest : public testing::TestWithParam<bool>,
              SocketTag(),
              NetworkAnonymizationKey(),
              SecureDnsPolicy::kAllow,
-             /*disable_cert_verification_network_fetches=*/false),
+             /*disable_cert_verification_network_fetches=*/false,
+             handles::kInvalidNetworkHandle),
         ssl_data_(SSLSocketDataProvider(ASYNC, OK)) {
     ssl_data_.next_proto = NextProto::kProtoHTTP2;
     ssl_data_.ssl_info.cert =

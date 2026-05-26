@@ -20,6 +20,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
+#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/base/session_usage.h"
 #include "net/dns/public/secure_dns_policy.h"
@@ -91,7 +92,8 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
                        ProxyChain::Direct(), SessionUsage::kDestination,
                        SocketTag(), NetworkAnonymizationKey(),
                        SecureDnsPolicy::kAllow,
-                       /*disable_cert_verification_network_fetches=*/false);
+                       /*disable_cert_verification_network_fetches=*/false,
+                       handles::kInvalidNetworkHandle);
     return CreateSpdySession(session_.get(), key, NetLogWithSource());
   }
 

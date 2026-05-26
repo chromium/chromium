@@ -952,7 +952,8 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
             old_key.host_port_pair(), old_key.privacy_mode(),
             old_key.proxy_chain(), old_key.session_usage(), key.socket_tag(),
             old_key.network_anonymization_key(), old_key.secure_dns_policy(),
-            old_key.disable_cert_verification_network_fetches());
+            old_key.disable_cert_verification_network_fetches(),
+            old_key.target_network());
 
         // If there is already a session with |new_key|, skip this one.
         // It will be found in |aliases_| in a future iteration.
@@ -1000,7 +1001,8 @@ bool SpdySessionPool::OnHostResolutionCompleteShared(
               it->host_port_pair(), it->privacy_mode(), it->proxy_chain(),
               it->session_usage(), key.socket_tag(),
               it->network_anonymization_key(), it->secure_dns_policy(),
-              it->disable_cert_verification_network_fetches());
+              it->disable_cert_verification_network_fetches(),
+              it->target_network());
           auto old_it = it;
           ++it;
           available_session->RemovePooledAlias(*old_it);

@@ -1603,7 +1603,8 @@ bool SpdySession::ChangeSocketTag(const SocketTag& new_tag) {
       spdy_session_key_.proxy_chain(), spdy_session_key_.session_usage(),
       new_tag, spdy_session_key_.network_anonymization_key(),
       spdy_session_key_.secure_dns_policy(),
-      spdy_session_key_.disable_cert_verification_network_fetches());
+      spdy_session_key_.disable_cert_verification_network_fetches(),
+      spdy_session_key_.target_network());
   spdy_session_key_ = new_key;
 
   return true;

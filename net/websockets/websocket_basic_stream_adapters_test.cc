@@ -394,7 +394,8 @@ class WebSocketSpdyStreamAdapterTest : public TestWithTaskEnvironment {
              SocketTag(),
              NetworkAnonymizationKey(),
              SecureDnsPolicy::kAllow,
-             /*disable_cert_verification_network_fetches=*/false),
+             /*disable_cert_verification_network_fetches=*/false,
+             handles::kInvalidNetworkHandle),
         session_(SpdySessionDependencies::SpdyCreateSession(&session_deps_)),
         ssl_(SYNCHRONOUS, OK) {}
 

@@ -936,7 +936,8 @@ SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
       params_->proxy_server().host_port_pair(), PRIVACY_MODE_DISABLED,
       session_key_proxy_chain, SessionUsage::kProxy, socket_tag(),
       params_->network_anonymization_key(), params_->secure_dns_policy(),
-      /*disable_cert_verification_network_fetches=*/true);
+      /*disable_cert_verification_network_fetches=*/true,
+      params_->target_network());
 }
 
 // static
