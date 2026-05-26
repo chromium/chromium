@@ -65,7 +65,7 @@ class PCMWaveOutAudioOutputStream : public AudioOutputStream {
   void GetVolume(double* volume) override;
 
   // Sends a buffer to the audio driver for playback.
-  void QueueNextPacket(WAVEHDR* buffer);
+  void QueueNextPacket(WaveBuffer* buffer);
 
  private:
   enum State {

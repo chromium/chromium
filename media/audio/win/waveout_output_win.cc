@@ -9,6 +9,7 @@
 #include <cstdint>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -200,7 +201,7 @@ void PCMWaveOutAudioOutputStream::Start(AudioSourceCallback* callback) {
   // Queue the buffers.
   pending_bytes_ = 0;
   for (auto& buffer : buffers_) {
-    QueueNextPacket(&(buffer.header));  // Read more data.
+    QueueNextPacket(&buffer);  // Read more data.
     pending_bytes_ += buffer.header.dwBufferLength;
   }
 
@@ -321,8 +322,8 @@ void PCMWaveOutAudioOutputStream::HandleError(MMRESULT error) {
     callback_->OnError(AudioSourceCallback::ErrorType::kUnknown);
 }
 
-void PCMWaveOutAudioOutputStream::QueueNextPacket(WAVEHDR *buffer) {
-  DCHECK_EQ(channels_, format_.Format.nChannels);
+void PCMWaveOutAudioOutputStream::QueueNextPacket(WaveBuffer* wave_buffer) {
+  CHECK_EQ(channels_, format_.Format.nChannels);
   // Call the source which will fill our buffer with pleasant sounds and
   // return to us how many bytes were used.
   // TODO(fbarchard): Handle used 0 by queueing more.
@@ -333,24 +334,26 @@ void PCMWaveOutAudioOutputStream::QueueNextPacket(WAVEHDR *buffer) {
                          format_.Format.nAvgBytesPerSec);
   int frames_filled = callback_->OnMoreData(delay, base::TimeTicks::Now(), {},
                                             audio_bus_.get());
-  uint32_t used = frames_filled * audio_bus_->channels() *
-                  format_.Format.wBitsPerSample / 8;
+  const uint32_t bytes_used = frames_filled * audio_bus_->channels() *
+                              format_.Format.wBitsPerSample / 8;
 
-  if (used <= buffer_size_) {
+  if (bytes_used <= buffer_size_) {
     // Note: If this ever changes to output raw float the data must be clipped
     // and sanitized since it may come from an untrusted source such as NaCl.
     audio_bus_->Scale(volume_);
 
     DCHECK_EQ(format_.Format.wBitsPerSample, 16);
-    audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(
-        frames_filled, reinterpret_cast<int16_t*>(buffer->lpData));
+    auto bytes_span =
+        base::as_writable_bytes(wave_buffer->audio_data.as_span());
+    audio_bus_->ToInterleavedBytesPartial<SignedInt16SampleTypeTraits>(
+        0, bytes_span.first(bytes_used));
 
-    buffer->dwBufferLength = used * format_.Format.nChannels / channels_;
+    wave_buffer->header.dwBufferLength = bytes_used;
   } else {
     HandleError(0);
     return;
   }
-  buffer->dwFlags = WHDR_PREPARED;
+  wave_buffer->header.dwFlags = WHDR_PREPARED;
 }
 
 // One of the threads in our thread pool asynchronously calls this function when
@@ -380,7 +383,7 @@ void NTAPI PCMWaveOutAudioOutputStream::BufferCallback(PVOID lpParameter,
       // Before we queue the next packet, we need to adjust the number of
       // pending bytes since the last write to hardware.
       stream->pending_bytes_ -= buffer.header.dwBufferLength;
-      stream->QueueNextPacket(&(buffer.header));
+      stream->QueueNextPacket(&buffer);
 
       // QueueNextPacket() can take a long time, especially if several of them
       // were called back-to-back. Check if we are stopping now.
