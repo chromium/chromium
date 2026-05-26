@@ -46,11 +46,22 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
+#include "base/scoped_observation.h"
+#include "ui/views/bubble/info_bubble.h"
+#include "ui/views/focus/focus_manager.h"
 #endif
 
 namespace {
 
-class HoverButtonHandCursor : public HoverButton {
+// A HoverButton that uses a hand cursor. On Mac, it also shows an InfoBubble
+// when focused via keyboard traversal to provide visual feedback since tooltips
+// are not automatically shown on focus on that platform.
+class HoverButtonHandCursor : public HoverButton
+#if BUILDFLAG(IS_MAC)
+    ,
+                              public views::WidgetObserver
+#endif
+{
   METADATA_HEADER(HoverButtonHandCursor, HoverButton)
 
  public:
@@ -60,11 +71,58 @@ class HoverButtonHandCursor : public HoverButton {
   HoverButtonHandCursor(const HoverButtonHandCursor&) = delete;
   HoverButtonHandCursor& operator=(const HoverButtonHandCursor&) = delete;
 
-  ~HoverButtonHandCursor() override = default;
+  ~HoverButtonHandCursor() override {
+#if BUILDFLAG(IS_MAC)
+    if (bubble_) {
+      bubble_->GetWidget()->CloseNow();
+      bubble_ = nullptr;
+      observation_.Reset();
+    }
+#endif
+  }
 
   ui::Cursor GetCursor(const ui::MouseEvent& event) override {
     return ui::mojom::CursorType::kHand;
   }
+
+#if BUILDFLAG(IS_MAC)
+  void OnFocus() override {
+    HoverButton::OnFocus();
+    if (!GetFocusManager() || IsMouseHovered() || bubble_) {
+      return;
+    }
+
+    auto bubble = std::make_unique<views::InfoBubble>(
+        this, views::BubbleBorder::NONE, GetTooltipText());
+    bubble_ = bubble.get();
+    bubble_->SetBackgroundColor(ui::kColorTooltipBackground);
+    views::BubbleDialogDelegateView::CreateBubble(std::move(bubble))
+        ->ShowInactive();
+    observation_.Observe(bubble_->GetWidget());
+  }
+
+  void OnBlur() override {
+    HoverButton::OnBlur();
+    if (bubble_) {
+      observation_.Reset();
+      bubble_->GetWidget()->Close();
+      bubble_ = nullptr;
+    }
+  }
+
+  void OnWidgetDestroyed(views::Widget* widget) override {
+    DCHECK(observation_.IsObservingSource(widget));
+    observation_.Reset();
+    bubble_ = nullptr;
+  }
+#endif
+
+ private:
+#if BUILDFLAG(IS_MAC)
+  raw_ptr<views::InfoBubble> bubble_ = nullptr;
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
+#endif
 };
 
 BEGIN_METADATA(HoverButtonHandCursor)

@@ -104,4 +104,27 @@ TEST_F(CastDialogNoSinksViewWithPermissionIssueTest, CreateView) {
             get_icon()->GetViewAccessibility().GetCachedRole());
 }
 
+TEST_F(CastDialogNoSinksViewTest, FocusIconShowsBubble) {
+  task_environment()->FastForwardBy(
+      media_router::CastDialogNoSinksView::kSearchWaitTime);
+  views::View* icon = const_cast<views::View*>(get_icon());
+  EXPECT_NE(icon, nullptr);
+
+  // We need a widget for FocusManager to work.
+  auto widget = std::make_unique<views::Widget>();
+  views::Widget::InitParams params =
+      CreateParams(views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET,
+                   views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  widget->Init(std::move(params));
+  widget->SetContentsView(std::move(no_sinks_view_));
+
+  views::FocusManager* focus_manager = widget->GetFocusManager();
+  focus_manager->SetFocusedViewWithReason(
+      icon, views::FocusManager::FocusChangeReason::kFocusTraversal);
+
+  // We cannot easily check if the bubble is shown without exposing internals,
+  // but we can verify it doesn't crash.
+  // TODO(crbug.com/478008776): Add verification for bubble visibility.
+}
+
 }  // namespace media_router
