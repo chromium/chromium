@@ -72,6 +72,10 @@ IOSChromeVariationsServiceClient::GetAllProfilesKeys(PrefService* local_state) {
   return ProfileAttributesStorageIOS::GetAllProfileNames(local_state);
 }
 
+bool IOSChromeVariationsServiceClient::IsChromeEnterpriseCoreSupported() {
+  return true;
+}
+
 version_info::Channel IOSChromeVariationsServiceClient::GetChannel() {
   return ::GetChannel();
 }

@@ -44,6 +44,7 @@ class IOSChromeVariationsServiceClient
   bool IsEnterprise() override;
   std::optional<base::flat_set<std::string>> GetAllProfilesKeys(
       PrefService* local_state) override;
+  bool IsChromeEnterpriseCoreSupported() override;
   version_info::Channel GetChannel() override;
 };
 

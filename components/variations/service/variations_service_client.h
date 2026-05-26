@@ -91,6 +91,9 @@ class VariationsServiceClient {
   virtual std::optional<base::flat_set<std::string>> GetAllProfilesKeys(
       PrefService* local_state);
 
+  // Returns whether Chrome Enterprise Core is supported on this platform.
+  virtual bool IsChromeEnterpriseCoreSupported();
+
  private:
   // Gets the channel of the embedder. But all variations callers should use
   // |GetChannelForVariations()| instead.

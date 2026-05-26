@@ -316,6 +316,7 @@ class TestVariationsServiceClient : public VariationsServiceClient {
     return true;
   }
   bool IsEnterprise() override { return false; }
+  bool IsChromeEnterpriseCoreSupported() override { return true; }
 
  private:
   // VariationsServiceClient:
@@ -333,6 +334,22 @@ class MockVariationsServiceClient : public TestVariationsServiceClient {
               (PrefService*),
               (override));
   MOCK_METHOD(Study::FormFactor, GetCurrentFormFactor, (), (override));
+};
+
+class TestVariationsServiceClientWithoutEnterpriseSupport
+    : public TestVariationsServiceClient {
+ public:
+  TestVariationsServiceClientWithoutEnterpriseSupport() = default;
+
+  TestVariationsServiceClientWithoutEnterpriseSupport(
+      const TestVariationsServiceClientWithoutEnterpriseSupport&) = delete;
+  TestVariationsServiceClientWithoutEnterpriseSupport& operator=(
+      const TestVariationsServiceClientWithoutEnterpriseSupport&) = delete;
+
+  ~TestVariationsServiceClientWithoutEnterpriseSupport() override = default;
+
+  // VariationsServiceClient:
+  bool IsChromeEnterpriseCoreSupported() override { return false; }
 };
 
 class TestVariationsSeedStore : public VariationsSeedStore {
@@ -1830,6 +1847,28 @@ TEST_F(FieldTrialCreatorTest,
                   ->GetDict(enterprise_groups::kEnterpriseGroupsProfilePref)
                   .FindList("Profile 1"),
               ::testing::IsNull());
+}
+
+TEST_F(FieldTrialCreatorTest,
+       GetEnterpriseGroupsFromPrefsReturnsEmptyForUnsupportedPlatform) {
+  TestVariationsServiceClientWithoutEnterpriseSupport variations_service_client;
+  NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
+  TestVariationsFieldTrialCreator field_trial_creator(
+      local_state(), &variations_service_client, &safe_seed_manager,
+      user_data_dir_path());
+
+  base::DictValue enterprise_groups_dict;
+  enterprise_groups_dict.Set(
+      "Profile 1", base::ListValue().Append("123").Append("profiles"));
+  enterprise_groups_dict.Set(
+      "Profile 2", base::ListValue().Append("456").Append("profiles"));
+  local_state()->SetDict(enterprise_groups::kEnterpriseGroupsProfilePref,
+                         std::move(enterprise_groups_dict));
+  local_state()->SetList(enterprise_groups::kEnterpriseGroupsBrowserPref,
+                         base::ListValue().Append("456").Append("browser"));
+
+  EXPECT_THAT(field_trial_creator.GetEnterpriseGroupsFromPrefs(),
+              ::testing::IsEmpty());
 }
 
 struct SeedWithLimitedLayerTestParams {

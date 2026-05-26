@@ -104,4 +104,8 @@ VariationsServiceClient::GetAllProfilesKeys(PrefService* local_state) {
   return std::nullopt;
 }
 
+bool VariationsServiceClient::IsChromeEnterpriseCoreSupported() {
+  return false;
+}
+
 }  // namespace variations

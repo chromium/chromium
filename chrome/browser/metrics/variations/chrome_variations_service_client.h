@@ -38,6 +38,7 @@ class ChromeVariationsServiceClient
   bool IsEnterprise() override;
   std::optional<base::flat_set<std::string>> GetAllProfilesKeys(
       PrefService* local_state) override;
+  bool IsChromeEnterpriseCoreSupported() override;
 
  private:
   // variations::VariationsServiceClient:

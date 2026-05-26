@@ -642,10 +642,14 @@ bool VariationsFieldTrialCreator::IsSeedForFutureMilestone(bool is_safe_seed) {
 
 base::flat_set<std::string>
 VariationsFieldTrialCreator::GetEnterpriseGroupsFromPrefs() {
+  base::flat_set<std::string> groups;
+  if (!client_->IsChromeEnterpriseCoreSupported()) {
+    return groups;
+  }
+
   RemovePrefsForDeletedProfiles(
       enterprise_groups::kEnterpriseGroupsProfilePref);
 
-  base::flat_set<std::string> groups = base::flat_set<std::string>();
   AddGroupsFromList(
       local_state()->GetList(enterprise_groups::kEnterpriseGroupsBrowserPref),
       groups);

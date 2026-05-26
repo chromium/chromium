@@ -113,6 +113,14 @@ ChromeVariationsServiceClient::GetAllProfilesKeys(PrefService* local_state) {
   return ProfileAttributesStorage::GetAllProfilesKeys(local_state);
 }
 
+bool ChromeVariationsServiceClient::IsChromeEnterpriseCoreSupported() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
+  return true;
+#endif
+}
+
 version_info::Channel ChromeVariationsServiceClient::GetChannel() {
   return chrome::GetChannel();
 }
