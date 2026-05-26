@@ -41,17 +41,14 @@ source_set("browser_tests") {
   deps = [
     ":telemetry",
     "//base",
-    "//chrome/browser/chromeos/extensions/telemetry/api/common:remote_probe_strategy",
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
     "//chromeos/ash/components/dbus/debug_daemon",
     "//chromeos/ash/components/telemetry_extension/telemetry",
-    "//chromeos/crosapi/cpp/telemetry:test_support",
-    "//chromeos/crosapi/mojom",
+    "//chromeos/ash/services/cros_healthd/public/cpp:test_support",
     "//chromeos/services/network_config/public/mojom:network_types",
     "//chromeos/services/network_health/public/mojom:types",
     "//content/test:test_support",
     "//extensions/common",
-    "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
 
