@@ -6,20 +6,20 @@ found in the LICENSE file.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:ignore="UselessParent">
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/at_memory_bottom_sheet_horizontal_margin"
+    android:layout_marginEnd="@dimen/at_memory_bottom_sheet_horizontal_margin"
+    android:layout_marginTop="@dimen/at_memory_bottom_sheet_margin_top"
+    android:layout_marginBottom="@dimen/at_memory_bottom_sheet_margin_bottom"
+    android:orientation="vertical">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="48dp"
+        android:layout_height="@dimen/at_memory_search_bar_height"
         android:orientation="horizontal"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="18dp"
         android:background="@drawable/at_memory_search_bar_background">
 
         <EditText
@@ -29,11 +29,12 @@ found in the LICENSE file.
             android:layout_weight="1"
             android:hint="@string/at_memory_search_hint"
             android:drawableStart="@drawable/search_spark"
-            android:drawablePadding="16dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="4dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="12dp"
+            android:drawablePadding=
+                "@dimen/at_memory_search_bar_drawable_padding"
+            android:paddingStart="@dimen/at_memory_search_bar_padding_start"
+            android:paddingEnd="@dimen/at_memory_search_bar_padding_end"
+            android:paddingTop="@dimen/at_memory_search_bar_padding_vertical"
+            android:paddingBottom="@dimen/at_memory_search_bar_padding_vertical"
             android:textAppearance="@style/TextAppearance.TextLarge.Primary"
             android:importantForAutofill="no"
             android:inputType="text"
@@ -41,13 +42,26 @@ found in the LICENSE file.
 
         <org.chromium.ui.widget.ChromeImageButton
             android:id="@+id/clear_search_button"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="@dimen/at_memory_icon_button_size"
+            android:layout_height="@dimen/at_memory_icon_button_size"
             android:layout_gravity="center_vertical"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@drawable/btn_delete_24dp"
             android:scaleType="centerInside"
             android:visibility="gone"
-            android:contentDescription="@string/accessibility_toolbar_btn_delete_url" />
+            android:contentDescription=
+                "@string/accessibility_toolbar_btn_delete_url" />
     </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/suggestions_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="@dimen/at_memory_suggestions_margin_top"
+        android:background="@drawable/at_memory_suggestions_bg"
+        android:clipToOutline="true"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/at_memory_bottom_sheet_suggestion_item"/>
+
 </LinearLayout>

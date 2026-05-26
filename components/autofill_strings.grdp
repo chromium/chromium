@@ -815,6 +815,9 @@
     <message name="IDS_AT_MEMORY_SEARCH_HINT" desc="Hint text for the search bar in the @memory bottom sheet." formatter_data="android_java" translateable="false">
       Find and fill info with Gemini
     </message>
+    <message name="IDS_AT_MEMORY_OPEN_FLYOUT" desc="Content description for the button that opens the details page for a suggestion." formatter_data="android_java" translateable="false">
+      Open details page
+    </message>
   </if>
   <message name="IDS_AUTOFILL_AT_MEMORY_MANAGE_SUGGESTION_MAIN_TEXT" desc="The label for a button in the At Memory flyout that opens the Autofill for AI information management interface in Chrome settings." formatter_data="android_java" translateable="false">
     Manage information

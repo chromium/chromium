@@ -23,4 +23,21 @@ found in the LICENSE file.
   <dimen name="at_memory_flyout_divider_height">2dp</dimen>
   <dimen name="at_memory_flyout_default_margin">16dp</dimen>
   <dimen name="at_memory_flyout_chip_padding_vertical">6dp</dimen>
+  <dimen name="at_memory_suggestion_default_margin">16dp</dimen>
+  <dimen name="at_memory_suggestion_item_padding_vertical">12dp</dimen>
+  <dimen name="at_memory_suggestion_icon_size">24dp</dimen>
+  <dimen name="at_memory_suggestion_divider_width">1dp</dimen>
+  <dimen name="at_memory_suggestion_divider_height">24dp</dimen>
+  <dimen name="at_memory_suggestions_corner_radius">16dp</dimen>
+  <dimen name="at_memory_bottom_sheet_horizontal_margin">24dp</dimen>
+  <dimen name="at_memory_bottom_sheet_margin_top">20dp</dimen>
+  <dimen name="at_memory_bottom_sheet_margin_bottom">18dp</dimen>
+  <dimen name="at_memory_search_bar_height">48dp</dimen>
+  <dimen name="at_memory_search_bar_drawable_padding">16dp</dimen>
+  <dimen name="at_memory_search_bar_padding_start">16dp</dimen>
+  <dimen name="at_memory_search_bar_padding_end">4dp</dimen>
+  <dimen name="at_memory_search_bar_padding_vertical">12dp</dimen>
+  <dimen name="at_memory_icon_button_size">48dp</dimen>
+  <dimen name="at_memory_suggestions_margin_top">20dp</dimen>
+  <dimen name="at_memory_suggestion_item_height">64dp</dimen>
 </resources>

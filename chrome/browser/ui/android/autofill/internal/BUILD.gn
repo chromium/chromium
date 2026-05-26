@@ -159,7 +159,9 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/at_memory_flyout_buttons_bg.xml",
     "java/res/drawable/at_memory_search_bar_background.xml",
+    "java/res/drawable/at_memory_suggestions_bg.xml",
     "java/res/layout/at_memory_bottom_sheet.xml",
+    "java/res/layout/at_memory_bottom_sheet_suggestion_item.xml",
     "java/res/layout/at_memory_flyout_bottom_sheet.xml",
     "java/res/layout/at_memory_flyout_chip.xml",
     "java/res/layout/authenticator_option.xml",

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/at_memory_suggestion_item_height"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:paddingStart="@dimen/at_memory_suggestion_default_margin"
+    android:paddingEnd="@dimen/at_memory_suggestion_default_margin"
+    android:paddingTop="@dimen/at_memory_suggestion_item_padding_vertical"
+    android:paddingBottom="@dimen/at_memory_suggestion_item_padding_vertical"
+    android:background="?attr/selectableItemBackground">
+
+    <ImageView
+        android:id="@+id/icon_view"
+        android:layout_width="@dimen/at_memory_suggestion_icon_size"
+        android:layout_height="@dimen/at_memory_suggestion_icon_size"
+        android:layout_marginEnd="@dimen/at_memory_suggestion_default_margin"
+        android:scaleType="fitCenter"
+        android:importantForAccessibility="no" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/title_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
+        <TextView
+            android:id="@+id/detail_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textAppearance=
+                    "@style/TextAppearance.TextMedium.Secondary" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="@dimen/at_memory_suggestion_divider_width"
+        android:layout_height="@dimen/at_memory_suggestion_divider_height"
+        android:layout_marginStart=
+                "@dimen/at_memory_suggestion_default_margin"
+        android:layout_marginEnd="@dimen/at_memory_suggestion_default_margin"
+        android:background="?android:attr/listDivider"
+        android:importantForAccessibility="no" />
+
+    <org.chromium.ui.widget.ChromeImageButton
+        android:id="@+id/arrow_view"
+        android:layout_width="@dimen/at_memory_suggestion_icon_size"
+        android:layout_height="@dimen/at_memory_suggestion_icon_size"
+        android:layout_gravity="center_vertical"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/outline_chevron_right_24dp"
+        android:scaleType="centerInside"
+        android:contentDescription="@string/at_memory_open_flyout" />
+</LinearLayout>
