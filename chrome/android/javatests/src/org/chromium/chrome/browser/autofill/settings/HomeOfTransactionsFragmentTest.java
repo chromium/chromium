@@ -51,6 +51,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.PayloadCallbackHelper;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment;
+import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment.YourSavedInfoDataCategory;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherFactory;
@@ -521,6 +522,24 @@ public class HomeOfTransactionsFragmentTest {
         mSettingsActivityTestRule.startSettingsActivity();
 
         onView(withText(R.string.autofill_travel_title)).check(doesNotExist());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID,
+        ChromeFeatureList.AUTOFILL_AI_WITH_DATA_SCHEMA
+    })
+    public void testReportsEventOnlyOnce() {
+        var histogramWatcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+                        AutofillSettingsReferrer.SETTINGS_MENU);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        mSettingsActivityTestRule.recreateActivity();
+
+        histogramWatcher.assertExpected();
     }
 
     private static void signInPromoDeclined(boolean value) {

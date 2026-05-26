@@ -64,6 +64,33 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
     public static final String PREF_AUTOFILL_TRAVEL = "autofill_and_passwords_travel";
     public static final String PREF_AUTOFILL_SETTINGS = "autofill_and_passwords_settings";
 
+    public static final String EXTRA_REFERRER = "autofill_and_passwords_referrer";
+
+    // Represents different referrers when navigating to the Home of Transactions page.
+    //
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    //
+    // Needs to stay in sync with AutofillSettingsReferrer in enums.xml. Clank currently uses only
+    // the SETTINGS_MENU value.
+    // LINT.IfChange(AutofillSettingsReferrer)
+    @IntDef({AutofillSettingsReferrer.SETTINGS_MENU, AutofillSettingsReferrer.COUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface AutofillSettingsReferrer {
+
+        // int PROFILE_MENU = 0,
+
+        /** Corresponds to Chrome's main settings menu. */
+        int SETTINGS_MENU = 1;
+
+        // int AUTOFILL_AND_PASSWORDS_PAGE = 2,
+        // int FILLING_FLOW_DROPDOWN = 3,
+
+        int COUNT = 4;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillSettingsReferrer)
+
     /**
      * These values are persisted to logs. Entries should not be renumbered and numeric values
      * should never be reused.
@@ -106,6 +133,20 @@ public class HomeOfTransactionsFragment extends ChromeBaseSettingsFragment {
     @Override
     public void onCreatePreferences(@Nullable Bundle savedInstanceState, @Nullable String rootKey) {
         mPageTitle.set(getString(R.string.autofill_and_passwords_settings_title));
+
+        @AutofillSettingsReferrer
+        int referrer =
+                getArguments() != null
+                        ? getArguments()
+                                .getInt(EXTRA_REFERRER, AutofillSettingsReferrer.SETTINGS_MENU)
+                        : AutofillSettingsReferrer.SETTINGS_MENU;
+
+        if (savedInstanceState == null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Autofill.YourSavedInfoSettingsPage.VisitReferrer",
+                    referrer,
+                    AutofillSettingsReferrer.COUNT);
+        }
 
         requireActivity()
                 .addMenuProvider(new AutofillHelpMenuProvider(this), this, Lifecycle.State.RESUMED);

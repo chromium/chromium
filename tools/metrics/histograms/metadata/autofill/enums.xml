@@ -4121,7 +4121,7 @@ Called by update_autofill_enums.py.-->
   <int value="3" label="FillingFlowDropdown"/>
 </enum>
 
-<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/autofill_settings_metrics.h:AutofillSettingsReferrer,/chrome/browser/resources/settings/metrics_browser_proxy.ts:AutofillSettingsReferrer) -->
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/autofill_settings_metrics.h:AutofillSettingsReferrer, /chrome/browser/resources/settings/metrics_browser_proxy.ts:AutofillSettingsReferrer, /chrome/android/java/src/org/chromium/chrome/browser/autofill/settings/HomeOfTransactionsFragment.java:AutofillSettingsReferrer) -->
 
 <enum name="AutofillSettingsVisibleTypes">
   <int value="0" label="Undefined"/>

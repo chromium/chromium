@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
@@ -65,7 +67,14 @@ public class SettingsNavigationHelperTest {
     public void testRecordsActionThenLaunchesHomeOfTransactionsSettings() {
         assertTrue(SettingsNavigationHelper.showAutofillAndPasswordsSettings(mMockContext));
         assertTrue(mActionTester.getActions().contains("AutofillYourSavedInfoViewed"));
-        verify(mMockLauncher).startSettings(mMockContext, HomeOfTransactionsFragment.class);
+        verify(mMockLauncher)
+                .startSettings(
+                        eq(mMockContext),
+                        eq(HomeOfTransactionsFragment.class),
+                        mBundleCaptor.capture());
+        assertEquals(
+                HomeOfTransactionsFragment.AutofillSettingsReferrer.SETTINGS_MENU,
+                mBundleCaptor.getValue().getInt(HomeOfTransactionsFragment.EXTRA_REFERRER));
     }
 
     @Test

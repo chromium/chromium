@@ -5,12 +5,14 @@
 package org.chromium.chrome.browser.autofill.settings;
 
 import android.content.Context;
+import android.os.Bundle;
 
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.autofill.settings.HomeOfTransactionsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.content_public.browser.WebContents;
@@ -33,8 +35,11 @@ public class SettingsNavigationHelper {
         }
 
         RecordUserAction.record("AutofillYourSavedInfoViewed");
+        Bundle fragmentArgs = new Bundle();
+        fragmentArgs.putInt(
+                HomeOfTransactionsFragment.EXTRA_REFERRER, AutofillSettingsReferrer.SETTINGS_MENU);
         SettingsNavigationFactory.createSettingsNavigation()
-                .startSettings(context, HomeOfTransactionsFragment.class);
+                .startSettings(context, HomeOfTransactionsFragment.class, fragmentArgs);
         return true;
     }
 
