@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/stack_allocated.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/types/to_address.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -40,7 +41,8 @@ class CodePointIterator {
     template <typename CharT>
       requires(std::is_integral_v<CharT> && sizeof(CharT) == 2)
     explicit Utf16(base::span<const CharT> span)
-        : Utf16(reinterpret_cast<const UChar*>(span.data()), span.size()) {}
+        : Utf16(reinterpret_cast<const UChar*>(span.data()),
+                base::checked_cast<wtf_size_t>(span.size())) {}
 
     // Constructor for creating a 'begin' iterator from a span of 16-bit
     // characters.
@@ -70,7 +72,7 @@ class CodePointIterator {
 
     // Similar to `std::distance`, but in the code units, not code points.
     wtf_size_t DistanceByCodeUnits(const Utf16& other) const {
-      return data_ - other.data_;
+      return base::checked_cast<wtf_size_t>(data_ - other.data_);
     }
 
    private:

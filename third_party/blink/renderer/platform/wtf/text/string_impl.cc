@@ -600,7 +600,7 @@ ALWAYS_INLINE scoped_refptr<StringImpl> StringImpl::RemoveCharacters(
     to[outc++] = c;
   }
 
-  data.Shrink(outc);
+  data.Shrink(base::checked_cast<size_type>(outc));
   return data.Release();
 }
 

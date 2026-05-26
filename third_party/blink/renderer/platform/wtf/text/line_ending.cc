@@ -69,8 +69,8 @@ wtf_size_t RequiredSizeForCrLf(base::span<const CharType> data) {
 
 template <typename CharType>
 void NormalizeToCrLf(base::span<const CharType> src, base::span<CharType> dst) {
-  wtf_size_t src_length = src.size();
-  wtf_size_t index = 0, index_out = 0;
+  size_t src_length = src.size();
+  size_t index = 0, index_out = 0;
 
   while (index < src_length) {
     CharType c = src[index++];
@@ -143,7 +143,7 @@ void InternalNormalizeLineEndingsToCrLf(const std::string& from,
   }
 
   wtf_size_t old_buffer_size = buffer.size();
-  buffer.Grow(old_buffer_size + new_len);
+  buffer.Grow(base::checked_cast<wtf_size_t>(old_buffer_size + new_len));
   NormalizeToCrLf(base::span(from),
                   base::span(buffer).subspan(old_buffer_size));
 }

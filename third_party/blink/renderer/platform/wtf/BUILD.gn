@@ -232,6 +232,7 @@ component("wtf") {
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:non_test_config",
     "//third_party/blink/renderer:blink_pch",
+    "//third_party/blink/renderer:narrowing",
   ]
 
   defines = [ "WTF_IMPLEMENTATION=1" ]
@@ -412,6 +413,7 @@ source_set("wtf_unittests_sources") {
   configs += [
     "//third_party/blink/renderer:config",
     "//third_party/blink/renderer:blink_pch",
+    "//third_party/blink/renderer:narrowing",
   ]
 
   deps = [

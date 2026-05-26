@@ -57,7 +57,7 @@ class WTF_EXPORT StringUtf8Adaptor final {
   ~StringUtf8Adaptor();
 
   const char* data() const { return span_.data(); }
-  wtf_size_t size() const { return span_.size(); }
+  size_t size() const { return span_.size(); }
 
   // Iterators, so this type meets the requirements of
   // `std::ranges::contiguous_range`.

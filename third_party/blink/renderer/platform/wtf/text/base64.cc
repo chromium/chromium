@@ -60,7 +60,8 @@ bool Base64DecodeRaw(const StringView& in,
   // Using StringUtf8Adaptor means we avoid allocations if the string is 8-bit
   // ascii, which is likely given that base64 is required to be ascii.
   StringUtf8Adaptor adaptor(in);
-  out.resize(modp_b64_decode_len(adaptor.size()));
+  out.resize(
+      base::checked_cast<wtf_size_t>(modp_b64_decode_len(adaptor.size())));
   base::span<char> write_buffer = base::as_writable_chars(base::span(out));
   size_t output_size = modp_b64_decode(write_buffer.data(), adaptor.data(),
                                        adaptor.size(), GetModpPolicy(policy));

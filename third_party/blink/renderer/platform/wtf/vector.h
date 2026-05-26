@@ -2530,7 +2530,8 @@ template <typename R>
 inline void Vector<T, InlineCapacity, Allocator>::append_range(R&& r) {
   if constexpr (std::ranges::contiguous_range<R> &&
                 std::ranges::sized_range<R>) {
-    Append(std::ranges::data(r), std::ranges::size(r));
+    Append(std::ranges::data(r),
+           base::checked_cast<wtf_size_t>(std::ranges::size(r)));
   } else {
     Append(std::ranges::begin(r), std::ranges::end(r));
   }

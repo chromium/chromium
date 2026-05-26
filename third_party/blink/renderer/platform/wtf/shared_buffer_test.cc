@@ -108,14 +108,17 @@ TEST(SharedBufferTest, getPartAsBytes) {
 
 TEST(SharedBufferTest, getAsBytesLargeSegments) {
   Vector<char> vector0(0x4000);
-  for (size_t i = 0; i < vector0.size(); ++i)
+  for (wtf_size_t i = 0; i < vector0.size(); ++i) {
     vector0[i] = 'a';
+  }
   Vector<char> vector1(0x4000);
-  for (size_t i = 0; i < vector1.size(); ++i)
+  for (wtf_size_t i = 0; i < vector1.size(); ++i) {
     vector1[i] = 'b';
+  }
   Vector<char> vector2(0x4000);
-  for (size_t i = 0; i < vector2.size(); ++i)
+  for (wtf_size_t i = 0; i < vector2.size(); ++i) {
     vector2[i] = 'c';
+  }
 
   scoped_refptr<SharedBuffer> shared_buffer =
       SharedBuffer::Create(std::move(vector0));
