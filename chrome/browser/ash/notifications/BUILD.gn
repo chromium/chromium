@@ -43,6 +43,7 @@ static_library("notifications") {
     "//ash",
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/app/vector_icons",
