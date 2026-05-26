@@ -1041,12 +1041,8 @@ public abstract class ChromeFeatureList {
                     LOAD_ALL_TABS_AT_STARTUP,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    // For the LoadNativeEarly CachedFlag, its defaultValue is false so that we do not load native
-    // library early and initialize feature list early on the first run to not break the first run
-    // Finch support, its defaultValueInTests is true so that we test this new behaviour in CQ bots.
     public static final CachedFlag sLoadNativeEarly =
-            newCachedFlag(
-                    LOAD_NATIVE_EARLY, /* defaultValue= */ false, /* defaultValueInTests= */ true);
+            newCachedFlag(LOAD_NATIVE_EARLY, /* defaultValue= */ true);
     public static final CachedFlag sLockBackPressHandlerAtStart =
             newCachedFlag(LOCK_BACK_PRESS_HANDLER_AT_START, true);
     public static final CachedFlag sLockTopControlsOnLargeTabletsV2 =
