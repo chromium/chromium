@@ -631,7 +631,7 @@ CanvasRenderingContext* HTMLCanvasElement::GetCanvasRenderingContextInternal(
   if (!IsRenderingContext2D())
     SetNeedsCompositingUpdate();
 
-  is_opaque_ = SkAlphaTypeIsOpaque(GetRenderingContextAlphaType());
+  is_opaque_ = IsOpaque();
   if (cc_layer_) {
     cc_layer_->SetContentsOpaque(is_opaque_);
     cc_layer_->SetBlendBackgroundColor(!is_opaque_);
@@ -1054,8 +1054,7 @@ void HTMLCanvasElement::NotifyListenersCanvasChanged() {
             IsGpuMemoryBufferReadbackFromTextureEnabled());
   }
 
-  const bool context_color_is_opaque =
-      context_ && SkAlphaTypeIsOpaque(context_->GetAlphaType());
+  const bool context_color_is_opaque = IsOpaque();
 
   for (CanvasDrawListener* listener : listeners_) {
     if (!listener->NeedsNewFrame())
@@ -1958,7 +1957,7 @@ void HTMLCanvasElement::SetOffscreenCanvasResource(
 }
 
 bool HTMLCanvasElement::IsOpaque() const {
-  return context_ && !context_->CreationAttributes().alpha;
+  return RenderingContext() && RenderingContext()->IsOpaque();
 }
 
 bool HTMLCanvasElement::CreateLayer() {

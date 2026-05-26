@@ -241,15 +241,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   void Trace(Visitor*) const override;
 
   // Implementing methods from CanvasRenderingContext
-  SkAlphaType GetAlphaType() const final {
-    return color_params_.GetAlphaType();
-  }
-  viz::SharedImageFormat GetSharedImageFormat() const final {
-    return color_params_.GetSharedImageFormat();
-  }
-  gfx::ColorSpace GetColorSpace() const final {
-    return color_params_.GetGfxColorSpace();
-  }
+  bool IsOpaque() const final { return GetAlphaType() == kOpaque_SkAlphaType; }
   void DisableAccelerationForCanvas2D() final { DisableAcceleration(); }
   bool Is2DCanvasAccelerated() const final;
   void PageVisibilityChanged() override {}
@@ -315,6 +307,14 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasRenderingContext,
   }
 
   bool context_restorable_{true};
+
+  viz::SharedImageFormat GetSharedImageFormat() const {
+    return color_params_.GetSharedImageFormat();
+  }
+  gfx::ColorSpace GetColorSpace() const {
+    return color_params_.GetGfxColorSpace();
+  }
+  SkAlphaType GetAlphaType() const { return color_params_.GetAlphaType(); }
 
  private:
   virtual bool IsHibernating() const { return false; }

@@ -127,9 +127,6 @@ class CORE_EXPORT CanvasRenderingContextHost
   bool IsRenderingContext2D() const;
   bool IsImageBitmapRenderingContext() const;
 
-  SkAlphaType GetRenderingContextAlphaType() const;
-  viz::SharedImageFormat GetRenderingContextFormat() const;
-  gfx::ColorSpace GetRenderingContextColorSpace() const;
   PlainTextPainter& GetPlainTextPainter();
 
   // Actual RasterMode used for rendering 2d primitives.

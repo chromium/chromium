@@ -108,6 +108,10 @@ V8OffscreenRenderingContext* GPUCanvasContext::AsV8OffscreenRenderingContext() {
   return MakeGarbageCollected<V8OffscreenRenderingContext>(this);
 }
 
+bool GPUCanvasContext::IsOpaque() const {
+  return GetAlphaType() == kOpaque_SkAlphaType;
+}
+
 SkAlphaType GPUCanvasContext::GetAlphaType() const {
   if (!swap_buffers_) {
     return kPremul_SkAlphaType;

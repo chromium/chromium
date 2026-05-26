@@ -71,13 +71,9 @@ class MODULES_EXPORT ImageBitmapRenderingContext final
 
   void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 
-  SkAlphaType GetAlphaType() const override { return kPremul_SkAlphaType; }
-  viz::SharedImageFormat GetSharedImageFormat() const override {
-    return GetN32FormatForCanvas();
-  }
-  gfx::ColorSpace GetColorSpace() const override {
-    return gfx::ColorSpace::CreateSRGB();
-  }
+  // TODO(https://crbug.com/40206688): This should reflect the opacity of the
+  // ImageBitmap.
+  bool IsOpaque() const override { return false; }
   bool IsComposited() const final { return true; }
   bool PushFrame() override;
 

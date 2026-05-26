@@ -667,9 +667,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
     void Trace(Visitor*) const;
   };
 
-  SkAlphaType GetAlphaType() const override;
-  viz::SharedImageFormat GetSharedImageFormat() const override;
-  gfx::ColorSpace GetColorSpace() const override;
+  bool IsOpaque() const override;
   scoped_refptr<StaticBitmapImage> GetImage() override;
   void SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) override;
 
@@ -1979,6 +1977,10 @@ class MODULES_EXPORT WebGLRenderingContextBase
                         int64_t offset);
 
   void RecordANGLEImplementation();
+
+  viz::SharedImageFormat GetSharedImageFormat() const;
+  gfx::ColorSpace GetColorSpace() const;
+  SkAlphaType GetAlphaType() const;
 
  private:
   WebGLRenderingContextBase(CanvasRenderingContextHost*,

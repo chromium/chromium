@@ -66,10 +66,8 @@ class GPUCanvasContext : public ScriptWrappable,
   // CanvasRenderingContext implementation
   V8RenderingContext* AsV8RenderingContext() final;
   V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
-  SkAlphaType GetAlphaType() const override;
-  viz::SharedImageFormat GetSharedImageFormat() const override;
+  bool IsOpaque() const override;
   base::ByteSize AllocatedBufferSize() const override;
-  gfx::ColorSpace GetColorSpace() const override;
   // Produces a snapshot of the current contents of the swap chain if possible
   // or else a snapshot of the most-recently presented contents.
   scoped_refptr<StaticBitmapImage> GetImage() final;
@@ -136,6 +134,10 @@ class GPUCanvasContext : public ScriptWrappable,
       CanvasNon2DResourceProviderSharedImage* resource_provider) const;
 
   void CopyToSwapTexture();
+
+  viz::SharedImageFormat GetSharedImageFormat() const;
+  gfx::ColorSpace GetColorSpace() const;
+  SkAlphaType GetAlphaType() const;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> GetContextProviderWeakPtr()
       const;

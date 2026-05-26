@@ -1305,9 +1305,7 @@ class MODULES_EXPORT WebGLRenderingContextWebGPUBase
   // **************************************************************************
   // Start of CanvasRenderingContext implementation
   // **************************************************************************
-  SkAlphaType GetAlphaType() const override;
-  viz::SharedImageFormat GetSharedImageFormat() const override;
-  gfx::ColorSpace GetColorSpace() const override;
+  bool IsOpaque() const override;
   base::ByteSize AllocatedBufferSize() const override;
   bool isContextLost() const override;
   scoped_refptr<StaticBitmapImage> GetImage() override;

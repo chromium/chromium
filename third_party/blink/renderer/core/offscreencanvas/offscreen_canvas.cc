@@ -449,7 +449,7 @@ ScriptPromise<Blob> OffscreenCanvas::convertToBlob(
 }
 
 bool OffscreenCanvas::IsOpaque() const {
-  return context_ && !context_->CreationAttributes().alpha;
+  return RenderingContext() && RenderingContext()->IsOpaque();
 }
 
 CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(

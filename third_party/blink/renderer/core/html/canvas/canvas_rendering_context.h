@@ -167,9 +167,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   CanvasRenderingContextHost* Host() const { return host_.Get(); }
 
-  virtual SkAlphaType GetAlphaType() const = 0;
-  virtual viz::SharedImageFormat GetSharedImageFormat() const = 0;
-  virtual gfx::ColorSpace GetColorSpace() const = 0;
+  virtual bool IsOpaque() const = 0;
 
   virtual scoped_refptr<StaticBitmapImage> GetImage() = 0;
   virtual bool IsComposited() const = 0;

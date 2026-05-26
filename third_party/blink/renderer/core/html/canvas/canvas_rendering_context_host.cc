@@ -115,10 +115,7 @@ CanvasRenderingContextHost::CreateTransparentImage() const {
   if (!IsValidImageSize()) {
     return nullptr;
   }
-  SkImageInfo info = SkImageInfo::Make(
-      gfx::SizeToSkISize(Size()),
-      viz::ToClosestSkColorType(GetRenderingContextFormat()),
-      kPremul_SkAlphaType, GetRenderingContextColorSpace().ToSkColorSpace());
+  SkImageInfo info = SkImageInfo::MakeN32Premul(gfx::SizeToSkISize(Size()));
   sk_sp<SkSurface> surface =
       SkSurfaces::Raster(info, info.minRowBytes(), nullptr);
   if (!surface) {
@@ -176,23 +173,6 @@ bool CanvasRenderingContextHost::IsRenderingContext2D() const {
 bool CanvasRenderingContextHost::IsImageBitmapRenderingContext() const {
   return RenderingContext() &&
          RenderingContext()->IsImageBitmapRenderingContext();
-}
-
-SkAlphaType CanvasRenderingContextHost::GetRenderingContextAlphaType() const {
-  return RenderingContext() ? RenderingContext()->GetAlphaType()
-                            : kPremul_SkAlphaType;
-}
-
-viz::SharedImageFormat CanvasRenderingContextHost::GetRenderingContextFormat()
-    const {
-  return RenderingContext() ? RenderingContext()->GetSharedImageFormat()
-                            : GetN32FormatForCanvas();
-}
-
-gfx::ColorSpace CanvasRenderingContextHost::GetRenderingContextColorSpace()
-    const {
-  return RenderingContext() ? RenderingContext()->GetColorSpace()
-                            : gfx::ColorSpace::CreateSRGB();
 }
 
 PlainTextPainter& CanvasRenderingContextHost::GetPlainTextPainter() {

@@ -193,9 +193,11 @@ bool ImageBitmapRenderingContext::PushFrame() {
       return false;
     }
 
-    const SkAlphaType alpha_type = GetAlphaType();
-    const viz::SharedImageFormat format = GetSharedImageFormat();
-    const gfx::ColorSpace color_space = GetColorSpace();
+    // TODO(https://crbug.com/40206688): These values should reflect the
+    // ImageBitmap.
+    const SkAlphaType alpha_type = kPremul_SkAlphaType;
+    const viz::SharedImageFormat format = GetN32FormatForCanvas();
+    const gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
     if (SharedGpuContext::IsGpuCompositingEnabled()) {
       resource_provider_for_offscreen_canvas_ =
           CanvasNon2DResourceProviderSharedImage::Create(

@@ -5951,6 +5951,10 @@ gfx::Rect WebGLRenderingContextBase::SafeGetImageSize(Image* image) {
   return GetTextureSourceSize(image);
 }
 
+bool WebGLRenderingContextBase::IsOpaque() const {
+  return !CreationAttributes().alpha;
+}
+
 SkAlphaType WebGLRenderingContextBase::GetAlphaType() const {
   // This selection of alpha type disregards whether or not the drawing buffer
   // is premultiplied. This is to match historical behavior that may or may not

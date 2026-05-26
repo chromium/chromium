@@ -3752,26 +3752,8 @@ void WebGLRenderingContextWebGPUBase::readPixels(
 // ****************************************************************************
 // Start of CanvasRenderingContext implementation
 // ****************************************************************************
-SkAlphaType WebGLRenderingContextWebGPUBase::GetAlphaType() const {
-  // WebGL spec section 2.2 The Drawing Buffer
-  //
-  //   If defined, the alpha channel is used by the HTML compositor to combine
-  //   the color buffer with the rest of the page.
-  return CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
-}
-
-viz::SharedImageFormat WebGLRenderingContextWebGPUBase::GetSharedImageFormat()
-    const {
-  // TODO(413078308): Add support for RGBA16Float drawing buffer.
-  if (swap_buffers_) {
-    return swap_buffers_->Format();
-  }
-  return GetN32FormatForCanvas();
-}
-
-gfx::ColorSpace WebGLRenderingContextWebGPUBase::GetColorSpace() const {
-  // TODO(413078308): Add support for non-SRGB color spaces.
-  return gfx::ColorSpace::CreateSRGB();
+bool WebGLRenderingContextWebGPUBase::IsOpaque() const {
+  return !CreationAttributes().alpha;
 }
 
 base::ByteSize WebGLRenderingContextWebGPUBase::AllocatedBufferSize() const {
@@ -3947,8 +3929,12 @@ void WebGLRenderingContextWebGPUBase::EnsureDefaultFramebuffer() {
   texDesc.format = swap_buffers_->TextureFormat();
   texDesc.dimension = wgpu::TextureDimension::e2D;
 
+  SkAlphaType alpha_type =
+      CreationAttributes().alpha ? kPremul_SkAlphaType : kOpaque_SkAlphaType;
+
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture =
-      swap_buffers_->GetNewTexture(texDesc, GetAlphaType());
+      swap_buffers_->GetNewTexture(texDesc, alpha_type);
+
   Host()->UpdateMemoryUsage();
   mailbox_texture->SetNeedsPresent(true);
 
