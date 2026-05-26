@@ -954,11 +954,18 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
 
   // The actual navigation item will not be committed until the native content
   // or WebUI is shown.
-  if (weakContext && !weakContext->GetUrl().SchemeIs(url::kAboutScheme)) {
-    [self.delegate webViewHandlerUpdateSSLStatusForCurrentNavigationItem:self];
-    if (!weakContext->IsLoadingErrorPage()) {
-      [self setLastCommittedNavigationItemTitle:webView.title];
-    }
+  if (!weakContext) {
+    return;
+  }
+
+  const GURL& url = weakContext->GetUrl();
+  if (!url.is_valid() || url.SchemeIs(url::kAboutScheme)) {
+    return;
+  }
+
+  [self.delegate webViewHandlerUpdateSSLStatusForCurrentNavigationItem:self];
+  if (!weakContext->IsLoadingErrorPage()) {
+    [self setLastCommittedNavigationItemTitle:webView.title];
   }
 }
 
