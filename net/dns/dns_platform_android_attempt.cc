@@ -186,7 +186,7 @@ int DnsPlatformAndroidAttempt::DoQueryComplete(int result) {
   if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
           fd_, /*persistent=*/false, base::MessagePumpForIO::WATCH_READ,
           &read_fd_watcher_, this)) {
-    return ERR_FAILED;
+    return ERR_UNEXPECTED;
   }
 
   next_state_ = State::kReadResponse;
