@@ -20,7 +20,7 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "components/session_manager/session_manager_types.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -302,10 +302,9 @@ TEST_F(SystemModalContainerLayoutManagerTest, CanActivateAfterEndModalSession) {
   transient->Hide();
   TestWindow::CloseTestWindow(transient.release());
 
-  base::RunLoop().RunUntilIdle();
-
-  // parent should now be active again.
-  EXPECT_TRUE(wm::IsActiveWindow(parent.get()));
+  // Closing the transient restores activation to its parent asynchronously.
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return wm::IsActiveWindow(parent.get()); }));
 
   // Attempting to click unrelated should activate it.
   ui::test::EventGenerator e2(Shell::GetPrimaryRootWindow(), unrelated.get());
