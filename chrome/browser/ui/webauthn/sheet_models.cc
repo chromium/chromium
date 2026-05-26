@@ -801,38 +801,6 @@ AuthenticatorOffTheRecordInterstitialSheetModel::GetCancelButtonLabel() const {
       IDS_WEBAUTHN_PLATFORM_AUTHENTICATOR_OFF_THE_RECORD_INTERSTITIAL_DENY);
 }
 
-// AuthenticatorPaaskSheetModel -----------------------------------------
-
-AuthenticatorPaaskSheetModel::AuthenticatorPaaskSheetModel(
-    AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kHidden) {
-  vector_illustrations_.emplace(kPasskeyPhoneCustomIcon,
-                                kPasskeyPhoneDarkCustomIcon);
-}
-
-AuthenticatorPaaskSheetModel::~AuthenticatorPaaskSheetModel() = default;
-
-bool AuthenticatorPaaskSheetModel::IsActivityIndicatorVisible() const {
-  return true;
-}
-
-std::u16string AuthenticatorPaaskSheetModel::GetStepTitle() const {
-  switch (*dialog_model()->cable_ui_type) {
-    case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
-    case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
-      // caBLEv1 and v2 server-link don't include device names.
-      return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE);
-    case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
-      return l10n_util::GetStringUTF16(
-          IDS_WEBAUTHN_CABLE_ACTIVATE_TITLE_DEVICE);
-  }
-}
-
-std::u16string AuthenticatorPaaskSheetModel::GetStepDescription() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLE_ACTIVATE_DESCRIPTION);
-}
-
 // AuthenticatorClientPinEntrySheetModel
 // -----------------------------------------
 

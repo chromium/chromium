@@ -70,7 +70,6 @@ Discovery::Discovery(
     std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key,
     std::unique_ptr<EventStream<std::unique_ptr<Pairing>>>
         contact_device_stream,
-    const std::vector<CableDiscoveryData>& extension_contents,
     std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
         pairing_callback,
     std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
@@ -81,7 +80,6 @@ Discovery::Discovery(
       request_type_(request_type),
       network_context_factory_(std::move(network_context_factory)),
       qr_keys_(KeysFromQRGeneratorKey(qr_generator_key)),
-      extension_keys_(KeysFromExtension(extension_contents)),
       contact_device_stream_(std::move(contact_device_stream)),
       pairing_callback_(std::move(pairing_callback)),
       invalidated_pairing_callback_(std::move(invalidated_pairing_callback)),
@@ -242,33 +240,6 @@ std::optional<Discovery::UnpairedKeys> Discovery::KeysFromQRGeneratorKey(
       qr_generator_key->subspan<kQRSeedSize, kQRSecretSize>());
   ret.eid_key = Derive<ret.eid_key.size()>(
       ret.qr_secret, base::span<const uint8_t>(), DerivedValueType::kEIDKey);
-  return ret;
-}
-
-// static
-std::vector<Discovery::UnpairedKeys> Discovery::KeysFromExtension(
-    const std::vector<CableDiscoveryData>& extension_contents) {
-  std::vector<Discovery::UnpairedKeys> ret;
-
-  for (auto const& data : extension_contents) {
-    if (data.version != CableDiscoveryData::Version::V2) {
-      continue;
-    }
-
-    auto sized_server_link_data_span =
-        base::span(data.v2->server_link_data).to_fixed_extent<kQRKeySize>();
-    if (!sized_server_link_data_span.has_value()) {
-      FIDO_LOG(ERROR) << "caBLEv2 extension has incorrect length ("
-                      << data.v2->server_link_data.size() << ")";
-      continue;
-    }
-
-    if (std::optional<Discovery::UnpairedKeys> keys =
-            KeysFromQRGeneratorKey(sized_server_link_data_span.value())) {
-      ret.emplace_back(*std::move(keys));
-    }
-  }
-
   return ret;
 }
 

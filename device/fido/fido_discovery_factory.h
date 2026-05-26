@@ -63,10 +63,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   // WebAuthn testing API.
   virtual bool IsTestOverride();
 
-  // set_cable_data configures caBLE obtained via a WebAuthn extension.
+  // set_cable_data configures the QR code generator key for hybrid.
   virtual void set_cable_data(
       FidoRequestType request_type,
-      std::vector<CableDiscoveryData> cable_data,
       const std::optional<std::array<uint8_t, cablev2::kQRKeySize>>&
           qr_generator_key);
 
@@ -158,7 +157,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
   bool allow_no_nswindow_for_testing_ = false;
 #endif  // BUILDFLAG(IS_MAC)
   NetworkContextFactory network_context_factory_;
-  std::optional<std::vector<CableDiscoveryData>> cable_data_;
   std::optional<std::array<uint8_t, cablev2::kQRKeySize>> qr_generator_key_;
   std::optional<FidoRequestType> request_type_;
   std::unique_ptr<

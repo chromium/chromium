@@ -312,7 +312,6 @@ class AuthenticatorRequestDialogController
   }
 
   void set_cable_transport_info(
-      std::optional<bool> extension_is_v2,
       const std::optional<std::string>& cable_qr_string);
 
   bool win_native_api_enabled() const {

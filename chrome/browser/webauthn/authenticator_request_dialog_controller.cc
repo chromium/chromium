@@ -1544,21 +1544,7 @@ void AuthenticatorRequestDialogController::OnSampleCollected(
 }
 
 void AuthenticatorRequestDialogController::set_cable_transport_info(
-    std::optional<bool> extension_is_v2,
     const std::optional<std::string>& cable_qr_string) {
-  if (extension_is_v2.has_value()) {
-    if (*extension_is_v2) {
-      model_->cable_ui_type =
-          AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK;
-    } else {
-      model_->cable_ui_type =
-          AuthenticatorRequestDialogModel::CableUIType::CABLE_V1;
-    }
-  } else {
-    model_->cable_ui_type =
-        AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR;
-  }
-
   model_->cable_qr_string = cable_qr_string;
 }
 
@@ -1740,7 +1726,6 @@ void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
     AuthenticatorTransport transport) {
   DCHECK(model_->step() == Step::kMechanismSelection ||
          model_->step() == Step::kUsbInsertAndActivate ||
-         model_->step() == Step::kCableActivate ||
          model_->step() == Step::kPasskeyAutofill ||
          model_->step() == Step::kChromeProfileCreatePasskey ||
          model_->step() == Step::kPreSelectAccount ||
@@ -1757,7 +1742,7 @@ void AuthenticatorRequestDialogController::StartGuidedFlowForTransport(
     case AuthenticatorTransport::kHybrid:
       EnsureBleAdapterIsPoweredAndContinue(
           base::BindOnce(&AuthenticatorRequestDialogController::SetCurrentStep,
-                         weak_factory_.GetWeakPtr(), Step::kCableActivate));
+                         weak_factory_.GetWeakPtr(), Step::kCableV2QRCode));
       break;
     default:
       break;
@@ -1990,28 +1975,9 @@ void AuthenticatorRequestDialogController::PopulateMechanisms() {
   const bool windows_handles_hybrid = WebAuthnApiSupportsHybrid();
   bool include_add_phone_option = false;
 
-  if (model_->cable_ui_type) {
-    switch (*model_->cable_ui_type) {
-      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
-        if (transport_availability_.available_transports.contains(kCable)) {
-          include_add_phone_option = !windows_handles_hybrid;
-        }
-        break;
-
-      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
-      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1: {
-        if (transport_availability_.available_transports.contains(kCable)) {
-          transports_to_list_if_active.push_back(kCable);
-
-          // If this is a caBLEv1 or server-link request then offering to "Try
-          // Again" is unfortunate because the server won't send another ping
-          // to the phone. It is valid if trying to use USB devices but the
-          // confusion of the caBLE case overrides that.
-          model_->offer_try_again_in_ui = false;
-        }
-        break;
-      }
-    }
+  if (model_->cable_qr_string.has_value() &&
+      transport_availability_.available_transports.contains(kCable)) {
+    include_add_phone_option = !windows_handles_hybrid;
   }
 
   if (!is_get_assertion &&
@@ -2216,24 +2182,6 @@ AuthenticatorRequestDialogController::IndexOfGetAssertionPriorityMechanism() {
                                  GetRenderFrameHost()->GetBrowserContext())
                                  ->GetOriginalProfile()))) {
       return best_cred->first;
-    }
-  }
-
-  // If it's caBLEv1, or server-linked caBLEv2, jump to that.
-  if (model_->cable_ui_type) {
-    switch (*model_->cable_ui_type) {
-      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_SERVER_LINK:
-      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V1:
-        for (size_t i = 0; i < model_->mechanisms.size(); ++i) {
-          if (model_->mechanisms[i].type ==
-              Mechanism::Type(
-                  Mechanism::Transport(AuthenticatorTransport::kHybrid))) {
-            return i;
-          }
-        }
-        break;
-      case AuthenticatorRequestDialogModel::CableUIType::CABLE_V2_2ND_FACTOR:
-        break;
     }
   }
 

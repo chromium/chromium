@@ -54,7 +54,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
       // may be nullptr.
       std::unique_ptr<EventStream<std::unique_ptr<Pairing>>>
           contact_device_stream,
-      const std::vector<CableDiscoveryData>& extension_contents,
       // pairing_callback will be called when a QR-initiated connection
       // receives pairing information from the peer.
       std::optional<base::RepeatingCallback<void(std::unique_ptr<Pairing>)>>
@@ -107,8 +106,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Discovery
   void PairingIsInvalid(std::unique_ptr<Pairing> pairing);
   static std::optional<UnpairedKeys> KeysFromQRGeneratorKey(
       std::optional<base::span<const uint8_t, kQRKeySize>> qr_generator_key);
-  static std::vector<UnpairedKeys> KeysFromExtension(
-      const std::vector<CableDiscoveryData>& extension_contents);
 
   static const BluetoothUUID& GoogleCableUUID();
   static const BluetoothUUID& FIDOCableUUID();

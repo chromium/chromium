@@ -187,8 +187,6 @@ enum class TransportAvailabilityParam {
   kOnlyHybridOrInternal,
   kHasWinNativeAuthenticator,
   kWindowsHandlesHybrid,
-  kHasCableV1Extension,
-  kHasCableV2Extension,
   kRequireResidentKey,
   kIsConditionalUI,
   kAttachmentAny,
@@ -231,10 +229,6 @@ std::string_view TransportAvailabilityParamToString(
       return "kHasWinNativeAuthenticator";
     case TransportAvailabilityParam::kWindowsHandlesHybrid:
       return "kWindowsHandlesHybrid";
-    case TransportAvailabilityParam::kHasCableV1Extension:
-      return "kHasCableV1Extension";
-    case TransportAvailabilityParam::kHasCableV2Extension:
-      return "kHasCableV2Extension";
     case TransportAvailabilityParam::kRequireResidentKey:
       return "kRequireResidentKey";
     case TransportAvailabilityParam::kIsConditionalUI:
@@ -456,7 +450,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto wincred2 = CredentialInfoFrom(kWinCred2);
   [[maybe_unused]] const auto touchid_cred1 = CredentialInfoFrom(kTouchIDCred1);
   [[maybe_unused]] const auto enclave_cred1 = CredentialInfoFrom(kEnclaveCred1);
-  const auto v1 = TransportAvailabilityParam::kHasCableV1Extension;
   const auto has_winapi =
       TransportAvailabilityParam::kHasWinNativeAuthenticator;
   [[maybe_unused]] const auto win_hybrid =
@@ -508,7 +501,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
   const auto usb_ui = Step::kUsbInsertAndActivate;
   const auto mss = Step::kMechanismSelection;
   const auto plat_ui = Step::kPlatformAuthenticator;
-  const auto cable_ui = Step::kCableActivate;
   [[maybe_unused]] const auto create_pk = Step::kChromeProfileCreatePasskey;
   const auto create_pk_or_mss =
 #if BUILDFLAG(IS_MAC)
@@ -633,9 +625,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
       {L, ga, {}, {has_winapi}, {winapi}, plat_ui},
       // ...even if there are discovered Windows credentials.
       {L, ga, {}, {has_winapi, one_cred}, {c(wincred1), winapi}, plat_ui},
-
-      // A caBLEv1 extension should cause us to go directly to caBLE.
-      {L, ga, {usb, cable}, {v1}, {t(cable), t(usb)}, cable_ui},
 
       // If this is a Conditional UI request, don't offer the platform
       // authenticator.
@@ -1156,21 +1145,6 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     FakeEnclaveController enclave_controller(model.get());
 
-    std::optional<bool> has_v2_cable_extension;
-    if (test.params.contains(
-            TransportAvailabilityParam::kHasCableV1Extension)) {
-      has_v2_cable_extension = false;
-    }
-    if (test.params.contains(TransportAvailabilityParam::kEnclaveCred)) {
-      model->OnGPMEnclaveEnabledStatusChanged(EnclaveEnabledStatus::kEnabled);
-    }
-
-    if (test.params.contains(
-            TransportAvailabilityParam::kHasCableV2Extension)) {
-      CHECK(!has_v2_cable_extension.has_value());
-      has_v2_cable_extension = true;
-    }
-
     controller.set_allow_icloud_keychain(transports_info.has_icloud_keychain);
     if (test.params.contains(
             TransportAvailabilityParam::kCreateInICloudKeychain)) {
@@ -1204,16 +1178,16 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Mechanisms) {
     if (test.params.contains(TransportAvailabilityParam::kEnclaveNeedsSignIn)) {
       controller.OnGPMEnclaveEnabledStatusChanged(
           EnclaveEnabledStatus::kEnabledAndReauthNeeded);
+    } else if (test.params.contains(TransportAvailabilityParam::kEnclaveCred)) {
+      controller.OnGPMEnclaveEnabledStatusChanged(
+          EnclaveEnabledStatus::kEnabled);
     }
 
     controller.SetAccountPreselectedCallback(base::BindRepeating(
         [](device::DiscoverableCredentialMetadata cred) {}));
 
-    if (has_v2_cable_extension.has_value() ||
-        test.transports.contains(device::FidoTransportProtocol::kHybrid)) {
-      std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
-      controller.set_cable_transport_info(has_v2_cable_extension,
-                                          std::nullopt);
+    if (test.transports.contains(device::FidoTransportProtocol::kHybrid)) {
+      controller.set_cable_transport_info("fido:/1234");
     }
 
     const bool is_autofill =
@@ -1286,7 +1260,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, WinCancel) {
       controller.saved_authenticators().emplace_back(
           "ID", AuthenticatorTransport::kInternal,
           device::AuthenticatorType::kWinNative);
-      controller.set_cable_transport_info(std::nullopt, "fido:/1234");
+      controller.set_cable_transport_info("fido:/1234");
 
       UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
       controller.StartFlow(std::move(tai), {});
@@ -1349,7 +1323,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   controller.saved_authenticators().emplace_back(
       "ID", AuthenticatorTransport::kInternal,
       device::AuthenticatorType::kWinNative);
-  controller.set_cable_transport_info(std::nullopt, "fido:/1234");
+  controller.set_cable_transport_info("fido:/1234");
   UpdateModelBeforeStartFlow(model.get(), tai, /*is_off_the_record=*/false);
   controller.StartFlow(std::move(tai), {});
 
@@ -1542,8 +1516,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, Cable2ndFactorFlows) {
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
 
-    controller.set_cable_transport_info(
-        /*extension_is_v2=*/std::nullopt, std::nullopt);
+    controller.set_cable_transport_info("fido:/1234");
     UpdateModelBeforeStartFlow(
         model.get(), transports_info,
         /*is_off_the_record=*/test.profile == Profile::INCOGNITO);
@@ -1639,7 +1612,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterAlreadyPowered) {
     AuthenticatorTransport transport;
     Step expected_final_step;
   } kTestCases[] = {
-      {AuthenticatorTransport::kHybrid, Step::kCableActivate},
+      {AuthenticatorTransport::kHybrid, Step::kCableV2QRCode},
   };
 
   for (const auto test_case : kTestCases) {
@@ -1654,7 +1627,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterAlreadyPowered) {
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    controller.set_cable_transport_info(true, std::nullopt);
+    controller.set_cable_transport_info("fido:/1234");
     UpdateModelBeforeStartFlow(model.get(), transports_info,
                                /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
@@ -1670,7 +1643,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     AuthenticatorTransport transport;
     Step expected_final_step;
   } kTestCases[] = {
-      {AuthenticatorTransport::kHybrid, Step::kCableActivate},
+      {AuthenticatorTransport::kHybrid, Step::kCableV2QRCode},
   };
 
   for (const auto test_case : kTestCases) {
@@ -1687,7 +1660,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     model->observers.AddObserver(&mock_observer);
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    controller.set_cable_transport_info(true, std::nullopt);
+    controller.set_cable_transport_info("fido:/1234");
     UpdateModelBeforeStartFlow(model.get(), transports_info,
                                /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
@@ -1736,8 +1709,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     auto model =
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-    controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                        std::nullopt);
+    controller.set_cable_transport_info("fido:/1234");
     UpdateModelBeforeStartFlow(model.get(), transports_info,
                                /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
@@ -1768,7 +1740,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
     AuthenticatorTransport transport;
     Step expected_final_step;
   } kTestCases[] = {
-      {AuthenticatorTransport::kHybrid, Step::kCableActivate},
+      {AuthenticatorTransport::kHybrid, Step::kCableV2QRCode},
   };
 
   for (const auto test_case : kTestCases) {
@@ -1783,7 +1755,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
         base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetBluetoothAdapterPowerOnCallback(power_receiver.GetCallback());
-    controller.set_cable_transport_info(true, std::nullopt);
+    controller.set_cable_transport_info("fido:/1234");
     UpdateModelBeforeStartFlow(model.get(), transports_info,
                                /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
@@ -1824,7 +1796,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterPendingPermission) {
     AuthenticatorRequestDialogController controller(model.get(), main_rfh());
     controller.SetRequestBlePermissionCallback(
         request_ble_permission_callback_receiver.Callback());
-    controller.set_cable_transport_info(true, std::nullopt);
+    controller.set_cable_transport_info("fido:/1234");
     UpdateModelBeforeStartFlow(model.get(), transports_info,
                                /*is_off_the_record=*/false);
     controller.StartFlow(std::move(transports_info), {});
@@ -1837,7 +1809,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BleAdapterPendingPermission) {
 
     if (ble_status == BleStatus::kOn) {
       EXPECT_TRUE(model->ble_adapter_is_powered);
-      EXPECT_EQ(model->step(), Step::kCableActivate);
+      EXPECT_EQ(model->step(), Step::kCableV2QRCode);
     } else if (ble_status == BleStatus::kOff) {
       EXPECT_FALSE(model->ble_adapter_is_powered);
       EXPECT_EQ(model->step(), Step::kBlePowerOnAutomatic);
@@ -2192,8 +2164,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, BluetoothPermissionPrompt) {
       auto model =
           base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
       AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-      controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                          std::nullopt);
+      controller.set_cable_transport_info("fido:/1234");
       TransportAvailabilityInfo transports_info;
       transports_info.ble_status = ble_status;
       transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2222,8 +2193,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, AdvanceThroughCableV2States) {
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-  controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                      std::nullopt);
+  controller.set_cable_transport_info("fido:/1234");
   TransportAvailabilityInfo transports_info;
   transports_info.ble_status = BleStatus::kOn;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2249,8 +2219,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
   auto model =
       base::MakeRefCounted<AuthenticatorRequestDialogModel>(main_rfh());
   AuthenticatorRequestDialogController controller(model.get(), main_rfh());
-  controller.set_cable_transport_info(/*extension_is_v2=*/std::nullopt,
-                                      std::nullopt);
+  controller.set_cable_transport_info("fido:/1234");
   TransportAvailabilityInfo transports_info;
   transports_info.ble_status = BleStatus::kOn;
   transports_info.request_type = device::FidoRequestType::kGetAssertion;
@@ -2269,10 +2238,10 @@ TEST_F(AuthenticatorRequestDialogControllerTest,
 
   // Moving to a different step should stop the timer so that kCableV2Connected
   // never shows.
-  controller.SetCurrentStepForTesting(Step::kCableActivate);
+  controller.SetCurrentStepForTesting(Step::kClosed);
 
   task_environment()->FastForwardBy(base::Seconds(10));
-  EXPECT_EQ(model->step(), Step::kCableActivate);
+  EXPECT_EQ(model->step(), Step::kClosed);
 }
 
 TEST_F(AuthenticatorRequestDialogControllerTest, Crbug1503187) {
@@ -2383,8 +2352,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, HybridButtonLabel) {
     transports_info.request_type = device::FidoRequestType::kMakeCredential;
     transports_info.attestation_conveyance_preference =
         device::AttestationConveyancePreference::kNone;
-    controller.set_cable_transport_info(
-        /*extension_is_v2=*/std::nullopt, std::nullopt);
+    controller.set_cable_transport_info("fido:/1234");
     if (test_case.chrome_can_do_usb) {
       transports_info.available_transports = {
           device::FidoTransportProtocol::kHybrid,
@@ -2587,8 +2555,7 @@ TEST_F(AuthenticatorRequestDialogControllerTest, MechanismsFromUserAccounts) {
   transports_info.recognized_credentials = {kCred1, kCred2};
   transports_info.ble_status = BleStatus::kOn;
 
-  controller.set_cable_transport_info(
-      /*extension_is_v2=*/std::nullopt, std::nullopt);
+  controller.set_cable_transport_info("fido:/1234");
   RepeatingValueCallbackReceiver<device::DiscoverableCredentialMetadata>
       account_preselected_callback;
   controller.SetAccountPreselectedCallback(

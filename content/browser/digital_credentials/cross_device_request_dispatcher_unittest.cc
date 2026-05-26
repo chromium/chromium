@@ -71,7 +71,6 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
           device::FidoRequestType::kGetAssertion,
           base::BindLambdaForTesting([&]() { return network_context_.get(); }),
           qr_generator_key_, std::move(callback_and_event_stream.second),
-          /*extension_contents=*/std::vector<device::CableDiscoveryData>(),
           GetPairingCallback(), GetInvalidatedPairingCallback(),
           GetEventCallback(),
           /*must_support_ctap=*/false);
