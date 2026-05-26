@@ -1712,6 +1712,33 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, InvokeSuccess) {
   EXPECT_TRUE(GetInstanceForTab(tab));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWithTabsToPin) {
+  tabs::TabInterface* tab1 = GetTabListInterface()->GetActiveTab();
+  tabs::TabInterface* tab2 = CreateUserInitiatedTab(GURL("about:blank"));
+  // Ensure tab1 is active for Glic invocation.
+  ActivateTab(tab1);
+
+  base::test::TestFuture<void> success_future;
+  GlicInvokeOptions options(glic::Target(tab1),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+  options.tab_sharing.tabs_to_pin = {tab2->GetHandle()};
+  options.tab_sharing.pin_trigger = GlicPinTrigger::kInstanceCreation;
+
+  coordinator().Invoke(std::move(options));
+
+  EXPECT_TRUE(success_future.Wait());
+
+  auto* instance = GetInstanceForTab(tab1);
+  ASSERT_TRUE(instance);
+
+  // Verify that tab2 was pinned.
+  auto usage = instance->sharing_manager().GetPinnedTabUsage(tab2->GetHandle());
+  ASSERT_TRUE(usage.has_value());
+  EXPECT_EQ(usage->pin_event.trigger, GlicPinTrigger::kInstanceCreation);
+}
+
 // This test is disabled on Android because incognito window creation
 // behavior differs and is not supported by this test setup.
 #if !BUILDFLAG(IS_ANDROID)
