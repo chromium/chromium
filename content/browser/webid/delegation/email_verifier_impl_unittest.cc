@@ -21,8 +21,12 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::ByMove;
 using ::testing::NiceMock;
 using ::testing::Optional;
+using ::testing::Return;
+using ::testing::StrictMock;
+using ::testing::WithArgs;
 
 namespace content::webid {
 
@@ -40,7 +44,8 @@ class MockEmailVerificationRequest : public EmailVerificationRequest {
               Send,
               (const std::string&,
                const std::string&,
-               EmailVerifier::OnEmailVerifiedCallback));
+               EmailVerifier::OnEmailVerifiedCallback),
+              (override));
 };
 
 class MockRequestBuilder {
@@ -56,20 +61,18 @@ class EmailVerifierImplTest : public RenderViewHostTestHarness {
 
 TEST_F(EmailVerifierImplTest, TestSingleRequest) {
   auto request =
-      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>(
-          *main_rfh());
+      std::make_unique<StrictMock<MockEmailVerificationRequest>>(*main_rfh());
   auto* request_ptr = request.get();
 
   MockRequestBuilder builder;
-  EXPECT_CALL(builder, Run)
-      .WillOnce(testing::Return(testing::ByMove(std::move(request))));
+  EXPECT_CALL(builder, Run).WillOnce(Return(ByMove(std::move(request))));
 
   EmailVerifierImpl verifier(base::BindRepeating(&MockRequestBuilder::Run,
                                                  base::Unretained(&builder)));
 
   EXPECT_CALL(*request_ptr, Send("test@example.com", "nonce", _))
-      .WillOnce(testing::WithArgs<2>(
-          [&](EmailVerifier::OnEmailVerifiedCallback callback) {
+      .WillOnce(
+          WithArgs<2>([&](EmailVerifier::OnEmailVerifiedCallback callback) {
             std::move(callback).Run(EmailVerifier::Result{
                 "token", net::SchemefulSite(GURL("https://example.com"))});
           }));
@@ -77,25 +80,23 @@ TEST_F(EmailVerifierImplTest, TestSingleRequest) {
 
   base::MockCallback<EmailVerifier::OnEmailVerifiedCallback> cb;
   EXPECT_CALL(cb,
-              Run(testing::Optional(EmailVerifier::Result{
+              Run(Optional(EmailVerifier::Result{
                   "token", net::SchemefulSite(GURL("https://example.com"))})));
   verifier.Verify("test@example.com", "nonce", cb.Get());
 }
 
 TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
   auto request1 =
-      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>(
-          *main_rfh());
+      std::make_unique<StrictMock<MockEmailVerificationRequest>>(*main_rfh());
   auto* request_ptr1 = request1.get();
   auto request2 =
-      std::make_unique<testing::StrictMock<MockEmailVerificationRequest>>(
-          *main_rfh());
+      std::make_unique<StrictMock<MockEmailVerificationRequest>>(*main_rfh());
   auto* request_ptr2 = request2.get();
 
   MockRequestBuilder builder;
   EXPECT_CALL(builder, Run)
-      .WillOnce(testing::Return(testing::ByMove(std::move(request1))))
-      .WillOnce(testing::Return(testing::ByMove(std::move(request2))));
+      .WillOnce(Return(ByMove(std::move(request1))))
+      .WillOnce(Return(ByMove(std::move(request2))));
 
   EmailVerifierImpl verifier(base::BindRepeating(&MockRequestBuilder::Run,
                                                  base::Unretained(&builder)));
@@ -103,15 +104,15 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
   // Set up expectations and capture callbacks for the two requests.
   EmailVerifier::OnEmailVerifiedCallback callback1;
   EXPECT_CALL(*request_ptr1, Send("test1@example.com", "nonce1", _))
-      .WillOnce(testing::WithArgs<2>(
-          [&](EmailVerifier::OnEmailVerifiedCallback callback) {
+      .WillOnce(
+          WithArgs<2>([&](EmailVerifier::OnEmailVerifiedCallback callback) {
             callback1 = std::move(callback);
           }));
 
   EmailVerifier::OnEmailVerifiedCallback callback2;
   EXPECT_CALL(*request_ptr2, Send("test2@example.com", "nonce2", _))
-      .WillOnce(testing::WithArgs<2>(
-          [&](EmailVerifier::OnEmailVerifiedCallback callback) {
+      .WillOnce(
+          WithArgs<2>([&](EmailVerifier::OnEmailVerifiedCallback callback) {
             callback2 = std::move(callback);
           }));
 
@@ -129,10 +130,10 @@ TEST_F(EmailVerifierImplTest, TestTwoConcurrentRequests) {
   EXPECT_CALL(*request_ptr1, Destroy());
   EXPECT_CALL(*request_ptr2, Destroy());
   EXPECT_CALL(cb1,
-              Run(testing::Optional(EmailVerifier::Result{
+              Run(Optional(EmailVerifier::Result{
                   "token1", net::SchemefulSite(GURL("https://example.com"))})));
   EXPECT_CALL(cb2,
-              Run(testing::Optional(EmailVerifier::Result{
+              Run(Optional(EmailVerifier::Result{
                   "token2", net::SchemefulSite(GURL("https://example.com"))})));
 
   // Complete in reverse order to test concurrency.

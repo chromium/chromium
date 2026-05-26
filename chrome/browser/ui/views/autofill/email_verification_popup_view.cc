@@ -48,9 +48,9 @@ EmailVerificationPopupView::EmailVerificationPopupView(
     const net::SchemefulSite& issuer_site,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback)
-    : autofill::PopupBaseView(controller,
-                              parent_widget,
-                              views::Widget::InitParams::Activatable::kYes),
+    : PopupBaseView(controller,
+                    parent_widget,
+                    views::Widget::InitParams::Activatable::kYes),
       callback_(std::move(callback)) {
   SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
@@ -161,7 +161,7 @@ void EmailVerificationPopupView::Show() {
 }
 
 bool EmailVerificationPopupView::OverlapsWithPictureInPictureWindow() const {
-  return autofill::BoundsOverlapWithPictureInPictureWindow(GetBoundsInScreen());
+  return BoundsOverlapWithPictureInPictureWindow(GetBoundsInScreen());
 }
 
 gfx::Size EmailVerificationPopupView::CalculatePreferredSize(

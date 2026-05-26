@@ -69,7 +69,7 @@ void EmailVerificationPopupController::Show(
   popup_hide_helper_.emplace(
       web_contents(),
       rfh ? rfh->GetGlobalId() : content::GlobalRenderFrameHostId(),
-      autofill::AutofillPopupHideHelper::HidingParams{
+      AutofillPopupHideHelper::HidingParams{
           .hide_on_web_contents_lost_focus = false,
       },
       /*hiding_callback=*/
@@ -81,8 +81,7 @@ void EmailVerificationPopupController::Show(
           base::Unretained(this)));
 }
 
-void EmailVerificationPopupController::Hide(
-    autofill::SuggestionHidingReason reason) {
+void EmailVerificationPopupController::Hide(SuggestionHidingReason reason) {
   HideImpl(/*confirmed=*/false);
 }
 
@@ -104,9 +103,8 @@ const gfx::RectF& EmailVerificationPopupController::element_bounds() const {
   return element_bounds_;
 }
 
-autofill::PopupAnchorType EmailVerificationPopupController::anchor_type()
-    const {
-  return autofill::PopupAnchorType::kField;
+PopupAnchorType EmailVerificationPopupController::anchor_type() const {
+  return PopupAnchorType::kField;
 }
 
 base::i18n::TextDirection

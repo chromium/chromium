@@ -78,6 +78,8 @@ class EmailVerificationPopupViewTest : public ChromeViewsTestBase {
   std::unique_ptr<views::Widget> widget_;
 };
 
+// Tests that the popup view can be successfully shown and that hiding the popup
+// correctly triggers the callback with `false` (cancelling the flow).
 TEST_F(EmailVerificationPopupViewTest, Show) {
   auto controller =
       std::make_unique<EmailVerificationPopupController>(web_contents());
@@ -105,7 +107,7 @@ TEST_F(EmailVerificationPopupViewTest, Show) {
   EXPECT_CALL(*mock_view, Hide);
 
   // Verify that controller callback is invoked on hiding / closing.
-  controller->Hide(autofill::SuggestionHidingReason::kTabGone);
+  controller->Hide(SuggestionHidingReason::kTabGone);
   EXPECT_TRUE(confirmed_future.IsReady());
   EXPECT_FALSE(confirmed_future.Get());
 }

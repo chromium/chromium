@@ -29,8 +29,8 @@ class EmailVerificationPopupController;
 // A popup that asks the user for permission to automatically verify their
 // email address with an identity provider.
 // Similar to PasswordCrossDomainConfirmationPopupViewViews.
-class EmailVerificationPopupView : public autofill::PopupBaseView {
-  METADATA_HEADER(EmailVerificationPopupView, autofill::PopupBaseView)
+class EmailVerificationPopupView : public PopupBaseView {
+  METADATA_HEADER(EmailVerificationPopupView, PopupBaseView)
  public:
   enum class PopupViewId {
     kNone = 0,
