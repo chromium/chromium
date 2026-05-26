@@ -614,7 +614,7 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(
   static const uint32_t poison_16_bytes[4] = {0xbadbad00, 0xbadbad00,
                                               0xbadbad00, 0xbadbad00};
 
-#if !(PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)) && \
+#if !(PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(IS_COMPONENT_BUILD)) && \
     PA_HAS_BUILTIN(__builtin_assume_aligned)
   void* slot_start_tagged = __builtin_assume_aligned(
       slot_start.Tag().ToObject(), internal::kAlignment);

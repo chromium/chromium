@@ -809,7 +809,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   // accept that allocations and deallocations will not be matched at all times.
   // It is however essential for PartitionAlloc, which is exercized in the test
   // below.
-#ifndef COMPONENT_BUILD
+#if !PA_BUILDFLAG(IS_COMPONENT_BUILD)
   // Calls vasprintf() indirectly, see below.
   counts_before = counts_after;
   std::stringstream stream;
@@ -817,7 +817,7 @@ TEST_F(AllocatorShimTest, InterceptCLibraryFunctions) {
   EXPECT_GT(stream.view().size(), 30u);
   counts_after = total_counts(allocs_intercepted_by_size);
   EXPECT_GT(counts_after, counts_before);
-#endif  // COMPONENT_BUILD
+#endif  // !PA_BUILDFLAG(IS_COMPONENT_BUILD)
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
@@ -972,11 +972,11 @@ class AllocatorShimCppOperatorTest : public AllocatorShimTest {
 
  protected:
   static constexpr size_t GetAllocSize(size_t size, size_t alignment) {
-#if !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
+#if !PA_BUILDFLAG(IS_APPLE) || !PA_BUILDFLAG(IS_COMPONENT_BUILD)
     return size;
 #else
     return partition_alloc::internal::base::bits::AlignUp(size, alignment);
-#endif  // !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
+#endif  // !PA_BUILDFLAG(IS_APPLE) || !PA_BUILDFLAG(IS_COMPONENT_BUILD)
   }
 
   // Tests `operator new()` and `operator delete()` against `T`.
@@ -1105,12 +1105,12 @@ class AllocatorShimCppOperatorTest : public AllocatorShimTest {
 // On Apple component-builds, all deallocations are routed to `try_free_default`
 // and size information will be missing.
 #if PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC) && \
-    (!PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD))
+    (!PA_BUILDFLAG(IS_APPLE) || !PA_BUILDFLAG(IS_COMPONENT_BUILD))
 #define ASSERT_TRUE_IFF_SIZED(a) ASSERT_TRUE(a)
 #else
 #define ASSERT_TRUE_IFF_SIZED(a) ASSERT_FALSE(a)
 #endif  // PA_BUILDFLAG(SHIM_SUPPORTS_SIZED_DEALLOC) && (!PA_BUILDFLAG(IS_APPLE)
-        // || !defined(COMPONENT_BUILD))
+        // || !PA_BUILDFLAG(IS_COMPONENT_BUILD))
 
 TEST_F(AllocatorShimCppOperatorTest, NewAndDeleteGlobalOperator) {
   InsertAllocatorDispatch(&g_mock_dispatch);
@@ -1219,9 +1219,9 @@ TEST_F(AllocatorShimCppOperatorTest,
       frees_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
   // On Apple component build `try_free_default` is used and alignment
   // information is missing.
-#if !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
+#if !PA_BUILDFLAG(IS_APPLE) || !PA_BUILDFLAG(IS_COMPONENT_BUILD)
   ASSERT_TRUE(frees_intercepted_by_alignment[kAlignment]);
-#endif  // !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
+#endif  // !PA_BUILDFLAG(IS_APPLE) || !PA_BUILDFLAG(IS_COMPONENT_BUILD)
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }
@@ -1335,9 +1335,9 @@ TEST_F(AllocatorShimCppOperatorTest,
       frees_intercepted_by_size[GetAllocSize(kSize, kAlignment)]);
   // On Apple component build `try_free_default` is used and alignment
   // information is missing.
-#if !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
+#if !PA_BUILDFLAG(IS_APPLE) || !PA_BUILDFLAG(IS_COMPONENT_BUILD)
   ASSERT_TRUE(frees_intercepted_by_alignment[kAlignment]);
-#endif  // !PA_BUILDFLAG(IS_APPLE) || !defined(COMPONENT_BUILD)
+#endif  // !PA_BUILDFLAG(IS_APPLE) || !PA_BUILDFLAG(IS_COMPONENT_BUILD)
 
   RemoveAllocatorDispatchForTesting(&g_mock_dispatch);
 }

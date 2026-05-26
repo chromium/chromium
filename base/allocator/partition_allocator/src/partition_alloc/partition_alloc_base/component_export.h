@@ -5,6 +5,8 @@
 #ifndef PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPONENT_EXPORT_H_
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_COMPONENT_EXPORT_H_
 
+#include "partition_alloc/buildflags.h"
+
 // Used to annotate symbols which are exported by the component named
 // |component|. Note that this only does the right thing if the corresponding
 // component target's sources are compiled with |IS_$component_IMPL| defined
@@ -33,7 +35,7 @@
 // Compiler-specific macros to annotate for export or import of a symbol. No-op
 // in non-component builds. These should not see much if any direct use.
 // Instead use the PA_COMPONENT_EXPORT macro defined above.
-#if defined(COMPONENT_BUILD)
+#if PA_BUILDFLAG(IS_COMPONENT_BUILD)
 #if defined(WIN32)
 #define PA_COMPONENT_EXPORT_ANNOTATION __declspec(dllexport)
 #define PA_COMPONENT_IMPORT_ANNOTATION __declspec(dllimport)
@@ -41,10 +43,10 @@
 #define PA_COMPONENT_EXPORT_ANNOTATION __attribute__((visibility("default")))
 #define PA_COMPONENT_IMPORT_ANNOTATION __attribute__((visibility("default")))
 #endif  // defined(WIN32)
-#else   // defined(COMPONENT_BUILD)
+#else   // !PA_BUILDFLAG(IS_COMPONENT_BUILD)
 #define PA_COMPONENT_EXPORT_ANNOTATION
 #define PA_COMPONENT_IMPORT_ANNOTATION
-#endif  // defined(COMPONENT_BUILD)
+#endif  // PA_BUILDFLAG(IS_COMPONENT_BUILD)
 
 // Below this point are several internal utility macros used for the
 // implementation of the above macros. Not intended for external use.

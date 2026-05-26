@@ -6,12 +6,13 @@
 #include <cstddef>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace partition_alloc::internal::base {
 
-#if PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD) && \
+#if PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(IS_COMPONENT_BUILD) && \
     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // TODO(crbug.com/1429450): TruncatingStringPrintf() defined in
 // allocator_base.dll allocates string from system allocator, but

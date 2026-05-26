@@ -22,7 +22,7 @@
 #include "partition_alloc/shim/shim_alloc_functions.h"
 #include "partition_alloc/shim/winheap_stubs_win.h"
 
-#if defined(COMPONENT_BUILD)
+#if PA_BUILDFLAG(IS_COMPONENT_BUILD)
 #include <cstdlib>
 #include <cstring>
 #endif
@@ -276,7 +276,7 @@ __declspec(restrict) void* _aligned_offset_recalloc(void* address,
   __builtin_unreachable();
 }
 
-#if defined(COMPONENT_BUILD)
+#if PA_BUILDFLAG(IS_COMPONENT_BUILD)
 // Overrides CRT functions which internally call malloc() and expect callers
 // will free().
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
@@ -501,7 +501,7 @@ __declspec(restrict) void* _aligned_offset_recalloc_dbg(void* address,
   __builtin_unreachable();
 }
 
-#if defined(COMPONENT_BUILD)
+#if PA_BUILDFLAG(IS_COMPONENT_BUILD)
 // Overrides CRT functions which internally call malloc() and expect callers
 // will free().
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM)
@@ -527,7 +527,7 @@ errno_t _wdupenv_s_dbg(wchar_t** buffer,
                        const wchar_t* varname) {
   return _wdupenv_s(buffer, number_of_elements, varname);
 }
-#endif  // defined(COMPONENT_BUILD)
+#endif  // PA_BUILDFLAG(IS_COMPONENT_BUILD)
 
 #endif  // PA_BUILDFLAG(IS_DEBUG)
 

@@ -14,6 +14,7 @@
 #include <new>
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/shim/allocator_dispatch.h"
@@ -51,7 +52,7 @@ bool CallNewHandler(size_t size) {
 #endif
 }
 
-#if !(PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD))
+#if !(PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(IS_COMPONENT_BUILD))
 PA_ALWAYS_INLINE
 #endif
 const allocator_shim::AllocatorDispatch* GetChainHead() {

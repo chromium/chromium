@@ -9,8 +9,9 @@
 #define PARTITION_ALLOC_PARTITION_ALLOC_BASE_CXX_WRAPPER_OPTIONAL_H_
 
 #include "partition_alloc/build_config.h"
+#include "partition_alloc/buildflags.h"
 
-#if PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+#if PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(IS_COMPONENT_BUILD)
 #include "partition_alloc/partition_alloc_base/check.h"
 
 // To enable allocator_shim for the windows component build chrome,
@@ -39,6 +40,6 @@
 #pragma pop_macro("_LIBCPP_VERBOSE_ABORT")
 #else
 #include <optional>
-#endif  // PA_BUILDFLAG(IS_WIN) && defined(COMPONENT_BUILD)
+#endif  // PA_BUILDFLAG(IS_WIN) && PA_BUILDFLAG(IS_COMPONENT_BUILD)
 
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_CXX_WRAPPER_OPTIONAL_H_
