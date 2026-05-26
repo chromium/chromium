@@ -6984,6 +6984,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOption)},
 
+    {"composebox-drive-context-menu-option-disclaimer",
+     flag_descriptions::kComposeboxDriveContextMenuOptionDisclaimerName,
+     flag_descriptions::kComposeboxDriveContextMenuOptionDisclaimerDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kComposeboxDriveContextMenuOptionDisclaimer)},
+
     {"composebox-uses-chrome-compose-client",
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientName,
      flag_descriptions::kNtpComposeboxUsesChromeComposeClientDescription,

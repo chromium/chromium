@@ -9345,6 +9345,8 @@ from previous Chrome versions.
   <int value="-1575043928" label="OriginKeyedProcessesByDefault:enabled"/>
   <int value="-1574799991" label="SkipServiceWorkerForInstallPromot:enabled"/>
   <int value="-1574315456" label="ArchiveTabService:disabled"/>
+  <int value="-1573494098"
+      label="ComposeboxDriveContextMenuOptionDisclaimer:disabled"/>
   <int value="-1573468162" label="ClientStorageAccessContextAuditing:enabled"/>
   <int value="-1573043947" label="MaliciousApkDownloadCheck:disabled"/>
   <int value="-1572374515"
@@ -15715,6 +15717,8 @@ from previous Chrome versions.
   <int value="514569020" label="RemoteCopyImageNotification:enabled"/>
   <int value="515046556"
       label="EnterpriseUrlFilteringEventReportingOnAndroid:enabled"/>
+  <int value="515384640"
+      label="ComposeboxDriveContextMenuOptionDisclaimer:enabled"/>
   <int value="515954975" label="ESimEmptyActivationCodeSupported:disabled"/>
   <int value="515981953" label="ElasticOverscroll:enabled"/>
   <int value="516143995" label="EnableAriaElementReflection:enabled"/>

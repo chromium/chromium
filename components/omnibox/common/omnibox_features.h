@@ -172,6 +172,10 @@ BASE_DECLARE_FEATURE(kComposeboxAttachmentsTypedState);
 // Whether to enable Google Drive context menu option in the composebox.
 BASE_DECLARE_FEATURE(kComposeboxDriveContextMenuOption);
 
+// Whether to enable Google Drive context menu option's disclaimer flow in the
+// composebox.
+BASE_DECLARE_FEATURE(kComposeboxDriveContextMenuOptionDisclaimer);
+
 // Whether the composebox should show a verbatim match for context in
 // zero-suggest.
 BASE_DECLARE_FEATURE(kComposeboxVerbatimMatchZeroSuggest);
