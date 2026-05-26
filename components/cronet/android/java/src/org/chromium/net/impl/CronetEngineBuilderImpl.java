@@ -18,11 +18,11 @@ import org.chromium.net.ICronetEngineBuilder;
 import org.chromium.net.ProxyOptions;
 import org.chromium.net.VersionSafeProxyOptions;
 import org.chromium.net.impl.CronetLogger.CronetSource;
+import org.chromium.url.IDNStringUtil;
 
 import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.IDN;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -451,7 +451,7 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
                             + " The name of the host does not comply with RFC 1122 and RFC 1123.");
         }
         try {
-            return IDN.toASCII(hostName, IDN.USE_STD3_ASCII_RULES);
+            return IDNStringUtil.idnToASCII(hostName);
         } catch (IllegalArgumentException ex) {
             throw new IllegalArgumentException(
                     "Hostname "

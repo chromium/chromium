@@ -27,7 +27,7 @@ bool IDNToASCII(std::u16string_view src, CanonOutputW* output) {
   base::android::ScopedJavaLocalRef<jstring> java_src =
       base::android::ConvertUTF16ToJavaString(env, src);
   ScopedJavaLocalRef<jstring> java_result =
-      android::Java_IDNStringUtil_idnToASCII(env, java_src);
+      android::Java_IDNStringUtil_nativeIdnToASCII(env, java_src);
   // NULL indicates failure.
   if (java_result.is_null())
     return false;

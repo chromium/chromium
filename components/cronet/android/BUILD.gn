@@ -447,6 +447,7 @@ cronet_impl_common_java_srcjar_deps = [
 cronet_impl_common_java_deps_to_package = [
   "//net/android:net_thread_stats_uid_java",
   "//components/cronet:request_context_config_java_proto",
+  "//url:url_java",
 ]
 
 # cronet_impl_common_java.jar - common Cronet code that is shared
@@ -601,7 +602,6 @@ cronet_impl_native_java_deps_to_package = [
   "//third_party/jni_zero:generate_jni_java",
   "//third_party/jni_zero:jni_zero_java",
   "//net/android:net_java",
-  "//url:url_java",
   "//net/log:net_log_capture_mode_java",
 ]
 

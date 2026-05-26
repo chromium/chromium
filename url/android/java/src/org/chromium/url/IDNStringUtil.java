@@ -19,14 +19,15 @@ public class IDNStringUtil {
     /**
      * Attempts to convert a Unicode string to an ASCII string using IDN rules. As of May 2014, the
      * underlying Java function IDNA2003.
-     *
-     * @param src String to convert.
-     * @return String containing only ASCII characters on success, null on failure.
      */
+    public static String idnToASCII(String src) {
+        return IDN.toASCII(src, IDN.USE_STD3_ASCII_RULES);
+    }
+
     @CalledByNative
-    private static @Nullable String idnToASCII(String src) {
+    private static @Nullable String nativeIdnToASCII(String src) {
         try {
-            return IDN.toASCII(src, IDN.USE_STD3_ASCII_RULES);
+            return idnToASCII(src);
         } catch (Exception e) {
             return null;
         }
