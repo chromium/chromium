@@ -98,6 +98,9 @@ void FaceGazeBubbleController::Update(const std::u16string& text,
 }
 
 void FaceGazeBubbleController::UpdatePosition() {
+  if (!facegaze_bubble_view_) {
+    return;
+  }
   const gfx::Rect primary_work_area =
       display::Screen::Get()->GetPrimaryDisplay().work_area();
   const gfx::Size work_area_size = primary_work_area.size();

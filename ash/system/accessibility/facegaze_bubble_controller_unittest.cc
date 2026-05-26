@@ -218,4 +218,13 @@ TEST_F(FaceGazeBubbleControllerTest, Rotation) {
   EXPECT_NEAR(300, get_bounds().CenterPoint().x(), 30);
 }
 
+TEST_F(FaceGazeBubbleControllerTest, RotationBeforeInitialization) {
+  // Rotate the display.
+  display::Display display = display::Screen::Get()->GetPrimaryDisplay();
+  display_manager()->SetDisplayRotation(display.id(),
+                                        display::Display::ROTATE_90,
+                                        display::Display::RotationSource::USER);
+  // No crash should occur.
+}
+
 }  // namespace ash
