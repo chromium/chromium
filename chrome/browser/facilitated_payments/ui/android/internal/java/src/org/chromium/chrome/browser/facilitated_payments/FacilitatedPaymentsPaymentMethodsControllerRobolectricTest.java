@@ -1483,6 +1483,20 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
     }
 
     @Test
+    public void testClickingSettingsLinkInPixAccountLinkingPromptOpensSettings() {
+        mCoordinator.showPixAccountLinkingPrompt();
+
+        // Simulate clicking the settings link.
+        mFacilitatedPaymentsPaymentMethodsModel
+                .get(SCREEN_VIEW_MODEL)
+                .get(SETTINGS_LINK_CALLBACK)
+                .onClick(null);
+
+        verify(mSettingsNavigation)
+                .startSettings(mContext, SettingsNavigation.SettingsFragment.FINANCIAL_ACCOUNTS);
+    }
+
+    @Test
     public void testFopSelectorToProgressScreenSwapUpdatesModel() {
         // Show the FOP selector.
         mCoordinator.showSheetForPix(List.of(BANK_ACCOUNT_1));
