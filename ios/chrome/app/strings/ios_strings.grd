@@ -3317,6 +3317,12 @@
       <message name="IDS_IOS_GEMINI_LIVE_IPH" desc="Main text in the in-product help tooltip suggesting to users that they can talk to Gemini in Live mode about the current page.">
         Go Live with Gemini to ask about a page, brainstorm out loud, and talk back and forth.
       </message>
+      <message name="IDS_IOS_GEMINI_LIVE_JUST_A_SEC" desc="Status text shown in the Gemini Live session when Gemini is processing the user's speech.">
+        Just a sec
+      </message>
+      <message name="IDS_IOS_GEMINI_LIVE_LISTENING" desc="Status text shown in the Gemini Live session when Gemini is listening to the user.">
+        Listening
+      </message>
       <message name="IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_DETAIL" desc="Detail message of modal dialog shown when the user tries to start Gemini Live but has not allowed microphone access. This body instructs the user to enable the microphone in Settings.">
         To use Live, give Chrome access to your microphone in settings
       </message>
@@ -3328,6 +3334,9 @@
       </message>
       <message name="IDS_IOS_GEMINI_LIVE_MICROPHONE_ALERT_TITLE" desc="Title of modal dialog shown when the user tries to start Gemini Live but has not allowed microphone access.">
         Turn on Microphone
+      </message>
+      <message name="IDS_IOS_GEMINI_LIVE_RESPONDING" desc="Status text shown in the Gemini Live session when Gemini is responding to the user.">
+        Responding
       </message>
       <message name="IDS_IOS_GEMINI_LIVE_SHARING_LABEL" desc="Label describing the current page context shown in Gemini Live mode, indicating that the current page is being shared. [iOS only]">
         Sharing <ph name="PAGE_TITLE">$1<ex>Example Page</ex></ph>
