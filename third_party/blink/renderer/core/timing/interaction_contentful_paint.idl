@@ -5,12 +5,7 @@
 // https://github.com/WICG/soft-navigations
 [Exposed=Window, RuntimeEnabled=SoftNavigationHeuristics]
 interface InteractionContentfulPaint : PerformanceEntry {
-    readonly attribute DOMHighResTimeStamp renderTime;
-    readonly attribute DOMHighResTimeStamp loadTime;
-    readonly attribute unsigned long long size;
-    readonly attribute DOMString id;
-    readonly attribute DOMString url;
-    readonly attribute Element? element;
+    readonly attribute LargestContentfulPaint largestContentfulPaint;
     readonly attribute unsigned long long interactionId;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();

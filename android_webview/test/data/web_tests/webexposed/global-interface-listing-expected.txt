@@ -5661,15 +5661,10 @@ interface IntegrityViolationReportBody : ReportBody
     method toJSON
 interface InteractionContentfulPaint : PerformanceEntry
     attribute @@toStringTag
-    getter element
-    getter id
     getter interactionId
-    getter loadTime
+    getter largestContentfulPaint
     getter paintTime
     getter presentationTime
-    getter renderTime
-    getter size
-    getter url
     method constructor
     method toJSON
 interface InterestEvent : Event

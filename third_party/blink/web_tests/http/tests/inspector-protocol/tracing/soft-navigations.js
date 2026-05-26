@@ -68,7 +68,7 @@
           }),
           new Promise(resolve => {
             new PerformanceObserver(list => {
-              resolve(list.getEntries()[0].element.innerHTML);
+              resolve(list.getEntries()[0].largestContentfulPaint.element.innerHTML);
             }).observe({
               type: 'interaction-contentful-paint',
               buffered: true

@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
+#include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -14,11 +15,7 @@ namespace blink {
 InteractionContentfulPaint::InteractionContentfulPaint(
     double start_time,
     DOMHighResTimeStamp render_time,
-    uint64_t size,
-    DOMHighResTimeStamp load_time,
-    const AtomicString& id,
-    const String& url,
-    Element* element,
+    LargestContentfulPaint* largest_contentful_paint,
     DOMWindow* source,
     uint32_t navigation_id,
     uint64_t interaction_id)
@@ -27,12 +24,7 @@ InteractionContentfulPaint::InteractionContentfulPaint(
                        start_time,
                        source,
                        navigation_id),
-      size_(size),
-      render_time_(render_time),
-      load_time_(load_time),
-      id_(id),
-      url_(url),
-      element_(element),
+      largest_contentful_paint_(largest_contentful_paint),
       interaction_id_(interaction_id) {}
 
 InteractionContentfulPaint::~InteractionContentfulPaint() = default;
@@ -45,33 +37,15 @@ PerformanceEntryType InteractionContentfulPaint::EntryTypeEnum() const {
   return PerformanceEntry::EntryType::kInteractionContentfulPaint;
 }
 
-Element* InteractionContentfulPaint::element() const {
-  if (!element_ || !element_->isConnected() || element_->IsInShadowTree()) {
-    return nullptr;
-  }
-
-  // Do not expose |element_| when the document is not 'fully active'.
-  const Document& document = element_->GetDocument();
-  if (!document.IsActive() || !document.GetFrame()) {
-    return nullptr;
-  }
-
-  return element_.Get();
-}
-
 void InteractionContentfulPaint::BuildJSONValue(
     V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
-  builder.AddInteger("size", size_);
-  builder.AddNumber("renderTime", render_time_);
-  builder.AddNumber("loadTime", load_time_);
-  builder.AddString("id", id_);
-  builder.AddString("url", url_);
   builder.AddNumber("interactionId", interaction_id_);
+  builder.Add("largestContentfulPaint", largest_contentful_paint_.Get());
 }
 
 void InteractionContentfulPaint::Trace(Visitor* visitor) const {
-  visitor->Trace(element_);
+  visitor->Trace(largest_contentful_paint_);
   PerformanceEntry::Trace(visitor);
 }
 

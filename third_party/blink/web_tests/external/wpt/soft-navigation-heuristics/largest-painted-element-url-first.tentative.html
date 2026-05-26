@@ -40,9 +40,9 @@
 
     assert_not_equals(largest, null, "largestInteractionContentfulPaint is not null");
 
-    assert_equals(largest.id, largeId, "largestInteractionContentfulPaint has the correct ID");
-    assert_true("paintTime" in largest, "paintTime attribute should exist on ICP entry");
-    assert_greater_than(largest.paintTime, 0, "ICP entry paintTime should be greater than 0");
-    assert_equals(largest.paintTime, entry.paintTime, "paintTime should match as it is the only/first large paint");
+    assert_equals(largest.largestContentfulPaint.id, largeId, "largestInteractionContentfulPaint has the correct ID");
+    assert_true("paintTime" in largest.largestContentfulPaint, "paintTime attribute should exist on ICP entry");
+    assert_greater_than(largest.largestContentfulPaint.paintTime, 0, "ICP entry paintTime should be greater than 0");
+    assert_equals(largest.largestContentfulPaint.paintTime, entry.paintTime, "paintTime should match as it is the only/first large paint");
   }, "Test that the largestInteractionContentfulPaint attribute of a soft navigation entry is correctly set when URL change happens before paint");
 </script>

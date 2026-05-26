@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/interaction_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/interaction_effects_monitor.h"
+#include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
@@ -229,6 +230,7 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(first_image_or_text_);
   visitor->Trace(window_);
   visitor->Trace(largest_icp_entry_);
+  visitor->Trace(current_lcp_entry_);
   visitor->Trace(initial_event_timing_);
 }
 
@@ -239,6 +241,7 @@ void SoftNavigationContext::Shutdown() {
   first_image_or_text_ = nullptr;
   window_ = nullptr;
   largest_icp_entry_ = nullptr;
+  current_lcp_entry_ = nullptr;
   initial_event_timing_ = nullptr;
 }
 
@@ -310,12 +313,20 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
 
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
 
+  auto* lcp_entry = MakeGarbageCollected<LargestContentfulPaint>(
+      /*start_time=*/paint_timing_info.presentation_time,
+      /*render_time=*/paint_timing_info.presentation_time, paint_size,
+      performance->MonotonicTimeToDOMHighResTimeStamp(load_time), id, url,
+      element, window_, performance->NavigationId());
+  lcp_entry->SetPaintTimingInfo(paint_timing_info);
+
+  current_lcp_entry_ = lcp_entry;
+
   auto* entry = MakeGarbageCollected<InteractionContentfulPaint>(
       /*start_time=*/performance->MonotonicTimeToDOMHighResTimeStamp(
           TimeOrigin()),
-      /*render_time=*/paint_timing_info.presentation_time, paint_size,
-      performance->MonotonicTimeToDOMHighResTimeStamp(load_time), id, url,
-      element, window_, performance->NavigationId(),
+      /*render_time=*/paint_timing_info.presentation_time, current_lcp_entry_,
+      window_, performance->NavigationId(),
       initial_event_timing_->interactionId());
   entry->SetPaintTimingInfo(paint_timing_info);
   performance->OnInteractionContentfulPaintUpdated(entry);

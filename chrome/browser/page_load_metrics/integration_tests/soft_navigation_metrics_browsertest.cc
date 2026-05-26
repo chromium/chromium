@@ -219,7 +219,7 @@ std::string JsSnippetGetPerformanceEntries() {
           const obj = byInteractionId.get(record.interactionId);
           if (obj) {
             obj.interactionContentfulPaint = {
-              renderTime: record.renderTime,
+              renderTime: record.largestContentfulPaint?.renderTime,
             }
           }
         }

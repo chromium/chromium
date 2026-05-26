@@ -13,6 +13,8 @@
 
 namespace blink {
 
+class LargestContentfulPaint;
+
 // Exposes the Interaction to Largest Contentful Paint, computed as described in
 // https://github.com/WICG/soft-navigations
 class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
@@ -21,11 +23,7 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
  public:
   InteractionContentfulPaint(double start_time,
                              DOMHighResTimeStamp render_time,
-                             uint64_t size,
-                             DOMHighResTimeStamp load_time,
-                             const AtomicString& id,
-                             const String& url,
-                             Element* element,
+                             LargestContentfulPaint* largest_contentful_paint,
                              DOMWindow* source,
                              uint32_t navigation_id,
                              uint64_t interaction_id);
@@ -34,12 +32,9 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
   const AtomicString& entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
 
-  uint64_t size() const { return size_; }
-  DOMHighResTimeStamp renderTime() const { return render_time_; }
-  DOMHighResTimeStamp loadTime() const { return load_time_; }
-  const AtomicString& id() const { return id_; }
-  const String& url() const { return url_; }
-  Element* element() const;
+  LargestContentfulPaint* largestContentfulPaint() const {
+    return largest_contentful_paint_.Get();
+  }
   uint64_t interactionId() const { return interaction_id_; }
 
   void Trace(Visitor*) const override;
@@ -47,12 +42,7 @@ class CORE_EXPORT InteractionContentfulPaint final : public PerformanceEntry {
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
-  uint64_t size_;
-  DOMHighResTimeStamp render_time_;
-  DOMHighResTimeStamp load_time_;
-  AtomicString id_;
-  String url_;
-  WeakMember<Element> element_;
+  Member<LargestContentfulPaint> largest_contentful_paint_;
   uint64_t interaction_id_;
 };
 

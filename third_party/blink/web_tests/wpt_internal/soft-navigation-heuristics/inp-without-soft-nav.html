@@ -25,6 +25,6 @@
     const icps = await helper.withTimeoutMessage(
         icpPromise, 'ICP not detected.', /*timeout=*/ 3000);
     assert_equals(icps.length, 1, 'Expected exactly one ICP entry.');
-    assert_equals(icps[0].id, 'candidate', 'Expected ICP candidate to be "candidate"');
+    assert_equals(icps[0].largestContentfulPaint.id, 'candidate', 'Expected ICP candidate to be "candidate"');
   }, 'ICP entries are emitted without soft navigations');
 </script>
