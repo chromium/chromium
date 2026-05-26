@@ -1321,6 +1321,19 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromWrongOrigin) {
   ASSERT_TRUE(received_bad_message());
 }
 
+TEST_P(RestrictedCookieManagerTest, SetCookieFromStringWithMismatchingDomain) {
+  backend()->SetCookieFromString(
+      kDefaultUrlWithPath, kDefaultSiteForCookies, kDefaultOrigin,
+      net::StorageAccessApiStatus::kNone,
+      /*is_ad_tagged=*/false, /*apply_devtools_overrides=*/false,
+      "new-name=new-value;path=/;domain=not-example.com");
+  service_remote_.FlushForTesting();
+  // SetCookieFromString does not BadMessage the caller if the cookie's domain
+  // mismatches, since the caller is not required to have parsed the cookie
+  // string to identify that case.
+  ASSERT_FALSE(received_bad_message());
+}
+
 TEST_P(RestrictedCookieManagerTest, SetCanonicalCookieFromOpaqueOrigin) {
   url::Origin opaque_origin;
   ASSERT_TRUE(opaque_origin.opaque());

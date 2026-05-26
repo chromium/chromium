@@ -718,6 +718,10 @@ void RestrictedCookieManager::SetCanonicalCookie(
     bool is_ad_tagged,
     bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
+  if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin)) {
+    std::move(callback).Run(false);
+    return;
+  }
   std::optional<net::CookiePartitionKey> cookie_partition_key =
       cookie_params->partitioned ==
                   mojom::RestrictedCookiePartition::PARTITIONED ||
@@ -732,10 +736,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
           cookie_params->last_access, cookie_params->secure,
           cookie_params->http_only, cookie_params->same_site,
           cookie_params->priority, cookie_partition_key, &status);
-  if (status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
-                                    EXCLUDE_DOMAIN_MISMATCH)) {
-    receiver_.ReportBadMessage(
-        "Setting cookies on other domains is disallowed.");
+  if (!ValidateCookieDomain(url, cookie.get(), status)) {
     std::move(callback).Run(false);
     return;
   }
@@ -759,17 +760,15 @@ void RestrictedCookieManager::SetCanonicalCookie(
     bool apply_devtools_overrides,
     SetCanonicalCookieCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin,
+                                  /*record_metrics=*/false));
+  CHECK(ValidateCookieDomain(url, &cookie, status));
   CHECK(status.IsInclude());
   CHECK((!cookie.IsPartitioned() &&
          !net::CookiePartitionKey::HasNonce(cookie_partition_key_)) ||
         cookie.PartitionKey() == cookie_partition_key_);
   bool collect_metrics =
       base::ShouldRecordSubsampledMetric(net::kHistogramSampleProbability);
-  if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin,
-                                 &cookie)) {
-    std::move(callback).Run(false);
-    return;
-  }
 
   const net::CookieSettingOverrides cookie_setting_overrides =
       GetCookieSettingOverrides(storage_access_api_status, is_ad_tagged,
@@ -956,9 +955,9 @@ void RestrictedCookieManager::SetCookieFromString(
     const std::string& cookie) {
   TRACE_EVENT("net", "RestrictedCookieManager::SetCookieFromString");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Note: `ValidateAccessToCookiesAt` is checked in `SetCanonicalCookie` below
-  // in the happy path, and in the `if (!parsed_cookie)` block in this function
-  // for the unhappy path.
+  if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin)) {
+    return;
+  }
   base::ElapsedTimer timer;
 
   // The cookie is about to be set. Proactively increment the version so it's
@@ -972,10 +971,12 @@ void RestrictedCookieManager::SetCookieFromString(
       net::CanonicalCookie::Create(
           url, cookie, base::Time::Now(), /*server_time=*/std::nullopt,
           cookie_partition_key_, net::CookieSourceType::kScript, &status);
+  // Don't validate the cookie's domain via `ValidateCookieDomain` here. We
+  // don't require the caller to validate `cookie`'s domain before invoking
+  // `SetCookieFromString` since that would involve parsing `cookie`; so we must
+  // not BadMessage the caller if the cookie domain mismatches.
+
   if (!parsed_cookie) {
-    if (!ValidateAccessToCookiesAt(url, site_for_cookies, top_frame_origin)) {
-      return;
-    }
     if (cookie_observer_) {
       std::vector<network::mojom::CookieOrLineWithAccessResultPtr>
           result_with_access_result;
@@ -1107,7 +1108,7 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const url::Origin& top_frame_origin,
-    const net::CanonicalCookie* cookie_being_set) {
+    bool record_metrics) {
   if (origin_.opaque()) {
     receiver_.ReportBadMessage("Access is denied in this context");
     return false;
@@ -1131,7 +1132,8 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
                << "' from browser='" << BoundTopFrameOrigin() << "';";
   }
 
-  if (base::ShouldRecordSubsampledMetric(net::kHistogramSampleProbability)) {
+  if (record_metrics &&
+      base::ShouldRecordSubsampledMetric(net::kHistogramSampleProbability)) {
     base::UmaHistogramBoolean(
         "Net.RestrictedCookieManager.SiteForCookiesOK.Subsampled",
         site_for_cookies_ok);
@@ -1140,18 +1142,26 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
         top_frame_origin_ok);
   }
 
-  // Don't allow setting cookies on other domains. See crbug.com/996786.
-  if (cookie_being_set && !cookie_being_set->IsDomainMatch(url.GetHost())) {
-    receiver_.ReportBadMessage(
-        "Setting cookies on other domains is disallowed.");
-    return false;
-  }
-
   if (origin_.IsSameOriginWith(url))
     return true;
 
   receiver_.ReportBadMessage("Incorrect url origin");
   return false;
+}
+
+bool RestrictedCookieManager::ValidateCookieDomain(
+    const GURL& url,
+    const net::CanonicalCookie* cookie,
+    const net::CookieInclusionStatus& status) {
+  // Don't allow setting cookies on other domains. See crbug.com/996786.
+  if ((cookie && !cookie->IsDomainMatch(url.GetHost())) ||
+      status.HasExclusionReason(net::CookieInclusionStatus::ExclusionReason::
+                                    EXCLUDE_DOMAIN_MISMATCH)) {
+    receiver_.ReportBadMessage(
+        "Setting cookies on other domains is disallowed.");
+    return false;
+  }
+  return true;
 }
 
 net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
