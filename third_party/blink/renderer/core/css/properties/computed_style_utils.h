@@ -483,7 +483,7 @@ class CORE_EXPORT ComputedStyleUtils {
                                            const StyleIntrinsicLength&);
   static CSSValue* ValueForPositionArea(const blink::PositionArea&);
   static CSSValue* ValueForPositionTryFallbacks(const PositionTryFallbacks&);
-  static CSSValue* ValueForFitText(const ComputedStyle&, const FitText&);
+  static CSSValue* ValueForTextFit(const ComputedStyle&, const TextFit&);
   static CSSValueList* ValuesForGridLanesShorthand(
       const StylePropertyShorthand&,
       const ComputedStyle&,

@@ -4220,25 +4220,25 @@ PositionTryFallback StyleBuilderConverter::ConvertSinglePositionTryFallback(
   return PositionTryFallback(scoped_name, tactic_list);
 }
 
-FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
+TextFit StyleBuilderConverter::ConvertTextFit(StyleResolverState& state,
                                               const CSSValue& value) {
   const auto& list = To<CSSValueList>(value);
 
   const auto type_id = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
-  FitTextType type = FitTextType::kNone;
+  TextFitType type = TextFitType::kNone;
   if (type_id == CSSValueID::kNone) {
     // It's the default value. Do nothing.
   } else if (type_id == CSSValueID::kGrow) {
-    type = FitTextType::kGrow;
+    type = TextFitType::kGrow;
   } else {
-    // If this DCHECK fails, This function and ConsumeFitText() are
+    // If this DCHECK fails, This function and ConsumeTextFit() are
     // inconsistent.
     DCHECK_EQ(type_id, CSSValueID::kShrink);
-    type = FitTextType::kShrink;
+    type = TextFitType::kShrink;
   }
   wtf_size_t next_index = 1;
 
-  FitTextTarget target = FitTextTarget::kConsistent;
+  TextFitTarget target = TextFitTarget::kConsistent;
   if (next_index < list.length()) {
     if (const auto* target_value =
             DynamicTo<CSSIdentifierValue>(list.Item(next_index))) {
@@ -4246,12 +4246,12 @@ FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
       if (target_id == CSSValueID::kConsistent) {
         // It's the default value. Do nothing.
       } else if (target_id == CSSValueID::kPerLine) {
-        target = FitTextTarget::kPerLine;
+        target = TextFitTarget::kPerLine;
       } else {
-        // If this DCHECK fails, This function and ConsumeFitText() are
+        // If this DCHECK fails, This function and ConsumeTextFit() are
         // inconsistent.
         DCHECK_EQ(target_id, CSSValueID::kPerLineAll);
-        target = FitTextTarget::kPerLineAll;
+        target = TextFitTarget::kPerLineAll;
       }
       ++next_index;
     }
@@ -4267,7 +4267,7 @@ FitText StyleBuilderConverter::ConvertFitText(StyleResolverState& state,
     }
     ++next_index;
   }
-  return FitText(type, target, limit);
+  return TextFit(type, target, limit);
 }
 
 TextOverflowData StyleBuilderConverter::ConvertTextOverflow(

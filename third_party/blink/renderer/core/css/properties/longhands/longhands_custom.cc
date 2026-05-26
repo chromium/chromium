@@ -9841,7 +9841,7 @@ const CSSValue* TextFit::CSSValueFromComputedStyleInternal(
     const LayoutObject*,
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
-  return ComputedStyleUtils::ValueForFitText(style, style.TextFit());
+  return ComputedStyleUtils::ValueForTextFit(style, style.GetTextFit());
 }
 const CSSValue* TextIndent::ParseSingleValue(
     CSSParserTokenStream& stream,

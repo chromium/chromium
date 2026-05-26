@@ -664,13 +664,13 @@ const LayoutResult* BlockLayoutAlgorithm::LayoutInlineChild(
     const InlineNode& node) {
   ParagraphScale paragraph_scale;
   if (RuntimeEnabledFeatures::CssTextFitEnabled()) {
-    const FitText& fit_text = Style().TextFit();
+    const TextFit& fit_text = Style().GetTextFit();
     const bool grow_consistent =
-        fit_text.Type() == FitTextType::kGrow &&
-        fit_text.Target() == FitTextTarget::kConsistent;
+        fit_text.Type() == TextFitType::kGrow &&
+        fit_text.Target() == TextFitTarget::kConsistent;
     const bool shrink_consistent =
-        fit_text.Type() == FitTextType::kShrink &&
-        fit_text.Target() == FitTextTarget::kConsistent;
+        fit_text.Type() == TextFitType::kShrink &&
+        fit_text.Target() == TextFitTarget::kConsistent;
     if (grow_consistent || shrink_consistent) {
       // Compute the paragraph scaling factor with a cloned
       // BlockLayoutAlgorithm.

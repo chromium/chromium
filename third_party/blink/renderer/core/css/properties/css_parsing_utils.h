@@ -1057,7 +1057,7 @@ CORE_EXPORT CSSValue* ConsumePositionTryFallbacks(CSSParserTokenStream&,
                                                   const CSSParserContext&,
                                                   CSSParserLocalContext&);
 
-CSSValue* ConsumeFitText(CSSParserTokenStream&,
+CSSValue* ConsumeTextFit(CSSParserTokenStream&,
                          const CSSParserContext&,
                          CSSParserLocalContext&);
 

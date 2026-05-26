@@ -10019,7 +10019,7 @@ CSSValue* ConsumeAnchoredFallbackQueryValue(
   return ConsumePositionAreaQueryValue(stream);
 }
 
-CSSValue* ConsumeFitText(CSSParserTokenStream& stream,
+CSSValue* ConsumeTextFit(CSSParserTokenStream& stream,
                          const CSSParserContext& context,
                          CSSParserLocalContext& local_context) {
   // The syntax is:

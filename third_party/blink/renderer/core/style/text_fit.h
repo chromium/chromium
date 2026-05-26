@@ -10,39 +10,39 @@
 
 namespace blink {
 
-enum class FitTextType : uint8_t {
+enum class TextFitType : uint8_t {
   kNone,
   kGrow,
   kShrink,
 };
 
-enum class FitTextTarget : uint8_t {
+enum class TextFitTarget : uint8_t {
   kConsistent,
   kPerLine,
   kPerLineAll,
 };
 
-enum class FitTextMethod : uint8_t {
+enum class TextFitMethod : uint8_t {
   kScale,     // Paint-time scaling. This is the default method.
   kFontSize,  // Reshaping.
 };
 
-class CORE_EXPORT FitText {
+class CORE_EXPORT TextFit {
   DISALLOW_NEW();
 
  public:
-  FitText() = default;
-  FitText(FitTextType type, FitTextTarget target, std::optional<float> limit)
+  TextFit() = default;
+  TextFit(TextFitType type, TextFitTarget target, std::optional<float> limit)
       : type_(type), target_(target), scale_factor_limit_(limit) {}
 
-  bool operator==(const FitText& other) const {
+  bool operator==(const TextFit& other) const {
     return type_ == other.type_ && target_ == other.target_ &&
            scale_factor_limit_ == other.scale_factor_limit_;
   }
 
-  FitTextType Type() const { return type_; }
-  FitTextTarget Target() const { return target_; }
-  FitTextMethod Method() const;
+  TextFitType Type() const { return type_; }
+  TextFitTarget Target() const { return target_; }
+  TextFitMethod Method() const;
   // This returns 1.0 for "100%".
   std::optional<float> ScaleFactorLimit() const { return scale_factor_limit_; }
 
@@ -50,8 +50,8 @@ class CORE_EXPORT FitText {
   String ToString() const;
 
  private:
-  FitTextType type_ = FitTextType::kNone;
-  FitTextTarget target_ = FitTextTarget::kConsistent;
+  TextFitType type_ = TextFitType::kNone;
+  TextFitTarget target_ = TextFitTarget::kConsistent;
   std::optional<float> scale_factor_limit_;
 };
 

@@ -827,7 +827,7 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
              (a.GetTextEmphasisMark() == b.GetTextEmphasisMark()) &&
              (a.TextEmphasisCustomMark() == b.TextEmphasisCustomMark());
     case CSSPropertyID::kTextFit:
-      return a.TextFit() == b.TextFit();
+      return a.GetTextFit() == b.GetTextFit();
     case CSSPropertyID::kTextIndent:
       return a.TextIndent() == b.TextIndent() &&
              a.GetTextIndentFlags() == b.GetTextIndentFlags();

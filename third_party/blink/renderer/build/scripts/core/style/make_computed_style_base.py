@@ -92,7 +92,7 @@ ALIGNMENT_ORDER = [
     'Length',
     'UnzoomedLength',
     'TextSizeAdjust',
-    'FitText',
+    'TextFit',
     'TabSize',
     'float',
     'StyleInterestDelay',

@@ -334,8 +334,8 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
   // Initialize the box state for the line box.
   InlineBoxState& line_box_state = LineBoxState();
   if (line_box_state.style != &line_style ||
-      (line_style.TextFit().Type() != FitTextType::kNone &&
-       line_style.TextFit().Target() != FitTextTarget::kConsistent)) {
+      (line_style.GetTextFit().Type() != TextFitType::kNone &&
+       line_style.GetTextFit().Target() != TextFitTarget::kConsistent)) {
     line_box_state.ResetStyle(line_style, node.IsSvgText(),
                               *node.GetLayoutBox());
 

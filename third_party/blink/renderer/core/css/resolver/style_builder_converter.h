@@ -467,7 +467,7 @@ class StyleBuilderConverter {
       StyleResolverState&,
       const CSSValue&,
       bool allow_any_keyword_in_position_area = false);
-  static FitText ConvertFitText(StyleResolverState&, const CSSValue&);
+  static TextFit ConvertTextFit(StyleResolverState&, const CSSValue&);
   static TextOverflowData ConvertTextOverflow(StyleResolverState&,
                                               const CSSValue&);
   static MaxLinesData ConvertMaxLines(StyleResolverState&, const CSSValue&);

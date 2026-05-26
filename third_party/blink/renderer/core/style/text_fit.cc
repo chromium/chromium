@@ -10,35 +10,35 @@
 
 namespace blink {
 
-FitTextMethod FitText::Method() const {
+TextFitMethod TextFit::Method() const {
   return RuntimeEnabledFeatures::CssTextFitReshapingEnabled()
-             ? FitTextMethod::kFontSize
-             : FitTextMethod::kScale;
+             ? TextFitMethod::kFontSize
+             : TextFitMethod::kScale;
 }
 
-String FitText::ToString() const {
+String TextFit::ToString() const {
   StringView type;
   switch (Type()) {
-    case FitTextType::kNone:
+    case TextFitType::kNone:
       type = "none";
       break;
-    case FitTextType::kGrow:
+    case TextFitType::kGrow:
       type = "grow";
       break;
-    case FitTextType::kShrink:
+    case TextFitType::kShrink:
       type = "shrink";
       break;
   }
 
   StringView target;
   switch (Target()) {
-    case FitTextTarget::kConsistent:
+    case TextFitTarget::kConsistent:
       target = "consistent";
       break;
-    case FitTextTarget::kPerLine:
+    case TextFitTarget::kPerLine:
       target = "per-line";
       break;
-    case FitTextTarget::kPerLineAll:
+    case TextFitTarget::kPerLineAll:
       target = "per-line-all";
       break;
   }
@@ -47,7 +47,7 @@ String FitText::ToString() const {
   if (ScaleFactorLimit()) {
     limit = String::Number(*ScaleFactorLimit());
   }
-  return StrCat({"FitText {type:", type, ", target:", target,
+  return StrCat({"TextFit {type:", type, ", target:", target,
                  limit.empty() ? "" : ", scale-factor-limit:", limit, "}"});
 }
 

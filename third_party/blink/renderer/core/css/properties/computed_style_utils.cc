@@ -5271,18 +5271,18 @@ CSSValue* ComputedStyleUtils::ValueForPositionTryFallbacks(
   return fallback_list;
 }
 
-CSSValue* ComputedStyleUtils::ValueForFitText(const ComputedStyle& style,
-                                              const FitText& fit_text) {
+CSSValue* ComputedStyleUtils::ValueForTextFit(const ComputedStyle& style,
+                                              const TextFit& fit_text) {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   CSSValueID type_id;
   switch (fit_text.Type()) {
-    case FitTextType::kNone:
+    case TextFitType::kNone:
       type_id = CSSValueID::kNone;
       break;
-    case FitTextType::kGrow:
+    case TextFitType::kGrow:
       type_id = CSSValueID::kGrow;
       break;
-    case FitTextType::kShrink:
+    case TextFitType::kShrink:
       type_id = CSSValueID::kShrink;
       break;
   }
@@ -5292,13 +5292,13 @@ CSSValue* ComputedStyleUtils::ValueForFitText(const ComputedStyle& style,
   }
 
   switch (fit_text.Target()) {
-    case FitTextTarget::kConsistent:
+    case TextFitTarget::kConsistent:
       // It's a default value.
       break;
-    case FitTextTarget::kPerLine:
+    case TextFitTarget::kPerLine:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kPerLine));
       break;
-    case FitTextTarget::kPerLineAll:
+    case TextFitTarget::kPerLineAll:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kPerLineAll));
       break;
   }
