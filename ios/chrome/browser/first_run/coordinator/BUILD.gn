@@ -64,18 +64,30 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "first_run_post_action_provider_unittest.mm" ]
+  sources = [
+    "first_run_post_action_provider_unittest.mm",
+    "first_run_screen_provider_unittest.mm",
+  ]
   deps = [
     ":first_run_provider",
     "//base",
     "//base/test:test_support",
+    "//components/policy/core/common:test_support",
     "//components/prefs:test_support",
+    "//components/regional_capabilities:test_support",
+    "//components/search_engines",
     "//ios/chrome/browser/first_run/public:features",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/policy/model:test_support",
+    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/safari_data_import/model:features",
     "//ios/chrome/browser/screen/ui_bundled:screen_type",
+    "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }

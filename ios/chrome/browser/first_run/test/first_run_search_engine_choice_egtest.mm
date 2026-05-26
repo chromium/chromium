@@ -11,6 +11,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/authentication/test/signin_matchers.h"
+#import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/test/first_run_app_interface.h"
 #import "ios/chrome/browser/first_run/test/first_run_test_case_base.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -46,19 +47,23 @@
   config.additional_args.push_back(
       "--" + std::string(switches::kForceSearchEngineChoiceScreen));
   config.additional_args.push_back("true");
-  /// Disable post FRE actions so the test cases could open Settings sooner.
-  config.additional_args.push_back(
-      "--disable-features=UpdatedFirstRunSequence");
-  config.additional_args.push_back(
-      "--disable-features=AnimatedDefaultBrowserPromoInFRE");
+  // Enable the updated FRE sequence variation 2 (kRemoveSignInSync) to verify
+  // that the standard sequence is displayed when a choice screen is required.
+  config.features_enabled_and_params.push_back(
+      {first_run::kUpdatedFirstRunSequence,
+       {{first_run::kUpdatedFirstRunSequenceParam, "2"}}});
+  // Disable the animated default browser promo to prevent post-FRE promotions
+  // from interfering with the settings verification steps.
+  config.features_disabled.push_back(
+      first_run::kAnimatedDefaultBrowserPromoInFRE);
 
   if ([self isRunningTest:@selector
             (testNoDefaultBrowserPromoAfterSearchEngineChoiceScreen)]) {
-    config.additional_args.push_back(
-        "--enable-features=SkipDefaultBrowserPromoInFirstRun");
+    config.features_enabled.push_back(
+        first_run::kSkipDefaultBrowserPromoInFirstRun);
   } else {
-    config.additional_args.push_back(
-        "--disable-features=SkipDefaultBrowserPromoInFirstRun");
+    config.features_disabled.push_back(
+        first_run::kSkipDefaultBrowserPromoInFirstRun);
   }
 
   return config;

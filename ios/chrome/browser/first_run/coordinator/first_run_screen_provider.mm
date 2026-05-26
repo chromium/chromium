@@ -71,8 +71,15 @@ void AddDBPromoAndBestFeaturesScreens(NSMutableArray* screens,
 NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
   NSMutableArray* screens = [NSMutableArray array];
 
+  BOOL shouldDisplayChoiceScreen = ShouldDisplaySearchEngineChoiceScreen(
+      *profile, /*is_first_run_entrypoint=*/true,
+      /*app_started_via_external_intent=*/false);
+
   first_run::UpdatedFRESequenceVariationType variationType =
-      first_run::GetUpdatedFRESequenceVariation(profile);
+      shouldDisplayChoiceScreen
+          ? first_run::UpdatedFRESequenceVariationType::kDisabled
+          : first_run::GetUpdatedFRESequenceVariation();
+
   BOOL hasIdentities =
       ChromeAccountManagerServiceFactory::GetForProfile(profile)
           ->HasIdentities();
@@ -81,9 +88,7 @@ NSArray* FirstRunScreenSequenceForProfile(ProfileIOS* profile) {
     case first_run::UpdatedFRESequenceVariationType::kDisabled:
       [screens addObject:@(kSignIn)];
       [screens addObject:@(kHistorySync)];
-      if (ShouldDisplaySearchEngineChoiceScreen(
-              *profile, /*is_first_run_entrypoint=*/true,
-              /*app_started_via_external_intent=*/false)) {
+      if (shouldDisplayChoiceScreen) {
         [screens addObject:@(kChoice)];
       }
       // Only add best features screen if feature
