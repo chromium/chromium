@@ -42,6 +42,9 @@ found in the LICENSE file.
         android:layout_marginStart="@dimen/web_signin_loading_dialog_padding"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
         android:text="@string/signin_web_signin_loading_dialog_loading_text"
+        android:focusable="false"
+        android:screenReaderFocusable="true"
+        android:importantForAccessibility="yes"
         app:layout_constraintTop_toTopOf="@id/progress_spinner"
         app:layout_constraintBottom_toBottomOf="@id/progress_spinner"
         app:layout_constraintStart_toEndOf="@id/progress_spinner"
@@ -61,6 +64,8 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/web_signin_loading_dialog_margin"
         android:text="@string/signin_web_signin_loading_dialog_cancel_button"
+        android:focusable="true"
+        android:importantForAccessibility="yes"
         app:layout_constraintTop_toBottomOf="@id/spinner_text_barrier"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent" />

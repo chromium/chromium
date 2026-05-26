@@ -77,6 +77,13 @@ public class WebSigninRedirectCoordinator {
      */
     public void initializeWebSigninAndRedirect(
             Tab tab, String email, GURL continueUrl, GURL initialTabURL) {
+        // If we are forcing the dialog to be shown (e.g. for testing), don't destroy it if
+        // initialize is called again.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.FORCE_SHOW_WEB_SIGNIN_LOADING_DIALOG)
+                && mDialogState == DialogState.SHOWN) {
+            return;
+        }
+
         mInitializeStartTime = SystemClock.elapsedRealtime();
         mTab = tab;
         mContinueUrl = continueUrl;
@@ -100,6 +107,13 @@ public class WebSigninRedirectCoordinator {
      */
     public void initializeWebSigninAndRedirect(
             Tab tab, CoreAccountId accountId, GURL continueUrl, GURL initialTabURL) {
+        // If we are forcing the dialog to be shown (e.g. for testing), don't destroy it if
+        // initialize is called again.
+        if (SigninFeatureMap.isEnabled(SigninFeatures.FORCE_SHOW_WEB_SIGNIN_LOADING_DIALOG)
+                && mDialogState == DialogState.SHOWN) {
+            return;
+        }
+
         mInitializeStartTime = SystemClock.elapsedRealtime();
         mTab = tab;
         mContinueUrl = continueUrl;
@@ -256,6 +270,10 @@ public class WebSigninRedirectCoordinator {
                 "Signin.ProcessMirrorHeaders.LoadingDuration"
                         + getWebSigninTrackerResultString(result),
                 SystemClock.elapsedRealtime() - mInitializeStartTime);
+
+        if (SigninFeatureMap.isEnabled(SigninFeatures.FORCE_SHOW_WEB_SIGNIN_LOADING_DIALOG)) {
+            return;
+        }
 
         destroy();
 
