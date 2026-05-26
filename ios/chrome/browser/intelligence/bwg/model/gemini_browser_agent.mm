@@ -49,9 +49,11 @@
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_feature_availability.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/omnibox/model/omnibox_position/omnibox_position_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/layout_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -147,7 +149,8 @@ NotificationCenterBlock ClosureToNotificationCenterBlock(
 
 }  // namespace
 
-@interface GeminiSceneStateObserver : NSObject <SceneStateObserver>
+@interface GeminiSceneStateObserver
+    : NSObject <SceneStateObserver, IncognitoStateObserver>
 
 - (instancetype)initWithBrowserAgent:(GeminiBrowserAgent*)browserAgent
                           sceneState:(SceneState*)sceneState;
@@ -168,12 +171,14 @@ NotificationCenterBlock ClosureToNotificationCenterBlock(
     _browserAgent = browserAgent;
     _sceneState = sceneState;
     [_sceneState addObserver:self];
+    [_sceneState.incognitoState addObserver:self];
   }
   return self;
 }
 
 - (void)disconnect {
   [_sceneState removeObserver:self];
+  [_sceneState.incognitoState removeObserver:self];
   _browserAgent = nullptr;
 }
 
@@ -183,6 +188,14 @@ NotificationCenterBlock ClosureToNotificationCenterBlock(
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (_browserAgent) {
     _browserAgent->OnSceneActivationLevelChanged(level);
+  }
+}
+
+#pragma mark - IncognitoStateObserver
+
+- (void)willEnterIncognitoForState:(IncognitoState*)incognitoState {
+  if (_browserAgent) {
+    _browserAgent->OnWillEnterIncognito();
   }
 }
 
@@ -379,10 +392,19 @@ void GeminiBrowserAgent::RemoveObserver(Observer* observer) {
 bool GeminiBrowserAgent::IsGeminiAvailableForActiveWebState() const {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
-  GeminiTabHelper* tab_helper =
-      active_web_state ? GeminiTabHelper::FromWebState(active_web_state)
-                       : nullptr;
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(active_web_state);
   return tab_helper && tab_helper->IsGeminiAvailableForWebState();
+}
+
+bool GeminiBrowserAgent::IsGeminiChatAvailableForActiveWebState() const {
+  web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
+  GeminiTabHelper* tab_helper = GetActiveTabHelper(web_state);
+  return tab_helper && tab_helper->IsGeminiChatAvailableForWebState();
+}
+
+bool GeminiBrowserAgent::IsInGeminiLiveMode() const {
+  return IsGeminiLiveEnabled() && ios::provider::GetCurrentMode() ==
+                                      ios::provider::GeminiViewMode::kLive;
 }
 
 void GeminiBrowserAgent::UpdateGeminiAvailability() {
@@ -455,12 +477,12 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   is_keyboard_visible_ = is_visible;
   if (is_visible) {
     // If the floaty is expanded but not thinking or temporarily hidden, the
-    // floaty should not be re-shown on keyboard updates.
-    bool is_expanded_not_thinking =
-        last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded &&
-        ios::provider::GetCurrentClientMode() !=
-            ios::provider::GeminiClientMode::kThinking;
-    if (is_expanded_not_thinking || is_floaty_temporarily_hidden_) {
+    // floaty should not be hidden on keyboard updates. However, focusing the
+    // omnibox should always hide the floaty. While standard Chat mode is
+    // collapsed when minimized (bypassing this check), Live mode operates in
+    // the kExpanded state while active. Checking `is_omnibox_focused` ensures
+    // that Live mode is also successfully hidden when focusing the omnibox.
+    if (ShouldIgnoreKeyboardUpdate()) {
       return;
     }
 
@@ -471,6 +493,9 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
   }
 
   if (IsOnlyHiddenByKeyboard()) {
+    if (IsOmniboxFocused()) {
+      return;
+    }
     ShowFloatyIfInvoked(/*animated=*/false,
                         gemini::FloatyUpdateSource::Keyboard);
     is_hidden_by_keyboard_ = false;
@@ -480,13 +505,15 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
 void GeminiBrowserAgent::OnSceneActivationLevelChanged(
     SceneActivationLevel level) {
   if (level == SceneActivationLevelBackground) {
-    if (IsGeminiLiveEnabled() && is_floaty_invoked_ &&
-        ios::provider::GetCurrentMode() ==
-            ios::provider::GeminiViewMode::kLive) {
+    if (is_floaty_invoked_ && IsInGeminiLiveMode()) {
       ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kFloaty,
                                   /*animated=*/false);
     }
   }
+}
+
+void GeminiBrowserAgent::OnWillEnterIncognito() {
+  ForceDismissFloaty();
 }
 
 void GeminiBrowserAgent::FullscreenProgressUpdatedForAnimation() {
@@ -794,9 +821,7 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
 
 void GeminiBrowserAgent::OnProcessingStatusChanged(
     ios::provider::GeminiClientMode processing_status) {
-  // TODO(crbug.com/504758406): Update context on speaking state when available.
-  if (!IsGeminiLiveEnabled() ||
-      ios::provider::GetCurrentMode() != ios::provider::GeminiViewMode::kLive) {
+  if (!IsInGeminiLiveMode()) {
     return;
   }
 
@@ -998,6 +1023,18 @@ void GeminiBrowserAgent::HideFloatyIfInvoked(
     return;
   }
 
+  if (IsInGeminiLiveMode()) {
+    UpdateLiveModeUI();
+    // In Gemini Live mode, the overlay is persistent. Navigation, tab grid
+    // transitions, or entering an ineligible page should not temporarily hide
+    // the floaty overlay.
+    if (source == gemini::FloatyUpdateSource::WebNavigation ||
+        source == gemini::FloatyUpdateSource::TabGrid ||
+        source == gemini::FloatyUpdateSource::IneligibleSite) {
+      return;
+    }
+  }
+
   floaty_hidden_timestamp_ = base::TimeTicks::Now();
   if (ShouldSourceReshowFloaty(source)) {
     active_hiding_sources_.insert(source);
@@ -1025,7 +1062,20 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   }
   UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/false);
 
-  if (!is_floaty_invoked_ || !ShouldShowFloatyForSource(source)) {
+  if (!is_floaty_invoked_) {
+    return;
+  }
+
+  if (IsInGeminiLiveMode()) {
+    UpdateLiveModeUIAndMaybeContext();
+    if (source == gemini::FloatyUpdateSource::WebNavigation) {
+      return;
+    }
+    ForceShowFloatyIfInvoked();
+    return;
+  }
+
+  if (!ShouldShowFloatyForSource(source)) {
     return;
   }
 
@@ -1109,6 +1159,7 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
     }
   }
 
+  UpdateLiveModeUI();
   UpdateGeminiAvailability();
 }
 
@@ -1138,12 +1189,16 @@ void GeminiBrowserAgent::OnScrollEvent() {
 void GeminiBrowserAgent::OnPageContextUpdated(web::WebState* web_state) {
   UpdateGeminiAvailability();
 
-  // Update page context for Gemini Live only when the user is not speaking, as
-  // when they start wording their query, the page context should be locked in.
-  if (IsGeminiLiveEnabled() &&
-      ios::provider::GetCurrentMode() == ios::provider::GeminiViewMode::kLive &&
-      processing_status_ == ios::provider::GeminiClientMode::kTranscribing) {
-    return;
+  if (IsInGeminiLiveMode()) {
+    // Update page context for Gemini Live only when the user is not speaking,
+    // as when they start wording their query, the page context should be locked
+    // in.
+    if (processing_status_ == ios::provider::GeminiClientMode::kTranscribing) {
+      return;
+    }
+    if (UpdateLiveModeUIAndMaybeContext()) {
+      return;
+    }
   }
 
   GeminiTabHelper* tab_helper = GetActiveTabHelper(web_state);
@@ -1210,6 +1265,42 @@ bool GeminiBrowserAgent::IsOnlyHiddenByKeyboard() const {
   }
   return active_hiding_sources_.size() == 1 &&
          active_hiding_sources_.contains(gemini::FloatyUpdateSource::Keyboard);
+}
+
+bool GeminiBrowserAgent::IsOmniboxFocused() const {
+  OmniboxPositionBrowserAgent* omnibox_agent =
+      OmniboxPositionBrowserAgent::FromBrowser(browser_);
+  return omnibox_agent && omnibox_agent->IsOmniboxFocused();
+}
+
+bool GeminiBrowserAgent::ShouldIgnoreKeyboardUpdate() const {
+  bool is_expanded_not_thinking =
+      last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded &&
+      ios::provider::GetCurrentClientMode() !=
+          ios::provider::GeminiClientMode::kThinking;
+  return !IsOmniboxFocused() &&
+         (is_expanded_not_thinking || is_floaty_temporarily_hidden_);
+}
+
+bool GeminiBrowserAgent::IsChatEligiblePage() const {
+  return IsGeminiChatAvailableForActiveWebState();
+}
+
+void GeminiBrowserAgent::UpdateLiveModeUI() {
+  if (!IsInGeminiLiveMode()) {
+    return;
+  }
+  ios::provider::SetLiveStopButtonHidden(!IsChatEligiblePage());
+}
+
+bool GeminiBrowserAgent::UpdateLiveModeUIAndMaybeContext() {
+  UpdateLiveModeUI();
+  if (IsChatEligiblePage()) {
+    UpdateFloatyWithPartialPageContext();
+    RequestPageContextGeneration();
+    return true;
+  }
+  return false;
 }
 
 void GeminiBrowserAgent::FullscreenControllerWillShutDown(
@@ -1394,6 +1485,15 @@ void GeminiBrowserAgent::ResetFullscreenDisabler() {
 
 void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
     GeminiPageContext* gemini_page_context) {
+  if (!IsChatEligiblePage()) {
+    gemini_page_context.geminiPageContextComputationState =
+        ios::provider::GeminiPageContextComputationState::kBlocked;
+    gemini_page_context.geminiPageContextAttachmentState =
+        ios::provider::GeminiPageContextAttachmentState::kDetached;
+    gemini_page_context.uniquePageContext = nullptr;
+    return;
+  }
+
   // Disable the page context attachment state based on user prefs.
   PrefService* pref_service = browser_->GetProfile()->GetPrefs();
   if (!pref_service->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
@@ -1401,7 +1501,8 @@ void GeminiBrowserAgent::ApplyUserPrefsToPageContext(
         ios::provider::GeminiPageContextAttachmentState::kUserDisabled;
   } else if (IsGeminiCopresenceEnabled() && is_floaty_invoked_ &&
              ios::provider::GetCurrentPageContextAttachmentState() ==
-                 ios::provider::GeminiPageContextAttachmentState::kDetached) {
+                 ios::provider::GeminiPageContextAttachmentState::kDetached &&
+             !IsInGeminiLiveMode()) {
     gemini_page_context.geminiPageContextAttachmentState =
         ios::provider::GeminiPageContextAttachmentState::kDetached;
   } else {
@@ -1453,6 +1554,8 @@ void GeminiBrowserAgent::OnPageContextGenerated(
 
 void GeminiBrowserAgent::OnViewStateChanged(
     ios::provider::GeminiViewState view_state) {
+  UpdateLiveModeUI();
+
   if (view_state == ios::provider::GeminiViewState::kExpanded) {
     if (is_floaty_temporarily_hidden_) {
       ForceShowFloatyIfInvoked();
@@ -1464,7 +1567,7 @@ void GeminiBrowserAgent::OnViewStateChanged(
 }
 
 GeminiTabHelper* GeminiBrowserAgent::GetActiveTabHelper(
-    web::WebState* web_state) {
+    web::WebState* web_state) const {
   web::WebState* active_web_state =
       browser_->GetWebStateList()->GetActiveWebState();
   if (active_web_state && active_web_state == web_state) {

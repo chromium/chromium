@@ -39,7 +39,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/snapshots/model/fake_snapshot_generator_delegate.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -220,6 +222,16 @@ class GeminiBrowserAgentTest : public PlatformTest {
   // Triggers `RequestPageContextGeneration()` in the browser agent.
   void RequestPageContextGeneration() {
     gemini_browser_agent_->RequestPageContextGeneration();
+  }
+
+  // Setter for `processing_status_`.
+  void SetProcessingStatus(ios::provider::GeminiClientMode mode) {
+    gemini_browser_agent_->processing_status_ = mode;
+  }
+
+  // Getter for `processing_status_`.
+  ios::provider::GeminiClientMode GetProcessingStatus() {
+    return gemini_browser_agent_->processing_status_;
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -721,6 +733,7 @@ TEST_F(GeminiBrowserAgentTest, TestOnGeminiAvailabilityChanged) {
   WebViewProxyTabHelper::CreateForWebState(web_state.get());
   web_state->SetCurrentURL(GURL("https://example.com"));
   web_state->SetContentsMimeType("text/html");
+  web_state->WasShown();
 
   // Insert and activate the web state to trigger active web state change.
   browser_->GetWebStateList()->InsertWebState(
@@ -777,4 +790,59 @@ TEST_F(GeminiBrowserAgentTest, TestOnLiveButtonTappedTriggersEvent) {
       NotifyEvent(testing::Eq(feature_engagement::events::kIOSGeminiLiveUsed)));
 
   gemini_browser_agent_->OnLiveButtonTapped();
+}
+
+// Tests that OnProcessingStatusChanged updates processing_status_ and switches
+// to text mode when dormant.
+TEST_F(GeminiBrowserAgentTest, TestOnProcessingStatusChangedLiveDormant) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLive}, {});
+
+  // Register mock targets to satisfy commands used by
+  // ShowLiveSessionDormantSnackbar/PrepareFloatyToBeShown.
+  id mock_snackbar_handler = OCMProtocolMock(@protocol(SnackbarCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_snackbar_handler
+                   forProtocol:@protocol(SnackbarCommands)];
+  id mock_fullscreen_handler = OCMProtocolMock(@protocol(FullscreenCommands));
+  [browser_->GetCommandDispatcher()
+      startDispatchingToTarget:mock_fullscreen_handler
+                   forProtocol:@protocol(FullscreenCommands)];
+
+  SetIsFloatyInvoked(true);
+
+  // Put in Live mode.
+  ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kLive,
+                              /*animated=*/false);
+  EXPECT_EQ(ios::provider::GetCurrentMode(),
+            ios::provider::GeminiViewMode::kLive);
+
+  // Change status to kDormant.
+  gemini_browser_agent_->OnProcessingStatusChanged(
+      ios::provider::GeminiClientMode::kDormant);
+
+  // Should switch back to Floaty (text mode) and update the internal status.
+  EXPECT_EQ(ios::provider::GetCurrentMode(),
+            ios::provider::GeminiViewMode::kFloaty);
+  EXPECT_EQ(GetProcessingStatus(), ios::provider::GeminiClientMode::kDormant);
+}
+
+// Tests that OnGeminiLiveUserDidBargeIn updates processing_status_ to
+// kTranscribing.
+TEST_F(GeminiBrowserAgentTest, TestOnGeminiLiveUserDidBargeIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kGeminiLive}, {});
+
+  SetIsFloatyInvoked(true);
+
+  // Put in Live mode.
+  ios::provider::SwitchToMode(ios::provider::GeminiViewMode::kLive,
+                              /*animated=*/false);
+
+  // Trigger barge-in.
+  gemini_browser_agent_->OnGeminiLiveUserDidBargeIn();
+
+  // Status should be set to kTranscribing.
+  EXPECT_EQ(GetProcessingStatus(),
+            ios::provider::GeminiClientMode::kTranscribing);
 }

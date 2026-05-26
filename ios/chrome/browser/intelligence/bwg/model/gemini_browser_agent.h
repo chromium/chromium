@@ -90,6 +90,12 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Returns true if Gemini is available for the active web state.
   bool IsGeminiAvailableForActiveWebState() const;
 
+  // Returns true if Gemini Chat mode is available for the active web state.
+  bool IsGeminiChatAvailableForActiveWebState() const;
+
+  // Returns true if Gemini Live mode is currently active.
+  bool IsInGeminiLiveMode() const;
+
   // BrowserObserver:
   void BrowserDestroyed(Browser* browser) override;
 
@@ -142,6 +148,9 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
   // Called when the scene activation level changes.
   void OnSceneActivationLevelChanged(SceneActivationLevel level);
 
+  // Called when the scene is about to enter Incognito mode.
+  void OnWillEnterIncognito();
+
   // Called when trait collection is updated.
   void UpdateForTraitCollection(UITraitCollection* traitCollection);
 
@@ -190,7 +199,7 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Helper to get the GeminiTabHelper for the active web state if it matches
   // the provided web state.
-  GeminiTabHelper* GetActiveTabHelper(web::WebState* web_state);
+  GeminiTabHelper* GetActiveTabHelper(web::WebState* web_state) const;
 
   // Callback for scroll events.
   void OnScrollEvent();
@@ -275,6 +284,22 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Returns true if the floaty is only hidden by the keyboard.
   bool IsOnlyHiddenByKeyboard() const;
+
+  // Returns true if the omnibox is focused.
+  bool IsOmniboxFocused() const;
+
+  // Returns true if the keyboard update should be ignored.
+  bool ShouldIgnoreKeyboardUpdate() const;
+
+  // Returns true if the current page is eligible for standard Gemini Chat mode.
+  bool IsChatEligiblePage() const;
+
+  // Recalculates and updates the Gemini Live mode UI elements.
+  void UpdateLiveModeUI();
+
+  // Updates the Gemini Live mode UI and page context. Returns true if page
+  // context update was performed.
+  bool UpdateLiveModeUIAndMaybeContext();
 
   // Returns true if the source expects the floaty to re-show after hiding it.
   // New sources must be added to the switch statement depending on if we

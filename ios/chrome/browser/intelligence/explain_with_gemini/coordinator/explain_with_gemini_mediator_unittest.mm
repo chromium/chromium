@@ -94,6 +94,7 @@ class ExplainWithGeminiMediatorTest : public PlatformTest {
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(browser_state_.get());
     web_state_->SetVisibleURL(GURL("https://example.com"));
+    web_state_->WasShown();
 
     GeminiTabHelper::CreateForWebState(web_state_.get());
     WebSelectionTabHelper::CreateForWebState(web_state_.get());

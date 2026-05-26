@@ -190,6 +190,7 @@ class LocationBarBadgeMediatorTest : public PlatformTest {
     web_state->SetBrowserState(profile_.get());
     web_state->SetCurrentURL(GURL("https://www.google.com"));
     web_state->SetContentsMimeType("text/html");
+    web_state->WasShown();
 
     // Contextual Panel setup.
     std::map<ContextualPanelItemType,
@@ -684,6 +685,7 @@ TEST_F(LocationBarBadgeMediatorTest, TestContextualPanelWebStateListChanged) {
 
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
+  web_state->WasShown();
   std::map<ContextualPanelItemType,
            raw_ptr<ContextualPanelModel>>
       models;

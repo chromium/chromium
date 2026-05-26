@@ -738,6 +738,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonHighlighted_GeminiAvailable) {
   web_state->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state.get());
   web_state->SetVisibleURL(GURL("https://example.com"));
+  web_state->WasShown();
 
   regular_web_state_list_->InsertWebState(std::move(web_state));
   regular_web_state_list_->ActivateWebStateAt(0);
@@ -805,6 +806,7 @@ TEST_F(AppBarMediatorTest, TestAssistantButtonStateAsk_GeminiAvailable) {
   web_state->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state.get());
   web_state->SetVisibleURL(GURL("https://google.com"));
+  web_state->WasShown();
 
   regular_web_state_list_->InsertWebState(std::move(web_state));
   regular_web_state_list_->ActivateWebStateAt(0);

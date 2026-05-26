@@ -743,6 +743,7 @@ TEST_F(GeminiTabHelperTest,
        IsGeminiAvailableForWebState_WhenUserIsNotEligible) {
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
+  web_state_->WasShown();
   GeminiTabHelper::CreateForWebState(web_state_.get());
   tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
   EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
@@ -754,6 +755,7 @@ TEST_F(GeminiTabHelperTest,
        IsGeminiAvailableForWebState_WhenWebStateIsOffTheRecord) {
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_->GetOffTheRecordProfile());
+  web_state_->WasShown();
   GeminiTabHelper::CreateForWebState(web_state_.get());
   tab_helper_ = GeminiTabHelper::FromWebState(web_state_.get());
   EXPECT_FALSE(tab_helper_->IsGeminiAvailableForWebState());
@@ -767,6 +769,7 @@ TEST_F(GeminiTabHelperTest, IsGeminiAvailableForWebState_WhenUrlIsAimUrl) {
       /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
+  web_state_->WasShown();
   web_state_->SetCurrentURL(
       GURL("https://www.google.com/search?q=test&udm=50"));
   web_state_->SetContentsMimeType("text/html");
@@ -784,6 +787,7 @@ TEST_F(GeminiTabHelperTest,
       /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
+  web_state_->WasShown();
   web_state_->SetCurrentURL(GURL("https://www.google.com"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
@@ -800,6 +804,7 @@ TEST_F(GeminiTabHelperTest,
       /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
+  web_state_->WasShown();
   web_state_->SetCurrentURL(GURL("https://www.google.com/search?q=test"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
@@ -813,6 +818,7 @@ TEST_F(GeminiTabHelperTest,
        IsGeminiAvailableForWebState_WhenUrlIsNotAimUrlAndNotGoogleSearch) {
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
+  web_state_->WasShown();
   web_state_->SetCurrentURL(GURL("https://www.example.com"));
   web_state_->SetContentsMimeType("text/html");
   GeminiTabHelper::CreateForWebState(web_state_.get());
@@ -826,6 +832,7 @@ TEST_F(GeminiTabHelperTest,
        IsGeminiAvailableForWebState_WhenUrlIsPdf_AllPagesDisabled) {
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
+  web_state_->WasShown();
   web_state_->SetCurrentURL(GURL("https://www.example.com/test.pdf"));
   web_state_->SetContentsMimeType("application/pdf");
   GeminiTabHelper::CreateForWebState(web_state_.get());
@@ -842,6 +849,7 @@ TEST_F(GeminiTabHelperTest,
       /*disabled_features=*/{});
   web_state_ = std::make_unique<web::FakeWebState>();
   web_state_->SetBrowserState(profile_.get());
+  web_state_->WasShown();
   web_state_->SetCurrentURL(GURL("https://www.example.com/test.pdf"));
   web_state_->SetContentsMimeType("application/pdf");
   GeminiTabHelper::CreateForWebState(web_state_.get());

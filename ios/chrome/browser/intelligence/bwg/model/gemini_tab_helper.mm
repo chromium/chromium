@@ -399,12 +399,23 @@ void GeminiTabHelper::SetLocationBarBadgeCommandsHandler(
 }
 
 bool GeminiTabHelper::IsGeminiAvailableForWebState() {
+  if (IsInGeminiLiveMode()) {
+    return true;
+  }
+  return IsGeminiChatAvailableForWebState();
+}
+
+bool GeminiTabHelper::IsGeminiChatAvailableForWebState() {
   // With NextIA, all URLs are eligible, including when there's no web state.
   if (IsChromeNextIaEnabled()) {
     return true;
   }
 
   if (!web_state_) {
+    return false;
+  }
+
+  if (!web_state_->IsVisible()) {
     return false;
   }
 
@@ -454,7 +465,10 @@ IOSGeminiInvocationPageType GeminiTabHelper::GetCurrentPageType() {
 #pragma mark - WebStateObserver
 
 void GeminiTabHelper::WasShown(web::WebState* web_state) {
-  if (IsChromeNextIaEnabled()) {
+  // In NextIA or Live mode, the floaty remains persistently visible across tab
+  // switches, but the page context needs to be updated to match the newly
+  // visible tab.
+  if (IsNextIaOrLiveMode()) {
     NotifyPageContextUpdated(web_state);
   } else if (IsGeminiCopresenceEnabled()) {
     [gemini_commands_handler_
@@ -465,7 +479,10 @@ void GeminiTabHelper::WasShown(web::WebState* web_state) {
 }
 
 void GeminiTabHelper::WasHidden(web::WebState* web_state) {
-  if (IsChromeNextIaEnabled()) {
+  // In NextIA or Live mode, the floaty remains persistently visible when a tab
+  // is hidden (e.g., during a tab switch), but we must update the page context
+  // immediately to ensure the hidden tab's content is detached and blocked.
+  if (IsNextIaOrLiveMode()) {
     NotifyPageContextUpdated(web_state);
   } else if (IsGeminiCopresenceEnabled()) {
     [gemini_commands_handler_
@@ -911,5 +928,14 @@ void GeminiTabHelper::ParseSuggestionsResponse(
 
 bool GeminiTabHelper::CanExtractPageContextForGemini() {
   return CanExtractPageContextForWebState(web_state_) &&
-         (!IsChromeNextIaEnabled() || web_state_->IsVisible());
+         (!IsNextIaOrLiveMode() || web_state_->IsVisible());
+}
+
+bool GeminiTabHelper::IsInGeminiLiveMode() const {
+  return IsGeminiLiveEnabled() && ios::provider::GetCurrentMode() ==
+                                      ios::provider::GeminiViewMode::kLive;
+}
+
+bool GeminiTabHelper::IsNextIaOrLiveMode() const {
+  return IsChromeNextIaEnabled() || IsInGeminiLiveMode();
 }

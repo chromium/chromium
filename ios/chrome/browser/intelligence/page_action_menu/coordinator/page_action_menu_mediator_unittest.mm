@@ -91,6 +91,7 @@ class PageActionMenuMediatorTest : public PlatformTest {
     fake_gemini_service_ = std::make_unique<FakeGeminiService>();
     web_state_ = std::make_unique<web::FakeWebState>();
     web_state_->SetBrowserState(browser_state_.get());
+    web_state_->WasShown();
 
     // Set up search engines environment and content settings map.
     TemplateURLService* template_url_service =

@@ -86,6 +86,9 @@ class GeminiTabHelper : public web::WebStateObserver,
   // Returns the current type of page or WebState.
   IOSGeminiInvocationPageType GetCurrentPageType();
 
+  // Whether Gemini Chat mode is available for the current web state.
+  bool IsGeminiChatAvailableForWebState();
+
   // Gets the client and server IDs for the Gemini session for the associated
   // WebState. server ID is optional because it may not be found or is expired.
   std::string GetClientId();
@@ -242,6 +245,13 @@ class GeminiTabHelper : public web::WebStateObserver,
 
   // Whether Gemini can extract the current web state's page context.
   bool CanExtractPageContextForGemini();
+
+  // TODO(crbug.com/516531773): Find solution for repetitive helper methods.
+  // Whether Gemini Live mode is currently active.
+  bool IsInGeminiLiveMode() const;
+
+  // Whether standard NextIA or Live mode is active.
+  bool IsNextIaOrLiveMode() const;
 
   // Fetches the cached favicon or generates a default fallback.
   UIImage* GetFavicon();
