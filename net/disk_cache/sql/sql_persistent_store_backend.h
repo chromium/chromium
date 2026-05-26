@@ -368,7 +368,7 @@ class SqlPersistentStore::Backend {
   base::expected<EvictionCandidateList, Error> SelectEvictionCandidates(
       int64_t size_to_be_removed,
       base::flat_set<ResId> excluded_res_ids,
-      const std::optional<SqlPersistentStoreInMemoryIndex>& index,
+      std::optional<SqlPersistentStoreInMemoryIndex>& index,
       bool is_idle_time_eviction,
       size_t& scanned_count);
   // Called by the `EvictionCandidateAggregator` to evict a list of selected

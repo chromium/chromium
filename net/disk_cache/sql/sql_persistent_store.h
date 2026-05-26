@@ -618,6 +618,13 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   // Sets a hook to be called during eviction, allowing tests to control timing.
   void SetEvictionHookForTesting(base::RepeatingClosure hook);
 
+  BackendShard& GetShardForTesting(ShardId shard_id) const {
+    return *backend_shards_[shard_id.value()];
+  }
+  BackendShard& GetShardForTesting(CacheEntryKey::Hash hash) const {
+    return GetShard(hash);
+  }
+
  private:
   // The result of a successful initialization.
   struct InitResult {

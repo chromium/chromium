@@ -42,6 +42,7 @@
 #include "net/disk_cache/sql/entry_write_buffer.h"
 #include "net/disk_cache/sql/sql_async_task_manager.h"
 #include "net/disk_cache/sql/sql_backend_constants.h"
+#include "net/disk_cache/sql/sql_persistent_store_backend_shard.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -6044,6 +6045,159 @@ TEST_P(SqlPersistentStoreTest, StartEvictionPrioritizesHighPriorityEntries) {
     }
   }
   EXPECT_EQ(gone_count, 1);
+}
+
+TEST_P(SqlPersistentStoreTest,
+       StartEvictionPrioritizesHighPriorityEntriesWithConsolidatedIndex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"},
+         {"SqlDiskCacheConsolidatedInMemoryIndex", "true"}}},
+       {net::features::kSimpleCachePrioritizedCaching, {}}},
+      {});
+
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
+  const int64_t kLowWatermark =
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // Add 9 low priority entries.
+  // Each entry size = 650 + 300 + 4 = 954. Total = 8586.
+  std::vector<CacheEntryKey> low_priority_keys;
+  for (int i = 0; i < 9; ++i) {
+    const CacheEntryKey key(base::StringPrintf("low%d", i));
+    low_priority_keys.push_back(key);
+    auto res_id = CreateEntryAndGetResId(key);
+    FillDataInRange(key, res_id, 0, 0, 650, 'a');
+  }
+
+  // Add 1 high priority entry, same size and age.
+  // Size = 650 + 300 + 13 ("high_priority") = 963.
+  // Total size = 8586 + 963 = 9549 (> 9500).
+  const CacheEntryKey high_priority_key("high_priority");
+  auto high_priority_res_id = CreateEntryAndGetResId(high_priority_key);
+  FillDataInRange(high_priority_key, high_priority_res_id, 0, 0, 650, 'b');
+
+  // Set hints to HINT_HIGH_PRIORITY.
+  ASSERT_EQ(UpdateEntryHeaderAndLastUsed(
+                high_priority_key, high_priority_res_id, base::Time::Now(),
+                nullptr, 0, MemoryEntryDataHints(HINT_HIGH_PRIORITY)),
+            SqlPersistentStore::Error::kOk);
+
+  // Set all to same age.
+  base::Time now = base::Time::Now();
+  for (const auto& key : low_priority_keys) {
+    ASSERT_EQ(UpdateEntryLastUsedByKey(key, now),
+              SqlPersistentStore::Error::kOk);
+  }
+  ASSERT_EQ(UpdateEntryLastUsedByKey(high_priority_key, now),
+            SqlPersistentStore::Error::kOk);
+
+  // Advance clock.
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  EXPECT_GT(GetSizeOfAllEntries(), kHighWatermark);
+
+  // Start eviction.
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  // One entry should be evicted. Target to remove = 9549 - 9000 = 549.
+  EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
+  EXPECT_EQ(GetEntryCount(), 9);
+
+  // Verify the high priority entry is still there.
+  auto open_high = OpenEntry(high_priority_key);
+  ASSERT_TRUE(open_high.has_value());
+  EXPECT_TRUE(open_high->has_value());
+
+  // Verify one of the low priority entries is gone.
+  int gone_count = 0;
+  for (const auto& key : low_priority_keys) {
+    auto open_result = OpenEntry(key);
+    if (open_result.has_value() && !open_result->has_value()) {
+      gone_count++;
+    }
+  }
+  EXPECT_EQ(gone_count, 1);
+}
+
+TEST_P(SqlPersistentStoreTest, EvictionCollectsMetadata) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"},
+         {"SqlDiskCacheConsolidatedInMemoryIndex", "true"}}}},
+      {});
+
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
+  const int64_t kLowWatermark =
+      kMaxBytes * kSqlBackendEvictionLowWaterMarkPermille / 1000;  // 9000
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // 1. Add entries to trigger the eviction.
+  std::vector<CacheEntryKey> keys;
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%04d", i++));
+    keys.push_back(key);
+    auto create_result = CreateEntry(key);
+    ASSERT_TRUE(create_result.has_value());
+    task_environment_.AdvanceClock(base::Seconds(1));
+  }
+
+  EXPECT_FALSE(store_->GetShardForTesting(SqlPersistentStoreShardId(0))
+                   .GetIndexForTesting()
+                   ->is_entry_metadata_ready());
+
+  // 2. Perform the eviction.
+  // This will set is_entry_metadata_ready_ to true in the in-memory index.
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+  EXPECT_LE(GetSizeOfAllEntries(), kLowWatermark);
+  EXPECT_TRUE(store_->GetShardForTesting(SqlPersistentStoreShardId(0))
+                  .GetIndexForTesting()
+                  ->is_entry_metadata_ready());
+
+  for (const auto& key : keys) {
+    if (store_->GetIndexStateForHash(key.hash()) ==
+        SqlPersistentStore::IndexState::kHashFound) {
+      // Verify that metadata is available after the first eviction.
+      auto open_result = OpenEntry(key);
+      ASSERT_TRUE(open_result.has_value());
+      ASSERT_TRUE(open_result->has_value());
+      auto res_id = (*open_result)->res_id;
+      auto metadata = store_->GetShardForTesting(key.hash())
+                          .GetIndexForTesting()
+                          ->GetEntryMetadataForTesting(key.hash(), res_id);
+      ASSERT_TRUE(metadata.has_value());
+
+      EXPECT_EQ(metadata->last_used.InSecondsFSinceUnixEpoch(),
+                base::Time::FromSecondsSinceUnixEpoch(
+                    static_cast<uint32_t>(
+                        (*open_result)->last_used.InSecondsFSinceUnixEpoch()))
+                    .InSecondsFSinceUnixEpoch());
+
+      uint64_t expected_initial_size = (*open_result)->body_end;
+      if ((*open_result)->head) {
+        expected_initial_size += (*open_result)->head->capacity();
+      }
+      uint64_t expected_usage = expected_initial_size + key.string().size();
+      EXPECT_EQ(metadata->bytes_usage, ((expected_usage + 255) >> 8) << 8);
+      EXPECT_EQ(metadata->hints.value(), 0);
+    }
+  }
 }
 
 #if DCHECK_IS_ON()

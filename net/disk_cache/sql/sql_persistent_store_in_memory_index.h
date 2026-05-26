@@ -5,16 +5,21 @@
 #ifndef NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_IN_MEMORY_INDEX_H_
 #define NET_DISK_CACHE_SQL_SQL_PERSISTENT_STORE_IN_MEMORY_INDEX_H_
 
+#include <algorithm>
 #include <optional>
 #include <variant>
 #include <vector>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "net/base/net_export.h"
 #include "net/disk_cache/sql/indexed_pair_set.h"
 #include "net/disk_cache/sql/sql_backend_aliases.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace disk_cache {
 
@@ -80,6 +85,43 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   bool IsConsolidatedInMemoryIndexEnabled() const {
     return std::holds_alternative<ConsolidatedImpl<ResId32>>(impl32_);
   }
+
+  // Returns true if the metadata (last used time and usage) of all entries
+  // are ready in the consolidated in-memory index.
+  // This must only be called when the consolidated in-memory index is enabled.
+  bool is_entry_metadata_ready() const { return is_entry_metadata_ready_; }
+
+  // Sets the metadata ready flag.
+  // This must only be called when the consolidated in-memory index is enabled.
+  void SetEntryMetadataReady();
+
+  // Iterates over all entries in the index and calls `fun` for each entry.
+  // This version does not include metadata.
+  // This must only be called when the consolidated in-memory index is enabled.
+  void ForEach(base::FunctionRef<void(CacheEntryKeyHash hash,
+                                      SqlPersistentStoreResId res_id,
+                                      MemoryEntryDataHints hints)> fun) const;
+
+  // Sets the approximate last used time and usage for the entry.
+  // This must only be called when the consolidated in-memory index is enabled.
+  void SetEntryLastUsedAndUsage(CacheEntryKeyHash hash,
+                                SqlPersistentStoreResId res_id,
+                                base::Time last_used,
+                                uint64_t bytes_usage);
+
+  struct Metadata {
+    base::Time last_used;
+    uint64_t bytes_usage;
+    MemoryEntryDataHints hints;
+  };
+
+  // Retrieves the metadata (last_used, bytes_usage, and hints) for the entry.
+  // This must only be called when the consolidated in-memory index is enabled
+  // and is_entry_metadata_ready() is true. Returns std::nullopt if the entry
+  // is not found.
+  std::optional<Metadata> GetEntryMetadataForTesting(
+      CacheEntryKeyHash hash,
+      SqlPersistentStoreResId res_id) const;
 
  private:
   using ResId32 = base::StrongAlias<class ResId32, uint32_t>;
@@ -177,8 +219,15 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
    public:
     struct Entry {
       ResIdType res_id;
+      // The approximate time the entry was last used, in seconds since the UNIX
+      // epoch. Note that this 32-bit unsigned integer will overflow and
+      // potentially cause incorrect behavior after February 2106.
       uint32_t last_used_time_seconds_since_epoch;
+      // The total bytes usage of the entry in 256-byte chunks, rounded up.
+      // Capped at (1<<30) - 1.
       uint32_t entry_size_256b_chunks : 30;
+      // Stores MemoryEntryDataHints (e.g., HINT_HIGH_PRIORITY), which fits in 2
+      // bits.
       uint32_t hints : 2;
     };
     struct EntryTraits {
@@ -259,6 +308,43 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
           });
     }
 
+    void ForEach(
+        base::FunctionRef<void(CacheEntryKeyHash hash,
+                               SqlPersistentStoreResId res_id,
+                               MemoryEntryDataHints hints)> fun) const {
+      hash_res_id_map_.ForEach([&](CacheEntryKeyHash hash, const Entry& entry) {
+        fun(hash, SqlPersistentStoreResId(entry.res_id.value()),
+            MemoryEntryDataHints(entry.hints));
+      });
+    }
+
+    void SetEntryLastUsedAndUsage(CacheEntryKeyHash hash,
+                                  ResIdType res_id,
+                                  base::Time last_used,
+                                  uint64_t bytes_usage) {
+      Entry* entry = hash_res_id_map_.Get(hash, res_id);
+      if (entry) {
+        entry->last_used_time_seconds_since_epoch =
+            static_cast<uint32_t>(last_used.InSecondsFSinceUnixEpoch());
+        entry->entry_size_256b_chunks =
+            std::min<uint64_t>((bytes_usage + 255) >> 8, (1ull << 30) - 1);
+      }
+    }
+
+    std::optional<Metadata> GetEntryMetadataForTesting(CacheEntryKeyHash hash,
+                                                       ResIdType res_id) const {
+      const Entry* entry = hash_res_id_map_.Get(hash, res_id);
+      if (!entry) {
+        return std::nullopt;
+      }
+      return Metadata{
+          .last_used = base::Time::FromSecondsSinceUnixEpoch(
+              entry->last_used_time_seconds_since_epoch),
+          .bytes_usage = static_cast<uint64_t>(entry->entry_size_256b_chunks)
+                         << 8,
+          .hints = MemoryEntryDataHints(entry->hints)};
+    }
+
     size_t size() const { return hash_res_id_map_.size(); }
 
    private:
@@ -276,6 +362,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
 
   ImplVariant32 impl32_;
   std::optional<ImplVariant64> impl64_;
+  bool is_entry_metadata_ready_ = false;
 };
 
 }  // namespace disk_cache

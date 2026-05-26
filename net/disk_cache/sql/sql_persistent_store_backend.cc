@@ -2472,7 +2472,7 @@ base::expected<SqlPersistentStore::Backend::EvictionCandidateList,
 SqlPersistentStore::Backend::SelectEvictionCandidates(
     int64_t size_to_be_removed,
     base::flat_set<ResId> excluded_res_ids,
-    const std::optional<SqlPersistentStoreInMemoryIndex>& index,
+    std::optional<SqlPersistentStoreInMemoryIndex>& index,
     bool is_idle_time_eviction,
     size_t& scanned_count) {
   if (is_idle_time_eviction && !IsBrowserIdle()) {
@@ -2484,6 +2484,8 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
 
   const bool size_and_priority_aware_eviction =
       net::features::kSqlDiskCacheSizeAndPriorityAwareEviction.Get();
+  const bool consolidated_in_memory_index =
+      index && index->IsConsolidatedInMemoryIndexEnabled();
   const bool prioritized_caching_enabled = base::FeatureList::IsEnabled(
       net::features::kSimpleCachePrioritizedCaching);
   const int caching_prioritization_factor =
@@ -2493,16 +2495,35 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
           net::features::kSimpleCachePrioritizedCachingPrioritizationPeriod
               .Get()
               .InSeconds());
+  const bool need_to_update_index =
+      index && consolidated_in_memory_index && size_and_priority_aware_eviction;
 
   base::flat_set<ResId> high_priority_res_ids_set;
-  if (size_and_priority_aware_eviction) {
-    CHECK(index);
-    // Retrieve the list of high priority resource IDs from the in-memory index.
-    std::vector<ResId> high_priority_res_ids =
-        index->GetResIdsWithHints(MemoryEntryDataHints(HINT_HIGH_PRIORITY));
-    std::sort(high_priority_res_ids.begin(), high_priority_res_ids.end());
-    high_priority_res_ids_set = base::flat_set<ResId>(
-        base::sorted_unique, std::move(high_priority_res_ids));
+  absl::flat_hash_map<ResId, CacheEntryKeyHash> res_id_to_hash_map;
+
+  if (index) {
+    if (size_and_priority_aware_eviction) {
+      if (consolidated_in_memory_index) {
+        // TODO: When `index->is_entry_metadata_ready()` is true, gather
+        // eviction targets from the index without accessing to the DB.
+        index->ForEach([&](CacheEntryKeyHash hash,
+                           SqlPersistentStoreResId res_id,
+                           MemoryEntryDataHints hints) {
+          res_id_to_hash_map[res_id] = hash;
+          if ((hints.value() & HINT_HIGH_PRIORITY) == HINT_HIGH_PRIORITY) {
+            high_priority_res_ids_set.insert(res_id);
+          }
+        });
+      } else {
+        // Retrieve the list of high priority resource IDs from the in-memory
+        // index.
+        std::vector<ResId> high_priority_res_ids =
+            index->GetResIdsWithHints(MemoryEntryDataHints(HINT_HIGH_PRIORITY));
+        std::sort(high_priority_res_ids.begin(), high_priority_res_ids.end());
+        high_priority_res_ids_set = base::flat_set<ResId>(
+            base::sorted_unique, std::move(high_priority_res_ids));
+      }
+    }
   }
 
   EvictionCandidateList candidates;
@@ -2548,6 +2569,13 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
           return candidates;
         }
       }
+      if (need_to_update_index) {
+        if (auto it = res_id_to_hash_map.find(res_id);
+            it != res_id_to_hash_map.end()) {
+          index->SetEntryLastUsedAndUsage(it->second, res_id, last_used,
+                                          bytes_usage);
+        }
+      }
     }
     const int sqlite_error = db_.GetErrorCode();
     if (sqlite_error != static_cast<int>(sql::SqliteResultCode::kDone)) {
@@ -2560,6 +2588,9 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
   }
   if (!size_and_priority_aware_eviction) {
     return candidates;
+  }
+  if (need_to_update_index) {
+    index->SetEntryMetadataReady();
   }
 
   // For size and priority aware eviction, all entry information is included in

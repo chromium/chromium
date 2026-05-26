@@ -167,6 +167,10 @@ class SqlPersistentStore::BackendShard {
   void RazeAndPoisonForTesting();
   void SetEvictionHookForTesting(base::RepeatingClosure hook);
 
+  std::optional<SqlPersistentStoreInMemoryIndex>& GetIndexForTesting() {
+    return index_;
+  }
+
  private:
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.

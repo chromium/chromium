@@ -444,6 +444,143 @@ TEST_P(SqlPersistentStoreInMemoryIndexTest,
   EXPECT_EQ(index.GetEntryDataHints(kHash1), std::nullopt);
 }
 
+TEST_P(SqlPersistentStoreInMemoryIndexTest, ForEach) {
+  if (!GetParam()) {
+    // ForEach is only supported when consolidated in-memory index is enabled.
+    return;
+  }
+  SqlPersistentStoreInMemoryIndex index;
+  const MemoryEntryDataHints hints(1);
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  index.SetEntryDataHints(kHash1, kResId1, hints);
+
+  size_t call_count = 0;
+  index.ForEach([&](CacheEntryKeyHash hash, SqlPersistentStoreResId res_id,
+                    MemoryEntryDataHints in_memory_data) {
+    EXPECT_EQ(hash, kHash1);
+    EXPECT_EQ(res_id, kResId1);
+    EXPECT_EQ(in_memory_data, hints);
+    ++call_count;
+  });
+  EXPECT_EQ(call_count, 1u);
+
+  // Test impl64_ path
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge((static_cast<uint64_t>(1) << 33) +
+                                            1);
+  const MemoryEntryDataHints hints_large(2);
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge));
+  index.SetEntryDataHints(kHashLarge, kResIdLarge, hints_large);
+  call_count = 0;
+  index.ForEach([&](CacheEntryKeyHash hash, SqlPersistentStoreResId res_id,
+                    MemoryEntryDataHints in_memory_data) {
+    EXPECT_TRUE(res_id == kResId1 || res_id == kResIdLarge);
+    ++call_count;
+    if (res_id == kResId1) {
+      EXPECT_EQ(res_id, kResId1);
+      EXPECT_EQ(in_memory_data, hints);
+    } else if (res_id == kResIdLarge) {
+      EXPECT_EQ(hash, kHashLarge);
+      EXPECT_EQ(in_memory_data, hints_large);
+    }
+  });
+  EXPECT_EQ(call_count, 2u);
+}
+
+TEST_P(SqlPersistentStoreInMemoryIndexTest, SetEntryLastUsedAndUsage) {
+  if (!GetParam()) {
+    return;
+  }
+  SqlPersistentStoreInMemoryIndex index;
+  const base::Time last_used = base::Time::FromSecondsSinceUnixEpoch(100);
+  const uint64_t bytes_usage = 512;
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  index.SetEntryLastUsedAndUsage(kHash1, kResId1, last_used, bytes_usage);
+
+  std::optional<SqlPersistentStoreInMemoryIndex::Metadata> metadata =
+      index.GetEntryMetadataForTesting(kHash1, kResId1);
+  ASSERT_TRUE(metadata.has_value());
+  EXPECT_EQ(metadata->last_used, last_used);
+  EXPECT_EQ(metadata->bytes_usage, bytes_usage);
+
+  // Test impl64_ path
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge((static_cast<uint64_t>(1) << 33) +
+                                            1);
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge));
+  index.SetEntryLastUsedAndUsage(kHashLarge, kResIdLarge, last_used,
+                                 bytes_usage);
+
+  metadata = index.GetEntryMetadataForTesting(kHashLarge, kResIdLarge);
+  ASSERT_TRUE(metadata.has_value());
+  EXPECT_EQ(metadata->last_used, last_used);
+  EXPECT_EQ(metadata->bytes_usage, bytes_usage);
+}
+
+TEST_P(SqlPersistentStoreInMemoryIndexTest,
+       SetEntryLastUsedAndUsageBoundaryValues) {
+  if (!GetParam()) {
+    return;
+  }
+  SqlPersistentStoreInMemoryIndex index;
+  const base::Time last_used = base::Time::FromSecondsSinceUnixEpoch(100);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+
+  auto verify_usage = [&](uint64_t bytes_usage,
+                          uint64_t expected_stored_usage) {
+    index.SetEntryLastUsedAndUsage(kHash1, kResId1, last_used, bytes_usage);
+    auto metadata = index.GetEntryMetadataForTesting(kHash1, kResId1);
+    ASSERT_TRUE(metadata.has_value());
+    EXPECT_EQ(metadata->bytes_usage, expected_stored_usage);
+  };
+
+  verify_usage(0, 0);
+  verify_usage(1, 256);
+  verify_usage(255, 256);
+  verify_usage(256, 256);
+  verify_usage(257, 512);
+
+  const uint64_t kMaxChunks = (1ull << 30) - 1;
+  const uint64_t kMaxBytes = kMaxChunks << 8;
+  verify_usage(kMaxBytes, kMaxBytes);
+  verify_usage(kMaxBytes + 1, kMaxBytes);  // Exceeds max, capped to kMaxBytes
+  verify_usage(1ull << 40, kMaxBytes);     // Very large, capped to kMaxBytes
+}
+
+TEST_P(SqlPersistentStoreInMemoryIndexTest, GetEntryMetadataForTestingNullopt) {
+  if (!GetParam()) {
+    return;
+  }
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge((static_cast<uint64_t>(1) << 33) +
+                                            1);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  EXPECT_TRUE(index.Insert(kHashLarge, kResIdLarge));
+
+  // Test ConsolidatedImpl::GetEntryMetadataForTesting !entry
+  EXPECT_EQ(index.GetEntryMetadataForTesting(kHash2, kResId1), std::nullopt);
+  EXPECT_EQ(index.GetEntryMetadataForTesting(kHash2, kResIdLarge),
+            std::nullopt);
+}
+
+TEST_P(SqlPersistentStoreInMemoryIndexTest,
+       GetEntryMetadataForTestingNoImpl64) {
+  if (!GetParam()) {
+    return;
+  }
+  SqlPersistentStoreInMemoryIndex index;
+  const CacheEntryKeyHash kHashLarge(3);
+  const SqlPersistentStoreResId kResIdLarge((static_cast<uint64_t>(1) << 33) +
+                                            1);
+  // We don't insert a large ID, so impl64_ is not created.
+  EXPECT_EQ(index.GetEntryMetadataForTesting(kHashLarge, kResIdLarge),
+            std::nullopt);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SqlPersistentStoreInMemoryIndexTest,
                          testing::Bool(),
