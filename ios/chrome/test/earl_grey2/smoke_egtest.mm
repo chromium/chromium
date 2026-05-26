@@ -30,6 +30,16 @@
 
 @implementation SmokeTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  if ([self isRunningTest:@selector(testAppResourcesArePresent)] ||
+      [self isRunningTest:@selector(testTapToolsMenu)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
+  return config;
+}
+
 // Tests that a tab can be opened.
 - (void)testOpenTab {
   // Open tools menu.

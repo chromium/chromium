@@ -78,6 +78,10 @@ static const char* kInterstitialWaitingContent = "Waiting for permission";
   } else if ([self isRunningTest:@selector
                    (MAYBE_testSupervisedUserInterstitialOnBackButton)]) {
     config.features_disabled.push_back(supervised_user::kLocalWebApprovals);
+  } else if ([self
+                 isRunningTest:@selector
+                 (testSupervisedUserStaysSignedInAfterClearingBrowsingData)]) {
+    config.features_enabled.push_back(kFullscreenRefactoring);
   } else {
     config.features_enabled_and_params.push_back(
         {supervised_user::kLocalWebApprovals,

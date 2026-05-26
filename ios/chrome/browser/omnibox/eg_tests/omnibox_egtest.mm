@@ -230,6 +230,11 @@ id<GREYMatcher> SearchCopiedImageWithLensContextMenuButton() {
                     grey_accessibilityTrait(UIAccessibilityTraitButton),
                     grey_hidden(NO), nil);
 }
+// Returns a matcher for the visible DSE icon.
+id<GREYMatcher> VisibleDSEIcon() {
+  return grey_allOf(grey_accessibilityID(@"DSEIconNonEmpty"),
+                    grey_sufficientlyVisible(), nil);
+}
 
 // Taps the fake omnibox and waits for the real omnibox to be visible.
 void FocusFakebox() {
@@ -492,6 +497,13 @@ void FocusFakebox() {
   [self openPage1];
 
   if ([ChromeEarlGrey isCompactWidth]) {
+    // Under Chrome Next IA, the share button is not visible on the steady state
+    // location bar by default.
+    if ([ChromeEarlGrey isChromeNextEnabled]) {
+      [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+          assertWithMatcher:grey_notVisible()];
+      return;
+    }
     [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
         assertWithMatcher:grey_sufficientlyVisible()];
   }
@@ -667,7 +679,7 @@ void FocusFakebox() {
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 
   // Verify the DSE icon is visible using the accessibilityIdentifier.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"DSEIconNonEmpty")]
+  [[EarlGrey selectElementWithMatcher:VisibleDSEIcon()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Focus the omnibox.
@@ -677,7 +689,7 @@ void FocusFakebox() {
   [OmniboxEarlGrey defocusOmnibox];
 
   // Verify the DSE icon is still visible.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"DSEIconNonEmpty")]
+  [[EarlGrey selectElementWithMatcher:VisibleDSEIcon()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open a second Incognito tab.
@@ -685,7 +697,7 @@ void FocusFakebox() {
   [ChromeEarlGrey waitForIncognitoTabCount:2];
 
   // Verify the icon in the new tab.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"DSEIconNonEmpty")]
+  [[EarlGrey selectElementWithMatcher:VisibleDSEIcon()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Open a normal tab (switches to normal mode).
@@ -697,7 +709,7 @@ void FocusFakebox() {
   [ChromeEarlGrey waitForIncognitoTabCount:3];
 
   // Verify the icon is still there.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"DSEIconNonEmpty")]
+  [[EarlGrey selectElementWithMatcher:VisibleDSEIcon()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Clean up.

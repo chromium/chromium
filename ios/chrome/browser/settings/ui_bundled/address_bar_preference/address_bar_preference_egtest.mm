@@ -4,6 +4,7 @@
 
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -55,6 +56,15 @@ id<GREYMatcher> BottomAddressBarOptionSelected() {
 @end
 
 @implementation AddressBarPreferenceTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  if ([self isRunningTest:@selector(testSelectBottomAddressBar)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

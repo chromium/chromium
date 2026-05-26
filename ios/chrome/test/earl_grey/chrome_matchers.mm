@@ -299,6 +299,11 @@ id<GREYMatcher> ShowTabsButton() {
   return [ChromeMatchersAppInterface showTabsButton];
 }
 
+id<GREYMatcher> ShowTabsButtonWithCount(NSString* count) {
+  return grey_allOf(grey_descendant(grey_accessibilityLabel(count)),
+                    ShowTabsButton(), nil);
+}
+
 id<GREYMatcher> BlueDotOnShowTabsButton() {
   return [ChromeMatchersAppInterface blueDotOnShowTabsButton];
 }

@@ -17,6 +17,7 @@
 #import "components/version_info/version_info.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -148,6 +149,15 @@ class PausableRequestHandler {
 @end
 
 @implementation VisibleURLWithCachedRestoreTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  if ([self isRunningTest:@selector
+            (testStoppingPendingBackNavigationAndReload)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -400,6 +410,7 @@ class PausableRequestHandler {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_disabled.push_back(
       web::features::kForceSynthesizedRestoreSession);
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 

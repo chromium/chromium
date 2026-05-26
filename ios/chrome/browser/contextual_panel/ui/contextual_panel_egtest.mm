@@ -93,6 +93,11 @@ id<GREYMatcher> ContextualPanelEntrypointImageViewMatcher() {
   // PSF.
   config.features_disabled.push_back(kProactiveSuggestionsFramework);
 
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  if ([self isRunningTest:@selector
+            (testContextualPanelEntrypointLargeChipDismissable)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
   return config;
 }
 

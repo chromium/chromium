@@ -4,6 +4,7 @@
 
 #import "base/ios/ios_util.h"
 #import "base/strings/stringprintf.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -92,6 +93,12 @@ void TapWebShareButton() {
 @end
 
 @implementation WebShareTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  config.features_disabled.push_back(kChromeNextIa);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

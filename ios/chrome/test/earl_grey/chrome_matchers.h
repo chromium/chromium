@@ -242,6 +242,9 @@ id<GREYMatcher> TabShareButton();
 // `[ChromeEarlGrey  showTabSwitcher]` or `[ChromeEarlGreyUI openTabGrid]`.
 id<GREYMatcher> ShowTabsButton();
 
+// Returns a matcher for the Show Tabs button with a specific count.
+id<GREYMatcher> ShowTabsButtonWithCount(NSString* count);
+
 // Returns a matcher for the blue dot on the show tabs button.
 id<GREYMatcher> BlueDotOnShowTabsButton();
 

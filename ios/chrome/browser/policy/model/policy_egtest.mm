@@ -863,6 +863,11 @@ const char kTestPageText[] = "pony";
 // enterprise selected No Protection as the choice of protection.
 - (void)testEnterpriseBubbleInEnhancedSafeBrowsingPage {
   SetPolicy(0, policy::key::kSafeBrowsingProtectionLevel);
+  // Under Chrome Next, the NTP's tools menu button may be scrolled offscreen.
+  // Load a standard page to ensure a visible tools menu button.
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [ChromeEarlGrey loadURL:GURL(kChromeUIVersionURL)];
+  }
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
       tapSettingsMenuButton:chrome_test_util::SettingsMenuPrivacyButton()];

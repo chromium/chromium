@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey.h"
 #import "ios/chrome/browser/bookmarks/test/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/snackbar/snackbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -59,6 +60,15 @@ id<GREYMatcher> AddBookmarkButton() {
 @end
 
 @implementation BookmarksEntriesTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  if ([self isRunningTest:@selector(testContextMenuForMultipleURLOpenAll)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

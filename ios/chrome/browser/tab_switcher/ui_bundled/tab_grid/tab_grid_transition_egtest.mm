@@ -91,6 +91,13 @@ void ExpectIdleHistogramBucketCount(const char* histogram,
 // to fail.
 @implementation TabSwitcherTransitionTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
 

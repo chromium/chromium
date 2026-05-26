@@ -98,6 +98,13 @@ enum class QuickActionsVisibility {
 
 @implementation NewTabPageTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
+  return config;
+}
+
 - (void)tearDownHelper {
   [self releaseHistogramTester];
   policy_test_utils::ClearPolicies();

@@ -297,7 +297,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 @implementation TabGridTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   if ([self isRunningTest:@selector(testCloseOtherTabsUsingEditMenu)] ||
       [self isRunningTest:@selector(testCloseOtherTabsUsingContextMenu)] ||
@@ -323,6 +323,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   if ([self isRunningTest:@selector
             (testIncognitoTabOperationsWithChromeNextIa)]) {
     config.features_enabled.push_back(kChromeNextIa);
+  } else {
+    config.features_disabled.push_back(kChromeNextIa);
   }
 
   return config;
@@ -2950,16 +2952,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 // Relaunches the app with Inactive Tabs in test mode (i.e. considers tabs as
 // inactive immediately).
 - (void)relaunchAppWithInactiveTabsTestMode {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back("-InactiveTabsTestMode");
   config.additional_args.push_back("true");
-  if ([self isRunningTest:@selector
-            (testCloseAllAndUndoCloseAllWithInactiveTabs)]) {
-    config.features_disabled.push_back(kTabSwitcherOverflowMenu);
-  } else {
-    config.features_enabled.push_back(kTabSwitcherOverflowMenu);
-  }
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 

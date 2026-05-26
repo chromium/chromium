@@ -61,12 +61,6 @@ void SetIncognitoAvailabiliy(IncognitoAvailability availability) {
                          policy::key::kIncognitoModeAvailability)];
 }
 
-// Returns a matcher for the tab grid button.
-id<GREYMatcher> TabGridButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_TOOLBAR_SHOW_TABS);
-}
-
 // Returns a matcher for the incognito search button in the tools menu.
 id<GREYMatcher> IncognitoSearchButton() {
   return chrome_test_util::ButtonWithAccessibilityLabelId(
@@ -166,9 +160,17 @@ id<GREYMatcher> IncognitoNewTabButton() {
 - (void)testTabGridButtonLongPressMenuWhenIncognitoAvailable {
   SetIncognitoAvailabiliy(IncognitoAvailability::kAvailable);
   // Long press the tab grid button.
-  [[EarlGrey selectElementWithMatcher:TabGridButton()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
 
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                       IDS_IOS_TOOLS_MENU_NEW_TAB)]
+        assertWithMatcher:grey_nil()];
+    return;
+  }
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
@@ -177,11 +179,19 @@ id<GREYMatcher> IncognitoNewTabButton() {
 // Incognito Tab" item should be disabled in the popup menu triggered by
 // long-pressing the tab grid button.
 - (void)testTabGridButtonLongPressMenuWhenIncognitoDisabled {
-  SetIncognitoAvailabiliy(IncognitoAvailability::kDisabled);
+  [self restartWithIncognitoPolicy:IncognitoAvailability::kDisabled];
   // Long press the tab grid button.
-  [[EarlGrey selectElementWithMatcher:TabGridButton()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
 
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                       IDS_IOS_TOOLS_MENU_NEW_TAB)]
+        assertWithMatcher:grey_nil()];
+    return;
+  }
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
@@ -192,9 +202,17 @@ id<GREYMatcher> IncognitoNewTabButton() {
 - (void)testTabGridButtonLongPressMenuWhenIncognitoOnly {
   SetIncognitoAvailabiliy(IncognitoAvailability::kOnly);
   // Long press the tab grid button.
-  [[EarlGrey selectElementWithMatcher:TabGridButton()]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
       performAction:grey_longPress()];
 
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                       IDS_IOS_TOOLS_MENU_NEW_TAB)]
+        assertWithMatcher:grey_nil()];
+    return;
+  }
   AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_TAB);
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
@@ -389,7 +407,10 @@ id<GREYMatcher> IncognitoNewTabButton() {
   if ([ChromeEarlGrey isIPhoneIdiom]) {
     [self restartWithIncognitoPolicy:IncognitoAvailability::kOnly];
 
-    [[EarlGrey selectElementWithMatcher:IncognitoNewTabButton()]
+    id<GREYMatcher> matcher = [ChromeEarlGrey isChromeNextEnabled]
+                                  ? chrome_test_util::NewTabButton()
+                                  : IncognitoNewTabButton();
+    [[EarlGrey selectElementWithMatcher:matcher]
         performAction:grey_longPress()];
 
     AssertContextMenuItemDisabled(IDS_IOS_TOOLS_MENU_NEW_SEARCH);

@@ -5,6 +5,7 @@
 
 #import "base/ios/ios_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -68,6 +69,16 @@ id<GREYMatcher> BandwidthSettingsButton() {
 @end
 
 @implementation SettingsAccessibilityTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  if ([self isRunningTest:@selector(testSettingsSignedOutIncognito)] ||
+      [self isRunningTest:@selector(testSettingsSwipeDownDismiss)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
+  return config;
+}
 
 - (void)tearDownHelper {
   // It is possible for a test to fail with a menu visible, which can cause

@@ -4928,6 +4928,24 @@
             ]
         }
     ],
+    "ChromeNextIa": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "form_factors": [
+                "phone"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ChromeNextIa"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSARCVMLmkPerceptibleMinState": [
         {
             "platforms": [

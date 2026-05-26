@@ -123,6 +123,10 @@ NSString* const kActivityMenuIdentifier = @"ActivityListView";
     }
   }
 
+  if ([self isRunningTest:@selector(testDownloadDisplayedPDF)]) {
+    configuration.features_disabled.push_back(kChromeNextIa);
+  }
+
   return configuration;
 }
 

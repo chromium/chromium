@@ -8,6 +8,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/threading/platform_thread.h"
 #import "base/time/time.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -68,6 +69,15 @@ std::unique_ptr<net::test_server::HttpResponse> HandleInfiniteRequest(
 @end
 
 @implementation StopLoadingTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  if ([self isRunningTest:@selector(testStopLoading)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
+  return config;
+}
 
 // Tests that tapping "Stop" button stops the loading.
 - (void)testStopLoading {

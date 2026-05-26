@@ -32,10 +32,9 @@
 
 namespace {
 
-using chrome_test_util::BackButton;
-using chrome_test_util::ForwardButton;
 using chrome_test_util::PrimaryToolbar;
 using chrome_test_util::SecondaryToolbar;
+using chrome_test_util::TabShareButton;
 using chrome_test_util::TapWebElementWithId;
 using chrome_test_util::WebStateScrollViewMatcher;
 using chrome_test_util::WebViewMatcher;
@@ -69,38 +68,52 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   return std::move(http_response);
 }
 
-// Returns a matcher for the visible share button.
-id<GREYMatcher> ShareButton() {
-  return grey_allOf(grey_accessibilityID(kLegacyToolbarShareButtonIdentifier),
+// Returns a matcher for the back button.
+id<GREYMatcher> BackButton() {
+  return grey_allOf(chrome_test_util::BackButton(), grey_sufficientlyVisible(),
+                    nil);
+}
+
+// Returns a matcher for the forward button.
+id<GREYMatcher> ForwardButton() {
+  return grey_allOf(chrome_test_util::ForwardButton(),
                     grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the reload button.
 id<GREYMatcher> ReloadButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_ACCNAME_RELOAD);
+  return grey_allOf(chrome_test_util::ReloadButton(),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the tools menu button.
 id<GREYMatcher> ToolsMenuButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_TOOLBAR_SETTINGS);
+  return grey_allOf(chrome_test_util::ToolsMenuButton(),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the cancel button.
 id<GREYMatcher> CancelButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(IDS_CANCEL);
+  return grey_allOf(chrome_test_util::CancelButton(),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the search button.
 id<GREYMatcher> NewTabButton() {
-  return grey_accessibilityID(kToolbarNewTabButtonIdentifier);
+  return grey_allOf(chrome_test_util::NewTabButton(),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Returns a matcher for the legacy share button in the toolbar.
+id<GREYMatcher> LegacyShareButton() {
+  return grey_allOf(grey_accessibilityID(kLegacyToolbarShareButtonIdentifier),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for the tab grid button.
 id<GREYMatcher> TabGridButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(
-      IDS_IOS_TOOLBAR_SHOW_TABS);
+  return grey_allOf(chrome_test_util::ShowTabsButton(),
+                    grey_sufficientlyVisible(), nil);
 }
 
 // Returns a matcher for a UIResponder object being first responder.
@@ -205,7 +218,7 @@ void CheckButtonsVisibilityIPhonePortrait(BOOL omniboxFocused) {
   if (omniboxFocused) {
     CheckVisibilityInToolbar(CancelButton(), ButtonVisibilityPrimary);
 
-    CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(LegacyShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
 
     // Those buttons are hidden by the keyboard.
@@ -217,7 +230,7 @@ void CheckButtonsVisibilityIPhonePortrait(BOOL omniboxFocused) {
   } else {
     CheckVisibilityInToolbar(CancelButton(), ButtonVisibilityNone);
 
-    CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(LegacyShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilitySecondary);
@@ -234,7 +247,7 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
     // Omnibox focused in iPhone landscape.
     CheckVisibilityInToolbar(CancelButton(), ButtonVisibilityPrimary);
 
-    CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilityNone);
@@ -245,7 +258,7 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
   } else {
     CheckVisibilityInToolbar(CancelButton(), ButtonVisibilityNone);
 
-    CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityPrimary);
+    CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityPrimary);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilityPrimary);
@@ -264,7 +277,7 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
 void CheckButtonsVisibilityIPad() {
   CheckVisibilityInToolbar(CancelButton(), ButtonVisibilityNone);
 
-  CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityPrimary);
+  CheckVisibilityInToolbar(TabShareButton(), ButtonVisibilityPrimary);
   CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
   CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityPrimary);
 
@@ -389,6 +402,16 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
 @implementation AdaptiveToolbarTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  if ([self isRunningTest:@selector(testNewTabButton)] ||
+      [self isRunningTest:@selector(testToolbarsUI)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
+  return config;
+}
+
 - (void)setUp {
   [super setUp];
   [ChromeEarlGrey setBoolValue:NO
@@ -407,8 +430,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   FocusOmnibox();
 
   // Tap the back button and check the omnibox is unfocused.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:grey_not(firstResponder())];
 }
@@ -505,35 +527,45 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   // Loads two url and check the navigation buttons status.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageURL)];
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageURL2)];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+  [[EarlGrey selectElementWithMatcher:BackButton()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        assertWithMatcher:grey_nil()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        assertWithMatcher:grey_not(grey_enabled())];
+  }
 
   // Check the navigation to the second page occurred.
   CheckCurrentURLContainsString(kPageURL2);
 
   // Go back.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   CheckCurrentURLContainsString(kPageURL);
 
   // Check the buttons status.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+  [[EarlGrey selectElementWithMatcher:BackButton()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
+  [[EarlGrey selectElementWithMatcher:ForwardButton()]
       assertWithMatcher:grey_interactable()];
 
   // Go forward.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
+  [[EarlGrey selectElementWithMatcher:ForwardButton()]
       performAction:grey_tap()];
   CheckCurrentURLContainsString(kPageURL2);
 
   // Check the buttons status.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
+  [[EarlGrey selectElementWithMatcher:BackButton()]
       assertWithMatcher:grey_interactable()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        assertWithMatcher:grey_nil()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        assertWithMatcher:grey_not(grey_enabled())];
+  }
 
   // Open a page in a new incognito tab to have the focus.
   [[EarlGrey selectElementWithMatcher:WebViewMatcher()]
@@ -546,13 +578,18 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
       performAction:grey_tap()];
 
   // Check the buttons status.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      assertWithMatcher:grey_not(grey_enabled())];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ForwardButton()]
+  if ([ChromeEarlGrey isChromeNextEnabled]) {
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        assertWithMatcher:grey_nil()];
+  } else {
+    [[EarlGrey selectElementWithMatcher:ForwardButton()]
+        assertWithMatcher:grey_not(grey_enabled())];
+  }
+  [[EarlGrey selectElementWithMatcher:BackButton()]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Close incognito tab.
-  [ChromeEarlGrey closeAllTabs];
+  [ChromeEarlGrey closeAllIncognitoTabs];
 }
 
 // Tests that tapping the NewTab button opens a new tab.
@@ -563,15 +600,18 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
   [ChromeEarlGrey waitForMainTabCount:1];
 
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kToolbarNewTabButtonIdentifier)]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:NewTabButton()] performAction:grey_tap()];
 
   [ChromeEarlGrey waitForMainTabCount:2];
 }
 
 // Tests share button is enabled only on pages that can be shared.
 - (void)testShareButton {
+  if ([ChromeEarlGrey isChromeNextEnabled] && [ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Share button is hidden on iPad toolbar under Chrome Next.");
+  }
+
   if (![ChromeEarlGrey isIPadIdiom]) {
     // If this test is run on an iPhone, rotate it to have the unsplit toolbar.
     [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeLeft
@@ -586,7 +626,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
   // Navigate to another page and check that the share button is enabled.
   [ChromeEarlGrey loadURL:pageURL];
-  [[EarlGrey selectElementWithMatcher:ShareButton()]
+  [[EarlGrey selectElementWithMatcher:TabShareButton()]
       assertWithMatcher:grey_interactable()];
 
   if (![ChromeEarlGrey isIPadIdiom]) {
@@ -675,8 +715,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
   // Location bar should be hidden when returning to NTP with the back button.
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::BackButton()]
-      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:BackButton()] performAction:grey_tap()];
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
@@ -691,19 +730,10 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
                            ButtonVisibilityNone);
 
-  // Revert the orientation/trait collection to the original.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    // Remove the override.
 
-    for (UIViewController* child in topViewController.childViewControllers) {
-      child.traitOverrides.horizontalSizeClass =
-          originalTraitCollection.horizontalSizeClass;
-    }
-  } else {
     // Cancel the rotation.
     [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
                                      error:nil];
-  }
 
   // Check the visiblity after a rotation.
   CheckVisibilityInToolbar(chrome_test_util::DefocusedLocationView(),
@@ -719,6 +749,13 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 @end
 
 @implementation AdaptiveToolbarBottomOmniboxTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix tests with Chrome Next enabled.
+  config.features_disabled.push_back(kChromeNextIa);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

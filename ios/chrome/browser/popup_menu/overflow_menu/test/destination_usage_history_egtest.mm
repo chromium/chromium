@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -48,6 +49,11 @@ GREYLayoutConstraint* RightConstraintWithOverlap() {
       base::StringPrintf("--disable-features=%s",
                          feature_engagement::kIPHWhatsNewUpdatedFeature.name));
 
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  if ([self isRunningTest:@selector
+            (testDefaultCarouselSortOrderDisplayedOnNTPForIncognito)]) {
+    config.features_disabled.push_back(kChromeNextIa);
+  }
   return config;
 }
 

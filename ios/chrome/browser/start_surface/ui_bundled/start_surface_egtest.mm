@@ -67,7 +67,7 @@ const char kZeroSecondsThreshold[] = "0";
 @implementation StartSurfaceTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
@@ -79,9 +79,10 @@ const char kZeroSecondsThreshold[] = "0";
         {kShowTabGroupInGridOnStart,
          {{{kShowTabGroupInGridInactiveDurationInSeconds,
             kZeroSecondsThreshold}}}});
-    return config;
   }
 
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 

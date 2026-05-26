@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/share_kit/model/test_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_app_interface.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
@@ -173,6 +174,8 @@ void CreateSharedGroupAndOpenMenu(
   config.additional_args.push_back(
       "--" + std::string(test_switches::kEnableFakeTabGroupSyncService));
 
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 

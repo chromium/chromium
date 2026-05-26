@@ -55,6 +55,14 @@ void ReloadFromOmnibox() {
 
 @implementation BubblePresenterTestCase
 
+// Relaunches the app with the test case's custom configuration and the given
+// IPH feature enabled.
+- (void)relaunchWithIPHFeature:(NSString*)feature
+                safariSwitcher:(BOOL)safariSwitcher {
+  RelaunchConfigurationWithIPHFeature([self appConfigurationForTestCase],
+                                      feature, safariSwitcher);
+}
+
 // Open a random url from omnibox. `isAfterNewAppLaunch` is used for deciding
 // whether the step of tapping the fake omnibox is needed.
 - (void)openURLFromOmniboxWithIsAfterNewAppLaunch:(BOOL)isAfterNewAppLaunch {
@@ -91,6 +99,9 @@ void ReloadFromOmnibox() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
+
   // Enable lens overlay flag to test the IPH.
   if ([self
           isRunningTest:@selector
@@ -111,8 +122,8 @@ void ReloadFromOmnibox() {
     EARL_GREY_TEST_DISABLED(
         @"Test disabled on iPad due to flakiness from split screen.");
   }
-  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
-                         /*safari_switcher=*/YES);
+  [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
+                safariSwitcher:YES];
   if ([ChromeEarlGrey isIPadIdiom]) {
     OpenSplitScreen();
   }
@@ -140,8 +151,8 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
   }
-  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
-                         /*safari_switcher=*/YES);
+  [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
+                safariSwitcher:YES];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -173,8 +184,8 @@ void ReloadFromOmnibox() {
     EARL_GREY_TEST_DISABLED(
         @"Test disabled on iPad due to flakiness from split screen.");
   }
-  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
-                         /*safari_switcher=*/YES);
+  [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
+                safariSwitcher:YES];
   if ([ChromeEarlGrey isIPadIdiom]) {
     OpenSplitScreen();
   }
@@ -205,8 +216,8 @@ void ReloadFromOmnibox() {
     EARL_GREY_TEST_DISABLED(
         @"Test disabled on iPad due to flakiness from split screen.");
   }
-  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
-                         /*safari_switcher=*/YES);
+  [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
+                safariSwitcher:YES];
   if ([ChromeEarlGrey isIPadIdiom]) {
     OpenSplitScreen();
   }
@@ -229,8 +240,8 @@ void ReloadFromOmnibox() {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPhone.");
   }
-  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
-                         /*safari_switcher=*/YES);
+  [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
+                safariSwitcher:YES];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -243,7 +254,7 @@ void ReloadFromOmnibox() {
 // Tests that the swipe back/forward IPH is attempted on navigation, and
 // disappears when user leaves the page.
 - (void)testSwipeBackForwardIPHShowsOnNavigationAndHidesOnNavigation {
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeBackForward" safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -272,8 +283,8 @@ void ReloadFromOmnibox() {
     EARL_GREY_TEST_DISABLED(
         @"Test disabled on iPad due to flakiness from split screen.");
   }
-  RelaunchWithIPHFeature(@"IPH_iOSPullToRefreshFeature",
-                         /*safari_switcher=*/YES);
+  [self relaunchWithIPHFeature:@"IPH_iOSPullToRefreshFeature"
+                safariSwitcher:YES];
   if ([ChromeEarlGrey isIPadIdiom]) {
     OpenSplitScreen();
   }
@@ -307,7 +318,7 @@ void ReloadFromOmnibox() {
   // 12s; use a fixed wait time between the two to distinguish between the two
   // kinds of swipe IPHs.
   const base::TimeDelta waitTime = base::Seconds(11);
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeBackForward" safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -326,7 +337,7 @@ void ReloadFromOmnibox() {
   }
   AssertGestureIPHVisibleWithDismissAction(
       @"Bi-directional swipe back/forward IPH should still be visible.", nil);
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeBackForward" safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
   // Go forward to destination URL 2.
   [[EarlGrey selectElementWithMatcher:ForwardButton()]
@@ -342,7 +353,7 @@ void ReloadFromOmnibox() {
 
 // Tests that opening a new tab hides the swipe back/forward IPH.
 - (void)testSwipeBackForwardIPHHidesOnNewTabOpening {
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeBackForward" safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -366,7 +377,7 @@ void ReloadFromOmnibox() {
 // `kSwipedAsInstructedByGestureIPH` when the user swipes the page in the
 // correct direction.
 - (void)testSwipeBackForwardPerformAction {
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeBackForward" safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -388,7 +399,7 @@ void ReloadFromOmnibox() {
 
 // Tests that the swipe back/forward IPH would NOT show if the page load fails.
 - (void)testSwipeBackForwardDoesNotShowWhenPageFails {
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeBackForward", /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeBackForward" safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -413,11 +424,8 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Need to be fixed for next.");
-  }
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
-                         /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
+                safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -450,11 +458,8 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Need to be fixed for next.");
-  }
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
-                         /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
+                safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -490,11 +495,8 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Need to be fixed for next.");
-  }
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
-                         /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
+                safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -545,8 +547,8 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
-                         /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
+                safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
@@ -580,11 +582,8 @@ void ReloadFromOmnibox() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (IPH is iPhone only)");
   }
-  if ([ChromeEarlGrey isChromeNextEnabled]) {
-    EARL_GREY_TEST_DISABLED(@"Need to be fixed for next.");
-  }
-  RelaunchWithIPHFeature(@"IPH_iOSSwipeToolbarToChangeTab",
-                         /*safari_switcher=*/NO);
+  [self relaunchWithIPHFeature:@"IPH_iOSSwipeToolbarToChangeTab"
+                safariSwitcher:NO];
   [BaseEarlGreyTestCaseAppInterface disableFastAnimation];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");

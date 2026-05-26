@@ -39,6 +39,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/password/reauthentication/local_reauthentication_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/widget_promo_instructions/widget_promo_instructions_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -747,6 +748,8 @@ void OpenPasswordManagerWidgetPromoInstructions() {
     config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
   }
 
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
 
   return config;
 }

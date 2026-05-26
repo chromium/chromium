@@ -78,6 +78,8 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
     config.features_enabled.push_back(
         send_tab_to_self::kSendTabToSelfPostSendToast);
   }
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 

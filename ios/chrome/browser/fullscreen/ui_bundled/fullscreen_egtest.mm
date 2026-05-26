@@ -143,6 +143,8 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   AppLaunchConfiguration config;
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
   config.features_disabled.push_back(kFullscreenRefactoring);
+  // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
+  config.features_disabled.push_back(kChromeNextIa);
   config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   return config;
 }
@@ -745,6 +747,8 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   config.features_disabled.push_back(
       web::features::kSmoothScrollingUseDelegate);
   config.features_disabled.push_back(kFullscreenRefactoring);
+  // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
@@ -812,6 +816,8 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   config.features_enabled.push_back(web::features::kSmoothScrollingUseDelegate);
   config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   config.features_disabled.push_back(kFullscreenRefactoring);
+  // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
@@ -853,6 +859,8 @@ std::unique_ptr<net::test_server::HttpResponse> NotFoundResponse() {
   config.features_enabled.push_back(kFullscreenRefactoring);
   config.features_enabled.push_back(kHideToolbarsInOverflowMenu);
   config.features_disabled.push_back(web::features::kSmoothScrollingDefault);
+  // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 

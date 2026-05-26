@@ -9,6 +9,7 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_constants.h"
 #import "ios/chrome/browser/popup_menu/public/popup_menu_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -53,6 +54,13 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 @end
 
 @implementation PopupMenuTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];

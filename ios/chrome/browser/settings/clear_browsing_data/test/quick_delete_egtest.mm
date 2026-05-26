@@ -282,6 +282,9 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  // Disable Chrome Next to prevent hangs.
+  config.features_disabled.push_back(kChromeNextIa);
+
   config.relaunch_policy = NoForceRelaunchAndResetState;
   config.additional_args.push_back(std::string("--") +
                                    syncer::kSyncShortNudgeDelayForTest);

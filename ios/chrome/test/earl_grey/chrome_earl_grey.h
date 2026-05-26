@@ -498,6 +498,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // and tablet.
 - (void)showTabSwitcher;
 
+// Hides the tab switcher.
+- (void)hideTabSwitcher;
+
 #pragma mark - Window utilities (EG2)
 
 // Returns screen position of the given `windowNumber`

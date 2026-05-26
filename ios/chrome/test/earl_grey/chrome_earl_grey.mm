@@ -644,6 +644,14 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
   [ChromeEarlGrey waitForAndTapButton:chrome_test_util::ShowTabsButton()];
 }
 
+- (void)hideTabSwitcher {
+  if ([ChromeEarlGrey isChromeNextEnabled] && ![ChromeEarlGrey isIPadIdiom]) {
+    [ChromeEarlGrey waitForAndTapButton:chrome_test_util::ShowTabsButton()];
+  } else {
+    [ChromeEarlGrey waitForAndTapButton:chrome_test_util::TabGridDoneButton()];
+  }
+}
+
 #pragma mark - Cookie Utilities (EG2)
 
 - (NSDictionary*)cookies {

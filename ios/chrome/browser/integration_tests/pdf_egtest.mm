@@ -92,8 +92,7 @@ const char kGreenPDFPath[] = "/green.pdf";
   [ChromeEarlGreyUI openTabGrid];
 
   // Leave the tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey hideTabSwitcher];
 
   id<GREYMatcher> toolbar = chrome_test_util::PrimaryToolbar();
   // Swipe back and forth a few times. If this crashes, there may be a new
@@ -123,8 +122,7 @@ const char kGreenPDFPath[] = "/green.pdf";
   base::test::ios::SpinRunLoopWithMinDelay(base::Seconds(5));
 
   // Leave the tab grid.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey hideTabSwitcher];
 }
 
 // Tests the center color of the grid tab showing a PDF. (physical device only)

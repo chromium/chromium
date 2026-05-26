@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -88,8 +89,10 @@ id<GREYMatcher> GeminiButton() {
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kPageActionMenu);
+  // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
+  config.features_disabled.push_back(kChromeNextIa);
 
   if ([self isRunningTest:@selector(testAIHubNewBadgeAccessibility)]) {
     config.iph_feature_enabled = "IPH_iOSAIHubNewBadge";

@@ -56,8 +56,10 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
 @implementation LocationBarBadgeTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(kPageActionMenu);
+  // TODO(crbug.com/511992708): Fix these tests when Chrome Next is enabled.
+  config.features_disabled.push_back(kChromeNextIa);
 
   if ([self isRunningTest:@selector
             (testAskGeminiChipDoesNotShowForNonConsentedUsers)]) {

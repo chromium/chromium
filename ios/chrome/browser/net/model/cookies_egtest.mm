@@ -108,8 +108,7 @@ std::string IncognitoCookiePath() {
   // TODO(crbug.com/40856675): Fix the underlying bug and remove this
   // workaround.
   [ChromeEarlGrey showTabSwitcher];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey hideTabSwitcher];
 
   // Finally, closes all incognito tabs while still in normal tab.
   // Checks that incognito cookie is gone.

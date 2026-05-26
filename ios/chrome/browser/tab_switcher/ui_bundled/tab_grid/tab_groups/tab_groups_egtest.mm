@@ -343,7 +343,7 @@ void TapTabGroupTitle() {
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.features_enabled.push_back(
       data_sharing::features::kDataSharingFeature);
   if ([self isRunningTest:@selector(testCloseAllAndUndo)]) {
@@ -356,6 +356,8 @@ void TapTabGroupTitle() {
   if ([self isRunningTest:@selector(testUpdateGroupByTappingTitle)]) {
     config.features_enabled.push_back(kOpenEditGroupViewByTappingTitle);
   }
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 

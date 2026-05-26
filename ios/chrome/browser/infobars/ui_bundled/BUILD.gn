@@ -40,6 +40,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/translate/model:eg_test_support+eg2",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

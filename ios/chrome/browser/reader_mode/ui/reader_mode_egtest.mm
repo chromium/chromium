@@ -273,6 +273,8 @@ std::unique_ptr<net::test_server::HttpResponse> HandleReaderModeTestRequests(
 #endif
     config.features_enabled.push_back(kContextualPanelForceShowEntrypoint);
   }
+  // TODO(crbug.com/514608938): Fix test for Chrome Next.
+  config.features_disabled.push_back(kChromeNextIa);
   return config;
 }
 
