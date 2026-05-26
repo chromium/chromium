@@ -983,12 +983,11 @@ void PasswordsPrivateDelegateImpl::ShowExportedFileInShell(
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(web_contents);
   DCHECK(browser);
-#if !BUILDFLAG(IS_WIN)
-  base::FilePath path(file_path);
-#else
-  base::FilePath path(base::UTF8ToWide(file_path));
-#endif
-  platform_util::ShowItemInFolder(browser->GetProfile(), path);
+  // TODO(b/516745102): Move this logic to PasswordExportController after
+  // splitting PasswordManagerPorter.
+  if (!last_exported_path_.empty()) {
+    platform_util::ShowItemInFolder(browser->GetProfile(), last_exported_path_);
+  }
 }
 
 void PasswordsPrivateDelegateImpl::ChangePasswordManagerPin(
@@ -1144,6 +1143,14 @@ void PasswordsPrivateDelegateImpl::MaybeShowPasswordShareButtonIPH(
 
 void PasswordsPrivateDelegateImpl::OnPasswordsExportProgress(
     const password_manager::PasswordExportInfo& progress) {
+  if (progress.status == password_manager::ExportProgressStatus::kSucceeded) {
+#if !BUILDFLAG(IS_WIN)
+    last_exported_path_ = base::FilePath(progress.file_path);
+#else
+    last_exported_path_ = base::FilePath(base::UTF8ToWide(progress.file_path));
+#endif
+  }
+
   PasswordsPrivateEventRouter* router =
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router) {

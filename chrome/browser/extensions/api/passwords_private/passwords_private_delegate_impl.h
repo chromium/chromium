@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -299,6 +300,8 @@ class PasswordsPrivateDelegateImpl
 
   // Used to control the export and import flows.
   std::unique_ptr<PasswordManagerPorterInterface> password_manager_porter_;
+
+  base::FilePath last_exported_path_;
 
   PasswordAccessAuthTimeoutHandler auth_timeout_handler_;
 
