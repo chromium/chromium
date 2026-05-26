@@ -222,10 +222,8 @@ content::WebContents* WebAppLaunchProcess::Run() {
     is_file_handling = false;
   }
 
-  auto [browser, is_new_browser] = EnsureBrowser();
-
   NavigateResult navigate_result =
-      MaybeNavigateBrowser(browser, is_new_browser, launch_url, share_target);
+      MaybeNavigateBrowser(launch_url, share_target);
   content::WebContents* web_contents = navigate_result.web_contents;
   if (!web_contents) {
     return nullptr;
@@ -333,20 +331,6 @@ LaunchHandler::ClientMode WebAppLaunchProcess::GetLaunchClientMode() const {
   return launch_handler.parsed_client_mode();
 }
 
-std::tuple<BrowserWindowInterface*, bool /*is_new_browser*/>
-WebAppLaunchProcess::EnsureBrowser() {
-  BrowserWindowInterface* browser = MaybeFindBrowserForLaunch();
-  bool is_new_browser = false;
-  if (browser) {
-    browser->GetWindow()->Activate();
-  } else {
-    browser = CreateBrowserForLaunch();
-    is_new_browser = true;
-  }
-  browser->GetWindow()->Show();
-  return {browser, is_new_browser};
-}
-
 BrowserWindowInterface* WebAppLaunchProcess::MaybeFindBrowserForLaunch() const {
   if (params_->container == apps::LaunchContainer::kLaunchContainerTab) {
     // In general, when opening a web application in a tab, we want to open the
@@ -400,10 +384,18 @@ Browser* WebAppLaunchProcess::CreateBrowserForLaunch() {
 }
 
 WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
-    BrowserWindowInterface* browser,
-    bool is_new_browser,
     const GURL& launch_url,
     const apps::ShareTarget* share_target) {
+  BrowserWindowInterface* browser = MaybeFindBrowserForLaunch();
+  bool is_new_browser = false;
+  if (browser) {
+    browser->GetWindow()->Activate();
+  } else {
+    browser = CreateBrowserForLaunch();
+    is_new_browser = true;
+  }
+  browser->GetWindow()->Show();
+
   WindowOpenDisposition navigation_disposition =
       GetNavigationDisposition(is_new_browser);
   content::WebContents* existing_tab =

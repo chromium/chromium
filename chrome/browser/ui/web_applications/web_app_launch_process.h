@@ -80,9 +80,7 @@ class WebAppLaunchProcess {
     raw_ptr<content::WebContents> web_contents = nullptr;
     bool did_navigate;
   };
-  NavigateResult MaybeNavigateBrowser(BrowserWindowInterface* browser,
-                                      bool is_new_browser,
-                                      const GURL& launch_url,
+  NavigateResult MaybeNavigateBrowser(const GURL& launch_url,
                                       const apps::ShareTarget* share_target);
 
   void MaybeEnqueueWebLaunchParams(const GURL& launch_url,
