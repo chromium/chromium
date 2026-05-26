@@ -84,7 +84,7 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingDialogBrowserTest, ShowAndClose) {
       CheckView(
           IndigoOnboardingDialog::kWebViewId,
           [](views::WebView* web_view) { return web_view->GetPreferredSize(); },
-          SizeIsInRange(gfx::Size(480, 100), gfx::Size(480, 960))),
+          SizeIsInRange(gfx::Size(448, 100), gfx::Size(448, 960))),
       Do([&]() { dialog_->Close(); }),
       WaitForHide(IndigoOnboardingDialog::kWebViewId),
       Check([&]() { return WasDialogClosed(); }));

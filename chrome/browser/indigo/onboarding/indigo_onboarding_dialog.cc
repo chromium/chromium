@@ -56,8 +56,8 @@ class OnboardingDialogTracker
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(OnboardingDialogTracker);
 
-constexpr gfx::Size kMinSize{480, 100};
-constexpr gfx::Size kMaxSize{480, 960};
+constexpr gfx::Size kMinSize{448, 100};
+constexpr gfx::Size kMaxSize{448, 960};
 
 class OnboardingWebView : public views::WebView {
  public:
