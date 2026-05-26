@@ -1789,6 +1789,7 @@ export const ComposeboxEmbedderMixin =
                   iconName: null,
                   supportsUnimodal: true,
                   thumbnailUrl: file.thumbnailUrl ?? null,
+                  iconUrl: file.iconUrl ?? null,
                 });
             composeboxFiles.set(file.token, attachment);
 

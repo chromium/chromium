@@ -21,6 +21,8 @@ struct DriveFile {
   // The resource key of the file. Optional since this implies the drive file
   // is a shared file.
   string? resource_key;
+  // The URL of the icon of the file, only populated if valid.
+  url.mojom.Url? icon_url;
   // The URL of the thumbnail of the file, only populated if the file is an
   // image.
   url.mojom.Url? thumbnail_url;

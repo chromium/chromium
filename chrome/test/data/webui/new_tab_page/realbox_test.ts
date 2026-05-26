@@ -231,18 +231,18 @@ suite('NewTabPageRealboxNextTest', () => {
 
   test('selecting drive upload opens composebox', async () => {
     const sampleToken = {high: BigInt(123), low: BigInt(456)};
-    testProxy.handler.setResultFor(
-        'onDriveUploadClicked', Promise.resolve({
-          response: {
-            files: [{
-              token: sampleToken,
-              mimeType: 'application/pdf',
-              fileName: 'sample.pdf',
-              thumbnailUrl: null,
-            }],
-            error: null,
-          },
-        }));
+    testProxy.handler.setResultFor('onDriveUploadClicked', Promise.resolve({
+      response: {
+        files: [{
+          token: sampleToken,
+          mimeType: 'application/pdf',
+          fileName: 'sample.pdf',
+          thumbnailUrl: null,
+          iconUrl: null,
+        }],
+        error: null,
+      },
+    }));
 
     const contextElement = realbox.shadowRoot.querySelector(
         'cr-composebox-contextual-entrypoint-and-menu');

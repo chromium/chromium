@@ -25,6 +25,7 @@ export interface SanitizedDriveFile {
   sizeBytes: bigint;
   resourceKey: string|null;
   thumbnailUrl: Url|null;
+  iconUrl: Url|null;
 }
 
 /**
@@ -55,6 +56,7 @@ export class DrivePickerSanitizer {
         SIZE_BYTES: string,
         RESOURCE_KEY: string,
         THUMBNAIL_URL: string,
+        ICON_URL: string,
       },
       allowedTypes: Set<string>): SanitizedDriveFile {
     const id = doc[pickerKeys.ID];
@@ -64,6 +66,7 @@ export class DrivePickerSanitizer {
     const sizeBytes = doc[pickerKeys.SIZE_BYTES];
     const resourceKey = doc[pickerKeys.RESOURCE_KEY];
     const thumbnailUrl = doc[pickerKeys.THUMBNAIL_URL];
+    const iconUrl = doc[pickerKeys.ICON_URL];
 
     if (!this.isValidId(id)) {
       throw new Error(String(SanitizationError.INVALID_FILE_ID));
@@ -91,7 +94,7 @@ export class DrivePickerSanitizer {
 
     return {
       id,
-      mimeType,
+      mimeType: mimeType,
       name,
       type,
       sizeBytes: sizeBytesBigInt,
@@ -99,6 +102,7 @@ export class DrivePickerSanitizer {
       thumbnailUrl: type === DriveFileType.PHOTO ?
           this.sanitizeThumbnailUrl(thumbnailUrl) :
           null,
+      iconUrl: this.sanitizeIconUrl(iconUrl),
     };
   }
 
@@ -121,6 +125,22 @@ export class DrivePickerSanitizer {
     // Matches https://lh[3-6].googleusercontent.com/drive-storage/[safe_chars]
     const urlRegex =
         /^https:\/\/lh[3-6]\.googleusercontent\.com\/drive-storage\/[a-zA-Z0-9\-_=]+$/;
+    return urlRegex.test(url) ? url : null;
+  }
+
+  /**
+   * Validates that an icon URL points to a trusted Google domain.
+   */
+  static sanitizeIconUrl(url: unknown): Url|null {
+    if (typeof url !== 'string') {
+      return null;
+    }
+
+    // Matches:
+    // https://lh[3-6].googleusercontent.com/[size]/hype/[safe_chars]
+    // https://drive-thirdparty.googleusercontent.com/[size]/type/[safe_chars]
+    const urlRegex =
+        /^https:\/\/(lh[3-6]\.googleusercontent\.com|drive-thirdparty\.googleusercontent\.com)\/[0-9]+\/(hype|type)\/[a-zA-Z0-9\-_/.:+=]+$/;
     return urlRegex.test(url) ? url : null;
   }
 }

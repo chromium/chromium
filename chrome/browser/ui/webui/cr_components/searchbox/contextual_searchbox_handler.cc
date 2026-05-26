@@ -880,6 +880,7 @@ void ContextualSearchboxHandler::OnSelection(
     success_file->mime_type = file.mime_type;
     success_file->thumbnail_url =
         file.thumbnail_url ? file.thumbnail_url->spec() : "";
+    success_file->icon_url = file.icon_url;
 
     response->files.push_back(std::move(success_file));
     valid_files_count++;

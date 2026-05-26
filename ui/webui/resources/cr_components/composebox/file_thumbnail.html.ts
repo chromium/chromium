@@ -154,11 +154,9 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               <svg role="image" class="spinner" viewBox="0 0 100 100">
                 <circle class="spinner-circle" cx="50" cy="50" r="40" />
               </svg>
-            ` : (this.file.type === 'application/vnd.google-apps.document' ||
-                 this.file.type === 'application/vnd.google-apps.spreadsheet' ||
-                 this.file.type === 'application/vnd.google-apps.presentation') ? html`
+            ` : this.file.iconUrl ? html`
               <img is="cr-auto-img" class="document-icon" draggable="false"
-                  auto-src="https://drive-thirdparty.googleusercontent.com/32/type/${this.file.type}">
+                  auto-src="${this.file.iconUrl}">
             ` : html`
               <cr-icon icon="${
                   this.shouldUsePdfIcon_() ?

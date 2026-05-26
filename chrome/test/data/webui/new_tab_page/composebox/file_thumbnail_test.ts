@@ -145,8 +145,10 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
     document.body.appendChild(fileThumbnailElement);
 
     // Arrange.
-    fileThumbnailElement.file =
-        createComposeboxFile(0, {type: 'application/vnd.google-apps.document'});
+    const iconUrl =
+        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document';
+    fileThumbnailElement.file = createComposeboxFile(
+        0, {type: 'application/vnd.google-apps.document', iconUrl: iconUrl});
     await microtasksFinished();
 
     // Assert one document file.
@@ -161,9 +163,7 @@ suite('NewTabPageComposeboxFileThumbnailTest', () => {
         fileThumbnailElement.shadowRoot.querySelector('.document-icon');
     assertTrue(!!icon);
     assertEquals(icon.tagName, 'IMG');
-    assertEquals(
-        icon.getAttribute('auto-src'),
-        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document');
+    assertEquals(icon.getAttribute('auto-src'), iconUrl);
   });
 
   test('display tab file', async () => {

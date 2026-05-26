@@ -124,6 +124,7 @@ export class ComposeboxFile {
   iconName: string|null;
   supportsUnimodal: boolean;
   thumbnailUrl?: string|null;
+  iconUrl?: Url|null;
 
   constructor(
       uuid: UnguessableToken, name: string, type: string, inputType: InputType,
@@ -141,6 +142,7 @@ export class ComposeboxFile {
     this.iconName = options?.iconName ?? null;
     this.supportsUnimodal = options?.supportsUnimodal ?? false;
     this.thumbnailUrl = options?.thumbnailUrl ?? null;
+    this.iconUrl = options?.iconUrl ?? null;
   }
 
   static createFromFile(
@@ -196,6 +198,7 @@ export interface DriveUpload {
   mimeType: string;
   fileName: string;
   thumbnailUrl: string|null;
+  iconUrl: Url|null;
 }
 
 export enum TabUploadOrigin {

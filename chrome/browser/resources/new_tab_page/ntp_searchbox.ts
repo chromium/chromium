@@ -558,6 +558,7 @@ export class NtpSearchboxElement extends NtpSearchboxElementBase implements
                              mimeType: file.mimeType,
                              fileName: file.fileName,
                              thumbnailUrl: file.thumbnailUrl ?? null,
+                             iconUrl: file.iconUrl ?? null,
                            }));
 
     recordContextualElementClickedMetric(

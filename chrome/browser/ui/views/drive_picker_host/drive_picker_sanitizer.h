@@ -25,6 +25,7 @@ struct SanitizedDriveFileData {
   uint64_t size_bytes;
   std::optional<std::string> resource_key;
   std::optional<GURL> thumbnail_url;
+  std::optional<GURL> icon_url;
 };
 
 /**
@@ -40,6 +41,13 @@ class DrivePickerSanitizer {
    */
   static std::optional<SanitizedDriveFileData> Sanitize(
       const drive_picker_host::mojom::DriveFilePtr& file);
+
+  /**
+   * Validates that the given icon URL is a valid HTTPS URL and points
+   * to a trusted Google Drive storage domain.
+   * Returns a valid GURL if acceptable, otherwise an empty GURL.
+   */
+  static GURL SanitizeDriveIconUrl(const std::string& url_string);
 
  private:
   /**

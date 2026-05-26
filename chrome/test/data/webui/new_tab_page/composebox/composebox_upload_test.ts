@@ -606,18 +606,18 @@ suite('NewTabPageComposeboxUploadFileTest', () => {
     assertEquals(
         testProxy.searchboxHandler.getCallCount('queryAutocomplete'), 1);
 
-    testProxy.searchboxHandler.setPromiseResolveFor(
-        'onDriveUploadClicked', {
-          response: {
-            files: [{
-              token: {low: BigInt(1), high: BigInt(2)},
-              fileName: 'foo.pdf',
-              mimeType: 'application/pdf',
-              thumbnailUrl: null,
-            }],
-            error: null,
-          },
-        });
+    testProxy.searchboxHandler.setPromiseResolveFor('onDriveUploadClicked', {
+      response: {
+        files: [{
+          token: {low: BigInt(1), high: BigInt(2)},
+          fileName: 'foo.pdf',
+          mimeType: 'application/pdf',
+          thumbnailUrl: null,
+          iconUrl: null,
+        }],
+        error: null,
+      },
+    });
 
     const contextEntrypoint = $$(testProxy.element, '#contextEntrypoint');
     assertTrue(!!contextEntrypoint);

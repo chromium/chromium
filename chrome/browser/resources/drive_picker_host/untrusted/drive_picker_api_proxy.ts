@@ -36,6 +36,7 @@ export interface GooglePicker {
     MIME_TYPE: string,
     NAME: string,
     TYPE: string,
+    ICON_URL: string,
   };
   Type: {
     DOCUMENT: string,
@@ -192,6 +193,7 @@ export class DrivePickerApiProxyImpl implements DrivePickerApiProxy {
       SIZE_BYTES: 'sizeBytes',
       RESOURCE_KEY: 'resourceKey',
       THUMBNAIL_URL: 'thumbnailUrl',
+      ICON_URL: google.picker.Document.ICON_URL,
     };
     // Note: 'file' is used as a string literal instead of
     // google.picker.Type.FILE, because FILE is not defined on

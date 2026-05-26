@@ -73,7 +73,57 @@ std::optional<SanitizedDriveFileData> DrivePickerSanitizer::Sanitize(
     sanitized.thumbnail_url = std::nullopt;
   }
 
+  if (file->icon_url) {
+    sanitized.icon_url = SanitizeDriveIconUrl(file->icon_url->spec());
+    if (sanitized.icon_url->is_empty()) {
+      sanitized.icon_url = std::nullopt;
+    }
+  }
+
   return sanitized;
+}
+
+// static
+GURL DrivePickerSanitizer::SanitizeDriveIconUrl(const std::string& url_string) {
+  GURL url(url_string);
+  if (!url.is_valid()) {
+    return GURL();
+  }
+  if (!url.SchemeIs(url::kHttpsScheme)) {
+    return GURL();
+  }
+
+  static constexpr auto kTrustedHosts =
+      base::MakeFixedFlatSet<std::string_view>({
+          "lh3.googleusercontent.com",
+          "lh4.googleusercontent.com",
+          "lh5.googleusercontent.com",
+          "lh6.googleusercontent.com",
+          "drive-thirdparty.googleusercontent.com",
+      });
+
+  if (!kTrustedHosts.contains(url.host())) {
+    return GURL();
+  }
+
+  // Path must start with /[size]/hype/ or /[size]/type/
+  std::string_view path = url.path();
+  if (path.empty() || path[0] != '/') {
+    return GURL();
+  }
+
+  size_t second_slash = path.find('/', 1);
+  if (second_slash == std::string::npos) {
+    return GURL();
+  }
+  std::string_view remaining_path = path.substr(second_slash + 1);
+
+  if (!base::StartsWith(remaining_path, "hype/") &&
+      !base::StartsWith(remaining_path, "type/")) {
+    return GURL();
+  }
+
+  return url;
 }
 
 // static

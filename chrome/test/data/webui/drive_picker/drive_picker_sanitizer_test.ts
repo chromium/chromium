@@ -14,6 +14,7 @@ suite('DrivePickerSanitizerTest', function() {
     SIZE_BYTES: 'sizeBytes',
     RESOURCE_KEY: 'resourceKey',
     THUMBNAIL_URL: 'thumbnailUrl',
+    ICON_URL: 'iconUrl',
   };
   const allowedTypes = new Set(['document', 'file', 'photo', 'video']);
 
@@ -100,6 +101,59 @@ suite('DrivePickerSanitizerTest', function() {
         doc as Record<string, unknown>, pickerKeys, allowedTypes);
 
     assertEquals(null, sanitized.thumbnailUrl);
+  });
+
+  test('SanitizeDriveIconUrl', function() {
+    // Valid hosts and paths.
+    const validUrls = [
+      'https://lh3.googleusercontent.com/16/hype/pdf',
+      'https://lh6.googleusercontent.com/16/type/image/png',
+      'https://drive-thirdparty.googleusercontent.com/16/type/pdf',
+    ];
+
+    for (const url of validUrls) {
+      const sanitized = DrivePickerSanitizer.sanitizeIconUrl(url);
+      assertTrue(!!sanitized);
+      assertEquals(url, sanitized);
+    }
+
+    // Invalid hosts.
+    const invalidHosts = [
+      'https://malicious.com/16/type/pdf',
+      'https://lh7.googleusercontent.com/16/type/pdf',
+    ];
+
+    for (const url of invalidHosts) {
+      assertEquals(null, DrivePickerSanitizer.sanitizeIconUrl(url));
+    }
+
+    // Invalid paths.
+    const invalidPaths = [
+      'https://lh3.googleusercontent.com/invalid/path',
+      'https://lh3.googleusercontent.com/16/other/pdf',
+    ];
+
+    for (const url of invalidPaths) {
+      assertEquals(null, DrivePickerSanitizer.sanitizeIconUrl(url));
+    }
+  });
+
+  test('SanitizesValidDocumentWithIconUrl', function() {
+    const iconUrl = 'https://lh3.googleusercontent.com/16/hype/pdf';
+    const doc = {
+      id: 'valid-id',
+      mimeType: 'application/pdf',
+      name: 'test.pdf',
+      type: 'document',
+      sizeBytes: 100,
+      iconUrl: iconUrl,
+    };
+
+    const sanitized = DrivePickerSanitizer.sanitizeDocument(
+        doc as Record<string, unknown>, pickerKeys, allowedTypes);
+
+    assertTrue(!!sanitized.iconUrl);
+    assertEquals(iconUrl, sanitized.iconUrl);
   });
 
   test('SanitizesValidDocumentWithStringSize', function() {

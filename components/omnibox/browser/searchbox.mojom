@@ -270,6 +270,7 @@ struct DriveFile {
   string mime_type;
   string file_name;
   string? thumbnail_url;
+  url.mojom.Url? icon_url;
 };
 
 // The result of the Drive upload action.
