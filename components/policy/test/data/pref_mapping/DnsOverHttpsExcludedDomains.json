@@ -3,18 +3,16 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "DnsOverHttpsExcludedDomains": ["google.com", "*.google.com"]
-        },
-        "prefs": {
-          "dns_over_https.excluded_domains": {
-            "location": "local_state",
-            "value": ["google.com", "*.google.com"]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "dns_over_https.excluded_domains",
+      "pref_location": "local_state",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "google.com",
+          "*.google.com"
+        ]
+      ]
+    }
   }
 ]

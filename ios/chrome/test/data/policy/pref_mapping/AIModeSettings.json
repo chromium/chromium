@@ -6,9 +6,10 @@
     "simple_policy_pref_mapping_test": {
       "pref_name": "omnibox.ai_mode_settings",
       "default_value": 0,
+      "default_for_enterprise_users": 0,
       "values_to_test": [
-        0,
-        1
+        1,
+        0
       ]
     }
   }

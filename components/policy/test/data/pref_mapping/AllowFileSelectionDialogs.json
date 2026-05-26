@@ -6,6 +6,23 @@
       "linux",
       "fuchsia"
     ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "select_file_dialogs.allowed",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  },
+  {
+    "os": [
+      "win",
+      "mac",
+      "linux",
+      "fuchsia"
+    ],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -14,10 +31,6 @@
         "prefs": {
           "download.prompt_for_download": {
             "check_for_recommended": false,
-            "value": false
-          },
-          "select_file_dialogs.allowed": {
-            "location": "local_state",
             "value": false
           }
         }
@@ -30,10 +43,6 @@
           "download.prompt_for_download": {
             "check_for_recommended": false,
             "default_value": false
-          },
-          "select_file_dialogs.allowed": {
-            "location": "local_state",
-            "value": true
           }
         }
       }
