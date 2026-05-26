@@ -56,6 +56,8 @@ class LiveTabContextBrowserAgent
       int index) const override;
   const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
       const tab_groups::TabGroupId& group) const override;
+  const split_tabs::SplitTabVisualData* GetVisualDataForSplit(
+      const split_tabs::SplitTabId& split_id) const override;
   const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
       const tab_groups::TabGroupId& group) const override;
   const std::optional<tab_groups::TabGroupId> GetGroupIdForSavedGroup(
@@ -75,9 +77,11 @@ class LiveTabContextBrowserAgent
       sessions::tab_restore::Type original_session_type) override;
   sessions::LiveTab* ReplaceRestoredTab(
       const sessions::tab_restore::Tab& tab) override;
-  void ReconstructSplit(sessions::LiveTab* leading_tab,
-                        sessions::LiveTab* trailing_tab,
-                        split_tabs::SplitTabId split_id) override;
+  void ReconstructSplit(
+      sessions::LiveTab* leading_tab,
+      sessions::LiveTab* trailing_tab,
+      split_tabs::SplitTabId split_id,
+      const split_tabs::SplitTabVisualData& visual_data) override;
   void CloseTab() override;
 
  private:

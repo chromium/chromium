@@ -44,6 +44,7 @@
 #include "components/sessions/core/tab_restore_service_impl.h"
 #include "components/sessions/core/tab_restore_service_observer.h"
 #include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/browser_thread.h"
@@ -115,6 +116,9 @@ class MockLiveTabContext : public sessions::LiveTabContext {
   MOCK_CONST_METHOD1(GetVisualDataForGroup,
                      const tab_groups::TabGroupVisualData*(
                          const tab_groups::TabGroupId& group));
+  MOCK_CONST_METHOD1(GetVisualDataForSplit,
+                     const split_tabs::SplitTabVisualData*(
+                         const split_tabs::SplitTabId& split_id));
   MOCK_CONST_METHOD1(
       GetSavedTabGroupIdForGroup,
       const std::optional<base::Uuid>(const tab_groups::TabGroupId& group));
@@ -140,10 +144,11 @@ class MockLiveTabContext : public sessions::LiveTabContext {
               ReplaceRestoredTab,
               ((const sessions::tab_restore::Tab&)),
               (override));
-  MOCK_METHOD3(ReconstructSplit,
+  MOCK_METHOD4(ReconstructSplit,
                void(sessions::LiveTab* leading_tab,
                     sessions::LiveTab* trailing_tab,
-                    split_tabs::SplitTabId split_id));
+                    split_tabs::SplitTabId split_id,
+                    const split_tabs::SplitTabVisualData& visual_data));
   MOCK_METHOD0(CloseTab, void());
 };
 
@@ -1432,4 +1437,88 @@ TEST_F(TabRestoreServiceImplWithMockClientTest, SplitCreationAndSuppression) {
   ASSERT_EQ(3U, service_->entries().size());
   EXPECT_EQ(sessions::tab_restore::Type::TAB,
             service_->entries().front()->type);
+}
+
+TEST_F(TabRestoreServiceImplWithMockClientTest, SplitVisualDataPersistence) {
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  testing::NiceMock<MockLiveTab> mock_tab1, mock_tab2;
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+
+  SetupMockSplit(&mock_live_tab_context, &mock_tab1, &mock_tab2,
+                 GURL("http://split1"), GURL("http://split2"), split_id);
+
+  ON_CALL(mock_live_tab_context, AddRestoredTab(_, _, _, _, _))
+      .WillByDefault(testing::Return(&mock_tab1));
+
+  split_tabs::SplitTabVisualData visual_data(
+      split_tabs::SplitTabLayout::kStacked, 0.3);
+
+  ON_CALL(mock_live_tab_context, GetVisualDataForSplit(split_id))
+      .WillByDefault(testing::Return(&visual_data));
+
+  // Create the Historical Split
+  service_->CreateHistoricalSplit(&mock_live_tab_context, split_id);
+  ASSERT_EQ(1U, service_->entries().size());
+
+  auto& entry = service_->entries().front();
+  ASSERT_EQ(sessions::tab_restore::Type::SPLIT, entry->type);
+
+  auto* split_entry = static_cast<sessions::tab_restore::Split*>(entry.get());
+  EXPECT_EQ(visual_data, split_entry->visual_data);
+
+  // Now verify that restoring the split passes the correct visual data.
+  EXPECT_CALL(mock_live_tab_context,
+              ReconstructSplit(_, _, split_id, testing::Eq(visual_data)))
+      .Times(1);
+
+  service_->RestoreEntryById(&mock_live_tab_context, entry->id,
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}
+
+TEST_F(TabRestoreServiceImplWithMockClientTest,
+       WindowSplitVisualDataPersistence) {
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  testing::NiceMock<MockLiveTab> mock_tab1, mock_tab2;
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+
+  SetupMockSplit(&mock_live_tab_context, &mock_tab1, &mock_tab2,
+                 GURL("http://split1"), GURL("http://split2"), split_id);
+
+  ON_CALL(mock_live_tab_context, AddRestoredTab(_, _, _, _, _))
+      .WillByDefault(testing::Return(&mock_tab1));
+
+  split_tabs::SplitTabVisualData visual_data(
+      split_tabs::SplitTabLayout::kStacked, 0.3);
+
+  ON_CALL(mock_live_tab_context, GetVisualDataForSplit(split_id))
+      .WillByDefault(testing::Return(&visual_data));
+
+  ON_CALL(mock_live_tab_context, GetWindowType)
+      .WillByDefault(testing::Return(sessions::SessionWindow::TYPE_NORMAL));
+
+  ON_CALL(*mock_tab_restore_service_client_,
+          CreateLiveTabContext(_, _, _, _, _, _, _, _))
+      .WillByDefault(testing::Return(&mock_live_tab_context));
+
+  // Create the Historical Window (via BrowserClosing)
+  service_->BrowserClosing(&mock_live_tab_context);
+  ASSERT_EQ(1U, service_->entries().size());
+
+  auto& entry = service_->entries().front();
+  ASSERT_EQ(sessions::tab_restore::Type::WINDOW, entry->type);
+
+  auto* window_entry = static_cast<sessions::tab_restore::Window*>(entry.get());
+  ASSERT_EQ(2U, window_entry->tabs.size());
+
+  // Verify that the tabs inside the window preserved the split visual data.
+  EXPECT_EQ(split_id, window_entry->tabs[0]->split_id);
+  EXPECT_EQ(visual_data, window_entry->tabs[0]->split_visual_data);
+
+  // Now verify that restoring the window passes the correct visual data.
+  EXPECT_CALL(mock_live_tab_context,
+              ReconstructSplit(_, _, split_id, testing::Eq(visual_data)))
+      .Times(1);
+
+  service_->RestoreEntryById(&mock_live_tab_context, entry->id,
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }

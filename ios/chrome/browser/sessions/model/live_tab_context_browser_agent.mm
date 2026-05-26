@@ -100,6 +100,14 @@ LiveTabContextBrowserAgent::GetVisualDataForGroup(
   NOTREACHED();
 }
 
+const split_tabs::SplitTabVisualData*
+LiveTabContextBrowserAgent::GetVisualDataForSplit(
+    const split_tabs::SplitTabId& split_id) const {
+  // Split views are not currently supported on the iOS platform. This function
+  // would return the visual data of the split (orientation and ratio).
+  return nullptr;
+}
+
 bool LiveTabContextBrowserAgent::IsTabPinned(int index) const {
   // Not supported by iOS.
   return false;
@@ -168,7 +176,8 @@ sessions::LiveTab* LiveTabContextBrowserAgent::ReplaceRestoredTab(
 void LiveTabContextBrowserAgent::ReconstructSplit(
     sessions::LiveTab* leading_tab,
     sessions::LiveTab* trailing_tab,
-    split_tabs::SplitTabId split_id) {
+    split_tabs::SplitTabId split_id,
+    const split_tabs::SplitTabVisualData& visual_data) {
   // Split views are currently not supported on the iOS platform.
   // This function serves as a placeholder to store the logic that would combine
   // two tabs into a singular SplitView object.

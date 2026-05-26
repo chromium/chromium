@@ -171,8 +171,11 @@ void ReconstructSplits(
     auto trailing_it = restored_tab_map.find(tabs[1]->id);
     if (leading_it != restored_tab_map.end() &&
         trailing_it != restored_tab_map.end()) {
+      const split_tabs::SplitTabVisualData visual_data =
+          tabs[0]->split_visual_data.value_or(split_tabs::SplitTabVisualData());
+
       context->ReconstructSplit(leading_it->second, trailing_it->second,
-                                split_id);
+                                split_id, visual_data);
     }
   }
 }
@@ -434,6 +437,11 @@ TabRestoreServiceHelper::CreateHistoricalSplitImpl(
   auto split = std::make_unique<tab_restore::Split>();
   split->split_id = id;
   split->timestamp = TimeNow();
+
+  const auto* visual_data = context->GetVisualDataForSplit(id);
+  if (visual_data) {
+    split->visual_data = *visual_data;
+  }
 
   for (const auto& split_tab : split_tabs) {
     auto tab = std::make_unique<Tab>();
@@ -1055,7 +1063,7 @@ std::vector<LiveTab*> TabRestoreServiceHelper::RestoreEntryById(
       if (restored_leading_tab && restored_trailing_tab &&
           split.split_id.has_value()) {
         context->ReconstructSplit(restored_leading_tab, restored_trailing_tab,
-                                  split.split_id.value());
+                                  split.split_id.value(), split.visual_data);
       }
 
       context->ShowBrowserWindow();
@@ -1284,6 +1292,14 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
     tab->pinned = context->IsTabPinned(tab->tabstrip_index);
     tab->group = context->GetTabGroupForTab(tab->tabstrip_index);
     tab->split_id = context->GetSplitForTab(tab->tabstrip_index);
+
+    if (tab->split_id.has_value()) {
+      const auto* visual_data =
+          context->GetVisualDataForSplit(tab->split_id.value());
+      if (visual_data) {
+        tab->split_visual_data = *visual_data;
+      }
+    }
 
     if (tab->group.has_value()) {
       tab->saved_group_id =

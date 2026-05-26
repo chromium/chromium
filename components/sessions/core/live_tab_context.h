@@ -15,6 +15,7 @@
 #include "components/sessions/core/sessions_export.h"
 #include "components/sessions/core/tab_restore_types.h"
 #include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -59,6 +60,8 @@ class SESSIONS_EXPORT LiveTabContext {
   // |group|.
   virtual const tab_groups::TabGroupVisualData* GetVisualDataForGroup(
       const tab_groups::TabGroupId& group) const = 0;
+  virtual const split_tabs::SplitTabVisualData* GetVisualDataForSplit(
+      const split_tabs::SplitTabId& split_id) const = 0;
   virtual const std::optional<base::Uuid> GetSavedTabGroupIdForGroup(
       const tab_groups::TabGroupId& group) const = 0;
   virtual const std::optional<tab_groups::TabGroupId> GetGroupIdForSavedGroup(
@@ -96,9 +99,11 @@ class SESSIONS_EXPORT LiveTabContext {
 
   // Reconstructs a split view by merging |leading_tab| and |trailing_tab|
   // back into a coupled state defined by |split_id|.
-  virtual void ReconstructSplit(LiveTab* leading_tab,
-                                LiveTab* trailing_tab,
-                                split_tabs::SplitTabId split_id) = 0;
+  virtual void ReconstructSplit(
+      LiveTab* leading_tab,
+      LiveTab* trailing_tab,
+      split_tabs::SplitTabId split_id,
+      const split_tabs::SplitTabVisualData& visual_data) = 0;
 
   virtual void CloseTab() = 0;
 

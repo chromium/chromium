@@ -19,6 +19,7 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/sessions_export.h"
 #include "components/split_tabs/split_tab_id.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/mojom/window_show_state.mojom-forward.h"
@@ -129,6 +130,9 @@ struct SESSIONS_EXPORT Tab : public Entry {
   // The split view the tab belonged to, if any.
   std::optional<split_tabs::SplitTabId> split_id = std::nullopt;
 
+  // The split visual data for the tab, if any.
+  std::optional<split_tabs::SplitTabVisualData> split_visual_data;
+
   // The group the tab belonged to, if any.
   std::optional<tab_groups::TabGroupId> group;
 
@@ -151,6 +155,9 @@ struct SESSIONS_EXPORT Split : public Entry {
 
   // The unique identifier for this split view instance.
   std::optional<split_tabs::SplitTabId> split_id = std::nullopt;
+
+  // The visual data for the split view.
+  split_tabs::SplitTabVisualData visual_data;
 
   // The tabs that comprised the split view, in order.
   std::vector<std::unique_ptr<Tab>> tabs;

@@ -49,6 +49,7 @@
 #include "components/split_tabs/split_tab_visual_data.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/session_storage_namespace.h"
@@ -196,6 +197,16 @@ BrowserLiveTabContext::GetVisualDataForGroup(
   TabGroup* tab_group = group_model->GetTabGroup(group);
   CHECK(tab_group);
   return tab_group->visual_data();
+}
+
+const split_tabs::SplitTabVisualData*
+BrowserLiveTabContext::GetVisualDataForSplit(
+    const split_tabs::SplitTabId& split_id) const {
+  if (!tab_strip_model_->ContainsSplit(split_id)) {
+    return nullptr;
+  }
+  auto* split_data = tab_strip_model_->GetSplitData(split_id);
+  return split_data ? split_data->visual_data() : nullptr;
 }
 
 const std::optional<base::Uuid>
@@ -384,9 +395,11 @@ sessions::LiveTab* BrowserLiveTabContext::ReplaceRestoredTab(
   return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }
 
-void BrowserLiveTabContext::ReconstructSplit(sessions::LiveTab* leading_tab,
-                                             sessions::LiveTab* trailing_tab,
-                                             split_tabs::SplitTabId split_id) {
+void BrowserLiveTabContext::ReconstructSplit(
+    sessions::LiveTab* leading_tab,
+    sessions::LiveTab* trailing_tab,
+    split_tabs::SplitTabId split_id,
+    const split_tabs::SplitTabVisualData& visual_data) {
   auto* leading_content_tab =
       static_cast<sessions::ContentLiveTab*>(leading_tab);
   auto* trailing_content_tab =
@@ -399,9 +412,8 @@ void BrowserLiveTabContext::ReconstructSplit(sessions::LiveTab* leading_tab,
 
   if (leading_index != TabStripModel::kNoTab &&
       trailing_index != TabStripModel::kNoTab) {
-    // TODO(crbug.com/510787267): Supply Split Tab Visual Data here.
     tab_strip_model_->RestoreSplit(split_id, {leading_index, trailing_index},
-                                   split_tabs::SplitTabVisualData());
+                                   visual_data);
   }
 }
 

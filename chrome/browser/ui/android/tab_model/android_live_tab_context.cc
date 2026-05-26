@@ -118,6 +118,14 @@ AndroidLiveTabContext::GetVisualDataForGroup(
   NOTREACHED();
 }
 
+const split_tabs::SplitTabVisualData*
+AndroidLiveTabContext::GetVisualDataForSplit(
+    const split_tabs::SplitTabId& split_id) const {
+  // Split views are not currently supported on the Android platform. This
+  // function would return the visual data of the split (orientation and ratio).
+  return nullptr;
+}
+
 const std::optional<base::Uuid>
 AndroidLiveTabContext::GetSavedTabGroupIdForGroup(
     const tab_groups::TabGroupId& group) const {
@@ -225,9 +233,11 @@ sessions::LiveTab* AndroidLiveTabContext::ReplaceRestoredTab(
   return sessions::ContentLiveTab::GetOrCreateForWebContents(web_contents);
 }
 
-void AndroidLiveTabContext::ReconstructSplit(sessions::LiveTab* leading_tab,
-                                             sessions::LiveTab* trailing_tab,
-                                             split_tabs::SplitTabId split_id) {
+void AndroidLiveTabContext::ReconstructSplit(
+    sessions::LiveTab* leading_tab,
+    sessions::LiveTab* trailing_tab,
+    split_tabs::SplitTabId split_id,
+    const split_tabs::SplitTabVisualData& visual_data) {
   // Split views are currently not supported on the Android platform.
   // This function serves as a placeholder to store the logic that would combine
   // two tabs into a singular SplitView object.
