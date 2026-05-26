@@ -68,7 +68,10 @@ namespace {
 std::vector<GURL> CreateGURLVectorFromIntentURLs(NSArray<NSURL*>* intent_urls) {
   std::vector<GURL> urls;
   for (NSURL* url in intent_urls) {
-    urls.push_back(net::GURLWithNSURL(url));
+    GURL gurl = net::GURLWithNSURL(url);
+    if (gurl.is_valid() && gurl.SchemeIsHTTPOrHTTPS()) {
+      urls.push_back(gurl);
+    }
   }
   return urls;
 }

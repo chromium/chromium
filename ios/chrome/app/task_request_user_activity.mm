@@ -525,7 +525,8 @@ std::vector<GURL> GURLVectorWithNSURLArray(NSArray<NSURL*>* intent_urls) {
   std::vector<GURL> urls;
   urls.reserve(intent_urls.count);
   for (NSURL* intent_url in intent_urls) {
-    if (GURL url = net::GURLWithNSURL(intent_url); url.is_valid()) {
+    if (GURL url = net::GURLWithNSURL(intent_url);
+        url.is_valid() && url.SchemeIsHTTPOrHTTPS()) {
       urls.push_back(std::move(url));
     }
   }
