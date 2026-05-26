@@ -35,6 +35,10 @@ extern const base::FeatureParam<PasskeyUnlockErrorUiExperimentArm>
 COMPONENT_EXPORT(FIDO_PUBLIC) BASE_DECLARE_FEATURE(kWebAuthUseNativeWinApi);
 #endif  // BUILDFLAG(IS_WIN)
 
+// Support the caBLE extension in assertion requests from any origin.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthCableExtensionAnywhere);
+
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnActorCheck);
 

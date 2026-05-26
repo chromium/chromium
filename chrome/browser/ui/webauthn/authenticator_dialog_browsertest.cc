@@ -248,7 +248,8 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kOffTheRecordInterstitial);
     } else if (name == "cable_v2_pair") {
-      controller_->set_cable_transport_info("fido://qrcode");
+      controller_->set_cable_transport_info(
+          /*extension_is_v2=*/std::nullopt, "fido://qrcode");
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableV2QRCode);
     } else if (name == "cable_v2_connecting") {
@@ -423,7 +424,11 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
       controller_->SelectAccount(
           std::move(responses),
           base::BindOnce([](device::AuthenticatorGetAssertionResponse) {}));
-
+    } else if (name == "server_link_title_UNLOCK_YOUR_PHONE") {
+      controller_->set_cable_transport_info(
+          /*extension_is_v2=*/true, "fido://qrcode");
+      controller_->SetCurrentStepForTesting(
+          AuthenticatorRequestDialogModel::Step::kCableActivate);
     } else if (name == "create_passkey") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kChromeProfileCreatePasskey);
@@ -628,6 +633,11 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
+                       InvokeUi_server_link_title_UNLOCK_YOUR_PHONE) {
+  ShowAndVerifyUi();
+}
+
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_ble_permission_mac) {
   ShowAndVerifyUi();
@@ -714,7 +724,8 @@ class GPMPasskeysAuthenticatorDialogTest : public DialogBrowserTest {
                                               "Elisa Beckett"),
         "Another Example Passkey Provider");
     model_->user_entity = local_cred1.user;
-    controller_->set_cable_transport_info("fido://qrcode");
+    controller_->set_cable_transport_info(
+        /*extension_is_v2=*/std::nullopt, "fido://qrcode");
 
     if (name == "no_passkeys_discovered") {
       transport_availability.recognized_credentials = {};

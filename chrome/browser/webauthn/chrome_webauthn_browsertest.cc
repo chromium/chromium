@@ -1066,6 +1066,9 @@ class WebAuthnConditionalUITest : public WebAuthnBrowserTest {
       state_ = kShowedUI;
     }
 
+    void CableV2ExtensionSeen(
+        base::span<const uint8_t> server_link_data) override {}
+
     void AccountSelectorShown(
         const std::vector<device::AuthenticatorGetAssertionResponse>& responses)
         override {
@@ -1238,6 +1241,9 @@ class WebAuthnAmbientUITest : public WebAuthnBrowserTest {
       }
       state_ = kShowedUI;
     }
+
+    void CableV2ExtensionSeen(
+        base::span<const uint8_t> server_link_data) override {}
 
     void AccountSelectorShown(
         const std::vector<device::AuthenticatorGetAssertionResponse>& responses)

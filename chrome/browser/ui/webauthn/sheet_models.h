@@ -326,7 +326,18 @@ class AuthenticatorOffTheRecordInterstitialSheetModel
   void OnAccept() override;
 };
 
+class AuthenticatorPaaskSheetModel : public AuthenticatorSheetModelBase {
+ public:
+  explicit AuthenticatorPaaskSheetModel(
+      AuthenticatorRequestDialogModel* dialog_model);
+  ~AuthenticatorPaaskSheetModel() override;
 
+ private:
+  // AuthenticatorSheetModelBase:
+  bool IsActivityIndicatorVisible() const override;
+  std::u16string GetStepTitle() const override;
+  std::u16string GetStepDescription() const override;
+};
 
 class AuthenticatorClientPinEntrySheetModel
     : public AuthenticatorSheetModelBase {
