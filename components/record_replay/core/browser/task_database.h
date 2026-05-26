@@ -10,10 +10,8 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/expected.h"
-#include "base/types/optional_ref.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
 #include "sql/database.h"
@@ -21,10 +19,7 @@
 namespace record_replay {
 
 // Manages the relational SQLite database for record/replay recordings,
-// task definitions, and task data.
-//
-// SQLite allows structured queries, such as retrieving all task definitions for
-// a given site or managing data overrides independently of shareable intent.
+// task definitions, and execution observations.
 class TaskDatabase {
  public:
   TaskDatabase();
@@ -34,45 +29,32 @@ class TaskDatabase {
 
   // Initializes the database in the given profile directory. If `profile_path`
   // is empty, the database is opened in memory which suffices for testing.
-  void Init(base::FilePath profile_path);
+  void Init(const base::FilePath& profile_path);
 
   // Adds a recording to the database. Returns the generated ID of the newly
   // added recording, or -1 on failure.
   int64_t AddRecording(Recording recording);
 
   // Retrieves every Recording that matches the given `url`.
-  std::vector<Recording> GetRecordingsByUrl(std::string url);
-
-  // Handles both insertion (when task_definition_id is nullopt) and updates.
-  void SaveTaskDefinition(std::optional<int64_t> task_definition_id,
-                          TaskDefinition task_definition,
-                          std::string target_url,
-                          std::optional<int64_t> recording_id);
+  std::vector<Recording> GetRecordingsByUrl(std::string_view url);
 
   // Attempts to seed from file (if path not empty), then Finch (if json not
   // empty). Triggers DumpWithoutCrashing if all attempted seeding mechanisms
   // fail.
-  void RunSeeding(base::FilePath file_path, std::string feature_json);
+  void RunSeeding(const base::FilePath& file_path,
+                  std::string_view feature_json);
 
-  // Retrieves the task definition for a given ID, if it exists.
-  std::optional<TaskDefinition> GetTaskDefinition(int64_t task_definition_id);
+  // Full CRUD for Task Definitions (Create & Update are unified under Save)
+  int64_t SaveTaskDefinition(std::optional<int64_t> definition_id,
+                             TaskDefinition definition);
+  std::optional<TaskDefinition> GetTaskDefinition(int64_t definition_id);
+  std::vector<TaskDefinition> GetTaskDefinitionsByUrl(std::string_view url);
+  bool DeleteTaskDefinition(int64_t definition_id);
 
-  // Retrieves all task definitions for a site, returning their IDs and proto
-  // data.
-  std::vector<std::pair<int64_t, TaskDefinition>> GetTaskDefinitionsByUrl(
-      const std::string& url);
-
-  // Saves or updates task data for a task definition.
+  // Full CRUD for Suggestions Overrides
   bool SaveTaskData(int64_t task_definition_id, const TaskData& data);
-
-  // Retrieves task data for a task definition.
   std::optional<TaskData> GetTaskData(int64_t task_definition_id);
-
-  // Deletes task data for a task definition.
   bool DeleteTaskData(int64_t task_definition_id);
-
-  // Deletes a task definition.
-  bool DeleteTaskDefinition(int64_t task_definition_id);
 
  private:
   // Returns the current version of the database.
@@ -81,28 +63,74 @@ class TaskDatabase {
   // Migrates the database to the current version.
   bool Migrate(int version);
 
-  // Creates the "Recordings" table if it doesn't exist.
+  // Creates the "recordings" table if it doesn't exist.
   bool CreateRecordingsTable();
 
-  // Creates the "TaskDefinitions" table if it doesn't exist.
+  // Creates the "task_definitions" table if it doesn't exist.
   bool CreateTaskDefinitionsTable();
 
-  // Creates the "TaskData" table if it doesn't exist.
+  // Creates the "task_steps" table if it doesn't exist.
+  bool CreateTaskStepsTable();
+
+  // Creates the "task_parameters" table if it doesn't exist.
+  bool CreateTaskParametersTable();
+
+  // Creates the "task_data" table if it doesn't exist.
   bool CreateTaskDataTable();
 
   // Reads a file and seeds the database if empty.
   base::expected<std::vector<TaskDefinition>, std::string>
   SeedTaskDefinitionsFromFile(const base::FilePath& file_path);
 
-  // Checks if the "TaskDefinitions" table is empty.
+  // Checks if the "task_definitions" table is empty.
   bool IsTaskDefinitionsTableEmpty();
 
   // Reads JSON and seeds the database if empty.
   base::expected<std::vector<TaskDefinition>, std::string>
   GetSeedTaskDefinitionsFromJson(const std::string& json_string);
 
-  // Saves a batch of seeded task definitions within an atomic transaction.
-  void SaveSeededTaskDefinitions(std::vector<TaskDefinition> task_definitions);
+  // Saves a batch of seeded definitions within an atomic transaction.
+  void SaveSeededTaskDefinitions(std::vector<TaskDefinition> definitions);
+
+  // Task Definition helpers:
+  bool HasDefinitionWithId(std::optional<int64_t> definition_id);
+  bool AddShallowTaskDefinition(const TaskDefinition& definition);
+  bool UpdateShallowTaskDefinition(int64_t definition_id,
+                                   const TaskDefinition& definition);
+
+  // Step Definition helpers:
+  bool SaveSteps(int64_t definition_id,
+                 ::google::protobuf::RepeatedPtrField<TaskStep> steps);
+  base::flat_map<int64_t, int32_t> GetStepIndicesAndIds(int64_t definition_id);
+  bool ShiftStepIndicesNegative(
+      const base::flat_map<int64_t, int32_t>& step_index_for_id);
+  bool UpdateStep(int64_t step_id, const TaskStep& step);
+  bool AddStep(int64_t definition_id, const TaskStep& step);
+  std::optional<int64_t> FindStepIndex(
+      const TaskStep& step,
+      const base::flat_map<int64_t, int32_t>& step_index_for_id);
+  bool DeleteStepById(int64_t step_id);
+
+  // Task Parameter helpers:
+  bool SaveParameters(
+      int64_t step_id,
+      ::google::protobuf::RepeatedPtrField<TaskParameter> parameters);
+  base::flat_map<int64_t, std::string> GetParameterIndicesAndKeys(
+      int64_t step_id);
+  bool UpdateParameter(const TaskParameter& parameter, int64_t parameter_id);
+  bool AddParameter(int64_t step_id, const TaskParameter& parameter);
+  std::optional<int64_t> FindParameterId(
+      const TaskParameter& parameter,
+      const base::flat_map<int64_t, std::string>& parameter_key_for_id);
+  bool DeleteParameterById(int64_t parameter_id);
+
+  // Task Retrieval helpers:
+  std::optional<TaskDefinition> GetPartialDefinition(int64_t definition_id);
+  base::flat_map<int64_t, std::vector<TaskParameter>>
+  GetParametersForStepsOfDefinition(int64_t definition_id);
+  std::vector<TaskStep> GetStepsOfDefinition(
+      int64_t definition_id,
+      base::flat_map<int64_t, std::vector<TaskParameter>> step_params);
 
   sql::Database db_;
 

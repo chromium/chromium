@@ -40,16 +40,13 @@ class RecordingDataManagerImpl : public RecordingDataManager {
       base::OnceCallback<void(std::vector<Recording>)> callback) override;
   void SaveTaskDefinition(std::optional<int64_t> task_definition_id,
                           TaskDefinition task_definition,
-                          std::string target_url,
-                          std::optional<int64_t> recording_id,
-                          base::OnceClosure callback) override;
+                          base::OnceCallback<void(int64_t)> callback) override;
   void GetTaskDefinition(int64_t task_definition_id,
                          base::OnceCallback<void(std::optional<TaskDefinition>)>
                              callback) override;
   void GetTaskDefinitionsByUrl(
       std::string url,
-      base::OnceCallback<void(std::vector<std::pair<int64_t, TaskDefinition>>)>
-          callback) override;
+      base::OnceCallback<void(std::vector<TaskDefinition>)> callback) override;
   void SaveTaskData(int64_t task_definition_id,
                     TaskData data,
                     base::OnceCallback<void(bool)> callback) override;

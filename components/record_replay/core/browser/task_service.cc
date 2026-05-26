@@ -39,9 +39,8 @@ void TaskService::OnURLVisited(const GURL& visited_url) {
 
 void TaskService::OnTaskDefinitionsRetrieved(
     const GURL& visited_url,
-    std::vector<std::pair<int64_t, TaskDefinition>> task_definitions) {
-  for (const auto& pair : task_definitions) {
-    const auto& definition = pair.second;
+    std::vector<TaskDefinition> task_definitions) {
+  for (const TaskDefinition& definition : task_definitions) {
     if (definition.url() == visited_url.spec()) {
       observer_ = std::make_unique<TaskObserver>(
           definition, base::BindRepeating(&TaskService::OnTaskCompleted,
@@ -55,10 +54,6 @@ void TaskService::OnTaskDefinitionsRetrieved(
 void TaskService::OnTaskCompleted(const TaskObservation& observation) {
   recording_data_manager_->SaveTaskDefinition(
       /*task_definition_id=*/std::nullopt, observation.definition(),
-      observation.definition().url(),
-      /*recording_id=*/std::nullopt,
-      // TODO(crbug.com/515729820): Implement a callback that uses the newly
-      // stored observation.
       base::DoNothing());
   observer_.reset();
 }

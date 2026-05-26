@@ -40,9 +40,7 @@ class MockRecordingDataManager : public RecordingDataManager {
               SaveTaskDefinition,
               (std::optional<int64_t> task_definition_id,
                TaskDefinition task_definition,
-               std::string target_url,
-               std::optional<int64_t> recording_id,
-               base::OnceClosure callback),
+               base::OnceCallback<void(int64_t)> callback),
               (override));
   MOCK_METHOD(
       void,
@@ -50,13 +48,11 @@ class MockRecordingDataManager : public RecordingDataManager {
       (int64_t task_definition_id,
        base::OnceCallback<void(std::optional<TaskDefinition>)> callback),
       (override));
-  MOCK_METHOD(
-      void,
-      GetTaskDefinitionsByUrl,
-      (std::string url,
-       base::OnceCallback<void(std::vector<std::pair<int64_t, TaskDefinition>>)>
-           callback),
-      (override));
+  MOCK_METHOD(void,
+              GetTaskDefinitionsByUrl,
+              (std::string url,
+               base::OnceCallback<void(std::vector<TaskDefinition>)> callback),
+              (override));
   MOCK_METHOD(void,
               SaveTaskData,
               (int64_t task_definition_id,
@@ -100,14 +96,14 @@ TEST_F(TaskServiceTest, OnURLVisitedRetrievesTaskDefinitions) {
               GetTaskDefinitionsByUrl(url.spec(), ::testing::_))
       .WillOnce(
           [](std::string url,
-             base::OnceCallback<void(
-                 std::vector<std::pair<int64_t, TaskDefinition>>)> callback) {
-            std::vector<std::pair<int64_t, TaskDefinition>> task_definitions;
+             base::OnceCallback<void(std::vector<TaskDefinition>)> callback) {
+            std::vector<TaskDefinition> task_definitions;
             TaskDefinition task_definition;
+            task_definition.set_id(42);
             task_definition.set_url(url);
             task_definition.set_title("Test Task");
             task_definition.set_description("Test Description");
-            task_definitions.emplace_back(42, task_definition);
+            task_definitions.push_back(std::move(task_definition));
             std::move(callback).Run(std::move(task_definitions));
           });
 
@@ -128,8 +124,7 @@ TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
       GetTaskDefinitionsByUrl("https://example.com/unrelated", ::testing::_))
       .WillRepeatedly(
           [](std::string url,
-             base::OnceCallback<void(
-                 std::vector<std::pair<int64_t, TaskDefinition>>)> callback) {
+             base::OnceCallback<void(std::vector<TaskDefinition>)> callback) {
             std::move(callback).Run({});
           });
 
@@ -139,10 +134,11 @@ TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
       .WillRepeatedly(
           [definition](
               std::string url,
-              base::OnceCallback<void(
-                  std::vector<std::pair<int64_t, TaskDefinition>>)> callback) {
-            std::vector<std::pair<int64_t, TaskDefinition>> task_definitions;
-            task_definitions.emplace_back(42, definition);
+              base::OnceCallback<void(std::vector<TaskDefinition>)> callback) {
+            std::vector<TaskDefinition> task_definitions;
+            TaskDefinition def = definition;
+            def.set_id(42);
+            task_definitions.push_back(std::move(def));
             std::move(callback).Run(std::move(task_definitions));
           });
 
@@ -173,16 +169,14 @@ TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
 
   EXPECT_CALL(mock_data_manager_,
               SaveTaskDefinition(::testing::Eq(std::nullopt), ::testing::_,
-                                 "https://example.com/start",
-                                 ::testing::Eq(std::nullopt), ::testing::_))
+                                 ::testing::_))
       .WillOnce([completed_def](std::optional<int64_t> task_definition_id,
                                 TaskDefinition task_definition,
-                                std::string target_url,
-                                std::optional<int64_t> recording_id,
-                                base::OnceClosure callback) {
+                                base::OnceCallback<void(int64_t)> callback) {
         EXPECT_EQ(task_definition.description(), "Completed successfully");
         EXPECT_EQ(task_definition.title(), "Test Journey");
         EXPECT_EQ(task_definition.url(), "https://example.com/start");
+        std::move(callback).Run(42);
       });
 
   TaskObservation completed_obs;

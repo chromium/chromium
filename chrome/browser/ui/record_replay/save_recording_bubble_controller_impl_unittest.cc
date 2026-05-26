@@ -27,9 +27,7 @@ class MockRecordingDataManager : public RecordingDataManager {
               SaveTaskDefinition,
               (std::optional<int64_t> task_definition_id,
                TaskDefinition task_definition,
-               std::string target_url,
-               std::optional<int64_t> recording_id,
-               base::OnceClosure callback),
+               base::OnceCallback<void(int64_t)> callback),
               (override));
   MOCK_METHOD(
       void,
@@ -37,13 +35,11 @@ class MockRecordingDataManager : public RecordingDataManager {
       (int64_t task_definition_id,
        base::OnceCallback<void(std::optional<TaskDefinition>)> callback),
       (override));
-  MOCK_METHOD(
-      void,
-      GetTaskDefinitionsByUrl,
-      (std::string url,
-       base::OnceCallback<void(std::vector<std::pair<int64_t, TaskDefinition>>)>
-           callback),
-      (override));
+  MOCK_METHOD(void,
+              GetTaskDefinitionsByUrl,
+              (std::string url,
+               base::OnceCallback<void(std::vector<TaskDefinition>)> callback),
+              (override));
   MOCK_METHOD(void,
               SaveTaskData,
               (int64_t task_definition_id,

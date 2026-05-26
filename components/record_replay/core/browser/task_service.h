@@ -56,9 +56,8 @@ class TaskService : public KeyedService {
   }
 
  private:
-  void OnTaskDefinitionsRetrieved(
-      const GURL& visited_url,
-      std::vector<std::pair<int64_t, TaskDefinition>> task_definitions);
+  void OnTaskDefinitionsRetrieved(const GURL& visited_url,
+                                  std::vector<TaskDefinition> task_definitions);
 
   raw_ptr<RecordingDataManager> recording_data_manager_;
   // For simplification, we assume there is just one task to be observed at one

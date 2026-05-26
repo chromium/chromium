@@ -68,12 +68,9 @@ void RecordingDataManagerImpl::GetRecordingsByUrl(
 void RecordingDataManagerImpl::SaveTaskDefinition(
     std::optional<int64_t> task_definition_id,
     TaskDefinition task_definition,
-    std::string target_url,
-    std::optional<int64_t> recording_id,
-    base::OnceClosure callback) {
+    base::OnceCallback<void(int64_t)> callback) {
   db_.AsyncCall(&TaskDatabase::SaveTaskDefinition)
-      .WithArgs(task_definition_id, std::move(task_definition),
-                std::move(target_url), recording_id)
+      .WithArgs(task_definition_id, std::move(task_definition))
       .Then(std::move(callback));
 }
 
@@ -87,8 +84,7 @@ void RecordingDataManagerImpl::GetTaskDefinition(
 
 void RecordingDataManagerImpl::GetTaskDefinitionsByUrl(
     std::string url,
-    base::OnceCallback<void(std::vector<std::pair<int64_t, TaskDefinition>>)>
-        callback) {
+    base::OnceCallback<void(std::vector<TaskDefinition>)> callback) {
   db_.AsyncCall(&TaskDatabase::GetTaskDefinitionsByUrl)
       .WithArgs(std::move(url))
       .Then(std::move(callback));

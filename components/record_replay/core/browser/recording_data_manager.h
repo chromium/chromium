@@ -39,23 +39,20 @@ class RecordingDataManager : public KeyedService {
       base::OnceCallback<void(std::vector<Recording>)> callback) = 0;
 
   // Handles both insertion (when task_definition_id is nullopt) and updates.
-  virtual void SaveTaskDefinition(std::optional<int64_t> task_definition_id,
-                                  TaskDefinition task_definition,
-                                  std::string target_url,
-                                  std::optional<int64_t> recording_id,
-                                  base::OnceClosure callback) = 0;
+  virtual void SaveTaskDefinition(
+      std::optional<int64_t> task_definition_id,
+      TaskDefinition task_definition,
+      base::OnceCallback<void(int64_t)> callback) = 0;
 
   // Retrieves the task definition for a given ID, if it exists.
   virtual void GetTaskDefinition(
       int64_t task_definition_id,
       base::OnceCallback<void(std::optional<TaskDefinition>)> callback) = 0;
 
-  // Retrieves all task definitions for a site, returning their IDs and proto
-  // data.
+  // Retrieves all task definitions for a site, returning their proto data.
   virtual void GetTaskDefinitionsByUrl(
       std::string url,
-      base::OnceCallback<void(std::vector<std::pair<int64_t, TaskDefinition>>)>
-          callback) = 0;
+      base::OnceCallback<void(std::vector<TaskDefinition>)> callback) = 0;
 
   // Saves or updates task data for a task definition.
   virtual void SaveTaskData(int64_t task_definition_id,

@@ -183,26 +183,28 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskDefinition) {
   TaskDefinition task_definition;
   task_definition.set_title("Test Title");
   task_definition.set_description("Test Description");
+  task_definition.set_url(recording.url());
+  task_definition.set_recording_id(recording_id);
   StepDefinition step;
   step.set_description("Step 1");
   (*task_definition.mutable_steps())[1] = step;
 
-  base::test::TestFuture<void> add_future;
-  data_manager().SaveTaskDefinition(std::nullopt, task_definition,
-                                    recording.url(), recording_id,
+  base::test::TestFuture<int64_t> add_future;
+  data_manager().SaveTaskDefinition(std::nullopt, std::move(task_definition),
                                     add_future.GetCallback());
-  add_future.Get();
+  int64_t def_id = add_future.Get();
+  EXPECT_GT(def_id, 0);
 
-  base::test::TestFuture<std::vector<std::pair<int64_t, TaskDefinition>>>
-      get_future;
+  base::test::TestFuture<std::vector<TaskDefinition>> get_future;
   data_manager().GetTaskDefinitionsByUrl(recording.url(),
                                          get_future.GetCallback());
   auto retrieved = get_future.Get();
 
   ASSERT_EQ(retrieved.size(), 1u);
-  EXPECT_EQ(retrieved[0].second.title(), "Test Title");
-  EXPECT_EQ(retrieved[0].second.description(), "Test Description");
-  EXPECT_EQ(retrieved[0].second.steps().at(1).description(), "Step 1");
+  EXPECT_EQ(retrieved[0].id(), def_id);
+  EXPECT_EQ(retrieved[0].title(), "Test Title");
+  EXPECT_EQ(retrieved[0].description(), "Test Description");
+  EXPECT_EQ(retrieved[0].steps().at(1).description(), "Step 1");
 }
 
 TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskData) {
@@ -215,11 +217,13 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskData) {
 
   TaskDefinition task_definition;
   task_definition.set_title("Test Title");
-  base::test::TestFuture<void> anno_future;
-  data_manager().SaveTaskDefinition(std::nullopt, task_definition,
-                                    recording.url(), recording_id,
+  task_definition.set_url(recording.url());
+  task_definition.set_recording_id(recording_id);
+  base::test::TestFuture<int64_t> anno_future;
+  data_manager().SaveTaskDefinition(std::nullopt, std::move(task_definition),
                                     anno_future.GetCallback());
-  anno_future.Get();
+  int64_t def_id = anno_future.Get();
+  EXPECT_GT(def_id, 0);
 
   TaskData data;
   StepDataValues values;
@@ -227,11 +231,11 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskData) {
   (*data.mutable_step_data())[1] = values;
 
   base::test::TestFuture<bool> save_future;
-  data_manager().SaveTaskData(recording_id, data, save_future.GetCallback());
+  data_manager().SaveTaskData(def_id, data, save_future.GetCallback());
   EXPECT_TRUE(save_future.Get());
 
   base::test::TestFuture<std::optional<TaskData>> get_future;
-  data_manager().GetTaskData(recording_id, get_future.GetCallback());
+  data_manager().GetTaskData(def_id, get_future.GetCallback());
   std::optional<TaskData> retrieved_data = get_future.Get();
 
   ASSERT_TRUE(retrieved_data.has_value());
@@ -246,25 +250,27 @@ TEST_F(RecordingDataManagerImplTest, DeleteTaskData) {
   int64_t recording_id = id_future.Get();
 
   TaskDefinition task_definition;
-  base::test::TestFuture<void> anno_future;
-  data_manager().SaveTaskDefinition(std::nullopt, task_definition,
-                                    recording.url(), recording_id,
+  task_definition.set_url(recording.url());
+  task_definition.set_recording_id(recording_id);
+  base::test::TestFuture<int64_t> anno_future;
+  data_manager().SaveTaskDefinition(std::nullopt, std::move(task_definition),
                                     anno_future.GetCallback());
-  anno_future.Get();
+  int64_t def_id = anno_future.Get();
+  EXPECT_GT(def_id, 0);
 
   TaskData data;
   (*data.mutable_step_data())[1] = StepDataValues();
 
   base::test::TestFuture<bool> save_future;
-  data_manager().SaveTaskData(recording_id, data, save_future.GetCallback());
+  data_manager().SaveTaskData(def_id, data, save_future.GetCallback());
   ASSERT_TRUE(save_future.Get());
 
   base::test::TestFuture<bool> delete_future;
-  data_manager().DeleteTaskData(recording_id, delete_future.GetCallback());
+  data_manager().DeleteTaskData(def_id, delete_future.GetCallback());
   EXPECT_TRUE(delete_future.Get());
 
   base::test::TestFuture<std::optional<TaskData>> get_future;
-  data_manager().GetTaskData(recording_id, get_future.GetCallback());
+  data_manager().GetTaskData(def_id, get_future.GetCallback());
   EXPECT_FALSE(get_future.Get().has_value());
 }
 
@@ -297,17 +303,16 @@ TEST_F(RecordingDataManagerImplTest, SeedFromFileQuickSyntax) {
 
   RecreateDataManager();
 
-  base::test::TestFuture<std::vector<std::pair<int64_t, TaskDefinition>>>
-      future;
+  base::test::TestFuture<std::vector<TaskDefinition>> future;
   data_manager().GetTaskDefinitionsByUrl("https://example.com",
                                          future.GetCallback());
   auto task_definitions = future.Get();
 
   ASSERT_EQ(task_definitions.size(), 1u);
-  EXPECT_EQ(task_definitions[0].second.title(), "Quick Title");
-  EXPECT_EQ(task_definitions[0].second.description(), "Quick Instructions");
-  ASSERT_EQ(task_definitions[0].second.steps().size(), 1u);
-  EXPECT_EQ(task_definitions[0].second.steps().at(1).description(),
+  EXPECT_EQ(task_definitions[0].title(), "Quick Title");
+  EXPECT_EQ(task_definitions[0].description(), "Quick Instructions");
+  ASSERT_EQ(task_definitions[0].steps().size(), 1u);
+  EXPECT_EQ(task_definitions[0].steps().at(1).description(),
             "Quick Instructions");
 }
 
@@ -341,24 +346,19 @@ TEST_F(RecordingDataManagerImplTest, SeedFromFileDetailedSyntax) {
 
   RecreateDataManager();
 
-  base::test::TestFuture<std::vector<std::pair<int64_t, TaskDefinition>>>
-      future;
+  base::test::TestFuture<std::vector<TaskDefinition>> future;
   data_manager().GetTaskDefinitionsByUrl("https://example.com/detailed",
                                          future.GetCallback());
   auto task_definitions = future.Get();
 
   ASSERT_EQ(task_definitions.size(), 1u);
-  EXPECT_EQ(task_definitions[0].second.title(), "Detailed Title");
-  EXPECT_EQ(task_definitions[0].second.description(), "Top Level Description");
-  ASSERT_EQ(task_definitions[0].second.steps().size(), 2u);
-  EXPECT_EQ(task_definitions[0].second.steps().at(1).description(),
-            "Step 1 Desc");
-  EXPECT_EQ(task_definitions[0].second.steps().at(1).expected_data_keys(0),
-            "key1");
-  EXPECT_EQ(task_definitions[0].second.steps().at(2).description(),
-            "Step 2 Desc");
-  EXPECT_EQ(task_definitions[0].second.steps().at(2).expected_data_keys(0),
-            "key2");
+  EXPECT_EQ(task_definitions[0].title(), "Detailed Title");
+  EXPECT_EQ(task_definitions[0].description(), "Top Level Description");
+  ASSERT_EQ(task_definitions[0].steps().size(), 2u);
+  EXPECT_EQ(task_definitions[0].steps().at(1).description(), "Step 1 Desc");
+  EXPECT_EQ(task_definitions[0].steps().at(1).expected_data_keys(0), "key1");
+  EXPECT_EQ(task_definitions[0].steps().at(2).description(), "Step 2 Desc");
+  EXPECT_EQ(task_definitions[0].steps().at(2).expected_data_keys(0), "key2");
 }
 
 }  // namespace

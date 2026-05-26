@@ -99,11 +99,11 @@ base::expected<TaskDefinition, std::string> ParseDetailedSyntax(
     definition.set_description(*description);
   }
 
-  int step_index = 1;
+  int step_index = 0;
   for (const base::Value& step_val : steps_list) {
     if (!step_val.is_dict()) {
       return base::unexpected(
-          base::StrCat({"Step at index ", base::NumberToString(step_index),
+          base::StrCat({"Step at index ", base::NumberToString(step_index + 1),
                         " is not a dictionary."}));
     }
 
@@ -112,27 +112,30 @@ base::expected<TaskDefinition, std::string> ParseDetailedSyntax(
         MapStep(step_dict, step_index, url);
     if (!step.has_value()) {
       return base::unexpected(
-          base::StrCat({"Error in step ", base::NumberToString(step_index),
+          base::StrCat({"Error in step ", base::NumberToString(step_index + 1),
                         ": ", step.error()}));
     }
-    *definition.add_task_steps() = step.value();
-
-    StepDefinition legacy_step;
-    legacy_step.set_description(step.value().description());
 
     const base::ListValue* keys_list = step_dict.FindList("expected_data_keys");
     if (keys_list) {
       for (const base::Value& key : *keys_list) {
         if (key.is_string()) {
-          legacy_step.add_expected_data_keys(key.GetString());
+          TaskParameter* param = step.value().add_parameters();
+          param->set_key(key.GetString());
+          param->set_name(key.GetString());
+          param->set_type("string");
         }
       }
-    } else {
-      for (int i = 0; i < step.value().parameters_size(); ++i) {
-        legacy_step.add_expected_data_keys(step.value().parameters(i).key());
-      }
     }
-    (*definition.mutable_steps())[step_index] = legacy_step;
+
+    StepDefinition legacy_step;
+    legacy_step.set_description(step.value().description());
+    for (int i = 0; i < step.value().parameters_size(); ++i) {
+      legacy_step.add_expected_data_keys(step.value().parameters(i).key());
+    }
+    (*definition.mutable_steps())[step_index + 1] = std::move(legacy_step);
+
+    *definition.add_task_steps() = std::move(step.value());
 
     step_index++;
   }
