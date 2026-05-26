@@ -30,9 +30,13 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
 
 // Detach is not supported on Android, and multiple windows/tabs don't work
 // yet in Android browsertests, preventing concurrent visibility testing.
-// TODO(crbug.com/512686943): Test is also causing a UAF on Linux.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ConcurrentVisibility DISABLED_ConcurrentVisibility
+#else
+#define MAYBE_ConcurrentVisibility ConcurrentVisibility
+#endif
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
-                       DISABLED_ConcurrentVisibility) {
+                       MAYBE_ConcurrentVisibility) {
   GlicHistogramTester histogram_tester;
 
   // 1. Open Glic for active tab and detach it (making it floating).
@@ -45,10 +49,8 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorMetricsBrowserTest,
   ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance2, OpenGlicForActiveTab());
 
   // 4. Close one instance to end concurrent visibility.
-  instance2->Close(new_tab);
-
-  // Wait for it to close.
-  ASSERT_TRUE(base::test::RunUntil([&]() { return !instance2->IsShowing(); }));
+  PreventDeletionOnClose(instance2);
+  ASSERT_OK(CloseGlicForTabAndWait(new_tab));
 
   // Verify histograms.
   histogram_tester.ExpectUniqueSample("Glic.ConcurrentVisibility.PeakCount", 2,
