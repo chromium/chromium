@@ -19235,7 +19235,8 @@
     "Prerender2MemoryControlsAndroid": [
         {
             "platforms": [
-                "android"
+                "android",
+                "android_webview"
             ],
             "experiments": [
                 {

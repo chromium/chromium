@@ -921,6 +921,8 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Prerender2 by Speculation Rules API is delayed until LCP is"
                         + " finished."),
         Flag.baseFeature(
+                BlinkFeatures.PRERENDER2_MEMORY_CONTROLS, "Controls memory limits for Prerender2."),
+        Flag.baseFeature(
                 "SelectParserRelaxation",
                 "Enables new HTML parser behavior for the <select> element."),
         Flag.baseFeature(
