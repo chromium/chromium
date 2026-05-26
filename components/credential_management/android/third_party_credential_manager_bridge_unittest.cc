@@ -18,6 +18,8 @@
 #include "components/credential_management/android/password_credential_response.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -27,6 +29,7 @@ const std::u16string kTestPassword = u"password";
 const std::string kTestOrigin = "https://origin.com";
 }  // namespace
 namespace credential_management {
+using testing::_;
 using StoreCallback = base::OnceCallback<void()>;
 using GetCallback = base::OnceCallback<void(
     password_manager::CredentialManagerError,
@@ -41,7 +44,8 @@ class FakeJniDelegate : public JniDelegate {
   FakeJniDelegate& operator=(const FakeJniDelegate&) = delete;
   ~FakeJniDelegate() override = default;
 
-  void Get(bool is_auto_select_allowed,
+  void Get(content::WebContents& web_contents,
+           bool is_auto_select_allowed,
            bool include_passwords,
            const std::vector<GURL>& federations,
            const std::string& origin,
@@ -60,7 +64,8 @@ class FakeJniDelegate : public JniDelegate {
                                       true, kTestUsername, kTestPassword)));
   }
 
-  void Store(const std::u16string& username,
+  void Store(content::WebContents& web_contents,
+             const std::u16string& username,
              const std::u16string& password,
              const std::string& origin,
              base::OnceCallback<void(bool)> completion_callback) override {
@@ -68,6 +73,11 @@ class FakeJniDelegate : public JniDelegate {
         FROM_HERE,
         base::BindOnce(std::move(completion_callback), !simulate_errors_));
   }
+
+  void Cancel() override { cancel_called_ = true; }
+
+  bool cancel_called() const { return cancel_called_; }
+  void reset_cancel_called() { cancel_called_ = false; }
 
   void set_bridge(ThirdPartyCredentialManagerBridge* bridge) {
     bridge_ = bridge;
@@ -80,12 +90,17 @@ class FakeJniDelegate : public JniDelegate {
  private:
   // The owning native ThirdPartyCredentialManagerBridge.
   raw_ptr<ThirdPartyCredentialManagerBridge> bridge_;
-  bool simulate_errors_;
+  bool simulate_errors_ = false;
+  bool cancel_called_ = false;
 };
 
 class ThirdPartyCredentialManagerBridgeTest : public testing::Test {
  public:
   void SetUp() override {
+    browser_context_ = std::make_unique<content::TestBrowserContext>();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        browser_context_.get(), nullptr);
+
     auto jni_delegate = std::make_unique<FakeJniDelegate>();
     fake_jni_delegate_ = jni_delegate.get();
     bridge_ = std::make_unique<ThirdPartyCredentialManagerBridge>(
@@ -97,9 +112,12 @@ class ThirdPartyCredentialManagerBridgeTest : public testing::Test {
   FakeJniDelegate& fake_jni_delegate() { return *fake_jni_delegate_; }
 
   ThirdPartyCredentialManagerBridge* bridge() { return bridge_.get(); }
+  content::WebContents* web_contents() { return web_contents_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<content::TestBrowserContext> browser_context_;
+  std::unique_ptr<content::WebContents> web_contents_;
   raw_ptr<FakeJniDelegate> fake_jni_delegate_;
   std::unique_ptr<ThirdPartyCredentialManagerBridge> bridge_;
 };
@@ -109,11 +127,11 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulGetCall) {
   base::MockCallback<GetCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(false);
 
-  EXPECT_CALL(
-      mock_callback,
-      Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
+  EXPECT_CALL(mock_callback,
+              Run(password_manager::CredentialManagerError::SUCCESS, _))
       .WillOnce([&]() { run_loop.Quit(); });
-  bridge()->Get(/*is_auto_select_allowed=*/false, /*include_passwords=*/true,
+  bridge()->Get(*web_contents(), /*is_auto_select_allowed=*/false,
+                /*include_passwords=*/true,
                 /*federations=*/{}, kTestOrigin, mock_callback.Get());
   run_loop.Run();
 }
@@ -123,11 +141,11 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulGetCall) {
   base::MockCallback<GetCallback> mock_callback;
   fake_jni_delegate().set_error_simulation(true);
 
-  EXPECT_CALL(
-      mock_callback,
-      Run(password_manager::CredentialManagerError::UNKNOWN, testing::_))
+  EXPECT_CALL(mock_callback,
+              Run(password_manager::CredentialManagerError::UNKNOWN, _))
       .WillOnce([&]() { run_loop.Quit(); });
-  bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true,
+  bridge()->Get(*web_contents(), /*is_auto_select_allowed=*/true,
+                /*include_passwords=*/true,
                 /*federations=*/{}, kTestOrigin, mock_callback.Get());
   run_loop.Run();
 }
@@ -138,7 +156,8 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest,
                          const std::optional<password_manager::CredentialInfo>&>
       future;
 
-  bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/false,
+  bridge()->Get(*web_contents(), /*is_auto_select_allowed=*/true,
+                /*include_passwords=*/false,
                 /*federations=*/{}, kTestOrigin, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get<0>(), password_manager::CredentialManagerError::UNKNOWN);
@@ -151,7 +170,7 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulStoreCall) {
   fake_jni_delegate().set_error_simulation(false);
 
   EXPECT_CALL(mock_callback, Run()).WillOnce([&]() { run_loop.Quit(); });
-  bridge()->Store(kTestUsername, kTestPassword, kTestOrigin,
+  bridge()->Store(*web_contents(), kTestUsername, kTestPassword, kTestOrigin,
                   mock_callback.Get());
   run_loop.Run();
 }
@@ -162,7 +181,7 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnsuccessfulStoreCall) {
   fake_jni_delegate().set_error_simulation(true);
 
   EXPECT_CALL(mock_callback, Run()).WillOnce([&]() { run_loop.Quit(); });
-  bridge()->Store(kTestUsername, kTestPassword, kTestOrigin,
+  bridge()->Store(*web_contents(), kTestUsername, kTestPassword, kTestOrigin,
                   mock_callback.Get());
   run_loop.Run();
 }
@@ -177,18 +196,25 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestMultipleCalls) {
   EXPECT_CALL(mock_store_callback, Run()).WillOnce([&]() {
     run_loop_store.Quit();
   });
-  bridge()->Store(kTestUsername, kTestPassword, kTestOrigin,
+  bridge()->Store(*web_contents(), kTestUsername, kTestPassword, kTestOrigin,
                   mock_store_callback.Get());
   run_loop_store.Run();
 
-  EXPECT_CALL(
-      mock_get_callback,
-      Run(password_manager::CredentialManagerError::SUCCESS, testing::_))
+  EXPECT_CALL(mock_get_callback,
+              Run(password_manager::CredentialManagerError::SUCCESS, _))
       .WillOnce([&]() { run_loop_get.Quit(); });
 
-  bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true,
+  bridge()->Get(*web_contents(), /*is_auto_select_allowed=*/true,
+                /*include_passwords=*/true,
                 /*federations=*/{}, kTestOrigin, mock_get_callback.Get());
   run_loop_get.Run();
+}
+
+TEST_F(ThirdPartyCredentialManagerBridgeTest, TestCancel) {
+  fake_jni_delegate().reset_cancel_called();
+  ASSERT_FALSE(fake_jni_delegate().cancel_called());
+  bridge()->Cancel();
+  EXPECT_TRUE(fake_jni_delegate().cancel_called());
 }
 
 }  // namespace credential_management

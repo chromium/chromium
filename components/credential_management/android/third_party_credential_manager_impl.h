@@ -6,6 +6,7 @@
 #define COMPONENTS_CREDENTIAL_MANAGEMENT_ANDROID_THIRD_PARTY_CREDENTIAL_MANAGER_IMPL_H_
 
 #include "base/memory/raw_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "components/credential_management/android/third_party_credential_manager_bridge.h"
 #include "components/credential_management/credential_manager_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -42,8 +43,16 @@ class ThirdPartyCredentialManagerImpl : public CredentialManagerInterface {
   std::unique_ptr<CredentialManagerBridge> bridge_;
   const raw_ref<content::WebContents> web_contents_;
 
+  uint32_t pending_request_id_ = 0;
+  uint32_t next_request_id_ = 0;
+
+  bool IsVisibleAndFocused() const;
   bool IsOffTheRecord() const;
   net::CertStatus GetMainFrameCertStatus() const;
+
+  void OnRequestComplete(uint32_t request_id);
+
+  base::WeakPtrFactory<ThirdPartyCredentialManagerImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace credential_management

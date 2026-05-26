@@ -12,8 +12,10 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
 
@@ -61,7 +63,8 @@ class JniDelegateImpl : public JniDelegate {
   JniDelegateImpl& operator=(const JniDelegateImpl&) = delete;
   ~JniDelegateImpl() override = default;
 
-  void Get(bool is_auto_select_allowed,
+  void Get(content::WebContents& web_contents,
+           bool is_auto_select_allowed,
            bool include_passwords,
            const std::vector<GURL>& federations,
            const std::string& origin,
@@ -75,22 +78,32 @@ class JniDelegateImpl : public JniDelegate {
           url::GURLAndroid::FromNativeGURL(env, federation));
     }
     Java_ThirdPartyCredentialManagerBridge_get(
-        env, GetOrCreateBridge(), is_auto_select_allowed, include_passwords,
-        federations_array, base::android::ConvertUTF8ToJavaString(env, origin),
+        env, GetOrCreateBridge(), web_contents.GetJavaWebContents(),
+        is_auto_select_allowed, include_passwords, federations_array,
+        base::android::ConvertUTF8ToJavaString(env, origin),
         base::android::ToJniCallback(env, std::move(completion_callback)));
   }
 
-  void Store(const std::u16string& username,
+  void Store(content::WebContents& web_contents,
+             const std::u16string& username,
              const std::u16string& password,
              const std::string& origin,
              base::OnceCallback<void(bool)> completion_callback) override {
     JNIEnv* env = jni_zero::AttachCurrentThread();
     Java_ThirdPartyCredentialManagerBridge_store(
-        env, GetOrCreateBridge(),
+        env, GetOrCreateBridge(), web_contents.GetJavaWebContents(),
         base::android::ConvertUTF16ToJavaString(env, username),
         base::android::ConvertUTF16ToJavaString(env, password),
         base::android::ConvertUTF8ToJavaString(env, origin),
         base::android::ToJniCallback(env, std::move(completion_callback)));
+  }
+
+  void Cancel() override {
+    if (!java_bridge_) {
+      return;
+    }
+    JNIEnv* env = jni_zero::AttachCurrentThread();
+    Java_ThirdPartyCredentialManagerBridge_cancel(env, java_bridge_);
   }
 
  private:
@@ -114,10 +127,12 @@ ThirdPartyCredentialManagerBridge::ThirdPartyCredentialManagerBridge(
     std::unique_ptr<JniDelegate> jni_delegate)
     : jni_delegate_(std::move(jni_delegate)) {}
 
-ThirdPartyCredentialManagerBridge::~ThirdPartyCredentialManagerBridge() =
-    default;
+ThirdPartyCredentialManagerBridge::~ThirdPartyCredentialManagerBridge() {
+  Cancel();
+}
 
 void ThirdPartyCredentialManagerBridge::Get(
+    content::WebContents& web_contents,
     bool is_auto_select_allowed,
     bool include_passwords,
     const std::vector<GURL>& federations,
@@ -133,18 +148,24 @@ void ThirdPartyCredentialManagerBridge::Get(
     std::move(on_complete).Run(PasswordCredentialResponse(false, u"", u""));
     return;
   }
-  jni_delegate_->Get(is_auto_select_allowed, include_passwords, federations,
-                     origin, std::move(on_complete));
+  jni_delegate_->Get(web_contents, is_auto_select_allowed, include_passwords,
+                     federations, origin, std::move(on_complete));
 }
 
 void ThirdPartyCredentialManagerBridge::Store(
+    content::WebContents& web_contents,
     const std::u16string& username,
     const std::u16string& password,
     const std::string& origin,
     StoreCallback completion_callback) {
   base::OnceCallback<void(bool)> on_complete = base::BindOnce(
       &OnCreateCredentialResponse, std::move(completion_callback));
-  jni_delegate_->Store(username, password, origin, std::move(on_complete));
+  jni_delegate_->Store(web_contents, username, password, origin,
+                       std::move(on_complete));
+}
+
+void ThirdPartyCredentialManagerBridge::Cancel() {
+  jni_delegate_->Cancel();
 }
 
 }  // namespace credential_management

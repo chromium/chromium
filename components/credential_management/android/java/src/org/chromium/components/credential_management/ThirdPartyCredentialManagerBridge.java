@@ -4,7 +4,8 @@
 
 package org.chromium.components.credential_management;
 
-import android.content.Context;
+import android.app.Activity;
+import android.os.CancellationSignal;
 
 import androidx.credentials.CreateCredentialResponse;
 import androidx.credentials.CreatePasswordRequest;
@@ -23,10 +24,12 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
@@ -37,6 +40,7 @@ import java.util.List;
 @NullMarked
 class ThirdPartyCredentialManagerBridge {
     private static @Nullable CredentialManager sCredentialManagerForTesting;
+    private @Nullable CancellationSignal mCancellationSignal;
 
     @CalledByNative
     ThirdPartyCredentialManagerBridge() {}
@@ -48,16 +52,22 @@ class ThirdPartyCredentialManagerBridge {
 
     @CalledByNative
     void get(
+            @Nullable WebContents webContents,
             boolean isAutoSelectAllowed,
             boolean includePasswords,
             @JniType("std::vector") List<GURL> federations,
             String origin,
             Callback<PasswordCredentialResponse> callback) {
         // TODO(crbug.com/419810756): Add support for federated credentials.
-        Context context = ContextUtils.getApplicationContext();
+        Activity activity = getActivity(webContents);
+        if (activity == null) {
+            callback.onResult(new PasswordCredentialResponse(false, "", ""));
+            return;
+        }
+
         CredentialManager credentialManager =
                 sCredentialManagerForTesting == null
-                        ? CredentialManager.create(context)
+                        ? CredentialManager.create(activity)
                         : sCredentialManagerForTesting;
         // We're currently preventing silent access for every get request by
         // default in 3rd party mode so isAutoSelectAllowed is always set to
@@ -79,6 +89,7 @@ class ThirdPartyCredentialManagerBridge {
                         new CredentialManagerCallback<>() {
                             @Override
                             public void onError(GetCredentialException error) {
+                                mCancellationSignal = null;
                                 callback.onResult(new PasswordCredentialResponse(false, "", ""));
                                 ThirdPartyCredentialManagerMetricsRecorder
                                         .recordCredentialManagerGetResult(
@@ -87,22 +98,38 @@ class ThirdPartyCredentialManagerBridge {
 
                             @Override
                             public void onResult(GetCredentialResponse result) {
+                                mCancellationSignal = null;
                                 onGetCredentialResponse(result, callback);
                                 ThirdPartyCredentialManagerMetricsRecorder
                                         .recordCredentialManagerGetResult(
                                                 /* success= */ true, /* error= */ null);
                             }
                         };
+        mCancellationSignal = new CancellationSignal();
         credentialManager.getCredentialAsync(
-                context, getCredentialRequestBuilder.build(), null, Runnable::run, credentialCallback);
+                activity,
+                getCredentialRequestBuilder.build(),
+                mCancellationSignal,
+                ThreadUtils::postOnUiThread,
+                credentialCallback);
     }
 
     @CalledByNative
-    void store(String username, String password, String origin, Callback<Boolean> callback) {
-        Context context = ContextUtils.getApplicationContext();
+    void store(
+            @Nullable WebContents webContents,
+            String username,
+            String password,
+            String origin,
+            Callback<Boolean> callback) {
+        Activity activity = getActivity(webContents);
+        if (activity == null) {
+            callback.onResult(false);
+            return;
+        }
+
         CredentialManager credentialManager =
                 sCredentialManagerForTesting == null
-                        ? CredentialManager.create(context)
+                        ? CredentialManager.create(activity)
                         : sCredentialManagerForTesting;
         CreatePasswordRequest createPasswordRequest =
                 new CreatePasswordRequest(username, password, origin, false, false);
@@ -112,6 +139,7 @@ class ThirdPartyCredentialManagerBridge {
                         new CredentialManagerCallback<>() {
                             @Override
                             public void onError(CreateCredentialException error) {
+                                mCancellationSignal = null;
                                 callback.onResult(false);
                                 ThirdPartyCredentialManagerMetricsRecorder
                                         .recordCredentialManagerStoreResult(
@@ -120,14 +148,20 @@ class ThirdPartyCredentialManagerBridge {
 
                             @Override
                             public void onResult(CreateCredentialResponse response) {
+                                mCancellationSignal = null;
                                 callback.onResult(true);
                                 ThirdPartyCredentialManagerMetricsRecorder
                                         .recordCredentialManagerStoreResult(
                                                 /* success= */ true, /* error= */ null);
                             }
                         };
+        mCancellationSignal = new CancellationSignal();
         credentialManager.createCredentialAsync(
-                context, createPasswordRequest, null, Runnable::run, credentialCallback);
+                activity,
+                createPasswordRequest,
+                mCancellationSignal,
+                ThreadUtils::postOnUiThread,
+                credentialCallback);
     }
 
     private void onGetCredentialResponse(
@@ -140,5 +174,21 @@ class ThirdPartyCredentialManagerBridge {
         PasswordCredentialResponse response =
                 new PasswordCredentialResponse(true, username, password);
         callback.onResult(response);
+    }
+
+    private @Nullable Activity getActivity(@Nullable WebContents webContents) {
+        if (webContents == null) {
+            return null;
+        }
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        return window != null ? window.getActivity().get() : null;
+    }
+
+    @CalledByNative
+    void cancel() {
+        if (mCancellationSignal != null) {
+            mCancellationSignal.cancel();
+            mCancellationSignal = null;
+        }
     }
 }

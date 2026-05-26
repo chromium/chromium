@@ -15,6 +15,10 @@
 #include "components/credential_management/android/password_credential_response.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 
+namespace content {
+class WebContents;
+}
+
 namespace credential_management {
 using StoreCallback = base::OnceCallback<void()>;
 using GetCallback = base::OnceCallback<void(
@@ -25,16 +29,20 @@ class CredentialManagerBridge {
  public:
   virtual ~CredentialManagerBridge() = default;
 
-  virtual void Get(bool is_auto_select_allowed,
+  virtual void Get(content::WebContents& web_contents,
+                   bool is_auto_select_allowed,
                    bool include_passwords,
                    const std::vector<GURL>& federations,
                    const std::string& origin,
                    GetCallback completion_callback) = 0;
 
-  virtual void Store(const std::u16string& username,
+  virtual void Store(content::WebContents& web_contents,
+                     const std::u16string& username,
                      const std::u16string& password,
                      const std::string& origin,
                      StoreCallback completion_callback) = 0;
+
+  virtual void Cancel() = 0;
 };
 
 // This class is a bridge between the browser and the Android Credential
@@ -51,7 +59,8 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
     // Gets a credential from the Android Credential Manager.
     // The `completion_callback` should always be invoked on completion, passing
     // the PasswordCredentialResponse.
-    virtual void Get(bool is_auto_select_allowed,
+    virtual void Get(content::WebContents& web_contents,
+                     bool is_auto_select_allowed,
                      bool include_passwords,
                      const std::vector<GURL>& federations,
                      const std::string& origin,
@@ -61,10 +70,13 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
     // Stores a credential to the Android Credential Manager.
     // The `completion_callback` should always be invoked on completion, passing
     // a success status.
-    virtual void Store(const std::u16string& username,
+    virtual void Store(content::WebContents& web_contents,
+                       const std::u16string& username,
                        const std::u16string& password,
                        const std::string& origin,
                        base::OnceCallback<void(bool)> completion_callback) = 0;
+
+    virtual void Cancel() = 0;
   };
 
   ThirdPartyCredentialManagerBridge();
@@ -79,16 +91,20 @@ class ThirdPartyCredentialManagerBridge : public CredentialManagerBridge {
 
   ~ThirdPartyCredentialManagerBridge() override;
 
-  void Get(bool is_auto_select_allowed,
+  void Get(content::WebContents& web_contents,
+           bool is_auto_select_allowed,
            bool include_passwords,
            const std::vector<GURL>& federations,
            const std::string& origin,
            GetCallback completion_callback) override;
 
-  void Store(const std::u16string& username,
+  void Store(content::WebContents& web_contents,
+             const std::u16string& username,
              const std::u16string& password,
              const std::string& origin,
              StoreCallback completion_callback) override;
+
+  void Cancel() override;
 
  private:
   // Forwards all requests to JNI. Can be replaced in tests.
