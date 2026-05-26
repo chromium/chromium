@@ -8,15 +8,18 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/contextual_tasks/public/features.h"
 #import "ios/chrome/browser/cobrowse/model/aim_cobrowse_java_script_feature.h"
-#import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
+#import "ios/web/public/test/fakes/fake_web_frame.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "net/base/apple/url_conversions.h"
@@ -45,10 +48,14 @@ class AssistantAIMMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
     auto fake_web_state = std::make_unique<web::FakeWebState>();
+    fake_web_state_ = fake_web_state.get();
     fake_web_state->SetBrowserState(profile_.get());
     auto manager = std::make_unique<web::FakeWebFramesManager>();
-    fake_web_state->SetWebFramesManager(web::ContentWorld::kIsolatedWorld,
+    fake_web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
                                         std::move(manager));
+    AssistantAimTabHelper::CreateForWebState(fake_web_state.get());
+    web::test::OverrideJavaScriptFeatures(
+        profile_.get(), {AimCobrowseJavaScriptFeature::GetInstance()});
 
     mediator_ =
         [[AssistantAIMMediator alloc] initWithWebState:std::move(fake_web_state)
@@ -62,17 +69,20 @@ class AssistantAIMMediatorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    fake_web_state_ = nullptr;
     [mediator_ disconnect];
     mediator_ = nil;
     PlatformTest::TearDown();
   }
 
-  web::WebTaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_{
+      web::WebTaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
+  raw_ptr<web::FakeWebState> fake_web_state_ = nullptr;
   AssistantAIMMediator* mediator_;
   id mock_delegate_;
 };
@@ -95,6 +105,7 @@ TEST_F(AssistantAIMMediatorTest, AbortsWhenWebStateNull) {
   // Non-empty message.
   message.mutable_submit_query()->mutable_payload()->set_query_text("test");
 
+  fake_web_state_ = nullptr;
   [mediator_ disconnect];
 
   [[mock_delegate_ reject] assistantAIMMediatorDidLoadQuery:[OCMArg any]];
@@ -263,4 +274,230 @@ TEST_F(AssistantAIMMediatorTest, CancelsUnauthorizedGoogleRedirection) {
   EXPECT_TRUE(blocked_decision.ShouldCancelNavigation());
   EXPECT_EQ(url_loader_->load_current_tab_call_count, 1);
   EXPECT_EQ(url_loader_->last_params.web_params.url, unauthorized_google_url);
+}
+
+// Tests that the handshake timer is NOT started on a non-AimURL page.
+TEST_F(AssistantAIMMediatorTest, HandshakeTimerNotStartedOnNonAimURL) {
+  fake_web_state_->SetCurrentURL(GURL("https://www.google.com/"));
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com/")));
+  auto* main_frame_ptr = main_frame.get();
+  main_frame_ptr->set_browser_state(profile_.get());
+
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_->GetWebFramesManager(
+              web::ContentWorld::kPageContentWorld));
+  frames_manager->AddWebFrame(std::move(main_frame));
+
+  // Handshake ping should NOT be sent since it is not an AimURL.
+  EXPECT_TRUE(main_frame_ptr->GetJavaScriptCallHistory().empty());
+}
+
+// Tests that the handshake timer IS started when the main frame becomes
+// available on an AimURL page.
+TEST_F(AssistantAIMMediatorTest, HandshakeTimerStartedOnAimURL) {
+  fake_web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=test&udm=50"));
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com/")));
+  auto* main_frame_ptr = main_frame.get();
+  main_frame_ptr->set_browser_state(profile_.get());
+
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_->GetWebFramesManager(
+              web::ContentWorld::kPageContentWorld));
+  frames_manager->AddWebFrame(std::move(main_frame));
+
+  // Handshake ping should be sent immediately.
+  EXPECT_FALSE(main_frame_ptr->GetJavaScriptCallHistory().empty());
+  std::u16string last_call = main_frame_ptr->GetLastJavaScriptCall();
+  EXPECT_TRUE(
+      last_call.find(
+          u"__gCrWeb.callFunctionInGcrWeb('aimCobrowse', 'sendNativeToWeb',") !=
+      std::u16string::npos);
+}
+
+// Tests that the handshake timer is NOT started when a non-main frame (child
+// frame) becomes available on an AimURL page.
+TEST_F(AssistantAIMMediatorTest, HandshakeTimerNotStartedOnNonMainFrame) {
+  fake_web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=test&udm=50"));
+
+  auto child_frame = web::FakeWebFrame::CreateChildWebFrame(
+      url::Origin::Create(GURL("https://www.google.com/")));
+  auto* child_frame_ptr = child_frame.get();
+  child_frame_ptr->set_browser_state(profile_.get());
+
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_->GetWebFramesManager(
+              web::ContentWorld::kPageContentWorld));
+  frames_manager->AddWebFrame(std::move(child_frame));
+
+  // Handshake ping should NOT be sent since this is a non-main frame.
+  EXPECT_TRUE(child_frame_ptr->GetJavaScriptCallHistory().empty());
+}
+
+// Tests that navigating away from an AimURL stops the handshake timer.
+TEST_F(AssistantAIMMediatorTest, HandshakeTimerStoppedOnNavigationToNonAimURL) {
+  fake_web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=test&udm=50"));
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com/")));
+  auto* main_frame_ptr = main_frame.get();
+  main_frame_ptr->set_browser_state(profile_.get());
+
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_->GetWebFramesManager(
+              web::ContentWorld::kPageContentWorld));
+  frames_manager->AddWebFrame(std::move(main_frame));
+
+  // Ping 1 sent immediately.
+  ASSERT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
+
+  // Fast forward 1 second. The repeating timer should fire once.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 2u);
+
+  // Simulate navigating to a non-AimURL.
+  fake_web_state_->SetCurrentURL(GURL("https://www.google.com/"));
+  auto non_aim_main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com/")));
+  auto* non_aim_main_frame_ptr = non_aim_main_frame.get();
+  non_aim_main_frame_ptr->set_browser_state(profile_.get());
+
+  frames_manager->RemoveWebFrame(main_frame_ptr->GetFrameId());
+  frames_manager->AddWebFrame(std::move(non_aim_main_frame));
+
+  // Fast forward another 5 seconds. No new pings should be sent.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_TRUE(non_aim_main_frame_ptr->GetJavaScriptCallHistory().empty());
+}
+
+// Tests that navigating from one AimURL to another AimURL resets and restarts
+// the handshake.
+TEST_F(AssistantAIMMediatorTest,
+       HandshakeTimerRestartsOnNavigationToAnotherAimURL) {
+  fake_web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=page1&udm=50"));
+
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com/")));
+  auto* main_frame_ptr = main_frame.get();
+  main_frame_ptr->set_browser_state(profile_.get());
+
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_->GetWebFramesManager(
+              web::ContentWorld::kPageContentWorld));
+  frames_manager->AddWebFrame(std::move(main_frame));
+
+  // Ping 1 sent immediately.
+  ASSERT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
+
+  // Simulate handshake response received on Page 1 (stops the timer).
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(fake_web_state_);
+  lens::AimToClientMessage handshake_response;
+  handshake_response.mutable_handshake_response();
+  tab_helper->OnMessageReceived(handshake_response);
+  ASSERT_TRUE(tab_helper->IsHandshakeReceived());
+
+  // Fast forward 5 seconds. No new pings should be sent because the timer was
+  // stopped.
+  task_environment_.FastForwardBy(base::Seconds(5));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
+
+  // Simulate navigating to AimURL 2.
+  fake_web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=page2&udm=50"));
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  tab_helper->DidStartNavigation(fake_web_state_, &context);
+
+  // Verify handshake is now reset.
+  EXPECT_FALSE(tab_helper->IsHandshakeReceived());
+
+  // Register the new main frame for Page 2.
+  auto next_main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com/")));
+  auto* next_main_frame_ptr = next_main_frame.get();
+  next_main_frame_ptr->set_browser_state(profile_.get());
+
+  frames_manager->RemoveWebFrame(main_frame_ptr->GetFrameId());
+  frames_manager->AddWebFrame(std::move(next_main_frame));
+
+  // A new handshake ping should be sent immediately on Page 2!
+  EXPECT_EQ(next_main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
+  std::u16string last_call = next_main_frame_ptr->GetLastJavaScriptCall();
+  EXPECT_TRUE(
+      last_call.find(
+          u"__gCrWeb.callFunctionInGcrWeb('aimCobrowse', 'sendNativeToWeb',") !=
+      std::u16string::npos);
+}
+
+// Tests that receiving a handshake response stores capabilities correctly in
+// the mediator.
+TEST_F(AssistantAIMMediatorTest, HandshakeCapabilitiesStored) {
+  EXPECT_FALSE(mediator_.capabilities.has_value());
+
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(fake_web_state_);
+  lens::AimToClientMessage message;
+  message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+  message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::OPEN_THREADS_VIEW);
+
+  tab_helper->OnMessageReceived(message);
+
+  // Capabilities should now be stored.
+  ASSERT_TRUE(mediator_.capabilities.has_value());
+  EXPECT_EQ(mediator_.capabilities->size(), 2u);
+  EXPECT_TRUE([mediator_ supportsCapability:lens::FeatureCapability::DEFAULT]);
+  EXPECT_TRUE([mediator_
+      supportsCapability:lens::FeatureCapability::OPEN_THREADS_VIEW]);
+  EXPECT_FALSE(
+      [mediator_ supportsCapability:lens::FeatureCapability::LOCK_INPUT]);
+}
+
+// Tests that stored capabilities are cleared when navigating to a new page.
+TEST_F(AssistantAIMMediatorTest, HandshakeCapabilitiesResetOnNavigation) {
+  fake_web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=test&udm=50"));
+
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(fake_web_state_);
+  lens::AimToClientMessage message;
+  message.mutable_handshake_response()->add_capabilities(
+      lens::FeatureCapability::DEFAULT);
+
+  tab_helper->OnMessageReceived(message);
+  ASSERT_TRUE(mediator_.capabilities.has_value());
+
+  // Simulate navigating to a new AIM page.
+  fake_web_state_->SetCurrentURL(
+      GURL("https://www.google.com/search?q=test2&udm=50"));
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  tab_helper->DidStartNavigation(fake_web_state_, &context);
+
+  // Simulate main frame becoming available.
+  auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
+      url::Origin::Create(GURL("https://www.google.com/")));
+  main_frame->set_browser_state(profile_.get());
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_->GetWebFramesManager(
+              web::ContentWorld::kPageContentWorld));
+  frames_manager->AddWebFrame(std::move(main_frame));
+
+  // Verify capabilities are reset to std::nullopt.
+  EXPECT_FALSE(mediator_.capabilities.has_value());
 }

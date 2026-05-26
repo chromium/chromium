@@ -7,6 +7,8 @@
 #import "base/base64.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/values.h"
+#import "ios/chrome/browser/cobrowse/model/assistant_aim_tab_helper.h"
+#import "ios/web/public/js_messaging/script_message.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -24,7 +26,7 @@ AimCobrowseJavaScriptFeature* AimCobrowseJavaScriptFeature::GetInstance() {
 
 AimCobrowseJavaScriptFeature::AimCobrowseJavaScriptFeature()
     : web::JavaScriptFeature(
-          web::ContentWorld::kIsolatedWorld,
+          web::ContentWorld::kPageContentWorld,
           {FeatureScript::CreateWithFilename(
               kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
@@ -56,4 +58,39 @@ void AimCobrowseJavaScriptFeature::SendNativeToWeb(
   parameters.Append(base64_message);
 
   CallJavaScriptFunction(main_frame, "aimCobrowse.sendNativeToWeb", parameters);
+}
+
+std::optional<std::string>
+AimCobrowseJavaScriptFeature::GetScriptMessageHandlerName() const {
+  return "AimCobrowseMessageHandler";
+}
+
+void AimCobrowseJavaScriptFeature::ScriptMessageReceived(
+    web::WebState* web_state,
+    const web::ScriptMessage& message) {
+  AssistantAimTabHelper* tab_helper =
+      AssistantAimTabHelper::FromWebState(web_state);
+  if (!tab_helper) {
+    return;
+  }
+  if (!message.is_main_frame()) {
+    return;
+  }
+  if (!message.body() || !message.body()->is_dict()) {
+    return;
+  }
+  const base::DictValue& dict = message.body()->GetDict();
+  const std::string* base64_message = dict.FindString("message");
+  if (!base64_message) {
+    return;
+  }
+  std::string serialized_message;
+  if (!base::Base64Decode(*base64_message, &serialized_message)) {
+    return;
+  }
+  lens::AimToClientMessage aim_to_client_message;
+  if (!aim_to_client_message.ParseFromString(serialized_message)) {
+    return;
+  }
+  tab_helper->OnMessageReceived(aim_to_client_message);
 }

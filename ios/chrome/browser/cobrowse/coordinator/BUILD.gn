@@ -56,6 +56,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/url_loading/model:test_support",
     "//ios/chrome/browser/web/model:web_internal",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",

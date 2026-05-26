@@ -8,6 +8,8 @@ source_set("model") {
   sources = [
     "aim_cobrowse_java_script_feature.h",
     "aim_cobrowse_java_script_feature.mm",
+    "assistant_aim_tab_helper.h",
+    "assistant_aim_tab_helper.mm",
     "cobrowse_browser_agent.h",
     "cobrowse_browser_agent.mm",
     "cobrowse_context.h",
@@ -71,6 +73,8 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "aim_cobrowse_java_script_feature_unittest.mm",
+    "aim_cobrowse_javascript_test.mm",
+    "assistant_aim_tab_helper_unittest.mm",
     "cobrowse_context_unittest.mm",
     "cobrowse_tab_helper_unittest.mm",
   ]
@@ -91,7 +95,9 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:javascript_test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/lens_server_proto:lens_overlay_proto",

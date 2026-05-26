@@ -8,10 +8,13 @@
 #import <Foundation/Foundation.h>
 
 #import <memory>
+#import <optional>
+#import <vector>
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_url_loader.h"
+#import "third_party/lens_server_proto/aim_communication.pb.h"
 
 @protocol AssistantContainerCommands;
 @class CobrowseContext;
@@ -57,6 +60,14 @@ class WebState;
 
 // The delegate of the mediator.
 @property(nonatomic, weak) id<AssistantAIMMediatorDelegate> delegate;
+
+// Returns YES if the AIM page supports the given capability. Returns NO if
+// the handshake has not completed yet or the capability is not supported.
+- (BOOL)supportsCapability:(lens::FeatureCapability)capability;
+
+// Returns the active capabilities of the current AIM page. Returns std::nullopt
+// if the handshake has not completed yet.
+- (const std::optional<std::vector<lens::FeatureCapability>>&)capabilities;
 
 // Disconnects the mediator.
 - (void)disconnect;
