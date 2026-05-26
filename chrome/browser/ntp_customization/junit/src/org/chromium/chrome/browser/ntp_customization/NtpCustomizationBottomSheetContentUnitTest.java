@@ -24,6 +24,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -313,6 +314,22 @@ public final class NtpCustomizationBottomSheetContentUnitTest {
         Assert.assertEquals(
                 R.string.ntp_customization_chrome_colors_bottom_sheet_opened_half,
                 mBottomSheetContent.getSheetHalfHeightAccessibilityStringId());
+
+        // Verifies the expected content description and accessibility strings when the theme tip
+        // bottom sheet is active.
+        mBottomSheetContent.setCurrentBottomSheetTypeSupplierForTesting(() -> THEME_TIP);
+        assertEquals(
+                "New tab page appearance bottom sheet",
+                mBottomSheetContent.getSheetContentDescription(mContext));
+        Assert.assertEquals(
+                R.string.ntp_customization_theme_tip_bottom_sheet_opened_full,
+                mBottomSheetContent.getSheetFullHeightAccessibilityStringId());
+        Assert.assertEquals(
+                R.string.ntp_customization_theme_tip_bottom_sheet_opened_half,
+                mBottomSheetContent.getSheetHalfHeightAccessibilityStringId());
+        Assert.assertEquals(
+                R.string.ntp_customization_theme_tip_bottom_sheet_closed,
+                mBottomSheetContent.getSheetClosedAccessibilityStringId());
     }
 
     @Test

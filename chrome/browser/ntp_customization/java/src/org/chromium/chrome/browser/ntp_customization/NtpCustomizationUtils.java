@@ -229,8 +229,10 @@ public class NtpCustomizationUtils {
                 return R.string.ntp_customization_ntp_cards_bottom_sheet_opened_full;
             case FEED:
                 return R.string.ntp_customization_feed_bottom_sheet_opened_full;
-            case THEME, THEME_TIP:
+            case THEME:
                 return R.string.ntp_customization_theme_bottom_sheet_opened_full;
+            case THEME_TIP:
+                return R.string.ntp_customization_theme_tip_bottom_sheet_opened_full;
             case THEME_COLLECTIONS:
             case SINGLE_THEME_COLLECTION:
                 return R.string.ntp_customization_theme_collections_bottom_sheet_opened_full;
@@ -257,8 +259,10 @@ public class NtpCustomizationUtils {
                 return R.string.ntp_customization_ntp_cards_bottom_sheet_opened_half;
             case FEED:
                 return R.string.ntp_customization_feed_bottom_sheet_opened_half;
-            case THEME, THEME_TIP:
+            case THEME:
                 return R.string.ntp_customization_theme_bottom_sheet_opened_half;
+            case THEME_TIP:
+                return R.string.ntp_customization_theme_tip_bottom_sheet_opened_half;
             case THEME_COLLECTIONS:
             case SINGLE_THEME_COLLECTION:
                 return R.string.ntp_customization_theme_collections_bottom_sheet_opened_half;
@@ -267,6 +271,20 @@ public class NtpCustomizationUtils {
             default:
                 assert false : "Bottom sheet type not supported!";
                 return -1;
+        }
+    }
+
+    /**
+     * Returns the resource ID for the accessibility string announced when the bottom sheet is
+     * closed.
+     */
+    public static int getSheetClosedAccessibilityStringId(
+            @NtpCustomizationCoordinator.BottomSheetType int type) {
+        switch (type) {
+            case THEME_TIP:
+                return R.string.ntp_customization_theme_tip_bottom_sheet_closed;
+            default:
+                return R.string.ntp_customization_main_bottom_sheet_closed;
         }
     }
 
