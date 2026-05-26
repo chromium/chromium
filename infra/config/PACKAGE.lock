@@ -1,5 +1,5 @@
 {
-	"lucicfg": "1.46.2",
+	"lucicfg": "1.46.3",
 	"packages": [
 		{
 			"name": "@chromium-project",
@@ -32,7 +32,7 @@
 			"name": "@chromium-luci",
 			"source": {
 				"repo": "https://chromium.googlesource.com/infra/chromium/+/refs/heads/main",
-				"revision": "82276c51a10e5c232c2259e914b3d69a7525df63",
+				"revision": "b5db180b6ca4f82f62669c0acbbcc34655698d6a",
 				"path": "starlark-libs/chromium-luci"
 			},
 			"lucicfg": "1.46.1"
