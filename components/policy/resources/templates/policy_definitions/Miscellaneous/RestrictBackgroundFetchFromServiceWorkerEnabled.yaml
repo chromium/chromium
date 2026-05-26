@@ -1,9 +1,13 @@
 caption: Restrict Background Fetch API when called from a Service Worker
-default: null
+default: true
 desc: |-
   This policy controls whether background fetch requests from Service Workers are restricted. If a feature that downloads files in the background is affected, this policy may be relevant.
+
   If this policy is set to Enabled, or left unset, the restriction is active, and background fetch requests from Service Worker contexts may be blocked.
+
   If this policy is set to Disabled, the restriction is bypassed, allowing all Service Workers to make background fetch requests.
+
+  This enterprise policy is temporary, and will be removed after M152.
 example_value: true
 features:
   dynamic_refresh: true
@@ -13,8 +17,6 @@ items:
   value: true
 - caption: 'Disabled: Background Fetch from Service Workers is allowed without restrictions.'
   value: false
-- caption: 'Default: Background Fetch restriction depends on browser defaults and field trials.'
-  value: null
 owners:
 - yyanagisawa@chromium.org
 - sisidovski@chromium.org

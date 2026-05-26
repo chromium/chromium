@@ -8,7 +8,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
@@ -90,6 +92,14 @@ IN_PROC_BROWSER_TEST_P(RestrictBackgroundFetchPolicyBrowserTest,
   ASSERT_EQ("ok - service worker registered",
             EvalJs(chrome_test_utils::GetActiveWebContents(this),
                    "RegisterServiceWorker()"));
+
+  // Verify that the preference reflects the expected value.
+  // When Policy::kDefault is used, the preference should be true because
+  // the policy defaults to true in the YAML definition.
+  EXPECT_EQ(
+      GetParam() != Policy::kFalse,
+      chrome_test_utils::GetProfile(this)->GetPrefs()->GetBoolean(
+          policy_prefs::kRestrictBackgroundFetchFromServiceWorkerEnabled));
 
   if (GetParam() == Policy::kFalse) {
     // If policy is set to false, the restriction is bypassed/allowed.
