@@ -83,6 +83,7 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/common/content_constants_internal.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/common/features.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/common/trace_utils.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
@@ -4652,6 +4653,16 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           false /* is_history_navigation_in_new_child_frame */,
           params.input_start, network::mojom::RequestDestination::kEmpty);
 
+  // It is safe to convert GURL to an Origin and back in the code below because
+  // we only want to discard the rest of the URL (e.g., path and params). The
+  // actual underlying Origin is not needed, which could be inherited or opaque
+  // in sandbox cases.
+  const GURL original_url_for_renderer =
+      base::FeatureList::IsEnabled(
+          features::kSanitizeOriginalUrlDuringNavigation)
+          ? common_params->url.DeprecatedGetOriginAsURL()
+          : common_params->url;
+
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
           url::Origin(),
@@ -4660,7 +4671,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           blink::StorageKey(), override_user_agent, params.redirect_chain,
           std::vector<network::mojom::URLResponseHeadPtr>(),
           std::vector<net::RedirectInfo>(), params.post_content_type,
-          common_params->url, common_params->method,
+          original_url_for_renderer, common_params->method,
           params.can_load_local_resources, page_state_data,
           entry->GetUniqueID(), entry->GetSubframeUniqueNames(node),
           /*intended_as_new_entry=*/true,
@@ -4859,12 +4870,22 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   common_params->is_history_navigation_in_new_child_frame =
       is_history_navigation_in_new_child_frame;
 
+  // It is safe to convert GURL to an Origin and back in the code below because
+  // we only want to discard the rest of the URL (e.g., path and params). The
+  // actual underlying Origin is not needed, which could be inherited or opaque
+  // in sandbox cases.
+  const GURL original_url_for_renderer =
+      base::FeatureList::IsEnabled(
+          features::kSanitizeOriginalUrlDuringNavigation)
+          ? common_params->url.DeprecatedGetOriginAsURL()
+          : common_params->url;
+
   // TODO(clamy): |intended_as_new_entry| below should always be false once
   // Reload no longer leads to this being called for a pending NavigationEntry
   // of index -1.
   blink::mojom::CommitNavigationParamsPtr commit_params =
       entry->ConstructCommitNavigationParams(
-          *frame_entry, common_params->url, common_params->method,
+          *frame_entry, original_url_for_renderer, common_params->method,
           entry->GetSubframeUniqueNames(frame_tree_node),
           GetPendingEntryIndex() == -1 /* intended_as_new_entry */,
           GetIndexOfEntry(entry), GetLastCommittedEntryIndex(), GetEntryCount(),
@@ -5733,7 +5754,15 @@ NavigationControllerImpl::CreateNavigationRequestForErrorPage(
 
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::CreateCommitNavigationParams();
-  commit_params->original_url = common_params->url;
+  // It is safe to convert GURL to an Origin and back in the code below because
+  // we only want to discard the rest of the URL (e.g., path and params). The
+  // actual underlying Origin is not needed, which could be inherited or opaque
+  // in sandbox cases.
+  commit_params->original_url =
+      base::FeatureList::IsEnabled(
+          features::kSanitizeOriginalUrlDuringNavigation)
+          ? common_params->url.DeprecatedGetOriginAsURL()
+          : common_params->url;
 
   // TODO(arthursonzogni): Consider providing the minimal capabilities to the
   // error pages.

@@ -620,9 +620,17 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
     bool is_main_frame,
     WebNavigationParams* navigation_params,
     bool is_ad_frame) {
-  // Use the original navigation url to start with. We'll replay the
-  // redirects afterwards and will eventually arrive to the final url.
-  const KURL original_url = !commit_params->original_url.is_empty()
+  // Use the original navigation URL to start with. Note that when the browser
+  // enables redirect sanitization (via
+  // `features::kSanitizeOriginalUrlDuringNavigation`), it populates
+  // `commit_params->original_url` with only the sanitized origin of the
+  // original URL instead of the full URL by calling DeprecatedGetOriginAsURL().
+  // We'll replay the redirects afterwards and will eventually arrive at the
+  // final URL. For non-redirecting navigations, use the final URL to be
+  // committed (as that is the same as the original URL).
+  const bool should_use_original_url = !commit_params->redirect_infos.empty() &&
+                                       !commit_params->original_url.is_empty();
+  const KURL original_url = should_use_original_url
                                 ? KURL(commit_params->original_url)
                                 : KURL(common_params->url);
   KURL url = original_url;

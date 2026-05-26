@@ -418,7 +418,8 @@ struct CommitNavigationParams {
   // The content type from the request headers for POST requests.
   string post_content_type;
 
-  // The original URL & method for this navigation.
+  // The original URL and method for this navigation.
+  // TODO(crbug.com/495463654): Replace original_url with original_origin.
   url.mojom.Url original_url;
   string original_method;
 

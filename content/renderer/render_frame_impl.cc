@@ -492,11 +492,18 @@ void FillNavigationParamsRequest(
     const blink::mojom::CommonNavigationParams& common_params,
     const blink::mojom::CommitNavigationParams& commit_params,
     blink::WebNavigationParams* navigation_params) {
-  // Use the original navigation url to start with. We'll replay the redirects
-  // afterwards and will eventually arrive to the final url.
-  navigation_params->url = !commit_params.original_url.is_empty()
-                               ? commit_params.original_url
-                               : common_params.url;
+  // Use the original navigation URL to start with. Note that when the browser
+  // enables redirect sanitization (via
+  // `features::kSanitizeOriginalUrlDuringNavigation`), it populates
+  // `commit_params->original_url` with only the sanitized origin of the
+  // original URL instead of the full URL by calling DeprecatedGetOriginAsURL().
+  // We'll replay the redirects afterwards and will eventually arrive at the
+  // final URL. For non-redirecting navigations, use the final URL to be
+  // committed (as that is the same as the original URL).
+  const bool should_use_original_url = !commit_params.redirect_infos.empty() &&
+                                       !commit_params.original_url.is_empty();
+  navigation_params->url =
+      should_use_original_url ? commit_params.original_url : common_params.url;
   navigation_params->http_method = WebString::FromAscii(
       !commit_params.original_method.empty() ? commit_params.original_method
                                              : common_params.method);

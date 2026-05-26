@@ -1849,6 +1849,14 @@ class CONTENT_EXPORT NavigationRequest
   friend class NavigationRequestTest;
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest, SanitizeRedirectsForCommit);
   FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
+                           SanitizeRedirectsForCommitRelativeLocation);
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
+                           SanitizeRedirectsForCommitNonStandardRelative);
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
+                           SanitizeRedirectsForCommitHostlessNonStandard);
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
+                           SanitizeRedirectsForCommitErrorPage);
+  FRIEND_TEST_ALL_PREFIXES(NavigationRequestTest,
                            ShouldRecordNavigationTimelineUkmForChromeUI);
 
   struct ConsoleMessage {

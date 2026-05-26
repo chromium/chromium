@@ -1391,6 +1391,16 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
   common_params->request_destination =
       GetDestinationFromFrameTreeNode(frame_tree_node);
 
+  GURL original_url = common_params->url;
+  if (base::FeatureList::IsEnabled(
+          features::kSanitizeOriginalUrlDuringNavigation)) {
+    // It is safe to convert GURL to an Origin and back in the code below
+    // because we only want to discard the rest of the URL (e.g., path and
+    // params). The actual underlying Origin is not needed, which could be
+    // inherited or opaque in sandbox cases.
+    original_url = common_params->url.DeprecatedGetOriginAsURL();
+  }
+
   // TODO(clamy): See if the navigation start time should be measured in the
   // renderer and sent to the browser instead of being measured here.
   blink::mojom::CommitNavigationParamsPtr commit_params =
@@ -1403,7 +1413,7 @@ std::unique_ptr<NavigationRequest> NavigationRequest::CreateRendererInitiated(
           /*redirect_response=*/
           std::vector<network::mojom::URLResponseHeadPtr>(),
           /*redirect_infos=*/std::vector<net::RedirectInfo>(),
-          /*post_content_type=*/std::string(), common_params->url,
+          /*post_content_type=*/std::string(), original_url,
           common_params->method,
           /*can_load_local_resources=*/false,
           /*page_state=*/std::string(),
@@ -1553,6 +1563,15 @@ NavigationRequest::CreateForSynchronousRendererCommit(
   // by navigations that went through the browser (e.g. page_state is only
   // set in CommitNavigationParams of history navigations) or these values are
   // not used by the browser after commit.
+  // It is safe to convert GURL to an Origin and back in the code below because
+  // we only want to discard the rest of the URL (e.g., path and params). The
+  // actual underlying Origin is not needed, which could be inherited or opaque
+  // in sandbox cases.
+  const GURL original_url_for_renderer =
+      base::FeatureList::IsEnabled(
+          features::kSanitizeOriginalUrlDuringNavigation)
+          ? original_url.DeprecatedGetOriginAsURL()
+          : original_url;
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
           url::Origin(),
@@ -1562,7 +1581,7 @@ NavigationRequest::CreateForSynchronousRendererCommit(
           /*redirect_response=*/
           std::vector<network::mojom::URLResponseHeadPtr>(),
           /*redirect_infos=*/std::vector<net::RedirectInfo>(),
-          /*post_content_type=*/std::string(), original_url,
+          /*post_content_type=*/std::string(), original_url_for_renderer,
           /*original_method=*/method,
           /*can_load_local_resources=*/false,
           /*page_state=*/std::string(),
@@ -1788,7 +1807,13 @@ NavigationRequest::NavigationRequest(
         !common_params_->initiator_base_url->is_empty());
   CHECK(!blink::IsRendererDebugURL(common_params_->url));
   CHECK(common_params_->method == "POST" || !common_params_->post_data);
-  CHECK_EQ(common_params_->url, commit_params_->original_url);
+  if (base::FeatureList::IsEnabled(
+          features::kSanitizeOriginalUrlDuringNavigation)) {
+    CHECK_EQ(common_params_->url.DeprecatedGetOriginAsURL(),
+             commit_params_->original_url);
+  } else {
+    CHECK_EQ(common_params_->url, commit_params_->original_url);
+  }
   // Navigations can't be a replacement and a reload at the same time.
   CHECK(!common_params_->should_replace_current_entry ||
         !NavigationTypeUtils::IsReload(common_params_->navigation_type));
@@ -2848,7 +2873,16 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
   const GURL& mapped_url_value =
       properties->mapped_url()->GetValueIgnoringVisibility();
   common_params_->url = mapped_url_value;
-  commit_params_->original_url = mapped_url_value;
+  if (base::FeatureList::IsEnabled(
+          features::kSanitizeOriginalUrlDuringNavigation)) {
+    // It is safe to convert GURL to an Origin and back in the code below
+    // because we only want to discard the rest of the URL (e.g., path and
+    // params). The actual underlying Origin is not needed, which could be
+    // inherited or opaque in sandbox cases.
+    commit_params_->original_url = mapped_url_value.DeprecatedGetOriginAsURL();
+  } else {
+    commit_params_->original_url = mapped_url_value;
+  }
 
   // Store the browser's view of the fenced frame properties along with any
   // embedder context for shared storage in the`NavigationRequest`. Upon commit,
@@ -7847,7 +7881,17 @@ net::Error NavigationRequest::CheckContentSecurityPolicy(
       network::UpgradeInsecureRequest(&common_params_->url);
       common_params_->referrer = Referrer::SanitizeForRequest(
           common_params_->url, *common_params_->referrer);
-      commit_params_->original_url = common_params_->url;
+      if (base::FeatureList::IsEnabled(
+              features::kSanitizeOriginalUrlDuringNavigation)) {
+        // It is safe to convert GURL to an Origin and back in the code below
+        // because we only want to discard the rest of the URL (e.g., path and
+        // params). The actual underlying Origin is not needed, which could be
+        // inherited or opaque in sandbox cases.
+        commit_params_->original_url =
+            common_params_->url.DeprecatedGetOriginAsURL();
+      } else {
+        commit_params_->original_url = common_params_->url;
+      }
     }
   }
 
@@ -8120,6 +8164,31 @@ void NavigationRequest::SanitizeRedirectsForCommit(
     for (net::RedirectInfo& redirect :
          redirect_infos_span.first(redirect_infos_span.size() - 1)) {
       redirect.new_url = redirect.new_url.DeprecatedGetOriginAsURL();
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kSanitizeLocationHeadersDuringNavigation)) {
+    url::Origin final_origin = url::Origin::Create(common_params_->url);
+
+    // Sanitize the "Location" headers for redirects that are cross-origin to
+    // the final committed URL.
+    // TODO(crbug.com/495463654): Consider if we need to handle cases that
+    // inherit an origin (e.g. about:blank), or if we cross a CSP sandbox
+    // boundary where the origin becomes unique/opaque.
+    for (size_t i = 0; i < commit_params->redirect_response.size(); ++i) {
+      auto& response_head = commit_params->redirect_response[i];
+      if (!response_head || !response_head->headers ||
+          !response_head->headers->HasHeader("Location")) {
+        continue;
+      }
+
+      const GURL& target_url = commit_params->redirect_infos[i].new_url;
+      const url::Origin target_origin = url::Origin::Create(target_url);
+      if (!target_origin.IsSameOriginWith(final_origin)) {
+        response_head->headers->SetHeader("Location",
+                                          target_origin.GetURL().spec());
+      }
     }
   }
 }

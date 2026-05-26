@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/navigation_throttle_runner.h"
+#include "content/common/features.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/process_selection_user_data.h"
@@ -890,9 +891,216 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommit) {
   EXPECT_EQ(GURL("https://c.com"), commit_params->redirects[2]);
 }
 
+// Test to ensure that relative Location headers are handled correctly during
+// sanitization (not cleared if same-origin, and sanitized to origin if
+// cross-origin).
+TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitRelativeLocation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSanitizeLocationHeadersDuringNavigation,
+                            features::kSanitizeOriginalUrlDuringNavigation},
+      /*disabled_features=*/{});
+  const GURL start_url("https://a.com/start");
+  const GURL url_2("https://a.com/foo");
+  const GURL url_3("https://b.com/bar");
+  const GURL url_4("https://b.com/baz");
+  const GURL final_url("https://b.com/final");
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(start_url, main_test_rfh());
+  navigation->Start();
+
+  // 1. Redirect to same-site (relative). Cross-origin to final URL.
+  auto headers1 =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 302 Found");
+  headers1->SetHeader("Location", "/foo");
+  navigation->SetRedirectHeaders(headers1);
+  navigation->Redirect(url_2);
+
+  // 2. Redirect to cross-site (absolute). Same-origin to final URL.
+  auto headers2 =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 302 Found");
+  headers2->SetHeader("Location", "https://b.com/bar");
+  navigation->SetRedirectHeaders(headers2);
+  navigation->Redirect(url_3);
+
+  // 3. Redirect to same-site (relative). Same-origin to final URL.
+  auto headers3 =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 302 Found");
+  headers3->SetHeader("Location", "/baz");
+  navigation->SetRedirectHeaders(headers3);
+  navigation->Redirect(url_4);
+
+  // Final navigation to D.
+  navigation->Redirect(final_url);
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  auto commit_params = request->commit_params().Clone();
+
+  request->SanitizeRedirectsForCommit(commit_params);
+
+  EXPECT_EQ(4u, commit_params->redirect_response.size());
+
+  size_t iter = 0;
+  std::optional<std::string_view> location;
+
+  // 1. "Location: /foo" resolves to cross-origin URL. Should be sanitized to
+  // origin.
+  location = commit_params->redirect_response[0]->headers->EnumerateHeader(
+      &iter, "Location");
+  ASSERT_TRUE(location.has_value());
+  EXPECT_EQ("https://a.com/", location.value());
+
+  // 2. "Location: https://b.com/bar" is same-origin to final URL. Should be
+  // left alone.
+  iter = 0;
+  location = commit_params->redirect_response[1]->headers->EnumerateHeader(
+      &iter, "Location");
+  ASSERT_TRUE(location.has_value());
+  EXPECT_EQ("https://b.com/bar", location.value());
+
+  // 3. "Location: /baz" resolves to same-origin URL. Should be left alone as
+  // relative URL.
+  iter = 0;
+  location = commit_params->redirect_response[2]->headers->EnumerateHeader(
+      &iter, "Location");
+  ASSERT_TRUE(location.has_value());
+  EXPECT_EQ("/baz", location.value());
+
+  // The original navigation URL should be sanitized to origin when
+  // kSanitizeOriginalUrlDuringNavigation is enabled.
+  EXPECT_EQ(GURL("https://a.com/"), commit_params->original_url);
+}
+
+// Test to ensure that relative Location headers on non-standard schemes are
+// handled correctly during sanitization.
+TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitNonStandardRelative) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSanitizeLocationHeadersDuringNavigation,
+                            features::kSanitizeOriginalUrlDuringNavigation},
+      /*disabled_features=*/{});
+
+  url::ScopedSchemeRegistryForTests scoped_registry;
+  url::AddStandardScheme("chrome-foo", url::SCHEME_WITH_HOST);
+
+  const GURL start_url("chrome-foo://history/start");
+  const GURL url_2("chrome-foo://history/foo");
+  const GURL url_3("chrome-foo://newtab/bar");
+  const GURL final_url("chrome-foo://newtab/final");
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(start_url, main_test_rfh());
+  navigation->Start();
+
+  // 1. Redirect to same-site (relative). Cross-origin to final URL.
+  auto headers1 =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 302 Found");
+  headers1->SetHeader("Location", "/foo");
+  navigation->SetRedirectHeaders(headers1);
+  navigation->Redirect(url_2);
+
+  // 2. Redirect to cross-site (absolute). Same-origin to final URL.
+  auto headers2 =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 302 Found");
+  headers2->SetHeader("Location", "chrome-foo://newtab/bar");
+  navigation->SetRedirectHeaders(headers2);
+  navigation->Redirect(url_3);
+
+  // Final navigation to D.
+  navigation->Redirect(final_url);
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  auto commit_params = request->commit_params().Clone();
+
+  request->SanitizeRedirectsForCommit(commit_params);
+
+  EXPECT_EQ(3u, commit_params->redirect_response.size());
+
+  size_t iter = 0;
+  std::optional<std::string_view> location;
+
+  // 1. "Location: /foo" resolves to cross-origin URL. Should be sanitized to
+  // origin.
+  location = commit_params->redirect_response[0]->headers->EnumerateHeader(
+      &iter, "Location");
+  ASSERT_TRUE(location.has_value());
+  EXPECT_EQ("chrome-foo://history/", location.value());
+
+  // 2. "Location: chrome-foo://newtab/bar" is same-origin to final URL.
+  // Should be left alone.
+  iter = 0;
+  location = commit_params->redirect_response[1]->headers->EnumerateHeader(
+      &iter, "Location");
+  ASSERT_TRUE(location.has_value());
+  EXPECT_EQ("chrome-foo://newtab/bar", location.value());
+
+  // The original navigation URL should be sanitized to origin when
+  // kSanitizeOriginalUrlDuringNavigation is enabled.
+  EXPECT_EQ(GURL("chrome-foo://history/"), commit_params->original_url);
+}
+
+// Test to ensure that hostless non-standard schemes (like data:) are handled
+// safely and treated as cross-origin during sanitization.
+TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitHostlessNonStandard) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSanitizeLocationHeadersDuringNavigation,
+                            features::kSanitizeOriginalUrlDuringNavigation},
+      /*disabled_features=*/{});
+
+  const GURL start_url("https://a.com/start");
+  const GURL url_2("data:text/html,foo");
+  const GURL final_url("https://a.com/final");
+
+  std::unique_ptr<NavigationSimulator> navigation =
+      NavigationSimulator::CreateRendererInitiated(start_url, main_test_rfh());
+  navigation->Start();
+
+  // 1. Redirect to data: URL.
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 302 Found");
+  headers->SetHeader("Location", "data:text/html,foo");
+  navigation->SetRedirectHeaders(headers);
+  navigation->Redirect(url_2);
+
+  // Final navigation to D.
+  navigation->Redirect(final_url);
+
+  NavigationRequest* request =
+      NavigationRequest::From(navigation->GetNavigationHandle());
+  auto commit_params = request->commit_params().Clone();
+
+  request->SanitizeRedirectsForCommit(commit_params);
+
+  EXPECT_EQ(2u, commit_params->redirect_response.size());
+
+  size_t iter = 0;
+  std::optional<std::string_view> location;
+
+  // "Location: data:text/html,foo" resolves to cross-origin URL (since data:
+  // has no origin). Should be sanitized to empty string because
+  // GetOriginForSanitization returns empty!
+  location = commit_params->redirect_response[0]->headers->EnumerateHeader(
+      &iter, "Location");
+  ASSERT_TRUE(location.has_value());
+  EXPECT_EQ("", location.value());
+
+  // The original navigation URL should be sanitized to origin when
+  // kSanitizeOriginalUrlDuringNavigation is enabled.
+  EXPECT_EQ(GURL("https://a.com/"), commit_params->original_url);
+}
+
 // Test to ensure that SanitizeRedirectsForCommit is called when a navigation
 // fails and commits an error page.
 TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitErrorPage) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kSanitizeOriginalUrlDuringNavigation},
+      /*disabled_features=*/{});
+
   const GURL start_url("https://a.com?param=1");
   const GURL url_2("https://b.com?param=2#foo");
   const GURL final_url("https://d.com?param=4");
@@ -921,6 +1129,10 @@ TEST_F(NavigationRequestTest, SanitizeRedirectsForCommitErrorPage) {
   EXPECT_EQ(2u, commit_params.redirect_infos.size());
   EXPECT_EQ(GURL("https://b.com"), commit_params.redirect_infos[0].new_url);
   EXPECT_EQ(final_url, commit_params.redirect_infos[1].new_url);
+
+  // The original navigation URL should be sanitized to origin when
+  // kSanitizeOriginalUrlDuringNavigation is enabled.
+  EXPECT_EQ(GURL("https://a.com/"), commit_params.original_url);
 }
 
 TEST_F(NavigationRequestTest, AbortsDeletedNavigationInProgress) {

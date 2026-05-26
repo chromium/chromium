@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/queue.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
@@ -28,6 +29,7 @@
 #include "content/browser/renderer_host/navigation_entry_restore_context_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/common/content_constants_internal.h"
+#include "content/common/features.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/url_constants.h"
@@ -1032,6 +1034,12 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     current_length_to_send = 0;
   }
 
+  const GURL original_url_for_renderer =
+      base::FeatureList::IsEnabled(
+          features::kSanitizeOriginalUrlDuringNavigation)
+          ? original_url.DeprecatedGetOriginAsURL()
+          : original_url;
+
   blink::mojom::CommitNavigationParamsPtr commit_params =
       blink::mojom::CommitNavigationParams::New(
           url::Origin(),
@@ -1039,12 +1047,12 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
           // navigation.
           blink::StorageKey(), GetIsOverridingUserAgent(), redirects,
           std::vector<network::mojom::URLResponseHeadPtr>(),
-          std::vector<net::RedirectInfo>(), std::string(), original_url,
-          original_method, GetCanLoadLocalResources(),
-          frame_entry.page_state().ToEncodedData(), GetUniqueID(),
-          subframe_unique_names, intended_as_new_entry, pending_index_to_send,
-          current_index_to_send, current_length_to_send, false,
-          IsViewSourceMode(), should_clear_history_list(),
+          std::vector<net::RedirectInfo>(), std::string(),
+          original_url_for_renderer, original_method,
+          GetCanLoadLocalResources(), frame_entry.page_state().ToEncodedData(),
+          GetUniqueID(), subframe_unique_names, intended_as_new_entry,
+          pending_index_to_send, current_index_to_send, current_length_to_send,
+          false, IsViewSourceMode(), should_clear_history_list(),
           blink::mojom::NavigationTiming::New(),
           blink::mojom::WasActivatedOption::kUnknown,
           base::UnguessableToken::Create(),
