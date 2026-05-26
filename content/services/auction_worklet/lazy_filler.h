@@ -42,7 +42,8 @@ class LazyFiller {
   virtual ~LazyFiller();
 
  protected:
-  explicit LazyFiller(AuctionV8Helper* v8_helper);
+  explicit LazyFiller(AuctionV8Helper* v8_helper,
+                      gin::ExternalPointerTypeTag tag);
   AuctionV8Helper* v8_helper() { return v8_helper_.get(); }
 
   // Returns the C++ object DefineLazyAttribute() was invoked on, from the
@@ -52,8 +53,7 @@ class LazyFiller {
   // Does not work with attributes set by DefineLazyAttributeWithMetadata().
   template <typename T>
   static T* GetSelf(const v8::PropertyCallbackInfo<v8::Value>& info) {
-    return static_cast<T*>(
-        v8::External::Cast(*info.Data())->Value(gin::kLazyFillerTag));
+    return static_cast<T*>(v8::External::Cast(*info.Data())->Value(T::kTag));
   }
 
   // Like GetSelf(), but for DefineLazyAttributeWithMetadata().
@@ -62,7 +62,8 @@ class LazyFiller {
   template <typename T>
   static T* GetSelfWithMetadata(const v8::PropertyCallbackInfo<v8::Value>& info,
                                 v8::Local<v8::Value>& metadata) {
-    return static_cast<T*>(GetSelfWithMetadataInternal(info, metadata));
+    return static_cast<T*>(
+        GetSelfWithMetadataInternal(info, metadata, T::kTag));
   }
 
   static void SetResult(const v8::PropertyCallbackInfo<v8::Value>& info,
@@ -86,9 +87,11 @@ class LazyFiller {
  private:
   static void* GetSelfWithMetadataInternal(
       const v8::PropertyCallbackInfo<v8::Value>& info,
-      v8::Local<v8::Value>& metadata);
+      v8::Local<v8::Value>& metadata,
+      gin::ExternalPointerTypeTag tag);
 
   const raw_ptr<AuctionV8Helper> v8_helper_;
+  const gin::ExternalPointerTypeTag tag_;
 };
 
 }  // namespace auction_worklet

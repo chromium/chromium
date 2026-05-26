@@ -79,7 +79,8 @@ class PersistedLazyFiller : public LazyFiller {
   virtual void Reset() = 0;
 
  protected:
-  PersistedLazyFiller(AuctionV8Helper* v8_helper);
+  PersistedLazyFiller(AuctionV8Helper* v8_helper,
+                      gin::ExternalPointerTypeTag tag);
 };
 
 // This helps manage the state of bindings on a context should we chose to

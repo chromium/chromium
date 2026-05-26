@@ -173,7 +173,7 @@ bool CreateAdSizeObject(v8::Isolate* isolate,
 SellerBrowserSignalsLazyFiller::SellerBrowserSignalsLazyFiller(
     AuctionV8Helper* v8_helper,
     AuctionV8Logger* v8_logger)
-    : PersistedLazyFiller(v8_helper), v8_logger_(v8_logger) {}
+    : PersistedLazyFiller(v8_helper, kTag), v8_logger_(v8_logger) {}
 
 void SellerBrowserSignalsLazyFiller::Reset() {
   browser_signal_render_url_ = nullptr;
@@ -247,7 +247,7 @@ void SellerBrowserSignalsLazyFiller::HandleAdComponentsCreativeScanningMetadata(
 
 AuctionConfigLazyFiller::AuctionConfigLazyFiller(AuctionV8Helper* v8_helper,
                                                  AuctionV8Logger* v8_logger)
-    : PersistedLazyFiller(v8_helper), v8_logger_(v8_logger) {}
+    : PersistedLazyFiller(v8_helper, kTag), v8_logger_(v8_logger) {}
 
 void AuctionConfigLazyFiller::Reset() {
   auction_ad_config_non_shared_params_ = nullptr;

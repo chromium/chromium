@@ -14,7 +14,7 @@ namespace auction_worklet {
 
 ReportWinBrowserSignalsLazyFiller::ReportWinBrowserSignalsLazyFiller(
     AuctionV8Helper* v8_helper)
-    : PersistedLazyFiller(v8_helper) {}
+    : PersistedLazyFiller(v8_helper, kTag) {}
 
 bool ReportWinBrowserSignalsLazyFiller::FillInObject(
     const std::optional<uint16_t> browser_signal_modeling_signals,

@@ -28,6 +28,9 @@ class AuctionV8Logger;
 
 class CONTENT_EXPORT InterestGroupLazyFiller : public PersistedLazyFiller {
  public:
+  static const gin::ExternalPointerTypeTag kTag =
+      gin::kInterestGroupLazyFillerTag;
+
   // `v8_helper` and `v8_logger` must outlive `this`.
   InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
                           AuctionV8Logger* v8_logger);
@@ -161,6 +164,9 @@ enum class PrevWinsType { kSeconds, kMilliseconds };
 class CONTENT_EXPORT BiddingBrowserSignalsLazyFiller
     : public PersistedLazyFiller {
  public:
+  static const gin::ExternalPointerTypeTag kTag =
+      gin::kBiddingBrowserSignalsLazyFillerTag;
+
   explicit BiddingBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper);
 
   void ReInitialize(blink::mojom::BiddingBrowserSignals* bidder_browser_signals,

@@ -20,7 +20,7 @@ DeprecatedUrlLazyFiller::DeprecatedUrlLazyFiller(AuctionV8Helper* v8_helper,
                                                  AuctionV8Logger* v8_logger,
                                                  const GURL* url,
                                                  const char* warning)
-    : LazyFiller(v8_helper),
+    : LazyFiller(v8_helper, kTag),
       v8_logger_(v8_logger),
       url_(url),
       warning_(warning) {}

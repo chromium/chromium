@@ -22,6 +22,9 @@ class AuctionV8Logger;
 // containing a URL is accessed.
 class DeprecatedUrlLazyFiller : public LazyFiller {
  public:
+  static const gin::ExternalPointerTypeTag kTag =
+      gin::kDeprecatedUrlLazyFillerTag;
+
   // Creates an object that can set a field on passed in objects to a string
   // containing `url`, and display `warning` on first access. If `url` is
   // nullptr, does nothing. Name of the field is specified when calling

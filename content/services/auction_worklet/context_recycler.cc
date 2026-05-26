@@ -32,8 +32,9 @@ Bindings::~Bindings() = default;
 
 PersistedLazyFiller::~PersistedLazyFiller() = default;
 
-PersistedLazyFiller::PersistedLazyFiller(AuctionV8Helper* v8_helper)
-    : LazyFiller(v8_helper) {}
+PersistedLazyFiller::PersistedLazyFiller(AuctionV8Helper* v8_helper,
+                                         gin::ExternalPointerTypeTag tag)
+    : LazyFiller(v8_helper, tag) {}
 
 ContextRecycler::ContextRecycler(AuctionV8Helper* v8_helper)
     : v8_helper_(v8_helper) {}

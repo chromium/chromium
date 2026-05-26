@@ -20,6 +20,9 @@ namespace auction_worklet {
 class CONTENT_EXPORT SellerBrowserSignalsLazyFiller
     : public PersistedLazyFiller {
  public:
+  static const gin::ExternalPointerTypeTag kTag =
+      gin::kSellerBrowserSignalsLazyFillerTag;
+
   // `v8_helper` and  `v8_logger` must outlive `this`.
   explicit SellerBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper,
                                           AuctionV8Logger* v8_logger);
@@ -51,6 +54,9 @@ class CONTENT_EXPORT SellerBrowserSignalsLazyFiller
 
 class CONTENT_EXPORT AuctionConfigLazyFiller : public PersistedLazyFiller {
  public:
+  static const gin::ExternalPointerTypeTag kTag =
+      gin::kAuctionConfigLazyFillerTag;
+
   // `v8_helper`, `v8_logger` must outlive `this`.
   explicit AuctionConfigLazyFiller(AuctionV8Helper* v8_helper,
                                    AuctionV8Logger* v8_logger);

@@ -117,7 +117,7 @@ v8::MaybeLocal<v8::Value> CreatePrevWinsArray(
 
 InterestGroupLazyFiller::InterestGroupLazyFiller(AuctionV8Helper* v8_helper,
                                                  AuctionV8Logger* v8_logger)
-    : PersistedLazyFiller(v8_helper),
+    : PersistedLazyFiller(v8_helper, kTag),
       creative_scanning_enabled_(base::FeatureList::IsEnabled(
           blink::features::kFledgeTrustedSignalsKVv1CreativeScanning)),
       v8_logger_(v8_logger) {}
@@ -551,7 +551,7 @@ void InterestGroupLazyFiller::HandleDeprecatedAdsRenderUrl(
 
 BiddingBrowserSignalsLazyFiller::BiddingBrowserSignalsLazyFiller(
     AuctionV8Helper* v8_helper)
-    : PersistedLazyFiller(v8_helper) {}
+    : PersistedLazyFiller(v8_helper, kTag) {}
 
 void BiddingBrowserSignalsLazyFiller::ReInitialize(
     blink::mojom::BiddingBrowserSignals* bidder_browser_signals,

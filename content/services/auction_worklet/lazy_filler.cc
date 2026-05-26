@@ -20,7 +20,9 @@ namespace auction_worklet {
 
 LazyFiller::~LazyFiller() = default;
 
-LazyFiller::LazyFiller(AuctionV8Helper* v8_helper) : v8_helper_(v8_helper) {}
+LazyFiller::LazyFiller(AuctionV8Helper* v8_helper,
+                       gin::ExternalPointerTypeTag tag)
+    : v8_helper_(v8_helper), tag_(tag) {}
 
 // static
 void LazyFiller::SetResult(const v8::PropertyCallbackInfo<v8::Value>& info,
@@ -35,7 +37,7 @@ bool LazyFiller::DefineLazyAttribute(v8::Local<v8::Object> object,
 
   v8::Maybe<bool> success = object->SetLazyDataProperty(
       isolate->GetCurrentContext(), gin::StringToSymbol(isolate, name), getter,
-      v8::External::New(isolate, this, gin::kLazyFillerTag),
+      v8::External::New(isolate, this, tag_),
       /*attributes=*/v8::None,
       /*getter_side_effect_type=*/v8::SideEffectType::kHasNoSideEffect,
       /*setter_side_effect_type=*/v8::SideEffectType::kHasSideEffect);
@@ -57,8 +59,7 @@ bool LazyFiller::DefineLazyAttributeWithMetadata(
   }
   v8::Local<v8::Object> data =
       lazy_filler_template->NewInstance(context).ToLocalChecked();
-  data->SetInternalField(0,
-                         v8::External::New(isolate, this, gin::kLazyFillerTag));
+  data->SetInternalField(0, v8::External::New(isolate, this, tag_));
   data->SetInternalField(1, metadata);
 
   v8::Maybe<bool> success = object->SetLazyDataProperty(
@@ -71,11 +72,12 @@ bool LazyFiller::DefineLazyAttributeWithMetadata(
 
 void* LazyFiller::GetSelfWithMetadataInternal(
     const v8::PropertyCallbackInfo<v8::Value>& info,
-    v8::Local<v8::Value>& metadata) {
+    v8::Local<v8::Value>& metadata,
+    gin::ExternalPointerTypeTag tag) {
   v8::Local<v8::Object> data = v8::Local<v8::Object>::Cast(info.Data());
   metadata = data->GetInternalField(1).As<v8::Value>();
   return (data->GetInternalField(0).As<v8::Value>().As<v8::External>())
-      ->Value(gin::kLazyFillerTag);
+      ->Value(tag);
 }
 
 }  // namespace auction_worklet

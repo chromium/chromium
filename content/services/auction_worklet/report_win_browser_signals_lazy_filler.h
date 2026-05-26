@@ -18,6 +18,9 @@ namespace auction_worklet {
 class CONTENT_EXPORT ReportWinBrowserSignalsLazyFiller
     : public PersistedLazyFiller {
  public:
+  static const gin::ExternalPointerTypeTag kTag =
+      gin::kReportWinBrowserSignalsLazyFillerTag;
+
   // `v8_helper` must outlive `this`.
   explicit ReportWinBrowserSignalsLazyFiller(AuctionV8Helper* v8_helper);
 
