@@ -46,7 +46,7 @@ class SystemMediaControlsWin : public SystemMediaControls {
   void SetPlaybackStatus(PlaybackStatus status) override;
   void SetTitle(const std::u16string& title) override;
   void SetArtist(const std::u16string& artist) override;
-  void SetAlbum(const std::u16string& album) override {}
+  void SetAlbum(const std::u16string& album) override;
   void SetThumbnail(const SkBitmap& bitmap) override;
   void SetPosition(const media_session::MediaPosition& position) override;
   void ClearThumbnail() override;

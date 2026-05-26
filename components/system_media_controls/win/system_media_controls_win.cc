@@ -265,6 +265,23 @@ void SystemMediaControlsWin::SetArtist(const std::u16string& artist) {
   DCHECK(SUCCEEDED(hr));
 }
 
+void SystemMediaControlsWin::SetAlbum(const std::u16string& album) {
+  DCHECK(initialized_);
+  DCHECK(display_properties_);
+
+  Microsoft::WRL::ComPtr<ABI::Windows::Media::IMusicDisplayProperties2>
+      display_properties_2;
+  HRESULT hr = display_properties_.As(&display_properties_2);
+  if (FAILED(hr)) {
+    return;
+  }
+
+  base::win::ScopedHString h_album =
+      base::win::ScopedHString::Create(base::UTF16ToWide(album));
+  hr = display_properties_2->put_AlbumTitle(h_album.get());
+  DCHECK(SUCCEEDED(hr));
+}
+
 void SystemMediaControlsWin::SetThumbnail(const SkBitmap& bitmap) {
   DCHECK(initialized_);
   DCHECK(display_updater_);
