@@ -1853,18 +1853,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Media.Audio.Mac.VoiceProcessedInputStreamDetectedWithoutNativeAEC"
-    enum="BooleanDetected" expires_after="2027-04-27">
-  <owner>brandstrom@chromium.org</owner>
-  <owner>webrtc-audio-uma@google.com</owner>
-  <summary>
-    If we detect voice processing input streams. Logged at calls to
-    media::core_audio_mac::IsInputDevice. Used for debugging
-    crbug.com/392938088.
-  </summary>
-</histogram>
-
 <histogram name="Media.Audio.MakeAudioInputStreamStatus"
     enum="MakeAudioStreamStatus" expires_after="2026-08-30">
   <owner>yuhsuan@chromium.org</owner>

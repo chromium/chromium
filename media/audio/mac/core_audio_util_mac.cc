@@ -16,11 +16,9 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/audio/apple/scoped_audio_unit.h"
 #include "media/base/audio_timestamp_helper.h"
-#include "media/base/media_switches.h"
 
 namespace media {
 namespace {
@@ -276,25 +274,6 @@ std::optional<std::string> TranslateDeviceSource(
   return ret;
 }
 
-bool IsOutputTerminal(uint32_t terminal) {
-  // From IOAudioTypes.h
-  //
-  // // Output terminal types
-  // enum {
-  //   OUTPUT_UNDEFINED                     = 0x0300,
-  //   OUTPUT_SPEAKER                       = 0x0301,
-  //   OUTPUT_HEADPHONES                    = 0x0302,
-  //   OUTPUT_HEAD_MOUNTED_DISPLAY_AUDIO    = 0x0303,
-  //   OUTPUT_DESKTOP_SPEAKER               = 0x0304,
-  //   OUTPUT_ROOM_SPEAKER                  = 0x0305,
-  //   OUTPUT_COMMUNICATION_SPEAKER         = 0x0306,
-  //   OUTPUT_LOW_FREQUENCY_EFFECTS_SPEAKER = 0x0307
-  // };
-
-  return terminal >= OUTPUT_UNDEFINED &&
-         terminal <= OUTPUT_LOW_FREQUENCY_EFFECTS_SPEAKER;
-}
-
 }  // namespace
 
 CoreAudioUtilMac::CoreAudioUtilMac(LogCallback log_callback)
@@ -437,12 +416,13 @@ bool CoreAudioUtilMac::IsPrivateAggregateDevice(AudioObjectID device_id) const {
   return is_private;
 }
 
+// TODO(crbug.com/392938088): When a VoiceProcessing AudioUnit is active, this
+// function might errously report that output devices are also input devices.
 bool CoreAudioUtilMac::IsInputDevice(AudioObjectID device_id) const {
   std::vector<AudioObjectID> streams =
       GetAudioObjectIDs(device_id, kAudioDevicePropertyStreams, log_callback_)
           .value_or({});
 
-  int num_voice_processing_input_streams = 0;
   int num_undefined_input_streams = 0;
   int num_defined_input_streams = 0;
   int num_output_streams = 0;
@@ -468,56 +448,23 @@ bool CoreAudioUtilMac::IsInputDevice(AudioObjectID device_id) const {
       //
       // Testing has shown that VoiceProcessing-generated input streams have a
       // terminal type of 0 or an Output terminal type. The previous code
-      // checked for terminal == INPUT_UNDEFINED, which I haven't observed.
-      // However, I've kept this check to maintain the original behavior, as it
-      // might be necessary for older macOS versions.
+      // checked for terminal == INPUT_UNDEFINED, which we haven't observed.
+      // However, we've kept this check to maintain the original behavior, as
+      // it might be necessary for older macOS versions.
       auto terminal = GetDeviceUint32Property(
           stream_id, kAudioStreamPropertyTerminalType,
           kAudioObjectPropertyScopeGlobal, log_callback_);
       if (terminal.has_value() && terminal == INPUT_UNDEFINED) {
         ++num_undefined_input_streams;
-      } else if (terminal.has_value() &&
-                 (IsOutputTerminal(*terminal) || terminal == 0)) {
-        ++num_voice_processing_input_streams;
-        // TODO(crbug.com/392938088): Remove this increment when we see that
-        // the change is safe. See the TODO below for info.
-        ++num_defined_input_streams;
       } else {
         ++num_defined_input_streams;
       }
     }
   }
 
-  // TODO(crbug.com/392938088): The current filter will not remove all
-  // VoiceProcessing-generated input streams. To fully address
-  // crbug.com/392938088, we would also need to include
-  // num_voice_processing_input_streams in the filter (see details in the last
-  // section in this comment).
-  //
-  // Before we make that change, we're testing with UMA histogram to check for
-  // any unknown consequences, specifically whether it would ever
-  // exclude legitimate audio input devices.
-  //
-  // For now, we are just logging and maintaining the existing filter
-  // behavior.
-  //
-  // If the UMA histogram confirms that num_voice_processing_input_streams is
-  // always zero when VoiceProcessing AudioUnit is absent, then it is safe
-  // to include it in the filter (see details below).
-  // We will remove the `++num_defined_input_streams` increment under the TODO
-  // above, and treat the `num_voice_processing_input_streams` and
-  // `num_undefined_input_streams` the same in the return below, e.g. change
-  // `num_undefined_input_streams > 0` to
-  // `num_undefined_input_streams + num_voice_processing_input_streams > 0`.
-  if (!media::IsSystemEchoCancellationEnforced()) {
-    base::UmaHistogramBoolean(
-        "Media.Audio.Mac.VoiceProcessedInputStreamDetectedWithoutNativeAEC",
-        num_voice_processing_input_streams > 0);
-  }
-
-  // I've only seen INPUT_UNDEFINED introduced by the VoiceProcessing AudioUnit,
-  // but to err on the side of caution, let's allow a device with only undefined
-  // input streams and no output streams as well.
+  // We've only seen INPUT_UNDEFINED introduced by the VoiceProcessing
+  // AudioUnit, but to err on the side of caution, we allow a device with only
+  // undefined input streams and no output streams as well.
   return num_defined_input_streams > 0 ||
          (num_undefined_input_streams > 0 && num_output_streams == 0);
 }
