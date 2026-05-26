@@ -64,9 +64,6 @@
   <message name="IDS_PAGE_INFO_MIXED_CONTENT_DETAILS" desc="A short paragraph explaining a partially insecure site to the user.">
     Attackers might be able to see the images you’re looking at on this site and trick you by modifying them.
   </message>
-  <message name="IDS_PAGE_INFO_LEGACY_TLS_DETAILS" desc="A short paragraph explaining to the user a site that uses deprecated security configrations.">
-    This site uses an outdated security configuration, which may expose your information (for example, passwords or credit card numbers) when it is sent to this site.
-  </message>
   <message name="IDS_PAGE_INFO_NOT_SECURE_DETAILS" desc="A short paragraph explaining a non-secure site to the user.">
     You should not enter any sensitive information on this site (for example, passwords or credit cards), because it could be stolen by attackers.
   </message>
@@ -175,35 +172,11 @@
         Certificate Information
       </message>
     </if>
-    <message name="IDS_PAGE_INFO_ADDRESS" desc="Locality as reported in the EV identity text.">
-      <ph name="CITY">$1<ex>Mountain View</ex></ph>, <ph name="STATE">$2<ex>California</ex></ph> <ph name="COUNTRY">$3<ex>USA</ex></ph>
-    </message>
-    <message name="IDS_PAGE_INFO_PARTIAL_ADDRESS" desc="Locality with missing state as reported in the EV identity text.">
-      <ph name="CITY">$1<ex>Mountain View</ex></ph>, <ph name="COUNTRY">$2<ex>US</ex></ph>
-    </message>
     <message name="IDS_PAGE_INFO_SECURITY_TAB_SECURE_IDENTITY_EV_VERIFIED" desc="Describes the legal entity that the current page's HTTPS certificate was issued to. Shown in the certificate area in the Page Info bubble when a HTTPS site with a valid EV certificate is loaded.">
       Issued to: <ph name="ORGANIZATION">$1<ex>Google LLC</ex></ph> [<ph name="JURISDICTION">$2<ex>US</ex></ph>]
     </message>
 
     <!-- Certificate Viewer link -->
-      <message name="IDS_PAGE_INFO_CERTIFICATE" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded.">
-        Certificate
-      </message>
-      <message name="IDS_PAGE_INFO_CERTIFICATE_VALID_LINK" desc="This appears in the Page Info bubble when a HTTPS site is loaded with a valid certificate. Text of the link that launches the Certificate Viewer.">
-        Valid
-      </message>
-      <message name="IDS_PAGE_INFO_CERTIFICATE_INVALID_LINK" desc="This appears in the Page Info bubble when a HTTPS site is loaded with an invalid certificate, e.g. https://wrong.host.badssl.com/. Text of the link that launches the Certificate Viewer.">
-        Invalid
-      </message>
-      <message name="IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT" desc="Title of the certificate button in the Page Info bubble, shown when a HTTPS site is loaded. Clicking this button will show the certificate viewer.">
-        Certificate <ph name="CERTIFICATE_VALIDITY">$1<ex>(Invalid)</ex></ph>
-      </message>
-      <message name="IDS_PAGE_INFO_CERTIFICATE_VALID_PARENTHESIZED" desc="Button text used as part of IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT when the Page Information bubble has been opened for a site with a valid certificate.">
-        (Valid)
-      </message>
-      <message name="IDS_PAGE_INFO_CERTIFICATE_INVALID_PARENTHESIZED" desc="Button text used as part of IDS_PAGE_INFO_CERTIFICATE_BUTTON_TEXT when the Page Information bubble has been opened for a site with an invalid certificate.">
-        (Invalid)
-      </message>
       <message name="IDS_PAGE_INFO_CERTIFICATE_IS_VALID" desc="Title of the certificate area in the Page Info bubble, shown when a HTTPS site is loaded with a valid certificate.">
         Certificate is valid
       </message>
@@ -249,29 +222,6 @@
       Mute (default)
     </message>
     </if>
-
-    <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_ALLOW" desc="The text of the menu item of a permissions menu on the Page Info UI that resets the setting to the default setting which is allow.">
-      Use global default (Allow)
-    </message>
-    <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_BLOCK" desc="The text of the menu item of a permissions menu on the Page Info UI that resets the setting to the default setting which is block.">
-      Use global default (Block)
-    </message>
-    <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_ASK" desc="The text of the menu item of a permissions menu on the Page Info UI that reset the setting to the default setting which is ask.">
-      Use global default (Ask)
-    </message>
-
-    <message name="IDS_PAGE_INFO_MENU_ITEM_ALLOW" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to allow.">
-      Always allow on this site
-    </message>
-    <message name="IDS_PAGE_INFO_MENU_ITEM_BLOCK" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to allow.">
-      Always block on this site
-    </message>
-    <message name="IDS_PAGE_INFO_MENU_ITEM_ASK" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to ask.">
-      Always ask on this site
-    </message>
-    <message name="IDS_PAGE_INFO_MENU_ITEM_ADS_BLOCK" desc="The text of the menu item of a permissions menu on the Page Info UI for the ads permission in Block mode">
-      Block on this site
-    </message>
 
     <message name="IDS_PAGE_INFO_STATE_TEXT_ALLOWED" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the permission is allowed by any source (the user, the administrator, etc.).">
       Allowed
@@ -683,23 +633,14 @@
   </message>
 
   <!-- About this site strings -->
-  <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_HEADER" desc="The header label of the 'About this site' subpage in Page Info bubble.">
-    From the web
-  </message>
   <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE" desc="The title of the 'About this page' row in the Page Info bubble.">
     About this page
   </message>
   <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER" desc="The description of the 'About this page' row in the Page Info bubble if no more detailed description is available. 'It' refers to the page the user is currently visiting.">
     Learn about its source and topic
   </message>
-  <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_TOOLTIP" desc="The tooltip of the button that opens 'About this site' subpage in Page Info bubble.">
-    Show information from the web
-  </message>
   <message name="IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP" desc="The tooltip of the button that opens 'About this page' details in Page Info bubble.">
     Learn about this page's source &amp; topic
-  </message>
-  <message name="IDS_PAGE_INFO_ABOUT_THIS_SITE_SUBPAGE_FROM_LABEL" desc="The label containing the source of the description in the 'About this site' subpage in Page Info bubble.">
-    From <ph name="SOURCE_NAME">$1<ex>Wikipedia</ex></ph>
   </message>
 
   <!-- Cookies subpage -->
