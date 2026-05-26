@@ -4,10 +4,12 @@ rootWebArea
 ++++++group name='Atomic undefined'
 ++++++textField name='Autocomplete undefined'
 ++++++group name='Busy undefined'
-++++++treeItem name='Checked undefined' selected=false selectedFromFocus=false
+++++++tree vertical
+++++++++treeItem name='Checked undefined'
 ++++++group name='Current undefined'
 ++++++group name='Disabled undefined'
-++++++treeItem name='Expanded undefined' selected=false selectedFromFocus=false
+++++++tree vertical
+++++++++treeItem name='Expanded undefined' selected=false selectedFromFocus=false
 ++++++button name='Haspopup undefined'
 ++++++textField name='Invalid undefined'
 ++++++group name='Live undefined'
