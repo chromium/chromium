@@ -271,11 +271,6 @@ class LocalStorageImplTestBase : public testing::Test {
     return test::GetSync(area.get(), key);
   }
 
-  // Pumps both the main-thread sequence and the background database sequence
-  // until both are idle. Prefer other means of waiting, such as `RunUntil` or
-  // `TestFuture`.
-  void RunUntilIdle() { task_environment_->RunUntilIdle(); }
-
   // Waits for all pending tasks on the database thread to complete.
   void WaitForDatabaseTasks() {
     base::RunLoop loop;
@@ -344,7 +339,7 @@ class LocalStorageImplTestBase : public testing::Test {
     EXPECT_TRUE(base::test::RunUntil([&]() {
       actual_entries.clear();
       ReadMapKeyValuesSync(*context()->GetDatabaseForTesting(),
-                           std::move(map_locator), &actual_entries);
+                           map_locator.Clone(), &actual_entries);
       return actual_entries.size() == expected_entries.size();
     }));
 
@@ -395,13 +390,7 @@ class LocalStorageImplTestBase : public testing::Test {
   // testing::Test:
   void SetUp() override { InitializeStorage(storage_path()); }
 
-  void TearDown() override {
-    // Some of these tests close message pipes which serve as master interfaces
-    // to other associated interfaces; this in turn schedules tasks to invoke
-    // the associated interfaces' error handlers, and local storage code relies
-    // on those handlers running in order to avoid memory leaks at shutdown.
-    RunUntilIdle();
-  }
+  void TearDown() override { ShutDownStorage(); }
 
   // Enables or disables SQLite.
   base::test::ScopedFeatureList feature_list_;
@@ -506,6 +495,11 @@ TEST_P(LocalStorageImplTest, ShutdownDroppedChanges) {
   // to the database.
   histograms.ExpectUniqueSample("Storage.LocalStorage.ShutdownDroppedChanges",
                                 true, 1);
+
+  // Re-open the database, which allows test tear down to wait for shutdown to
+  // complete.
+  InitializeStorage(storage_path());
+  WaitForDatabaseOpen();
 }
 
 TEST_P(LocalStorageImplTest, StorageKeysAreIndependent) {
@@ -2102,17 +2096,16 @@ TEST_P(LocalStorageImplStaleDeletionTest, StaleStorageAreaDeletion) {
   context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
   context()->ForceFakeOpenStorageAreaForTesting(storage_key3);
   WaitForDatabaseOpen();
-  RunUntilIdle();
 
   // We should see that only the data for storage_key4 was cleared.
+  ASSERT_NO_FATAL_FAILURE(
+      WaitForMapEntries(storage_key4, /*expected_entries=*/{}));
   ASSERT_NO_FATAL_FAILURE(
       ExpectMapEquals(storage_key1, /*expected_entries=*/{{key, value}}));
   ASSERT_NO_FATAL_FAILURE(
       ExpectMapEquals(storage_key2, /*expected_entries=*/{{key, value}}));
   ASSERT_NO_FATAL_FAILURE(
       ExpectMapEquals(storage_key3, /*expected_entries=*/{{key, value}}));
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectMapEquals(storage_key4, /*expected_entries=*/{}));
   ASSERT_NO_FATAL_FAILURE(
       ExpectMapEquals(storage_key5, /*expected_entries=*/{{key, value}}));
 
@@ -2134,9 +2127,10 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(0, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histograms.GetBucketCount(
+                 "LocalStorage.OrphanStorageAreasOnStartupCount", 0) == 1;
+    }));
   }
 
   // First party bucket doesn't qualify, even if it's old.
@@ -2148,15 +2142,16 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
             base::DoNothing());
   area.FlushForTesting();
   area.reset();
-  RunUntilIdle();
+  WaitForDatabaseTasks();
   {
     base::HistogramTester histograms;
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(0, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histograms.GetBucketCount(
+                 "LocalStorage.OrphanStorageAreasOnStartupCount", 0) == 1;
+    }));
 
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(first_party_key, /*expected_entries=*/{{key, value}}));
@@ -2169,9 +2164,10 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(0, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histograms.GetBucketCount(
+                 "LocalStorage.OrphanStorageAreasOnStartupCount", 0) == 2;
+    }));
 
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(first_party_key, /*expected_entries=*/{{key, value}}));
@@ -2189,15 +2185,16 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
             base::DoNothing());
   area.FlushForTesting();
   area.reset();
-  RunUntilIdle();
+  WaitForDatabaseTasks();
   {
     base::HistogramTester histograms;
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(0, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histograms.GetBucketCount(
+                 "LocalStorage.OrphanStorageAreasOnStartupCount", 0) == 1;
+    }));
 
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(first_party_key, /*expected_entries=*/{{key, value}}));
@@ -2216,13 +2213,12 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(1, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    ASSERT_NO_FATAL_FAILURE(
+        WaitForMapEntries(first_party_nonce_key, /*expected_entries=*/{}));
+    EXPECT_EQ(1, histograms.GetBucketCount(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount", 1));
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(first_party_key, /*expected_entries=*/{{key, value}}));
-    ASSERT_NO_FATAL_FAILURE(
-        ExpectMapEquals(first_party_nonce_key, /*expected_entries=*/{}));
     ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataCount(1u));
     ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(first_party_key));
   }
@@ -2238,15 +2234,16 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
             base::DoNothing());
   area.FlushForTesting();
   area.reset();
-  RunUntilIdle();
+  WaitForDatabaseTasks();
   {
     base::HistogramTester histograms;
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(0, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histograms.GetBucketCount(
+                 "LocalStorage.OrphanStorageAreasOnStartupCount", 0) == 1;
+    }));
 
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(first_party_key, /*expected_entries=*/{{key, value}}));
@@ -2265,9 +2262,10 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(0, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histograms.GetBucketCount(
+                 "LocalStorage.OrphanStorageAreasOnStartupCount", 0) == 2;
+    }));
 
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(first_party_key, /*expected_entries=*/{{key, value}}));
@@ -2293,15 +2291,16 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
             base::DoNothing());
   area.FlushForTesting();
   area.reset();
-  RunUntilIdle();
+  WaitForDatabaseTasks();
   {
     base::HistogramTester histograms;
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(0, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histograms.GetBucketCount(
+                 "LocalStorage.OrphanStorageAreasOnStartupCount", 0) == 1;
+    }));
 
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(first_party_key, /*expected_entries=*/{{key, value}}));
@@ -2325,9 +2324,10 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
     ResetStorage(storage_path());
     context()->OverrideDeleteStaleStorageAreasDelayForTesting(base::Days(0));
     WaitForDatabaseOpen();
-    RunUntilIdle();
-    EXPECT_EQ(1, histograms.GetTotalSum(
-                     "LocalStorage.OrphanStorageAreasOnStartupCount"));
+    ASSERT_NO_FATAL_FAILURE(
+        WaitForMapEntries(third_party_nonce_key, /*expected_entries=*/{}));
+    EXPECT_EQ(1, histograms.GetBucketCount(
+                     "LocalStorage.OrphanStorageAreasOnStartupCount", 1));
 
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(first_party_key, /*expected_entries=*/{{key, value}}));
@@ -2335,8 +2335,6 @@ TEST_P(LocalStorageImplStaleDeletionTest, Orphan) {
         ExpectMapEquals(first_party_nonce_key, /*expected_entries=*/{}));
     ASSERT_NO_FATAL_FAILURE(
         ExpectMapEquals(third_party_key, /*expected_entries=*/{{key, value}}));
-    ASSERT_NO_FATAL_FAILURE(
-        ExpectMapEquals(third_party_nonce_key, /*expected_entries=*/{}));
 
     ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataCount(2u));
     ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(first_party_key));
