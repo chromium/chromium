@@ -398,12 +398,6 @@
   <message name="IDS_GLIC_WINDOW_TITLE" desc="Accessible title for the Gemini Window." is_accessibility_with_no_ui="true">
     Gemini
   </message>
-  <message name="IDS_GLIC_WINDOW_TITLE_FIRST_LOAD" desc="Accessible title for the Gemini Window. Only included on first load." is_accessibility_with_no_ui="true">
-    Gemini. To return to where you were on the page press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
-  </message>
-  <message name="IDS_GLIC_WINDOW_FIRST_FOCUS_LOST_ANNOUNCEMENT" desc="Announcement triggered the first time the Gemini window loses focus." is_accessibility_with_no_ui="true">
-    To return to Gemini, press <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
-  </message>
 
   <!-- Task Manager -->
   <message name="IDS_TASK_MANAGER_GLIC_RENDERER_PREFIX" desc="Task Manager row for a renderer process used to host the Gemini UI">
@@ -417,16 +411,6 @@
       =1 {Share tab with Gemini}
     other {Share # tabs with Gemini}}
   </message>
-  <message name="IDS_TAB_CXMENU_GLIC_STOP_SHARE" desc="The label of the tab context menu submenu for stopping sharing the given tab or tabs with Gemini. [ICU syntax]">
-    {NUM_TABS, plural,
-      =1 {Stop sharing tab with Gemini}
-    other {Stop sharing # tabs with Gemini}}
-  </message>
-  <message name="IDS_TAB_CXMENU_GLIC_SHARE_LIMIT" desc="The label of the tab context menu submenu when the number of tabs is beyond the supported limit. [ICU syntax]">
-    {NUM_TABS, plural,
-      =1 {Sharing selected tab would exceed the sharing limit}
-    other {Sharing # tabs would exceed the sharing limit}}
-  </message>
   <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu.">
     Start new chat with Gemini
   </message>
@@ -436,16 +420,6 @@
     {NUM_TABS, plural,
       =1 {Share Tab with Gemini}
     other {Share # Tabs with Gemini}}
-  </message>
-  <message name="IDS_TAB_CXMENU_GLIC_STOP_SHARE" desc="The label of the tab context menu submenu for stopping sharing the given tab or tabs with Gemini. [ICU syntax]">
-    {NUM_TABS, plural,
-      =1 {Stop Sharing Tab with Gemini}
-    other {Stop Sharing # Tabs with Gemini}}
-  </message>
-  <message name="IDS_TAB_CXMENU_GLIC_SHARE_LIMIT" desc="The label of the tab context menu submenu when the number of tabs is beyond the supported limit. [ICU syntax]">
-    {NUM_TABS, plural,
-      =1 {Sharing Selected Tab Would Exceed the Sharing Limit}
-    other {Sharing # Tabs Would Exceed the Sharing Limit}}
   </message>
   <message name="IDS_TAB_CXMENU_GLIC_CREATE_NEW_CHAT" desc="The label of the 'Start new chat' item in the Glic submenu.">
     Start New Chat with Gemini
@@ -511,16 +485,10 @@
   <message name="IDS_GLIC_SHORTCUT_IPH_TEXT" desc="Title for a promo pointing to the Gemini icon in Chrome. It informs the user about a keyboard shortcut for quicly opening Gemini in Chrome.">
     Use <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph> to open Gemini in Chrome
   </message>
-  <message name="IDS_GLIC_SHORTCUT_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Title for a promo pointing to the Gemini icon in Chrome for screen readers. It informs the user about a keyboard shortcut for quicly opening Gemini in Chrome.">
-    Easily open Gemini in Chrome with <ph name="FOCUS_TOGGLE_HOTKEY">$1<ex>Ctrl+⌘+G</ex></ph>
-  </message>
 
   <!-- Selection Nudge -->
   <message name="IDS_GLIC_SELECTION_ASK_ABOUT" desc="Label for the nudge asking about the selected text.">
     Ask about <ph name="TEXT">$1<ex>something</ex></ph>
-  </message>
-  <message name="IDS_GLIC_SELECTION_TELL_ME_ABOUT" desc="Prompt suggestion for telling me about the selected text.">
-    Tell me about <ph name="TEXT">$1<ex>something</ex></ph>
   </message>
 
   <!-- Educational Tip -->
