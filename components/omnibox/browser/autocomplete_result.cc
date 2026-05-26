@@ -395,14 +395,12 @@ void AutocompleteResult::Sort(
 
   // Users can opt into sharing geo location headers with DSE search
   // suggestions. If they don't opt in to automatically include the header, they
-  // may see a duplicate search suggestion of their (top|verbatim|?) search
-  // suggestion: one without the header; and one with the header. These
-  // with/without geo location header search duplicates should be ranked
-  // adjacent; the without-header search above the with-header search.
-  // TODO(crbug.com/507036994, andypaicu) Fill in the ? above.
-  // TODO(crbug.com/507036994, andypaicu) Add explanation why
-  //   `DeduplicateMatches()` above did not remove the inline location signaling
-  //   match making this call a no-op.
+  // may see a duplicate search suggestion of their 1st
+  // `SUBTYPE_LOCATION_SUGGEST_TRIGGER` search suggestion: one without the
+  // header; and one with the header. These with/without geo location header
+  // search duplicates should be ranked adjacent; the without-header search
+  // above the with-header search. They aren't deduped by `DeduplicateMatches()`
+  // above because of `AutocompleteMatchDedupeType::kInlineLocationSignaling`.
   ArrangeInlineLocationSignalingMatch();
 }
 

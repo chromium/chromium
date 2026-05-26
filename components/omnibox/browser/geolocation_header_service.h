@@ -68,9 +68,11 @@ class GeolocationHeaderService : public KeyedService {
   // - `for_automatic_sending` is false when this is called for search matches
   //    that will explicitly warn the user a geo header is included. So it
   //    returns the header only if site level permissions are not explicitly
-  //    granted (ASK/DENY).
-  // TODO(crbug.com/507036994, andypaicu) Add explanation why we want geo header
-  //   match even if the user has selected DENY.
+  //    granted (ASK/DENY). Showing a location match even when the permission is
+  //    DENY is ok because the match is non-intrusive and is not allowed to be
+  //    default. This behavior is in line with similar features involving users
+  //    proactively initiating some capability access: geolocation, usermedia,
+  //    install.
   std::optional<std::string> GetLocationHeader(const GURL& url,
                                                bool for_automatic_sending);
 
