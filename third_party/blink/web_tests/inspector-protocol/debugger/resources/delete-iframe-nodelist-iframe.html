@@ -1,0 +1,23 @@
+<!doctype html>
+<script>
+  Object.defineProperties(NodeList.prototype, {
+    length: {
+      get() {
+        console.error("Getting the length of the NodeList.");
+        parent.document.querySelector("#nested").remove();
+        return 0;
+      },
+    },
+  });
+
+  function test() {
+    const nodes = document.body.childNodes;
+    debugger;
+    console.log(nodes.length);
+  }
+
+  setTimeout(test, 10);
+</script>
+<div></div>
+<div></div>
+<div></div>

@@ -1,0 +1,10 @@
+Tests that we can unload an iframe during a pause
+Navigating to url
+Paused
+{
+    code : -32000
+    message : Cannot find context with specified id
+}
+Resuming
+Resumed
+
