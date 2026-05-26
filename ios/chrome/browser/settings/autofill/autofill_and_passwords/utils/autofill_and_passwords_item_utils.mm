@@ -94,11 +94,13 @@ TableViewDetailIconItem* AutofillProfileItem(BOOL enabled) {
           ? IDS_AUTOFILL_CONTACT_INFO_TITLE
           : IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
 
-  return DetailItemWithType(
-      SettingsItemTypeAutofillProfile, title,
-      AutofillProfileItemDetailText(enabled),
-      CustomSettingsRootSymbol(kLocationSymbol),
-      kSettingsAddressesAndMoreCellId);
+  UIImage* symbol = IsYourSavedInfoSettingsPageIosEnabled()
+                        ? DefaultSettingsRootSymbol(kEnvelopeSymbol)
+                        : CustomSettingsRootSymbol(kLocationSymbol);
+
+  return DetailItemWithType(SettingsItemTypeAutofillProfile, title,
+                            AutofillProfileItemDetailText(enabled), symbol,
+                            kSettingsAddressesAndMoreCellId);
 }
 
 TableViewDetailIconItem* IdentityDocsItem(BOOL enabled) {
