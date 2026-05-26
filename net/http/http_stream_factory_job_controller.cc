@@ -990,7 +990,8 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
         request_info_.network_anonymization_key,
         request_info_.secure_dns_policy,
         /*require_dns_https_alpn=*/false,
-        disable_cert_verification_network_fetches());
+        disable_cert_verification_network_fetches(),
+        request_info_.target_network);
 
     quic::ParsedQuicVersion ws_quic_version =
         quic::ParsedQuicVersion::Unsupported();
@@ -1476,7 +1477,8 @@ HttpStreamFactory::JobController::GetAdvertisedAltSvcInternal(
         proxy_info_.proxy_chain(), SessionUsage::kDestination,
         request_info.socket_tag, request_info.network_anonymization_key,
         request_info.secure_dns_policy, /*require_dns_https_alpn=*/false,
-        disable_cert_verification_network_fetches());
+        disable_cert_verification_network_fetches(),
+        request_info.target_network);
 
     GURL destination = CreateAltSvcUrl(
         request_info.url, alternative_service_info.GetHostPortPair());

@@ -140,7 +140,7 @@ int QuicSessionPoolTestBase::RequestBuilder::CallRequest() {
       std::move(proxy_annotation_tag), http_user_agent_settings, session_usage,
       privacy_mode, priority, socket_tag, network_anonymization_key,
       secure_dns_policy, require_dns_https_alpn, cert_verify_flags, url,
-      net_log, &net_error_details,
+      handles::kInvalidNetworkHandle, net_log, &net_error_details,
       MultiplexedSessionCreationInitiator::kUnknown,
       connection_management_config,
       std::move(failed_on_default_network_callback), std::move(callback));

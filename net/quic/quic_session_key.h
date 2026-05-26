@@ -9,6 +9,7 @@
 
 #include "net/base/host_port_pair.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/privacy_mode.h"
 #include "net/base/proxy_chain.h"
 #include "net/base/session_usage.h"
@@ -31,7 +32,8 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
                  const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn,
-                 bool disable_cert_verification_network_fetches);
+                 bool disable_cert_verification_network_fetches,
+                 handles::NetworkHandle target_network);
   QuicSessionKey(std::string host,
                  uint16_t port,
                  PrivacyMode privacy_mode,
@@ -41,7 +43,8 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
                  const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn,
-                 bool disable_cert_verification_network_fetches);
+                 bool disable_cert_verification_network_fetches,
+                 handles::NetworkHandle target_network);
   QuicSessionKey(const quic::QuicServerId& server_id,
                  PrivacyMode privacy_mode,
                  const ProxyChain& proxy_chain,
@@ -50,7 +53,8 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
                  const NetworkAnonymizationKey& network_anonymization_key,
                  SecureDnsPolicy secure_dns_policy,
                  bool require_dns_https_alpn,
-                 bool disable_cert_verification_network_fetches);
+                 bool disable_cert_verification_network_fetches,
+                 handles::NetworkHandle target_network);
   QuicSessionKey(const QuicSessionKey& other);
   QuicSessionKey(QuicSessionKey&& other);
   QuicSessionKey& operator=(const QuicSessionKey& other);
@@ -95,6 +99,8 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
     return disable_cert_verification_network_fetches_;
   }
 
+  handles::NetworkHandle target_network() const { return target_network_; }
+
  private:
   quic::QuicServerId server_id_;
   PrivacyMode privacy_mode_ = PRIVACY_MODE_DISABLED;
@@ -106,6 +112,7 @@ class NET_EXPORT_PRIVATE QuicSessionKey {
   SecureDnsPolicy secure_dns_policy_ = SecureDnsPolicy::kAllow;
   bool require_dns_https_alpn_ = false;
   bool disable_cert_verification_network_fetches_ = false;
+  handles::NetworkHandle target_network_ = handles::kInvalidNetworkHandle;
 };
 
 NET_EXPORT_PRIVATE std::ostream& operator<<(std::ostream& os,

@@ -173,6 +173,7 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
               bool require_dns_https_alpn,
               int cert_verify_flags,
               const GURL& url,
+              handles::NetworkHandle target_network,
               const NetLogWithSource& net_log,
               NetErrorDetails* net_error_details,
               MultiplexedSessionCreationInitiator session_creation_initiator,

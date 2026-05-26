@@ -251,7 +251,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
                            SessionUsage::kDestination, SocketTag(),
                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                            /*require_dns_https_alpn=*/false,
-                           /*disable_cert_verification_network_fetches=*/true));
+                           /*disable_cert_verification_network_fetches=*/true,
+                           handles::kInvalidNetworkHandle));
   EXPECT_EQ(https_key.destination(), kHttpsHost);
 
   // H2 alt services should result in empty QUIC session alias keys.
@@ -276,7 +277,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKey) {
                            SessionUsage::kDestination, SocketTag(),
                            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
                            /*require_dns_https_alpn=*/false,
-                           /*disable_cert_verification_network_fetches=*/true));
+                           /*disable_cert_verification_network_fetches=*/true,
+                           handles::kInvalidNetworkHandle));
   EXPECT_EQ(different_origin_key.destination(), kHttpsAliasHost);
 }
 
@@ -299,10 +301,8 @@ TEST(HttpStreamKeyTest, CalculateQuicSessionAliasKeyTargetNetworkEquality) {
                     /*disable_cert_network_fetches=*/true, 2)
           .CalculateQuicSessionAliasKey();
 
-  // TODO(https://crbug.com/495684670): Update these assertions to _NE once
-  // QuicSessionAliasKey supports target_network.
-  EXPECT_EQ(key, target_network_1_key);
-  EXPECT_EQ(target_network_1_key, target_network_2_key);
+  EXPECT_NE(key, target_network_1_key);
+  EXPECT_NE(target_network_1_key, target_network_2_key);
 }
 
 }  // namespace net

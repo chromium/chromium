@@ -190,8 +190,8 @@ int QuicSessionPool::ProxyJob::DoCreateProxySession() {
                     : session_key.network_anonymization_key(),
       session_key.secure_dns_policy(), session_key.require_dns_https_alpn(),
       proxy_server_cert_verify_flags, GURL("https://" + last_server.ToString()),
-      net_log(), &net_error_details_, session_creation_initiator_,
-      connection_management_config_,
+      session_key.target_network(), net_log(), &net_error_details_,
+      session_creation_initiator_, connection_management_config_,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       io_callback_);
 }

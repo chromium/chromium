@@ -56,7 +56,8 @@ bool QuicSessionPoolPeer::HasActiveSession(
   return pool->HasActiveSession(QuicSessionKey(
       server_id, privacy_mode, proxy_chain, session_usage, SocketTag(),
       network_anonymization_key, SecureDnsPolicy::kAllow,
-      require_dns_https_alpn, disable_cert_verification_network_fetches));
+      require_dns_https_alpn, disable_cert_verification_network_fetches,
+      handles::kInvalidNetworkHandle));
 }
 
 bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* pool,
@@ -67,7 +68,8 @@ bool QuicSessionPoolPeer::HasActiveJob(QuicSessionPool* pool,
       server_id, privacy_mode, ProxyChain::Direct(), SessionUsage::kDestination,
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       require_dns_https_alpn,
-      /*disable_cert_verification_network_fetches=*/false));
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle));
 }
 
 // static
@@ -80,7 +82,8 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetPendingSession(
       server_id, privacy_mode, ProxyChain::Direct(), SessionUsage::kDestination,
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
-      /*disable_cert_verification_network_fetches=*/false);
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
   QuicSessionAliasKey key(std::move(destination), session_key);
   DCHECK(pool->HasActiveJob(session_key));
   DCHECK_EQ(pool->all_sessions_.size(), 1u);
@@ -101,7 +104,8 @@ QuicChromiumClientSession* QuicSessionPoolPeer::GetActiveSession(
   QuicSessionKey session_key(
       server_id, privacy_mode, proxy_chain, session_usage, SocketTag(),
       network_anonymization_key, SecureDnsPolicy::kAllow,
-      require_dns_https_alpn, disable_cert_verification_network_fetches);
+      require_dns_https_alpn, disable_cert_verification_network_fetches,
+      handles::kInvalidNetworkHandle);
   DCHECK(pool->HasActiveSession(session_key));
   return pool->active_sessions_[session_key];
 }

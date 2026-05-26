@@ -342,7 +342,8 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
       proxy_info_.proxy_chain(), SessionUsage::kDestination,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
-      disable_cert_verification_network_fetches());
+      disable_cert_verification_network_fetches(),
+      request_info_.target_network);
 
   // `WS_OVER_H3` requires a QUIC session that supports Extended CONNECT.
   if (job_type_ == WS_OVER_H3) {
@@ -892,8 +893,9 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
       SessionUsage::kDestination, request_info_.privacy_mode, priority_,
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
-      server_cert_verifier_flags, request_info_.url, net_log_,
-      &net_error_details_, initiator, management_config_,
+      server_cert_verifier_flags, request_info_.url,
+      request_info_.target_network, net_log_, &net_error_details_, initiator,
+      management_config_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {

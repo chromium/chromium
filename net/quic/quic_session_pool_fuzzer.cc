@@ -158,7 +158,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       SessionUsage::kDestination, PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY,
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false, kCertVerifyFlags, GURL(kUrl),
-      env.net_log, &net_error_details,
+      handles::kInvalidNetworkHandle, env.net_log, &net_error_details,
       MultiplexedSessionCreationInitiator::kUnknown,
       /*management_config=*/std::nullopt,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),

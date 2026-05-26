@@ -800,7 +800,8 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
-      /*disable_cert_verification_network_fetches=*/false);
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
   QuicSessionPool* quic_session_pool = session_->quic_session_pool();
   EXPECT_TRUE(quic_session_pool->FindExistingSession(session_key, server));
 }
@@ -850,7 +851,8 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
-      /*disable_cert_verification_network_fetches=*/false);
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
   QuicSessionPool* quic_session_pool = session_->quic_session_pool();
   EXPECT_TRUE(quic_session_pool->FindExistingSession(session_key, server));
 }
@@ -908,7 +910,8 @@ TEST_P(HttpStreamFactoryJobControllerDualPathTest,
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
-      /*disable_cert_verification_network_fetches=*/false);
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
   QuicSessionPool* quic_session_pool = session_->quic_session_pool();
   EXPECT_TRUE(quic_session_pool->FindExistingSession(session_key, server));
 }
@@ -1225,7 +1228,8 @@ class JobControllerReconsiderProxyAfterErrorTest
         ProxyChain::ForIpProtection({}, 0), SessionUsage::kProxy, SocketTag(),
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
         /*require_dns_https_alpn=*/false,
-        /*disable_cert_verification_network_fetches=*/true);
+        /*disable_cert_verification_network_fetches=*/true,
+        handles::kInvalidNetworkHandle);
     auto new_session = std::make_unique<MockQuicChromiumClientSession>(
         connection, std::move(socket), session_->quic_session_pool(),
         &crypto_client_stream_factory_, &clock, &transport_security_state,
@@ -6076,23 +6080,24 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
         alt_destination ? "alt.example.org" : "www.example.org", 443);
     std::optional<int> quic_request_result;
 
-    CHECK_EQ(ERR_IO_PENDING,
-             quic_request.Request(
-                 scheme_host_port,
-                 require_dns_https_alpn ? quic::ParsedQuicVersion::Unsupported()
-                                        : version_,
-                 ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
-                 /*http_user_agent_settings=*/nullptr,
-                 SessionUsage::kDestination, PRIVACY_MODE_DISABLED,
-                 DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
-                 SecureDnsPolicy::kAllow, require_dns_https_alpn,
-                 /*cert_verify_flags=*/0, GURL("https://www.example.org/"),
-                 net_log_with_source_, &net_error_details,
-                 MultiplexedSessionCreationInitiator::kUnknown, std::nullopt,
-                 base::BindLambdaForTesting([&](int result) {}),
-                 base::BindLambdaForTesting([&quic_request_result](int result) {
-                   quic_request_result = result;
-                 })));
+    CHECK_EQ(
+        ERR_IO_PENDING,
+        quic_request.Request(
+            scheme_host_port,
+            require_dns_https_alpn ? quic::ParsedQuicVersion::Unsupported()
+                                   : version_,
+            ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
+            /*http_user_agent_settings=*/nullptr, SessionUsage::kDestination,
+            PRIVACY_MODE_DISABLED, DEFAULT_PRIORITY, SocketTag(),
+            NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
+            require_dns_https_alpn,
+            /*cert_verify_flags=*/0, GURL("https://www.example.org/"),
+            handles::kInvalidNetworkHandle, net_log_with_source_,
+            &net_error_details, MultiplexedSessionCreationInitiator::kUnknown,
+            std::nullopt, base::BindLambdaForTesting([&](int result) {}),
+            base::BindLambdaForTesting([&quic_request_result](int result) {
+              quic_request_result = result;
+            })));
     base::RunLoop().RunUntilIdle();
     CHECK_EQ(1u, crypto_client_stream_factory_.streams().size());
     CHECK(crypto_client_stream_factory_.streams()[0]);
@@ -7808,7 +7813,8 @@ class HttpStreamFactoryJobControllerWsOverH3Test
         ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
         NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
         /*require_dns_https_alpn=*/false,
-        /*disable_cert_verification_network_fetches=*/false);
+        /*disable_cert_verification_network_fetches=*/false,
+        handles::kInvalidNetworkHandle);
     quic::QuicConfig quic_config(quic::test::DefaultQuicConfig());
     auto new_session = std::make_unique<QuicChromiumClientSession>(
         connection, std::move(socket), session_->quic_session_pool(),

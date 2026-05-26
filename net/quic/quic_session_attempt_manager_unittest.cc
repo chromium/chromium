@@ -81,7 +81,8 @@ class SessionRequester {
                        proxy_chain_, session_usage_, socket_tag_,
                        network_anonymization_key_, secure_dns_policy_,
                        require_dns_https_alpn_,
-                       disable_cert_verification_network_fetches_));
+                       disable_cert_verification_network_fetches_,
+                       handles::kInvalidNetworkHandle));
     request_ = manager_->CreateRequest(key);
     int rv = request_->RequestSession(
         endpoint_, cert_verify_flags_, dns_resolution_start_time_,

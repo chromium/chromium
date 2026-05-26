@@ -160,7 +160,8 @@ QuicSessionPool::QuicCryptoClientConfigKey CreateTestQuicCryptoClientConfigKey(
       PrivacyMode::PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
       SessionUsage::kDestination, SocketTag(), network_anonymization_key,
       SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false,
-      /*disable_cert_verification_network_fetches=*/false));
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle));
 }
 
 std::vector<TestParams> GetTestParams() {
@@ -190,7 +191,8 @@ class SessionAttemptHelper : public QuicSessionAttempt::Delegate {
         PrivacyMode::PRIVACY_MODE_DISABLED, ProxyChain::Direct(),
         SessionUsage::kDestination, SocketTag(), NetworkAnonymizationKey(),
         SecureDnsPolicy::kAllow, /*require_dns_https_alpn=*/false,
-        /*disable_cert_verification_network_fetches=*/false);
+        /*disable_cert_verification_network_fetches=*/false,
+        handles::kInvalidNetworkHandle);
     quic_session_alias_key_ = QuicSessionAliasKey(destination, session_key);
     attempt_ = pool_->CreateSessionAttempt(
         this, quic_session_alias_key_.session_key(), quic_endpoint,
@@ -15554,7 +15556,8 @@ TEST_P(QuicSessionPoolTest, CanUseExistingSessionForWebSocket_NoSessionExists) {
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
-      /*disable_cert_verification_network_fetches=*/false);
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
   EXPECT_FALSE(pool_->CanUseExistingSessionForWebSocket(session_key,
                                                         kDefaultDestination));
 }
@@ -15590,7 +15593,8 @@ TEST_P(QuicSessionPoolTest,
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
-      /*disable_cert_verification_network_fetches=*/false);
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
   EXPECT_TRUE(pool_->CanUseExistingSession(session_key, kDefaultDestination));
   EXPECT_FALSE(pool_->CanUseExistingSessionForWebSocket(session_key,
                                                         kDefaultDestination));
@@ -15657,7 +15661,8 @@ TEST_P(QuicSessionPoolTest,
       ProxyChain::Direct(), SessionUsage::kDestination, SocketTag(),
       NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false,
-      /*disable_cert_verification_network_fetches=*/false);
+      /*disable_cert_verification_network_fetches=*/false,
+      handles::kInvalidNetworkHandle);
   EXPECT_TRUE(pool_->CanUseExistingSession(session_key, kDefaultDestination));
   EXPECT_TRUE(pool_->CanUseExistingSessionForWebSocket(session_key,
                                                        kDefaultDestination));

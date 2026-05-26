@@ -29,7 +29,8 @@ QuicSessionKey::QuicSessionKey(
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     bool require_dns_https_alpn,
-    bool disable_cert_verification_network_fetches)
+    bool disable_cert_verification_network_fetches,
+    handles::NetworkHandle target_network)
     : QuicSessionKey(host_port_pair.host(),
                      host_port_pair.port(),
                      privacy_mode,
@@ -39,7 +40,8 @@ QuicSessionKey::QuicSessionKey(
                      network_anonymization_key,
                      secure_dns_policy,
                      require_dns_https_alpn,
-                     disable_cert_verification_network_fetches) {}
+                     disable_cert_verification_network_fetches,
+                     target_network) {}
 
 QuicSessionKey::QuicSessionKey(
     std::string host,
@@ -51,7 +53,8 @@ QuicSessionKey::QuicSessionKey(
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     bool require_dns_https_alpn,
-    bool disable_cert_verification_network_fetches)
+    bool disable_cert_verification_network_fetches,
+    handles::NetworkHandle target_network)
     : QuicSessionKey(quic::QuicServerId(std::move(host), port),
                      privacy_mode,
                      proxy_chain,
@@ -60,7 +63,8 @@ QuicSessionKey::QuicSessionKey(
                      network_anonymization_key,
                      secure_dns_policy,
                      require_dns_https_alpn,
-                     disable_cert_verification_network_fetches) {}
+                     disable_cert_verification_network_fetches,
+                     target_network) {}
 
 QuicSessionKey::QuicSessionKey(
     const quic::QuicServerId& server_id,
@@ -71,7 +75,8 @@ QuicSessionKey::QuicSessionKey(
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     bool require_dns_https_alpn,
-    bool disable_cert_verification_network_fetches)
+    bool disable_cert_verification_network_fetches,
+    handles::NetworkHandle target_network)
     : server_id_(server_id),
       privacy_mode_(privacy_mode),
       proxy_chain_(proxy_chain),
@@ -84,7 +89,8 @@ QuicSessionKey::QuicSessionKey(
       secure_dns_policy_(secure_dns_policy),
       require_dns_https_alpn_(require_dns_https_alpn),
       disable_cert_verification_network_fetches_(
-          disable_cert_verification_network_fetches) {}
+          disable_cert_verification_network_fetches),
+      target_network_(target_network) {}
 
 QuicSessionKey::QuicSessionKey(const QuicSessionKey& other) = default;
 QuicSessionKey::QuicSessionKey(QuicSessionKey&& other) = default;
@@ -98,12 +104,13 @@ bool QuicSessionKey::operator<(const QuicSessionKey& other) const {
   return std::tie(port, server_id_.host(), privacy_mode_, proxy_chain_,
                   session_usage_, socket_tag_, network_anonymization_key_,
                   secure_dns_policy_, require_dns_https_alpn_,
-                  disable_cert_verification_network_fetches_) <
+                  disable_cert_verification_network_fetches_, target_network_) <
          std::tie(other_port, other.server_id_.host(), other.privacy_mode_,
                   other.proxy_chain_, other.session_usage_, other.socket_tag_,
                   other.network_anonymization_key_, other.secure_dns_policy_,
                   other.require_dns_https_alpn_,
-                  other.disable_cert_verification_network_fetches_);
+                  other.disable_cert_verification_network_fetches_,
+                  other.target_network_);
 }
 bool QuicSessionKey::operator==(const QuicSessionKey& other) const {
   return server_id_.port() == other.server_id_.port() &&
@@ -116,7 +123,8 @@ bool QuicSessionKey::operator==(const QuicSessionKey& other) const {
          secure_dns_policy_ == other.secure_dns_policy_ &&
          require_dns_https_alpn_ == other.require_dns_https_alpn_ &&
          disable_cert_verification_network_fetches_ ==
-             other.disable_cert_verification_network_fetches_;
+             other.disable_cert_verification_network_fetches_ &&
+         target_network_ == other.target_network_;
 }
 
 bool QuicSessionKey::CanUseForAliasing(const QuicSessionKey& other) const {
@@ -128,7 +136,8 @@ bool QuicSessionKey::CanUseForAliasing(const QuicSessionKey& other) const {
          secure_dns_policy_ == other.secure_dns_policy_ &&
          require_dns_https_alpn_ == other.require_dns_https_alpn_ &&
          disable_cert_verification_network_fetches_ ==
-             other.disable_cert_verification_network_fetches_;
+             other.disable_cert_verification_network_fetches_ &&
+         target_network_ == other.target_network_;
 }
 
 std::ostream& operator<<(std::ostream& os, const QuicSessionKey& key) {
@@ -141,7 +150,8 @@ std::ostream& operator<<(std::ostream& os, const QuicSessionKey& key) {
      << ", secure_dns_policy: " << static_cast<int>(key.secure_dns_policy())
      << ", require_dns_https_alpn: " << key.require_dns_https_alpn()
      << ", disable_cert_verification_network_fetches: "
-     << key.disable_cert_verification_network_fetches() << "}";
+     << key.disable_cert_verification_network_fetches()
+     << ", target_network: " << key.target_network() << "}";
   return os;
 }
 
