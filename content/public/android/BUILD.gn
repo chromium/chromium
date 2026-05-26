@@ -728,9 +728,6 @@ android_library("content_javatests") {
 robolectric_binary("content_junit_tests") {
   resources_package = "org.chromium.content"
   sources = [
-    "java/src/org/chromium/content/browser/input/AutocorrectManagerUnitTest.java",
-    "java/src/org/chromium/content/browser/input/ImeAdapterImplUnitTest.java",
-    "java/src/org/chromium/content/browser/input/ImeUtilsTest.java",
     "junit/src/org/chromium/content/browser/AudioFocusDelegateTest.java",
     "junit/src/org/chromium/content/browser/BindingManagerTest.java",
     "junit/src/org/chromium/content/browser/ChildProcessConnectionMetricsUnitTest.java",
@@ -740,6 +737,9 @@ robolectric_binary("content_junit_tests") {
     "junit/src/org/chromium/content/browser/ScreenOrientationProviderImplTest.java",
     "junit/src/org/chromium/content/browser/SpareChildConnectionTest.java",
     "junit/src/org/chromium/content/browser/androidoverlay/DialogOverlayCoreTest.java",
+    "junit/src/org/chromium/content/browser/input/AutocorrectManagerTest.java",
+    "junit/src/org/chromium/content/browser/input/ImeAdapterImplTest.java",
+    "junit/src/org/chromium/content/browser/input/ImeUtilsTest.java",
     "junit/src/org/chromium/content/browser/input/InputMethodManagerWrapperImplTest.java",
     "junit/src/org/chromium/content/browser/input/OngoingGestureTest.java",
     "junit/src/org/chromium/content/browser/input/RangeTest.java",

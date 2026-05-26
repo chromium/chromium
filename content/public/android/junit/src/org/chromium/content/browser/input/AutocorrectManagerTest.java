@@ -25,7 +25,7 @@ import org.chromium.content_public.common.ContentFeatures;
 
 /** Unit tests for {@link AutocorrectManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class AutocorrectManagerUnitTest {
+public class AutocorrectManagerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private AutocorrectManager mAutocorrectManager;
     @Mock private ImeAdapterImpl mImeAdapterImpl;
