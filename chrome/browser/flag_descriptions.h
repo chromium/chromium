@@ -3984,16 +3984,6 @@ inline constexpr char kRendererSideContentDecodingDescription[] =
     "network service sends compressed HTTP response bodies to the renderer "
     "process.";
 
-inline constexpr char kBackgroundCompactMessageName[] =
-    "Enable Background Compaction";
-inline constexpr char kBackgroundCompactDescription[] =
-    "Compact memory for all tabs while chrome is backgrounded";
-inline constexpr char kRunningCompactMessageName[] =
-    "Enable Running Compaction";
-inline constexpr char kRunningCompactDescription[] =
-    "Compact memory tabs that haven't been used in a while while chrome "
-    "is running.";
-
 inline constexpr char kRcapsDynamicProfileCountryName[] =
     "Dynamic Profile Country";
 inline constexpr char kRcapsDynamicProfileCountryDescription[] =

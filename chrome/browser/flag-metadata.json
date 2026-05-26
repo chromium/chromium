@@ -1112,11 +1112,6 @@
   },
 
   {
-      "name": "background-compact",
-      "owners": [ "thiabaud@google.com", "clank-performance-team@google.com" ],
-      "expiry_milestone": 150
-  },
-  {
     "name": "background-listening",
     "owners": [
       "jiamingc@chromium.org",
@@ -8267,11 +8262,6 @@
     "name": "run-video-capture-service-in-browser",
     "owners": [ "agpalak@chromium.org", "herre@chromium.org", "video-cmi-apis@google.com" ],
     "expiry_milestone": 160
-  },
-  {
-      "name": "running-compact",
-      "owners": [ "thiabaud@google.com", "clank-performance-team@google.com" ],
-      "expiry_milestone": 150
   },
   {
     "name": "saas-usage-reporting",

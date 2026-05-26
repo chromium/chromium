@@ -23,10 +23,6 @@
 namespace base::android {
 class MemoryPurgeManagerAndroid;
 
-// TODO(thiabaud): Remove these once we fix the include in about/flags
-BASE_EXPORT BASE_DECLARE_FEATURE(kShouldFreezeSelf);
-BASE_EXPORT BASE_DECLARE_FEATURE(kUseRunningCompact);
-
 // Starting from Android U, apps are frozen shortly after being backgrounded
 // (with some exceptions). This causes some background tasks for reclaiming
 // resources in Chrome to not be run until Chrome is foregrounded again (which
