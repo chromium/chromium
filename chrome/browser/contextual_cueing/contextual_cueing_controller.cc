@@ -610,7 +610,7 @@ void ContextualCueingController::ShowCue(
   action->SetImage(target.GetOmniboxChipIcon());
   action->SetInvokeActionCallback(base::BindRepeating(
       &ContextualCueingController::OnCueClicked, weak_ptr_factory_.GetWeakPtr(),
-      cue_type, action_data));
+      cue_type, response.suggested_cuj(), action_data));
 
   page_actions::PageActionController* page_action_controller =
       tab->GetTabFeatures()->page_action_controller();
@@ -633,7 +633,7 @@ void ContextualCueingController::ShowCue(
 
   auto menu_model = std::make_unique<ContextualCueingMenuModel>(
       browser_window_interface_->GetProfile(), weak_ptr_factory_.GetWeakPtr(),
-      cue_type, action_data);
+      cue_type, response.suggested_cuj(), action_data);
   page_action_controller->SetAnchoredMessageAction(
       kActionAnchoredContextualCue,
       page_actions::AnchoredMessageActionIconType::kMenu,
@@ -648,8 +648,6 @@ void ContextualCueingController::ShowCue(
 
   page_action_observer_->RegisterAsPageActionObserver(*page_action_controller);
 
-  current_cuj_ = response.suggested_cuj();
-
   contextual_cueing_service_->OnCueShown(
       tab->GetContents()->GetLastCommittedURL());
 #endif
@@ -662,7 +660,6 @@ void ContextualCueingController::ShowCue(
 }
 
 void ContextualCueingController::OnCueHidden() {
-  current_cuj_.clear();
   cue_shown_time_ = base::TimeTicks();
 }
 
@@ -672,6 +669,7 @@ void ContextualCueingController::OnSidePanelShown() {
 
 void ContextualCueingController::OnCueClicked(
     CueTargetType cue_type,
+    std::string cuj,
     CueActionData data,
     actions::ActionItem*,
     actions::ActionInvocationContext) {
@@ -699,19 +697,20 @@ void ContextualCueingController::OnCueClicked(
   }
 #endif
 
-  OnCueInteraction(ContextualCueingInteraction::kCueClicked, cue_type,
+  OnCueInteraction(ContextualCueingInteraction::kCueClicked, cue_type, cuj,
                    std::move(data));
 }
 
 void ContextualCueingController::OnCueInteraction(
     ContextualCueingInteraction interaction_type,
     CueTargetType cue_type,
+    const std::string& cuj,
     CueActionData data) {
   base::TimeDelta shown_duration = ExtractCueShownDuration();
 
   ukm::SourceId source_id = GetActiveTabSourceId();
 
-  RecordContextualCueingInteraction(interaction_type, current_cuj_, source_id,
+  RecordContextualCueingInteraction(interaction_type, cuj, source_id,
                                     shown_duration);
 
   switch (interaction_type) {

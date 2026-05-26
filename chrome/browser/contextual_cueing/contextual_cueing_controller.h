@@ -84,10 +84,9 @@ class ContextualCueingController
   // Returns the CueTarget for the given CueTargetType, or nullptr if there is
   // none.
   CueTarget* GetTarget(CueTargetType type);
-  // Getter function for CUJ of shown cue
-  const std::string& current_cuj() const { return current_cuj_; }
   void OnCueInteraction(ContextualCueingInteraction interaction_type,
                         CueTargetType cue_type,
+                        const std::string& cuj,
                         CueActionData data);
 
  private:
@@ -121,6 +120,7 @@ class ContextualCueingController
                const CueTarget& target,
                optimization_guide::proto::ContextualCueingResponse response);
   void OnCueClicked(CueTargetType cue_type,
+                    std::string cuj,
                     CueActionData data,
                     actions::ActionItem*,
                     actions::ActionInvocationContext);
@@ -147,7 +147,6 @@ class ContextualCueingController
   raw_ptr<TemplateURLService> template_url_service_;
   raw_ptr<signin::IdentityManager> identity_manager_;
   absl::flat_hash_map<CueTargetType, std::unique_ptr<CueTarget>> cue_targets_;
-  std::string current_cuj_;
   base::CallbackListSubscription side_panel_shown_subscription_;
   base::TimeTicks cue_shown_time_;
 

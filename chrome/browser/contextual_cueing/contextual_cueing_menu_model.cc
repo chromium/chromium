@@ -50,11 +50,13 @@ ContextualCueingMenuModel::ContextualCueingMenuModel(
     Profile* profile,
     base::WeakPtr<ContextualCueingController> controller,
     CueTargetType cue_type,
+    std::string cuj,
     CueActionData data)
     : ui::SimpleMenuModel(this),
       profile_(profile),
       controller_(controller),
       cue_type_(cue_type),
+      cuj_(cuj),
       data_(data) {
   contextual_cueing_service_ =
       ContextualCueingServiceFactory::GetForProfile(profile_);
@@ -95,7 +97,8 @@ void ContextualCueingMenuModel::ExecuteCommand(int command_id,
     return;
   }
 
-  controller_->OnCueInteraction(*interaction, cue_type_, std::move(data_));
+  controller_->OnCueInteraction(*interaction, cue_type_, cuj_,
+                                std::move(data_));
 }
 
 }  // namespace contextual_cueing

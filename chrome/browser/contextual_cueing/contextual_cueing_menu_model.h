@@ -24,6 +24,7 @@ class ContextualCueingMenuModel : public ui::SimpleMenuModel,
       Profile* profile,
       base::WeakPtr<ContextualCueingController> controller,
       CueTargetType cue_type,
+      std::string cuj,
       CueActionData data);
   ContextualCueingMenuModel(const ContextualCueingMenuModel&) = delete;
   ContextualCueingMenuModel& operator=(const ContextualCueingMenuModel&) =
@@ -38,6 +39,7 @@ class ContextualCueingMenuModel : public ui::SimpleMenuModel,
   raw_ptr<ContextualCueingService> contextual_cueing_service_;
   base::WeakPtr<ContextualCueingController> controller_;
   CueTargetType cue_type_;
+  std::string cuj_;
   CueActionData data_;
 };
 
