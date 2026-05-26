@@ -122,7 +122,8 @@ SignedInUserState GetSignedInUserState(
 // there is no unsynced data.
 bool ForceLeavingPrimaryAccountConfirmationDialog(
     SignedInUserState signed_in_user_state,
-    ProfileIOS* profile);
+    ProfileIOS* profile,
+    const GaiaId& gaia_id_to_sign_in);
 
 // Returns a dialog for the user to confirm to sign out, switch account.
 // `anchorView` and `anchorRect` is the position that triggered sign-in.

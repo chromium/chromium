@@ -154,7 +154,8 @@ using signin_metrics::SignoutDataLossAlertReason;
   _signedInUserState = GetSignedInUserState(
       self.authenticationService, self.identityManager, profilePrefService);
   if (ForceLeavingPrimaryAccountConfirmationDialog(_signedInUserState,
-                                                   self.profile)) {
+                                                   self.profile,
+                                                   /*gaia_id_to_sign_in=*/{})) {
     [self startActionSheetCoordinatorForSignout];
   } else {
     [self checkForUnsyncedDataAndSignOut];

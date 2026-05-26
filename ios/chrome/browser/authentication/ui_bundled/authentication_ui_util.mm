@@ -266,7 +266,8 @@ SignedInUserState GetSignedInUserState(
 
 bool ForceLeavingPrimaryAccountConfirmationDialog(
     SignedInUserState signed_in_user_state,
-    ProfileIOS* profile) {
+    ProfileIOS* profile,
+    const GaiaId& gaia_id_to_sign_in) {
   switch (signed_in_user_state) {
     case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin:
       return false;
@@ -279,7 +280,13 @@ bool ForceLeavingPrimaryAccountConfirmationDialog(
       // Show the dialog only if a managed account is signing out from the
       // personal profile. (This can only happen for managed accounts that were
       // already signed in before there was multi-profile support.)
-      return IsPersonalProfile(profile);
+      // If the new account is different from the one in the personal profile,
+      // we are not actually signing it out.
+      return IsPersonalProfile(profile) &&
+             (gaia_id_to_sign_in.empty() ||
+              IdentityManagerFactory::GetForProfile(profile)
+                      ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+                      .gaia == gaia_id_to_sign_in);
   }
   NOTREACHED();
 }

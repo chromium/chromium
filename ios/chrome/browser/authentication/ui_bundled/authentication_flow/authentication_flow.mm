@@ -581,7 +581,8 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
   SignedInUserState signedInUserState = GetSignedInUserState(
       authenticationService, identityManager, profilePrefService);
   if (!ForceLeavingPrimaryAccountConfirmationDialog(signedInUserState,
-                                                    profile) &&
+                                                    profile,
+                                                    _identityToSignIn.gaiaId) &&
       _unsyncedDataTypes.value().empty()) {
     [self continueFlow];
     return;

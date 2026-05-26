@@ -6,7 +6,17 @@
 
 #import "base/functional/callback.h"
 #import "base/run_loop.h"
+#import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_test_util.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/signin/model/identity_test_environment_browser_state_adaptor.h"
+#import "ios/web/public/test/web_task_environment.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "testing/platform_test.h"
 
 namespace {
@@ -77,4 +87,43 @@ TEST_F(AuthenticationUIUtil, DialogMessageFromErrorWithUnderlyingErrors) {
   ExpectErrorInMessage(error3, message, YES);
   ExpectErrorInMessage(error2, message, NO);
   ExpectErrorInMessage(error1, message, NO);
+}
+
+TEST_F(AuthenticationUIUtil,
+       ForceLeavingPrimaryAccountConfirmationDialog_DifferentAccount) {
+  IOSChromeScopedTestingLocalState scoped_testing_local_state;
+  web::WebTaskEnvironment task_environment;
+  TestProfileManagerIOS profile_manager;
+  TestProfileIOS::Builder builder;
+  builder.SetName(GetApplicationContext()
+                      ->GetProfileManager()
+                      ->GetProfileAttributesStorage()
+                      ->GetPersonalProfileName());
+  builder.AddTestingFactory(
+      IdentityManagerFactory::GetInstance(),
+      base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
+                              BuildIdentityManagerForTests));
+  TestProfileIOS* profile = profile_manager.AddProfileWithBuilder(std::move(builder));
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+
+  // Add a primary account.
+  AccountInfo primary_account = signin::MakePrimaryAccountAvailable(
+      identity_manager, "primary@gmail.com", signin::ConsentLevel::kSignin);
+
+  // Test with the same account.
+  EXPECT_TRUE(ForceLeavingPrimaryAccountConfirmationDialog(
+      SignedInUserState::kManagedAccountClearsDataOnSignout, profile,
+      primary_account.gaia));
+
+  // Test with a different account.
+  EXPECT_FALSE(ForceLeavingPrimaryAccountConfirmationDialog(
+      SignedInUserState::kManagedAccountClearsDataOnSignout, profile,
+      GaiaId("different_gaia")));
+
+  // Test with an empty account (sign-out).
+  EXPECT_TRUE(ForceLeavingPrimaryAccountConfirmationDialog(
+      SignedInUserState::kManagedAccountClearsDataOnSignout, profile,
+      {}));
 }
