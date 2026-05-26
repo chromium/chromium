@@ -26,7 +26,6 @@ def __step_config(ctx, step_config):
     #      `action_with_pydeps` instead of manually listing them in `inputs`.
     # 4. Re-build and verify the action succeeds remotely.
     python_scripts = [
-        "base/win/embedded_i18n/create_string_rc.py",
         "build/modules/unified/generate_system_modulemap.py",
         # Reads .gclient_entries which is outside of the source tree.
         "build/private_code_test/list_gclient_deps.py",

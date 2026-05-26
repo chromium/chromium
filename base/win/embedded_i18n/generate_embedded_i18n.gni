@@ -4,6 +4,7 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/locales.gni")
+import("//build/config/python.gni")
 
 # This template defines a rule to generate localized string .rc and .h files
 # that can be embedded directly into a library or executable if desired
@@ -49,8 +50,8 @@ import("//build/config/locales.gni")
 #   deps (optional)
 #   visibility (optional)
 
-# Locales in |all_chrome_locales| are for pak file format.  We need to convert them
-# to the xtb version.
+# Locales in |all_chrome_locales| are for pak file format. We need to convert
+# them to the xtb version.
 default_embedded_i18_locales = all_chrome_locales - [
                                  "en-US",
                                  "he",
@@ -83,7 +84,7 @@ template("generate_embedded_i18n") {
     first_resource_id = invoker.first_resource_id
   }
 
-  action(target_name) {
+  action_with_pydeps(target_name) {
     script = "//base/win/embedded_i18n/create_string_rc.py"
     inputs = []
 
