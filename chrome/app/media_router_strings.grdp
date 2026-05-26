@@ -32,12 +32,6 @@
   <message name="IDS_MEDIA_ROUTER_HELP" desc="Title of a menu item which, on click, opens a page to the Google Cast help center.">
     Help
   </message>
-  <message name="IDS_MEDIA_ROUTER_ALWAYS_SHOW_TOOLBAR_ACTION" desc="Title of a menu item which, on click, toggles whether or not the Media Router action icon is always shown. When toggled off, the icon is shown only when the Media Router dialog is open or if there is an active local Media Route or an issue.">
-    Always show icon
-  </message>
-  <message name="IDS_MEDIA_ROUTER_SHOWN_BY_POLICY" desc="Title of a menu item, which indicates that the Media Router action icon was added to the toolbar by the policy enabled by the user's administrator.">
-    Added by your administrator
-  </message>
   <message name="IDS_MEDIA_ROUTER_TOGGLE_MEDIA_REMOTING" desc="Title of a menu item which, on click, toggles (enables or disables) the feature to optimize casting fullscreen videos to a casting device. This menu item has a checkmark when the feature is enabled.">
     Optimize fullscreen videos
   </message>
@@ -94,9 +88,6 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_NO_DEVICES_FOUND_BUTTON" desc="The accessibility label that gets read by screen readers for a button shown when no Cast device was found. Clicking on the button opens a new tab.">
     No devices found. Open a help center article in a new tab
-  </message>
-  <message name="IDS_MEDIA_ROUTER_DESTINATION_MISSING" desc="Link to display when no Cast destinations are found which, on click, opens a page to the Google Cast help center explaining possible reasons why none are detected.">
-    No cast destinations found. Need help?
   </message>
   <message name="IDS_MEDIA_ROUTER_LOCAL_DISCOVERY_PERMISSION_REJECTED_BUTTON" desc="The accessibility label for a button shown when the browser does not have the permission to connect to devices on the local network.">
     Permission to cast is rejected. Open a help center article in a new tab to learn more.
@@ -189,17 +180,6 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_CANCEL_BUTTON" desc="Label for a button in the Media Remoting dialog that the user can click on to cancel enabling the feature. Shown next to the 'Optimize' button. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
     No thanks
-  </message>
-  <message name="IDS_MEDIA_ROUTER_REMOTING_DIALOG_CANCEL_BUTTON_MACOS" desc="Label for a button in the Media Remoting dialog that the user can click on to cancel enabling the feature, shown on macOS. Shown next to the 'Optimize' button. Media Remoting is a feature that can be enabled during a Cast session for improved playback.">
-    No Thanks
-  </message>
-
-  <!-- Cast-to-meeting deprecation/removal -->
-  <message name="IDS_MEDIA_ROUTER_CAST_TO_MEETING_DEPRECATED" desc="Used in the Cast dialog to inform the user that starting a presentation from the Cast dialog will no longer work, and using meet.google.com will be the only option.">
-    Soon this option will no longer be supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_CAST_TO_MEETING_REMOVED" desc="Used in the Cast dialog to inform the user that starting a presentation from the Cast dialog is not longer supported, and using meet.google.com is the only option.">
-    This option is no longer supported. To present a tab, use <ph name="GOOGLE_MEET">$1<ex>Google Meet</ex></ph>.
   </message>
 
   <!-- Wired Display Media Route Provider -->
@@ -411,28 +391,5 @@
   </message>
   <message name="IDS_MEDIA_ROUTER_FEEDBACK_NETWORK_WIRED_PC" desc="Option for describing the network with a wired PC.">
     PC is wired and casting device is on Wi-Fi
-  </message>
-
-  <!-- OS-level notifications -->
-  <message name="IDS_MEDIA_ROUTER_NOTIFICATION_MESSAGE_CAST_SCREEN" desc="The notification message to tell the user we are casting the desktop screen.">
-    You are currently casting your screen
-  </message>
-  <message name="IDS_MEDIA_ROUTER_NOTIFICATION_MESSAGE_PAUSED" desc="The notification message to tell the user that casting is paused.">
-    Casting is currently paused. You can resume casting or stop casting at any time.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_NOTIFICATION_MESSAGE_SCREEN_CAN_PAUSE" desc="Notification message to tell the user that we are casting the desktop screen, and that the casting session may be paused.">
-    You are casting your screen. You can pause or stop casting your screen at any time.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_NOTIFICATION_MESSAGE_SCREEN_PAUSED" desc="Notification message to tell the user that we are casting the desktop screen, and that the casting session is currently paused.">
-    Casting is currently paused. You can resume casting or stop casting your screen at any time.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_NOTIFICATION_MESSAGE_TAB_CAN_PAUSE" desc="Notification message to tell the user that we are casting a tab, and that the casting session may be paused.">
-    You are casting a tab. You can pause or stop casting at any time.
-  </message>
-  <message name="IDS_MEDIA_ROUTER_NOTIFICATION_TITLE" desc="The notification title to tell the user we are casting to a cast device.">
-    Casting to <ph name="RECEIVER_NAME">$1<ex>Living Room</ex></ph>
-  </message>
-  <message name="IDS_MEDIA_ROUTER_NOTIFICATION_TITLE_UNKNOWN" desc="The label used when we have detected we are casting but do not know what we are casting or who we are casting to.">
-    Casting to an unknown receiver
   </message>
 </grit-part>
