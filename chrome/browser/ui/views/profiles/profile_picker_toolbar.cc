@@ -40,14 +40,41 @@ namespace {
 constexpr gfx::Insets kToolbarPadding =
     gfx::Insets(8).set_left(16).set_right(16);
 
-class SimpleBackButton : public ToolbarButton {
-  METADATA_HEADER(SimpleBackButton, ToolbarButton)
+class ProfilePickerToolbarButton : public ToolbarButton {
+  METADATA_HEADER(ProfilePickerToolbarButton, ToolbarButton)
 
  public:
-  explicit SimpleBackButton(PressedCallback callback)
+  explicit ProfilePickerToolbarButton(PressedCallback callback)
       : ToolbarButton(std::move(callback)) {
     SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
+    // Unlike usual toolbar buttons, these should be focusable to make them
+    // consistent with other screens of the flow where the button is part of the
+    // page.
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+
+    // Ensure the button's layer is a non-opaque so it shows through the
+    // transparent background.
+    SetPaintToLayer();
+    CHECK_DEREF(layer()).SetFillsBoundsOpaquely(false);
+  }
+
+  ProfilePickerToolbarButton(const ProfilePickerToolbarButton&) = delete;
+  ProfilePickerToolbarButton& operator=(const ProfilePickerToolbarButton&) =
+      delete;
+
+  ~ProfilePickerToolbarButton() override = default;
+};
+
+BEGIN_METADATA(ProfilePickerToolbarButton)
+END_METADATA
+
+class SignInBackButton : public ProfilePickerToolbarButton {
+  METADATA_HEADER(SignInBackButton, ProfilePickerToolbarButton)
+
+ public:
+  explicit SignInBackButton(PressedCallback callback)
+      : ProfilePickerToolbarButton(std::move(callback)) {
     SetVectorIcons(features::IsRoundedIconsEnabled()
                        ? vector_icons::kArrowBackIcon
                        : vector_icons::kBackArrowOldIcon,
@@ -55,34 +82,26 @@ class SimpleBackButton : public ToolbarButton {
                                                      : kBackArrowTouchOldIcon);
     SetTooltipText(l10n_util::GetStringUTF16(
         IDS_PROFILE_PICKER_BACK_BUTTON_SIGN_IN_LABEL));
-    // Unlike toolbar buttons, this one should be focusable to make it
-    // consistent with other screens of the flow where the back button is part
-    // of the page.
-    SetFocusBehavior(FocusBehavior::ALWAYS);
   }
-  SimpleBackButton(const SimpleBackButton&) = delete;
-  SimpleBackButton& operator=(const SimpleBackButton&) = delete;
-  ~SimpleBackButton() override = default;
+
+  SignInBackButton(const SignInBackButton&) = delete;
+  SignInBackButton& operator=(const SignInBackButton&) = delete;
+
+  ~SignInBackButton() override = default;
 };
 
-BEGIN_METADATA(SimpleBackButton)
+BEGIN_METADATA(SignInBackButton)
 END_METADATA
 
-class DontSignInButton : public ToolbarButton {
-  METADATA_HEADER(DontSignInButton, ToolbarButton)
+class DontSignInButton : public ProfilePickerToolbarButton {
+  METADATA_HEADER(DontSignInButton, ProfilePickerToolbarButton)
 
  public:
   explicit DontSignInButton(PressedCallback callback)
-      : ToolbarButton(std::move(callback)) {
-    SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |
-                             ui::EF_MIDDLE_MOUSE_BUTTON);
+      : ProfilePickerToolbarButton(std::move(callback)) {
     SetHighlight(l10n_util::GetStringUTF16(
                      IDS_FRE_NATIVE_TOOLBAR_DONT_SIGN_IN_BUTTON_LABEL),
                  SK_ColorTRANSPARENT);
-    // Unlike usual toolbar buttons, this one should be focusable to make it
-    // consistent with the first screen of the flow where the "Don't sign in"
-    // button is part of the page.
-    SetFocusBehavior(FocusBehavior::ALWAYS);
     SetHorizontalAlignment(gfx::ALIGN_CENTER);
     SetProperty(views::kElementIdentifierKey,
                 kProfilePickerToolbarDontSignInButtonElementId);
@@ -157,12 +176,9 @@ ProfilePickerToolbar::ProfilePickerToolbar() {
                                        views::MaximumFlexSizeRule::kUnbounded)
                   .WithWeight(1));
 
-  // Set the background to transparent to inherit the color from sign-in page.
+  // Set the background to transparent to inherit the color from the underlying
+  // WebUI / WebView.
   SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  // Ensure toolbar is drawn on top of the WebView. Mark it as non-opaque to let
-  // the web content show through the transparent background.
-  SetPaintToLayer();
-  CHECK_DEREF(layer()).SetFillsBoundsOpaquely(false);
 }
 
 ProfilePickerToolbar::~ProfilePickerToolbar() = default;
@@ -182,7 +198,7 @@ void ProfilePickerToolbar::AddBackButton(
   CHECK(sign_in_back_button_ == nullptr);
   CHECK(!on_back_callback.is_null());
   sign_in_back_button_ = AddChildView(
-      std::make_unique<SimpleBackButton>(std::move(on_back_callback)));
+      std::make_unique<SignInBackButton>(std::move(on_back_callback)));
   sign_in_back_button_->SetVisible(false);
 }
 
