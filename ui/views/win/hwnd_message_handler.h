@@ -272,6 +272,11 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Returns true if IsFrameSystemDrawn() and there's actually a frame to draw.
   bool HasSystemFrame() const;
 
+  // Allow WeakPtr use in subclasses.
+  base::WeakPtr<HWNDMessageHandler> GetWeakPtr() {
+    return msg_handler_weak_factory_.GetWeakPtr();
+  }
+
  private:
   friend class ::views::test::DesktopWindowTreeHostWinTestApi;
 
