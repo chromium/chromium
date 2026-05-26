@@ -4,10 +4,11 @@
 
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {ToolbarEvent} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingToolbarElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome-untrusted://webui-test/test_util.js';
 
 import {stubAnimationFrame} from './common.js';
@@ -165,4 +166,62 @@ suite('FontSize', () => {
     assertEquals(startingFontSize, chrome.readingMode.fontSize);
     assertTrue(fontSizeEmitted);
   });
+
+  test(
+      'reset button disabled state updates based on default font size',
+      async () => {
+        // Ensure the mock starts at the production default font size (2.0)
+        chrome.readingMode.fontSize = 2.0;
+
+        // Force a re-render of the toolbar element
+        toolbar.requestUpdate();
+        await microtasksFinished();
+
+        // Open the font size settings drop-down menu
+        menuButton!.click();
+        await microtasksFinished();
+
+        // Locate the font reset button inside the toolbar shadow root menu
+        const resetButton =
+            toolbar.$.fontSizeMenu.get().querySelector<CrButtonElement>(
+                '#font-size-reset')!;
+        assertTrue(!!resetButton, 'Reset button should be present in DOM');
+
+        // Assertion: Reset button must be disabled initially because font
+        // size is at its default value (2.0)
+        assertTrue(
+            resetButton.disabled,
+            'Reset button should be disabled at default font size');
+
+        // Interaction: Increase the font size to 3.0
+        const increaseButton =
+            toolbar.$.fontSizeMenu.get().querySelector<CrIconButtonElement>(
+                '#font-size-increase')!;
+        increaseButton.click();
+        await microtasksFinished();
+
+        // Assertion: Font size increased; the reset button should now be
+        // enabled
+        assertEquals(chrome.readingMode.fontSize, 3.0);
+        assertFalse(
+            resetButton.disabled,
+            'Reset button should be enabled when font size changes');
+
+        // Override mock's reset action to restore 2.0 (mimicking production
+        // C++ model reset logic)
+        chrome.readingMode.onFontSizeReset = () => {
+          chrome.readingMode.fontSize = 2.0;
+        };
+
+        // Interaction: Click the reset button to revert to default font size
+        resetButton.click();
+        await microtasksFinished();
+
+        // Assertion: Font size returned to 2.0; the reset button must be
+        // disabled again
+        assertEquals(chrome.readingMode.fontSize, 2.0);
+        assertTrue(
+            resetButton.disabled,
+            'Reset button should become disabled after resetting font size');
+      });
 });

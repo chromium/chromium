@@ -200,6 +200,7 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     </cr-icon-button>
     <cr-button role="menuitem"
         id="font-size-reset"
+        ?disabled="${this.isFontSizeDefault_()}"
         aria-label="$i18n{fontResetTooltip}"
         title="$i18n{fontResetTooltip}"
         @click="${this.onFontResetClick_}">

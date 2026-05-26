@@ -215,6 +215,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // connectedCallback has finished executing.
   private isSetupComplete_: boolean = false;
 
+  protected isFontSizeDefault_(): boolean {
+    return chrome.readingMode.fontSize === 2.0;
+  }
+
   isReadingModeInactive(): boolean {
     return this.presentationState ===
         chrome.readingMode.inHiddenPresentationState;
@@ -726,6 +730,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (startingSize !== chrome.readingMode.fontSize) {
       this.announceSizeChage(increase);
     }
+    this.requestUpdate();
     // Don't close the menu
   }
 
@@ -734,6 +739,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
         ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     chrome.readingMode.onFontSizeReset();
     this.fire(ToolbarEvent.FONT_SIZE);
+    this.requestUpdate();
   }
 
   protected onPlayPauseClick_() {
