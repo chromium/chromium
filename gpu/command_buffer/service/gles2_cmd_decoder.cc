@@ -11324,6 +11324,18 @@ error::Error GLES2DecoderImpl::HandleReadPixels(uint32_t immediate_data_size,
     return error::kOutOfBounds;
   }
 
+  // Defense-in-depth: read_pixel_format may accept enums (e.g. sized norm16
+  // internal formats) that GLES2Util::ElementsPerGroup does not recognize, in
+  // which case ComputeImageDataSizesES3 succeeds with a 0-byte size. If we
+  // proceeded, GetSharedMemoryAs would validate 0 bytes and we would hand the
+  // pointer to the native driver, which writes width*height*bpp bytes -> OOB
+  // write past the renderer's transfer buffer in the GPU process.
+  if (width > 0 && height > 0 && pixels_size == 0) {
+    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, func_name,
+                       "unsupported format/type combination");
+    return error::kNoError;
+  }
+
   uint8_t* pixels = nullptr;
   Buffer* buffer = state_.bound_pixel_pack_buffer.get();
   if (pixels_shm_id == 0) {
