@@ -347,19 +347,20 @@ tools/metrics/histograms/metadata/stability/enums.xml
   <variant name="viz"/>
 </variants>
 
-<histogram name="PerformanceMonitor.AverageCPU9.Total{UsageScenario}"
+<histogram name="PerformanceMonitor.AverageCPU10.Total{UsageScenario}"
     units="1/100 %" expires_after="2026-08-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    See definition of PerformanceClass.AverageCPU9.ProcessName. This is recorded
-    every 2 minutes for {UsageScenario} (see go/chrome_power_use_per_scenario).
+    See definition of PerformanceClass.AverageCPU10.ProcessName. This is
+    recorded every 2 minutes for {UsageScenario} (see
+    go/chrome_power_use_per_scenario).
   </summary>
   <token key="UsageScenario" variants="UsageScenario"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.AverageCPU9.UtilityProcess.{Subtype}"
+<histogram name="PerformanceMonitor.AverageCPU10.UtilityProcess.{Subtype}"
     units="1/100 %" expires_after="2027-02-13">
   <owner>anthonyvd@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
@@ -382,7 +383,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
   <token key="Subtype" variants="UtilityProcessSubtype"/>
 </histogram>
 
-<histogram name="PerformanceMonitor.AverageCPU9.{ProcessName}" units="1/100 %"
+<histogram name="PerformanceMonitor.AverageCPU10.{ProcessName}" units="1/100 %"
     expires_after="2026-08-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>

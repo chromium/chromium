@@ -54,7 +54,7 @@ void RecordAverageCPUUsage(const std::string_view histogram_suffix,
   // of type {ProcessName} existed during the interval, a sample of zero is
   // still emitted."
   base::UmaHistogramCustomCounts(
-      base::StrCat({"PerformanceMonitor.AverageCPU9.", histogram_suffix}),
+      base::StrCat({"PerformanceMonitor.AverageCPU10.", histogram_suffix}),
       cpu_usage.value_or(0.0) * kCPUUsageFactor, kCPUUsageHistogramMin,
       kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
 }
