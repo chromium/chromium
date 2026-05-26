@@ -80,14 +80,7 @@ class GlicBackgroundModeManagerUiTest : public test::InteractiveGlicTest {
                   &browser_process);
             }));
 #endif
-    feature_list_.InitWithFeatures(
-        {features::kGlicCaptureRegion,
-#if BUILDFLAG(IS_CHROMEOS)
-         features::kGlicShowStatusTrayIcon,
-         chromeos::features::kSupportCustomIconsInStatusArea
-#endif
-        },
-        {});
+    feature_list_.InitWithFeatures({features::kGlicCaptureRegion}, {});
   }
 
   void TearDownOnMainThread() override {

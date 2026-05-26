@@ -695,13 +695,7 @@ class SelectionOverlayHotkeyInteractiveTest
  public:
   SelectionOverlayHotkeyInteractiveTest() {
     scoped_feature_list_.InitWithFeatures(
-        {::features::kGlicDefaultTabContextSetting,
-#if BUILDFLAG(IS_CHROMEOS)
-         features::kGlicShowStatusTrayIcon,
-         chromeos::features::kSupportCustomIconsInStatusArea
-#endif
-        },
-        {});
+        {::features::kGlicDefaultTabContextSetting}, {});
   }
   ~SelectionOverlayHotkeyInteractiveTest() override = default;
 

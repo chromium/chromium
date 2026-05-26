@@ -8,7 +8,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_file_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/background/glic/glic_controller.h"
@@ -83,14 +82,6 @@ class GlicStatusIconTest : public testing::Test {
 
     glic_status_icon_ =
         GlicStatusIcon::Create(&glic_controller_, &status_tray_);
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {
-#if BUILDFLAG(IS_CHROMEOS)
-            features::kGlicShowStatusTrayIcon
-#endif
-        },
-        /*disabled_features=*/{});
     glic_status_icon_->Init();
   }
 
@@ -116,7 +107,6 @@ class GlicStatusIconTest : public testing::Test {
   MockStatusTray status_tray_;
   MockGlicController glic_controller_;
   base::HistogramTester histogram_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 #if !BUILDFLAG(IS_LINUX)
