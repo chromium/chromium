@@ -1,0 +1,29 @@
+Name: DirectX 12 Agility SDK
+Short Name: microsoft.direct3d.d3d12
+URL: https://www.nuget.org/packages/Microsoft.Direct3D.D3D12
+Version: N/A
+Revision: DEPS
+Update Mechanism: Manual
+License: Microsoft-DirectX, MIT
+License File: LICENSE
+Security Critical: no
+Shipped: no
+
+Description:
+The DirectX 12 Agility SDK is an SDK provided by Microsoft that allows developers to ship software using the latest DirectX features, even if they are not supported by the system-installed DirectX libraries (https://devblogs.microsoft.com/directx/directx12agility).
+
+This directory contains a copy of the Nuget package that Microsoft makes officially available. The latest version of this package is automatically imported into CIPD by the 3pp scripts in this directory. Manually update your DEPS file to point to the vesion of this package you want to use. If the package changes, you may also have to update ./BUILD.gn.
+
+Note that there are two license files inside the package that have been inlined into the root LICENSE file here. From the package's readme:
+```
+The included licenses apply to the following files:
+
+- **LICENSE.txt** : applies to all files under `build/native/bin/`
+- **LICENSE-CODE.txt** : applies to all files under `build/native/include/'
+```
+Both licenses are required.
+
+Note that files covered by LICENSE.txt have been granted an exception for use only during development and testing.
+
+Local Modifications:
+None.
