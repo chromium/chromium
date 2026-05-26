@@ -81,4 +81,8 @@
   return l10n_util::GetNSString(IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON);
 }
 
+- (NSString*)accessibilityLabelForCollapsedSecondaryToolbarButton {
+  return l10n_util::GetNSString(IDS_IOS_COLLAPSED_SECONDARY_TOOLBAR_BUTTON);
+}
+
 @end

@@ -1673,6 +1673,9 @@
       <message name="IDS_IOS_COLLAPSED_PRIMARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in primary toolbar. [iOS only].">
         Collapsed primary toolbar button
       </message>
+      <message name="IDS_IOS_COLLAPSED_SECONDARY_TOOLBAR_BUTTON" desc="The accessibility label for the collapsed toolbar button in secondary toolbar. [iOS only].">
+        Collapsed secondary toolbar button
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_ADD_ATTACHMENT_BUTTON_ACCESSIBILITY_LABEL" desc="The accessibility announcement read by Voice Over for the button that enables the user to add other attachments to the search query. [iOS only].">
         Add attachment
       </message>

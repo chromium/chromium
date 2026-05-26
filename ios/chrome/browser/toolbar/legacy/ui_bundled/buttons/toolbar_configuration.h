@@ -62,6 +62,10 @@
 // toolbar.
 - (NSString*)accessibilityLabelForCollapsedPrimaryToolbarButton;
 
+// Returns accessibility label of the collapsed toolbar button in secondary
+// toolbar.
+- (NSString*)accessibilityLabelForCollapsedSecondaryToolbarButton;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_BUTTONS_TOOLBAR_CONFIGURATION_H_
