@@ -235,6 +235,9 @@ AuthenticationExtensionsClientInputsFromJSON(
     }
     result->setPrf(prf);
   }
+  if (json.hasCrossDeviceFallbackUrl()) {
+    result->setCrossDeviceFallbackUrl(json.crossDeviceFallbackUrl());
+  }
   return result;
 }
 
@@ -306,6 +309,9 @@ AuthenticationExtensionsClientOutputsToJSON(
                                         supplemental_pub_keys.signatures());
     }
     json->setSupplementalPubKeys(builder.ToScriptObject());
+  }
+  if (in.hasCrossDeviceFallbackUrl()) {
+    json->setCrossDeviceFallbackUrl(in.crossDeviceFallbackUrl());
   }
   return json;
 }

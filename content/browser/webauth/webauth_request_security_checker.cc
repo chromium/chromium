@@ -15,6 +15,7 @@
 #include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/policy_container_host.h"
+#include "content/browser/renderer_host/render_frame_host_csp_context.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_authentication_delegate.h"
 #include "content/public/common/content_client.h"
+#include "device/fido/public/features.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -384,6 +386,35 @@ bool& WebAuthRequestSecurityChecker::
     UseSystemSharedURLLoaderFactoryForTesting() {
   static bool value = false;
   return value;
+}
+
+bool WebAuthRequestSecurityChecker::ValidateCrossDeviceFallbackUrl(
+    const std::string& relying_party_id,
+    const GURL& fallback_url) {
+  CHECK(base::FeatureList::IsEnabled(device::kWebAuthnCrossDeviceFallbackUrl));
+  if (!fallback_url.is_valid() || !fallback_url.SchemeIs("https")) {
+    return false;
+  }
+  if (!webauthn::OriginIsAllowedToClaimRelyingPartyId(
+          relying_party_id, url::Origin::Create(fallback_url))) {
+    return false;
+  }
+
+  RenderFrameHostCSPContext csp_context(
+      static_cast<RenderFrameHostImpl*>(render_frame_host_));
+  return csp_context
+      .IsAllowedByCsp(static_cast<RenderFrameHostImpl*>(render_frame_host_)
+                          ->policy_container_host()
+                          ->policies()
+                          .content_security_policies,
+                      network::mojom::CSPDirectiveName::ConnectSrc,
+                      fallback_url,
+                      /*url_before_redirects=*/fallback_url,
+                      /*has_followed_redirect=*/false,
+                      network::mojom::SourceLocation::New(),
+                      network::CSPContext::CheckCSPDisposition::CHECK_ALL_CSP,
+                      /*is_opaque_fenced_frame=*/false)
+      .IsAllowed();
 }
 
 }  // namespace content

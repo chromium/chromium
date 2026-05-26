@@ -25,4 +25,8 @@ dictionary AuthenticationExtensionsClientOutputsJSON {
 
   // https://w3c.github.io/webauthn/#prf-extension
   object prf;
+
+  // Cross-device fallback URL support.
+  // https://github.com/w3c/webauthn/pull/2380
+  [RuntimeEnabled=WebAuthenticationCrossDeviceFallbackUrl] boolean crossDeviceFallbackUrl;
 };

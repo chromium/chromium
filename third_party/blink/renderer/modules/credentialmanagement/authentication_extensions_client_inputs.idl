@@ -56,5 +56,9 @@ dictionary AuthenticationExtensionsClientInputs {
   // Credential Manager Trust Group (CMTG) key.
   // https://github.com/w3c/webauthn/pull/2377
   [RuntimeEnabled=WebAuthenticationCmtgKey] boolean cmtgKey;
+
+  // Cross-device fallback URL support.
+  // https://github.com/w3c/webauthn/pull/2380
+  [RuntimeEnabled=WebAuthenticationCrossDeviceFallbackUrl] USVString crossDeviceFallbackUrl;
 };
 // LINT.ThenChange(//third_party/blink/renderer/modules/credentialmanagement/public_key_credential.cc)

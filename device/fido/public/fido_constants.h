@@ -472,6 +472,8 @@ COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kCtap2_1Version[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kCtap2_2Version[];
 
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionHmacSecret[];
+COMPONENT_EXPORT(FIDO_PUBLIC)
+extern const char kExtensionCrossDeviceFallbackUrl[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionHmacSecretMc[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionCredProtect[];
 COMPONENT_EXPORT(FIDO_PUBLIC) extern const char kExtensionLargeBlob[];

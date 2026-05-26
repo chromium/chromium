@@ -206,6 +206,11 @@ std::optional<CtapGetAssertionRequest> CtapGetAssertionRequest::Parse(
           // No other combinations of keys are acceptable.
           return std::nullopt;
         }
+      } else if (extension_id == kExtensionCrossDeviceFallbackUrl) {
+        if (!extension.second.is_string()) {
+          return std::nullopt;
+        }
+        request.cross_device_fallback_url = extension.second.GetString();
       }
     }
   }
@@ -331,6 +336,11 @@ AsCTAPRequestValuePair(const CtapGetAssertionRequest& request) {
 
   if (request.get_cred_blob) {
     extensions.emplace(kExtensionCredBlob, true);
+  }
+
+  if (request.cross_device_fallback_url) {
+    extensions.emplace(kExtensionCrossDeviceFallbackUrl,
+                       cbor::Value(*request.cross_device_fallback_url));
   }
 
   if (!request.prf_inputs.empty()) {

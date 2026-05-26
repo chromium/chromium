@@ -1497,6 +1497,7 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
   }
   CtapGetAssertionRequest request = std::move(*opt_request);
 
+  mutable_state()->last_get_assertion_request = request;
   mutable_state()->allow_list_history.push_back(request.allow_list);
 
   bool user_verified;

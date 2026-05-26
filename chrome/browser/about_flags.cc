@@ -11195,6 +11195,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebAuthnImmediateGetDescription, kOsAll,
      FEATURE_VALUE_TYPE(device::kWebAuthnImmediateGet)},
 
+    {"web-authentication-cross-device-fallback-url",
+     flag_descriptions::kWebAuthnCrossDeviceFallbackUrlName,
+     flag_descriptions::kWebAuthnCrossDeviceFallbackUrlDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(device::kWebAuthnCrossDeviceFallbackUrl)},
+
     {"media-playback-while-not-visible-permission-policy",
      flag_descriptions::kMediaPlaybackWhileNotVisiblePermissionPolicyName,
      flag_descriptions::

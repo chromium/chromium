@@ -253,7 +253,8 @@ TEST(WebAuthenticationJSONConversionTest,
               device::AttestationConveyancePreference::kDirect,
               std::vector<std::string>({"a", "b", "c"})),
           std::vector<device::PublicKeyCredentialParams::CredentialInfo>(),
-          /*cmtg_key=*/false));
+          /*cmtg_key=*/false,
+          /*cross_device_fallback_url=*/GURL("https://example.test/fallback")));
 
   base::Value value = ToValue(options);
   std::string json;
@@ -261,7 +262,7 @@ TEST(WebAuthenticationJSONConversionTest,
   ASSERT_TRUE(serializer.Serialize(value));
   EXPECT_EQ(
       json,
-      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"hints":["security-key","client-device","hybrid"],"rpId":"example.test","timeout":300000,"userVerification":"required"})");
+      R"({"allowCredentials":[{"id":"FBUW","transports":["usb"],"type":"public-key"},{"id":"Hh8g","type":"public-key"}],"challenge":"dGVzdCBjaGFsbGVuZ2U","extensions":{"appid":"https://example.test/appid.json","crossDeviceFallbackUrl":"https://example.test/fallback","getCredBlob":true,"largeBlob":{"read":true,"write":"CAkK"},"prf":{"eval":{"first":"AQIDBA"},"evalByCredential":{"AQID":{"first":"BAUG","second":"BwgJ"}}},"remoteDesktopClientOverride":{"origin":"https://login.example.test","sameOriginWithAncestors":true},"supplementalPubKeys":{"attestation":"direct","attestationFormats":["a","b","c"],"scopes":["device","provider"]}},"hints":["security-key","client-device","hybrid"],"rpId":"example.test","timeout":300000,"userVerification":"required"})");
 }
 
 TEST(WebAuthenticationJSONConversionTest,
@@ -497,6 +498,7 @@ TEST(WebAuthenticationJSONConversionTest,
   "authenticatorAttachment": "cross-platform",
   "clientExtensionResults": {
     "appid": true,
+    "crossDeviceFallbackUrl": true,
     "getCredBlob": "dGVzdCBjcmVkIGJsb2I",
     "largeBlob": {
       "blob": "dGVzdCBsYXJnZSBibG9i",
@@ -558,7 +560,8 @@ TEST(WebAuthenticationJSONConversionTest,
           blink::mojom::SupplementalPubKeysResponse::New(
               std::vector<std::vector<uint8_t>>({{0, 16, 131}, {16, 81, 135}})),
           /*payment=*/nullptr,
-          /*cmtg_key=*/nullptr));
+          /*cmtg_key=*/nullptr,
+          /*cross_device_fallback_url=*/true));
   static const uint8_t expected_prf_first[32] = {
       0x99, 0x9d, 0x30, 0x29, 0x7b, 0xc5, 0x03, 0x7b, 0xa5, 0x7b, 0x81,
       0xbc, 0xf8, 0x27, 0xb3, 0x47, 0x1b, 0xe8, 0x3f, 0x80, 0x67, 0xf6,

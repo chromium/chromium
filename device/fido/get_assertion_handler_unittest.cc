@@ -71,6 +71,45 @@ using TestGetAssertionRequestFuture = base::test::TestFuture<
     std::optional<std::vector<AuthenticatorGetAssertionResponse>>,
     FidoAuthenticator*>;
 
+MATCHER_P(CborRequestHasCrossDeviceFallbackUrl, expected, "") {
+  if (arg.empty()) {
+    return false;
+  }
+  if (arg[0] !=
+      static_cast<uint8_t>(CtapRequestCommand::kAuthenticatorGetAssertion)) {
+    return false;
+  }
+  base::span<const uint8_t> cbor_data =
+      base::span<const uint8_t>(arg).subspan(1u);
+  std::optional<cbor::Value> val = cbor::Reader::Read(cbor_data);
+  if (!val || !val->is_map()) {
+    return false;
+  }
+  const auto& map = val->GetMap();
+
+  std::optional<std::string> expected_opt(expected);
+
+  auto ext_it = map.find(cbor::Value(4));
+  if (ext_it == map.end()) {
+    return !expected_opt.has_value();
+  }
+  if (!ext_it->second.is_map()) {
+    return false;
+  }
+  const auto& ext_map = ext_it->second.GetMap();
+
+  auto url_it = ext_map.find(cbor::Value("crossDeviceFallbackUrl"));
+  if (url_it == ext_map.end()) {
+    return !expected_opt.has_value();
+  }
+  if (!url_it->second.is_string()) {
+    return false;
+  }
+
+  return expected_opt.has_value() &&
+         url_it->second.GetString() == *expected_opt;
+}
+
 }  // namespace
 
 using testing::_;
@@ -973,5 +1012,58 @@ TEST(GetAssertionRequestHandlerWinTest, TestWinUsbDiscovery) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
+
+TEST_F(FidoGetAssertionHandlerTest, CrossDeviceFallbackUrl_Usb) {
+  set_supported_transports({FidoTransportProtocol::kUsbHumanInterfaceDevice});
+
+  auto request = CtapGetAssertionRequest(test_data::kRelyingPartyId,
+                                         test_data::kClientDataJson);
+  request.allow_list = {PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey,
+      fido_parsing_utils::Materialize(
+          test_data::kTestGetAssertionCredentialId))};
+  request.cross_device_fallback_url = "https://example.com/fallback";
+
+  auto request_handler =
+      CreateGetAssertionHandlerWithRequest(std::move(request));
+  discovery()->WaitForCallToStartAndSimulateSuccess();
+
+  auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
+  device->SetDeviceTransport(FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorGetAssertion,
+      test_data::kTestGetAssertionResponse, base::TimeDelta(),
+      CborRequestHasCrossDeviceFallbackUrl(std::nullopt));
+
+  discovery()->AddDevice(std::move(device));
+  EXPECT_TRUE(get_assertion_future().Wait());
+}
+
+TEST_F(FidoGetAssertionHandlerTest, CrossDeviceFallbackUrl_Hybrid) {
+  set_supported_transports({FidoTransportProtocol::kHybrid});
+
+  auto request = CtapGetAssertionRequest(test_data::kRelyingPartyId,
+                                         test_data::kClientDataJson);
+  request.allow_list = {PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey,
+      fido_parsing_utils::Materialize(
+          test_data::kTestGetAssertionCredentialId))};
+  request.cross_device_fallback_url = "https://example.com/fallback";
+
+  auto request_handler =
+      CreateGetAssertionHandlerWithRequest(std::move(request));
+  cable_discovery()->WaitForCallToStartAndSimulateSuccess();
+
+  auto device = MockFidoDevice::MakeCtapWithGetInfoExpectation();
+  device->SetDeviceTransport(FidoTransportProtocol::kHybrid);
+  device->ExpectCtap2CommandAndRespondWith(
+      CtapRequestCommand::kAuthenticatorGetAssertion,
+      test_data::kTestGetAssertionResponse, base::TimeDelta(),
+      CborRequestHasCrossDeviceFallbackUrl(
+          std::make_optional<std::string>("https://example.com/fallback")));
+
+  cable_discovery()->AddDevice(std::move(device));
+  EXPECT_TRUE(get_assertion_future().Wait());
+}
 
 }  // namespace device

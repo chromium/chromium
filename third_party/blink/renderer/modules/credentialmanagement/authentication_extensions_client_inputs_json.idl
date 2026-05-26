@@ -35,4 +35,5 @@ dictionary AuthenticationExtensionsClientInputsJSON {
   [RuntimeEnabled=WebAuthenticationRemoteDesktopSupport] RemoteDesktopClientOverride remoteDesktopClientOverride;
   [RuntimeEnabled=WebAuthenticationSupplementalPubKeys] AuthenticationExtensionsSupplementalPubKeysInputs supplementalPubKeys;
   AuthenticationExtensionsPRFInputsJSON prf;
+  [RuntimeEnabled=WebAuthenticationCrossDeviceFallbackUrl] USVString crossDeviceFallbackUrl;
 };

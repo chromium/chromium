@@ -136,6 +136,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CtapGetAssertionRequest {
   // in getAssertion requests.
   bool large_blob_extension_read = false;
   std::optional<LargeBlob> large_blob_extension_write;
+  std::optional<std::string> cross_device_fallback_url;
 };
 
 struct CtapGetNextAssertionRequest {};

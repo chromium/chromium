@@ -220,6 +220,7 @@ const char kCtap2_1Version[] = "FIDO_2_1";
 const char kCtap2_2Version[] = "FIDO_2_2";
 
 const char kExtensionHmacSecret[] = "hmac-secret";
+const char kExtensionCrossDeviceFallbackUrl[] = "crossDeviceFallbackUrl";
 const char kExtensionHmacSecretMc[] = "hmac-secret-mc";
 const char kExtensionCredProtect[] = "credProtect";
 const char kExtensionLargeBlob[] = "largeBlob";

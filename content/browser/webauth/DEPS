@@ -1,6 +1,7 @@
 include_rules = [
   "+components/webauthn/core/browser",
   "+device/fido",
+  "+components/device_event_log",
   "+third_party/boringssl/src/pki",
 ]
 

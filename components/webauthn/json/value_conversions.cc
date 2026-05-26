@@ -557,6 +557,11 @@ base::Value ToValue(
                    ToValue(options->extensions->supplemental_pub_keys));
   }
 
+  if (options->extensions->cross_device_fallback_url) {
+    extensions.Set("crossDeviceFallbackUrl",
+                   options->extensions->cross_device_fallback_url->spec());
+  }
+
   if (!extensions.empty()) {
     value.Set("extensions", std::move(extensions));
   }
@@ -949,6 +954,13 @@ GetAssertionResponseFromValue(const base::Value& value) {
       return InvalidGetAssertionField("supplementalPubKeys");
     }
     response->extensions->supplemental_pub_keys = std::move(*maybe_result);
+  }
+
+  const std::optional<bool> cross_device_fallback_url =
+      client_extension_results->FindBool("crossDeviceFallbackUrl");
+  if (cross_device_fallback_url) {
+    response->extensions->cross_device_fallback_url =
+        *cross_device_fallback_url;
   }
 
   return {std::move(response), ""};

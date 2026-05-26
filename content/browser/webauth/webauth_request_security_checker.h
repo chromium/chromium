@@ -114,6 +114,11 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   [[nodiscard]] bool DeduplicateCredentialDescriptorListAndValidateLength(
       std::vector<device::PublicKeyCredentialDescriptor>* list);
 
+  // Validates the cross-device fallback URL. Returns true if it is valid,
+  // secure, matches the RP ID, and is allowed by CSP. Otherwise returns false.
+  bool ValidateCrossDeviceFallbackUrl(const std::string& relying_party_id,
+                                      const GURL& fallback_url);
+
   static bool& UseSystemSharedURLLoaderFactoryForTesting();
 
  protected:

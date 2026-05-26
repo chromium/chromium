@@ -110,6 +110,10 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAttestation);
 COMPONENT_EXPORT(FIDO_PUBLIC)
 BASE_DECLARE_FEATURE(kWebAuthnImmediateRequestRateLimit);
 
+// Support the WebAuthn Cross-device ("hybrid") fallback URL extension.
+COMPONENT_EXPORT(FIDO_PUBLIC)
+BASE_DECLARE_FEATURE(kWebAuthnCrossDeviceFallbackUrl);
+
 // Parameter controlling the maximum number of immediate requests allowed per
 // origin (eTLD+1) within the time window. This applies to the longer of the
 // two rate limiters.

@@ -223,6 +223,7 @@ struct AuthenticationExtensionsClientOutputs {
   // If so, |user_verification_methods| contains the actual value.
   [EnableIf=is_android]
   bool echo_user_verification_methods;
+
   [EnableIf=is_android]
   array<UvmEntry>? user_verification_methods;
 
@@ -259,6 +260,10 @@ struct AuthenticationExtensionsClientOutputs {
 
   // The response for the Credential Manager Trust Group key extension.
   CmtgKeyResponse? cmtg_key;
+
+  // The value of the `crossDeviceFallbackUrl` extension output, or null if
+  // none.
+  bool? cross_device_fallback_url;
 };
 
 // Information about the relying party. These fields take arbitrary input.
@@ -466,6 +471,10 @@ struct AuthenticationExtensionsClientInputs {
   // Group key extension.
   // https://github.com/w3c/webauthn/pull/2377
   bool cmtg_key = false;
+
+  // The cross-device fallback URL extension, if present.
+  // https://github.com/w3c/webauthn/pull/2380
+  url.mojom.Url? cross_device_fallback_url;
 };
 
 struct GetCredentialOptions {

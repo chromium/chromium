@@ -246,6 +246,10 @@ CtapGetAssertionRequest SpecializeRequestForAuthenticator(
         CredentialType::kPublicKey, preselected_credential->cred_id,
         std::move(transports))};
   }
+  if (authenticator.AuthenticatorTransport() !=
+      FidoTransportProtocol::kHybrid) {
+    specialized_request.cross_device_fallback_url = std::nullopt;
+  }
   return specialized_request;
 }
 

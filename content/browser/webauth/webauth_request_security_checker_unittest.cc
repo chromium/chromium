@@ -21,6 +21,7 @@
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_contents_factory.h"
+#include "device/fido/public/features.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -524,6 +525,49 @@ TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
   WebAuthRequestSecurityChecker::UseSystemSharedURLLoaderFactoryForTesting() =
       false;
   SetBrowserClientForTesting(old_client);
+}
+
+TEST_F(WebAuthRequestSecurityCheckerSingleFrameTest,
+       ValidateCrossDeviceFallbackUrl) {
+  base::test::ScopedFeatureList feature_list(
+      device::kWebAuthnCrossDeviceFallbackUrl);
+  auto navigation = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents());
+  navigation->Commit();
+  RenderFrameHost* frame = web_contents()->GetPrimaryMainFrame();
+
+  auto policies = network::ParseContentSecurityPolicies(
+      "connect-src https://allowed.com",
+      network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP,
+      GURL("https://example.com"));
+  static_cast<RenderFrameHostImpl*>(frame)
+      ->policy_container_host()
+      ->AddContentSecurityPolicies(std::move(policies));
+
+  scoped_refptr<WebAuthRequestSecurityChecker> checker =
+      static_cast<RenderFrameHostImpl*>(frame)
+          ->GetWebAuthRequestSecurityChecker();
+
+  // 1. Valid GURL, allowed by CSP, matches RP ID.
+  EXPECT_TRUE(checker->ValidateCrossDeviceFallbackUrl(
+      "allowed.com", GURL("https://allowed.com/fallback")));
+
+  // 2. Blocked by CSP.
+  EXPECT_FALSE(checker->ValidateCrossDeviceFallbackUrl(
+      "blocked.com", GURL("https://blocked.com/fallback")));
+
+  // 3. Invalid scheme (HTTP).
+  EXPECT_FALSE(checker->ValidateCrossDeviceFallbackUrl(
+      "allowed.com", GURL("http://allowed.com/fallback")));
+
+  // 4. Invalid GURL.
+  EXPECT_FALSE(
+      checker->ValidateCrossDeviceFallbackUrl("allowed.com", GURL("")));
+
+  // 5. RP ID mismatch.
+  EXPECT_FALSE(checker->ValidateCrossDeviceFallbackUrl(
+      "google.com", GURL("https://allowed.com/fallback")));
 }
 
 }  // namespace

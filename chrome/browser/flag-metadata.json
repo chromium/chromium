@@ -9682,6 +9682,11 @@
     "expiry_milestone": 160
   },
   {
+    "name": "web-authentication-cross-device-fallback-url",
+    "owners": [ "martinkr@google.com", "chrome-webauthn@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "web-authentication-immediate-get",
     "owners": [
       "derinel@google.com",

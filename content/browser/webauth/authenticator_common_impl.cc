@@ -41,8 +41,10 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/webauthn/core/browser/common_utils.h"
 #include "components/webauthn/core/browser/remote_validation.h"
+#include "components/webauthn/core/browser/webauthn_security_utils.h"
 #include "components/webauthn/json/value_conversions.h"
 #include "content/browser/back_forward_cache/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -133,6 +135,7 @@ enum class RequestExtension {
   kCredBlob,
   kGetCredBlob,
   kMinPINLength,
+  kCrossDeviceFallbackUrl,
 };
 
 enum class AttestationErasureOption {
@@ -181,6 +184,11 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
     request_parameter.alternative_application_parameter =
         CreateApplicationParameter(*app_id);
     request_parameter.app_id = std::move(*app_id);
+  }
+
+  if (options->extensions && options->extensions->cross_device_fallback_url) {
+    request_parameter.cross_device_fallback_url =
+        options->extensions->cross_device_fallback_url->spec();
   }
 
   return request_parameter;
@@ -1730,6 +1738,25 @@ void AuthenticatorCommonImpl::ContinueGetAssertionAfterRpIdCheck(
   req_state_->caller_origin = caller_origin;
   req_state_->relying_party_id = public_key_options->relying_party_id;
 
+  if (public_key_options->extensions->cross_device_fallback_url) {
+    if (!base::FeatureList::IsEnabled(
+            device::kWebAuthnCrossDeviceFallbackUrl)) {
+      mojo::ReportBadMessage(
+          "crossDeviceFallbackUrl extension sent but feature disabled");
+      return;
+    }
+    if (!security_checker_->ValidateCrossDeviceFallbackUrl(
+            public_key_options->relying_party_id,
+            *public_key_options->extensions->cross_device_fallback_url)) {
+      // TODO(crbug.com/509934168): Clarify if this should return an error.
+      FIDO_LOG(ERROR) << "Invalid crossDeviceFallbackUrl extension value";
+      public_key_options->extensions->cross_device_fallback_url = std::nullopt;
+    } else {
+      req_state_->requested_extensions.insert(
+          RequestExtension::kCrossDeviceFallbackUrl);
+    }
+  }
+
   if (public_key_options->extensions->appid) {
     req_state_->requested_extensions.insert(RequestExtension::kAppID);
     std::string app_id;
@@ -2975,6 +3002,7 @@ AuthenticatorCommonImpl::CreateMakeCredentialResponse(
       case RequestExtension::kLargeBlobRead:
       case RequestExtension::kLargeBlobWrite:
       case RequestExtension::kGetCredBlob:
+      case RequestExtension::kCrossDeviceFallbackUrl:
         NOTREACHED();
     }
   }
@@ -3113,6 +3141,9 @@ AuthenticatorCommonImpl::CreateGetAssertionResponse(
 
         break;
       }
+      case RequestExtension::kCrossDeviceFallbackUrl:
+        response_extensions->cross_device_fallback_url = true;
+        break;
       case RequestExtension::kHMACSecret:
       case RequestExtension::kCredProps:
       case RequestExtension::kLargeBlobEnable:

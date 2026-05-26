@@ -4705,6 +4705,13 @@ inline constexpr char kWebAuthnImmediateGetDescription[] =
     "if there are no credentials for a given get request. The request can also "
     "request passwords.";
 
+inline constexpr char kWebAuthnCrossDeviceFallbackUrlName[] =
+    "WebAuthn Cross-device fallback URL extension";
+inline constexpr char kWebAuthnCrossDeviceFallbackUrlDescription[] =
+    "Enables support for the WebAuthn crossDeviceFallbackUrl extension, "
+    "which allows Relying Parties to provide a fallback URL for hybrid "
+    "authenticator get requests.";
+
 inline constexpr char kWebBluetoothName[] = "Web Bluetooth";
 inline constexpr char kWebBluetoothDescription[] =
     "Enables the Web Bluetooth API on platforms without official support";

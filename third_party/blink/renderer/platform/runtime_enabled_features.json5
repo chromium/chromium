@@ -6568,6 +6568,12 @@
       name: "WebAuthenticationCmtgKey",
       status: "experimental",
     },
+    {
+      name: "WebAuthenticationCrossDeviceFallbackUrl",
+      status: {"Android": "", "default": "experimental"},
+      base_feature: "none",
+      public: true,
+    },
     // Enables `uiMode` enumeration field in CredentialRequestOptions struct.
     // and `get()` requests with `uiMode: 'immediate'`.
     // See https://github.com/w3c/webauthn/issues/2228.

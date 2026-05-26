@@ -288,6 +288,10 @@ TypeConverter<blink::AuthenticationExtensionsClientOutputs*,
         ConvertTo<blink::AuthenticationExtensionsCmtgKeyOutputs*>(
             extensions->cmtg_key));
   }
+  if (extensions->cross_device_fallback_url.has_value()) {
+    extension_outputs->setCrossDeviceFallbackUrl(
+        *extensions->cross_device_fallback_url);
+  }
   return extension_outputs;
 }
 
@@ -897,6 +901,10 @@ TypeConverter<AuthenticationExtensionsClientInputsPtr,
   }
   if (inputs.hasCmtgKey()) {
     mojo_inputs->cmtg_key = inputs.cmtgKey();
+  }
+  if (inputs.hasCrossDeviceFallbackUrl()) {
+    mojo_inputs->cross_device_fallback_url =
+        blink::KURL(inputs.crossDeviceFallbackUrl());
   }
 
   return mojo_inputs;

@@ -88,6 +88,10 @@ void OnGetClientCapabilitiesComplete(
   results.emplace_back(
       "extension:cmtgKey",
       RuntimeEnabledFeatures::WebAuthenticationCmtgKeyEnabled());
+  results.emplace_back(
+      "extension:crossDeviceFallbackUrl",
+      RuntimeEnabledFeatures::WebAuthenticationCrossDeviceFallbackUrlEnabled(
+          resolver->GetExecutionContext()));
 
   // Results should be sorted lexicographically based on the keys.
   std::sort(

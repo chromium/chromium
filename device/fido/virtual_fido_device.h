@@ -277,6 +277,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     // sequence of requests was sent.
     std::vector<std::vector<PublicKeyCredentialDescriptor>> allow_list_history;
 
+    // last_get_assertion_request contains the last get assertion request
+    // received by the device.
+    std::optional<CtapGetAssertionRequest> last_get_assertion_request;
+
     // exclude_list_history contains the exclude_list values that have been seen
     // in registration requests. This is for tests to confirm that the expected
     // sequence of requests was sent.

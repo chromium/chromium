@@ -74,6 +74,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "crypto/evp.h"
@@ -120,6 +121,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/data_decoder/gzipper.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -10628,6 +10630,149 @@ TEST_F(AuthenticatorImplWithRequestProxyTest,
   EXPECT_EQ(request_proxy().observations().num_isuvpaa, 0u);
   EXPECT_TRUE(AuthenticatorIsConditionalMediationAvailable());
   EXPECT_EQ(request_proxy().observations().num_isuvpaa, 0u);
+}
+
+TEST_F(AuthenticatorImplTest, CrossDeviceFallbackUrl_Valid) {
+  base::test::ScopedFeatureList feature_list(
+      device::kWebAuthnCrossDeviceFallbackUrl);
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->transport =
+      device::FidoTransportProtocol::kHybrid;
+
+  auto options = GetTestGetCredentialOptions();
+  options->public_key->extensions->cross_device_fallback_url =
+      GURL("https://a.google.com/fallback");
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->public_key->allow_credentials[0].id, kTestRelyingPartyId));
+
+  GetAssertionResult result = AuthenticatorGetCredential(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  ASSERT_TRUE(result.response);
+  ASSERT_TRUE(result.response->extensions);
+  ASSERT_TRUE(
+      result.response->extensions->cross_device_fallback_url.has_value());
+  EXPECT_TRUE(*result.response->extensions->cross_device_fallback_url);
+
+  auto last_request =
+      virtual_device_factory_->mutable_state()->last_get_assertion_request;
+  ASSERT_TRUE(last_request.has_value());
+  ASSERT_TRUE(last_request->cross_device_fallback_url.has_value());
+  EXPECT_EQ(*last_request->cross_device_fallback_url,
+            "https://a.google.com/fallback");
+}
+
+TEST_F(AuthenticatorImplTest, CrossDeviceFallbackUrl_InvalidOrigin) {
+  base::test::ScopedFeatureList feature_list(
+      device::kWebAuthnCrossDeviceFallbackUrl);
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->transport =
+      device::FidoTransportProtocol::kHybrid;
+
+  auto options = GetTestGetCredentialOptions();
+  options->public_key->extensions->cross_device_fallback_url =
+      GURL("https://other.com/fallback");
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->public_key->allow_credentials[0].id, kTestRelyingPartyId));
+
+  AuthenticatorGetCredential(std::move(options));
+
+  auto last_request =
+      virtual_device_factory_->mutable_state()->last_get_assertion_request;
+  ASSERT_TRUE(last_request.has_value());
+  EXPECT_FALSE(last_request->cross_device_fallback_url.has_value());
+}
+
+TEST_F(AuthenticatorImplTest, CrossDeviceFallbackUrl_InvalidScheme) {
+  base::test::ScopedFeatureList feature_list(
+      device::kWebAuthnCrossDeviceFallbackUrl);
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->transport =
+      device::FidoTransportProtocol::kHybrid;
+
+  auto options = GetTestGetCredentialOptions();
+  options->public_key->extensions->cross_device_fallback_url =
+      GURL("http://a.google.com/fallback");
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->public_key->allow_credentials[0].id, kTestRelyingPartyId));
+
+  AuthenticatorGetCredential(std::move(options));
+
+  auto last_request =
+      virtual_device_factory_->mutable_state()->last_get_assertion_request;
+  ASSERT_TRUE(last_request.has_value());
+  EXPECT_FALSE(last_request->cross_device_fallback_url.has_value());
+}
+
+TEST_F(AuthenticatorImplTest, CrossDeviceFallbackUrl_BlockedByCSP) {
+  base::test::ScopedFeatureList feature_list(
+      device::kWebAuthnCrossDeviceFallbackUrl);
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  // Set CSP to block the fallback URL.
+  auto policies = network::ParseContentSecurityPolicies(
+      "connect-src https://allowed.com",
+      network::mojom::ContentSecurityPolicyType::kEnforce,
+      network::mojom::ContentSecurityPolicySource::kHTTP, GURL(kTestOrigin1));
+  static_cast<RenderFrameHostImpl*>(main_rfh())
+      ->policy_container_host()
+      ->AddContentSecurityPolicies(std::move(policies));
+
+  device::VirtualCtap2Device::Config config;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->transport =
+      device::FidoTransportProtocol::kHybrid;
+
+  auto options = GetTestGetCredentialOptions();
+  options->public_key->extensions->cross_device_fallback_url =
+      GURL("https://a.google.com/fallback");
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->public_key->allow_credentials[0].id, kTestRelyingPartyId));
+
+  AuthenticatorGetCredential(std::move(options));
+
+  auto last_request =
+      virtual_device_factory_->mutable_state()->last_get_assertion_request;
+  ASSERT_TRUE(last_request.has_value());
+  EXPECT_FALSE(last_request->cross_device_fallback_url.has_value());
+}
+
+TEST_F(AuthenticatorImplTest, CrossDeviceFallbackUrl_FlagDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(device::kWebAuthnCrossDeviceFallbackUrl);
+  NavigateAndCommit(GURL(kTestOrigin1));
+
+  device::VirtualCtap2Device::Config config;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->mutable_state()->transport =
+      device::FidoTransportProtocol::kHybrid;
+
+  auto options = GetTestGetCredentialOptions();
+  options->public_key->extensions->cross_device_fallback_url =
+      GURL("https://a.google.com/fallback");
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectRegistration(
+      options->public_key->allow_credentials[0].id, kTestRelyingPartyId));
+
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+
+  mojo::test::BadMessageObserver bad_message_observer;
+  authenticator->GetCredential(std::move(options), base::DoNothing());
+  EXPECT_EQ(bad_message_observer.WaitForBadMessage(),
+            "crossDeviceFallbackUrl extension sent but feature disabled");
 }
 
 }  // namespace content

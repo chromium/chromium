@@ -184,6 +184,9 @@ BASE_FEATURE_PARAM(int,
                    "window_seconds_short",
                    kDefaultWindowSecondsShort);
 
+BASE_FEATURE(kWebAuthnCrossDeviceFallbackUrl,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enabled in M148. Remove in or after M151.
 BASE_FEATURE(kWebAuthnImmediateGet,
              "WebAuthenticationImmediateGet",

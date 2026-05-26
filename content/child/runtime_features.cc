@@ -256,6 +256,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kTouchDragAndContextMenu)},
           {wf::EnableWebAuthenticationAmbient,
            raw_ref(device::kWebAuthnAmbientSignin)},
+          {wf::EnableWebAuthenticationCrossDeviceFallbackUrl,
+           raw_ref(device::kWebAuthnCrossDeviceFallbackUrl)},
           {wf::EnableWebAuthenticationImmediateGet,
            raw_ref(device::kWebAuthnImmediateGet), kDefault},
           {wf::EnableWebBluetooth, raw_ref(features::kWebBluetooth),

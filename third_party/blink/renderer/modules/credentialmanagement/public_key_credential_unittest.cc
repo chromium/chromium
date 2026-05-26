@@ -77,6 +77,7 @@ struct ExtensionsClientInputsValues {
   std::optional<PRFValues> prf_eval;
   std::optional<std::vector<std::pair<std::string, PRFValues>>>
       prf_eval_by_credential;
+  std::optional<std::string> cross_device_fallback_url;
 };
 
 AuthenticationExtensionsClientInputsJSON* MakeExtensionsInputsJSON(
@@ -124,6 +125,10 @@ AuthenticationExtensionsClientInputsJSON* MakeExtensionsInputsJSON(
     auto* prf_inputs = AuthenticationExtensionsPRFInputsJSON::Create();
     prf_inputs->setEvalByCredential(prf_values_by_cred);
     extensions->setPrf(prf_inputs);
+  }
+  if (in.cross_device_fallback_url) {
+    extensions->setCrossDeviceFallbackUrl(
+        String(*in.cross_device_fallback_url));
   }
   return extensions;
 }
@@ -378,6 +383,12 @@ void ExpectExtensionsMatch(
   }
   EXPECT_EQ(extensions.hasPrf(),
             values.prf_eval || values.prf_eval_by_credential);
+  if (values.cross_device_fallback_url) {
+    EXPECT_THAT(extensions.crossDeviceFallbackUrl(),
+                StrEq(*values.cross_device_fallback_url));
+  } else {
+    EXPECT_FALSE(extensions.hasCrossDeviceFallbackUrl());
+  }
 }
 
 // Tests `PublicKeyCredentialCreationOptions` and `CreationOptionsValues` for
@@ -587,6 +598,7 @@ TEST(PublicKeyCredentialTest, ParseRequestOptionsFromJSON_WithExtensions) {
       {.appid = "https://example.com/appid.json"},
       {.get_cred_blob = true},
       {.prf_eval_by_credential = {{std::make_pair("ABEiMw", kTestPRFValues)}}},
+      {.cross_device_fallback_url = "https://example.com/fallback"},
   };
   for (const auto& ext : kTestCases) {
     CredentialRequestOptionsValues options_values{.extensions = ext};
