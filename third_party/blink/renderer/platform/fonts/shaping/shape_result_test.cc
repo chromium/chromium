@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/font_test_base.h"
@@ -940,6 +941,41 @@ TEST_F(ShapeResultCursorTest, StartIndex) {
   EXPECT_EQ(cursor.glyph_index_, 2u);
   EXPECT_EQ(cursor.CharacterIndex(), 4u);
   EXPECT_EQ(cursor.GlyphData().glyph, 24u);
+}
+
+TEST_F(ShapeResultTest, ForEachGraphemeClustersBoundsCheck) {
+  ShapeResult* result =
+      MakeGarbageCollected<ShapeResult>(0, 10, TextDirection::kLtr);
+  result->InsertRunForTesting(0, 10, TextDirection::kLtr);
+  const String text = "0123456789";
+
+  struct Context {
+    Vector<unsigned> called_indices;
+  };
+  const auto callback = [](void* context_ptr, unsigned character_index,
+                           float total_advance, unsigned graphemes_in_cluster,
+                           float cluster_advance,
+                           CanvasRotationInVertical rotation) {
+    auto* ctx = static_cast<Context*>(context_ptr);
+    ctx->called_indices.push_back(character_index);
+  };
+  {
+    Context context;
+    result->ForEachGraphemeClusters(text, 0.0f, 0, 8, 0, callback, &context);
+    EXPECT_EQ(context.called_indices.size(), 8u);
+    for (unsigned i = 0; i < context.called_indices.size(); ++i) {
+      EXPECT_EQ(context.called_indices[i], i);
+    }
+  }
+  {
+    const ShapeResultView* view = ShapeResultView::Create(result);
+    Context context;
+    view->ForEachGraphemeClusters(text, 0.0f, 0, 8, 0, callback, &context);
+    EXPECT_EQ(context.called_indices.size(), 8u);
+    for (unsigned i = 0; i < 8; ++i) {
+      EXPECT_EQ(context.called_indices[i], i);
+    }
+  }
 }
 
 }  // namespace blink

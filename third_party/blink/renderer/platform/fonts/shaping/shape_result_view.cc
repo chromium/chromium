@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/glyph_bounds_accumulator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character_break_iterator.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -532,22 +533,28 @@ float ShapeResultView::ForEachGraphemeClusters(const StringView& text,
     const unsigned num_glyphs = part.NumGlyphs();
     for (unsigned i = 0; i < num_glyphs; ++i) {
       const HarfBuzzRunGlyphData& glyph_data = part.GlyphAt(i);
-      uint16_t current_character_index =
+      const uint16_t current_character_index =
           glyph_data.character_index + character_index_offset_for_glyph_data;
-
-      bool is_run_end = (i + 1 == num_glyphs);
-      bool is_cluster_end =
-          is_run_end || (part.GlyphAt(i + 1).character_index +
-                             character_index_offset_for_glyph_data !=
-                         current_character_index);
-
-      if ((rtl && current_character_index >= to) ||
-          (!rtl && current_character_index < from)) {
+      const bool is_bounds_check_enabled =
+          RuntimeEnabledFeatures::GraphemeClusterBoundsCheckEnabled();
+      if (is_bounds_check_enabled && current_character_index >= text.length())
+          [[unlikely]] {
+        NOTREACHED();
+      }
+      if (is_bounds_check_enabled
+              ? current_character_index < from || current_character_index >= to
+              : (rtl && current_character_index >= to) ||
+                    (!rtl && current_character_index < from)) {
         advance_so_far += glyph_data.advance.ToFloat();
         rtl ? --cluster_start : ++cluster_start;
         continue;
       }
 
+      const bool is_run_end = (i + 1 == num_glyphs);
+      const bool is_cluster_end =
+          is_run_end || (part.GlyphAt(i + 1).character_index +
+                             character_index_offset_for_glyph_data !=
+                         current_character_index);
       cluster_advance += glyph_data.advance.ToFloat();
 
       if (text.Is8Bit()) {

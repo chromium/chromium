@@ -3214,6 +3214,10 @@
       status: "stable",
     },
     {
+      name: "GraphemeClusterBoundsCheck",
+      status: "stable",
+    },
+    {
       name: "GroupEffect",
       status: "test",
     },
