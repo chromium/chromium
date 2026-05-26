@@ -8,7 +8,8 @@ to them, and re-ordering headers as needed.  If multiple source files are
 specified, the destination must be a directory.  Updates include guards in
 moved header files.  Assumes Chromium coding style.
 
-Attempts to update and reorder paths used in .gyp(i) files.
+Attempts to update and reorder paths used in .gn/.gni files, as well as legacy
+.gyp/.gypi files, using a heuristic.
 
 Updates full-path references to files in // comments in source files.
 
@@ -88,7 +89,7 @@ def UpdatePostMove(from_path, to_path):
   """Given a file that has moved from |from_path| to |to_path|,
   updates the moved file's include guard to match the new path and
   updates all references to the file in other source files. Also tries
-  to update references in .gyp(i) files using a heuristic.
+  to update references in .gn/.gni/.gyp/.gypi files using a heuristic.
   """
   # Include paths always use forward slashes.
   from_path = from_path.replace('\\', '/')
@@ -119,10 +120,9 @@ def UpdatePostMove(from_path, to_path):
 
   # Update references in GYP and BUILD.gn files.
   #
-  # GYP files are mostly located under the first level directory (ex.
-  # chrome/chrome_browser.gypi), but sometimes they are located in
-  # directories at a deeper level (ex. extensions/shell/app_shell.gypi). On
-  # the other hand, BUILD.gn files can be placed in any directories.
+  # GYP files are mostly located under the first level directory, but sometimes
+  # they are located in directories at a deeper level. BUILD.gn files can be
+  # placed in any directory.
   #
   # Paths in a GYP or BUILD.gn file are relative to the directory where the
   # file is placed.
