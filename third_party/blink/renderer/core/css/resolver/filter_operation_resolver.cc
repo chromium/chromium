@@ -169,6 +169,26 @@ double FilterOperationResolver::ResolveNumericArgumentForFunction(
   }
 }
 
+// To avoid unnecessary filter invalidations, preserve the filter pointer from
+// the old style if the URL and resource match.
+static Filter* GetFilterFromOldStyle(const ComputedStyle* old_style,
+                                     const ReferenceFilterOperation& new_ref,
+                                     size_t index) {
+  if (!old_style || !old_style->HasFilter()) {
+    return nullptr;
+  }
+  const auto& ops = old_style->Filter().Operations();
+  if (index >= ops.size()) {
+    return nullptr;
+  }
+  auto* old_ref = DynamicTo<ReferenceFilterOperation>(ops[index].Get());
+  if (old_ref && old_ref->Url() == new_ref.Url() &&
+      old_ref->Resource() == new_ref.Resource()) {
+    return old_ref->GetFilter();
+  }
+  return nullptr;
+}
+
 FilterOperations FilterOperationResolver::CreateFilterOperations(
     StyleResolverState& state,
     const CSSValue& in_value,
@@ -189,10 +209,12 @@ FilterOperations FilterOperationResolver::CreateFilterOperations(
       CountFilterUse(FilterOperation::OperationType::kReference,
                      state.GetDocument());
 
-      operations.Operations().push_back(
-          MakeGarbageCollected<ReferenceFilterOperation>(
-              url_value->ValueForSerialization(),
-              state.GetSVGResource(property_id, *url_value)));
+      auto* new_op = MakeGarbageCollected<ReferenceFilterOperation>(
+          url_value->ValueForSerialization(),
+          state.GetSVGResource(property_id, *url_value));
+      new_op->SetFilter(
+          GetFilterFromOldStyle(state.OldStyle(), *new_op, operations.size()));
+      operations.Operations().push_back(new_op);
       continue;
     }
 

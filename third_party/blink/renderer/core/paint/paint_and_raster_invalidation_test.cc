@@ -880,6 +880,26 @@ TEST_P(PaintAndRasterInvalidationTest, SVGWithFilterNoOpStyleUpdate) {
   GetDocument().View()->SetTracksRasterInvalidations(false);
 }
 
+TEST_P(PaintAndRasterInvalidationTest, SVGWithMultipleFiltersNoOpStyleUpdate) {
+  SetBodyInnerHTML(R"HTML(
+    <svg>
+      <filter id="f">
+        <feGaussianBlur stdDeviation="5"/>
+      </filter>
+      <rect width="100" height="100" style="filter: url(#f) blur(0px)"/>
+    </svg>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().View()->SetTracksRasterInvalidations(true);
+  GetDocument().body()->setAttribute(html_names::kStyleAttr,
+                                     AtomicString("--x: 42"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(GetRasterInvalidationTracking()->HasInvalidations());
+  GetDocument().View()->SetTracksRasterInvalidations(false);
+}
+
 TEST_P(PaintAndRasterInvalidationTest, PaintPropertyChange) {
   SetUpHTML(*this);
   Element* target = GetDocument().getElementById(AtomicString("target"));
