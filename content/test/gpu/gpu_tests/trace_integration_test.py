@@ -971,6 +971,12 @@ WHERE
       other_args: dict) -> None:
     """Verified that all DXGI swap chains are presented with the expected alpha
     mode."""
+    browser_options = self.GetOriginalFinderOptions().browser_options
+    browser_args = getattr(browser_options, 'extra_browser_args', [])
+    if any('InitialWebUI' in arg for arg in browser_args):
+      self.skipTest('Skipping test on Win with InitialWebUI enabled. '
+                    'See crbug.com/477426026.')
+
     os_name = self.browser.platform.GetOSName()
     assert os_name and os_name.lower() == 'win'
 
