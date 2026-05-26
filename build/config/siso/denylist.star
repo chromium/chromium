@@ -49,7 +49,6 @@ def __step_config(ctx, step_config):
         "testing/libfuzzer/fuzzers/generate_v8_inspector_fuzzer_corpus.py",
         "testing/libfuzzer/research/domatolpm/fuzzer_generator.py",
         "testing/libfuzzer/research/domatolpm/generator.py",
-        "testing/libfuzzer/research/fuzzilli_idl_fuzzing/generator.py",
         "testing/scripts/rust/generate_script.py",
         # Dynamically walks and loads 160+ translated grd files (xtb) and requires
         # full grit python libraries. Too many dynamic dependencies to track.

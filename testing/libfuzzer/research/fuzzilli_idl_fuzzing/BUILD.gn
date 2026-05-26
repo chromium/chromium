@@ -1,3 +1,4 @@
+import("//build/config/python.gni")
 import("//build_overrides/build.gni")
 import("//third_party/blink/renderer/bindings/bindings.gni")
 
@@ -11,7 +12,7 @@ if (build_with_chromium) {
   # iOS. Since we don't (and likely will never need to) build this on iOS, we
   # just don't define on such platform.
   if (!is_ios) {
-    action("chrome_profile_generator") {
+    action_with_pydeps("chrome_profile_generator") {
       testonly = true
       script = "//testing/libfuzzer/research/fuzzilli_idl_fuzzing/generator.py"
       args = [
@@ -20,7 +21,10 @@ if (build_with_chromium) {
         "-o",
         rebase_path("${root_build_dir}/ChromiumProfile.swift", root_build_dir),
       ]
-      inputs = [ "//testing/libfuzzer/research/fuzzilli_idl_fuzzing/ChromiumProfile.swift.tmpl" ]
+      inputs = [
+        "//testing/libfuzzer/research/fuzzilli_idl_fuzzing/ChromiumProfile.swift.tmpl",
+        web_idl_database_filepath,
+      ]
       deps = [ "//third_party/blink/renderer/bindings:web_idl_database" ]
       outputs = [ "${root_build_dir}/ChromiumProfile.swift" ]
     }
