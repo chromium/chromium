@@ -489,6 +489,8 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V8Optimizer.DeferNavigationToComputeSiteFamiliarity", true,
       1);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 1);
 }
 
 // Test that
@@ -522,6 +524,8 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
   histogram_tester.ExpectUniqueSample(
       "SafeBrowsing.V8Optimizer.DeferNavigationToComputeSiteFamiliarity", false,
       1);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 0);
 }
 
 // Test that the safe-browsing-high-confidence-allowlist is re-queried when the
@@ -532,6 +536,8 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
   GURL kTestUrl2("https://www.bar.com");
   url::Origin kTestOrigin1 = url::Origin::Create(kTestUrl1);
   url::Origin kTestOrigin2 = url::Origin::Create(kTestUrl2);
+
+  base::HistogramTester histogram_tester;
 
   raw_ptr<ManualCallbackEmptyHistoryService> mock_history_service =
       static_cast<ManualCallbackEmptyHistoryService*>(history_service());
@@ -552,6 +558,8 @@ TEST_F(SiteFamiliarityProcessSelectionDeferringConditionMockHistoryTest,
             condition.OnWillSelectFinalProcess(base::OnceClosure()));
 
   CheckSiteUnfamiliar(navigation_handle);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 0);
 }
 
 // Test that the safe-browsing-high-confidence-allowlist and history are
@@ -656,6 +664,8 @@ TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest, SearchUrl) {
 
   histogram_tester.ExpectUniqueSample(
       kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 0);
   CheckSiteFamiliar(navigation_handle);
 }
 
@@ -680,6 +690,8 @@ TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,
       static_cast<ManualCallbackEmptyHistoryService*>(history_service());
   mock_history_service->RunNextCallback();
   CheckSiteUnfamiliar(navigation_handle);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 1);
 }
 
 // Test that a navigation to a site unrelated to the DSE can be deferred and is
@@ -703,6 +715,8 @@ TEST_F(SiteFamiliarityDefaultSearchEngineSkipFamiliarityCheckTest,
       static_cast<ManualCallbackEmptyHistoryService*>(history_service());
   mock_history_service->RunNextCallback();
   CheckSiteUnfamiliar(navigation_handle);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 1);
 }
 
 // SiteFamiliarityDefaultSearchEngineTestBase subclass for tests that run site
@@ -743,6 +757,8 @@ TEST_F(SiteFamiliarityDefaultSearchEngineRunFamiliarityCheckTest,
   mock_history_service->RunNextCallback();
 
   CheckSiteUnfamiliar(navigation_handle);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 1);
 }
 
 // Test that a DSE search URL with history query is not deferred,
@@ -769,6 +785,8 @@ TEST_F(SiteFamiliarityDefaultSearchEngineRunFamiliarityCheckTest,
 
   histogram_tester.ExpectUniqueSample(
       kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram, false, 1);
+  histogram_tester.ExpectTotalCount(
+      kSiteFamiliarityDeferNavigationDurationHistogram, 0);
 
   CheckSiteUnfamiliar(navigation_handle);
 }

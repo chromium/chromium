@@ -9,6 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/site_protection/site_familiarity_fetcher.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -21,6 +23,10 @@ namespace site_protection {
 inline constexpr char
     kSiteFamiliarityDeferNavigationForDefaultSearchEngineHistogram[] =
         "SafeBrowsing.SiteFamiliarity.DeferNavigation.DefaultSearchEngine";
+
+inline constexpr char kSiteFamiliarityDeferNavigationDurationHistogram[] =
+    "SafeBrowsing.SiteFamiliarity.DeferNavigationToComputeSiteFamiliarity."
+    "DeferDuration";
 
 // ProcessSelectionDeferringCondition which defers process-selection till the
 // site's familiarity is computed.
@@ -53,6 +59,9 @@ class SiteFamiliarityProcessSelectionDeferringCondition
 
   // Callback passed to OnWillSelectFinalProcess().
   base::OnceClosure callback_;
+
+  // Timer for computing deferral duration.
+  std::optional<base::ElapsedTimer> defer_timer_;
 
   base::WeakPtrFactory<SiteFamiliarityProcessSelectionDeferringCondition>
       weak_factory_{this};
