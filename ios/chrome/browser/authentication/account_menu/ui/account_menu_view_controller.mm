@@ -128,7 +128,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   }
   _resizeReady = NO;
   self.tableView =
-      [[UITableView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
+      [[UITableView alloc] initWithFrame:CGRectZero
                                    style:UITableViewStyleInsetGrouped];
   UITableView* tableView = self.tableView;
   tableView.separatorInset = UIEdgeInsetsMake(0., /*left=*/
