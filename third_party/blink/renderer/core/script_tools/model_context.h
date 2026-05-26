@@ -53,6 +53,8 @@ class DeclarativeWebMCPTool : public GarbageCollectedMixin {
 
   virtual String ToolDescription() const = 0;
 
+  virtual String ToolTitle() const = 0;
+
   // Returns the input json-schema associated with the tool.
   virtual String ComputeInputSchema() = 0;
 

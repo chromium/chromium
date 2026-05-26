@@ -19,6 +19,11 @@ struct ScriptToolAnnotations {
 struct ScriptTool {
   // These directly map to the corresponding fields in the web API.
   string name;
+  // The optional title for the tool. This can be null if the tool is registered
+  // without a title — either imperatively (where the `title` property of
+  // `ModelContextTool` is omitted) or declaratively (where the `<form>` lacks
+  // a `tooltitle` attribute).
+  string? title;
   string description;
   string? input_schema;
   ScriptToolAnnotations? annotations;

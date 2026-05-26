@@ -2,16 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://webmachinelearning.github.io/webmcp/#model-context-tool
-
+// https://webmachinelearning.github.io/webmcp/#dictdef-modelcontexttool.
 dictionary ModelContextTool {
   required DOMString name;
+  // This is a `USVString` since it is intended to be used in possibly native
+  // displays, so it must be UTF-8 compliant and contain no unmatched
+  // surrogates. See
+  // https://w3ctag.github.io/design-principles/#idl-string-types.
+  USVString title;
   required DOMString description;
   object inputSchema;
   required ToolExecuteCallback execute;
   ToolAnnotations annotations;
 };
 
+// https://webmachinelearning.github.io/webmcp/#dictdef-toolannotations.
 dictionary ToolAnnotations {
   boolean readOnlyHint = false;
   boolean untrustedContentHint = false;

@@ -1377,6 +1377,7 @@ class MockDeclarativeTool : public GarbageCollected<MockDeclarativeTool>,
 
   String ToolName() const override { return "test_tool"; }
   String ToolDescription() const override { return "description"; }
+  String ToolTitle() const override { return "title"; }
   String ComputeInputSchema() override { return "{}"; }
   Element* FormElement() const override { return nullptr; }
   void Trace(Visitor* visitor) const override {}

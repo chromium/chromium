@@ -348,6 +348,8 @@ void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
   // declarative WebMCP inclusion.
   String name = FastGetAttribute(html_names::kToolnameAttr);
   String description = FastGetAttribute(html_names::kTooldescriptionAttr);
+  // `title` is not required to form a valid tool; only `name` and `description`
+  // are required.
   const bool is_valid_mcp_form = isConnected() && name && description;
 
   // Only report issues if it is not a valid mcp form and
@@ -396,6 +398,7 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
 
   String name = FastGetAttribute(html_names::kToolnameAttr);
   String description = FastGetAttribute(html_names::kTooldescriptionAttr);
+  String title = FastGetAttribute(html_names::kTooltitleAttr);
   // We check that `this` is "still" a valid declarative WebMCP form because
   // last we checked when this method was queued, it was, but that could've
   // changed.
@@ -414,14 +417,15 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
   if (active_webmcp_tool_) {
     String new_schema = active_webmcp_tool_->ComputeInputSchema();
 
-    bool name_or_description_changed =
+    bool tool_attributes_changed =
         active_webmcp_tool_->ToolName() != name ||
-        active_webmcp_tool_->ToolDescription() != description;
+        active_webmcp_tool_->ToolDescription() != description ||
+        active_webmcp_tool_->ToolTitle() != title;
 
     bool schema_changed =
         active_webmcp_tool_->LastComputedSchema() != new_schema;
 
-    if (!name_or_description_changed && !schema_changed) {
+    if (!tool_attributes_changed && !schema_changed) {
       // Nothing changed; this can happen when a non-schema-affecting form
       // control association or mutation took place.
       return;
@@ -438,7 +442,7 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
   }
 
   active_webmcp_tool_ =
-      MakeGarbageCollected<HTMLFormMcpTool>(*this, name, description);
+      MakeGarbageCollected<HTMLFormMcpTool>(*this, name, description, title);
   active_webmcp_tool_->SetLastComputedSchema(
       active_webmcp_tool_->ComputeInputSchema());
 
@@ -1108,7 +1112,8 @@ void HTMLFormElement::AttributeChanged(
   const QualifiedName& name = params.name;
   HTMLElement::AttributeChanged(params);
   if ((name == html_names::kToolnameAttr ||
-       name == html_names::kTooldescriptionAttr) &&
+       name == html_names::kTooldescriptionAttr ||
+       name == html_names::kTooltitleAttr) &&
       (params.old_value != params.new_value)) {
     ScheduleDeclarativeWebMCPToolRegistration();
   }

@@ -276,14 +276,17 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
     HTMLFormMcpTool& operator=(const HTMLFormMcpTool&) = delete;
     HTMLFormMcpTool(HTMLFormElement& form,
                     String tool_name,
-                    String tool_description)
+                    String tool_description,
+                    String tool_title)
         : tool_name_(tool_name),
           tool_description_(tool_description),
+          tool_title_(tool_title),
           form_(form) {
       CHECK(!tool_name.IsNull() && !tool_description.IsNull());
     }
     String ToolName() const override { return tool_name_; }
     String ToolDescription() const override { return tool_description_; }
+    String ToolTitle() const override { return tool_title_; }
     String ComputeInputSchema() override;
     Element* FormElement() const override { return form_; }
     void ExecuteTool(
@@ -323,8 +326,16 @@ class CORE_EXPORT HTMLFormElement final : public HTMLElement {
 
     bool is_currently_running_ = false;
     bool is_handling_submit_ = false;
+    // Both `tool_name_` and `tool_description_` are guaranteed to be non-null
+    // (i.e., `blink::String::IsNull()`), since the `toolname` and
+    // `tooldescription` attributes must be present on `form_`, for it to
+    // represent a valid declarative tool.
+    //
+    // `tool_title_` on the other hand can be `IsNull()` if the `tooltitle`
+    // attribute is not present, which is valid.
     String tool_name_;
     String tool_description_;
+    String tool_title_;
     String last_computed_schema_;
     Member<HTMLFormElement> form_;
     Member<HTMLFormControlElement> active_submit_button_;

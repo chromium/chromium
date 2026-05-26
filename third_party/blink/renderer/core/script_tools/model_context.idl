@@ -22,6 +22,10 @@ dictionary ModelContextRegisterToolOptions {
 };
 
 dictionary RegisteredTool : RegisteredToolDeprecated {
+  // `title` can be exposed as a `DOMString` since it was taken in by a
+  // `USVString`, meaning all unmatched surrogate processing has already been
+  // done, and there's no need to do it again on tool exposure.
+  DOMString title;
   required Window window;
   required USVString origin;
   ToolAnnotations annotations;

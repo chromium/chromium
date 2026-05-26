@@ -342,6 +342,9 @@ void ModelContext::registerTool(ScriptState* script_state,
 
   auto script_tool = mojom::blink::ScriptTool::New();
   script_tool->name = tool->name();
+  // If `tool` is not provided, the null string fallback is treated as a
+  // nullable member by mojo.
+  script_tool->title = tool->hasTitle() ? tool->title() : String();
   script_tool->description = tool->description();
   script_tool->input_schema = input_schema;
   // TODO(https://crbug.com/509568047): Stop setting these two members.
@@ -659,6 +662,7 @@ void ModelContext::RegisterDeclarativeTool(
   auto script_tool = mojom::blink::ScriptTool::New();
   script_tool->name = declarative_tool->ToolName();
   script_tool->description = declarative_tool->ToolDescription();
+  script_tool->title = declarative_tool->ToolTitle();
   script_tool->input_schema = declarative_tool->ComputeInputSchema();
   // TODO(https://crbug.com/509568047): Stop setting these two members.
   script_tool->tool_owner_frame_token = document_->GetFrame()->GetFrameToken();
@@ -817,6 +821,12 @@ void ModelContext::OnGetScriptToolsCompleted(
   for (const auto& t : tools) {
     auto* result = RegisteredTool::Create();
     result->setName(t->name);
+    // Because `ScriptTool`'s `title` member is nullable, `t->title` will always
+    // be a `String` but it could be `String::IsNull()`. Unconditionally assign
+    // it here, since the bindings will convert null strings to empty string,
+    // and we always want to expose a string to JavaScript here (never
+    // `undefined`).
+    result->setTitle(t->title);
     result->setDescription(t->description);
     if (!t->input_schema.IsNull()) {
       result->setInputSchema(t->input_schema);
