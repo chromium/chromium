@@ -108,23 +108,23 @@ public class TabBottomSheetWebUiTest {
 
     @Test
     public void testSetWebContents_SameWebContents_Noop() {
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
         verify(mWebContents, times(1)).setDelegates(any(), any(), any(), eq(mWindowAndroid), any());
 
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
         // Verify it was not called again.
         verify(mWebContents, times(1)).setDelegates(any(), any(), any(), eq(mWindowAndroid), any());
     }
 
     @Test
     public void testSetWebContents_DifferentWebContents_Updates() {
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
         verify(mWebContents, times(1)).setDelegates(any(), any(), any(), eq(mWindowAndroid), any());
 
         WebContents secondWebContents = mock(WebContents.class);
         Mockito.doReturn(mEventForwarder).when(secondWebContents).getEventForwarder();
 
-        mWebUi.setWebContents(secondWebContents);
+        mWebUi.setWebContents(secondWebContents, true);
         verify(secondWebContents, times(1))
                 .setDelegates(any(), any(), any(), eq(mWindowAndroid), any());
     }
@@ -134,7 +134,7 @@ public class TabBottomSheetWebUiTest {
         ViewAndroidDelegate viewDelegate = ViewAndroidDelegate.createBasicDelegate(null);
         when(mWebContents.getViewAndroidDelegate()).thenReturn(viewDelegate);
 
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
 
         verify(mWebContents, times(0)).setDelegates(any(), any(), any(), any(), any());
         verify(mWebContents, times(1)).setTopLevelNativeWindow(eq(mWindowAndroid));
@@ -146,7 +146,7 @@ public class TabBottomSheetWebUiTest {
         ViewTreeObserver mockViewTreeObserver = mock(ViewTreeObserver.class);
         when(mMockContentView.getViewTreeObserver()).thenReturn(mockViewTreeObserver);
 
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
 
         ArgumentCaptor<View.OnAttachStateChangeListener> attachListenerCaptor =
                 ArgumentCaptor.forClass(View.OnAttachStateChangeListener.class);
@@ -182,8 +182,8 @@ public class TabBottomSheetWebUiTest {
         EventForwarder mockEventForwarder = mock(EventForwarder.class);
         Mockito.doReturn(mockEventForwarder).when(nonNullWebContents).getEventForwarder();
 
-        mWebUi.setWebContents(nonNullWebContents);
-        mWebUi.setWebContents(null);
+        mWebUi.setWebContents(nonNullWebContents, true);
+        mWebUi.setWebContents(null, false);
         verify(mThinWebView, times(1)).destroy();
     }
 
@@ -193,7 +193,7 @@ public class TabBottomSheetWebUiTest {
         EventForwarder mockEventForwarder = mock(EventForwarder.class);
         Mockito.doReturn(mockEventForwarder).when(nonNullWebContents).getEventForwarder();
 
-        mWebUi.setWebContents(nonNullWebContents);
+        mWebUi.setWebContents(nonNullWebContents, true);
 
         Activity mockActivity = mock(Activity.class);
         when(mockActivity.isDestroyed()).thenReturn(true);
@@ -203,7 +203,7 @@ public class TabBottomSheetWebUiTest {
         // Reset verification state of mThinWebView
         Mockito.reset(mThinWebView);
 
-        mWebUi.setWebContents(null);
+        mWebUi.setWebContents(null, false);
 
         // Verify that mThinWebView's destroy was called (the first one is destroyed).
         verify(mThinWebView, times(1)).destroy();
@@ -217,7 +217,7 @@ public class TabBottomSheetWebUiTest {
         EventForwarder mockEventForwarder = mock(EventForwarder.class);
         Mockito.doReturn(mockEventForwarder).when(nonNullWebContents).getEventForwarder();
 
-        mWebUi.setWebContents(nonNullWebContents);
+        mWebUi.setWebContents(nonNullWebContents, true);
 
         WeakReference<Activity> weakActivity = new WeakReference<>(null);
         when(mWindowAndroid.getActivity()).thenReturn(weakActivity);
@@ -225,7 +225,7 @@ public class TabBottomSheetWebUiTest {
         // Reset verification state of mThinWebView
         Mockito.reset(mThinWebView);
 
-        mWebUi.setWebContents(null);
+        mWebUi.setWebContents(null, false);
 
         // Verify that mThinWebView's destroy was called (the first one is destroyed).
         verify(mThinWebView, times(1)).destroy();
@@ -235,7 +235,7 @@ public class TabBottomSheetWebUiTest {
 
     @Test
     public void testDestroy() {
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
         mWebUi.destroy();
         verify(mThinWebView).destroy();
         assertNull(mWebUi.getWebContents());
@@ -249,7 +249,7 @@ public class TabBottomSheetWebUiTest {
 
     @Test
     public void testCreateWebContentsDelegate_ContentsZoomChange() {
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
 
         ArgumentCaptor<ThinWebViewAttachParams> paramsCaptor =
                 ArgumentCaptor.forClass(ThinWebViewAttachParams.class);
@@ -268,7 +268,7 @@ public class TabBottomSheetWebUiTest {
 
     @Test
     public void testSetWebContents_resetsTouchOffset() {
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
 
         verify(mEventForwarder).setCurrentTouchOffsetX(0.0f);
         verify(mEventForwarder).setCurrentTouchOffsetY(0.0f);
@@ -281,9 +281,21 @@ public class TabBottomSheetWebUiTest {
         View focusedView = mock();
         when(mockActivity.getCurrentFocus()).thenReturn(focusedView);
 
-        mWebUi.setWebContents(mWebContents);
+        mWebUi.setWebContents(mWebContents, true);
 
         verify(focusedView, times(1)).clearFocus();
+    }
+
+    @Test
+    public void testSetWebContents_noFocus_doesNotClearActivityFocus() {
+        Activity mockActivity = mMockActivity;
+        assertNotNull(mockActivity);
+        View focusedView = mock();
+        when(mockActivity.getCurrentFocus()).thenReturn(focusedView);
+
+        mWebUi.setWebContents(mWebContents, false);
+
+        verify(focusedView, times(0)).clearFocus();
     }
 
     private static class TestTabBottomSheetWebUi extends TabBottomSheetWebUi {

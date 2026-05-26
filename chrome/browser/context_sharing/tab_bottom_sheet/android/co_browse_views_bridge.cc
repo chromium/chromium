@@ -74,7 +74,8 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
   return !java_co_browse_views_.is_null();
 }
 
-void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents) {
+void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents,
+                                         bool request_focus) {
   if (web_contents) {
     web_contents->SetIgnoreZoomGestures(true);
   }
@@ -99,7 +100,8 @@ void CoBrowseViewsBridge::SetWebContents(content::WebContents* web_contents) {
   }
 
   JNIEnv* env = AttachCurrentThread();
-  Java_CoBrowseViews_setWebContents(env, java_co_browse_views_, web_contents);
+  Java_CoBrowseViews_setWebContents(env, java_co_browse_views_, web_contents,
+                                    request_focus);
 }
 
 base::android::ScopedJavaLocalRef<jobject>
@@ -116,7 +118,8 @@ void CoBrowseViewsBridge::DestroyCoBrowseViews() {
     return;
   }
   JNIEnv* env = AttachCurrentThread();
-  Java_CoBrowseViews_setWebContents(env, java_co_browse_views_, nullptr);
+  Java_CoBrowseViews_setWebContents(env, java_co_browse_views_, nullptr,
+                                    /*request_focus=*/false);
   Java_CoBrowseViews_destroy(env, java_co_browse_views_);
   java_co_browse_views_.Reset();
   window_android_ = nullptr;

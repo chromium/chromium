@@ -129,10 +129,11 @@ public class CoBrowseViews {
     /** Sets the WebContents of the WebUi. */
     @CalledByNative
     public void setWebContents(
-            @Nullable @JniType("content::WebContents*") WebContents webContents) {
+            @Nullable @JniType("content::WebContents*") WebContents webContents,
+            boolean requestFocus) {
         if (mWebUi != null) {
             View oldView = mWebUi.getWebUiView();
-            mWebUi.setWebContents(webContents);
+            mWebUi.setWebContents(webContents, requestFocus);
             View newView = mWebUi.getWebUiView();
             if (oldView != newView) {
                 ViewGroup webUiContainer = mContainerView.findViewById(R.id.web_ui_container);

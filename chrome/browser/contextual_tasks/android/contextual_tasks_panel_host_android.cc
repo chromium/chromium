@@ -86,7 +86,7 @@ void ContextualTasksPanelHostAndroid::SetWebContents(
 
   web_contents_->SetDelegate(this);
   if (auto* bridge = GetOrCreateBridge()) {
-    views_bridge_->SetWebContents(web_contents);
+    views_bridge_->SetWebContents(web_contents, /*request_focus=*/true);
     if (is_open_) {
       bridge->Show(views_bridge_->GetCoBrowseViews(), /*animate=*/false,
                    /*starts_expanded=*/true);

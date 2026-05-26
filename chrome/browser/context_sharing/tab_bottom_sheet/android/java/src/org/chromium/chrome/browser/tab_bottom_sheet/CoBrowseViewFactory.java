@@ -129,7 +129,7 @@ public class CoBrowseViewFactory {
             }
         }
 
-        webUi.setWebContents(webContents);
+        webUi.setWebContents(webContents, false);
 
         return new CoBrowseViews(containerView, clientType, webUi, fusebox, backgroundColor);
     }

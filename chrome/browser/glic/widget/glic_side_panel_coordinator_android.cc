@@ -52,7 +52,7 @@ void GlicSidePanelCoordinatorAndroid::Show(const ShowOptions& options) {
     return;
   }
 
-  views_bridge_->SetWebContents(web_contents_.get());
+  views_bridge_->SetWebContents(web_contents_.get(), /*request_focus=*/false);
   bool shown = tab_bottom_sheet_bridge_->Show(
       views_bridge_->GetCoBrowseViews(),
       /*animate=*/!options.suppress_animations,
@@ -81,7 +81,7 @@ void GlicSidePanelCoordinatorAndroid::SetWebContents(
   } else {
     web_contents_.reset();
   }
-  views_bridge_->SetWebContents(web_contents);
+  views_bridge_->SetWebContents(web_contents, /*request_focus=*/false);
 }
 
 void GlicSidePanelCoordinatorAndroid::Close(const CloseOptions& options) {

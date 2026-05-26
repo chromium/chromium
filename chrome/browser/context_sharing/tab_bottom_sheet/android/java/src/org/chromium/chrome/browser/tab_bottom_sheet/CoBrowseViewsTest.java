@@ -122,9 +122,15 @@ public class CoBrowseViewsTest {
     }
 
     @Test
-    public void testSetWebContents() {
-        mCoBrowseViews.setWebContents(mWebContents);
-        verify(mWebUi).setWebContents(mWebContents);
+    public void testSetWebContents_withFocus() {
+        mCoBrowseViews.setWebContents(mWebContents, true);
+        verify(mWebUi).setWebContents(mWebContents, true);
+    }
+
+    @Test
+    public void testSetWebContents_withoutFocus() {
+        mCoBrowseViews.setWebContents(mWebContents, false);
+        verify(mWebUi).setWebContents(mWebContents, false);
     }
 
     @Test
@@ -132,7 +138,7 @@ public class CoBrowseViewsTest {
         View newWebUiView = new View(mContext);
         when(mWebUi.getWebUiView()).thenReturn(mWebUiView).thenReturn(newWebUiView);
 
-        mCoBrowseViews.setWebContents(mWebContents);
+        mCoBrowseViews.setWebContents(mWebContents, true);
 
         View view = mCoBrowseViews.getView();
         ViewGroup webUiContainer = view.findViewById(R.id.web_ui_container);

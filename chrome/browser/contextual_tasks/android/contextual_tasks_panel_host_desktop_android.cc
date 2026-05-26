@@ -148,7 +148,8 @@ void ContextualTasksPanelHostDesktopAndroid::SetWebContents(
   }
 
   if (MaybeCreateBridge()) {
-    co_browse_views_bridge_->SetWebContents(web_contents);
+    co_browse_views_bridge_->SetWebContents(web_contents,
+                                            /*request_focus=*/true);
   }
 }
 

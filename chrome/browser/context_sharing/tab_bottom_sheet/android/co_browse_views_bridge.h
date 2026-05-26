@@ -46,7 +46,7 @@ class CoBrowseViewsBridge {
   bool CreateCoBrowseViews(content::WebContents* web_contents);
 
   // Sets the web contents for the view.
-  void SetWebContents(content::WebContents* web_contents);
+  void SetWebContents(content::WebContents* web_contents, bool request_focus);
 
   // Returns the Java CoBrowseViews object.
   base::android::ScopedJavaLocalRef<jobject> GetCoBrowseViews();

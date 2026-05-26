@@ -68,7 +68,7 @@ public class TabBottomSheetWebUi {
     }
 
     @SuppressLint("ClickableViewAccessibility")
-    void setWebContents(@Nullable WebContents webContents) {
+    void setWebContents(@Nullable WebContents webContents, boolean requestFocus) {
         if (mWebContents == webContents) {
             return;
         }
@@ -150,13 +150,17 @@ public class TabBottomSheetWebUi {
                                 == Configuration.ORIENTATION_LANDSCAPE);
             }
 
-            // Only request focus once the web contents have been attached to the activity's layout
-            // tree.
-            View currentFocus = assertNonNull(mWindowAndroid.getActivity().get()).getCurrentFocus();
-            if (currentFocus != null) {
-                currentFocus.clearFocus();
+            if (requestFocus) {
+                // Only request focus once the web contents have been attached to the activity's
+                // layout
+                // tree.
+                View currentlyFocusedView =
+                        assertNonNull(mWindowAndroid.getActivity().get()).getCurrentFocus();
+                if (currentlyFocusedView != null) {
+                    currentlyFocusedView.clearFocus();
+                }
+                contentView.requestFocus();
             }
-            contentView.requestFocus();
         } else {
             destroyThinWebView();
         }

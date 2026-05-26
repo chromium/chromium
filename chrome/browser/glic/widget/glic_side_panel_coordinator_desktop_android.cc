@@ -181,7 +181,8 @@ void GlicSidePanelCoordinatorDesktopAndroid::SetWebContents(
     content::WebContents* web_contents) {
   web_contents_ = web_contents;
   if (cobrowse_views_bridge_) {
-    cobrowse_views_bridge_->SetWebContents(web_contents);
+    cobrowse_views_bridge_->SetWebContents(web_contents,
+                                           /*request_focus=*/false);
   }
 }
 

@@ -37,7 +37,7 @@ void TabBottomSheetTestFeature::Close(bool animate) {
 void TabBottomSheetTestFeature::SetWebContents(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  views_bridge_->SetWebContents(web_contents);
+  views_bridge_->SetWebContents(web_contents, /*request_focus=*/true);
 }
 
 void TabBottomSheetTestFeature::OnClosed() {
