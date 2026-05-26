@@ -138,13 +138,13 @@ class MultiContentsDropTargetView : public views::View,
               std::unique_ptr<ui::LayerTreeOwner> drag_image_layer_owner);
 
   // The side that this view is showing on.
-  std::optional<DropSide> side_ = std::nullopt;
+  std::optional<DropSide> side_;
 
   // The state that this view is in, if showing.
-  std::optional<DropTargetState> state_ = std::nullopt;
+  std::optional<DropTargetState> state_;
 
   // The type of drag operation.
-  std::optional<DragType> drag_type_ = std::nullopt;
+  std::optional<DragType> drag_type_;
 
   raw_ptr<DragDelegate> drag_delegate_ = nullptr;
 
@@ -152,7 +152,7 @@ class MultiContentsDropTargetView : public views::View,
   gfx::SlideAnimation animation_{this};
   // The width at the time the animation started.
   // This is relevant for transitioning from a nudge state to a full state.
-  std::optional<int> animate_expand_starting_width_ = std::nullopt;
+  std::optional<int> animate_expand_starting_width_;
   // Flag to used by base::AutoReset to suppress animation for hide request
   // to avoid content reflows during the split view creation.
   bool should_suppress_animation_ = false;

@@ -31,7 +31,7 @@ class SidePanelEntryKey {
 
  private:
   SidePanelEntryId id_;
-  std::optional<extensions::ExtensionId> extension_id_ = std::nullopt;
+  std::optional<extensions::ExtensionId> extension_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENTRY_KEY_H_

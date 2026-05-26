@@ -551,7 +551,7 @@ TabStripModel::DetachTabGroupForInsertion(
            std::vector<std::pair<tabs::TabInterface*, int>>>
       splits_in_group;
 
-  std::optional<int> active_index_in_collection = std::nullopt;
+  std::optional<int> active_index_in_collection;
   int index = 0;
   for (tabs::TabInterface* tab :
        *contents_data_->GetTabGroupCollection(group_id)) {
@@ -601,7 +601,7 @@ TabStripModel::DetachSplitTabForInsertion(
   const std::optional<tab_groups::TabGroupId> previous_group_state =
       tabs_in_split[0].first->GetGroup();
 
-  std::optional<int> active_index_in_collection = std::nullopt;
+  std::optional<int> active_index_in_collection;
   int index = 0;
   for (tabs::TabInterface* tab :
        *contents_data_->GetSplitTabCollection(split_id)) {
@@ -944,7 +944,7 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
   // Ask the delegate to save an entry for this tab in the historical tab
   // database.
 
-  std::optional<SessionID> id = std::nullopt;
+  std::optional<SessionID> id;
   if (create_historical_tab) {
     id = delegate_->CreateHistoricalTab(tab->GetContents());
   }

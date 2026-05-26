@@ -22,7 +22,7 @@
 
 namespace {
 
-std::optional<bool> g_tab_search_trailing_tabstrip_at_startup = std::nullopt;
+std::optional<bool> g_tab_search_trailing_tabstrip_at_startup;
 }
 
 namespace tabs {

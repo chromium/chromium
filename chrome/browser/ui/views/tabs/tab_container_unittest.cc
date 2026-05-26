@@ -334,7 +334,7 @@ class TabContainerTest : public ChromeViewsTestBase {
   views::View::Views GetTabSlotViewsInVisualOrder() {
     views::View::Views ordered_views;
 
-    std::optional<tab_groups::TabGroupId> prev_group = std::nullopt;
+    std::optional<tab_groups::TabGroupId> prev_group;
 
     for (int i = 0; i < tab_container_->GetTabCount(); ++i) {
       Tab* tab = tab_container_->GetTabAtModelIndex(i);

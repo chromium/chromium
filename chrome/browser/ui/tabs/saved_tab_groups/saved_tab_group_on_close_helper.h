@@ -46,7 +46,7 @@ class SavedTabGroupOnCloseHelper : public content::WebContentsObserver {
  private:
   const raw_ptr<TabGroupSyncService> service_ = nullptr;
   const raw_ptr<tabs::TabInterface> tab_ = nullptr;
-  std::optional<base::Uuid> saved_tab_group_id_ = std::nullopt;
+  std::optional<base::Uuid> saved_tab_group_id_;
 
   base::CallbackListSubscription tab_detach_subscription_;
 };

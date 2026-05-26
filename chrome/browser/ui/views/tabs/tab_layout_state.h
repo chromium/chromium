@@ -47,7 +47,7 @@ class TabLayoutState {
   TabActive activeness_ = TabActive::kActive;
 
   // Whether this tab is split.
-  std::optional<split_tabs::SplitTabId> splitness_ = std::nullopt;
+  std::optional<split_tabs::SplitTabId> splitness_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_LAYOUT_STATE_H_

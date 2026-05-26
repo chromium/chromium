@@ -220,7 +220,7 @@ int TabStripLayoutHelper::UpdateIdealBounds(int available_width) {
 
   // Store the active split (if applicable) for determining whether other tabs
   // in the split should be active.
-  std::optional<split_tabs::SplitTabId> active_split_id = std::nullopt;
+  std::optional<split_tabs::SplitTabId> active_split_id;
   if (active_tab_slot_index.has_value()) {
     const TabSlot& active_slot = slots_[active_tab_slot_index.value()];
     active_split_id = active_slot.view->split();

@@ -342,7 +342,7 @@ class VerticalTabStripRegionView final
 
   // The width of the vertical tabstrip at the beginning of the current resize
   // operation. Is std::nullopt when not resizing.
-  std::optional<int> starting_width_on_resize_ = std::nullopt;
+  std::optional<int> starting_width_on_resize_;
 
   // The intended collapse state by the user as a result of dragging the resize
   // area. This differs from the state controller in that its uncollapsed_width

@@ -472,7 +472,7 @@ void VerticalTabStripController::TabGroupFocusChanged(
 
 void VerticalTabStripController::TabKeyboardFocusChangedTo(
     const tabs::TabInterface* tab) {
-  std::optional<int> tab_index = std::nullopt;
+  std::optional<int> tab_index;
   if (tab) {
     tab_index = model_->GetIndexOfTab(tab);
   }

@@ -172,7 +172,7 @@ void SavedTabGroupBar::UpdateDropIndex() {
   const std::optional<size_t> current_index =
       GetIndexOfGroup(dragged_group_guid);
 
-  std::optional<size_t> drop_index = std::nullopt;
+  std::optional<size_t> drop_index;
 
   if (!drop_index.has_value()) {
     drop_index = get_drop_index(this, cursor_location, false);

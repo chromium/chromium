@@ -48,9 +48,9 @@ class DownloadDisplay {
   // Describes updates to be made to the icon.
   struct IconUpdateInfo {
     // Nullopt indicates no change.
-    std::optional<IconState> new_state = std::nullopt;
-    std::optional<IconActive> new_active = std::nullopt;
-    std::optional<ProgressInfo> new_progress = std::nullopt;
+    std::optional<IconState> new_state;
+    std::optional<IconActive> new_active;
+    std::optional<ProgressInfo> new_progress;
 
     // Whether an animated icon will be shown.
     bool show_animation = false;

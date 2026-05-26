@@ -102,7 +102,7 @@ class DownloadBubbleRowViewInfo
   // Color used for alert text, which may be different from |secondary_color|,
   // used for icons. If this is nullopt, |secondary_color| will be used for
   // text.
-  std::optional<ui::ColorId> secondary_text_color_ = std::nullopt;
+  std::optional<ui::ColorId> secondary_text_color_;
   // List of quick actions
   std::vector<DownloadBubbleQuickAction> quick_actions_;
   // Whether the main button (clicking the row itself) should be enabled. When

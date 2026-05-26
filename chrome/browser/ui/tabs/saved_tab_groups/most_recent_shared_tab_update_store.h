@@ -61,7 +61,7 @@ class MostRecentSharedTabUpdateStore {
 
   // The most recent local update to a tab within this browser window.
   // LocalTabID will be null in the case where the user removed the tab.
-  std::optional<TabIdentifiers> last_updated_tab_ = std::nullopt;
+  std::optional<TabIdentifiers> last_updated_tab_;
 };
 
 }  // namespace tab_groups

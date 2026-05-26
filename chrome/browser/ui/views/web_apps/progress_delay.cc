@@ -10,7 +10,7 @@ namespace web_app {
 
 namespace {
 
-std::optional<base::TimeDelta> g_duration_override_ = std::nullopt;
+std::optional<base::TimeDelta> g_duration_override_;
 
 }  // namespace
 

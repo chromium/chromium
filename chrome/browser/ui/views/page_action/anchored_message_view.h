@@ -99,7 +99,7 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   raw_ptr<views::ImageButton> close_button_ = nullptr;
   raw_ptr<views::MenuButton> menu_button_ = nullptr;
   raw_ptr<views::ImageView> icon_view_ = nullptr;
-  std::optional<ui::ImageModel> icon_ = std::nullopt;
+  std::optional<ui::ImageModel> icon_;
   std::u16string label_text_;
   bool show_close_button_;
   raw_ptr<ui::SimpleMenuModel> menu_model_ = nullptr;

@@ -48,7 +48,7 @@ class TestFileSystemAccessPermissionDialog {
   const content::PathInfo kTestPathInfo =
       content::PathInfo(FILE_PATH_LITERAL("/foo/bar.txt"));
 
-  std::optional<permissions::PermissionAction> result_ = std::nullopt;
+  std::optional<permissions::PermissionAction> result_;
 };
 
 TEST_F(FileSystemAccessPermissionDialogTest, Accept) {

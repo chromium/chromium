@@ -241,7 +241,7 @@ void UserCloudSigninRestrictionPolicyFetcher::FinalizeResult(
   }
 
   if (IsFetchingArcPolicy()) {
-    std::optional<bool> policy_value = std::nullopt;
+    std::optional<bool> policy_value;
     if (policy) {
       policy_value = policy.value() == "true";
       base::UmaHistogramBoolean(kSecondaryAccountAllowedInArcValueHistogramName,

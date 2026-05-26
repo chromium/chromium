@@ -104,7 +104,7 @@ class FakeBaseTabStripController : public TabStripController {
 
   int num_tabs_ = 0;
   int num_pinned_tabs_ = 0;
-  std::optional<int> active_index_ = std::nullopt;
+  std::optional<int> active_index_;
 
   tab_groups::TabGroupVisualData fake_group_data_;
   std::vector<std::optional<tab_groups::TabGroupId>> tab_groups_;

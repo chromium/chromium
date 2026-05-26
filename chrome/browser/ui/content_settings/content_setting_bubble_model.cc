@@ -137,7 +137,7 @@ const std::u16string& GetDefaultDisplayURLForTesting() {
 }
 
 // An override display URL in content setting bubble UI for testing.
-std::optional<bool> g_display_url_override_for_testing = std::nullopt;
+std::optional<bool> g_display_url_override_for_testing;
 
 // Returns a boolean indicating whether the setting should be managed by the
 // user (i.e. it is not controlled by policy). Also takes a (nullable) out-param

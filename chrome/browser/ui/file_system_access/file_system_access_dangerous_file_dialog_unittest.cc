@@ -45,7 +45,7 @@ class TestFileSystemAccessDangerousFileDialog {
       content::PathInfo(FILE_PATH_LITERAL("bar.swf"));
 
   bool callback_called_ = false;
-  std::optional<DangerousFileResult> result_ = std::nullopt;
+  std::optional<DangerousFileResult> result_;
 };
 
 TEST_F(FileSystemAccessDangerousFileDialogTest, Accept) {

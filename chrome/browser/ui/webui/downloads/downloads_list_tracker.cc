@@ -400,7 +400,7 @@ downloads::mojom::DataPtr DownloadsListTracker::CreateDownloadData(
   std::u16string progress_status_text;
   bool retry = false;
   // This will always be populated, but we set a null value to start with.
-  std::optional<downloads::mojom::State> state = std::nullopt;
+  std::optional<downloads::mojom::State> state;
 
   switch (download_item->GetState()) {
     case download::DownloadItem::IN_PROGRESS: {

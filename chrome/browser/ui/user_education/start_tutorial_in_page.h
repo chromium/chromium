@@ -56,7 +56,7 @@ class StartTutorialInPage {
     ~Params();
 
     // The page to open. If not specified, the current page will be used.
-    std::optional<GURL> target_url = std::nullopt;
+    std::optional<GURL> target_url;
 
     // See page_open_mode in show_promo_in_page.h.
     user_education::PageOpenMode page_open_mode =
@@ -69,8 +69,7 @@ class StartTutorialInPage {
     Callback callback = base::DoNothing();
 
     // The ID of the tutorial to start.
-    std::optional<user_education::TutorialIdentifier> tutorial_id =
-        std::nullopt;
+    std::optional<user_education::TutorialIdentifier> tutorial_id;
   };
 
   StartTutorialInPage(const StartTutorialInPage&) = delete;

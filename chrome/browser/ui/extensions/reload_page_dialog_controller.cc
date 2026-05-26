@@ -43,7 +43,7 @@ namespace extensions {
 namespace {
 
 // Whether the dialog should be accepted without showing it on tests.
-std::optional<bool> g_accept_bubble_for_testing_ = std::nullopt;
+std::optional<bool> g_accept_bubble_for_testing_;
 
 // The size of the extension icon.
 constexpr int kIconSize = extension_misc::EXTENSION_ICON_SMALLISH;

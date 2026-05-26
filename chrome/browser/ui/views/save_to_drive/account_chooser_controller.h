@@ -66,7 +66,7 @@ class AccountChooserController : public signin::IdentityManager::Observer,
     // Accounts with refresh tokens.
     std::vector<AccountInfo> accounts;
     // Primary account id, if it exists.
-    std::optional<CoreAccountId> primary_account_id = std::nullopt;
+    std::optional<CoreAccountId> primary_account_id;
   };
 
   // Observes the add account popup window's WebContents.

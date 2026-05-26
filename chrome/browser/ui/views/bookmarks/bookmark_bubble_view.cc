@@ -454,7 +454,7 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
   auto dialog_model_builder =
       ui::DialogModel::Builder(std::move(bubble_delegate_unique));
 
-  std::optional<commerce::ProductInfo> product_info = std::nullopt;
+  std::optional<commerce::ProductInfo> product_info;
   if (shopping_service->IsShoppingListEligible()) {
     product_info = shopping_service->GetAvailableProductInfoForUrl(url);
   }

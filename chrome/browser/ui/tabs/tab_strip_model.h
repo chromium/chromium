@@ -99,7 +99,7 @@ struct DetachedTabCollection {
                std::unique_ptr<tabs::SplitTabCollection>>
       collection_;
   // Store the index of tab that was active in the detached group.
-  std::optional<int> active_index_ = std::nullopt;
+  std::optional<int> active_index_;
   bool pinned_ = false;
 };
 

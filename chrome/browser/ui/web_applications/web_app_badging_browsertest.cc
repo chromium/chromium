@@ -269,7 +269,7 @@ class WebAppBadgingBrowserTest : public WebAppBrowserTestBase {
   struct BadgeChange {
     bool was_cleared_ = false;
     bool was_flagged_ = false;
-    std::optional<uint64_t> last_badge_content_ = std::nullopt;
+    std::optional<uint64_t> last_badge_content_;
   };
 
   // Records a single badge update for multiple apps.

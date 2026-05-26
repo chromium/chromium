@@ -316,7 +316,7 @@ class MultiContentsView
 
   bool active_contents_view_highlighted_ = false;
 
-  std::optional<int> min_contents_size_for_testing_ = std::nullopt;
+  std::optional<int> min_contents_size_for_testing_;
 
   // Width ratios that a split view will snap to when resize is within a
   // snap distance (kSnapDistance).

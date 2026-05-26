@@ -162,7 +162,7 @@ class WebUIToolbarInternalWebView : public views::WebView {
   }
 
   std::optional<GURL> ConsumeDroppedUrl(const gfx::PointF& point) {
-    std::optional<GURL> url = std::nullopt;
+    std::optional<GURL> url;
     if (cached_dragged_file_position_.has_value() &&
         point == *cached_dragged_file_position_ &&
         cached_dragged_file_path_.has_value()) {

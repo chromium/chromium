@@ -321,12 +321,11 @@ class PageActionModel : public PageActionModelInterface {
   std::u16string anchored_message_text_;
   // Special anchored message icon. If set, the normal page action icon will not
   // show on the anchored message.
-  std::optional<ui::ImageModel> anchored_message_icon_ = std::nullopt;
+  std::optional<ui::ImageModel> anchored_message_icon_;
 
   // Optional content that resides on an expandable area of the anchored
   // message.
-  std::optional<AnchoredMessageExpandableContent> expandable_content_ =
-      std::nullopt;
+  std::optional<AnchoredMessageExpandableContent> expandable_content_;
 
   // When set, it will always take precedence over `text_` because by default
   // `text_` will be used.

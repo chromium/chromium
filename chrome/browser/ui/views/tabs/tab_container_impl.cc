@@ -743,7 +743,7 @@ void TabContainerImpl::ExitTabClosingMode() {
 void TabContainerImpl::SetTabSlotVisibility() {
   std::set<tab_groups::TabGroupId> visibility_changed_groups;
   bool last_tab_visible = false;
-  std::optional<tab_groups::TabGroupId> last_tab_group = std::nullopt;
+  std::optional<tab_groups::TabGroupId> last_tab_group;
   std::vector<Tab*> tabs = layout_helper_->GetTabs();
   for (auto it = tabs.rbegin(); true; ++it) {
     Tab* tab = it != tabs.rend() ? *it : nullptr;

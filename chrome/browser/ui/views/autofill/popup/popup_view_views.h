@@ -343,7 +343,7 @@ class PopupViewViews : public PopupBaseView,
   std::optional<size_t> row_with_open_sub_popup_;
 
   // Stores the initial width of the popup to maintain when switching tabs.
-  std::optional<int> tabbed_pane_initial_width_ = std::nullopt;
+  std::optional<int> tabbed_pane_initial_width_;
 
   std::vector<RowPointer> rows_;
   const std::optional<const AutofillPopupView::SearchBarConfig>

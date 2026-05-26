@@ -35,7 +35,7 @@ struct ValidityRequirement {
   ValidityRequirement(const ValidityRequirement& other);
   ValidityRequirement(ValidityRequirement&& other);
   bool must_exist = true;
-  std::optional<base::TimeDelta> must_be_newer_than = std::nullopt;
+  std::optional<base::TimeDelta> must_be_newer_than;
 };
 
 using FilePathList = std::vector<base::FilePath>;

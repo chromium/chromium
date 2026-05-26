@@ -564,7 +564,7 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       return 0;
     }
 
-    std::optional<int> first_dragged_tab_model_index = std::nullopt;
+    std::optional<int> first_dragged_tab_model_index;
     bool can_insert_into_groups = true;
     for (TabSlotView* tab_slot_view : dragged_views) {
       const bool is_tab =

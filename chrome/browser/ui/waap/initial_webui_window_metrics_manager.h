@@ -105,7 +105,7 @@ class InitialWebUIWindowMetricsManager {
   // The timestamp when this window creation was initiated.
   // Updated when `SetWindowCreationInfo` is called. Can still be null if the
   // window was created via uninterested paths.
-  std::optional<base::TimeTicks> new_window_start_time_ = std::nullopt;
+  std::optional<base::TimeTicks> new_window_start_time_;
 
   bool is_new_window_first_paint_recorded_ = false;
   bool is_new_window_reload_button_first_paint_recorded_ = false;

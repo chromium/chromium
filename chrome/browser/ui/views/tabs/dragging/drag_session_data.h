@@ -72,7 +72,7 @@ struct TabDragData final {
 
   // The information on the group the tab was in at the start of the drag, or
   // nullopt if tab was not grouped.
-  std::optional<TabGroupData> tab_group_data = std::nullopt;
+  std::optional<TabGroupData> tab_group_data;
 };
 
 // Stores the data for the tabs and (if applicable) group header being dragged.
@@ -88,7 +88,7 @@ struct DragSessionData final {
   // Data related to the dragged tab group, if any. This is only set if the
   // drag originated from a group header, indicating that the entire group is
   // being dragged together.
-  std::optional<GroupHeaderDragData> group_header_drag_data_ = std::nullopt;
+  std::optional<GroupHeaderDragData> group_header_drag_data_;
 
   // Groups that are being dragged, including header-only drags (in which case
   // the size of this will be one) or by selecting all tabs in a group.

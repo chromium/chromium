@@ -41,7 +41,7 @@ class DraggableBubbleDialogView : public WebUIBubbleDialogView,
   void SetupDraggingSupport();
 
  private:
-  std::optional<SkRegion> draggable_region_ = std::nullopt;
+  std::optional<SkRegion> draggable_region_;
   std::unique_ptr<MakoBubbleEventHandler> event_handler_;
   bool dragging_initialized_;
 };

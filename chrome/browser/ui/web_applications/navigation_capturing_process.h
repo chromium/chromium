@@ -316,7 +316,7 @@ class NavigationCapturingProcess
   // Debug information persisted to chrome://web-app-internals on destruction of
   // this class.
   base::DictValue debug_data_;
-  std::optional<int64_t> navigation_handle_id_ = std::nullopt;
+  std::optional<int64_t> navigation_handle_id_;
 
   // Stores the exact time when the navigation capturing process starts
   // "handling" the current navigation when asked from Navigate().

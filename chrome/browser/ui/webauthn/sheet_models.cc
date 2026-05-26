@@ -672,7 +672,7 @@ AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
   const std::u16string rp_id = GetRelyingPartyIdStringTitle(dialog_model());
-  std::optional<int> id = std::nullopt;
+  std::optional<int> id;
   switch (dialog_model()->request_type) {
     case device::FidoRequestType::kMakeCredential:
       id = IDS_WEBAUTHN_GPM_CREATE_PASSKEY_TITLE;

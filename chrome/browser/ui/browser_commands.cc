@@ -1201,7 +1201,7 @@ content::WebContents& NewTab(BrowserWindowInterface* browser,
 
   if (browser->GetBrowserForMigrationOnly()->SupportsWindowFeature(
           Browser::WindowFeature::kFeatureTabStrip)) {
-    std::optional<tab_groups::TabGroupId> group_id = std::nullopt;
+    std::optional<tab_groups::TabGroupId> group_id;
 
     if (features::IsNewTabAddsToActiveGroupEnabled()) {
       const int index = browser->GetTabStripModel()->active_index();
@@ -1733,7 +1733,7 @@ void AddNewTabToRecentGroup(BrowserWindowInterface* browser) {
     return;
   }
 
-  std::optional<tab_groups::TabGroupId> group_id = std::nullopt;
+  std::optional<tab_groups::TabGroupId> group_id;
 
   // Add the new tab to the most recently active group.
   TabGroupModel* tab_group_model = tab_strip_model->group_model();

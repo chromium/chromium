@@ -374,7 +374,7 @@ void VerticalTabDragHandlerImpl::HandleDraggedTabsIntoNode(
   }
 
   int target_index;
-  std::optional<tab_groups::TabGroupId> target_group_id = std::nullopt;
+  std::optional<tab_groups::TabGroupId> target_group_id;
   if (node.type() == TabCollectionNode::Type::GROUP) {
     // If dragging into a group, then either put the dragged tabs into the
     // start/end if the source dragged tab is before/after the group, or move

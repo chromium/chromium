@@ -95,7 +95,7 @@ class SidePanelUIBase : public SidePanelUI {
     // The side-panel is showing if and only if current_key_ is set. That means
     // it must only be set in one place: PopulateSidePanel() and unset in one
     // place: OnViewVisibilityChanged()
-    std::optional<SidePanelUIBase::UniqueKey> current_key = std::nullopt;
+    std::optional<SidePanelUIBase::UniqueKey> current_key;
 
     // Inner class that waits for side panel entries to load.
     std::unique_ptr<SidePanelEntryWaiter> waiter;

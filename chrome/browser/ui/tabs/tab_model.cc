@@ -402,8 +402,8 @@ TabStripModel* TabModel::GetModelForTabInterface() const {
 // called from here instead of manually doing it in TabStripModel.
 void TabModel::UpdateProperties() {
   bool pinned = false;
-  std::optional<tab_groups::TabGroupId> group = std::nullopt;
-  std::optional<split_tabs::SplitTabId> split = std::nullopt;
+  std::optional<tab_groups::TabGroupId> group;
+  std::optional<split_tabs::SplitTabId> split;
 
   TabCollection* ancestor = parent_collection_;
   while (ancestor) {

@@ -405,7 +405,7 @@ class LensOverlaySidePanelCoordinator
 
   // A pending url to be loaded in the side panel. Needed when the side
   // panel is not yet bound at the time of a request.
-  std::optional<GURL> pending_side_panel_url_ = std::nullopt;
+  std::optional<GURL> pending_side_panel_url_;
 
   // Whether the side panel should show the error page.
   bool side_panel_should_show_error_page_ = false;

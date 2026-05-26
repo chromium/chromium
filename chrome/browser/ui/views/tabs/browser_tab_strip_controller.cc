@@ -576,7 +576,7 @@ void BrowserTabStripController::OnStoppedDragging() {
 
 void BrowserTabStripController::TabKeyboardFocusChangedTo(
     const tabs::TabInterface* tab) {
-  std::optional<int> index = std::nullopt;
+  std::optional<int> index;
   if (tab) {
     index = model_->GetIndexOfTab(tab);
   }

@@ -62,7 +62,7 @@ using Step = IsolatedWebAppInstallerModel::Step;
 struct TestParam {
   std::string test_suffix;
   Step step;
-  std::optional<IsolatedWebAppInstallerModel::Dialog> dialog = std::nullopt;
+  std::optional<IsolatedWebAppInstallerModel::Dialog> dialog;
   bool use_dark_theme = false;
   bool use_right_to_left_language = false;
 };

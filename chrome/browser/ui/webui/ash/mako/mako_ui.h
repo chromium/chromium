@@ -50,7 +50,7 @@ class MakoUntrustedUI : public UntrustedTopChromeWebUIController {
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
 
-  std::optional<SkRegion> draggable_region_ = std::nullopt;
+  std::optional<SkRegion> draggable_region_;
   std::unique_ptr<LobsterPageHandler> lobster_page_handler_;
 };
 

@@ -1787,7 +1787,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutIconCorrectColor) {
   base::FilePath shortcut_path;
   auto* provider = WebAppProvider::GetForTest(profile());
   std::vector<SkColor> expected_pixel_colors = {SkColorSetRGB(92, 92, 92)};
-  std::optional<SkColor> icon_pixel_color = std::nullopt;
+  std::optional<SkColor> icon_pixel_color;
 #if BUILDFLAG(IS_MAC)
   icon_pixel_color = os_integration_override().GetShortcutIconTopLeftColor(
       profile(), os_integration_override().chrome_apps_folder(), app_id,

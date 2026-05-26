@@ -706,7 +706,7 @@ void LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
 
 void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
     lens::mojom::SemanticEvent event) {
-  std::optional<lens::LensOverlayRequestId> request_id = std::nullopt;
+  std::optional<lens::LensOverlayRequestId> request_id;
   if (event == lens::mojom::SemanticEvent::kTextGleamsViewStart) {
     request_id = std::make_optional(latest_request_id_);
   }

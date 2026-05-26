@@ -366,7 +366,7 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
       reason == GroupDeletionReason::ClosedLastTab
           ? DeletionDialogController::DialogType::CloseTabAndDelete
           : DeletionDialogController::DialogType::RemoveTabAndDelete;
-  std::optional<base::OnceCallback<void()>> keep_callback = std::nullopt;
+  std::optional<base::OnceCallback<void()>> keep_callback;
 
   if (tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
       saved_group.collaboration_id()) {

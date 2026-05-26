@@ -68,7 +68,7 @@ class ShowPromoInPage {
     ~Params();
 
     // The page to open. If not specified, the current page will be used.
-    std::optional<GURL> target_url = std::nullopt;
+    std::optional<GURL> target_url;
 
     // How the page should be opened. Default is kNewForegroundTab as most
     // promos are expected to be opened in new tabs to avoid disrupting the

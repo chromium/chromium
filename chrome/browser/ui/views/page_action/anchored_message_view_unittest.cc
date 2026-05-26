@@ -79,9 +79,8 @@ class AnchoredMessageBubbleViewTest
  protected:
   NiceMock<MockPageActionModel> model_;
   NiceMock<MockAnchoredMessageDelegate> delegate_;
-  std::optional<ui::ImageModel> no_icon_ = std::nullopt;
-  std::optional<AnchoredMessageExpandableContent> empty_expandable_content_ =
-      std::nullopt;
+  std::optional<ui::ImageModel> no_icon_;
+  std::optional<AnchoredMessageExpandableContent> empty_expandable_content_;
   std::optional<ui::ImageModel> test_icon_opt_ = ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? vector_icons::kInstallDesktopIcon
                                         : vector_icons::kInstallDesktopOldIcon);

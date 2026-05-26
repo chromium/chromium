@@ -92,7 +92,7 @@ class FileSystemAccessPermissionDialogTest : public DialogBrowserTest {
   const url::Origin kTestOrigin =
       url::Origin::Create(GURL("https://example.com"));
 
-  std::optional<permissions::PermissionAction> result_ = std::nullopt;
+  std::optional<permissions::PermissionAction> result_;
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessPermissionDialogTest, InvokeUi_default) {

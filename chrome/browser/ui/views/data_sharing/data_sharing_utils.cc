@@ -183,7 +183,7 @@ std::optional<GURL> data_sharing::GenerateWebUIUrl(RequestInfo request_info,
   }
 
   // Find the saved group for the request.
-  std::optional<tab_groups::SavedTabGroup> saved_group = std::nullopt;
+  std::optional<tab_groups::SavedTabGroup> saved_group;
 
   if (std::holds_alternative<tab_groups::LocalTabGroupID>(request_info.id)) {
     saved_group = tab_group_service->GetGroup(std::get<0>(request_info.id));

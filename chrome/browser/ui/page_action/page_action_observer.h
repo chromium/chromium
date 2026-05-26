@@ -36,9 +36,9 @@ struct PageActionState {
   bool anchored_message_showing = false;
 
   // Not set if the page action is not showing.
-  std::optional<std::u16string> tooltip = std::nullopt;
+  std::optional<std::u16string> tooltip;
   // Not set if the page action is not showing in chip state.
-  std::optional<std::u16string> label = std::nullopt;
+  std::optional<std::u16string> label;
 };
 
 // PageActionObserver observes for events on a tab's page action.

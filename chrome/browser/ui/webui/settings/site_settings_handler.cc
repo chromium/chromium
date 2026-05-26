@@ -2416,7 +2416,7 @@ void SiteSettingsHandler::GetOriginStorage(
     // If the storage is partitioned on a third party we need to ensure the
     // grouping key matches the top-site and doesn't default to the origin
     // in the UI.
-    std::optional<GroupingKey> partition_grouping_key = std::nullopt;
+    std::optional<GroupingKey> partition_grouping_key;
     auto third_party_partitioning_site = entry.GetThirdPartyPartitioningSite();
     if (third_party_partitioning_site) {
       partition_grouping_key = GroupingKey::Create(url::Origin::Create(
@@ -2439,8 +2439,8 @@ void SiteSettingsHandler::GetHostCookies(
     if (!cookie) {
       continue;
     }
-    std::optional<std::string> partition_etld_plus1 = std::nullopt;
-    std::optional<GroupingKey> partition_grouping_key = std::nullopt;
+    std::optional<std::string> partition_etld_plus1;
+    std::optional<GroupingKey> partition_grouping_key;
     if (cookie->IsPartitioned()) {
       partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().GetHost();
       partition_grouping_key =

@@ -121,7 +121,7 @@ struct TestParam {
   std::string test_suffix;
   SyncButtonsFeatureConfig sync_buttons_feature_config =
       SyncButtonsFeatureConfig::kAsyncNotEqualButtons;
-  std::optional<bool> with_supervision = std::nullopt;
+  std::optional<bool> with_supervision;
   bool with_sync_engine_ready = true;
   // The variant of the refreshed view to use for the test, `std::nullopt` means
   // that the refresh is disabled.

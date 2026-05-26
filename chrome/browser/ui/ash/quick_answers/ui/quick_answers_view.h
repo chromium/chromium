@@ -135,7 +135,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   base::WeakPtr<QuickAnswersUiController> controller_;
   std::string title_;
   const Design design_;
-  std::optional<Intent> intent_ = std::nullopt;
+  std::optional<Intent> intent_;
   const bool is_internal_;
 
   raw_ptr<QuickAnswersStageButton> quick_answers_stage_button_ = nullptr;

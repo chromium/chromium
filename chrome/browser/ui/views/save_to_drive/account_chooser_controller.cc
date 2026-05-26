@@ -244,7 +244,7 @@ AccountChooserController::GetProfileInfo() {
   // Remove accounts that are not fully populated; they cannot be shown.
   std::erase_if(accounts, std::not_fn(&HasCriticalAccountInfo));
 
-  std::optional<CoreAccountId> primary_account_id = std::nullopt;
+  std::optional<CoreAccountId> primary_account_id;
   if (identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     primary_account_id =
         identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);

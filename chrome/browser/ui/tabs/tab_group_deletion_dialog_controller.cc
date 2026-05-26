@@ -67,7 +67,7 @@ struct DialogText {
   const std::u16string title;
   const std::u16string body;
   const std::u16string ok_text;
-  const std::optional<std::u16string> cancel_text = std::nullopt;
+  const std::optional<std::u16string> cancel_text;
 };
 
 // Returns the list of strings that are needed for a given dialog type.

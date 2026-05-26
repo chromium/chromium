@@ -105,7 +105,7 @@ void PageActionContainerView::NormalizePageActionViewOrder() {
       chip_state_views;
   std::vector<std::pair<size_t /*initial_index*/, PageActionView*>>
       icon_state_views;
-  std::optional<PageActionView*> anchored_message_state_view = std::nullopt;
+  std::optional<PageActionView*> anchored_message_state_view;
 
   chip_state_views.reserve(page_action_views_.size());
   icon_state_views.reserve(page_action_views_.size());

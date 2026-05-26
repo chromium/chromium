@@ -167,11 +167,11 @@ class MultiContentsViewDropTargetController final
 
   // This timer is used for showing the drop target a delay, and may be
   // canceled in case a drag exits the drop area before the target is shown.
-  std::optional<DropTargetShowTimer> show_drop_target_timer_ = std::nullopt;
+  std::optional<DropTargetShowTimer> show_drop_target_timer_;
 
   base::OneShotTimer hide_drop_target_timer_;
 
-  std::optional<DropTargetShowTimer> show_nudge_timer_ = std::nullopt;
+  std::optional<DropTargetShowTimer> show_nudge_timer_;
 
   // Stores the most recent time the drop target was hidden. Used to calculate
   // the show timer for link drags.

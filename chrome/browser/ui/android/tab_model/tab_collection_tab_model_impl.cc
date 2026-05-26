@@ -408,7 +408,7 @@ std::vector<TabAndroid*> TabCollectionTabModelImpl::GetRepresentativeTabList(
   tabs.reserve(tab_strip_collection_->pinned_collection()->ChildCount() +
                tab_strip_collection_->unpinned_collection()->ChildCount());
 
-  std::optional<TabGroupId> current_group_id = std::nullopt;
+  std::optional<TabGroupId> current_group_id;
   for (TabInterface* tab : *tab_strip_collection_) {
     std::optional<TabGroupId> tab_group_id = tab->GetGroup();
     if (!tab_group_id) {

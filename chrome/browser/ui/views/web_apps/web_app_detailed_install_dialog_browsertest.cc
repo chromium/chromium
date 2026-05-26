@@ -236,7 +236,7 @@ class WebAppDetailedInstallDialogBrowserTest : public DialogBrowserTest {
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeScreenshotFetcher> fetcher_;
-  std::optional<bool> dialog_accepted_ = std::nullopt;
+  std::optional<bool> dialog_accepted_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppDetailedInstallDialogBrowserTest,

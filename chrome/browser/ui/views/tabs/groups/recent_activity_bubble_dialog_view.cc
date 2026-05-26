@@ -88,7 +88,7 @@ std::optional<data_sharing::GroupMember> GetRelevantUserForActivity(
     const ActivityLogItem& item) {
   using collaboration::messaging::CollaborationEvent;
 
-  std::optional<data_sharing::GroupMember> user = std::nullopt;
+  std::optional<data_sharing::GroupMember> user;
   switch (item.collaboration_event) {
     case CollaborationEvent::TAB_UPDATED:
     case CollaborationEvent::TAB_REMOVED:

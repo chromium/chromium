@@ -133,7 +133,7 @@ class CollaborationMessagingTabData {
   // The cached message while a request is in flight. This is used to
   // verify that the message has not changed while the image was being
   // requested.
-  std::optional<PersistentMessage> message_to_commit_ = std::nullopt;
+  std::optional<PersistentMessage> message_to_commit_;
 
   // Contains the given name of the user who triggered the event.
   std::u16string given_name_;
@@ -146,7 +146,7 @@ class CollaborationMessagingTabData {
 
   // Testing purposes only. Contains a mock image to use in lieu of making
   // a network request for the avatar.
-  std::optional<gfx::Image> mock_avatar_for_testing_ = std::nullopt;
+  std::optional<gfx::Image> mock_avatar_for_testing_;
 
   // Listeners to notify when the message for this tab changes.
   CallbackList message_changed_callback_list_;

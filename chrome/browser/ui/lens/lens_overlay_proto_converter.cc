@@ -319,7 +319,7 @@ lens::mojom::TranslatedParagraphPtr CreateTranslatedParagraphMojomFromProto(
        line_index++) {
     auto proto_line = proto_paragraph.lines()[line_index];
     auto translated_line = translation_data.line()[line_index];
-    std::optional<TranslationData_Line> next_translated_line = std::nullopt;
+    std::optional<TranslationData_Line> next_translated_line;
     if (line_index + 1 < translation_data.line().size()) {
       next_translated_line = translation_data.line()[line_index + 1];
     }

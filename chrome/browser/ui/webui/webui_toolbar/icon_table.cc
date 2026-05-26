@@ -261,7 +261,7 @@ class IconTable::ProviderImpl : public toolbar_ui_api::IconHandle::Provider {
 
   std::optional<ui::ImageModel> image_model_;
   // Set if `image_model_` got rendered to `name_or_url_`.
-  std::optional<float> rasterized_scale_ = std::nullopt;
+  std::optional<float> rasterized_scale_;
 };
 
 class IconTable::IconTableFetcherImpl

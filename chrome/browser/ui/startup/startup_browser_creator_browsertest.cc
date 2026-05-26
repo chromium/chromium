@@ -3910,7 +3910,7 @@ struct ProfilePickerSetup {
   std::optional<std::string> switch_value_ascii;
   std::optional<GURL> url_arg;
   ShutdownType shutdown_type = ShutdownType::kNormal;
-  std::optional<std::string> extra_switch_name = std::nullopt;
+  std::optional<std::string> extra_switch_name;
 };
 
 // Checks the correct behavior of the profile picker on startup. This feature is

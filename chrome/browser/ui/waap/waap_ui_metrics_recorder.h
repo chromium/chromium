@@ -104,9 +104,9 @@ class WaapUIMetricsRecorder {
   base::TimeTicks mouse_pressed_time_;
 
   // State related to the last ButtonPressed input event.
-  std::optional<const LastInputInfo> last_input_info_ = std::nullopt;
+  std::optional<const LastInputInfo> last_input_info_;
   // State related to a pending mode change.
-  std::optional<const PendingModeChange> pending_mode_change_ = std::nullopt;
+  std::optional<const PendingModeChange> pending_mode_change_;
 };
 
 #endif  // CHROME_BROWSER_UI_WAAP_WAAP_UI_METRICS_RECORDER_H_

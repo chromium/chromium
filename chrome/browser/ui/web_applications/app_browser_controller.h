@@ -392,7 +392,7 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   std::optional<SkColor> last_theme_color_;
   std::optional<SkColor> last_background_color_;
 
-  std::optional<SkRegion> draggable_region_ = std::nullopt;
+  std::optional<SkRegion> draggable_region_;
 
   base::OnceClosure on_draggable_region_set_for_testing_;
 

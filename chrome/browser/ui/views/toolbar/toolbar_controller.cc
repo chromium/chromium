@@ -809,7 +809,7 @@ void ToolbarController::ActionItemChanged(actions::ActionItem* action_item) {
     return;
   }
 
-  std::optional<int> command_id = std::nullopt;
+  std::optional<int> command_id;
   for (size_t i = 0; i < responsive_elements_.size(); ++i) {
     const auto& element = responsive_elements_[i];
     if (std::holds_alternative<actions::ActionId>(element.overflow_id)) {

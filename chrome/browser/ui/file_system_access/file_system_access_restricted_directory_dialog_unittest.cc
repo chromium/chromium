@@ -42,7 +42,7 @@ class TestFileSystemAccessRestrictedDirectoryDialog {
       url::Origin::Create(GURL("https://example.com"));
   const HandleType kTestHandleType = HandleType::kDirectory;
 
-  std::optional<SensitiveEntryResult> result_ = std::nullopt;
+  std::optional<SensitiveEntryResult> result_;
 };
 
 TEST_F(FileSystemAccessRestrictedDirectoryDialogTest, Accept) {
