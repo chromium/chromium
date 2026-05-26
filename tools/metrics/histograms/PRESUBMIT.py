@@ -11,10 +11,9 @@ PRESUBMIT_VERSION = '2.0.0'
 import enum
 import os
 import pathlib
-import tempfile
-from typing import Any, Callable, List, Type
-
 import sys
+import tempfile
+from typing import Any, List
 
 # PRESUBMIT infrastructure doesn't guarantee that the cwd() will be on
 # path requiring manual path manipulation to call setup_modules.
@@ -26,12 +25,12 @@ import setup_modules  # pylint: disable=unused-import
 
 sys.path.remove('.')
 
+import chromium_src.components.segmentation_platform.tools.generate_histogram_list as generate_histogram_list
+import chromium_src.tools.metrics.common.path_util as path_util
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_caching_support
 import chromium_src.tools.metrics.histograms.histogram_paths as histogram_paths
 import chromium_src.tools.metrics.histograms.histograms_allowlist_check as histograms_allowlist_check
-import chromium_src.components.segmentation_platform.tools.generate_histogram_list as generate_histogram_list
-import chromium_src.tools.metrics.histograms.presubmit_caching_support as presubmit_caching_support
 import chromium_src.tools.metrics.histograms.print_histogram_names as print_histogram_names
-from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH
 
 # Cannot be called CheckType because by convention PRESUBMIT will try to call
 # anything with a Check prefix as a function.
@@ -49,37 +48,6 @@ class HistogramsPresubmitCheckType(enum.Enum):
 
 _CACHE_DIR_PATH = os.path.join(tempfile.gettempdir(),
                                'histograms_presubmit_cache')
-
-
-def _RunCheckWithCache(check_method: Callable[[Any, Any, Any], List[Any]],
-                       check_id: int, input_api: Any, output_api: Any,
-                       cache_file_path: str, *args, **kwargs):
-  """Runs a check method with caching support.
-
-  Args:
-    check_method: The method that executes actual checks, must accept input_api
-      and output_api as first two arguments and will get past the rest generic
-      arguments (args, kwargs).
-    check_id: Unique identifier for the check used as a key for the cache. The
-      same type of check must always use the same id.
-    input_api: The input api type, generally provided by the PRESUBMIT system.
-    output_api: The output api type, generally provided by the PRESUBMIT system.
-    cache_file_path: The path of the cache file to be used.
-    *args: The extra args to pass to the check method (see: check_method).
-    **kwargs: The extra kwargs to pass to the check method (see: check_method).
-  """
-  cache = presubmit_caching_support.PresubmitCache(
-      cache_file_path, input_api.PresubmitLocalPath())
-  cached_result = cache.RetrieveResultFromCache(check_id)
-
-  if cached_result is not None:
-    print(f'Using cached result for {check_id}\n')
-    return cached_result
-
-  new_result = check_method(input_api, output_api, *args, **kwargs)
-  cache.StoreResultInCache(check_id, new_result)
-  return new_result
-
 
 def GetPrettyPrintErrors(input_api, output_api, cwd, rel_path, results):
   """Runs pretty-print command for specified file."""
@@ -231,10 +199,10 @@ def CheckHistogramFormatting(input_api,
   This function is a wrapper around
   ExecuteCheckHistogramFormatting that adds caching support.
   """
-  return _RunCheckWithCache(ExecuteCheckHistogramFormatting,
-                            HistogramsPresubmitCheckType.FORMATTING_VALIDATION,
-                            input_api, output_api, cache_file_path,
-                            allow_test_paths, xml_paths_override)
+  return presubmit_caching_support.RunCheckWithCache(
+      ExecuteCheckHistogramFormatting,
+      HistogramsPresubmitCheckType.FORMATTING_VALIDATION, input_api, output_api,
+      cache_file_path, allow_test_paths, xml_paths_override)
 
 
 # Note: Execute convention in this file comes from the fact that PRESUBMIT
@@ -283,7 +251,7 @@ def CheckWebViewHistogramsAllowlistOnUpload(input_api,
   This function is a wrapper around
   ExecuteCheckWebViewHistogramsAllowlistOnUpload that adds caching support.
   """
-  return _RunCheckWithCache(
+  return presubmit_caching_support.RunCheckWithCache(
       ExecuteCheckWebViewHistogramsAllowlistOnUpload,
       HistogramsPresubmitCheckType.ALL_ALLOWLIST_HISTOGRAMS_PRESENT, input_api,
       output_api, cache_file_path, allowlist_path_override, xml_paths_override)
@@ -309,7 +277,7 @@ def ExecuteCheckWebViewHistogramsAllowlistOnUpload(input_api, output_api,
 
   xml_files = [open(f, encoding='utf-8') for f in xml_files_paths]
   allowlist_path = os.path.join(
-      CHROMIUM_SRC_PATH,
+      path_util.CHROMIUM_SRC_PATH,
       histograms_allowlist_check.WellKnownAllowlistPath.ANDROID_WEBVIEW.
       relative_path())
 
@@ -331,9 +299,10 @@ def CheckBooleansAreEnums(input_api,
   This function is a wrapper around ExecuteCheckBooleansAreEnums that adds
   caching support.
   """
-  return _RunCheckWithCache(ExecuteCheckBooleansAreEnums,
-                            HistogramsPresubmitCheckType.BOOLS_ARE_ENUMS,
-                            input_api, output_api, cache_file_path)
+  return presubmit_caching_support.RunCheckWithCache(
+      ExecuteCheckBooleansAreEnums,
+      HistogramsPresubmitCheckType.BOOLS_ARE_ENUMS, input_api, output_api,
+      cache_file_path)
 
 
 # Note: Execute convention in this file comes from the fact that PRESUBMIT

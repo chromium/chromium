@@ -10,6 +10,8 @@ for more details on the presubmit API built into gcl.
 import os
 import sys
 from pathlib import Path
+import enum
+import tempfile
 from typing import Iterable, Any, Type, List, Dict
 
 # PRESUBMIT infrastructure doesn't guarantee that the cwd() will be on
@@ -22,7 +24,17 @@ import setup_modules  # pylint: disable=unused-import
 
 sys.path.remove('.')
 
-from chromium_src.tools.metrics.common.path_util import CHROMIUM_SRC_PATH, METRICS_TOOLS_PATH
+import chromium_src.tools.metrics.common.presubmit_util as presubmit_caching_support
+import chromium_src.tools.metrics.common.path_util as path_util
+
+
+class MetricsPresubmitCheckType(enum.Enum):
+  PYTHON_ISSUES = 1
+  XML_ISSUES = 2
+
+
+_CACHE_DIR_PATH = os.path.join(tempfile.gettempdir(), 'metrics_presubmit_cache')
+
 
 import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
 import chromium_src.tools.metrics.python_support.mypy_helpers as mypy_helpers
@@ -54,7 +66,7 @@ def _RunSelectedTests(
   return input_api.RunTests([
       input_api.Command(name=t.file_path,
                         cmd=t.cmd,
-                        kwargs={'cwd': CHROMIUM_SRC_PATH},
+                        kwargs={'cwd': path_util.CHROMIUM_SRC_PATH},
                         message=output_api.PresubmitError) for t in test_scripts
   ])
 
@@ -75,7 +87,7 @@ def _ReportMissingBuildFileReferences(output_api: Type) -> Iterable[Any]:
 
 def _ReportMyPyErrors(input_api: Type, output_api: Type) -> Iterable[Any]:
   my_py_issues = mypy_helpers.run_mypy_and_filter_irrelevant(
-      str(METRICS_TOOLS_PATH))
+      str(path_util.METRICS_TOOLS_PATH))
   return [output_api.PresubmitError(i) for i in my_py_issues]
 
 
@@ -89,8 +101,8 @@ def _ReportIssuesWithScripts(input_api: Type, output_api: Type,
     return []
 
   print(f"Running {len(scripts_to_test)} affected scripts to check them.")
-  commands_failed = script_checker.check_scripts(scripts_to_test,
-                                                 cwd=str(CHROMIUM_SRC_PATH))
+  commands_failed = script_checker.check_scripts(
+      scripts_to_test, cwd=str(path_util.CHROMIUM_SRC_PATH))
   return [
       output_api.PresubmitError(res.error_message()) for res in commands_failed
   ]
@@ -121,7 +133,8 @@ def _ReportPythonIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
     return
 
   deps_graph = dependency_solver.scan_directory_dependencies(
-      str(METRICS_TOOLS_PATH), report_relative_to=str(CHROMIUM_SRC_PATH))
+      str(path_util.METRICS_TOOLS_PATH),
+      report_relative_to=str(path_util.CHROMIUM_SRC_PATH))
 
   yield from _ReportMissingBuildFileReferences(output_api)
   yield from _ReportMyPyErrors(input_api, output_api)
@@ -133,6 +146,13 @@ def _ReportPythonIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
                                     deps_graph)
 
 
+def _ReportPythonIssuesList(input_api, output_api):
+  return list(_ReportPythonIssues(input_api, output_api))
+
+
+def _ReportXmlIssuesList(input_api, output_api):
+  return list(_ReportXmlIssues(input_api, output_api))
+
 def _ReportEnumXmlIssues(input_api: Type, output_api: Type,
                          affected_files: List[str]) -> Iterable[Any]:
   enums_changed = any(
@@ -143,8 +163,8 @@ def _ReportEnumXmlIssues(input_api: Type, output_api: Type,
 
   testable_script = tests_helpers.TestableScript.CreatePythonScript(
       Path('tools/metrics/ukm/validate_format.py'), ['--presubmit'])
-  commands_failed = script_checker.check_scripts([testable_script],
-                                                 cwd=str(CHROMIUM_SRC_PATH))
+  commands_failed = script_checker.check_scripts(
+      [testable_script], cwd=str(path_util.CHROMIUM_SRC_PATH))
 
   if not commands_failed:
     return
@@ -176,8 +196,15 @@ def _ReportXmlIssues(input_api: Type, output_api: Type) -> Iterable[Any]:
 
 def CheckChange(input_api: Type, output_api: Type):
   problems: List[Any] = []
-  problems.extend(_ReportPythonIssues(input_api, output_api))
-  problems.extend(_ReportXmlIssues(input_api, output_api))
+  problems.extend(
+      presubmit_caching_support.RunCheckWithCache(
+          _ReportPythonIssuesList,
+          MetricsPresubmitCheckType.PYTHON_ISSUES.value, input_api, output_api,
+          _CACHE_DIR_PATH))
+  problems.extend(
+      presubmit_caching_support.RunCheckWithCache(
+          _ReportXmlIssuesList, MetricsPresubmitCheckType.XML_ISSUES.value,
+          input_api, output_api, _CACHE_DIR_PATH))
   return problems
 
 
