@@ -132,6 +132,18 @@ bool IsProfileInSearchEngineChoiceRegion(Profile* profile) {
       .IsInSearchEngineChoiceScreenRegion();
 }
 
+std::optional<std::vector<std::string>> GetForcedStepsFromCommandLine() {
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  if (command_line.HasSwitch(switches::kForceFreFeatureShowcaseSteps)) {
+    std::string steps_str = command_line.GetSwitchValueASCII(
+        switches::kForceFreFeatureShowcaseSteps);
+    return base::SplitString(steps_str, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
+  }
+  return std::nullopt;
+}
+
 #if BUILDFLAG(IS_WIN)
 void PinToTaskbarResult(bool result) {
   base::UmaHistogramBoolean("Windows.TaskbarPinFromFRESucceeded", result);
@@ -439,7 +451,15 @@ class FeatureShowcaseStepController : public ProfileManagementStepController {
   void Show(StepSwitchFinishedCallback step_shown_callback,
             bool reset_state) override {
     CHECK(reset_state);
+
     step_shown_callback_ = std::move(step_shown_callback);
+
+    if (std::optional<std::vector<std::string>> forced_steps =
+            GetForcedStepsFromCommandLine();
+        forced_steps) {
+      OnEligibilityDetermined(*forced_steps);
+      return;
+    }
 
     tracker_->EvaluateEligibleSteps(
         *profile_,

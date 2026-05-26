@@ -26,29 +26,41 @@
 // not in the webui directory because they manipulate views.
 namespace {
 
-const std::vector<PixelTestParam>& GetTestParams() {
-  static const base::NoDestructor<std::vector<PixelTestParam>> kParams([] {
-    const PixelTestParam kBaseTestParams[] = {
-        {.test_suffix = "LightTheme", .window_size = gfx::Size(1024, 768)},
-    };
+struct FeatureShowcaseTestParam {
+  PixelTestParam pixel_test_param;
+  std::string step;
+};
 
-    std::vector<PixelTestParam> params;
-    for (const auto& pixel_test_param : kBaseTestParams) {
-      params.push_back(pixel_test_param);
-    }
-    return params;
-  }());
+const std::vector<FeatureShowcaseTestParam>& GetTestParams() {
+  static const base::NoDestructor<std::vector<FeatureShowcaseTestParam>>
+      kParams([] {
+        const PixelTestParam kBaseTestParams[] = {
+            {.test_suffix = "LightTheme", .window_size = gfx::Size(1024, 768)},
+        };
+
+        const std::string kSteps[] = {
+            "example",
+        };
+
+        std::vector<FeatureShowcaseTestParam> params;
+        for (const auto& pixel_test_param : kBaseTestParams) {
+          for (const auto& step : kSteps) {
+            params.push_back({pixel_test_param, step});
+          }
+        }
+        return params;
+      }());
   return *kParams;
 }
 }  // namespace
 
 class FirstRunFeatureShowcasePixelTest
     : public ProfilesPixelTestBaseT<UiBrowserTest>,
-      public testing::WithParamInterface<PixelTestParam>,
+      public testing::WithParamInterface<FeatureShowcaseTestParam>,
       public views::ViewObserver {
  public:
   FirstRunFeatureShowcasePixelTest()
-      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam()) {
+      : ProfilesPixelTestBaseT<UiBrowserTest>(GetParam().pixel_test_param) {
     scoped_feature_list_.InitWithFeatures(
         {switches::kFirstRunDesktopRefresh,
          switches::kFirstRunDesktopChoiceScreenRefresh,
@@ -60,6 +72,14 @@ class FirstRunFeatureShowcasePixelTest
     if (profile_picker_view_) {
       profile_picker_view_->views::View::RemoveObserver(this);
     }
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ProfilesPixelTestBaseT<UiBrowserTest>::SetUpCommandLine(command_line);
+
+    CHECK(!GetParam().step.empty());
+    command_line->AppendSwitchASCII(switches::kForceFreFeatureShowcaseSteps,
+                                    GetParam().step);
   }
 
   void ShowUi(const std::string& name) override {
@@ -83,7 +103,7 @@ class FirstRunFeatureShowcasePixelTest
             browser()->profile()));
 
     profile_picker_view_->views::View::AddObserver(this);
-    profile_picker_view_->ShowAndWait(GetParam().window_size);
+    profile_picker_view_->ShowAndWait(GetParam().pixel_test_param.window_size);
   }
 
   bool VerifyUi() override {
@@ -93,7 +113,8 @@ class FirstRunFeatureShowcasePixelTest
         testing::UnitTest::GetInstance()->current_test_info();
     CHECK(test_info);
     const std::string screenshot_name =
-        base::StrCat({test_info->test_suite_name(), "_", test_info->name()});
+        base::StrCat({test_info->test_suite_name(), "_", test_info->name(), "_",
+                      GetParam().step});
 
     return VerifyPixelUi(widget, "FirstRunFeatureShowcasePixelTest",
                          screenshot_name) != ui::test::ActionResult::kFailed;
@@ -132,6 +153,6 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     FirstRunFeatureShowcasePixelTest,
     testing::ValuesIn(GetTestParams()),
-    [](const testing::TestParamInfo<PixelTestParam>& info) {
-      return info.param.test_suffix;
+    [](const testing::TestParamInfo<FeatureShowcaseTestParam>& info) {
+      return info.param.pixel_test_param.test_suffix + "_" + info.param.step;
     });
