@@ -3084,16 +3084,44 @@ Google Chrome is unable to recover your settings.
         To use Gemini in Chrome, sign in with a different Google Account
       </message>
 
-        <!-- Experimental Glic settings -->
-        <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" desc="Title of the Gemini settings subpage. Also shown in tab strip.">
-          Gemini in Chrome
+      <!-- Experimental Glic settings -->
+      <message name="IDS_SETTINGS_GLIC_PAGE_TITLE" desc="Title of the Gemini settings subpage. Also shown in tab strip.">
+        Gemini in Chrome
+      </message>
+      <message name="IDS_SETTINGS_GLIC_SECTION_TITLE" desc="Text of the Gemini section header on the AI settings page.">
+        Gemini in Chrome
+      </message>
+      <message name="IDS_SETTINGS_GLIC_ROW_LABEL" desc="Label of the Gemini row button on the AI settings page leading to the Gemini subpage.">
+        Gemini in Chrome
+      </message>
+      <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the tabstrip." formatter_data="android_java">
+        Quickly open Gemini in Chrome whenever you need it
+      </message>
+      <if expr="is_macosx">
+        <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the MacOS menu bar (on Mac only).">
+          Show Gemini in Chrome in Mac menu bar and turn on keyboard shortcut
         </message>
-        <message name="IDS_SETTINGS_GLIC_SECTION_TITLE" desc="Text of the Gemini section header on the AI settings page.">
-          Gemini in Chrome
+      </if>
+      <if expr="is_win or is_linux or is_chromeos">
+        <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the system tray (on ChromeOS, Windows and Linux).">
+          Show Gemini in Chrome in system tray and turn on keyboard shortcut
         </message>
-        <message name="IDS_SETTINGS_GLIC_ROW_LABEL" desc="Label of the Gemini row button on the AI settings page leading to the Gemini subpage.">
-          Gemini in Chrome
-        </message>
+      </if>
+      <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux).">
+        Easy access to use Gemini in Chrome across your device, even if Chrome is minimized.
+      </message>
+      <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut that's used to globally invoke Gemini.">
+        Open Gemini in Chrome with a keyboard shortcut.
+      </message>
+      <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Gemini.">
+        To leave or return to Gemini in Chrome, use keyboard shortcut.
+      </message>
+      <message name="IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS_SUBLABEL" desc="Sublabel describing the setting to keep side panel open when new tabs are opened.">
+        If Gemini in Chrome is open, the side panel stays open when creating new tabs
+      </message>
+      <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_SUBLABEL" desc="Sublabel describing the selection shortcut triggering in Gemini.">
+        To select part of the screen in Gemini in Chrome, use keyboard shortcut.
+      </message>
 
       <!-- Profile Picker Glic version-->
       <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Heading describing that the section below choosing a Chrome profile to use with Gemini. 'Gemini' has a special styling.">

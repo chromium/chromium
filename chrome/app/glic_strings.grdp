@@ -138,24 +138,8 @@
   <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the tabstrip.">
     Show Gemini at the top of the browser
   </message>
-  <message name="IDS_SETTINGS_GLIC_BUTTON_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the tabstrip." formatter_data="android_java">
-    Quickly open Gemini whenever you need it
-  </message>
-  <if expr="is_macosx">
-    <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the MacOS menu bar (on Mac only).">
-      Show Gemini in Mac menu bar and turn on keyboard shortcut
-    </message>
-  </if>
-  <if expr="is_win or is_linux or is_chromeos">
-    <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE" desc="Name of the toggle that controls whether the Gemini icon is shown in the system tray (on ChromeOS, Windows and Linux).">
-      Show Gemini in system tray and turn on keyboard shortcut
-    </message>
-  </if>
   <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SHORTCUTS_ONLY" desc="Name of the toggle that controls whether gemini keyboard shortcuts are enabled.">
     Turn on Gemini keyboard shortcut
-  </message>
-  <message name="IDS_SETTINGS_GLIC_OS_WIDGET_TOGGLE_SUBLABEL" desc="Sublabel of the toggle that controls whether the Gemini icon is shown in the menu bar (on Mac) / system tray (on Windows and Linux).">
-    Easy access to use Gemini across your device, even if Chrome is minimized.
   </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT" desc="Name of the keyboard shortcut setting.">
     Keyboard shortcut
@@ -165,9 +149,6 @@
   </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_CLEAR_LABEL" desc="Label of the clear keyboard shortcut setting button.">
     Clear keyboard shortcut
-  </message>
-  <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut that's used to globally invoke Gemini.">
-    Open Gemini with a keyboard shortcut.
   </message>
   <message name="IDS_SETTINGS_GLIC_KEYBOARD_SHORTCUT_LEARN_MORE_LABEL" desc="Label for the 'Learn more' link in the sublabel for Gemini in Chrome settings.">
     Learn more
@@ -190,9 +171,6 @@
   <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_CLEAR_LABEL" desc="Label of the clear navigation shortcut setting button.">
     Clear navigation shortcut
   </message>
-  <message name="IDS_SETTINGS_GLIC_NAVIGATION_SHORTCUT_SUBLABEL" desc="Sublabel describing the keyboard shortcut navigate between Chrome and Gemini.">
-    To leave or return to Gemini, use keyboard shortcut.
-  </message>
   <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT" desc="Title for the selection shortcut setting to trigger selection mode in Gemini in Chrome.">
     Selection shortcut
   </message>
@@ -202,17 +180,14 @@
   <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_CLEAR_LABEL" desc="Label of the clear selection shortcut setting button.">
     Clear selection shortcut
   </message>
-  <message name="IDS_SETTINGS_GLIC_SELECTION_SHORTCUT_SUBLABEL" desc="Sublabel describing the selection shortcut triggering in Gemini.">
-    To select part of the screen in Gemini, use keyboard shortcut.
-  </message>
   <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING" desc="Name of the closed captioning setting.">
-    Closed Captioning
+    Closed captioning
   </message>
   <message name="IDS_SETTINGS_GLIC_CLOSED_CAPTIONING_SUBLABEL" desc="Sublabel describing that this setting will enable closed captions for Gemini Live.">
     Show closed captions when using Gemini Live
   </message>
-  <message name="IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS" desc="Name of the daisy chain new tabs setting.">
-    Keep the Gemini sidebar open when you open a new tab
+  <message name="IDS_SETTINGS_GLIC_KEEP_SIDEPANEL_OPEN_ON_NEW_TABS" desc="Name of the setting to keep side panel open on new tabs.">
+    Keep browsing with Gemini when you open new tabs
   </message>
   <message name="IDS_SETTINGS_GLIC_PERMISSIONS_LOCATION_TOGGLE" desc="Name of the location sharing setting." formatter_data="android_java">
     Precise Location
