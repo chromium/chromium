@@ -78,6 +78,7 @@ source_set("unit_tests") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",

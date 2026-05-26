@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"

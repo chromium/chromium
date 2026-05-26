@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/byte_size.h"
 #include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 

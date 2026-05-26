@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/browser_delegate/browser_delegate.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"

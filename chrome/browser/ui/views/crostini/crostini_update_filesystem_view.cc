@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_update_filesystem_view.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/crostini/crostini_update_filesystem_view.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"

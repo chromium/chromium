@@ -56,7 +56,8 @@ source_set("startup_status") {
 
   public_deps = [
     "//base",
-    "//chrome/app:generated_resources_grit",
     "//content/public/browser",
   ]
+
+  deps = [ "//ash/strings" ]
 }

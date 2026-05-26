@@ -1013,17 +1013,6 @@ need to be translated for each locale.-->
         Built-in display
       </message>
 
-      <!-- Crostini app context menu item names, dialog message and button strings -->
-      <message name="IDS_CROSTINI_USE_LOW_DENSITY" desc="The Crostini app Shelf item context menu item to use low display density for app windows.">
-        Use low density
-      </message>
-      <message name="IDS_CROSTINI_USE_HIGH_DENSITY" desc="The Crostini app Shelf item context menu item to use high display density for app windows.">
-        Use high density
-      </message>
-      <message name="IDS_CROSTINI_APP_RESTART_BODY" desc="Description for the Crostini app restart dialog.">
-        Your application's display settings will take effect when it is next restarted.
-      </message>
-
       <!-- Badging -->
       <message name="IDS_SATURATED_BADGE_CONTENT" desc="The content to display when the application's badge is too large to display to indicate that the badge is more than a given maximum. This string should be as short as possible, preferably only one character beyond the content">
         <ph name="MAXIMUM_VALUE">$1<ex>99</ex></ph>+

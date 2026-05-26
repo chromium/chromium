@@ -38,7 +38,6 @@ include_rules = [
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/common/pref_names.h",
-  "+chrome/grit",
 ]
 
 specific_include_rules = {
@@ -47,6 +46,14 @@ specific_include_rules = {
   "crostini_manager_factory\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
+  ],
+
+  "crostini_export_import\\.cc": [
+    "+chrome/grit",
+  ],
+
+  "crostini_export_import_notification_controller\\.cc": [
+    "+chrome/grit",
   ],
 
   ".*test.*": [

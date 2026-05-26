@@ -9687,6 +9687,334 @@ To shut down the device, press and hold the power button on the device again.
         Learn more.
       </message>
 
+      <!-- Crostini -->
+      <message name="IDS_CROSTINI_LINUX" desc="Name shown for crostini Linux. Do not translate.">
+        Linux
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_APP_NAME" desc="Name of the Terminal app, which provides access to a Linux virtual machine.">
+        Terminal
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_APP_SEARCH_TERMS" desc="Additional search terms for the 'Terminal' app, which provides access to a Linux virtual machine.">
+        Linux
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_START" desc="Text shown in the crostini terminal when it was just started">
+        Initializing
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_INSTALL_IMAGE_LOADER" desc="Text shown in the crostini terminal when it is checking whether the virtual machine component is installed">
+        Checking the virtual machine
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_CREATE_DISK_IMAGE" desc="Text shown in the crostini terminal when it is checking whether the VM image is installed">
+        Checking the virtual machine image
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_START_TERMINA_VM" desc="Text shown in the crostini terminal when it is starting the termina VM">
+        Starting the virtual machine
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_START_LXD" desc="Text shown in the crostini terminal when it is starting the LXD service (used to manage containers in the VM)">
+        Starting the container manager
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_CREATE_CONTAINER" desc="Text shown in the crostini terminal when it is checking whether the Linux container is installed">
+        Checking the Linux container
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_SETUP_CONTAINER" desc="Text shown in the crostini terminal when it is checking Linux container setup">
+        Checking the Linux container setup
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_START_CONTAINER" desc="Text shown in the crostini terminal when it is starting the Linux container">
+        Starting the Linux container
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_CONFIGURE_CONTAINER" desc="Text shown in the crostini terminal when it is configuring the Linux container">
+        Configuring the Linux container
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_CONNECT_CONTAINER" desc="Text shown in the crostini terminal when it is connecting to the container">
+        Connecting to the container
+      </message>
+      <message name="IDS_CROSTINI_TERMINAL_STATUS_READY" desc="Text shown in the crostini terminal when it just finished the initialization and it is ready to use.">
+        Ready
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_TITLE" desc="Title of the Crostini installer, a dialog for installing Linux.">
+        Set up Linux development environment
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_BODY" desc="Description for the Crostini installer, a dialog for installing Linux.">
+        Get tools for developing websites, Android apps, and more. Installing Linux will download <ph name="DOWNLOAD_SIZE">$1<ex>300MB</ex></ph> of data.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_NEXT_BUTTON" desc="Label for the button in the Crostini installer dialog to progress to the next page.">
+        Next
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_BACK_BUTTON" desc="Label for the button in the Crostini installer dialog to go back to the previous page.">
+        Back
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_INSTALL_BUTTON" desc="Label for the button in the Crostini installer dialog to begin installing Linux.">
+        Install
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_SETTINGS_BUTTON" desc="Label for the button in the Crostini installer dialog to open the settings app.">
+        Open Settings
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_INSTALLING" desc="Text shown in the Crostini installer dialog while  Linux is installing.">
+        Installing Linux...
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_CANCELING_TITLE" desc="Title of the Crostini installer when the install is canceled.">
+        Cancelling Linux installation...
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_CANCELING" desc="Text shown in the Crostini installer dialog when the install is canceled.">
+        This window will close after cancellation is complete.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_ERROR_TITLE" desc="Title of the Crostini installer when an error occurs.">
+        Error installing Linux
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_LOAD_TERMINA_MESSAGE" desc="Text shown in the Crostini installer dialog when the VM component is loading">
+        This process may take a few minutes. Downloading the virtual machine.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_CREATE_DISK_IMAGE_MESSAGE" desc="Text shown in the Crostini installer dialog when the disk image is being created">
+        This process may take a few minutes. Starting the virtual machine.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_START_TERMINA_VM_MESSAGE" desc="Text shown in the Crostini installer dialog when the VM itself is starting">
+        This process may take a few minutes. Starting the virtual machine.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_START_LXD_MESSAGE" desc="Text shown in the Crostini installer dialog when the LXD service (used to manage containers in the VM) is starting">
+        This process may take a few minutes. Starting the container manager.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_START_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when the container inside the VM is starting">
+        This process may take a few minutes. Starting the Linux container.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_CONFIGURE_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when the container inside the VM is being configured">
+        Configuring the Linux container. This might take up to 30 minutes.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_MESSAGE" desc="Text shown in the Crostini installer dialog when the container inside the VM is being set up">
+        This process may take a few minutes. Setting up the Linux container.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_RETRY_BUTTON" desc="Retry button of the Crostini installer dialog that starts the install steps again.">
+        Retry
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_OFFLINE_ERROR" desc="Text shown in the Crostini installer dialog when there is no internet connection">
+        <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> is offline. Connect to the Internet and try again.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_DISK_RESIZE_RECOMMENDED_WARNING" desc="The message shown indicating the recommended disk size in Gigabytes, when disk space must be freed to make this possible.">
+        <ph name="DISK_SIZE">$1<ex>5GB</ex></ph> of space is recommended for Linux. To increase free space, delete files from your device.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_INSUFFICIENT_DISK_ERROR" desc="Text shown in the Crostini installer dialog when there is not enough free disk space to complete the installation">
+        Install failed due to lack of storage space. To free up space, delete files from device storage.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_MINIMUM_FREE_SPACE_UNMET_ERROR" desc="Text shown in the Crostini installer dialog when the free space is less than the minimum requirement">
+        <ph name="INSTALL_SIZE">$1<ex>1.3GB</ex></ph> of free space is required to install Linux. To increase free space, delete files from your device.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_LOAD_TERMINA_ERROR" desc="Text shown in the Crostini installer dialog when the VM component fails to load">
+        Error downloading the virtual machine. Please try again.
+      </message>
+      <if expr="reven">
+        <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_TITLE" desc="Title shown in the Crostini installer dialog when the VM fails to install because the device must be updated">
+          ChromeOS Flex update required
+        </message>
+        <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_ERROR" desc="Text shown in the Crostini installer dialog when the VM fails to install because the device must be updated first">
+          To finish setting up Linux, update ChromeOS Flex and try again.
+        </message>
+      </if>
+      <if expr="not reven">
+        <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_TITLE" desc="Title shown in the Crostini installer dialog when the VM fails to install because the device must be updated">
+          ChromeOS update required
+        </message>
+        <message name="IDS_CROSTINI_INSTALLER_NEED_UPDATE_ERROR" desc="Text shown in the Crostini installer dialog when the VM fails to install because the device must be updated first">
+          To finish setting up Linux, update ChromeOS and try again.
+        </message>
+      </if>
+      <message name="IDS_CROSTINI_INSTALLER_CREATE_DISK_IMAGE_ERROR" desc="Text shown in the Crostini installer dialog when the failing to create the disk image">
+        Error creating disk image. Please try again.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_START_TERMINA_VM_ERROR" desc="Text shown in the Crostini installer dialog when the VM itself fails to start">
+        Error starting the virtual machine. Please try again.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_START_LXD_ERROR" desc="Text shown in the Crostini installer dialog when the LXD service (used to manage containers in the VM) fails to start">
+        Error starting the container manager. Please try again.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_START_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container fails to start inside the VM">
+        The Linux container didn't start. Please try again.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_CONFIGURE_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container fails to be configured inside the VM">
+        There was an error while configuring Linux. Contact your administrator.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_SETUP_CONTAINER_ERROR" desc="Text shown in the Crostini installer dialog when the container fails to be set up inside the VM">
+        The Linux container setup did not complete. Please try again.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_UNKNOWN_ERROR" desc="Text shown in the Crostini installer dialog when some unknown error happens">
+        Something went wrong. Please try again.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_CONFIGURE_MESSAGE" desc="Text shown in the Crostini installer dialog describing the purpose of the page for entering extra user-specified options">
+        Change how Linux apps will work.
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_DISK_SIZE_SUBTITLE" desc="A subtitle in Crostini installer dialog for the disk size config section">
+        Disk size
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_DISK_SIZE_HINT" desc="Text shown in Crostini installer dialog to explain that the disk size can be modified later in Settings">
+        This can be modified later in Settings
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_USERNAME_LABEL" desc="Label for the field where the user enters their username">
+        Username
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_USERNAME_INVALID_FIRST_CHARACTER_ERROR" desc="Text shown in the Crostini installer dialog when the user picks a username starting with an invalid character">
+        Must start with a lowercase character or underscore
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_USERNAME_INVALID_CHARACTERS_ERROR" desc="Text shown in the Crostini installer dialog when the user picks a username containing an invalid character">
+        Lowercase characters, digits, underscores, or dashes only
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_USERNAME_NOT_AVAILABLE_ERROR" desc="Text shown in the Crostini installer dialog when the user picks a username that is not available">
+        Username "<ph name="USERNAME">$1<ex>root</ex></ph>" is not available
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_RECOMMENDED_DISK_SIZE_LABEL" desc="Label for the radio button in the Crostini installer dialog to pick the recommended disk size">
+        Recommended (<ph name="INSTALL_SIZE">$1<ex>1.3GB</ex></ph>)
+      </message>
+      <message name="IDS_CROSTINI_INSTALLER_CUSTOM_DISK_SIZE_LABEL" desc="Label for the radio button in the Crostini installer dialog to pick a custom disk size">
+        Custom
+      </message>
+      <message name="IDS_CROSTINI_UNINSTALLER_TITLE" desc="Title of the Crostini uninstaller, a dialog for uninstalling Linux, the associated VM and Linux files.">
+        Remove Linux development environment
+      </message>
+      <message name="IDS_CROSTINI_UNINSTALLER_BODY" desc="Description for the Crostini uninstaller, a dialog for uninstalling Linux, the associated VM and Linux files.">
+        Delete all Linux applications and data in your Linux files folder from this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>?
+      </message>
+      <message name="IDS_CROSTINI_UNINSTALLER_UNINSTALL_BUTTON" desc="Label for the button in the Crostini uninstaller dialog to uninstall Linux">
+        Delete
+      </message>
+      <message name="IDS_CROSTINI_UNINSTALLER_UNINSTALLING_MESSAGE" desc="Text shown in the Crostini installer dialog when Linux uninstall is in progress.">
+        Deleting...
+      </message>
+      <message name="IDS_CROSTINI_UNINSTALLER_ERROR" desc="Text shown in the Crostini uninstaller dialog when the Linux uninstall process fails.">
+        Error uninstalling Linux. Please try again.
+      </message>
+      <message name="IDS_CROSTINI_UPGRADING_LABEL" desc="Label for upgrade dialog warning user of delay starting container due to running upgrades.">
+        Linux is upgrading
+      </message>
+      <message name="IDS_CROSTINI_UPGRADING_SUBTEXT" desc="Description for upgrade dialog warning user of delay starting container due to running upgrades.">
+        Your app will open when the upgrade is finished. Upgrades can take a few minutes.
+      </message>
+      <message name="IDS_CROSTINI_SHUT_DOWN_LINUX_MENU_ITEM" desc="Text shown in the context menu for the Linux terminal app, allowing users to shut down the Linux virtual machine.">
+        Shut down Linux
+      </message>
+      <message name="IDS_CROSTINI_CREDITS_PLACEHOLDER" desc="Message shown to the user if the credits file is unavailable (e.g. because Crostini isn't installed).">
+        Crostini is not installed. Please install Crostini to view credits.
+      </message>
+
+      <!-- Linux windows force closing messages -->
+      <message name="IDS_CROSTINI_FORCE_CLOSE_TITLE_UNKNOWN" desc="Title of the crostini force-close dialog, which is used to destroy windows which are not responding. This version is used when we don't know which app is not responding.">
+        Application not responding.
+      </message>
+      <message name="IDS_CROSTINI_FORCE_CLOSE_TITLE_KNOWN" desc="Title of the crostini force-close dialog, which is used to destroy windows which are not responding. This version is used when we know which app is not responding.">
+        <ph name="LINUX_APP_NAME">$1<ex>GIMP</ex></ph> not responding.
+      </message>
+      <message name="IDS_CROSTINI_FORCE_CLOSE_BODY_UNKNOWN" desc="Description used by crostini's force-close dialog. This version is used when we don't know which app is not responding.">
+        The application is not responding. Select "Force close" to close the app.
+      </message>
+      <message name="IDS_CROSTINI_FORCE_CLOSE_BODY_KNOWN" desc="Description used by crostini's force-close dialog. This version is used when we know which app is not responding.">
+        <ph name="LINUX_APP_NAME">$1<ex>GIMP</ex></ph> is not responding. Select "Force close" to close the app.
+      </message>
+      <message name="IDS_CROSTINI_FORCE_CLOSE_ACCEPT_BUTTON" desc="Label for the button in the force-close dialog that closes the window.">
+        Force close
+      </message>
+
+      <!-- Crostini export and import notification -->
+      <message name="IDS_CROSTINI_NOTIFICATION_OPERATION_STARTING" desc="Message to display in a notification when the operation is starting and we don't yet have an estimate for how long it will take">
+        Starting...
+      </message>
+      <message name="IDS_CROSTINI_EXPORT_IMPORT_NOTIFICATION_DISPLAY_SOURCE" desc="The name of the notification source, which is 'Linux'.  Shown in the notification header">
+        Linux
+      </message>
+      <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_RUNNING" desc="Title displayed in the notification while export (backup) of the Linux container is in progress.">
+        Backing up Linux apps &amp; files
+      </message>
+      <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_CANCELLING" desc="Title displayed in the notification while export (backup) of the Linux container is being cancelled.">
+        Cancelling Linux backup
+      </message>
+      <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_DONE" desc="Title displayed in the notification when export (backup) of the Linux container is complete.">
+        Backup complete
+      </message>
+      <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_DONE" desc="Message displayed in the notification when export (backup) of the Linux container is complete.">
+        Linux apps &amp; files have been successfully backed up
+      </message>
+      <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_TITLE_FAILED" desc="Title displayed in the notification when export (backup) of the Linux container fails.">
+        Error while backing up Linux
+      </message>
+      <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_FAILED" desc="Message displayed in the notification when export (backup) of the Linux container fails.">
+        Backup couldn't be completed due to an error
+      </message>
+      <message name="IDS_CROSTINI_EXPORT_NOTIFICATION_MESSAGE_FAILED_IN_PROGRESS" desc="Message displayed in the notification when export (backup) of the Linux container fails due to another being in progress.">
+        Linux backup currently in progress
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_RUNNING" desc="Title displayed in the notification while import (restore) of the Linux container is in progress.">
+        Restoring Linux apps &amp; files
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_CANCELLING" desc="Title displayed in the notification while import (restore) of the Linux container is being cancelled.">
+        Cancelling Linux restore
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_DONE" desc="Title displayed in the notification when import (restore) of the Linux container is complete.">
+        Restore complete
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_DONE" desc="Message displayed in the notification when import (restore) of the Linux container is complete.">
+        Linux apps &amp; files have been successfully replaced
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_TITLE_FAILED" desc="Title displayed in the notification when import (restore) of the Linux container fails.">
+        Error while restoring Linux
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED" desc="Message displayed in the notification when import (restore) of the Linux container fails.">
+        Restoring couldn't be completed due to an error
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_IN_PROGRESS" desc="Message displayed in the notification when import (restore) of the Linux container fails due to another being in progress.">
+        Linux restore currently in progress
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_BAD_IMAGE" desc="Message displayed in the notification when import (restore) of the Linux guest fails due to a bad image.">
+        Issue with provided restore file - likely incorrect type for existing Linux guest. Check /var/log/messages for more info.
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_ARCHITECTURE" desc="Message displayed in the notification when import (restore) of the Linux container fails due to architecture mismatch.">
+        Cannot import container architecture type <ph name="ARCHITECTURE_CONTAINER">$1<ex>arm64</ex></ph> with this device which is <ph name="ARCHITECTURE_DEVICE">$2<ex>x86_64</ex></ph>. You can try restoring this container into a different device, or you can access the files inside this container image by opening in Files app.
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE" desc="Message displayed in the notification when import (restore) of the Linux container fails due to insufficient space.">
+        Cannot restore due to lack of storage space. Free up <ph name="SPACE_REQUIRED">$1<ex>10Gb</ex></ph> from the device and try again.
+      </message>
+      <message name="IDS_CROSTINI_IMPORT_NOTIFICATION_MESSAGE_FAILED_SPACE_UNKNOWN_AMOUNT" desc="Message displayed in the notification when import (restore) of the Linux container fails due to insufficient space.">
+        Cannot restore due to lack of storage space.
+      </message>
+      <message name="IDS_CROSTINI_RECOVERY_TITLE" desc="Title displayed in the dialog when a Linux will be restarted after a Chrome crash.">
+        Restart Linux?
+      </message>
+      <message name="IDS_CROSTINI_RECOVERY_MESSAGE" desc="Message displayed in the dialog when a Linux will be restarted after a Chrome crash.">
+        Your device didn't shut down properly. Restart Linux to use Linux apps.
+      </message>
+      <message name="IDS_CROSTINI_RECOVERY_TERMINAL_BUTTON" desc="Label for the dialog button when Linux will not be restarted after a Chrome crash, and instead a Terminal will be shown.">
+        Open recovery terminal
+      </message>
+      <message name="IDS_CROSTINI_RECOVERY_RESTART_BUTTON" desc="Label for the dialog button when Linux will be restarted after a Chrome crash.">
+        Restart Linux
+      </message>
+
+      <!-- Crostini low disk space notification -->
+      <message name="IDS_CROSTINI_LOW_DISK_NOTIFICATION_TITLE" desc="Title of the notification warning users that they are low on disk space.">
+        Linux is low on disk space
+      </message>
+      <message name="IDS_CROSTINI_LOW_DISK_NOTIFICATION_MESSAGE" desc="Notification text warning users that they are low on disk space.">
+        Free up disk space or resize the Linux disk in Settings
+      </message>
+      <message name="IDS_CROSTINI_CRITICALLY_LOW_DISK_NOTIFICATION_TITLE" desc="Title of the notification warning users that they are critically low on disk space.">
+        Linux disk space critically low
+      </message>
+      <message name="IDS_CROSTINI_CRITICALLY_LOW_DISK_NOTIFICATION_MESSAGE" desc="Notification text warning users that they are critically low on disk space.">
+        Linux apps may become unresponsive.
+      </message>
+      <message name="IDS_CROSTINI_LOW_DISK_NOTIFICATION_BUTTON" desc="Button on the low disk notification to open storage management.">
+        Resize Linux disk
+      </message>
+
+      <!-- Crostini app context menu item names, dialog message and button strings -->
+      <message name="IDS_CROSTINI_USE_LOW_DENSITY" desc="The Crostini app Shelf item context menu item to use low display density for app windows.">
+        Use low density
+      </message>
+      <message name="IDS_CROSTINI_USE_HIGH_DENSITY" desc="The Crostini app Shelf item context menu item to use high display density for app windows.">
+        Use high density
+      </message>
+      <message name="IDS_CROSTINI_APP_RESTART_BODY" desc="Description for the Crostini app restart dialog.">
+        Your application's display settings will take effect when it is next restarted.
+      </message>
+
+      <!-- Strings for notifications about features which aren't supported in Crostini -->
+      <message name="IDS_CROSTINI_UNSUPPORTED_VIRTUAL_KEYBOARD" desc="Text for notification message shown when a user tries to use a virtual keyboard or tablet mode in a Linux app.">
+        The on-screen keyboard doesn’t work in Linux apps yet
+      </message>
+
       <!-- Floating Workspace -->
       <message name="IDS_FLOATING_WORKSPACE_STARTUP_DIALOG_TITLE" desc="Title for floating workspace startup dialog.">
         Restoring windows from your previous session...

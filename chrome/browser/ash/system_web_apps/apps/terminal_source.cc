@@ -9,6 +9,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/webui_url_constants.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"

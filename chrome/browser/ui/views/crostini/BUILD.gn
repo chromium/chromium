@@ -19,7 +19,7 @@ static_library("crostini") {
   ]
 
   deps = [
-    "//chrome/app:generated_resources",
+    "//ash/strings",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/guest_os/public",
@@ -91,7 +91,6 @@ source_set("browser_tests") {
     ":crostini",
     "//base",
     "//base/test:test_support",
-    "//chrome/app:generated_resources",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/crostini:test_support",

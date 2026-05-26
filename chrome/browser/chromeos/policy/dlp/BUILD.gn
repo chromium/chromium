@@ -70,6 +70,7 @@ static_library("dlp") {
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/resources/vector_icons",
+    "//ash/strings",
     "//ash/webui/file_manager:constants",
     "//base",
     "//chrome/app:generated_resources",
@@ -155,6 +156,7 @@ source_set("unit_tests") {
   deps = [
     ":dlp",
     "//ash/constants",
+    "//ash/strings",
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",

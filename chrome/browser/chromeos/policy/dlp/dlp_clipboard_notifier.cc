@@ -14,6 +14,7 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"

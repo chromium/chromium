@@ -1,0 +1,5 @@
+specific_include_rules = {
+  "startup_status\\.cc": [
+    "+ash/strings",
+  ],
+}

@@ -19,7 +19,6 @@
 #include "components/services/app_service/public/cpp/intent.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/strings/grit/ui_strings.h"
 
 namespace {
 

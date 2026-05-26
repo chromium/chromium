@@ -32,6 +32,7 @@ static_library("usb") {
   ]
 
   deps = [
+    "//ash/strings",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc:arc_util",

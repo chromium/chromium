@@ -4,12 +4,12 @@
 
 #include "chrome/browser/ui/views/crostini/crostini_app_restart_dialog.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
-#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"

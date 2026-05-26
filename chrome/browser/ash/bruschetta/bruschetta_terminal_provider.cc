@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/bruschetta/bruschetta_terminal_provider.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_pref_names.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/extensions/api/terminal/startup_status.h"
-#include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace bruschetta {

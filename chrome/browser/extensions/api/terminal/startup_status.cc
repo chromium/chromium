@@ -11,12 +11,12 @@
 #include <memory>
 #include <vector>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
 #include "ui/base/l10n/l10n_util.h"
 

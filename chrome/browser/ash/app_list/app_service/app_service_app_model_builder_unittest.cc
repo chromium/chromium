@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"

@@ -8,13 +8,13 @@
 
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
