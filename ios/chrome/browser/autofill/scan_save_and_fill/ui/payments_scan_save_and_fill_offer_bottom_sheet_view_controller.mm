@@ -47,6 +47,7 @@ CGFloat const kCustomFaviconSideLength = 58;
   self.customSpacingBeforeImage = kSpacingBeforeImage;
   self.customSpacingAfterImage = kSpacingAfterImage;
   self.imageHasFixedSize = YES;
+  self.alwaysShowImage = YES;
 
   self.titleString = l10n_util::GetNSString(
       IDS_AUTOFILL_SCAN_SAVE_AND_FILL_BOTTOM_SHEET_TITLE);

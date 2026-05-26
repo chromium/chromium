@@ -92,7 +92,7 @@
   presentationController.prefersEdgeAttachedInCompactHeight = YES;
   presentationController.detents = @[
     [_viewController preferredHeightDetent],
-    [UISheetPresentationControllerDetent mediumDetent]
+    [UISheetPresentationControllerDetent largeDetent]
   ];
 
   [self.baseViewController presentViewController:_viewController
