@@ -159,16 +159,11 @@ void DeskIconButton::UpdateFocusState() {
   };
 
   std::optional<ui::ColorId> new_focus_color_id = get_focus_color();
-  if (focus_color_id_ == new_focus_color_id) {
-    return;
-  }
-
   focus_color_id_ = new_focus_color_id;
 
-  // Only repaint the focus ring if the color gets updated.
   auto* focus_ring = views::FocusRing::Get(this);
   focus_ring->SetColorId(new_focus_color_id);
-  focus_ring->SchedulePaint();
+  focus_ring->Refresh();
 }
 
 void DeskIconButton::OnFocus() {

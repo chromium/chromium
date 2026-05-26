@@ -1153,7 +1153,7 @@ bool AppListItemView::InitiateDrag(const gfx::Point& location,
   if (!IsItemDraggable()) {
     return false;
   }
-  drag_state_ = DragState::kInitialized;
+  SetDragState(DragState::kInitialized);
   SilentlyRequestFocus();
   return true;
 }
@@ -1161,7 +1161,7 @@ bool AppListItemView::InitiateDrag(const gfx::Point& location,
 void AppListItemView::OnDragStarted() {
   mouse_drag_timer_.Stop();
   touch_drag_timer_.Stop();
-  drag_state_ = DragState::kStarted;
+  SetDragState(DragState::kStarted);
   SetUIState(UI_STATE_DRAGGING);
   CancelContextMenu();
 }
@@ -1177,7 +1177,7 @@ void AppListItemView::OnDragEnded() {
     context_menu_for_folder_->set_owner_touch_dragging(false);
 
   SetUIState(UI_STATE_NORMAL);
-  drag_state_ = DragState::kNone;
+  SetDragState(DragState::kNone);
 }
 
 void AppListItemView::OnDragDone() {
@@ -1247,7 +1247,7 @@ void AppListItemView::OnContextMenuModelReceived(
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type,
     std::unique_ptr<ui::SimpleMenuModel> menu_model) {
-  waiting_for_context_menu_options_ = false;
+  SetWaitingForContextMenuOptions(false);
   if (!menu_model || IsShowingAppMenu()) {
     return;
   }
@@ -1339,6 +1339,7 @@ void AppListItemView::OnContextMenuModelReceived(
 
   item_menu_model_adapter_->Run(
       anchor_rect, views::MenuAnchorPosition::kBubbleRight, run_types);
+  views::FocusRing::Get(this)->Refresh();
 
   if (!context_menu_shown_callback_.is_null()) {
     context_menu_shown_callback_.Run();
@@ -1361,7 +1362,7 @@ void AppListItemView::ShowContextMenuForViewImpl(
   if (waiting_for_context_menu_options_) {
     return;
   }
-  waiting_for_context_menu_options_ = true;
+  SetWaitingForContextMenuOptions(true);
   views::InkDrop::Get(this)->SetMode(
       views::InkDropHost::InkDropMode::ON_NO_GESTURE_HANDLER);
   views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
@@ -1499,7 +1500,7 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
   if (drag_state_ == DragState::kInitialized &&
       ui_state_ == UI_STATE_DRAGGING) {
     SetMouseDragging(false);
-    drag_state_ = DragState::kNone;
+    SetDragState(DragState::kNone);
     return;
   } else {
     // Triggers the button's click handler callback, which might delete `this`.
@@ -1512,10 +1513,10 @@ void AppListItemView::OnMouseReleased(const ui::MouseEvent& event) {
 
   SetMouseDragging(false);
 
-    // Cancel drag timer set when the mouse was pressed, to prevent the app
-    // item from entering dragged state.
-    mouse_drag_timer_.Stop();
-    drag_state_ = DragState::kNone;
+  // Cancel drag timer set when the mouse was pressed, to prevent the app
+  // item from entering dragged state.
+  mouse_drag_timer_.Stop();
+  SetDragState(DragState::kNone);
 }
 
 void AppListItemView::OnMouseCaptureLost() {
@@ -1534,14 +1535,14 @@ void AppListItemView::OnFocus() {
     return;
   }
   grid_delegate_->SetSelectedView(this);
-  views::FocusRing::Get(this)->SchedulePaint();
+  views::FocusRing::Get(this)->Refresh();
 }
 
 void AppListItemView::OnBlur() {
   if (grid_delegate_->IsSelectedView(this)) {
     grid_delegate_->ClearSelectedView();
   }
-  views::FocusRing::Get(this)->SchedulePaint();
+  views::FocusRing::Get(this)->Refresh();
 }
 
 int AppListItemView::GetDragOperations(const gfx::Point& press_pt) {
@@ -1630,7 +1631,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
         // Reset `drag_state_` if there was an attempt to initiate it (i.e. the
         // touch drag timer fired) but was not properly started (i.e. the app
         // item was never actually dragged) before a release event occurred.
-        drag_state_ = DragState::kNone;
+        SetDragState(DragState::kNone);
       }
       touch_drag_timer_.Stop();
       SetTouchDragging(false);
@@ -1882,6 +1883,7 @@ void AppListItemView::OnMenuClosed() {
   // Release menu since its menu model delegate (AppContextMenu) could be
   // released as a result of menu command execution.
   item_menu_model_adapter_.reset();
+  views::FocusRing::Get(this)->Refresh();
 
   if (!menu_close_initiated_from_drag_) {
     // If the menu was not closed due to a drag sequence(e.g. multi touch) reset
@@ -2325,6 +2327,16 @@ void AppListItemView::UpdateTooltipText() {
     tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);
   }
   SetTooltipText(tooltip);
+}
+
+void AppListItemView::SetWaitingForContextMenuOptions(bool wait) {
+  waiting_for_context_menu_options_ = wait;
+  views::FocusRing::Get(this)->Refresh();
+}
+
+void AppListItemView::SetDragState(DragState state) {
+  drag_state_ = state;
+  views::FocusRing::Get(this)->Refresh();
 }
 
 BEGIN_METADATA(AppListItemView)

@@ -469,6 +469,12 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   void UpdateTooltipText();
 
+  // Sets whether the view is waiting for context menu options to be fetched.
+  void SetWaitingForContextMenuOptions(bool wait);
+
+  // Updates the drag state of the view.
+  void SetDragState(DragState state);
+
   // The app list config used to layout this view. The initial values is set
   // during view construction, but can be changed by calling
   // `UpdateAppListConfig()`.

@@ -1062,6 +1062,7 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
     // the item's selection status.
     if (focused_view->GetClassName() == AppListItemView::kViewClassName) {
       static_cast<AppListItemView*>(focused_view)->EnsureSelected();
+      views::FocusRing::Get(focused_view)->Refresh();
     }
 
     focused_view->SchedulePaint();
