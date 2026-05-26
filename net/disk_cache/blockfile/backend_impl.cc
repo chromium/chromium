@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/containers/heap_array.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
@@ -2092,8 +2093,8 @@ int BackendImpl::MaxBuffersSize() {
   // then cache the result.
   static const int max_buffers_size = ([]() {
     constexpr uint64_t kMaxMaxBuffersSize = 30 * 1024 * 1024;
-    const base::ByteCount total_memory =
-        base::SysInfo::AmountOfPhysicalMemory();
+    const base::ByteSize total_memory =
+        base::SysInfo::AmountOfTotalPhysicalMemory();
     if (total_memory.is_zero()) {
       return int{kMaxMaxBuffersSize};
     }
