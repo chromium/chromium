@@ -75,6 +75,8 @@ class SharedMemoryVirtualDeviceMojoAdapter
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
+bool IsSupportedVideoPixelFormat(media::VideoPixelFormat format);
+
 }  // namespace video_capture
 
 #endif  // SERVICES_VIDEO_CAPTURE_SHARED_MEMORY_VIRTUAL_DEVICE_MOJO_ADAPTER_H_

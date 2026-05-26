@@ -11,6 +11,10 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/numerics/checked_math.h"
+#include "media/base/video_frame.h"
+#include "media/base/video_frame_layout.h"
+#include "media/base/video_types.h"
 #include "media/capture/video/scoped_buffer_pool_reservation.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
 #include "media/capture/video/video_capture_buffer_pool_util.h"
@@ -20,6 +24,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/video_capture/public/mojom/constants.mojom.h"
 
+namespace video_capture {
 namespace {
 
 void OnNewBufferAcknowleged(
@@ -29,9 +34,67 @@ void OnNewBufferAcknowleged(
   std::move(callback).Run(buffer_id);
 }
 
+bool ValidateVideoFrameInfo(const media::mojom::VideoFrameInfoPtr& frame_info,
+                            size_t buffer_size) {
+  if (!IsSupportedVideoPixelFormat(frame_info->pixel_format)) {
+    return false;
+  }
+
+  if (!media::VideoFrame::IsValidConfig(
+          frame_info->pixel_format, media::VideoFrame::STORAGE_SHMEM,
+          frame_info->coded_size, frame_info->visible_rect,
+          frame_info->natural_size)) {
+    return false;
+  }
+
+  const size_t num_planes =
+      media::VideoFrame::NumPlanes(frame_info->pixel_format);
+
+  std::vector<size_t> strides;
+  if (frame_info->strides) {
+    if (frame_info->strides->stride_by_plane.size() < num_planes) {
+      return false;
+    }
+    strides.assign(frame_info->strides->stride_by_plane.begin(),
+                   frame_info->strides->stride_by_plane.begin() + num_planes);
+  } else {
+    strides.resize(num_planes);
+    for (size_t i = 0; i < num_planes; ++i) {
+      strides[i] = media::VideoFrame::RowBytes(i, frame_info->pixel_format,
+                                               frame_info->coded_size.width());
+    }
+  }
+
+  std::vector<media::ColorPlaneLayout> planes;
+  base::CheckedNumeric<size_t> offset = 0;
+  for (size_t i = 0; i < num_planes; ++i) {
+    size_t rows = media::VideoFrame::Rows(i, frame_info->pixel_format,
+                                          frame_info->coded_size.height());
+    base::CheckedNumeric<size_t> plane_size = base::CheckMul(strides[i], rows);
+    if (!plane_size.IsValid()) {
+      return false;
+    }
+    planes.emplace_back(strides[i], offset.ValueOrDie(),
+                        plane_size.ValueOrDie());
+    offset += plane_size;
+    if (!offset.IsValid()) {
+      return false;
+    }
+  }
+  auto layout = media::VideoFrameLayout::CreateWithPlanes(
+      frame_info->pixel_format, frame_info->coded_size, std::move(planes));
+
+  return layout && layout->FitsInContiguousBufferOfSize(buffer_size);
+}
+
 }  // anonymous namespace
 
-namespace video_capture {
+bool IsSupportedVideoPixelFormat(media::VideoPixelFormat format) {
+  if (format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
+    return false;
+  }
+  return media::IsValidVideoPixelFormat(format);
+}
 
 SharedMemoryVirtualDeviceMojoAdapter::SharedMemoryVirtualDeviceMojoAdapter(
     mojo::Remote<mojom::Producer> producer)
@@ -121,6 +184,11 @@ void SharedMemoryVirtualDeviceMojoAdapter::OnFrameReadyInBuffer(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Unknown buffer ID.
   if (!std::ranges::contains(known_buffer_ids_, buffer_id)) {
+    return;
+  }
+
+  auto handle = buffer_pool_->GetHandleForInProcessAccess(buffer_id);
+  if (!ValidateVideoFrameInfo(frame_info, handle->mapped_size())) {
     return;
   }
 

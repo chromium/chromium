@@ -101,6 +101,15 @@ class VirtualDeviceTest : public ::testing::Test {
   std::vector<int> received_buffer_ids_;
   std::unique_ptr<MockProducer> producer_;
 
+  media::mojom::VideoFrameInfoPtr CreateValidVideoFrameInfo() {
+    auto info = media::mojom::VideoFrameInfo::New();
+    info->pixel_format = kTestPixelFormat;
+    info->coded_size = kTestFrameSize;
+    info->visible_rect = gfx::Rect(kTestFrameSize);
+    info->natural_size = kTestFrameSize;
+    return info;
+  }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   media::VideoCaptureDeviceInfo device_info_;
@@ -115,7 +124,7 @@ TEST_F(VirtualDeviceTest, OnFrameReadyInBufferWithoutReceiver) {
   // Release one buffer back to the pool, no consumer hold since there is no
   // receiver.
   device_adapter_->OnFrameReadyInBuffer(received_buffer_ids_.at(0),
-                                        media::mojom::VideoFrameInfo::New());
+                                        CreateValidVideoFrameInfo());
 
   // Verify there is a buffer available now, without creating a new
   // buffer.
@@ -148,8 +157,8 @@ TEST_F(VirtualDeviceTest, OnFrameReadyInBufferWithReceiver) {
   device_adapter_->Start(media::VideoCaptureParams(),
                          std::move(handler_remote));
   for (auto buffer_id : received_buffer_ids_) {
-    media::mojom::VideoFrameInfoPtr info = media::mojom::VideoFrameInfo::New();
-    device_adapter_->OnFrameReadyInBuffer(buffer_id, std::move(info));
+    device_adapter_->OnFrameReadyInBuffer(buffer_id,
+                                          CreateValidVideoFrameInfo());
   }
   wait_loop.RunUntilIdle();
   Mock::VerifyAndClearExpectations(&video_frame_handler);
