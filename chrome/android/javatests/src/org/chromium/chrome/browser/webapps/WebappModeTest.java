@@ -26,6 +26,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -76,7 +77,7 @@ public class WebappModeTest {
         if (addMac) {
             // Needed for security reasons.  If the MAC is excluded, the URL of the webapp is opened
             // in a browser window, instead.
-            String mac = ShortcutHelper.getEncodedMac(url);
+            String mac = ShortcutHelper.getEncodedMac(url, icon);
             intent.putExtra(WebappConstants.EXTRA_MAC, mac);
         }
 
@@ -237,6 +238,76 @@ public class WebappModeTest {
      * ActivityTestUtils.waitForActivity() because of the way WebappActivity is instanced on pre-L
      * devices.
      */
+    @Test
+    @MediumTest
+    @Feature({"Webapps"})
+    public void testWebappLaunchesWithTrustedIcon() {
+        // Launch with valid new MAC (URL + Icon).
+        final WebappActivity webappActivity =
+                startWebappActivity(WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON);
+
+        // Verify the launch succeeds and the icon IS decoded.
+        Assert.assertNotNull(
+                webappActivity.getIntentDataProvider().getWebappExtras().icon.bitmap());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Webapps"})
+    public void testWebappLaunchesWithLegacyMacAndIconNotDecoded() {
+        // Create intent with legacy MAC (URL only) but still include the icon.
+        Intent intent = createIntent(WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, false);
+        // Compute legacy MAC manually and add it.
+        String legacyMac = ShortcutHelper.getEncodedMac(WEBAPP_1_URL, null);
+        intent.putExtra(WebappConstants.EXTRA_MAC, legacyMac);
+
+        // Fire intent.
+        ApplicationProvider.getApplicationContext().startActivity(intent);
+        ChromeApplicationTestUtils.waitUntilChromeInForeground();
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+                    return isWebappActivityReady(lastActivity);
+                },
+                10000,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        WebappActivity webappActivity =
+                (Activity) ApplicationStatus.getLastTrackedFocusedActivity()
+                                instanceof WebappActivity
+                        ? (WebappActivity) ApplicationStatus.getLastTrackedFocusedActivity()
+                        : null;
+        Assert.assertNotNull("WebappActivity should have launched", webappActivity);
+
+        // Verify the launch succeeds, but the icon is NOT decoded.
+        Assert.assertNull(webappActivity.getIntentDataProvider().getWebappExtras().icon.bitmap());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Webapps"})
+    public void testWebappLaunchFailsWithModifiedIcon() {
+        // Create intent with valid MAC for original icon.
+        Intent intent = createIntent(WEBAPP_1_ID, WEBAPP_1_URL, WEBAPP_1_TITLE, WEBAPP_ICON, true);
+        // Modify the icon in the intent to invalidate the MAC.
+        intent.putExtra(WebappConstants.EXTRA_ICON, WEBAPP_ICON + "_modified");
+
+        // Fire intent.
+        ApplicationProvider.getApplicationContext().startActivity(intent);
+        ChromeApplicationTestUtils.waitUntilChromeInForeground();
+
+        // Verify that we did NOT launch WebappActivity (it should open in tab instead).
+        // We poll until ChromeTabbedActivity is launched.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Activity lastActivity = ApplicationStatus.getLastTrackedFocusedActivity();
+                    return lastActivity instanceof ChromeTabbedActivity;
+                },
+                5000,
+                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
     private WebappActivity startWebappActivity(String id, String url, String title, String icon) {
         fireWebappIntent(id, url, title, icon, true);
         CriteriaHelper.pollUiThread(

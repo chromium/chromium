@@ -128,7 +128,7 @@ public class ShortcutHelper {
                                 backgroundColor,
                                 iconUrl.isEmpty(),
                                 isIconAdaptive);
-                shortcutIntent.putExtra(WebappConstants.EXTRA_MAC, getEncodedMac(url));
+                shortcutIntent.putExtra(WebappConstants.EXTRA_MAC, getEncodedMac(url, encodedIcon));
                 shortcutIntent.putExtra(
                         WebappConstants.EXTRA_SOURCE, ShortcutSource.ADD_TO_HOMESCREEN_STANDALONE);
                 return shortcutIntent;
@@ -258,7 +258,8 @@ public class ShortcutHelper {
                 .putExtra(WebappConstants.EXTRA_THEME_COLOR, themeColor)
                 .putExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, backgroundColor)
                 .putExtra(WebappConstants.EXTRA_IS_ICON_GENERATED, isIconGenerated)
-                .putExtra(WebappConstants.EXTRA_IS_ICON_ADAPTIVE, isIconAdaptive);
+                .putExtra(WebappConstants.EXTRA_IS_ICON_ADAPTIVE, isIconAdaptive)
+                .putExtra(WebappConstants.EXTRA_IS_ICON_TRUSTED, true);
         return shortcutIntent;
     }
 
@@ -332,11 +333,11 @@ public class ShortcutHelper {
     /**
      * @return String that can be used to verify that a WebappActivity is being started by Chrome.
      */
-    public static String getEncodedMac(String url) {
+    public static String getEncodedMac(String url, @Nullable String encodedIcon) {
         // The only reason we convert to a String here is because Android inexplicably eats a
         // byte[] when adding the shortcut -- the Bundle received by the launched Activity even
         // lacks the key for the extra.
-        byte[] mac = WebappAuthenticator.getMacForUrl(url);
+        byte[] mac = WebappAuthenticator.getMacForUrlAndIcon(url, encodedIcon);
         return Base64.encodeToString(mac, Base64.DEFAULT);
     }
 

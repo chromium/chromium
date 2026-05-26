@@ -122,6 +122,9 @@ public class WebappIntentDataProviderFactory {
         boolean isIconAdaptive =
                 IntentUtils.safeGetBooleanExtra(
                         intent, WebappConstants.EXTRA_IS_ICON_ADAPTIVE, false);
+        boolean isIconTrusted =
+                IntentUtils.safeGetBooleanExtra(
+                        intent, WebappConstants.EXTRA_IS_ICON_TRUSTED, false);
         boolean forceNavigation =
                 IntentUtils.safeGetBooleanExtra(
                         intent, WebappConstants.EXTRA_FORCE_NAVIGATION, false);
@@ -137,7 +140,7 @@ public class WebappIntentDataProviderFactory {
                         id,
                         url,
                         scope,
-                        new WebappIcon(icon, /* isTrusted= */ true),
+                        new WebappIcon(icon, isIconTrusted),
                         name,
                         shortName,
                         displayMode,

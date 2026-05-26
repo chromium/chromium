@@ -38,6 +38,8 @@ public class WebappConstants {
             "org.chromium.chrome.browser.is_icon_generated";
     public static final String EXTRA_IS_ICON_ADAPTIVE =
             "org.chromium.chrome.browser.webapp_icon_adaptive";
+    public static final String EXTRA_IS_ICON_TRUSTED =
+            "org.chromium.chrome.browser.webapp_is_icon_trusted";
     public static final String EXTRA_VERSION =
             "org.chromium.chrome.browser.webapp_shortcut_version";
     public static final String REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB =
