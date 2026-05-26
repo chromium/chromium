@@ -1,0 +1,67 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("status_icons") {
+  sources = []
+  public_deps = []
+  deps = []
+
+  if (is_linux) {
+    sources += [
+      "status_icon_button_linux.cc",
+      "status_icon_button_linux.h",
+      "status_icon_linux_wrapper.cc",
+      "status_icon_linux_wrapper.h",
+      "status_tray_linux.cc",
+      "status_tray_linux.h",
+    ]
+    public_deps += [
+      "//build/config/linux/dbus:buildflags",
+      "//chrome/browser/status_icons",
+      "//ui/base/mojom:ui_base_types",
+      "//ui/linux:linux_ui",
+      "//ui/views",
+    ]
+    deps += [
+      "//chrome/browser:shell_integration_linux",
+      "//chrome/browser/ui:ui_features",
+      "//ui/aura",
+      "//ui/base:wm_role_names",
+      "//ui/message_center/public/cpp",
+      "//ui/ozone",
+    ]
+
+    if (use_dbus) {
+      sources += [
+        "concat_menu_model.cc",
+        "concat_menu_model.h",
+        "status_icon_linux_dbus.cc",
+        "status_icon_linux_dbus.h",
+      ]
+      public_deps += [ "//components/dbus" ]
+      deps += [ "//content/public/browser" ]
+    }
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "status_icon_chromeos.cc",
+      "status_icon_chromeos.h",
+      "status_tray_chromeos.cc",
+      "status_tray_chromeos.h",
+    ]
+    public_deps += [
+      "//chrome/browser/status_icons",
+      "//ui/display",
+      "//ui/gfx",
+    ]
+    deps += [
+      "//ash",
+      "//ash/constants",
+      "//base",
+    ]
+  }
+}
