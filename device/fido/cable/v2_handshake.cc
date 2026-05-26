@@ -825,11 +825,11 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
     return false;
   }
 
-  crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(write_key_);
-  DCHECK_EQ(nonce.size(), aes_key.NonceLength());
+  DCHECK_EQ(nonce.size(),
+            crypto::aead::NonceSizeFor(crypto::aead::AES_256_GCM));
 
-  std::vector<uint8_t> ciphertext = aes_key.Seal(padded_message, nonce, {});
+  std::vector<uint8_t> ciphertext = crypto::aead::Seal(
+      crypto::aead::AES_256_GCM, write_key_, padded_message, nonce, {});
   message_to_encrypt->swap(ciphertext);
   return true;
 }
@@ -841,12 +841,11 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
     return false;
   }
 
-  crypto::Aead aes_key(crypto::Aead::AES_256_GCM);
-  aes_key.Init(read_key_);
-  DCHECK_EQ(nonce.size(), aes_key.NonceLength());
+  DCHECK_EQ(nonce.size(),
+            crypto::aead::NonceSizeFor(crypto::aead::AES_256_GCM));
 
-  std::optional<std::vector<uint8_t>> plaintext =
-      aes_key.Open(ciphertext, nonce, {});
+  std::optional<std::vector<uint8_t>> plaintext = crypto::aead::Open(
+      crypto::aead::AES_256_GCM, read_key_, ciphertext, nonce, {});
 
   if (!plaintext) {
     return false;

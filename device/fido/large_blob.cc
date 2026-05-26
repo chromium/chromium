@@ -223,11 +223,10 @@ LargeBlobData::LargeBlobData(
 }
 LargeBlobData::LargeBlobData(LargeBlobKey key, LargeBlob large_blob)
     : orig_size_(large_blob.original_size) {
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(key);
   crypto::RandBytes(nonce_);
-  ciphertext_ = aead.Seal(large_blob.compressed_data, nonce_,
-                          GenerateLargeBlobAdditionalData(orig_size_));
+  ciphertext_ = crypto::aead::Seal(crypto::aead::AES_256_GCM, key,
+                                   large_blob.compressed_data, nonce_,
+                                   GenerateLargeBlobAdditionalData(orig_size_));
 }
 LargeBlobData::LargeBlobData(LargeBlobData&&) = default;
 LargeBlobData& LargeBlobData::operator=(LargeBlobData&&) = default;
@@ -239,10 +238,9 @@ bool LargeBlobData::operator==(const LargeBlobData& other) const {
 }
 
 std::optional<LargeBlob> LargeBlobData::Decrypt(LargeBlobKey key) const {
-  crypto::Aead aead(crypto::Aead::AeadAlgorithm::AES_256_GCM);
-  aead.Init(key);
-  std::optional<std::vector<uint8_t>> compressed_data = aead.Open(
-      ciphertext_, nonce_, GenerateLargeBlobAdditionalData(orig_size_));
+  std::optional<std::vector<uint8_t>> compressed_data =
+      crypto::aead::Open(crypto::aead::AES_256_GCM, key, ciphertext_, nonce_,
+                         GenerateLargeBlobAdditionalData(orig_size_));
   if (!compressed_data) {
     return std::nullopt;
   }
