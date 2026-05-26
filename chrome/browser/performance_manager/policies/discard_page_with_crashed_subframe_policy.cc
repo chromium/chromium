@@ -7,7 +7,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -37,25 +36,15 @@ void DiscardPageWithCrashedSubframePolicy::
   bool will_reload = !frame_node->GetPageNode()->IsVisible() &&
                      frame_node->IsRendered() && frame_node->IsActive();
   bool is_eligible = will_reload;
-  if (base::FeatureList::IsEnabled(
-          chrome::android::kDiscardPageWithCrashedSubframeRelaxedEligibility)) {
-    const PageNode* page_node = frame_node->GetPageNode();
-    // We should not discard pages which is immediately perceptible to the
-    // users. For example, a page which is audible, playing video in
-    // picture-in-picture.
-    //
-    // This is relaxed eligibility check than
-    // DiscardEligibilityPolicy::CanDiscard.
-    is_eligible = is_eligible &&
-                  eligiblity_policy->IsDiscardAllowed(page_node) &&
-                  !eligiblity_policy->WillDiscardBePerceptible(page_node);
-  } else {
-    is_eligible =
-        is_eligible && eligiblity_policy->CanDiscard(
-                           frame_node->GetPageNode(),
-                           DiscardEligibilityPolicy::DiscardReason::URGENT,
-                           base::TimeDelta()) == CanDiscardResult::kEligible;
-  }
+  const PageNode* page_node = frame_node->GetPageNode();
+  // We should not discard pages which is immediately perceptible to the users.
+  // For example, a page which is audible, playing video in picture-in-picture.
+  //
+  // This is relaxed eligibility check than
+  // DiscardEligibilityPolicy::CanDiscard.
+  is_eligible = is_eligible &&
+                eligiblity_policy->IsDiscardAllowed(page_node) &&
+                !eligiblity_policy->WillDiscardBePerceptible(page_node);
   base::UmaHistogramBoolean("Stability.ChildFrameCrash.PageWillReload",
                             will_reload);
   base::UmaHistogramBoolean("Stability.ChildFrameCrash.PageEligibleToDiscard",
