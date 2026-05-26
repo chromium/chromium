@@ -895,6 +895,38 @@ bool Animation::PreCommit(
     }
   }
 
+  // If we fail to start an animation on the compositor that animates via a
+  // native paint wprklet, then update the corresponding paint status bit.
+  NativePaintWorkletReasons npw_reasons = GetNativePaintWorkletReasons();
+  if (should_start && !compositor_state_ &&
+      npw_reasons != NativePaintWorkletProperties::kNoPaintWorklet &&
+      RuntimeEnabledFeatures::ConcurrentNativePaintWorkletsEnabled()) {
+    KeyframeEffect* keyframe_effect = DynamicTo<KeyframeEffect>(content_.Get());
+    Element* target =
+        keyframe_effect ? keyframe_effect->EffectTarget() : nullptr;
+    ElementAnimations* element_animations =
+        target ? target->GetElementAnimations() : nullptr;
+    if (element_animations) {
+      // We only fall back the NPW status if it has received an eligibility
+      // determination. If it hasn't, this could mean its target is outside the
+      // paint apron or been made invisible with CSS, and is still potentially
+      // compositable.
+      if (npw_reasons &
+              NativePaintWorkletProperties::kBackgroundColorPaintWorklet &&
+          element_animations->CompositedBackgroundColorStatus() !=
+              ElementAnimations::CompositedPaintStatus::kNeedsRepaint) {
+        element_animations->SetCompositedBackgroundColorStatus(
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+      }
+      if (npw_reasons & NativePaintWorkletProperties::kClipPathPaintWorklet &&
+          element_animations->CompositedClipPathStatus() !=
+              ElementAnimations::CompositedPaintStatus::kNeedsRepaint) {
+        element_animations->SetCompositedClipPathStatus(
+            ElementAnimations::CompositedPaintStatus::kNotComposited);
+      }
+    }
+  }
+
   return true;
 }
 
@@ -3154,10 +3186,11 @@ void Animation::CancelAnimationOnCompositor() {
     keyframe_effect->CancelAnimationOnCompositor(GetCompositorAnimation());
   }
 
-  // Note: We do not update the composited paint status here since already
-  // updated via setCompositorPending. If the animation is to be restarted on
-  // compositor, paint has already been given the opportunity to make the
-  // compositing decision.
+  // Do not update the composited paint status here, as we may be in the
+  // process of restarting the animation on the compositor. A downgrade is
+  // enforced during Precommit if we fail to start the animation on the
+  // compositor.
+
   DestroyCompositorAnimation();
   compositor_state_.reset();
 }

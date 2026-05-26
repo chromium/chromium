@@ -244,6 +244,13 @@ void KeyframeEffect::AddKeyframeModel(
             keyframe_model->TargetProperty() ==
                 existing_keyframe_model->TargetProperty() &&
             cc_keyframe_model->group() == cc_existing_keyframe_model->group();
+        if (same_group_and_target && keyframe_model->TargetProperty() ==
+                                         TargetProperty::NATIVE_PROPERTY) {
+          same_group_and_target =
+              cc_keyframe_model->native_property_type() ==
+              cc_existing_keyframe_model->native_property_type();
+        }
+
         // Keyframe models in the same group might target the same property
         // if one or both is an outgoing animation (i.e. about to be
         // removed).

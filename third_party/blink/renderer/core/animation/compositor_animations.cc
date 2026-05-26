@@ -118,6 +118,17 @@ bool IsTransformRelatedCSSProperty(const PropertyHandle property) {
           property.GetCSSProperty().IDEquals(CSSPropertyID::kTranslate));
 }
 
+bool HasNativePaintWorketReason(
+    Animation::NativePaintWorkletReasons npw_reasons,
+    Animation::NativePaintWorkletProperties property) {
+  if (RuntimeEnabledFeatures::ConcurrentNativePaintWorkletsEnabled()) {
+    return npw_reasons & property;
+  }
+  // By default, only a single property can be animated on the compositor
+  // thread within a single animation.
+  return npw_reasons == property;
+}
+
 bool HasIncompatibleAnimations(const Element& target_element,
                                const Animation& animation_to_add,
                                const EffectModel& effect_to_add) {
@@ -314,7 +325,6 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
     }
 
     // Presently native paint worklets only work with monotonic timelines.
-    NativePaintImageGenerator* generator = nullptr;
     Animation::NativePaintWorkletReasons npw_reasons =
         Animation::NativePaintWorkletProperties::kNoPaintWorklet;
     if (animation_to_add) {
@@ -328,9 +338,11 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
       // Not having a layout object is a reason for not compositing marked
       // in CompositorAnimations::CheckCanStartElementOnCompositor.
       switch (property.GetCSSProperty().PropertyID()) {
-        case CSSPropertyID::kBackgroundColor:
-          if (npw_reasons == Animation::NativePaintWorkletProperties::
-                                 kBackgroundColorPaintWorklet) {
+        case CSSPropertyID::kBackgroundColor: {
+          NativePaintImageGenerator* generator = nullptr;
+          if (HasNativePaintWorketReason(
+                  npw_reasons, Animation::NativePaintWorkletProperties::
+                                   kBackgroundColorPaintWorklet)) {
             DCHECK(RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled());
             generator = target_element.GetDocument()
                             .GetFrame()
@@ -342,10 +354,13 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
                                          property, &reasons);
           }
           break;
+        }
 
-        case CSSPropertyID::kClipPath:
-          if (npw_reasons ==
-              Animation::NativePaintWorkletProperties::kClipPathPaintWorklet) {
+        case CSSPropertyID::kClipPath: {
+          NativePaintImageGenerator* generator = nullptr;
+          if (HasNativePaintWorketReason(
+                  npw_reasons, Animation::NativePaintWorkletProperties::
+                                   kClipPathPaintWorklet)) {
             DCHECK(RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled());
             generator = target_element.GetDocument()
                             .GetFrame()
@@ -357,6 +372,7 @@ CompositorAnimations::CheckCanStartEffectOnCompositor(
                                          property, &reasons);
           }
           break;
+        }
 
         default:
           break;

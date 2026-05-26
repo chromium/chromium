@@ -59,6 +59,11 @@ Color InterpolateColor(unsigned index,
 bool CompositorMayHaveIncorrectDamageRect(const Element* element) {
   LayoutObject* layout_object = element->GetLayoutObject();
   DCHECK(layout_object);
+  if (element->GetDocument().Lifecycle().GetState() <=
+      DocumentLifecycle::kInPrePaint) {
+    return false;
+  }
+
   auto& first_fragment =
       layout_object->EnclosingLayer()->GetLayoutObject().FirstFragment();
   if (!first_fragment.HasLocalBorderBoxProperties())
@@ -231,8 +236,9 @@ struct DowncastTraits<BackgroundColorPaintWorkletInput> {
 
 Animation* BackgroundColorPaintDefinition::GetAnimationIfCompositable(
     const Element* element) {
-  if (CompositorMayHaveIncorrectDamageRect(element))
+  if (CompositorMayHaveIncorrectDamageRect(element)) {
     return nullptr;
+  }
 
   return GetAnimationForProperty(element, GetCSSPropertyBackgroundColor(),
                                  ValidateColorValue);

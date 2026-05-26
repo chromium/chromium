@@ -1307,6 +1307,12 @@
       }
     },
     {
+      // If enabled, allow concurrent animations via native paint worklets to
+      // run on the compositor thread.
+      name: "ConcurrentNativePaintWorklets",
+      status: "experimental",
+    },
+    {
       // When enabled, providing developers control over the resources loaded
       // into their pages' contexts and the endpoints to which their pages can
       // make requests.

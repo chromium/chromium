@@ -266,19 +266,7 @@ Animation* ClipPathClipper::GetClipPathAnimation(
   CHECK(generator);
 
   Element* element = To<Element>(layout_object.GetNode());
-  Animation* animation = generator->GetAnimationIfCompositable(element);
-
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  if (animation &&
-      CompositeClipPathStatus(element) == CompositedPaintStatus::kComposited) {
-    CHECK(animation->HasActiveAnimationsOnCompositor() ||
-          animation->CheckCanStartAnimationOnCompositor(
-              nullptr, StartOnCompositorReason::kGeneric) ==
-              CompositorAnimations::kNoFailure);
-  }
-#endif  // EXPENSIVE_DCHECKS_ARE_ON()
-
-  return animation;
+  return generator->GetAnimationIfCompositable(element);
 }
 
 bool ClipPathClipper::HasCompositeClipPathAnimation(

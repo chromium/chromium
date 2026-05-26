@@ -2969,14 +2969,14 @@ TEST_P(AnimationCompositorAnimationsTest, NativePaintWorkletProperties) {
       Animation::NativePaintWorkletProperties::kBackgroundColorPaintWorklet |
           Animation::NativePaintWorkletProperties::kClipPathPaintWorklet,
       animation->GetNativePaintWorkletReasons());
-  // Restricted to 1 native paint worklet property per animation.
-  EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
+  // Support multiple NPW-based properties on the same animation.
+  EXPECT_EQ(CompositorAnimations::kNoFailure,
             animation->CheckCanStartAnimationOnCompositor(
                 GetDocument().View()->GetPaintArtifactCompositor(),
                 StartOnCompositorReason::kGeneric));
-  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
-  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNotComposited,
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedClipPathStatus());
 
   target = GetDocument().getElementById(AtomicString("target2"));
@@ -3382,8 +3382,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   )HTML");
 
   // The clip animation being lower in composite order can't be composited.
-  // The multi-property animation also can't be composited.
-  // This test is currently failing, possible that understanding is wrong.
+  // The multi-property animation also can't be composited due to the overlap
+  // of affected properties.
   Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ(2U, target->GetElementAnimations()->Animations().size());
   HeapVector<Member<Animation>> animations = target->getAnimations();
@@ -3392,8 +3392,7 @@ TEST_P(AnimationCompositorAnimationsTest,
                 GetDocument().View()->GetPaintArtifactCompositor(),
                 StartOnCompositorReason::kGeneric));
   EXPECT_FALSE(animations[0]->HasActiveAnimationsOnCompositor());
-  EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty |
-                CompositorAnimations::kTargetHasIncompatibleAnimations,
+  EXPECT_EQ(CompositorAnimations::kTargetHasIncompatibleAnimations,
             animations[1]->CheckCanStartAnimationOnCompositor(
                 GetDocument().View()->GetPaintArtifactCompositor(),
                 StartOnCompositorReason::kGeneric));
@@ -3406,18 +3405,32 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   // Clear the effect of the multi-property animation. Now we only have a
   // single compositable animation on the target.
-  Animation* animation =
+  Animation* multi_prop_animation =
       GetAnimation(target, PropertyHandle(GetCSSPropertyBackgroundColor()));
-  ASSERT_TRUE(animation);
-  animation->setEffect(nullptr);
+  ASSERT_TRUE(multi_prop_animation);
+  AnimationEffect* effect = multi_prop_animation->effect();
+  multi_prop_animation->setEffect(nullptr);
 
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(1U, target->GetElementAnimations()->Animations().size());
-  EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
-  animation = GetAnimation(target, PropertyHandle(GetCSSPropertyClipPath()));
-  ASSERT_TRUE(animation);
-  EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
+  EXPECT_FALSE(multi_prop_animation->HasActiveAnimationsOnCompositor());
+  Animation* clip_path_animation =
+      GetAnimation(target, PropertyHandle(GetCSSPropertyClipPath()));
+  ASSERT_TRUE(clip_path_animation);
+  EXPECT_TRUE(clip_path_animation->HasActiveAnimationsOnCompositor());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kNoAnimation,
+            target->GetElementAnimations()->CompositedBackgroundColorStatus());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
+            target->GetElementAnimations()->CompositedClipPathStatus());
+
+  // restore the effect on the multi-property animations and clear on the
+  // clip-path animation.
+  multi_prop_animation->setEffect(effect);
+  clip_path_animation->setEffect(nullptr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(clip_path_animation->HasActiveAnimationsOnCompositor());
+  EXPECT_TRUE(multi_prop_animation->HasActiveAnimationsOnCompositor());
+  EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedBackgroundColorStatus());
   EXPECT_EQ(ElementAnimations::CompositedPaintStatus::kComposited,
             target->GetElementAnimations()->CompositedClipPathStatus());
