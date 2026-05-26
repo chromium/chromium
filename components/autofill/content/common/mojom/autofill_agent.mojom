@@ -95,14 +95,14 @@ interface AutofillAgent {
   TriggerSuggestions(
       FieldRendererId field, AutofillSuggestionTriggerSource trigger_source);
 
-  // Sets the autofill/autocomplete suggestion availability of `field` (if it is
-  // still the currently selected node).
+  // Sets the autofill/autocomplete suggestion availability of `field` (if it
+  // still exists).
   SetSuggestionAvailability(
       FieldRendererId field,
       AutofillSuggestionAvailability suggestion_availability);
 
-  // Sets the value of `field` (if it is still the currently selected node).
-  // to the given data list value.
+  // Sets the value of `field` (if it still exists) to the given data list
+  // value.
   AcceptDataListSuggestion(
       FieldRendererId field, mojo_base.mojom.String16 value);
 

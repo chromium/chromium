@@ -1464,28 +1464,26 @@ void AutofillAgent::ApplyFieldAction(
 void AutofillAgent::SetSuggestionAvailability(
     FieldRendererId field_id,
     mojom::AutofillSuggestionAvailability suggestion_availability) {
-  WebFormControlElement last_queried_element = last_queried_element_.GetField();
-  if (!last_queried_element ||
-      field_id != form_util::GetFieldRendererId(last_queried_element)) {
+  WebFormControlElement form_control =
+      form_util::GetFormControlByRendererId(field_id);
+  if (!form_control) {
     return;
   }
 
-  SetAutofillSuggestionAvailability(
-      last_queried_element.DynamicTo<WebInputElement>(),
-      suggestion_availability);
+  SetAutofillSuggestionAvailability(form_control.DynamicTo<WebInputElement>(),
+                                    suggestion_availability);
 }
 
 void AutofillAgent::AcceptDataListSuggestion(
     FieldRendererId field_id,
     const std::u16string& suggested_value) {
-  WebFormControlElement last_queried_element = last_queried_element_.GetField();
-  if (!last_queried_element ||
-      field_id != form_util::GetFieldRendererId(last_queried_element)) {
+  WebFormControlElement form_control =
+      form_util::GetFormControlByRendererId(field_id);
+  if (!form_control) {
     return;
   }
 
-  WebInputElement input_element =
-      last_queried_element.DynamicTo<WebInputElement>();
+  WebInputElement input_element = form_control.DynamicTo<WebInputElement>();
   if (!input_element) {
     // Early return for non-input fields such as textarea.
     return;
@@ -1517,8 +1515,7 @@ void AutofillAgent::AcceptDataListSuggestion(
 
     new_value = base::JoinString(parts, u",");
   }
-  DoFillFieldWithValue(new_value, last_queried_element,
-                       WebAutofillState::kNotFilled);
+  DoFillFieldWithValue(new_value, form_control, WebAutofillState::kNotFilled);
 }
 
 void AutofillAgent::PreviewPasswordSuggestion(const std::u16string& username,

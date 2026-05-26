@@ -341,7 +341,8 @@ class AutofillDriver {
   // Exposes DOM Node IDs in an attribute "dom-node-id".
   virtual void ExposeDomNodeIdsInAllFrames() = 0;
 
-  // Tells the renderer to accept data list suggestions for |value|.
+  // Tells the renderer to set `field_id`'s value to the accepted datalist
+  // suggestion `value`.
   virtual void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field_id,
       const std::u16string& value) = 0;
@@ -354,9 +355,8 @@ class AutofillDriver {
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 
-  // Tells the renderer to set the currently focused node's corresponding
-  // accessibility node's autofill suggestion_availability to
-  // |suggestion_availability|.
+  // Tells the renderer to set `field_id`'s corresponding accessibility node's
+  // autofill suggestion availability to `suggestion_availability`.
   virtual void RendererShouldSetSuggestionAvailability(
       const FieldGlobalId& field_id,
       mojom::AutofillSuggestionAvailability suggestion_availability) = 0;

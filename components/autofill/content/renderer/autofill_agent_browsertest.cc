@@ -49,6 +49,8 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
+#include "third_party/blink/public/web/web_ax_context.h"
+#include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
@@ -56,6 +58,8 @@
 #include "third_party/blink/public/web/web_option_element.h"
 #include "third_party/blink/public/web/web_select_element.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "v8/include/v8.h"
 
 namespace autofill {
@@ -755,6 +759,47 @@ TEST_F(AutofillAgentTestWithFeatures,
       GetFieldRendererIdById("ff"),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
   task_environment_.RunUntilIdle();
+}
+
+// Tests that suggestion availability updates the field identified by
+// `field_id`.
+TEST_F(AutofillAgentTestWithFeatures, SetSuggestionAvailabilityUsesFieldId) {
+  LoadHTML("<body><input id=ff></body>");
+
+  auto ax_context = std::make_unique<blink::WebAXContext>(
+      GetDocument(), ui::kAXModeDefaultForTests);
+  ax_context->UpdateAXForAllDocuments();
+
+  blink::WebAXObject element_ax_object =
+      blink::WebAXObject::FromWebNode(GetWebElementById("ff"));
+  ui::AXNodeData node_data;
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
+  ASSERT_FALSE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
+
+  autofill_agent().SetSuggestionAvailability(
+      GetFieldRendererIdById("ff"),
+      mojom::AutofillSuggestionAvailability::kAutofillAvailable);
+  ax_context->UpdateAXForAllDocuments();
+
+  node_data = ui::AXNodeData();
+  element_ax_object.Serialize(&node_data, ui::AXMode::kExtendedProperties);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kAutofillAvailable));
+}
+
+// Tests that accepting a datalist suggestion fills the field identified by
+// `field_id`.
+TEST_F(AutofillAgentTestWithFeatures, AcceptDataListSuggestionUsesFieldId) {
+  LoadHTML("<body><input id=ff><input id=other></body>");
+
+  autofill_agent().AcceptDataListSuggestion(GetFieldRendererIdById("ff"),
+                                            u"Strawberry");
+
+  WebFormControlElement field =
+      GetWebElementById("ff").DynamicTo<WebFormControlElement>();
+  WebFormControlElement other =
+      GetWebElementById("other").DynamicTo<WebFormControlElement>();
+  EXPECT_EQ(field.Value().Utf16(), u"Strawberry");
+  EXPECT_TRUE(other.Value().IsEmpty());
 }
 
 // Tests that `AutofillDriver::TriggerSuggestions()` works for contenteditables.
