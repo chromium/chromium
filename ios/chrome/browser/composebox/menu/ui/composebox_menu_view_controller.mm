@@ -429,7 +429,7 @@ UIImage* IconForModel(ComposeboxModelOption option) {
   CHECK(_inputState);
   ComposeboxMenuItem* currentTabItem = [[ComposeboxMenuItem alloc]
       initWithTitle:l10n_util::GetNSString(
-                        IDS_IOS_COMPOSEBOX_MENU_CURRENT_TAB_ACTION)
+                        IDS_IOS_COMPOSEBOX_MENU_ADD_CURRENT_TAB_ACTION)
               image:DefaultSymbolWithPointSize(kGlobeSymbol,
                                                kSymbolActionPointSize)
                type:ComposeboxMenuItemType::kCurrentTab

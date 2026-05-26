@@ -1751,6 +1751,9 @@
         =1 {Add up to 1 tab}
         other {Add up to {COUNT} tabs}}
       </message>
+      <message name="IDS_IOS_COMPOSEBOX_MENU_ADD_CURRENT_TAB_ACTION" desc="The contextual menu option for attaching the current tab. [iOS only].">
+        Add tab
+      </message>
       <message name="IDS_IOS_COMPOSEBOX_MENU_CURRENT_TAB_ACTION" desc="The contextual menu option for attaching the current tab. [iOS only].">
         Current tab
       </message>
