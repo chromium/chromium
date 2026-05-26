@@ -2874,7 +2874,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Prompt.ContextAttachment" enum="Boolean"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <improvement direction="HIGHER_IS_BETTER"/>
@@ -3007,7 +3007,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.Gemini.Session.Time" units="ms" expires_after="2026-09-20">
+<histogram name="IOS.Gemini.Session.Time" units="ms" expires_after="2026-11-22">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>

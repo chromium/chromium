@@ -5153,7 +5153,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="NetworkService.CorsURLLoaderFactory.CreateLoaderAndStart2.Duration"
-    units="microseconds" expires_after="2026-09-20">
+    units="microseconds" expires_after="2026-11-22">
   <owner>olivier@chromium.org</owner>
   <owner>cduvall@chromium.org</owner>
   <improvement direction="LOWER_IS_BETTER"/>

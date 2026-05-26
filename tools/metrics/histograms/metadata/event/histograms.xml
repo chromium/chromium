@@ -183,7 +183,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.GestureScrollEnd.BrowserCompositorFrame.Count"
-    units="counts" expires_after="2026-09-20">
+    units="counts" expires_after="2026-11-22">
   <owner>peilinwang@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
@@ -691,7 +691,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Event.ScrollJank.DelayedFramesPercentage4.PerScroll" units="%"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>petrcermak@chromium.org</owner>
   <owner>kartarsingh@google.com</owner>
   <owner>jonross@chromium.org</owner>

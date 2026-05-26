@@ -4738,7 +4738,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.TemplateUrl.DBRefresh.UnmatchedDefaultSearchCount"
-    units="count" expires_after="2026-09-20">
+    units="count" expires_after="2026-11-22">
   <owner>dgn@google.com</owner>
   <owner>ender@google.com</owner>
   <owner>chrome-regionalcapabiltiies@google.com</owner>

@@ -1011,7 +1011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.DataChannelCounters" enum="DataChannelCounters"
-    expires_after="2026-09-20">
+    expires_after="2026-11-22">
   <owner>orphis@chromium.org</owner>
   <owner>toprice@chromium.org</owner>
   <summary>

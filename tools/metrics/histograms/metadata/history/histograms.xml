@@ -2775,7 +2775,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.URLRowAddedAsHidden" enum="Boolean"
-    expires_after="2026-09-19">
+    expires_after="2026-11-22">
   <owner>svend@chromium.org</owner>
   <owner>kyraseevers@chromium.org</owner>
   <summary>
