@@ -315,6 +315,7 @@ source_set("unit_tests") {
     "zaura_shell_unittest.cc",
     "zcr_remote_shell_impl_unittest.cc",
     "zcr_remote_shell_unittest.cc",
+    "zxdg_output_manager_unittest.cc",
   ]
 
   deps = [
