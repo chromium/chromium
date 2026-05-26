@@ -353,12 +353,12 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
 #include "chrome/browser/enterprise/webstore/features.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"  // nogncheck
 #include "chrome/browser/glic/suggestions/contextual_cueing_features.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
@@ -1542,14 +1542,6 @@ const FeatureEntry::Choice kContextualSuggestionsUiImprovementsChoices[] = {
      "OpenLensActionUITweaks"},
 };
 
-const FeatureEntry::FeatureParam kComposeboxNextThreadsRail[] = {
-    {"EnableThreadsRail", "true"},
-};
-
-const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
-    {"- With Threads Rail", kComposeboxNextThreadsRail, nullptr},
-};
-
 const FeatureEntry::FeatureParam kNtpNextAllowDisablement[] = {
     {"NtpNextDisablementContextMenuParam", "true"},
 };
@@ -1600,6 +1592,20 @@ const FeatureEntry::FeatureVariation
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
         // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+
+const FeatureEntry::FeatureParam kComposeboxNextThreadsRail[] = {
+    {"EnableThreadsRail", "true"},
+};
+
+const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
+    {"- With Threads Rail", kComposeboxNextThreadsRail, nullptr},
+};
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kOmniboxToolbeltLensActionsZeroInputs[] = {
     {"KeepToolbeltAfterInput", "false"},
@@ -6994,6 +7000,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabFaviconChipsToCoinsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kTabFaviconChipsToCoins)},
 
+    {"ntp-composebox", flag_descriptions::kNtpComposeboxName,
+    flag_descriptions::kNtpComposeboxDescription, kOsDesktop,
+    FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_composebox::kNtpComposebox,
+                                kNtpComposeboxVariations,
+                                "NtpComposebox")},
+
+    {"ntp-realbox-next", flag_descriptions::kNtpRealboxNextName,
+    flag_descriptions::kNtpRealboxNextDescription, kOsDesktop,
+    FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxNext)},
+
 #if !BUILDFLAG(IS_ANDROID)
     {"ntp-alpha-background-collections",
      flag_descriptions::kNtpAlphaBackgroundCollectionsName,
@@ -7011,16 +7027,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kNtpCalendarModule,
                                     kNtpCalendarModuleVariations,
                                     "DesktopNtpModules")},
-
-    {"ntp-composebox", flag_descriptions::kNtpComposeboxName,
-     flag_descriptions::kNtpComposeboxDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_composebox::kNtpComposebox,
-                                    kNtpComposeboxVariations,
-                                    "NtpComposebox")},
-
-    {"ntp-realbox-next", flag_descriptions::kNtpRealboxNextName,
-     flag_descriptions::kNtpRealboxNextDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxNext)},
 
     {"ntp-realbox-cycling-placeholders",
      flag_descriptions::kNtpRealboxCyclingPlaceholdersName,
