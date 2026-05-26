@@ -277,6 +277,15 @@ bool IdentityManager::HasAccountWithRefreshTokenInPersistentErrorState(
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+bool IdentityManager::GenerateBindingKeyRegistrationToken(
+    std::string_view supported_algorithms,
+    std::string_view auth_code,
+    base::OnceCallback<void(
+        std::optional<signin::BindingKeyRegistrationTokenResult>)> callback) {
+  return token_service_->GenerateBindingKeyRegistrationToken(
+      supported_algorithms, auth_code, std::move(callback));
+}
+
 bool IdentityManager::HasAccountWithBoundRefreshToken(
     const CoreAccountId& account_id) const {
   return !token_service_->GetWrappedBindingKey(account_id).empty();

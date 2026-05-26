@@ -119,8 +119,9 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
     bool mtls_token_binding,
     SigninClient* signin_client,
     AccountReconcilor* account_reconcilor,
-    base::expected<raw_ref<signin::BindingKeyRegistrationTokenHelper>,
-                   TokenBindingOutcome> registration_token_helper_or_error,
+    signin::IdentityManager* identity_manager,
+    base::expected<std::string, TokenBindingOutcome>
+        supported_algorithms_or_error,
     DiceSigninSession* session)
     : gaia_id_(gaia_id),
       email_(email),
@@ -135,12 +136,12 @@ DiceResponseHandler::DiceTokenFetcher::DiceTokenFetcher(
   CHECK(session_);
   account_reconcilor_lock_ =
       std::make_unique<AccountReconcilor::Lock>(account_reconcilor);
-  if (registration_token_helper_or_error.has_value()) {
-    StartBindingKeyGeneration(registration_token_helper_or_error->get());
+  if (supported_algorithms_or_error.has_value()) {
+    StartBindingKeyGeneration(identity_manager, *supported_algorithms_or_error);
     // Wait until the binding key is generated before fetching a token.
     return;
   } else {
-    token_binding_outcome_ = registration_token_helper_or_error.error();
+    token_binding_outcome_ = supported_algorithms_or_error.error();
   }
   StartTokenFetch();
 }
@@ -207,20 +208,23 @@ void DiceResponseHandler::DiceTokenFetcher::StartTokenFetch() {
 }
 
 void DiceResponseHandler::DiceTokenFetcher::StartBindingKeyGeneration(
-    signin::BindingKeyRegistrationTokenHelper& registration_token_helper) {
+    signin::IdentityManager* identity_manager,
+    std::string_view supported_algorithms) {
   CHECK(
       switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
-  // `base::Unretained()` is safe because `DiceResponseHandler` guarantees that
-  // `registration_token_helper` outlives `this`.
-  registration_token_helper.GenerateForTokenBinding(
-      GaiaUrls::GetInstance()->oauth2_chrome_client_id(), authorization_code_,
-      GURL("https://accounts.google.com/accountmanager"),
+  bool started = identity_manager->GenerateBindingKeyRegistrationToken(
+      supported_algorithms, authorization_code_,
       base::BindOnce(&DiceTokenFetcher::OnRegistrationTokenGenerated,
                      base::Unretained(this)));
+  if (!started) {
+    token_binding_outcome_ = TokenBindingOutcome::kNotBoundNotSupported;
+    StartTokenFetch();
+    return;
+  }
 }
 
 void DiceResponseHandler::DiceTokenFetcher::OnRegistrationTokenGenerated(
-    std::optional<signin::BindingKeyRegistrationTokenHelper::Result> result) {
+    std::optional<signin::BindingKeyRegistrationTokenResult> result) {
   CHECK(
       switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
   if (result.has_value()) {
@@ -305,17 +309,15 @@ void DiceResponseHandler::DiceSigninSession::FetchTokenForAccount(
     return;
   }
 
-  base::expected<raw_ref<signin::BindingKeyRegistrationTokenHelper>,
-                 TokenBindingOutcome>
-      registration_token_helper_or_error =
-          handler_->MaybeGetBindingRegistrationTokenHelper(
-              account.supported_algorithms_for_token_binding);
+  base::expected<std::string, TokenBindingOutcome>
+      supported_algorithms_or_error = handler_->CheckTokenBindingEligibility(
+          account.supported_algorithms_for_token_binding);
 
   token_fetchers_.push_back(std::make_unique<DiceTokenFetcher>(
       account.account_info.gaia_id, account.account_info.email,
       account.authorization_code, account.mtls_token_binding,
       handler_->signin_client_, handler_->account_reconcilor_,
-      registration_token_helper_or_error, this));
+      handler_->identity_manager_, supported_algorithms_or_error, this));
 }
 
 void DiceResponseHandler::DiceSigninSession::DeleteFetcher(
@@ -452,14 +454,11 @@ DiceResponseHandler::DiceResponseHandler(
     SigninClient* signin_client,
     signin::IdentityManager* identity_manager,
     AccountReconcilor* account_reconcilor,
-    AboutSigninInternals* about_signin_internals,
-    RegistrationTokenHelperFactory registration_token_helper_factory)
+    AboutSigninInternals* about_signin_internals)
     : signin_client_(signin_client),
       identity_manager_(identity_manager),
       account_reconcilor_(account_reconcilor),
-      about_signin_internals_(about_signin_internals),
-      registration_token_helper_factory_(
-          std::move(registration_token_helper_factory)) {
+      about_signin_internals_(about_signin_internals) {
   DCHECK(signin_client_);
   DCHECK(identity_manager_);
   DCHECK(account_reconcilor_);
@@ -555,14 +554,6 @@ void DiceResponseHandler::SetTaskRunner(
   task_runner_ = std::move(task_runner);
 }
 
-void DiceResponseHandler::
-    SetRegistrationTokenHelperFactoryForTesting(  // IN-TEST
-        RegistrationTokenHelperFactory factory) {
-  CHECK(
-      switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
-  registration_token_helper_factory_ = std::move(factory);
-}
-
 void DiceResponseHandler::ProcessEnableSyncHeader(
     const GaiaId& gaia_id,
     const std::string& email,
@@ -627,10 +618,6 @@ void DiceResponseHandler::ProcessDiceSignoutHeader(
     }
   }
 
-  if (sessions_.empty()) {
-    registration_token_helper_.reset();
-  }
-
   if (!primary_account_signed_out) {
     RecordDiceResponseHeader(kSignoutSecondary);
   }
@@ -641,26 +628,19 @@ void DiceResponseHandler::DeleteSession(DiceSigninSession* session) {
       sessions_,
       [session](const auto& current) { return current.get() == session; });
   CHECK_EQ(delete_count, 1U);
-
-  if (sessions_.empty()) {
-    registration_token_helper_.reset();
-  }
 }
 
-base::expected<raw_ref<signin::BindingKeyRegistrationTokenHelper>,
-               DiceResponseHandler::TokenBindingOutcome>
-DiceResponseHandler::MaybeGetBindingRegistrationTokenHelper(
+base::expected<std::string, DiceResponseHandler::TokenBindingOutcome>
+DiceResponseHandler::CheckTokenBindingEligibility(
     std::string_view supported_algorithms) {
-  if (registration_token_helper_factory_.is_null()) {
+  if (!switches::IsChromeRefreshTokenBindingEnabled(
+          signin_client_->GetPrefs())) {
     return base::unexpected(TokenBindingOutcome::kNotBoundNotSupported);
   }
 
   if (supported_algorithms.empty()) {
     return base::unexpected(TokenBindingOutcome::kNotBoundNotEligible);
   }
-
-  CHECK(
-      switches::IsChromeRefreshTokenBindingEnabled(signin_client_->GetPrefs()));
 
   if (!identity_manager_->AreRefreshTokensLoaded()) {
     // We cannot determine the right binding key to reuse if tokens haven't been
@@ -672,25 +652,5 @@ DiceResponseHandler::MaybeGetBindingRegistrationTokenHelper(
         TokenBindingOutcome::kNotBoundRefreshTokensNotLoaded);
   }
 
-  // If `registration_token_helper_` doesn't exist, create it.
-  if (!registration_token_helper_) {
-    std::vector<uint8_t> wrapped_binding_key_to_reuse =
-        identity_manager_->GetWrappedBindingKey();
-    if (!wrapped_binding_key_to_reuse.empty()) {
-      // Ignore the value of `supported_algorithms` in favor of an existing
-      // binding key.
-      registration_token_helper_ = registration_token_helper_factory_.Run(
-          std::move(wrapped_binding_key_to_reuse));
-    } else {
-      registration_token_helper_ = registration_token_helper_factory_.Run(
-          signin::ParseSignatureAlgorithmList(supported_algorithms));
-    }
-  }
-
-  // If `registration_token_helper_` was reused, its supported algorithm
-  // list may mismatch `supported_algorithms`. We ignore this because it's more
-  // important to reuse the same key.
-  CHECK(registration_token_helper_);
-  return raw_ref<signin::BindingKeyRegistrationTokenHelper>(
-      *registration_token_helper_);
+  return std::string(supported_algorithms);
 }

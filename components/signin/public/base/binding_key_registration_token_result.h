@@ -15,6 +15,10 @@ namespace signin {
 
 // A struct containing the necessary pieces of data for binding a refresh token
 // to a token binding key.
+//
+// TODO(crbug.com/516196445): move this struct into
+// `//components/signin/public/identity_manager/` once
+// `binding_key_registration_token_helper.h` can also be moved.
 struct BindingKeyRegistrationTokenResult {
   unexportable_keys::UnexportableKeyId binding_key_id;
   std::vector<uint8_t> wrapped_binding_key;

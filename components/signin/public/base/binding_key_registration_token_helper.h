@@ -41,6 +41,10 @@ namespace signin {
 //
 // TODO(alexilin): support a timeout aborting the token generation if it takes
 // too long.
+//
+// TODO(crbug.com/516196445): move this class into
+// `//components/signin/internal/identity_manager/` once it's no longer used
+// outside of the signin component.
 class BindingKeyRegistrationTokenHelper {
  public:
   // Initialization parameter indicating which binding key should be used for

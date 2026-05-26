@@ -29,7 +29,7 @@
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/public/base/binding_key_registration_token_helper.h"
+#include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -51,7 +51,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using signin::BindingKeyRegistrationTokenHelper;
 using signin::DiceAction;
 using signin::DiceResponseParams;
 using testing::_;
@@ -65,10 +64,6 @@ constexpr char kAuthorizationCode[] = "authorization_code";
 constexpr char kEmail[] = "test@email.com";
 constexpr int kSessionIndex = 42;
 constexpr char kEligibleForTokenBinding[] = "ES256 RS256";
-
-constexpr crypto::SignatureVerifier::SignatureAlgorithm
-    kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256,
-                               crypto::SignatureVerifier::RSA_PKCS1_SHA256};
 
 constexpr char kTokenBindingOutcomeHistogram[] =
     "Signin.DiceTokenBindingOutcome";
@@ -117,34 +112,6 @@ class DiceTestSigninClient : public TestSigninClient, public GaiaAuthConsumer {
 
  private:
   std::queue<raw_ptr<GaiaAuthConsumer>> consumers_;
-};
-
-class MockBindingKeyRegistrationTokenHelper
-    : public BindingKeyRegistrationTokenHelper {
- public:
-  MockBindingKeyRegistrationTokenHelper()
-      : BindingKeyRegistrationTokenHelper(
-            fake_unexportable_key_service_,
-            std::vector<crypto::SignatureVerifier::SignatureAlgorithm>{}) {}
-
-  ~MockBindingKeyRegistrationTokenHelper() override = default;
-
-  MOCK_METHOD(void,
-              GenerateForSessionBinding,
-              (std::string_view challenge,
-               const GURL& registration_url,
-               base::OnceCallback<void(std::optional<Result>)> callback),
-              (override));
-  MOCK_METHOD(void,
-              GenerateForTokenBinding,
-              (std::string_view client_id,
-               std::string_view auth_code,
-               const GURL& registration_url,
-               base::OnceCallback<void(std::optional<Result>)> callback),
-              (override));
-
- private:
-  unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service_;
 };
 
 class DiceResponseHandlerTest : public testing::Test,
@@ -199,9 +166,7 @@ class DiceResponseHandlerTest : public testing::Test,
 
     dice_response_handler_ = std::make_unique<DiceResponseHandler>(
         &signin_client_, identity_test_env_.identity_manager(),
-        account_reconcilor_.get(), about_signin_internals_.get(),
-        /*registration_token_helper_factory=*/
-        DiceResponseHandler::RegistrationTokenHelperFactory());
+        account_reconcilor_.get(), about_signin_internals_.get());
   }
 
   ~DiceResponseHandlerTest() override {
@@ -277,40 +242,15 @@ class DiceResponseHandlerTest : public testing::Test,
       const CoreAccountId& primary_account,
       bool invalid_primary_account);
 
-  void EnableRegistrationTokenHelperFactory() {
-    dice_response_handler_->SetRegistrationTokenHelperFactoryForTesting(
-        mock_registration_token_helper_factory_.Get());
-  }
-
-  void ExpectRegistrationTokenHelperCreated(
-      const std::vector<std::string>& expected_authorization_codes,
-      const BindingKeyRegistrationTokenHelper::KeyInitParam&
-          expected_key_init_param) {
-    EXPECT_CALL(mock_registration_token_helper_factory_,
-                Run(expected_key_init_param))
-        .WillOnce(
-            Return(BuildRegistrationTokenHelper(expected_authorization_codes)));
-  }
-
-  std::unique_ptr<BindingKeyRegistrationTokenHelper>
-  BuildRegistrationTokenHelper(
-      const std::vector<std::string>& expected_authorization_codes) {
-    auto helper =
-        std::make_unique<StrictMock<MockBindingKeyRegistrationTokenHelper>>();
-    for (const auto& authorization_code : expected_authorization_codes) {
-      EXPECT_CALL(*helper, GenerateForTokenBinding(_, authorization_code, _, _))
-          .WillOnce(
-              MoveArg<3>(&binding_registration_callbacks_[authorization_code]));
-    }
-    return helper;
+  void EnableTokenBindingRegistration() {
+    identity_test_env_.EnableTokenBindingRegistration();
   }
 
   void SimulateRegistrationTokenHelperResult(
       const std::string& authorization_code,
-      std::optional<BindingKeyRegistrationTokenHelper::Result> result) {
-    auto node = binding_registration_callbacks_.extract(authorization_code);
-    ASSERT_FALSE(node.empty());
-    std::move(node.mapped()).Run(std::move(result));
+      std::optional<signin::BindingKeyRegistrationTokenResult> result) {
+    identity_test_env_.IssueTokenBindingRegistrationTokenForAuthCode(
+        authorization_code, std::move(result));
   }
 
   // AccountReconcilor::Observer:
@@ -339,13 +279,6 @@ class DiceResponseHandlerTest : public testing::Test,
   std::string auth_error_email_;
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableChromeRefreshTokenBinding};
-  std::map<std::string,
-           base::OnceCallback<void(
-               std::optional<BindingKeyRegistrationTokenHelper::Result>)>>
-      binding_registration_callbacks_;
-  StrictMock<
-      base::MockCallback<DiceResponseHandler::RegistrationTokenHelperFactory>>
-      mock_registration_token_helper_factory_;
   base::HistogramTester histogram_tester_;
 };
 
@@ -751,7 +684,7 @@ TEST_P(DiceResponseHandlerParamTest,
 // Checks that a SIGNIN action triggers a token exchange request.
 TEST_P(DiceResponseHandlerParamTest, SigninWithBoundToken_PrimaryConnected) {
   const size_t account_count = GetAccountCount();
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   DiceResponseParams dice_params =
       MakeDiceParams(DiceAction::SIGNIN, account_count);
 
@@ -767,8 +700,6 @@ TEST_P(DiceResponseHandlerParamTest, SigninWithBoundToken_PrimaryConnected) {
     EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(id));
   }
 
-  ExpectRegistrationTokenHelperCreated(authorization_codes,
-                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -780,7 +711,7 @@ TEST_P(DiceResponseHandlerParamTest, SigninWithBoundToken_PrimaryConnected) {
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   for (const auto& code : authorization_codes) {
     SimulateRegistrationTokenHelperResult(
-        code, BindingKeyRegistrationTokenHelper::Result(
+        code, signin::BindingKeyRegistrationTokenResult(
                   unexportable_keys::UnexportableKeyId(), kWrappedKey,
                   "test_registration_token"));
   }
@@ -816,7 +747,7 @@ TEST_P(DiceResponseHandlerParamTest, SigninWithBoundToken_PrimaryConnected) {
 // Checks that no token binding attempt is made when an account is ineligible
 // for token binding.
 TEST_F(DiceResponseHandlerTest, SigninIneligibleForTokenBinding) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   DiceResponseParams dice_params;
   DiceResponseParams::SigninInfo* signin_info =
       &dice_params.data.emplace<DiceResponseParams::SigninInfo>();
@@ -851,7 +782,7 @@ TEST_F(DiceResponseHandlerTest, SigninIneligibleForTokenBinding) {
 
 // Checks that token binding is skipped if refresh tokens are not loaded yet.
 TEST_F(DiceResponseHandlerTest, SigninWithUnloadedTokensDoesNotBind) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   identity_test_env_.ResetToAccountsNotYetLoadedFromDiskState();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
@@ -884,7 +815,7 @@ TEST_F(DiceResponseHandlerTest, SigninWithUnloadedTokensDoesNotBind) {
 // Checks that Chrome will discard the binding key if the server didn't accept
 // the binding key.
 TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto* account = dice_params.signin_info()->GetInitiator();
   ASSERT_TRUE(account);
@@ -892,8 +823,6 @@ TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
       account->account_info.gaia_id, account->account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
   const std::string authorization_code = account->authorization_code;
-  ExpectRegistrationTokenHelperCreated({authorization_code},
-                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -903,7 +832,7 @@ TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
   // Simulate successful token generation.
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
-      authorization_code, BindingKeyRegistrationTokenHelper::Result(
+      authorization_code, signin::BindingKeyRegistrationTokenResult(
                               unexportable_keys::UnexportableKeyId(),
                               kWrappedKey, "test_registration_token"));
 
@@ -926,7 +855,7 @@ TEST_F(DiceResponseHandlerTest, SigninServerRejectedBinding) {
 }
 
 TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   identity_test_env_.MakeAccountAvailable(
       signin::AccountAvailabilityOptionsBuilder()
@@ -940,7 +869,6 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
   CoreAccountId account_id = identity_manager()->PickAccountIdForAccount(
       account->account_info.gaia_id, account->account_info.email);
   const std::string authorization_code = account->authorization_code;
-  ExpectRegistrationTokenHelperCreated({authorization_code}, kWrappedKey);
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -950,7 +878,7 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
   // Simulate successful token generation.
   SimulateRegistrationTokenHelperResult(
-      authorization_code, BindingKeyRegistrationTokenHelper::Result(
+      authorization_code, signin::BindingKeyRegistrationTokenResult(
                               unexportable_keys::UnexportableKeyId(),
                               kWrappedKey, "test_registration_token"));
   // Check that a GaiaAuthFetcher has been created.
@@ -966,7 +894,7 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOtherTokenIsBound) {
 }
 
 TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOneTokenBoundOneNonBound) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   identity_test_env_.MakeAccountAvailable("nonbound@gmail.com");
   identity_test_env_.MakeAccountAvailable(
@@ -976,29 +904,23 @@ TEST_F(DiceResponseHandlerTest, ReuseBindingKeyOneTokenBoundOneNonBound) {
           .Build("bound@email.com"));
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  ExpectRegistrationTokenHelperCreated(
-      {dice_params.signin_info()->GetInitiator()->authorization_code},
-      kWrappedKey);
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
 }
 
 TEST_F(DiceResponseHandlerTest, NewBindingKeyOtherTokenIsNotBound) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   identity_test_env_.MakeAccountAvailable("other@email.com");
 
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
-  ExpectRegistrationTokenHelperCreated(
-      {dice_params.signin_info()->GetInitiator()->authorization_code},
-      base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
 }
 
 TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   auto account_id = [&](const DiceResponseParams& dice_params) {
     const auto* initiator = dice_params.signin_info()->GetInitiator();
     return identity_manager()->PickAccountIdForAccount(
@@ -1019,9 +941,6 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   std::string code_2 = authorization_code(dice_params_2);
   CoreAccountId id_1 = account_id(dice_params_1);
   CoreAccountId id_2 = account_id(dice_params_2);
-
-  ExpectRegistrationTokenHelperCreated({code_1, code_2},
-                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params_1),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -1035,13 +954,13 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
   // been created.
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
-      code_2, BindingKeyRegistrationTokenHelper::Result(
+      code_2, signin::BindingKeyRegistrationTokenResult(
                   unexportable_keys::UnexportableKeyId(), kWrappedKey,
                   "test_registration_token"));
   GaiaAuthConsumer* consumer_2 = signin_client_.GetAndClearConsumer();
   ASSERT_THAT(consumer_2, testing::NotNull());
   SimulateRegistrationTokenHelperResult(
-      code_1, BindingKeyRegistrationTokenHelper::Result(
+      code_1, signin::BindingKeyRegistrationTokenResult(
                   unexportable_keys::UnexportableKeyId(), kWrappedKey,
                   "other_registration_token"));
   GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
@@ -1065,7 +984,7 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersReuseRegistrationTokenHelper) {
 }
 
 TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   auto authorization_code = [&](const DiceResponseParams& dice_params) {
     return dice_params.signin_info()->GetInitiator()->authorization_code;
   };
@@ -1078,9 +997,6 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
                            "other_authorization_code", false, std::string(),
                            false});
   std::string eligible_code = authorization_code(eligible_dice_params_);
-
-  ExpectRegistrationTokenHelperCreated({eligible_code},
-                                       base::ToVector(kAcceptableAlgorithms));
 
   dice_response_handler_->ProcessDiceHeader(
       std::move(eligible_dice_params_),
@@ -1098,7 +1014,7 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
   // been created.
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
-      eligible_code, BindingKeyRegistrationTokenHelper::Result(
+      eligible_code, signin::BindingKeyRegistrationTokenResult(
                          unexportable_keys::UnexportableKeyId(), kWrappedKey,
                          "test_registration_token"));
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::NotNull());
@@ -1106,7 +1022,7 @@ TEST_F(DiceResponseHandlerTest, TwoFetchersOneEligible) {
 
 TEST_F(DiceResponseHandlerTest,
        NewRegistrationTokenHelperCreatedForConsecutiveFetchers) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   auto account_id = [&](const DiceResponseParams& dice_params) {
     const auto* initiator = dice_params.signin_info()->GetInitiator();
     return identity_manager()->PickAccountIdForAccount(
@@ -1119,9 +1035,6 @@ TEST_F(DiceResponseHandlerTest,
   DiceResponseParams dice_params_1 = MakeDiceParams(DiceAction::SIGNIN);
   std::string code_1 = authorization_code(dice_params_1);
   CoreAccountId id_1 = account_id(dice_params_1);
-
-  ExpectRegistrationTokenHelperCreated({code_1},
-                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params_1),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
@@ -1130,7 +1043,7 @@ TEST_F(DiceResponseHandlerTest,
   ASSERT_THAT(signin_client_.GetAndClearConsumer(), testing::IsNull());
   const std::vector<uint8_t> kWrappedKey = {1, 2, 3};
   SimulateRegistrationTokenHelperResult(
-      code_1, BindingKeyRegistrationTokenHelper::Result(
+      code_1, signin::BindingKeyRegistrationTokenResult(
                   unexportable_keys::UnexportableKeyId(), kWrappedKey,
                   "test_registration_token"));
   GaiaAuthConsumer* consumer_1 = signin_client_.GetAndClearConsumer();
@@ -1151,15 +1064,13 @@ TEST_F(DiceResponseHandlerTest,
   signin_info_2->AddAccount(
       {GetDiceResponseParamsAccountInfo("other@email.com"),
        "other_authorization_code", false, kEligibleForTokenBinding, false});
-  ExpectRegistrationTokenHelperCreated({authorization_code(dice_params_2)},
-                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params_2),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
 }
 
 TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
-  EnableRegistrationTokenHelperFactory();
+  EnableTokenBindingRegistration();
   DiceResponseParams dice_params = MakeDiceParams(DiceAction::SIGNIN);
   const auto* signin_info = dice_params.signin_info();
   const auto* account = signin_info->GetInitiator();
@@ -1168,8 +1079,6 @@ TEST_F(DiceResponseHandlerTest, SigninWithFailedBoundTokenAttempt) {
       account->account_info.gaia_id, account->account_info.email);
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id));
   const std::string authorization_code = account->authorization_code;
-  ExpectRegistrationTokenHelperCreated({authorization_code},
-                                       base::ToVector(kAcceptableAlgorithms));
   dice_response_handler_->ProcessDiceHeader(
       std::move(dice_params),
       std::make_unique<TestProcessDiceHeaderDelegate>(this));
