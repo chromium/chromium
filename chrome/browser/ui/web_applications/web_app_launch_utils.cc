@@ -216,8 +216,6 @@ base::DictValue ToDebugDict(const apps::AppLaunchParams& params) {
   value.Set("container", static_cast<int>(params.container));
   value.Set("disposition", static_cast<int>(params.disposition));
   value.Set("override_url", params.override_url.spec());
-  value.Set("override_bounds", params.override_bounds.ToString());
-  value.Set("override_app_name", params.override_app_name);
   value.Set("restore_id", params.restore_id);
 #if BUILDFLAG(IS_WIN)
   value.Set("command_line",

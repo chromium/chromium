@@ -473,18 +473,14 @@ Browser* CreateApplicationWindow(Profile* profile,
   const Extension* const extension = GetExtension(profile, params);
 
   std::string app_name;
-  if (!params.override_app_name.empty()) {
-    app_name = params.override_app_name;
-  } else if (extension) {
+  if (extension) {
     app_name = web_app::GenerateApplicationNameFromAppId(extension->id());
   } else {
     app_name = web_app::GenerateApplicationNameFromURL(url);
   }
 
   gfx::Rect initial_bounds;
-  if (!params.override_bounds.IsEmpty()) {
-    initial_bounds = params.override_bounds;
-  } else if (extension) {
+  if (extension) {
     initial_bounds.set_width(
         extensions::AppLaunchInfo::GetLaunchWidth(extension));
     initial_bounds.set_height(
