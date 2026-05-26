@@ -9877,8 +9877,7 @@ const CSSValue* TextIndent::ParseSingleValue(
     }
     break;
   }
-  if (!hanging && !each_line &&
-      RuntimeEnabledFeatures::CssTextIndentAsPrimitiveEnabled()) {
+  if (!hanging && !each_line) {
     return length_percentage;
   }
   if (!length_percentage) {
@@ -9903,7 +9902,7 @@ const CSSValue* TextIndent::CSSValueFromComputedStyleInternal(
   const CSSValue* length = ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
       style.TextIndent(), style);
   const TextIndentFlags flags = style.GetTextIndentFlags();
-  if (!flags && RuntimeEnabledFeatures::CssTextIndentAsPrimitiveEnabled()) {
+  if (!flags) {
     return length;
   }
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();

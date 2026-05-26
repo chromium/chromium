@@ -2005,10 +2005,6 @@
       status: "stable",
     },
     {
-      name: "CssTextIndentAsPrimitive",
-      status: "stable",
-    },
-    {
       // crbug.com/1463890, crbug.com/1463891: CSS `text-spacing` shorthand
       name: "CSSTextSpacing",
       status: "test",
