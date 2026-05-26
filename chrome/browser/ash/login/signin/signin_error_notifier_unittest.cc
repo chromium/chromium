@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/public/cpp/token_handle_store.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
@@ -299,8 +299,8 @@ TEST_F(SigninErrorNotifierTest, ChildSecondaryAccountMigrationTest) {
       display_service_->GetNotification(kSecondaryAccountErrorNotificationId));
 
   // Mark secondary account as migrated, message should be different.
-  profile()->GetPrefs()->SetBoolean(prefs::kEduCoexistenceArcMigrationCompleted,
-                                    true);
+  profile()->GetPrefs()->SetBoolean(
+      ash::prefs::kEduCoexistenceArcMigrationCompleted, true);
 
   // Invalidate the secondary account.
   SetAuthError(

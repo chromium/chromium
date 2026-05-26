@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -92,7 +92,7 @@ bool IsSecondaryEduAccountMigratedForChildUser(Profile* profile,
   }
 
   return profile->GetPrefs()->GetBoolean(
-      prefs::kEduCoexistenceArcMigrationCompleted);
+      ash::prefs::kEduCoexistenceArcMigrationCompleted);
 }
 
 std::unique_ptr<message_center::Notification>
@@ -247,8 +247,8 @@ bool SigninErrorNotifier::ShouldIgnoreSyncErrorsForTesting() {
 
 // static
 void SigninErrorNotifier::RegisterPrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kEduCoexistenceArcMigrationCompleted,
-                                false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kEduCoexistenceArcMigrationCompleted, false);
 }
 
 void SigninErrorNotifier::Shutdown() {

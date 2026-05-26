@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/session/guest_session_confirmation_dialog.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ui/webui/ash/edu_coexistence/edu_coexistence_state_tracker.h"
 #include "chrome/browser/ui/webui/signin/ash/signin_helper.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/version/version_loader.h"
 #include "components/account_manager_core/account.h"
@@ -217,8 +217,8 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
     if (success) {
       // The EDU account has been added/re-authenticated. Mark migration to
       // ARC++ as completed.
-      pref_service_->SetBoolean(::prefs::kEduCoexistenceArcMigrationCompleted,
-                                true);
+      pref_service_->SetBoolean(
+          ash::prefs::kEduCoexistenceArcMigrationCompleted, true);
 
       UpsertAccount(refresh_token);
     } else {

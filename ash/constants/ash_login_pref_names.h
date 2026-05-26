@@ -239,6 +239,14 @@ inline constexpr char kSecurityTokenSessionNotificationSeconds[] =
 inline constexpr char kSecurityTokenSessionNotificationScheduledDomain[] =
     "security_token_session_notification_scheduled";
 
+// Boolean pref indicating whether the supervised user has migrated EDU
+// secondary account to ARC++.
+inline constexpr char kEduCoexistenceArcMigrationCompleted[] =
+    "account_manager.edu_coexistence_arc_migration_completed";
+
+// Preference storing Easy Unlock pairing data.
+inline constexpr char kEasyUnlockPairing[] = "easy_unlock.pairing";
+
 }  // namespace ash::prefs
 
 #endif  // ASH_CONSTANTS_ASH_LOGIN_PREF_NAMES_H_

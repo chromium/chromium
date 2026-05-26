@@ -593,11 +593,6 @@ inline constexpr char kUpdateRequiredWarningPeriod[] =
 inline constexpr char kSystemProxyUserTrafficHostAndPort[] =
     "system_proxy.user_traffic_host_and_port";
 
-// Boolean pref indicating whether the supervised user has migrated EDU
-// secondary account to ARC++.
-inline constexpr char kEduCoexistenceArcMigrationCompleted[] =
-    "account_manager.edu_coexistence_arc_migration_completed";
-
 // A dictionary storing the string representation of
 // chromeos::settings::mojom::Setting IDs for the unique OS Settings changed.
 // Implicitly stores the total count of the unique OS Settings changed by each
@@ -1128,9 +1123,6 @@ inline constexpr char kGCMProductCategoryForSubtypes[] =
 
 // Whether a user is allowed to use Easy Unlock.
 inline constexpr char kEasyUnlockAllowed[] = "easy_unlock.allowed";
-
-// Preference storing Easy Unlock pairing data.
-inline constexpr char kEasyUnlockPairing[] = "easy_unlock.pairing";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Used to indicate whether or not the toolbar redesign bubble has been shown

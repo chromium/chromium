@@ -8,6 +8,7 @@
 #include <optional>
 #include <utility>
 
+#include "ash/constants/ash_login_pref_names.h"
 #include "ash/public/cpp/smartlock_state.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -31,7 +32,6 @@
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
@@ -101,7 +101,7 @@ SmartLockService* SmartLockService::GetForUser(const user_manager::User& user) {
 // static
 void SmartLockService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(prefs::kEasyUnlockPairing);
+  registry->RegisterDictionaryPref(ash::prefs::kEasyUnlockPairing);
   proximity_auth::ProximityAuthProfilePrefManager::RegisterPrefs(registry);
 }
 
