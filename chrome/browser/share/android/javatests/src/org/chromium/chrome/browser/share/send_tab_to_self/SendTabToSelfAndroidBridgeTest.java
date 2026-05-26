@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -24,18 +25,33 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.messages.ManagedMessageDispatcher;
+import org.chromium.components.messages.MessageBannerProperties;
+import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
+import org.chromium.components.messages.MessagesFactory;
+import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.sync_device_info.FormFactor;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Tests for SendTabToSelfAndroidBridge */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -253,5 +269,67 @@ public class SendTabToSelfAndroidBridgeTest {
         confirmationCallbackCaptor.getValue().onResult(SendTabToSelfResult.SUCCESS);
 
         Assert.assertEquals(0, ShadowToast.shownToastCount());
+    }
+
+    @Test
+    @SmallTest
+    // Tests that the message banner (which is shown tabs are auto-opened in the background) is
+    // shown correctly and that the primary action callback is triggered correctly.
+    public void testShowMessageBanner() {
+        // Set up mocks for the window and messaging infrastructure needed to enqueue a banner.
+        WebContents webContents = mock(WebContents.class);
+        WindowAndroid windowAndroid = mock(WindowAndroid.class);
+        ManagedMessageDispatcher messageDispatcher = mock(ManagedMessageDispatcher.class);
+
+        when(windowAndroid.getUnownedUserDataHost()).thenReturn(new UnownedUserDataHost());
+        when(webContents.getTopLevelNativeWindow()).thenReturn(windowAndroid);
+        MessagesFactory.attachMessageDispatcher(windowAndroid, messageDispatcher);
+
+        // Trigger the banner display logic.
+        SendTabToSelfAndroidBridge.showMessageBanner(webContents, "Pixel 10");
+
+        // Capture the enqueued PropertyModel to verify its content and action callbacks.
+        ArgumentCaptor<PropertyModel> messageCaptor = ArgumentCaptor.forClass(PropertyModel.class);
+        verify(messageDispatcher)
+                .enqueueMessage(
+                        messageCaptor.capture(),
+                        eq(webContents),
+                        eq(MessageScopeType.WEB_CONTENTS),
+                        eq(false));
+
+        // Verify the static properties of the banner.
+        PropertyModel model = messageCaptor.getValue();
+        Assert.assertEquals(
+                MessageIdentifier.SEND_TAB_TO_SELF,
+                model.get(MessageBannerProperties.MESSAGE_IDENTIFIER));
+        Assert.assertEquals("Links received", model.get(MessageBannerProperties.TITLE));
+        Assert.assertEquals("From Pixel 10", model.get(MessageBannerProperties.DESCRIPTION));
+        Assert.assertEquals("Open", model.get(MessageBannerProperties.PRIMARY_BUTTON_TEXT));
+        Assert.assertEquals(
+                R.drawable.send_tab, model.get(MessageBannerProperties.ICON_RESOURCE_ID));
+
+        // Verify the ON_PRIMARY_ACTION callback behavior.
+        Supplier<Integer> onPrimaryAction = model.get(MessageBannerProperties.ON_PRIMARY_ACTION);
+
+        // Set up a mock ChromeTabbedActivity and LayoutManager to verify that the action attempts
+        // to open the tab switcher.
+        ChromeTabbedActivity tabbedActivity = mock(ChromeTabbedActivity.class);
+        LayoutManagerChrome layoutManager = mock(LayoutManagerChrome.class);
+        when(tabbedActivity.getLayoutManager()).thenReturn(layoutManager);
+        // Register the mock activity with ApplicationStatus so getLastTrackedFocusedActivity()
+        // returns it.
+        ApplicationStatus.onStateChangeForTesting(tabbedActivity, ActivityState.CREATED);
+
+        // Execute the primary action.
+        int result = onPrimaryAction.get();
+
+        // Verify that the banner dismisses immediately and showLayout is called to show the tab
+        // switcher.
+        Assert.assertEquals(PrimaryActionClickBehavior.DISMISS_IMMEDIATELY, result);
+        verify(layoutManager).showLayout(LayoutType.TAB_SWITCHER, true);
+
+        // Clean up global static state.
+        ApplicationStatus.onStateChangeForTesting(tabbedActivity, ActivityState.DESTROYED);
+        MessagesFactory.detachMessageDispatcher(messageDispatcher);
     }
 }

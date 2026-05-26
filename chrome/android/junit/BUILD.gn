@@ -1133,6 +1133,7 @@ if (is_android) {
       ":chrome_junit_tests_helper",
       "//chrome/browser/ui/android/pdf:pdf_utils_java",
       "//chrome/browser/ui/android/toolbar:adaptive_features_java",
+      "//components/messages/android:factory_java",
       "//components/paint_preview/common/mojom:mojom_java",
       "//components/strings:components_strings_grd",
     ]

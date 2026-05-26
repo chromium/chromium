@@ -186,6 +186,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".SaveCardFailure"/>
   <variant name=".SavePassword"/>
   <variant name=".SaveUpdateEntity"/>
+  <variant name=".SendTabToSelf"/>
   <variant name=".SharedHighlighting"/>
   <variant name=".SigninSurvey"/>
   <variant name=".SyncError"/>

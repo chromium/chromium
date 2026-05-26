@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/android/send_tab_to_self/send_tab_to_self_android_bridge.h"
+
 #include <string>
 #include <vector>
 
@@ -160,6 +162,14 @@ JNI_SendTabToSelfAndroidBridge_GetEntryPointDisplayReason(
   // hidden entry point doesn't seem worth it after all. Make that just another
   // value in the enum, sparing the complexity here.
   return jni_zero::ToJavaInteger(env, static_cast<int32_t>(*reason));
+}
+
+void ShowMessageBanner(content::WebContents* web_contents,
+                       std::string_view device_name) {
+  JNIEnv* const env = base::android::AttachCurrentThread();
+  Java_SendTabToSelfAndroidBridge_showMessageBanner(
+      env, web_contents->GetJavaWebContents(),
+      base::android::ConvertUTF8ToJavaString(env, device_name));
 }
 
 }  // namespace send_tab_to_self

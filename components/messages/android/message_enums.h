@@ -158,6 +158,7 @@ enum class MessageIdentifier {
   SIGNIN_SURVEY = 68,
   EXTENSIONS_REQUEST_ACCESS = 69,
   KNOWN_INTERCEPTION_DISCLOSURE = 70,
+  SEND_TAB_TO_SELF = 71,
   // Insert new values before this line.
   COUNT
 };
