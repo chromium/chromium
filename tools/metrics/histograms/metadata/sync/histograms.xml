@@ -34,7 +34,6 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(DataTypeHistogramSuffix) -->
 
 <variants name="SyncDataType">
-  <variant name=".ACCESSIBILITY_ANNOTATION" summary="ACCESSIBILITY_ANNOTATION"/>
   <variant name=".ACCOUNT_SETTING" summary="ACCOUNT_SETTING"/>
   <variant name=".AI_THREAD" summary="AI_THREAD"/>
   <variant name=".APP" summary="APP"/>

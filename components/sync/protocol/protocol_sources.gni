@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 sync_protocol_sources = [
-  "accessibility_annotation_specifics.proto",
   "account_setting_specifics.proto",
   "ai_thread_specifics.proto",
   "app_list_specifics.proto",

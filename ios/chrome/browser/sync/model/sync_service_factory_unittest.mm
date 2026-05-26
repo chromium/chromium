@@ -55,7 +55,7 @@ class SyncServiceFactoryTest : public PlatformTest {
  protected:
   // Returns the collection of default datatypes.
   syncer::DataTypeSet DefaultDatatypes() {
-    static_assert(64 == syncer::GetNumDataTypes(),
+    static_assert(63 == syncer::GetNumDataTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
@@ -116,9 +116,6 @@ class SyncServiceFactoryTest : public PlatformTest {
     if (base::FeatureList::IsEnabled(syncer::kSyncThemesIos) &&
         IsNTPBackgroundCustomizationEnabled()) {
       datatypes.Put(syncer::THEMES_IOS);
-    }
-    if (base::FeatureList::IsEnabled(syncer::kSyncAccessibilityAnnotation)) {
-      datatypes.Put(syncer::ACCESSIBILITY_ANNOTATION);
     }
     if (base::FeatureList::IsEnabled(syncer::kSyncAccountSettings)) {
       datatypes.Put(syncer::ACCOUNT_SETTING);

@@ -1060,22 +1060,6 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
             .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
         },
         {
-            .type = ACCESSIBILITY_ANNOTATION,
-            .specifics_field_number =
-                sync_pb::EntitySpecifics::kAccessibilityAnnotationFieldNumber,
-            .debug_string = "Accessibility Annotation",
-            .histogram_suffix = "ACCESSIBILITY_ANNOTATION",
-            .stable_lowercase_string = "accessibility_annotation",
-            // Not encrypted since it originates from the server.
-            .encryption_policy = EncryptionPolicy::kNeverEncrypted,
-            .priority = DataTypePriority::kRegular,
-            .communication_direction = CommunicationDirection::kRegularTwoWay,
-            .apply_updates_batch_policy = ApplyUpdatesBatchPolicy::kStandard,
-            .unsynced_data_check_on_signout_policy =
-                UnsyncedDataCheckOnSignoutPolicy::kNone,
-            .cross_user_sharing_policy = CrossUserSharingPolicy::kNone,
-        },
-        {
             .type = THEMES_ANDROID,
             .specifics_field_number =
                 sync_pb::EntitySpecifics::kThemeAndroidFieldNumber,
@@ -1111,7 +1095,7 @@ constexpr std::array<DataTypeInfo, syncer::GetNumDataTypes()>
     }};
 
 // LINT.IfChange(DataTypeHistogramSuffix)
-static_assert(GetNumDataTypes() == 64,
+static_assert(GetNumDataTypes() == 63,
               "When adding a new type, update kDataTypeInfoTable, update "
               "histograms.xml and follow the integration checklist in "
               "https://www.chromium.org/developers/design-documents/sync/"
@@ -1325,9 +1309,6 @@ void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
     case GEMINI_THREAD:
       specifics->mutable_gemini_thread();
       break;
-    case ACCESSIBILITY_ANNOTATION:
-      specifics->mutable_accessibility_annotation();
-      break;
     case THEMES_ANDROID:
       specifics->mutable_theme_android();
       break;
@@ -1425,9 +1406,6 @@ DataTypeSet AlwaysPreferredUserTypes() {
     types.Remove(PRIORITY_PREFERENCES);
   }
 
-  if (base::FeatureList::IsEnabled(kSyncAccessibilityAnnotation)) {
-    types.Put(ACCESSIBILITY_ANNOTATION);
-  }
 
   return types;
 }
@@ -1679,8 +1657,6 @@ DataTypeForHistograms DataTypeHistogramValue(DataType data_type) {
       return DataTypeForHistograms::kSkill;
     case GEMINI_THREAD:
       return DataTypeForHistograms::kGeminiThread;
-    case ACCESSIBILITY_ANNOTATION:
-      return DataTypeForHistograms::kAccessibilityAnnotation;
     case THEMES_ANDROID:
       return DataTypeForHistograms::kThemesAndroid;
   }

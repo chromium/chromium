@@ -46,7 +46,6 @@ BASE_FEATURE(kNewTabPageCustomizationThemeSync,
 
 BASE_FEATURE(kSyncLoyaltyCardMetadata, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSyncAccessibilityAnnotation, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(IS_CHROMEOS)
 BASE_FEATURE(kUnoPhase2FollowUp,
