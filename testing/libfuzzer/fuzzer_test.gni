@@ -399,9 +399,9 @@ template("fuzzer_test") {
             "//testing/libfuzzer/fuzzer_support_ios/fuzzer-engine-Info.plist"
       }
 
-      if (is_mac) {
-        sources += [ "//testing/libfuzzer/libfuzzer_exports.h" ]
-      }
+      # Depend on libfuzzer_exports to satisfy GN header checking for
+      # fuzzers that include libfuzzer_exports.h.
+      deps += [ "//testing/libfuzzer:libfuzzer_exports" ]
     }
   } else {
     # noop on unsupported platforms.

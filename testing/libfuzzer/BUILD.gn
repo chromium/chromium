@@ -27,6 +27,13 @@ buildflag_header("buildflags") {
   ]
 }
 
+# This target allows support libraries (not defined via the fuzzer_test
+# template) to depend on libfuzzer_exports.h, which is needed for files
+# that define LLVMFuzzerInitialize.
+source_set("libfuzzer_exports") {
+  sources = [ "libfuzzer_exports.h" ]
+}
+
 # Temporary target for legacy reasons. Some third party repos explicitly
 # refer to libfuzzer_main though they should refer to fuzzer_engine_main
 # instead, and so do some infrastructure repos. We should migrate them

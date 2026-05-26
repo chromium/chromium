@@ -3752,6 +3752,7 @@ if (use_fuzzing_engine) {
       "socket/fuzzed_socket_factory.cc",
       "socket/fuzzed_socket_factory.h",
     ]
+
     public_deps = [
       "//base/test:test_support",
       "//net/dns:fuzzer_test_support",
@@ -3760,6 +3761,7 @@ if (use_fuzzing_engine) {
       "//base",
       "//base:i18n",
       "//net",
+      "//testing/libfuzzer:libfuzzer_exports",
     ]
     data = [
       "data/fuzzer_data/",
