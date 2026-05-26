@@ -22,6 +22,7 @@ static_library("auth_factors_policy") {
     "//chromeos/ash/components/osauth/public",
   ]
   deps = [
+    "//ash/strings",
     "//chrome/browser/ash/login",
     "//chrome/browser/ash/login/quick_unlock",
     "//chrome/browser/notifications",
