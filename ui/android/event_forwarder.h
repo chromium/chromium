@@ -126,6 +126,8 @@ class UI_ANDROID_EXPORT EventForwarder {
 
   gfx::PointF GetCurrentTouchSequenceOffset();
 
+  base::ObserverList<Observer>& GetObserversForTesting() { return observers_; }
+
  private:
   friend class ViewAndroid;
 

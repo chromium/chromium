@@ -28,6 +28,8 @@ class TickClock;
 
 namespace content {
 
+class WebContents;
+
 // MouseCursorOverlayController is used by FrameSinkVideoCaptureDevice to manage
 // the mouse cursor overlay in the viz::FrameSinkVideoCapturer session based on
 // the behavior of the mouse cursor reported by the windowing system.
@@ -40,6 +42,12 @@ class CONTENT_EXPORT MouseCursorOverlayController {
  public:
   using Overlay = viz::mojom::FrameSinkVideoCaptureOverlay;
 
+  // Special value from the Captured Mouse Events specification to indicate that
+  // the mouse is outside the captured view.
+  // See
+  // https://screen-share.github.io/captured-mouse-events/#captured-mouse-change-event
+  static constexpr gfx::Point kOutsideSurface = {-1, -1};
+
   MouseCursorOverlayController();
 
   MouseCursorOverlayController(const MouseCursorOverlayController&) = delete;
@@ -49,7 +57,10 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   ~MouseCursorOverlayController();
 
   // Sets a new target view to monitor for mouse cursor updates.
-  void SetTargetView(gfx::NativeView view);
+  // If `target_web_contents` is set, will only report events if they correspond
+  // to the portion of `view` corresponding to `target_web_contents`.
+  void SetTargetView(gfx::NativeView view,
+                     content::WebContents* target_web_contents = nullptr);
 
   // If the target view is not a gfx::NativeView (which is the case when
   // capturing a NSWindow on macOS), this function may be used to set the size
@@ -211,12 +222,6 @@ class CONTENT_EXPORT MouseCursorOverlayController {
   // Amount of time to elapse with no mouse activity before the cursor should
   // stop showing.
   static constexpr base::TimeDelta kIdleTimeout = base::Seconds(2);
-
-  // Special value from the Captured Mouse Events specification to indicate that
-  // the mouse is outside the captured view.
-  // See
-  // https://screen-share.github.io/captured-mouse-events/#captured-mouse-change-event
-  static constexpr gfx::Point kOutsideSurface = {-1, -1};
 
   // The specification contains some hints to limit the frequency with which
   // events are fired. This is implemented using a minimal time to wait between
