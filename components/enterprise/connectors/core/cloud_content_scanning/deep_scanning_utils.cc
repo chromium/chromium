@@ -355,7 +355,11 @@ void InitializeBinaryUploadRequest(BinaryUploadRequest* request,
 
 EventResult CalculateEventResult(const AnalysisSettings& settings,
                                  bool allowed_by_scan_result,
-                                 bool should_warn) {
+                                 bool should_warn,
+                                 ScanRequestUploadResult result) {
+  if (result == ScanRequestUploadResult::kUserCancelled) {
+    return EventResult::CANCELLED;
+  }
   bool wait_for_verdict =
       settings.block_until_verdict == BlockUntilVerdict::kBlock;
   return (allowed_by_scan_result || !wait_for_verdict)

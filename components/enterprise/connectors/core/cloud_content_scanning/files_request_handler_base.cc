@@ -330,7 +330,7 @@ void FilesRequestHandlerBase::FileRequestCallback(
       content_analysis_info_->GetContentAreaAccountEmail(), file_info.size,
       upload_result, response,
       CalculateEventResult(analysis_settings, request_handler_result.complies,
-                           result_is_warning));
+                           result_is_warning, upload_result));
   delegate_->MarkFileAsReported(index);
 
   DecrementCrashKey(ScanningCrashKey::PENDING_FILE_UPLOADS);

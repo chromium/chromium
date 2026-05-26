@@ -180,7 +180,8 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
       kWebContentUploadDataTransferEventTrigger, content_transfer_method_,
       source_content_area_email_, content_size_, result, response_,
       CalculateEventResult(content_analysis_info_->settings(),
-                           request_handler_result.complies, should_warn));
+                           request_handler_result.complies, should_warn,
+                           result));
 
   std::move(callback_).Run(std::move(request_handler_result));
 }

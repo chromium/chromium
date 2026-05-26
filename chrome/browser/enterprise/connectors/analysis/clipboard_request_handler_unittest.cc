@@ -344,4 +344,50 @@ TEST_F(ClipboardRequestHandlerTest, Image) {
   run_loop_bypass.Run();
 }
 
+TEST_F(ClipboardRequestHandlerTest, CancelledByUser) {
+  TestContentAnalysisInfo info(cloud_settings());
+
+  binary_upload_service_.SetResponse(ScanRequestUploadResult::kUserCancelled,
+                                     ContentAnalysisResponse());
+
+  auto handler = ClipboardRequestHandler::Create(
+      &info, &binary_upload_service_, profile_.get(), GURL(kUrl),
+      ClipboardRequestHandler::Type::kText, DeepScanAccessPoint::PASTE,
+      GetSource(), kSourceEmail, kMethod, CreateTestData(kMaxSize),
+      base::BindOnce([](RequestHandlerResult result) {
+        EXPECT_EQ(result.final_result, FinalContentAnalysisResult::CANCELLED);
+        EXPECT_EQ(result.complies, false);
+      }));
+
+  base::RunLoop run_loop;
+  auto validator = helper_->CreateValidator();
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  chrome::cros::reporting::proto::UnscannedFileEvent expected_event;
+  expected_event.set_url(kUrl);
+  expected_event.set_tab_url(kUrl);
+  expected_event.set_source(kSourceUrl);
+  expected_event.set_destination(kUrl);
+  expected_event.set_file_name("Text data");
+  expected_event.set_content_type("text/plain");
+  expected_event.set_content_size(kMaxSize);
+  expected_event.set_scan_id("");
+  expected_event.set_event_result(chrome::cros::reporting::proto::EventResult::
+                                      EVENT_RESULT_CANCELLED_BY_USER);
+  expected_event.set_unscanned_reason(
+      chrome::cros::reporting::proto::UnscannedFileEvent::USER_CANCELLED);
+  expected_event.set_content_transfer_method(
+      chrome::cros::reporting::proto::CONTENT_TRANSFER_METHOD_FILE_PASTE);
+  expected_event.set_trigger(chrome::cros::reporting::proto::
+                                 DataTransferEventTrigger::WEB_CONTENT_UPLOAD);
+
+  expected_event.set_profile_identifier(profile_->GetPath().AsUTF8Unsafe());
+  expected_event.set_profile_user_name("test-user@chromium.org");
+
+  validator.ExpectUnscannedFileEvent(std::move(expected_event));
+
+  EXPECT_TRUE(handler->UploadData());
+  run_loop.Run();
+}
+
 }  // namespace enterprise_connectors
