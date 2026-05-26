@@ -5,6 +5,7 @@
 #include "media/base/demuxer_memory_limit.h"
 
 #include "base/android/android_info.h"
+#include "base/byte_size.h"
 #include "base/system/sys_info.h"
 
 namespace media {
@@ -23,7 +24,7 @@ base::ByteCount SelectLimit(base::ByteCount default_limit,
                : default_limit;
   }
   // Use very low limit on 512MiB Android Go devices only.
-  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512) {
+  if (base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() <= 512) {
     return very_low_limit;
   }
   return low_limit;
