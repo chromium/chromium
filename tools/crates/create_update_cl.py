@@ -409,11 +409,14 @@ def UpdateCrate(args, old_crate_id: str, new_crate_id: str,
         GitClUpload("--hashtag=cratesio-autoupdate",
                     "--cc=chrome-rust-experiments+autoupdate@google.com")
 
-    FinishUpdatingCrate(args, title, diff)
-    return new_branch, diff
+    final_diff = FinishUpdatingCrate(args, title, diff, old_crate_ids,
+                                     only_minor_updates)
+    return new_branch, final_diff
 
 
-def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
+def FinishUpdatingCrate(args, title: str, diff: CratesDiff,
+                        old_crate_ids: Set[str],
+                        only_minor_updates: bool) -> CratesDiff:
     updated_old_crate_ids = set()
 
     # git mv <vendor/old version> <vendor/new version>
@@ -523,6 +526,17 @@ def FinishUpdatingCrate(args, title: str, diff: CratesDiff):
     if args.upload:
         issue = Git("cl", "issue")
         print(f"  {issue}")
+
+    final_crate_ids = crate_utils.GetCurrentCrateIds()
+    final_diff = DiffCrateIds(old_crate_ids, final_crate_ids,
+                              only_minor_updates)
+
+    if args.upload:
+        print(f"  Updating CL description on Gerrit...")
+        final_description = CreateCommitDescription(title, final_diff)
+        GitClUpload(f"--commit-description={final_description}")
+
+    return final_diff
 
 
 def IsGitDirty():
@@ -644,7 +658,7 @@ def BreakingUpdate(args):
         GitClUpload("--hashtag=cratesio-autoupdate",
                     "--cc=chrome-rust-experiments+autoupdate@google.com")
 
-    FinishUpdatingCrate(args, title, diff)
+    FinishUpdatingCrate(args, title, diff, old_crate_ids, only_minor_updates)
 
 
 def AutoUpdate(args):
@@ -795,13 +809,11 @@ def ManualUpdate(args):
             "No changes in `Cargo.lock` after running `gnrt vendor`")
 
     # This covers most update steps: git mv, gnrt vendor, gnrt gen
-    FinishUpdatingCrate(args, title, diff)
-
-    if args.upload:
-        print(f"  Running `git cl upload --commit-description=...` ...")
-        description = CreateCommitDescription(title, diff)
-        GitClUpload(f"--commit-description={description}", "-t",
-                    "Edit CL description to include more info")
+    FinishUpdatingCrate(args,
+                        title,
+                        diff,
+                        old_crate_ids,
+                        only_minor_updates=False)
 
 
 def main():
