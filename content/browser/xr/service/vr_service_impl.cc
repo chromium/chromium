@@ -424,6 +424,12 @@ void VRServiceImpl::OnImmersiveSessionCreated(
     return;
   }
 
+  if (enabled_features.contains(device::mojom::XRSessionFeature::DOM_OVERLAY)) {
+    // Tell RenderFrameHostImpl that we're setting up the WebXR DOM Overlay,
+    // it checks for this in EnterFullscreen via HasSeenRecentXrOverlaySetup().
+    render_frame_host_->SetIsXrOverlaySetup();
+  }
+
   // Get the metrics tracker for the new immersive session
   mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
       session_metrics_recorder =
@@ -874,18 +880,6 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
               ToRendererProcessId(render_frame_host_->GetProcess()->GetID()),
               render_frame_host_->GetRoutingID());
     }
-  }
-
-  bool use_dom_overlay =
-      std::ranges::contains(runtime_options->required_features,
-                            device::mojom::XRSessionFeature::DOM_OVERLAY) ||
-      std::ranges::contains(runtime_options->optional_features,
-                            device::mojom::XRSessionFeature::DOM_OVERLAY);
-
-  if (use_dom_overlay) {
-    // Tell RenderFrameHostImpl that we're setting up the WebXR DOM Overlay,
-    // it checks for this in EnterFullscreen via HasSeenRecentXrOverlaySetup().
-    render_frame_host_->SetIsXrOverlaySetup();
   }
 
   if (device::XRSessionModeUtils::IsImmersive(runtime_options->mode)) {
