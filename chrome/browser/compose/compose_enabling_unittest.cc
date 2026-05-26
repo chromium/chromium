@@ -20,7 +20,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -106,7 +106,7 @@ void RegisterMockOptimizationGuideKeyedServiceFactory(
 
 }  // namespace
 
-class ComposeEnablingTest : public BrowserWithTestWindowTest {
+class ComposeEnablingTest : public ChromeRenderViewHostTestHarness {
  public:
   ComposeEnablingTest() {
     // Allows early registration of a override of the factory that instantiates
@@ -118,7 +118,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
   }
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
+    ChromeRenderViewHostTestHarness::SetUp();
 
     // Set flags to their expected enabled/disabled state for these tests
     // without relyong on their default state. In other words, a change in
@@ -139,11 +139,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
         mock_translate_client_.get(), mock_translate_ranker_.get(),
         language_model_.get());
 
-    // Note that AddTab makes its own ComposeEnabling as part of
-    // ChromeComposeClient. This can cause confusion when debugging tests.
-    // Don't confuse the two ComposeEnabling objects when debugging.
-    AddTab(browser(), GURL(kExampleBadURL));
-    AddTab(browser(), GURL(kExampleURL));
+    NavigateAndCommit(GURL(kExampleURL));
     context_menu_params_.is_content_editable_for_autofill = true;
     context_menu_params_.frame_origin = GetOrigin();
 
@@ -190,7 +186,7 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     opt_guide_ = nullptr;
     scoped_feature_list_.Reset();
     compose::ResetConfigForTesting();
-    BrowserWithTestWindowTest::TearDown();
+    ChromeRenderViewHostTestHarness::TearDown();
   }
 
   void SetProactiveNudgePref(bool pref_value) {
@@ -227,19 +223,13 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     translate_manager_->GetLanguageState()->SetSourceLanguage(lang);
   }
 
+  TestingProfile* GetProfile() { return profile(); }
+
   url::Origin GetOrigin() {
-    return url::Origin::Create(browser()
-                                   ->tab_strip_model()
-                                   ->GetWebContentsAt(0)
-                                   ->GetLastCommittedURL());
+    return url::Origin::Create(web_contents()->GetLastCommittedURL());
   }
 
-  content::RenderFrameHost* GetRenderFrameHost() {
-    return browser()
-        ->tab_strip_model()
-        ->GetWebContentsAt(0)
-        ->GetPrimaryMainFrame();
-  }
+  content::RenderFrameHost* GetRenderFrameHost() { return main_rfh(); }
 
   void CheckIsEnabledError(ComposeEnabling* compose_enabling,
                            compose::ComposeShowStatus error_show_status) {
@@ -463,9 +453,9 @@ TEST_F(ComposeEnablingTest, ShouldTriggerContextMenuIncorrectSchemeTest) {
   auto scoped_compose_enabled =
       ComposeEnabling::ScopedEnableComposeForTesting();
 
-  // Get the rfh for the tab with the incorrect Scheme.
-  auto* rfh =
-      browser()->tab_strip_model()->GetWebContentsAt(1)->GetPrimaryMainFrame();
+  // Navigate to the incorrect scheme and retrieve the main frame.
+  NavigateAndCommit(GURL(kExampleBadURL));
+  auto* rfh = main_rfh();
 
   EXPECT_FALSE(compose_enabling_->ShouldTriggerContextMenu(
       GetProfile(), translate_manager_.get(), rfh, context_menu_params_));
