@@ -397,6 +397,7 @@ HidBlocklist::HidBlocklist() {
   for (const auto& entry : kStaticEntries)
     DCHECK(IsValidBlocklistEntry(entry));
 #endif
+  PopulateWithServerProvidedValues();
 }
 
 }  // namespace device
