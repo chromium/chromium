@@ -1009,11 +1009,13 @@ IN_PROC_BROWSER_TEST_F(AppListClientSearchResultsBrowserTest,
 
   EXPECT_TRUE(search_controller->GetResultByTitleForTest(title));
 
+  app_list::SearchResultsChangedWaiter results_changed_waiter(
+      search_controller, {app_list::ResultType::kInstalledApp});
+
   // Uninstall the extension.
   UninstallExtension(extension->id());
 
-  // Allow async callbacks to run.
-  base::RunLoop().RunUntilIdle();
+  results_changed_waiter.Wait();
 
   // We cannot find the extension any more.
   EXPECT_FALSE(search_controller->GetResultByTitleForTest(title));
