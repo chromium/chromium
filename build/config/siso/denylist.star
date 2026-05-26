@@ -59,6 +59,9 @@ def __step_config(ctx, step_config):
         "third_party/blink/renderer/modules/webcodecs/fuzzer_seed_corpus/generate_image_corpus.py",
         "third_party/cast_core/public/src/build/chromium/cast_core_grpc_generator_wrapper.py",
         "third_party/catapult/tracing/bin/generate_about_tracing_contents",
+        # Requires JDK to run. Additionally, it dynamically parses .js_library
+        # metadata files to determine JS source files to load at runtime, making
+        # input tracking too complex for static analysis without Starlark handlers.
         "third_party/closure_compiler/js_binary.py",
         "third_party/dawn/generator/dawn_gpu_info_generator.py",
         "third_party/dawn/generator/dawn_json_generator.py",
