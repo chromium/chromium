@@ -75,6 +75,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/scoped_handle.h"
@@ -250,6 +251,8 @@ class MEDIA_EXPORT WASAPIAudioInputStream
 
   // Sets up `input_format_` and `output_format_` based on `params_`.
   bool UpdateFormats();
+
+  const base::UnguessableToken id_;
 
   // Our creator, the audio manager needs to be notified when we close.
   const raw_ptr<AudioManagerWin> manager_;

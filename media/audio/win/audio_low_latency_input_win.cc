@@ -668,7 +668,8 @@ WASAPIAudioInputStream::WASAPIAudioInputStream(
     const AudioParameters& params,
     const std::string& device_id,
     AudioManager::LogCallback log_callback)
-    : manager_(manager),
+    : id_(base::UnguessableToken::Create()),
+      manager_(manager),
       params_(params),
       peak_detector_(base::BindRepeating(&AudioManager::TraceAmplitudePeak,
                                          base::Unretained(manager_),
@@ -1196,8 +1197,8 @@ void WASAPIAudioInputStream::SetOutputDeviceForAec(
 
 void WASAPIAudioInputStream::SendLogMessage(std::string message) {
   if (log_callback_) {
-    log_callback_.Run(
-        base::StringPrintf("WAIS[%p]: %s", this, message.c_str()));
+    log_callback_.Run(base::StringPrintf(
+        "WAIS[id=%s]: %s", id_.ToString().c_str(), message.c_str()));
   }
 }
 

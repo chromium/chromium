@@ -91,7 +91,8 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
     const AudioParameters& params,
     ERole device_role,
     AudioManager::LogCallback log_callback)
-    : creating_thread_id_(base::PlatformThread::CurrentId()),
+    : id_(base::UnguessableToken::Create()),
+      creating_thread_id_(base::PlatformThread::CurrentId()),
       manager_(manager),
       glitch_reporter_(SystemGlitchReporter::StreamType::kRender),
       format_(),
@@ -562,8 +563,8 @@ void WASAPIAudioOutputStream::GetVolume(double* volume) {
 
 void WASAPIAudioOutputStream::SendLogMessage(std::string message) {
   if (log_callback_) {
-    log_callback_.Run(
-        base::StringPrintf("WAOS[%p]: %s", this, message.c_str()));
+    log_callback_.Run(base::StringPrintf(
+        "WAOS[id=%s]: %s", id_.ToString().c_str(), message.c_str()));
   }
 }
 
