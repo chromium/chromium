@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.sync.synced_set_up;
 
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.CROSS_DEVICE_PREF_TRACKER_EXTRA_LOGS;
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.XPLAT_SYNCED_SETUP;
 import static org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsMediator.MODULE_TYPE_TO_USER_PREFS_KEY;
 import static org.chromium.chrome.browser.sync.synced_set_up.SyncedSetUpUtilsBridge.getCrossDevicePrefsFromRemoteDevice;
 import static org.chromium.chrome.browser.toolbar.settings.AddressBarPreference.computeToolbarPositionAndSource;
@@ -21,7 +20,6 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -189,8 +187,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     private void onTabChangeOrGainFocus(@Nullable Tab currentTab, boolean availableImmediately) {
-        if (!FeatureList.isNativeInitialized()
-                || !ChromeFeatureList.isEnabled(XPLAT_SYNCED_SETUP)) {
+        if (!ChromeFeatureList.sXplatSyncedSetup.isEnabled()) {
             return;
         }
 

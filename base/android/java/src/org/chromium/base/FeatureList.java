@@ -39,7 +39,9 @@ public class FeatureList {
      * @return Whether the native FeatureList is initialized or not.
      */
     public static boolean isNativeInitialized() {
-        if (!LibraryLoader.getInstance().isInitialized()) return false;
+        if (sDisableNativeForTesting || !LibraryLoader.getInstance().isInitialized()) {
+            return false;
+        }
         // Even if the native library is loaded, the C++ FeatureList might not be initialized yet.
         // In that case, accessing it will not immediately fail, but instead cause a crash later
         // when it is initialized. Return whether the native FeatureList has been initialized,

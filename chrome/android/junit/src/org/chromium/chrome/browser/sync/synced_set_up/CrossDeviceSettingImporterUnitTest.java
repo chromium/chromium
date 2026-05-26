@@ -35,9 +35,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureListJni;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -104,8 +101,6 @@ public class CrossDeviceSettingImporterUnitTest {
     @Mock private PrefService mLocalPrefService;
     @Mock private CrossDevicePrefTracker mCrossDevicePrefTracker;
     @Mock private SyncedSetUpUtilsBridge.Natives mSyncedSetUpUtilsBridgeNatives;
-    @Mock private FeatureList.Natives mFeatureListNatives;
-    @Mock private LibraryLoader mLibraryLoader;
 
     @Captor private ArgumentCaptor<ModalDialogManagerObserver> mModalDialogManagerObserverCaptor;
     @Captor private ArgumentCaptor<Snackbar> mSnackbarCaptor;
@@ -151,12 +146,6 @@ public class CrossDeviceSettingImporterUnitTest {
         // Sync and Cross-Device tracker mocks.
         CrossDevicePrefTrackerFactory.setInstanceForTesting(mCrossDevicePrefTracker);
         SyncedSetUpUtilsBridgeJni.setInstanceForTesting(mSyncedSetUpUtilsBridgeNatives);
-
-        // Library and Feature flags mocks.
-        FeatureListJni.setInstanceForTesting(mFeatureListNatives);
-        when(mFeatureListNatives.isInitialized()).thenReturn(true);
-        LibraryLoader.setLibraryLoaderForTesting(mLibraryLoader);
-        when(mLibraryLoader.isInitialized()).thenReturn(true);
 
         mUserActionTester = new UserActionTester();
         RobolectricUtil.runAllBackgroundAndUi();
