@@ -148,11 +148,7 @@ export class PowerBookmarksAppElement extends CrLitElement implements
   protected accessor hasShownBookmarks_: boolean = false;
   protected accessor sectionVisibility_: AppSectionVisibility = {};
   private showUiCalled_: boolean = false;
-  private visibilityChangedListener_: () => void = () => {
-    if (document.visibilityState === 'hidden') {
-      this.$.contextMenu.close();
-    }
-  };
+
 
   constructor() {
     super();
@@ -192,9 +188,6 @@ export class PowerBookmarksAppElement extends CrLitElement implements
             (product: BookmarkProductInfo) =>
                 this.onBookmarkPriceUntracked_(product)),
     );
-
-    document.addEventListener(
-        'visibilitychange', this.visibilityChangedListener_);
   }
 
   override disconnectedCallback() {
@@ -202,9 +195,6 @@ export class PowerBookmarksAppElement extends CrLitElement implements
     this.bookmarksService_.stopListening();
     this.shoppingListenerIds_.forEach(
         id => this.priceTrackingProxy_.getCallbackRouter().removeListener(id));
-
-    document.removeEventListener(
-        'visibilitychange', this.visibilityChangedListener_);
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {

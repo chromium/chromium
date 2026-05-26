@@ -1119,7 +1119,7 @@ suite('General', () => {
       assertEquals(4, getBookmarksInList(powerBookmarksApp, 0).length);
     });
 
-    test('ClosesContextMenuOnVisibilityChange', async () => {
+    test('ContextMenuClosesOnFocusout', async () => {
       const bookmarks = getBookmarks(powerBookmarksApp);
       assertTrue(bookmarks.length > 0);
       const bookmark = bookmarks[0]!;
@@ -1127,23 +1127,20 @@ suite('General', () => {
       // Open context menu.
       powerBookmarksApp.$.contextMenu.showAt(
           document.body, [bookmark], false, false, false, 0);
-      await flushTasks();
+      await microtasksFinished();
       await waitAfterNextRender(powerBookmarksApp.$.contextMenu);
       assertTrue(powerBookmarksApp.$.contextMenu.isOpen());
 
-      // Mock visibility state and dispatch event.
-      const originalVisibilityState = document.visibilityState;
-      Object.defineProperty(
-          document, 'visibilityState', {value: 'hidden', configurable: true});
-      document.dispatchEvent(new Event('visibilitychange'));
-      await flushTasks();
+      // Simulate blur by dispatching focusout event with relatedTarget outside
+      // the menu.
+      const event = new FocusEvent('focusout', {
+        relatedTarget: document.body,
+      });
+      powerBookmarksApp.$.contextMenu.$.menu.dispatchEvent(event);
 
-      // Verify menu is closed.
+      await microtasksFinished();
+
       assertFalse(powerBookmarksApp.$.contextMenu.isOpen());
-
-      // Cleanup: restore document state.
-      Object.defineProperty(
-          document, 'visibilityState', {value: originalVisibilityState});
     });
 
     test('SortMenuClosesOnFocusout', async () => {
