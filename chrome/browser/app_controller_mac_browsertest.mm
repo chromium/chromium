@@ -1343,8 +1343,9 @@ IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
 
 // Tests opening a new window from a browser command while incognito is forced.
 // Regression test for https://crbug.com/40181046
+// TODO(crbug.com/514579535): Re-enable. This test is flaky.
 IN_PROC_BROWSER_TEST_F(AppControllerMainMenuBrowserTest,
-                       ForcedIncognito_NewWindow) {
+                       DISABLED_ForcedIncognito_NewWindow) {
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(), 1u);
   // Close the current non-incognito browser.
   Profile* profile = browser()->profile();
