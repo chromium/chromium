@@ -19,4 +19,9 @@ public class GlicMetrics {
     public static void recordShowPeekView() {
         RecordUserAction.record("Glic.Instance.Show.PeekView");
     }
+
+    /** Recorded when the Bottom Sheet appears on the screen. */
+    public static void recordShowBottomSheet() {
+        RecordUserAction.record("Glic.Instance.Show.BottomSheet");
+    }
 }

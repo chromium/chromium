@@ -520,6 +520,13 @@ public class TabBottomSheetCoordinator {
                     GlicMetrics.recordShowPeekView();
                 }
 
+                if ((state == SheetState.HALF || state == SheetState.FULL)
+                        && mLastStableState != SheetState.HALF
+                        && mLastStableState != SheetState.FULL
+                        && clientType == TabBottomSheetClientType.GLIC) {
+                    GlicMetrics.recordShowBottomSheet();
+                }
+
                 // Record transition if between open stable states (PEEK, HALF, FULL)
                 TabBottomSheetMetrics.recordTransition(clientType, mLastStableState, state);
 

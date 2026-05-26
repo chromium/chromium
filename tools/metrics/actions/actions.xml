@@ -15467,6 +15467,13 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Glic.Instance.Show.BottomSheet">
+  <owner>lindaywang@chromium.org</owner>
+  <description>
+    Logged when a Glic instance is shown in the bottom sheet on Android.
+  </description>
+</action>
+
 <action name="Glic.Instance.Show.Floaty">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>

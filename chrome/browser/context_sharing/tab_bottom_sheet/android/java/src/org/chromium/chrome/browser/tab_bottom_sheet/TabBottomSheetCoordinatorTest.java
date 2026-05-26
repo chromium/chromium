@@ -440,6 +440,29 @@ public class TabBottomSheetCoordinatorTest {
     }
 
     @Test
+    public void testOnSheetStateChanged_Expanded_recordsMetric() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+        UserActionTester userActionTester = new UserActionTester();
+        doReturn(TabBottomSheetClientType.GLIC).when(mCoBrowseViews).getClientType();
+        try {
+            // 1. Transitioning from HIDDEN (non-expanded) to HALF (expanded) should record metric.
+            observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+            assertEquals(1, userActionTester.getActionCount("Glic.Instance.Show.BottomSheet"));
+
+            // 2. Transitioning between open expanded states (HALF to FULL) should NOT record metric again.
+            observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+            assertEquals(1, userActionTester.getActionCount("Glic.Instance.Show.BottomSheet"));
+
+            // 3. Transitioning from FULL to PEEK (non-expanded) then back to HALF (expanded) should record it a second time.
+            observer.onSheetStateChanged(SheetState.PEEK, StateChangeReason.NONE);
+            observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+            assertEquals(2, userActionTester.getActionCount("Glic.Instance.Show.BottomSheet"));
+        } finally {
+            userActionTester.tearDown();
+        }
+    }
+
+    @Test
     public void testGestureListener_Scroll() {
         simulateShowSuccessAndGetObserver();
 
