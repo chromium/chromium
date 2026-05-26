@@ -1550,8 +1550,9 @@ class WebViewChromium
     @Override
     public boolean overlayHorizontalScrollbar() {
         forbidBuilderConfiguration();
-        mAwInit.triggerAndWaitForChromiumStarted(
-                CallSite.WEBVIEW_INSTANCE_OVERLAY_HORIZONTAL_SCROLLBAR);
+        if (!mAwInit.isChromiumInitStarted()) {
+            return true;
+        }
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1575,8 +1576,9 @@ class WebViewChromium
     @Override
     public boolean overlayVerticalScrollbar() {
         forbidBuilderConfiguration();
-        mAwInit.triggerAndWaitForChromiumStarted(
-                CallSite.WEBVIEW_INSTANCE_OVERLAY_VERTICAL_SCROLLBAR);
+        if (!mAwInit.isChromiumInitialized()) {
+            return false;
+        }
         if (checkNeedsPost()) {
             boolean ret =
                     mFactory.runOnUiThreadBlocking(
@@ -1607,7 +1609,9 @@ class WebViewChromium
     @Override
     public SslCertificate getCertificate() {
         forbidBuilderConfiguration();
-        mAwInit.triggerAndWaitForChromiumStarted(CallSite.WEBVIEW_INSTANCE_GET_CERTIFICATE);
+        if (!mAwInit.isChromiumInitialized()) {
+            return null;
+        }
         if (checkNeedsPost()) {
             SslCertificate ret =
                     mFactory.runOnUiThreadBlocking(
