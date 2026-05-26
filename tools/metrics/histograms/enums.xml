@@ -8131,6 +8131,7 @@ from previous Chrome versions.
   <int value="-1970672551" label="CanvasContextLostInBackground:disabled"/>
   <int value="-1969636234" label="OmniboxRefinedFocusState:disabled"/>
   <int value="-1969627578" label="EnableVariableRefreshRateAlwaysOn:disabled"/>
+  <int value="-1969569529" label="FedCmWebIdentitySubdomain:disabled"/>
   <int value="-1968796101"
       label="OmniboxRemoveExcessiveRecycledViewClearCalls:disabled"/>
   <int value="-1968729540" label="ArcExtendIntentAnrTimeout:enabled"/>
@@ -10705,6 +10706,7 @@ from previous Chrome versions.
   <int value="-1138851579" label="QuerySearchBurnInPeriod:disabled"/>
   <int value="-1137745598" label="PhoneHubNudge:disabled"/>
   <int value="-1137696948" label="enable-chromeos-account-manager"/>
+  <int value="-1137470863" label="FedCmWebIdentitySubdomain:enabled"/>
   <int value="-1137442543" label="enable-slimming-paint"/>
   <int value="-1136627751" label="ignore-autocomplete-off-autofill"/>
   <int value="-1136509631" label="ssl-interstitial-v1"/>

@@ -2381,6 +2381,13 @@ inline constexpr char kFedCmNonceInParamsDescription[] =
     "Removes nonce as an explicit parameter of the FedCM API. When enabled, a "
     "nonce may be passed in params.";
 
+inline constexpr char kFedCmWebIdentitySubdomainName[] =
+    "FedCmWebIdentitySubdomain";
+inline constexpr char kFedCmWebIdentitySubdomainDescription[] =
+    "Enables subdomain-first discovery for the FedCM well-known file. "
+    "Fetches https://web-identity.<eTLD+1>/.well-known/web-identity first "
+    "and falls back to the apex URL on failure.";
+
 inline constexpr char kFedCmWellKnownEndpointValidationName[] =
     "FedCmWellKnownEndpointValidation";
 inline constexpr char kFedCmWellKnownEndpointValidationDescription[] =

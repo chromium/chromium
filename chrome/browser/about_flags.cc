@@ -8579,6 +8579,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmNonceInParamsDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmNonceInParams)},
 
+    {"fedcm-web-identity-subdomain",
+     flag_descriptions::kFedCmWebIdentitySubdomainName,
+     flag_descriptions::kFedCmWebIdentitySubdomainDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmWebIdentitySubdomain)},
+
     {"fedcm-well-known-endpoint-validation",
      flag_descriptions::kFedCmWellKnownEndpointValidationName,
      flag_descriptions::kFedCmWellKnownEndpointValidationDescription, kOsAll,

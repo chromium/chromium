@@ -4692,6 +4692,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "fedcm-web-identity-subdomain",
+    "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "fedcm-well-known-endpoint-validation",
     "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
      "expiry_milestone": 155
