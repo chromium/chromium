@@ -306,6 +306,7 @@ if (!is_android) {
       "//chrome/browser/password_manager",
       "//chrome/browser/prefs",
       "//chrome/browser/search_engines",
+      "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/lens",
       "//chrome/browser/user_education",
       "//chrome/test:test_support",
