@@ -148,6 +148,7 @@ bool LaunchDefaultAppForFileExtensionSettings(
     RecordOpenWithLauncherResult(OpenWithLauncherResult::kComError);
     return false;
   }
+  ::CoAllowSetForegroundWindow(open_with_launcher.Get(), nullptr);
 
   // Open "select a default app for `file_extension` files" dialog.
   // `kOpenWithFlags` is a working `flags` argument discovered by observation.
