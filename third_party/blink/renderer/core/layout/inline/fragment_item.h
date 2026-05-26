@@ -27,8 +27,8 @@ class FragmentItems;
 class InlinePaintContext;
 class PhysicalBoxFragment;
 class UsedFont;
-struct FitTextScale;
 struct LogicalLineItem;
+struct TextFitScale;
 struct TextFragmentPaintInfo;
 
 // Structure of additional fields that are rarely used for a Text type
@@ -570,7 +570,7 @@ class CORE_EXPORT FragmentItem final {
   const UsedFont GetUsedFont() const;
 
   // Returns a paint-time text scaling factor for text-fit property.
-  float GetFitTextScale() const;
+  float GetTextFitScale() const;
   void SetLineTextFitScale(float scale);
 
   // Get a description of |this| for the debug purposes.
@@ -631,7 +631,7 @@ class CORE_EXPORT FragmentItem final {
       const AffineTransform& length_adjust) const;
   AffineTransform BuildSvgTransformForLengthAdjust() const;
 
-  void SetTextRareData(const FitTextScale* scale,
+  void SetTextRareData(const TextFitScale* scale,
                        FontHeight annotation_metrics = FontHeight());
 
   // TODO(kojii): We can make them sub-classes if we need to make the vector of

@@ -153,7 +153,7 @@ struct CORE_EXPORT InlineItemResult {
   LineBoxStrut padding;
 
   // For text-grow and text-shrink.
-  Member<FitTextScale> fit_text_scale;
+  Member<TextFitScale> text_fit_scale;
 
   // Inside of this may be breakable. False means there are no break
   // opportunities, or has CSS properties that prohibit breaking.
@@ -211,7 +211,7 @@ struct CORE_EXPORT InlineItemResult {
 using InlineItemResults = HeapVector<InlineItemResult, 32>;
 
 // Do not use this, which is a helper of FindTextScale().
-FitTextBlockScale FindTextScaleInternal(const InlineItemResults& line_items,
+TextFitBlockScale FindTextScaleInternal(const InlineItemResults& line_items,
                                         wtf_size_t start_index,
                                         wtf_size_t initial_nesting_level);
 
@@ -224,7 +224,7 @@ FitTextBlockScale FindTextScaleInternal(const InlineItemResults& line_items,
 // font of "bar" item is returned.
 //
 // `should_scale` - Returns {1.0f, nullptr} if it is false.
-inline FitTextBlockScale FindTextScale(bool should_scale,
+inline TextFitBlockScale FindTextScale(bool should_scale,
                                        const InlineItemResults& line_items,
                                        wtf_size_t start_index,
                                        wtf_size_t initial_nesting_level) {

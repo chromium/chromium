@@ -26,8 +26,8 @@ class InlineNode;
 class LineInfo;
 class LogicalLineItems;
 class ShapeResultView;
-struct FitTextBlockScale;
 struct LogicalRubyColumn;
+struct TextFitBlockScale;
 
 // Fragments that require the layout position/size of ancestor are packed in
 // this struct.
@@ -131,11 +131,11 @@ struct InlineBoxState {
   void ComputeTextMetrics(const ComputedStyle&,
                           const Font& fontref,
                           FontBaseline ifc_baseline,
-                          const FitTextBlockScale* scale);
+                          const TextFitBlockScale* scale);
   void EnsureTextMetrics(const ComputedStyle&,
                          const Font& fontref,
                          FontBaseline ifc_baseline,
-                         const FitTextBlockScale* scale);
+                         const TextFitBlockScale* scale);
   void ResetTextMetrics();
 
   void AccumulateUsedFonts(const ShapeResultView*, float scale = 1.0f);
@@ -199,7 +199,7 @@ class CORE_EXPORT InlineLayoutStateStack {
                             const InlineItem&,
                             const InlineItemResult&,
                             FontBaseline baseline_type,
-                            const FitTextBlockScale& text_scale,
+                            const TextFitBlockScale& text_scale,
                             LogicalLineItems* line_box);
 
   // Pop a box state stack.
@@ -281,7 +281,7 @@ class CORE_EXPORT InlineLayoutStateStack {
                    FontBaseline);
 
   void AddBoxFragmentPlaceholder(InlineBoxState*,
-                                 const FitTextBlockScale& text_scale,
+                                 const TextFitBlockScale& text_scale,
                                  LogicalLineItems*,
                                  FontBaseline);
   void AddBoxData(const ConstraintSpace&,

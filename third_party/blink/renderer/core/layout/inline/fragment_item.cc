@@ -177,7 +177,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
           line_item.is_hidden_for_paint);
       has_over_annotation_ = line_item.has_over_annotation;
       has_under_annotation_ = line_item.has_under_annotation;
-      SetTextRareData(line_item.fit_text_scale, line_item.annotation_metrics);
+      SetTextRareData(line_item.text_fit_scale, line_item.annotation_metrics);
       return;
     }
 
@@ -188,7 +188,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                      line_item.is_hidden_for_paint);
     has_over_annotation_ = line_item.has_over_annotation;
     has_under_annotation_ = line_item.has_under_annotation;
-    SetTextRareData(line_item.fit_text_scale, line_item.annotation_metrics);
+    SetTextRareData(line_item.text_fit_scale, line_item.annotation_metrics);
     return;
   }
 
@@ -207,7 +207,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
                      std::move(line_item.shape_result), line_item.text_content,
                      ToPhysicalSize(line_item.MarginSize(), writing_mode),
                      line_item.is_hidden_for_paint);
-    SetTextRareData(line_item.fit_text_scale);
+    SetTextRareData(line_item.text_fit_scale);
     return;
   }
 
@@ -458,7 +458,7 @@ float FragmentItem::ScaleInlineOffset(LayoutUnit inline_offset) const {
     return inline_offset.ToFloat() * SvgScalingFactor() /
            svg_data->length_adjust_scale;
   }
-  float scale = GetFitTextScale();
+  float scale = GetTextFitScale();
   if (scale != 1.0f) {
     return inline_offset.ToFloat() / scale;
   }
@@ -605,14 +605,14 @@ StringView FragmentItem::Text(const FragmentItems& items) const {
 
 TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     const FragmentItems& items) const {
-  const auto fit_text_scale = GetFitTextScale();
+  const auto text_fit_scale = GetTextFitScale();
   if (Type() == kText) {
     return {items.Text(UsesFirstLineStyle()), text_.text_offset.start,
-            text_.text_offset.end, text_.shape_result.Get(), fit_text_scale};
+            text_.text_offset.end, text_.shape_result.Get(), text_fit_scale};
   }
   if (Type() == kGeneratedText) {
     return {generated_text_.text, 0, generated_text_.text.length(),
-            generated_text_.shape_result.Get(), fit_text_scale};
+            generated_text_.shape_result.Get(), text_fit_scale};
   }
   NOTREACHED();
 }
@@ -789,17 +789,17 @@ const Font& FragmentItem::ScaledFont() const {
   return data && data->scaled_font ? *data->scaled_font : *Style().GetFont();
 }
 
-void FragmentItem::SetTextRareData(const FitTextScale* scale,
+void FragmentItem::SetTextRareData(const TextFitScale* scale,
                                    FontHeight annotation_metrics) {
-  bool is_fit_text = scale && (scale->scale != 1.0f || scale->font);
-  if (!is_fit_text && annotation_metrics.ascent == 0 &&
+  bool is_text_fit = scale && (scale->scale != 1.0f || scale->font);
+  if (!is_text_fit && annotation_metrics.ascent == 0 &&
       annotation_metrics.descent == 0) {
     return;
   }
   auto* data = MakeGarbageCollected<TextFragmentRareData>();
   data->annotation_metrics = annotation_metrics;
   data->is_svg = false;
-  if (is_fit_text) {
+  if (is_text_fit) {
     data->length_adjust_scale = scale->scale;
     data->scaled_font = scale->font;
     if (Type() == kText) {
@@ -810,7 +810,7 @@ void FragmentItem::SetTextRareData(const FitTextScale* scale,
       // Do not call this function for this Type().
       NOTREACHED();
     }
-    DCHECK_EQ(scale->scale, GetFitTextScale());
+    DCHECK_EQ(scale->scale, GetTextFitScale());
   } else {
     DCHECK_EQ(Type(), kText);
     data->length_adjust_scale = 1.0f;
@@ -839,7 +839,7 @@ const UsedFont FragmentItem::GetUsedFont() const {
   return UsedFont(*Style().GetFont(), 1.0f);
 }
 
-float FragmentItem::GetFitTextScale() const {
+float FragmentItem::GetTextFitScale() const {
   if (Type() == kText) {
     if (const auto* data = text_.rare_data.Get()) {
       if (!data->is_svg) {
@@ -1110,7 +1110,7 @@ LayoutUnit FragmentItem::CaretInlinePositionForOffset(StringView text,
     return LayoutUnit::FromFloatRound(
         TextShapeResult()->CreateShapeResult()->CaretPositionForOffset(
             offset, text, AdjustMidCluster::kToEnd) *
-        GetFitTextScale());
+        GetTextFitScale());
   }
 
   // This fragment is a flow control because otherwise ShapeResult exists.
@@ -1145,7 +1145,7 @@ std::pair<LayoutUnit, LayoutUnit> FragmentItem::LineLeftAndRightForOffsets(
   LayoutUnit start_position;
   LayoutUnit end_position;
   if (TextShapeResult()) {
-    float scaling_factor = GetFitTextScale();
+    float scaling_factor = GetTextFitScale();
     // TODO(layout-dev): Move caret position out of ShapeResult and into a
     // separate support class that can take a ShapeResult or ShapeResultView.
     // Allows for better code separation and avoids the extra copy below.

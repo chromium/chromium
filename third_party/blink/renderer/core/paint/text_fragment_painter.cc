@@ -420,7 +420,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
   } else {
     DCHECK(!text_item.IsSvgText());
     if (RuntimeEnabledFeatures::CssTextFitEnabled()) {
-      scaling_factor = text_item.GetFitTextScale();
+      scaling_factor = text_item.GetTextFitScale();
     }
     PhysicalRect ink_overflow = text_item.SelfInkOverflowRect();
     ink_overflow.Move(physical_box.offset);

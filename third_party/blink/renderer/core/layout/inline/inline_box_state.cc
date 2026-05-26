@@ -108,7 +108,7 @@ void InlineBoxState::ResetStyle(const ComputedStyle& style_ref,
 void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
                                         const Font& fontref,
                                         FontBaseline ifc_baseline,
-                                        const FitTextBlockScale* scale) {
+                                        const TextFitBlockScale* scale) {
   const auto baseline_type =
       styleref.CssDominantBaseline() == EDominantBaseline::kAuto
           ? ifc_baseline
@@ -237,7 +237,7 @@ void InlineBoxState::ResetTextMetrics() {
 void InlineBoxState::EnsureTextMetrics(const ComputedStyle& styleref,
                                        const Font& fontref,
                                        FontBaseline ifc_baseline,
-                                       const FitTextBlockScale* scale) {
+                                       const TextFitBlockScale* scale) {
   if (text_metrics.IsEmpty())
     ComputeTextMetrics(styleref, fontref, ifc_baseline, scale);
 }
@@ -310,7 +310,7 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
       box.fragment_start = line_box->size();
       if (box.needs_box_fragment) {
         DCHECK_NE(&box, stack_.data());
-        FitTextBlockScale text_block_scale{line_info.TextFitScale(), nullptr};
+        TextFitBlockScale text_block_scale{line_info.TextFitScale(), nullptr};
         AddBoxFragmentPlaceholder(&box, text_block_scale, line_box,
                                   baseline_type);
       }
@@ -342,7 +342,7 @@ InlineBoxState* InlineLayoutStateStack::OnBeginPlaceItems(
     // Use a "strut" (a zero-width inline box with the element's font and
     // line height properties) as the initial metrics for the line box.
     // https://drafts.csswg.org/css2/visudet.html#strut
-    FitTextBlockScale text_scale{line_info.TextFitScale(), nullptr};
+    TextFitBlockScale text_scale{line_info.TextFitScale(), nullptr};
     line_box_state.text_fit_scale = text_scale.TotalScale(*line_box_state.font);
     if (!line_height_quirk) {
       line_box_state.ComputeTextMetrics(line_style, *line_box_state.font,
@@ -374,7 +374,7 @@ InlineBoxState* InlineLayoutStateStack::OnOpenTag(
     const InlineItem& item,
     const InlineItemResult& item_result,
     FontBaseline baseline_type,
-    const FitTextBlockScale& text_scale,
+    const TextFitBlockScale& text_scale,
     LogicalLineItems* line_box) {
   InlineBoxState* box =
       OnOpenTag(space, item, item_result, baseline_type, *line_box);
@@ -499,7 +499,7 @@ void InlineLayoutStateStack::OnBlockInInline(const FontHeight& metrics,
 // from placeholders.
 void InlineLayoutStateStack::AddBoxFragmentPlaceholder(
     InlineBoxState* box,
-    const FitTextBlockScale& text_scale,
+    const TextFitBlockScale& text_scale,
     LogicalLineItems* line_box,
     FontBaseline baseline_type) {
   DCHECK(box != stack_.data() &&

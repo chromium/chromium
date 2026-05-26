@@ -747,7 +747,7 @@ AnnotationMetrics ComputeAnnotationOverflow(
     if (const auto* style = item.Style()) {
       if (style->GetTextEmphasisMark() != TextEmphasisMark::kNone) {
         if (RuntimeEnabledFeatures::TextEmphasisWithRubyEnabled()) {
-          float scale = item.fit_text_scale ? item.fit_text_scale->scale : 1.0f;
+          float scale = item.text_fit_scale ? item.text_fit_scale->scale : 1.0f;
           const auto& emphasis_mark_outsets =
               InlineBoxState::ComputeEmphasisMarkOutsets(
                   *style, *style->GetFont(), scale);

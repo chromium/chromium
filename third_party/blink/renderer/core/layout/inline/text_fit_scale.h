@@ -12,7 +12,7 @@
 namespace blink {
 
 // Represents scaling information of each item.
-struct FitTextScale : public GarbageCollected<FitTextScale> {
+struct TextFitScale : public GarbageCollected<TextFitScale> {
   float scale = 1.0f;
   // `font` is non-null only if the method is `font-size`.
   Member<Font> font;
@@ -24,11 +24,11 @@ struct FitTextScale : public GarbageCollected<FitTextScale> {
 // * If the method is `scale`, we scale the original font by `paint_scale`.
 //   `scaled_font` is nullptr.
 // * If the method is `font-size`, we scale `scaled_font` by `paint_scale`.
-struct FitTextBlockScale {
+struct TextFitBlockScale {
   float paint_scale = 1.0f;
   const Font* scaled_font = nullptr;
 
-  constexpr static FitTextBlockScale* kFixed = nullptr;
+  constexpr static TextFitBlockScale* kFixed = nullptr;
 
   float TotalScale(const Font& original_font) const {
     if (!scaled_font) {

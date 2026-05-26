@@ -279,7 +279,7 @@ void InlineLayoutAlgorithm::PrepareBoxStates(
   // If the previous line was ::first-line, always rebuild because box states
   // have ::first-line styles.
   const InlineItems& items = line_info.ItemsData().items;
-  if (!break_token->UseFirstLineStyle() && !apply_fit_text_) {
+  if (!break_token->UseFirstLineStyle() && !apply_text_fit_) {
     box_states_ = context_->BoxStatesIfValidForItemIndex(
         items, break_token->StartItemIndex());
     if (box_states_) {
@@ -387,7 +387,7 @@ void InlineLayoutAlgorithm::CreateLine(const LineLayoutOpportunity& opportunity,
     // No scaling because of no text.
     box_states_->LineBoxState().EnsureTextMetrics(
         line_info->LineStyle(), *box_states_->LineBoxState().font,
-        baseline_type_, FitTextBlockScale::kFixed);
+        baseline_type_, TextFitBlockScale::kFixed);
   } else if (line_builder.InitialLetterItemResult() &&
              box_states_->LineBoxState().metrics.IsEmpty()) [[unlikely]] {
     box_states_->LineBoxState().metrics = FontHeight();
@@ -641,7 +641,7 @@ void InlineLayoutAlgorithm::ApplyTextBoxTrim(LineInfo& line_info,
   InlineBoxState::AdjustEdges(line_style, *line_style.GetFont(), baseline_type_,
                               should_apply_over, should_apply_under,
                               intrinsic_metrics);
-  if (RuntimeEnabledFeatures::CssTextFitEnabled() && apply_fit_text_) {
+  if (RuntimeEnabledFeatures::CssTextFitEnabled() && apply_text_fit_) {
     float scale = line_info.TextFitScale();
     if (scale < 1.0f) {
       std::optional<float> min_size = Node().MinimumFontPhysicalSize();
@@ -1153,7 +1153,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     container_builder_.SetIsLineForParallelFlow();
   }
 
-  apply_fit_text_ = ShouldApplyFitText(Node());
+  apply_text_fit_ = ShouldApplyTextFit(Node());
 
   FragmentItemsBuilder* const items_builder = context_->ItemsBuilder();
   DCHECK(items_builder);
@@ -1344,7 +1344,7 @@ const LayoutResult* InlineLayoutAlgorithm::Layout() {
     }
 
     bool should_scale_line_height = false;
-    if (apply_fit_text_) {
+    if (apply_text_fit_) {
       if (context_->IsMeasuringScale()) {
         // No fit-text handling here. We call MeasurePerBlockScale() later.
       } else if (ParagraphScale scale = context_->MeasuredScale();

@@ -67,7 +67,7 @@ void InlineItemResult::Trace(Visitor* visitor) const {
   visitor->Trace(ruby_column);
   visitor->Trace(positioned_float);
   visitor->Trace(exclusion_space_before_position_float);
-  visitor->Trace(fit_text_scale);
+  visitor->Trace(text_fit_scale);
 }
 
 String InlineItemResult::ToString(const String& ifc_text_content,
@@ -113,7 +113,7 @@ String InlineItemResult::ToString(const String& ifc_text_content,
   return builder.ToString();
 }
 
-FitTextBlockScale FindTextScaleInternal(const InlineItemResults& line_items,
+TextFitBlockScale FindTextScaleInternal(const InlineItemResults& line_items,
                                         wtf_size_t start_index,
                                         wtf_size_t initial_nesting_level) {
   wtf_size_t level = initial_nesting_level;
@@ -128,8 +128,8 @@ FitTextBlockScale FindTextScaleInternal(const InlineItemResults& line_items,
       --level;
     } else if (item_type == InlineItem::kText) {
       if (level == 0) {
-        if (const auto* fit_text_scale = line_items[i].fit_text_scale.Get()) {
-          return {fit_text_scale->scale, fit_text_scale->font};
+        if (const auto* text_fit_scale = line_items[i].text_fit_scale.Get()) {
+          return {text_fit_scale->scale, text_fit_scale->font};
         }
         break;
       }

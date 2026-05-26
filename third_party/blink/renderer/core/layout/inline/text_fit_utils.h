@@ -15,7 +15,7 @@ namespace blink {
 class LineInfo;
 class PhysicalFragment;
 
-bool ShouldApplyFitText(const InlineNode node);
+bool ShouldApplyTextFit(const InlineNode node);
 
 // This represents a per-block scaling factor.
 // It contains two values for the font-size.
