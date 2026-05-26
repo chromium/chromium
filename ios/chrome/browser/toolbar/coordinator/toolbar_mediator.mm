@@ -154,6 +154,8 @@
   return self;
 }
 
+#pragma mark - Public
+
 - (void)updateConsumerWithWebState:(web::WebState*)webState
                           animated:(BOOL)animated {
   if (!webState) {
@@ -268,10 +270,20 @@
   }
 }
 
-#pragma mark - ToolbarMutator
-
 - (void)tabGroupIndicatorVisibilityUpdated:(BOOL)visible {
   [self setUICurrentlySupportsPromo:!visible];
+}
+
+- (void)assistantButtonTapped {
+  GeminiStartupState* startupState = [[GeminiStartupState alloc]
+      initWithEntryPoint:gemini::EntryPoint::Toolbar];
+  [self.geminiHandler
+      startGeminiEntryFlowWithStartupState:startupState
+                        baseViewController:self.baseViewController
+                               accessPoint:signin_metrics::AccessPoint::
+                                               kIosGeminiButtonToolbar
+                  showSnackbarOnCompletion:YES
+                                completion:nil];
 }
 
 #pragma mark - ToolbarButtonMenuFactoryDelegate
@@ -303,21 +315,6 @@
 - (void)addNewTabInCurrentTabGroup {
   // Toolbar button menus do not have this functionality.
   NOTREACHED();
-}
-
-- (void)addCurrentTabToGroup:(const TabGroup*)destinationGroup {
-  /// TODO(crbug.com/493948951): Implement this (iPad).
-  NOTIMPLEMENTED();
-}
-
-- (void)removeCurrentTabFromGroup {
-  /// TODO(crbug.com/493948951): Implement this (iPad).
-  NOTIMPLEMENTED();
-}
-
-- (void)moveCurrentTabToGroup:(const TabGroup*)destinationGroup {
-  /// TODO(crbug.com/493948951): Implement this (iPad).
-  NOTIMPLEMENTED();
 }
 
 #pragma mark - CRWWebStateObserver
@@ -523,20 +520,6 @@
   BOOL enabled = visible;
 
   [self.consumer setAssistantButtonVisible:visible enabled:enabled];
-}
-
-#pragma mark - ToolbarMutator
-
-- (void)assistantButtonTapped {
-  GeminiStartupState* startupState = [[GeminiStartupState alloc]
-      initWithEntryPoint:gemini::EntryPoint::Toolbar];
-  [self.geminiHandler
-      startGeminiEntryFlowWithStartupState:startupState
-                        baseViewController:self.baseViewController
-                               accessPoint:signin_metrics::AccessPoint::
-                                               kIosGeminiButtonToolbar
-                  showSnackbarOnCompletion:YES
-                                completion:nil];
 }
 
 @end
