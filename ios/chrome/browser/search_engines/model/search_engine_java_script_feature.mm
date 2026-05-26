@@ -48,10 +48,10 @@ SearchEngineJavaScriptFeature::GetScriptMessageHandlerName() const {
 void SearchEngineJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& script_message) {
-  if (!delegate_ || !script_message.legacy_body()) {
+  if (!delegate_ || !script_message.body()) {
     return;
   }
-  const auto* dict = script_message.legacy_body()->GetIfDict();
+  const auto* dict = script_message.body()->GetIfDict();
   if (!dict) {
     return;
   }

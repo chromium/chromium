@@ -49,13 +49,13 @@ RemoteFrameRegistrationJavaScriptFeature::GetScriptMessageHandlerName() const {
 void RemoteFrameRegistrationJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
+  if (!message.body() || !message.body()->is_dict()) {
     return;
   }
 
   if (auto* registrar =
           ChildFrameRegistrar::GetOrCreateForWebState(web_state)) {
-    registrar->ProcessRegistrationMessage(message.legacy_body());
+    registrar->ProcessRegistrationMessage(message.body());
   }
 }
 

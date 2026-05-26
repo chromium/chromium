@@ -97,9 +97,9 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature()->last_received_message()->legacy_body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
@@ -125,9 +125,9 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature()->last_received_message()->legacy_body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kReplyString, reply->c_str());
 }
@@ -184,9 +184,9 @@ TEST_F(JavaScriptFeaturePageContentWorldTest,
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature()->last_received_message()->legacy_body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
@@ -311,9 +311,9 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest, MessageHandlerInIsolatedWorld) {
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature()->last_received_message()->legacy_body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
@@ -339,9 +339,9 @@ TEST_F(JavaScriptFeatureAnyContentWorldTest,
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature()->last_received_message()->legacy_body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kReplyString, reply->c_str());
 }
@@ -534,9 +534,9 @@ TEST_F(JavaScriptFeaturePrivateTest, MessageHandler) {
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
+  ASSERT_TRUE(feature()->last_received_message()->body());
   const std::string* reply =
-      feature()->last_received_message()->legacy_body()->GetIfString();
+      feature()->last_received_message()->body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }

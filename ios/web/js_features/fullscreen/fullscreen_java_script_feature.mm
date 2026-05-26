@@ -46,8 +46,7 @@ void FullscreenJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& script_message) {
   const base::DictValue* script_dict =
-      script_message.legacy_body() ? script_message.legacy_body()->GetIfDict()
-                                   : nullptr;
+      script_message.body() ? script_message.body()->GetIfDict() : nullptr;
   if (!script_dict) {
     return;
   }

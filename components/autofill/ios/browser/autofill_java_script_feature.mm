@@ -147,15 +147,13 @@ AutofillJavaScriptFeature::GetScriptMessageHandlerName() const {
 void AutofillJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
+  if (!message.body() || !message.body()->is_dict()) {
     return;
   }
-  const std::string* command =
-      message.legacy_body()->GetDict().FindString("command");
-  const std::string* frame_id =
-      message.legacy_body()->GetDict().FindString("frame");
+  const std::string* command = message.body()->GetDict().FindString("command");
+  const std::string* frame_id = message.body()->GetDict().FindString("frame");
   const base::DictValue* form_dict =
-      message.legacy_body()->GetDict().FindDict("form_data");
+      message.body()->GetDict().FindDict("form_data");
   if (!command || !frame_id || !form_dict || *command != kFormFilledCommand) {
     return;
   }

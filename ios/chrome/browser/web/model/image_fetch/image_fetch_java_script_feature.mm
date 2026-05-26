@@ -75,7 +75,7 @@ void ImageFetchJavaScriptFeature::ScriptMessageReceived(
   }
 
   // Verify that the message is well-formed before using it.
-  base::Value* message = script_message.legacy_body();
+  base::Value* message = script_message.body();
   if (!message || !message->is_dict()) {
     return;
   }

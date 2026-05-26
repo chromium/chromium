@@ -113,7 +113,7 @@ void AnnotationsJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  base::Value* response = script_message.legacy_body();
+  base::Value* response = script_message.body();
   if (!response || !response->is_dict()) {
     return;
   }

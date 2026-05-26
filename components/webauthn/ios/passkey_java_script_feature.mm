@@ -254,7 +254,7 @@ void PasskeyJavaScriptFeature::ScriptMessageReceived(
   // event: (string) Describes a type of event.
   //
   // For some events there are more expected arguments described below.
-  base::Value* body = message.legacy_body();
+  base::Value* body = message.body();
   if (!body || !body->is_dict()) {
     return;
   }

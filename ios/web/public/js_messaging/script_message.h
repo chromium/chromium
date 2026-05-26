@@ -17,7 +17,7 @@ namespace web {
 // Represents a script message sent from JavaScript.
 class ScriptMessage {
  public:
-  explicit ScriptMessage(std::unique_ptr<base::Value> legacy_body,
+  explicit ScriptMessage(std::unique_ptr<base::Value> body,
                          bool is_user_interacting,
                          bool is_main_frame,
                          std::optional<GURL> request_url,
@@ -28,14 +28,8 @@ class ScriptMessage {
   ScriptMessage(const ScriptMessage&) = delete;
   ScriptMessage(ScriptMessage&& message);
 
-  // DEPRECATED: This property is being replaced with a new container object. By
-  // using this new container object, the time taken to process WKScriptMessage
-  // objects into ScriptMessages will be improved.
-  // TODO(crbug.com/514993435): Remove once each invocation of this function in
-  // the codebase has been replaced.
-
   // Returns the message body.
-  base::Value* legacy_body() const { return legacy_body_.get(); }
+  base::Value* body() const { return body_.get(); }
 
   // Whether or not the user was interacting with the page when this message
   // was sent.
@@ -53,7 +47,7 @@ class ScriptMessage {
   const url::Origin& security_origin() const { return security_origin_; }
 
  private:
-  std::unique_ptr<base::Value> legacy_body_;
+  std::unique_ptr<base::Value> body_;
   bool is_user_interacting_;
   bool is_main_frame_;
   std::optional<GURL> request_url_;

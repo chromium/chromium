@@ -11,12 +11,12 @@
 
 namespace web {
 
-ScriptMessage::ScriptMessage(std::unique_ptr<base::Value> legacy_body,
+ScriptMessage::ScriptMessage(std::unique_ptr<base::Value> body,
                              bool is_user_interacting,
                              bool is_main_frame,
                              std::optional<GURL> request_url,
                              url::Origin security_origin)
-    : legacy_body_(std::move(legacy_body)),
+    : body_(std::move(body)),
       is_user_interacting_(is_user_interacting),
       is_main_frame_(is_main_frame),
       request_url_(request_url),
@@ -24,7 +24,7 @@ ScriptMessage::ScriptMessage(std::unique_ptr<base::Value> legacy_body,
 ScriptMessage::~ScriptMessage() = default;
 
 ScriptMessage::ScriptMessage(ScriptMessage&& message)
-    : legacy_body_(std::move(message.legacy_body_)),
+    : body_(std::move(message.body_)),
       is_user_interacting_((message.is_user_interacting_)),
       is_main_frame_(message.is_main_frame_),
       request_url_(std::move(message.request_url_)) {}
