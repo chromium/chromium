@@ -18,7 +18,7 @@ tests.
    - Ensure the test is **non-batched** (annotated with `@DoNotBatch`). Batched
      tests can share state and make leak traces ambiguous or hard to reproduce.
    - **Critical**: Annotate the test class or method with `@EnableLeakChecks` or
-     else LeakCanary will not run.
+     pass `--enable-leak-checks` to the test runner.
    - Run the test and look for LeakCanary detections in the log output.
 
 2. **Analyze Leak Trace**:
@@ -81,7 +81,7 @@ tests.
 
    - Rebuild the test target: `autoninja -C out/Debug chrome_public_test_apk`.
    - Run the specific leak test:
-     `out/Debug/bin/run_chrome_public_test_apk -f "YourLeakTest*"`.
+     `out/Debug/bin/run_chrome_public_test_apk --enable-leak-checks -f "YourLeakTest*"`.
    - Verify that LeakCanary no longer reports the leak.
 
 ## Best Practices & Gotchas
