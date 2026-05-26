@@ -7,6 +7,7 @@ import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.m
 
 import type {RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup} from './tab_search.mojom-webui.js';
 import {tabHasMediaAlerts} from './tab_search_utils.js';
+import type {Range} from './tab_search_utils.js';
 import {TabAlertState} from './tabs.mojom-webui.js';
 
 export enum TabItemType {
@@ -20,7 +21,7 @@ export class ItemData {
   type: TabItemType = TabItemType.OPEN_TAB;
   a11yTypeText: string = '';
   tabGroup?: TabGroup|RecentlyClosedTabGroup;
-  highlightRanges: {[key: string]: Array<{start: number, length: number}>} = {};
+  highlightRanges: Record<string, Range[]> = {};
 }
 
 /**

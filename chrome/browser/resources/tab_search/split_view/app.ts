@@ -25,7 +25,7 @@ import {getHtml} from './app.html.js';
 export interface SplitNewTabPageAppElement {
   $: {
     header: HTMLElement,
-    splitTabsList: SelectableLazyListElement,
+    splitTabsList: SelectableLazyListElement<TabData>,
   };
 }
 

@@ -21,15 +21,16 @@ class TestAppElement extends CrLitElement {
   }
 
   override render() {
+    // clang-format off
     return html`
     <selectable-lazy-list max-height="${this.maxHeight_}" item-size="48"
-        .isSelectable=${(item: any) => item.constructor.name === 'TabData'}
-        .template=${(item: any) => {
+        .isSelectable=${(item: TitleItem|TabData) => item.constructor.name === 'TabData'}
+        .template=${(item: TitleItem|TabData) => {
       switch (item.constructor.name) {
         case 'TitleItem':
-          return html`<div class="section-title">${item.title}</div>`;
+          return html`<div class="section-title">${(item as TitleItem).title}</div>`;
         case 'TabData':
-          return html`<tab-search-item id="${item.tab.tabId}"
+          return html`<tab-search-item id="${(item as TabData).tab.tabId}"
                 class="selectable"
                 style="display: flex;height: 48px" .data="${item}" tabindex="0"
                 role="option">
@@ -39,6 +40,7 @@ class TestAppElement extends CrLitElement {
       }
     }}
     </selectable-lazy-list>`;
+    // clang-format on
   }
 
   static override get properties() {

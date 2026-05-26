@@ -63,7 +63,7 @@ export interface TabSearchPageElement {
     searchField: HTMLElement,
     searchInput: HTMLInputElement,
     searchWrapper: HTMLElement,
-    tabsList: SelectableLazyListElement,
+    tabsList: SelectableLazyListElement<TitleItem|TabData|TabGroupData>,
   };
 }
 

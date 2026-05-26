@@ -5,6 +5,7 @@
 import {quoteString} from 'chrome://resources/js/util.js';
 
 import type {ItemData, TabData, TabGroupData} from './tab_data.js';
+import type {Range} from './tab_search_utils.js';
 
 export interface OptionKeyObject {
   name: string;
@@ -142,8 +143,7 @@ function replaceSpecialQuotationCharacters(text: string) {
  * searchText appears. If there are no identified matches an empty array is
  * returned.
  */
-function getRanges(target: string, searchText: string):
-    Array<{start: number, length: number}> {
+function getRanges(target: string, searchText: string): Range[] {
   target = replaceSpecialQuotationCharacters(target);
   searchText = replaceSpecialQuotationCharacters(searchText);
   const escapedText = quoteString(searchText);

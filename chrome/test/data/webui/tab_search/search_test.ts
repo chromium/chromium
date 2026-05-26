@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {SearchOptions} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {search, getHostname, getTitle, TabData, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import type {ItemData, Range, SearchOptions} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {getHostname, getTitle, search, TabData, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {createTab} from './tab_search_test_data.js';
 
@@ -24,15 +24,18 @@ function assertSearchOrders(
   }
 }
 
-function assertResults(expectedRecords: any[], actualRecords: TabData[]) {
+function assertResults(expectedRecords: ItemData[], actualRecords: ItemData[]) {
   assertEquals(expectedRecords.length, actualRecords.length);
   expectedRecords.forEach((expected, i) => {
     const actual = actualRecords[i]!;
-    assertEquals(expected.tab.title, actual.tab.title);
+    if (expected instanceof TabData) {
+      assertTrue(actual instanceof TabData);
+      assertEquals(expected.tab.title, actual.tab.title);
+      assertEquals(expected.hostname, actual.hostname);
+    }
     if (expected.tabGroup !== undefined) {
       assertEquals(expected.tabGroup.title, actual.tabGroup!.title);
     }
-    assertEquals(expected.hostname, actual.hostname);
     assertDeepEquals(expected.highlightRanges, actual.highlightRanges);
   });
 }
@@ -79,70 +82,94 @@ suite('FuzzySearchTest', () => {
     // Results for 'arch'.
     const archMatchedRecords = [
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: 'Arch Linux'},
         hostname: 'www.archlinux.org',
         highlightRanges: {
           'tab.title': [{start: 0, length: 4}],
           hostname: [{start: 4, length: 4}],
-        },
+        } as Record<string, Range[]>,
       },
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: 'Arches National Park'},
         hostname: 'www.nps.gov',
         highlightRanges: {
           'tab.title': [{start: 0, length: 4}],
-        },
+        } as Record<string, Range[]>,
       },
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: 'Chrome Desktop Architecture'},
         hostname: 'drive.google.com',
         highlightRanges: {
           'tab.title': [{start: 15, length: 4}],
-        },
+        } as Record<string, Range[]>,
       },
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: 'Code Search'},
         hostname: 'search.chromium.search',
         highlightRanges: {
           'tab.title': [{start: 7, length: 4}],
           hostname: [{start: 2, length: 4}, {start: 18, length: 4}],
-        },
+        } as Record<string, Range[]>,
       },
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: 'Search Engine Land - Search Engines'},
         hostname: 'searchengineland.com',
         highlightRanges: {
           'tab.title': [{start: 2, length: 4}, {start: 23, length: 4}],
           hostname: [{start: 2, length: 4}],
-        },
+        } as Record<string, Range[]>,
       },
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: 'Marching band'},
         hostname: 'en.marching.band.com',
         highlightRanges: {
           'tab.title': [{start: 1, length: 4}],
           hostname: [{start: 4, length: 4}],
-        },
+        } as Record<string, Range[]>,
       },
     ];
 
     // Results for 'search'.
     const searchMatchedRecords = [
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: 'Code Search'},
         hostname: 'search.chromium.search',
         highlightRanges: {
           'tab.title': [{start: 5, length: 6}],
           hostname: [{start: 0, length: 6}, {start: 16, length: 6}],
-        },
+        } as Record<string, Range[]>,
       },
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: 'Search Engine Land - Search Engines'},
         hostname: 'searchengineland.com',
         highlightRanges: {
           'tab.title': [{start: 0, length: 6}, {start: 21, length: 6}],
           hostname: [{start: 0, length: 6}],
-        },
+        } as Record<string, Range[]>,
       },
     ];
 
@@ -182,6 +209,9 @@ suite('FuzzySearchTest', () => {
     // Expected results for '\test'.
     const backslashMatchedRecords = [
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: '\'beginning\\test\\end'},
         hostname: 'beginning\\test\"end',
         highlightRanges: {
@@ -194,6 +224,9 @@ suite('FuzzySearchTest', () => {
     // Expected results for '"end'.
     const quoteMatchedRecords = [
       {
+        inActiveWindow: false,
+        type: TabItemType.OPEN_TAB,
+        a11yTypeText: '',
         tab: {title: '\'beginning\\test\\end'},
         hostname: 'beginning\\test\"end',
         highlightRanges: {
@@ -232,6 +265,9 @@ suite('FuzzySearchTest', () => {
     ];
 
     const singleQuoteMatchedRecords = [{
+      inActiveWindow: false,
+      type: TabItemType.OPEN_TAB,
+      a11yTypeText: '',
       tab: {title: '‘Chrome’ Browser'},
       hostname: '“google.com”',
       highlightRanges: {
@@ -243,6 +279,9 @@ suite('FuzzySearchTest', () => {
         search('‘Chrome’', recordsWithSpecialChar, options));
 
     const doubleQuoteMatchedRecords = [{
+      inActiveWindow: false,
+      type: TabItemType.OPEN_TAB,
+      a11yTypeText: '',
       tab: {title: '‘Chrome’ Browser'},
       hostname: '“google.com”',
       highlightRanges: {
@@ -256,6 +295,9 @@ suite('FuzzySearchTest', () => {
     // Search for text with regular characters in a record with special
     // characters.
     const singleQuoteMatchedRecordsRegular = [{
+      inActiveWindow: false,
+      type: TabItemType.OPEN_TAB,
+      a11yTypeText: '',
       tab: {title: '‘Chrome’ Browser'},
       hostname: '“google.com”',
       highlightRanges: {
@@ -267,6 +309,9 @@ suite('FuzzySearchTest', () => {
         search('\'Chrome\'', recordsWithSpecialChar, options));
 
     const doubleQuoteMatchedRecordsRegular = [{
+      inActiveWindow: false,
+      type: TabItemType.OPEN_TAB,
+      a11yTypeText: '',
       tab: {title: '‘Chrome’ Browser'},
       hostname: '“google.com”',
       highlightRanges: {
@@ -286,6 +331,9 @@ suite('FuzzySearchTest', () => {
     ];
 
     const singleQuoteMatchedRecordsSpecial = [{
+      inActiveWindow: false,
+      type: TabItemType.OPEN_TAB,
+      a11yTypeText: '',
       tab: {title: '\'Chrome\' Browser'},
       hostname: '"google.com"',
       highlightRanges: {
@@ -297,6 +345,9 @@ suite('FuzzySearchTest', () => {
         search('‘Chrome’', recordsWithRegularChar, options));
 
     const doubleQuoteMatchedRecordsSpecial = [{
+      inActiveWindow: false,
+      type: TabItemType.OPEN_TAB,
+      a11yTypeText: '',
       tab: {title: '\'Chrome\' Browser'},
       hostname: '"google.com"',
       highlightRanges: {

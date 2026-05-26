@@ -22,5 +22,6 @@ export {TabSearchItemElement} from './tab_search_item.js';
 export {SEARCH_QUERY_MAX_LENGTH, TabSearchPageElement} from './tab_search_page.js';
 export type {TabSearchSyncBrowserProxy} from './tab_search_sync_browser_proxy.js';
 export {TabSearchSyncBrowserProxyImpl} from './tab_search_sync_browser_proxy.js';
+export type {Range} from './tab_search_utils.js';
 export {TabAlertState} from './tabs.mojom-webui.js';
 export {TitleItem} from './title_item.js';
