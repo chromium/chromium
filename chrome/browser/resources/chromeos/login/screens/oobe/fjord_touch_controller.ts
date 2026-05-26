@@ -57,7 +57,7 @@ export class FjordTouchControllerScreen extends
    * Returns the control which should receive initial focus.
    */
   override get defaultControl(): HTMLElement|null {
-    return this.shadowRoot!.querySelector('#oobeFrame');
+    return this.shadowRoot!.querySelector('#primaryButton');
   }
 
 
