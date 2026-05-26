@@ -42,11 +42,8 @@ if (!defined(experimental_linker_path) || !is_a_target_toolchain) {
 
 if (!is_win && !is_mac && !is_ios) {
   declare_args() {
-    # Link using mold instead of lld for faster builds.
-    # TODO(40208899): Enable more broadly.
-    use_mold =
-        !is_official_build && !using_sanitizer && target_os == "android" &&
-        (current_cpu == "arm64" || current_cpu == "x64")
+    # Link using mold instead of lld.
+    use_mold = false
   }
 }
 
@@ -54,7 +51,7 @@ if (!defined(use_mold)) {
   use_mold = false
   linker_path = ""
 } else if (use_mold) {
-  linker_path = "//buildtools/third_party/mold/cipd/mold"
+  linker_path = "//buildtools/third_party/mold/cipd/bin/mold"
 } else {
   linker_path = experimental_linker_path
 }

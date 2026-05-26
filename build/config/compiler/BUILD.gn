@@ -1045,6 +1045,17 @@ config("linker") {
   if (!is_win) {
     if (linker_path != "") {
       inputs = [ linker_path ]
+
+      if (use_mold) {
+        # Wrapper needed to strip unsupported: --use-android-relr-tags
+        # https://github.com/rui314/mold/issues/1544
+        _wrapper = "//buildtools/third_party/mold/mold_wrapper.py"
+        inputs += [ _wrapper ]
+        ldflags +=
+            [ "-Wl,--linker-path=" + rebase_path(linker_path, root_build_dir) ]
+        linker_path = _wrapper
+      }
+
       ldflags += [ "--ld-path=" + rebase_path(linker_path, root_build_dir) ]
     } else if (use_lld) {
       ldflags += [ "-fuse-ld=lld" ]
@@ -2450,9 +2461,7 @@ if (is_win) {
   if (is_android && (use_lld || use_mold)) {
     # TODO(jdduke) Re-enable on mips after resolving linking
     # issues with libc++ (crbug.com/456380).
-    # ffmpeg x86 asm has textrels. See: https://crbug.com/911658#c19
-    if (current_cpu != "mipsel" && current_cpu != "mips64el" &&
-        current_cpu != "x86") {
+    if (current_cpu != "mipsel" && current_cpu != "mips64el") {
       common_optimize_on_ldflags += [
         # Warn in case of text relocations.
         "-Wl,--warn-shared-textrel",
