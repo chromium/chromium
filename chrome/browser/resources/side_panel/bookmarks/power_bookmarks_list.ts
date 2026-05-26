@@ -53,6 +53,7 @@ export interface PowerBookmarksListElement {
     folderEmptyState: SpEmptyStateElement,
     heading: HTMLElement,
     scroller: HTMLElement,
+    list: IronListElement,
   };
 }
 
@@ -76,7 +77,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
   static get properties() {
     return {
-      displayLists_: {
+      displayList_: {
         type: Array,
         value: () => [],
       },
@@ -150,7 +151,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
       hasShownBookmarks: {
         type: Boolean,
         value: false,
-        computed: 'computeHasShownBookmarks_(displayLists_.*)',
+        computed: 'computeHasShownBookmarks_(displayList_.*)',
         notify: true,
       },
 
@@ -175,8 +176,13 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
       hasFolders_: {
         type: Boolean,
-        computed: 'computeHasFolders_(displayLists_.*)',
+        computed: 'computeHasFolders_(displayList_.*)',
         reflect: true,
+      },
+
+      firstSecondaryIndex_: {
+        type: Number,
+        value: -1,
       },
     };
   }
@@ -184,7 +190,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   static get observers() {
     return [
       'onSearchChanged_(searchQuery)',
-      'updateDisplayLists_(activeFolderPath.*, labels.*, sortOrder, searchQuery)',
+      'updateDisplayList_(activeFolderPath.*, labels.*, sortOrder, searchQuery, sectionVisibility_.filterHeadings)',
     ];
   }
 
@@ -213,7 +219,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare searchQuery: string|undefined;
 
   declare private compact_: boolean;
-  declare private displayLists_: BookmarksTreeNode[][];
+  declare private displayList_: BookmarksTreeNode[];
   declare private imageUrls_: {[key: string]: string};
   declare private selectedBookmarks: {[key: string]: boolean};
   declare private hasLoadedData_: boolean;
@@ -223,6 +229,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   declare private hasFolders_: boolean;
   declare private shoppingCollectionFolderId_: string;
   declare private updatedElementIds_: string[];
+  declare private firstSecondaryIndex_: number;
 
   constructor() {
     super();
@@ -267,7 +274,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   onBookmarksLoaded() {
-    this.updateDisplayLists_();
+    this.updateDisplayList_();
     this.hasLoadedData_ = true;
   }
 
@@ -276,7 +283,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
      this.updatedElementIds_ = [bookmark.id];
     if (this.bookmarkShouldShow_(bookmark) ||
         this.bookmarkIsShowing_(bookmark)) {
-      this.updateDisplayLists_();
+      this.updateDisplayList_();
     }
     this.notifyPathIfVisible_(id, 'title');
     this.notifyPathIfVisible_(id, 'url');
@@ -287,7 +294,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
       this.updateShoppingCollectionFolderId_();
 
       const scrollTop = this.$.scroller.scrollTop;
-      this.updateDisplayLists_();
+      this.updateDisplayList_();
       if (bookmark.url) {
         getAnnouncerInstance().announce(loadTimeData.getStringF(
             'bookmarkCreated', getBookmarkName(bookmark)));
@@ -295,20 +302,16 @@ export class PowerBookmarksListElement extends PolymerElement implements
         getAnnouncerInstance().announce(loadTimeData.getStringF(
             'bookmarkFolderCreated', getBookmarkName(bookmark)));
       }
-      for (let i = 0; i < this.displayLists_.length; i++) {
-        const indexInList = this.displayLists_[i].indexOf(bookmark);
-        if (indexInList > -1) {
-          const listElement = this.getDisplayListElement_(i);
-          if (listElement &&
-              (indexInList < listElement.firstVisibleIndex ||
-               indexInList > listElement.lastVisibleIndex)) {
-            listElement.scrollToIndex(indexInList);
-          } else {
-            afterNextRender(this, () => {
-              this.$.scroller.scrollTop = scrollTop;
-            });
-          }
-          break;
+      const indexInList = this.displayList_.indexOf(bookmark);
+      if (indexInList > -1) {
+        const listElement = this.$.list;
+        if (indexInList < listElement.firstVisibleIndex ||
+            indexInList > listElement.lastVisibleIndex) {
+          listElement.scrollToIndex(indexInList);
+        } else {
+          afterNextRender(this, () => {
+            this.$.scroller.scrollTop = scrollTop;
+          });
         }
       }
     }
@@ -328,7 +331,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
         (shouldShow !== isShowing) ||
         (shouldShow && this.hasSomeActiveFilter)) {
       const scrollTop = this.$.scroller.scrollTop;
-      this.updateDisplayLists_();
+      this.updateDisplayList_();
       getAnnouncerInstance().announce(loadTimeData.getStringF(
           'bookmarkMoved', getBookmarkName(bookmark),
           getBookmarkName(newParent)));
@@ -385,7 +388,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
   /** PowerBookmarksDragDelegate */
   onFinishDrop(dropTarget: BookmarksTreeNode): void {
-    this.updateDisplayLists_();
+    this.updateDisplayList_();
     this.focusBookmark_(dropTarget.id);
 
     // Show the focus state immediately after dropping a bookmark to indicate
@@ -432,22 +435,17 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private notifyPathIfVisible_(id: string, key: string) {
-    for (let i = 0; i < this.displayLists_.length; i++) {
-      const listIndex = this.displayLists_[i].findIndex(b => b.id === id);
-      if (listIndex > -1) {
-        this.notifyPath(`displayLists_.${i}.${listIndex}.${key}`);
-        return;
-      }
+    const listIndex = this.displayList_.findIndex(item => item.id === id);
+    if (listIndex > -1) {
+      this.notifyPath(`displayList_.${listIndex}.${key}`);
     }
   }
 
   private computeHasFolders_(): boolean {
-    if (!this.displayLists_ || this.displayLists_.length === 0) {
+    if (!this.displayList_ || this.displayList_.length === 0) {
       return false;
     }
-    return this.displayLists_.some(
-        list => list.some(bookmark => !!bookmark.children),
-    );
+    return this.displayList_.some(item => !!item.children);
   }
 
   private computeCanDrag_(): boolean {
@@ -463,18 +461,13 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private bookmarkIsShowing_(bookmark: BookmarksTreeNode): boolean {
-    return this.displayLists_.some(
-        list => list.some(item => item.id === bookmark.id));
+    return this.displayList_.some(item => item.id === bookmark.id);
   }
 
   private removeNodeFromDisplayLists_(nodeId: string) {
-    for (let listIndex = 0; listIndex < this.displayLists_.length;
-         listIndex++) {
-      const itemIndex =
-          this.displayLists_[listIndex].findIndex(b => b.id === nodeId);
-      if (itemIndex > -1) {
-        this.splice(`displayLists_.${listIndex}`, itemIndex, 1);
-      }
+    const itemIndex = this.displayList_.findIndex(item => item.id === nodeId);
+    if (itemIndex > -1) {
+      this.splice('displayList_', itemIndex, 1);
     }
   }
 
@@ -524,46 +517,43 @@ export class PowerBookmarksListElement extends PolymerElement implements
   /**
    * Update the lists of bookmarks and folders displayed to the user.
    */
-  private updateDisplayLists_() {
+  private updateDisplayList_() {
     const activeFolder = this.getActiveFolder();
     const primaryList = this.bookmarksService_.filterBookmarks(
         activeFolder, this.sortOrder, this.searchQuery, this.labels);
+    this.bookmarksService_.refreshDataForBookmarks(primaryList);
+
+    let secondaryList: BookmarksTreeNode[] = [];
     if (this.hasSomeActiveFilter && !!activeFolder) {
-      const secondaryList = this.bookmarksService_.filterBookmarks(
+      secondaryList = this.bookmarksService_.filterBookmarks(
           undefined, this.sortOrder, this.searchQuery, this.labels,
           activeFolder);
-      this.displayLists_ = [primaryList, secondaryList];
-    } else {
-      this.displayLists_ = [primaryList];
+      this.bookmarksService_.refreshDataForBookmarks(secondaryList);
     }
-    this.displayLists_.forEach(
-        list => this.bookmarksService_.refreshDataForBookmarks(list));
+
+    const displayList: BookmarksTreeNode[] = [];
+    displayList.push(...primaryList);
+    displayList.push(...secondaryList);
+
+    this.firstSecondaryIndex_ =
+        secondaryList.length > 0 ? primaryList.length : -1;
+
+    this.displayList_ = displayList;
     this.updateListScrollOffset_();
-
-
 
     // After the lists are updated and all children updates are complete,
     // notify iron-list to resize.
-    afterNextRender(this, () => {
-      const children =
-          [...this.shadowRoot!.querySelectorAll('power-bookmark-row')];
+    afterNextRender(this, async () => {
+      // Allow time for child Lit elements to render.
+      await new Promise(resolve => setTimeout(resolve, 0));
+      this.notifyBookmarksListResize_();
 
-      const onChildrenUpdated = () => {
-        this.notifyBookmarksListResize_();
+      // Make sure the keyboard navigation tree is rebuilt whenever the
+      // iron-list is updated.
+      this.rebuildNavigationElements_();
 
-        // Make sure the keyboard navigation tree is rebuilt whenever the
-        // iron-list is updated.
-        this.rebuildNavigationElements_();
-
-        if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_) {
-          this.recordBookmarkCountMetrics_();
-        }
-      };
-      if (children.length > 0) {
-        Promise.all(children.map(el => el.updateComplete))
-            .then(onChildrenUpdated);
-      } else {
-        onChildrenUpdated();
+      if (this.recordCountMetricsOnNextUpdate_ && this.hasLoadedData_) {
+        this.recordBookmarkCountMetrics_();
       }
     });
   }
@@ -576,16 +566,8 @@ export class PowerBookmarksListElement extends PolymerElement implements
     // Set scrollOffset so the iron-list scrolling accounts for the space the
     // other scrolling UI elements take.
     afterNextRender(this, () => {
-      const primaryList = this.getDisplayListElement_(0);
-      const secondaryList = this.getDisplayListElement_(1);
       const bookmarksOffsetTop = this.$.bookmarks.offsetTop;
-      if (primaryList) {
-        primaryList.scrollOffset = primaryList.offsetTop - bookmarksOffsetTop;
-      }
-      if (secondaryList) {
-        secondaryList.scrollOffset =
-            secondaryList.offsetTop - bookmarksOffsetTop;
-      }
+      this.$.list.scrollOffset = this.$.list.offsetTop - bookmarksOffsetTop;
     });
   }
 
@@ -652,11 +634,8 @@ export class PowerBookmarksListElement extends PolymerElement implements
         this.dispatchEvent(
             new CustomEvent('clear-search', {bubbles: true, composed: true}));
         afterNextRender(this, () => {
-          for (let i = 0; i < this.displayLists_.length; i++) {
-            if (this.displayLists_[i].length > 0) {
-              this.getDisplayListElement_(i)!.focusItem(0);
-              break;
-            }
+          if (this.displayList_.length > 0) {
+            this.$.list.focusItem(0);
           }
         });
       } else {
@@ -710,29 +689,27 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.renamingId = '';
   }
 
-  private getDisplayListElement_(index: number): IronListElement|null {
-    return this.shadowRoot!.querySelector<IronListElement>(
-        `#shownBookmarksIronList${index}`);
-  }
-
-  private notifyBookmarksListResize_() {
-    for (let i = 0; i < this.displayLists_.length; i++) {
-      const displayListElement = this.getDisplayListElement_(i);
-      // When switching between filtered and non-filtered views, the list of
-      // display elements might become briefly out of sync with
-      // `this.displayLists_` so check that it exists.
-      if (displayListElement) {
-        displayListElement.notifyResize();
-      }
+  private getRowHeading_(_item: BookmarksTreeNode, index: number): string {
+    const showHeadings =
+        this.sectionVisibility_ && this.sectionVisibility_.filterHeadings;
+    if (!showHeadings) {
+      return '';
     }
-  }
 
-  private getFilterHeading_(index: number) {
+    if (index === this.firstSecondaryIndex_) {
+      return loadTimeData.getString('secondaryFilterHeading');
+    }
+
     if (index === 0) {
       return loadTimeData.getStringF(
           'primaryFilterHeading', this.getActiveFolderLabel_());
     }
-    return loadTimeData.getString('secondaryFilterHeading');
+
+    return '';
+  }
+
+  private notifyBookmarksListResize_() {
+    this.$.list.notifyResize();
   }
 
   private getSelectedDescription_() {
@@ -811,7 +788,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   private onViewToggled_() {
     this.compact_ = !this.compact_;
     if (this.compact_) {
-      this.updateDisplayLists_();
+      this.updateDisplayList_();
     }
     this.notifyBookmarksListResize_();
     recordViewType(this.compact_);
@@ -820,7 +797,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private computeHasShownBookmarks_(): boolean {
-    return this.displayLists_.some((list) => list.length > 0);
+    return !!this.displayList_ && this.displayList_.length > 0;
   }
 
   private computeSectionVisibility_(): ListSectionVisibility {
@@ -843,7 +820,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
   }
 
   private onShownBookmarksResize_() {
-    // The iron-lists of `displayLists_` are in a dynamically sized card.
+    // The iron-list of `displayList_` is in a dynamically sized card.
     // Any time the size changes, let iron-list know so that iron-list can
     // properly adjust to its possibly new height.
     this.notifyBookmarksListResize_();

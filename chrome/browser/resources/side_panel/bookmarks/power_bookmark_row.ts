@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './power_bookmark_row_item.js';
+import '//bookmarks-side-panel.top-chrome/shared/sp_heading.js';
 
 import type {PriceTrackingBrowserProxy} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
 import {PriceTrackingBrowserProxyImpl} from '//resources/cr_components/commerce/price_tracking_browser_proxy.js';
@@ -65,6 +66,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
       activeFolderPath: {type: Array},
       hasFolders: {type: Boolean, reflect: true},
       activeSortIndex: {type: Number},
+      rowHeading: {type: String},
     };
   }
 
@@ -99,6 +101,7 @@ export class PowerBookmarkRowElement extends CrLitElement {
   accessor hasFolders: boolean = false;
   accessor activeSortIndex: number = 0;
   accessor listItemSize: CrUrlListItemSize = CrUrlListItemSize.COMPACT;
+  accessor rowHeading: string = '';
 
   private bookmarksService_: PowerBookmarksService =
       PowerBookmarksService.getInstance();

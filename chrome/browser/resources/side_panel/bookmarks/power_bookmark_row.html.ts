@@ -9,6 +9,11 @@ import type {PowerBookmarkRowElement} from './power_bookmark_row.ts';
 export function getHtml(this: PowerBookmarkRowElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
+${this.rowHeading ? html`
+  <sp-heading hide-back-button>
+    <h1 slot="heading">${this.rowHeading}</h1>
+  </sp-heading>
+` : ''}
 ${this.shouldExpand_() ? html`
   <power-bookmark-row-item id="listItem" class="folder"
       .isExpandable="${this.shouldExpand_()}"

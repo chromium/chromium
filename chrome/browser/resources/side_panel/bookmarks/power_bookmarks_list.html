@@ -19,10 +19,6 @@
     padding-bottom: 40px;
   }
 
-  sp-heading {
-    margin: 8px 14px;
-  }
-
   #scroller {
     height: 100%;
     overflow-y: auto;
@@ -67,49 +63,40 @@
           compact$="[[compact_]]"
           on-click="onAddNewFolderClicked_">
       </power-bookmarks-add-folder-button>
-      <template is="dom-repeat" items="[[displayLists_]]" as="bookmarks">
-        <template is="dom-if" restamp if="[[bookmarks.length]]">
-          <sp-heading hidden="[[!sectionVisibility_.filterHeadings]]"
-              hide-back-button>
-            <h1 slot="heading">
-              [[getFilterHeading_(index, activeFolderPath.*)]]
-            </h1>
-          </sp-heading>
-          <iron-list id="shownBookmarksIronList[[index]]"
-              items="[[bookmarks]]" scroll-target="scroller" role="tree">
-            <template>
-              <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
-                  compact="[[compact_]]"
-                  search-query="[[searchQuery]]"
-                  updated-element-ids="[[updatedElementIds_]]"
-                  trailing-icon-tooltip="$i18n{tooltipMore}"
-                  has-checkbox="[[editing]]"
-                  active-sort-index="[[activeSortIndex]]"
-                  selected-bookmarks=
-                      "[[getSelectedBookmarksList_(selectedBookmarks.*)]]"
-                  renaming-id="[[renamingId]]"
-                  on-row-clicked="onRowClicked_"
-                  on-context-menu="onShowContextMenuClicked_"
-                  on-trailing-icon-clicked="onShowContextMenuClicked_"
-                  on-checkbox-change="onRowSelectedChange_"
-                  on-input-change="onRename_"
-                  on-list-item-size-changed="notifyBookmarksListResize_"
-                  on-power-bookmark-toggle="onRowToggled_"
-                  tabindex$="[[tabIndex]]"
-                  image-urls="[[imageUrls_]]"
-                  shopping-collection-folder-id=
-                      "[[shoppingCollectionFolderId_]]"
-                  context-menu-bookmark="[[contextMenuBookmark]]"
-                  draggable="[[canDrag_]]"
-                  can-drag="[[canDrag_]]"
-                  has-active-drag="[[hasActiveDrag_]]"
-                  active-folder-path="[[activeFolderPath]]"
-                  has-folders="[[hasFolders_]]">
-              </power-bookmark-row>
-            </template>
-          </iron-list>
+      <iron-list id="list"
+          items="[[displayList_]]" scroll-target="scroller" role="tree">
+        <template>
+          <power-bookmark-row id="bookmark-[[item.id]]" bookmark="[[item]]"
+              compact="[[compact_]]"
+              search-query="[[searchQuery]]"
+              updated-element-ids="[[updatedElementIds_]]"
+              trailing-icon-tooltip="$i18n{tooltipMore}"
+              has-checkbox="[[editing]]"
+              active-sort-index="[[activeSortIndex]]"
+              selected-bookmarks=
+                  "[[getSelectedBookmarksList_(selectedBookmarks.*)]]"
+              renaming-id="[[renamingId]]"
+              on-row-clicked="onRowClicked_"
+              on-context-menu="onShowContextMenuClicked_"
+              on-trailing-icon-clicked="onShowContextMenuClicked_"
+              on-checkbox-change="onRowSelectedChange_"
+              on-input-change="onRename_"
+              on-list-item-size-changed="notifyBookmarksListResize_"
+              on-power-bookmark-toggle="onRowToggled_"
+              tabindex$="[[tabIndex]]"
+              image-urls="[[imageUrls_]]"
+              shopping-collection-folder-id=
+                  "[[shoppingCollectionFolderId_]]"
+              context-menu-bookmark="[[contextMenuBookmark]]"
+              draggable="[[canDrag_]]"
+              can-drag="[[canDrag_]]"
+              has-active-drag="[[hasActiveDrag_]]"
+              active-folder-path="[[activeFolderPath]]"
+              has-folders="[[hasFolders_]]"
+              row-heading="[[getRowHeading_(item, index, activeFolderPath.*, sectionVisibility_.*, firstSecondaryIndex_)]]">
+          </power-bookmark-row>
         </template>
-      </template>
+      </iron-list>
     </div>
   </div>
 </div>

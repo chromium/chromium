@@ -21,3 +21,7 @@ power-bookmark-row-item.folder {
   --cr-expand-button-icon-size: 16px;
   --cr-expand-button-size: 24px;
 }
+
+sp-heading {
+  margin: 8px 14px;
+}

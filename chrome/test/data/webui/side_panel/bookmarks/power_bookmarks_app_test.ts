@@ -90,7 +90,6 @@ suite('General', () => {
     const bookmark = getBookmarkWithId(powerBookmarksApp, id);
     assertTrue(!!bookmark);
     powerBookmarksApp.$.bookmarksList.clickBookmarkRowForTests(bookmark);
-
     await metricsLogged;
   }
 
@@ -155,6 +154,9 @@ suite('General', () => {
     powerBookmarksApp = await initializeAppUi(bookmarksApi);
     await eventToPromise(
         'bookmark-count-recorded', powerBookmarksApp.$.bookmarksList);
+    await microtasksFinished();
+    powerBookmarksApp.$.bookmarksList
+        .flushNavigationElementsDebouncerForTesting();
   });
 
   suite('Part1', function() {
@@ -250,7 +252,10 @@ suite('General', () => {
               .getElementsForTesting()
               .map((el: HTMLElement) => el.id));
 
+      const navigationElementsRebuilt = eventToPromise(
+          'rebuild-navigation-elements', powerBookmarksApp.$.bookmarksList);
       await performSearch('child');
+      await navigationElementsRebuilt;
 
       assertArrayEquals(
           [
