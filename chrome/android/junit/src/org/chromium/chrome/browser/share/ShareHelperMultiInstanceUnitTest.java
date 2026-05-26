@@ -136,7 +136,7 @@ public class ShareHelperMultiInstanceUnitTest {
     public void shareInTwoWindow_KillFirstWindowThenCompleteSecond() throws SendIntentException {
         mWindowFoo.startShare();
         mWindowBar.startShare();
-        mWindowFoo.closeWindow().verifyCleanerIntentDispatched();
+        mWindowFoo.closeWindow().verifyCallbackCanceled();
         mWindowBar
                 .verifyCallbackNotCalled()
                 .completeShareWithComponent(COMPONENT_NAME_2)
@@ -148,7 +148,7 @@ public class ShareHelperMultiInstanceUnitTest {
     @Test
     public void shareInTwoWindow_KillSecondWindowThenCompleteFirst() throws SendIntentException {
         mWindowFoo.startShare();
-        mWindowBar.startShare().closeWindow().verifyCleanerIntentDispatched();
+        mWindowBar.startShare().closeWindow().verifyCallbackCanceled();
         mWindowFoo
                 .verifyCallbackNotCalled()
                 .completeShareWithComponent(COMPONENT_NAME_1)
@@ -262,16 +262,9 @@ public class ShareHelperMultiInstanceUnitTest {
             return this;
         }
 
-        public SingleWindowTestInstance verifyCleanerIntentDispatched() {
-            Intent intent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
-            assertNotNull("Cleaner intent is not sent.", intent);
-            assertEquals(
-                    "Cleaner intent does not have the right class name.",
-                    intent.getComponent().getClassName(),
-                    mActivity.getClass().getName());
-            assertTrue(
-                    "FLAG_ACTIVITY_CLEAR_TOP is not set for cleaner intent.",
-                    (intent.getFlags() & Intent.FLAG_ACTIVITY_CLEAR_TOP) != 0);
+        public SingleWindowTestInstance verifyCallbackCanceled() {
+            assertTrue("Callback onCancel should be called.", mCallback.onCancelCalled);
+            verify(mActivity).unregisterReceiver(any());
             return this;
         }
 

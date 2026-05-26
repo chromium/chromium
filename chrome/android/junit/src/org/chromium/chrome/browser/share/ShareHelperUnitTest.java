@@ -396,6 +396,30 @@ public class ShareHelperUnitTest {
                 Matchers.is(name));
     }
 
+    @Test
+    public void testCleanupIntentNotSentIfActivityFinishing() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        WindowAndroid window =
+                new ActivityWindowAndroid(
+                        activity,
+                        /* listenToActivityState= */ false,
+                        IntentRequestTracker.createFromActivity(activity),
+                        /* insetObserver= */ null,
+                        /* occlusionTrackingAllowed= */ true);
+
+        ShareParams params = new ShareParams.Builder(window, "", "").build();
+        ShareHelper.shareWithSystemShareSheetUi(params, null, true);
+
+        Intent chooserIntent = Shadows.shadowOf(activity).getNextStartedActivity();
+        assertNotNull("Chooser intent should have been started", chooserIntent);
+
+        activity.finish();
+        window.destroy();
+
+        Intent nextIntent = Shadows.shadowOf(activity).getNextStartedActivity();
+        assertNull("Cleanup intent should not be sent when activity is finishing.", nextIntent);
+    }
+
     private ShareParams emptyShareParams() {
         return new ShareParams.Builder(mWindow, "", "").build();
     }

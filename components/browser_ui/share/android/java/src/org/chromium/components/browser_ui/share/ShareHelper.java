@@ -297,6 +297,30 @@ public class ShareHelper {
             // attaching window.
             Context attachedContext = self.mAttachedContext.get();
             if (attachedContext != null) {
+                Activity activity = ContextUtils.activityFromContext(attachedContext);
+                // An activity is "finishing" if it is done and should be closed (see
+                // https://developer.android.com/reference/android/app/Activity#finish()).
+                // If the activity is finishing, we can't send the clearing intent. The clearing
+                // intent uses FLAG_ACTIVITY_CLEAR_TOP to reuse the parent activity and clear the
+                // share sheet on top of it. However, if the parent activity is finishing, the OS
+                // cannot reuse it and falls back to launching a new instance of it. Since this
+                // clearing intent has no URL, the new instance (or Custom Tab) defaults to loading
+                // about:blank.
+                //
+                // Furthermore, we don't need to explicitly clear the ChooserActivity when the
+                // parent
+                // activity is finishing, because the OS will automatically destroy any activities
+                // on top of it in the task stack (see
+                // https://developer.android.com/guide/components/activities/tasks-and-back-stack).
+                //
+                // The activity may be destroyed temporarily during a recreate (see
+                // https://developer.android.com/reference/android/app/Activity#onDestroy()). Theme
+                // changes recreate the activity and dismiss the share sheet in non-freeform window
+                // mode, so we want to emit the clearing intent in those cases.
+                if (activity != null && activity.isFinishing()) {
+                    self.cancel();
+                    return;
+                }
                 Log.i(TAG, "Dispatch cleaning intent to close the share sheet.");
                 // Issue a cleaner intent so the share sheet is cleared. This is a workaround to
                 // close the top ChooserActivity when share isn't completed.
