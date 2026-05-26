@@ -159,6 +159,7 @@
     return;
   }
 
+  [_viewController.view endEditing:YES];
   [_viewController.presentingViewController
       dismissViewControllerAnimated:YES
                          completion:dismissComplete];
@@ -166,6 +167,7 @@
 
 - (void)stop {
   if (!_viewController.isBeingDismissed) {
+    [_viewController.view endEditing:YES];
     [_viewController.presentingViewController
         dismissViewControllerAnimated:NO
                            completion:nil];
