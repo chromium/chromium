@@ -30,7 +30,7 @@ Vote GetVote(const WorkerNode* worker_node) {
   // for now set `USER_BLOCKING` so all use-cases will be covered.
   base::Process::Priority priority =
       worker_node->GetOrigin().GetURL().SchemeIs("chrome-extension")
-          ? base::Process::Priority::kUserVisible
+          ? base::Process::Priority::kUserBlocking
           : base::Process::Priority::kMinValue;
   return Vote(priority, ExtensionServiceWorkerVoter::kPriorityReason);
 }

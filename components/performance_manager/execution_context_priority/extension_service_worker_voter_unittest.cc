@@ -81,7 +81,7 @@ TEST_F(ExtensionServiceWorkerVoterTest, AddExtensionServiceWorker) {
 
   EXPECT_EQ(observer_.GetVoteCount(), 1u);
   EXPECT_TRUE(observer_.HasVote(voter_id(), GetExecutionContext(worker_node),
-                                base::Process::Priority::kUserVisible,
+                                base::Process::Priority::kUserBlocking,
                                 ExtensionServiceWorkerVoter::kPriorityReason));
 
   test_worker_node_factory_.DeleteWorker(worker_node);
