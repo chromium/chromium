@@ -64,6 +64,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/expectation_handler.h"
 #include "net/test/url_request/url_request_failed_job.h"
 #include "services/network/public/cpp/loading_params.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -5061,8 +5062,8 @@ class NavigationRequestResponseBodyBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(NavigationRequestResponseBodyBrowserTest, Received) {
-  net::test_server::ControllableHttpResponse response(embedded_test_server(),
-                                                      "/target.html");
+  net::test_server::ExpectationHandler handler(embedded_test_server());
+  handler.OnRequest("/target.html").RespondWith("text/html", kResponseBody);
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ResponseBodyNavigationThrottle* client_throttle = nullptr;
@@ -5086,10 +5087,6 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestResponseBodyBrowserTest, Received) {
   EXPECT_TRUE(manager.WaitForRequestStart());
   manager.ResumeNavigation();
 
-  // Build the response with no headers and some body text.
-  response.WaitForRequest();
-  response.Send(base::StringPrintf(kResponseTemplate, "", kResponseBody));
-  response.Done();
   ASSERT_TRUE(manager.WaitForResponse());
   ASSERT_NE(nullptr, client_throttle);
   EXPECT_TRUE(client_throttle->was_callback_called());
