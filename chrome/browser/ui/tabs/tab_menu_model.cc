@@ -164,6 +164,12 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index) {
                                               : kDevicesOldIcon,
           ui::kColorMenuIcon, kTabMenuIconSize));
 #endif
+
+  // TODO(crbug.com/516708776): Remove new feature tag when no longer new.
+  SetIsNewFeatureAt(GetItemCount() - 1,
+                    UserEducationService::MaybeShowNewBadge(
+                        tab_strip_->profile(),
+                        send_tab_to_self::kSendTabToSelfEnhancedDesktopUI));
 }
 
 void TabMenuModel::BuildLegacySendTabToSelfItem() {

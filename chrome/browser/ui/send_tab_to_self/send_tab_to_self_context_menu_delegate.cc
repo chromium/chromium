@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_util.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -160,6 +161,10 @@ void SendTabToSelfContextMenuDelegate::ExecuteCommand(int command_id,
     if (device_index >= devices_.size()) {
       return;
     }
+
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+        web_contents_->GetBrowserContext(),
+        send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
 
     SendTabToSelfPageHandler* handler =
         SendTabToSelfPageHandler::GetOrCreateForWebContents(

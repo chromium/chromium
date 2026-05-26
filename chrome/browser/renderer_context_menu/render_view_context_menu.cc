@@ -4430,6 +4430,13 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
             : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
                                                 : kDevicesOldIcon));
 #endif
+
+    // TODO(crbug.com/516708776): Remove new feature tag when no longer new.
+    menu_model_.SetIsNewFeatureAt(
+        menu_model_.GetItemCount() - 1,
+        UserEducationService::MaybeShowNewBadge(
+            GetBrowserContext(),
+            send_tab_to_self::kSendTabToSelfEnhancedDesktopUI));
     return;
   }
 

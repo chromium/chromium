@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_device_picker_bubble_view.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_promo_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions.h"
+#include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -203,6 +204,9 @@ SendTabToSelfBubbleController::GetEntryPointDisplayReason() {
 void SendTabToSelfBubbleController::OnDeviceSelected(
     const std::string& target_device_guid,
     std::string_view device_name) {
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
+      GetProfile(), send_tab_to_self::kSendTabToSelfEnhancedDesktopUI);
+
   // TODO(crbug.com/40817150): This duplicates the ShouldOfferFeature() check,
   // instead the 2 codepaths should share code.
   SendTabToSelfPageHandler* handler =
