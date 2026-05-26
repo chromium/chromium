@@ -42,6 +42,10 @@ public class WebappAuthenticator {
     private static final int MAC_KEY_BYTE_COUNT = 32;
     private static final Object sLock = new Object();
 
+    public static final int MAC_INVALID = 0;
+    public static final int MAC_LEGACY = 1;
+    public static final int MAC_TRUSTED = 2;
+
     private static @Nullable SecretKey sKey;
 
     /**
@@ -67,11 +71,49 @@ public class WebappAuthenticator {
      * @return The bytes of a MAC for the URL, or null if a secure MAC was not available.
      */
     public static byte @Nullable [] getMacForUrl(String url) {
+        return getMacForUrlAndIcon(url, null);
+    }
+
+    /**
+     * Calculates a MAC for the concatenation of a URL and an encoded icon.
+     *
+     * @param url A URL for which to calculate a MAC.
+     * @param encodedIcon The base64 encoded icon, or null.
+     * @return The bytes of a MAC, or null if a secure MAC was not available.
+     */
+    public static byte @Nullable [] getMacForUrlAndIcon(String url, @Nullable String encodedIcon) {
         Mac mac = getMac();
         if (mac == null) {
             return null;
         }
-        return mac.doFinal(ApiCompatibilityUtils.getBytesUtf8(url));
+        mac.update(ApiCompatibilityUtils.getBytesUtf8(url));
+        if (encodedIcon != null) {
+            mac.update(ApiCompatibilityUtils.getBytesUtf8(encodedIcon));
+        }
+        return mac.doFinal();
+    }
+
+    /**
+     * Verifies the MAC for a URL and encoded icon.
+     *
+     * @param url The URL to validate.
+     * @param encodedIcon The base64 encoded icon, or null.
+     * @param mac The bytes of a previously-calculated MAC.
+     * @return MAC_TRUSTED (2) if MAC matches URL and Icon. MAC_LEGACY (1) if MAC matches URL only.
+     *     MAC_INVALID (0) otherwise.
+     */
+    public static int verifyMac(String url, @Nullable String encodedIcon, byte[] mac) {
+        if (encodedIcon != null) {
+            byte[] goodMacWithIcon = getMacForUrlAndIcon(url, encodedIcon);
+            if (goodMacWithIcon != null && constantTimeAreArraysEqual(goodMacWithIcon, mac)) {
+                return MAC_TRUSTED;
+            }
+        }
+        byte[] goodMacUrlOnly = getMacForUrlAndIcon(url, null);
+        if (goodMacUrlOnly != null && constantTimeAreArraysEqual(goodMacUrlOnly, mac)) {
+            return MAC_LEGACY;
+        }
+        return MAC_INVALID;
     }
 
     // TODO(palmer): Put this method, and as much of this class as possible, in a utility class.

@@ -39,7 +39,8 @@ public class WebappSplashScreenHomescreenIconTest {
                                 .createIntent()
                                 .putExtra(
                                         WebappConstants.EXTRA_ICON,
-                                        WebappActivityTestRule.TEST_ICON));
+                                        WebappActivityTestRule.TEST_ICON)
+                                .putExtra(WebappConstants.EXTRA_IS_ICON_TRUSTED, true));
     }
 
     @Test
