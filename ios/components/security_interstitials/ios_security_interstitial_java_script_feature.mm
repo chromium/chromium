@@ -45,11 +45,12 @@ void IOSSecurityInterstitialJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!script_message.body() || !script_message.body()->is_dict()) {
+  if (!script_message.legacy_body() ||
+      !script_message.legacy_body()->is_dict()) {
     return;
   }
 
-  const base::DictValue& dict = script_message.body()->GetDict();
+  const base::DictValue& dict = script_message.legacy_body()->GetDict();
   const std::string* command = dict.FindString("command");
   if (!command) {
     return;

@@ -92,13 +92,13 @@ ClipboardJavaScriptFeature::GetScriptMessageHandlerName() const {
 void ClipboardJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& message) {
-  // Expected `message.body` format:
+  // Expected `message.legacy_body` format:
   // {
   //   "command": "read"|"write"|"didFinishClipboardRead",
   //   "requestId": <number>,  // Only for "read" and "write".
   //   "frameId": <string>,
   // }
-  const base::DictValue* body = message.body()->GetIfDict();
+  const base::DictValue* body = message.legacy_body()->GetIfDict();
   if (!body) {
     return;
   }

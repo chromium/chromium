@@ -156,7 +156,7 @@ void FakeJavaScriptFeature::ScriptMessageReceivedWithReply(
 void FakeJavaScriptFeature::SetLastReceivedMessage(
     const ScriptMessage& message) {
   last_received_message_ = std::make_unique<const ScriptMessage>(
-      std::make_unique<base::Value>(message.body()->Clone()),
+      std::make_unique<base::Value>(message.legacy_body()->Clone()),
       message.is_user_interacting(), message.is_main_frame(),
       message.request_url(), message.security_origin());
 }

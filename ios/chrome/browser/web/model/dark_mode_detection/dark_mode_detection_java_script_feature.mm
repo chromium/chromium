@@ -64,11 +64,11 @@ void DarkModeDetectionJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!message.body() || !message.body()->is_dict()) {
+  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
     return;
   }
 
-  const base::DictValue& dict = message.body()->GetDict();
+  const base::DictValue& dict = message.legacy_body()->GetDict();
   std::optional<bool> supports_via_meta = dict.FindBool("supportsViaMeta");
   std::optional<bool> supports_via_css = dict.FindBool("supportsViaCss");
   std::optional<bool> supports_via_media_query =

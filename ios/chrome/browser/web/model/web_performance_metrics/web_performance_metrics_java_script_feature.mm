@@ -65,11 +65,11 @@ void WebPerformanceMetricsJavaScriptFeature::ScriptMessageReceived(
   DCHECK(web_state);
 
   // Verify that the message is well-formed before using it
-  if (!message.body()->is_dict()) {
+  if (!message.legacy_body()->is_dict()) {
     return;
   }
 
-  base::DictValue& body_dict = message.body()->GetDict();
+  base::DictValue& body_dict = message.legacy_body()->GetDict();
 
   std::string* metric = body_dict.FindString("metric");
   if (!metric || metric->empty()) {

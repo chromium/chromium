@@ -55,11 +55,12 @@ void LanguageDetectionJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!script_message.body() || !script_message.body()->is_dict()) {
+  if (!script_message.legacy_body() ||
+      !script_message.legacy_body()->is_dict()) {
     return;
   }
 
-  base::DictValue& body_dict = script_message.body()->GetDict();
+  base::DictValue& body_dict = script_message.legacy_body()->GetDict();
 
   std::optional<bool> has_notranslate = body_dict.FindBool("hasNoTranslate");
   const std::string* html_lang = body_dict.FindString("htmlLang");

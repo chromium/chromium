@@ -83,11 +83,11 @@ void PageStabilityJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!message.body() || !message.body()->is_dict()) {
+  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
     return;
   }
 
-  const base::DictValue& dict = message.body()->GetDict();
+  const base::DictValue& dict = message.legacy_body()->GetDict();
   std::optional<double> mutation_count = dict.FindDouble("mutationCount");
   std::optional<double> time_to_first_mutation =
       dict.FindDouble("timeToFirstMutation");

@@ -49,14 +49,15 @@ void FaviconJavaScriptFeature::ScriptMessageReceived(
     const web::ScriptMessage& message) {
   DCHECK(message.is_main_frame());
 
-  if (!message.body() || !message.body()->is_list() || !message.request_url()) {
+  if (!message.legacy_body() || !message.legacy_body()->is_list() ||
+      !message.request_url()) {
     return;
   }
 
   const GURL url = message.request_url().value();
 
   std::vector<FaviconURL> urls;
-  if (!ExtractFaviconURL(message.body()->GetList(), url, &urls)) {
+  if (!ExtractFaviconURL(message.legacy_body()->GetList(), url, &urls)) {
     return;
   }
 

@@ -53,11 +53,11 @@ NavigationJavaScriptFeature::GetScriptMessageHandlerName() const {
 void NavigationJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!message.body()) {
+  if (!message.legacy_body()) {
     // Ignore malformed responses.
     return;
   }
-  auto* dict = message.body()->GetIfDict();
+  auto* dict = message.legacy_body()->GetIfDict();
   if (!dict) {
     // Ignore malformed responses.
     return;

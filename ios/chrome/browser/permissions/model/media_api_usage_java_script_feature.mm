@@ -73,7 +73,8 @@ void MediaAPIUsageJavaScriptFeature::ScriptMessageReceived(
   std::optional<bool> audio;
   std::optional<bool> video;
   const base::DictValue* script_dict =
-      script_message.body() ? script_message.body()->GetIfDict() : nullptr;
+      script_message.legacy_body() ? script_message.legacy_body()->GetIfDict()
+                                   : nullptr;
   if (script_dict) {
     audio = script_dict->FindBool(kScriptMessageResponseAudioKey);
     video = script_dict->FindBool(kScriptMessageResponseVideoKey);

@@ -30,12 +30,12 @@ FormRemovalParams::~FormRemovalParams() = default;
 bool BaseFormActivityParams::FromMessage(const web::ScriptMessage& message,
                                          const base::DictValue** message_body,
                                          BaseFormActivityParams* params) {
-  if (!message.body() || !message.body()->is_dict()) {
+  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
     // Ignore invalid message.
     return false;
   }
 
-  const auto& message_body_dict = message.body()->GetDict();
+  const auto& message_body_dict = message.legacy_body()->GetDict();
   *message_body = &message_body_dict;
   const std::string* frame_id = message_body_dict.FindString("frameID");
   if (!frame_id) {

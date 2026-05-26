@@ -54,10 +54,10 @@ void PasswordProtectionJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
   // Verify that the message is well-formed before using it.
-  if (!message.body()->is_dict()) {
+  if (!message.legacy_body()->is_dict()) {
     return;
   }
-  const base::DictValue& dict = message.body()->GetDict();
+  const base::DictValue& dict = message.legacy_body()->GetDict();
 
   const std::string* event_type = dict.FindString("eventType");
   if (!event_type || event_type->empty()) {

@@ -86,7 +86,7 @@ void WebSelectionJavaScriptFeature::ScriptMessageReceived(
     // There is no observer waiting for selection retrieval. Ignore the message.
     return;
   }
-  base::Value* response = script_message.body();
+  base::Value* response = script_message.legacy_body();
   if (!response || !response->is_dict()) {
     NOTREACHED();
   }

@@ -64,9 +64,9 @@ TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->body());
+  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
   const std::string* reply =
-      feature()->last_received_message()->body()->GetIfString();
+      feature()->last_received_message()->legacy_body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
@@ -104,9 +104,9 @@ TEST_F(JavaScriptFeatureManagerPageContentWorldIntTest,
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->body());
+  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
   const std::string* reply =
-      feature()->last_received_message()->body()->GetIfString();
+      feature()->last_received_message()->legacy_body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
@@ -152,9 +152,9 @@ TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->body());
+  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
   const std::string* reply =
-      feature()->last_received_message()->body()->GetIfString();
+      feature()->last_received_message()->legacy_body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }
@@ -192,9 +192,9 @@ TEST_F(JavaScriptFeatureManagerAnyContentWorldIntTest,
 
   EXPECT_EQ(web_state(), feature()->last_received_web_state());
 
-  ASSERT_TRUE(feature()->last_received_message()->body());
+  ASSERT_TRUE(feature()->last_received_message()->legacy_body());
   const std::string* reply =
-      feature()->last_received_message()->body()->GetIfString();
+      feature()->last_received_message()->legacy_body()->GetIfString();
   ASSERT_TRUE(reply);
   EXPECT_STREQ(kFakeJavaScriptFeaturePostMessageReplyValue, reply->c_str());
 }

@@ -78,11 +78,11 @@ ContextMenuJavaScriptFeature::GetScriptMessageHandlerName() const {
 void ContextMenuJavaScriptFeature::ScriptMessageReceived(
     WebState* web_state,
     const ScriptMessage& message) {
-  if (!message.body()) {
+  if (!message.legacy_body()) {
     // Ignore malformed responses.
     return;
   }
-  const auto* dict = message.body()->GetIfDict();
+  const auto* dict = message.legacy_body()->GetIfDict();
   if (!dict) {
     // Ignore malformed responses.
     return;

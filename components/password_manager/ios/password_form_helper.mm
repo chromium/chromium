@@ -391,7 +391,7 @@ const char kHostFrameKey[] = "host_frame";
   }
 
   web::WebFrame* frame = nullptr;
-  base::Value* body = message.body();
+  base::Value* body = message.legacy_body();
 
   if (!body->is_dict()) {
     // Don't handle the message if it isn't of dictionary type. The renderer

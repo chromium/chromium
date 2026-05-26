@@ -86,10 +86,12 @@ WebViewMessageHandlerJavaScriptFeature::GetScriptMessageHandlerName() const {
 void WebViewMessageHandlerJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& script_message) {
-  if (!script_message.body() || !script_message.body()->is_dict()) {
+  if (!script_message.legacy_body() ||
+      !script_message.legacy_body()->is_dict()) {
     return;
   }
-  base::DictValue message_body = std::move(script_message.body()->GetDict());
+  base::DictValue message_body =
+      std::move(script_message.legacy_body()->GetDict());
 
   // Pass messages from the non-static instances to the static instance during
   // transition.

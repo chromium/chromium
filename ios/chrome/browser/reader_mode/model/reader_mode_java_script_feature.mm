@@ -64,14 +64,14 @@ void ReaderModeJavaScriptFeature::ScriptMessageReceived(
     return;
   }
 
-  if (!message.body() || !message.body()->is_dict()) {
+  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
     ReaderModeHeuristicResultAvailable(
         web_state, ReaderModeHeuristicResult::kMalformedResponse);
     return;
   }
 
   std::optional<std::vector<double>> result =
-      TransformToDerivedFeatures(message.body()->GetDict(), url.value());
+      TransformToDerivedFeatures(message.legacy_body()->GetDict(), url.value());
   if (!result.has_value()) {
     ReaderModeHeuristicResultAvailable(
         web_state, ReaderModeHeuristicResult::kMalformedResponse);

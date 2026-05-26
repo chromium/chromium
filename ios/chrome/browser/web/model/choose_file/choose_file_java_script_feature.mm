@@ -149,10 +149,10 @@ void ChooseFileJavaScriptFeature::ScriptMessageReceived(
   DCHECK(web_state);
 
   // Verify that the message is well-formed before using it
-  if (!message.body()->is_dict()) {
+  if (!message.legacy_body()->is_dict()) {
     return;
   }
-  base::DictValue& body_dict = message.body()->GetDict();
+  base::DictValue& body_dict = message.legacy_body()->GetDict();
 
   std::optional<double> accept_type = body_dict.FindDouble("acceptType");
   std::optional<bool> has_multiple = body_dict.FindBool("hasMultiple");

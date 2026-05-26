@@ -79,14 +79,15 @@ TranslateJavaScriptFeature::GetScriptMessageHandlerName() const {
 void TranslateJavaScriptFeature::ScriptMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!message.is_main_frame() || !message.body() ||
-      !message.body()->is_dict()) {
+  if (!message.is_main_frame() || !message.legacy_body() ||
+      !message.legacy_body()->is_dict()) {
     return;
   }
 
   TranslateController* translate_controller =
       TranslateController::FromWebState(web_state);
-  translate_controller->OnJavascriptCommandReceived(message.body()->GetDict());
+  translate_controller->OnJavascriptCommandReceived(
+      message.legacy_body()->GetDict());
 }
 
 }  // namespace translate

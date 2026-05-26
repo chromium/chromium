@@ -349,12 +349,12 @@ void HandleSubmissionError(const base::DictValue& message) {
 void FormActivityTabHelper::OnFormMessageReceived(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!message.body() || !message.body()->is_dict()) {
+  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
     // Ignore invalid message.
     return;
   }
 
-  const auto& message_body = message.body()->GetDict();
+  const auto& message_body = message.legacy_body()->GetDict();
 
   RecordFormActivityMetrics(message_body);
 
@@ -415,13 +415,13 @@ void FormActivityTabHelper::HandleFormRemoval(
 void FormActivityTabHelper::FormSubmissionHandler(
     web::WebState* web_state,
     const web::ScriptMessage& message) {
-  if (!message.body() || !message.body()->is_dict()) {
+  if (!message.legacy_body() || !message.legacy_body()->is_dict()) {
     // Ignore invalid message.
     RecordFormSubmissionOutcome(FormSubmissionOutcome::kInvalidMessageBody);
     return;
   }
 
-  const base::DictValue& message_body = message.body()->GetDict();
+  const base::DictValue& message_body = message.legacy_body()->GetDict();
   const std::string* frame_id = message_body.FindString("frameID");
   if (!frame_id) {
     RecordFormSubmissionOutcome(FormSubmissionOutcome::kNoFrameID);
