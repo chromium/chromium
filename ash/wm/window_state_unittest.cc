@@ -2324,8 +2324,9 @@ class WindowStateMetricsTest : public AshTestBase {
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void AdvanceClock(base::TimeDelta delta) {
-    task_environment()->AdvanceClock(delta);
-    task_environment()->RunUntilIdle();
+    // Run mock time by the exact partial-split duration under test so any
+    // delayed metrics work due in that interval completes before assertions.
+    task_environment()->FastForwardBy(delta);
   }
 };
 
