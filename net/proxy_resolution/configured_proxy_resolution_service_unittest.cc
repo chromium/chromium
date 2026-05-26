@@ -36,6 +36,8 @@
 #include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
+#include "net/dns/context_host_resolver.h"
+#include "net/dns/dns_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log.h"
@@ -5243,15 +5245,25 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
   config.set_proxy_override_rules(
       {CreateOverrideRule(kMatchingRule, proxy_list, kDnsHost1)});
 
-  mock_host_resolver_ = std::make_unique<MockHostResolver>();
-  mock_host_resolver_->set_ondemand_mode(true);
+  RecordingNetLogObserver net_log_observer;
+
+  scoped_refptr<MockHostResolverProc> resolver_proc =
+      base::MakeRefCounted<MockHostResolverProc>();
+  resolver_proc->AddRuleForAllFamilies(std::string(GURL(kDnsHost1).host()),
+                                       "1.2.3.4");
+
+  std::unique_ptr<ContextHostResolver> host_resolver =
+      HostResolver::CreateStandaloneContextResolver(net::NetLog::Get());
+  host_resolver->SetHostResolverSystemParamsForTest(
+      HostResolverSystemTask::Params(resolver_proc,
+                                     4u /* max_retry_attempts */));
 
   auto config_service =
       std::make_unique<MockProxyConfigService>(std::move(config));
   auto factory = std::make_unique<MockAsyncProxyResolverFactory>(false);
   ConfiguredProxyResolutionService service(
-      std::move(config_service), std::move(factory), mock_host_resolver_.get(),
-      /*net_log=*/nullptr,
+      std::move(config_service), std::move(factory), host_resolver.get(),
+      net::NetLog::Get(),
       /*quick_check_enabled=*/true);
 
   ProxyInfo info1;
@@ -5261,38 +5273,52 @@ TEST_F(ConfiguredProxyResolutionServiceTest,
       net::SchemefulSite(GURL(kMatchingUrl)));
   int rv = service.ResolveProxy(GURL(kMatchingUrl), std::string(), nak, &info1,
                                 callback1.callback(), &request1,
-                                NetLogWithSource(), DEFAULT_PRIORITY);
+                                NetLogWithSource::Make(NetLogSourceType::NONE),
+                                DEFAULT_PRIORITY);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_TRUE(request1);
   ASSERT_FALSE(callback1.have_result());
 
-  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
-  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
-  EXPECT_EQ(mock_host_resolver_->request_priority(1U), DEFAULT_PRIORITY);
+  ASSERT_TRUE(resolver_proc->WaitFor(1U));
+  EXPECT_EQ(resolver_proc->GetCaptureList().size(), 1U);
 
   ProxyInfo info2;
   TestCompletionCallback callback2;
   std::unique_ptr<ProxyResolutionRequest> request2;
-  rv = service.ResolveProxy(GURL(kMatchingUrl), std::string(), nak, &info2,
-                            callback2.callback(), &request2, NetLogWithSource(),
-                            HIGHEST);
+  rv = service.ResolveProxy(
+      GURL(kMatchingUrl), std::string(), nak, &info2, callback2.callback(),
+      &request2, NetLogWithSource::Make(NetLogSourceType::NONE), HIGHEST);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
   EXPECT_TRUE(request2);
   ASSERT_FALSE(callback2.have_result());
 
-  // There should only be one pending DNS resolution request.
-  ASSERT_TRUE(mock_host_resolver_->has_pending_requests());
-  ASSERT_EQ(mock_host_resolver_->last_id(), 1U);
-  EXPECT_EQ(mock_host_resolver_->request_priority(1U), HIGHEST);
+  // There should only be one pending DNS resolution request in the proc.
+  EXPECT_EQ(resolver_proc->GetCaptureList().size(), 1U);
 
-  AddDnsEntry(GURL(kDnsHost1), "1.2.3.4");
-  mock_host_resolver_->ResolveOnlyRequestNow();
+  resolver_proc->SignalAll();
 
   EXPECT_THAT(callback1.WaitForResult(), IsOk());
   EXPECT_TRUE(info1.proxy_list().Equals(proxy_list));
 
   EXPECT_THAT(callback2.WaitForResult(), IsOk());
   EXPECT_TRUE(info2.proxy_list().Equals(proxy_list));
+
+  // Verify NetLog to confirm HostResolverManager received 2 queries
+  // but only created 1 job (coalesced).
+  size_t request_count = 0;
+  size_t job_count = 0;
+  for (const auto& entry : net_log_observer.GetEntries()) {
+    if (entry.type == NetLogEventType::HOST_RESOLVER_MANAGER_REQUEST) {
+      if (entry.phase == NetLogEventPhase::BEGIN) {
+        request_count++;
+      }
+    } else if (entry.type ==
+               NetLogEventType::HOST_RESOLVER_MANAGER_CREATE_JOB) {
+      job_count++;
+    }
+  }
+  EXPECT_EQ(request_count, 2U);
+  EXPECT_EQ(job_count, 1U);
 }
 
 TEST_F(ConfiguredProxyResolutionServiceTest,

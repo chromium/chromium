@@ -15,6 +15,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/unique_ptr_adapters.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -38,7 +39,6 @@
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "net/proxy_resolution/resolve_host_request.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "url/gurl.h"
 
 namespace base {
@@ -299,31 +299,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
     STATE_READY,
   };
 
-  struct HostResolutionRequest {
-    HostResolutionRequest(
-        std::unique_ptr<HostResolver::ResolveHostRequest> request,
-        RequestPriority initial_priority);
 
-    HostResolutionRequest(HostResolutionRequest&&);
-    HostResolutionRequest& operator=(HostResolutionRequest&&);
-
-    HostResolutionRequest(const HostResolutionRequest&) = delete;
-    HostResolutionRequest& operator=(const HostResolutionRequest&) = delete;
-
-    ~HostResolutionRequest();
-
-    // Adds a new `listener` for the current request, with its associated
-    // `priority`. If the new priority is higher than the current one, the
-    // request's priority will be updated.
-    void AddListener(base::WeakPtr<ConfiguredProxyResolutionRequest> listener,
-                     RequestPriority priority);
-
-    std::unique_ptr<HostResolver::ResolveHostRequest> request;
-
-    // Make sure to add listeners using the `AddListener` function.
-    std::vector<base::WeakPtr<ConfiguredProxyResolutionRequest>> listeners;
-    RequestPriority current_priority;
-  };
 
   // We won't always be able to return a good LoadState. For example, the
   // ConfiguredProxyResolutionService can only get this information from the
@@ -402,11 +378,8 @@ class NET_EXPORT ConfiguredProxyResolutionService
       const ProxyConfigWithAnnotation& effective_config);
 
   // Initiates a DNS resolution for `dns_condition` using
-  // `network_anonymization_key` and `priority`. It ensures only one request is
-  // active per host: if a resolution is pending, `listener` is added to the
-  // existing request; otherwise, a new request is created and stored in
-  // `host_resolution_requests_`. The `listener` must be a base::WeakPtr as the
-  // service does not own the pending requests.
+  // `network_anonymization_key` and `priority`. `listener` must be a
+  // base::WeakPtr as the service does not own the pending requests.
   std::optional<ResolveHostResult> RequestHostResolution(
       const ProxyConfig::ProxyOverrideRule::DnsProbeCondition& dns_condition,
       base::WeakPtr<ConfiguredProxyResolutionRequest> listener,
@@ -414,13 +387,17 @@ class NET_EXPORT ConfiguredProxyResolutionService
       const NetLogWithSource& net_log,
       RequestPriority priority);
 
-  // When called, will look into the `host_resolution_requests_` map
-  // and notify all the listeners that a DNS resolution request has
-  // completed with `net_error`. The map's entry for `host` will be
-  // erased afterwards, as the request is no longer pending, and the
-  // results are cached in the HostResolver.
-  void OnHostResolved(const url::SchemeHostPort& host,
-                      const NetworkAnonymizationKey& network_anonymization_key,
+  // Called when a DNS resolution `request`, for `scheme_host_port`, has
+  // completed with `net_error`.
+  // The respective entry in `host_resolution_requests_` will be erased and
+  // `listener` will be notified of the result.
+  // This acts as a bridge between the HostResolver::ResolveHostRequest's
+  // "owner", `this`, and its actual requester: `listener`. This is done to
+  // avoid potential cancellation churn when `listener` is destroyed prior to
+  // the DNS resolution completing.
+  void OnHostResolved(HostResolver::ResolveHostRequest* request,
+                      base::WeakPtr<ConfiguredProxyResolutionRequest> listener,
+                      const url::SchemeHostPort& scheme_host_port,
                       int net_error);
 
   // NetworkChangeNotifier::IPAddressObserver
@@ -491,12 +468,10 @@ class NET_EXPORT ConfiguredProxyResolutionService
 
   State current_state_ = STATE_NONE;
 
-  // Map holding all pending DNS resolution requests started while evaluating
-  // proxy override rules' DNS conditions. Those requests are keyed by the host
-  // being resolved, as well as the NetworkAnonymizationKey used in the request
-  // which required this host resolution.
-  absl::flat_hash_map<std::pair<url::SchemeHostPort, NetworkAnonymizationKey>,
-                      HostResolutionRequest>
+  // Set holding all pending DNS resolution requests started while evaluating
+  // proxy override rules' DNS conditions.
+  std::set<std::unique_ptr<HostResolver::ResolveHostRequest>,
+           base::UniquePtrComparator>
       host_resolution_requests_;
 
   // Either OK or an ERR_* value indicating that a permanent error (e.g.
