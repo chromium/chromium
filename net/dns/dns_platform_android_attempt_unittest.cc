@@ -122,7 +122,8 @@ TEST_F(DnsPlatformAndroidAttemptTest, Success) {
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
     ResultsCallbackTestFuture future;
-    executor.Start(future.GetCallback());
+    int rv = executor.Start(future.GetCallback());
+    ASSERT_EQ(rv, ERR_IO_PENDING);
     int result = future.Take();
 
     EXPECT_THAT(result, IsOk());
@@ -159,10 +160,8 @@ TEST_F(DnsPlatformAndroidAttemptTest,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
     ResultsCallbackTestFuture future;
-    executor.Start(future.GetCallback());
-    int result = future.Take();
-
-    EXPECT_THAT(result, IsError(ERR_ACCESS_DENIED));
+    int rv = executor.Start(future.GetCallback());
+    EXPECT_THAT(rv, IsError(ERR_ACCESS_DENIED));
   } else {
     GTEST_SKIP_(kSkipTestOnAndroidVersionBelow29);
   }
@@ -189,7 +188,8 @@ TEST_F(DnsPlatformAndroidAttemptTest,
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
     ResultsCallbackTestFuture future;
-    executor.Start(future.GetCallback());
+    int rv = executor.Start(future.GetCallback());
+    ASSERT_EQ(rv, ERR_IO_PENDING);
     int result = future.Take();
 
     EXPECT_THAT(result, IsError(ERR_ACCESS_DENIED));
@@ -219,7 +219,8 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnMalformedDnsResponse) {
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
     ResultsCallbackTestFuture future;
-    executor.Start(future.GetCallback());
+    int rv = executor.Start(future.GetCallback());
+    ASSERT_EQ(rv, ERR_IO_PENDING);
     int result = future.Take();
 
     EXPECT_THAT(result, IsError(ERR_DNS_MALFORMED_RESPONSE));
@@ -249,7 +250,8 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseFlagsNxdomain) {
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
     ResultsCallbackTestFuture future;
-    executor.Start(future.GetCallback());
+    int rv = executor.Start(future.GetCallback());
+    ASSERT_EQ(rv, ERR_IO_PENDING);
     int result = future.Take();
 
     EXPECT_THAT(result, IsError(ERR_NAME_NOT_RESOLVED));
@@ -279,7 +281,8 @@ TEST_F(DnsPlatformAndroidAttemptTest, FailOnResponseTCFlag) {
         handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
     ResultsCallbackTestFuture future;
-    executor.Start(future.GetCallback());
+    int rv = executor.Start(future.GetCallback());
+    ASSERT_EQ(rv, ERR_IO_PENDING);
     int result = future.Take();
 
     EXPECT_THAT(result, IsError(ERR_UNEXPECTED));
@@ -298,16 +301,10 @@ TEST_F(DnsPlatformAndroidAttemptTest, DestroyedBeforeResponseClosesFd) {
     base::ScopedFD fd =
         MockAndroidDnsPlatformAttemptDelegate::CreateFdWithNoData();
 
-    base::RunLoop run_loop;
     MockAndroidDnsPlatformAttemptDelegate delegate;
     EXPECT_CALL(delegate, Query(NETWORK_UNSPECIFIED, StrEq("www.google.com"),
                                 dns_protocol::kTypeA))
-        .WillOnce([&]() {
-          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-              FROM_HERE, base::BindOnce(&base::RunLoop::Quit,
-                                        base::Unretained(&run_loop)));
-          return fd.get();
-        });
+        .WillOnce(Return(fd.get()));
     EXPECT_CALL(delegate, Result(_, _, _)).Times(0);
     EXPECT_CALL(delegate, Close(fd.get())).WillOnce([&]() {
       EXPECT_EQ(close(fd.release()), 0);
@@ -319,11 +316,8 @@ TEST_F(DnsPlatformAndroidAttemptTest, DestroyedBeforeResponseClosesFd) {
           handles::kInvalidNetworkHandle, &delegate, NetLogWithSource());
 
       ResultsCallbackTestFuture future;
-      executor.Start(future.GetCallback());
-      // Triggers the execution of DnsPlatformAndroidAttempt::StartInternal,
-      // which calls ::Query. At this point our mock posts RunLoop::Quit, before
-      // returning a valid fd.
-      run_loop.Run();
+      int rv = executor.Start(future.GetCallback());
+      ASSERT_EQ(rv, ERR_IO_PENDING);
       // The end of the scope destroys the executor, which should close the fd.
     }
   } else {
@@ -358,8 +352,10 @@ TEST_F(DnsPlatformAndroidAttemptTest, E2EUnsuccessfulResolution) {
         NetLogWithSource());
 
     ResultsCallbackTestFuture future;
-    executor.Start(future.GetCallback());
-    int result = future.Take();
+    int rv = executor.Start(future.GetCallback());
+    // This is a real E2E test, so we don't know whether `Start` terminates
+    // synchronously or asynchronously.
+    int result = rv == ERR_IO_PENDING ? future.Take() : rv;
 
     // Make sure it terminates with a failure, but the exact failure is not
     // important.

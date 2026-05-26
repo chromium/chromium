@@ -101,27 +101,23 @@ class NET_EXPORT DnsPlatformAndroidAttempt final
   bool IsPending() const override;
 
  private:
-  // Starts the `hostname` resolution. `Start()` can be called only once per
-  // each instance of `DnsPlatformAndroidAttempt`. Calling it multiple
-  // times will result in crash. `results_callback` will be invoked
-  // asynchronously on the thread that called `Start()` with the results of the
-  // resolution. `results_callback` can destroy `this`.
-  void StartInternal() __INTRODUCED_IN(29);
+  enum class State {
+    kNone,
+    kQuery,
+    kQueryComplete,
+    kReadResponse,
+    kReadResponseComplete,
+  };
+
+  int DoLoop(int result) __INTRODUCED_IN(29);
+  int DoQuery() __INTRODUCED_IN(29);
+  int DoQueryComplete(int result) __INTRODUCED_IN(29);
+  int DoReadResponse() __INTRODUCED_IN(29);
+  int DoReadResponseComplete(int result);
 
   // `base::MessagePumpForIO::FdWatcher` methods.
   void OnFileCanReadWithoutBlocking(int fd) __INTRODUCED_IN(29) override;
   void OnFileCanWriteWithoutBlocking(int fd) __INTRODUCED_IN(29) override;
-
-  void ReadResponse() __INTRODUCED_IN(29);
-
-  // Callback for when resolution completes.
-  void OnLookupComplete(
-      base::expected<scoped_refptr<net::IOBuffer>, int> result);
-
-  bool IsActive() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return !callback_.is_null();
-  }
 
   const std::string hostname_;
   const uint16_t dns_query_type_;
@@ -133,9 +129,10 @@ class NET_EXPORT DnsPlatformAndroidAttempt final
   CompletionOnceCallback callback_;
   std::unique_ptr<DnsResponse> response_;
   base::MessagePumpForIO::FdWatchController read_fd_watcher_;
+  State next_state_ = State::kNone;
+  scoped_refptr<GrowableIOBuffer> read_buffer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  base::WeakPtrFactory<DnsPlatformAndroidAttempt> weak_factory_{this};
 };
 
 }  // namespace net
