@@ -194,7 +194,7 @@ export class TabsFromOtherDevicesAppElement extends
         }
       }
     }
-    return tabs;
+    return tabs.sort((a, b) => b.timestamp - a.timestamp);
   }
 
   protected screenshotLoadFailed_(sessionTag: string, tabId: number): boolean {
