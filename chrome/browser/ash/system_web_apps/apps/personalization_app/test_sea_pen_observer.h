@@ -46,7 +46,7 @@ class TestSeaPenObserver : public personalization_app::mojom::SeaPenObserver {
   std::optional<std::vector<mojom::TextQueryHistoryEntryPtr>> entries_ =
       std::nullopt;
   unsigned int id_updated_count_ = 0;
-  std::optional<uint32_t> id_ = std::nullopt;
+  std::optional<uint32_t> id_;
   base::OnceCallback<void(std::optional<uint32_t>)> callback_;
   mojo::Receiver<ash::personalization_app::mojom::SeaPenObserver>
       sea_pen_observer_receiver_{this};

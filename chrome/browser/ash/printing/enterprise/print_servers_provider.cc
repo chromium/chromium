@@ -322,7 +322,7 @@ class PrintServersProviderImpl : public PrintServersProvider {
   // The current input list of servers.
   std::vector<PrintServer> servers_;
   // The current allowlist.
-  std::optional<std::set<std::string>> allowlist_ = std::nullopt;
+  std::optional<std::set<std::string>> allowlist_;
   // The current resultant list of servers.
   std::vector<PrintServer> result_servers_;
 

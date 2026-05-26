@@ -64,9 +64,8 @@ class StartCrdSessionJobDelegate {
     // If disabled, clipboard synchronization is not allowed and overrides the
     // behavior of the RemoteAccessHostClipboardSizeBytes policy.
     bool allow_clipboard_sync = true;
-    std::optional<base::TimeDelta> connection_auto_accept_timeout =
-        std::nullopt;
-    std::optional<base::TimeDelta> maximum_session_duration = std::nullopt;
+    std::optional<base::TimeDelta> connection_auto_accept_timeout;
+    std::optional<base::TimeDelta> maximum_session_duration;
   };
 
   virtual ~StartCrdSessionJobDelegate() = default;

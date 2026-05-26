@@ -37,7 +37,7 @@ class FakeRollbackNetworkConfig : public RollbackNetworkConfig {
   }
 
  private:
-  std::optional<base::Value> imported_config_ = std::nullopt;
+  std::optional<base::Value> imported_config_;
   base::OnceClosure config_imported_callback_;
 };
 

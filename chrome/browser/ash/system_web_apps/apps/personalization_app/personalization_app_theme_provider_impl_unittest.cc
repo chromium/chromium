@@ -142,7 +142,7 @@ class TestThemeObserver
   bool is_geolocation_user_modifiable_ = true;
   ash::style::mojom::ColorScheme color_scheme_ =
       ash::style::mojom::ColorScheme::kTonalSpot;
-  std::optional<::SkColor> static_color_ = std::nullopt;
+  std::optional<::SkColor> static_color_;
   std::vector<ash::SampleColorScheme> sample_color_schemes_;
 };
 

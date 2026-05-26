@@ -35,7 +35,7 @@
 namespace {
 
 // Anchored view for test.
-std::optional<views::View*> anchored_view_for_testing = std::nullopt;
+std::optional<views::View*> anchored_view_for_testing;
 
 // Nudge payload paths.
 constexpr char kNudgeTitlePath[] = "title";

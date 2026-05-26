@@ -514,7 +514,7 @@ bool AppActivityRegistry::UpdateAppLimits(
       continue;
     }
 
-    std::optional<AppLimit> new_limit = std::nullopt;
+    std::optional<AppLimit> new_limit;
     if (app_limits.contains(app_id)) {
       new_limit = app_limits.at(app_id);
     }

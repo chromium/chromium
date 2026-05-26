@@ -65,7 +65,7 @@ void PostResponse(PinBackend::AvailabilityCallback result,
 void PostResponse(AuthOperationCallback result,
                   std::unique_ptr<UserContext> user_context,
                   bool success) {
-  std::optional<AuthenticationError> error = std::nullopt;
+  std::optional<AuthenticationError> error;
   if (!success) {
     error = std::make_optional<AuthenticationError>(AuthFailure::UNLOCK_FAILED);
   }

@@ -184,7 +184,7 @@ class AppActivityRegistry : public AppServiceWrapper::EventListener {
                        AppNotification app_notification);
     SystemNotification(const SystemNotification&);
     SystemNotification& operator=(const SystemNotification&);
-    std::optional<base::TimeDelta> time_limit = std::nullopt;
+    std::optional<base::TimeDelta> time_limit;
     AppNotification notification = AppNotification::kUnknown;
   };
 

@@ -33,7 +33,7 @@ constexpr std::string_view kKeyCryptohomeFailure = "cryptohome_failure";
 constexpr std::string_view kUserCancelledLaunchKey = "user_cancelled_launch";
 
 // Error from the last kiosk launch.
-std::optional<KioskAppLaunchError::Error> s_last_error = std::nullopt;
+std::optional<KioskAppLaunchError::Error> s_last_error;
 
 }  // namespace
 

@@ -211,7 +211,7 @@ class RecentModel : public KeyedService {
   std::vector<std::unique_ptr<RecentSource>> sources_;
 
   // Cached GetRecentFiles() response.
-  std::optional<std::vector<RecentFile>> cached_files_ = std::nullopt;
+  std::optional<std::vector<RecentFile>> cached_files_;
 
   // The parameters of the last query. These are used to check if the
   // cached content can be re-used.

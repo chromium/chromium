@@ -35,7 +35,7 @@ class BorealisLaunchOptions {
     Options(const Options&);
     ~Options();
 
-    std::optional<base::FilePath> extra_disk = std::nullopt;
+    std::optional<base::FilePath> extra_disk;
 
     bool auto_shutdown = true;
   };

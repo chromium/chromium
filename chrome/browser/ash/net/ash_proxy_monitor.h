@@ -87,7 +87,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) AshProxyMonitor
 
   // The PAC URL associated with `default_network_name_`, received via the DHCP
   // discovery method.
-  std::optional<GURL> cached_wpad_url_ = std::nullopt;
+  std::optional<GURL> cached_wpad_url_;
   std::unique_ptr<ProxyConfigDictionary> cached_proxy_config_ = nullptr;
 
   std::unique_ptr<PrefChangeRegistrar> profile_prefs_registrar_;

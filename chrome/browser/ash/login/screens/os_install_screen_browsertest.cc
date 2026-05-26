@@ -139,7 +139,7 @@ class OsInstallScreenTest : public OobeBaseTest, OsInstallClient::Observer {
     status_ = status;
   }
 
-  std::optional<OsInstallClient::Status> status_ = std::nullopt;
+  std::optional<OsInstallClient::Status> status_;
 };
 
 // If the kAllowOsInstall switch is not set, clicking `Get Started` button

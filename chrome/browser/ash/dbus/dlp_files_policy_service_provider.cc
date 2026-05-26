@@ -239,7 +239,7 @@ void DlpFilesPolicyServiceProvider::IsFilesTransferRestricted(
     files_action = MapProtoToFileAction(request.file_action());
   }
 
-  std::optional<file_manager::io_task::IOTaskId> task_id = std::nullopt;
+  std::optional<file_manager::io_task::IOTaskId> task_id;
   if (request.has_io_task_id()) {
     task_id = request.io_task_id();
   }

@@ -312,7 +312,7 @@ class ServicesCustomizationDocument : public CustomizationDocument {
 
   // Delay between checks for network online state. If the optional is empty,
   // the default value for delay is used.
-  std::optional<base::TimeDelta> custom_network_delay_ = std::nullopt;
+  std::optional<base::TimeDelta> custom_network_delay_;
 
   // Known external loaders.
   ExternalLoaders external_loaders_;

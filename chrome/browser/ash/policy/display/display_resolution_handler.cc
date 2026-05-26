@@ -49,7 +49,7 @@ struct DisplayResolutionHandler::ExternalDisplaySettings {
   bool use_native = false;
   int width = 0;
   int height = 0;
-  std::optional<int> scale_percentage = std::nullopt;
+  std::optional<int> scale_percentage;
 
   bool operator==(const ExternalDisplaySettings& rhs) const {
     return use_native == rhs.use_native && width == rhs.width &&

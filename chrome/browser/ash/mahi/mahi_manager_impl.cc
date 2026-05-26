@@ -866,7 +866,7 @@ void MahiManagerImpl::OnGetPageContentForSummary(
     return;
   }
 
-  std::optional<std::string> context = std::nullopt;
+  std::optional<std::string> context;
   if (current_selected_text_ != std::nullopt) {
     context = base::UTF16ToUTF8(current_panel_content_.page_content);
   }

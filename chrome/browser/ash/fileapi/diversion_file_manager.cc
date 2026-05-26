@@ -130,7 +130,7 @@ class DiversionFileManager::Entry
   Tmpfile tmpfile_;
   uint64_t num_workers_constructed_ = 0;
   uint64_t num_workers_destroyed_ = 0;
-  std::optional<StoppedReason> stopped_reason_ = std::nullopt;
+  std::optional<StoppedReason> stopped_reason_;
   bool is_running_an_op_ = false;
   base::circular_deque<Op> pending_ops_;
   Callback implicit_callback_;

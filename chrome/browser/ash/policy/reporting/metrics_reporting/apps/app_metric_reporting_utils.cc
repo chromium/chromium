@@ -20,7 +20,7 @@ std::optional<std::string> GetPublisherIdForApp(const std::string& app_id,
   CHECK(profile);
   CHECK(
       ::apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile));
-  std::optional<std::string> publisher_id = std::nullopt;
+  std::optional<std::string> publisher_id;
   ::apps::AppServiceProxyFactory::GetForProfile(profile)
       ->AppRegistryCache()
       .ForOneApp(app_id, [&publisher_id](const ::apps::AppUpdate& app_update) {

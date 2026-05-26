@@ -112,7 +112,7 @@ class KioskArcvmAppService : public KeyedService,
   std::string app_id_;
   std::unique_ptr<ArcAppListPrefs::AppInfo> app_info_;
   std::unique_ptr<ArcAppIcon> app_icon_;
-  std::optional<int> task_id_ = std::nullopt;
+  std::optional<int> task_id_;
   KioskAppLauncher::ObserverList observers_;
 
   // This contains the list of apps that must be installed for the device to be

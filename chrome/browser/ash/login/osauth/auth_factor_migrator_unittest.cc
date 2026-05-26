@@ -23,7 +23,7 @@ using AuthOperationTestFuture =
                            std::optional<AuthenticationError>>;
 
 struct FakeMigrationInput {
-  std::optional<AuthenticationError> error = std::nullopt;
+  std::optional<AuthenticationError> error;
   bool should_skip = false;
 };
 

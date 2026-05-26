@@ -1062,7 +1062,7 @@ std::unique_ptr<ArcAppListPrefs::AppInfo> ArcAppListPrefs::GetAppFromPrefs(
   std::string icon_resource_id =
       maybe_icon_resource_id ? *maybe_icon_resource_id : std::string();
 
-  std::optional<std::string> version_name = std::nullopt;
+  std::optional<std::string> version_name;
   if (maybe_version_name && *maybe_version_name != std::string())
     version_name = *maybe_version_name;
 

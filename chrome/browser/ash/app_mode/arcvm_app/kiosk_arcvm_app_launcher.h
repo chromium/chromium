@@ -70,7 +70,7 @@ class KioskArcvmAppLauncher : public ArcAppListPrefs::Observer,
 
   const std::string app_id_;
   const raw_ptr<ArcAppListPrefs> prefs_;
-  std::optional<int> task_id_ = std::nullopt;
+  std::optional<int> task_id_;
   std::set<raw_ptr<aura::Window, SetExperimental>> windows_;
   // Pointer to the owner of this class.
   const raw_ptr<Owner> owner_;

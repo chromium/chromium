@@ -126,7 +126,7 @@ class TasksClientImpl : public TasksClient {
     FetchStatus status = FetchStatus::kNotFresh;
 
     // The last time that the tasks were fetched and the status became kFresh.
-    std::optional<base::Time> last_updated_time = std::nullopt;
+    std::optional<base::Time> last_updated_time;
 
     // Callbacks to be called when all tasks in a task list get fetched using
     // tasks API.
