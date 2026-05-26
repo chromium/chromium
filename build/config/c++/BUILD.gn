@@ -82,28 +82,15 @@ config("runtime_library") {
 
     cflags_objcc = cflags_cc
 
-    # Make sure we don't link against the system libstdc++ or libc++.
-    if (is_clang) {
-      ldflags += [ "-nostdlib++" ]
-    } else {
+    if (!is_clang) {
       # Gcc has a built-in abs() definition with default visibility.
       # If it was not disabled, it would conflict with libc++'s abs()
       # with hidden visibility.
       cflags += [ "-fno-builtin-abs" ]
-
-      ldflags += [ "-nodefaultlibs" ]
-
-      # Unfortunately, there's no way to disable linking against just libc++
-      # (gcc doesn't have -notstdlib++:
-      # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=83931); -nodefaultlibs
-      # removes all of the default libraries, so add back the ones that we need.
-      libs += [
-        "c",
-        "gcc_s",
-        "m",
-        "rt",
-      ]
     }
+
+    # Make sure we don't link against the system libstdc++ or libc++.
+    ldflags += [ "-nostdlib++" ]
   }
 
   if (is_ios) {
