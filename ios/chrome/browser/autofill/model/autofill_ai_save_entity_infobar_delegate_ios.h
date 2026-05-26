@@ -42,6 +42,7 @@ class AutofillAiSaveEntityInfoBarDelegateIOS : public ConfirmInfoBarDelegate {
   std::u16string GetMessageText() const override;
   std::u16string GetButtonLabel(InfoBarButton button) const override;
   bool UseIconBackgroundTint() const override;
+  bool IgnoreIconColorWithTint() const override;
   bool Accept() override;
   bool Cancel() override;
   void InfoBarDismissed() override;

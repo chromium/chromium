@@ -26,6 +26,7 @@ ConfirmBannerRequestConfigStorage::ConfirmBannerRequestConfigStorage(
   }
   is_high_priority_ = static_cast<InfoBarIOS*>(infobar)->high_priority();
   use_icon_background_tint_ = delegate->UseIconBackgroundTint();
+  ignore_icon_color_with_tint_ = delegate->IgnoreIconColorWithTint();
 }
 
 ConfirmBannerRequestConfigStorage::~ConfirmBannerRequestConfigStorage() =

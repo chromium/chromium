@@ -55,6 +55,8 @@ using confirm_infobar_overlays::ConfirmBannerRequestConfig;
   if (!config->icon_image().IsEmpty()) {
     [self.consumer setIconImage:config->icon_image().ToUIImage()];
     [self.consumer setUseIconBackgroundTint:config->use_icon_background_tint()];
+    [self.consumer
+        setIgnoreIconColorWithTint:config->ignore_icon_color_with_tint()];
   }
   [self.consumer setPresentsModal:NO];
   if (config->title_text().empty()) {

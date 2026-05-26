@@ -41,6 +41,7 @@ TEST_F(ConfirmInfobarBannerOverlayRequestConfigTest, Initilization) {
   EXPECT_EQ(u"message", config->message_text());
   EXPECT_EQ(u"button label text", config->button_label_text());
   EXPECT_EQ(false, config->use_icon_background_tint());
+  EXPECT_EQ(true, config->ignore_icon_color_with_tint());
   EXPECT_EQ(true, config->is_high_priority());
   EXPECT_EQ(icon.GetImage(), config->icon_image());
 }
@@ -66,6 +67,7 @@ TEST_F(ConfirmInfobarBannerOverlayRequestConfigTest,
   EXPECT_EQ(u"", config->message_text());
   EXPECT_EQ(u"", config->button_label_text());
   EXPECT_EQ(true, config->use_icon_background_tint());
+  EXPECT_EQ(true, config->ignore_icon_color_with_tint());
   EXPECT_EQ(false, config->is_high_priority());
   EXPECT_EQ(true, config->icon_image().IsEmpty());
 }

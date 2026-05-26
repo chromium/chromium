@@ -133,7 +133,12 @@ AutofillAiSaveEntityInfoBarDelegateIOS::GetPriority() const {
 }
 
 bool AutofillAiSaveEntityInfoBarDelegateIOS::UseIconBackgroundTint() const {
-  return false;
+  return true;
+}
+
+bool AutofillAiSaveEntityInfoBarDelegateIOS::IgnoreIconColorWithTint() const {
+  return params_.new_entity.record_type() !=
+         EntityInstance::RecordType::kServerWallet;
 }
 
 }  // namespace autofill

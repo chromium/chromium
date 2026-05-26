@@ -109,6 +109,10 @@ int ConfirmInfoBarDelegate::GetLinkSpacingWhenPositionedBeforeButton() const {
 bool ConfirmInfoBarDelegate::UseIconBackgroundTint() const {
   return true;
 }
+
+bool ConfirmInfoBarDelegate::IgnoreIconColorWithTint() const {
+  return true;
+}
 #endif
 
 bool ConfirmInfoBarDelegate::Accept() {

@@ -126,6 +126,11 @@ class ConfirmInfoBarDelegate : public infobars::InfoBarDelegate {
   // Returns whether or not a tint should be applied to the icon background.
   // Defaults to true.
   virtual bool UseIconBackgroundTint() const;
+
+  // Returns whether or not the icon image colors should be ignored when the
+  // background tint is applied. Defaults to true (which forces template
+  // rendering mode).
+  virtual bool IgnoreIconColorWithTint() const;
 #endif
 
   // Called when the OK button is pressed. If this function returns true, the

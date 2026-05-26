@@ -42,6 +42,12 @@ class ConfirmBannerRequestConfigStorage {
   // Whether to use a background tint for the icon image.
   bool use_icon_background_tint() const { return use_icon_background_tint_; }
 
+  // Whether the icon image colors should be ignored when the background tint
+  // is applied.
+  bool ignore_icon_color_with_tint() const {
+    return ignore_icon_color_with_tint_;
+  }
+
   infobars::InfoBar* infobar() const { return infobar_.get(); }
 
  protected:
@@ -58,6 +64,9 @@ class ConfirmBannerRequestConfigStorage {
   gfx::Image icon_image_;
   // True if the icon image should apply a background tint.
   bool use_icon_background_tint_ = true;
+  // True if the icon image colors should be ignored when the background tint
+  // is applied.
+  bool ignore_icon_color_with_tint_ = true;
   // True if the infobar's banner should be presented for a longer time.
   bool is_high_priority_ = false;
 };
