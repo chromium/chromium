@@ -61,17 +61,10 @@ void ExtensionViewViews::VisibilityChanged(View* starting_from,
   views::WebView::VisibilityChanged(starting_from, is_visible);
 
   if (starting_from == this) {
-    // Also tell RenderWidgetHostView the new visibility. Despite its name, it
-    // is not part of the View hierarchy and does not know about the change
-    // unless we tell it.
-    content::RenderWidgetHostView* host_view =
-        host_->main_frame_host()->GetView();
-    if (host_view) {
-      if (is_visible) {
-        host_view->Show();
-      } else {
-        host_view->Hide();
-      }
+    if (is_visible) {
+      web_contents()->WasShown();
+    } else {
+      web_contents()->WasHidden();
     }
   }
 }
