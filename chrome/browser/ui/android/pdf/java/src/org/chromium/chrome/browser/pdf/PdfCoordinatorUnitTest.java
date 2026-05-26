@@ -20,9 +20,13 @@ import android.net.Uri;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.FragmentActivity;
+import androidx.pdf.PdfDocument;
+import androidx.pdf.PdfDocument.PageInfo;
 import androidx.pdf.PdfPoint;
 import androidx.pdf.view.PdfView;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+
+import kotlin.coroutines.Continuation;
 
 import org.junit.After;
 import org.junit.Before;
@@ -37,6 +41,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowView;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -286,7 +291,6 @@ public class PdfCoordinatorUnitTest {
                         /* isWorkProfile= */ false, "com.google.android.googlequicksearchbox");
         assertEquals(null, uri);
     }
-
     @Test
     @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
     public void testCalculateFitToPageZoom() {
@@ -302,14 +306,14 @@ public class PdfCoordinatorUnitTest {
         // Fit to page height
         float zoomHeight =
                 mPdfCoordinator.mChromePdfViewerFragment.calculateFitToPageZoom(
-                        realPageInfo, true, mPdfView);
+                        realPageInfo, true, mPdfView, /* zoomRatio= */ 1.0f);
         // viewportSize = 1000, contentSize = 400. zoom = 1000 / 400 = 2.5f
         assertEquals(2.5f, zoomHeight, 0.001f);
 
         // Fit to page width
         float zoomWidth =
                 mPdfCoordinator.mChromePdfViewerFragment.calculateFitToPageZoom(
-                        realPageInfo, false, mPdfView);
+                        realPageInfo, false, mPdfView, /* zoomRatio= */ 1.0f);
         // viewportSize = 500, contentSize = 200. zoom = 500 / 200 = 2.5f
         assertEquals(2.5f, zoomWidth, 0.001f);
     }
@@ -360,10 +364,114 @@ public class PdfCoordinatorUnitTest {
         mPdfCoordinator.toggleTwoPagesPerRow(true, 1.5f, 2);
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testCalculateFitToPageZoomWithRatio() {
+        createPdfCoordinator();
+
+        androidx.pdf.PdfDocument.PageInfo realPageInfo =
+                new androidx.pdf.PdfDocument.PageInfo(
+                        0, 400, 200, java.util.Collections.emptyList());
+
+        // mPdfView width = 500, height = 1000
+        // Fit to page width with 0.8 ratio
+        float zoomWidthRatio =
+                mPdfCoordinator.mChromePdfViewerFragment.calculateFitToPageZoom(
+                        realPageInfo, false, mPdfView, 0.8f);
+        // viewportSize = 500, contentSize = 200. zoom = (500 * 0.8) / 200 = 400 / 200 = 2.0f
+        assertEquals(2.0f, zoomWidthRatio, 0.001f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    @Config(shadows = {ShadowPdfView.class})
+    @SuppressWarnings("unchecked")
+    public void testDefaultZoomLargeViewport() {
+        // Need to create coordinator with larger width
+        mPdfCoordinator =
+                new PdfCoordinator(
+                        mNativePageHost,
+                        mProfile,
+                        mActivity,
+                        FILE_PATH,
+                        PDF_TITLE,
+                        TAB_ID,
+                        PDF_URL,
+                        mPdfFragmentViewTracker);
+        mPdfView = new PdfView(mActivity);
+        mPdfView.layout(0, 0, /* width= */ 1000, /* height= */ PDF_CONTENT_HEIGHT);
+        mPdfCoordinator.mChromePdfViewerFragment.setPdfViewForTesting(mPdfView);
+        ViewGroup contentView = mActivity.findViewById(android.R.id.content);
+        contentView.addView(mPdfCoordinator.getView());
+        contentView.addView(mPdfView);
+
+        ShadowPdfView shadowPdfView = Shadow.extract(mPdfView);
+        PdfDocument mockPdfDocument =
+                (PdfDocument)
+                        java.lang.reflect.Proxy.newProxyInstance(
+                                PdfDocument.class.getClassLoader(),
+                                new Class[] {PdfDocument.class},
+                                (proxy, method, args) -> {
+                                    if (method.getName().equals("getPageInfo")
+                                            && args != null
+                                            && args.length == 2) {
+                                        Continuation<PageInfo> continuation =
+                                                (Continuation<PageInfo>) args[1];
+                                        PageInfo realPageInfo =
+                                                new PageInfo(
+                                                        0,
+                                                        400,
+                                                        200,
+                                                        java.util.Collections.emptyList());
+                                        continuation.resumeWith(realPageInfo);
+                                        return null;
+                                    }
+                                    Class<?> returnType = method.getReturnType();
+                                    if (returnType.equals(Void.TYPE)) return null;
+                                    if (returnType.equals(Boolean.TYPE)) return false;
+                                    if (returnType.equals(Integer.TYPE)) return 0;
+                                    if (returnType.equals(Long.TYPE)) return 0L;
+                                    if (returnType.equals(Float.TYPE)) return 0f;
+                                    return null;
+                                });
+        shadowPdfView.mPdfDocument = mockPdfDocument;
+
+        // Trigger default zoom
+        mPdfCoordinator.onViewportChanged(0, 3.76f);
+
+        // Since setDefaultZoom posts to pdfView, we must idle the looper.
+        ShadowLooper.idleMainLooper();
+
+        // viewportWidth = 1000. contentWidth = 200.
+        // expectedZoom = (1000 * 0.8) / 200 = 800 / 200 = 4.0f
+        assertEquals(4.0f, shadowPdfView.mZoom, 0.001f);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
+    public void testOnLoadDocumentError_MakesContainerVisible() {
+        createPdfCoordinator();
+
+        android.view.View container =
+                mPdfCoordinator.getView().findViewById(mPdfCoordinator.mFragmentContainerViewId);
+        assertEquals(android.view.View.INVISIBLE, container.getVisibility());
+
+        // Set document load start timestamp to simulate that load started.
+        mPdfCoordinator.mChromePdfViewerFragment.mDocumentLoadStartTimestamp = 12345L;
+
+        // Trigger error.
+        mPdfCoordinator.mChromePdfViewerFragment.onLoadDocumentError(
+                new RuntimeException("Test error"));
+
+        // Verify container is now VISIBLE.
+        assertEquals(android.view.View.VISIBLE, container.getVisibility());
+    }
+
     @Implements(PdfView.class)
     public static class ShadowPdfView extends ShadowView {
         public PdfPoint mPdfPoint;
         public float mZoom = 1.0f;
+        public PdfDocument mPdfDocument;
         public int mPagesPerRow = 1;
 
         public ShadowPdfView() {}
@@ -386,6 +494,21 @@ public class PdfCoordinatorUnitTest {
         @Implementation
         public float getZoom() {
             return mZoom;
+        }
+
+        @Implementation
+        public float getMinZoom() {
+            return 0.1f;
+        }
+
+        @Implementation
+        public float getMaxZoom() {
+            return 25.0f;
+        }
+
+        @Implementation
+        public PdfDocument getPdfDocument() {
+            return mPdfDocument;
         }
     }
 }

@@ -42,4 +42,7 @@ public interface PdfActionsDelegate {
      * @param pdfView The PdfView to use for the coordinator.
      */
     void loadPdfSelectionCoordinator(PdfView pdfView);
+
+    /** Called when the PDF document fails to load. */
+    void onDocumentLoadFailed();
 }

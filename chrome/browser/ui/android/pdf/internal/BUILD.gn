@@ -92,6 +92,7 @@ robolectric_library("junit") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
+    "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
