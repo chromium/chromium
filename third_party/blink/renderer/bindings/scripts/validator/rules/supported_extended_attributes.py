@@ -156,6 +156,7 @@ def _build_supported_extended_attributes():
         E("NodeWrapInOwnContext",
           applicable_to=[T.ATTRIBUTE, T.OPERATION, T.TYPE]),
         E("NotEnumerable", applicable_to=[T.ATTRIBUTE, T.OPERATION]),
+        E("NotSubclassable", applicable_to=[T.INTERFACE]),
         E("PassAsSpan", applicable_to=[T.TYPE]),
         E("PermissiveDictionaryConversion", applicable_to=[T.DICTIONARY]),
         E("PerWorldBindings", applicable_to=[T.ATTRIBUTE, T.OPERATION]),

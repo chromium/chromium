@@ -7,6 +7,7 @@
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/PlatformProvidedBehaviors/explainer.md
 [
   Exposed=Window,
+  NotSubclassable,
   RuntimeEnabled=ElementInternalsBehaviors
 ]
 interface HTMLSubmitButtonBehavior : ElementBehavior {

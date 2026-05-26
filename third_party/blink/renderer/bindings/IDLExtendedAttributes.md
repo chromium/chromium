@@ -784,6 +784,25 @@ Usage: `[NotEnumerable]` can be specified on methods and attributes
 
 `[NotEnumerable]` indicates that the method or attribute is not enumerable.
 
+### [NotSubclassable]
+
+Summary: Disallows constructing subclasses of an interface.
+
+Usage: `[NotSubclassable]` can be specified on interfaces with a constructor.
+
+```webidl
+[Exposed=Window, NotSubclassable]
+interface XXX {
+  constructor();
+};
+```
+
+`[NotSubclassable]` makes the generated constructor reject `NewTarget`s
+that are not the interface's own constructor function, throwing a `TypeError("Illegal constructor")`.
+This forbids constructing subclasses with `class Foo extends XXX { ... }; new Foo()` (or equivalent
+`Reflect.construct` calls). The check only runs at construction time; existing
+instances may still be placed on the prototype chain of other objects.
+
 ### [PassAsSpan]
 
 Summary: Denotes that an argument should be passed as `base::span<const

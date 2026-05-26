@@ -917,6 +917,28 @@ def make_check_constructor_call(cg_context):
         ]))
     return node
 
+
+def make_check_not_subclassable_constructor(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    if "NotSubclassable" not in cg_context.interface.extended_attributes:
+        return None
+
+    node = CxxUnlikelyIfNode(
+        cond=("${info}.NewTarget() != "
+              "${per_context_data}->ConstructorForType("
+              "${class_name}::GetWrapperTypeInfo())"),
+        attribute="[[unlikely]]",
+        body=TextNode("V8ThrowException::ThrowTypeError(${isolate}, "
+                      "\"Illegal constructor\");\n"
+                      "return;"))
+    node.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/platform/bindings/v8_per_context_data.h",
+        ]))
+    return node
+
+
 def make_promise_return_context(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -2200,6 +2222,8 @@ def make_constructor_function_def(cg_context, function_name):
         make_report_deprecate_as(cg_context),
         make_report_measure_as(cg_context),
         make_log_activity(cg_context),
+        EmptyNode(),
+        make_check_not_subclassable_constructor(cg_context),
         EmptyNode(),
         make_check_argument_length(cg_context),
         EmptyNode(),
