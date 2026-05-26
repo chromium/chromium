@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -584,7 +585,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojo::Receiver<mojom::ClientCertificateResponder>
       client_cert_responder_receiver_{this};
   MaybeSyncURLLoaderClient url_loader_client_;
-  int64_t total_written_bytes_ = 0;
+  base::ByteSize total_written_bytes_;
 
   mojo::ScopedDataPipeProducerHandle response_body_stream_;
   scoped_refptr<NetToMojoPendingBuffer> pending_write_;

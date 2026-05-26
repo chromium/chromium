@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/net_errors.h"
 #include "net/filter/source_stream.h"
@@ -138,7 +139,7 @@ int SourceStreamToDataPipe::DoReadDataComplete(int result) {
   }
   dest_ = pending_write_->Complete(result);
   pending_write_.reset();
-  transferred_bytes_ += result;
+  transferred_bytes_ += base::ByteSize(base::as_unsigned(result));
 
   // Don't hop through an extra ReadMore just to find out there's no more data.
   if (source_->MayHaveMoreBytes()) {

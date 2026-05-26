@@ -374,7 +374,8 @@ void SignedExchangeLoader::NotifyClientOnCompleteIfReady() {
   // ByteSize::operator-= will CHECK if the result becomes negative.
   encoded_body_length -= signed_exchange_handler_->GetExchangeHeaderLength();
   status.encoded_body_length = encoded_body_length.InBytes();
-  status.decoded_body_length = body_data_pipe_adapter_->TransferredBytes();
+  status.decoded_body_length =
+      body_data_pipe_adapter_->TransferredBytes().InBytes();
 
   if (ssl_info_) {
     DCHECK((url_loader_options_ &

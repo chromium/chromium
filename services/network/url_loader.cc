@@ -2075,7 +2075,7 @@ void URLLoader::NotifyCompleted(int error_code) {
     } else {
       status.encoded_body_length = url_request_->GetRawBodyBytes().InBytes();
     }
-    status.decoded_body_length = total_written_bytes_;
+    status.decoded_body_length = total_written_bytes_.InBytes();
     status.resolve_error_info =
         url_request_->response_info().resolve_error_info;
     if (trust_token_interceptor_ && trust_token_interceptor_->status()) {
@@ -2140,7 +2140,7 @@ void URLLoader::CompletePendingWrite(bool success) {
     response_body_stream_ =
         pending_write_->Complete(pending_write_buffer_offset_);
   }
-  total_written_bytes_ += pending_write_buffer_offset_;
+  total_written_bytes_ += base::ByteSize(pending_write_buffer_offset_);
   pending_write_ = nullptr;
   pending_write_buffer_offset_ = 0;
 }
@@ -2692,7 +2692,7 @@ void URLLoader::PerformSyntheticResponseFallback() {
       WriteSyntheticResponseFallbackBody(response_body_stream_);
   if (result == MOJO_RESULT_OK) {
     CHECK_GT(written_bytes, 0u);
-    total_written_bytes_ += written_bytes;
+    total_written_bytes_ += base::ByteSize(written_bytes);
     SendResponseToClient();
     NotifyCompleted(net::OK);
   } else {

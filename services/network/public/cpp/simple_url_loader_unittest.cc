@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/base_paths.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -107,7 +108,7 @@ const char kShortUploadBody[] =
 // Standard value used on requests / responses.
 const char kExpectedResponse[] = "Expected Response";
 
-const int64_t kExpectedResponseSize = strlen(kExpectedResponse);
+const size_t kExpectedResponseSize = strlen(kExpectedResponse);
 
 // Returns a string longer than
 // SimpleURLLoader::kMaxUploadStringAsStringLength, to test the path where
@@ -943,11 +944,12 @@ TEST_P(SimpleURLLoaderTest, BasicRequest) {
   if (!IsHeadersOnly()) {
     ASSERT_TRUE(test_helper->response_body());
     EXPECT_EQ(kExpectedResponse, *test_helper->response_body());
-    EXPECT_EQ(kExpectedResponseSize,
+    EXPECT_EQ(static_cast<int64_t>(kExpectedResponseSize),
               test_helper->simple_url_loader()->GetContentSize());
-    EXPECT_EQ(kExpectedResponseSize, test_helper->simple_url_loader()
-                                         ->CompletionStatus()
-                                         ->decoded_body_length);
+    EXPECT_EQ(static_cast<int64_t>(kExpectedResponseSize),
+              test_helper->simple_url_loader()
+                  ->CompletionStatus()
+                  ->decoded_body_length);
   }
 }
 
@@ -2273,7 +2275,7 @@ class MockURLLoader : public network::mojom::URLLoader {
         case TestLoaderEvent::kNameNotResolved: {
           network::URLLoaderCompletionStatus status;
           status.error_code = net::ERR_NAME_NOT_RESOLVED;
-          status.decoded_body_length = CountBytesToSend();
+          status.decoded_body_length = CountBytesToSend().InBytes();
           client_->OnComplete(status);
           break;
         }
@@ -2365,7 +2367,7 @@ class MockURLLoader : public network::mojom::URLLoader {
         case TestLoaderEvent::kResponseComplete: {
           network::URLLoaderCompletionStatus status;
           status.error_code = net::OK;
-          status.decoded_body_length = CountBytesToSend();
+          status.decoded_body_length = CountBytesToSend().InBytes();
           client_->OnComplete(status);
           break;
         }
@@ -2374,30 +2376,32 @@ class MockURLLoader : public network::mojom::URLLoader {
           // Use an error that SimpleURLLoader doesn't create itself, so clear
           // when this is the source of the error code.
           status.error_code = net::ERR_TIMED_OUT;
-          status.decoded_body_length = CountBytesToSend();
+          status.decoded_body_length = CountBytesToSend().InBytes();
           client_->OnComplete(status);
           break;
         }
         case TestLoaderEvent::kResponseCompleteNetworkChanged: {
           network::URLLoaderCompletionStatus status;
           status.error_code = net::ERR_NETWORK_CHANGED;
-          status.decoded_body_length = CountBytesToSend();
+          status.decoded_body_length = CountBytesToSend().InBytes();
           client_->OnComplete(status);
           break;
         }
         case TestLoaderEvent::kResponseCompleteTruncated: {
           network::URLLoaderCompletionStatus status;
           status.error_code = net::OK;
-          status.decoded_body_length = CountBytesToSend() + 1;
+          status.decoded_body_length =
+              (CountBytesToSend() + base::ByteSize(1)).InBytes();
           client_->OnComplete(status);
           break;
         }
         case TestLoaderEvent::kResponseCompleteWithExtraData: {
           // Make sure |decoded_body_length| doesn't underflow.
-          DCHECK_GT(CountBytesToSend(), 0u);
+          ASSERT_GT(CountBytesToSend(), base::ByteSize(0u));
           network::URLLoaderCompletionStatus status;
           status.error_code = net::OK;
-          status.decoded_body_length = CountBytesToSend() - 1;
+          status.decoded_body_length =
+              (CountBytesToSend() - base::ByteSize(1)).InBytes();
           client_->OnComplete(status);
           break;
         }
@@ -2443,13 +2447,13 @@ class MockURLLoader : public network::mojom::URLLoader {
   // Counts the total number of bytes that will be sent over the course of
   // running the request. Includes both those that have been sent already, and
   // those that have yet to be sent.
-  uint32_t CountBytesToSend() const {
-    int total_bytes = 0;
+  base::ByteSize CountBytesToSend() const {
+    uint32_t total_bytes = 0;
     for (auto test_event : test_events_) {
       if (test_event == TestLoaderEvent::kBodyDataRead)
         ++total_bytes;
     }
-    return total_bytes;
+    return base::ByteSize(total_bytes);
   }
 
   void OnReadComplete(int32_t status, uint64_t size) {

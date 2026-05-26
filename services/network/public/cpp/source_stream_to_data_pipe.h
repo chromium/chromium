@@ -5,6 +5,7 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_SOURCE_STREAM_TO_DATA_PIPE_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_SOURCE_STREAM_TO_DATA_PIPE_H_
 
+#include "base/byte_size.h"
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -32,7 +33,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SourceStreamToDataPipe {
 
   // Start reading the source.
   void Start(base::OnceCallback<void(int)> completion_callback);
-  int64_t TransferredBytes() const { return transferred_bytes_; }
+  base::ByteSize TransferredBytes() const { return transferred_bytes_; }
 
  private:
   enum class State {
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(NETWORK_CPP) SourceStreamToDataPipe {
   std::unique_ptr<net::SourceStream> source_;
   mojo::ScopedDataPipeProducerHandle dest_;
   base::OnceCallback<void(int)> completion_callback_;
-  int64_t transferred_bytes_ = 0;
+  base::ByteSize transferred_bytes_;
 
   scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
   mojo::SimpleWatcher writable_handle_watcher_;
