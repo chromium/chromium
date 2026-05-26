@@ -21,6 +21,9 @@
 - (void)handleCATransactionCommitEndWithLink:(UIUpdateLink*)link
                                         info:(UIUpdateInfo*)info
                                 isLowLatency:(BOOL)isLowLatency;
+- (void)handleTapGesture:(UITapGestureRecognizer*)sender;
+- (void)handlePanGesture:(UIPanGestureRecognizer*)sender;
+- (const char*)currentGestureForTesting;
 @end
 
 @interface TestUIViewControllerWithDisplayTracing
@@ -33,9 +36,35 @@
   return self.mockedMediaTime != 0.0 ? self.mockedMediaTime
                                      : [super currentMediaTime];
 }
+@end
 
-- (UIViewControllerDisplayTracingOptions)displayTracingOptions {
-  return UIViewControllerDisplayTracingOptionAllTraces;
+@interface TestUITapGestureRecognizer : UITapGestureRecognizer
+@property(nonatomic, assign) UIGestureRecognizerState mockedState;
+@end
+
+@implementation TestUITapGestureRecognizer
+- (UIGestureRecognizerState)state {
+  return self.mockedState;
+}
+@end
+
+@interface TestUIPanGestureRecognizer : UIPanGestureRecognizer
+@property(nonatomic, assign) UIGestureRecognizerState mockedState;
+@end
+
+@implementation TestUIPanGestureRecognizer
+- (UIGestureRecognizerState)state {
+  return self.mockedState;
+}
+@end
+
+@interface TestUISwipeGestureRecognizer : UISwipeGestureRecognizer
+@property(nonatomic, assign) UIGestureRecognizerState mockedState;
+@end
+
+@implementation TestUISwipeGestureRecognizer
+- (UIGestureRecognizerState)state {
+  return self.mockedState;
 }
 @end
 
@@ -58,7 +87,9 @@ class UIViewControllerWithDisplayTracingTest
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    view_controller_ = [[TestUIViewControllerWithDisplayTracing alloc] init];
+    view_controller_ = [[TestUIViewControllerWithDisplayTracing alloc]
+        initWithDisplayTracingOptions:
+            UIViewControllerDisplayTracingOptionAllTraces];
     // Enable variable refresh rate by default at max 120FPS.
     [view_controller_ setValue:@YES forKey:@"isVariableRefreshRate"];
     [view_controller_ setValue:@(kFramePeriod120FPS)
@@ -178,6 +209,202 @@ TEST_P(UIViewControllerWithDisplayTracingTest,
   EXPECT_DOUBLE_EQ([[view_controller_ valueForKey:@"currentFramePeriodEstimate"]
                        doubleValue],
                    framePeriod);
+}
+
+class UIViewControllerWithDisplayTracingGestureTest : public PlatformTest {
+ protected:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    view_controller_ = [[TestUIViewControllerWithDisplayTracing alloc]
+        initWithDisplayTracingOptions:
+            UIViewControllerDisplayTracingOptionGesture];
+  }
+
+  void TearDown() override {
+    view_controller_ = nil;
+    PlatformTest::TearDown();
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  TestUIViewControllerWithDisplayTracing* view_controller_;
+};
+
+// Verifies that a tap gesture on a UIControl is not disregarded.
+TEST_F(UIViewControllerWithDisplayTracingGestureTest,
+       TapGestureOnControlNotDisregarded) {
+  UIView* rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIControl* button =
+      [[UIControl alloc] initWithFrame:CGRectMake(10, 10, 50, 50)];
+  [rootView addSubview:button];
+
+  id senderMock = OCMClassMock([UITapGestureRecognizer class]);
+  OCMStub([senderMock view]).andReturn(rootView);
+  OCMStub([senderMock locationInView:rootView]).andReturn(CGPointMake(20, 20));
+
+  view_controller_.view = rootView;
+
+  EXPECT_EQ([view_controller_ currentGestureForTesting], nullptr);
+
+  [view_controller_ handleTapGesture:senderMock];
+
+  EXPECT_STREQ([view_controller_ currentGestureForTesting], "Tap");
+}
+
+// Verifies that a tap gesture on a plain UIView with no gesture recognizer is
+// disregarded.
+TEST_F(UIViewControllerWithDisplayTracingGestureTest,
+       TapGestureOnPlainViewDisregarded) {
+  UIView* rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIView* plainView = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 50, 50)];
+  [rootView addSubview:plainView];
+
+  id senderMock = OCMClassMock([UITapGestureRecognizer class]);
+  OCMStub([senderMock view]).andReturn(rootView);
+  OCMStub([senderMock locationInView:rootView]).andReturn(CGPointMake(20, 20));
+
+  view_controller_.view = rootView;
+
+  [view_controller_ handleTapGesture:senderMock];
+
+  EXPECT_EQ([view_controller_ currentGestureForTesting], nullptr);
+}
+
+// Verifies that a tap gesture on a subview with a recognized tap gesture
+// recognizer is not disregarded.
+TEST_F(UIViewControllerWithDisplayTracingGestureTest,
+       TapGestureOnViewWithRecognizedTapNotDisregarded) {
+  UIView* rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIView* subview = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 50, 50)];
+  [rootView addSubview:subview];
+
+  TestUITapGestureRecognizer* subviewRecognizer =
+      [[TestUITapGestureRecognizer alloc] initWithTarget:nil action:nil];
+  subviewRecognizer.mockedState = UIGestureRecognizerStateRecognized;
+  [subview addGestureRecognizer:subviewRecognizer];
+
+  id senderMock = OCMClassMock([UITapGestureRecognizer class]);
+  OCMStub([senderMock view]).andReturn(rootView);
+  OCMStub([senderMock locationInView:rootView]).andReturn(CGPointMake(20, 20));
+
+  view_controller_.view = rootView;
+
+  [view_controller_ handleTapGesture:senderMock];
+
+  EXPECT_STREQ([view_controller_ currentGestureForTesting], "Tap");
+}
+
+// Verifies that a tap gesture on a subview with an unrecognized tap gesture
+// recognizer is disregarded.
+TEST_F(UIViewControllerWithDisplayTracingGestureTest,
+       TapGestureOnViewWithUnrecognizedTapDisregarded) {
+  UIView* rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIView* subview = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 50, 50)];
+  [rootView addSubview:subview];
+
+  TestUITapGestureRecognizer* subviewRecognizer =
+      [[TestUITapGestureRecognizer alloc] initWithTarget:nil action:nil];
+  subviewRecognizer.mockedState = UIGestureRecognizerStatePossible;
+  [subview addGestureRecognizer:subviewRecognizer];
+
+  id senderMock = OCMClassMock([UITapGestureRecognizer class]);
+  OCMStub([senderMock view]).andReturn(rootView);
+  OCMStub([senderMock locationInView:rootView]).andReturn(CGPointMake(20, 20));
+
+  view_controller_.view = rootView;
+
+  [view_controller_ handleTapGesture:senderMock];
+
+  EXPECT_EQ([view_controller_ currentGestureForTesting], nullptr);
+}
+
+// Verifies that a pan gesture on a plain UIView is disregarded.
+TEST_F(UIViewControllerWithDisplayTracingGestureTest,
+       PanGestureOnPlainViewDisregarded) {
+  UIView* rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIView* plainView = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 50, 50)];
+  [rootView addSubview:plainView];
+
+  id senderMock = OCMClassMock([UIPanGestureRecognizer class]);
+  OCMStub([senderMock view]).andReturn(rootView);
+  OCMStub([senderMock locationInView:rootView]).andReturn(CGPointMake(20, 20));
+
+  view_controller_.view = rootView;
+
+  [view_controller_ handlePanGesture:senderMock];
+
+  EXPECT_EQ([view_controller_ currentGestureForTesting], nullptr);
+}
+
+// Verifies that a pan gesture on a subview with a began pan gesture recognizer
+// is not disregarded.
+TEST_F(UIViewControllerWithDisplayTracingGestureTest,
+       PanGestureOnViewWithBeganPanNotDisregarded) {
+  UIView* rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIView* subview = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 50, 50)];
+  [rootView addSubview:subview];
+
+  TestUIPanGestureRecognizer* subviewRecognizer =
+      [[TestUIPanGestureRecognizer alloc] initWithTarget:nil action:nil];
+  subviewRecognizer.mockedState = UIGestureRecognizerStateBegan;
+  [subview addGestureRecognizer:subviewRecognizer];
+
+  id senderMock = OCMClassMock([UIPanGestureRecognizer class]);
+  OCMStub([senderMock view]).andReturn(rootView);
+  OCMStub([senderMock locationInView:rootView]).andReturn(CGPointMake(20, 20));
+
+  view_controller_.view = rootView;
+
+  [view_controller_ handlePanGesture:senderMock];
+
+  EXPECT_STREQ([view_controller_ currentGestureForTesting], "Pan");
+}
+
+// Verifies that a pan gesture on a subview with a recognized swipe gesture
+// recognizer is not disregarded.
+TEST_F(UIViewControllerWithDisplayTracingGestureTest,
+       PanGestureOnViewWithRecognizedSwipeNotDisregarded) {
+  UIView* rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIView* subview = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 50, 50)];
+  [rootView addSubview:subview];
+
+  TestUISwipeGestureRecognizer* subviewRecognizer =
+      [[TestUISwipeGestureRecognizer alloc] initWithTarget:nil action:nil];
+  subviewRecognizer.mockedState = UIGestureRecognizerStateRecognized;
+  [subview addGestureRecognizer:subviewRecognizer];
+
+  id senderMock = OCMClassMock([UIPanGestureRecognizer class]);
+  OCMStub([senderMock view]).andReturn(rootView);
+  OCMStub([senderMock locationInView:rootView]).andReturn(CGPointMake(20, 20));
+
+  view_controller_.view = rootView;
+
+  [view_controller_ handlePanGesture:senderMock];
+
+  EXPECT_STREQ([view_controller_ currentGestureForTesting], "Pan");
+}
+
+// Verifies that a pan gesture on a subview with an unrecognized pan gesture
+// recognizer is disregarded.
+TEST_F(UIViewControllerWithDisplayTracingGestureTest,
+       PanGestureOnViewWithUnrecognizedPanDisregarded) {
+  UIView* rootView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  UIView* subview = [[UIView alloc] initWithFrame:CGRectMake(10, 10, 50, 50)];
+  [rootView addSubview:subview];
+
+  TestUIPanGestureRecognizer* subviewRecognizer =
+      [[TestUIPanGestureRecognizer alloc] initWithTarget:nil action:nil];
+  subviewRecognizer.mockedState = UIGestureRecognizerStatePossible;
+  [subview addGestureRecognizer:subviewRecognizer];
+
+  id senderMock = OCMClassMock([UIPanGestureRecognizer class]);
+  OCMStub([senderMock view]).andReturn(rootView);
+  OCMStub([senderMock locationInView:rootView]).andReturn(CGPointMake(20, 20));
+
+  view_controller_.view = rootView;
+
+  [view_controller_ handlePanGesture:senderMock];
+
+  EXPECT_EQ([view_controller_ currentGestureForTesting], nullptr);
 }
 
 }  // namespace

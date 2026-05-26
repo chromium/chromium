@@ -3550,6 +3550,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.InputLatency.{ClassName}.{Gesture}.{MeasurementType}"
+    units="ms" expires_after="never">
+<!-- expires-never: Input latency is a guardrail metric -->
+
+  <owner>junov@chromium.org</owner>
+  <owner>bling-fundamentals@google.com</owner>
+  <summary>
+    Records {MeasurementType} for {Gesture} gestures on {ClassName}. This metric
+    is subsampled to 1% of occurrences. This metric only captures the
+    propagation of immediate UI updates. Delayed effects, such as future updates
+    after network responses to requests triggered by a gesture, are not
+    captured.
+
+    Note: Scanout delays are estimated and the reliability of these estimates on
+    variable refresh rate displays (ProMotion) is not yet well understood.
+  </summary>
+  <token key="ClassName">
+    <variant name="AssistantAIMViewController"/>
+    <variant name="BrowserViewController"/>
+    <variant name="IncognitoViewController"/>
+    <variant name="NewTabPageViewController"/>
+    <variant name="SceneViewController"/>
+    <variant name="TabGridViewController"/>
+    <variant name="TestUIViewControllerWithDisplayTracing"/>
+  </token>
+  <token key="Gesture">
+    <variant name="Pan" summary="pan"/>
+    <variant name="Tap" summary="tap"/>
+  </token>
+  <token key="MeasurementType">
+    <variant name="CommitToDisplay"
+        summary="the display latency from CoreAnimation transaction commit to
+                 display scanout"/>
+    <variant name="InputToCommit"
+        summary="the input latency from event dispatch to CoreAnimation
+                 transaction commit"/>
+    <variant name="InputToDisplay"
+        summary="the input latency from event dispatch to display scanout"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.IsDefaultBrowser" enum="Boolean" expires_after="never">
 <!-- expires-never: used internally for filtering -->
 

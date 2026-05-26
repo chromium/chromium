@@ -16,6 +16,7 @@ typedef NS_OPTIONS(NSUInteger, UIViewControllerDisplayTracingOptions) {
   UIViewControllerDisplayTracingOptionLayout = 1 << 3,
   UIViewControllerDisplayTracingOptionAppear = 1 << 4,
   UIViewControllerDisplayTracingOptionDisplay = 1 << 5,
+  UIViewControllerDisplayTracingOptionGesture = 1 << 6,
 
   UIViewControllerDisplayTracingOptionAllTraces =
       UIViewControllerDisplayTracingOptionEventDispatch |
@@ -23,17 +24,20 @@ typedef NS_OPTIONS(NSUInteger, UIViewControllerDisplayTracingOptions) {
       UIViewControllerDisplayTracingOptionCATransactionCommit |
       UIViewControllerDisplayTracingOptionLayout |
       UIViewControllerDisplayTracingOptionAppear |
-      UIViewControllerDisplayTracingOptionDisplay,
+      UIViewControllerDisplayTracingOptionDisplay |
+      UIViewControllerDisplayTracingOptionGesture,
 
   UIViewControllerDisplayTracingOptionEssentialTraces =
       UIViewControllerDisplayTracingOptionCATransactionCommit |
       UIViewControllerDisplayTracingOptionLayout |
-      UIViewControllerDisplayTracingOptionAppear,
+      UIViewControllerDisplayTracingOptionAppear |
+      UIViewControllerDisplayTracingOptionGesture,
 };
 
 // A mixin class that can be added to subclasses of UIViewController to inject
 // new tracing capabilities based on CADisplayLink.
-@interface UIViewControllerWithDisplayTracing : UIViewController
+@interface UIViewControllerWithDisplayTracing
+    : UIViewController <UIGestureRecognizerDelegate>
 
 // Initializes the view controller with specific display tracing options.
 - (instancetype)initWithDisplayTracingOptions:

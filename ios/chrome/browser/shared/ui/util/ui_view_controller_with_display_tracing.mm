@@ -8,6 +8,8 @@
 
 #import <string>
 
+#import "base/metrics/histogram_functions.h"
+#import "base/rand_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/trace_event/trace_event.h"
 #import "base/trace_event/typed_macros.h"
@@ -23,8 +25,27 @@ enum class UIUpdatePhase {
   kBeforeLowLatencyEventDispatch,
   kAfterLowLatencyEventDispatch,
   kBeforeLowLatencyCATransactionCommit,
+  kMaybeGesture,
 };
 }  // namespace
+
+// A private delegate that handles the tracing gesture recognizers' callbacks to
+// ensure they are completely passive and do not interfere with other gesture
+// recognizers or UI controls in the view hierarchy.
+@interface DisplayTracingGestureDelegate
+    : NSObject <UIGestureRecognizerDelegate>
+@end
+
+@implementation DisplayTracingGestureDelegate
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer*)gestureRecognizer
+    shouldRecognizeSimultaneouslyWithGestureRecognizer:
+        (UIGestureRecognizer*)otherGestureRecognizer {
+  // Always recognize simultaneously to be completely transparent and passive.
+  return YES;
+}
+
+@end
 
 @implementation UIViewControllerWithDisplayTracing {
   std::string _className;
@@ -38,6 +59,9 @@ enum class UIUpdatePhase {
   BOOL _isVariableRefreshRate;
   NSTimeInterval _minSupportedFramePeriod;
   int _lastDroppedFrames;
+  const char* _currentGesture;
+  base::TimeTicks _possibleGestureTimestamp;
+  DisplayTracingGestureDelegate* _gestureDelegate;
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   UIUpdateLink* _updateLink;
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
@@ -91,15 +115,36 @@ enum class UIUpdatePhase {
 
 - (void)commonInit {
   _className = base::SysNSStringToUTF8(NSStringFromClass([self class]));
+  _gestureDelegate = [[DisplayTracingGestureDelegate alloc] init];
 }
 
-- (UIViewControllerDisplayTracingOptions)displayTracingOptions {
-  return UIViewControllerDisplayTracingOptionEssentialTraces;
+#pragma mark - UIViewController overrides
+
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  if (_displayTracingOptions & UIViewControllerDisplayTracingOptionGesture) {
+    UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(handleTapGesture:)];
+    tapRecognizer.cancelsTouchesInView = NO;
+    tapRecognizer.delaysTouchesBegan = NO;
+    tapRecognizer.delaysTouchesEnded = NO;
+    tapRecognizer.delegate = _gestureDelegate;
+    [self.view addGestureRecognizer:tapRecognizer];
+
+    UIPanGestureRecognizer* panRecognizer = [[UIPanGestureRecognizer alloc]
+        initWithTarget:self
+                action:@selector(handlePanGesture:)];
+    panRecognizer.cancelsTouchesInView = NO;
+    panRecognizer.delaysTouchesBegan = NO;
+    panRecognizer.delaysTouchesEnded = NO;
+    panRecognizer.delegate = _gestureDelegate;
+    [self.view addGestureRecognizer:panRecognizer];
+  }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
-  if ([self displayTracingOptions] &
-      UIViewControllerDisplayTracingOptionAppear) {
+  if (_displayTracingOptions & UIViewControllerDisplayTracingOptionAppear) {
     // Note: `viewWillAppear:` and `viewDidAppear:` execute across different
     // runloop spins, so using TRACE_EVENT_BEGIN/END here intentionally leaves
     // the trace slice open across runloop boundaries on the main thread. All
@@ -125,8 +170,7 @@ enum class UIUpdatePhase {
 }
 
 - (void)viewWillLayoutSubviews {
-  if ([self displayTracingOptions] &
-      UIViewControllerDisplayTracingOptionLayout) {
+  if (_displayTracingOptions & UIViewControllerDisplayTracingOptionLayout) {
     TRACE_EVENT_BEGIN("ui", "UIViewControllerWithDisplayTracing LayoutSubviews",
                       perfetto::Flow::ProcessScoped([self ensureFlowID]),
                       "controller", _className);
@@ -136,8 +180,7 @@ enum class UIUpdatePhase {
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  if ([self displayTracingOptions] &
-      UIViewControllerDisplayTracingOptionLayout) {
+  if (_displayTracingOptions & UIViewControllerDisplayTracingOptionLayout) {
     TRACE_EVENT_END("ui");
   }
 }
@@ -179,6 +222,13 @@ enum class UIUpdatePhase {
         _minSupportedFramePeriod = 1.0 / maxFramesPerSecond;
       }
       _currentFramePeriodEstimate = 1.0 / maxFramesPerSecond;
+    }
+
+    if (_displayTracingOptions & UIViewControllerDisplayTracingOptionGesture) {
+      registerPhase(UIUpdateActionPhase.beforeEventDispatch,
+                    UIUpdatePhase::kMaybeGesture);
+      registerPhase(UIUpdateActionPhase.beforeLowLatencyEventDispatch,
+                    UIUpdatePhase::kMaybeGesture);
     }
 
     if (_displayTracingOptions &
@@ -246,6 +296,56 @@ enum class UIUpdatePhase {
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
+#pragma mark - Gesture Handlers
+
+- (void)handleTapGesture:(UITapGestureRecognizer*)sender {
+  CGPoint location = [sender locationInView:sender.view];
+  UIView* hitView = [sender.view hitTest:location withEvent:nil];
+
+  // 1. Check if the hit view is an interactive control (like a UIButton).
+  if ([hitView isKindOfClass:[UIControl class]]) {
+    _currentGesture = "Tap";
+    return;
+  }
+
+  // 2. Traverse up the view hierarchy to check if any parent of hitView's tap
+  // gesture recognizer has recognized the gesture simultaneously.
+  UIView* view = hitView;
+  while (view && view != sender.view) {
+    for (UIGestureRecognizer* recognizer in view.gestureRecognizers) {
+      if (recognizer != sender &&
+          [recognizer isKindOfClass:[UITapGestureRecognizer class]] &&
+          (recognizer.state == UIGestureRecognizerStateRecognized)) {
+        _currentGesture = "Tap";
+        return;
+      }
+    }
+    view = view.superview;
+  }
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer*)sender {
+  CGPoint location = [sender locationInView:sender.view];
+  UIView* hitView = [sender.view hitTest:location withEvent:nil];
+
+  // Traverse up the view hierarchy to check if any parent of the hitView's pan
+  // or swipe gesture recognizer has recognized the gesture simultaneously.
+  UIView* view = hitView;
+  while (view && view != sender.view) {
+    for (UIGestureRecognizer* recognizer in view.gestureRecognizers) {
+      if (recognizer != sender &&
+          ([recognizer isKindOfClass:[UIPanGestureRecognizer class]] ||
+           [recognizer isKindOfClass:[UISwipeGestureRecognizer class]]) &&
+          (recognizer.state == UIGestureRecognizerStateBegan ||
+           recognizer.state == UIGestureRecognizerStateChanged ||
+           recognizer.state == UIGestureRecognizerStateRecognized)) {
+        _currentGesture = "Pan";
+        return;
+      }
+    }
+    view = view.superview;
+  }
+}
 #pragma mark - Private
 
 // Ends the current phase's tracing slice, if there is one.
@@ -286,6 +386,11 @@ enum class UIUpdatePhase {
     case UIUpdatePhase::kBeforeLowLatencyCATransactionCommit:
       phaseName = "LowLatencyCATransactionCommit";
       break;
+    case UIUpdatePhase::kMaybeGesture:
+      // At this time we know an event is queued, but we don't yet know whether
+      // it will be recognized as a gesture we care about.
+      _possibleGestureTimestamp = base::TimeTicks::Now();
+      break;
     default:
       break;
   }
@@ -302,13 +407,22 @@ enum class UIUpdatePhase {
   return CACurrentMediaTime();
 }
 
+- (const char*)currentGestureForTesting {
+  return _currentGesture;
+}
+
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
 - (void)handleCATransactionCommitEndWithLink:(UIUpdateLink*)link
                                         info:(UIUpdateInfo*)info
                                 isLowLatency:(BOOL)isLowLatency {
   [self endCurrentPhaseIfNeeded];
-  if ([self displayTracingOptions] &
-      UIViewControllerDisplayTracingOptionDisplay) {
+  bool shouldRecordGestureLatency =
+      _currentGesture && !_possibleGestureTimestamp.is_null() /*&&
+                         base::ShouldRecordSubsampledMetric(0.01)*/
+      ;
+
+  if ((_displayTracingOptions & UIViewControllerDisplayTracingOptionDisplay) ||
+      shouldRecordGestureLatency) {
     base::TimeTicks nowInTicks = base::TimeTicks::Now();
     NSTimeInterval nowInSeconds = [self currentMediaTime];
 
@@ -381,15 +495,37 @@ enum class UIUpdatePhase {
     droppedFrames = std::max(droppedFrames, 0);
     _lastDroppedFrames = droppedFrames;
     scanoutDelay += droppedFrames * _currentFramePeriodEstimate;
-
-    base::TimeTicks presentationTime = nowInTicks + base::Seconds(scanoutDelay);
-    TRACE_EVENT_INSTANT("ui", "Display", perfetto::NamedTrack("Display"),
-                        presentationTime,
-                        perfetto::Flow::ProcessScoped(_flowID), "controller",
-                        _className, "dropped_frames", droppedFrames);
+    base::TimeDelta scanoutDelayTimeDelta = base::Seconds(scanoutDelay);
+    base::TimeTicks presentationTime = nowInTicks + scanoutDelayTimeDelta;
+    if (_displayTracingOptions & UIViewControllerDisplayTracingOptionDisplay) {
+      TRACE_EVENT_INSTANT(
+          "ui", "Display", perfetto::NamedTrack("Display"), presentationTime,
+          perfetto::Flow::ProcessScoped(_flowID), "controller", _className,
+          "dropped_frames", droppedFrames, "gesture",
+          _currentGesture ? _currentGesture : "none/unknown", "is_low_latency",
+          isLowLatency);
+    }
+    if (shouldRecordGestureLatency) {
+      std::string histogram_name =
+          "IOS.InputLatency." + _className + "." + _currentGesture;
+      base::TimeDelta inputToCommitTimeDelta =
+          nowInTicks - _possibleGestureTimestamp;
+      base::UmaHistogramTimes(histogram_name + ".InputToCommit",
+                              inputToCommitTimeDelta);
+      base::UmaHistogramTimes(histogram_name + ".CommitToDisplay",
+                              scanoutDelayTimeDelta);
+      // Due to probable covariance between the individual component metrics,
+      // the distribution of their sum cannot be reliably estimated from the
+      // distributions of the components. Therefore the sum metric must also be
+      // recorded.
+      base::UmaHistogramTimes(histogram_name + ".InputToDisplay",
+                              inputToCommitTimeDelta + scanoutDelayTimeDelta);
+    }
   }
 
   _flowID = 0;
+  _currentGesture = nullptr;
+  _possibleGestureTimestamp = base::TimeTicks();
 }
 #endif  // !BUILDFLAG(IS_IOS_MACCATALYST)
 @end
