@@ -6,6 +6,7 @@
 
 #include <objbase.h>
 
+#include <memory>
 #include <optional>
 #include <string>
 #include <utility>
@@ -17,11 +18,13 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_process_information.h"
@@ -31,7 +34,6 @@
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 #include "components/crx_file/crx_verifier.h"
-#include "components/update_client/utils.h"
 #include "third_party/zlib/google/zip.h"
 
 namespace elevation_service {
@@ -402,7 +404,21 @@ HRESULT RunCRX(const base::FilePath& crx_path,
   if (FAILED(hr))
     return hr;
 
-  const auto manifest = update_client::ReadManifest(unpacked_crx_dir.GetPath());
+  const auto manifest = [&]() -> std::optional<base::DictValue> {
+    base::FilePath manifest_path =
+        unpacked_crx_dir.GetPath().Append(FILE_PATH_LITERAL("manifest.json"));
+    if (!base::PathExists(manifest_path)) {
+      return std::nullopt;
+    }
+    JSONFileValueDeserializer deserializer(manifest_path);
+    std::string error;
+    std::unique_ptr<base::Value> root =
+        deserializer.Deserialize(nullptr, &error);
+    if (!root || !root->is_dict()) {
+      return std::nullopt;
+    }
+    return std::move(root->GetDict());
+  }();
   if (!manifest) {
     return E_FAIL;
   }
