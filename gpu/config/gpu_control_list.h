@@ -218,19 +218,6 @@ class GPU_CONFIG_EXPORT GpuControlList {
     RAW_PTR_EXCLUSION const IntelConditions* intel_conditions;
     RAW_PTR_EXCLUSION const More* more;
 
-    Conditions(OsType os_type,
-               Version os_version,
-               uint32_t vendor_id,
-               base::span<const Device> devices,
-               MultiGpuCategory multi_gpu_category,
-               MultiGpuStyle multi_gpu_style,
-               const DriverInfo* driver_info,
-               const GLStrings* gl_strings,
-               const MachineModelInfo* machine_model_info,
-               const IntelConditions* intel_conditions,
-               const More* more);
-    Conditions(const Conditions& other);
-
     bool Contains(OsType os_type,
                   std::string_view os_version,
                   const GPUInfo& gpu_info) const;
