@@ -112,7 +112,7 @@ import java.util.function.Supplier;
     private final ScrimManager mScrimManager;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
     private final SettableNonNullObservableSupplier<@PopupState Integer> mPopupStateSupplier;
-    private final @Nullable BackPressManager mBackPressManager;
+    private final BackPressManager mBackPressManager;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
 
@@ -152,7 +152,7 @@ import java.util.function.Supplier;
             Clipboard clipboard,
             ScrimManager scrimManager,
             Supplier<@Nullable View> scrimAnchorViewSupplier,
-            @Nullable BackPressManager backPressManager) {
+            BackPressManager backPressManager) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mPermissionDelegate = windowAndroid;
@@ -205,16 +205,12 @@ import java.util.function.Supplier;
 
         mModel.set(FuseboxProperties.POPUP_MODEL_DIVIDER_VISIBLE, false);
         mModel.set(FuseboxProperties.POPUP_MODEL_HEADER_VISIBLE, false);
-        if (mBackPressManager != null) {
-            mBackPressManager.addHandler(this, BackPressHandler.Type.FUSEBOX_POPUP);
-        }
+        mBackPressManager.addHandler(this, BackPressHandler.Type.FUSEBOX_POPUP);
     }
 
     /* package */ void destroy() {
         endInput();
-        if (mBackPressManager != null) {
-            mBackPressManager.removeHandler(this);
-        }
+        mBackPressManager.removeHandler(this);
     }
 
     public boolean wasActionTaken() {

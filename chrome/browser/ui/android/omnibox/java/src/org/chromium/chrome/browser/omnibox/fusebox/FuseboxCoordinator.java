@@ -119,7 +119,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private @Nullable BottomSheetRectProvider mBottomSheetRectProvider;
     private final Supplier<@Nullable View> mScrimAnchorViewSupplier;
     private final ScrimManager mScrimManager;
-    private final @Nullable BackPressManager mBackPressManager;
+    private final BackPressManager mBackPressManager;
     private boolean mHasContextualTasksFocus;
 
     // Mediator is scoped to a particular profile. Can reuse as long as the profile does not change.
@@ -148,7 +148,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
             OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             SnackbarManager snackbarManager,
             Supplier<@Nullable View> scrimAnchorViewSupplier,
-            @Nullable BackPressManager backPressManager) {
+            BackPressManager backPressManager) {
         mActivity = assumeNonNull(ContextUtils.activityFromContext(context));
         mWindowAndroid = windowAndroid;
         mParent = parent;

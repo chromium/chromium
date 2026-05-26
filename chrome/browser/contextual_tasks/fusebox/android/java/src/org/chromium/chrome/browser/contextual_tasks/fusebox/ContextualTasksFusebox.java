@@ -12,6 +12,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
@@ -115,7 +116,7 @@ public class ContextualTasksFusebox {
                         /* isToolbarMicEnabledSupplier= */ () -> true,
                         config.omniboxActionDelegate,
                         /* browserControlsVisibilityDelegate= */ null,
-                        /* backPressManager= */ null,
+                        /* backPressManager= */ new BackPressManager(),
                         /* omniboxSuggestionsDropdownScrollListener= */ null,
                         /* tabModelSelectorSupplier= */ tabModelSelectorSupplier,
                         /* topInsetProvider= */ new NoOpTopInsetProvider(),

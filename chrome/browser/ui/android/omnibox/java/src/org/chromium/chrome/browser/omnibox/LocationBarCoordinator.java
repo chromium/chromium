@@ -258,7 +258,7 @@ public class LocationBarCoordinator
             OmniboxActionDelegateImpl omniboxActionDelegate,
             @Nullable BrowserStateBrowserControlsVisibilityDelegate
                     browserControlsVisibilityDelegate,
-            @Nullable BackPressManager backPressManager,
+            BackPressManager backPressManager,
             @Nullable OmniboxSuggestionsDropdownScrollListener
                     omniboxSuggestionsDropdownScrollListener,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
@@ -387,9 +387,7 @@ public class LocationBarCoordinator
         if (mBackButton != null) {
             mBackButton.setOnClickListener(v -> mLocationBarMediator.onBackButtonClicked());
         }
-        if (backPressManager != null) {
-            backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
-        }
+        backPressManager.addHandler(mLocationBarMediator, BackPressHandler.Type.LOCATION_BAR);
         mActivityLifecycleDispatcher.register(mLocationBarMediator);
         mUrlCoordinator =
                 new UrlBarCoordinator(
