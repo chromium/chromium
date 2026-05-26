@@ -299,7 +299,8 @@ bool IsSwiftShaderAllowedByCommandLine(const base::CommandLine* command_line) {
 
   std::string angle_name =
       command_line->GetSwitchValueASCII(switches::kUseANGLE);
-  if (angle_name == gl::kANGLEImplementationSwiftShaderName) {
+  if (angle_name == gl::kANGLEImplementationSwiftShaderName ||
+      angle_name == gl::kANGLEImplementationSwiftShaderForWebGLName) {
     // If SwiftShader is specifically requested with the --use-angle command
     // line flag, allow it.
     return true;
