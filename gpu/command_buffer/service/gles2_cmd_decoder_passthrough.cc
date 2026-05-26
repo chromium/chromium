@@ -175,6 +175,31 @@ class ScopedScissorTestReset {
   GLboolean scissor_test_;
 };
 
+class ScopedRasterizerDiscardReset {
+ public:
+  explicit ScopedRasterizerDiscardReset(gl::GLApi* api,
+                                        bool rasterizer_discard_available)
+      : api_(api), rasterizer_discard_available_(rasterizer_discard_available) {
+    if (rasterizer_discard_available_) {
+      api_->glGetBooleanvFn(GL_RASTERIZER_DISCARD, &rasterizer_discard_);
+    }
+  }
+  ~ScopedRasterizerDiscardReset() {
+    if (rasterizer_discard_available_) {
+      if (rasterizer_discard_) {
+        api_->glEnableFn(GL_RASTERIZER_DISCARD);
+      } else {
+        api_->glDisableFn(GL_RASTERIZER_DISCARD);
+      }
+    }
+  }
+
+ private:
+  raw_ptr<gl::GLApi> api_;
+  const bool rasterizer_discard_available_;
+  GLboolean rasterizer_discard_;
+};
+
 template <typename ClientType, typename ServiceType, typename DeleteFunction>
 void DeleteServiceObjects(ClientServiceMap<ClientType, ServiceType>* id_map,
                           bool have_context,
@@ -602,6 +627,8 @@ void PassthroughResources::SharedImageData::EnsureClear(
     auto texture = representation_->GetTexturePassthrough();
     const bool use_oes_draw_buffers_indexed =
         impl->features().oes_draw_buffers_indexed;
+    bool has_rasterizer_discard =
+        impl->GetFeatureInfo()->gl_version_info().IsAtLeastGLES(3, 0);
 
     // Back up all state we are about to change.
     gl::GLApi* api = impl->api();
@@ -614,6 +641,8 @@ void PassthroughResources::SharedImageData::EnsureClear(
     ScopedColorMaskZeroReset color_mask_reset(api,
                                               use_oes_draw_buffers_indexed);
     ScopedScissorTestReset scissor_test_reset(api);
+    ScopedRasterizerDiscardReset rasterizer_discard_reset(
+        api, has_rasterizer_discard);
 
     // Generate a new framebuffer and bind the shared image's uncleared texture
     // to it.
@@ -632,6 +661,9 @@ void PassthroughResources::SharedImageData::EnsureClear(
       api->glColorMaskFn(true, true, true, true);
     api->glDisableFn(GL_SCISSOR_TEST);
     api->glClearFn(GL_COLOR_BUFFER_BIT);
+    if (has_rasterizer_discard) {
+      api->glDisableFn(GL_RASTERIZER_DISCARD);
+    }
 
     if (api->glCheckFramebufferStatusEXTFn(GL_FRAMEBUFFER) ==
         GL_FRAMEBUFFER_COMPLETE) {
