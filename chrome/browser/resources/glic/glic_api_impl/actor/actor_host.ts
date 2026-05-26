@@ -13,16 +13,16 @@ import {CreateTaskErrorReason, PerformActionsErrorReason} from '../../glic_api/g
 import type {CheckEnumCompatibility} from '../conversions.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
 import {byteArrayFromClient, getArrayBufferFromBigBuffer, idFromClient, idToClient, optionalToClient, resumeActorTaskResultToClient, tabContextOptionsFromClient, tabContextToClient, taskOptionsToMojo, urlToClient} from '../host/conversions.js';
-import {assertNever} from '../messaging.js';
-import type {ResponseExtras} from '../post_message_transport.js';
-import type {MessageHandlerInterface, ResumeActorTaskResultPrivate, TabContextResultPrivate} from '../request_types.js';
 import {ErrorWithReasonImpl} from '../request_types.js';
+import type {ResumeActorTaskResultPrivate, TabContextResultPrivate} from '../request_types.js';
+import {assertNever} from '../transport/messaging.js';
+import type {MessageHandlerInterface, ResponseExtras} from '../transport/messaging.js';
 
 import type * as actorTypes from './actor_types.js';
-import type {ActorHostRequestTypes} from './actor_types.js';
+import type {ActorHost} from './actor_types.js';
 
 export class ActorHostMessageHandler implements
-    MessageHandlerInterface<ActorHostRequestTypes> {
+    MessageHandlerInterface<ActorHost> {
   constructor(private actorHandler: ActorHandlerInterface) {}
 
   async glicBrowserGetContextForActorFromTab(

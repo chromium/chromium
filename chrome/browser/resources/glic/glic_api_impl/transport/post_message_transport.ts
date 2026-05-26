@@ -4,8 +4,10 @@
 
 import {assert} from '//resources/js/assert.js';
 
-import type {AllRequestTypes, AllRequestTypesWithoutReturn, RequestRequestType, RequestResponseType, TransferableException} from './request_types.js';
-import {exceptionFromTransferable, newTransferableException} from './request_types.js';
+import type {AllRequestTypes, AllRequestTypesWithoutReturn, RequestRequestType, RequestResponseType, TransferableException} from '../request_types.js';
+import {exceptionFromTransferable, newTransferableException} from '../request_types.js';
+
+import {ResponseExtras} from './messaging.js';
 
 // This file contains helpers to send and receive messages over postMessage.
 
@@ -52,15 +54,6 @@ export function newSenderId(): string {
   const array = new Uint8Array(8);
   crypto.getRandomValues(array);
   return Array.from(array).map((n: number) => n.toString(16)).join('');
-}
-
-export class ResponseExtras {
-  transfers: Transferable[] = [];
-
-  // Add objects to transfer when sending the response over postMessage.
-  addTransfer(...transfers: Transferable[]): void {
-    this.transfers.push(...transfers);
-  }
 }
 
 class MessageLogger {

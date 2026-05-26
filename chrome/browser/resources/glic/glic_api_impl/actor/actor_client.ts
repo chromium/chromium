@@ -7,15 +7,14 @@
 import type {ActorTaskState, GlicBrowserHostJournal, Journal, NavigationConfirmationRequest, SelectAutofillSuggestionsDialogRequest, SelectCredentialDialogRequest, UserConfirmationDialogRequest} from '../../glic_api/glic_api.js';
 import type {GlicBrowserHostImpl} from '../client/glic_api_client.js';
 import {rgbaImageToBlob} from '../client/image_utils.js';
-import type {PostMessageRequestSender} from '../post_message_transport.js';
-import type {MessageHandlerInterface} from '../request_types.js';
+import type {MessageHandlerInterface} from '../transport/messaging.js';
+import type {PostMessageRequestSender} from '../transport/post_message_transport.js';
 
 import {ConfirmationRequestErrorReason, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './actor_types.js';
-import type {ActorClientRequestTypes, CredentialPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate} from './actor_types.js';
+import type {ActorClient, CredentialPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate} from './actor_types.js';
 
 export class ActorWebClientMessageHandler implements
-    MessageHandlerInterface<ActorClientRequestTypes> {
-  // TODO(harringtond): Remove deps on glic_api_client.ts.
+    MessageHandlerInterface<ActorClient> {
   constructor(private host: GlicBrowserHostImpl) {}
 
   glicWebClientNotifyActorTaskStateChanged(

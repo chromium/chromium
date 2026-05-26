@@ -5,10 +5,9 @@
 import type {WebClientInitialState} from '../glic.mojom-webui.js';
 import type {AdditionalContext, AdditionalContextPart, AnnotatedPageData, CaptureRegionErrorReason, CaptureRegionParams, CaptureRegionResult, ChromeVersion, ClientCapabilities, ClientErrorDialogType, ConversationInfo, CreateSkillRequest, ErrorReasonTypes, ErrorWithReason, ExperimentalTriggeringUpdate, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, FormFactor, GetPinCandidatesOptions, HostCapability, InvokeOptions, MetricUserInputReactionType, MicrophoneStatus, OnResponseStoppedDetails, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, PinTabsOptions, Platform, ResumeActorTaskResult, Screenshot, ScrollToParams, Skill, SkillPreview, SkillsWebClientEvent, TabContextOptions, TabContextResult, TabData, UnpinTabsOptions, UpdateSkillRequest, UserProfileInfo, WebClientMode, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
-import type {ActorClientRequestTypes, ActorHostRequestTypes} from './actor/actor_types.js';
-import type {ValidateRequestMap} from './messaging.js';
-import {assertNever} from './messaging.js';
-import type {ResponseExtras} from './post_message_transport.js';
+import type {ActorClient, ActorHost} from './actor/actor_types.js';
+import type {CheckStructuredClonable, ReplaceProperties, ValidateRequestMap} from './transport/messaging.js';
+import {assertNever} from './transport/messaging.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -19,9 +18,7 @@ messages by concatenating the interface name with the method name. This helps
 readability, and ensures that each name is unique.
 */
 
-
-// Types of requests to the host (Chrome).
-export declare type WebClientHostRequestTypes = ValidateRequestMap<{
+export declare interface WebClientHost {
   // This message is sent just before calling initialize() on the web client.
   // It is not part of the GlicBrowserHost public API.
   glicBrowserWebClientCreated: {
@@ -32,7 +29,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       initialState: WebClientInitialStatePrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   // This message is sent after the client returns from initialize(). It is not
   // part of the GlicBrowserHost public API.
   glicBrowserWebClientInitialized: {
@@ -43,7 +40,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       exception?: TransferableException,
     },
     backgroundAllowed: true,
-  },
+  };
 
   glicBrowserOnExperimentalTriggeringUpdate: {
     request: {
@@ -52,7 +49,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
             observation: SubscriberObservationType,
     },
     backgroundAllowed: true,
-  },
+  };
 
   // The messages that fulfil the GlicBrowserHost public API follow below.
 
@@ -66,41 +63,41 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       tabData?: TabDataPrivate,
     },
     backgroundAllowed: false,
-  },
+  };
   glicBrowserOpenGlicSettingsPage: {
     request: {options?: OpenSettingsOptions},
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOpenPasswordManagerSettingsPage: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserClosePanel: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserClosePanelAndShutdown: {
     backgroundAllowed: true,
-  },
-  glicBrowserShowProfilePicker: {},
+  };
+  glicBrowserShowProfilePicker: {};
   glicBrowserGetModelQualityClientId: {
     response: {
       modelQualityClientId: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSwitchConversation: {
     request: {
       info?: ConversationInfo,
     },
     response: {},
     backgroundAllowed: true,
-  },
+  };
   glicBrowserRegisterConversation: {
     request: {
       info: ConversationInfo,
     },
     response: {},
     backgroundAllowed: true,
-  },
+  };
   glicBrowserGetContextFromFocusedTab: {
     request: {
       options: TabContextOptions,
@@ -109,7 +106,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       tabContextResult: TabContextResultPrivate,
     },
     backgroundAllowed: false,
-  },
+  };
   glicBrowserGetContextFromTab: {
     backgroundAllowed: false,
     request: {
@@ -119,7 +116,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
     response: {
       tabContextResult: TabContextResultPrivate,
     },
-  },
+  };
   glicBrowserSetMaximumNumberOfPinnedTabs: {
     request: {
       requestedMax: number,
@@ -128,19 +125,19 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       effectiveMax: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserActivateTab: {
     request: {
       tabId: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserCaptureScreenshot: {
     response: {
       screenshot: Screenshot,
     },
     backgroundAllowed: false,
-  },
+  };
   glicBrowserResizeWindow: {
     request: {
       size: {
@@ -152,13 +149,13 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       },
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserEnableDragResize: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetMinimumWidgetSize: {
     request: {
       size: {
@@ -167,143 +164,143 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       },
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetMicrophonePermissionState: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetLocationPermissionState: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetTabContextPermissionState: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetClosedCaptioningSetting: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetContextAccessIndicator: {
     request: {
       show: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetActuationOnWebSetting: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserGetUserProfileInfo: {
     response: {
       profileInfo?: UserProfileInfoPrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserRefreshSignInCookies: {
     response: {
       success: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserAttachPanel: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserDetachPanel: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetAudioDucking: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnUserInputSubmitted: {
     request: {
       mode: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnReaction: {
     backgroundAllowed: true,
     request: {
       reactionType: MetricUserInputReactionType,
     },
-  },
+  };
   glicBrowserOnOptinImpression: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnContextUploadStarted: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnContextUploadCompleted: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnResponseStarted: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnResponseStopped: {
     request: {details?: OnResponseStoppedDetails},
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnSessionTerminated: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnTurnCompleted: {
     request: {
       model: number,
       duration: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnResponseRated: {
     request: {
       positive: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnClosedCaptionsShown: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnActionSubmitted: {
     request: {
       isRetry?: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserScrollTo: {
     request: {
       params: ScrollToParams,
     },
     backgroundAllowed: false,
-  },
+  };
   glicBrowserDropScrollToHighlight: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetSyntheticExperimentState: {
     request: {
       trialName: string,
       groupName: string,
     },
     backgroundAllowed: true,
-  },
-  glicBrowserOpenOsPermissionSettingsMenu: {request: {permission: string}},
+  };
+  glicBrowserOpenOsPermissionSettingsMenu: {request: {permission: string}};
   glicBrowserGetOsMicrophonePermissionStatus: {
     response: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserPinTabs: {
     backgroundAllowed: false,
     request: {
@@ -313,7 +310,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
     response: {
       pinnedAll: boolean,
     },
-  },
+  };
   glicBrowserUnpinTabs: {
     backgroundAllowed: true,
     request: {
@@ -323,13 +320,13 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
     response: {
       unpinnedAll: boolean,
     },
-  },
+  };
   glicBrowserUnpinAllTabs: {
     backgroundAllowed: false,
     request: {
       options?: UnpinTabsOptions,
     },
-  },
+  };
   glicBrowserCreateSkill: {
     request: {
       request: CreateSkillRequest,
@@ -337,7 +334,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
     response: {
       modalOpened: boolean,
     },
-  },
+  };
   glicBrowserUpdateSkill: {
     request: {
       request: UpdateSkillRequest,
@@ -345,13 +342,13 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
     response: {
       modalOpened: boolean,
     },
-  },
+  };
   glicBrowserShowManageSkillsUi: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserShowBrowseSkillsUi: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserGetSkill: {
     request: {
       id: string,
@@ -359,47 +356,46 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
     response: {
       skill?: Skill,
     },
-  },
+  };
   glicBrowserRecordSkillsWebClientEvent: {
     request: {
       event: SkillsWebClientEvent,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSubscribeToPinCandidates: {
     backgroundAllowed: false,
     request: {
       options: GetPinCandidatesOptions,
       observationId: number,
     },
-  },
+  };
   glicBrowserUnsubscribeFromPinCandidates: {
     request: {
       observationId: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSubscribeToCaptureRegion: {
     request: {
       observationId: number,
       params?: CaptureRegionParams,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserUnsubscribeFromCaptureRegion: {
     request: {
       observationId: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserDeleteCapturedRegion: {
     request: {
       tabId: string,
       regionId: string,
     },
     backgroundAllowed: true,
-  },
-
+  };
   glicBrowserGetZeroStateSuggestionsForFocusedTab: {
     request: {
       isFirstRun?: boolean,
@@ -408,11 +404,10 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       suggestions?: ZeroStateSuggestions,
     },
     backgroundAllowed: false,
-  },
+  };
   glicBrowserMaybeRefreshUserStatus: {
     backgroundAllowed: true,
-  },
-
+  };
   glicBrowserGetZeroStateSuggestionsAndSubscribe: {
     request: {
       hasActiveSubscription: boolean,
@@ -421,7 +416,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
     response: {
       suggestions?: ZeroStateSuggestionsV2,
     },
-  },
+  };
   glicBrowserSubscribeToPageMetadata: {
     request: {
       tabId: string,
@@ -431,16 +426,16 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       success: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnModeChange: {
     request: {
       newMode: WebClientMode,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetOnboardingCompleted: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSubscribeToTabData: {
     request: {
       tabId: string,
@@ -448,7 +443,7 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       cancel: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSubscribeToTabFavicon: {
     request: {
       tabId: string,
@@ -456,13 +451,13 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       cancel: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserOnMicrophoneStatusChange: {
     request: {
       status: MicrophoneStatus,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserRecordHistogram: {
     request: {
       name: string,
@@ -470,31 +465,30 @@ export declare type WebClientHostRequestTypes = ValidateRequestMap<{
       // Add other histogram types as needed.
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSetErrorDialogState: {
     request: {
       shownDialogType?: ClientErrorDialogType,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserReportClientTransientError: {
     request: {
       abslStatus: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserSubscribeToZoomLevel: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserUnsubscribeFromZoomLevel: {
     backgroundAllowed: true,
-  },
-}>;
-
-export type HostRequestTypes = WebClientHostRequestTypes&ActorHostRequestTypes;
+  };
+}
+export type CheckWebClientHost = ValidateRequestMap<WebClientHost>;
 
 // Types of requests to the GlicWebClient.
-export declare type WebClientClientRequestTypes = ValidateRequestMap<{
+export declare interface WebClient {
   glicWebClientNotifyPanelWillOpen: {
     request: {
       panelOpeningData: PanelOpeningData,
@@ -503,180 +497,180 @@ export declare type WebClientClientRequestTypes = ValidateRequestMap<{
       openPanelInfo?: OpenPanelInfo,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyPanelWasClosed: {
     backgroundAllowed: true,
-  },
+  };
   glicWebClientStopMicrophone: {
     backgroundAllowed: true,
-  },
+  };
   glicWebClientPanelStateChanged: {
     request: {
       panelState: PanelState,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientCanAttachStateChanged: {
     request: {
       canAttach: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyMicrophonePermissionStateChanged: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyLocationPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyTabContextPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyDefaultTabContextPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyOsLocationPermissionStateChanged: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyClosedCaptioningSettingChanged: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyActuationOnWebSettingChanged: {
     request: {
       enabled: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyFocusedTabChanged: {
     request: {
       focusedTabDataPrivate: FocusedTabDataPrivate,
     },
-  },
+  };
   glicWebClientNotifyPanelActiveChanged: {
     request: {
       panelActive: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientCheckResponsive: {
     response: {
       clientSendMessageQueueLength: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyManualResizeChanged: {
     request: {
       resizing: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientBrowserIsOpenChanged: {
     request: {
       browserIsOpen: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyOsHotkeyStateChanged: {
     request: {
       hotkey: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyPinnedTabsChanged: {
     request: {
       tabData: TabDataPrivate[],
     },
-  },
+  };
   glicWebClientNotifyPinnedTabDataChanged: {
     request: {
       tabData: TabDataPrivate,
     },
-  },
+  };
   glicWebClientNotifySkillPreviewsChanged: {
     request: {
       skillPreviews: SkillPreview[],
     },
-  },
+  };
   glicWebClientNotifySkillPreviewChanged: {
     request: {
       skillPreview: SkillPreview,
     },
-  },
+  };
   glicWebClientNotifyContextualSkillPreviewsChanged: {
     request: {
       contextualSkillPreviews: SkillPreview[],
     },
-  },
+  };
   glicWebClientNotifySkillDeleted: {
     request: {
       skillId: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientPinCandidatesChanged: {
     request: {
       candidates: PinCandidatePrivate[],
       observationId: number,
     },
-  },
+  };
   glicWebClientZeroStateSuggestionsChanged: {
     request: {
       suggestions: ZeroStateSuggestionsV2,
       options: ZeroStateSuggestionsOptions,
     },
-  },
+  };
   glicWebClientPageMetadataChanged: {
     request: {
       tabId: string,
-      pageMetadata: PageMetadata | null,
+      pageMetadata: PageMetadata|null,
     },
-  },
+  };
   glicWebClientNotifyAdditionalContext: {
     request: {
       context: AdditionalContextPrivate,
     },
-  },
+  };
   glicWebClientCaptureRegionUpdate: {
     request: {
       result?: CaptureRegionResult,
       reason?: CaptureRegionErrorReason, observationId: number,
     },
-  },
+  };
   glicWebClientNotifyActOnWebCapabilityChanged: {
     request: {
       canActOnWeb: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientOnboardingCompletedChanged: {
     request: {
       completed: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyActorTaskListRowClicked: {
     request: {
       taskId: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientTabDataChanged: {
     request: {
       // If not present, the tab no longer exists and no more updates will be
@@ -684,7 +678,7 @@ export declare type WebClientClientRequestTypes = ValidateRequestMap<{
       tabData?: TabDataPrivate, observationId: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientTabFaviconChanged: {
     request: {
       observationId: number,
@@ -693,13 +687,13 @@ export declare type WebClientClientRequestTypes = ValidateRequestMap<{
       favicon?: RgbaImage,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientInvoke: {
     request: {
       options: InvokeOptionsPrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientGetExperimentalTriggeringUpdates: {
     request: {
       observationId: number,
@@ -708,17 +702,22 @@ export declare type WebClientClientRequestTypes = ValidateRequestMap<{
       success: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientNotifyZoomLevelChanged: {
     request: {
       zoomFactor: number,
     },
     backgroundAllowed: true,
-  },
-}>;
+  };
+}
+export type CheckWebClient = ValidateRequestMap<WebClient>;
 
-export type WebClientRequestTypes =
-    WebClientClientRequestTypes&ActorClientRequestTypes;
+export type WebClientRequestTypes = WebClient&ActorClient;
+
+export type HostRequestTypes = WebClientHost&ActorHost;
+
+export type ValidateAllMessages =
+    ValidateRequestMap<HostRequestTypes&WebClientRequestTypes>;
 
 // Each host request needs to be added to either UnreportedRequests or
 // RECORDED_REQUEST_IDS. Requests in UnreportedRequests will not record
@@ -873,7 +872,10 @@ export function getHostRequestHistogramInfo(requestType: string):
   return {name: requestName, id: id};
 }
 
-export type AllRequestTypes = HostRequestTypes&WebClientRequestTypes;
+export type AllRequestTypes = {
+  [K in keyof(HostRequestTypes&WebClientRequestTypes)]:
+      (HostRequestTypes&WebClientRequestTypes)[K]
+};
 // All request types which do not provide a return.
 export type AllRequestTypesWithoutReturn = {
   [K in keyof AllRequestTypes as
@@ -892,43 +894,11 @@ export type RequestResponseType<T extends keyof AllRequestTypes> =
     AllRequestTypes[T]['response'] :
     void;
 
-type Promisify<T> = T extends void ? void : Promise<T>;
-
-export type MessageHandlerInterface<MapType> = {
-  [Property in Extract<keyof MapType, keyof AllRequestTypes>]:
-      (payload: RequestRequestType<Property>, extras: ResponseExtras) =>
-          Promisify<RequestResponseType<Property>>;
-};
-
-type AllValues<T> = T[keyof T];
-type ArrayElement<ArrayType extends unknown[]> =
-    ArrayType extends Array<infer ElementType>? ElementType : never;
-
-// Do some high level checks that we don't accidentally add a non-cloneable or
-// transferable type to our messages. These are not perfect.
-
-// This can be extended for other transferable types when we need them. Using
-// 'extends ...' for all possible Transferable types is too permissive.
-type TransferableTypes = ArrayBuffer|Blob;
-type StructuredClonableBasicType = string|boolean|number|void|undefined|null;
-type CheckStructuredClonable<T> =
-    T extends StructuredClonableBasicType ? never : T extends unknown[] ?
-    CheckStructuredClonable<ArrayElement<T>>:
-    T extends Map<infer K, infer V>?
-    (CheckStructuredClonable<K>&CheckStructuredClonable<V>) :
-    T extends Function ?
-    ['Function not structured cloneable', T] :
-    T extends Promise<unknown>? ['Promise not structured cloneable', T] :
-                                CheckStructuredClonableObject<T>;
-type CheckStructuredClonableObject<T> = T extends TransferableTypes ?
-    never :
-    AllValues<{[K in keyof T] -?: CheckStructuredClonable<T[K]>;}>;
-
 assertNever<CheckStructuredClonable<HostRequestTypes>>();
 assertNever<CheckStructuredClonable<WebClientRequestTypes>>();
 // Message names should be unique.
-assertNever<keyof WebClientClientRequestTypes&keyof ActorClientRequestTypes>();
-assertNever<keyof WebClientHostRequestTypes&keyof ActorHostRequestTypes>();
+assertNever<keyof WebClient&keyof ActorClient>();
+assertNever<keyof WebClientHost&keyof ActorHost>();
 
 //
 // Types used in messages that are not exposed directly to the API.
@@ -942,11 +912,6 @@ assertNever<keyof WebClientHostRequestTypes&keyof ActorHostRequestTypes>();
 // accidentally leave the private data on the returned object.
 //
 
-// Same as A&B, but replaces properties that are in both with those in B.
-type ReplaceProperties<A, B> = {
-  [K in keyof A |
-   keyof B]: K extends keyof B ? B[K] : K extends keyof A ? A[K] : never;
-};
 
 export type WebClientInitialStatePrivate =
     ReplaceProperties<WebClientInitialState, {

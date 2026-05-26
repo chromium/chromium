@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import type {ActorTaskInterruptReason, ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, AutofillSuggestion, CancelActionsResult, Credential, FormFillingRequest, FormFillingResponse, Journal, NavigationConfirmationRequest, NavigationConfirmationResponse, SelectAutofillSuggestionsDialogRequest, SelectAutofillSuggestionsDialogResponse, SelectCredentialDialogRequest, SelectCredentialDialogResponse, TabContextOptions, TaskOptions, UserConfirmationDialogRequest, UserConfirmationDialogResponse} from '../../glic_api/glic_api.js';
-import type {ValidateRequestMap} from '../messaging.js';
 import type {ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate} from '../request_types.js';
+import type {ValidateRequestMap} from '../transport/messaging.js';
 
 // Shared between host and client.
 
-export declare type ActorHostRequestTypes = ValidateRequestMap<{
+export declare interface ActorHost {
   glicBrowserGetContextForActorFromTab: {
     request: {
       tabId: string,
@@ -18,7 +18,7 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       tabContextResult: TabContextResultPrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserCreateTask: {
     request: {
       taskOptions?: TaskOptions,
@@ -27,7 +27,7 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       taskId: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserPerformActions: {
     request: {
       actions: ArrayBuffer,
@@ -36,7 +36,7 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       actionsResult: ArrayBuffer,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserCancelActions: {
     request: {
       taskId: number,
@@ -45,14 +45,14 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       result: CancelActionsResult,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserStopActorTask: {
     request: {
       taskId: number,
       stopReason: ActorTaskStopReason,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserPauseActorTask: {
     request: {
       taskId: number,
@@ -60,7 +60,7 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       tabId: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserResumeActorTask: {
     request: {
       taskId: number,
@@ -70,20 +70,20 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       resumeActorTaskResult: ResumeActorTaskResultPrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserInterruptActorTask: {
     request: {
       taskId: number,
       interruptReason?: ActorTaskInterruptReason,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserUninterruptActorTask: {
     request: {
       taskId: number,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserCreateActorTab: {
     request: {
       taskId: number,
@@ -98,7 +98,7 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       tabData?: TabDataPrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserLogBeginAsyncEvent: {
     request: {
       asyncEventId: number,
@@ -107,14 +107,14 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       details: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserLogEndAsyncEvent: {
     request: {
       asyncEventId: number,
       details: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserLogInstantEvent: {
     request: {
       taskId: number,
@@ -122,10 +122,10 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       details: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserJournalClear: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserJournalSnapshot: {
     request: {
       clear: boolean,
@@ -134,31 +134,31 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       journal: Journal,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserJournalStart: {
     request: {
       maxBytes: number,
       captureScreenshots: boolean,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserJournalStop: {
     backgroundAllowed: true,
-  },
+  };
   glicBrowserJournalRecordFeedback: {
     request: {
       positive: boolean,
       reason: string,
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserAutofillSuggestionDialogOnFormPresented: {
     request: {
       taskId: number,
       params: {formFillingRequestIndex: number},
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserAutofillSuggestionDialogOnFormPreviewChanged: {
     request: {
       taskId: number,
@@ -168,7 +168,7 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       },
     },
     backgroundAllowed: true,
-  },
+  };
   glicBrowserAutofillSuggestionDialogOnFormConfirmed: {
     request: {
       taskId: number,
@@ -178,18 +178,18 @@ export declare type ActorHostRequestTypes = ValidateRequestMap<{
       },
     },
     backgroundAllowed: true,
-  },
-}>;
+  };
+}
+export type CheckActorHost = ValidateRequestMap<ActorHost>;
 
-
-export declare type ActorClientRequestTypes = ValidateRequestMap<{
+export declare interface ActorClient {
   glicWebClientNotifyActorTaskStateChanged: {
     request: {
       taskId: number,
       state: ActorTaskState,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientRequestToShowDialog: {
     request: {
       request: SelectCredentialDialogRequestPrivate,
@@ -198,7 +198,7 @@ export declare type ActorClientRequestTypes = ValidateRequestMap<{
       response: SelectCredentialDialogResponsePrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientRequestToShowConfirmationDialog: {
     request: {
       request: UserConfirmationDialogRequestPrivate,
@@ -207,7 +207,7 @@ export declare type ActorClientRequestTypes = ValidateRequestMap<{
       response: UserConfirmationDialogResponsePrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientRequestToConfirmNavigation: {
     request: {
       request: NavigationConfirmationRequestPrivate,
@@ -216,7 +216,7 @@ export declare type ActorClientRequestTypes = ValidateRequestMap<{
       response: NavigationConfirmationResponsePrivate,
     },
     backgroundAllowed: true,
-  },
+  };
   glicWebClientRequestToShowAutofillSuggestionsDialog: {
     request: {
       request: SelectAutofillSuggestionsDialogRequestPrivate,
@@ -225,8 +225,9 @@ export declare type ActorClientRequestTypes = ValidateRequestMap<{
       response: SelectAutofillSuggestionsDialogResponsePrivate,
     },
     backgroundAllowed: true,
-  },
-}>;
+  };
+}
+export type CheckActorClient = ValidateRequestMap<ActorClient>;
 
 export declare interface CredentialPrivate extends
     Omit<Credential, 'getIcon'|'getAccountPicture'> {

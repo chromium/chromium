@@ -16,10 +16,11 @@ import type {CaptureRegionParams, ClientErrorDialogType, ConversationInfo, Creat
 import {CaptureScreenshotErrorReason, ClientCapabilities, ResponseStopCause, ScrollToErrorReason} from '../../glic_api/glic_api.js';
 import {replaceProperties} from '../conversions.js';
 import {enumFromClient, enumToClient} from '../enum_conversions.js';
-import {ResponseExtras} from '../post_message_transport.js';
-import type {PostMessageRequestSender} from '../post_message_transport.js';
-import type {MessageHandlerInterface, RgbaImage, TabContextResultPrivate, TransferableException, WebClientHostRequestTypes, WebClientInitialStatePrivate} from '../request_types.js';
+import type {RgbaImage, TabContextResultPrivate, TransferableException, WebClientHost, WebClientInitialStatePrivate} from '../request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, SubscriberObservationType} from '../request_types.js';
+import {ResponseExtras} from '../transport/messaging.js';
+import type {MessageHandlerInterface} from '../transport/messaging.js';
+import type {PostMessageRequestSender} from '../transport/post_message_transport.js';
 
 import {bitmapN32ToRGBAImage, captureRegionResultToClient, conversationInfoFromClient, conversionSettings, focusedTabDataToClient, getPinCandidatesOptionsFromClient, hostCapabilitiesToClient, idFromClient, idToClient, microphoneStatusToMojo, optionalFromClient, optionalToClient, panelStateToClient, pinTabsOptionsToMojo, subscriberObservationTypeFromClient, tabContextOptionsFromClient, tabContextToClient, tabDataToClient, timeDeltaFromClient, unpinTabsOptionsToMojo, urlFromClient, urlToClient, webClientModeToMojo, zeroStateSuggestionsToClient} from './conversions.js';
 import type {GatedSender} from './gated_sender.js';
@@ -37,7 +38,7 @@ import {WebClientImpl} from './host_to_client.js';
  * `GlicApiHost`.
  */
 export class HostMessageHandler implements
-    MessageHandlerInterface<WebClientHostRequestTypes> {
+    MessageHandlerInterface<WebClientHost> {
   // Undefined until the web client is initialized.
   private receiver: WebClientReceiver|undefined;
 
@@ -554,7 +555,7 @@ export class HostMessageHandler implements
     this.handler.onClosedCaptionsShown();
   }
 
-  async glicBrowserScrollTo(request: {params: ScrollToParams}) {
+  async glicBrowserScrollTo(request: {params: ScrollToParams}): Promise<void> {
     const {params} = request;
 
     function getMojoSelector(): ScrollToSelectorMojo {
@@ -616,7 +617,6 @@ export class HostMessageHandler implements
     if (errorReason !== null) {
       throw new ErrorWithReasonImpl('scrollTo', enumToClient(errorReason));
     }
-    return {};
   }
 
   glicBrowserSetSyntheticExperimentState(request: {

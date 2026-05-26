@@ -16,10 +16,10 @@ import type {ObservableValueReadOnly} from '../../observable.js';
 import {TaskQueue} from '../../task_queue.js';
 import {OneShotTimer} from '../../timer.js';
 import {ActorHostMessageHandler} from '../actor/actor_host.js';
+import type {ResponseExtras} from '../transport/messaging.js';
+import type {PostMessageRequestHandler, PostMessageRequestReceiver, PostMessageRequestSender, PostMessageRouter} from '../transport/post_message_transport.js';
+import {createBidirectionalPostMessageTransport, newSenderId} from '../transport/post_message_transport.js';
 
-import type {PostMessageRequestHandler, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
-import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
-import type {PostMessageRequestReceiver, PostMessageRequestSender} from './../post_message_transport.js';
 import {getHostRequestHistogramInfo, HOST_REQUEST_TYPES} from './../request_types.js';
 import {urlFromClient} from './conversions.js';
 import {GatedSender} from './gated_sender.js';

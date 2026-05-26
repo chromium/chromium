@@ -5,8 +5,8 @@
 import type * as mojom from '../glic.mojom-webui.js';
 import type * as api from '../glic_api/glic_api.js';
 
-import {assertNever} from './messaging.js';
 import type * as requestTypes from './request_types.js';
+import {assertNever} from './transport/messaging.js';
 
 // Helper function to shallow-copy an object and replace some properties.
 // Useful to convert from these private types to public types. This will fail to

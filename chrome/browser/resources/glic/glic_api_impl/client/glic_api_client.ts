@@ -7,11 +7,12 @@ import {ActorTaskPauseReason, ActorTaskState, ActorTaskStopReason, HostCapabilit
 import {ObservableValue as ObservableValueImpl, Subject} from '../../observable.js';
 import {OneShotTimer} from '../../timer.js';
 import {ActorWebClientMessageHandler, GlicBrowserHostJournalImpl} from '../actor/actor_client.js';
+import type {MessageHandlerInterface, ResponseExtras} from '../transport/messaging.js';
+import {createBidirectionalPostMessageTransport, newSenderId} from '../transport/post_message_transport.js';
+import type {PostMessageRequestSender, PostMessageRouter} from '../transport/post_message_transport.js';
 
 import {replaceProperties} from './../conversions.js';
-import {createBidirectionalPostMessageTransport, newSenderId} from './../post_message_transport.js';
-import type {PostMessageRequestSender, PostMessageRouter, ResponseExtras} from './../post_message_transport.js';
-import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, InvokeOptionsPrivate, MessageHandlerInterface, PdfDocumentDataPrivate, PinCandidatePrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientClientRequestTypes} from './../request_types.js';
+import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, InvokeOptionsPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, ResumeActorTaskResultPrivate, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClient} from './../request_types.js';
 import {ErrorWithReasonImpl, newTransferableException, SubscriberObservationType} from './../request_types.js';
 import {rgbaImageToBlob} from './image_utils.js';
 
@@ -46,8 +47,7 @@ export class GlicHostRegistryImpl implements GlicHostRegistry {
 // A type which the guest should implement.
 // This helps verify that WebClientMessageHandler is implemented with the
 // correct parameter and return types.
-class WebClientMessageHandler implements
-    MessageHandlerInterface<WebClientClientRequestTypes> {
+class WebClientMessageHandler implements MessageHandlerInterface<WebClient> {
   private cachedPinnedTabs: TabData[]|undefined = undefined;
   private cachedSkillPreviews: SkillPreview[] = [];
   private cachedContextualSkillPreviews: SkillPreview[] = [];
