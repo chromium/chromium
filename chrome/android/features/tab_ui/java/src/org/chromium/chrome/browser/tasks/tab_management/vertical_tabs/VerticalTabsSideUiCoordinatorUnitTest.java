@@ -72,7 +72,7 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     @Test
     @SmallTest
     public void testGetAnchorSide() {
-        assertEquals(AnchorSide.START, mCoordinator.getAnchorSide());
+        assertEquals(AnchorSide.LEFT, mCoordinator.getAnchorSide());
     }
 
     @Test

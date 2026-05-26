@@ -66,27 +66,27 @@ public class ViewMarginAdjusterForSideUiTest {
 
     @Test
     public void testOnSideUiSpecsChanged_hasBaseMargin() {
-        mMarginLayoutParams.setMarginStart(20);
-        mMarginLayoutParams.setMarginEnd(35);
+        mMarginLayoutParams.leftMargin = 20;
+        mMarginLayoutParams.rightMargin = 35;
 
         SideUiObserver marginContainerObserver = new ViewMarginAdjusterForSideUi(mView);
 
-        // End margin
+        // Right margin
         marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(0, 200));
         verify(mView).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(20, mLayoutParamsCaptor.getValue().getMarginStart());
-        assertEquals(235, mLayoutParamsCaptor.getValue().getMarginEnd());
+        assertEquals(20, mLayoutParamsCaptor.getValue().leftMargin);
+        assertEquals(235, mLayoutParamsCaptor.getValue().rightMargin);
 
         // Start margin
         marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(200, 0));
         verify(mView, times(2)).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(220, mLayoutParamsCaptor.getValue().getMarginStart());
-        assertEquals(35, mLayoutParamsCaptor.getValue().getMarginEnd());
+        assertEquals(220, mLayoutParamsCaptor.getValue().leftMargin);
+        assertEquals(35, mLayoutParamsCaptor.getValue().rightMargin);
 
         // Both margins
         marginContainerObserver.onSideUiSpecsChanged(new SideUiSpecs(100, 200));
         verify(mView, times(3)).setLayoutParams(mLayoutParamsCaptor.capture());
-        assertEquals(120, mLayoutParamsCaptor.getValue().getMarginStart());
-        assertEquals(235, mLayoutParamsCaptor.getValue().getMarginEnd());
+        assertEquals(120, mLayoutParamsCaptor.getValue().leftMargin);
+        assertEquals(235, mLayoutParamsCaptor.getValue().rightMargin);
     }
 }

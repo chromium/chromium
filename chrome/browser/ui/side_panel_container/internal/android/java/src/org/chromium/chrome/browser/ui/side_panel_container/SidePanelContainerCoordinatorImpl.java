@@ -34,7 +34,7 @@ final class SidePanelContainerCoordinatorImpl
         implements SidePanelContainerCoordinator, SideUiContainer {
     private static final String TAG = "SidePanelContainerCoordinatorImpl";
 
-    private static final @AnchorSide int SIDE_PANEL_DEFAULT_ANCHOR_SIDE = AnchorSide.END;
+    private static final @AnchorSide int SIDE_PANEL_DEFAULT_ANCHOR_SIDE = AnchorSide.RIGHT;
 
     private final Activity mParentActivity;
     private final FrameLayout mContainerView;

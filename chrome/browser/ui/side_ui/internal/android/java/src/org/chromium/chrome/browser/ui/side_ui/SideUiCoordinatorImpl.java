@@ -42,8 +42,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private final ViewGroup mAnchorContainerParent;
-    private final ViewGroup mStartAnchorContainer;
-    private final ViewGroup mEndAnchorContainer;
+    private final ViewGroup mLeftAnchorContainer;
+    private final ViewGroup mRightAnchorContainer;
 
     private final ObserverList<SideUiObserver> mSideUiObservers = new ObserverList<>();
 
@@ -61,16 +61,16 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      *     parentActivity}.
      * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
      *     containers.
-     * @param startAnchorContainerStub The {@link ViewStub} for the start-anchored container.
-     * @param endAnchorContainerStub The {@link ViewStub} for the end-anchored container.
+     * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
+     * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
      * @param topMarginSupplier The supplier for the Side UI's top margin.
      */
     /* package */ SideUiCoordinatorImpl(
             Activity parentActivity,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             ViewGroup anchorContainerParent,
-            ViewStub startAnchorContainerStub,
-            ViewStub endAnchorContainerStub,
+            ViewStub leftAnchorContainerStub,
+            ViewStub rightAnchorContainerStub,
             NonNullObservableSupplier<Integer> topMarginSupplier) {
         mParentActivity = parentActivity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -78,10 +78,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
 
         // TODO(crbug.com/485309827): Account for the height of Side UI. Specifically, show beneath
         //  the tab strip when it is visible.
-        mStartAnchorContainer = (ViewGroup) startAnchorContainerStub.inflate();
-        mEndAnchorContainer = (ViewGroup) endAnchorContainerStub.inflate();
-        assert mAnchorContainerParent == mStartAnchorContainer.getParent();
-        assert mAnchorContainerParent == mEndAnchorContainer.getParent();
+        mLeftAnchorContainer = (ViewGroup) leftAnchorContainerStub.inflate();
+        mRightAnchorContainer = (ViewGroup) rightAnchorContainerStub.inflate();
+        assert mAnchorContainerParent == mLeftAnchorContainer.getParent();
+        assert mAnchorContainerParent == mRightAnchorContainer.getParent();
 
         mTopMarginObserver = this::onTopMarginChanged;
         mTopMarginSupplier = topMarginSupplier;
@@ -97,6 +97,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
     @Override
     public void registerSideUiContainer(SideUiContainer sideUiContainer) {
         assert mSideUiContainer == null : "Registering a SideUiContainer when already set.";
+        assert sideUiContainer.getAnchorSide() == AnchorSide.LEFT
+                        || sideUiContainer.getAnchorSide() == AnchorSide.RIGHT
+                : "Only LEFT/RIGHT anchor side are supported for now";
         mSideUiContainer = sideUiContainer;
     }
 
@@ -154,17 +157,17 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         // Therefore, we need to explicitly check if the visibility is View.GONE, and if so, return
         // 0.
         @Px
-        int startAnchorContainerWidth =
-                mStartAnchorContainer.getVisibility() == View.GONE
+        int leftAnchorContainerWidth =
+                mLeftAnchorContainer.getVisibility() == View.GONE
                         ? 0
-                        : mStartAnchorContainer.getWidth();
+                        : mLeftAnchorContainer.getWidth();
         @Px
-        int endAnchorContainerWidth =
-                mEndAnchorContainer.getVisibility() == View.GONE
+        int rightAnchorContainerWidth =
+                mRightAnchorContainer.getVisibility() == View.GONE
                         ? 0
-                        : mEndAnchorContainer.getWidth();
+                        : mRightAnchorContainer.getWidth();
 
-        return new SideUiSpecs(startAnchorContainerWidth, endAnchorContainerWidth);
+        return new SideUiSpecs(leftAnchorContainerWidth, rightAnchorContainerWidth);
     }
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -183,9 +186,9 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         @AnchorSide int currentAnchorSide = mSideUiContainer.getAnchorSide();
         @Px
         int currentSideUiWidth =
-                currentAnchorSide == AnchorSide.START
-                        ? currentSideUiSpecs.mStartContainerWidth
-                        : currentSideUiSpecs.mEndContainerWidth;
+                currentAnchorSide == AnchorSide.LEFT
+                        ? currentSideUiSpecs.leftWidth()
+                        : currentSideUiSpecs.rightWidth();
 
         // 2. Check if we need to close/re-open side UI.
         //
@@ -258,10 +261,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
                         requestedSideUiProperties.mWidth, availableWidth, windowWidth);
         var newSideUiSpecs =
                 new SideUiSpecs(
-                        requestedSideUiProperties.mAnchorSide == AnchorSide.START
+                        requestedSideUiProperties.mAnchorSide == AnchorSide.LEFT
                                 ? finalSideUiWidth
                                 : 0,
-                        requestedSideUiProperties.mAnchorSide == AnchorSide.END
+                        requestedSideUiProperties.mAnchorSide == AnchorSide.RIGHT
                                 ? finalSideUiWidth
                                 : 0);
 
@@ -302,16 +305,14 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
 
         // Add transitions for the side UI container.
         // TODO(crbug.com/478338737): Update to account for multiple side containers.
-        if (anchorSide == AnchorSide.START) {
+        if (anchorSide == AnchorSide.LEFT) {
             transitionSet.addTransition(
                     SideUiContainerTransition.createContainerTransition(
-                            mStartAnchorContainer,
-                            AnchorSide.START,
-                            sideUiSpecs.mStartContainerWidth));
+                            mLeftAnchorContainer, AnchorSide.LEFT, sideUiSpecs.leftWidth()));
         } else {
             transitionSet.addTransition(
                     SideUiContainerTransition.createContainerTransition(
-                            mEndAnchorContainer, AnchorSide.END, sideUiSpecs.mEndContainerWidth));
+                            mRightAnchorContainer, AnchorSide.RIGHT, sideUiSpecs.rightWidth()));
         }
 
         for (SideUiObserver observer : mSideUiObservers) {
@@ -340,8 +341,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
             @Nullable TransitionSet transitionSet,
             @AnchorSide int anchorSide) {
         // TODO(crbug.com/478338737): Update to account for multiple SideUiContainers.
-        assert sideUiSpecs.mStartContainerWidth == EMPTY_SIDE_UI_SPECS.mStartContainerWidth
-                        || sideUiSpecs.mEndContainerWidth == EMPTY_SIDE_UI_SPECS.mEndContainerWidth
+        assert sideUiSpecs.leftWidth() == EMPTY_SIDE_UI_SPECS.leftWidth()
+                        || sideUiSpecs.rightWidth() == EMPTY_SIDE_UI_SPECS.rightWidth()
                 : "Only one SideUiContainer is supported for now, so SideUiSpecs can't have"
                         + " specs for more than one container";
 
@@ -363,9 +364,7 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         // TODO(crbug.com/478338737): Update to account for multiple SideUiContainers.
         @Px
         int sideUiWidth =
-                anchorSide == AnchorSide.START
-                        ? sideUiSpecs.mStartContainerWidth
-                        : sideUiSpecs.mEndContainerWidth;
+                anchorSide == AnchorSide.LEFT ? sideUiSpecs.leftWidth() : sideUiSpecs.rightWidth();
 
         // Ensure side UI container is attached and, if showing, starts offscreen with the
         // side UI width. If hiding, i.e. side UI width is 0, then setWidth() should be
@@ -400,17 +399,17 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         // like setting a View's translation, is not enough alone.
         ViewUtils.triggerSynchronousMeasureAndLayout(mAnchorContainerParent);
         TransitionManager.beginDelayedTransition(getRootView(), transitionSet);
-        if (anchorSide == AnchorSide.START) {
+        if (anchorSide == AnchorSide.LEFT) {
             SideUiContainerTransition.triggerContainerTransition(
-                    mStartAnchorContainer,
-                    mStartAnchorContainer.getWidth(),
-                    AnchorSide.START,
+                    mLeftAnchorContainer,
+                    mLeftAnchorContainer.getWidth(),
+                    AnchorSide.LEFT,
                     sideUiWidth);
         } else {
             SideUiContainerTransition.triggerContainerTransition(
-                    mEndAnchorContainer,
-                    mEndAnchorContainer.getWidth(),
-                    AnchorSide.END,
+                    mRightAnchorContainer,
+                    mRightAnchorContainer.getWidth(),
+                    AnchorSide.RIGHT,
                     sideUiWidth);
         }
         for (SideUiObserver observer : mSideUiObservers) {
@@ -425,13 +424,11 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         // TODO(crbug.com/478338737): Update to account for multiple SideUiContainers.
         @Px
         int sideUiWidth =
-                anchorSide == AnchorSide.START
-                        ? sideUiSpecs.mStartContainerWidth
-                        : sideUiSpecs.mEndContainerWidth;
+                anchorSide == AnchorSide.LEFT ? sideUiSpecs.leftWidth() : sideUiSpecs.rightWidth();
 
         // Reset the side UI containers to clear any leftover state from previous Transitions.
-        SideUiContainerTransition.resetContainer(mStartAnchorContainer);
-        SideUiContainerTransition.resetContainer(mEndAnchorContainer);
+        SideUiContainerTransition.resetContainer(mLeftAnchorContainer);
+        SideUiContainerTransition.resetContainer(mRightAnchorContainer);
 
         if (sideUiWidth != 0) {
             attachSideUiContainerView(mSideUiContainer.getView(), anchorSide);
@@ -451,10 +448,10 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      * @param anchorSide The requested {@link AnchorSide}.
      */
     private void attachSideUiContainerView(View sideUiContainerView, @AnchorSide int anchorSide) {
-        if (anchorSide == AnchorSide.START) {
-            attachSideUiContainerView(sideUiContainerView, mStartAnchorContainer);
-        } else if (anchorSide == AnchorSide.END) {
-            attachSideUiContainerView(sideUiContainerView, mEndAnchorContainer);
+        if (anchorSide == AnchorSide.LEFT) {
+            attachSideUiContainerView(sideUiContainerView, mLeftAnchorContainer);
+        } else if (anchorSide == AnchorSide.RIGHT) {
+            attachSideUiContainerView(sideUiContainerView, mRightAnchorContainer);
         } else {
             assert false : "SideUiContainer requested an unknown AnchorSide.";
         }
@@ -499,14 +496,14 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
         // No-op if already detached.
         if (currentParent == null) return;
 
-        if (currentParent == mStartAnchorContainer) {
-            mStartAnchorContainer.removeView(sideUiContainerView);
-            assert mStartAnchorContainer.getChildCount() == 0;
-            mStartAnchorContainer.setVisibility(View.GONE);
-        } else if (currentParent == mEndAnchorContainer) {
-            mEndAnchorContainer.removeView(sideUiContainerView);
-            assert mEndAnchorContainer.getChildCount() == 0;
-            mEndAnchorContainer.setVisibility(View.GONE);
+        if (currentParent == mLeftAnchorContainer) {
+            mLeftAnchorContainer.removeView(sideUiContainerView);
+            assert mLeftAnchorContainer.getChildCount() == 0;
+            mLeftAnchorContainer.setVisibility(View.GONE);
+        } else if (currentParent == mRightAnchorContainer) {
+            mRightAnchorContainer.removeView(sideUiContainerView);
+            assert mRightAnchorContainer.getChildCount() == 0;
+            mRightAnchorContainer.setVisibility(View.GONE);
         } else {
             assert false : "SideUiContainer was attached to an unknown group.";
         }
@@ -529,15 +526,15 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator, ConfigurationCha
      * @param tabStripBottomPx The tab strip's bottom in relation to the top of the window in px.
      */
     private void onTopMarginChanged(@Px int tabStripBottomPx) {
-        MarginLayoutParams startLayoutParams =
-                ((MarginLayoutParams) mStartAnchorContainer.getLayoutParams());
-        startLayoutParams.topMargin = tabStripBottomPx;
-        mStartAnchorContainer.setLayoutParams(startLayoutParams);
+        MarginLayoutParams leftLayoutParams =
+                ((MarginLayoutParams) mLeftAnchorContainer.getLayoutParams());
+        leftLayoutParams.topMargin = tabStripBottomPx;
+        mLeftAnchorContainer.setLayoutParams(leftLayoutParams);
 
-        MarginLayoutParams endLayoutParams =
-                ((MarginLayoutParams) mEndAnchorContainer.getLayoutParams());
-        endLayoutParams.topMargin = tabStripBottomPx;
-        mEndAnchorContainer.setLayoutParams(endLayoutParams);
+        MarginLayoutParams rightLayoutParams =
+                ((MarginLayoutParams) mRightAnchorContainer.getLayoutParams());
+        rightLayoutParams.topMargin = tabStripBottomPx;
+        mRightAnchorContainer.setLayoutParams(rightLayoutParams);
     }
 
     private @Px int getWindowWidth() {

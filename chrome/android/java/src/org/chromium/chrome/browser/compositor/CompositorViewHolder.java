@@ -41,7 +41,6 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -105,7 +104,6 @@ import org.chromium.ui.animation.transition.IntegerValueTransition;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.SPenSupport;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
@@ -1156,8 +1154,7 @@ public class CompositorViewHolder extends FrameLayout
                 && AndroidSidePanelEnabledFn.isEnabled()
                 && mSideUiStateProvider != null) {
             SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
-            horizontalViewportInsets =
-                    sideUiSpecs.mStartContainerWidth + sideUiSpecs.mEndContainerWidth;
+            horizontalViewportInsets = sideUiSpecs.leftWidth() + sideUiSpecs.rightWidth();
         }
 
         // The view size takes into account of the browser controls whose height should be
@@ -1423,7 +1420,7 @@ public class CompositorViewHolder extends FrameLayout
         if (webContents == null) return null;
 
         Point viewportSize = getViewportSize();
-        int sideUiTotalWidth = sideUiSpecs.mStartContainerWidth + sideUiSpecs.mEndContainerWidth;
+        int sideUiTotalWidth = sideUiSpecs.leftWidth() + sideUiSpecs.rightWidth();
         int startWidth = ViewUtils.dpToPx(mActivity, webContents.getWidth());
         int targetWidth = viewportSize.x - sideUiTotalWidth;
 
@@ -1472,12 +1469,7 @@ public class CompositorViewHolder extends FrameLayout
         updateWebContentsSize(getCurrentTab());
 
         // TODO(crbug.com/514774842): Account for offset X for animations.
-        @Px
-        int contentOffsetX =
-                LocalizationUtils.isLayoutRtl()
-                        ? sideUiSpecs.mEndContainerWidth
-                        : sideUiSpecs.mStartContainerWidth;
-        mLayoutManager.setContentOffsetX(contentOffsetX);
+        mLayoutManager.setContentOffsetX(sideUiSpecs.leftWidth());
 
         repositionTabViewForSideUi(sideUiSpecs);
         onViewportChanged();
@@ -1511,8 +1503,8 @@ public class CompositorViewHolder extends FrameLayout
         // TODO(b/496307238): verify if need to explicitly trigger repositionTabViewForSideUi again
         // after layout params are set.
         if (layoutParams == null) return;
-        layoutParams.setMarginStart(sideUiSpecs.mStartContainerWidth);
-        layoutParams.setMarginEnd(sideUiSpecs.mEndContainerWidth);
+        layoutParams.leftMargin = sideUiSpecs.leftWidth();
+        layoutParams.rightMargin = sideUiSpecs.rightWidth();
         mView.setLayoutParams(layoutParams);
     }
 
@@ -1632,16 +1624,8 @@ public class CompositorViewHolder extends FrameLayout
     private void adjustRectForSideUi(RectF outRect) {
         if (mSideUiStateProvider != null) {
             SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
-            int leftOffset =
-                    LocalizationUtils.isLayoutRtl()
-                            ? sideUiSpecs.mEndContainerWidth
-                            : sideUiSpecs.mStartContainerWidth;
-            int rightOffset =
-                    LocalizationUtils.isLayoutRtl()
-                            ? sideUiSpecs.mStartContainerWidth
-                            : sideUiSpecs.mEndContainerWidth;
-            outRect.left += leftOffset;
-            outRect.right -= rightOffset;
+            outRect.left += sideUiSpecs.leftWidth();
+            outRect.right -= sideUiSpecs.rightWidth();
         }
     }
 

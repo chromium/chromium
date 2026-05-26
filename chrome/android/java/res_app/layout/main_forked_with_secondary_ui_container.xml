@@ -204,25 +204,25 @@ TODO(http://crbug.com/485940935): Delete this.
                 added to the following container. The added views' positions/sizes
                 will be maintained by SideUiCoordinator. -->
             <ViewStub
-                android:id="@+id/side_ui_start_anchor_container_stub"
+                android:id="@+id/side_ui_left_anchor_container_stub"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:inflatedId="@+id/side_ui_start_anchor_container"
+                android:inflatedId="@+id/side_ui_left_anchor_container"
                 android:layout="@layout/side_ui_anchor_container"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
             <!-- Please do not add anything in between
-                side_ui_start_anchor_container_stub and
-                side_ui_end_anchor_container_stub. -->
+                side_ui_left_anchor_container_stub and
+                side_ui_right_anchor_container_stub. -->
             <ViewStub
-                android:id="@+id/side_ui_end_anchor_container_stub"
+                android:id="@+id/side_ui_right_anchor_container_stub"
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:inflatedId="@+id/side_ui_end_anchor_container"
+                android:inflatedId="@+id/side_ui_right_anchor_container"
                 android:layout="@layout/side_ui_anchor_container"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 

@@ -9,7 +9,7 @@ import android.transition.Transition;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
 
 /** Provides a variety of static methods to facilitate container Transitions. */
 @NullMarked
@@ -72,15 +72,13 @@ public final class SideUiContainerTransition {
      * Returns the translation offset that needs to be offset to a container on a particular anchor
      * side to place it fully offscreen.
      */
-    private static int getOffscreenOffset(
-            @SideUiCoordinator.AnchorSide int anchorSide, int acceptedWidth) {
-        // Flip the starting translation offset if the container is anchored to the left side, i.e.
+    private static int getOffscreenOffset(@AnchorSide int anchorSide, int acceptedWidth) {
+        // TODO(crbug.com/478338737): When adding support for START/END anchor side, flip the
+        // starting translation offset if the container is anchored to the left side, i.e.
         // the START in LTR or the END in RTL.
-        boolean flipOffset =
-                (!LocalizationUtils.isLayoutRtl()
-                                && anchorSide == SideUiCoordinator.AnchorSide.START)
-                        || (LocalizationUtils.isLayoutRtl()
-                                && anchorSide == SideUiCoordinator.AnchorSide.END);
+        assert anchorSide == AnchorSide.LEFT || anchorSide == AnchorSide.RIGHT
+                : "Only LEFT/RIGHT anchor side are supported now.";
+        boolean flipOffset = anchorSide == AnchorSide.LEFT;
         return flipOffset ? -acceptedWidth : acceptedWidth;
     }
 }

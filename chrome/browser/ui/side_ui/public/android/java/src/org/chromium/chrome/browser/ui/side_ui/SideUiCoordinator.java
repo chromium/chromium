@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ui.side_ui;
 
+import android.util.ArrayMap;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 
@@ -11,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Coordinator for "side UI," with "side UI" referring to views that will anchor to either the left
@@ -23,13 +26,13 @@ public interface SideUiCoordinator extends SideUiStateProvider {
     int MIN_WEB_CONTENTS_WIDTH_DP = 412;
 
     /**
-     * The side of the window ({@link #START} or {@link #END}) that a {@link SideUiContainer} will
-     * anchor to.
+     * The sides of the window that a {@link SideUiContainer} will anchor to. Each value should have
+     * a corresponding container view in main_forked_with_secondary_ui_container.xml.
      */
-    @IntDef({AnchorSide.START, AnchorSide.END})
+    @IntDef({AnchorSide.LEFT, AnchorSide.RIGHT})
     @interface AnchorSide {
-        int START = 0;
-        int END = 1;
+        int LEFT = 0;
+        int RIGHT = 1;
         int NUM_ENTRIES = 2;
     }
 
@@ -57,32 +60,43 @@ public interface SideUiCoordinator extends SideUiStateProvider {
      * SideUiStateProvider} instead.
      */
     final class SideUiSpecs {
-        /** A {@link SideUiSpecs} with a startContainerWidth and endContainerWidth of 0. */
+        /** A {@link SideUiSpecs} with a leftContainerWidth and rightContainerWidth of 0. */
         public static final SideUiSpecs EMPTY_SIDE_UI_SPECS =
-                new SideUiSpecs(/* startContainerWidth= */ 0, /* endContainerWidth= */ 0);
+                new SideUiSpecs(/* leftContainerWidth= */ 0, /* rightContainerWidth= */ 0);
 
-        public final @Px int mStartContainerWidth;
-        public final @Px int mEndContainerWidth;
+        /** Maps @AnchorSide to ContainerWidth. */
+        private final Map<Integer, Integer> mSideUiWidths = new ArrayMap<>();
 
-        public SideUiSpecs(@Px int startContainerWidth, @Px int endContainerWidth) {
-            mStartContainerWidth = startContainerWidth;
-            mEndContainerWidth = endContainerWidth;
+        public SideUiSpecs(@Px int leftContainerWidth, @Px int rightContainerWidth) {
+            mSideUiWidths.put(AnchorSide.LEFT, leftContainerWidth);
+            mSideUiWidths.put(AnchorSide.RIGHT, rightContainerWidth);
+        }
+
+        public int leftWidth() {
+            return mSideUiWidths.containsKey(AnchorSide.LEFT)
+                    ? mSideUiWidths.get(AnchorSide.LEFT)
+                    : 0;
+        }
+
+        public int rightWidth() {
+            return mSideUiWidths.containsKey(AnchorSide.RIGHT)
+                    ? mSideUiWidths.get(AnchorSide.RIGHT)
+                    : 0;
         }
 
         @Override
         public boolean equals(@Nullable Object obj) {
             if (!(obj instanceof SideUiSpecs that)) return false;
-            return (this.mStartContainerWidth == that.mStartContainerWidth)
-                    && (this.mEndContainerWidth == that.mEndContainerWidth);
+            return this.mSideUiWidths.equals(that.mSideUiWidths);
         }
 
         @Override
         public String toString() {
             return String.format(
                     Locale.ENGLISH,
-                    "[StartContainerWidth: %d, EndContainerWidth: %d]",
-                    mStartContainerWidth,
-                    mEndContainerWidth);
+                    "[LeftContainerWidth: %d, RightContainerWidth: %d]",
+                    mSideUiWidths.get(AnchorSide.LEFT),
+                    mSideUiWidths.get(AnchorSide.RIGHT));
         }
     }
 

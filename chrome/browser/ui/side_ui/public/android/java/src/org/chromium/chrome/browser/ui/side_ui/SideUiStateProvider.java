@@ -37,12 +37,12 @@ public interface SideUiStateProvider {
     SideUiSpecs getCurrentSideUiSpecs();
 
     /** Returns whether the start-anchored Side UI container is currently showing. */
-    default boolean isStartContainerShowing() {
-        return getCurrentSideUiSpecs().mStartContainerWidth > 0;
+    default boolean isLeftContainerShowing() {
+        return getCurrentSideUiSpecs().leftWidth() > 0;
     }
 
     /** Returns whether the end-anchored Side UI container is currently showing. */
-    default boolean isEndContainerShowing() {
-        return getCurrentSideUiSpecs().mEndContainerWidth > 0;
+    default boolean isRightContainerShowing() {
+        return getCurrentSideUiSpecs().rightWidth() > 0;
     }
 }

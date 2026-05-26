@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.SideUiContainerP
 public final class TestSideUiContainer implements SideUiContainer {
     public static final @Px int TEST_SIDE_UI_WIDTH = 412;
 
-    public static final @AnchorSide int TEST_ANCHOR_SIDE = AnchorSide.END;
+    public static final @AnchorSide int TEST_ANCHOR_SIDE = AnchorSide.RIGHT;
 
     /** The last {@code requestedWidth} received by {@link #determineContainerWidth}. */
     public @Nullable @Px Integer mLastRequestedWidth;

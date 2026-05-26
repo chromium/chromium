@@ -2021,9 +2021,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private void initializeSideUi() {
         ViewGroup anchorContainerParent = mActivity.findViewById(R.id.constrained_views_container);
         ViewStub sideUiStartAnchorContainerStub =
-                mActivity.findViewById(R.id.side_ui_start_anchor_container_stub);
+                mActivity.findViewById(R.id.side_ui_left_anchor_container_stub);
         ViewStub sideUiEndAnchorContainerStub =
-                mActivity.findViewById(R.id.side_ui_end_anchor_container_stub);
+                mActivity.findViewById(R.id.side_ui_right_anchor_container_stub);
 
         NonNullObservableSupplier<Integer> stripBottomPxSupplier = null;
         assumeNonNull(mLayoutManager);

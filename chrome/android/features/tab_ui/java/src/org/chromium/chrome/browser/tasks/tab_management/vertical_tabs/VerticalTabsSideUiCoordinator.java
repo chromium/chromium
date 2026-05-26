@@ -27,7 +27,7 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer {
     public VerticalTabsSideUiCoordinator(
             Activity activity, VerticalTabListCoordinator tabListCoordinator) {
         // TODO(crbug.com/513622986): Resolve physical Left rail placement dynamically based on RTL.
-        mAnchorSide = AnchorSide.START;
+        mAnchorSide = AnchorSide.LEFT;
 
         mRootView = new FrameLayout(activity);
         mRootView.setLayoutParams(

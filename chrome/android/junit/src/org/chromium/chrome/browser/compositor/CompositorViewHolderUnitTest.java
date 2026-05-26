@@ -1438,9 +1438,9 @@ public class CompositorViewHolderUnitTest {
         reset(mWebContents);
 
         // Arbitrary Side UI width.
-        int startContainerWidth = 50;
-        int endContainerWidth = 150;
-        SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
+        int leftContainerWidth = 50;
+        int rightContainerWidth = 150;
+        SideUiSpecs currentSideUiSpecs = new SideUiSpecs(leftContainerWidth, rightContainerWidth);
         when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
@@ -1448,8 +1448,8 @@ public class CompositorViewHolderUnitTest {
         // Act.
         mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
 
-        // Verify.
-        int expectedContentOffsetX = shouldBeRtl ? endContainerWidth : startContainerWidth;
+        // Verify that RTL does not affect the offset (i.e. always contentOffsetx == left)
+        int expectedContentOffsetX = leftContainerWidth;
         verify(mLayoutManager).setContentOffsetX(expectedContentOffsetX);
     }
 

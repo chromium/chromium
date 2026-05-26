@@ -28,8 +28,8 @@ public final class SideUiCoordinatorFactory {
      *     parentActivity}.
      * @param anchorContainerParent The {@link ViewGroup} that is the parent for the side UI
      *     containers.
-     * @param startAnchorContainerStub The {@link ViewStub} for the start-anchored container.
-     * @param endAnchorContainerStub The {@link ViewStub} for the end-anchored container.
+     * @param leftAnchorContainerStub The {@link ViewStub} for the left-anchored container.
+     * @param rightAnchorContainerStub The {@link ViewStub} for the right-anchored container.
      * @param topMarginSupplier The supplier for the Side UI's top margin.
      * @return The newly-created {@link SideUiCoordinator}, or {@code null} if it was not created.
      */
@@ -38,16 +38,16 @@ public final class SideUiCoordinatorFactory {
             Activity parentActivity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             @Nullable ViewGroup anchorContainerParent,
-            @Nullable ViewStub startAnchorContainerStub,
-            @Nullable ViewStub endAnchorContainerStub,
+            @Nullable ViewStub leftAnchorContainerStub,
+            @Nullable ViewStub rightAnchorContainerStub,
             @Nullable NonNullObservableSupplier<Integer> topMarginSupplier) {
         if (!AndroidSidePanelEnabledFn.isEnabled()) {
             return null;
         }
 
         assert anchorContainerParent != null;
-        assert startAnchorContainerStub != null;
-        assert endAnchorContainerStub != null;
+        assert leftAnchorContainerStub != null;
+        assert rightAnchorContainerStub != null;
 
         if (topMarginSupplier == null) {
             topMarginSupplier = ObservableSuppliers.createNonNull(0);
@@ -56,8 +56,8 @@ public final class SideUiCoordinatorFactory {
                 parentActivity,
                 lifecycleDispatcher,
                 anchorContainerParent,
-                startAnchorContainerStub,
-                endAnchorContainerStub,
+                leftAnchorContainerStub,
+                rightAnchorContainerStub,
                 topMarginSupplier);
     }
 }
