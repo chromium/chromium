@@ -4106,26 +4106,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FirstPartySets.Database.TransactionFailed" enum="BooleanError"
-    expires_after="2026-06-28">
-  <owner>shuuran@google.com</owner>
-  <owner>kaustubhag@google.com</owner>
-  <summary>
-    Records how often First-Party Sets database gets poisoned due to transaction
-    failure. Recorded when a subquery within a transaction happens.
-  </summary>
-</histogram>
-
-<histogram name="FirstPartySets.Initialization.ClearSiteDataOutcome"
-    enum="BooleanSuccess" expires_after="2026-03-01">
-  <owner>shuuran@google.com</owner>
-  <owner>kaustubhag@google.com</owner>
-  <summary>
-    Measures the outcome of site data clearing. Recorded when First-Party Sets
-    initialization triggers site data clearing for a given browser context.
-  </summary>
-</histogram>
-
 <histogram name="FirstRun.ImportBookmarksDict"
     enum="FirstRunImportBookmarksResult" expires_after="M150">
   <owner>atharvmaan@chromium.org</owner>

@@ -64,9 +64,6 @@ constexpr char kAdditionsField[] = "additions";
 constexpr char kPrimaryField[] = "primary";
 constexpr char kCctldsField[] = "ccTLDs";
 
-constexpr char kFirstPartySetsClearSiteDataOutcomeHistogram[] =
-    "FirstPartySets.Initialization.ClearSiteDataOutcome";
-
 constexpr char kDelayedQueriesCountHistogram[] =
     "Cookie.FirstPartySets.Browser.DelayedQueriesCount";
 constexpr char kMostDelayedQueryDeltaHistogram[] =
@@ -376,8 +373,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
   handler.Init(scoped_dir_.GetPath(),
                FirstPartySetParser::ParseFromCommandLine(input));
 
-  // Should not yet be recorded.
-  histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
   ClearSiteDataOnChangedSetsForContextAndWait(
       handler, context(), browser_context_id,
       net::FirstPartySetsContextConfig());
@@ -392,8 +387,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)),
           Pair(associated,
                net::FirstPartySetEntry(foo, net::SiteType::kAssociated))));
-  histogram.ExpectUniqueSample(kFirstPartySetsClearSiteDataOutcomeHistogram,
-                               /*sample=*/true, 1);
   histogram.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
   histogram.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
@@ -424,8 +417,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
         HasEntryInBrowserContextsClearedAndWait(handler, browser_context_id),
         Optional(false));
 
-    // Should not yet be recorded.
-    histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
     ClearSiteDataOnChangedSetsForContextAndWait(
         handler, context(), browser_context_id,
         net::FirstPartySetsContextConfig());
@@ -442,9 +433,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
     EXPECT_THAT(
         HasEntryInBrowserContextsClearedAndWait(handler, browser_context_id),
         Optional(true));
-
-    histogram.ExpectUniqueSample(kFirstPartySetsClearSiteDataOutcomeHistogram,
-                                 /*sample=*/true, 1);
 
     // Make sure the database is closed properly before being opened again.
     handler.SynchronouslyResetDBHelperForTesting();
@@ -467,8 +455,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
 
     handler.Init(scoped_dir_.GetPath(), net::LocalSetDeclaration());
 
-    // Should not yet be recorded.
-    histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
     ClearSiteDataOnChangedSetsForContextAndWait(
         handler, context(), browser_context_id,
         net::FirstPartySetsContextConfig());
@@ -485,9 +471,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
     EXPECT_THAT(
         HasEntryInBrowserContextsClearedAndWait(handler, browser_context_id),
         Optional(true));
-
-    histogram.ExpectUniqueSample(kFirstPartySetsClearSiteDataOutcomeHistogram,
-                                 /*sample=*/true, 1);
   }
 }
 
@@ -520,8 +503,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
       context(), browser_context_id, net::FirstPartySetsContextConfig());
 
   EXPECT_EQ(GetPersistedSetsAndWait(browser_context_id), std::nullopt);
-  // Should not be recorded.
-  histogram.ExpectTotalCount(kFirstPartySetsClearSiteDataOutcomeHistogram, 0);
   histogram.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
   histogram.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }
@@ -562,8 +543,6 @@ TEST_F(FirstPartySetsHandlerImplEnabledTest,
           Pair(foo, net::FirstPartySetEntry(foo, net::SiteType::kPrimary)),
           Pair(associated,
                net::FirstPartySetEntry(foo, net::SiteType::kAssociated))));
-  histogram.ExpectUniqueSample(kFirstPartySetsClearSiteDataOutcomeHistogram,
-                               /*sample=*/true, 1);
   histogram.ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
   histogram.ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
 }

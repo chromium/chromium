@@ -953,12 +953,7 @@ bool FirstPartySetsDatabase::Destroy() {
 
 bool FirstPartySetsDatabase::TransactionFailed() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool failed =
-      !db_->HasActiveTransactions() || db_status_ != InitStatus::kSuccess;
-
-  base::UmaHistogramBoolean("FirstPartySets.Database.TransactionFailed",
-                            failed);
-  return failed;
+  return !db_->HasActiveTransactions() || db_status_ != InitStatus::kSuccess;
 }
 
 }  // namespace content

@@ -452,14 +452,7 @@ void FirstPartySetsHandlerImplInstance::DidClearSiteDataOnChangedSetsForContext(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!db_helper_.is_null());
 
-  // Only measures the successful rate without parsing the failed types, since
-  // `failed_data_types` only has value if the failure is related to passwords
-  // or is for all data types if the task is dropped at shutdown, which is not
-  // for our interest.
-  bool success = failed_data_types == 0;
-  base::UmaHistogramBoolean(
-      "FirstPartySets.Initialization.ClearSiteDataOutcome", success);
-  if (success) {
+  if (failed_data_types == 0) {
     db_helper_
         .AsyncCall(
             &FirstPartySetsHandlerDatabaseHelper::UpdateClearStatusForContext)
