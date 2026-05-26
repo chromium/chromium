@@ -58,9 +58,14 @@ constexpr std::optional<base::TimeDelta> kJsExecutionTimeout = base::Seconds(8);
 constexpr RunLoopTimeoutBehavior kJsRunLoopTimeoutBehavior =
     RunLoopTimeoutBehavior::kDeclareInfiniteLoop;
 #endif
-
 constexpr char kMojoFuzzerHtml[] = R"(
 <script src="gen/mojo/public/js/mojo_bindings_lite.js"></script>
+<script src="gen/mojo/public/mojom/base/string16.mojom-lite.js"></script>
+<script src="gen/url/mojom/scheme_host_port.mojom-lite.js"></script>
+<script src="gen/url/mojom/url.mojom-lite.js"></script>
+<script
+ src="gen/third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-lite.js">
+</script>
 <script
  src="gen/third_party/blink/public/mojom/locks/lock_manager.mojom-lite.js">
 </script>
