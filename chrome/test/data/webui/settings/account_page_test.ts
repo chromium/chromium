@@ -26,8 +26,13 @@ suite('AccountPage', function() {
   setup(async function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
-    loadTimeData.overrideValues(
-        {replaceSyncPromosWithSignInPromos: true, isEeaChoiceCountry: false});
+    loadTimeData.overrideValues({
+      replaceSyncPromosWithSignInPromos: true,
+      isEeaChoiceCountry: false,
+      // <if expr="is_chromeos">
+      osSettingsAccountsPageUrl: 'chrome://os-settings/osPeople',
+      // </if>
+    });
     resetRouterForTesting();
 
     testSyncBrowserProxy = new TestSyncBrowserProxy();
@@ -81,6 +86,12 @@ suite('AccountPage', function() {
     assertTrue(isChildVisible(accountSettingsPage, 'settings-sync-controls'));
     assertTrue(isChildVisible(accountSettingsPage, '#syncDashboardLink'));
     assertTrue(isChildVisible(accountSettingsPage, '#manage-google-account'));
+    // <if expr="is_chromeos">
+    assertTrue(isChildVisible(accountSettingsPage, '#manage-device-accounts'));
+    // </if>
+    // <if expr="not is_chromeos">
+    assertFalse(isChildVisible(accountSettingsPage, '#manage-device-accounts'));
+    // </if>
     assertTrue(
         isChildVisible(accountSettingsPage, '#activityControlsLinkRowV2'));
     assertTrue(isChildVisible(accountSettingsPage, '#encryptionDescription'));
@@ -102,6 +113,10 @@ suite('AccountPage', function() {
   test('RowsLinkToCorrectUrls', function() {
     assertElementLinksToUrl('#syncDashboardLink', 'syncDashboardUrl');
     assertElementLinksToUrl('#manage-google-account', 'googleAccountUrl');
+    // <if expr="is_chromeos">
+    assertElementLinksToUrl(
+        '#manage-device-accounts', 'osSettingsAccountsPageUrl');
+    // </if>
     assertElementLinksToUrl(
         '#activityControlsLinkRowV2', 'activityControlsUrl');
   });

@@ -3834,6 +3834,12 @@
       </message>
     </if>
 
+    <if expr="is_chromeos">
+      <message name="IDS_ACCOUNT_CHROMEOS_DEVICE_ACCOUNTS" desc="Title shown on the manage accounts on this device button item.">
+        Manage accounts on this device
+      </message>
+    </if>
+
     <if expr="not is_chromeos">
       <!-- Import Settings Dialog -->
       <message name="IDS_SETTINGS_IMPORT_SETTINGS_TITLE" desc="Dialog title for import dialog.">

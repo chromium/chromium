@@ -61,6 +61,14 @@
             on-click="onManageGoogleAccountClicked_" external>
         </cr-link-row>
 
+        <if expr="is_chromeos">
+          <!-- Manage accounts on this device -->
+          <cr-link-row id="manage-device-accounts" class="hr"
+              label="$i18n{manageDeviceAccounts}"
+              on-click="onManageDeviceAccountsClicked_" external>
+          </cr-link-row>
+        </if>
+
         <!-- Control how browsing history is used -->
         <template is="dom-if" if="[[!isEeaChoiceCountry_]]">
           <cr-link-row class="hr" id="activityControlsLinkRowV2"
