@@ -314,7 +314,9 @@ void IndigoPageActionController::DidFinishNavigation(
 
   HideToolbar();
 
-  // TODO: b/508219600 Consider closing the onboarding dialog if navigates away.
+  if (onboarding_dialog_) {
+    onboarding_dialog_->Close();
+  }
 
   invoke_weak_ptr_factory_.InvalidateWeakPtrs();
 

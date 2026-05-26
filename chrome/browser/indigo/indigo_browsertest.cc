@@ -367,6 +367,32 @@ IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, OnboardingFlow) {
                   }));
 }
 
+IN_PROC_BROWSER_TEST_F(IndigoOnboardingBrowserTest, ClosedOnNavigation) {
+  const GURL main_tab_url = embedded_test_server()->GetURL("/image.html");
+  const GURL other_url = embedded_test_server()->GetURL("/title1.html");
+  const GURL popup_url = embedded_test_server()->GetURL("/empty.html");
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsId),
+      NavigateWebContents(kWebContentsId, main_tab_url),
+      WaitForWebContentsReady(kWebContentsId, main_tab_url),
+      WaitForShow(kIndigoPageActionIconElementId),
+      PressButton(kIndigoPageActionIconElementId),
+      WaitForShow(IndigoOnboardingDialog::kWebViewId),
+      InstrumentNonTabWebView(kDialogWebContentsId,
+                              IndigoOnboardingDialog::kWebViewId),
+      WaitForWebContentsReady(kDialogWebContentsId, popup_url),
+      // Navigate the main tab away to another page.
+      NavigateWebContents(kWebContentsId, other_url),
+      // The onboarding dialog should close/hide automatically.
+      WaitForHide(IndigoOnboardingDialog::kWebViewId),
+      // Acknowledge pref remains false because onboarding was cancelled.
+      Check([&]() {
+        return !browser()->profile()->GetPrefs()->GetBoolean(
+            prefs::kIndigoHasOnboarded);
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(IndigoBrowserTest, TabSwitchPreservesToolbarState) {
   const GURL url = embedded_test_server()->GetURL("/image.html");
   const GURL url2 = embedded_test_server()->GetURL("/empty.html");
