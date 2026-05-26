@@ -20,7 +20,6 @@ import public "components/optimization_guide/proto/features/proofreader_api.prot
 import public "components/optimization_guide/proto/string_value.proto";
 import public "components/optimization_guide/proto/features/scam_detection.proto";
 import public "components/optimization_guide/proto/features/summarize.proto";
-import public "components/optimization_guide/proto/features/tab_organization.proto";
 import public "components/optimization_guide/proto/features/writing_assistance_api.proto";
 import public "components/optimization_guide/proto/features/classify_api.proto";
 
@@ -39,7 +38,7 @@ message SummarizeLoggingData {
 // This message is never instantiated, it just enumerates the message types that
 // will be supported as requests/responses by on-device code.
 message OnDeviceFeatureProtoRegistry {
-  reserved 11;
+  reserved 7, 11;
 
   optimization_guide.proto.ComposeLoggingData a = 1;
   optimization_guide.proto.HistoryAnswerLoggingData b = 2;
@@ -47,7 +46,6 @@ message OnDeviceFeatureProtoRegistry {
   optimization_guide.proto.PromptApiLoggingData d = 4;
   TestLoggingData e = 5;
   SummarizeLoggingData f = 6;
-  optimization_guide.proto.TabOrganizationLoggingData g = 7;
   optimization_guide.proto.ScamDetectionLoggingData h = 8;
   optimization_guide.proto.WritingAssistanceApiLoggingData i = 9;
   ExampleForTestingData j = 10;

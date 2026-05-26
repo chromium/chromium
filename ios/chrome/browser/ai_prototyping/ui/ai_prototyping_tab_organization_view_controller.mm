@@ -14,27 +14,11 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
-#import "components/optimization_guide/proto/features/tab_organization.pb.h"
-
-using optimization_guide::proto::
-    TabOrganizationRequest_TabOrganizationModelStrategy;
-using optimization_guide::proto::
-    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED;
-using optimization_guide::proto::
-    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED;
-using optimization_guide::proto::
-    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED;
 
 @interface AIPrototypingTabOrganizationViewController () {
   UIButton* _groupTabsButton;
   UITextView* _responseContainer;
 }
-
-@property(nonatomic, strong) UIButton* groupingStrategyButton;
-
-// The currently selected strategy for tab grouping.
-@property(nonatomic, assign)
-    TabOrganizationRequest_TabOrganizationModelStrategy groupingStrategy;
 
 @end
 
@@ -68,19 +52,6 @@ using optimization_guide::proto::
 
   UIColor* primaryColor = [UIColor colorNamed:kTextPrimaryColor];
 
-  _groupingStrategyButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  _groupingStrategyButton.layer.borderColor = [primaryColor CGColor];
-  _groupingStrategyButton.layer.borderWidth = kBorderWidth;
-  _groupingStrategyButton.layer.cornerRadius = kCornerRadius;
-  [_groupingStrategyButton setTitleColor:primaryColor
-                                forState:UIControlStateNormal];
-  _groupingStrategyButton.showsMenuAsPrimaryAction = YES;
-
-  self.groupingStrategy =
-      TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED;
-
-  _groupingStrategyButton.menu = [self createTabGroupingStrategyMenu];
-
   _groupTabsButton = [UIButton buttonWithType:UIButtonTypeSystem];
   _groupTabsButton.backgroundColor = [UIColor colorNamed:kBlueColor];
   _groupTabsButton.layer.cornerRadius = kCornerRadius;
@@ -105,7 +76,7 @@ using optimization_guide::proto::
       l10n_util::GetNSString(IDS_IOS_AI_PROTOTYPING_RESULT_PLACEHOLDER);
 
   UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-    label, _groupingStrategyButton, _groupTabsButton, _responseContainer
+    label, _groupTabsButton, _responseContainer
   ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
@@ -144,105 +115,6 @@ using optimization_guide::proto::
 }
 
 #pragma mark - Private
-
-// Creates menu for tab grouping strategy.
-- (UIMenu*)createTabGroupingStrategyMenu {
-  NSMutableArray<UIAction*>* strategies = [NSMutableArray array];
-
-  UIAction* topicBasedStrategy = [UIAction
-      actionWithTitle:
-          [self
-              titleForGroupingStrategy:
-                  TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED]
-                image:nil
-           identifier:nil
-              handler:^(UIAction* action) {
-                self.groupingStrategy =
-                    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED;
-                self.groupingStrategyButton.menu =
-                    [self createTabGroupingStrategyMenu];
-              }];
-  [strategies addObject:topicBasedStrategy];
-  UIAction* taskBasedStrategy = [UIAction
-      actionWithTitle:
-          [self
-              titleForGroupingStrategy:
-                  TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED]
-                image:nil
-           identifier:nil
-              handler:^(UIAction* action) {
-                self.groupingStrategy =
-                    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED;
-                self.groupingStrategyButton.menu =
-                    [self createTabGroupingStrategyMenu];
-              }];
-  [strategies addObject:taskBasedStrategy];
-  UIAction* domainBasedStrategy = [UIAction
-      actionWithTitle:
-          [self
-              titleForGroupingStrategy:
-                  TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED]
-                image:nil
-           identifier:nil
-              handler:^(UIAction* action) {
-                self.groupingStrategy =
-                    TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED;
-                self.groupingStrategyButton.menu =
-                    [self createTabGroupingStrategyMenu];
-              }];
-  [strategies addObject:domainBasedStrategy];
-
-  switch (self.groupingStrategy) {
-    case TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED:
-      topicBasedStrategy.state = UIMenuElementStateOn;
-      break;
-    case TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED:
-      taskBasedStrategy.state = UIMenuElementStateOn;
-      break;
-    case TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED:
-      domainBasedStrategy.state = UIMenuElementStateOn;
-      break;
-    default:
-      NOTREACHED();
-  }
-
-  return [UIMenu
-      menuWithTitle:
-          l10n_util::GetNSString(
-              IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_LABEL)
-           children:strategies];
-}
-
-- (void)setGroupingStrategy:
-    (TabOrganizationRequest_TabOrganizationModelStrategy)groupingStrategy {
-  _groupingStrategy = groupingStrategy;
-  [_groupingStrategyButton
-      setTitle:
-          [NSString
-              stringWithFormat:
-                  @"%@: %@",
-                  l10n_util::GetNSString(
-                      IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_LABEL),
-                  [self titleForGroupingStrategy:groupingStrategy]]
-      forState:UIControlStateNormal];
-}
-
-- (NSString*)titleForGroupingStrategy:
-    (TabOrganizationRequest_TabOrganizationModelStrategy)groupingStrategy {
-  switch (groupingStrategy) {
-    case TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TOPIC_BASED:
-      return l10n_util::GetNSString(
-          IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_TOPIC);
-    case TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_TASK_BASED:
-      return l10n_util::GetNSString(
-          IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_TASK);
-    case TabOrganizationRequest_TabOrganizationModelStrategy_STRATEGY_DOMAIN_BASED:
-      return l10n_util::GetNSString(
-          IDS_IOS_AI_PROTOTYPING_TAB_ORGANIZATION_GROUPING_STRATEGY_DOMAIN);
-    default:
-      NOTREACHED();
-  }
-}
 
 // Disable submit button, and style the accordingly.
 - (void)disableSubmitButton {

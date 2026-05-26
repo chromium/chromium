@@ -6,8 +6,6 @@ source_set("model") {
   sources = [
     "ai_prototyping_service_impl.h",
     "ai_prototyping_service_impl.mm",
-    "tab_organization_service_impl.h",
-    "tab_organization_service_impl.mm",
   ]
 
   deps = [

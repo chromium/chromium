@@ -10,7 +10,6 @@
 #include "components/optimization_guide/core/feature_registry/settings_ui_registry.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "enterprise_policy_registry.h"
@@ -19,10 +18,6 @@
 namespace optimization_guide {
 
 namespace prefs {
-
-const char kTabOrganizationEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.tab_organization_enterprise_policy_"
-    "allowed";
 
 const char kComposeEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.compose_enterprise_policy_allowed";
@@ -73,8 +68,6 @@ namespace features {
 BASE_FEATURE(kActorLoginMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kComposeMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTabOrganizationMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWallpaperSearchMqlsLogging, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -142,38 +135,6 @@ void RegisterCompose() {
 
   auto ui_metadata = std::make_unique<SettingsUiMetadata>(
       kComposeName, UserVisibleFeatureKey::kCompose, enterprise_policy);
-  SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
-}
-
-void RegisterTabOrganization() {
-  const char kTabOrganizationName[] = "TabOrganization";
-  EnterprisePolicyPref enterprise_policy =
-      EnterprisePolicyRegistry::GetInstance().Register(
-          prefs::kTabOrganizationEnterprisePolicyAllowed);
-
-  UserFeedbackCallback logging_callback =
-      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
-        // If there is no tab organization, we don't have any user_feedback mark
-        // it as unspecified.
-        const proto::TabOrganizationQuality& quality =
-            request_proto.tab_organization().quality();
-        if (quality.organizations().empty()) {
-          return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
-        }
-        if (quality.user_feedback()) {
-          return quality.user_feedback();
-        }
-        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
-      });
-  auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
-      kTabOrganizationName,
-      proto::LogAiDataRequest::FeatureCase::kTabOrganization, enterprise_policy,
-      &features::kTabOrganizationMqlsLogging, logging_callback);
-  MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
-
-  auto ui_metadata = std::make_unique<SettingsUiMetadata>(
-      kTabOrganizationName, UserVisibleFeatureKey::kTabOrganization,
-      enterprise_policy);
   SettingsUiRegistry::GetInstance().Register(std::move(ui_metadata));
 }
 
@@ -359,7 +320,6 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     // program (rather than once per profile).
     RegisterActorLogin();
     RegisterCompose();
-    RegisterTabOrganization();
     RegisterWallpaperSearch();
     RegisterHistorySearch();
     RegisterProductSpecifications();

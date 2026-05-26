@@ -127,9 +127,6 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
             ->mutable_quality()
             ->set_user_feedback(feedback);
         break;
-      case UserVisibleFeatureKey::kTabOrganization:
-        // No longer used.
-        break;
       case UserVisibleFeatureKey::kWallpaperSearch:
         log_entry->log_ai_data_request()
             ->mutable_wallpaper_search()
@@ -329,77 +326,6 @@ TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.WallpaperSearch",
       proto::USER_FEEDBACK_THUMBS_DOWN, 1);
-}
-
-TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
-  // Nothing gets recorded since the per-organization feedback logic has been
-  // removed.
-  std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      GetModelQualityLogEntryAndSetFeedback(
-          UserVisibleFeatureKey::kTabOrganization,
-          proto::USER_FEEDBACK_THUMBS_UP);
-  UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
-
-  histogram_tester_.ExpectBucketCount(
-      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_UP, 0);
-
-  std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
-      GetModelQualityLogEntryAndSetFeedback(
-          UserVisibleFeatureKey::kTabOrganization,
-          proto::USER_FEEDBACK_THUMBS_DOWN);
-  UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
-  histogram_tester_.ExpectBucketCount(
-      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_DOWN, 0);
-}
-
-TEST_F(ModelQualityLogsUploaderServiceTest,
-       TabOrganizationUserFeedbackNullCheck) {
-  // Set TabOrganization ModelQualityLogEntry without any quality data tab
-  // organization.
-  proto::TabOrganizationLoggingData tab_organization_logging_data;
-
-  proto::TabOrganizationRequest tab_request;
-
-  *(tab_organization_logging_data.mutable_request()) = tab_request;
-  std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
-      std::make_unique<ModelQualityLogEntry>(nullptr);
-  *(log_entry_1->log_ai_data_request()->mutable_tab_organization()) =
-      tab_organization_logging_data;
-
-  // Upload logs without quality data set this should mark user_feedback as
-  // unspecified.
-  UploadModelQualityLogsWithLogEntry(std::move(log_entry_1));
-
-  histogram_tester_.ExpectBucketCount(
-      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_UNSPECIFIED, 1);
-}
-
-TEST_F(ModelQualityLogsUploaderServiceTest,
-       TabOrganizationMultipleOrganizationUserFeedbackUMA) {
-  std::unique_ptr<ModelQualityLogEntry> log_entry =
-      GetModelQualityLogEntryAndSetFeedback(
-          UserVisibleFeatureKey::kTabOrganization,
-          proto::USER_FEEDBACK_THUMBS_UP);
-  // Add one more tab organization to existing log_entry with user feedback.
-  log_entry->log_ai_data_request()
-      ->mutable_tab_organization()
-      ->mutable_quality()
-      ->add_organizations()
-      ->set_user_feedback(proto::USER_FEEDBACK_THUMBS_DOWN);
-
-  UploadModelQualityLogsWithLogEntry(std::move(log_entry));
-
-  // Nothing gets recorded since the per-organization feedback logic has been
-  // removed.
-  histogram_tester_.ExpectBucketCount(
-      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_UP, 0);
-  histogram_tester_.ExpectBucketCount(
-      "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_DOWN, 0);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, ComposeUserFeedbackUMA) {

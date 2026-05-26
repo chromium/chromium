@@ -38,7 +38,7 @@ class ModelExecutionLiveTest : public signin::test::LiveTest {
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         {features::kOptimizationGuideModelExecution,
-         features::internal::kTabOrganizationSettingsVisibility},
+         features::internal::kComposeSettingsVisibility},
         {});
     LiveTest::SetUp();
     // Always disable animation for stability.
@@ -82,10 +82,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest, PRE_SimpleSyncFlow) {
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
+      UserVisibleFeatureKey::kCompose));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult."
-      "TabOrganization",
+      "Compose",
       ModelExecutionFeaturesController::SettingsVisibilityResult::
           kVisibleFieldTrialEnabled,
       1);
@@ -97,10 +97,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest, SimpleSyncFlow) {
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_TRUE(IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
+      UserVisibleFeatureKey::kCompose));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult."
-      "TabOrganization",
+      "Compose",
       ModelExecutionFeaturesController::SettingsVisibilityResult::
           kVisibleFieldTrialEnabled,
       1);
@@ -114,10 +114,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest,
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
+      UserVisibleFeatureKey::kCompose));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult."
-      "TabOrganization",
+      "Compose",
       ModelExecutionFeaturesController::SettingsVisibilityResult::
           kNotVisibleModelExecutionCapability,
       1);
@@ -130,10 +130,10 @@ IN_PROC_BROWSER_TEST_F(ModelExecutionLiveTest,
 
   EXPECT_TRUE(sync_service()->IsSyncFeatureEnabled());
   EXPECT_FALSE(IsSettingVisible(
-      UserVisibleFeatureKey::kTabOrganization));
+      UserVisibleFeatureKey::kCompose));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelExecution.SettingsVisibilityResult."
-      "TabOrganization",
+      "Compose",
       ModelExecutionFeaturesController::SettingsVisibilityResult::
           kNotVisibleModelExecutionCapability,
       1);

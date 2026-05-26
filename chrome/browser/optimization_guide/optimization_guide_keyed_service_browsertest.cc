@@ -198,7 +198,7 @@ class OptimizationGuideKeyedServiceBrowserTest
  public:
   OptimizationGuideKeyedServiceBrowserTest() {
     CHECK(network::TestNetworkConnectionTracker::HasInstance());
-    // Enable visibility of tab organization feature.
+    // Enable visibility of features.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{features::kOptimizationHints, {}},
@@ -209,13 +209,10 @@ class OptimizationGuideKeyedServiceBrowserTest
          {features::kLogOnDeviceMetricsOnStartup,
           {
               {"on_device_startup_metric_delay", "0"},
-          }},
-         {features::internal::kTabOrganizationSettingsVisibility,
-          {{"allow_unsigned_user", "true"}}}},
+          }}},
         /*disabled_features=*/
         {features::internal::kWallpaperSearchGraduated,
-         features::internal::kComposeGraduated,
-         features::internal::kTabOrganizationGraduated});
+         features::internal::kComposeGraduated});
   }
 
   OptimizationGuideKeyedServiceBrowserTest(
@@ -869,33 +866,49 @@ class TestSettingsEnabledObserver : public SettingsEnabledObserver {
   bool is_currently_enabled_ = false;
 };
 
-IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
+class OptimizationGuideKeyedServiceUnsignedUserBrowserTest
+    : public OptimizationGuideKeyedServiceBrowserTest {
+ public:
+  OptimizationGuideKeyedServiceUnsignedUserBrowserTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kOptimizationHints, {}},
+         {features::kOptimizationGuideModelExecution, {}},
+         {features::internal::kComposeSettingsVisibility, {}},
+         {features::internal::kWallpaperSearchSettingsVisibility,
+          {{"allow_unsigned_user", "true"}}},
+         {on_device_model::features::kUseFakeChromeML, {}},
+         {features::kLogOnDeviceMetricsOnStartup,
+          {
+              {"on_device_startup_metric_delay", "0"},
+          }}},
+        /*disabled_features=*/
+        {features::internal::kWallpaperSearchGraduated,
+         features::internal::kComposeGraduated});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceUnsignedUserBrowserTest,
                        SettingsVisibilitySignedOutVsSignedIn) {
-  // User is not signed-in.
-  EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
-
-  // Visibility of tab organizer is allowed for unsigned users.
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-
-  // Visibility of this feature is enabled via finch but the feature is still
-  // not visible.
+  // User is not signed-in, compose is not visible.
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
 
-  // kCompose should now be visible after
-  // sign-in.
+  // Visibility of wallpaper search is allowed for unsigned users.
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
+
+  // kCompose should now be visible after sign-in.
   EnableSignIn();
 
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
-
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // SignOut not supported on ChromeOS.
   SignOut();
-  // Tab Organizer is visible to unsigned users.
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
+  // Wallpaper Search is visible to unsigned users.
+  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
   EXPECT_FALSE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
 #endif
 }
@@ -909,9 +922,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   // Visibility of wallpaper search is enabled on ToT.
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
 
-  // Visibility of tab organizer is enabled via finch.
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-
   // Visibility of compose is enabled via finch.
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
 
@@ -924,8 +934,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   // the feature is enabled.
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
 
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
-
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
 
   prefs->SetInteger(
@@ -935,8 +943,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
   // Restarting the browser should cause wallpaper setting to still be visible
   // since the feature is still enabled.
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
-
-  EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_TRUE(IsSettingVisible(UserVisibleFeatureKey::kCompose));
 }
@@ -959,9 +965,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-
-  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kCompose));
 
   auto* prefs = browser()->profile()->GetPrefs();
@@ -976,9 +979,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-
-  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kCompose));
 
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -987,9 +987,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kWallpaperSearch));
-
-  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kCompose));
@@ -1019,9 +1016,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-
-  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kCompose));
 
   auto* prefs = browser()->profile()->GetPrefs();
@@ -1036,9 +1030,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
       UserVisibleFeatureKey::kWallpaperSearch));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
-
-  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kCompose));
 
   prefs->SetInteger(
@@ -1050,9 +1041,6 @@ IN_PROC_BROWSER_TEST_F(OptimizationGuideKeyedServiceBrowserTest,
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kWallpaperSearch));
-
-  EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
-      UserVisibleFeatureKey::kTabOrganization));
 
   EXPECT_FALSE(ogks->ShouldFeatureBeCurrentlyEnabledForUser(
       UserVisibleFeatureKey::kCompose));
@@ -1255,7 +1243,7 @@ class OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest
  public:
   OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest()
       : OptimizationGuideKeyedServiceBrowserTest() {
-    // Enable visibility of tab organization feature.
+    // Enable visibility of WallpaperSearch feature.
     scoped_feature_list_.Reset();
 
     if (ShouldFeatureBeEnabled()) {
@@ -1263,15 +1251,15 @@ class OptimizationGuideKeyedServiceBrowserWithModelExecutionFeatureDisabledTest
           {features::kOptimizationHints,
            // Enabled.
            features::kOptimizationGuideModelExecution,
-           features::internal::kTabOrganizationSettingsVisibility},
-          {features::internal::kTabOrganizationGraduated});
+           features::internal::kWallpaperSearchSettingsVisibility},
+          {features::internal::kWallpaperSearchGraduated});
     } else {
       scoped_feature_list_.InitWithFeatures(
           {features::kOptimizationHints,
-           features::internal::kTabOrganizationSettingsVisibility},
+           features::internal::kWallpaperSearchSettingsVisibility},
           // Disabled.
           {features::kOptimizationGuideModelExecution,
-           features::internal::kTabOrganizationGraduated});
+           features::internal::kWallpaperSearchGraduated});
     }
   }
 
@@ -1290,9 +1278,6 @@ IN_PROC_BROWSER_TEST_P(
 
   EXPECT_EQ(ShouldFeatureBeEnabled(),
             IsSettingVisible(UserVisibleFeatureKey::kWallpaperSearch));
-
-  EXPECT_EQ(ShouldFeatureBeEnabled(),
-            IsSettingVisible(UserVisibleFeatureKey::kTabOrganization));
 }
 
 class OptimizationGuideKeyedServicePermissionsCheckDisabledTest

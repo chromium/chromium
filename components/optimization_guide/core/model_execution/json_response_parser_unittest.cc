@@ -11,7 +11,7 @@
 #include "base/test/test_future.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "components/optimization_guide/proto/features/tab_organization.pb.h"
+#include "components/optimization_guide/proto/features/compose.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,44 +21,28 @@ namespace optimization_guide {
 
 class JsonResponseParserTest : public testing::Test {
  public:
-  base::test::TaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+   base::test::TaskEnvironment task_environment_;
+   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(JsonResponseParserTest, Parse) {
   base::test::TestFuture<ResponseParser::Result> response_future;
-  proto::OnDeviceModelExecutionOutputConfig config;
   constexpr char proto_type[] =
-      "optimization_guide.proto.TabOrganizationResponse";
+      "optimization_guide.proto.ComposeResponse";
   JsonResponseParser(proto_type)
       .ParseAsync(
           R"({
-        "tabGroups": [
-          {
-            "label": "mylabel",
-            "groupId": "someID",
-            "tabs": [
-              {
-                "tabId": 3,
-                "url": "someURL"
-              },
-              {
-                "title": "mytitle"
-              }
-            ]
-          }
-        ]
+        "output": "my output text"
       })",
           response_future.GetCallback());
   auto response = response_future.Get();
-  EXPECT_TRUE(response.has_value());
+  ASSERT_TRUE(response.has_value());
   EXPECT_EQ(
       response->type_url(),
-      "type.googleapis.com/optimization_guide.proto.TabOrganizationResponse");
-  proto::TabOrganizationResponse resp;
+      "type.googleapis.com/optimization_guide.proto.ComposeResponse");
+  proto::ComposeResponse resp;
   ASSERT_TRUE(resp.ParseFromString(response->value()));
-  EXPECT_EQ(resp.tab_groups(0).tabs(1).title(), "mytitle");
-  EXPECT_EQ(resp.tab_groups(0).tabs(0).tab_id(), 3);
+  EXPECT_EQ(resp.output(), "my output text");
 }
 
 }  // namespace optimization_guide

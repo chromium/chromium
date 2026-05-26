@@ -11,7 +11,6 @@
 #include "base/values.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 #include "components/optimization_guide/core/model_execution/response_parser.h"
-#include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace optimization_guide {

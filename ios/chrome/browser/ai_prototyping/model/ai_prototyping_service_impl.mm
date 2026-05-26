@@ -10,7 +10,6 @@
 #import "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
 #import "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 

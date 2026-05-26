@@ -69,40 +69,6 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             }
           }
         })");
-    case ModelBasedCapabilityKey::kTabOrganization:
-      return net::DefineNetworkTrafficAnnotation(
-          "tab_organizer_model_execution", R"(
-        semantics {
-          sender: "Tab organizer"
-          description:
-            "Automatically creates tab groups based on the open tabs."
-          trigger:
-            "User right-clicks on a tab and clicks Organize Similar Tabs."
-          destination: GOOGLE_OWNED_SERVICE
-          data:
-            "URL and title of the tabs to organize."
-          internal {
-            contacts {
-              email: "chrome-intelligence-core@google.com"
-            }
-          }
-          user_data {
-            type: ACCESS_TOKEN
-            type: SENSITIVE_URL
-            type: WEB_CONTENT
-          }
-          last_reviewed: "2024-01-11"
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "Users can control this by signing-in to Chrome, and from Settings."
-          chrome_policy {
-            TabOrganizerSettings {
-              TabOrganizerSettings: 2
-            }
-          }
-        })");
     case ModelBasedCapabilityKey::kCompose:
       return net::DefineNetworkTrafficAnnotation(
           "help_me_write_model_execution", R"(
@@ -540,7 +506,6 @@ void AppendHeadersIfNeeded(network::ResourceRequest& request) {
 bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
   switch (feature) {
     case ModelBasedCapabilityKey::kCompose:
-    case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kHistorySearch:

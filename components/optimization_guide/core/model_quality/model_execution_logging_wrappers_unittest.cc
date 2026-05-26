@@ -17,7 +17,6 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
-#include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,12 +39,12 @@ class ModelExecutionLoggingWrappersTest : public testing::Test {
 };
 
 TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
-  proto::TabOrganizationResponse response;
-  response.add_tab_groups()->set_label("foo");
+  proto::ComposeResponse response;
+  response.set_output("foo");
   proto::ModelExecutionInfo model_execution_info;
   model_execution_info.set_execution_id("id");
   EXPECT_CALL(*model_executor(),
-              ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
+              ExecuteModel(ModelBasedCapabilityKey::kCompose, _, _,
                            An<OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce([&response, &model_execution_info](
                     ModelBasedCapabilityKey feature,
@@ -59,16 +58,13 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
                                         model_execution_info)),
                                 /*log_entry=*/nullptr);
       });
-  proto::TabOrganizationRequest request;
-  auto* tabs = request.mutable_tabs();
-  auto* tab = tabs->Add();
-  tab->set_title("tab");
-  tab->set_tab_id(1);
-  ModelExecutionCallbackWithLogging<proto::TabOrganizationLoggingData>
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("tab");
+  ModelExecutionCallbackWithLogging<proto::ComposeLoggingData>
       callback = base::BindLambdaForTesting(
           [&request, &response, &model_execution_info](
               OptimizationGuideModelExecutionResult result,
-              std::unique_ptr<proto::TabOrganizationLoggingData>
+              std::unique_ptr<proto::ComposeLoggingData>
                   model_execution_proto) {
             ASSERT_TRUE(model_execution_proto);
             EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
@@ -78,13 +74,13 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging) {
                         EqualsProto(model_execution_info));
           });
   ExecuteModelWithLogging(model_executor(),
-                          ModelBasedCapabilityKey::kTabOrganization, request,
+                          ModelBasedCapabilityKey::kCompose, request,
                           std::nullopt, std::move(callback));
 }
 
 TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
   EXPECT_CALL(*model_executor(),
-              ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
+              ExecuteModel(ModelBasedCapabilityKey::kCompose, _, _,
                            An<OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce([](ModelBasedCapabilityKey feature,
                    const google::protobuf::MessageLite& request_metadata,
@@ -102,16 +98,13 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
                 nullptr),
             /*log_entry=*/nullptr);
       });
-  proto::TabOrganizationRequest request;
-  auto* tabs = request.mutable_tabs();
-  auto* tab = tabs->Add();
-  tab->set_title("tab");
-  tab->set_tab_id(1);
-  ModelExecutionCallbackWithLogging<proto::TabOrganizationLoggingData>
+  proto::ComposeRequest request;
+  request.mutable_generate_params()->set_user_input("tab");
+  ModelExecutionCallbackWithLogging<proto::ComposeLoggingData>
       callback = base::BindLambdaForTesting(
           [&request](OptimizationGuideModelExecutionResult result,
-                     std::unique_ptr<proto::TabOrganizationLoggingData>
-                         model_execution_proto) {
+                     std::unique_ptr<proto::ComposeLoggingData>
+                          model_execution_proto) {
             ASSERT_TRUE(model_execution_proto);
             EXPECT_THAT(model_execution_proto->request(), EqualsProto(request));
             EXPECT_EQ(
@@ -121,14 +114,14 @@ TEST_F(ModelExecutionLoggingWrappersTest, ExecuteModelWithLogging_Error) {
                                           ModelExecutionError::kDisabled));
           });
   ExecuteModelWithLogging(model_executor(),
-                          ModelBasedCapabilityKey::kTabOrganization, request,
+                          ModelBasedCapabilityKey::kCompose, request,
                           std::nullopt, std::move(callback));
 }
 
 TEST_F(ModelExecutionLoggingWrappersTest,
        ExecuteModelWithLogging_CustomServiceType) {
   EXPECT_CALL(*model_executor(),
-              ExecuteModel(ModelBasedCapabilityKey::kTabOrganization, _, _,
+              ExecuteModel(ModelBasedCapabilityKey::kCompose, _, _,
                            An<OptimizationGuideModelExecutionResultCallback>()))
       .WillOnce([](ModelBasedCapabilityKey feature,
                    const google::protobuf::MessageLite& request_metadata,
@@ -139,9 +132,9 @@ TEST_F(ModelExecutionLoggingWrappersTest,
                                 /*log_entry=*/nullptr);
       });
 
-  proto::TabOrganizationRequest request;
-  ExecuteModelWithLogging<proto::TabOrganizationLoggingData>(
-      model_executor(), ModelBasedCapabilityKey::kTabOrganization, request,
+  proto::ComposeRequest request;
+  ExecuteModelWithLogging<proto::ComposeLoggingData>(
+      model_executor(), ModelBasedCapabilityKey::kCompose, request,
       std::nullopt, base::DoNothing(), ModelExecutionServiceType::kPrivateAi);
 }
 

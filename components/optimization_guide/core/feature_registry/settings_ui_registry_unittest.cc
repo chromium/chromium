@@ -38,7 +38,7 @@ TEST_F(SettingsUiRegistryTest, MAYBE_Register) {
   EXPECT_EQ("Test", metadata_from_registry->name());
   EXPECT_EQ("policy_name", metadata_from_registry->enterprise_policy().name());
   EXPECT_FALSE(SettingsUiRegistry::GetInstance().GetFeature(
-      UserVisibleFeatureKey::kTabOrganization));
+      UserVisibleFeatureKey::kWallpaperSearch));
 }
 
 }  // namespace optimization_guide

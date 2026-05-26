@@ -5,7 +5,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 
 #include "components/optimization_guide/proto/features/compose.pb.h"
-#include "components/optimization_guide/proto/features/tab_organization.pb.h"
+#include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
@@ -37,16 +37,16 @@ TEST(ProtoDescriptorsTest, MutableMessageError) {
 }
 
 TEST(ProtoDescriptorsTest, MutableRepeatedMessageField) {
-  proto::TabOrganizationRequest req;
-  EXPECT_EQ(AddProtoMessage(&req, 1), 1);
-  SetProtoField(GetProtoMutableRepeatedMessage(&req, 1, 0), 2, "mytitle");
-  EXPECT_EQ(req.tabs(0).title(), "mytitle");
+  proto::HistoryAnswerRequest req;
+  EXPECT_EQ(AddProtoMessage(&req, 2), 1);
+  SetProtoField(GetProtoMutableRepeatedMessage(&req, 2, 0), 1, "mytext");
+  EXPECT_EQ(req.passages(0).text(), "mytext");
 }
 
 TEST(ProtoDescriptorsTest, MutableRepeatedMessageError) {
-  proto::TabOrganizationRequest req;
+  proto::HistoryAnswerRequest req;
   EXPECT_EQ(AddProtoMessage(&req, 999), 0);
-  EXPECT_EQ(GetProtoMutableRepeatedMessage(&req, 1, 0), nullptr);
+  EXPECT_EQ(GetProtoMutableRepeatedMessage(&req, 2, 0), nullptr);
 }
 
 }  // namespace

@@ -17,8 +17,6 @@ namespace optimization_guide::features::internal {
 
 // Settings visibility features.
 BASE_FEATURE(kComposeSettingsVisibility, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kTabOrganizationSettingsVisibility,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kWallpaperSearchSettingsVisibility,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kHistorySearchSettingsVisibility,
@@ -40,7 +38,6 @@ const base::FeatureParam<std::string> kPerformanceClassListForHistorySearch(
 // Note: ComposeGraduated is enabled by default because the feature is
 // country-restricted at runtime.
 BASE_FEATURE(kComposeGraduated, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kTabOrganizationGraduated, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWallpaperSearchGraduated, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFindsGraduated, base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -55,9 +52,6 @@ bool IsGraduatedFeature(UserVisibleFeatureKey feature) {
     // Actual features.
     case UserVisibleFeatureKey::kCompose:
       is_graduated = base::FeatureList::IsEnabled(kComposeGraduated);
-      break;
-    case UserVisibleFeatureKey::kTabOrganization:
-      is_graduated = base::FeatureList::IsEnabled(kTabOrganizationGraduated);
       break;
     case UserVisibleFeatureKey::kWallpaperSearch:
       is_graduated = base::FeatureList::IsEnabled(kWallpaperSearchGraduated);
@@ -84,8 +78,6 @@ const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
   switch (feature) {
     case UserVisibleFeatureKey::kCompose:
       return &kComposeSettingsVisibility;
-    case UserVisibleFeatureKey::kTabOrganization:
-      return &kTabOrganizationSettingsVisibility;
     case UserVisibleFeatureKey::kWallpaperSearch:
       return &kWallpaperSearchSettingsVisibility;
     case UserVisibleFeatureKey::kHistorySearch:

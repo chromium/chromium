@@ -45,14 +45,11 @@ TEST_F(OptimizationGuideFeaturesTest, ModelQualityLoggingDefault) {
 
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
 
-  // Compose, wallpaper search and tab organization should be enabled by
+  // Compose and wallpaper search should be enabled by
   // default whereas product specifications should be disabled by default.
   MqlsFeatureRegistry& registry = MqlsFeatureRegistry::GetInstance();
   EXPECT_TRUE(features::IsModelQualityLoggingEnabledForFeature(
       registry.GetFeature(proto::LogAiDataRequest::FeatureCase::kCompose)));
-  EXPECT_TRUE(
-      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
-          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
   EXPECT_TRUE(
       features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
           proto::LogAiDataRequest::FeatureCase::kWallpaperSearch)));
@@ -84,10 +81,10 @@ TEST_F(OptimizationGuideFeaturesTest, ComposeModelQualityLoggingDisabled) {
 
   EXPECT_TRUE(features::IsModelQualityLoggingEnabled());
   EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(metadata));
-  // TabOrganization should still be enabled.
+  // WallpaperSearch should still be enabled.
   EXPECT_TRUE(
       features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
-          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
+          proto::LogAiDataRequest::FeatureCase::kWallpaperSearch)));
 }
 
 TEST_F(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
@@ -100,9 +97,6 @@ TEST_F(OptimizationGuideFeaturesTest, ModelQualityLoggingDisabled) {
   MqlsFeatureRegistry& registry = MqlsFeatureRegistry::GetInstance();
   EXPECT_FALSE(features::IsModelQualityLoggingEnabledForFeature(
       registry.GetFeature(proto::LogAiDataRequest::FeatureCase::kCompose)));
-  EXPECT_FALSE(
-      features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
-          proto::LogAiDataRequest::FeatureCase::kTabOrganization)));
   EXPECT_FALSE(
       features::IsModelQualityLoggingEnabledForFeature(registry.GetFeature(
           proto::LogAiDataRequest::FeatureCase::kWallpaperSearch)));

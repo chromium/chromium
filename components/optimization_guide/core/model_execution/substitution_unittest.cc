@@ -19,7 +19,7 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/example_for_testing.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
-#include "components/optimization_guide/proto/features/tab_organization.pb.h"
+#include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
 #include "services/on_device_model/ml/chrome_ml_audio_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,17 +51,17 @@ auto ToneField() {
 auto LengthField() {
   return ProtoField({8, 3});
 }
-// TabOrganizationRequest::tabs
-auto TabsField() {
-  return ProtoField({1});
-}
-// Tab::tab_id
-auto TabId() {
-  return ProtoField({1});
-}
-// Tab::title
-auto TabTitle() {
+// HistoryAnswerRequest::passages (field 2)
+auto PassagesField() {
   return ProtoField({2});
+}
+// Passage::passage_id (field 3)
+auto PassageId() {
+  return ProtoField({3});
+}
+// Passage::text (field 1)
+auto PassageText() {
+  return ProtoField({1});
 }
 
 // PromptApiRequest::prompts
@@ -201,6 +201,40 @@ TEST_F(SubstitutionTest, RawString) {
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
+// Evaluate an expression over a list of passages.
+// The substititon should produce a string like "Tabs: E,E,"
+// Where "E" is the 'expr' evaluated over the list of passages.
+proto::SubstitutedString PassagesExpr(const proto::StringSubstitution& expr) {
+  proto::SubstitutedString root;
+  root.set_string_template("Tabs: %s");
+  auto* range =
+      root.add_substitutions()->add_candidates()->mutable_range_expr();
+  *range->mutable_proto_field() = PassagesField();
+
+  auto* substitution = range->mutable_expr();
+  substitution->set_string_template("%s,");
+  substitution->add_substitutions()->MergeFrom(expr);
+
+  return root;
+}
+
+// Make a simple request with two passages.
+proto::HistoryAnswerRequest TwoPassageRequest() {
+  proto::HistoryAnswerRequest request;
+  auto* passages = request.mutable_passages();
+  {
+    auto* p1 = passages->Add();
+    p1->set_text("tabA");
+    p1->set_passage_id("10");
+  }
+  {
+    auto* p2 = passages->Add();
+    p2->set_text("tabB");
+    p2->set_passage_id("20");
+  }
+  return request;
+}
+
 TEST_F(SubstitutionTest, ControlTokens) {
   google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
   auto* substitution = subs.Add();
@@ -326,48 +360,14 @@ TEST_F(SubstitutionTest, Conditions) {
   EXPECT_FALSE(result->should_ignore_input_context);
 }
 
-// Make a simple request with two tabs.
-proto::TabOrganizationRequest TwoTabRequest() {
-  proto::TabOrganizationRequest request;
-  auto* tabs = request.mutable_tabs();
-  {
-    auto* t1 = tabs->Add();
-    t1->set_title("tabA");
-    t1->set_tab_id(10);
-  }
-  {
-    auto* t1 = tabs->Add();
-    t1->set_title("tabB");
-    t1->set_tab_id(20);
-  }
-  return request;
-}
-
-// Evaluate an expression over a list of tabs.
-// The substititon should produce a string like "Tabs: E,E,"
-// Where "E" is the 'expr' evaluated over the list of tabs.
-proto::SubstitutedString TabsExpr(const proto::StringSubstitution& expr) {
-  proto::SubstitutedString root;
-  root.set_string_template("Tabs: %s");
-  auto* range =
-      root.add_substitutions()->add_candidates()->mutable_range_expr();
-  *range->mutable_proto_field() = TabsField();
-
-  auto* substitution = range->mutable_expr();
-  substitution->set_string_template("%s,");
-  substitution->add_substitutions()->MergeFrom(expr);
-
-  return root;
-}
-
 TEST_F(SubstitutionTest, RepeatedRawField) {
   google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
   {
     proto::StringSubstitution expr;
     expr.add_candidates()->set_raw_string("E");
-    subs.Add()->MergeFrom(TabsExpr(expr));
+    subs.Add()->MergeFrom(PassagesExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::HistoryAnswerRequest request = TwoPassageRequest();
   auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: E,E,");
@@ -378,10 +378,10 @@ TEST_F(SubstitutionTest, RepeatedProtoField) {
   google::protobuf::RepeatedPtrField<proto::SubstitutedString> subs;
   {
     proto::StringSubstitution expr;
-    *expr.add_candidates()->mutable_proto_field() = TabTitle();
-    subs.Add()->MergeFrom(TabsExpr(expr));
+    *expr.add_candidates()->mutable_proto_field() = PassageText();
+    subs.Add()->MergeFrom(PassagesExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::HistoryAnswerRequest request = TwoPassageRequest();
   auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: tabA,tabB,");
@@ -393,9 +393,9 @@ TEST_F(SubstitutionTest, RepeatedZeroBasedIndexField) {
   {
     proto::StringSubstitution expr;
     expr.add_candidates()->mutable_index_expr();
-    subs.Add()->MergeFrom(TabsExpr(expr));
+    subs.Add()->MergeFrom(PassagesExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::HistoryAnswerRequest request = TwoPassageRequest();
   auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: 0,1,");
@@ -407,9 +407,9 @@ TEST_F(SubstitutionTest, RepeatedOneBasedIndexField) {
   {
     proto::StringSubstitution expr;
     expr.add_candidates()->mutable_index_expr()->set_one_based(true);
-    subs.Add()->MergeFrom(TabsExpr(expr));
+    subs.Add()->MergeFrom(PassagesExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::HistoryAnswerRequest request = TwoPassageRequest();
   auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: 1,2,");
@@ -426,12 +426,12 @@ TEST_F(SubstitutionTest, RepeatedCondition) {
     *c1->mutable_conditions() = ConditionList(
         proto::CONDITION_EVALUATION_TYPE_OR,
         {
-            Condition(TabId(), proto::OPERATOR_TYPE_EQUAL_TO, Int64Proto(10)),
+            Condition(PassageId(), proto::OPERATOR_TYPE_EQUAL_TO, StrProto("10")),
         });
     c2->set_raw_string("NotTen");
-    subs.Add()->MergeFrom(TabsExpr(expr));
+    subs.Add()->MergeFrom(PassagesExpr(expr));
   }
-  proto::TabOrganizationRequest request = TwoTabRequest();
+  proto::HistoryAnswerRequest request = TwoPassageRequest();
   auto result = CreateSubstitutions(MultimodalMessageReadView(request), subs);
   ASSERT_TRUE(result.has_value());
   EXPECT_EQ(result->ToString(), "Tabs: Ten,NotTen,");

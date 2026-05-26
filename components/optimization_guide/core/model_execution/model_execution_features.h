@@ -19,7 +19,6 @@ namespace optimization_guide::features::internal {
 // to the user. Should only be enabled for experimental features that have not
 // graduated yet.
 BASE_DECLARE_FEATURE(kComposeSettingsVisibility);
-BASE_DECLARE_FEATURE(kTabOrganizationSettingsVisibility);
 BASE_DECLARE_FEATURE(kWallpaperSearchSettingsVisibility);
 BASE_DECLARE_FEATURE(kHistorySearchSettingsVisibility);
 BASE_DECLARE_FEATURE(kFindsSettingsVisibility);
@@ -34,7 +33,6 @@ extern const base::FeatureParam<std::string>
 // should not be enabled at the same time as their respective settings
 // visibility features.
 BASE_DECLARE_FEATURE(kComposeGraduated);
-BASE_DECLARE_FEATURE(kTabOrganizationGraduated);
 BASE_DECLARE_FEATURE(kWallpaperSearchGraduated);
 BASE_DECLARE_FEATURE(kFindsGraduated);
 

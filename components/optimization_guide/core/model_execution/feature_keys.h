@@ -18,8 +18,6 @@ namespace optimization_guide {
 // Capabilities that are implemented by model execution.
 enum class ModelBasedCapabilityKey {
   kCompose = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE,
-  kTabOrganization =
-      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION,
   kWallpaperSearch =
       proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH,
   kTest = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST,
@@ -64,8 +62,6 @@ inline std::ostream& operator<<(std::ostream& out,
   switch (val) {
     case ModelBasedCapabilityKey::kCompose:
       return out << "Compose";
-    case ModelBasedCapabilityKey::kTabOrganization:
-      return out << "TabOrganization";
     case ModelBasedCapabilityKey::kWallpaperSearch:
       return out << "WallpaperSearch";
     case ModelBasedCapabilityKey::kTest:
@@ -114,8 +110,6 @@ inline std::ostream& operator<<(std::ostream& out,
 // These will have their own prefs / settings / policies etc.
 enum class UserVisibleFeatureKey {
   kCompose = static_cast<int>(ModelBasedCapabilityKey::kCompose),
-  kTabOrganization =
-      static_cast<int>(ModelBasedCapabilityKey::kTabOrganization),
   kWallpaperSearch =
       static_cast<int>(ModelBasedCapabilityKey::kWallpaperSearch),
   kHistorySearch = static_cast<int>(ModelBasedCapabilityKey::kHistorySearch),
@@ -129,7 +123,6 @@ enum class UserVisibleFeatureKey {
 inline constexpr auto kAllUserVisibleFeatureKeys =
     std::to_array<UserVisibleFeatureKey>({
         UserVisibleFeatureKey::kCompose,
-        UserVisibleFeatureKey::kTabOrganization,
         UserVisibleFeatureKey::kWallpaperSearch,
         UserVisibleFeatureKey::kHistorySearch,
         UserVisibleFeatureKey::kPasswordChangeSubmission,
@@ -142,8 +135,6 @@ inline ModelBasedCapabilityKey ToModelBasedCapabilityKey(
   switch (key) {
     case UserVisibleFeatureKey::kCompose:
       return ModelBasedCapabilityKey::kCompose;
-    case UserVisibleFeatureKey::kTabOrganization:
-      return ModelBasedCapabilityKey::kTabOrganization;
     case UserVisibleFeatureKey::kWallpaperSearch:
       return ModelBasedCapabilityKey::kWallpaperSearch;
     case UserVisibleFeatureKey::kHistorySearch:
@@ -162,9 +153,6 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
   switch (key) {
     case ModelBasedCapabilityKey::kCompose:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_COMPOSE;
-    case ModelBasedCapabilityKey::kTabOrganization:
-      return proto::ModelExecutionFeature::
-          MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION;
     case ModelBasedCapabilityKey::kWallpaperSearch:
       return proto::ModelExecutionFeature::
           MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH;

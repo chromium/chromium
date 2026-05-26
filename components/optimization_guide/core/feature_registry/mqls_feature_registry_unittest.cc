@@ -55,7 +55,7 @@ TEST_F(MqlsFeatureRegistryTest, MAYBE_RegisterFeature) {
   EXPECT_EQ(&kLoggingEnabledFeature,
             metadata_from_registry->field_trial_feature());
   EXPECT_FALSE(MqlsFeatureRegistry::GetInstance().GetFeature(
-      proto::LogAiDataRequest::FeatureCase::kTabOrganization));
+      proto::LogAiDataRequest::FeatureCase::kWallpaperSearch));
 }
 
 TEST(MqlsFeatureMetadataTest, LoggingEnabledViaFieldTrial) {

@@ -13,7 +13,6 @@
 namespace optimization_guide::proto {
 
 enum BlingPrototypingRequest_ModelEnum : int;
-enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
 }  // namespace optimization_guide::proto
 
 // Mutator protocol for the UI layer to communicate to the
@@ -31,11 +30,6 @@ enum TabOrganizationRequest_TabOrganizationModelStrategy : int;
                              model:(optimization_guide::proto::
                                         BlingPrototypingRequest_ModelEnum)model;
 
-// TODO(crbug.com/460813653): Remove deprecated TabOrganization functions.
-// Executes a tab organization request with a given organization `strategy`.
-- (void)executeGroupTabsWithStrategy:
-    (optimization_guide::proto::
-         TabOrganizationRequest_TabOrganizationModelStrategy)strategy;
 
 // Executes a tab organization request.
 - (void)executeSmartTabGrouping;

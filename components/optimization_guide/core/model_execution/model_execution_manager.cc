@@ -91,7 +91,6 @@ void RecordModelExecutionLatency(ModelBasedCapabilityKey feature,
 size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
   switch (feature) {
     case ModelBasedCapabilityKey::kCompose:
-    case ModelBasedCapabilityKey::kTabOrganization:
     case ModelBasedCapabilityKey::kWallpaperSearch:
     case ModelBasedCapabilityKey::kTest:
     case ModelBasedCapabilityKey::kHistorySearch:
@@ -192,33 +191,6 @@ void ModelExecutionManager::ExecuteModel(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
         optimization_guide_logger_)
         << "ExecuteModel: " << ProtoName(feature);
-    switch (feature) {
-      case ModelBasedCapabilityKey::kTabOrganization: {
-        proto::Any any = AnyWrapProto(request_metadata);
-        auto tab_request = optimization_guide::ParsedAnyMetadata<
-            optimization_guide::proto::TabOrganizationRequest>(any);
-        std::string tabs = "";
-        for (const auto& tab : tab_request->tabs()) {
-          tabs += base::StringPrintf("%s\"%s\"", tabs.empty() ? "" : ",",
-                                     tab.title());
-        }
-        OPTIMIZATION_GUIDE_LOGGER(
-            optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
-            optimization_guide_logger_)
-            << "TabOrganization Request: "
-            << base::StringPrintf(
-                   "{\"model_strategy\": \"%s\", \"tabs\" : [%s]}",
-                   optimization_guide::proto::
-                       TabOrganizationRequest_TabOrganizationModelStrategy_Name(
-                           tab_request->model_strategy()),
-                   tabs);
-
-        break;
-      }
-      default: {
-        break;
-      }
-    }
   }
 
   // Create log request if not already provided.
@@ -372,35 +344,6 @@ void ModelExecutionManager::OnModelExecuteResponse(
         optimization_guide_common::mojom::LogSource::MODEL_EXECUTION,
         optimization_guide_logger_)
         << "ExecuteModel Response: " << ProtoName(feature);
-    switch (feature) {
-      case ModelBasedCapabilityKey::kTabOrganization: {
-        std::string message = "";
-        auto tab_response = optimization_guide::ParsedAnyMetadata<
-            optimization_guide::proto::TabOrganizationResponse>(
-            execute_response->response_metadata());
-        message += "Response: [";
-        int group_cnt = 0;
-        for (const auto& tab_group : tab_response->tab_groups()) {
-          std::string tab_titles = "";
-          for (const auto& tab : tab_group.tabs()) {
-            tab_titles += base::StringPrintf(
-                "%s\" %s \"", tab_titles.empty() ? "" : ",", tab.title());
-          }
-          message += base::StringPrintf(
-              "%s{"
-              "\"label\": \"%s\", "
-              "\"tabs\": [%s] }",
-              group_cnt > 0 ? "," : "", tab_group.label(), tab_titles);
-          group_cnt += 1;
-        }
-        message += "]";
-        scoped_logger.set_message(message);
-        break;
-      }
-      default: {
-        break;
-      }
-    }
   }
 
   RecordModelExecutionResultHistogram(feature, true);

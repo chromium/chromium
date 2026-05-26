@@ -24,13 +24,13 @@ TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
     scoped_feature_list.InitWithFeaturesAndParameters(
         {{features::internal::kComposeSettingsVisibility,
           {{"allow_unsigned_user", "true"}}},
-         {features::internal::kTabOrganizationSettingsVisibility,
+         {features::internal::kWallpaperSearchSettingsVisibility,
           {{"allow_unsigned_user", "true"}}}},
         {});
     EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(),
                 UnorderedElementsAre(UserVisibleFeatureKey::kHistorySearch,
                                      UserVisibleFeatureKey::kCompose,
-                                     UserVisibleFeatureKey::kTabOrganization));
+                                     UserVisibleFeatureKey::kWallpaperSearch));
   }
   {
     base::test::ScopedFeatureList scoped_feature_list;
@@ -39,11 +39,11 @@ TEST(ModelExecutionFeature, GetAllowedFeaturesForUnsignedUser) {
           {{"allow_unsigned_user", "false"}}},
          {features::internal::kComposeSettingsVisibility,
           {{"allow_unsigned_user", "false"}}},
-         {features::internal::kTabOrganizationSettingsVisibility,
+         {features::internal::kWallpaperSearchSettingsVisibility,
           {{"allow_unsigned_user", "true"}}}},
         {});
     EXPECT_THAT(GetAllowedFeaturesForUnsignedUser(),
-                UnorderedElementsAre(UserVisibleFeatureKey::kTabOrganization));
+                UnorderedElementsAre(UserVisibleFeatureKey::kWallpaperSearch));
   }
 }
 

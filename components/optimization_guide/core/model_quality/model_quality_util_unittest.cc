@@ -33,11 +33,11 @@ TEST_F(ModelQualityUtilTest, GetModelQualityClientId) {
       proto::LogAiDataRequest::FeatureCase::kCompose, &pref_service_);
   int64_t wallpaper_search_client_id = GetOrCreateModelQualityClientId(
       proto::LogAiDataRequest::kWallpaperSearch, &pref_service_);
-  int64_t tab_organization_client_id = GetOrCreateModelQualityClientId(
-      proto::LogAiDataRequest::kTabOrganization, &pref_service_);
+  int64_t history_answer_client_id = GetOrCreateModelQualityClientId(
+      proto::LogAiDataRequest::kHistoryAnswer, &pref_service_);
   EXPECT_NE(compose_client_id, wallpaper_search_client_id);
-  EXPECT_NE(wallpaper_search_client_id, tab_organization_client_id);
-  EXPECT_NE(tab_organization_client_id, compose_client_id);
+  EXPECT_NE(wallpaper_search_client_id, history_answer_client_id);
+  EXPECT_NE(history_answer_client_id, compose_client_id);
 
   // Advance clock by more than one day to check that the client ids are
   // different.

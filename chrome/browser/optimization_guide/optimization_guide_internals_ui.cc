@@ -97,37 +97,28 @@ void OptimizationGuideInternalsUI::RequestLoggedModelQualityClientIds(
     return;
   }
 
-  // Get the client ids for the compose and tab organization feature for the
+  // Get the client ids for the compose feature for the
   // past 28 days to show on chrome://optimization-guide-internals.
   std::vector<optimization_guide_internals::mojom::LoggedClientIdsPtr>
       logged_client_ids;
   // Initialize time outside to have it change when generating the client ids
   // for different days.
   base::Time now = base::Time::Now();
-  // Loop through past 28 days to generate the client ids for compose and
-  // tab_organization features.
+  // Loop through past 28 days to generate the client ids for compose
+  // feature.
   for (int i = 0; i < 28; ++i) {
     base::Time day_i = now - base::Days(i);
 
-    // Hash the client id with the date so that it changes everyday for every
+    // Hash the client id with the date so that it changes everyday for the
     // feature.
     int64_t client_id_i_compose =
         optimization_guide::GetHashedModelQualityClientId(
             optimization_guide::proto::LogAiDataRequest::FeatureCase::kCompose,
             day_i, client_id);
 
-    int64_t client_id_i_tab_organization =
-        optimization_guide::GetHashedModelQualityClientId(
-            optimization_guide::proto::LogAiDataRequest::FeatureCase::
-                kTabOrganization,
-            day_i, client_id);
-
     logged_client_ids.push_back(
         optimization_guide_internals::mojom::LoggedClientIds::New(
             client_id_i_compose));
-    logged_client_ids.push_back(
-        optimization_guide_internals::mojom::LoggedClientIds::New(
-            client_id_i_tab_organization));
   }
 
   std::move(callback).Run(std::move(logged_client_ids));

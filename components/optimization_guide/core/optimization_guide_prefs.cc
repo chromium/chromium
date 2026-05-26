@@ -56,8 +56,6 @@ std::string GetSettingEnabledPrefName(UserVisibleFeatureKey feature) {
   switch (feature) {
     case UserVisibleFeatureKey::kCompose:
       return "optimization_guide.compose_setting_state";
-    case UserVisibleFeatureKey::kTabOrganization:
-      return "optimization_guide.tab_organization_setting_state";
     case UserVisibleFeatureKey::kWallpaperSearch:
       return "optimization_guide.wallpaper_search_setting_state";
     case UserVisibleFeatureKey::kHistorySearch:

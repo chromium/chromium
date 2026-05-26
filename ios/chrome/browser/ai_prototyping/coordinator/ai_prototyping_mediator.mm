@@ -23,11 +23,9 @@
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "components/optimization_guide/proto/features/enhanced_calendar.pb.h"
 #import "components/optimization_guide/proto/features/ios_smart_tab_grouping.pb.h"
-#import "components/optimization_guide/proto/features/tab_organization.pb.h"
 #import "components/optimization_guide/proto/string_value.pb.h"  // nogncheck
 #import "ios/chrome/browser/ai_prototyping/features.h"
 #import "ios/chrome/browser/ai_prototyping/model/ai_prototyping_service_impl.h"
-#import "ios/chrome/browser/ai_prototyping/model/tab_organization_service_impl.h"
 #import "ios/chrome/browser/ai_prototyping/ui/ai_prototyping_consumer.h"
 #import "ios/chrome/browser/ai_prototyping/utils/ai_prototyping_constants.h"
 #import "ios/chrome/browser/ai_prototyping/utils/json_action_parser.h"
@@ -42,7 +40,6 @@
 #import "ios/chrome/browser/intelligence/proto_wrappers/ios_smart_tab_grouping_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper_config.h"
-#import "ios/chrome/browser/intelligence/proto_wrappers/tab_organization_request_wrapper.h"
 #import "ios/chrome/browser/intelligence/smart_tab_grouping/model/smart_tab_grouping_service_impl.h"
 #import "ios/chrome/browser/intelligence/smart_tab_grouping/utils/smart_tab_grouping_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -66,13 +63,6 @@
   // `AIPrototypingServiceImpl`.
   std::unique_ptr<ai::AIPrototypingServiceImpl> _ai_prototyping_service_impl;
 
-  // Remote used to make calls to functions related to `TabOrganizationService`.
-  mojo::Remote<ai::mojom::TabOrganizationService> _tab_organization_service;
-  // Instantiated to pipe virtual remote calls to overridden functions in the
-  // `TabOrganizationServiceImpl`.
-  std::unique_ptr<ai::TabOrganizationServiceImpl>
-      _tab_organization_service_impl;
-
   // Remote used to make calls to functions related to
   // `EnhancedCalendarService`.
   mojo::Remote<ai::mojom::EnhancedCalendarService> _enhanced_calendar_service;
@@ -87,9 +77,6 @@
   // Instatiated to pipe virtual remote calls to overriden functions in
   // 'SmartTabGroupingServiceImpl'.
   std::unique_ptr<ai::SmartTabGroupingServiceImpl> _smartTabGroupingServiceImpl;
-
-  // The Tab Organization feature's request wrapper.
-  TabOrganizationRequestWrapper* _tabOrganizationRequestWrapper;
 
   // The freeform feature's PageContext wrapper.
   PageContextWrapper* _pageContextWrapper;
@@ -125,12 +112,7 @@
         std::make_unique<ai::AIPrototypingServiceImpl>(
             std::move(ai_prototyping_receiver), browserState, startOnDevice);
 
-    mojo::PendingReceiver<ai::mojom::TabOrganizationService>
-        tab_organization_receiver =
-            _tab_organization_service.BindNewPipeAndPassReceiver();
-    _tab_organization_service_impl =
-        std::make_unique<ai::TabOrganizationServiceImpl>(
-            std::move(tab_organization_receiver), _webStateList, startOnDevice);
+
 
     mojo::PendingReceiver<ai::mojom::EnhancedCalendarService>
         enhanced_calendar_receiver =
@@ -239,58 +221,6 @@
       }));
 }
 
-- (void)executeGroupTabsWithStrategy:
-    (optimization_guide::proto::
-         TabOrganizationRequest_TabOrganizationModelStrategy)strategy {
-  // Ensure that tabOrganizationRequestWrapper is reset from previous attempts.
-  if (_tabOrganizationRequestWrapper) {
-    _tabOrganizationRequestWrapper = nil;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-
-  // Create return callback for `_tab_organization_service`.
-  base::OnceCallback<void(const std::string& response_string)>
-      service_callback =
-          base::BindOnce(^void(const std::string& response_string) {
-            [weakSelf.consumer
-                updateQueryResult:base::SysUTF8ToNSString(response_string)
-                       forFeature:AIPrototypingFeature::kTabOrganization];
-
-            // Assign to a strong variable to avoid race condition when setting
-            // `_tabOrganizationRequestWrapper` to nil.
-            AIPrototypingMediator* strongSelf = weakSelf;
-            if (strongSelf) {
-              strongSelf->_tabOrganizationRequestWrapper = nil;
-            }
-          });
-
-  // Create completion callback for TabOrganization request wrapper.
-  base::OnceCallback<void(
-      std::unique_ptr<optimization_guide::proto::TabOrganizationRequest>)>
-      completion_callback = base::BindOnce(
-          [](AIPrototypingMediator* mediator,
-             base::OnceCallback<void(const std::string& response_string)>
-                 callback,
-             std::unique_ptr<optimization_guide::proto::TabOrganizationRequest>
-                 request) {
-            ::mojo_base::ProtoWrapper proto_wrapper =
-                mojo_base::ProtoWrapper(*request.get());
-
-            mediator->_tab_organization_service->ExecuteGroupTabs(
-                std::move(proto_wrapper), std::move(callback));
-          },
-          base::Unretained(self), std::move(service_callback));
-
-  // Create the TabOrganization request wrapper, and start populating its
-  // fields. When completed, `completionCallback` will be executed.
-  _tabOrganizationRequestWrapper = [[TabOrganizationRequestWrapper alloc]
-                 initWithWebStateList:_webStateList
-      allowReorganizingExistingGroups:true
-                     groupingStrategy:strategy
-                   completionCallback:std::move(completion_callback)];
-  [_tabOrganizationRequestWrapper populateRequestFieldsAsync];
-}
 
 - (void)executeSmartTabGrouping {
   __weak __typeof(self) weakSelf = self;

@@ -63,11 +63,10 @@ enum ErrorState {
 }
 
 enum ModelExecutionFeature {
-  reserved 9, 10, 11, 16, 19, 21, 22, 25;
+  reserved 2, 9, 10, 11, 16, 19, 21, 22, 25;
 
   MODEL_EXECUTION_FEATURE_UNSPECIFIED = 0;
   MODEL_EXECUTION_FEATURE_COMPOSE = 1;
-  MODEL_EXECUTION_FEATURE_TAB_ORGANIZATION = 2;
   MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH = 3;
   // This test feature cannot be used for launch but can be used for
   // prototyping. Please reach out to optimization_guide OWNERS when looking to

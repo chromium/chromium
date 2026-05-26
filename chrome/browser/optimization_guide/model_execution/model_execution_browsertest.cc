@@ -838,7 +838,7 @@ class ModelExecutionEnabledBrowserTestWithExplicitBrowserSignin
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
         {features::internal::kHistorySearchSettingsVisibility},
-        {features::internal::kTabOrganizationGraduated});
+        {});
   }
 };
 
@@ -850,17 +850,10 @@ IN_PROC_BROWSER_TEST_F(
   prefs->SetInteger(
       prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kWallpaperSearch),
       static_cast<int>(prefs::FeatureOptInState::kEnabled));
-  prefs->SetInteger(
-      prefs::GetSettingEnabledPrefName(UserVisibleFeatureKey::kTabOrganization),
-      static_cast<int>(prefs::FeatureOptInState::kDisabled));
 
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup.Compose", false,
       1);
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
-      "TabOrganization",
-      false, 1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
       "WallpaperSearch",
@@ -868,10 +861,6 @@ IN_PROC_BROWSER_TEST_F(
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.Compose",
       0);
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
-      "TabOrganization",
-      false, 1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
       "WallpaperSearch",
@@ -889,18 +878,10 @@ IN_PROC_BROWSER_TEST_F(
       1);
   histogram_tester_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
-      "TabOrganization",
-      false, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.FeatureEnabledAtStartup."
       "WallpaperSearch",
       false, 1);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange.Compose",
-      0);
-  histogram_tester_.ExpectTotalCount(
-      "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
-      "TabOrganization",
       0);
   histogram_tester_.ExpectTotalCount(
       "OptimizationGuide.ModelExecution.FeatureEnabledAtSettingsChange."
@@ -983,9 +964,9 @@ class ModelExecutionNewFeaturesEnabledAutomaticallyTest
   void InitializeFeatureList() override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {features::kOptimizationGuideModelExecution, {}},
-        {features::internal::kTabOrganizationSettingsVisibility, {}}};
+        {features::internal::kWallpaperSearchSettingsVisibility, {}}};
     std::vector<base::test::FeatureRef> disabled_features = {
-        features::internal::kTabOrganizationGraduated,
+        features::internal::kWallpaperSearchGraduated,
         features::internal::kComposeGraduated};
 
     std::string test_name =
@@ -1025,12 +1006,10 @@ class ModelExecutionEnterprisePolicyBrowserTest
     std::vector<base::test::FeatureRef> enabled_features = {
         features::kOptimizationGuideModelExecution,
         features::kModelQualityLogging,
-        features::internal::kTabOrganizationSettingsVisibility,
         features::internal::kWallpaperSearchSettingsVisibility};
     std::vector<base::test::FeatureRef> disabled_features = {
         features::internal::kComposeGraduated,
         features::internal::kComposeSettingsVisibility,
-        features::internal::kTabOrganizationGraduated,
         features::internal::kWallpaperSearchGraduated};
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
