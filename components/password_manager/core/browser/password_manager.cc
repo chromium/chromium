@@ -768,7 +768,7 @@ void PasswordManager::DidNavigateMainFrame(bool form_may_be_submitted) {
       // May be null in tests.
       if (reuse_manager) {
         reuse_manager->MaybeSavePasswordHash(manager->GetSubmittedForm(),
-                                             client_);
+                                             client_, std::nullopt);
       }
     }
   }
@@ -1643,7 +1643,7 @@ void PasswordManager::OnLoginSuccessful() {
   // May be null in tests.
   if (reuse_manager) {
     reuse_manager->MaybeSavePasswordHash(submitted_manager->GetSubmittedForm(),
-                                         client_);
+                                         client_, std::nullopt);
   }
 
   RecordMetricsForLoginWithChangedPassword(client_, *submitted_manager,

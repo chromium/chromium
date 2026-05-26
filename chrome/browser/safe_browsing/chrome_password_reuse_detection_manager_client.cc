@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/content/browser/password_manager_log_router_factory.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/sync/base/user_selectable_type.h"
@@ -165,7 +166,9 @@ void ChromePasswordReuseDetectionManagerClient::InternalOnPrimaryAccountChanged(
       return;
     }
     password_manager_client->GetPasswordReuseManager()->MaybeSavePasswordHash(
-        &password_form.value(), password_manager_client);
+        &password_form.value(), password_manager_client,
+        password_manager::metrics_util::GaiaPasswordHashChange::
+            SAVED_ON_CHROME_SIGNIN);
     base::UmaHistogramBoolean(
         "PasswordProtection.AttemptsToSavePasswordHashFromProfilePicker", true);
   }

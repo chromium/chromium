@@ -655,7 +655,8 @@ void PasswordReuseManagerImpl::OnPrimaryAccountChanged(
 
 void PasswordReuseManagerImpl::MaybeSavePasswordHash(
     const PasswordForm* submitted_form,
-    PasswordManagerClient* client) {
+    PasswordManagerClient* client,
+    std::optional<metrics_util::GaiaPasswordHashChange> event) {
   // This method doesn't use DelayUntilReady since it isn't safe to store
   // `submitted_form` or `client` in a task. That's okay since this method
   // doesn't (and should never) use any member variables. It does call into
@@ -704,18 +705,18 @@ void PasswordReuseManagerImpl::MaybeSavePasswordHash(
   CHECK(should_save_gaia_pw);
   bool is_sync_account_email =
       client->GetStoreResultFilter()->IsSyncAccountEmail(username);
-  metrics_util::GaiaPasswordHashChange event =
+  metrics_util::GaiaPasswordHashChange gaia_event = event.value_or(
       is_sync_account_email
           ? (is_password_change
                  ? metrics_util::GaiaPasswordHashChange::CHANGED_IN_CONTENT_AREA
                  : metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA)
-          : (is_password_change
-                 ? metrics_util::GaiaPasswordHashChange::
-                       NOT_SYNC_PASSWORD_CHANGE
-                 : metrics_util::GaiaPasswordHashChange::SAVED_IN_CONTENT_AREA);
+          : (is_password_change ? metrics_util::GaiaPasswordHashChange::
+                                      NOT_SYNC_PASSWORD_CHANGE
+                                : metrics_util::GaiaPasswordHashChange::
+                                      SAVED_IN_CONTENT_AREA));
   SaveGaiaPasswordHash(username, password,
                        /*is_sync_password_for_metrics=*/is_sync_account_email,
-                       event);
+                       gaia_event);
 }
 
 HashPasswordManager* PasswordReuseManagerImpl::GetHashPasswordManager() {

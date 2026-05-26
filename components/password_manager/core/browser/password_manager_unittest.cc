@@ -2594,7 +2594,7 @@ TEST_P(PasswordManagerTest, HashSavedOnGaiaFormWithSkipSavePassword) {
 
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
 
-  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _, _));
 
   OnPasswordFormSubmitted(form_data);
   observed.clear();
@@ -2689,7 +2689,7 @@ TEST_P(PasswordManagerTest, SyncCredentialsNotDroppedIfUpToDate) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _, _));
 
   manager()->OnPasswordFormSubmitted(&driver_, form.form_data);
 
@@ -3823,7 +3823,7 @@ TEST_P(PasswordManagerTest, SaveSyncPasswordHashOnChangePasswordPage) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _, _));
 
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
@@ -3876,7 +3876,7 @@ TEST_P(PasswordManagerTest, SaveOtherGaiaPasswordHashOnChangePasswordPage) {
 
   ON_CALL(*client_.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
-  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _, _));
 
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
@@ -3906,7 +3906,7 @@ TEST_P(PasswordManagerTest, SaveEnterprisePasswordHash) {
       .WillByDefault(Return(true));
   ON_CALL(*client_.GetStoreResultFilter(), IsSyncAccountEmail(_))
       .WillByDefault(Return(false));
-  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _));
+  EXPECT_CALL(reuse_manager_, MaybeSavePasswordHash(_, _, _));
   client_.FilterAllResultsForSaving();
   OnPasswordFormSubmitted(form_data);
 

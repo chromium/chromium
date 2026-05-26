@@ -6,6 +6,7 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_REUSE_MANAGER_H_
 
 #include <memory>
+#include <optional>
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
@@ -116,8 +117,10 @@ class PasswordReuseManager : public KeyedService {
 
   // Saves the hash version of a password if it corresponds to an
   // enterprise or gaia password.
-  virtual void MaybeSavePasswordHash(const PasswordForm* submitted_form,
-                                     PasswordManagerClient* client) = 0;
+  virtual void MaybeSavePasswordHash(
+      const PasswordForm* submitted_form,
+      PasswordManagerClient* client,
+      std::optional<metrics_util::GaiaPasswordHashChange> event) = 0;
 
   // May return nullptr if the HashPasswordManager is not yet available.
   virtual HashPasswordManager* GetHashPasswordManager() = 0;

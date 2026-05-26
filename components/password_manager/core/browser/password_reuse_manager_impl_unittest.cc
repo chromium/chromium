@@ -631,7 +631,8 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashNoHashSaved) {
       CreateForm("http://yahoo.com", u"user@yahoo.com", u"password",
                  PasswordForm::Store::kAccountStore);
   MockPasswordManagerClient client;
-  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client);
+  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client,
+                                         std::nullopt);
 
   RunUntilIdle();
   EXPECT_EQ(0u, prefs().GetList(prefs::kPasswordHashDataList).size());
@@ -645,7 +646,8 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashGaiaHashSaved) {
   MockPasswordManagerClient client;
   ON_CALL(*client.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
       .WillByDefault(Return(true));
-  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client);
+  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client,
+                                         std::nullopt);
 
   RunUntilIdle();
   // Check that right pref has been saved.
@@ -664,7 +666,8 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashEnterpriseHashSaved) {
   MockPasswordManagerClient client;
   ON_CALL(*client.GetStoreResultFilter(), ShouldSaveEnterprisePasswordHash(_))
       .WillByDefault(Return(true));
-  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client);
+  reuse_manager()->MaybeSavePasswordHash(&submitted_form, &client,
+                                         std::nullopt);
 
   RunUntilIdle();
   // Check that right pref has been saved.
@@ -673,6 +676,30 @@ TEST_F(PasswordReuseManagerImplTest, MaybeSavePasswordHashEnterpriseHashSaved) {
           local_prefs().GetList(prefs::kLocalPasswordHashDataList)[0])
           .value();
   EXPECT_FALSE(password_hash_data.is_gaia_password);
+}
+
+TEST_F(PasswordReuseManagerImplTest,
+       MaybeSavePasswordHashGaiaHashSavedWithExplicitEvent) {
+  Initialize();
+  PasswordForm submitted_form =
+      CreateForm("http://google.com", u"user@gmail.com", u"password",
+                 PasswordForm::Store::kAccountStore);
+  MockPasswordManagerClient client;
+  ON_CALL(*client.GetStoreResultFilter(), ShouldSaveGaiaPasswordHash(_))
+      .WillByDefault(Return(true));
+
+  base::HistogramTester histogram_tester;
+  reuse_manager()->MaybeSavePasswordHash(
+      &submitted_form, &client,
+      metrics_util::GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN);
+
+  RunUntilIdle();
+
+  // Since IsSyncAccountEmail is false by default in StubCredentialsFilter, it
+  // logs to NonSyncPasswordHashChange.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.NonSyncPasswordHashChange",
+      metrics_util::GaiaPasswordHashChange::SAVED_ON_CHROME_SIGNIN, 1);
 }
 
 #if BUILDFLAG(IS_ANDROID)

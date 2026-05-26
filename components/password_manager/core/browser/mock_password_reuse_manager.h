@@ -67,7 +67,8 @@ class MockPasswordReuseManager : public PasswordReuseManager {
   MOCK_METHOD(void,
               MaybeSavePasswordHash,
               (const PasswordForm* submitted_form,
-               PasswordManagerClient* client),
+               PasswordManagerClient* client,
+               std::optional<metrics_util::GaiaPasswordHashChange> event),
               (override));
   MOCK_METHOD(HashPasswordManager*, GetHashPasswordManager, (), (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));

@@ -75,8 +75,10 @@ class PasswordReuseManagerImpl : public PasswordReuseManager,
   void SetPasswordReuseManagerSigninNotifier(
       std::unique_ptr<PasswordReuseManagerSigninNotifier> notifier) override;
   void ScheduleEnterprisePasswordURLUpdate() override;
-  void MaybeSavePasswordHash(const PasswordForm* submitted_form,
-                             PasswordManagerClient* client) override;
+  void MaybeSavePasswordHash(
+      const PasswordForm* submitted_form,
+      PasswordManagerClient* client,
+      std::optional<metrics_util::GaiaPasswordHashChange> event) override;
   HashPasswordManager* GetHashPasswordManager() override;
   void AddObserver(PasswordReuseManager::Observer* observer) override;
   void RemoveObserver(PasswordReuseManager::Observer* observer) override;
