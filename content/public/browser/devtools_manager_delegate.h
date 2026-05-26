@@ -148,7 +148,7 @@ class CONTENT_EXPORT DevToolsManagerDelegate {
 
   // Call callback if command was not handled.
   using NotHandledCallback =
-      base::OnceCallback<void(base::span<const uint8_t>)>;
+      base::RepeatingCallback<void(base::span<const uint8_t>)>;
   virtual void HandleCommand(DevToolsAgentHostClientChannel* channel,
                              base::span<const uint8_t> message,
                              NotHandledCallback callback);

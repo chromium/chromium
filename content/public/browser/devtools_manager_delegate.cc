@@ -105,7 +105,7 @@ void DevToolsManagerDelegate::HandleCommand(
     DevToolsAgentHostClientChannel* channel,
     base::span<const uint8_t> message,
     NotHandledCallback callback) {
-  std::move(callback).Run(message);
+  callback.Run(message);
 }
 
 std::string DevToolsManagerDelegate::GetDiscoveryPageHTML() {

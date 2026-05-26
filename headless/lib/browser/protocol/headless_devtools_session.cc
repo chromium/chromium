@@ -48,7 +48,7 @@ void HeadlessDevToolsSession::HandleCommand(
     base::span<const uint8_t> message,
     content::DevToolsManagerDelegate::NotHandledCallback callback) {
   if (!browser_) {
-    std::move(callback).Run(message);
+    callback.Run(message);
     return;
   }
   crdtp::Dispatchable dispatchable(crdtp::SpanFrom(message));
@@ -58,7 +58,7 @@ void HeadlessDevToolsSession::HandleCommand(
   crdtp::UberDispatcher::DispatchResult dispatched =
       dispatcher_.Dispatch(dispatchable);
   if (!dispatched.MethodFound()) {
-    std::move(callback).Run(message);
+    callback.Run(message);
     return;
   }
   pending_commands_[dispatchable.CallId()] = std::move(callback);
@@ -94,7 +94,7 @@ void HeadlessDevToolsSession::FallThrough(int call_id,
                                           crdtp::span<uint8_t> message) {
   auto callback = std::move(pending_commands_[call_id]);
   pending_commands_.erase(call_id);
-  std::move(callback).Run(message);
+  callback.Run(message);
 }
 }  // namespace protocol
 }  // namespace headless

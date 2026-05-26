@@ -12,7 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -300,6 +300,8 @@ class DevToolsSession : public protocol::FrontendChannel,
       child_observers_;
   mojo::Remote<network::mojom::DurableMessageCollector>
       durable_message_collector_;
+  base::RepeatingCallback<void(base::span<const uint8_t>)>
+      handle_command_callback_;
 
   base::WeakPtrFactory<DevToolsSession> weak_factory_{this};
 };
