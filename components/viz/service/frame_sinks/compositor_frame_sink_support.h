@@ -60,8 +60,10 @@ enum class SubmitResult {
   SURFACE_ID_DECREASED = 4,
   SURFACE_OWNED_BY_ANOTHER_CLIENT = 5,
   HIT_TEST_DATA_INVALID = 6,
+  INVALID_FRAME = 7,
+  INVALID_DISPLAY_TRANSFORM = 8,
   // Magic constant used by the histogram macros.
-  kMaxValue = HIT_TEST_DATA_INVALID,
+  kMaxValue = INVALID_DISPLAY_TRANSFORM,
 };
 
 class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport

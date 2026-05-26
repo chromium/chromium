@@ -17,6 +17,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -140,7 +141,10 @@ void CompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
 
 void CompositorFrameSinkImpl::SetParams(
     mojom::CompositorFrameSinkParamsPtr params) {
-  DCHECK(!params_set_ && !support_->last_created_surface_id().is_valid());
+  if (params_set_ || support_->last_created_surface_id().is_valid()) {
+    mojo::ReportBadMessage("SetParams called invalidly");
+    return;
+  }
   params_set_ = true;
   if (params->wants_animate_only_begin_frames) {
     support_->SetWantsAnimateOnlyBeginFrames();
@@ -158,8 +162,6 @@ void CompositorFrameSinkImpl::SubmitCompositorFrame(
     CompositorFrame frame,
     std::optional<HitTestRegionList> hit_test_region_list,
     uint64_t submit_time) {
-  // Non-root surface frames should not have display transform hint.
-  DCHECK_EQ(gfx::OVERLAY_TRANSFORM_NONE, frame.metadata.display_transform_hint);
 
   const auto result = support_->MaybeSubmitCompositorFrame(
       local_surface_id, std::move(frame), std::move(hit_test_region_list),

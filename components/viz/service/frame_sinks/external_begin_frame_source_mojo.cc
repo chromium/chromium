@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "mojo/public/cpp/bindings/message.h"
 
 namespace viz {
 
@@ -33,8 +34,10 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
     const BeginFrameArgs& args,
     bool force,
     base::OnceCallback<void(const BeginFrameAck&)> callback) {
-  DCHECK(!pending_frame_callback_) << "Got overlapping IssueExternalBeginFrame";
-  DCHECK(pending_frame_sinks_.empty());
+  if (pending_frame_callback_ || !pending_frame_sinks_.empty()) {
+    mojo::ReportBadMessage("Got overlapping IssueExternalBeginFrame");
+    return;
+  }
   original_source_id_ = args.frame_id.source_id;
 
   OnBeginFrame(args);
