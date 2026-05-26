@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -18,6 +19,7 @@
 #include "content/browser/webid/delegation/evp_metrics.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
+#include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/navigation_simulator.h"
@@ -92,8 +94,13 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
   NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
       mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -120,6 +127,33 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
             well_known.signing_alg_values_supported.push_back("RS256");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
+          }));
+
+  const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = kAccountsEndpoint;
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_,
+              SendAccountsRequest(_, kAccountsEndpoint, _, _))
+      .WillOnce(WithArgs<3>(
+          [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            IdpNetworkRequestManager::AccountsResponse response;
+            auto account = base::MakeRefCounted<IdentityRequestAccount>(
+                "id", "email", "name", kEmail, "name", "given_name", GURL(),
+                "phone", "username", std::vector<std::string>(),
+                std::vector<std::string>(), std::vector<std::string>(),
+                std::vector<std::string>());
+            response.accounts.push_back(account);
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(response));
+            return true;
           }));
 
   EXPECT_CALL(*mock_network_manager, SendTokenRequest(kIssuanceEndpoint, _, _))
@@ -233,8 +267,13 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
   NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
       mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -260,6 +299,33 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
                                     well_known);
           }));
 
+  const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = kAccountsEndpoint;
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_,
+              SendAccountsRequest(_, kAccountsEndpoint, _, _))
+      .WillOnce(WithArgs<3>(
+          [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            IdpNetworkRequestManager::AccountsResponse response;
+            auto account = base::MakeRefCounted<IdentityRequestAccount>(
+                "id", "email", "name", kEmail, "name", "given_name", GURL(),
+                "phone", "username", std::vector<std::string>(),
+                std::vector<std::string>(), std::vector<std::string>(),
+                std::vector<std::string>());
+            response.accounts.push_back(account);
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(response));
+            return true;
+          }));
+
   // SendTokenRequest should NOT be called.
   EXPECT_CALL(*mock_network_manager, SendTokenRequest).Times(0);
 
@@ -272,6 +338,229 @@ TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
       EvpRequestStatus::kWellKnownIssuanceEndpointCrossOrigin, 1);
 }
 
+TEST_F(EmailVerificationRequestTest, UserLoggedOut) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
+      mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+  const GURL kIssuerUrl = GURL("https://issuer.example.com");
+  const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+  const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
+
+  EXPECT_CALL(*mock_dns_request_,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
+
+  EXPECT_CALL(*mock_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
+                  callback) {
+            EmailVerifierNetworkRequestManager::WellKnown well_known;
+            well_known.issuance_endpoint = kIssuanceEndpoint;
+            well_known.signing_alg_values_supported.push_back("RS256");
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = kAccountsEndpoint;
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_,
+              SendAccountsRequest(_, kAccountsEndpoint, _, _))
+      .WillOnce(WithArgs<3>(
+          [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            IdpNetworkRequestManager::AccountsResponse response;
+            auto account = base::MakeRefCounted<IdentityRequestAccount>(
+                "id", "email", "name", "different@example.com", "name",
+                "given_name", GURL(), "phone", "username",
+                std::vector<std::string>(), std::vector<std::string>(),
+                std::vector<std::string>(), std::vector<std::string>());
+            response.accounts.push_back(account);
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(response));
+            return true;
+          }));
+
+  EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
+
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<EmailVerifier::Result> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+
+  histogram_tester.ExpectUniqueSample("Blink.Evp.Status.Request",
+                                      EvpRequestStatus::kUserLoggedOut, 1);
+}
+
+TEST_F(EmailVerificationRequestTest, UnsupportedSigningAlgorithm) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
+      mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+  const GURL kIssuerUrl = GURL("https://issuer.example.com");
+  const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+  const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
+
+  EXPECT_CALL(*mock_dns_request_,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
+
+  EXPECT_CALL(*mock_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
+                  callback) {
+            EmailVerifierNetworkRequestManager::WellKnown well_known;
+            well_known.issuance_endpoint = kIssuanceEndpoint;
+            // Add ONLY unsupported algorithms!
+            well_known.signing_alg_values_supported.push_back("HS256");
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = kAccountsEndpoint;
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_,
+              SendAccountsRequest(_, kAccountsEndpoint, _, _))
+      .WillOnce(WithArgs<3>(
+          [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            IdpNetworkRequestManager::AccountsResponse response;
+            auto account = base::MakeRefCounted<IdentityRequestAccount>(
+                "id", "email", "name", kEmail, "name", "given_name", GURL(),
+                "phone", "username", std::vector<std::string>(),
+                std::vector<std::string>(), std::vector<std::string>(),
+                std::vector<std::string>());
+            response.accounts.push_back(account);
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(response));
+            return true;
+          }));
+
+  EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
+
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<EmailVerifier::Result> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Request",
+      EvpRequestStatus::kWellKnownUnsupportedSigningAlgorithm, 1);
+}
+
+TEST_F(EmailVerificationRequestTest, WebIdentityWellKnownHttpNotFound) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
+      mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kNonce = "test_nonce";
+  const GURL kIssuerUrl = GURL("https://issuer.example.com");
+  const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+
+  EXPECT_CALL(*mock_dns_request_,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
+
+  EXPECT_CALL(*mock_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
+                  callback) {
+            EmailVerifierNetworkRequestManager::WellKnown well_known;
+            well_known.issuance_endpoint = kIssuanceEndpoint;
+            well_known.signing_alg_values_supported.push_back("RS256");
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  // Task 2 FAILS!
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            std::move(callback).Run(
+                FetchStatus{ParseStatus::kHttpNotFoundError},
+                IdpNetworkRequestManager::WellKnown());
+          }));
+
+  // SendTokenRequest should NOT be called.
+  EXPECT_CALL(*mock_network_manager_, SendTokenRequest).Times(0);
+
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<EmailVerifier::Result> token = future.Get();
+  EXPECT_FALSE(token.has_value());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.Status.Request", EvpRequestStatus::kWellKnownHttpNotFound, 1);
+}
+
 TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
   base::HistogramTester histogram_tester;
   NavigateAndCommit(GURL("data:text/html,<html></html>"));
@@ -282,9 +571,12 @@ TEST_F(EmailVerificationRequestTest, OpaqueOriginRejected) {
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
   NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
       mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
 
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -310,9 +602,11 @@ TEST_F(EmailVerificationRequestTest, DnsFetchFailed) {
   NiceMock<MockDnsRequest>* mock_dns_request = mock_dns_request_ptr.get();
   auto mock_network_manager_ptr =
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
-
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -342,8 +636,13 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
   NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
       mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -366,6 +665,33 @@ TEST_F(EmailVerificationRequestTest, WellKnownHttpNotFound) {
                 EmailVerifierNetworkRequestManager::WellKnown());
           }));
 
+  const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = kAccountsEndpoint;
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_,
+              SendAccountsRequest(_, kAccountsEndpoint, _, _))
+      .WillOnce(WithArgs<3>(
+          [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            IdpNetworkRequestManager::AccountsResponse response;
+            auto account = base::MakeRefCounted<IdentityRequestAccount>(
+                "id", "email", "name", kEmail, "name", "given_name", GURL(),
+                "phone", "username", std::vector<std::string>(),
+                std::vector<std::string>(), std::vector<std::string>(),
+                std::vector<std::string>());
+            response.accounts.push_back(account);
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(response));
+            return true;
+          }));
+
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
   email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
   std::optional<EmailVerifier::Result> result_inner = future.Get();
@@ -384,8 +710,13 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
   NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
       mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -409,6 +740,33 @@ TEST_F(EmailVerificationRequestTest, TokenInvalidResponse) {
             well_known.signing_alg_values_supported.push_back("RS256");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
+          }));
+
+  const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = kAccountsEndpoint;
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_,
+              SendAccountsRequest(_, kAccountsEndpoint, _, _))
+      .WillOnce(WithArgs<3>(
+          [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            IdpNetworkRequestManager::AccountsResponse response;
+            auto account = base::MakeRefCounted<IdentityRequestAccount>(
+                "id", "email", "name", kEmail, "name", "given_name", GURL(),
+                "phone", "username", std::vector<std::string>(),
+                std::vector<std::string>(), std::vector<std::string>(),
+                std::vector<std::string>());
+            response.accounts.push_back(account);
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(response));
+            return true;
           }));
 
   EXPECT_CALL(*mock_network_manager, SendTokenRequest(kIssuanceEndpoint, _, _))
@@ -446,9 +804,12 @@ TEST_F(EmailVerificationRequestTest, FencedFrameRejected) {
   auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
   auto mock_network_manager_ptr =
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
 
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(fenced_frame)->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -473,9 +834,12 @@ TEST_F(EmailVerificationRequestTest, CrossOriginFrameRejected) {
   auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
   auto mock_network_manager_ptr =
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
 
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(cross_origin_iframe)->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -503,9 +867,14 @@ TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
   NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager_ =
       mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
 
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(same_origin_iframe)->GetSafeRef());
 
   const std::string kEmail = "test@example.com";
@@ -526,6 +895,14 @@ TEST_F(EmailVerificationRequestTest, SameOriginFrameAllowed) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             std::move(callback).Run(
                 FetchStatus{ParseStatus::kInvalidResponseError}, well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(_, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            std::move(callback).Run(
+                FetchStatus{ParseStatus::kHttpNotFoundError},
+                IdpNetworkRequestManager::WellKnown());
           }));
 
   base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
@@ -557,9 +934,12 @@ TEST_F(EmailVerificationRequestTest,
   auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
   auto mock_network_manager_ptr =
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
 
   webid::EmailVerificationRequest email_verification_request_(
-      std::move(mock_network_manager_ptr), std::move(mock_dns_request_ptr),
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
       static_cast<RenderFrameHostImpl*>(iframe_a)->GetSafeRef());
 
   const std::string kEmail = "test@example.com";

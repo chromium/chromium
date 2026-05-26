@@ -5,14 +5,19 @@
 #ifndef CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFICATION_REQUEST_H_
 #define CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFICATION_REQUEST_H_
 
+#include "base/barrier_closure.h"
 #include "base/functional/callback.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/types/expected.h"
 #include "content/browser/webid/delegation/dns_request.h"
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
+#include "content/browser/webid/idp_network_request_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/webid/email_verifier.h"
+#include "content/public/browser/webid/identity_request_account.h"
 #include "crypto/keypair.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -51,7 +56,10 @@ enum class EvpRequestStatus {
   kTokenInvalidSdJwt = 17,
   kKeyBindingSigningFailed = 18,
   kRpOriginIsOpaque = 19,
-  kMaxValue = kRpOriginIsOpaque
+  kWellKnownMissingAccountsEndpoint = 20,
+  kUserLoggedOut = 21,
+  kWellKnownAccountsEndpointCrossOrigin = 22,
+  kMaxValue = kWellKnownAccountsEndpointCrossOrigin
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpRequestStatus)
 
@@ -60,6 +68,12 @@ enum class EvpRequestStatus {
 // e.g. "test@example.com" -> "example.com"
 CONTENT_EXPORT std::optional<std::string> GetDomainFromEmail(
     const std::string& email);
+
+using WellKnownOrError = base::RefCountedData<
+    base::expected<EmailVerifierNetworkRequestManager::WellKnown,
+                   EvpRequestStatus>>;
+using AccountsOrError = base::RefCountedData<
+    base::expected<std::vector<IdentityRequestAccountPtr>, EvpRequestStatus>>;
 
 // Performs the email verification process, which involves making a DNS TXT
 // record request to determine the issuer, and then fetching a token from the
@@ -71,6 +85,7 @@ class CONTENT_EXPORT EmailVerificationRequest {
   explicit EmailVerificationRequest(RenderFrameHostImpl& render_frame_host);
   EmailVerificationRequest(
       std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager,
+      std::unique_ptr<IdpNetworkRequestManager> idp_network_manager,
       std::unique_ptr<DnsRequest> dns_request,
       base::SafeRef<RenderFrameHost> render_frame_host);
   virtual ~EmailVerificationRequest();
@@ -91,13 +106,31 @@ class CONTENT_EXPORT EmailVerificationRequest {
       const std::string& nonce,
       EmailVerifier::OnEmailVerifiedCallback callback,
       const std::optional<std::vector<std::string>>& text_records);
-  void OnWellKnownFetched(
-      const std::string& email,
+  void OnEmailVerificationWellKnownFetched(
+      base::RepeatingClosure barrier,
       const url::Origin& issuer,
-      const std::string& nonce,
-      EmailVerifier::OnEmailVerifiedCallback callback,
+      scoped_refptr<WellKnownOrError> well_known,
       FetchStatus status,
-      EmailVerifierNetworkRequestManager::WellKnown well_known);
+      EmailVerifierNetworkRequestManager::WellKnown fetched_well_known);
+  void OnWebIdentityWellKnownFetched(
+      const url::Origin& issuer,
+      const std::string& email,
+      base::RepeatingClosure barrier,
+      scoped_refptr<AccountsOrError> accounts,
+      FetchStatus status,
+      const IdpNetworkRequestManager::WellKnown& well_known);
+  void OnAccountsResponseReceived(
+      const std::string& email,
+      base::RepeatingClosure barrier,
+      scoped_refptr<AccountsOrError> accounts,
+      FetchStatus status,
+      IdpNetworkRequestManager::AccountsResponse response);
+  void OnAccountStatusFetched(scoped_refptr<WellKnownOrError> well_known,
+                              scoped_refptr<AccountsOrError> accounts,
+                              const url::Origin& issuer_origin,
+                              const std::string& email,
+                              const std::string& nonce,
+                              EmailVerifier::OnEmailVerifiedCallback callback);
   void OnTokenRequestComplete(
       const std::string& nonce,
       const url::Origin& issuer,
@@ -112,6 +145,7 @@ class CONTENT_EXPORT EmailVerificationRequest {
 
   std::unique_ptr<DnsRequest> dns_request_;
   std::unique_ptr<EmailVerifierNetworkRequestManager> network_manager_;
+  std::unique_ptr<IdpNetworkRequestManager> idp_network_manager_;
   base::SafeRef<RenderFrameHost> render_frame_host_;
 
   base::WeakPtrFactory<EmailVerificationRequest> weak_ptr_factory_{this};

@@ -280,6 +280,8 @@ Called by update_document_policy_enum.py.-->
   <int value="17" label="TokenInvalidSdJwt"/>
   <int value="18" label="KeyBindingSigningFailed"/>
   <int value="19" label="RpOriginIsOpaque"/>
+  <int value="20" label="WellKnownMissingAccountsEndpoint"/>
+  <int value="21" label="UserLoggedOut"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/webid/delegation/email_verification_request.h:EvpRequestStatus) -->

@@ -36,6 +36,7 @@ class MockEmailVerificationRequest : public EmailVerificationRequest {
       : EmailVerificationRequest(
             nullptr,
             nullptr,
+            nullptr,
             static_cast<RenderFrameHostImpl&>(rfh).GetSafeRef()) {}
   ~MockEmailVerificationRequest() override { Destroy(); }
 
