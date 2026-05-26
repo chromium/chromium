@@ -10,9 +10,22 @@ package content.fuzzing.dom_storage.proto;
 
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom.mojolpm.proto";
 
+enum OriginId {
+  ORIGIN_A = 0;       // https://example.com
+  ORIGIN_B = 1;       // https://other.com
+  ORIGIN_OPAQUE = 2;  // opaque origin
+}
+
+enum RendererProcessId {
+  RENDERER_A = 67;
+  RENDERER_B = 68;
+}
+
 // Bind a new StorageArea remote for local storage.
 message NewStorageAreaAction {
   required uint32 id = 1;
+  optional OriginId origin_id = 2;
+  optional RendererProcessId renderer_id = 3 [default = RENDERER_A];
 }
 
 // Actions that can be performed by the fuzzer.

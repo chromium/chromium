@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/task/bind_post_task.h"
 #include "content/browser/child_process_security_policy_impl.h"  // nogncheck
 #include "content/browser/storage_partition_impl.h"              // nogncheck
@@ -22,6 +23,7 @@
 #include "url/origin.h"
 
 using url::Origin;
+namespace dom_storage_proto = ::content::fuzzing::dom_storage::proto;
 
 namespace {
 
@@ -34,10 +36,24 @@ namespace {
 
 const char* const kCmdline[] = {"dom_storage_mojolpm_fuzzer", nullptr};
 
-// TODO(crbug.com/476447114): these could be added to NewStorageAreaAction.
-constexpr int kRendererID = 67;
-constexpr content::ChildProcessId kRendererProcess(kRendererID);
-constexpr std::string_view kUrl{"https://example.com"};
+constexpr int kRendererIdA = static_cast<int>(dom_storage_proto::RENDERER_A);
+constexpr int kRendererIdB = static_cast<int>(dom_storage_proto::RENDERER_B);
+constexpr content::ChildProcessId kRendererProcessA(kRendererIdA);
+constexpr content::ChildProcessId kRendererProcessB(kRendererIdB);
+
+blink::StorageKey GetStorageKeyForOriginId(
+    dom_storage_proto::OriginId origin_id) {
+  switch (origin_id) {
+    case dom_storage_proto::ORIGIN_A:
+      return blink::StorageKey::CreateFromStringForTesting(
+          "https://example.com");
+    case dom_storage_proto::ORIGIN_B:
+      return blink::StorageKey::CreateFromStringForTesting("https://other.com");
+    case dom_storage_proto::ORIGIN_OPAQUE:
+      return blink::StorageKey::CreateFirstParty(Origin());
+  }
+  NOTREACHED();
+}
 
 content::mojolpm::FuzzerEnvironment& GetEnvironment() {
   static base::NoDestructor<
@@ -85,10 +101,15 @@ class DomStorageTestcase
 
   // Called from the UI thread to open local storage.
   void OpenLocalStorage(
+      int renderer_id,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::StorageArea> receiver);
 
   // Helpers called from the fuzzer thread.
-  void CreateAndAddStorageArea(uint32_t id, base::OnceClosure done_closure)
+  void CreateAndAddStorageArea(uint32_t id,
+                               const blink::StorageKey& storage_key,
+                               int renderer_id,
+                               base::OnceClosure done_closure)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::unique_ptr<TestBrowserContext> browser_context_;
@@ -115,8 +136,12 @@ void DomStorageTestcase::SetUpOnUIThread(base::OnceClosure done_closure) {
 
   ChildProcessSecurityPolicyImpl* p =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  p->AddForTesting(kRendererProcess, browser_context_.get());
-  p->AddCommittedOrigin(kRendererID, url::Origin::Create(GURL(kUrl)));
+  p->AddForTesting(kRendererProcessA, browser_context_.get());
+  p->AddForTesting(kRendererProcessB, browser_context_.get());
+  p->AddCommittedOrigin(kRendererIdA,
+                        url::Origin::Create(GURL("https://example.com")));
+  p->AddCommittedOrigin(kRendererIdB,
+                        url::Origin::Create(GURL("https://other.com")));
 
   // Get the default storage partition to initialize it.
   browser_context_->GetDefaultStoragePartition();
@@ -142,7 +167,8 @@ void DomStorageTestcase::TearDown(base::OnceClosure done_closure) {
 }
 
 void DomStorageTestcase::TearDownOnUIThread(base::OnceClosure done_closure) {
-  ChildProcessSecurityPolicyImpl::GetInstance()->Remove(kRendererProcess);
+  ChildProcessSecurityPolicyImpl::GetInstance()->Remove(kRendererProcessA);
+  ChildProcessSecurityPolicyImpl::GetInstance()->Remove(kRendererProcessB);
   browser_context_.reset();
   GetFuzzerTaskRunner()->PostTask(
       FROM_HERE,
@@ -163,8 +189,11 @@ void DomStorageTestcase::RunAction(const ProtoAction& action,
 
   switch (action.action_case()) {
     case ProtoAction::kNewStorageArea:
-      CreateAndAddStorageArea(action.new_storage_area().id(),
-                              std::move(done_closure));
+      CreateAndAddStorageArea(
+          action.new_storage_area().id(),
+          GetStorageKeyForOriginId(action.new_storage_area().origin_id()),
+          static_cast<int>(action.new_storage_area().renderer_id()),
+          std::move(done_closure));
       return;
 
     case ProtoAction::kStorageAreaRemoteAction: {
@@ -180,26 +209,28 @@ void DomStorageTestcase::RunAction(const ProtoAction& action,
 }
 
 void DomStorageTestcase::OpenLocalStorage(
+    int renderer_id,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::StorageArea> receiver) {
   auto* storage_partition = static_cast<StoragePartitionImpl*>(
       browser_context_->GetDefaultStoragePartition());
-  storage_partition->OpenLocalStorageForProcess(
-      kRendererID,
-      blink::StorageKey::CreateFromStringForTesting(std::string(kUrl)),
-      std::move(receiver));
+  storage_partition->OpenLocalStorageForProcess(renderer_id, storage_key,
+                                                std::move(receiver));
 }
 
 void DomStorageTestcase::CreateAndAddStorageArea(
     uint32_t id,
+    const blink::StorageKey& storage_key,
+    int renderer_id,
     base::OnceClosure done_closure) {
   mojo::Remote<blink::mojom::StorageArea> storage_area_remote;
   auto storage_area_receiver = storage_area_remote.BindNewPipeAndPassReceiver();
 
   // Open local storage on the UI thread.
   GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DomStorageTestcase::OpenLocalStorage,
-                     base::Unretained(this), std::move(storage_area_receiver)));
+      FROM_HERE, base::BindOnce(&DomStorageTestcase::OpenLocalStorage,
+                                base::Unretained(this), renderer_id,
+                                storage_key, std::move(storage_area_receiver)));
 
   // Since the PendingReceiver is consumed asynchronously, flush the remote
   // before running done_closure.
