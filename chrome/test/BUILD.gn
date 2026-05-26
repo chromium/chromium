@@ -10655,8 +10655,7 @@ test("unit_tests") {
       deps += [ "//ui/linux:linux_ui" ]
     }
     if (is_win) {
-      sources +=
-          [ "../browser/ui/views/status_icons/status_tray_win_unittest.cc" ]
+      deps += [ "//chrome/browser/ui/views/status_icons:unit_tests" ]
     }
     if (is_mac) {
       sources += [
@@ -12173,11 +12172,11 @@ if (!is_android && !is_chromeos_device) {
           "../browser/ui/views/accessibility/post_install_announcement_browsertest.cc",
           "../browser/ui/views/frame/browser_frame_view_win_interactive_uitest.cc",
           "../browser/ui/views/frame/browser_window_property_manager_browsertest_win.cc",
-          "../browser/ui/views/status_icons/status_tray_state_changer_interactive_uitest_win.cc",
         ]
         deps += [
           "//chrome/browser/accessibility:test_support",
           "//chrome/browser/profiles",
+          "//chrome/browser/ui/views/status_icons:interactive_ui_tests",
           "//chrome/browser/web_applications/extensions",
         ]
         if (use_aura) {

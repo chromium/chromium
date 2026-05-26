@@ -64,4 +64,56 @@ source_set("status_icons") {
       "//base",
     ]
   }
+
+  if (is_win) {
+    sources = [
+      "status_icon_win.cc",
+      "status_icon_win.h",
+      "status_tray_state_changer_win.cc",
+      "status_tray_state_changer_win.h",
+      "status_tray_win.cc",
+      "status_tray_win.h",
+    ]
+    public_deps += [
+      "//base",
+      "//chrome/browser/status_icons",
+    ]
+    deps += [
+      "//chrome/browser/lifetime",
+      "//chrome/common:non_code_constants",
+      "//skia",
+      "//ui/display",
+      "//ui/gfx",
+      "//ui/message_center/public/cpp",
+      "//ui/views",
+    ]
+  }
+}
+
+if (is_win) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "status_tray_win_unittest.cc" ]
+    deps = [
+      ":status_icons",
+      "//chrome/browser/status_icons",
+      "//chrome/test:test_support",
+      "//ui/gfx",
+      "//ui/views:test_support",
+    ]
+  }
+
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "status_tray_state_changer_interactive_uitest_win.cc" ]
+    deps = [
+      ":status_icons",
+      "//base",
+      "//chrome/browser/status_icons",
+      "//skia",
+      "//testing/gtest",
+      "//ui/gfx",
+    ]
+  }
 }
