@@ -17,6 +17,9 @@
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// Android only supports manifest V3, which does not support "browser_action".
+static_assert(!BUILDFLAG(IS_ANDROID));
+
 namespace extensions {
 
 namespace errors = manifest_errors;

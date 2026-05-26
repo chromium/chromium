@@ -22,6 +22,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/command.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_resource.h"
@@ -40,6 +41,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using base::FilePath;
 using extension_test_util::LoadManifest;

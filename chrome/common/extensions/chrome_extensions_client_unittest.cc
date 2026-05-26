@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
@@ -21,6 +22,8 @@
 #include "extensions/test/test_context_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
+
 namespace extensions {
 
 class ChromeExtensionsClientTest : public testing::Test {
@@ -29,6 +32,8 @@ class ChromeExtensionsClientTest : public testing::Test {
     extensions_client_ = std::make_unique<ChromeExtensionsClient>();
     ExtensionsClient::Set(extensions_client_.get());
   }
+
+  void TearDown() override { ExtensionsClient::Set(nullptr); }
 
  private:
   std::unique_ptr<ChromeExtensionsClient> extensions_client_;

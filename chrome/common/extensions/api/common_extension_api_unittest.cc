@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_features_unittest.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
@@ -37,6 +38,8 @@
 #include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/test/test_context_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -658,6 +661,7 @@ TEST(ExtensionAPITest, HostedAppPermissions) {
                    .is_available());
 }
 
+#if BUILDFLAG(ENABLE_PLATFORM_APPS)
 TEST(ExtensionAPITest, AppAndFriendsAvailability) {
   std::unique_ptr<ExtensionAPI> extension_api(
       ExtensionAPI::CreateWithDefaultConfiguration());
@@ -721,6 +725,7 @@ TEST(ExtensionAPITest, AppAndFriendsAvailability) {
                      .is_available());
   }
 }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_APPS)
 
 TEST(ExtensionAPITest, ExtensionWithDependencies) {
   // Extension with the "ttsEngine" permission but not the "tts" permission; it
@@ -814,8 +819,8 @@ TEST(ExtensionAPITest, GetAPINameFromFullName) {
       {"bookmarks.create", "bookmarks", "create"},
       {"bookmarks.create.", "bookmarks", "create."},
       {"bookmarks.create.monkey", "bookmarks", "create.monkey"},
-      {"bookmarkManagerPrivate", "bookmarkManagerPrivate", ""},
-      {"bookmarkManagerPrivate.copy", "bookmarkManagerPrivate", "copy"},
+      {"runtime", "runtime", ""},
+      {"runtime.connect", "runtime", "connect"},
   });
 
   std::unique_ptr<ExtensionAPI> api(
@@ -833,18 +838,16 @@ TEST(ExtensionAPITest, DefaultConfigurationFeatures) {
   std::unique_ptr<ExtensionAPI> api(
       ExtensionAPI::CreateWithDefaultConfiguration());
 
-  const SimpleFeature* browser_action = static_cast<const SimpleFeature*>(
-      api->GetFeatureDependency("api:browserAction"));
-  const SimpleFeature* browser_action_set_title =
-      static_cast<const SimpleFeature*>(
-          api->GetFeatureDependency("api:browserAction.setTitle"));
+  const SimpleFeature* action = static_cast<const SimpleFeature*>(
+      api->GetFeatureDependency("api:action"));
+  const SimpleFeature* action_set_title = static_cast<const SimpleFeature*>(
+      api->GetFeatureDependency("api:action.setTitle"));
 
   struct TestData {
     raw_ptr<const SimpleFeature> feature;
     // TODO(aa): More stuff to test over time.
   };
-  auto test_data =
-      std::to_array<TestData>({{browser_action}, {browser_action_set_title}});
+  auto test_data = std::to_array<TestData>({{action}, {action_set_title}});
 
   for (size_t i = 0; i < std::size(test_data); ++i) {
     const SimpleFeature* feature = test_data[i].feature;

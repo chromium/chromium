@@ -5,8 +5,11 @@
 #include "chrome/common/extensions/activity_log_policy_util.h"
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/dom_action_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions::activity_log_policy_util {
 

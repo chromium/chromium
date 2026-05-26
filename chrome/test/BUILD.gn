@@ -9514,7 +9514,6 @@ test("unit_tests") {
       "//chrome/browser/ui/views/crostini:unit_tests",
       "//chrome/browser/ui/webui/ash:unit_tests",
       "//chrome/browser/ui/webui/signin/ash:unit_tests",
-      "//chrome/common/extensions:unit_tests",
       "//chrome/services/pdf:pdf_progressive_searchifier_test",
       "//chrome/services/pdf:pdf_searchifier_test",
       "//chrome/services/pdf:pdf_thumbnailer_test",
@@ -9643,6 +9642,7 @@ test("unit_tests") {
       "//base",
       "//chrome/browser/extensions:test_support",
       "//chrome/browser/extensions:unit_tests",
+      "//chrome/common/extensions:unit_tests",
       "//chrome/renderer/extensions:unit_tests",
     ]
   }
@@ -9706,11 +9706,6 @@ test("unit_tests") {
       "../browser/sync_file_system/sync_file_system_test_util.h",
       "../browser/sync_file_system/sync_process_runner_unittest.cc",
       "../browser/sync_file_system/syncable_file_system_util_unittest.cc",
-      "../common/extensions/activity_log_policy_util_unittest.cc",
-      "../common/extensions/api/common_extension_api_unittest.cc",
-      "../common/extensions/api/extension_action/browser_action_manifest_unittest.cc",
-      "../common/extensions/chrome_extensions_client_unittest.cc",
-      "../common/extensions/extension_unittest.cc",
     ]
 
     # Side panel is not yet supported on desktop Android.
@@ -9762,7 +9757,6 @@ test("unit_tests") {
       "//chrome/browser/web_applications:web_app_test",
       "//chrome/browser/web_applications:web_applications_unit_tests",
       "//chrome/browser/web_applications/extensions:unit_tests",
-      "//chrome/common/extensions:extension_features_unittest",
       "//chrome/utility/image_writer:unit_tests",
       "//components/services/unzip:in_process",
       "//extensions/browser/mime_handler",
