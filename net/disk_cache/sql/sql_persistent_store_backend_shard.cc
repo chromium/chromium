@@ -208,7 +208,7 @@ void SqlPersistentStore::BackendShard::UpdateEntryLastUsedByKey(
   }
   backend_.AsyncCall(&SqlPersistentStore::Backend::UpdateEntryLastUsedByKey)
       .WithArgs(key, last_used, base::TimeTicks::Now())
-      .Then(WrapCallback(std::move(callback)));
+      .Then(WrapUpdateLastUsedByKeyCallback(std::move(callback), key));
 }
 
 void SqlPersistentStore::BackendShard::WriteEntryDataAndMetadata(
@@ -482,7 +482,7 @@ SqlPersistentStore::BackendShard::WrapCallbackWithStoreStatus(
       weak_factory_.GetWeakPtr(), std::move(callback));
 }
 
-base::OnceCallback<void(SqlPersistentStore::ResIdOrErrorAndStoreStatus)>
+base::OnceCallback<void(SqlPersistentStore::EntryMetadataOrErrorAndStoreStatus)>
 SqlPersistentStore::BackendShard::WrapCallbackWithStoreStatusAndIndexUpdate(
     ResIdOrErrorCallback callback,
     const CacheEntryKey& key,
@@ -493,26 +493,55 @@ SqlPersistentStore::BackendShard::WrapCallbackWithStoreStatusAndIndexUpdate(
       [](base::WeakPtr<BackendShard> weak_ptr, ResIdOrErrorCallback callback,
          CacheEntryKey::Hash key_hash, bool is_new_entry,
          const std::optional<MemoryEntryDataHints>& new_hints,
-         IndexMismatchLocation location, ResIdOrErrorAndStoreStatus result) {
+         IndexMismatchLocation location,
+         EntryMetadataOrErrorAndStoreStatus result) {
         if (weak_ptr) {
           weak_ptr->store_status_ = result.store_status;
           if (result.result.has_value() && weak_ptr->index_) {
             if (is_new_entry) {
-              if (!weak_ptr->index_->Insert(key_hash, *result.result)) {
+              if (!weak_ptr->index_->Insert(key_hash, result.result->res_id)) {
                 weak_ptr->RecordIndexMismatch(location);
               }
             }
             if (new_hints) {
-              weak_ptr->index_->SetEntryDataHints(key_hash, *result.result,
-                                                  *new_hints);
+              weak_ptr->index_->SetEntryDataHints(
+                  key_hash, result.result->res_id, *new_hints);
+            }
+            if (weak_ptr->index_->is_entry_metadata_ready()) {
+              weak_ptr->index_->SetEntryLastUsedAndUsage(
+                  key_hash, result.result->res_id, result.result->last_used,
+                  result.result->bytes_usage);
             }
           }
           // We should not run the callback when `this` was deleted.
-          std::move(callback).Run(std::move(result.result));
+          std::move(callback).Run(
+              result.result.has_value()
+                  ? ResIdOrError(result.result->res_id)
+                  : ResIdOrError(base::unexpected(result.result.error())));
         }
       },
       weak_factory_.GetWeakPtr(), std::move(callback), key.hash(), is_new_entry,
       new_hints, location);
+}
+
+base::OnceCallback<void(SqlPersistentStore::EntryMetadataOrError)>
+SqlPersistentStore::BackendShard::WrapUpdateLastUsedByKeyCallback(
+    ErrorCallback callback,
+    const CacheEntryKey& key) {
+  return base::BindOnce(
+      [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
+         CacheEntryKey::Hash key_hash, EntryMetadataOrError result) {
+        if (weak_ptr) {
+          if (result.has_value() && weak_ptr->index_.has_value() &&
+              weak_ptr->index_->is_entry_metadata_ready()) {
+            weak_ptr->index_->SetEntryLastUsed(key_hash, result->res_id,
+                                               result->last_used);
+          }
+          // We should not run the callback when `this` was deleted.
+          std::move(callback).Run(result.error_or(Error::kOk));
+        }
+      },
+      weak_factory_.GetWeakPtr(), std::move(callback), key.hash());
 }
 
 base::OnceCallback<void(SqlPersistentStore::EntryInfoOrErrorAndStoreStatus)>
@@ -530,6 +559,9 @@ SqlPersistentStore::BackendShard::WrapEntryInfoOrErrorCallback(
             if (!result.result->opened) {
               if (!weak_ptr->index_->Insert(key_hash, result.result->res_id)) {
                 weak_ptr->RecordIndexMismatch(location);
+              } else if (weak_ptr->index_->is_entry_metadata_ready()) {
+                weak_ptr->index_->SetEntryLastUsed(
+                    key_hash, result.result->res_id, result.result->last_used);
               }
             }
           }

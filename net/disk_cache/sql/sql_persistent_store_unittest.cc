@@ -6170,9 +6170,13 @@ TEST_P(SqlPersistentStoreTest, EvictionCollectsMetadata) {
                   .GetIndexForTesting()
                   ->is_entry_metadata_ready());
 
+  // Keep track of which entries are still alive.
+  std::vector<CacheEntryKey> alive_keys;
   for (const auto& key : keys) {
     if (store_->GetIndexStateForHash(key.hash()) ==
         SqlPersistentStore::IndexState::kHashFound) {
+      alive_keys.push_back(key);
+
       // Verify that metadata is available after the first eviction.
       auto open_result = OpenEntry(key);
       ASSERT_TRUE(open_result.has_value());
@@ -6198,6 +6202,66 @@ TEST_P(SqlPersistentStoreTest, EvictionCollectsMetadata) {
       EXPECT_EQ(metadata->hints.value(), 0);
     }
   }
+  ASSERT_GE(alive_keys.size(), 2u);
+
+  // 3. Update the oldest alive entry, and increase the size of the second
+  // oldest entry.
+  CacheEntryKey oldest_alive_key = alive_keys.front();
+  auto open_oldest = OpenEntry(oldest_alive_key);
+  ASSERT_TRUE(open_oldest.has_value());
+  ASSERT_TRUE(open_oldest->has_value());
+  auto oldest_res_id = (*open_oldest)->res_id;
+
+  // Advance clock so the entry gets a newer last_used time.
+  base::Time new_last_used = base::Time::Now() + base::Seconds(10);
+  task_environment_.AdvanceClock(base::Seconds(10));
+  ASSERT_EQ(UpdateEntryLastUsedByKey(oldest_alive_key, new_last_used),
+            SqlPersistentStore::Error::kOk);
+
+  // Verify the in-memory index metadata was updated.
+  auto oldest_metadata =
+      store_->GetShardForTesting(oldest_alive_key.hash())
+          .GetIndexForTesting()
+          ->GetEntryMetadataForTesting(oldest_alive_key.hash(), oldest_res_id);
+  ASSERT_TRUE(oldest_metadata.has_value());
+  EXPECT_EQ(oldest_metadata->last_used.InSecondsFSinceUnixEpoch(),
+            base::Time::FromSecondsSinceUnixEpoch(
+                static_cast<uint32_t>(new_last_used.InSecondsFSinceUnixEpoch()))
+                .InSecondsFSinceUnixEpoch());
+  EXPECT_EQ(oldest_metadata->hints.value(), 0);
+
+  CacheEntryKey second_oldest_key = alive_keys[1];
+  auto open_second = OpenEntry(second_oldest_key);
+  ASSERT_TRUE(open_second.has_value());
+  ASSERT_TRUE(open_second->has_value());
+  auto res_id = (*open_second)->res_id;
+  auto initial_size = (*open_second)->body_end;
+  if ((*open_second)->head) {
+    initial_size += (*open_second)->head->capacity();
+  }
+
+  // We write some data to increase the size of the second oldest entry.
+  // This proves bytes_usage updates are reflected in the index.
+  const std::string kData(300, 'x');  // 300 bytes of 'x'
+  auto write_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
+  ASSERT_EQ(WriteEntryData(second_oldest_key, res_id, /*old_body_end=*/0,
+                           EntryWriteBuffer(std::move(write_buffer),
+                                            kData.size(), /*offset=*/0),
+                           /*truncate=*/true),
+            SqlPersistentStore::Error::kOk);
+
+  // Verify the in-memory index metadata was updated for usage.
+  auto second_metadata =
+      store_->GetShardForTesting(second_oldest_key.hash())
+          .GetIndexForTesting()
+          ->GetEntryMetadataForTesting(second_oldest_key.hash(), res_id);
+  ASSERT_TRUE(second_metadata.has_value());
+  // The entry size is updated using chunks of 256 bytes, so we check for
+  // equality using the chunk representation logic.
+  uint64_t expected_usage =
+      initial_size + kData.size() + second_oldest_key.string().size();
+  EXPECT_EQ(second_metadata->bytes_usage, ((expected_usage + 255) >> 8) << 8);
+  EXPECT_EQ(second_metadata->hints.value(), 0);
 }
 
 #if DCHECK_IS_ON()

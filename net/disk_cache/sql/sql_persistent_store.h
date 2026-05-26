@@ -119,6 +119,22 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     bool opened = false;
   };
 
+  // Holds approximate metadata about a cache entry.
+  struct NET_EXPORT_PRIVATE EntryMetadata {
+    EntryMetadata(ResId res_id,
+                  base::Time last_used,
+                  std::optional<int64_t> bytes_usage);
+    ~EntryMetadata();
+    EntryMetadata(const EntryMetadata&);
+    EntryMetadata& operator=(const EntryMetadata&);
+    EntryMetadata(EntryMetadata&&);
+    EntryMetadata& operator=(EntryMetadata&&);
+
+    ResId res_id;
+    base::Time last_used;
+    std::optional<int64_t> bytes_usage;
+  };
+
   // Represents the result of a read operation.
   struct NET_EXPORT_PRIVATE ReadResult {
     ReadResult();
@@ -291,12 +307,18 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
   using Int64OrErrorCallback = base::OnceCallback<void(Int64OrError)>;
   using ResIdOrTime = std::variant<ResId, base::Time>;
 
+  using EntryMetadataOrError = base::expected<EntryMetadata, Error>;
+  using EntryMetadataOrErrorCallback =
+      base::OnceCallback<void(EntryMetadataOrError)>;
+
   using HashAndResIdListOrError = base::expected<HashAndResIdList, Error>;
   using HashAndResIdListOrErrorCallback =
       base::OnceCallback<void(HashAndResIdListOrError)>;
 
   using ErrorAndStoreStatus = ResultAndStoreStatus<Error>;
   using EntryInfoOrErrorAndStoreStatus = ResultAndStoreStatus<EntryInfoOrError>;
+  using EntryMetadataOrErrorAndStoreStatus =
+      ResultAndStoreStatus<EntryMetadataOrError>;
   using ReadResultOrErrorAndStoreStatus =
       ResultAndStoreStatus<ReadResultOrError>;
   using ResIdOrError = base::expected<ResId, Error>;

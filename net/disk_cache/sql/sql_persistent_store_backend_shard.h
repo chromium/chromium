@@ -184,7 +184,8 @@ class SqlPersistentStore::BackendShard {
     kDeleteLiveEntriesBetween = 5,
     kWriteEntryDataAndMetadata = 6,
     kWriteEntryData = 7,
-    kMaxValue = kWriteEntryData,
+    kUpdateEntryLastUsedByKey = 8,
+    kMaxValue = kUpdateEntryLastUsedByKey,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheIndexMismatchLocation)
 
@@ -208,13 +209,17 @@ class SqlPersistentStore::BackendShard {
   base::OnceCallback<void(ErrorAndStoreStatus)> WrapCallbackWithStoreStatus(
       ErrorCallback callback);
 
-  base::OnceCallback<void(ResIdOrErrorAndStoreStatus)>
+  base::OnceCallback<void(EntryMetadataOrErrorAndStoreStatus)>
   WrapCallbackWithStoreStatusAndIndexUpdate(
       ResIdOrErrorCallback callback,
       const CacheEntryKey& key,
       bool is_new_entry,
       const std::optional<MemoryEntryDataHints>& new_hints,
       IndexMismatchLocation location);
+
+  base::OnceCallback<void(EntryMetadataOrError)>
+  WrapUpdateLastUsedByKeyCallback(ErrorCallback callback,
+                                  const CacheEntryKey& key);
 
   base::OnceCallback<void(EntryInfoOrErrorAndStoreStatus)>
   WrapEntryInfoOrErrorCallback(EntryInfoOrErrorCallback callback,

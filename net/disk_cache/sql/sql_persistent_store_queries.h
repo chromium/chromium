@@ -191,7 +191,8 @@ inline constexpr const char kUpdateEntryLastUsedByKey_UpdateResourceLastUsed[] =
     "WHERE "
         "cache_key_hash=? AND " // 1
         "cache_key=? AND "      // 2
-        "doomed=0";
+        "doomed=0 "
+    "RETURNING res_id";
 // clang-format on
 
 inline constexpr const char kInsertIntoResources[] =
@@ -345,7 +346,8 @@ inline constexpr const char kWriteEntryData_UpdateResource[] =
     "RETURNING "
         "body_end,"                   // 0
         "doomed,"                     // 1
-        "bytes_usage";                // 2
+        "bytes_usage,"                // 2
+        "last_used";                  // 3
 // clang-format on
 
 inline constexpr const char kTrimOverlappingBlobs_DeleteContained[] =

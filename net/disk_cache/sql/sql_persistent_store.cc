@@ -797,6 +797,20 @@ SqlPersistentStore::EntryInfo::EntryInfo(EntryInfo&&) = default;
 SqlPersistentStore::EntryInfo& SqlPersistentStore::EntryInfo::operator=(
     EntryInfo&&) = default;
 
+SqlPersistentStore::EntryMetadata::EntryMetadata(
+    ResId res_id,
+    base::Time last_used,
+    std::optional<int64_t> bytes_usage)
+    : res_id(res_id), last_used(last_used), bytes_usage(bytes_usage) {}
+SqlPersistentStore::EntryMetadata::~EntryMetadata() = default;
+SqlPersistentStore::EntryMetadata::EntryMetadata(const EntryMetadata&) =
+    default;
+SqlPersistentStore::EntryMetadata& SqlPersistentStore::EntryMetadata::operator=(
+    const EntryMetadata&) = default;
+SqlPersistentStore::EntryMetadata::EntryMetadata(EntryMetadata&&) = default;
+SqlPersistentStore::EntryMetadata& SqlPersistentStore::EntryMetadata::operator=(
+    EntryMetadata&&) = default;
+
 SqlPersistentStore::ReadResult::ReadResult() = default;
 SqlPersistentStore::ReadResult::~ReadResult() = default;
 SqlPersistentStore::ReadResult::ReadResult(const ReadResult&) = default;

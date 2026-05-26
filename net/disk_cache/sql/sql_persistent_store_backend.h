@@ -72,10 +72,10 @@ class SqlPersistentStore::Backend {
       base::Time end_time,
       base::flat_set<ResId> excluded_res_ids,
       base::TimeTicks start_time);
-  Error UpdateEntryLastUsedByKey(const CacheEntryKey& key,
-                                 base::Time last_used,
-                                 base::TimeTicks start_time);
-  ResIdOrErrorAndStoreStatus WriteEntryDataAndMetadata(
+  EntryMetadataOrError UpdateEntryLastUsedByKey(const CacheEntryKey& key,
+                                                base::Time last_used,
+                                                base::TimeTicks start_time);
+  EntryMetadataOrErrorAndStoreStatus WriteEntryDataAndMetadata(
       const CacheEntryKey& key,
       std::optional<ResId> res_id,
       std::optional<int64_t> old_body_end,
@@ -86,7 +86,7 @@ class SqlPersistentStore::Backend {
       int64_t header_size_delta,
       bool doomed_new_entry,
       base::TimeTicks start_time);
-  ResIdOrErrorAndStoreStatus WriteEntryData(
+  EntryMetadataOrErrorAndStoreStatus WriteEntryData(
       const CacheEntryKey& key,
       const ResIdOrTime& res_id_or_last_used_time,
       int64_t old_body_end,
@@ -221,6 +221,7 @@ class SqlPersistentStore::Backend {
   struct UpdateResourceResult {
     bool doomed;
     int64_t bytes_usage;
+    base::Time last_used;
   };
 
   void DatabaseErrorCallback(int error, sql::Statement* statement);
@@ -247,14 +248,15 @@ class SqlPersistentStore::Backend {
       base::Time end_time,
       const base::flat_set<ResId>& excluded_res_ids,
       bool& corruption_detected);
-  Error UpdateEntryLastUsedByKeyInternal(const CacheEntryKey& key,
-                                         base::Time last_used);
   base::expected<UpdateResourceResult, Error> UpdateResourceForWriteEntry(
       ResId res_id,
       int64_t body_end_delta,
       int64_t total_size_delta,
       int64_t expected_new_body_end,
       bool& corruption_detected);
+  EntryMetadataOrError UpdateEntryLastUsedByKeyInternal(
+      const CacheEntryKey& key,
+      base::Time last_used);
   Error WriteEntryBodyDataHelper(
       const CacheEntryKey& key,
       ResId res_id,
@@ -265,7 +267,7 @@ class SqlPersistentStore::Backend {
       base::CheckedNumeric<int64_t>& checked_total_size_delta,
       int64_t& new_body_end,
       bool& corruption_detected);
-  ResIdOrError WriteEntryDataAndMetadataInternal(
+  EntryMetadataOrError WriteEntryDataAndMetadataInternal(
       const CacheEntryKey& key,
       std::optional<ResId> res_id,
       std::optional<int64_t> old_body_end,
@@ -276,7 +278,7 @@ class SqlPersistentStore::Backend {
       int64_t header_size_delta,
       bool doomed_new_entry,
       bool& corruption_detected);
-  ResIdOrError WriteEntryDataInternal(
+  EntryMetadataOrError WriteEntryDataInternal(
       const CacheEntryKey& key,
       const ResIdOrTime& res_id_or_last_used_time,
       int64_t old_body_end,

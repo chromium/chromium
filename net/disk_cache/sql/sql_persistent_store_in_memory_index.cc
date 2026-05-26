@@ -184,7 +184,7 @@ void SqlPersistentStoreInMemoryIndex::SetEntryLastUsedAndUsage(
     CacheEntryKeyHash hash,
     SqlPersistentStoreResId res_id,
     base::Time last_used,
-    uint64_t bytes_usage) {
+    std::optional<uint64_t> bytes_usage) {
   CHECK(IsConsolidatedInMemoryIndexEnabled());
   if (auto res_id_32 = ToResId32(res_id); res_id_32.has_value()) {
     std::get<ConsolidatedImpl<ResId32>>(impl32_).SetEntryLastUsedAndUsage(
@@ -193,6 +193,13 @@ void SqlPersistentStoreInMemoryIndex::SetEntryLastUsedAndUsage(
     std::get<ConsolidatedImpl<SqlPersistentStoreResId>>(*impl64_)
         .SetEntryLastUsedAndUsage(hash, res_id, last_used, bytes_usage);
   }
+}
+
+void SqlPersistentStoreInMemoryIndex::SetEntryLastUsed(
+    CacheEntryKeyHash hash,
+    SqlPersistentStoreResId res_id,
+    base::Time last_used) {
+  SetEntryLastUsedAndUsage(hash, res_id, last_used, std::nullopt);
 }
 
 std::optional<SqlPersistentStoreInMemoryIndex::Metadata>

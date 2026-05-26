@@ -107,7 +107,12 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   void SetEntryLastUsedAndUsage(CacheEntryKeyHash hash,
                                 SqlPersistentStoreResId res_id,
                                 base::Time last_used,
-                                uint64_t bytes_usage);
+                                std::optional<uint64_t> bytes_usage);
+  // Sets the approximate last used time for the entry.
+  // This must only be called when the consolidated in-memory index is enabled.
+  void SetEntryLastUsed(CacheEntryKeyHash hash,
+                        SqlPersistentStoreResId res_id,
+                        base::Time last_used);
 
   struct Metadata {
     base::Time last_used;
@@ -321,13 +326,15 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
     void SetEntryLastUsedAndUsage(CacheEntryKeyHash hash,
                                   ResIdType res_id,
                                   base::Time last_used,
-                                  uint64_t bytes_usage) {
+                                  std::optional<uint64_t> bytes_usage) {
       Entry* entry = hash_res_id_map_.Get(hash, res_id);
       if (entry) {
         entry->last_used_time_seconds_since_epoch =
             static_cast<uint32_t>(last_used.InSecondsFSinceUnixEpoch());
-        entry->entry_size_256b_chunks =
-            std::min<uint64_t>((bytes_usage + 255) >> 8, (1ull << 30) - 1);
+        if (bytes_usage.has_value()) {
+          entry->entry_size_256b_chunks =
+              std::min<uint64_t>((*bytes_usage + 255) >> 8, (1ull << 30) - 1);
+        }
       }
     }
 
