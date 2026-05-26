@@ -182,6 +182,11 @@ class WrappedGLTextureCompoundImageRepresentation
     }
   }
 
+  void OnContextLost() override {
+    GLTextureImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<GLTextureImageRepresentation> wrapped_;
@@ -239,6 +244,11 @@ class WrappedGLTexturePassthroughCompoundImageRepresentation
     if (owned_backing_) {
       wrapped_->SetClearedRect(cleared_rect);
     }
+  }
+
+  void OnContextLost() override {
+    GLTexturePassthroughImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
   }
 
  private:
@@ -323,6 +333,11 @@ class WrappedSkiaGaneshCompoundImageRepresentation
     }
   }
 
+  void OnContextLost() override {
+    SkiaGaneshImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<SkiaGaneshImageRepresentation> wrapped_;
@@ -392,6 +407,11 @@ class WrappedSkiaGraphiteCompoundImageRepresentation
     }
   }
 
+  void OnContextLost() override {
+    SkiaGraphiteImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<SkiaGraphiteImageRepresentation> wrapped_;
@@ -440,6 +460,11 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
     }
   }
 
+  void OnContextLost() override {
+    DawnImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<DawnImageRepresentation> wrapped_;
@@ -486,6 +511,11 @@ class WrappedDawnBufferCompoundImageRepresentation
   void EndAccess() override {
     wrapped_->EndAccess();
     compound_backing()->NotifyEndAccess(wrapped_->backing(), access_mode_);
+  }
+
+  void OnContextLost() override {
+    DawnBufferRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
   }
 
   std::unique_ptr<SharedImageBacking> owned_backing_;
@@ -555,6 +585,11 @@ class WrappedOverlayCompoundImageRepresentation
     }
   }
 
+  void OnContextLost() override {
+    OverlayImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<OverlayImageRepresentation> wrapped_;
@@ -598,6 +633,11 @@ class WrappedWebNNTensorCompoundImageRepresentation
     if (owned_backing_) {
       wrapped_->SetClearedRect(cleared_rect);
     }
+  }
+
+  void OnContextLost() override {
+    WebNNTensorRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
   }
 
  private:
@@ -653,6 +693,11 @@ class WrappedMemoryCompoundImageRepresentation
     if (owned_backing_) {
       wrapped_->SetClearedRect(cleared_rect);
     }
+  }
+
+  void OnContextLost() override {
+    MemoryImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
   }
 
  private:
@@ -718,6 +763,11 @@ class WrappedVideoCompoundImageRepresentation
     }
   }
 
+  void OnContextLost() override {
+    VideoImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
+  }
+
  private:
   std::unique_ptr<SharedImageBacking> owned_backing_;
   std::unique_ptr<VideoImageRepresentation> wrapped_;
@@ -777,6 +827,11 @@ class WrappedVulkanCompoundImageRepresentation
     if (owned_backing_) {
       wrapped_->SetClearedRect(cleared_rect);
     }
+  }
+
+  void OnContextLost() override {
+    VulkanImageRepresentation::OnContextLost();
+    wrapped_->OnContextLost();
   }
 
  private:

@@ -113,6 +113,11 @@ SharedImageRepresentation::~SharedImageRepresentation() {
   }
 }
 
+void SharedImageRepresentation::OnContextLost() {
+  has_context_ = false;
+  backing_->OnContextLost();
+}
+
 size_t SharedImageRepresentation::NumPlanesExpected() const {
   if (format().PrefersExternalSampler()) {
     return 1;

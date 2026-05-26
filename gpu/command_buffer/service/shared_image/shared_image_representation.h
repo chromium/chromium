@@ -124,10 +124,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
 
   // Indicates that the underlying graphics context has been lost, and the
   // backing should be treated as destroyed.
-  void OnContextLost() {
-    has_context_ = false;
-    backing_->OnContextLost();
-  }
+  virtual void OnContextLost();
 
   // Returns the number of image planes expected based on the backing format.
   size_t NumPlanesExpected() const;
