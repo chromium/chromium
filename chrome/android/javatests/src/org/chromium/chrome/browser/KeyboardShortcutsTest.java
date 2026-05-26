@@ -559,7 +559,7 @@ public class KeyboardShortcutsTest {
     @Test
     @SmallTest
     public void testFocusSwitch() {
-        keyDown(KeyEvent.KEYCODE_F6, 0, true);
+        assertTrue(dispatchKeyEvent(KeyEvent.KEYCODE_F6, 0));
         verify(mMenuOrKeyboardActionController, times(1))
                 .onMenuOrKeyboardAction(
                         /* id= */ eq(R.id.switch_keyboard_focus_row), /* fromMenu= */ eq(false));
@@ -659,5 +659,20 @@ public class KeyboardShortcutsTest {
                 mTabModelSelector,
                 mMenuOrKeyboardActionController,
                 mToolbarManager);
+    }
+
+    private Boolean dispatchKeyEvent(int keyCode, int metaState) {
+        return KeyboardShortcuts.dispatchKeyEvent(
+                new KeyEvent(
+                        /* downTime= */ SystemClock.uptimeMillis(),
+                        /* eventTime= */ SystemClock.uptimeMillis(),
+                        KeyEvent.ACTION_DOWN,
+                        keyCode,
+                        /* repeat= */ 0,
+                        metaState),
+                /* uiInitialized= */ true,
+                /* fullscreenManager= */ null,
+                mMenuOrKeyboardActionController,
+                ApplicationProvider.getApplicationContext());
     }
 }

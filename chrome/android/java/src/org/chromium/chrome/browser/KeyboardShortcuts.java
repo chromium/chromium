@@ -867,6 +867,14 @@ public class KeyboardShortcuts {
                     }
                 }
                 break;
+            case KeyEvent.KEYCODE_F6:
+                if (event.getAction() == KeyEvent.ACTION_DOWN && event.getRepeatCount() == 0) {
+                    if (menuOrKeyboardActionController.onMenuOrKeyboardAction(
+                            R.id.switch_keyboard_focus_row, false)) {
+                        return true;
+                    }
+                }
+                return true;
             case KeyEvent.KEYCODE_TV:
             case KeyEvent.KEYCODE_GUIDE:
             case KeyEvent.KEYCODE_DVR:
@@ -1272,10 +1280,6 @@ public class KeyboardShortcuts {
                 case KeyboardShortcutsSemanticMeaning.OPEN_HELP:
                     menuOrKeyboardActionController.onMenuOrKeyboardAction(R.id.help_id, false);
                     return true;
-                case KeyboardShortcutsSemanticMeaning.KEYBOARD_FOCUS_SWITCH_ROW_OF_TOP_ELEMENTS:
-                    // TODO(crbug.com/360423850): Don't allow F6 to be overridden by websites.
-                    return menuOrKeyboardActionController.onMenuOrKeyboardAction(
-                            R.id.switch_keyboard_focus_row, /* fromMenu= */ false);
                 case KeyboardShortcutsSemanticMeaning.FOCUS_APP_MENU_BUTTON:
                     View menuButtonView = toolbarManager.getMenuButtonView();
                     if (menuButtonView != null) {
