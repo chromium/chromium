@@ -436,8 +436,6 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
                       EntryWriteBuffer buffer,
                       bool truncate,
                       bool doomed_new_entry,
-                      bool sparse_write,
-                      int64_t header_size,
                       ResIdOrErrorCallback callback);
 
   // Reads data from an entry's body.

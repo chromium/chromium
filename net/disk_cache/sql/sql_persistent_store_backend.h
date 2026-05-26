@@ -93,9 +93,6 @@ class SqlPersistentStore::Backend {
       EntryWriteBuffer buffer,
       bool truncate,
       bool doomed_new_entry,
-      bool sparse_write,
-      int64_t header_size,
-      int64_t max_sparse_data_size,
       base::TimeTicks start_time);
   ReadResultOrError ReadEntryData(const CacheEntryKey& key,
                                   ResId res_id,
@@ -217,11 +214,6 @@ class SqlPersistentStore::Backend {
     int64_t start;
   };
 
-  struct UpdateResourceResult {
-    bool doomed;
-    int64_t bytes_usage;
-  };
-
   void DatabaseErrorCallback(int error, sql::Statement* statement);
 
   Error InitializeInternal(bool& corruption_detected);
@@ -248,12 +240,6 @@ class SqlPersistentStore::Backend {
       bool& corruption_detected);
   Error UpdateEntryLastUsedByKeyInternal(const CacheEntryKey& key,
                                          base::Time last_used);
-  base::expected<UpdateResourceResult, Error> UpdateResourceForWriteEntry(
-      ResId res_id,
-      int64_t body_end_delta,
-      int64_t total_size_delta,
-      int64_t expected_new_body_end,
-      bool& corruption_detected);
   Error WriteEntryBodyDataHelper(
       const CacheEntryKey& key,
       ResId res_id,
@@ -282,9 +268,6 @@ class SqlPersistentStore::Backend {
       EntryWriteBuffer buffer,
       bool truncate,
       bool doomed_new_entry,
-      bool sparse_write,
-      int64_t header_size,
-      int64_t max_sparse_data_size,
       bool& corruption_detected);
   ReadResultOrError ReadEntryDataInternal(const CacheEntryKey& key,
                                           ResId res_id,
