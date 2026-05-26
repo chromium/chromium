@@ -259,6 +259,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="1392813880755413602">OpenDocument-præsentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> har ikke sendt nogen data.</translation>
 <translation id="1393071644879491291">Hackere på det website, du har forsøgt at besøge, kan narre dig til at installere software eller afsløre data som f.eks. dine adgangskoder, dit telefonnummer eller dine kreditkortnumre. Chrome anbefaler på det kraftigste, at du går tilbage til Sikkerhed. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger om denne advarsel<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Der henvises ikke til websites, du tilføjer her, i svar, selvom fanen er åben. Hvis et website, du tilføjer, i øjeblikket bruges i en tråd, kan det tage op til 30 minutter, før tråden stopper med at henvise til det.</translation>
 <translation id="1402151528875251561">Vis historik i sidepanelet</translation>
 <translation id="1405567553485452995">Lysegrøn</translation>
 <translation id="1406370515365284486">Dine betalingsmetoder gemmes stadig</translation>
@@ -1552,6 +1553,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="343474037147570563">De filer, du uploader eller vedhæfter, sendes til Google Cloud eller tredjeparter, hvor de analyseres. De kan f.eks. blive scannet for følsomme oplysninger eller malware, og de kan blive gemt i henhold til virksomhedens politikker og være synlige for din administrator.</translation>
 <translation id="3435557549311968410">Kontinuerlig (kort)</translation>
 <translation id="3435738964857648380">Sikkerhed</translation>
+<translation id="3438509337461223476">Del automatisk åbne faner i alle tråde</translation>
 <translation id="3440783957068352691">firkant</translation>
 <translation id="3441653493275994384">Skærm</translation>
 <translation id="3443504041532578451">Optisk disk (satin)</translation>
@@ -2483,6 +2485,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="4894390983254799375">F.eks. enheds-id, navn, OS-version og OS-brugernavn</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">OL</translation>
+<translation id="4897851261703006488">Denne politik må ikke have overskrifter, der overstiger <ph name="MAX_HEADER_SIZE_LIMIT" /> kB.</translation>
 <translation id="4898742041545089450">Blokeringen af dette emne er fjernet, og det kan blive aktivt baseret på din browserhistorik</translation>
 <translation id="4900217275619098670">Niende papirrulle</translation>
 <translation id="4901052769830245369">Etiketter (halvblanke)</translation>
@@ -2730,6 +2733,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="5284295735376057059">Dokumentegenskaber</translation>
 <translation id="528468243742722775">Afslut</translation>
 <translation id="5285468538058987167">Via stærk kundeautentifikation (SCA, Strong Customer Authentication)</translation>
+<translation id="5286195392366054103">Denne politik har mere end <ph name="MAX_URL_PATTERNS_LIMIT" /> webadressemønstre. Det er kun de første <ph name="MAX_URL_PATTERNS_LIMIT" /> webadressemønstre, der anvendes.</translation>
 <translation id="5287456746628258573">Dette website benytter en forældet sikkerhedskonfiguration, der muligvis afslører dine oplysninger (f.eks. adgangskoder eller kreditkortnumre), når de sendes til dette website.</translation>
 <translation id="5288108484102287882">Validering af politikværdier har genereret advarsler</translation>
 <translation id="5289384342738547352">Håndtering af flere dokumenter</translation>
@@ -3848,6 +3852,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="7016992613359344582">Disse opkrævninger kan være enkeltstående eller gentagne og fremgår muligvis ikke tydeligt.</translation>
 <translation id="701757816833614688">Uddannelse inden for visuel kunst og design</translation>
 <translation id="7020464868401003526">Webadressen for genvejen overskrider den maksimalt tilladte længde på <ph name="MAX_LENGTH" /> tegn.</translation>
+<translation id="7020581144940000377">Brug omtrentlig lokation</translation>
 <translation id="702275896380648118">Dette website foretager en vurdering af, hvad du kan lide, og foreslår derefter annoncer til andre websites. Dette website indhenter også dine annonceemner fra Chrome med henblik på at vise dig mere relevante annoncer.</translation>
 <translation id="7023162328967545559">Advarsel fra administrator</translation>
 <translation id="7023765275461720661">Vil du tilknytte kontoen og betale med <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3958,6 +3963,7 @@ Gå til <ph name="BEGIN_LINK" />betalingsindstillingerne<ph name="END_LINK" /> f
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Brug denne kode ved betaling. Gyldig indtil <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Når du har aktiveret denne indstilling, kan du vende tilbage til denne fane for at skrive</translation>
+<translation id="7196153352301578792">Chrome sender automatisk sideindholdet og webadresserne for åbne faner, der kan være relevante for dit spørgsmål, til Google for at give mere personligt tilpassede svar. Chrome deler kun faner fra det vindue, du arbejder i.</translation>
 <translation id="7196370964328811506">Udfyld automatisk disse kortoplysninger ved køb i Chrome, når kortet er gemt på denne enhed</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Vi har taget følgende åbne faner i betragtning:</translation>
@@ -4372,6 +4378,7 @@ Yderligere oplysninger:
 <translation id="7805268272389338048">Kryptering beskytter dine personlige oplysninger</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Luk tip</translation>
+<translation id="780756914888723112">Denne politik tillader op til <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> headere pr. regel. Det er kun de første <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> headere pr. regel, der anvendes.</translation>
 <translation id="7810410097247356677">Gem dit kort og din krypterede sikkerhedskode på din enhed, så du hurtigere kan betale næste gang</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Vil du fjerne formularforslaget fra Chrome?</translation>

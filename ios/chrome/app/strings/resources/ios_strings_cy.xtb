@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Gallwch sgrolio i'r dde i bori yn y modd Anhysbys.</translation>
 <translation id="2079545284768500474">Dadwneud</translation>
 <translation id="2085876078937250610">Cadw…</translation>
+<translation id="2089180529062519164">Rhoi'r meicroffon ymlaen</translation>
 <translation id="2096239473850415494">Wedi methu â lawrlwytho</translation>
 <translation id="2096716221239095980">Dileu'r holl ddata</translation>
 <translation id="2104436223719117661">Chwiliadau poblogaidd</translation>
@@ -1506,6 +1507,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="6241132809279377987">Datgloi mwy o nodweddion ar gyfer eich iPhone gydag apiau Google</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>
 <translation id="6251835855431997163">Awtolenwi <ph name="VALUE" /></translation>
+<translation id="6253686838150111720">Mewngofnodi i <ph name="URL" /></translation>
 <translation id="6254066287920239840">Agor dolenni yn yr ap yn lle'r porwr.</translation>
 <translation id="6259928806013786178">Gwnaeth y modd darllen fethu</translation>
 <translation id="6268773951964630964">Chwilio am lun a gopïwyd</translation>
@@ -2116,6 +2118,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8319282042900445670">Wedi gosod atgoffwr am <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Gweithgarwch diweddar:</translation>
 <translation id="8325455175867928593">Cuddio "Adolygiadau yn seiliedig ar eich diddordebau"</translation>
+<translation id="8333459276976141586">Bydd Live yn defnyddio'ch meicroffon. Mae tapio'r botwm Byw yn troi'r meic ymlaen. I ddiffodd y meic, tapiwch y botwm stopio neu caewch Gemini.</translation>
 <translation id="833647236762414178">Creu, cadw a rheoli'ch cyfrineiriau a'ch codau pas i fewngofnodi'n hawdd i wefannau ac apiau. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Gwneud copïau wrth gefn o'ch pethau a'u defnyddio ar unrhyw ddyfais.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Cwblhewch 1 dasg arall i fynd lefel yn uwch}zero{Cwblhewch {count} tasg arall i fynd lefel yn uwch}two{Cwblhewch {count} dasg arall i fynd lefel yn uwch}few{Cwblhewch {count} tasg arall i fynd lefel yn uwch}many{Cwblhewch {count} thasg arall i fynd lefel yn uwch}other{Cwblhewch {count} tasg arall i fynd lefel yn uwch}}</translation>
@@ -2192,6 +2195,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8571019948162152515">Dileu "<ph name="FILENAME" />"?</translation>
 <translation id="8571213806525832805">Y 4 wythnos diwethaf</translation>
 <translation id="8577056989960190117">Awtolenwi'r flwyddyn darfod <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Ewch yn Live gyda Gemini</translation>
 <translation id="8587001564479545614">Creu PIN adfer</translation>
 <translation id="8588404856427128947">Diffodd</translation>
 <translation id="8590286732816598906">Grŵp tabiau, <ph name="GROUP_TITLE" />, Dewislen.</translation>
@@ -2266,6 +2270,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="8803526663383843427">Pan fydd ymlaen</translation>
 <translation id="8803639129939845298">Diogel</translation>
 <translation id="8813277370772331957">Atgoffa fi yn nes ymlaen</translation>
+<translation id="8814308045751067027">I ddefnyddio Live, rhowch fynediad i Chrome at eich meicroffon yn y gosodiadau</translation>
 <translation id="8814719628147284151">Parhau</translation>
 <translation id="881559332211266856">Diweddaru rhif gwneud iawn</translation>
 <translation id="8817524703470045896">Olrhain prisiau a chael rhybuddion pan fydd y pris yn gostwng ar unrhyw wefan</translation>

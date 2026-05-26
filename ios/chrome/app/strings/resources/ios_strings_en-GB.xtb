@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
 <translation id="1149401351239820326">Expiry month</translation>
 <translation id="1150989369772528668">Calendar</translation>
+<translation id="1161444134753003495">Sign in</translation>
 <translation id="1161663161838091892">Sync tabs and history to continue</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} credit card}other{{count} credit cards}}</translation>
 <translation id="1164891049599601209">Entered on deceptive site</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">You can scroll right to browse in Incognito.</translation>
 <translation id="2079545284768500474">Undo</translation>
 <translation id="2085876078937250610">Save…</translation>
+<translation id="2089180529062519164">Turn on microphone</translation>
 <translation id="2096239473850415494">Couldn't download</translation>
 <translation id="2096716221239095980">Delete all data</translation>
 <translation id="2104436223719117661">Trending searches</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{New password for this site}other{New passwords for this site}}</translation>
 <translation id="3933372629914873850">You'll sign in to <ph name="URL" /></translation>
 <translation id="3934905113567851655">Pinch to resize</translation>
+<translation id="393732545649378031">Account</translation>
 <translation id="3940195383040445971">Track prices on tabs</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Close {COUNT} tab}other{Close {COUNT} tabs}}</translation>
 <translation id="3946483119107054883">Download to CSV</translation>
@@ -1469,6 +1472,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6140948187512243695">Show details</translation>
 <translation id="6144589619057374135">Open ${url} in Incognito</translation>
 <translation id="6146563240635539929">Videos</translation>
+<translation id="6148392728478209113">Are you still using Live? Tap the Live button to keep talking to Gemini</translation>
 <translation id="6151006591088192882">Unlock Incognito tabs with <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Inactive</translation>
 <translation id="6152406514676263192">Sync for the most relevant content based on your interests.</translation>
@@ -2117,6 +2121,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8319282042900445670">Reminder set for <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Recent activity</translation>
 <translation id="8325455175867928593">Hide 'Reviews based on your interests'</translation>
+<translation id="8333459276976141586">Live will use your microphone. Tapping the Live button turns on the mic. To turn off the mic, tap the stop button or close Gemini.</translation>
 <translation id="833647236762414178">Create, save and manage your passwords and passkeys to easily sign in to sites and apps. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Complete 1 more task to level up}other{Complete {count} more tasks to level up}}</translation>
@@ -2193,6 +2198,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8571019948162152515">Delete '<ph name="FILENAME" />'?</translation>
 <translation id="8571213806525832805">Last 4 weeks</translation>
 <translation id="8577056989960190117">Autofill the expiry year <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Go Live with Gemini</translation>
 <translation id="8587001564479545614">Create a recovery PIN</translation>
 <translation id="8588404856427128947">Off</translation>
 <translation id="8590286732816598906">Tab group, <ph name="GROUP_TITLE" />, menu.</translation>
@@ -2267,6 +2273,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8803526663383843427">When on</translation>
 <translation id="8803639129939845298">Secure</translation>
 <translation id="8813277370772331957">Remind me later</translation>
+<translation id="8814308045751067027">To use Live, give Chrome access to your microphone in settings</translation>
 <translation id="8814719628147284151">Continue</translation>
 <translation id="881559332211266856">Update redress number</translation>
 <translation id="8817524703470045896">Track prices and get alerts when the price drops on any site</translation>

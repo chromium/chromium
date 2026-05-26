@@ -1073,6 +1073,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5628604359369369630">Oläst – Tillgänglig offline</translation>
 <translation id="5631483240431073854">Hantera öppna flikar</translation>
 <translation id="5632485077360054581">Visa hur man gör</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> behöver din tillåtelse att köra <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Inloggad som <ph name="USER_NAME" />. Fel i Google-kontot. Öppnar inställningarna.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Sökhistorik<ph name="END_LINK1" /> och <ph name="BEGIN_LINK2" />annan aktivitet<ph name="END_LINK2" /> kan sparas i Google-kontot</translation>
 <translation id="5648166631817621825">Senaste sju dagarna</translation>
@@ -1880,6 +1881,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome har hittat ett svagt lösenord som du kan förbättra}other{Chrome har hittat # svaga lösenord som du kan förbättra}}</translation>
 <translation id="8766529642647037772">Vill du skapa en markerad länk som denna?</translation>
 <translation id="8769783688897433958">Visa webbplatsinformation och behörigheter</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> behöver din tillåtelse för att köra <ph name="COUNT" /> tillägg</translation>
 <translation id="8788265440806329501">Navigeringshistoriken har stängts</translation>
 <translation id="8790193082819560975">Tryck för att söka efter köpalternativ för produkten på en ny flik.</translation>
 <translation id="8798449543960971550">Lästa</translation>

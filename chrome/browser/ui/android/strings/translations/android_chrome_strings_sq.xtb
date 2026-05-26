@@ -493,6 +493,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3067505415088964188">Çmimi është i ulët</translation>
 <translation id="3070005020161560471">Përkthe automatikisht</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> do të hapet në Chrome. Duke vazhduar, ti pranon <ph name="BEGIN_LINK1" />"Kushtet e shërbimit" të Google<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />"Kushtet shtesë të shërbimit" të Google Chrome dhe të ChromeOS<ph name="END_LINK2" />. Zbatohet gjithashtu <ph name="BEGIN_LINK3" />Politika e privatësisë<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Kërko në skedë me "Lenten e Google"</translation>
 <translation id="3080525922482950719">Mund t'i ruash faqet për t'i lexuar më vonë ose offline</translation>
 <translation id="3087734570205094154">Në fund</translation>
 <translation id="3091010850649238832">Shfaq përmbajtjet e kujtesës së fragmenteve</translation>
@@ -550,6 +551,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3384347053049321195">Ndaje imazhin</translation>
 <translation id="3385749568468586663">Gemini nuk ofrohet në modalitetin "I fshehtë"</translation>
 <translation id="3387650086002190359">Shkarkimi i <ph name="FILE_NAME" /> dështoi për shkak të gabimeve të sistemit të skedarëve.</translation>
+<translation id="3391311825344469964">Mund t'i menaxhosh dritaret e tua te "Menaxheri i dritareve" i Chrome</translation>
 <translation id="3417835166382867856">Kërko skedat</translation>
 <translation id="3430670036890315772">Çaktivizimi i kyçjes së profilit do të heqë informacionet e tua të ruajtura</translation>
 <translation id="3435575784518354875">Për të mbajtur qasjen te fjalëkalimet e tua, eksportoji ato tani, përditëso shërbimet e Google Play dhe më pas importoji fjalëkalimet sërish te "Menaxheri i fjalëkalimeve i Google". <ph name="BEGIN_LINK" />Shiko udhëzimet e plota<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5628604359369369630">Të palexuara - ofrohen offline</translation>
 <translation id="5631483240431073854">Menaxho skedat e hapura</translation>
 <translation id="5632485077360054581">Më trego mënyrën</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> ka nevojë për leje që të ekzekutojë <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">I identifikuar si <ph name="USER_NAME" />. Gabim i "Llogarisë së Google". Hap cilësimet.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Historiku i kërkimeve<ph name="END_LINK1" /> dhe <ph name="BEGIN_LINK2" />format e tjera të aktivitetit<ph name="END_LINK2" /> mund të ruhen në "Llogarinë tënde të Google"</translation>
 <translation id="5648166631817621825">7 ditët e fundit</translation>
@@ -1877,6 +1880,7 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome gjeti një fjalëkalim të dobët që mund ta përmirësosh}other{Chrome gjeti # fjalëkalime të dobëta që mund t'i përmirësosh}}</translation>
 <translation id="8766529642647037772">Të krijohet një lidhje e theksuar si kjo?</translation>
 <translation id="8769783688897433958">Shiko informacionet dhe lejet e sajtit</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> ka nevojë për lejen tënde që të ekzekutojë <ph name="COUNT" /> shtesa</translation>
 <translation id="8788265440806329501">Historiku i navigimit është mbyllur</translation>
 <translation id="8790193082819560975">Trokit për të kërkuar për opsionet e blerjes për produktin në një skedë të re.</translation>
 <translation id="8798449543960971550">Të lexuara</translation>

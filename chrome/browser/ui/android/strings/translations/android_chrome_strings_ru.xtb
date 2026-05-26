@@ -1072,6 +1072,7 @@
 <translation id="5628604359369369630">Не прочитано – доступно офлайн</translation>
 <translation id="5631483240431073854">Управлять открытыми вкладками</translation>
 <translation id="5632485077360054581">Подробнее</translation>
+<translation id="5639031457248936693">Для работы расширения <ph name="EXTENSION_NAME" /> на сайте <ph name="WEBSITE" /> необходимо разрешение.</translation>
 <translation id="564121214411935612">Вы вошли как <ph name="USER_NAME" />. Ошибка в аккаунте Google. Открыть настройки.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />сведения о других действиях<ph name="END_LINK2" /> могут сохраняться в аккаунте Google.</translation>
 <translation id="5648166631817621825">Последние 7 дней</translation>
@@ -1879,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome обнаружил простой пароль, который можно сделать надежнее.}one{Chrome обнаружил # простой пароль, который можно сделать надежнее.}few{Chrome обнаружил # простых пароля, которые можно сделать надежнее.}many{Chrome обнаружил # простых паролей, которые можно сделать надежнее.}other{Chrome обнаружил # простого пароля, которые можно сделать надежнее.}}</translation>
 <translation id="8766529642647037772">Создать ссылку с похожим выделением?</translation>
 <translation id="8769783688897433958">Посмотреть сведения о сайте и разрешения</translation>
+<translation id="8786293874273448556">Для работы расширений (<ph name="COUNT" />) на сайте <ph name="WEBSITE" /> необходимо разрешение.</translation>
 <translation id="8788265440806329501">История переходов закрыта</translation>
 <translation id="8790193082819560975">Нажмите, чтобы открыть в новой вкладке другие предложения товара.</translation>
 <translation id="8798449543960971550">Прочитано</translation>

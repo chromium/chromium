@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">किंमत कमी आहे</translation>
 <translation id="3070005020161560471">आपोआप भाषांतर करा</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> हे Chrome मध्ये उघडेल. पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_LINK1" />Google सेवा अटी<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />Google Chrome व ChromeOS च्या अतिरिक्त सेवा अटी<ph name="END_LINK2" /> यांना सहमती दर्शवता. <ph name="BEGIN_LINK3" />गोपनीयता धोरण<ph name="END_LINK3" /> देखील लागू होते.</translation>
+<translation id="3080375898390966733">Google Lens सह शोध टॅब</translation>
 <translation id="3080525922482950719">तुम्‍ही नंतर किंवा ऑफलाइन वाचण्यासाठी पेज सेव्‍ह करू शकता</translation>
 <translation id="3087734570205094154">तळाकडील</translation>
 <translation id="3091010850649238832">क्लिपबोर्डवरील आशय दाखवा</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">इमेज शेअर करा</translation>
 <translation id="3385749568468586663">Gemini हे गुप्त मोडमध्ये उपलब्ध नाही</translation>
 <translation id="3387650086002190359">फाइल सिस्टीम एररमुळे <ph name="FILE_NAME" /> डाउनलोड करता आले नाही.</translation>
+<translation id="3391311825344469964">तुम्ही Chrome च्या विंडो व्यवस्थापक मध्ये तुमच्या विंडो व्यवस्थापित करू शकता</translation>
 <translation id="3417835166382867856">टॅब शोधा</translation>
 <translation id="3430670036890315772">तुमचे प्रोफाइल लॉक बंद केल्याने तुमची सेव्ह केलेली माहिती काढून टाकली जाईल</translation>
 <translation id="3435575784518354875">तुमच्या पासवर्डचा ॲक्सेस कायम ठेवण्यासाठी, ते आता एक्सपोर्ट करा, Google Play सेवा अपडेट करा आणि नंतर ते Google Password Manager मध्ये पुन्हा इंपोर्ट करा. <ph name="BEGIN_LINK" />सर्व सूचना पहा<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">न वाचलेले - ऑफलाइन उपलब्ध आहे</translation>
 <translation id="5631483240431073854">उघडे असलेले टॅब व्यवस्थापित करा</translation>
 <translation id="5632485077360054581">मला कसे ते दाखवा</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> ला <ph name="EXTENSION_NAME" /> रन करण्यासाठी तुमच्या परवानगीची आवश्यकता आहे</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> म्हणून साइन इन केले आहे. Google खाते संबंधित एरर. या बटणामुळे सेटिंग्ज उघडतात.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />शोध इतिहास<ph name="END_LINK1" /> आणि <ph name="BEGIN_LINK2" />ॲक्टिव्हिटीचे इतर प्रकार<ph name="END_LINK2" /> तुमच्या Google खाते मध्ये सेव्ह केले जाऊ शकतात</translation>
 <translation id="5648166631817621825">अखेरच्या 7 दिवसांमधील</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome ला कमकुवत पासवर्ड आढळला आहे, ज्यामध्ये तुम्ही सुधारणा करू शकता}other{Chrome ला # कमकुवत पासवर्ड आढळले आहेत, ज्यांमध्ये तुम्ही सुधारणा करू शकता}}</translation>
 <translation id="8766529642647037772">यासारखी हायलाइट केलेली लिंक तयार करायची आहे का?</translation>
 <translation id="8769783688897433958">साइटची माहिती आणि परवानग्या पहा</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> ला <ph name="COUNT" /> एक्स्टेंशन रन करण्यासाठी तुमच्या परवानगीची आवश्यकता आहे</translation>
 <translation id="8788265440806329501">नेव्हिगेशन इतिहास बंद आहे</translation>
 <translation id="8790193082819560975">नवीन टॅबमध्ये उत्पादनासाठी खरेदी करण्याचे पर्याय शोधण्याकरिता टॅप करा.</translation>
 <translation id="8798449543960971550">वाचलेले</translation>

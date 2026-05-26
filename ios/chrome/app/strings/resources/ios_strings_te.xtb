@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" />గా సైన్ ఇన్ చేశారు</translation>
 <translation id="1149401351239820326">గడువు ముగింపు నెల</translation>
 <translation id="1150989369772528668">క్యాలెండర్</translation>
+<translation id="1161444134753003495">సైన్ ఇన్ చేయి</translation>
 <translation id="1161663161838091892">కొనసాగించడానికి ట్యాబ్‌లను, హిస్టరీని సింక్ చేయండి</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} క్రెడిట్ కార్డ్}other{{count} క్రెడిట్ కార్డ్‌లు}}</translation>
 <translation id="1164891049599601209">మోసపూరిత సైట్‌లోకి ప్రవేశించారు</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">మీరు అజ్ఞాతంలో బ్రౌజ్ చేయడానికి కుడి వైపునకు స్క్రోల్ చేయవచ్చు.</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
 <translation id="2085876078937250610">సేవ్ చేయండి…</translation>
+<translation id="2089180529062519164">మైక్రోఫోన్‌ను ఆన్ చేయండి</translation>
 <translation id="2096239473850415494">డౌన్‌లోడ్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="2096716221239095980">మొత్తం డేటాను తొలగించండి</translation>
 <translation id="2104436223719117661">ట్రెండింగ్‌లో ఉన్న సెర్చ్ క్వెరీలు</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{ఈ సైట్ కోసం కొత్త పాస్‌వర్డ్}other{ఈ సైట్ కోసం కొత్త పాస్‌వర్డ్‌లు}}</translation>
 <translation id="3933372629914873850">మీరు <ph name="URL" />‌కు సైన్ ఇన్ చేయబోతున్నారు</translation>
 <translation id="3934905113567851655">సైజ్‌ను మార్చడానికి వేళ్లతో స్క్రీన్‌ను నియంత్రించండి</translation>
+<translation id="393732545649378031">ఖాతా</translation>
 <translation id="3940195383040445971">ధరలను ట్యాబ్‌లలో ట్రాక్ చేయండి</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ట్యాబ్‌ను మూసివేయండి}other{{COUNT} ట్యాబ్‌లను మూసివేయండి}}</translation>
 <translation id="3946483119107054883">CSV ఫార్మాట్‌లో డౌన్‌లోడ్ చేసుకోండి</translation>
@@ -1469,6 +1472,7 @@
 <translation id="6140948187512243695">వివరాలను చూపించు</translation>
 <translation id="6144589619057374135">${url}ను అజ్ఞాత మోడ్‌లో తెరవండి</translation>
 <translation id="6146563240635539929">వీడియోలు</translation>
+<translation id="6148392728478209113">మీరు ఇప్పటికీ Liveను ఉపయోగిస్తున్నారా? Geminiతో మాట్లాడటం కొనసాగించడానికి Live బటన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="6151006591088192882">అజ్ఞాత ట్యాబ్‌లను <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />తో అన్‌లాక్ చేయండి</translation>
 <translation id="6152340033632117531">ఇన్‌యాక్టివ్</translation>
 <translation id="6152406514676263192">మీ ఆసక్తుల ఆధారంగా అత్యంత సందర్భోచితమైన కంటెంట్ కోసం సింక్ చేయండి.</translation>
@@ -1506,6 +1510,7 @@
 <translation id="6241132809279377987">Google యాప్‌లతో మీ iPhone కోసం మరిన్ని ఫీచర్‌లను అన్‌లాక్ చేయండి</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251835855431997163"><ph name="VALUE" />‌ను ఆటోఫిల్ చేయండి</translation>
+<translation id="6253686838150111720"><ph name="URL" />‌కు సైన్ ఇన్ చేయండి</translation>
 <translation id="6254066287920239840">లింక్‌లను బ్రౌజర్‌కు బదులుగా యాప్‌లో తెరవండి.</translation>
 <translation id="6259928806013786178">రీడింగ్ మోడ్ విఫలమైంది</translation>
 <translation id="6268773951964630964">కాపీ చేయబడిన ఇమేజ్ కోసం సెర్చ్ చేయండి</translation>
@@ -2116,6 +2121,7 @@
 <translation id="8319282042900445670"><ph name="DATE" />న, <ph name="TIME" />కి రిమైండర్ సెట్ చేయబడింది</translation>
 <translation id="8320212361750431956">ఇటీవలి యాక్టివిటీ</translation>
 <translation id="8325455175867928593">"మీ ఆసక్తుల ఆధారంగా రివ్యూలు" దాచండి</translation>
+<translation id="8333459276976141586">Live మీ మైక్రోఫోన్‌ను ఉపయోగిస్తుంది. Live బటన్‌ను ట్యాప్ చేస్తే మైక్ ఆన్ అవుతుంది. మైక్‌ను ఆఫ్ చేయడానికి, 'ఆపివేయండి' బటన్‌ను ట్యాప్ చేయండి లేదా Geminiని మూసివేయండి.</translation>
 <translation id="833647236762414178">సైట్‌లు, యాప్‌లలో సులభంగా సైన్ ఇన్ చేసేందుకు మీ పాస్‌వర్డ్‌లు, పాస్-కీలను క్రియేట్ చేయండి, సేవ్ చేయండి, మేనేజ్ చేయండి. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">మీ అంశాలను బ్యాకప్ చేసి, వాటిని ఏ పరికరంలో అయినా ఉపయోగించండి.</translation>
 <translation id="8345328955902001853">{count,plural, =1{పై స్థాయికి వెళ్లడానికి మరో 1 టాస్క్‌ను పూర్తి చేయండి}other{పై స్థాయికి వెళ్లడానికి మరో {count} టాస్క్‌లను పూర్తి చేయండి}}</translation>
@@ -2192,6 +2198,7 @@
 <translation id="8571019948162152515">"<ph name="FILENAME" />"ను తొలగించాలా?</translation>
 <translation id="8571213806525832805">గత 4 వారాలు</translation>
 <translation id="8577056989960190117">గడువు ముగింపు సంవత్సరాన్ని <ph name="YEAR" />‌తో ఆటోఫిల్ చేయండి</translation>
+<translation id="8582026929965253036">Geminiతో Liveలో మాట్లాడండి</translation>
 <translation id="8587001564479545614">రికవరీ PINను క్రియేట్ చేయండి</translation>
 <translation id="8588404856427128947">ఆఫ్ చేయబడి ఉంది</translation>
 <translation id="8590286732816598906">ట్యాబ్ గ్రూప్, <ph name="GROUP_TITLE" />, మెనూ.</translation>
@@ -2266,6 +2273,7 @@
 <translation id="8803526663383843427">ఆన్‌లో ఉన్నప్పుడు</translation>
 <translation id="8803639129939845298">సురక్షితం</translation>
 <translation id="8813277370772331957">నాకు తర్వాత గుర్తు చేయి</translation>
+<translation id="8814308045751067027">Liveను ఉపయోగించడానికి, సెట్టింగ్‌లలో మీ మైక్రోఫోన్‌కు Chrome యాక్సెస్‌ను ఇవ్వండి</translation>
 <translation id="8814719628147284151">కొనసాగించండి</translation>
 <translation id="881559332211266856">రిడ్రస్ నంబర్‌ను అప్‌డేట్ చేయండి</translation>
 <translation id="8817524703470045896">ధరలను ట్రాక్ చేయండి, ఏదైనా సైట్‌లో ధర తగ్గినప్పుడు అలర్ట్‌లను పొందండి</translation>

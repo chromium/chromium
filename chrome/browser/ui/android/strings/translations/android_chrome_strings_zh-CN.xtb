@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">价格低</translation>
 <translation id="3070005020161560471">自动翻译</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。您也必须遵守<ph name="BEGIN_LINK3" />隐私权政策<ph name="END_LINK3" />。</translation>
+<translation id="3080375898390966733">使用 Google 智能镜头搜索标签页</translation>
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
 <translation id="3087734570205094154">底部</translation>
 <translation id="3091010850649238832">显示剪贴板内容</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3385749568468586663">Gemini 在无痕模式下无法使用</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>
+<translation id="3391311825344469964">您可以在 Chrome 的窗口管理器中管理窗口</translation>
 <translation id="3417835166382867856">搜索标签页</translation>
 <translation id="3430670036890315772">关闭个人资料锁定功能将移除您已保存的信息</translation>
 <translation id="3435575784518354875">如需继续使用您的密码，请立即将其导出，更新 Google Play 服务，然后将其重新导入 Google 密码管理工具。<ph name="BEGIN_LINK" />查看完整说明<ph name="END_LINK" />。</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">未读 - 可离线阅读</translation>
 <translation id="5631483240431073854">管理打开的标签页</translation>
 <translation id="5632485077360054581">操作步骤</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> 需要您的许可才能运行<ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">您已使用<ph name="USER_NAME" />的身份登录。Google 账号错误，打开设置。</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜索记录<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活动记录<ph name="END_LINK2" />可能会保存在您的 Google 账号中</translation>
 <translation id="5648166631817621825">过去 7 天</translation>
@@ -1875,6 +1878,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome 发现了 1 个安全系数低的密码，建议您改进}other{Chrome 发现了 # 个安全系数低的密码，建议您改进}}</translation>
 <translation id="8766529642647037772">创建一个像这样指向突出显示的文本的链接？</translation>
 <translation id="8769783688897433958">查看网站信息和权限</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> 需要您的许可才能运行 <ph name="COUNT" /> 个扩展程序</translation>
 <translation id="8788265440806329501">导航历史记录已关闭</translation>
 <translation id="8790193082819560975">点按即可在新标签页中搜索该商品的购买选项。</translation>
 <translation id="8798449543960971550">已读</translation>

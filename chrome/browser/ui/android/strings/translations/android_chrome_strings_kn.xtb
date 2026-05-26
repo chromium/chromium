@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">ಇತಿಹಾಸ ಸಿಂಕ್</translation>
 <translation id="1111673857033749125">ನಿಮ್ಮ ಇತರ ಸಾಧನಗಳಲ್ಲಿ ಉಳಿಸಲಾದ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, ಪಿಕ್ಚರ್-ಇನ್-ಪಿಕ್ಚರ್ ಟ್ಯಾಬ್</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 ವಿಂಡೋವನ್ನು ಮರುಸ್ಥಾಪಿಸಿ}one{# ವಿಂಡೋಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ}other{# ವಿಂಡೋಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಿ}}</translation>
 <translation id="1126696498560056882">ಈ ಸಾಧನದಲ್ಲಿ ಖಾತೆಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1135018701024399762">ಅಜ್ಞಾತ ಮೋಡ್ ನಿಮ್ಮ ಸಾಧನವನ್ನು ಬಳಸುವ ಇತರರಿಂದ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಅನ್ನು ಖಾಸಗಿಯಾಗಿರಿಸುತ್ತದೆ</translation>
 <translation id="113752097246673894">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಇತ್ಯಾದಿಗಳನ್ನು ಪಡೆಯಲು, <ph name="EMAIL" /> ಆಗಿ Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
@@ -510,6 +511,7 @@
 <translation id="3166827708714933426">ಟ್ಯಾಬ್ ಮತ್ತು ವಿಂಡೋ ಶಾರ್ಟ್‌ಕಟ್‌ಗಳು</translation>
 <translation id="3167258285411721858">ನೀವು <ph name="HOST_NAME" /> ಗಾಗಿ ಮೊಬೈಲ್ ಸೈಟ್ ಅನ್ನು ವಿನಂತಿಸಬಹುದು</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ಬಹು ಆಯ್ಕೆಮಾಡಿದ ಪಿನ್ ಮಾಡಲಾದ ಮ್ಯೂಟ್ ಆಗಿರುವ ಅಜ್ಞಾತ ಟ್ಯಾಬ್</translation>
+<translation id="3183941812169784232">ಎಲ್ಲಾ ವಿಂಡೋಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಬೇಕೆ?</translation>
 <translation id="3187472288455401631">ಜಾಹೀರಾತು ಮಾಪನ</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ಟ್ಯಾಬ್ ಗುಂಪು</translation>
 <translation id="3200536777393523575">ನಿಮ್ಮ ಪ್ರಸ್ತುತ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಬೇಕೆ?</translation>
@@ -723,6 +725,7 @@
 <translation id="4164642020717536140">ವೇಗದ ಮತ್ತು ಸುರಕ್ಷಿತ ವೆಬ್‌ ಬ್ರೌಸಿಂಗ್‌</translation>
 <translation id="4165077084524712774">ಇನ್ನಷ್ಟು ಟೂಲ್‌ಗಳು</translation>
 <translation id="4170577491341606575">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ\u2026</translation>
+<translation id="4176838562184310003">Chrome ಸರಿಯಾಗಿ ಶಟ್ ಡೌನ್ ಆಗಿಲ್ಲ ಮತ್ತು ನಿಮ್ಮ ಕಳೆದುಹೋದ ವಿಂಡೋಗಳು ಹಾಗೂ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ಪ್ರಯತ್ನಿಸಬಹುದು. ಮರುಸ್ಥಾಪಿಸಿದಾಗ ಕೆಲವು ವಿಂಡೋಗಳನ್ನು ಮಿನಿಮೈಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="4177222230309051052">ನಿಮ್ಮ ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4177501066905053472">ಜಾಹೀರಾತು ವಿಷಯಗಳು</translation>
 <translation id="417865198503699526">ಸೆಟ್ಟಿಂಗ್‌ಗಾಗಿ ಹುಡುಕಿ</translation>
@@ -1071,6 +1074,7 @@
 <translation id="5628604359369369630">ಓದಿಲ್ಲ - ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿ ಲಭ್ಯವಿದೆ</translation>
 <translation id="5631483240431073854">ತೆರೆದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="5632485077360054581">ಹೇಗೆಂದು ನನಗೆ ತೋರಿಸಿ</translation>
+<translation id="5639031457248936693"><ph name="EXTENSION_NAME" /> ರನ್ ಮಾಡಲು <ph name="WEBSITE" /> ಗೆ ನಿಮ್ಮ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> ಆಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ. Google ಖಾತೆಯ ದೋಷ. ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೆರೆಯುತ್ತದೆ.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />ಹುಡುಕಾಟದ ಇತಿಹಾಸ<ph name="END_LINK1" /> ಮತ್ತು <ph name="BEGIN_LINK2" />ಚಟುವಟಿಕೆಯ ಇತರ ವಿಧಾನಗಳನ್ನು<ph name="END_LINK2" /> ನಿಮ್ಮ Google ಖಾತೆಯಲ್ಲಿ ಉಳಿಸಬಹುದು</translation>
 <translation id="5648166631817621825">ಕಳೆದ 7 ದಿನಗಳು</translation>
@@ -1878,6 +1882,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}one{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ # ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}other{ನೀವು ಸುಧಾರಿಸಬಹುದಾದ # ದುರ್ಬಲ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Chrome ಪತ್ತೆ ಮಾಡಿದೆ}}</translation>
 <translation id="8766529642647037772">ಈ ರೀತಿಯ ಹೈಲೈಟ್ ಮಾಡಿದ ಲಿಂಕ್ ಅನ್ನು ರಚಿಸಬೇಕೆ?</translation>
 <translation id="8769783688897433958">ಸೈಟ್ ಮಾಹಿತಿ ಮತ್ತು ಅನುಮತಿಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
+<translation id="8786293874273448556"><ph name="COUNT" /> ಎಕ್ಸ್‌ಟೆನ್ಶನ್‌ಗಳನ್ನು ರನ್ ಮಾಡಲು <ph name="WEBSITE" /> ಗೆ ನಿಮ್ಮ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="8788265440806329501">ನ್ಯಾವಿಗೇಶನ್ ಇತಿಹಾಸ ಮುಚ್ಚಿದೆ</translation>
 <translation id="8790193082819560975">ಹೊಸ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ಉತ್ಪನ್ನದ ಖರೀದಿ ಆಯ್ಕೆಗಳನ್ನು ಹುಡುಕಲು ಟ್ಯಾಪ್ ಮಾಡಿ.</translation>
 <translation id="8798449543960971550">ಓದಲಾಗಿದೆ</translation>

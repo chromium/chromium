@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Naršydami inkognito režimu galite perbraukti dešinėn.</translation>
 <translation id="2079545284768500474">Anuliuoti</translation>
 <translation id="2085876078937250610">Išsaugoti…</translation>
+<translation id="2089180529062519164">Įjunkite mikrofoną</translation>
 <translation id="2096239473850415494">Nepavyko atsisiųsti</translation>
 <translation id="2096716221239095980">Ištrinti visus duomenis</translation>
 <translation id="2104436223719117661">Populiarios paieškos</translation>
@@ -1506,6 +1507,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6241132809279377987">Išplėskite „iPhone“ funkcionalumą naudodami „Google“ programas</translation>
 <translation id="6247557882553405851">„Google“ slaptažodžių tvarkytuvė</translation>
 <translation id="6251835855431997163">Automatiškai pildyti „<ph name="VALUE" />“</translation>
+<translation id="6253686838150111720">Prisijungimas prie <ph name="URL" /></translation>
 <translation id="6254066287920239840">Atidarykite nuorodas programoje, o ne naršyklėje.</translation>
 <translation id="6259928806013786178">Nepavyko įjungti skaitymo režimo</translation>
 <translation id="6268773951964630964">Ieškoti nukopijuoto vaizdo</translation>
@@ -2116,6 +2118,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8319282042900445670">Nustatytas priminimas <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Naujausia veikla</translation>
 <translation id="8325455175867928593">Slėpti parinktį „Atsiliepimai pagal jūsų pomėgius“</translation>
+<translation id="8333459276976141586">Funkcija „Live“ naudos jūsų mikrofoną. Palietus mygtuką „Live“ mikrofonas įsijungs. Jei norite išjungti mikrofoną, palieskite sustabdymo mygtuką arba uždarykite „Gemini“.</translation>
 <translation id="833647236762414178">Kurkite, saugokite ir tvarkykite slaptažodžius bei prieigos raktus, kad galėtumėte lengvai prisijungti prie svetainių ir programų. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sukurkite atsarginę turinio kopiją ir naudokite ją bet kuriame įrenginyje.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Atlikite dar 1 užduotį, kad pasiektumėte aukštesnį lygį}one{Atlikite dar {count} užduotį, kad pasiektumėte aukštesnį lygį}few{Atlikite dar {count} užduotis, kad pasiektumėte aukštesnį lygį}many{Atlikite dar {count} užduoties, kad pasiektumėte aukštesnį lygį}other{Atlikite dar {count} užduočių, kad pasiektumėte aukštesnį lygį}}</translation>
@@ -2192,6 +2195,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8571019948162152515">Ištrinti „<ph name="FILENAME" />“?</translation>
 <translation id="8571213806525832805">Pastarosios 4 savaitės</translation>
 <translation id="8577056989960190117">Automatiškai pildyti galiojimo pabaigos metus (<ph name="YEAR" />)</translation>
+<translation id="8582026929965253036">Kalbėkitės „Live“ režimu su „Gemini“</translation>
 <translation id="8587001564479545614">Sukurkite atkūrimo PIN kodą</translation>
 <translation id="8588404856427128947">Išjungta</translation>
 <translation id="8590286732816598906">Skirtukų grupė „<ph name="GROUP_TITLE" />“, meniu.</translation>
@@ -2266,6 +2270,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8803526663383843427">Kada įjungta</translation>
 <translation id="8803639129939845298">Saugūs</translation>
 <translation id="8813277370772331957">Priminti vėliau</translation>
+<translation id="8814308045751067027">Jei norite naudoti „Live“, nustatymuose suteikite „Chrome“ prieigą prie mikrofono</translation>
 <translation id="8814719628147284151">Tęsti</translation>
 <translation id="881559332211266856">Atnaujinkite kompensavimo numerį</translation>
 <translation id="8817524703470045896">Stebėkite kainas ir gaukite įspėjimus, kai kaina sumažės bet kurioje svetainėje</translation>

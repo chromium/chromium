@@ -667,6 +667,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1453561711872398978">Wyślij <ph name="BEGIN_LINK" />dzienniki debugowania<ph name="END_LINK" /> (zalecane)</translation>
 <translation id="1454223536435069390">Wykon&amp;aj zrzut ekranu</translation>
 <translation id="145432137617179457">Języki sprawdzania pisowni</translation>
+<translation id="1454523475536875350">Otwórz link w widoku u dołu</translation>
 <translation id="1455009947184333152">Umiejętność została usunięta</translation>
 <translation id="1455119378540982311">Gotowe rozmiary okien</translation>
 <translation id="1456849775870359518">Karty zostaną ponownie otwarte</translation>
@@ -805,6 +806,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1547123415014299762">Pliki cookie innych firm są dozwolone</translation>
 <translation id="1547808936554660006">Rozumiem, że Powerwash nie spowoduje usunięcia zainstalowanych profili eSIM</translation>
 <translation id="1547936895218027488">Kliknij ikonę panelu bocznego, aby go otworzyć</translation>
+<translation id="1548265680751768570">Gemini w Chrome nie jest dostępny</translation>
 <translation id="1549275686094429035">Włączono ARC</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> chce uzyskać dostęp do dysku <ph name="VOLUME_NAME" />. Będzie mogła tam zmieniać i usuwać pliki.</translation>
 <translation id="1549966883323105187">Szybsze otwieranie zapisanych haseł</translation>
@@ -961,6 +963,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Do określania lokalizacji używaj Wi-Fi i sieci komórkowych</translation>
 <translation id="1650407365859096313">Otwiera się w nowej karcie, ustawienie uprawnienia: <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">Otwórz link w widoku u dołu</translation>
 <translation id="1650801028905250434">Pliki z Mojego dysku są automatycznie synchronizowane z Chromebookiem, więc masz do nich dostęp bez połączenia z internetem. W każdej chwili możesz to zmienić, klikając Ustawienia &gt; Pliki.</translation>
 <translation id="1651008383952180276">Musisz dwukrotnie wpisać to samo hasło wielowyrazowe</translation>
 <translation id="1651609627703324721">Ta karta prezentuje treści VR na goglach</translation>
@@ -1152,6 +1155,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1784849162047402014">Na urządzeniu jest mało miejsca.</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Odinstalowanie aplikacji „<ph name="APP_NAME" />” spowoduje też odinstalowanie tej aplikacji:}few{Odinstalowanie aplikacji „<ph name="APP_NAME" />” spowoduje też odinstalowanie tych aplikacji:}many{Odinstalowanie aplikacji „<ph name="APP_NAME" />” spowoduje też odinstalowanie tych aplikacji:}other{Odinstalowanie aplikacji „<ph name="APP_NAME" />” spowoduje też odinstalowanie tych aplikacji:}}</translation>
 <translation id="1786290960428378411">Prosi o zgodę na odczytywanie i zmienianie danych</translation>
+<translation id="179021551944139249">Dodaj link do listy Do przeczytania</translation>
 <translation id="1790976235243700817">Anuluj dostęp</translation>
 <translation id="1791662854739702043">Zainstalowano</translation>
 <translation id="1792619191750875668">Ekran rozszerzony</translation>
@@ -1954,6 +1958,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2340239562261172947">Pliku <ph name="FILE_NAME" /> nie można pobrać w bezpieczny sposób</translation>
 <translation id="2341392013052489530">Odinstalowano wersję <ph name="VERSION" />, przyczyna: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">Do odblokowywania urządzenia Twoje dziecko może używać numeru (kodu PIN) zamiast hasła. Kod PIN możesz podać później w Ustawieniach.</translation>
+<translation id="2343005971389581619">Otwórz link w widoku u góry</translation>
 <translation id="2343160676229467122">Rozszerzenia są niedozwolone w witrynie <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Park Narodowy Gór Skalistych</translation>
 <translation id="2343747224442182863">Ustaw tę kartę jako aktywną</translation>
@@ -4139,6 +4144,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3854348409770521214">Malarstwo olejne</translation>
 <translation id="3854967233147778866">Proponuj tłumaczenie stron w innych językach</translation>
 <translation id="3854976556788175030">Zasobnik wyjściowy jest pełny</translation>
+<translation id="3855324045699437362">Gemini w Chrome jest udostępniany w różnych lokalizacjach, ale nie wszędzie.</translation>
 <translation id="3855441664322950881">Spakuj rozszerzenie</translation>
 <translation id="3855676282923585394">Importuj zakładki i ustawienia...</translation>
 <translation id="3856023744577163821">Karty otwarte z poziomu czatu lub udostępnionej karty są również udostępniane Gemini.</translation>
@@ -5624,6 +5630,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4910241725741323970">Aplikacja jest już zainstalowana</translation>
 <translation id="4912643508233590958">Wyjścia z nieaktywności</translation>
 <translation id="4913209098186576320">Ten plik może być niebezpieczny<ph name="LINE_BREAK" />Sprawdzanie trwa dłużej niż zwykle…</translation>
+<translation id="4913573660390710463">Uzyskaj dostęp do pakietów aplikacji internetowych o rozbudowanych możliwościach. <ph name="BEGIN_LINK_LEARN_MORE" />Więcej informacji<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Nie można znaleźć danych aplikacji</translation>
 <translation id="4915961947098019832">Zezwolono na wyświetlanie obrazów</translation>
 <translation id="491779113051926205">Liczniki ruchu ChromeOS</translation>
@@ -5860,6 +5867,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5088427648965532275">Dostawca protokołu Passpoint</translation>
 <translation id="5090637338841444533">Nie zezwolono na śledzenie pozycji kamery</translation>
 <translation id="5091636240353511739">Pokaż kod PIN</translation>
+<translation id="5092567114307895466">Sprawdź, czy spełniasz wymagania</translation>
 <translation id="5093447877601682598">Prześlij opinię o pasku kart</translation>
 <translation id="5093477827231450397">Lista zablokowanych przez Ciebie witryn, którym nie pozwalasz na sugerowanie reklam innym witrynom</translation>
 <translation id="5093569275467863761">Ramka podrzędna w trybie incognito w pamięci podręcznej stanu strony internetowej: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7704,6 +7712,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6427752304227226701">Zgłoś &amp;niebezpieczną witrynę…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Brak zapisanych haseł.}=1{Sprawdzam {COUNT} hasło…}few{Sprawdzam {COUNT} hasła…}many{Sprawdzam {COUNT} haseł…}other{Sprawdzam {COUNT} hasła…}}</translation>
 <translation id="6429384232893414837">Błąd aktualizacji</translation>
+<translation id="6430202563517028640">Dodaj link do listy Do przeczytania</translation>
 <translation id="6430814529589430811">Plik ASCII z kodowaniem Base64, jeden certyfikat</translation>
 <translation id="6431347207794742960">Program <ph name="PRODUCT_NAME" /> skonfiguruje aktualizacje automatyczne dla wszystkich użytkowników tego komputera.</translation>
 <translation id="6434104957329207050">Szybkość skanowania punktów</translation>
@@ -9585,6 +9594,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7753735457098489144">Instalacja nie udała się z powodu braku miejsca. Aby zwolnić miejsce, usuń pliki z pamięci urządzenia.</translation>
 <translation id="7754704193130578113">Pytaj przed pobraniem, gdzie zapisać każdy plik</translation>
 <translation id="7757592200364144203">Zmień nazwę urządzenia</translation>
+<translation id="7757735653610827848">&amp;Kopiuj „<ph name="SELECTION" />”</translation>
 <translation id="7757739382819740102">Kontakty w pobliżu mogą Ci udostępniać dane. Wymagane jest zatwierdzenie.</translation>
 <translation id="7757787379047923882">Tekst udostępniony z urządzenia <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -10151,6 +10161,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8137559199583651773">Zarządzaj rozszerzeniami</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Sprawdź 1 rozszerzenie, które może być niebezpieczne}few{Sprawdź {NUM_EXTENSIONS} rozszerzenia, które mogą być niebezpieczne}many{Sprawdź {NUM_EXTENSIONS} rozszerzeń, które mogą być niebezpieczne}other{Sprawdź {NUM_EXTENSIONS} rozszerzenia, które mogą być niebezpieczne}}</translation>
 <translation id="8138217203226449454">Czy chodziło o zmianę dostawcy wyszukiwania?</translation>
+<translation id="813858113027420189">Otwórz link w widoku u góry</translation>
 <translation id="8138997515734480534">Stan maszyny wirtualnej <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Przyspieszenie kursora</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -11140,6 +11151,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8819510664278523111">EID urządzenia to <ph name="EID_NUMBER" />, jego IMEI to <ph name="IMEI_NUMBER" />, a numer seryjny to <ph name="SERIAL_NUMBER" />. Tych numerów można użyć do aktywowania usługi.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="8821045908425223359">Skonfiguruj adres IP automatycznie</translation>
+<translation id="8821206216942230957">Twoje konto nie ma dostępu do Gemini w Chrome</translation>
 <translation id="8821268776955756404">Aplikacja <ph name="APP_NAME" /> jest gotowa do użycia.</translation>
 <translation id="882204272221080310">Zaktualizuj oprogramowanie, by zwiększyć bezpieczeństwo.</translation>
 <translation id="8823514049557262177">Kopiuj te&amp;kst linku</translation>

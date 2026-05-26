@@ -665,6 +665,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1453561711872398978">Enviar <ph name="BEGIN_LINK" />registros de depuración<ph name="END_LINK" /> (recomendado)</translation>
 <translation id="1454223536435069390">Tomar captura de pantalla</translation>
 <translation id="145432137617179457">Idiomas del corrector ortográfico</translation>
+<translation id="1454523475536875350">Abrir vínculo en la vista inferior</translation>
 <translation id="1455009947184333152">Se borró la habilidad</translation>
 <translation id="1455119378540982311">Tamaños de ventana predeterminados</translation>
 <translation id="1456849775870359518">Se volverán a abrir las pestañas</translation>
@@ -800,6 +801,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1547123415014299762">Se permiten las cookies de terceros</translation>
 <translation id="1547808936554660006">Entiendo que, cuando se aplique la función Powerwash, no se quitarán los perfiles de eSIM instalados</translation>
 <translation id="1547936895218027488">Haz clic en el ícono del panel lateral para abrirlo</translation>
+<translation id="1548265680751768570">Gemini en Chrome no está disponible</translation>
 <translation id="1549275686094429035">ARC habilitado</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> quiere acceder a <ph name="VOLUME_NAME" />. Podrá modificar o eliminar tus archivos.</translation>
 <translation id="1549966883323105187">Accede más rápido a tus contraseñas guardadas</translation>
@@ -956,6 +958,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1648439345221797326">Ctrl + Mayúsculas + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Usar Wi-Fi o redes móviles para determinar la ubicación</translation>
 <translation id="1650407365859096313">Se abre en una pestaña nueva. Permiso: <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">Abrir vínculo en la vista inferior</translation>
 <translation id="1650801028905250434">Los archivos de Mi unidad se sincronizarán automáticamente con tu Chromebook para que puedas acceder a ellos sin conexión a Internet. Puedes cambiar este parámetro en cualquier momento en Configuración &gt; Archivos.</translation>
 <translation id="1651008383952180276">Debes ingresar la misma frase de contraseña dos veces</translation>
 <translation id="1651609627703324721">Esta pestaña muestra contenido de RV en un visor</translation>
@@ -1147,6 +1150,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1784849162047402014">El dispositivo tiene poco espacio en el disco</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Si desinstalas "<ph name="APP_NAME" />", también se desinstalará esta app:}other{Si desinstalas "<ph name="APP_NAME" />", también se desinstalarán estas apps:}}</translation>
 <translation id="1786290960428378411">Solicitando acceso de lectura y edición</translation>
+<translation id="179021551944139249">Agregar vínculo a la lista de lectura</translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Pantalla extendida</translation>
@@ -1962,6 +1966,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2340239562261172947">No se puede descargar el archivo <ph name="FILE_NAME" /> de forma segura</translation>
 <translation id="2341392013052489530">Se desinstaló la versión <ph name="VERSION" />, motivo: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">Tu hijo puede usar un número (PIN) en lugar de una contraseña para desbloquear este dispositivo. Puedes configurar un PIN más tarde en Configuración.</translation>
+<translation id="2343005971389581619">Abrir vínculo en la vista superior</translation>
 <translation id="2343160676229467122">No se permiten las extensiones en <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Parque Nacional de las Montañas Rocosas</translation>
 <translation id="2343747224442182863">Enfocar esta pestaña</translation>
@@ -4157,6 +4162,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3854348409770521214">Pintura al óleo</translation>
 <translation id="3854967233147778866">Se ofrece la traducción de sitios web en otros idiomas.</translation>
 <translation id="3854976556788175030">La bandeja de salida está llena</translation>
+<translation id="3855324045699437362">Gemini en Chrome se está expandiendo a diferentes ubicaciones, pero no está disponible en todas partes.</translation>
 <translation id="3855441664322950881">Empaquetar extensión</translation>
 <translation id="3855676282923585394">Importar favoritos y configuración...</translation>
 <translation id="3856023744577163821">Las pestañas que se abren desde un chat o una pestaña compartida también se comparten con Gemini.</translation>
@@ -5879,6 +5885,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5088427648965532275">Proveedor de Passpoint</translation>
 <translation id="5090637338841444533">No puede realizar un seguimiento de la posición de la cámara</translation>
 <translation id="5091636240353511739">Mostrar PIN</translation>
+<translation id="5092567114307895466">Verifica que cumples con los requisitos y que eres apto</translation>
 <translation id="5093447877601682598">Enviar comentarios sobre la barra de pestañas</translation>
 <translation id="5093477827231450397">Lista de sitios que bloqueaste y no quieres que sugieran anuncios a otros sitios</translation>
 <translation id="5093569275467863761">Submarco de incógnito en la Memoria caché atrás/adelante: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7725,6 +7732,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6427752304227226701">Denunciar un sitio &amp;no seguro…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{No hay contraseñas guardadas.}=1{Revisando {COUNT} contraseña…}other{Revisando {COUNT} contraseñas…}}</translation>
 <translation id="6429384232893414837">Error en la actualización</translation>
+<translation id="6430202563517028640">Agregar vínculo a la lista de lectura</translation>
 <translation id="6430814529589430811">Certificado único ASCII con codificación Base64</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizaciones automáticas para todos los usuarios de esta computadora.</translation>
 <translation id="6434104957329207050">Velocidad de la búsqueda puntual</translation>
@@ -10171,6 +10179,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8137559199583651773">Administrar extensiones</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Revisa 1 extensión que podría no ser segura}other{Revisa {NUM_EXTENSIONS} extensiones que podrían no ser seguras}}</translation>
 <translation id="8138217203226449454">¿Querías cambiar el proveedor de búsqueda?</translation>
+<translation id="813858113027420189">Abrir vínculo en la vista superior</translation>
 <translation id="8138997515734480534">Estado de <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Aceleración del cursor</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

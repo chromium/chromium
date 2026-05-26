@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3070005020161560471">Да се превежда автоматично от</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ще се отвори в Chrome. С продължаването си приемате <ph name="BEGIN_LINK1" />Общите условия на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Допълнителните общи условия на Chrome и Chrome OS<ph name="END_LINK2" />. В сила е и <ph name="BEGIN_LINK3" />Декларацията за поверителност<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Търсене в раздела с Google Обектив</translation>
 <translation id="3080525922482950719">Можете да запазвате страници за четене по-късно или офлайн</translation>
 <translation id="3087734570205094154">Най-долу</translation>
 <translation id="3091010850649238832">Показване на съдържанието в буферната памет</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Споделяне на изображението</translation>
 <translation id="3385749568468586663">Gemini не е налице в режим „инкогнито“</translation>
 <translation id="3387650086002190359">Изтеглянето на „<ph name="FILE_NAME" />“ не бе успешно поради грешки във файловата система.</translation>
+<translation id="3391311825344469964">Можете да управлявате прозорците си в мениджъра на прозорците на Chrome</translation>
 <translation id="3417835166382867856">Търсене на раздели</translation>
 <translation id="3430670036890315772">Изключването на функцията за заключване на потребителския профил ще премахне запазената ви информация</translation>
 <translation id="3435575784518354875">За да запазите достъпа до паролите си, експортирайте ги сега, актуализирайте услугите за Google Play и след това импортирайте паролите отново в Google Мениджър на пароли. <ph name="BEGIN_LINK" />Преглед на пълните инструкции<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">Непрочетено – налице офлайн</translation>
 <translation id="5631483240431073854">Управление на отворените раздели</translation>
 <translation id="5632485077360054581">Покажете ми как</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> се нуждае от разрешението ви, за да стартира <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Влезли сте като <ph name="USER_NAME" />. Грешка в профила в Google. Отваря настройките.</translation>
 <translation id="5641456720590409793">Възможно е <ph name="BEGIN_LINK1" />историята на търсенията<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други видове активност<ph name="END_LINK2" /> да се запазват в профила ви в Google</translation>
 <translation id="5648166631817621825">Последните 7 дни</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome откри ненадеждна парола, която можете да подобрите}other{Chrome откри # ненадеждни пароли, които можете да подобрите}}</translation>
 <translation id="8766529642647037772">Да се създаде ли откроена връзка като тази?</translation>
 <translation id="8769783688897433958">Преглед на информацията и разрешенията за сайта</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> се нуждае от разрешението ви, за да стартира <ph name="COUNT" /> разширения</translation>
 <translation id="8788265440806329501">Историята на навигацията е затворена</translation>
 <translation id="8790193082819560975">Докоснете, за да търсите опции за купуване на продукта в нов раздел.</translation>
 <translation id="8798449543960971550">Прочетени</translation>

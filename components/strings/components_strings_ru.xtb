@@ -1121,6 +1121,7 @@
 <translation id="2719233594187778789">Повторяющийся URL "<ph name="URL_NAME" />" игнорируется.</translation>
 <translation id="2721148159707890343">Запрос выполнен успешно</translation>
 <translation id="2722622039067384533">Мебель для гостиной</translation>
+<translation id="2723284907371508295">Кнопка "Показывать вкладки с других устройств". Нажмите клавишу Ввод, чтобы увидеть больше вкладок с других устройств.</translation>
 <translation id="2723669454293168317">Запустите проверку безопасности в настройках Chrome</translation>
 <translation id="2726001110728089263">Боковой лоток</translation>
 <translation id="272616190148046464">Все карты постоянного клиента</translation>
@@ -3422,6 +3423,7 @@
 <translation id="6351658970066645919">Удалить данные о работе в браузере</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Нет}=1{1 пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}=2{2 пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}one{# пароль (для <ph name="DOMAIN_LIST" />, синхронизировано)}few{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}many{# паролей (для <ph name="DOMAIN_LIST" />, синхронизировано)}other{# пароля (для <ph name="DOMAIN_LIST" />, синхронизировано)}}</translation>
 <translation id="6354918092619878358">Эллиптическая кривая SECG secp256r1 (она же ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы посмотреть другие вкладки с других устройств, нажмите Tab, а затем Ввод.</translation>
 <translation id="6355392890578844978">Компания или организация не управляет этим браузером. Действиями на этом устройстве можно управлять вне браузера Chromium. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">Группы вкладок "<ph name="GROUP_TITLE_1" />" и "<ph name="GROUP_TITLE_2" />" больше не доступны.</translation>
 <translation id="6358088212770985041">изменить способы оплаты</translation>
@@ -4686,6 +4688,7 @@
 <translation id="8301894345671534559">Введите код</translation>
 <translation id="830498451218851433">Фальцовка книжкой</translation>
 <translation id="8308653357438598313">Онлайн-видеотрансляции</translation>
+<translation id="8310477433309274098">Без комиссий, годовая процентная ставка до 0 %</translation>
 <translation id="8311895354659782580">Недвижимость и земельные участки</translation>
 <translation id="8312841338723044391">ПРЯМОЙ ЭФИР</translation>
 <translation id="8316555157357957253">Разрешение используется сейчас</translation>
@@ -5262,6 +5265,7 @@
 <translation id="955429569736351433">Дано разрешение на использование VR</translation>
 <translation id="955627189349169688">Вы можете отключить эту функцию в <ph name="BEGIN_LINK" />настройках синхронизации Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Желтый 2</translation>
+<translation id="958952958906914932">Показывать вкладки с других устройств</translation>
 <translation id="961372935451193190">Вкладки и файлы</translation>
 <translation id="961663415146723894">Скрепление снизу</translation>
 <translation id="961856697154696964">Удалить данные о работе в браузере</translation>

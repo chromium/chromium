@@ -493,6 +493,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3067505415088964188">Cena je nizka</translation>
 <translation id="3070005020161560471">Samodejno prevedi</translation>
 <translation id="3072980200212375806">Aplikacija <ph name="APP_NAME" /> se bo odprla v Chromu. Če nadaljujete, se strinjate z <ph name="BEGIN_LINK1" />Googlovimi pogoji storitve<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />dodatnimi pogoji storitve za Google Chrome in Chrome OS<ph name="END_LINK2" />. Uporablja se tudi <ph name="BEGIN_LINK3" />pravilnik o zasebnosti<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Išči po zavihku z Googlom Lens</translation>
 <translation id="3080525922482950719">Strani lahko shranite, če želite brati pozneje ali brez povezave</translation>
 <translation id="3087734570205094154">Na dno</translation>
 <translation id="3091010850649238832">Prikaz vsebine odložišča</translation>
@@ -550,6 +551,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3384347053049321195">Skupna raba slike</translation>
 <translation id="3385749568468586663">Gemini ni na voljo v anonimnem načinu</translation>
 <translation id="3387650086002190359">Prenos datoteke <ph name="FILE_NAME" /> ni uspel zaradi napak v datotečnem sistemu.</translation>
+<translation id="3391311825344469964">Okna lahko upravljate v Chromovem upravitelju oken</translation>
 <translation id="3417835166382867856">Iskanje zavihkov</translation>
 <translation id="3430670036890315772">Če izklopite zaklepanje profila, se shranjeni podatki odstranijo</translation>
 <translation id="3435575784518354875">Če želite ohraniti dostop do gesel, jih izvozite, posodobite Storitve Google Play in nato gesla znova uvozite v Googlovega upravitelja gesel. <ph name="BEGIN_LINK" />Oglejte si celotna navodila<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="5628604359369369630">Neprebrano – na voljo brez povezave</translation>
 <translation id="5631483240431073854">Upravljanje odprtih zavihkov</translation>
 <translation id="5632485077360054581">Postopek</translation>
+<translation id="5639031457248936693">Spletno mesto <ph name="WEBSITE" /> potrebuje vaše dovoljenje za izvajanje razširitve <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Prijavljeni ste kot <ph name="USER_NAME" />. Napaka računa Google. Odpre nastavitve.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Zgodovina iskanja<ph name="END_LINK1" /> in <ph name="BEGIN_LINK2" />druge oblike dejavnosti<ph name="END_LINK2" /> se morda shranjujejo v računu Google</translation>
 <translation id="5648166631817621825">Zadnjih 7 dni</translation>
@@ -1877,6 +1880,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome je našel šibko geslo, ki ga lahko izboljšate}one{Chrome je našel # šibko geslo, ki ga lahko izboljšate}two{Chrome je našel # šibki gesli, ki ju lahko izboljšate}few{Chrome je našel # šibka gesla, ki jih lahko izboljšate}other{Chrome je našel # šibkih gesel, ki jih lahko izboljšate}}</translation>
 <translation id="8766529642647037772">Želite ustvariti označeno povezavo, kot je tale?</translation>
 <translation id="8769783688897433958">Ogled podatkov in dovoljenj za spletno mesto</translation>
+<translation id="8786293874273448556">Spletno mesto <ph name="WEBSITE" /> potrebuje vaše dovoljenje za izvajanje razširitev <ph name="COUNT" /></translation>
 <translation id="8788265440806329501">Zgodovina krmarjenja je zaprta</translation>
 <translation id="8790193082819560975">Dotaknite se, če želite iskati možnosti nakupa za izdelek na novem zavihku.</translation>
 <translation id="8798449543960971550">Branje</translation>

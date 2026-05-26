@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Aby przeglądać treści w trybie incognito, możesz przewijać w prawo.</translation>
 <translation id="2079545284768500474">Cofnij</translation>
 <translation id="2085876078937250610">Zapisz…</translation>
+<translation id="2089180529062519164">Włącz mikrofon</translation>
 <translation id="2096239473850415494">Nie udało się pobrać</translation>
 <translation id="2096716221239095980">Usuń wszystkie dane</translation>
 <translation id="2104436223719117661">Wyszukiwania zyskujące popularność</translation>
@@ -1506,6 +1507,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6241132809279377987">Odkryj nowe funkcje swojego iPhone’a dzięki aplikacjom Google</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6251835855431997163">Automatycznie uzupełnij: <ph name="VALUE" /></translation>
+<translation id="6253686838150111720">Zaloguj się w aplikacji <ph name="URL" /></translation>
 <translation id="6254066287920239840">Otwieraj linki w aplikacji, a nie w przeglądarce.</translation>
 <translation id="6259928806013786178">Nie udało się włączyć Trybu czytania</translation>
 <translation id="6268773951964630964">Wyszukaj skopiowany obraz</translation>
@@ -2116,6 +2118,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8319282042900445670">Przypomnienie ustawione na <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Ostatnia aktywność</translation>
 <translation id="8325455175867928593">Ukryj „Opinie na podstawie Twoich zainteresowań”</translation>
+<translation id="8333459276976141586">Tryb Live będzie korzystać z Twojego mikrofonu. Naciśnięcie przycisku Live włącza mikrofon. Aby wyłączyć mikrofon, kliknij przycisk zatrzymania lub zamknij Gemini.</translation>
 <translation id="833647236762414178">Twórz i zapisuj hasła oraz klucze dostępu i zarządzaj nimi, aby łatwo logować się na stronach i w aplikacjach. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Twórz kopie zapasowe swoich danych i używaj ich na dowolnym urządzeniu.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Wykonaj jeszcze 1 zadanie, aby przejść na kolejny poziom}few{Wykonaj jeszcze {count} zadania, aby przejść na kolejny poziom}many{Wykonaj jeszcze {count} zadań, aby przejść na kolejny poziom}other{Wykonaj jeszcze {count} zadania, aby przejść na kolejny poziom}}</translation>
@@ -2192,6 +2195,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8571019948162152515">Usunąć „<ph name="FILENAME" />”?</translation>
 <translation id="8571213806525832805">Ostatnie 4 tygodnie</translation>
 <translation id="8577056989960190117">Automatycznie uzupełnij rok ważności (<ph name="YEAR" />)</translation>
+<translation id="8582026929965253036">Rozmawiaj w trybie Live z Gemini</translation>
 <translation id="8587001564479545614">Utwórz kod PIN do przywracania</translation>
 <translation id="8588404856427128947">Wyłączono</translation>
 <translation id="8590286732816598906">Grupa kart, <ph name="GROUP_TITLE" />, menu.</translation>
@@ -2266,6 +2270,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8803526663383843427">Kiedy funkcja jest włączona</translation>
 <translation id="8803639129939845298">Bezpieczne</translation>
 <translation id="8813277370772331957">Przypomnij później</translation>
+<translation id="8814308045751067027">Aby korzystać z trybu Live, przyznaj Chrome dostęp do mikrofonu w ustawieniach</translation>
 <translation id="8814719628147284151">Dalej</translation>
 <translation id="881559332211266856">Zaktualizuj numer Redress</translation>
 <translation id="8817524703470045896">Śledź ceny i otrzymuj alerty, gdy cena spadnie na dowolnej stronie</translation>

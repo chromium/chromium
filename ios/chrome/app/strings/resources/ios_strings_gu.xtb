@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> તરીકે સાઇન ઇન થયા</translation>
 <translation id="1149401351239820326">સમય સમાપ્તિ મહિનો</translation>
 <translation id="1150989369772528668">કૅલેન્ડર</translation>
+<translation id="1161444134753003495">સાઇન ઇન કરો</translation>
 <translation id="1161663161838091892">આગળ વધવા માટે ટૅબ અને ઇતિહાસ સિંક કરો</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} ક્રેડિટ કાર્ડ}one{{count} ક્રેડિટ કાર્ડ}other{{count} ક્રેડિટ કાર્ડ}}</translation>
 <translation id="1164891049599601209">છેતરામણી સાઇટ પર પ્રવેશ કર્યો</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">છૂપા મોડમાં બ્રાઉઝ કરવા માટે તમે જમણી તરફ સ્ક્રોલ કરી શકો છો.</translation>
 <translation id="2079545284768500474">છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="2085876078937250610">સાચવો…</translation>
+<translation id="2089180529062519164">માઇક્રોફોન ચાલુ કરો</translation>
 <translation id="2096239473850415494">ડાઉનલોડ કરી શકતા નથી</translation>
 <translation id="2096716221239095980">બધો ડેટા ડિલીટ કરો</translation>
 <translation id="2104436223719117661">વલણમાં છે એ શોધો</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{આ સાઇટ માટે નવો પાસવર્ડ}one{આ સાઇટ માટે નવો પાસવર્ડ}other{આ સાઇટ માટે નવા પાસવર્ડ}}</translation>
 <translation id="3933372629914873850">તમે <ph name="URL" />માં સાઇન ઇન કરશો</translation>
 <translation id="3934905113567851655">કદ બદલવા માટે પિન્ચ કરો</translation>
+<translation id="393732545649378031">એકાઉન્ટ</translation>
 <translation id="3940195383040445971">ટૅબ પર કિંમત ટ્રૅક કરો</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ટૅબ બંધ કરો}one{{COUNT} ટૅબ બંધ કરો}other{{COUNT} ટૅબ બંધ કરો}}</translation>
 <translation id="3946483119107054883">CSV પર ડાઉનલોડ કરો</translation>
@@ -1469,6 +1472,7 @@
 <translation id="6140948187512243695">વિગતો બતાવો</translation>
 <translation id="6144589619057374135">છૂપા મોડમાં ${url} ખોલો</translation>
 <translation id="6146563240635539929">વીડિયો</translation>
+<translation id="6148392728478209113">શું તમે હજી પણ Liveનો ઉપયોગ કરી રહ્યાં છો? Gemini સાથે વાત કરવાનું ચાલુ રાખવા માટે લાઇવ બટન પર ટૅપ કરો</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> વડે છૂપા ટૅબ અનલૉક કરો</translation>
 <translation id="6152340033632117531">નિષ્ક્રિય</translation>
 <translation id="6152406514676263192">તમારી રુચિઓના આધારે સૌથી વધુ સંબંધિત કન્ટેન્ટ જોવા માટે સિંક કરો.</translation>
@@ -2117,6 +2121,7 @@
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> માટે રિમાઇન્ડર સેટ કર્યું</translation>
 <translation id="8320212361750431956">તાજેતરની ઍક્ટિવિટી</translation>
 <translation id="8325455175867928593">"તમારી રુચિઓ પર આધારિત રિવ્યૂ" છુપાવો</translation>
+<translation id="8333459276976141586">Live તમારા માઇક્રોફોનનો ઉપયોગ કરશે. લાઇવ બટન પર ટૅપ કરવાથી માઇક ચાલુ થઈ જાય છે. માઇક બંધ કરવા માટે, રોકો બટન પર ટૅપ કરો અથવા Gemini બંધ કરો.</translation>
 <translation id="833647236762414178">સાઇટ અને ઍપમાં સરળતાથી સાઇન ઇન કરવા માટે, તમારા પાસવર્ડ અને પાસકી બનાવો, તેને સાચવો અને મેનેજ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="8345328955902001853">{count,plural, =1{લેવલ અપ કરવા માટે વધુ 1 કાર્ય પૂર્ણ કરો}one{લેવલ અપ કરવા માટે વધુ {count} કાર્ય પૂર્ણ કરો}other{લેવલ અપ કરવા માટે વધુ {count} કાર્ય પૂર્ણ કરો}}</translation>
@@ -2193,6 +2198,7 @@
 <translation id="8571019948162152515">"<ph name="FILENAME" />"ને ડિલીટ કરીએ?</translation>
 <translation id="8571213806525832805">છેલ્લા 4 અઠવાડિયા</translation>
 <translation id="8577056989960190117">સમયસમાપ્તિનું વર્ષ <ph name="YEAR" /> ઑટોમૅટિક રીતે ભરાય</translation>
+<translation id="8582026929965253036">Gemini વડે Live થાઓ</translation>
 <translation id="8587001564479545614">કોઈ રિકવરી પિન બનાવો</translation>
 <translation id="8588404856427128947">બંધ</translation>
 <translation id="8590286732816598906">ટૅબનું ગ્રૂપ, <ph name="GROUP_TITLE" />, મેનૂ.</translation>
@@ -2267,6 +2273,7 @@
 <translation id="8803526663383843427">જ્યારે ચાલુ હોય</translation>
 <translation id="8803639129939845298">સુરક્ષિત</translation>
 <translation id="8813277370772331957">મને પછીથી યાદ કરાવો</translation>
+<translation id="8814308045751067027">લાઇવનો ઉપયોગ કરવા માટે, સેટિંગમાં જઈને Chromeને તમારા માઇક્રોફોનનો ઍક્સેસ આપો</translation>
 <translation id="8814719628147284151">ચાલુ રાખો</translation>
 <translation id="881559332211266856">નિવારણ નંબર અપડેટ કરો</translation>
 <translation id="8817524703470045896">કિંમતો ટ્રૅક કરો અને કોઈપણ સાઇટ પર કિંમતમાં ઘટાડો થાય ત્યારે અલર્ટ મેળવો</translation>

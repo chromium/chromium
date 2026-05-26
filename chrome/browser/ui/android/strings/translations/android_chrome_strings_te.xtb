@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">హిస్టరీ సింక్</translation>
 <translation id="1111673857033749125">మీ ఇతర పరికరాల్లో సేవ్ చేసిన బుక్‌మార్క్‌లు ఇక్కడ చూపబడతాయి.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, పిక్చర్-ఇన్-పిక్చర్ ట్యాబ్</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 విండోను రీస్టోర్ చేయండి}other{# విండోలను రీస్టోర్ చేయండి}}</translation>
 <translation id="1126696498560056882">ఈ పరికరంలోని ఖాతాలను మేనేజ్ చేయండి</translation>
 <translation id="1135018701024399762">మీ డివైజ్‌ను ఉపయోగించే ఇతరుల నుండి మీ బ్రౌజింగ్‌ను అజ్ఞాత మోడ్ ప్రైవేట్‌గా ఉంచుతుంది</translation>
 <translation id="113752097246673894">మీ డివైజ్‌లన్నింటిలో మీ బుక్‌మార్క్‌లను, మరిన్నింటిని పొందడానికి, <ph name="EMAIL" />‌గా Chromeకు సైన్ ఇన్ చేయండి</translation>
@@ -510,6 +511,7 @@
 <translation id="3166827708714933426">ట్యాబ్ మరియు విండో షార్ట్‌కట్‌లు</translation>
 <translation id="3167258285411721858">మీరు <ph name="HOST_NAME" /> కోసం మొబైల్ సైట్‌ను రిక్వెస్ట్ చేయవచ్చు</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, అజ్ఞాత మోడ్‌లో మ్యూట్ చేసే పిన్ చేసిన ట్యాబ్</translation>
+<translation id="3183941812169784232">విండోలన్నింటినీ రీస్టోర్ చేయాలా?</translation>
 <translation id="3187472288455401631">యాడ్ మెజర్‌మెంట్</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> ట్యాబ్ గ్రూప్</translation>
 <translation id="3200536777393523575">మీ ప్రస్తుత విండోను మూసివేయాలా?</translation>
@@ -723,6 +725,7 @@
 <translation id="4164642020717536140">వేగవంతమైన, సురక్షితమైన వెబ్ బ్రౌజింగ్</translation>
 <translation id="4165077084524712774">మరిన్ని టూల్స్</translation>
 <translation id="4170577491341606575">మీ డేటాను పొందుతోంది\u2026</translation>
+<translation id="4176838562184310003">Chrome సరిగ్గా షట్ డౌన్ కాలేదు, క్లోజ్ అయిపోయిన మీ విండోలను, ట్యాబ్‌లను అది రీస్టోర్ చేయడానికి ట్రై చేయవచ్చు. రీస్టోర్ అయినప్పుడు కొన్ని విండోలు మినిమైజ్ అయి ఉండవచ్చు.</translation>
 <translation id="4177222230309051052">మీ బుక్‌మార్క్‌లు అన్నిటినీ పొందండి</translation>
 <translation id="4177501066905053472">యాడ్ టాపిక్‌లు</translation>
 <translation id="417865198503699526">సెట్టింగ్ కోసం సెర్చ్ చేయండి</translation>
@@ -1072,6 +1075,7 @@
 <translation id="5628604359369369630">చదవనివి - ఆఫ్‌లైన్‌లో అందుబాటులో ఉన్నాయి</translation>
 <translation id="5631483240431073854">తెరిచిన ట్యాబ్‌లను మేనేజ్ చేయండి</translation>
 <translation id="5632485077360054581">ఎలా చేయాలో నాకు చూపించు</translation>
+<translation id="5639031457248936693"><ph name="EXTENSION_NAME" />‌కు రన్ చేయడానికి <ph name="WEBSITE" />‌కు మీ అనుమతి అవసరం</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" />‌గా సైన్ ఇన్ చేశారు. Google ఖాతా ఎర్రర్. సెట్టింగ్‌లను తెరుస్తుంది.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />సెర్చ్ హిస్టరీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK2" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు</translation>
 <translation id="5648166631817621825">గత 7 రోజులు</translation>
@@ -1877,6 +1881,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome, మీరు మెరుగుపరచగల బలహీనమైన పాస్‌వర్డ్‌ను కనుగొంది}other{Chrome, మీరు మెరుగుపరచగల # బలహీన పాస్‌వర్డ్‌లను కనుగొంది}}</translation>
 <translation id="8766529642647037772">ఇటువంటి హైలైట్ చేయబడిన లింక్‌ను క్రియేట్ చేయాలా?</translation>
 <translation id="8769783688897433958">సైట్ సమాచారాన్ని, అనుమతులను చూడండి</translation>
+<translation id="8786293874273448556"><ph name="COUNT" /> ఎక్స్‌టెన్షన్‌లను రన్ చేయడానికి <ph name="WEBSITE" />‌కు మీ అనుమతి అవసరం</translation>
 <translation id="8788265440806329501">నావిగేషన్ హిస్టరీ మూసివేయబడింది</translation>
 <translation id="8790193082819560975">కొత్త ట్యాబ్‌లో ప్రోడక్ట్ కోసం కొనుగోలు ఆప్షన్‌లను సెర్చ్ చేయడానికి ట్యాప్ చేయండి.</translation>
 <translation id="8798449543960971550">చదవండి</translation>

@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Za brskanje v anonimnem načinu lahko povlečete desno.</translation>
 <translation id="2079545284768500474">Razveljavi</translation>
 <translation id="2085876078937250610">Shrani …</translation>
+<translation id="2089180529062519164">Vklopite mikrofon</translation>
 <translation id="2096239473850415494">Ni bilo mogoče prenesti</translation>
 <translation id="2096716221239095980">Izbriši vse podatke</translation>
 <translation id="2104436223719117661">Iskanja v trendu</translation>
@@ -1506,6 +1507,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6241132809279377987">Odklenite več funkcij za iPhone z Googlovimi aplikacijami</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>
 <translation id="6251835855431997163">Samodejno izpolnjevanje »<ph name="VALUE" />«</translation>
+<translation id="6253686838150111720">Prijava na spletnem mestu <ph name="URL" /></translation>
 <translation id="6254066287920239840">Povezave namesto v brskalniku odpri v aplikaciji.</translation>
 <translation id="6259928806013786178">Način za branje ni uspel</translation>
 <translation id="6268773951964630964">Iskanje slike, ki ste jo kopirali</translation>
@@ -2116,6 +2118,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8319282042900445670">Opomnik je nastavljen za ta čas: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna dejavnost</translation>
 <translation id="8325455175867928593">Skrij »Mnenja na podlagi vaših zanimanj«</translation>
+<translation id="8333459276976141586">Funkcija Live bo uporabila vaš mikrofon. Če se dotaknete gumba za funkcijo Live, se vklopi mikrofon. Če ga želite izklopiti, se dotaknite gumba za ustavitev ali zaprite Geminija.</translation>
 <translation id="833647236762414178">Ustvarite, shranite in upravljajte gesla in ključe za dostop, da se boste lahko preprosto prijavili na spletnih mestih in v aplikacijah. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varnostno kopirajte vsebino in jo uporabljajte v poljubni napravi.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Dokončajte še 1 opravilo, da boste dosegli naslednjo stopnjo}one{Dokončajte še {count} opravilo, da boste dosegli naslednjo stopnjo}two{Dokončajte še {count} opravili, da boste dosegli naslednjo stopnjo}few{Dokončajte še {count} opravila, da boste dosegli naslednjo stopnjo}other{Dokončajte še {count} opravil, da boste dosegli naslednjo stopnjo}}</translation>
@@ -2192,6 +2195,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8571019948162152515">Ali želite izbrisati »<ph name="FILENAME" />«?</translation>
 <translation id="8571213806525832805">Zadnji 4 tedni</translation>
 <translation id="8577056989960190117">Samodejno izpolni leto poteka <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Pogovor Live z Geminijem</translation>
 <translation id="8587001564479545614">Ustvarjanje kode PIN za obnovitev</translation>
 <translation id="8588404856427128947">Izklop</translation>
 <translation id="8590286732816598906">Skupina zavihkov, <ph name="GROUP_TITLE" />, meni.</translation>
@@ -2266,6 +2270,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8803526663383843427">Če je to vklopljeno</translation>
 <translation id="8803639129939845298">Varno</translation>
 <translation id="8813277370772331957">Opomni me pozneje</translation>
+<translation id="8814308045751067027">Če želite uporabljati funkcijo Live, Chromu v nastavitvah omogočite dostop do mikrofona</translation>
 <translation id="8814719628147284151">Naprej</translation>
 <translation id="881559332211266856">Posodobite kontrolno številko</translation>
 <translation id="8817524703470045896">Spremljajte cene in prejemajte opozorila, ko se cena zniža na katerem koli spletnem mestu</translation>

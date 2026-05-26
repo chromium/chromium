@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Գինը ցածր է</translation>
 <translation id="3070005020161560471">Ավտոմատ թարգմանել</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> հավելվածը կբացվի Chrome-ում։ Շարունակելով՝ դուք ընդունում եք <ph name="BEGIN_LINK1" />Google-ի օգտագործման պայմանները<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />Google Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմանները<ph name="END_LINK2" />։ Կիրառվում է նաև <ph name="BEGIN_LINK3" />Գաղտնիության քաղաքականությունը<ph name="END_LINK3" />։</translation>
+<translation id="3080375898390966733">Որոնել ներդիրում Տեսապակու միջոցով</translation>
 <translation id="3080525922482950719">Դուք կարող եք պահել էջերը՝ ավելի ուշ կամ անցանց ռեժիմում կարդալու համար</translation>
 <translation id="3087734570205094154">Ներքև</translation>
 <translation id="3091010850649238832">Ցույց տալ սեղմատախտակի բովանդակությունը</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Կիսվել պատկերով</translation>
 <translation id="3385749568468586663">Gemini-ը հասանելի չէ ինկոգնիտո ռեժիմում</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> ֆայլի ներբեռնումը ձախողվեց՝ ֆայլային համակարգի սխալի պատճառով:</translation>
+<translation id="3391311825344469964">Դուք կարող եք կառավարել ձեր պատուհանները Chrome-ի պատուհանների կառավարչում</translation>
 <translation id="3417835166382867856">Որոնել ներդիրներ</translation>
 <translation id="3430670036890315772">Եթե անջատեք պրոֆիլի կողպումը, ձեր պահած տեղեկությունները կհեռացվեն</translation>
 <translation id="3435575784518354875">Ձեր գաղտնաբառերի հասանելիությունը պահպանելու համար արտահանեք դրանք հիմա, թարմացրեք Google Play ծառայությունները և այնուհետև նորից ներմուծեք դրանք Google գաղտնաբառերի կառավարիչում։ <ph name="BEGIN_LINK" />Դիտել բոլոր ցուցումները<ph name="END_LINK" />։</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">Չկարդացված – Հասանելի է անցանց ռեժիմում</translation>
 <translation id="5631483240431073854">Կառավարել բացված ներդիրները</translation>
 <translation id="5632485077360054581">Ցույց տալ, թե ինչպես</translation>
+<translation id="5639031457248936693"><ph name="EXTENSION_NAME" /> ընդլայնումն աշխատեցնելու համար <ph name="WEBSITE" /> կայքին ձեր թույլտվությունն է հարկավոր</translation>
 <translation id="564121214411935612">Դուք մուտք եք գործել որպես <ph name="USER_NAME" />։ Google հաշվի սխալ։ Բացում է կարգավորումները։</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Որոնումների պատմությունը<ph name="END_LINK1" /> և <ph name="BEGIN_LINK2" />այլ գործողություններ<ph name="END_LINK2" /> կարող են պահվել ձեր Google հաշվում</translation>
 <translation id="5648166631817621825">Վերջին 7 օրվա</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome-ը թույլ գաղտնաբառ է գտել, որը կարող եք ավելի հուսալի դարձնել}one{Chrome-ը # թույլ գաղտնաբառ է գտել, որը կարող եք ավելի հուսալի դարձնել}other{Chrome-ը # թույլ գաղտնաբառ է գտել, որոնք կարող եք ավելի հուսալի դարձնել}}</translation>
 <translation id="8766529642647037772">Ստեղծե՞լ այս հղման նման ընդգծված հղում</translation>
 <translation id="8769783688897433958">Դիտել կայքի տեղեկություններն ու թույլտվությունները</translation>
+<translation id="8786293874273448556"><ph name="COUNT" /> ընդլայնումներն աշխատեցնելու համար <ph name="WEBSITE" /> կայքին ձեր թույլտվությունն է հարկավոր</translation>
 <translation id="8788265440806329501">Նավիգացիայի պատմության թերթը փակված է</translation>
 <translation id="8790193082819560975">Հպեք՝ գնման տարբերակները նոր ներդիրում բացելու համար</translation>
 <translation id="8798449543960971550">Ընթերցված</translation>

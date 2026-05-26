@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> ஆக உள்நுழைந்துள்ளீர்கள்</translation>
 <translation id="1149401351239820326">காலாவதியாகும் மாதம்</translation>
 <translation id="1150989369772528668">கேலெண்டர்</translation>
+<translation id="1161444134753003495">உள்நுழை</translation>
 <translation id="1161663161838091892">தொடர, பக்கங்களையும் பதிவுகளையும் ஒத்திசையுங்கள்</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} கிரெடிட் கார்டு}other{{count} கிரெடிட் கார்டுகள்}}</translation>
 <translation id="1164891049599601209">ஏமாற்றக்கூடிய தளத்தில் கடவுச்சொல்லை உள்ளிட்டுள்ளீர்கள்</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">மறைநிலையில் உலாவ வலதுபுறம் ஸ்க்ரோல் செய்யலாம்.</translation>
 <translation id="2079545284768500474">செயல்தவிர்</translation>
 <translation id="2085876078937250610">சேமி…</translation>
+<translation id="2089180529062519164">மைக்ரோஃபோனை ஆன் செய்யவும்</translation>
 <translation id="2096239473850415494">பதிவிறக்க முடியவில்லை</translation>
 <translation id="2096716221239095980">அனைத்து தரவையும் நீக்கு</translation>
 <translation id="2104436223719117661">பிரபலமான தேடல்கள்</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{இந்தத் தளத்திற்கான புதிய கடவுச்சொல்}other{இந்தத் தளத்திற்கான புதிய கடவுச்சொற்கள்}}</translation>
 <translation id="3933372629914873850"><ph name="URL" /> என்ற தளத்தில் உள்நுழைவீர்கள்</translation>
 <translation id="3934905113567851655">அளவை மாற்றுவதற்குப் பின்ச் செய்யவும்</translation>
+<translation id="393732545649378031">கணக்கு</translation>
 <translation id="3940195383040445971">பக்கங்களில் விலையைக் கண்காணித்தல்</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} பக்கத்தை மூடு}other{{COUNT} பக்கங்களை மூடு}}</translation>
 <translation id="3946483119107054883">CSV ஃபைலாகப் பதிவிறக்கும்</translation>
@@ -1469,6 +1472,7 @@
 <translation id="6140948187512243695">விவரங்களைக் காண்பி</translation>
 <translation id="6144589619057374135">${url} இணைப்பை மறைநிலையில் திற</translation>
 <translation id="6146563240635539929">வீடியோக்கள்</translation>
+<translation id="6148392728478209113">இன்னும் Live பயன்படுத்துகிறீர்களா? Geminiயுடன் தொடர்ந்து பேச Live பட்டனைத் தட்டுங்கள்</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> மூலம் மறைநிலைப் பக்கங்களை அன்லாக் செய்யும்</translation>
 <translation id="6152340033632117531">செயலில் இல்லை</translation>
 <translation id="6152406514676263192">உங்கள் ஆர்வங்களின் அடிப்படையில் மிகவும் தொடர்புடைய உள்ளடக்கத்தைப் பார்க்க ஒத்திசைக்கவும்.</translation>
@@ -2117,6 +2121,7 @@
 <translation id="8319282042900445670"><ph name="DATE" />, <ph name="TIME" />க்கு நினைவூட்டல் அமைக்கப்பட்டது</translation>
 <translation id="8320212361750431956">சமீபத்திய செயல்</translation>
 <translation id="8325455175867928593">"உங்கள் ஆர்வங்களின் அடிப்படையிலான கருத்துகள்" என்பதை மறை</translation>
+<translation id="8333459276976141586">Live உங்கள் மைக்ரோஃபோனைப் பயன்படுத்தும். Live பட்டனைத் தட்டினால் மைக் ஆன் செய்யப்படும். மைக்கை ஆஃப் செய்ய, நிறுத்துவதற்கான பட்டனைத் தட்டவும் அல்லது Geminiயை மூடவும்.</translation>
 <translation id="833647236762414178">தளங்களிலும் ஆப்ஸிலும் எளிதாக உள்நுழைய, கடவுச்சொற்களையும் கடவுச்சாவிகளையும் உருவாக்கலாம் சேமிக்கலாம் நிர்வகிக்கலாம். <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">உங்கள் தரவைக் காப்புப் பிரதி எடுத்து எந்தச் சாதனத்தில் வேண்டுமானாலும் பயன்படுத்தலாம்.</translation>
 <translation id="8345328955902001853">{count,plural, =1{அடுத்த நிலைக்குச் செல்ல மேலும் 1 பணியை நிறைவுசெய்யுங்கள்}other{அடுத்த நிலைக்குச் செல்ல மேலும் {count} பணிகளை நிறைவுசெய்யுங்கள்}}</translation>
@@ -2193,6 +2198,7 @@
 <translation id="8571019948162152515">"<ph name="FILENAME" />" ஐ நீக்க வேண்டுமா?</translation>
 <translation id="8571213806525832805">கடந்த 4 வாரங்கள்</translation>
 <translation id="8577056989960190117"><ph name="YEAR" /> என்ற காலாவதியாகும் வருடத்தைத் தானாக நிரப்பும்</translation>
+<translation id="8582026929965253036">Gemini உடன் Liveவில் உரையாடுங்கள்</translation>
 <translation id="8587001564479545614">மீட்டெடுப்புப் பின்னை (PIN) உருவாக்குதல்</translation>
 <translation id="8588404856427128947">ஆஃப்</translation>
 <translation id="8590286732816598906">பக்கக் குழு, <ph name="GROUP_TITLE" />, மெனு.</translation>
@@ -2267,6 +2273,7 @@
 <translation id="8803526663383843427">இந்த அம்சம் செயலில் இருக்கும்போது</translation>
 <translation id="8803639129939845298">பாதுகாப்பானது</translation>
 <translation id="8813277370772331957">பின்னர் நினைவூட்டு</translation>
+<translation id="8814308045751067027">Live பயன்படுத்த, உங்கள் மைக்ரோஃபோனை Chrome அணுக அமைப்புகளில் அனுமதி வழங்கவும்</translation>
 <translation id="8814719628147284151">தொடர்க</translation>
 <translation id="881559332211266856">குறைதீர்வு எண்ணை மாற்றவா?</translation>
 <translation id="8817524703470045896">எந்தத் தளத்திலும் விலைகளைக் கண்காணிக்கலாம், விலை குறைந்தால் அதுகுறித்த விழிப்பூட்டல்களைப் பெறலாம்</translation>

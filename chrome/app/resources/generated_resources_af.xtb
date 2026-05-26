@@ -666,6 +666,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
     <ph name="BEGIN_LINK" />ontfoutloglêers<ph name="END_LINK" /> (aanbeveel)</translation>
 <translation id="1454223536435069390">Neem skermkiekie</translation>
 <translation id="145432137617179457">Speltoetstale</translation>
+<translation id="1454523475536875350">Maak skakel in onderaansig oop</translation>
 <translation id="1455009947184333152">Het vaardigheid uitgevee</translation>
 <translation id="1455119378540982311">Stel vooraf jou venstergroottes</translation>
 <translation id="1456849775870359518">Jou oortjies sal weer oopgemaak word</translation>
@@ -804,6 +805,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1547123415014299762">Derdepartywebkoekies word toegelaat</translation>
 <translation id="1547808936554660006">Ek verstaan dat Powerwash nie geïnstalleerde e-SIM-profiele sal verwyder nie</translation>
 <translation id="1547936895218027488">Klik die kantpaneelikoon om dit oop te maak</translation>
+<translation id="1548265680751768570">Gemini in Chrome is nie beskikbaar nie</translation>
 <translation id="1549275686094429035">ARC-geaktiveer</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> wil toegang tot <ph name="VOLUME_NAME" /> hê. Dit sal dalk jou lêers wysig of uitvee.</translation>
 <translation id="1549966883323105187">Kry jou gestoorde wagwoorde vinniger</translation>
@@ -960,6 +962,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1648439345221797326">ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Gebruik Wi-Fi of selnetwerke om ligging te bepaal</translation>
 <translation id="1650407365859096313">Maak in nuwe oortjie oop, toestemming is <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">Maak skakel in onderaansig oop</translation>
 <translation id="1650801028905250434">Jou lêers in My Drive sal outomaties met jou Chromebook gesinkroniseer word sodat jy hulle sonder ’n internetverbinding kan kry. Jy kan dit enige tyd in Instellings &gt; Lêers verander.</translation>
 <translation id="1651008383952180276">Jy moet dieselfde wagfrase twee keer invoer</translation>
 <translation id="1651609627703324721">Hierdie oortjie bied VR-inhoud vir ’n kopstuk aan</translation>
@@ -1159,6 +1162,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1784849162047402014">Toestel het min skyfspasie beskikbaar</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{As jy “<ph name="APP_NAME" />” deïnstalleer, sal dit ook hierdie app deïnstalleer:}other{As jy “<ph name="APP_NAME" />” deïnstalleer, sal dit ook hierdie apps deïnstalleer:}}</translation>
 <translation id="1786290960428378411">Versoek tans om te lees en te verander</translation>
+<translation id="179021551944139249">Voeg skakel by Leeslys</translation>
 <translation id="1790976235243700817">Verwyder toegang</translation>
 <translation id="1791662854739702043">Geïnstalleer</translation>
 <translation id="1792619191750875668">Uitgebreide skerm</translation>
@@ -1978,6 +1982,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> kan nie veilig afgelaai word nie</translation>
 <translation id="2341392013052489530">Het weergawe <ph name="VERSION" /> gedeïnstalleer, rede: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">Jou kind kan 'n nommer (PIN) pleks van 'n wagwoord gebruik om hierdie toestel te ontsluit. Gaan na Instellings om later 'n PIN te stel.</translation>
+<translation id="2343005971389581619">Maak skakel in boaansig oop</translation>
 <translation id="2343160676229467122">Uitbreidings word nie op <ph name="SITE_NAME" /> toegelaat nie</translation>
 <translation id="2343390523044483367">Rocky Mountains Nasionale Park</translation>
 <translation id="2343747224442182863">Fokus hierdie oortjie</translation>
@@ -4173,6 +4178,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3854348409770521214">Olieskildery</translation>
 <translation id="3854967233147778866">Aanbieding om webwerwe in ander tale te vertaal</translation>
 <translation id="3854976556788175030">Uitvoerlaai is vol</translation>
+<translation id="3855324045699437362">Gemini in Chrome brei uit na verskillende liggings, maar is nie oral beskikbaar nie.</translation>
 <translation id="3855441664322950881">Pakketuitbreiding</translation>
 <translation id="3855676282923585394">Voer boekmerke en instellings in …</translation>
 <translation id="3856023744577163821">Oortjies wat van ’n klets of ’n gedeelde oortjie af oopgemaak word, word ook met Gemini gedeel.</translation>
@@ -5895,6 +5901,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5088427648965532275">Passpoint-verskaffer</translation>
 <translation id="5090637338841444533">Mag nie jou kameraposisie naspoor nie</translation>
 <translation id="5091636240353511739">Wys PIN</translation>
+<translation id="5092567114307895466">Maak seker dat jy kwalifiseer en aan die vereistes voldoen</translation>
 <translation id="5093447877601682598">Stuur terugvoer oor die oortjiestrook</translation>
 <translation id="5093477827231450397">Lys werwe wat jy geblokkeer het wat jy nie wil hê advertensies aan ander werwe moet voorstel nie</translation>
 <translation id="5093569275467863761">Incognito-terug-vorentoe-kasgegeue-subraam: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7742,6 +7749,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6427752304227226701">Gee ’n &amp;onveilige werf aan …</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Geen gestoorde wagwoorde nie.}=1{Gaan tans {COUNT} wagwoord na …}other{Gaan tans {COUNT} wagwoorde na …}}</translation>
 <translation id="6429384232893414837">Kon nie opdateer nie</translation>
+<translation id="6430202563517028640">Voeg skakel by leeslys</translation>
 <translation id="6430814529589430811">Base64-geënkodeerde ASCII, enkele sertifikaat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> wil outomatiese opdaterings vir alle gebruikers van hierdie rekening opstel.</translation>
 <translation id="6434104957329207050">Puntskandeerspoed</translation>
@@ -10187,6 +10195,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8137559199583651773">Bestuur uitbreidings</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Hersien 1 uitbreiding wat onveilig kan wees}other{Hersien {NUM_EXTENSIONS} uitbreidings wat onveilig kan wees}}</translation>
 <translation id="8138217203226449454">Het jy bedoel om jou soekverskaffer te verander?</translation>
+<translation id="813858113027420189">Maak skakel in boaansig oop</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" />-status</translation>
 <translation id="8139440916039659819">Skermpyltjieversnelling</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Možete da skrolujete udesno da biste pregledali u režimu bez arhiviranja.</translation>
 <translation id="2079545284768500474">Opozovi</translation>
 <translation id="2085876078937250610">Sačuvaj…</translation>
+<translation id="2089180529062519164">Uključite mikrofon</translation>
 <translation id="2096239473850415494">Preuzimanje nije uspelo</translation>
 <translation id="2096716221239095980">Izbriši sve podatke</translation>
 <translation id="2104436223719117661">Pretrage u trendu</translation>
@@ -2117,6 +2118,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8319282042900445670">Podsetnik je podešen za <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nedavna aktivnost</translation>
 <translation id="8325455175867928593">Sakrij Recenzije na osnovu interesovanja</translation>
+<translation id="8333459276976141586">Live će koristiti mikrofon. Dodirom na dugme Live uključuje se mikrofon. Da biste isključili mikrofon, dodirnite dugme Zaustavi ili zatvorite Gemini.</translation>
 <translation id="833647236762414178">Pravite i čuvajte lozinke i pristupne ključeve i upravljajte njima da biste se lako prijavljivali na sajtove i u aplikacije. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Pravite rezervne kopije sadržaja i koristite ga na bilo kom uređaju.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Dovršite još 1 zadatak da biste prešli na sledeći nivo}one{Dovršite još {count} zadatak da biste prešli na sledeći nivo}few{Dovršite još {count} zadatka da biste prešli na sledeći nivo}other{Dovršite još {count} zadataka da biste prešli na sledeći nivo}}</translation>
@@ -2193,6 +2195,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8571019948162152515">Želite da izbrišete „<ph name="FILENAME" />“?</translation>
 <translation id="8571213806525832805">Poslednje 4 nedelje</translation>
 <translation id="8577056989960190117">Automatski popunite godinu isteka <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Počnite da koristite Live sa Gemini-jem</translation>
 <translation id="8587001564479545614">Napravite PIN za vraćanje pristupa nalogu</translation>
 <translation id="8588404856427128947">Isključeno</translation>
 <translation id="8590286732816598906">Grupa kartica, <ph name="GROUP_TITLE" />, meni.</translation>
@@ -2267,6 +2270,7 @@ Handoff treba da se omogući u odeljku General (Opšte) u meniju Settings (Pode
 <translation id="8803526663383843427">Kada je uključeno</translation>
 <translation id="8803639129939845298">Bezbedan</translation>
 <translation id="8813277370772331957">Podseti me kasnije</translation>
+<translation id="8814308045751067027">Da biste koristili Live, odobrite Chrome-u pristup mikrofonu u podešavanjima</translation>
 <translation id="8814719628147284151">Nastavi</translation>
 <translation id="881559332211266856">Ažurirajte broj obeštećenja</translation>
 <translation id="8817524703470045896">Pratite cene i dobijajte obaveštenja kada cena padne na bilo kom sajtu</translation>

@@ -9350,12 +9350,6 @@ Als dit beleid niet is ingesteld voor een site, is het beleid van <ph name="DEFA
       Als het beleid niet wordt ingesteld, wordt de plank standaard onderaan het scherm geplaatst en kan de gebruiker de positie van de plank zelf wijzigen.</translation>
 <translation id="7039815268521168329">Voice Match-proces van de Google Assistent laten zien tijdens de eerste installatie</translation>
 <translation id="7040229947030068419">Voorbeeldwaarde:</translation>
-<translation id="7044626519138840387">Een lijst met oorsprongen van Remote Desktop-client-apps die WebAuthn API-verzoeken kunnen uitvoeren die afkomstig zijn van een browsesessie op een externe host.
-
-Elke oorsprong die is ingesteld in dit beleid, kan WebAuthn-verzoeken indienen voor Relying Party-ID's (RP-ID's) die normaal gesproken niet kunnen worden geclaimd.
-
-Alleen geldige HTTPS-oorsprongen zijn toegestaan. Jokertekens worden niet ondersteund.
-Ongeldige vermeldingen worden genegeerd.</translation>
 <translation id="7044883996351280650">De Android-service 'Back-up maken en terugzetten' beheren</translation>
 <translation id="7045221780834308118">Als je het beleid toepast, kunnen web-apps van derden de Desk API gebruiken om <ph name="PRODUCT_OS_NAME" />-bureaus te beheren. Als je het beleid niet instelt of niet toepast, is <ph name="DESK_API_NAME" /> niet beschikbaar. Het beleid geldt alleen voor ingeschreven apparaten.</translation>
 <translation id="7046113122884041950">Smart Lock niet toestaan</translation>

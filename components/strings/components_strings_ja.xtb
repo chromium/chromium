@@ -259,6 +259,7 @@
 <translation id="1392813880755413602">OpenDocument プレゼンテーション</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> からデータが送信されませんでした。</translation>
 <translation id="1393071644879491291">アクセスしようとしたサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />この警告の詳細<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">タブに表示されている場合でも、ここに追加したサイトは回答で参照されません。現在スレッドで使用されているサイトを追加する場合、スレッドでそのサイトの参照を停止するまで、最大で 30 分ほどかかることがあります。</translation>
 <translation id="1402151528875251561">サイドパネルに履歴を表示</translation>
 <translation id="1405567553485452995">ライトグリーン</translation>
 <translation id="1406370515365284486">お支払い方法は引き続き保存されます</translation>
@@ -1552,6 +1553,7 @@
 <translation id="343474037147570563">アップロードまたは添付したファイルは分析のため Google Cloud または第三者に送信されます。たとえば、機密データやマルウェアがないかスキャンされ、会社のポリシーに基づいて保存され、管理者に公開されます。</translation>
 <translation id="3435557549311968410">連続（短尺）</translation>
 <translation id="3435738964857648380">セキュリティ</translation>
+<translation id="3438509337461223476">すべてのスレッドで開いている関連タブを自動的に共有</translation>
 <translation id="3440783957068352691">スクエア</translation>
 <translation id="3441653493275994384">画面</translation>
 <translation id="3443504041532578451">光ディスク（サテン）</translation>
@@ -2483,6 +2485,7 @@
 <translation id="4894390983254799375">デバイス ID、名前、OS バージョン、OS ユーザー名など</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">オリンピック</translation>
+<translation id="4897851261703006488">このポリシーで指定できるヘッダーのサイズは最大 <ph name="MAX_HEADER_SIZE_LIMIT" /> KB です。</translation>
 <translation id="4898742041545089450">このトピックのブロックを解除しました。トピックは閲覧履歴に基づいてアクティブになることがあります。</translation>
 <translation id="4900217275619098670">ロール 9</translation>
 <translation id="4901052769830245369">ラベル（半光沢）</translation>
@@ -2730,6 +2733,7 @@
 <translation id="5284295735376057059">ドキュメント プロパティ</translation>
 <translation id="528468243742722775">終了</translation>
 <translation id="5285468538058987167">強力な顧客認証（SCA）を使用する</translation>
+<translation id="5286195392366054103">このポリシーには、<ph name="MAX_URL_PATTERNS_LIMIT" /> 個を超える URL パターンが指定されています。最初の <ph name="MAX_URL_PATTERNS_LIMIT" /> 個の URL パターンのみが使用されます。</translation>
 <translation id="5287456746628258573">このサイトでは古いセキュリティ設定を使用しています。このサイトにパスワードやクレジット カード番号などの情報を送信すると流出する恐れがあります。</translation>
 <translation id="5288108484102287882">ポリシー値の検証で警告が返されました</translation>
 <translation id="5289384342738547352">複数ドキュメントの処理</translation>
@@ -3848,6 +3852,7 @@
 <translation id="7016992613359344582">料金の請求は 1 回限りの場合も繰り返し行われる場合もあり、課金されたかどうかわからないこともあります。</translation>
 <translation id="701757816833614688">ビジュアル アート、デザイン教育</translation>
 <translation id="7020464868401003526">ショートカットの URL が指定可能な最大文字数（<ph name="MAX_LENGTH" /> 文字）を超えています。</translation>
+<translation id="7020581144940000377">おおよその位置情報を使用</translation>
 <translation id="702275896380648118">このサイトでは、ユーザーの好みを判断して他のサイトに広告を提案します。また、より関連性の高い広告を表示するために Chrome から広告のトピックを取得します。</translation>
 <translation id="7023162328967545559">管理者の警告</translation>
 <translation id="7023765275461720661">アカウントをリンクして <ph name="BNPL_ISSUER_NAME" /> で支払いますか？</translation>
@@ -3958,6 +3963,7 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">ご購入手続き時にこのコードを使用してください。有効期限: <ph name="DATE" />。</translation>
 <translation id="7195852673246414183">この設定をオンにしたら、このタブに戻って作成を開始してください</translation>
+<translation id="7196153352301578792">よりパーソナライズされた回答を得るため、質問に関連する可能性のある開いているタブのページ コンテンツと URL が Google に自動的に送信されます。Chrome で共有されるのは、作業中のウィンドウのタブのみです。</translation>
 <translation id="7196370964328811506">このカードをこのデバイスに保存すると、Chrome で購入する際に自動入力されます</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">次の開いているタブを考慮しました。</translation>
@@ -4372,6 +4378,7 @@
 <translation id="7805268272389338048">暗号化により個人情報が保護されます</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7805906048382884326">ヒントを閉じる</translation>
+<translation id="780756914888723112">このポリシーで指定できるルールあたりのヘッダー数は最大 <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> 個です。各ルールにつき最初の <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> 個のヘッダーのみが使用されます。</translation>
 <translation id="7810410097247356677">カードと暗号化したセキュリティ コードをデバイスに保存すると、次回のお支払いが簡単になります</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Chrome から候補を削除してもよろしいですか？</translation>

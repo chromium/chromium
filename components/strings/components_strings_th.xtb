@@ -1121,6 +1121,7 @@
 <translation id="2719233594187778789">URL ที่ซ้ำกันถูกข้าม: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">คำขอสำเร็จ</translation>
 <translation id="2722622039067384533">เฟอร์นิเจอร์ห้องนั่งเล่น</translation>
+<translation id="2723284907371508295">ปุ่มแท็บเพิ่มเติมจากอุปกรณ์อื่นๆ กด Enter เพื่อดูแท็บเพิ่มเติมจากอุปกรณ์อื่นๆ</translation>
 <translation id="2723669454293168317">เรียกใช้การตรวจสอบความปลอดภัยในการตั้งค่า Chrome</translation>
 <translation id="2726001110728089263">ถาดข้าง</translation>
 <translation id="272616190148046464">บัตรสะสมคะแนนทั้งหมดของคุณ</translation>
@@ -3422,6 +3423,7 @@
 <translation id="6351658970066645919">ลบข้อมูลการท่องเว็บ</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ไม่มี}=1{มีรหัสผ่าน 1 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}=2{มีรหัสผ่าน 2 รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}other{มีรหัสผ่าน # รายการ (สำหรับ <ph name="DOMAIN_LIST" />, ซิงค์แล้ว)}}</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (เรียกอีกอย่างว่า ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab แล้วกด Enter เพื่อดูแท็บเพิ่มเติมจากอุปกรณ์อื่นๆ</translation>
 <translation id="6355392890578844978">เบราว์เซอร์นี้ไม่ได้จัดการโดยบริษัทหรือองค์กรอื่นๆ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">กลุ่มแท็บ "<ph name="GROUP_TITLE_1" />" และ "<ph name="GROUP_TITLE_2" />" ใช้งานไม่ได้อีกต่อไป</translation>
 <translation id="6358088212770985041">แก้ไขวิธีการชำระเงิน</translation>
@@ -4686,6 +4688,7 @@
 <translation id="8301894345671534559">ป้อนรหัส</translation>
 <translation id="830498451218851433">พับครึ่ง</translation>
 <translation id="8308653357438598313">สตรีมมิงวิดีโอสด</translation>
+<translation id="8310477433309274098">ไม่มีค่าธรรมเนียม อัตราดอกเบี้ยต่อปี (APR) ต่ำสุด 0%</translation>
 <translation id="8311895354659782580">การซื้อขายอสังหาริมทรัพย์</translation>
 <translation id="8312841338723044391">สด</translation>
 <translation id="8316555157357957253">กําลังใช้อยู่</translation>
@@ -5262,6 +5265,7 @@
 <translation id="955429569736351433">อนุญาต VR</translation>
 <translation id="955627189349169688">คุณเลือกไม่รับนโยบายนี้ได้ใน<ph name="BEGIN_LINK" />การตั้งค่าการซิงค์ของ Chrome<ph name="END_LINK" /></translation>
 <translation id="95721182352849470">เหลือง 2</translation>
+<translation id="958952958906914932">แท็บเพิ่มเติมจากอุปกรณ์อื่นๆ</translation>
 <translation id="961372935451193190">แท็บและไฟล์</translation>
 <translation id="961663415146723894">เย็บเล่มด้านล่าง</translation>
 <translation id="961856697154696964">ลบข้อมูลการท่องเว็บ</translation>

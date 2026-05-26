@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Нізкая цана</translation>
 <translation id="3070005020161560471">Аўтаматычна перакладаць з наступных моў:</translation>
 <translation id="3072980200212375806">Праграма "<ph name="APP_NAME" />" адкрыецца ў Chrome. Працягваючы, вы згаджаецеся з <ph name="BEGIN_LINK1" />Умовамі выкарыстання Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Дадатковымі ўмовамі выкарыстання Google Chrome і Chrome OS<ph name="END_LINK2" />. Прымяняецца таксама <ph name="BEGIN_LINK3" />Палітыка прыватнасці<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Шукаць на ўкладцы з дапамогай Google Аб’ектыва</translation>
 <translation id="3080525922482950719">Захоўвайце старонкі, каб прачытаць іх пазней або без падключэння да інтэрнэту</translation>
 <translation id="3087734570205094154">Знізу</translation>
 <translation id="3091010850649238832">Паказаць змесціва буфера абмену</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Абагуліць відарыс</translation>
 <translation id="3385749568468586663">Сэрвіс Gemini недаступны ў рэжыме інкогніта</translation>
 <translation id="3387650086002190359">Не ўдалося спампаваць файл "<ph name="FILE_NAME" />" з-за памылак файлавай сістэмы.</translation>
+<translation id="3391311825344469964">Вы можаце кіраваць вокнамі ў Менеджары вокнаў у Chrome</translation>
 <translation id="3417835166382867856">Пошук укладак</translation>
 <translation id="3430670036890315772">Калі вы выключыце блакіроўку профілю, уся захаваная вамі інфармацыя будзе выдалена</translation>
 <translation id="3435575784518354875">Каб захаваць доступ да пароляў, экспартуйце іх, абнавіце сэрвісы Google Play і потым імпартуйце паролі назад у Менеджар пароляў Google. <ph name="BEGIN_LINK" />Глядзець поўныя інструкцыі<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">Непрачытана – Даступна па-за сеткай</translation>
 <translation id="5631483240431073854">Кіраваць адкрытымі ўкладкамі</translation>
 <translation id="5632485077360054581">Паказаць</translation>
+<translation id="5639031457248936693">Вэб-сайту <ph name="WEBSITE" /> патрабуецца ваш дазвол на запуск пашырэння "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="564121214411935612">Вы ўвайшлі як <ph name="USER_NAME" />. Памылка Уліковага запісу Google. Кнопка адкрывае налады.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Гісторыя пошуку<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />звесткі пра іншыя дзеянні<ph name="END_LINK2" /> могуць захоўвацца ва Уліковым запісе Google</translation>
 <translation id="5648166631817621825">За апошнія 7 дзён</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome выявіў ненадзейны пароль, які можна палепшыць}one{Chrome выявіў # ненадзейны пароль, які можна палепшыць}few{Chrome выявіў # ненадзейныя паролі, якія можна палепшыць}many{Chrome выявіў # ненадзейных пароляў, якія можна палепшыць}other{Chrome выявіў # ненадзейнага пароля, якія можна палепшыць}}</translation>
 <translation id="8766529642647037772">Стварыць такую ж вылучаную спасылку, як гэта?</translation>
 <translation id="8769783688897433958">Праглядзець інфармацыю пра сайт і дазволы</translation>
+<translation id="8786293874273448556">Вэб-сайту <ph name="WEBSITE" /> патрабуецца ваш дазвол на запуск наступнай колькасці пашырэнняў: <ph name="COUNT" /></translation>
 <translation id="8788265440806329501">Гісторыя навігацыі закрыта</translation>
 <translation id="8790193082819560975">Націсніце для пошуку варыянтаў куплі гэтага тавару на новай укладцы.</translation>
 <translation id="8798449543960971550">Прачытана</translation>

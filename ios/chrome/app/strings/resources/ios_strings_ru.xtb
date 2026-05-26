@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Чтобы перейти в режим инкогнито, прокрутите экран вправо</translation>
 <translation id="2079545284768500474">Отмена</translation>
 <translation id="2085876078937250610">Сохранить</translation>
+<translation id="2089180529062519164">Включите микрофон</translation>
 <translation id="2096239473850415494">Не удалось скачать</translation>
 <translation id="2096716221239095980">Удалить все данные</translation>
 <translation id="2104436223719117661">Популярное</translation>
@@ -1506,6 +1507,7 @@
 <translation id="6241132809279377987">Пользуйтесь приложениями Google на iPhone</translation>
 <translation id="6247557882553405851">Google Менеджер паролей</translation>
 <translation id="6251835855431997163">Автозаполнение: <ph name="VALUE" /></translation>
+<translation id="6253686838150111720">Войдите в аккаунт на сайте <ph name="URL" /></translation>
 <translation id="6254066287920239840">Открывать ссылки в приложении, а не в браузере.</translation>
 <translation id="6259928806013786178">Не удалось запустить Режим чтения.</translation>
 <translation id="6268773951964630964">Поиск по скопированному изображению</translation>
@@ -2116,6 +2118,7 @@
 <translation id="8319282042900445670">Напоминание установлено на <ph name="DATE" />, <ph name="TIME" />.</translation>
 <translation id="8320212361750431956">Недавние действия</translation>
 <translation id="8325455175867928593">Скрыть карточку "Отзывы, которые могут вас заинтересовать"</translation>
+<translation id="8333459276976141586">Live использует микрофон. Чтобы включить микрофон, нажмите кнопку Live. Чтобы отключить микрофон, нажмите кнопку "Стоп" или закройте Gemini.</translation>
 <translation id="833647236762414178">Создавайте, сохраняйте и изменяйте пароли и ключи доступа, чтобы легко входить в аккаунты на сайтах и в приложениях. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Создайте резервную копию данных и используйте их на любом устройстве.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Выполните ещё 1 задание, чтобы перейти на следующий уровень.}one{Выполните ещё {count} задание, чтобы перейти на следующий уровень.}few{Выполните ещё {count} задания, чтобы перейти на следующий уровень.}many{Выполните ещё {count} заданий, чтобы перейти на следующий уровень.}other{Выполните ещё {count} задания, чтобы перейти на следующий уровень.}}</translation>
@@ -2192,6 +2195,7 @@
 <translation id="8571019948162152515">Удалить файл "<ph name="FILENAME" />"?</translation>
 <translation id="8571213806525832805">Последние 4 недели</translation>
 <translation id="8577056989960190117">Автозаполнить поле годом окончания срока действия: <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Live-чат с Gemini</translation>
 <translation id="8587001564479545614">Создайте резервный PIN-код</translation>
 <translation id="8588404856427128947">Выключено</translation>
 <translation id="8590286732816598906">Группа вкладок, <ph name="GROUP_TITLE" />, Меню.</translation>
@@ -2266,6 +2270,7 @@
 <translation id="8803526663383843427">Если функция включена</translation>
 <translation id="8803639129939845298">Защищено</translation>
 <translation id="8813277370772331957">Напомнить позже</translation>
+<translation id="8814308045751067027">Чтобы использовать Live, предоставьте Chrome доступ к микрофону в настройках.</translation>
 <translation id="8814719628147284151">Продолжить</translation>
 <translation id="881559332211266856">Обновить идентификатор Redress Number?</translation>
 <translation id="8817524703470045896">Отслеживайте цены и получайте оповещения о скидках на любых сайтах.</translation>

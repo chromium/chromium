@@ -259,6 +259,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="1392813880755413602">OpenDocument prezentacija</translation>
 <translation id="139305205187523129">Host <ph name="HOST_NAME" /> nije poslao nikakve podatke.</translation>
 <translation id="1393071644879491291">Napadači na web-lokaciji koju ste pokušali posjetiti mogu vas na prijevaru navesti da instalirate softver ili otkrijete podatke kao što su vaša zaporka, telefonski broj ili broj kreditne kartice. Chrome preporučuje da se vratite na sigurno. <ph name="BEGIN_LEARN_MORE_LINK" />Saznajte više o tom upozorenju<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Odgovori se neće referirati na web-lokacije koje dodate ovdje, čak i ako je kartica otvorena. Ako se web-lokacija koju dodate trenutačno upotrebljava u niti, može proći do 30 minuta da se nit prestane referirati na tu web-lokaciju.</translation>
 <translation id="1402151528875251561">Prikaži povijest na bočnoj ploči</translation>
 <translation id="1405567553485452995">Svijetlozelena</translation>
 <translation id="1406370515365284486">Vaši će načini plaćanja i dalje biti spremljeni</translation>
@@ -1552,6 +1553,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="343474037147570563">Datoteke koje prenesete ili priložite šalju se Google Cloudu ili trećim stranama na analizu. Na primjer, mogu se pregledavati radi otkrivanja osjetljivih podataka ili zlonamjernog softvera, pohranjivati na temelju pravila tvrtke i biti vidljive vašem administratoru.</translation>
 <translation id="3435557549311968410">Kontinuirano (kratko)</translation>
 <translation id="3435738964857648380">Sigurnost</translation>
+<translation id="3438509337461223476">Automatski dijeli relevantne otvorene kartice u svakoj niti</translation>
 <translation id="3440783957068352691">kvadratno</translation>
 <translation id="3441653493275994384">Zaslon</translation>
 <translation id="3443504041532578451">Optički disk (saten)</translation>
@@ -2482,6 +2484,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="4894390983254799375">Na primjer, ID uređaja, naziv, verzija OS-a i korisničko ime za OS</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijske igre</translation>
+<translation id="4897851261703006488">Zaglavlja ovog pravila ne smiju premašiti <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
 <translation id="4898742041545089450">Tema je deblokirana i može postati aktivna na temelju vaše povijesti pregledavanja</translation>
 <translation id="4900217275619098670">Deveti kolut</translation>
 <translation id="4901052769830245369">Naljepnice (polusjajno)</translation>
@@ -2729,6 +2732,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5284295735376057059">Svojstva dokumenta</translation>
 <translation id="528468243742722775">Završi</translation>
 <translation id="5285468538058987167">Putem pouzdane autentifikacije korisnika (SCA)</translation>
+<translation id="5286195392366054103">Broja uzoraka URL-ova u ovom pravilu premašuje maksimalni broj: <ph name="MAX_URL_PATTERNS_LIMIT" />. Upotrijebit će se samo prvih ovoliko uzoraka URL-ova: <ph name="MAX_URL_PATTERNS_LIMIT" />.</translation>
 <translation id="5287456746628258573">Ta web-lokacija upotrebljava zastarjelu sigurnosnu konfiguraciju, pa bi vaši podaci (na primjer zaporke ili brojevi kreditnih kartica) mogli biti otkriveni kad se šalju na nju.</translation>
 <translation id="5288108484102287882">Potvrđivanje vrijednosti pravila rezultiralo je upozorenjima</translation>
 <translation id="5289384342738547352">Obrada više dokumenata</translation>
@@ -3847,6 +3851,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="7016992613359344582">Ta terećenja mogu biti jednokratna ili ponavljajuća i možda nisu odmah vidljiva.</translation>
 <translation id="701757816833614688">Obrazovanje za vizualne umjetnosti i dizajn</translation>
 <translation id="7020464868401003526">URL prečaca premašuje maksimalnu dopuštenu duljinu od ovoliko znakova: <ph name="MAX_LENGTH" />.</translation>
+<translation id="7020581144940000377">Upotrijebi približnu lokaciju</translation>
 <translation id="702275896380648118">Ova web-lokacija određuje što vam se sviđa, a zatim predlaže oglase na drugim web-lokacijama. Ova web-lokacija također prima podatke o temama vaših oglasa iz Chromea kako bi vam prikazivala relevantnije oglase.</translation>
 <translation id="7023162328967545559">Upozorenje administratora</translation>
 <translation id="7023765275461720661">Želite li povezati račun i platiti putem usluge <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3957,6 +3962,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Ovaj kôd primijenite pri naplati. Vrijedi do <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Nakon što uključite tu postavku, vratite se na ovu karticu da biste počeli pisati</translation>
+<translation id="7196153352301578792">Chrome će Googleu automatski poslati sadržaj stranice i URL-ove otvorenih kartica koji bi mogli biti relevantni za vaše pitanje kako bi dobio personaliziranije odgovore. Chrome će dijeliti samo kartice iz prozora u kojem radite.</translation>
 <translation id="7196370964328811506">Podaci te kartice automatski se popunjavaju za kupnje u Chromeu kad je kartica spremljena na ovom uređaju</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Razmotrili smo sljedeće otvorene kartice:</translation>
@@ -4371,6 +4377,7 @@ Dodatne pojedinosti:
 <translation id="7805268272389338048">Šifriranje štiti vaše osobne podatke</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Zatvorite savjet</translation>
+<translation id="780756914888723112">To pravilo dopušta najviše ovoliko zaglavlja po pravilu: <ph name="MAX_HEADERS_PER_RULE_LIMIT" />. Upotrijebit će se samo prvih ovoliko zaglavlja po pravilu: <ph name="MAX_HEADERS_PER_RULE_LIMIT" />.</translation>
 <translation id="7810410097247356677">Da biste sljedeći put platili brže, spremite karticu i šifrirani sigurnosni kôd na uređaj</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite li s Chromea ukloniti prijedlog za obrasce?</translation>
@@ -4679,6 +4686,7 @@ Dodatne pojedinosti:
 <translation id="8301894345671534559">Unos koda</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
 <translation id="8308653357438598313">Videostreaming uživo</translation>
+<translation id="8310477433309274098">Bez naknada, GKS od samo 0%</translation>
 <translation id="8311895354659782580">Nekretnine na prodaju</translation>
 <translation id="8312841338723044391">UŽIVO</translation>
 <translation id="8316555157357957253">Trenutačno koristite</translation>

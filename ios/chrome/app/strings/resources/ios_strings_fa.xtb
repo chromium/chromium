@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">با <ph name="USER" /> به سیستم وارد شده‌اید</translation>
 <translation id="1149401351239820326">ماه انقضا</translation>
 <translation id="1150989369772528668">تقویم</translation>
+<translation id="1161444134753003495">ورود به سیستم</translation>
 <translation id="1161663161838091892">برای ادامه، زبانه‌ها و سابقه را همگام‌سازی کنید</translation>
 <translation id="1162834932051545794">{count,plural, =1{‫{count} کارت اعتباری}one{‫{count} کارت اعتباری}other{‫{count}کارت اعتباری}}</translation>
 <translation id="1164891049599601209">در سایت فریب‌دهنده وارد شده است</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">برای مرور در «حالت ناشناس»، می‌توانید به راست پیمایش کنید.</translation>
 <translation id="2079545284768500474">لغو</translation>
 <translation id="2085876078937250610">ذخیره…</translation>
+<translation id="2089180529062519164">روشن کردن میکروفون</translation>
 <translation id="2096239473850415494">بارگیری نشد</translation>
 <translation id="2096716221239095980">حذف همه داده‌ها</translation>
 <translation id="2104436223719117661">جستجوهای پرطرفدار</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{گذرواژه جدید برای این سایت}one{گذرواژه جدید برای این سایت}other{گذرواژه‌های جدید برای این سایت}}</translation>
 <translation id="3933372629914873850">به سیستم <ph name="URL" /> وارد خواهید شد</translation>
 <translation id="3934905113567851655">برای تغییر اندازه، انگشتانتان را نزدیک یا دور کنید</translation>
+<translation id="393732545649378031">حساب</translation>
 <translation id="3940195383040445971">ردگیری قیمت در زبانه‌ها</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{بستن {COUNT} زبانه}one{بستن {COUNT} زبانه}other{بستن {COUNT} زبانه}}</translation>
 <translation id="3946483119107054883">‏بارگیری در قالب CSV</translation>
@@ -1469,6 +1472,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6140948187512243695">نمایش جزئیات</translation>
 <translation id="6144589619057374135">‏باز کردن ${url} در حالت ناشناس</translation>
 <translation id="6146563240635539929">ویدیو</translation>
+<translation id="6148392728478209113">‏آیا هنوز از Live استفاده می‌کنید؟ برای ادامه صحبت با Gemini، روی دکمه Live تک‌ضرب بزنید</translation>
 <translation id="6151006591088192882">باز کردن قفل برگه‌های «ناشناس» با <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">غیرفعال</translation>
 <translation id="6152406514676263192">برای دریافت مربوط‌ترین محتوا براساس علایقتان، همگام‌سازی کنید.</translation>
@@ -1506,6 +1510,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6241132809279377987">‏با برنامه‌های Google، به ویژگی‌های بیشتری برای iPhone دسترسی پیدا کنید</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
 <translation id="6251835855431997163">تکمیل خودکار <ph name="VALUE" /></translation>
+<translation id="6253686838150111720">به سیستم <ph name="URL" /> وارد شوید</translation>
 <translation id="6254066287920239840">پیوندها به‌جای مرورگر در برنامه باز شوند.</translation>
 <translation id="6259928806013786178">«حالت خواندن» فعال نشد</translation>
 <translation id="6268773951964630964">جستجوی تصویر کپی‌شده</translation>
@@ -2116,6 +2121,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8319282042900445670">تنظیم یادآور برای <ph name="TIME" />، <ph name="DATE" /></translation>
 <translation id="8320212361750431956">فعالیت اخیر</translation>
 <translation id="8325455175867928593">پنهان کردن «مرورها براساس علایق شما»</translation>
+<translation id="8333459276976141586">‏‫Live از میکروفون شما استفاده خواهد کرد. با تک‌ضرب زدن روی دکمه Live، میکروفون روشن می‌شود. برای خاموش کردن میکروفون، روی دکمه «توقف» تک‌ضرب بزنید یا Gemini را ببندید.</translation>
 <translation id="833647236762414178">گذرواژه‌ها و گذرکلیدهایتان را ایجاد، ذخیره، و مدیریت کنید تا بتوانید به‌راحتی به سیستم سایت‌ها و برنامه‌ها وارد شوید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">از داده‌هایتان پشتیبان بگیرید و در هر دستگاهی از آن‌ها استفاده کنید.</translation>
 <translation id="8345328955902001853">{count,plural, =1{برای ارتقای سطح ۱ تکلیف دیگر را تکمیل کنید}one{برای ارتقای سطح {count} تکلیف دیگر را تکمیل کنید}other{برای ارتقای سطح {count} تکلیف دیگر را تکمیل کنید}}</translation>
@@ -2192,6 +2198,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8571019948162152515">‫«<ph name="FILENAME" />» حذف شود؟</translation>
 <translation id="8571213806525832805">۴ هفته گذشته</translation>
 <translation id="8577056989960190117">تکمیل خودکار سال انقضا <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">‏مکالمه Live با Gemini</translation>
 <translation id="8587001564479545614">پین بازیابی ایجاد کنید</translation>
 <translation id="8588404856427128947">خاموش</translation>
 <translation id="8590286732816598906">گروه زبانه، <ph name="GROUP_TITLE" />، منو.</translation>
@@ -2266,6 +2273,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8803526663383843427">وقتی روشن است</translation>
 <translation id="8803639129939845298">ایمن</translation>
 <translation id="8813277370772331957">بعداً به من یادآوری شود</translation>
+<translation id="8814308045751067027">‏برای استفاده از Live، در تنظیمات به Chrome اجازه دهید به میکروفون دسترسی داشته باشد</translation>
 <translation id="8814719628147284151">ادامه</translation>
 <translation id="881559332211266856">به‌روزرسانی شماره جبران خسارت</translation>
 <translation id="8817524703470045896">قیمت‌ها را ردگیری کنید و برای کاهش قیمت در هر سایتی هشدار دریافت کنید</translation>

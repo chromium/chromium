@@ -259,6 +259,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1392813880755413602">Presentazione OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> non ha inviato dati.</translation>
 <translation id="1393071644879491291">Gli attaccanti sul sito che hai cercato di visitare potrebbero indurti con l'inganno a installare software o a rivelare informazioni come password, numeri di telefono o delle carte di credito. Chrome consiglia vivamente di tornare indietro. <ph name="BEGIN_LEARN_MORE_LINK" />Scopri di più sull'avviso<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">I siti aggiunti qui non verranno utilizzati come riferimento per le risposte, anche se la scheda è aperta. Se un sito che aggiungi è attualmente utilizzato in una conversazione, potrebbero essere necessari fino a 30 minuti prima che la conversazione smetta di farvi riferimento.</translation>
 <translation id="1402151528875251561">Mostra cronologia nel riquadro laterale</translation>
 <translation id="1405567553485452995">Verde chiaro</translation>
 <translation id="1406370515365284486">I tuoi metodi di pagamento verranno comunque salvati</translation>
@@ -1549,6 +1550,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="343474037147570563">I file che carichi o alleghi vengono inviati a Google Cloud o a terze parti per essere analizzati. Ad esempio, potrebbero essere analizzati per rilevare dati sensibili o malware, essere archiviati in base alle policy aziendali ed essere visibili al tuo amministratore.</translation>
 <translation id="3435557549311968410">Continuo (corto)</translation>
 <translation id="3435738964857648380">Sicurezza</translation>
+<translation id="3438509337461223476">Condividi automaticamente le schede pertinenti aperte in ogni conversazione</translation>
 <translation id="3440783957068352691">Quadrata</translation>
 <translation id="3441653493275994384">Schermo</translation>
 <translation id="3443504041532578451">Disco ottico (satinato)</translation>
@@ -2480,6 +2482,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="4894390983254799375">Ad esempio, ID dispositivo, nome, versione del sistema operativo e nome utente del sistema operativo</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiadi</translation>
+<translation id="4897851261703006488">Questa policy non deve avere intestazioni superiori a <ph name="MAX_HEADER_SIZE_LIMIT" /> kB.</translation>
 <translation id="4898742041545089450">Questo argomento è stato sbloccato e potrebbe essere attivo in base alla tua cronologia di navigazione</translation>
 <translation id="4900217275619098670">Nono rullo</translation>
 <translation id="4901052769830245369">Etichette (semilucide)</translation>
@@ -2727,6 +2730,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="5284295735376057059">Proprietà documento</translation>
 <translation id="528468243742722775">Fine</translation>
 <translation id="5285468538058987167">Tramite autenticazione forte del cliente (SCA)</translation>
+<translation id="5286195392366054103">Questa policy ha più di <ph name="MAX_URL_PATTERNS_LIMIT" /> pattern URL. Verranno utilizzati solo i primi <ph name="MAX_URL_PATTERNS_LIMIT" /> pattern URL.</translation>
 <translation id="5287456746628258573">Le tue informazioni (ad esempio password o numeri di carte di credito) potrebbero essere a rischio, poiché questo sito utilizza una configurazione di sicurezza obsoleta.</translation>
 <translation id="5288108484102287882">La convalida dei valori della norma ha generato degli avvisi</translation>
 <translation id="5289384342738547352">Gestione di più documenti</translation>
@@ -3844,6 +3848,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="7016992613359344582">L'addebito potrebbe essere singolo oppure ricorrente e potrebbe non essere evidente.</translation>
 <translation id="701757816833614688">Formazione in arti visive e design</translation>
 <translation id="7020464868401003526">L'URL della scorciatoia supera la lunghezza massima consentita di <ph name="MAX_LENGTH" /> caratteri.</translation>
+<translation id="7020581144940000377">Usa posizione approssimativa</translation>
 <translation id="702275896380648118">Questo sito stabilisce i tuoi interessi per poi suggerire annunci ad altri siti. Questo sito riceve anche gli argomenti degli annunci da Chrome per mostrarti annunci più pertinenti.</translation>
 <translation id="7023162328967545559">Avviso dell'amministratore</translation>
 <translation id="7023765275461720661">Collegare l'account e pagare con <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3954,6 +3959,7 @@ Per nascondere le opzioni di pagamento posticipato, vai alle <ph name="BEGIN_LIN
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Utilizza questo codice al momento del pagamento. Data di fine validità: <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Dopo aver attivato questa impostazione, torna in questa scheda per iniziare a scrivere</translation>
+<translation id="7196153352301578792">Chrome invierà automaticamente a Google i contenuti delle pagine e gli URL delle schede aperte che potrebbero essere pertinenti alla tua domanda per ricevere risposte più personalizzate. Chrome condividerà solo le schede della finestra in cui stai lavorando.</translation>
 <translation id="7196370964328811506">Compila automaticamente i dati di questa carta per gli acquisti effettuati in Chrome quando la salvi su questo dispositivo</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Abbiamo preso in considerazione le seguenti schede aperte:</translation>
@@ -4368,6 +4374,7 @@ Ulteriori dettagli:
 <translation id="7805268272389338048">La crittografia protegge le tue informazioni personali</translation>
 <translation id="7805768142964895445">Stato</translation>
 <translation id="7805906048382884326">Chiudi suggerimento</translation>
+<translation id="780756914888723112">Questa policy consente fino a <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> intestazioni per ciascuna regola. Verranno utilizzate solo le prime <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> intestazioni per ciascuna regola.</translation>
 <translation id="7810410097247356677">Per pagare più velocemente la prossima volta, salva la carta e il codice di sicurezza criptato sul tuo dispositivo</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Rimuovere il suggerimento per i moduli da Chrome?</translation>
@@ -4676,6 +4683,7 @@ Ulteriori dettagli:
 <translation id="8301894345671534559">Inserisci codice</translation>
 <translation id="830498451218851433">Piegatura a metà</translation>
 <translation id="8308653357438598313">Streaming video in diretta</translation>
+<translation id="8310477433309274098">Nessuna commissione, TAEG minimo dello 0%</translation>
 <translation id="8311895354659782580">Inserzioni immobiliari</translation>
 <translation id="8312841338723044391">IN DIRETTA</translation>
 <translation id="8316555157357957253">In uso</translation>

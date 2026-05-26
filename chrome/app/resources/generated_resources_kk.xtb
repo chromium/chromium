@@ -5646,6 +5646,7 @@
 <translation id="4910241725741323970">Қолданба әлдеқашан орнатылды</translation>
 <translation id="4912643508233590958">Әрекетсіз режимінен іске қосу</translation>
 <translation id="4913209098186576320">Бұл файл қауіпті болуы мүмкін.<ph name="LINE_BREAK" />Тексеріс әдеттегіден ұзақ уақытқа созылып жатыр...</translation>
+<translation id="4913573660390710463">Кеңейтілген мүмкіндіктері бар бумадағы веб-қолданбаларды пайдаланыңыз. <ph name="BEGIN_LINK_LEARN_MORE" />Толық ақпарат<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Қолданба деректерін табу мүмкін емес.</translation>
 <translation id="4915961947098019832">Суреттерді көрсетуге рұқсаты барлар</translation>
 <translation id="491779113051926205">ChromeOS трафик есептеуіштері</translation>
@@ -9604,6 +9605,7 @@
 <translation id="7753735457098489144">Жад көлемі жеткіліксіз болғандықтан, орнату мүмкін болмады. Орын босату үшін құрылғы жадынан файлдарды жойыңыз.</translation>
 <translation id="7754704193130578113">Жүктеу алдында әр файлды сақтау орнын сұрау</translation>
 <translation id="7757592200364144203">Құрылғы атауын өзгерту</translation>
+<translation id="7757735653610827848">&amp;Көшіру: "<ph name="SELECTION" />"</translation>
 <translation id="7757739382819740102">Маңайдағы контактілер сізбен дерек бөлісе алады. Мақұлдау талап етіледі.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> бөліскен мәтін</translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -11162,6 +11164,7 @@
 <translation id="8819510664278523111">Құрылғыңыздың EID нөмірі: <ph name="EID_NUMBER" />, құрылғының IMEI нөмірі: <ph name="IMEI_NUMBER" /> және құрылғының сериялық нөмірі: <ph name="SERIAL_NUMBER" />. Қызметті белсендіру үшін осы нөмірлерді пайдалануға болады.</translation>
 <translation id="8820817407110198400">Бетбелгілер</translation>
 <translation id="8821045908425223359">IP мекенжайын автоматты түрде конфигурациялау</translation>
+<translation id="8821206216942230957">Аккаунтыңыздың Chrome-дағы Gemini-ды пайдалануға рұқсаты жоқ</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> пайдалануға дайын.</translation>
 <translation id="882204272221080310">Қауіпсіздікті күшейту үшін микробағдарламаны жаңартыңыз.</translation>
 <translation id="8823514049557262177">Сілтеме мә&amp;тінін көшіру</translation>

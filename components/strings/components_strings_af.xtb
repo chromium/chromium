@@ -259,6 +259,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1392813880755413602">OpenDocument-aanbieding</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> het geen data gestuur nie.</translation>
 <translation id="1393071644879491291">Aanvallers op die webwerf wat jy probeer besoek het, kan jou dalk mislei om sagteware te installeer of dinge soos jou wagwoorde, foonnommer of kredietkaartnommers te openbaar. Chrome beveel sterk aan dat jy na veiligheid terugkeer. <ph name="BEGIN_LEARN_MORE_LINK" />Kry meer inligting oor hierdie waarskuwing<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Werwe wat jy hier byvoeg, sal nie vir antwoorde gebruik word nie, selfs al is die oortjie oop. As ’n werf wat jy byvoeg tans in ’n kletsdraad gebruik word, kan dit tot 30 minute neem voordat die kletsdraad ophou om daarna te verwys.</translation>
 <translation id="1402151528875251561">Wys geskiedenis op kantpaneel</translation>
 <translation id="1405567553485452995">Liggroen</translation>
 <translation id="1406370515365284486">Jou betaalmetodes sal gestoor word</translation>
@@ -1552,6 +1553,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="343474037147570563">Lêers wat jy oplaai of aanheg, word na Google Cloud of derde partye gestuur om ontleed te word. Hulle kan byvoorbeeld vir sensitiewe data of wanware geskandeer word en kan op grond van maatskappybeleide geberg word en sigbaar vir jou administrateur wees.</translation>
 <translation id="3435557549311968410">Aaneenlopend (kort)</translation>
 <translation id="3435738964857648380">Sekuriteit</translation>
+<translation id="3438509337461223476">Deel outomaties relevante oop oortjies in elke kletsdraad</translation>
 <translation id="3440783957068352691">vierkant</translation>
 <translation id="3441653493275994384">Skerm</translation>
 <translation id="3443504041532578451">Optiese skyf (satyn)</translation>
@@ -2483,6 +2485,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="4894390983254799375">Soos toestel-ID en naam, en bedryfstelselweergawe en -gebruikernaam</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiese Spele</translation>
+<translation id="4897851261703006488">Hierdie beleid moenie opskrifte hê wat <ph name="MAX_HEADER_SIZE_LIMIT" /> KB oorskry nie.</translation>
 <translation id="4898742041545089450">Hierdie onderwerp is gedeblokkeer en kan op grond van jou blaaigeskiedenis aktief word</translation>
 <translation id="4900217275619098670">Negende rol</translation>
 <translation id="4901052769830245369">Etikette (semiglans)</translation>
@@ -2730,6 +2733,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5284295735376057059">Dokumenteienskappe</translation>
 <translation id="528468243742722775">Einde</translation>
 <translation id="5285468538058987167">Via streng kliëntstawing (SCA)</translation>
+<translation id="5286195392366054103">Hierdie beleid het meer as <ph name="MAX_URL_PATTERNS_LIMIT" /> URL-patrone. Slegs die eerste <ph name="MAX_URL_PATTERNS_LIMIT" /> URL-patrone sal gebruik word.</translation>
 <translation id="5287456746628258573">Hierdie werf gebruik 'n verouderde sekuriteitopstelling, wat jou inligting (byvoorbeeld, wagwoorde en kredietkaartnommers) kan blootstel wanneer dit na hierdie werf toe gestuur word.</translation>
 <translation id="5288108484102287882">Bevestiging van beleidswaardes het waarskuwings veroorsaak</translation>
 <translation id="5289384342738547352">Hantering van veelvuldige dokumente</translation>
@@ -3848,6 +3852,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="7016992613359344582">Hierdie heffings kan eenmalig of herhalend wees en is dalk nie ooglopend nie.</translation>
 <translation id="701757816833614688">Visuelekuns- en ontwerponderrig</translation>
 <translation id="7020464868401003526">Die URL van die kortpad oorskry die maksimum toegelate lengte van <ph name="MAX_LENGTH" /> karakters.</translation>
+<translation id="7020581144940000377">Gebruik benaderde ligging</translation>
 <translation id="702275896380648118">Hierdie werf bepaal van watter dinge jy hou, en stel dan advertensies aan ander werwe voor. Hierdie werf kry ook jou advertensieonderwerpe van Chrome af om vir jou relevanter advertensies te wys.</translation>
 <translation id="7023162328967545559">Adminwaarskuwing</translation>
 <translation id="7023765275461720661">Koppel rekening en betaal met <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3957,6 +3962,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Gebruik hierdie kode by die betaalpunt. Geldig tot <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Nadat jy hierdie instelling aangeskakel het, kom terug na hierdie oortjie om te begin skryf</translation>
+<translation id="7196153352301578792">Chrome sal outomaties die bladsyinhoud en URL’e van oop oortjies wat relevant kan wees vir jou vraag, na Google toe stuur om meer gepersonaliseerde antwoorde te kry. Chrome sal slegs oortjies deel vanaf die venster waarin jy werk.</translation>
 <translation id="7196370964328811506">Outovul hierdie kaart vir aankope wat in Chrome gemaak word wanneer dit op hierdie toestel gestoor is</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Ons het die volgende oop oortjies nagegaan:</translation>
@@ -4371,6 +4377,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7805268272389338048">Enkripsie beskerm jou persoonlike inligting</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Maak wenk toe</translation>
+<translation id="780756914888723112">Hierdie beleid laat tot <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> opskrifte per reël toe. Slegs die eerste <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> opskrifte per reël sal gebruik word.</translation>
 <translation id="7810410097247356677">Stoor jou kaart en geënkripteerde sekuriteitskode op jou toestel om volgende keer vinniger te betaal</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Verwyder vormvoorstel uit Chrome?</translation>
@@ -4679,6 +4686,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8301894345671534559">Voer kode in</translation>
 <translation id="830498451218851433">Halfgevou</translation>
 <translation id="8308653357438598313">Regstreekse videostroming</translation>
+<translation id="8310477433309274098">Geen fooie nie, so laag as 0% JPK</translation>
 <translation id="8311895354659782580">Eiendomslysinskrywings</translation>
 <translation id="8312841338723044391">REGSTREEKS</translation>
 <translation id="8316555157357957253">Gebruik tans</translation>

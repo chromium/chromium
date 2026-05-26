@@ -493,6 +493,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3067505415088964188">Cena ir zema</translation>
 <translation id="3070005020161560471">Automātiski tulkot</translation>
 <translation id="3072980200212375806">Lietotne <ph name="APP_NAME" /> tiks atvērta pārlūkā Chrome. Turpinot jūs piekrītat <ph name="BEGIN_LINK1" />Google pakalpojumu sniegšanas noteikumiem<ph name="END_LINK1" />, kā arī <ph name="BEGIN_LINK2" />Google Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumiem<ph name="END_LINK2" />. Ir spēkā arī <ph name="BEGIN_LINK3" />konfidencialitātes politika<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Meklēt cilnē, izmantojot Google Lens</translation>
 <translation id="3080525922482950719">Varat saglabāt lapas lasīšanai vēlāk vai bezsaistē.</translation>
 <translation id="3087734570205094154">Apakšā</translation>
 <translation id="3091010850649238832">Rādīt starpliktuves saturu</translation>
@@ -550,6 +551,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3384347053049321195">Kopīgot attēlu</translation>
 <translation id="3385749568468586663">Gemini nav pieejams inkognito režīmā.</translation>
 <translation id="3387650086002190359">Neizdevās lejupielādēt failu <ph name="FILE_NAME" />, jo radās failu sistēmas kļūdas.</translation>
+<translation id="3391311825344469964">Varat pārvaldīt savus logus Chrome logu pārvaldniekā.</translation>
 <translation id="3417835166382867856">Meklēt cilnēs</translation>
 <translation id="3430670036890315772">Izslēdzot profila bloķēšanu, tiks noņemta jūsu saglabātā informācija.</translation>
 <translation id="3435575784518354875">Lai saglabātu piekļuvi savām parolēm, eksportējiet tās tūlīt, atjauniniet Google Play pakalpojumus un pēc tam atkal importējiet paroles Google paroļu pārvaldniekā. <ph name="BEGIN_LINK" />Skatiet visus norādījumus<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5628604359369369630">Nelasītas — pieejamas bezsaistē</translation>
 <translation id="5631483240431073854">Pārvaldīt atvērtās cilnes</translation>
 <translation id="5632485077360054581">Parādīt, kā</translation>
+<translation id="5639031457248936693">Lai varētu palaist paplašinājumu <ph name="EXTENSION_NAME" />, tīmekļa vietnei <ph name="WEBSITE" /> ir nepieciešama atļauja.</translation>
 <translation id="564121214411935612">Jūs esat pierakstījies kā <ph name="USER_NAME" />. Google konta kļūda. Tiek atvērti iestatījumi.</translation>
 <translation id="5641456720590409793">Jūsu Google kontā var tikt saglabāta <ph name="BEGIN_LINK1" />meklēšanas vēsture<ph name="END_LINK1" /> un <ph name="BEGIN_LINK2" />cita veida darbības<ph name="END_LINK2" /></translation>
 <translation id="5648166631817621825">Pēdējās 7 dienas</translation>
@@ -1877,6 +1880,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Pārlūkā Chrome tika konstatēta nedroša parole, ko jūs varētu uzlabot.}zero{Pārlūkā Chrome tika konstatētas # nedrošas paroles, ko jūs varētu uzlabot.}one{Pārlūkā Chrome tika konstatēta # nedroša parole, ko jūs varētu uzlabot.}other{Pārlūkā Chrome tika konstatētas # nedrošas paroles, ko jūs varētu uzlabot.}}</translation>
 <translation id="8766529642647037772">Vai izveidot līdzīgu izceltu saiti?</translation>
 <translation id="8769783688897433958">Skatiet vietnes informāciju un atļaujas</translation>
+<translation id="8786293874273448556">Tīmekļa vietnei <ph name="WEBSITE" /> ir nepieciešama jūsu atļauja, lai varētu palaist <ph name="COUNT" /> paplašinājumus</translation>
 <translation id="8788265440806329501">Navigācijas vēsture ir aizvērta</translation>
 <translation id="8790193082819560975">Lai meklētu produkta iegādes iespējas, pieskarieties šeit (saite tiks atvērta jaunā cilnē).</translation>
 <translation id="8798449543960971550">Lasītas</translation>

@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Η τιμή είναι χαμηλή</translation>
 <translation id="3070005020161560471">Να γίνεται μετάφραση αυτόματα</translation>
 <translation id="3072980200212375806">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Επίσης, ισχύει η <ph name="BEGIN_LINK3" />Πολιτική απορρήτου<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Αναζήτηση καρτέλας με Google Lens</translation>
 <translation id="3080525922482950719">Μπορείτε να αποθηκεύετε σελίδες για ανάγνωση αργότερα ή εκτός σύνδεσης.</translation>
 <translation id="3087734570205094154">Κάτω</translation>
 <translation id="3091010850649238832">Εμφάνιση περιεχομένων πρόχειρου</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Κοινοποίηση εικόνας</translation>
 <translation id="3385749568468586663">Το Gemini δεν είναι διαθέσιμο στην Κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="3387650086002190359">Η λήψη του αρχείου <ph name="FILE_NAME" /> απέτυχε λόγω σφαλμάτων του συστήματος αρχείων.</translation>
+<translation id="3391311825344469964">Μπορείτε να διαχειριστείτε τα παράθυρά σας στη Διαχείριση παραθύρων του Chrome</translation>
 <translation id="3417835166382867856">Αναζήτηση στις καρτέλες</translation>
 <translation id="3430670036890315772">Η απενεργοποίηση του κλειδώματος προφίλ θα καταργήσει τα αποθηκευμένα στοιχεία σας</translation>
 <translation id="3435575784518354875">Για να διατηρήσετε την πρόσβαση στους κωδικούς πρόσβασης, εξαγάγετε τους τώρα, ενημερώστε τις υπηρεσίες Google Play και, στη συνέχεια, εισαγάγετέ τους στη Διαχείριση κωδικών πρόσβασης Google. <ph name="BEGIN_LINK" />Δείτε τις πλήρεις οδηγίες<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">Μη αναγνωσμένα - Διαθέσιμα εκτός σύνδεσης</translation>
 <translation id="5631483240431073854">Διαχείριση ανοικτών καρτελών</translation>
 <translation id="5632485077360054581">Οδηγίες</translation>
+<translation id="5639031457248936693">Ο ιστότοπος <ph name="WEBSITE" /> απαιτεί την άδειά σας για την εκτέλεση της επέκτασης <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Συνδεθήκατε ως <ph name="USER_NAME" />. Σφάλμα Λογαριασμού Google. Ανοίγει τις ρυθμίσεις.</translation>
 <translation id="5641456720590409793">Το <ph name="BEGIN_LINK1" />Ιστορικό αναζήτησης<ph name="END_LINK1" /> και <ph name="BEGIN_LINK2" />άλλες μορφές δραστηριότητας<ph name="END_LINK2" /> ενδέχεται να αποθηκεύονται στον Λογαριασμό σας Google.</translation>
 <translation id="5648166631817621825">Τελευταίες 7 ημέρες</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Το Chrome βρήκε έναν ασθενή κωδικό πρόσβασης που θα μπορούσατε να βελτιώσετε}other{Το Chrome βρήκε # ασθενείς κωδικούς πρόσβασης που θα μπορούσατε να βελτιώσετε}}</translation>
 <translation id="8766529642647037772">Δημιουργία ενός συνδέσμου που επισημαίνεται όπως αυτός;</translation>
 <translation id="8769783688897433958">Προβολή πληροφοριών και αδειών ιστοτόπου</translation>
+<translation id="8786293874273448556">Ο ιστότοπος <ph name="WEBSITE" /> χρειάζεται την άδειά σας για την εκτέλεση <ph name="COUNT" /> επεκτάσεων</translation>
 <translation id="8788265440806329501">Το Ιστορικό πλοήγηση έκλεισε</translation>
 <translation id="8790193082819560975">Πατήστε για να αναζητήσετε επιλογές αγοράς για το προϊόν σε μια νέα καρτέλα.</translation>
 <translation id="8798449543960971550">Αναγνωσμένα</translation>

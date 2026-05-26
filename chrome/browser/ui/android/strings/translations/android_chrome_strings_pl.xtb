@@ -1072,6 +1072,7 @@ Na stronie <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> n
 <translation id="5628604359369369630">Nieprzeczytane – dostępne offline</translation>
 <translation id="5631483240431073854">Zarządzaj otwartymi kartami</translation>
 <translation id="5632485077360054581">Pokaż jak</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> potrzebuje Twojego zezwolenia na uruchomienie rozszerzenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Zalogowano jako <ph name="USER_NAME" />. Błąd konta Google. Otwiera ustawienia.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Historia wyszukiwania<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />inne formy aktywności<ph name="END_LINK2" /> mogą być zapisywane na Twoim koncie Google</translation>
 <translation id="5648166631817621825">Ostatnie 7 dni</translation>
@@ -1879,6 +1880,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Przeglądarka Chrome znalazła słabe hasło, które możesz ulepszyć}few{Przeglądarka Chrome znalazła # słabe hasła, które możesz ulepszyć}many{Przeglądarka Chrome znalazła # słabych haseł, które możesz ulepszyć}other{Przeglądarka Chrome znalazła # słabego hasła, które możesz ulepszyć}}</translation>
 <translation id="8766529642647037772">Utworzyć wyróżniony link, taki jak ten?</translation>
 <translation id="8769783688897433958">Wyświetl informacje o witrynie i uprawnienia</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> potrzebuje Twojego zezwolenia na uruchomienie <ph name="COUNT" /> rozszerzeń</translation>
 <translation id="8788265440806329501">Historia nawigacji jest zamknięta</translation>
 <translation id="8790193082819560975">Kliknij, aby wyszukać opcje zakupu produktu w nowej karcie.</translation>
 <translation id="8798449543960971550">Przeczytane</translation>

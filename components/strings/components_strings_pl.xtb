@@ -1121,6 +1121,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2719233594187778789">Zignorowano nieunikalny adres URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Żądanie wykonane pomyślnie</translation>
 <translation id="2722622039067384533">Meble do salonu</translation>
+<translation id="2723284907371508295">Przycisk Więcej kart z innych urządzeń; aby wyświetlić więcej kart z innych urządzeń, naciśnij Enter</translation>
 <translation id="2723669454293168317">Uruchom kontrolę zabezpieczeń w ustawieniach Chrome</translation>
 <translation id="2726001110728089263">Taca boczna</translation>
 <translation id="272616190148046464">Wszystkie Twoje karty lojalnościowe</translation>
@@ -3423,6 +3424,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6351658970066645919">Usuń dane przeglądania</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Brak}=1{1 hasło (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}=2{2 hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}few{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}many{# haseł (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}other{# hasła (do <ph name="DOMAIN_LIST" />, zsynchronizowano)}}</translation>
 <translation id="6354918092619878358">Kryptografia krzywych eliptycznych SECG secp256r1 (inne nazwy: ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby wyświetlić więcej kart z innych urządzeń, naciśnij Tab, a potem Enter</translation>
 <translation id="6355392890578844978">Ta przeglądarka nie jest zarządzana przez firmę ani inną organizację. Aktywność na tym urządzeniu może być zarządzana poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">Grupy kart „<ph name="GROUP_TITLE_1" />” i „<ph name="GROUP_TITLE_2" />” nie są już dostępne</translation>
 <translation id="6358088212770985041">edytować formy płatności</translation>
@@ -4687,6 +4689,7 @@ Dodatkowe informacje:
 <translation id="8301894345671534559">Wpisz kod</translation>
 <translation id="830498451218851433">Składanie w połowie</translation>
 <translation id="8308653357438598313">Transmisje na żywo</translation>
+<translation id="8310477433309274098">Bez opłat, RRSO od 0%</translation>
 <translation id="8311895354659782580">Wykazy nieruchomości na sprzedaż</translation>
 <translation id="8312841338723044391">NA ŻYWO</translation>
 <translation id="8316555157357957253">Używasz teraz</translation>
@@ -5262,6 +5265,7 @@ Dodatkowe informacje:
 <translation id="955429569736351433">Przyznano dostęp do rzeczywistości wirtualnej</translation>
 <translation id="955627189349169688">Możesz zrezygnować z tej zasady w <ph name="BEGIN_LINK" />ustawieniach Synchronizacji Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Żółty 2</translation>
+<translation id="958952958906914932">Więcej kart z innych urządzeń</translation>
 <translation id="961372935451193190">Karty i pliki</translation>
 <translation id="961663415146723894">Wiązanie na dole</translation>
 <translation id="961856697154696964">Usuń dane przeglądania</translation>

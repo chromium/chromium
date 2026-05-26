@@ -493,6 +493,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3067505415088964188">Prețul este mic</translation>
 <translation id="3070005020161560471">Tradu automat</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> se va deschide în Chrome. Dacă alegi să continui, ești de acord cu <ph name="BEGIN_LINK1" />Termenii și condițiile Google<ph name="END_LINK1" /> și cu <ph name="BEGIN_LINK2" />Termenii și condițiile suplimentare pentru Google Chrome și ChromeOS<ph name="END_LINK2" />. Se aplică și <ph name="BEGIN_LINK3" />Politica de confidențialitate<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Caută în filă cu Google Lens</translation>
 <translation id="3080525922482950719">Poți să salvezi pagini ca să le citești offline sau mai târziu</translation>
 <translation id="3087734570205094154">Jos</translation>
 <translation id="3091010850649238832">Afișează conținutul clipboardului</translation>
@@ -550,6 +551,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="3384347053049321195">Trimite imaginea</translation>
 <translation id="3385749568468586663">Gemini nu este disponibil în modul incognito</translation>
 <translation id="3387650086002190359">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor erori privind sistemul de fișiere.</translation>
+<translation id="3391311825344469964">Poți gestiona ferestrele în Managerul de ferestre din Chrome</translation>
 <translation id="3417835166382867856">Caută file</translation>
 <translation id="3430670036890315772">Dacă dezactivezi blocarea profilului, informațiile tale salvate vor fi șterse</translation>
 <translation id="3435575784518354875">Pentru a păstra accesul la parole, exportă-le acum, actualizează serviciile Google Play și apoi importă-le înapoi în Managerul de parole Google. <ph name="BEGIN_LINK" />Consultă instrucțiunile complete<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Contul Google poate să ofere alte forme ale istoricului de navigare, cum ar fi 
 <translation id="5628604359369369630">Necitită – Disponibilă offline</translation>
 <translation id="5631483240431073854">Gestionează filele deschise</translation>
 <translation id="5632485077360054581">Arată-mi cum</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> are nevoie de permisiunea ta pentru a rula <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Te-ai conectat ca <ph name="USER_NAME" />. Eroare a Contului Google. Deschide setările.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Istoricul căutărilor<ph name="END_LINK1" /> și <ph name="BEGIN_LINK2" />alte tipuri de activități<ph name="END_LINK2" /> pot fi salvate în Contul tău Google</translation>
 <translation id="5648166631817621825">Ultimele 7 zile</translation>
@@ -1877,6 +1880,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome a găsit o parolă slabă pe care o poți face mai sigură}few{Chrome a găsit # parole slabe pe care le poți face mai sigure}other{Chrome a găsit # de parole slabe pe care le poți face mai sigure}}</translation>
 <translation id="8766529642647037772">Creezi un link evidențiat ca acesta?</translation>
 <translation id="8769783688897433958">Vezi informațiile și permisiunile privind site-urile</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> are nevoie de permisiunea ta pentru a rula <ph name="COUNT" /> extensii</translation>
 <translation id="8788265440806329501">Istoricul de navigare este închis</translation>
 <translation id="8790193082819560975">Atinge pentru a căuta opțiuni de cumpărare pentru produs într-o filă nouă.</translation>
 <translation id="8798449543960971550">Citite</translation>

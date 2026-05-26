@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3070005020161560471">יש לתרגם אוטומטית</translation>
 <translation id="3072980200212375806">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />. גם <ph name="BEGIN_LINK3" />מדיניות הפרטיות<ph name="END_LINK3" /> חלה.</translation>
+<translation id="3080375898390966733">‏חיפוש כרטיסייה עם Google Lens</translation>
 <translation id="3080525922482950719">ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין</translation>
 <translation id="3087734570205094154">תחתית</translation>
 <translation id="3091010850649238832">הצגת התוכן שבלוח</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3385749568468586663">‏‫Gemini לא זמין במצב פרטי</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
+<translation id="3391311825344469964">‏אפשר לנהל את החלונות במנהל החלונות של Chrome</translation>
 <translation id="3417835166382867856">חיפוש כרטיסיות</translation>
 <translation id="3430670036890315772">השבתה של נעילת הפרופיל תגרום להסרת המידע השמור</translation>
 <translation id="3435575784518354875">‏כדי לשמור על הגישה לסיסמאות, צריך לייצא אותן עכשיו, לעדכן את Google Play Services ואז לייבא אותן חזרה למנהל הסיסמאות של Google. <ph name="BEGIN_LINK" />לצפייה בהוראות המלאות<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">לא נקראו – זמינים במצב אופליין</translation>
 <translation id="5631483240431073854">ניהול הכרטיסיות הפתוחות</translation>
 <translation id="5632485077360054581">איך עושים זאת?</translation>
+<translation id="5639031457248936693">ל-<ph name="WEBSITE" /> דרושה הרשאה כדי להפעיל את <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">‏נכנסת לחשבון בתור <ph name="USER_NAME" />. שגיאה בחשבון Google. ההגדרות ייפתחו.</translation>
 <translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />היסטוריית החיפושים<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />סוגי פעילות אחרים<ph name="END_LINK2" /> עשויים להישמר בחשבון Google.</translation>
 <translation id="5648166631817621825">מהשבוע האחרון</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{‏‫Chrome זיהה סיסמה חלשה שאפשר לשפר}one{‏‫Chrome זיהה # סיסמאות חלשות שאפשר לשפר}two{‏‫Chrome זיהה # סיסמאות חלשות שאפשר לשפר}other{‏‫Chrome זיהה # סיסמאות חלשות שאפשר לשפר}}</translation>
 <translation id="8766529642647037772">רוצה ליצור קישור מודגש כמו זה שמופיע כאן?</translation>
 <translation id="8769783688897433958">אל פרטי האתר וההרשאות</translation>
+<translation id="8786293874273448556">ל-<ph name="WEBSITE" /> דרושה הרשאה כדי להפעיל <ph name="COUNT" /> תוספים</translation>
 <translation id="8788265440806329501">היסטוריית הניווט סגורה</translation>
 <translation id="8790193082819560975">צריך ללחוץ כדי לחפש אפשרויות קנייה של המוצר בכרטיסייה חדשה.</translation>
 <translation id="8798449543960971550">נקראו</translation>

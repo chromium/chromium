@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> sifatida kirgansiz</translation>
 <translation id="1149401351239820326">Muddati tugaydigan oy</translation>
 <translation id="1150989369772528668">Taqvim</translation>
+<translation id="1161444134753003495">Kirish</translation>
 <translation id="1161663161838091892">Davom etish uchun varaqlar va tarixni sinxronlang</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} ta kredit karta}other{{count} ta kredit karta}}</translation>
 <translation id="1164891049599601209">Soxta saytda kiritilgan</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">Inkognito rejimiga oʻtish uchun oʻngga aylantiring.</translation>
 <translation id="2079545284768500474">Bekor qilish</translation>
 <translation id="2085876078937250610">Saqlash…</translation>
+<translation id="2089180529062519164">Mikrofonni yoqish</translation>
 <translation id="2096239473850415494">Yuklab olinmadi</translation>
 <translation id="2096716221239095980">Hammasini oʻchirish</translation>
 <translation id="2104436223719117661">Trenddagi qidiruvlar</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Bu sayt uchun yangi parol}other{Bu sayt uchun yangi parol}}</translation>
 <translation id="3933372629914873850"><ph name="URL" /> hisobiga kirasiz</translation>
 <translation id="3934905113567851655">Hajmini oʻzgartirish uchun chimding</translation>
+<translation id="393732545649378031">Hisob</translation>
 <translation id="3940195383040445971">Narxlarni varaqlarda kuzatish</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ta varaqni yopish}other{{COUNT} ta varaqni yopish}}</translation>
 <translation id="3946483119107054883">CSV faylini yuklab olish</translation>
@@ -1469,6 +1472,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6140948187512243695">Tafsilotlarni ko‘rsatish</translation>
 <translation id="6144589619057374135">${url} sahifasini Inkognito rejimida ochish</translation>
 <translation id="6146563240635539929">Videolar</translation>
+<translation id="6148392728478209113">Live seansi hali ham yoniqmi? Gemini bilan suhbatni davom ettirish uchun Live tugmasini bosing</translation>
 <translation id="6151006591088192882">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan ochish</translation>
 <translation id="6152340033632117531">Nofaol</translation>
 <translation id="6152406514676263192">Qiziqishlar asosida eng mos kontent chiqishini sinxronlash.</translation>
@@ -1506,6 +1510,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6241132809279377987">Google ilovalari yordamida iPhone uchun koʻproq funksiyalarni oching</translation>
 <translation id="6247557882553405851">Google Parollar menejeri</translation>
 <translation id="6251835855431997163">Avtomatik kiritish: <ph name="VALUE" /></translation>
+<translation id="6253686838150111720"><ph name="URL" /> hisobiga kirish</translation>
 <translation id="6254066287920239840">Havolalarni brauzerning o‘rniga boshqa ilovada oching.</translation>
 <translation id="6259928806013786178">Mutolaa rejimi ishga tushmadi</translation>
 <translation id="6268773951964630964">Nusxalangan rasmni qidirish</translation>
@@ -2116,6 +2121,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8319282042900445670">Eslatma yaratildi: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Oxirgi faollik</translation>
 <translation id="8325455175867928593">“Qiziqishlaringiz asosidagi sharhlar” chiqmasin</translation>
+<translation id="8333459276976141586">Live rejimi mikrofoningizdan foydalanadi. Live tugmasi bosilganda mikrofon yoqiladi. Mikrofonni oʻchirish uchun toʻxtatish tugmasini bosing yoki Gemini ilovasini yoping.</translation>
 <translation id="833647236762414178">Sayt va ilovalarga oson kirish uchun parollar va kirish kalitlarini yarating, saqlang va boshqaring. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Darajani oshirish uchun yana 1 ta vazifani bajaring}other{Darajani oshirish uchun uchun yana {count} ta vazifani bajaring}}</translation>
@@ -2192,6 +2198,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8571019948162152515">"<ph name="FILENAME" />" oʻchirilsinmi?</translation>
 <translation id="8571213806525832805">Oxirgi 4 hafta</translation>
 <translation id="8577056989960190117">Amal qilish yilini (<ph name="YEAR" />) avtomatik kiritish</translation>
+<translation id="8582026929965253036">Gemini bilan Live rejimida suhbatlashing</translation>
 <translation id="8587001564479545614">Zaxiraviy PIN kod yaratish</translation>
 <translation id="8588404856427128947">Oʻchiq</translation>
 <translation id="8590286732816598906">Varaqlar guruhi, <ph name="GROUP_TITLE" />, Menyu.</translation>
@@ -2266,6 +2273,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="8803526663383843427">Qachon yoqilgan</translation>
 <translation id="8803639129939845298">Xavfsiz</translation>
 <translation id="8813277370772331957">Keyinroq eslatilsin</translation>
+<translation id="8814308045751067027">Live rejimidan foydalanish uchun sozlamalar orqali Chrome mikrofondan foydalanishiga ruxsat bering</translation>
 <translation id="8814719628147284151">Davom etish</translation>
 <translation id="881559332211266856">Redress raqamini yangilash</translation>
 <translation id="8817524703470045896">Narxlarni kuzating va saytlarda narx tushganda bildirishnoma oling</translation>

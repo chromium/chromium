@@ -1072,6 +1072,7 @@
 <translation id="5628604359369369630">ยังไม่อ่าน - อ่านขณะออฟไลน์ได้</translation>
 <translation id="5631483240431073854">จัดการแท็บที่เปิดอยู่</translation>
 <translation id="5632485077360054581">แสดงวิธีการ</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> ต้องได้รับอนุญาตจากคุณเพื่อเรียกใช้ <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">ลงชื่อเข้าใช้ด้วย <ph name="USER_NAME" /> ข้อผิดพลาดของบัญชี Google เปิดการตั้งค่า</translation>
 <translation id="5641456720590409793">ระบบอาจบันทึก<ph name="BEGIN_LINK1" />ประวัติการค้นหา<ph name="END_LINK1" />และ<ph name="BEGIN_LINK2" />กิจกรรมรูปแบบอื่น<ph name="END_LINK2" />ในบัญชี Google</translation>
 <translation id="5648166631817621825">7 วันที่ผ่านมา</translation>
@@ -1879,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome พบรหัสผ่านที่ไม่รัดกุมซึ่งคุณควรเปลี่ยนให้ดีขึ้น}other{Chrome พบรหัสผ่านที่ไม่รัดกุม # รายการซึ่งคุณควรเปลี่ยนให้ดีขึ้น}}</translation>
 <translation id="8766529642647037772">สร้างลิงก์ที่ไฮไลต์แบบลิงก์นี้ไหม</translation>
 <translation id="8769783688897433958">ดูข้อมูลและสิทธิ์ของเว็บไซต์</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> ต้องได้รับอนุญาตจากคุณเพื่อเรียกใช้ส่วนขยาย <ph name="COUNT" /> รายการ</translation>
 <translation id="8788265440806329501">ประวัติการนำทางปิดอยู่</translation>
 <translation id="8790193082819560975">แตะเพื่อค้นหาตัวเลือกการซื้อสำหรับผลิตภัณฑ์ในแท็บใหม่</translation>
 <translation id="8798449543960971550">อ่านแล้ว</translation>

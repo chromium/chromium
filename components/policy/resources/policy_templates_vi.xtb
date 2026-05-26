@@ -9569,12 +9569,6 @@ Nếu bạn không đặt chính sách này cho một trang web thì hệ thốn
       Nếu bạn không đặt chính sách này, thì kệ sẽ được đặt ở cuối màn hình theo mặc định và người dùng có thể thay đổi vị trí của kệ.</translation>
 <translation id="7039815268521168329">Hiển thị quy trình so khớp giọng nói của Trợ lý Google trong quá trình thiết lập ban đầu</translation>
 <translation id="7040229947030068419">Giá trị mẫu:</translation>
-<translation id="7044626519138840387">Danh sách nguồn gốc của các ứng dụng máy tính từ xa có thể thực thi các yêu cầu API WebAuthn bắt nguồn từ một phiên duyệt web trên một máy chủ từ xa.
-
-Bất kỳ nguồn gốc nào được định cấu hình trong chính sách này đều có thể thực hiện yêu cầu WebAuthn cho mã nhận dạng bên phụ thuộc (mã nhận dạng RP) mà thông thường không được phép nhận.
-
-Chỉ cho phép nguồn gốc HTTPS hợp lệ. Không hỗ trợ ký tự đại diện.
-Mọi mục nhập không hợp lệ đều sẽ bị bỏ qua.</translation>
 <translation id="7044883996351280650">Kiểm soát dịch vụ sao lưu và khôi phục trên thiết bị Android</translation>
 <translation id="7045221780834308118">Nếu bạn đặt chính sách này thành Enabled (Bật), thì các ứng dụng web bên thứ ba có thể sử dụng Desk API để kiểm soát các không gian làm việc trên <ph name="PRODUCT_OS_NAME" />. Nếu bạn tắt hoặc không đặt chính sách này, thì <ph name="DESK_API_NAME" /> sẽ không hoạt động. Chính sách này sẽ chỉ có hiệu lực trên các thiết bị đã đăng ký.</translation>
 <translation id="7046113122884041950">Không cho phép sử dụng Smart Lock</translation>

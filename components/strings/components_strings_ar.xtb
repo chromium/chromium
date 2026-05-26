@@ -1121,6 +1121,7 @@
 <translation id="2719233594187778789">‏تم تجاهل عنوان URL المكرّر: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">تم إرسال الطلب بنجاح</translation>
 <translation id="2722622039067384533">أثاث غرف معيشة</translation>
+<translation id="2723284907371508295">‏زر "المزيد من علامات التبويب من الأجهزة الأخرى"، يمكن الضغط على مفتاح Enter للاطّلاع على المزيد من علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="2723669454293168317">‏تفعيل ميزة "التحقّق من الأمان" في إعدادات Chrome</translation>
 <translation id="2726001110728089263">الدُرج الجانبي</translation>
 <translation id="272616190148046464">جميع بطاقات الولاء</translation>
@@ -3423,6 +3424,7 @@
 <translation id="6351658970066645919">حذف بيانات التصفّح</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{ما من كلمات مرور}=1{كلمة مرور واحدة (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}=2{كلمتا مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}few{# كلمات مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}many{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}other{# كلمة مرور (للقائمة <ph name="DOMAIN_LIST" />، تمت المزامنة)}}</translation>
 <translation id="6354918092619878358">‏منحنى SECG ناقص المقطع secp256r1‏ (aka ANSI X9.62 prime256v1‏، NIST P-256)</translation>
+<translation id="6355224247005550277">‏‫<ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />، يمكن الضغط على مفتاح Tab ثم مفتاح Enter للاطّلاع على المزيد من علامات التبويب من أجهزة أخرى</translation>
 <translation id="6355392890578844978">‏لا تتم إدارة هذا المتصفِّح من خلال شركة أو مؤسسة أخرى. وقد تتم إدارة النشاط على هذا الجهاز خارج Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">لم تعُد مجموعتَا علامات التبويب "<ph name="GROUP_TITLE_1" />" و"<ph name="GROUP_TITLE_2" />" متوفّرتَين</translation>
 <translation id="6358088212770985041">تعديل طُرق الدفع.</translation>
@@ -4688,6 +4690,7 @@
 <translation id="8301894345671534559">أدخِل الرمز</translation>
 <translation id="830498451218851433">الطي إلى نصفَين</translation>
 <translation id="8308653357438598313">بث فيديوهات مباشرة</translation>
+<translation id="8310477433309274098">‏بدون رسوم وبنسبة مئوية سنوية (APR) تبدأ من %0</translation>
 <translation id="8311895354659782580">قوائم عقارات</translation>
 <translation id="8312841338723044391">مباشر</translation>
 <translation id="8316555157357957253">يتم استخدامه الآن</translation>
@@ -5266,6 +5269,7 @@
 <translation id="955429569736351433">تم السماح باستخدام الواقع الافتراضي</translation>
 <translation id="955627189349169688">‏يمكنك إيقاف هذه السياسة من خلال <ph name="BEGIN_LINK" />إعدادات مزامنة Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">أصفر 2</translation>
+<translation id="958952958906914932">المزيد من علامات التبويب من الأجهزة الأخرى</translation>
 <translation id="961372935451193190">علامات التبويب والملفات</translation>
 <translation id="961663415146723894">التجليد من الأسفل</translation>
 <translation id="961856697154696964">حذف بيانات التصفّح</translation>

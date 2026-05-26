@@ -493,6 +493,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3067505415088964188">Alacsony ár</translation>
 <translation id="3070005020161560471">Automatikusan fordított nyelvek</translation>
 <translation id="3072980200212375806">A(z) <ph name="APP_NAME" /> a Chrome-ban fog megnyílni. A továbblépéssel Ön elfogadja a <ph name="BEGIN_LINK1" />Google Általános Szerződési Feltételeket<ph name="END_LINK1" />, valamint <ph name="BEGIN_LINK2" />A Google Chrome és a ChromeOS Kiegészítő Általános Szerződési Feltételeit<ph name="END_LINK2" />. Az <ph name="BEGIN_LINK3" />adatvédelmi irányelvek<ph name="END_LINK3" /> is érvényben vannak.</translation>
+<translation id="3080375898390966733">Keresés a lapon a Google Lensszel</translation>
 <translation id="3080525922482950719">Mentheti az oldalakat későbbi olvasásra, vagy ha offline állapotban van</translation>
 <translation id="3087734570205094154">Alja</translation>
 <translation id="3091010850649238832">Vágólap tartalmának mutatása</translation>
@@ -550,6 +551,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3384347053049321195">Kép megosztása</translation>
 <translation id="3385749568468586663">A Gemini nem áll rendelkezésre inkognitó módban</translation>
 <translation id="3387650086002190359">A következő fájl letöltése a fájlrendszer hibái miatt nem sikerült: <ph name="FILE_NAME" />.</translation>
+<translation id="3391311825344469964">A Chrome Ablakkezelőjében kezelheti az ablakokat</translation>
 <translation id="3417835166382867856">Lapok keresése</translation>
 <translation id="3430670036890315772">A profilzárolás kikapcsolásával törlődnek a mentett adatai</translation>
 <translation id="3435575784518354875">Ha továbbra is hozzá szeretne férni jelszavaihoz, exportálja őket haladéktalanul, majd frissítse a Google Play-szolgáltatásokat, és importálja őket vissza a Google Jelszókezelőbe. <ph name="BEGIN_LINK" />Részletes utasítások<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Előfordulhat, hogy Google-fiókjában (a <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5628604359369369630">Olvasatlan (Offline hozzáférhető)</translation>
 <translation id="5631483240431073854">Megnyitott lapok kezelése</translation>
 <translation id="5632485077360054581">Bemutató</translation>
+<translation id="5639031457248936693">A(z) <ph name="EXTENSION_NAME" /> futtatásához a(z) <ph name="WEBSITE" /> webhelynek az Ön engedélyére van szüksége</translation>
 <translation id="564121214411935612">A következőként van bejelentkezve: <ph name="USER_NAME" />. Hiba történt a Google-fiókkal. Ez a gomb megnyitja a beállításokat.</translation>
 <translation id="5641456720590409793">A <ph name="BEGIN_LINK1" />keresési előzményeket<ph name="END_LINK1" /> és <ph name="BEGIN_LINK2" />más tevékenységtípusokat<ph name="END_LINK2" /> a rendszer elmentheti az Ön Google-fiókjába.</translation>
 <translation id="5648166631817621825">Az elmúlt 7 napból</translation>
@@ -1877,6 +1880,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{A Chrome talált egy gyenge jelszót, amelyen lehetne javítani}other{A Chrome talált # gyenge jelszót, amelyen lehetne javítani}}</translation>
 <translation id="8766529642647037772">Szeretne létrehozni egy ehhez hasonló kiemelt linket?</translation>
 <translation id="8769783688897433958">Webhelyinformációk és engedélyek megtekintése</translation>
+<translation id="8786293874273448556"><ph name="COUNT" /> bővítmény futtatásához a(z) <ph name="WEBSITE" /> webhelynek az Ön engedélyére van szüksége</translation>
 <translation id="8788265440806329501">Bezárta a navigációs előzményeket</translation>
 <translation id="8790193082819560975">Koppintással új lapon keresheti a termékhez tartozó vásárlási lehetőségeket.</translation>
 <translation id="8798449543960971550">Olvasás</translation>

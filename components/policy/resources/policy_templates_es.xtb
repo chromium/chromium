@@ -2156,6 +2156,7 @@ Si se asigna un valor a esta política, el usuario no podrá anularlo.
 
 Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará inicialmente, pero el usuario podrá controlarla.</translation>
 <translation id="2413899611035194909">Mostrar las opciones de accesibilidad en el menú de la bandeja del sistema de la pantalla de inicio de sesión</translation>
+<translation id="2414712434655365347">Configurar la inyección de encabezados HTTP para patrones de URL específicos</translation>
 <translation id="2415715982424988916">Explorar (compatible desde la versión 91)</translation>
 <translation id="2420958105721932612">Especifica cómo se instala una aplicación. AVAILABLE: la aplicación no se instalará automáticamente, pero el usuario podrá instalarla. Si no se asigna ningún valor a esta política, este será el predeterminado. FORCE_INSTALLED: la aplicación se instalará automáticamente y el usuario no podrá desinstalarla. BLOCKED: la aplicación estará bloqueada y no se podrá instalar. Si la aplicación se instaló cuando estaba vigente una política anterior, se desinstalará.</translation>
 <translation id="2421400544595297401">No permitir que los usuarios no afiliados utilicen aplicaciones Android</translation>
@@ -8064,6 +8065,25 @@ En la versión 114 y posteriores, esta política es opcional si se establece la 
 <translation id="624219423122512710">Acciones que se ejecutarán cuando el navegador esté inactivo</translation>
 <translation id="6244061205361004687">Permitir que el usuario desconecte o modifique manualmente una VPN</translation>
 <translation id="6244210204546589761">URL que se deben abrir al inicio</translation>
+<translation id="6245828368576563662">Esta política permite definir una lista de reglas para inyectar encabezados HTTP personalizados en las solicitudes web que coincidan con patrones de URL específicos. Los encabezados definidos por esta política tienen prioridad sobre los que estaban presentes inicialmente en la solicitud, así como sobre las modificaciones que intenten hacer los usuarios o las extensiones.
+
+Un caso práctico habitual de esta política es aplicar obligatoriamente controles de acceso de cliente inyectando encabezados personalizados (por ejemplo, <ph name="EXAMPLE_HEADER_NAME" />).
+
+La política acepta una lista de reglas. Cada regla contiene:
+
+* <ph name="PATTERNS_KEY" />: una lista de patrones de URL con los que se debe coincidir. Consulta cómo aplicar formato a un patrón de URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: una lista de objetos que representan los encabezados que se van a inyectar. Cada uno de ellos contiene lo siguiente:
+
+  * <ph name="HEADER_NAME_KEY" />: el nombre del encabezado que se va a inyectar.
+
+  * <ph name="HEADER_VALUE_KEY" />: el valor del encabezado que se va a inyectar.
+
+Si varias reglas coinciden con una solicitud, se aplicarán los encabezados de todas las reglas que coincidan. Si hay varios encabezados con el mismo nombre, se aplicará el que tenga el patrón de URL más específico. Si los patrones son igual de específicos, se aplicará el que aparezca en último lugar en la lista.
+
+Los nombres de encabezado deben cumplir el protocolo RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Los valores de encabezado no deben contener símbolos NUL, CR ni LF. Los encabezados individuales no deben superar los 8 KB de tamaño. Los encabezados y patrones de URL no válidos se ignorarán.
+
+Esta política está limitada a un total de 500 patrones de URL en todas las reglas. Cada regla puede contener un máximo de 20 encabezados. Los patrones y encabezados que superen estos umbrales se ignorarán.</translation>
 <translation id="624595269193747921">Especifica si se limitará la búsqueda de la impresora coincidente a un conjunto de impresoras concreto.</translation>
 <translation id="6246290059248303618">Mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos en la red local</translation>
 <translation id="6247316685259031374">Esta política controla el entorno aislado de audio.
@@ -9422,12 +9442,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
       Si no le asignas ningún valor, la estantería se colocará en la parte inferior de la pantalla de forma predeterminada y el usuario podrá cambiar su posición.</translation>
 <translation id="7039815268521168329">Mostrar el flujo de Voice Match del Asistente de Google durante la configuración inicial</translation>
 <translation id="7040229947030068419">Valor de ejemplo:</translation>
-<translation id="7044626519138840387">Una lista de orígenes de aplicaciones de cliente de escritorio remoto que pueden realizar solicitudes a la API WebAuthn que se originan en una sesión de navegador en un host remoto.
-
-Cualquier origen configurado en esta política puede hacer solicitudes WebAuthn para obtener IDs de entidad de confianza que normalmente no podría solicitar.
-
-Solo se permiten orígenes HTTPS válidos. No se admiten comodines.
-Las entradas no válidas se ignoran.</translation>
 <translation id="7044883996351280650">Controlar el servicio de copia de seguridad y restauración de Android</translation>
 <translation id="7045221780834308118">Si se habilita esta política, las aplicaciones web de terceros podrán usar la API Desk para controlar los escritorios de <ph name="PRODUCT_OS_NAME" />. Si esta política no se define o se inhabilita, <ph name="DESK_API_NAME" /> no estará disponible. La política solo se aplicará a los dispositivos registrados.</translation>
 <translation id="7046113122884041950">No permitir Smart Lock</translation>

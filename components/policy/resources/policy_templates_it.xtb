@@ -2195,6 +2195,7 @@ Se questa policy viene impostata, l'utente non potrà sostituire il valore.
 
 Se questa policy non viene impostata, la Schermata sulla privacy verrà inizialmente disattivata, ma potrà essere controllata dall'utente.</translation>
 <translation id="2413899611035194909">Mostra opzioni di accessibilità nel menu della barra delle applicazioni della schermata di accesso</translation>
+<translation id="2414712434655365347">Configura l'inserimento di intestazioni HTTP per pattern URL specifici</translation>
 <translation id="2415715982424988916">Esplora (supportata dalla versione 91)</translation>
 <translation id="2420958105721932612">Consente di specificare la modalità di installazione di un'app. AVAILABLE: l'app non viene installata automaticamente, ma può essere installata dall'utente. Si tratta del comportamento predefinito se questa policy non viene specificata. FORCE_INSTALLED: l'app viene installata automaticamente e l'utente non può disinstallarla. BLOCKED: l'app è bloccata e non può essere installata. Se l'app è stata installata in base a una policy precedente, verrà disinstallata.</translation>
 <translation id="2421400544595297401">Non consentire a utenti non affiliati di utilizzare app per Android</translation>
@@ -8134,6 +8135,25 @@ Dalla versione 114 in poi, questa policy è facoltativa se viene configurata la 
 <translation id="624219423122512710">Azioni per browser inattivo</translation>
 <translation id="6244061205361004687">Consenti all'utente di disconnettere o modificare manualmente una VPN</translation>
 <translation id="6244210204546589761">Pagine da aprire all'avvio</translation>
+<translation id="6245828368576563662">Questa policy consente di definire un elenco di regole per inserire intestazioni HTTP personalizzate nelle richieste web che corrispondono a pattern URL specifici. Le intestazioni impostate da questa policy hanno la precedenza su quelle inizialmente presenti nella richiesta, nonché sulle modifiche tentate dagli utenti o dalle estensioni.
+
+Un caso d'uso comune per questa policy è l'applicazione dei controlli di accesso dei tenant mediante l'inserimento di intestazioni personalizzate (ad es. <ph name="EXAMPLE_HEADER_NAME" />).
+
+La policy accetta un elenco di regole. Ogni regola contiene:
+
+* <ph name="PATTERNS_KEY" />: un elenco di pattern URL da abbinare. Scopri come formattare un pattern URL (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" />: un elenco di oggetti che rappresentano le intestazioni da inserire, ognuno dei quali contiene:
+
+  * <ph name="HEADER_NAME_KEY" />: il nome dell'intestazione da inserire.
+
+  * <ph name="HEADER_VALUE_KEY" />: il valore dell'intestazione da inserire.
+
+Se più regole corrispondono a una richiesta, verranno applicate le intestazioni di tutte le regole corrispondenti. Se sono presenti più intestazioni con lo stesso nome, verrà applicata quella con il pattern URL più specifico. Se i pattern hanno la stessa specificità, verrà applicato quello che compare per ultimo nell'elenco.
+
+I nomi delle intestazioni devono essere conformi a RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). I valori delle intestazioni non devono contenere simboli NUL, CR o LF. Le singole intestazioni non devono superare gli 8 kB. Le intestazioni e i pattern URL non validi verranno ignorati.
+
+Questa policy è limitata a un totale di 500 pattern URL in tutte le regole. Ogni regola può contenere al massimo 20 intestazioni. I pattern e le intestazioni che superano queste soglie verranno ignorati.</translation>
 <translation id="624595269193747921">Consente di stabilire se limitare o meno la ricerca della stampante corrispondente a un insieme specifico di stampanti.</translation>
 <translation id="6246290059248303618">Mostra i controlli multimediali per le sessioni <ph name="PRODUCT_NAME" /> avviate da altri dispositivi sulla rete locale</translation>
 <translation id="6247316685259031374">Questa policy consente di controllare la sandbox del processo audio.
@@ -9531,14 +9551,6 @@ l'ottimizzazione di JavaScript viene attivata per il sito.</translation>
       Se la policy non viene impostata, la barra delle app verrà posizionata per impostazione predefinita nella parte inferiore dello schermo, ma l'utente potrà cambiare la posizione.</translation>
 <translation id="7039815268521168329">Mostrare il flusso Voice Match dell'Assistente Google durante la configurazione iniziale</translation>
 <translation id="7040229947030068419">Valore di esempio:</translation>
-<translation id="7044626519138840387">Un elenco di origini di app client Remote Desktop che potrebbero eseguire le richieste
-API WebAuthn provenienti da una sessione di navigazione su un host remoto.
-
-Qualsiasi origine configurata in questa policy può inviare richieste WebAuthn per ID
-Relying Party (ID RP) che normalmente non sarebbe autorizzata a richiedere.
-
-Sono consentite solo origini HTTPS valide. I caratteri jolly non sono supportati.
-Le voci non valide vengono ignorate.</translation>
 <translation id="7044883996351280650">Controlla il servizio backup e ripristino di Android</translation>
 <translation id="7045221780834308118">Se la policy viene impostata su Enabled, le applicazioni web di terze parti possono usare l'API Desk per controllare le scrivanie di <ph name="PRODUCT_OS_NAME" />. Se la policy non viene configurata o se viene disattivata, <ph name="DESK_API_NAME" /> non sarà disponibile. La policy verrà applicata soltanto sui dispositivi registrati.</translation>
 <translation id="7046113122884041950">Non consentire Smart Lock</translation>

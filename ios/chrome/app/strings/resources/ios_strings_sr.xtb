@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Можете да скролујете удесно да бисте прегледали у режиму без архивирања.</translation>
 <translation id="2079545284768500474">Опозови</translation>
 <translation id="2085876078937250610">Сачувај…</translation>
+<translation id="2089180529062519164">Укључите микрофон</translation>
 <translation id="2096239473850415494">Преузимање није успело</translation>
 <translation id="2096716221239095980">Избриши све податке</translation>
 <translation id="2104436223719117661">Претраге у тренду</translation>
@@ -2117,6 +2118,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8319282042900445670">Подсетник је подешен за <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Недавна активност</translation>
 <translation id="8325455175867928593">Сакриј Рецензије на основу интересовања</translation>
+<translation id="8333459276976141586">Live ће користити микрофон. Додиром на дугме Live укључује се микрофон. Да бисте искључили микрофон, додирните дугме Заустави или затворите Gemini.</translation>
 <translation id="833647236762414178">Правите и чувајте лозинке и приступне кључеве и управљајте њима да бисте се лако пријављивали на сајтове и у апликације. <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Правите резервне копије садржаја и користите га на било ком уређају.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Довршите још 1 задатак да бисте прешли на следећи ниво}one{Довршите још {count} задатак да бисте прешли на следећи ниво}few{Довршите још {count} задатка да бисте прешли на следећи ниво}other{Довршите још {count} задатака да бисте прешли на следећи ниво}}</translation>
@@ -2193,6 +2195,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8571019948162152515">Желите да избришете „<ph name="FILENAME" />“?</translation>
 <translation id="8571213806525832805">Последње 4 недеље</translation>
 <translation id="8577056989960190117">Аутоматски попуните годину истека <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Почните да користите Live са Gemini-јем</translation>
 <translation id="8587001564479545614">Направите PIN за враћање приступа налогу</translation>
 <translation id="8588404856427128947">Искључено</translation>
 <translation id="8590286732816598906">Група картица, <ph name="GROUP_TITLE" />, мени.</translation>
@@ -2267,6 +2270,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8803526663383843427">Када је укључено</translation>
 <translation id="8803639129939845298">Безбедан</translation>
 <translation id="8813277370772331957">Подсети ме касније</translation>
+<translation id="8814308045751067027">Да бисте користили Live, одобрите Chrome-у приступ микрофону у подешавањима</translation>
 <translation id="8814719628147284151">Настави</translation>
 <translation id="881559332211266856">Ажурирајте број обештећења</translation>
 <translation id="8817524703470045896">Пратите цене и добијајте обавештења када цена падне на било ком сајту</translation>

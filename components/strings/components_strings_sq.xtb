@@ -259,6 +259,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1392813880755413602">Prezantim OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nuk dërgoi asnjë të dhënë.</translation>
 <translation id="1393071644879491291">Sulmuesit në sajtin që u përpoqe të vizitoje mund të të mashtrojnë që të instalosh një softuer ose të zbulosh gjëra të tilla si fjalëkalimet, numrat e telefonit ose të kartave të kreditit. Chrome rekomandon shumë të kthehesh aty ku je i sigurt. <ph name="BEGIN_LEARN_MORE_LINK" />Mëso më shumë për këtë paralajmërim<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Sajtet që shton këtu nuk do të referohen për përgjigje, edhe nëse skeda është e hapur. Nëse një sajt që shton po përdoret aktualisht në një bashkëbisedim, mund të duhen deri në 30 minuta që bashkëbisedimi të mos e referojë më.</translation>
 <translation id="1402151528875251561">Shfaq "Historikun" në "Panelin anësor"</translation>
 <translation id="1405567553485452995">Jeshile e çelur</translation>
 <translation id="1406370515365284486">Mënyrat e tua të pagesës do të ruhen përsëri</translation>
@@ -1552,6 +1553,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="343474037147570563">Skedarët që ngarkon ose bashkëngjit dërgohen te Google Cloud ose te palë të treta për analizim. Për shembull, ata mund të skanohen për të dhëna delikate ose softuerë keqdashës dhe mund të ruhen bazuar në politikat e kompanisë dhe të jenë të dukshëm për administratorin tënd.</translation>
 <translation id="3435557549311968410">I vazhdueshëm (i shkurtër)</translation>
 <translation id="3435738964857648380">Siguria</translation>
+<translation id="3438509337461223476">Ndaj automatikisht skedat e hapura përkatëse në çdo bashkëbisedim</translation>
 <translation id="3440783957068352691">katror</translation>
 <translation id="3441653493275994384">Ekrani</translation>
 <translation id="3443504041532578451">Disk optik (saten)</translation>
@@ -2483,6 +2485,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="4894390983254799375">Si p.sh. ID-ja e pajisjes, emri, versioni i sistemit operativ dhe emri i përdoruesit të sistemit operativ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Lojërat Olimpike</translation>
+<translation id="4897851261703006488">Kjo politikë nuk duhet të ketë tituj që tejkalojnë <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
 <translation id="4898742041545089450">Kjo temë është zhbllokuar dhe mund të bëhet aktive bazuar në historikun tënd të shfletimit</translation>
 <translation id="4900217275619098670">Ruli i nëntë</translation>
 <translation id="4901052769830245369">Etiketa (me gjysmë shkëlqim)</translation>
@@ -2730,6 +2733,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="5284295735376057059">Karakteristikat e dokumentit</translation>
 <translation id="528468243742722775">Fundi</translation>
 <translation id="5285468538058987167">Nëpërmjet vërtetimit të fortë të klientit (SCA)</translation>
+<translation id="5286195392366054103">Kjo politikë ka më shumë se <ph name="MAX_URL_PATTERNS_LIMIT" /> motiv URL-je. Do të përdoren vetëm <ph name="MAX_URL_PATTERNS_LIMIT" /> motivet e para të URL-së.</translation>
 <translation id="5287456746628258573">Ky sajt përdor një konfigurim të vjetruar të sigurisë, i cili mund t'i ekspozojë informacionet e tua (p.sh. fjalëkalimin ose numrat e kartës së kreditit) kur dërgohen te ky sajt.</translation>
 <translation id="5288108484102287882">Vërtetimi i vlerave të politikës ka ngritur shqetësime</translation>
 <translation id="5289384342738547352">Menaxhimi i shumë dokumenteve</translation>
@@ -3847,6 +3851,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="7016992613359344582">Këto tarifa mund të jenë vetëm për një rast ose dhe të përsëritura, gjë që mund të mos jetë menjëherë e qartë.</translation>
 <translation id="701757816833614688">Edukim për artet pamore dhe dizajnin</translation>
 <translation id="7020464868401003526">URL-ja e shkurtores tejkalon maksimumin gjatësisë së lejuar prej <ph name="MAX_LENGTH" /> karakteresh.</translation>
+<translation id="7020581144940000377">Përdor vendndodhjen e përafërt</translation>
 <translation id="702275896380648118">Ky sajt përcakton gjërat që të pëlqejnë dhe më pas sugjeron reklama për sajtet e tjera. Ky sajt merr po ashtu temat e tua të reklamave nga Chrome për të të shfaqur reklama më të përshtatshme</translation>
 <translation id="7023162328967545559">Paralajmërim nga administratori</translation>
 <translation id="7023765275461720661">Të lidhet llogaria dhe të paguhet me <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3956,6 +3961,7 @@ Për të fshehur opsionet e "Paguaj më vonë", shko te <ph name="BEGIN_LINK" />
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Përdor këtë kod në përfundim të blerjes. I vlefshëm deri më <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Pasi të aktivizosh këtë cilësim, kthehu përsëri te kjo skedë për të filluar të shkruash</translation>
+<translation id="7196153352301578792">Chrome do të dërgojë automatikisht përmbajtjen e faqes dhe URL-të e skedave të hapura që mund të jenë të përshtatshme për pyetjen tënde te Google për të marrë përgjigje më të personalizuara. Chrome do të ndajë vetëm skedat nga dritarja ku po punon.</translation>
 <translation id="7196370964328811506">Plotëso automatikisht këtë kartë për blerjet e bëra në Chrome kur ajo ruhet në këtë pajisje</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Ne morëm parasysh skedat e mëposhtme të hapura:</translation>
@@ -4370,6 +4376,7 @@ Detaje shtesë:
 <translation id="7805268272389338048">Enkriptimi mbron informacionet e tua personale</translation>
 <translation id="7805768142964895445">Statusi</translation>
 <translation id="7805906048382884326">Mbylle këshillën</translation>
+<translation id="780756914888723112">Kjo politikë lejon deri në <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> tituj për rregull. Do të përdoren vetëm <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> titujt e parë për rregull.</translation>
 <translation id="7810410097247356677">Për të paguar më shpejt herën tjetër, ruaje kartën dhe kodin e enkriptuar të sigurisë në pajisjen tënde</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Të hiqet sugjerimi i formularit nga Chrome?</translation>
@@ -4678,6 +4685,7 @@ Detaje shtesë:
 <translation id="8301894345671534559">Fut kodin</translation>
 <translation id="830498451218851433">Palosje në gjysmë</translation>
 <translation id="8308653357438598313">Transmetim i videove të drejtpërdrejta</translation>
+<translation id="8310477433309274098">Pa tarifa, me deri në 0% NEI</translation>
 <translation id="8311895354659782580">Listime të pasurive të paluajtshme</translation>
 <translation id="8312841338723044391">DREJTPËRDREJT</translation>
 <translation id="8316555157357957253">Po përdoret tani</translation>

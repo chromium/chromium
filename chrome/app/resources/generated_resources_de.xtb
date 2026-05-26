@@ -665,6 +665,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />Fehlerbehebungsprotokolle<ph name="END_LINK" /> senden (empfohlen)</translation>
 <translation id="1454223536435069390">Screenshot &amp;erstellen</translation>
 <translation id="145432137617179457">Sprachen für die Rechtschreibprüfung</translation>
+<translation id="1454523475536875350">Link in Ansicht unten öffnen</translation>
 <translation id="1455009947184333152">Kompetenz gelöscht</translation>
 <translation id="1455119378540982311">Voreingestellte Fenstergrößen</translation>
 <translation id="1456849775870359518">Deine Tabs werden wieder geöffnet</translation>
@@ -800,6 +801,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1547123415014299762">Drittanbieter-Cookies werden zugelassen</translation>
 <translation id="1547808936554660006">Mir ist bewusst, dass die installierten eSIM-Profile durch ein Powerwash nicht entfernt werden</translation>
 <translation id="1547936895218027488">Klicke auf das Symbol für die Seitenleiste, um sie zu öffnen</translation>
+<translation id="1548265680751768570">Gemini in Chrome ist nicht verfügbar</translation>
 <translation id="1549275686094429035">ARC aktiviert</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> möchte auf <ph name="VOLUME_NAME" /> zugreifen. Deine Dateien können geändert oder gelöscht werden.</translation>
 <translation id="1549966883323105187">Gespeicherte Passwörter schneller aufrufen</translation>
@@ -956,6 +958,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1648439345221797326">Strg + Umschalttaste + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Standort über WLAN oder Mobilfunknetz bestimmen</translation>
 <translation id="1650407365859096313">Wird in neuem Tab geöffnet, aktivierte Berechtigung: <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">Link in Ansicht unten öffnen</translation>
 <translation id="1650801028905250434">Die Dateien in „Meine Ablage“ werden automatisch mit deinem Chromebook synchronisiert, sodass du auch ohne Internetverbindung darauf zugreifen kannst. Du kannst dies jederzeit unter „Einstellungen“ &gt; „Dateien” ändern.</translation>
 <translation id="1651008383952180276">Du musst zweimal dieselbe Passphrase eingeben</translation>
 <translation id="1651609627703324721">Auf diesem Tab werden VR-Inhalte für ein Headset dargestellt</translation>
@@ -1147,6 +1150,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1784849162047402014">Gerät verfügt über wenig Speicherplatz</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Durch das Deinstallieren von „<ph name="APP_NAME" />“ wird auch diese App deinstalliert:}other{Durch das Deinstallieren von „<ph name="APP_NAME" />“ werden auch diese Apps deinstalliert:}}</translation>
 <translation id="1786290960428378411">Anfrage zum Lesen und Ändern läuft</translation>
+<translation id="179021551944139249">Link zur Leseliste hinzufügen</translation>
 <translation id="1790976235243700817">Zugriff entfernen</translation>
 <translation id="1791662854739702043">Installiert</translation>
 <translation id="1792619191750875668">Erweiterter Bildschirm</translation>
@@ -1962,6 +1966,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> kann nicht sicher heruntergeladen werden</translation>
 <translation id="2341392013052489530">Version <ph name="VERSION" /> deinstalliert, Grund: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">Anstelle eines Passworts kann dein Kind eine Nummer (PIN) zum Entsperren dieses Geräts verwenden. Die PIN kann später in den Einstellungen festgelegt werden.</translation>
+<translation id="2343005971389581619">Link in Ansicht oben öffnen</translation>
 <translation id="2343160676229467122">Erweiterungen sind auf <ph name="SITE_NAME" /> nicht zulässig</translation>
 <translation id="2343390523044483367">Rocky-Mountains-Nationalpark</translation>
 <translation id="2343747224442182863">Diesen Tab fokussieren</translation>
@@ -4155,6 +4160,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3854348409770521214">Ölmalerei</translation>
 <translation id="3854967233147778866">Übersetzung von fremdsprachigen Websites anbieten</translation>
 <translation id="3854976556788175030">Ausgabefach ist voll</translation>
+<translation id="3855324045699437362">Gemini in Chrome wird in verschiedenen Regionen eingeführt, ist aber noch nicht überall verfügbar.</translation>
 <translation id="3855441664322950881">Erweiterung packen</translation>
 <translation id="3855676282923585394">Lesezeichen und Einstellungen importieren...</translation>
 <translation id="3856023744577163821">Über einen Chat oder einen geteilten Tab geöffnete Tabs werden ebenfalls mit Gemini geteilt.</translation>
@@ -5876,6 +5882,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5088427648965532275">Passpoint-Anbieter</translation>
 <translation id="5090637338841444533">Dürfen meine Kameraposition nicht erfassen</translation>
 <translation id="5091636240353511739">PIN anzeigen</translation>
+<translation id="5092567114307895466">Prüfe, ob du die Voraussetzungen erfüllst</translation>
 <translation id="5093447877601682598">Feedback zur Tableiste senden</translation>
 <translation id="5093477827231450397">Liste der Websites, die du blockiert hast und die anderen Websites keine Werbung vorschlagen dürfen</translation>
 <translation id="5093569275467863761">Inkognito-Subframe im Back-Forward-Cache: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7718,6 +7725,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6427752304227226701">&amp;Unsichere Website melden…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Keine gespeicherten Passwörter.}=1{{COUNT} Passwort wird geprüft...}other{{COUNT} Passwörter werden geprüft...}}</translation>
 <translation id="6429384232893414837">Fehler beim Aktualisieren</translation>
+<translation id="6430202563517028640">Link zur Leseliste hinzufügen</translation>
 <translation id="6430814529589430811">Base64-codierter ASCII-Code, Einzelzertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> richtet automatische Updates für alle Nutzer dieses Computers ein.</translation>
 <translation id="6434104957329207050">Punktscan-Geschwindigkeit</translation>
@@ -10164,6 +10172,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8137559199583651773">Erweiterungen verwalten</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Überprüfe 1 Erweiterung, die möglicherweise unsicher ist}other{Überprüfe {NUM_EXTENSIONS} Erweiterungen, die möglicherweise unsicher sind}}</translation>
 <translation id="8138217203226449454">Möchtest du deinen Suchanbieter wechseln?</translation>
+<translation id="813858113027420189">Link in Ansicht oben öffnen</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" />-Status</translation>
 <translation id="8139440916039659819">Cursorbeschleunigung</translation>
 <translation id="8140070492745508800">„<ph name="FIRST_DEVICE" />“, „<ph name="SECOND_DEVICE" />“</translation>

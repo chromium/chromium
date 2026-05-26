@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Cena je nízka</translation>
 <translation id="3070005020161560471">Automaticky prekladať</translation>
 <translation id="3072980200212375806">Aplikácia <ph name="APP_NAME" /> sa otvorí v Chrome. Pokračovaním vyjadrujete súhlas so <ph name="BEGIN_LINK1" />zmluvnými podmienkami spoločnosti Google<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />dodatočnými zmluvnými podmienkami prehliadača Google Chrome a systému Chrome OS<ph name="END_LINK2" />. Uplatňujú sa aj <ph name="BEGIN_LINK3" />pravidlá ochrany súkromia<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Vyhľadať na karte pomocou funkcie Google Lens</translation>
 <translation id="3080525922482950719">Stránky si môžete uložiť a prečítať neskôr či offline</translation>
 <translation id="3087734570205094154">Spodok</translation>
 <translation id="3091010850649238832">Zobraziť obsah schránky</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Zdieľať obrázok</translation>
 <translation id="3385749568468586663">V anonymnom režime nie je Gemini k dispozícii</translation>
 <translation id="3387650086002190359">Súbor <ph name="FILE_NAME" /> sa nepodarilo stiahnuť z dôvodu chýb systému súborov.</translation>
+<translation id="3391311825344469964">Okná si môžete spravovať v správcovi okien Chromu</translation>
 <translation id="3417835166382867856">Vyhľadávanie kariet</translation>
 <translation id="3430670036890315772">Vypnutím zámky profilu odstránite uložené informácie</translation>
 <translation id="3435575784518354875">Ak si chcete zachovať prístup k svojim heslám, exportujte ich, aktualizujte Služby Google Play a potom ich importujte späť do Správcu hesiel Google. <ph name="BEGIN_LINK" />Zobraziť úplné pokyny<ph name="END_LINK" /></translation>
@@ -1070,6 +1072,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5628604359369369630">Neprečítané – k dispozícii offline</translation>
 <translation id="5631483240431073854">Spravovať otvorené karty</translation>
 <translation id="5632485077360054581">Ukázať postup</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> potrebuje vaše povolenie na spustenie rozšírenia <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Prihlásili ste sa ako <ph name="USER_NAME" />. Chyba účtu Google. Otvorí nastavenia.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />História vyhľadávania<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />ďalšie formy aktivity<ph name="END_LINK2" /> sa môžu ukladať do vášho účtu Google</translation>
 <translation id="5648166631817621825">Posledných 7 dní</translation>
@@ -1877,6 +1880,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome našiel slabé heslo, ktoré môžete zlepšiť}few{Chrome našiel # slabé heslá, ktoré môžete zlepšiť}many{Chrome found # weak passwords that you could improve}other{Chrome našiel # slabých hesiel, ktoré môžete zlepšiť}}</translation>
 <translation id="8766529642647037772">Chcete vytvoriť zvýraznený odkaz ako tento?</translation>
 <translation id="8769783688897433958">Zobraziť informácie a povolenia webu</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> potrebuje vaše povolenie na spustenie <ph name="COUNT" /> rozšírení</translation>
 <translation id="8788265440806329501">História navigácie je zatvorená</translation>
 <translation id="8790193082819560975">Klepnutím vyhľadáte možnosti zakúpenia výrobku na novej karte.</translation>
 <translation id="8798449543960971550">Prečítané</translation>

@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> ಎಂಬ ಹೆಸರಿನಲ್ಲಿ ಸೈನ್ ಇನ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1149401351239820326">ಮುಕ್ತಾಯದ ತಿಂಗಳು</translation>
 <translation id="1150989369772528668">ಕ್ಯಾಲೆಂಡರ್</translation>
+<translation id="1161444134753003495">ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="1161663161838091892">ಮುಂದುವರಿಸಲು ಟ್ಯಾಬ್‌ಗಳು ಮತ್ತು ಇತಿಹಾಸವನ್ನು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್}one{{count} ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು}other{{count} ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು}}</translation>
 <translation id="1164891049599601209">ವಂಚನೆ ಮಾಡುವ ಸೈಟ್‌ನಲ್ಲಿ ನಮೂದಿಸಲಾಗಿದೆ</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">ಅಜ್ಞಾತ ಮೋಡ್‌ನಲ್ಲಿ ಬ್ರೌಸ್ ಮಾಡಲು ನೀವು ಬಲಕ್ಕೆ ಸ್ಕ್ರಾಲ್ ಮಾಡಬಹುದು.</translation>
 <translation id="2079545284768500474">ರದ್ದುಮಾಡಿ</translation>
 <translation id="2085876078937250610">ಸೇವ್ ಮಾಡಿ…</translation>
+<translation id="2089180529062519164">ಮೈಕ್ರೊಫೋನ್ ಆನ್ ಮಾಡಿ</translation>
 <translation id="2096239473850415494">ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="2096716221239095980">ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="2104436223719117661">ಟ್ರೆಂಡಿಂಗ್‌ ಹುಡುಕಾಟಗಳು</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{ಈ ಸೈಟ್‌ನ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌}one{ಈ ಸೈಟ್‌ಗಳ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}other{ಈ ಸೈಟ್‌ಗಳ ಹೊಸ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು}}</translation>
 <translation id="3933372629914873850">ನೀವು <ph name="URL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುತ್ತೀರಿ</translation>
 <translation id="3934905113567851655">ಮರುಗಾತ್ರಗೊಳಿಸಲು ಪಿಂಚ್ ಮಾಡಿ</translation>
+<translation id="393732545649378031">ಖಾತೆ</translation>
 <translation id="3940195383040445971">ಟ್ಯಾಬ್‌ಗಳಲ್ಲಿ ಬೆಲೆಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} ಟ್ಯಾಬ್‌ ಅನ್ನು ಮುಚ್ಚಿರಿ}one{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}other{{COUNT} ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿರಿ}}</translation>
 <translation id="3946483119107054883">CSV ಗೆ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
@@ -1469,6 +1472,7 @@
 <translation id="6140948187512243695">ವಿವರಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="6144589619057374135">${url} ಅನ್ನು ಅದೃಶ್ಯ ಮೋಡ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="6146563240635539929">ವೀಡಿಯೊಗಳು</translation>
+<translation id="6148392728478209113">ನೀವು ಈಗಲೂ Live ಬಳಸುತ್ತಿದ್ದೀರಾ? Gemini ಜೊತೆ ಮಾತನಾಡುವುದನ್ನು ಮುಂದುವರಿಸಲು Live ಬಟನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ಬಳಸಿಕೊಂಡು ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="6152340033632117531">ನಿಷ್ಕ್ರಿಯವಾಗಿದೆ</translation>
 <translation id="6152406514676263192">ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಆಧರಿಸಿದ ಅತ್ಯಂತ ಸೂಕ್ತ ವಿಷಯವನ್ನು ಪಡೆಯಲು ಸಿಂಕ್ ಮಾಡಿ.</translation>
@@ -1506,6 +1510,7 @@
 <translation id="6241132809279377987">Google ಆ್ಯಪ್‌ಗಳೊಂದಿಗೆ ನಿಮ್ಮ iPhone ಗಾಗಿ ಹೆಚ್ಚಿನ ಫೀಚರ್‌ಗಳನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="6247557882553405851">Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕ</translation>
 <translation id="6251835855431997163"><ph name="VALUE" /> ಆಟೋಫಿಲ್</translation>
+<translation id="6253686838150111720"><ph name="URL" /> ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="6254066287920239840">ಬ್ರೌಸರ್ ಬದಲಿಗೆ ಅಪ್ಲಿಕೇಶನ್‌ನಲ್ಲಿ ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ.</translation>
 <translation id="6259928806013786178">ರೀಡಿಂಗ್ ಮೋಡ್ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="6268773951964630964">ಕಾಪಿ ಮಾಡಿದ ಚಿತ್ರವನ್ನು ಹುಡುಕಿ</translation>
@@ -2116,6 +2121,7 @@
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> ಗೆ ರಿಮೈಂಡರ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8320212361750431956">ಇತ್ತೀಚಿನ ಚಟುವಟಿಕೆ</translation>
 <translation id="8325455175867928593">"ನಿಮ್ಮ ಆಸಕ್ತಿಗಳನ್ನು ಆಧರಿಸಿದ ವಿಮರ್ಶೆಗಳು" ಎಂಬುದನ್ನು ಮರೆಮಾಡಿ</translation>
+<translation id="8333459276976141586">Live ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್ ಅನ್ನು ಬಳಸುತ್ತದೆ. Live ಬಟನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡುವುದರಿಂದ ಮೈಕ್ ಆನ್ ಆಗುತ್ತದೆ. ಮೈಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಲು, ನಿಲ್ಲಿಸಿ ಬಟನ್ ಅನ್ನು ಟ್ಯಾಪ್ ಮಾಡಿ ಅಥವಾ Gemini ಅನ್ನು ಮುಚ್ಚಿರಿ.</translation>
 <translation id="833647236762414178">ಸೈಟ್‌ಗಳು ಮತ್ತು ಆ್ಯಪ್‌ಗಳಿಗೆ ಸುಲಭವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಲು ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಪಾಸ್‌ಕೀಗಳನ್ನು ರಚಿಸಿ, ಸೇವ್ ಮಾಡಿ ಮತ್ತು ನಿರ್ವಹಿಸಿ. <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಬ್ಯಾಕಪ್ ಮಾಡಿ ಹಾಗೂ ಅದನ್ನು ಯಾವುದೇ ಸಾಧನದಲ್ಲಿ ಬಳಸಿ.</translation>
 <translation id="8345328955902001853">{count,plural, =1{ಅಂತಿಮ ಹಂತವನ್ನು ತಲುಪಲು ಇನ್ನೂ 1 ಕಾರ್ಯವನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ}one{ಅಂತಿಮ ಹಂತವನ್ನು ತಲುಪಲು ಇನ್ನೂ {count} ಕಾರ್ಯಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ}other{ಅಂತಿಮ ಹಂತವನ್ನು ತಲುಪಲು ಇನ್ನೂ {count} ಕಾರ್ಯಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಿ}}</translation>
@@ -2192,6 +2198,7 @@
 <translation id="8571019948162152515">"<ph name="FILENAME" />" ಅಳಿಸಬೇಕೇ?</translation>
 <translation id="8571213806525832805">ಕಳೆದ 4 ವಾರಗಳು</translation>
 <translation id="8577056989960190117">ಮುಕ್ತಾಯ ವರ್ಷವನ್ನು ಆಟೋಫಿಲ್ ಮಾಡಿ <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Gemini ನೊಂದಿಗೆ Live ಅಲ್ಲಿ ಮಾತನಾಡಿ</translation>
 <translation id="8587001564479545614">ರಿಕವರಿ ಪಿನ್ ರಚಿಸಿ</translation>
 <translation id="8588404856427128947">ಆಫ್</translation>
 <translation id="8590286732816598906">ಟ್ಯಾಬ್‌ ಗುಂಪು, <ph name="GROUP_TITLE" />, ಮೆನು.</translation>
@@ -2266,6 +2273,7 @@
 <translation id="8803526663383843427">ಆನ್ ಆಗಿರುವಾಗ</translation>
 <translation id="8803639129939845298">ಸುರಕ್ಷಿತ</translation>
 <translation id="8813277370772331957">ನಂತರ ನನಗೆ ಜ್ಞಾಪಿಸಿ</translation>
+<translation id="8814308045751067027">Live ಅನ್ನು ಬಳಸಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನಿಮ್ಮ ಮೈಕ್ರೊಫೋನ್‌ಗೆ Chrome ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ನೀಡಿ</translation>
 <translation id="8814719628147284151">ಮುಂದುವರಿಸಿ</translation>
 <translation id="881559332211266856">ರಿಡ್ರೆಸ್ ಸಂಖ್ಯೆಯನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="8817524703470045896">ದರಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ ಮತ್ತು ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ದರ ಇಳಿಕೆಯಾದಾಗ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>

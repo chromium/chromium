@@ -666,6 +666,7 @@
     <ph name="END_LINK" /> 보내기(권장)</translation>
 <translation id="1454223536435069390">스크린샷 캡쳐하기(&amp;A)</translation>
 <translation id="145432137617179457">맞춤법 검사 언어</translation>
+<translation id="1454523475536875350">하단 뷰에서 링크 열기</translation>
 <translation id="1455009947184333152">스킬 삭제됨</translation>
 <translation id="1455119378540982311">미리 설정된 창 크기</translation>
 <translation id="1456849775870359518">탭이 다시 열립니다</translation>
@@ -804,6 +805,7 @@
 <translation id="1547123415014299762">서드 파티 쿠키 허용됨</translation>
 <translation id="1547808936554660006">설치된 eSIM 프로필이 파워워시로 삭제되지 않음을 이해합니다</translation>
 <translation id="1547936895218027488">측면 패널 아이콘을 클릭하여 엽니다.</translation>
+<translation id="1548265680751768570">Chrome의 Gemini를 사용할 수 없습니다</translation>
 <translation id="1549275686094429035">ARC 사용 설정됨</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" />에서 <ph name="VOLUME_NAME" />에 액세스하려고 합니다. 내 파일을 수정하거나 삭제할 수 있습니다.</translation>
 <translation id="1549966883323105187">더 빠르게 저장된 비밀번호로 이동</translation>
@@ -960,6 +962,7 @@
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">위치 파악에 Wi‑Fi 또는 모바일 네트워크 사용</translation>
 <translation id="1650407365859096313">새 탭에서 열기, 권한: <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">하단 뷰에서 링크 열기</translation>
 <translation id="1650801028905250434">내 드라이브에 있는 파일이 Chromebook에 자동으로 동기화되므로 인터넷에 연결되지 않은 상태에서도 파일에 액세스할 수 있습니다. 언제든지 설정 &gt; 파일에서 이를 변경할 수 있습니다.</translation>
 <translation id="1651008383952180276">동일한 암호를 두 번 입력해야 합니다.</translation>
 <translation id="1651609627703324721">이 탭에서 헤드셋에 VR 콘텐츠를 전송하는 중입니다</translation>
@@ -1159,6 +1162,7 @@
 <translation id="1784849162047402014">기기에 디스크 저장 공간 부족</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" 앱을 제거하면 다음 앱도 제거됩니다.}other{"<ph name="APP_NAME" />" 앱을 제거하면 다음 앱도 제거됩니다.}}</translation>
 <translation id="1786290960428378411">읽기 및 변경 요청</translation>
+<translation id="179021551944139249">읽기 목록에 링크 추가</translation>
 <translation id="1790976235243700817">액세스 권한 삭제</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792619191750875668">확장 디스플레이</translation>
@@ -1980,6 +1984,7 @@
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> 파일은 안전하게 다운로드할 수 없습니다.</translation>
 <translation id="2341392013052489530"><ph name="VERSION" /> 버전이 제거됨, 이유: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">자녀가 비밀번호 대신 번호(PIN)를 사용해 이 기기를 잠금 해제할 수 있습니다. 나중에 PIN을 설정하려면 설정으로 이동하세요</translation>
+<translation id="2343005971389581619">상단 뷰에서 링크 열기</translation>
 <translation id="2343160676229467122"><ph name="SITE_NAME" />에서 확장 프로그램이 허용되지 않습니다.</translation>
 <translation id="2343390523044483367">로키산맥 국립공원</translation>
 <translation id="2343747224442182863">이 탭에 포커스</translation>
@@ -4175,6 +4180,7 @@
 <translation id="3854348409770521214">유화</translation>
 <translation id="3854967233147778866">다른 언어로 된 웹사이트의 번역 옵션 제공</translation>
 <translation id="3854976556788175030">출력함이 가득 참</translation>
+<translation id="3855324045699437362">Chrome의 Gemini는 다양한 위치로 확대되고 있지만 모든 지역에서 사용할 수 있는 것은 아닙니다.</translation>
 <translation id="3855441664322950881">확장 프로그램 압축</translation>
 <translation id="3855676282923585394">북마크 및 설정 가져오기...</translation>
 <translation id="3856023744577163821">채팅 또는 공유된 탭에서 열린 탭도 Gemini와 공유됩니다.</translation>
@@ -5895,6 +5901,7 @@
 <translation id="5088427648965532275">Passpoint 제공업체</translation>
 <translation id="5090637338841444533">카메라 위치 추적이 허용되지 않음</translation>
 <translation id="5091636240353511739">PIN 표시</translation>
+<translation id="5092567114307895466">자격 요건을 충족하는지 확인하세요</translation>
 <translation id="5093447877601682598">탭 표시줄에 관한 의견 보내기</translation>
 <translation id="5093477827231450397">다른 사이트 광고를 추천하지 않도록 차단한 사이트 목록</translation>
 <translation id="5093569275467863761">시크릿 모드 뒤로-앞으로 캐시 서브프레임: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7741,6 +7748,7 @@
 <translation id="6427752304227226701">안전하지 않은 사이트 신고...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{저장된 비밀번호 없음}=1{비밀번호 {COUNT}개 확인 중...}other{비밀번호 {COUNT}개 확인 중…}}</translation>
 <translation id="6429384232893414837">업데이트 오류</translation>
+<translation id="6430202563517028640">읽기 목록에 링크 추가</translation>
 <translation id="6430814529589430811">Base64-인코딩 ASCII, 단일 인증서</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" />에서 이 컴퓨터의 모든 사용자에 대해 자동 업데이트를 설정합니다.</translation>
 <translation id="6434104957329207050">지점 스캔 속도</translation>
@@ -10186,6 +10194,7 @@
 <translation id="8137559199583651773">확장 프로그램 관리</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{안전하지 않을 수 있는 확장 프로그램 1개 검토}other{안전하지 않을 수 있는 확장 프로그램 {NUM_EXTENSIONS}개 검토}}</translation>
 <translation id="8138217203226449454">검색 제공업체를 변경하려고 하셨나요?</translation>
+<translation id="813858113027420189">상단 뷰에서 링크 열기</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> 상태</translation>
 <translation id="8139440916039659819">커서 가속</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

@@ -259,6 +259,7 @@
 <translation id="1392813880755413602">OpenDocument 演示文稿</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未发送任何数据。</translation>
 <translation id="1393071644879491291">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">您在此处添加的网站即使已打开标签页，系统也不会将其用作生成回答的参考依据。如果您添加的网站当前正用于某个会话串，该会话串可能需要最多 30 分钟才会停止引用该网站。</translation>
 <translation id="1402151528875251561">在侧边栏中显示历史记录</translation>
 <translation id="1405567553485452995">浅绿色</translation>
 <translation id="1406370515365284486">系统仍会保存您的支付方式</translation>
@@ -1550,6 +1551,7 @@
 <translation id="343474037147570563">系统会将您上传或附加的文件发送给 Google Cloud 或第三方以供分析。例如，这些文件可能会被扫描以确定其是否包含敏感数据或恶意软件，并且可能会被根据公司政策存储起来并对您的管理员可见。</translation>
 <translation id="3435557549311968410">连续纸（短边）</translation>
 <translation id="3435738964857648380">安全</translation>
+<translation id="3438509337461223476">在所有会话串中自动分享已打开的相关标签页</translation>
 <translation id="3440783957068352691">方形</translation>
 <translation id="3441653493275994384">屏幕</translation>
 <translation id="3443504041532578451">光盘（磨光）</translation>
@@ -2479,6 +2481,7 @@
 <translation id="4894390983254799375">例如设备 ID、名称、操作系统版本和操作系统用户名</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />、<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奥运会</translation>
+<translation id="4897851261703006488">此政策的标头不得超过 <ph name="MAX_HEADER_SIZE_LIMIT" />KB。</translation>
 <translation id="4898742041545089450">已取消屏蔽此主题，但根据您的浏览记录，此主题可能会变为活跃主题</translation>
 <translation id="4900217275619098670">第 9 卷</translation>
 <translation id="4901052769830245369">标签（半光）</translation>
@@ -2726,6 +2729,7 @@
 <translation id="5284295735376057059">文档属性</translation>
 <translation id="528468243742722775">结束</translation>
 <translation id="5285468538058987167">通过增强型客户身份验证 (SCA)</translation>
+<translation id="5286195392366054103">此政策包含的网址格式超过 <ph name="MAX_URL_PATTERNS_LIMIT" /> 个。系统只会使用前 <ph name="MAX_URL_PATTERNS_LIMIT" /> 个网址格式。</translation>
 <translation id="5287456746628258573">此网站使用的安全性配置已过期，这可能会导致您的信息（例如密码或信用卡卡号）在发送至此网站时出现泄露。</translation>
 <translation id="5288108484102287882">政策值验证引发了警告</translation>
 <translation id="5289384342738547352">多文档处理</translation>
@@ -3843,6 +3847,7 @@
 <translation id="7016992613359344582">这些费用可能只收取一次，也可能会周期性收取，而且可能不易察觉。</translation>
 <translation id="701757816833614688">视觉艺术与设计教育</translation>
 <translation id="7020464868401003526">快捷方式的网址超出了允许的长度上限（<ph name="MAX_LENGTH" /> 个字符）。</translation>
+<translation id="7020581144940000377">使用大致位置</translation>
 <translation id="702275896380648118">此网站会先判断您的喜好，然后向其他网站建议相关广告。此网站还会从 Chrome 中了解您的广告主题，从而向您展示与您更相关的广告。</translation>
 <translation id="7023162328967545559">管理员警告</translation>
 <translation id="7023765275461720661">要关联账号并使用<ph name="BNPL_ISSUER_NAME" />付款吗？</translation>
@@ -3953,6 +3958,7 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">结账时使用此折扣代码。有效期至 <ph name="DATE" />。</translation>
 <translation id="7195852673246414183">开启此设置后，请返回此标签页开始撰写</translation>
+<translation id="7196153352301578792">Chrome 会自动将可能与您的问题相关的已打开标签页的网页内容和网址发送给 Google，以便为您提供更加个性化的回答。Chrome 只会分享您当前窗口中的标签页。</translation>
 <translation id="7196370964328811506">如果将此卡保存到该设备上，那么在 Chrome 中购物时可以自动填充此卡的信息</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">我们参考了以下打开的标签页：</translation>
@@ -4367,6 +4373,7 @@
 <translation id="7805268272389338048">加密可保护您的个人信息</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7805906048382884326">关闭提示</translation>
+<translation id="780756914888723112">此政策允许每条规则最多包含 <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> 个标头。系统只会使用每条规则的前 <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> 个标头。</translation>
 <translation id="7810410097247356677">为方便下次更快完成付款，请将银行卡信息连同已加密的安全码一起保存到设备上</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">从 Chrome 中移除表单建议？</translation>
@@ -4675,6 +4682,7 @@
 <translation id="8301894345671534559">输入验证码</translation>
 <translation id="830498451218851433">对折</translation>
 <translation id="8308653357438598313">实时视频直播</translation>
+<translation id="8310477433309274098">免手续费，年利率低至 0%</translation>
 <translation id="8311895354659782580">房地产信息</translation>
 <translation id="8312841338723044391">实时</translation>
 <translation id="8316555157357957253">正在使用中</translation>

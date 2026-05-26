@@ -493,6 +493,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3067505415088964188">Баасы төмөн</translation>
 <translation id="3070005020161560471">Автоматтык түрдө которуу</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome'до ачылат. Улантуу менен, <ph name="BEGIN_LINK1" />Google'дун Тейлөө шарттарына<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />Google Chrome менен ChromeOS'тун Кошумча Тейлөө шарттарына<ph name="END_LINK2" /> макул болосуз. <ph name="BEGIN_LINK3" />Купуялык эрежелери<ph name="END_LINK3" /> да колдонулат.</translation>
+<translation id="3080375898390966733">Өтмөктү Google Lens аркылуу издөө</translation>
 <translation id="3080525922482950719">Барактарды сактап коюп, кийинчерээк оффлайн режиминде окуй аласыз</translation>
 <translation id="3087734570205094154">Аягы</translation>
 <translation id="3091010850649238832">Алмашуу буфериндеги мазмундарды көрсөтүү</translation>
@@ -550,6 +551,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="3384347053049321195">Сүрөт менен бөлүшүү</translation>
 <translation id="3385749568468586663">Gemini Жашыруун режимде иштебейт</translation>
 <translation id="3387650086002190359">Тутумдагы каталарга байланыштуу <ph name="FILE_NAME" /> жүктөлбөй калды.</translation>
+<translation id="3391311825344469964">Терезелерди Chrome'дун Терезе башкаргыч бөлүмүнөн башкара аласыз</translation>
 <translation id="3417835166382867856">Өтмөктөрдү издөө</translation>
 <translation id="3430670036890315772">Профилиңиздин кулпусун өчүрүп салсаңыз, сакталган маалыматыңыз өчүрүлөт</translation>
 <translation id="3435575784518354875">Сырсөздөрдү колдоно берүү үчүн аларды азыр экспорттоп, Google Play кызматтарын жаңыртып, Сырсөздөрдү башкаргычка кайра импорттоп алыңыз. <ph name="BEGIN_LINK" />Толук нускамаларды көрүңүз<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5628604359369369630">Окула элек – Оффлайн режиминде жеткиликтүү</translation>
 <translation id="5631483240431073854">Ачык өтмөктөрдү тескөө</translation>
 <translation id="5632485077360054581">Кантип?</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> плагинин иштетүү үчүн сиздин уруксатыңыз талап кылынат<ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> катары кирдиңиз. Google аккаунтундагы ката. Параметрлерди ачат.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Издөө таржымалы<ph name="END_LINK1" /> жана <ph name="BEGIN_LINK2" />аракеттердин башка формалары<ph name="END_LINK2" /> Google аккаунтуңузга сакталышы мүмкүн</translation>
 <translation id="5648166631817621825">Акыркы 7 күн</translation>
@@ -1877,6 +1880,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome өзгөртүү керектелген начар сырсөздү тапты}other{Chrome өзгөртүү керектелген # начар сырсөздү тапты}}</translation>
 <translation id="8766529642647037772">Ушуга окшош бөлүнүп көрсөтүлгөн шилтемени түзөсүзбү?</translation>
 <translation id="8769783688897433958">Сайттын маалыматын жана уруксаттарын көрүү</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> <ph name="COUNT" /> кеңейтүүнү иштетүү үчүн сиздин уруксатыңыз талап кылынат</translation>
 <translation id="8788265440806329501">Чабыттоо таржымалы жабылды</translation>
 <translation id="8790193082819560975">Товарды сатып алуу параметрлерин жаңы өтмөктө көрүү үчүн таптап коюңуз.</translation>
 <translation id="8798449543960971550">Окуу</translation>

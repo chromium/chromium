@@ -259,6 +259,7 @@
 <translation id="1392813880755413602">OpenDocument təqdimatı</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> hər hansı data göndərməyib.</translation>
 <translation id="1393071644879491291">Daxil olmağa cəhd etdiyiniz saytda hücumçular sizi proqram təminatı quraşdırmağa, yaxud parollar, telefon və ya kredit kartı nömrələri kimi məlumatları açıqlamağa təşviq edə bilər. Chrome geri qayıtmağınızı təkidlə tövsiyə edir. <ph name="BEGIN_LEARN_MORE_LINK" />Bu xəbərdarlıq haqqında ətraflı məlumat əldə edin<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Tab açıq olsa belə, cavablar üçün burada əlavə etdiyiniz saytlara istinad edilməyəcək. Əlavə etdiyiniz sayt hazırda mövzuda istifadə olunursa, mövzunun ona istinad etməyi dayandırması 30 dəqiqəyə qədər çəkə bilər.</translation>
 <translation id="1402151528875251561">Tarixçəni Yan paneldə göstərin</translation>
 <translation id="1405567553485452995">Açıq-yaşıl</translation>
 <translation id="1406370515365284486">Ödəniş metodlarınız yenə də yadda saxlanılacaq</translation>
@@ -1550,6 +1551,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="343474037147570563">Yüklədiyiniz və ya əlavə etdiyiniz fayllar təhlil üçün Google Cloud və ya üçüncü tərəflərə göndərilir. Onlar həssas data və ya zərərli proqram ilə bağlı skanlana, şirkət siyasətinə əsasən saxlana və administratora görünə bilər.</translation>
 <translation id="3435557549311968410">Davamlı (qısa)</translation>
 <translation id="3435738964857648380">Təhlükəsizlik</translation>
+<translation id="3438509337461223476">Hər mövzudakı müvafiq açıq tabları avtomatik paylaşın</translation>
 <translation id="3440783957068352691">kvadrat</translation>
 <translation id="3441653493275994384">Ekran</translation>
 <translation id="3443504041532578451">Optik disk (hamar)</translation>
@@ -2479,6 +2481,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="4894390983254799375">Məsələn, cihaz ID-si, adı, ƏS versiyası və ƏS istifadəçi adı</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiada</translation>
+<translation id="4897851261703006488">Bu siyasətdə maksimum başlıq ölçüsü <ph name="MAX_HEADER_SIZE_LIMIT" /> KB olmalıdır.</translation>
 <translation id="4898742041545089450">Bu mövzu blokdan çıxarılıb və brauzer tarixçənizə əsasən aktiv ola bilər</translation>
 <translation id="4900217275619098670">Doqquzuncu Rulon</translation>
 <translation id="4901052769830245369">Etiket (yarıparlaq)</translation>
@@ -2726,6 +2729,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="5284295735376057059">Sənəd xüsusiyyətləri</translation>
 <translation id="528468243742722775">Son</translation>
 <translation id="5285468538058987167">Güclü müştəri doğrulaması (SCA) vasitəsilə</translation>
+<translation id="5286195392366054103">Bu siyasət <ph name="MAX_URL_PATTERNS_LIMIT" /> URL nümunəsi limitini keçib. Yalnız ilk <ph name="MAX_URL_PATTERNS_LIMIT" /> URL nümunəsi istifadə olunacaq.</translation>
 <translation id="5287456746628258573">Bu sayt vaxtı keçmiş təhlükəsizlik konfiqurasiyasından istifadə edir və bu da sayta göndərilən məlumatınızın (məsələn, parol və ya kredit kartı nömrəsi) yayılmasına səbəb ola bilər.</translation>
 <translation id="5288108484102287882">Siyasət dəyərlərinin doğrulanması haqqında xəbərdarlıq var</translation>
 <translation id="5289384342738547352">Çoxsaylı sənədin idarə edilməsi</translation>
@@ -3844,6 +3848,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7016992613359344582">Bu ödənişlər birdəfəlik və ya təkrarlanan ola bilər. Onlar, eyni zamanda görünməyə bilər.</translation>
 <translation id="701757816833614688">Vizual incəsənət və dizayn təhsili</translation>
 <translation id="7020464868401003526">Qısayolun URL-i icazə verilən maksimum <ph name="MAX_LENGTH" /> simvol uzunluğunu keçir.</translation>
+<translation id="7020581144940000377">Təxmini məkandan istifadə edin</translation>
 <translation id="702275896380648118">Bu sayt bəyəndiklərinizi müəyyənləşdirir və sonra digər saytlara reklam təklif edir. Bu sayt sizə daha uyğun reklamlar göstərmək üçün Chrome'dan reklam mövzularınızı da əldə edir.</translation>
 <translation id="7023162328967545559">Admin xəbərdarlığı</translation>
 <translation id="7023765275461720661">Hesab əlaqələndirilsin və <ph name="BNPL_ISSUER_NAME" /> ilə ödənilsin?</translation>
@@ -3953,6 +3958,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="719464814642662924">Viza</translation>
 <translation id="7195432682252510959">Ödəniş zamanı bu koddan istifadə edin. <ph name="DATE" /> tarixinə qədər etibarlıdır.</translation>
 <translation id="7195852673246414183">Bu ayarı aktiv etdikdən sonra yazmağa başlamaq üçün bu taba qayıdın</translation>
+<translation id="7196153352301578792">Daha fərdiləşdirilmiş cavablar üçün Chrome suala uyğun ola biləcək açıq tabların səhifə kontenti və URL-ini Google-a avtomatik göndərəcək. Chrome yalnız işlədiyiniz pəncərədən tabları paylaşacaq.</translation>
 <translation id="7196370964328811506">Bu cihazda yadda saxlanıldıqda Chrome-da edilən satınalmalar üçün bu kartı avtomatik doldurun</translation>
 <translation id="7199278868241956094">Rəsmi</translation>
 <translation id="7200963436813710587">Aşağıdakı açıq tabları nəzərə aldıq:</translation>
@@ -4367,6 +4373,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="7805268272389338048">Şifrələmə şəxsi məlumatları qoruyur</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tövsiyəni bağlayın</translation>
+<translation id="780756914888723112">Bu siyasət hər qayda üçün maksimum <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> başlıq təyin etməyə icazə verir. Hər qayda üçün yalnız ilk <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> başlıq istifadə olunacaq.</translation>
 <translation id="7810410097247356677">Növbəti dəfə tez ödəmək üçün kart və şifrələnmiş güvənlik kodunu cihazda yadda saxlayın</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Təkliflər Chrome'dan silinsin?</translation>
@@ -4675,6 +4682,7 @@ Sonra ödəmə seçimlərini gizlətmək üçün <ph name="BEGIN_LINK" />ödəni
 <translation id="8301894345671534559">Kod daxil edin</translation>
 <translation id="830498451218851433">Yarımçıq qatlayın</translation>
 <translation id="8308653357438598313">Canlı videoyayım</translation>
+<translation id="8310477433309274098">Rüsumsuz, 0% IFD</translation>
 <translation id="8311895354659782580">Daşınmaz əmlak elanları</translation>
 <translation id="8312841338723044391">YAYIMLANIR</translation>
 <translation id="8316555157357957253">İndi istifadə edilir</translation>

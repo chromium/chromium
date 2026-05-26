@@ -259,6 +259,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1392813880755413602">Presentasi OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> tidak mengirimkan data apa pun.</translation>
 <translation id="1393071644879491291">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software atau mengungkapkan hal-hal seperti sandi, nomor telepon, atau nomor kartu kredit Anda. Chrome sangat merekomendasikan untuk kembali agar aman. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Situs yang Anda tambahkan di sini tidak akan digunakan sebagai rujukan untuk respons, meskipun tab terbuka. Jika situs yang Anda tambahkan saat ini digunakan dalam rangkaian pesan, mungkin perlu waktu hingga 30 menit agar rangkaian pesan berhenti merujuk ke situs tersebut.</translation>
 <translation id="1402151528875251561">Tampilkan Histori di Panel Samping</translation>
 <translation id="1405567553485452995">Hijau Muda</translation>
 <translation id="1406370515365284486">Metode pembayaran Anda akan tetap disimpan</translation>
@@ -1553,6 +1554,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="343474037147570563">File yang Anda upload atau lampirkan akan dikirimkan ke Google Cloud atau pihak ketiga untuk dianalisis. Misalnya, file mungkin dipindai untuk mendeteksi data sensitif atau malware dan mungkin disimpan berdasarkan kebijakan perusahaan serta dapat dilihat oleh administrator Anda.</translation>
 <translation id="3435557549311968410">Berkelanjutan (Singkat)</translation>
 <translation id="3435738964857648380">Keamanan</translation>
+<translation id="3438509337461223476">Bagikan tab terbuka yang relevan secara otomatis di setiap rangkaian pesan</translation>
 <translation id="3440783957068352691">persegi</translation>
 <translation id="3441653493275994384">Layar</translation>
 <translation id="3443504041532578451">Cakram Optis (Satin)</translation>
@@ -2483,6 +2485,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4894390983254799375">Seperti ID perangkat, nama, versi OS, dan nama pengguna OS</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpiade</translation>
+<translation id="4897851261703006488">Kebijakan ini tidak boleh memiliki header yang melebihi <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
 <translation id="4898742041545089450">Topik ini berhenti diblokir dan dapat menjadi aktif berdasarkan histori penjelajahan Anda</translation>
 <translation id="4900217275619098670">Rol Kesembilan</translation>
 <translation id="4901052769830245369">Label (Semi-Kilap)</translation>
@@ -2730,6 +2733,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5284295735376057059">Properti dokumen</translation>
 <translation id="528468243742722775">Berakhir</translation>
 <translation id="5285468538058987167">Melalui Autentikasi Pelanggan secara Ketat (SCA)</translation>
+<translation id="5286195392366054103">Kebijakan ini memiliki lebih dari <ph name="MAX_URL_PATTERNS_LIMIT" /> pola URL. Hanya <ph name="MAX_URL_PATTERNS_LIMIT" /> pola URL pertama yang akan digunakan.</translation>
 <translation id="5287456746628258573">Situs ini menggunakan konfigurasi keamanan yang telah habis masa berlakunya, yang dapat mengekspos informasi Anda (misalnya, sandi atau nomor kartu kredit) saat dikirimkan ke situs ini.</translation>
 <translation id="5288108484102287882">Validasi nilai kebijakan telah memunculkan peringatan</translation>
 <translation id="5289384342738547352">Penanganan beberapa dokumen</translation>
@@ -3848,6 +3852,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7016992613359344582">Tagihan ini bisa hanya satu kali atau berulang, dan mungkin tidak pasti.</translation>
 <translation id="701757816833614688">Pendidikan Seni &amp; Desain Visual</translation>
 <translation id="7020464868401003526">URL pintasan melebihi panjang maksimum yang diizinkan, yaitu <ph name="MAX_LENGTH" /> karakter.</translation>
+<translation id="7020581144940000377">Gunakan perkiraan lokasi</translation>
 <translation id="702275896380648118">Situs ini menentukan hal-hal yang Anda sukai, lalu menyarankan iklan ke situs lain. Situs ini juga mendapatkan topik iklan Anda dari Chrome untuk menampilkan iklan yang lebih relevan.</translation>
 <translation id="7023162328967545559">Peringatan admin</translation>
 <translation id="7023765275461720661">Tautkan akun dan bayar dengan <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3958,6 +3963,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Gunakan kode ini saat checkout. Berlaku hingga <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Setelah mengaktifkan setelan tersebut, kembali ke tab ini untuk mulai menulis</translation>
+<translation id="7196153352301578792">Chrome akan secara otomatis mengirimkan konten halaman dan URL tab terbuka yang mungkin relevan dengan pertanyaan Anda kepada Google untuk mendapatkan respons yang lebih dipersonalisasi. Chrome hanya akan membagikan tab dari jendela yang sedang Anda gunakan.</translation>
 <translation id="7196370964328811506">Isi otomatis kartu ini untuk pembelian yang dilakukan di Chrome jika kartu tersebut disimpan di perangkat ini</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Kami mempertimbangkan tab terbuka berikut:</translation>
@@ -4370,6 +4376,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7805268272389338048">Enkripsi melindungi info pribadi Anda</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7805906048382884326">Tutup tips</translation>
+<translation id="780756914888723112">Kebijakan ini mengizinkan maksimal <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> header per aturan. Hanya <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> header pertama per aturan yang akan digunakan.</translation>
 <translation id="7810410097247356677">Agar selanjutnya dapat melakukan pembayaran lebih cepat, simpan informasi kartu dan kode keamanan terenkripsi Anda ke perangkat</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Hapus sebagai saran dari Chrome?</translation>
@@ -4678,6 +4685,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8301894345671534559">Masukkan kode</translation>
 <translation id="830498451218851433">Lipatan setengah</translation>
 <translation id="8308653357438598313">Streaming Video Live</translation>
+<translation id="8310477433309274098">Tanpa biaya, APR rendah mulai dari 0%</translation>
 <translation id="8311895354659782580">Listingan Real Estat</translation>
 <translation id="8312841338723044391">LIVE</translation>
 <translation id="8316555157357957253">Sedang digunakan sekarang</translation>

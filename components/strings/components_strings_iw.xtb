@@ -259,6 +259,7 @@
 <translation id="1392813880755413602">OpenDocument Presentation</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> לא שלח נתונים.</translation>
 <translation id="1393071644879491291">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמאות, מספרי הטלפון או מספרי כרטיסי האשראי שלך. אזהרה מ-Chrome: ממש לא מומלץ להמשיך. עדיף לעשות אחורה פנה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">אתרים שיתווספו לכאן לא יהיו מקור לתשובות, גם אם הכרטיסייה פתוחה. אם האתר שמוסיפים נמצא באותו רגע בשימוש בשרשור, יכול להיות שיעברו עד 30 דקות עד שהשרשור יפסיק להפנות אליו.</translation>
 <translation id="1402151528875251561">הצגת ההיסטוריה בחלונית צדדית</translation>
 <translation id="1405567553485452995">ירוק בהיר</translation>
 <translation id="1406370515365284486">אמצעי התשלום שלך עדיין יישמרו</translation>
@@ -1552,6 +1553,7 @@
 <translation id="343474037147570563">‏קבצים שמעלים או מצרפים נשלחים ל-Google Cloud או לצדדים שלישיים לצורך ניתוח. לדוגמה, יכול להיות שהקבצים יעברו סריקה כדי לאתר מידע אישי רגיש או תוכנות זדוניות, וייתכן שהם יישמרו בהתאם למדיניות החברה ויהיו גלויים לאדמין שלך.</translation>
 <translation id="3435557549311968410">Continuous (Short)</translation>
 <translation id="3435738964857648380">אבטחה</translation>
+<translation id="3438509337461223476">שיתוף אוטומטי של הכרטיסיות הפתוחות הרלוונטיות בכל השרשורים</translation>
 <translation id="3440783957068352691">ריבוע</translation>
 <translation id="3441653493275994384">מסך</translation>
 <translation id="3443504041532578451">Optical Disc (Satin)</translation>
@@ -2487,6 +2489,7 @@ Del</translation>
 <translation id="4894390983254799375">למשל מזהה המכשיר, שם המכשיר, גרסת מערכת ההפעלה ושם המשתמש במערכת ההפעלה</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">אולימפיאדה</translation>
+<translation id="4897851261703006488">‏המדיניות הזו יכולה לכלול כותרות בגודל של עד<ph name="MAX_HEADER_SIZE_LIMIT" />‎KB.</translation>
 <translation id="4898742041545089450">בוטלה חסימת הנושא הזה ויכול להיות שהוא יהיה פעיל, בהתאם להיסטוריית הגלישה שלך</translation>
 <translation id="4900217275619098670">הגליל התשיעי</translation>
 <translation id="4901052769830245369">Labels (Semi-Gloss)</translation>
@@ -2734,6 +2737,7 @@ Del</translation>
 <translation id="5284295735376057059">מאפייני המסמך</translation>
 <translation id="528468243742722775">סיום</translation>
 <translation id="5285468538058987167">‏באמצעות אימות חזק ללקוח (SCA)</translation>
+<translation id="5286195392366054103">‏במדיניות הזו יש יותר מ-<ph name="MAX_URL_PATTERNS_LIMIT" /> תבניות URL. המערכת תשתמש רק ב-<ph name="MAX_URL_PATTERNS_LIMIT" /> תבניות ה-URL הראשונות.</translation>
 <translation id="5287456746628258573">האתר הזה משתמש בהגדרת אבטחה מיושנת, שעלולה לחשוף את המידע שלך (למשל, סיסמאות או מספרים של כרטיס אשראי) כשהוא נשלח לאתר זה.</translation>
 <translation id="5288108484102287882">בעקבות אימות ערכי המדיניות הופיעו אזהרות</translation>
 <translation id="5289384342738547352">טיפול במסמכים מרובים</translation>
@@ -3853,6 +3857,7 @@ Del</translation>
 <translation id="7016992613359344582">התשלום עשוי להיות חד-פעמי או לכלול חיובים חוזרים וייתכן שהדרישה לתשלום לא תוצג בצורה ברורה וחד-משמעית.</translation>
 <translation id="701757816833614688">לימודי עיצוב ואומנות חזותית</translation>
 <translation id="7020464868401003526">‏כתובת ה-URL של קיצור הדרך חורגת ממגבלת האורך של <ph name="MAX_LENGTH" /> תווים.</translation>
+<translation id="7020581144940000377">שימוש במיקום משוער</translation>
 <translation id="702275896380648118">‏האתר הזה מזהה אילו דברים אהבת ולאחר מכן מציע מודעות לאתרים אחרים. האתר הזה גם מקבל מידע על נושאי המודעות שלך מ-Chrome כדי להציג לך מודעות רלוונטיות יותר.</translation>
 <translation id="7023162328967545559">אזהרה מהאדמין</translation>
 <translation id="7023765275461720661">לקשר את החשבון ולשלם עם <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3963,6 +3968,7 @@ Del</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">צריך להזין את הקוד הזה בקופה. בתוקף עד <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">אחרי שמפעילים את ההגדרה הזו, צריך לחזור לכרטיסייה הזו כדי להתחיל לכתוב</translation>
+<translation id="7196153352301578792">‏כדי לקבל תשובות בהתאמה אישית גבוהה יותר, Chrome ישלח באופן אוטומטי ל-Google את תוכן הדפים ואת כתובות ה-URL של הכרטיסיות הפתוחות שרלוונטיות לשאלה שלך. ‫Chrome ישתף רק כרטיסיות מהחלון הפעיל.</translation>
 <translation id="7196370964328811506">‏אפשר למלא באופן אוטומטי את פרטי הכרטיס הזה לביצוע רכישות ב-Chrome כששומרים אותו במכשיר הזה</translation>
 <translation id="7199278868241956094">‏8.5x13.4 אינץ' (Oficio)</translation>
 <translation id="7200963436813710587">התייחסנו לכרטיסיות הפתוחות הבאות:</translation>
@@ -4377,6 +4383,7 @@ Del</translation>
 <translation id="7805268272389338048">ההצפנה מגנה על הפרטים האישיים שלך</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7805906048382884326">סגירת הטיפ</translation>
+<translation id="780756914888723112">המדיניות הזו מאפשרת עד <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> כותרות לכל כלל. המערכת תשתמש רק ב-<ph name="MAX_HEADERS_PER_RULE_LIMIT" /> הכותרות הראשונות לכל כלל.</translation>
 <translation id="7810410097247356677">רוצה לשלם מהר יותר בפעם הבאה? כדאי לשמור במכשיר את פרטי הכרטיס וקוד האבטחה המוצפן</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">‏האם להסיר מ-Chrome הצעות בשביל טפסים?</translation>
@@ -4685,6 +4692,7 @@ Del</translation>
 <translation id="8301894345671534559">הזנת הקוד</translation>
 <translation id="830498451218851433">קיפול באמצע</translation>
 <translation id="8308653357438598313">וידאו סטרימינג בשידור חי</translation>
+<translation id="8310477433309274098">בלי עמלות, ריבית שנתית בשיעור של 0%</translation>
 <translation id="8311895354659782580">מודעות נדל"ן</translation>
 <translation id="8312841338723044391">בשידור חי</translation>
 <translation id="8316555157357957253">בשימוש עכשיו</translation>

@@ -1121,6 +1121,7 @@
 <translation id="2719233594187778789">Еленбеген қайталанатын URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Сұрау сәтті жіберілді</translation>
 <translation id="2722622039067384533">Қонақ бөлме жиһазы</translation>
+<translation id="2723284907371508295">Басқа құрылғылардағы қосымша қойындылар түймесі. Басқа құрылғылардағы қосымша қойындыларды көру үшін Enter түймесін басыңыз.</translation>
 <translation id="2723669454293168317">Chrome параметрлерінен қауіпсіздік тексерісін іске қосу</translation>
 <translation id="2726001110728089263">Бүйірлік науа</translation>
 <translation id="272616190148046464">Барлық тұрақты клиент картаңыз</translation>
@@ -3422,6 +3423,7 @@
 <translation id="6351658970066645919">Браузерді пайдалану деректерін жою</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Жоқ}=1{1 құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}=2{2 құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}other{# құпия сөз (<ph name="DOMAIN_LIST" />, синхрондалды)}}</translation>
 <translation id="6354918092619878358">SECG эллипстік қисық сызығы secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />. Басқа құрылғылардағы қосымша қойындыларды көру үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="6355392890578844978">Бұл браузер компания немесе басқа ұйым арқылы басқарылмайды. Құрылғыдағы әрекет Chromium браузерінен тыс басқарылуы мүмкін. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">"<ph name="GROUP_TITLE_1" />" және "<ph name="GROUP_TITLE_2" />" қойындылар топтары енді қолжетімді емес.</translation>
 <translation id="6358088212770985041">төлеу әдістерін өзгерткісі келеді</translation>
@@ -5261,6 +5263,7 @@
 <translation id="955429569736351433">VR-ға рұқсат берілген.</translation>
 <translation id="955627189349169688">Бұл саясаттан бас тарту үшін <ph name="BEGIN_LINK" />Chrome Sync параметрлеріне<ph name="END_LINK" /> өтіңіз.</translation>
 <translation id="95721182352849470">Сары 2</translation>
+<translation id="958952958906914932">Басқа құрылғылардағы қосымша қойындылар</translation>
 <translation id="961372935451193190">Қойындылар мен файлдар</translation>
 <translation id="961663415146723894">Төменгі жағын байлау</translation>
 <translation id="961856697154696964">Браузер деректерін жою</translation>

@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Puedes deslizar hacia la derecha para navegar en Incógnito.</translation>
 <translation id="2079545284768500474">Deshacer</translation>
 <translation id="2085876078937250610">Guardar…</translation>
+<translation id="2089180529062519164">Activa el micrófono</translation>
 <translation id="2096239473850415494">No se ha podido descargar</translation>
 <translation id="2096716221239095980">Eliminar todos los datos</translation>
 <translation id="2104436223719117661">Tendencias de búsqueda</translation>
@@ -1506,6 +1507,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6241132809279377987">Disfruta de más funciones para tu iPhone con las apps de Google</translation>
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6251835855431997163">Autocompletar <ph name="VALUE" /></translation>
+<translation id="6253686838150111720">Inicia sesión en <ph name="URL" /></translation>
 <translation id="6254066287920239840">Abrir enlaces en la aplicación en lugar de en el navegador.</translation>
 <translation id="6259928806013786178">No se ha podido iniciar el modo Lectura</translation>
 <translation id="6268773951964630964">Buscar la imagen copiada</translation>
@@ -2116,6 +2118,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8319282042900445670">Recordatorio configurado para el <ph name="DATE" /> a las <ph name="TIME" /></translation>
 <translation id="8320212361750431956">Actividad reciente</translation>
 <translation id="8325455175867928593">Ocultar Reseñas según tus intereses</translation>
+<translation id="8333459276976141586">Live usará tu micrófono. Al tocar el botón Live, se activará el micrófono. Para desactivarlo, toca el botón de detener o cierra Gemini.</translation>
 <translation id="833647236762414178">Crea, guarda y gestiona tus contraseñas y llaves de acceso para iniciar sesión fácilmente en sitios y aplicaciones. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Completa 1 tarea más para subir de nivel}other{Completa {count} tareas más para subir de nivel}}</translation>
@@ -2192,6 +2195,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8571019948162152515">¿Eliminar <ph name="FILENAME" />?</translation>
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8577056989960190117">Autocompletar el año de caducidad: <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Usa Gemini Live</translation>
 <translation id="8587001564479545614">Crea un PIN de recuperación</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8590286732816598906">Grupo de pestañas, <ph name="GROUP_TITLE" />, menú.</translation>
@@ -2266,6 +2270,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8803526663383843427">Cuando está activada</translation>
 <translation id="8803639129939845298">Es seguro</translation>
 <translation id="8813277370772331957">Recordar más tarde</translation>
+<translation id="8814308045751067027">Para usar Live, permite que Chrome acceda a tu micrófono en los ajustes</translation>
 <translation id="8814719628147284151">Continuar</translation>
 <translation id="881559332211266856">Actualizar número Redress</translation>
 <translation id="8817524703470045896">Sigue los precios y recibe alertas cuando haya una bajada de precio en cualquier sitio</translation>

@@ -1121,6 +1121,7 @@
 <translation id="2719233594187778789">已忽略非專屬網址：<ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">要求成功</translation>
 <translation id="2722622039067384533">客廳家具</translation>
+<translation id="2723284907371508295">「其他裝置的更多分頁」掣，㩒 Enter 鍵就可以睇多啲其他裝置嘅分頁</translation>
 <translation id="2723669454293168317">在 Chrome 設定中執行安全檢查</translation>
 <translation id="2726001110728089263">側匣</translation>
 <translation id="272616190148046464">你的所有會員卡</translation>
@@ -3422,6 +3423,7 @@
 <translation id="6351658970066645919">刪除瀏覽資料</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{無}=1{有 1 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}=2{有 2 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}other{有 # 個密碼 (<ph name="DOMAIN_LIST" />，已同步)}}</translation>
 <translation id="6354918092619878358">SECG 橢圓曲線 secp256r1 (亦稱為 ANSI X9.62 prime256v1、NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以睇多啲其他裝置嘅分頁</translation>
 <translation id="6355392890578844978">此瀏覽器未受任何公司或其他機構管理。此裝置上的活動可透過 Chromium 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">「<ph name="GROUP_TITLE_1" />」和「<ph name="GROUP_TITLE_2" />」分頁群組已無法使用</translation>
 <translation id="6358088212770985041">編輯付款方法</translation>
@@ -5262,6 +5264,7 @@
 <translation id="955429569736351433">批准用 VR</translation>
 <translation id="955627189349169688">你可於 <ph name="BEGIN_LINK" />Chrome 同步設定<ph name="END_LINK" />中選擇停用此政策。</translation>
 <translation id="95721182352849470">黃色 2</translation>
+<translation id="958952958906914932">其他裝置的更多分頁</translation>
 <translation id="961372935451193190">分頁和檔案</translation>
 <translation id="961663415146723894">釘裝 (底部)</translation>
 <translation id="961856697154696964">刪除瀏覽資料</translation>

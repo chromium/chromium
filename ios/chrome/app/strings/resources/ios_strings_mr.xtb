@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">तुम्ही गुप्त मोड मध्ये ब्राउझ करण्यासाठी उजवीकडे स्क्रोल करू शकता.</translation>
 <translation id="2079545284768500474">पहिल्यासारखे करा</translation>
 <translation id="2085876078937250610">सेव्ह करा…</translation>
+<translation id="2089180529062519164">मायक्रोफोन सुरू करा</translation>
 <translation id="2096239473850415494">डाउनलोड करता आली नाही</translation>
 <translation id="2096716221239095980">सर्व डेटा हटवा</translation>
 <translation id="2104436223719117661">ट्रेंडिंग शोध</translation>
@@ -1506,6 +1507,7 @@
 <translation id="6241132809279377987">Google अ‍ॅप्स वापरून तुमच्या iPhone साठी आणखी वैशिष्ट्ये अनलॉक करा</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251835855431997163"><ph name="VALUE" /> ऑटोफिल करा</translation>
+<translation id="6253686838150111720"><ph name="URL" /> मध्ये साइन इन करा</translation>
 <translation id="6254066287920239840">ब्राउझर ऐवजी ॲपमध्ये लिंक उघडा.</translation>
 <translation id="6259928806013786178">वाचन मोड सुरू करता आला नाही</translation>
 <translation id="6268773951964630964">कॉपी केलेली इमेज शोधा</translation>
@@ -2117,6 +2119,7 @@
 <translation id="8319282042900445670"><ph name="TIME" />, <ph name="DATE" /> साठी रिमाइंडर सेट करा</translation>
 <translation id="8320212361750431956">अलीकडील अ‍ॅक्टिव्हिटी</translation>
 <translation id="8325455175867928593">"तुमच्या स्वारस्यांवर आधारित परीक्षणे" लपवा</translation>
+<translation id="8333459276976141586">Live तुमचा मायक्रोफोन वापरेल. Live बटणावर टॅप केल्याने माइक सुरू होतो. माइक बंद करण्यासाठी, थांबवा बटणावर टॅप करा किंवा Gemini बंद करा.</translation>
 <translation id="833647236762414178">साइट आणि ॲप्समध्ये सहजपणे साइन इन करण्यासाठी तुमचे पासवर्ड आणि पासकी तयार करा, सेव्ह करा आणि व्यवस्थापित करा. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">तुमच्या आशयाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा.</translation>
 <translation id="8345328955902001853">{count,plural, =1{लेव्हल अप करण्यासाठी आणखी १ टास्क पूर्ण करा}other{लेव्हल अप करण्यासाठी आणखी {count} टास्क पूर्ण करा}}</translation>
@@ -2193,6 +2196,7 @@
 <translation id="8571019948162152515">"<ph name="FILENAME" />" हटवायचे आहे का?</translation>
 <translation id="8571213806525832805">मागील 4 आठवड्यांमधील</translation>
 <translation id="8577056989960190117">एक्स्पायरीचे वर्ष <ph name="YEAR" /> ऑटोफिल करा</translation>
+<translation id="8582026929965253036">Gemini सह Live जा</translation>
 <translation id="8587001564479545614">रिकव्‍हरी पिन तयार करा</translation>
 <translation id="8588404856427128947">बंद करा</translation>
 <translation id="8590286732816598906">टॅब गट, <ph name="GROUP_TITLE" />, मेनू.</translation>
@@ -2267,6 +2271,7 @@
 <translation id="8803526663383843427">सुरू असल्यास</translation>
 <translation id="8803639129939845298">सुरक्षित</translation>
 <translation id="8813277370772331957">मला नंतर आठवण करून द्या</translation>
+<translation id="8814308045751067027">Live वापरण्यासाठी, सेटिंग्जमध्ये Chrome ला तुमच्या मायक्रोफोनचा अ‍ॅक्सेस द्या</translation>
 <translation id="8814719628147284151">पुढे सुरू ठेवा</translation>
 <translation id="881559332211266856">निवारणाचा क्रमांक अपडेट करा</translation>
 <translation id="8817524703470045896">कोणत्याही साइटवरील किमती ट्रॅक करा आणि किमतीतील घट झाल्यावर अलर्ट मिळवा</translation>

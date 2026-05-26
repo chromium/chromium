@@ -2232,6 +2232,7 @@ Jika kebijakan ini ditetapkan, pengguna tidak dapat mengganti nilainya.
 
 Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan tetapi dapat dikontrol oleh pengguna.</translation>
 <translation id="2413899611035194909">Tampilkan opsi aksesibilitas di menu area notifikasi layar login</translation>
+<translation id="2414712434655365347">Konfigurasi Injeksi Header HTTP untuk pola URL tertentu</translation>
 <translation id="2415715982424988916">Jelajahi (didukung sejak versi 91)</translation>
 <translation id="2420958105721932612">Menentukan bagaimana aplikasi diinstal. AVAILABLE: Aplikasi tidak otomatis diinstal, tetapi pengguna dapat menginstalnya. Ini adalah setelan default jika kebijakan ini tidak ditentukan. FORCE_INSTALLED: Aplikasi otomatis diinstal dan pengguna tidak dapat meng-uninstalnya. BLOCKED: Aplikasi diblokir dan tidak dapat diinstal. Jika aplikasi diinstal berdasarkan kebijakan sebelumnya, aplikasi akan di-uninstal.</translation>
 <translation id="2421400544595297401">Jangan izinkan pengguna yang tidak terafiliasi menggunakan aplikasi Android</translation>
@@ -8323,6 +8324,25 @@ Di versi 114 dan yang lebih baru, kebijakan ini bersifat opsional jika kebijakan
 <translation id="624219423122512710">Tindakan Browser Tidak Ada Aktivitas</translation>
 <translation id="6244061205361004687">Izinkan pengguna memutuskan koneksi atau mengubah VPN secara manual</translation>
 <translation id="6244210204546589761">URL untuk membuka saat permulaan</translation>
+<translation id="6245828368576563662">Kebijakan ini memungkinkan penentuan daftar aturan untuk memasukkan header HTTP kustom ke dalam permintaan web yang cocok dengan pola URL tertentu. Header yang ditetapkan oleh kebijakan ini lebih diutamakan daripada header yang awalnya ada dalam permintaan, serta modifikasi yang dicoba dilakukan oleh pengguna atau ekstensi.
+
+Kasus penggunaan umum untuk kebijakan ini adalah untuk menerapkan kontrol akses tenant dengan memasukkan header kustom (misalnya, <ph name="EXAMPLE_HEADER_NAME" />).
+
+Kebijakan ini menerima daftar Aturan. Setiap Aturan berisi:
+
+* <ph name="PATTERNS_KEY" />: Daftar pola URL yang harus dicocokkan. Lihat cara memformat pola URL ( https://support.google.com/chrome/a?p=url_blocklist_filter_format ).
+
+* <ph name="HEADERS_KEY" />: Daftar objek yang mewakili header yang akan dimasukkan, yang masing-masing berisi:
+
+  * <ph name="HEADER_NAME_KEY" />: Nama header yang akan dimasukkan.
+
+  * <ph name="HEADER_VALUE_KEY" />: Nilai header yang akan dimasukkan.
+
+Jika beberapa aturan cocok dengan permintaan, header dari semua aturan yang cocok akan diterapkan. Jika ada beberapa header dengan nama yang sama, header dengan pola URL yang paling spesifik akan diterapkan. Jika pola sama-sama spesifik, pola yang muncul terakhir dalam daftar akan diterapkan.
+
+Nama header harus mematuhi RFC 2616 ( https://www.rfc-editor.org/rfc/rfc2616 ). Nilai header tidak boleh berisi simbol NUL, CR, atau LF. Ukuran setiap header tidak boleh melebihi 8 KB. Header dan pola URL yang tidak valid akan diabaikan.
+
+Kebijakan ini dibatasi hingga total 500 pola URL di semua aturan. Setiap aturan dapat berisi maksimal 20 header. Pola dan header di luar batas ini akan diabaikan.</translation>
 <translation id="624595269193747921">Apakah ingin membatasi penelusuran printer yang cocok untuk satu set printer tertentu.</translation>
 <translation id="6246290059248303618">Menampilkan kontrol media untuk sesi <ph name="PRODUCT_NAME" /> yang dimulai oleh perangkat lain di jaringan lokal</translation>
 <translation id="6247316685259031374">Kebijakan ini mengontrol proses audio dalam sandbox.
@@ -9781,14 +9801,6 @@ pengoptimalan JavaScript akan diaktifkan untuk situs tersebut.</translation>
       Jika kebijakan ini tidak ditetapkan, rak akan ditempatkan di bagian bawah layar secara default dan pengguna dapat mengubah posisi rak.</translation>
 <translation id="7039815268521168329">Tampilkan alur Voice Match Asisten Google selama penyiapan awal</translation>
 <translation id="7040229947030068419">Nilai contoh:</translation>
-<translation id="7044626519138840387">Daftar origin aplikasi klien desktop jarak jauh yang dapat mengeksekusi permintaan WebAuthn API
-yang berasal dari sesi penjelajahan pada host jarak jauh.
-
-Setiap origin yang dikonfigurasi dalam kebijakan ini dapat membuat permintaan WebAuthn untuk ID Pihak
-Tepercaya (RP ID) yang biasanya tidak diizinkan untuk diklaim.
-
-Hanya origin HTTPS yang valid yang diizinkan. Karakter pengganti tidak didukung.
-Entri yang tidak valid akan diabaikan.</translation>
 <translation id="7044883996351280650">Mengontrol layanan pencadangan dan pemulihan Android</translation>
 <translation id="7045221780834308118">Jika kebijakan disetel ke Aktif, aplikasi web pihak ketiga dapat menggunakan Desk API untuk mengontrol desktop <ph name="PRODUCT_OS_NAME" />. Jika kebijakan ini disetel ke Nonaktif atau tidak disetel, <ph name="DESK_API_NAME" /> tidak akan tersedia. Kebijakan ini hanya akan berlaku di perangkat terdaftar.</translation>
 <translation id="7046113122884041950">Jangan izinkan Smart Lock</translation>

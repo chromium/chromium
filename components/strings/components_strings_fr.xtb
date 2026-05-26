@@ -259,6 +259,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1392813880755413602">Présentation OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> n'a envoyé aucune donnée.</translation>
 <translation id="1393071644879491291">Des pirates informatiques sur le site que vous avez essayé de consulter peuvent vous inciter à installer des logiciels ou à révéler des infos, comme vos mots de passe, ou vos numéro de téléphone ou de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus sur cet avertissement<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Les sites que vous ajoutez ici ne seront pas référencés pour les réponses, même si l'onglet est ouvert. Si un site que vous ajoutez est actuellement utilisé dans un fil de discussion, il peut s'écouler jusqu'à 30 minutes avant que le fil de discussion cesse d'y faire référence.</translation>
 <translation id="1402151528875251561">Afficher l'historique dans le panneau latéral</translation>
 <translation id="1405567553485452995">Vert clair</translation>
 <translation id="1406370515365284486">Vos modes de paiement resteront enregistrés</translation>
@@ -1552,6 +1553,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="343474037147570563">Les fichiers que vous importez ou joignez sont envoyés à Google Cloud ou à des tiers pour analyse. Ils peuvent par exemple être analysés pour rechercher des données sensibles ou des logiciels malveillants, être stockés conformément aux règles de l'entreprise et être visibles par votre administrateur.</translation>
 <translation id="3435557549311968410">Continu (court)</translation>
 <translation id="3435738964857648380">Sécurité</translation>
+<translation id="3438509337461223476">Partager automatiquement les onglets ouverts pertinents dans chaque fil de discussion</translation>
 <translation id="3440783957068352691">carré</translation>
 <translation id="3441653493275994384">Écran</translation>
 <translation id="3443504041532578451">Disque optique (satiné)</translation>
@@ -2483,6 +2485,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4894390983254799375">Par exemple, l'ID de l'appareil, son nom, la version de l'OS et le nom d'utilisateur de l'OS</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jeux olympiques</translation>
+<translation id="4897851261703006488">Cette règle ne doit pas comporter d'en-têtes dépassant <ph name="MAX_HEADER_SIZE_LIMIT" /> ko.</translation>
 <translation id="4898742041545089450">Ce thème est débloqué et peut devenir actif en fonction de votre historique de navigation</translation>
 <translation id="4900217275619098670">9e rouleau</translation>
 <translation id="4901052769830245369">Étiquettes (semi-brillance)</translation>
@@ -2730,6 +2733,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5284295735376057059">Propriétés du document</translation>
 <translation id="528468243742722775">Fin</translation>
 <translation id="5285468538058987167">Via l'authentification forte (SCA)</translation>
+<translation id="5286195392366054103">Cette règle comporte plus de <ph name="MAX_URL_PATTERNS_LIMIT" /> formats d'URL. Seuls les <ph name="MAX_URL_PATTERNS_LIMIT" /> premiers seront utilisés.</translation>
 <translation id="5287456746628258573">La configuration de sécurité obsolète de ce site peut exposer vos informations, comme vos mots de passe ou vos numéros de carte de crédit, lorsqu'elles lui sont transmises.</translation>
 <translation id="5288108484102287882">La validation des valeurs de règle a renvoyé des avertissements</translation>
 <translation id="5289384342738547352">Gestion de documents multiples</translation>
@@ -3848,6 +3852,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="7016992613359344582">Il peut s'agir de frais uniques ou récurrents qui ne sont pas toujours clairement signalés.</translation>
 <translation id="701757816833614688">Études d'art et de design visuels</translation>
 <translation id="7020464868401003526">L'URL du raccourci dépasse la longueur maximale autorisée de <ph name="MAX_LENGTH" /> caractères.</translation>
+<translation id="7020581144940000377">Utiliser la position approximative</translation>
 <translation id="702275896380648118">Ce site détermine ce que vous aimez, puis suggère des annonces à d'autres sites. Il obtient aussi vos thèmes publicitaires par l'intermédiaire de Chrome pour vous montrer des annonces plus pertinentes.</translation>
 <translation id="7023162328967545559">Avertissement de l'administrateur</translation>
 <translation id="7023765275461720661">Associer votre compte et payer avec <ph name="BNPL_ISSUER_NAME" /> ?</translation>
@@ -3958,6 +3963,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Utilisez ce code au moment de payer. Valable jusqu'au <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Après avoir activé ce paramètre, revenez à cet onglet pour commencer à écrire</translation>
+<translation id="7196153352301578792">Chrome enverra automatiquement à Google le contenu des pages et les URL des onglets ouverts qui peuvent être pertinents pour votre question afin d'obtenir des réponses plus personnalisées. Chrome ne partagera que les onglets de la fenêtre dans laquelle vous travaillez.</translation>
 <translation id="7196370964328811506">Les informations de cette carte seront saisies automatiquement pour les achats effectués dans Chrome une fois qu'elle sera enregistrée sur cet appareil</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Nous avons pris en compte les onglets ouverts suivants :</translation>
@@ -4373,6 +4379,7 @@ Informations supplémentaires :
 <translation id="7805268272389338048">Le chiffrement protège vos informations personnelles</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7805906048382884326">Fermer le conseil</translation>
+<translation id="780756914888723112">Cette règle autorise jusqu'à <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> en-têtes par règle. Seuls les <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> premiers seront utilisés.</translation>
 <translation id="7810410097247356677">Pour payer plus vite la prochaine fois, enregistrez votre carte et le code de sécurité chiffré sur votre appareil</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Supprimer la suggestion de saisie de formulaire de Chrome ?</translation>
@@ -4681,6 +4688,7 @@ Informations supplémentaires :
 <translation id="8301894345671534559">Saisissez le code</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="8308653357438598313">Flux vidéo en direct</translation>
+<translation id="8310477433309274098">Sans frais, à partir de 0 % de TAEG</translation>
 <translation id="8311895354659782580">Annonces immobilières</translation>
 <translation id="8312841338723044391">EN DIRECT</translation>
 <translation id="8316555157357957253">Utilisée actuellement</translation>

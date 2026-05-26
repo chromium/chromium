@@ -5650,6 +5650,7 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="4910241725741323970">Aplikacija je već instalirana</translation>
 <translation id="4912643508233590958">Buđenja iz stanja mirovanja</translation>
 <translation id="4913209098186576320">Ovaj fajl je možda opasan<ph name="LINE_BREAK" />Ova provera traje duže nego obično...</translation>
+<translation id="4913573660390710463">Pristup veb-aplikacijama u paketu sa poboljšanim mogućnostima. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Ne mogu da pronađem podatke aplikacije</translation>
 <translation id="4915961947098019832">Dozvoljeno im je da prikazuju slike</translation>
 <translation id="491779113051926205">Brojači saobraćaja za ChromeOS</translation>
@@ -9617,6 +9618,7 @@ Pritisnite dodeljeni prekidač ili taster da biste uklonili dodelu.</translation
 <translation id="7753735457098489144">Instaliranje nije uspelo zbog nedostatka memorijskog prostora. Da biste oslobodili prostor, izbrišite datoteke iz memorijskog prostora uređaja.</translation>
 <translation id="7754704193130578113">Pitaj gde treba sačuvati svaku datoteku pre preuzimanja</translation>
 <translation id="7757592200364144203">Promenite naziv uređaja</translation>
+<translation id="7757735653610827848">&amp;Kopiraj <ph name="SELECTION" /></translation>
 <translation id="7757739382819740102">Kontakti u blizini mogu da dele sadržaj sa vama. To treba da odobrite.</translation>
 <translation id="7757787379047923882">Tekst deljen sa uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -11177,6 +11179,7 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="8819510664278523111">EID uređaja je <ph name="EID_NUMBER" />, IMEI uređaja je <ph name="IMEI_NUMBER" />, a serijski broj uređaja je <ph name="SERIAL_NUMBER" />. Ove brojeve možete da koristite da biste aktivirali uslugu.</translation>
 <translation id="8820817407110198400">Obeleživači</translation>
 <translation id="8821045908425223359">Automatski konfiguriši IP adresu</translation>
+<translation id="8821206216942230957">Vaš nalog nema pristup Gemini-ju u Chrome-u</translation>
 <translation id="8821268776955756404">Aplikacija <ph name="APP_NAME" /> je spremna za korišćenje.</translation>
 <translation id="882204272221080310">Ažurirajte firmver radi veće bezbednosti.</translation>
 <translation id="8823514049557262177">Kopiraj tek&amp;st linka</translation>

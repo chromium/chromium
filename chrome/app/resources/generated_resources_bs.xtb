@@ -668,6 +668,7 @@ Odobrenja koja ste već dali aplikacijama se mogu primjenjivati na ovaj račun. 
     zapisnike o ispravkama pogreški<ph name="END_LINK" /> (preporučeno)</translation>
 <translation id="1454223536435069390">Nap&amp;ravi snimak ekrana</translation>
 <translation id="145432137617179457">Jezici za provjeru pravopisa</translation>
+<translation id="1454523475536875350">Otvori link u donjem prikazu</translation>
 <translation id="1455009947184333152">Vještina je izbrisana</translation>
 <translation id="1455119378540982311">Zadane postavke veličina prozora</translation>
 <translation id="1456849775870359518">Kartice će se ponovo otvoriti</translation>
@@ -806,6 +807,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1547123415014299762">Kolačići treće strane su dozvoljeni</translation>
 <translation id="1547808936554660006">Razumijem da se instalirani profili eSIM-a neće ukloniti ako se izvrši Powerwash</translation>
 <translation id="1547936895218027488">Kliknite na ikonu bočne ploče da je otvorite</translation>
+<translation id="1548265680751768570">Gemini u Chromeu nije dostupan</translation>
 <translation id="1549275686094429035">ARC je omogućen</translation>
 <translation id="1549788673239553762">Aplikacija <ph name="APP_NAME" /> želi pristup za <ph name="VOLUME_NAME" />. Moguće je da će izmijeniti ili izbrisati fajlove.</translation>
 <translation id="1549966883323105187">Dođite brže do sačuvanih lozinki</translation>
@@ -962,6 +964,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Koristi WiFi, Bluetooth ili mobilnu mrežu za određivanje lokacije</translation>
 <translation id="1650407365859096313">Otvaranje u novoj kartici; odobrenje je <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">Otvori link u donjem prikazu</translation>
 <translation id="1650801028905250434">Fajlovi na usluzi Moj disk će se automatski sinhronizirati s Chromebookom da im možete pristupati bez internetske veze. Možete promijeniti ovo bilo kada u Postavkama &gt; Fajlovi.</translation>
 <translation id="1651008383952180276">Morate dvaput unijeti isti pristupni izraz</translation>
 <translation id="1651609627703324721">Ova kartica prikazuje VR sadržaj u virtuelnim naočalama</translation>
@@ -1158,6 +1161,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1784849162047402014">Na disku ima malo prostora</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Deinstaliranje aplikacije "<ph name="APP_NAME" />" će deinstalirati i aplikaciju:}one{Deinstaliranje aplikacije "<ph name="APP_NAME" />" će deinstalirati i aplikacije:}few{Deinstaliranje aplikacije "<ph name="APP_NAME" />" će deinstalirati i aplikacije:}other{Deinstaliranje aplikacije "<ph name="APP_NAME" />" će deinstalirati i aplikacije:}}</translation>
 <translation id="1786290960428378411">Zahtjevi za čitanje i promjenu</translation>
+<translation id="179021551944139249">Dodaj link na Listu za čitanje</translation>
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni ekran</translation>
@@ -1977,6 +1981,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2340239562261172947">Nije moguće sigurno preuzeti fajl <ph name="FILE_NAME" /></translation>
 <translation id="2341392013052489530">Deinstalirana je verzija <ph name="VERSION" />, razlog: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">Vaše dijete može koristiti broj (PIN) umjesto lozinke da otključa ovaj uređaj. Idite u Postavke da postavite PIN kasnije.</translation>
+<translation id="2343005971389581619">Otvori link u gornjem prikazu</translation>
 <translation id="2343160676229467122">Ekstenzije nisu dozvoljene na <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Nacionalni park Stjenovite planine</translation>
 <translation id="2343747224442182863">Fokusiraj ovu stranicu</translation>
@@ -4172,6 +4177,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3854348409770521214">Ulje na platnu</translation>
 <translation id="3854967233147778866">Ponudi prevođenje web lokacija na drugim jezicima</translation>
 <translation id="3854976556788175030">Ladica za izlaz papira je puna</translation>
+<translation id="3855324045699437362">Gemini u Chromeu se proširuje na različite lokacije, ali nije dostupan svugdje.</translation>
 <translation id="3855441664322950881">Zapakiraj ekstenziju</translation>
 <translation id="3855676282923585394">Uvezite oznake i postavke…</translation>
 <translation id="3856023744577163821">Kartice otvorene iz chata ili dijeljene kartice se također dijele s Geminijem.</translation>
@@ -5894,6 +5900,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5088427648965532275">Pružalac Passpointa</translation>
 <translation id="5090637338841444533">Nije dozvoljeno praćenje položaja vaše kamere</translation>
 <translation id="5091636240353511739">Prikaz PIN-a</translation>
+<translation id="5092567114307895466">Provjerite ispunjavate li uslove i zahtjeve</translation>
 <translation id="5093447877601682598">Pošaljite povratne informacije o traci kartica</translation>
 <translation id="5093477827231450397">Lista web lokacija koje ste blokirali za koje ne želite da predlažu oglase drugim web lokacijama</translation>
 <translation id="5093569275467863761">Keširana verzija cijele stranice anonimnog načina rada za podokvir: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7740,6 +7747,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6427752304227226701">Prijava &amp;nesigurne web lokacije…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Nije sačuvana nijedna lozinka.}=1{Provjera {COUNT} lozinke…}one{Provjera {COUNT} lozinke…}few{Provjera {COUNT} lozinki…}other{Provjera {COUNT} lozinki…}}</translation>
 <translation id="6429384232893414837">Greška prilikom ažuriranja</translation>
+<translation id="6430202563517028640">Dodaj link na listu za čitanje</translation>
 <translation id="6430814529589430811">Šifrirano koristeći Base64 ASCII, jedna potvrda</translation>
 <translation id="6431347207794742960">Aplikacija <ph name="PRODUCT_NAME" /> će postaviti automatsko ažuriranje za sve korisnike na ovom računaru.</translation>
 <translation id="6434104957329207050">Brzina skeniranja po tačkama</translation>
@@ -10190,6 +10198,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8137559199583651773">Upravljanje ekstenzijama</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Pregledajte 1 ekstenziju koja bi mogla biti nesigurna}one{Pregledajte {NUM_EXTENSIONS} ekstenziju koja bi mogla biti nesigurna}few{Pregledajte {NUM_EXTENSIONS} ekstenzije koje bi mogle biti nesigurne}other{Pregledajte {NUM_EXTENSIONS} ekstenzija koje bi mogle biti nesigurne}}</translation>
 <translation id="8138217203226449454">Jeste li htjeli promijeniti pružaoca usluga pretraživanja?</translation>
+<translation id="813858113027420189">Otvori link u gornjem prikazu</translation>
 <translation id="8138997515734480534">Status: <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Ubrzanje kursora</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

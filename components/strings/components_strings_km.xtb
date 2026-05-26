@@ -1124,6 +1124,7 @@
 <translation id="2719233594187778789">URL ស្ទួន​ដែលមិនត្រូវ​បានអើពើ៖ <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">សំណើរបានជោគជ័យ</translation>
 <translation id="2722622039067384533">គ្រឿង​សង្ហារិម​សម្រាប់បន្ទប់​ទទួលភ្ញៀវ</translation>
+<translation id="2723284907371508295">ប៊ូតុង "ផ្ទាំង​ច្រើនទៀត​ពីឧបករណ៍​ផ្សេងទៀត", ចុច Enter ដើម្បី​មើលឃើញ​ផ្ទាំង​ច្រើនទៀត​ពីឧបករណ៍​ផ្សេង​ទៀត</translation>
 <translation id="2723669454293168317">ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព​នៅក្នុងការកំណត់ Chrome</translation>
 <translation id="2726001110728089263">ទម្រចំហៀង</translation>
 <translation id="272616190148046464">កាត​សមាជិក​ទាំងអស់​របស់អ្នក</translation>
@@ -3427,6 +3428,7 @@
 <translation id="6351658970066645919">លុប​ទិន្នន័យរុករក</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{គ្មាន}=1{ពាក្យសម្ងាត់ 1 (សម្រាប់ <ph name="DOMAIN_LIST" />, បាន​ធ្វើសមកាលកម្ម)}=2{ពាក្យសម្ងាត់ 2 (សម្រាប់ <ph name="DOMAIN_LIST" />, បាន​ធ្វើសមកាលកម្ម)}other{ពាក្យសម្ងាត់ # (សម្រាប់ <ph name="DOMAIN_LIST" />, បាន​ធ្វើសមកាលកម្ម)}}</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />, ចុច Tab រួច Enter ដើម្បីមើល​ផ្ទាំង​ច្រើនទៀត​ពីឧបករណ៍​ផ្សេង​ទៀត</translation>
 <translation id="6355392890578844978">កម្មវិធីរុករកតាមអ៊ីនធឺណិតនេះ​មិនត្រូវបានគ្រប់គ្រង​ដោយក្រុមហ៊ុន ឬស្ថាប័នផ្សេងទេ។ សកម្មភាព​នៅលើឧបករណ៍នេះ​អាចត្រូវបាន​គ្រប់គ្រងក្រៅពី Chromium។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">លែង​អាចប្រើ​ក្រុមផ្ទាំង "<ph name="GROUP_TITLE_1" />" និង "<ph name="GROUP_TITLE_2" />" បាន​ទៀតហើយ</translation>
 <translation id="6358088212770985041">កែ​វិធី​បង់ប្រាក់</translation>
@@ -5268,6 +5270,7 @@
 <translation id="955429569736351433">បាន​អនុញ្ញាត​ឱ្យប្រើ VR</translation>
 <translation id="955627189349169688">អ្នកអាច​ផ្ដាច់ចេញ​ពីគោលការណ៍នេះ​បាននៅក្នុង<ph name="BEGIN_LINK" />ការកំណត់ Chrome សមកាលកម្ម<ph name="END_LINK" />។</translation>
 <translation id="95721182352849470">លឿងទី 2</translation>
+<translation id="958952958906914932">ផ្ទាំង​ច្រើនទៀត​ពីឧបករណ៍​ផ្សេងទៀត</translation>
 <translation id="961372935451193190">ផ្ទាំង និង​ឯកសារ</translation>
 <translation id="961663415146723894">ភ្ជាប់​ខាងក្រោម</translation>
 <translation id="961856697154696964">លុប​ទិន្នន័យរុករក</translation>

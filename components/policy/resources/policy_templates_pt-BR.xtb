@@ -9775,13 +9775,6 @@ a otimização do JavaScript será ativada.</translation>
       Se esta política não for definida, a estante será posicionada na parte inferior da tela por padrão, e o usuário poderá mudar a posição da estante.</translation>
 <translation id="7039815268521168329">Mostrar o fluxo do Voice Match do Google Assistente durante a configuração inicial</translation>
 <translation id="7040229947030068419">Exemplo de valor:</translation>
-<translation id="7044626519138840387">Uma lista de origens de apps cliente de Área de Trabalho remota que podem executar solicitações de API
-WebAuthn originadas de uma sessão de navegação em um host remoto.
-
-Qualquer origem configurada nesta política pode fazer solicitações WebAuthn para IDs de terceiros confiáveis (RP IDs) que normalmente não seriam permitidos.
-
-Somente origens HTTPS válidas são permitidas. Caracteres curinga não são aceitos.
-As entradas inválidas são ignoradas.</translation>
 <translation id="7044883996351280650">Controlar o serviço de backup e restauração do Android</translation>
 <translation id="7045221780834308118">Se a política for ativada, os aplicativos da Web de terceiros poderão usar a API Desk para controlar os espaços de trabalho do <ph name="PRODUCT_OS_NAME" />. Se a política for desativada ou deixada sem definição, o <ph name="DESK_API_NAME" /> vai ficar indisponível. A política só será aplicada em dispositivos registrados.</translation>
 <translation id="7046113122884041950">Não permitir o Smart Lock</translation>

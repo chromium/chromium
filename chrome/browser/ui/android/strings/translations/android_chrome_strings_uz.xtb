@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">Tarix sinxronizatsiyasi</translation>
 <translation id="1111673857033749125">Boshqa qurilmalaringizda saqlangan xatcho‘plar shu yerda ko‘rsatiladi.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, Tasvir ustida tasvirli varaq</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{1 ta oynani tiklash}other{# ta oynani tiklash}}</translation>
 <translation id="1126696498560056882">Bu qurilmadagi hisoblarni boshqarish</translation>
 <translation id="1135018701024399762">Inkognito rejimidagi harakatlaringiz ayni qurilmadan foydalanuvchilarga koʻrinmaydi</translation>
 <translation id="113752097246673894">Barcha qurilmalarda bukmarklaringiz va boshqalarni olish uchun Chrome hisobiga (<ph name="EMAIL" />) kiring</translation>
@@ -510,6 +511,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3166827708714933426">Varaq va oynalar bilan ishlash</translation>
 <translation id="3167258285411721858"><ph name="HOST_NAME" /> saytining mobil versiyasini talab qilish mumkin</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, ovozsiz qilingan mahkamlangan inkognito varaq bir necha marta tanlandi</translation>
+<translation id="3183941812169784232">Barcha oynalar tiklansinmi?</translation>
 <translation id="3187472288455401631">Reklamalarni baholash</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> varaqlar guruhi</translation>
 <translation id="3200536777393523575">Joriy oyna yopilsinmi?</translation>
@@ -723,6 +725,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4164642020717536140">Internetni tez va xavfsiz kezing</translation>
 <translation id="4165077084524712774">Yana</translation>
 <translation id="4170577491341606575">Maʼlumotlar olinmoqda\u2026</translation>
+<translation id="4176838562184310003">Chrome kutilmaganda yopildi. Yoʻqolgan oyna va varaqlaringiz tiklansinmi? Tiklanganda ayrim oynalar kichraytirilgan holatda ochilishi mumkin.</translation>
 <translation id="4177222230309051052">Barcha xatchoʻplarni oling</translation>
 <translation id="4177501066905053472">Reklamadagi mavzular</translation>
 <translation id="417865198503699526">Sozlamani qidirish</translation>
@@ -1072,6 +1075,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5628604359369369630">Oʻqilmagan – oflayn mavjud</translation>
 <translation id="5631483240431073854">Ochiq varaqlarni boshqarish</translation>
 <translation id="5632485077360054581">Koʻrsatish</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> sayti <ph name="EXTENSION_NAME" /> kengaytmasini ishga tushirish uchun ruxsat olmoqchi</translation>
 <translation id="564121214411935612">Siz <ph name="USER_NAME" /> nomidan kirdingiz. Google hisobi xatosi. Sozlamalarni ochadi.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Qidiruv tarixi<ph name="END_LINK1" /> va <ph name="BEGIN_LINK2" />boshqa turdagi faoliyat<ph name="END_LINK2" /> Google hisobida saqlanishi mumkin</translation>
 <translation id="5648166631817621825">Oxirgi 7 kun</translation>
@@ -1879,6 +1883,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome yaxshilanishi mumkin zaif parolni aniqladi}other{Chrome yaxshilanishi mumkin # ta zaif parolni aniqladi}}</translation>
 <translation id="8766529642647037772">Bu kabi belgilovli havola yaratilsinmi?</translation>
 <translation id="8769783688897433958">Sayt axboroti va ruxsatlarini koʻrish</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> sayti <ph name="COUNT" /> ta kengaytmani ishga tushirish uchun ruxsat olmoqchi</translation>
 <translation id="8788265440806329501">Sahifalar tarixi yopildi</translation>
 <translation id="8790193082819560975">Yangi varaqda mahsulot uchun xarid variantlarini qidirish tugmasi</translation>
 <translation id="8798449543960971550">Oʻqish</translation>

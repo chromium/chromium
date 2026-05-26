@@ -665,6 +665,7 @@
 <translation id="1453561711872398978">ส่ง<ph name="BEGIN_LINK" />บันทึกการแก้ไขข้อบกพร่อง<ph name="END_LINK" /> (แนะนำ)</translation>
 <translation id="1454223536435069390">จับ&amp;ภาพหน้าจอ</translation>
 <translation id="145432137617179457">ภาษาที่ใช้การตรวจตัวสะกดได้</translation>
+<translation id="1454523475536875350">เปิดลิงก์ในมุมมองด้านล่าง</translation>
 <translation id="1455009947184333152">ลบทักษะแล้ว</translation>
 <translation id="1455119378540982311">ขนาดหน้าต่างที่กำหนดล่วงหน้า</translation>
 <translation id="1456849775870359518">แท็บจะเปิดขึ้นอีกครั้ง</translation>
@@ -803,6 +804,7 @@
 <translation id="1547123415014299762">อนุญาตคุกกี้ของบุคคลที่สาม</translation>
 <translation id="1547808936554660006">ฉันทราบดีว่าโปรไฟล์ eSIM ที่ติดตั้งไว้จะไม่ถูกนำออกโดยการทำ Powerwash</translation>
 <translation id="1547936895218027488">คลิกไอคอนแผงด้านข้างเพื่อเปิด</translation>
+<translation id="1548265680751768570">Gemini ใน Chrome ไม่พร้อมใช้งาน</translation>
 <translation id="1549275686094429035">ARC เปิดใช้งานอยู่</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ต้องการเข้าถึง <ph name="VOLUME_NAME" /> แอปอาจแก้ไขหรือลบไฟล์ของคุณได้</translation>
 <translation id="1549966883323105187">ดูรหัสผ่านที่บันทึกไว้ได้เร็วขึ้น</translation>
@@ -959,6 +961,7 @@
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">ใช้ Wi‑Fi หรือเครือข่ายมือถือเพื่อระบุตำแหน่ง</translation>
 <translation id="1650407365859096313">เปิดในแท็บใหม่ สิทธิ์เป็นแบบ<ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">เปิดลิงก์ในมุมมองด้านล่าง</translation>
 <translation id="1650801028905250434">ไฟล์ใน "ไดรฟ์ของฉัน" จะซิงค์กับ Chromebook โดยอัตโนมัติ เพื่อให้คุณเข้าถึงได้โดยไม่ต้องเชื่อมต่ออินเทอร์เน็ต คุณเปลี่ยนการตั้งค่านี้ได้ทุกเมื่อในการตั้งค่า &gt; ไฟล์</translation>
 <translation id="1651008383952180276">คุณต้องป้อนพาสเฟรสเดียวกัน 2 ครั้ง</translation>
 <translation id="1651609627703324721">แท็บนี้กำลังนำเสนอเนื้อหา VR ไปยังชุดหูฟัง</translation>
@@ -1150,6 +1153,7 @@
 <translation id="1784849162047402014">อุปกรณ์เครื่องนี้เหลือพื้นที่ว่างในดิสก์ต่ำ</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{การถอนการติดตั้ง "<ph name="APP_NAME" />" จะถอนการติดตั้งแอปนี้ด้วย}other{การถอนการติดตั้ง "<ph name="APP_NAME" />" จะถอนการติดตั้งแอปเหล่านี้ด้วย}}</translation>
 <translation id="1786290960428378411">กำลังขออ่านและเปลี่ยนแปลง</translation>
+<translation id="179021551944139249">เพิ่มลิงก์ไปยังเรื่องรออ่าน</translation>
 <translation id="1790976235243700817">นำสิทธิ์การเข้าถึงออก</translation>
 <translation id="1791662854739702043">ติดตั้งแล้ว</translation>
 <translation id="1792619191750875668">การแสดงผลแบบขยาย</translation>
@@ -1965,6 +1969,7 @@
 <translation id="2340239562261172947">ดาวน์โหลด <ph name="FILE_NAME" /> อย่างปลอดภัยไม่ได้</translation>
 <translation id="2341392013052489530">ถอนการติดตั้งเวอร์ชัน <ph name="VERSION" /> แล้ว เหตุผลคือ <ph name="REASON" /></translation>
 <translation id="2342180549977909852">บุตรหลานของคุณจะใช้หมายเลข (PIN) แทนรหัสผ่านเพื่อปลดล็อกอุปกรณ์นี้ได้ หากต้องการตั้ง PIN ในภายหลัง ให้ไปที่การตั้งค่า</translation>
+<translation id="2343005971389581619">เปิดลิงก์ในมุมมองด้านบน</translation>
 <translation id="2343160676229467122">ไม่อนุญาตให้ใช้ส่วนขยายใน <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">อุทยานแห่งชาติเทือกเขาร็อกกี</translation>
 <translation id="2343747224442182863">โฟกัสแท็บนี้</translation>
@@ -4158,6 +4163,7 @@
 <translation id="3854348409770521214">ภาพวาดสีน้ำมัน</translation>
 <translation id="3854967233147778866">เสนอการแปลเว็บไซต์ในภาษาอื่นๆ</translation>
 <translation id="3854976556788175030">ถาดกระดาษออกเต็มแล้ว</translation>
+<translation id="3855324045699437362">Gemini ใน Chrome กำลังขยายไปยังที่ต่างๆ แต่ยังไม่พร้อมใช้งานในบางที</translation>
 <translation id="3855441664322950881">แพคส่วนขยาย</translation>
 <translation id="3855676282923585394">นำเข้าบุ๊กมาร์กและการตั้งค่า...</translation>
 <translation id="3856023744577163821">ระบบจะแชร์แท็บที่เปิดจากแชทหรือแท็บที่แชร์อยู่กับ Gemini ด้วย</translation>
@@ -5643,6 +5649,7 @@
 <translation id="4910241725741323970">ติดตั้งแอปแล้ว</translation>
 <translation id="4912643508233590958">ไม่ใช้งานการปลุก</translation>
 <translation id="4913209098186576320">ไฟล์นี้อาจเป็นอันตราย<ph name="LINE_BREAK" />การตรวจสอบนี้ใช้เวลานานกว่าปกติ...</translation>
+<translation id="4913573660390710463">สิทธิ์เข้าถึงเว็บแอปพลิเคชันแบบแพ็กเกจพร้อมความสามารถที่ปรับปรุงใหม่ <ph name="BEGIN_LINK_LEARN_MORE" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">ไม่พบข้อมูลแอป</translation>
 <translation id="4915961947098019832">ได้รับอนุญาตให้แสดงรูปภาพ</translation>
 <translation id="491779113051926205">ตัวนับการรับส่งข้อมูลของ ChromeOS</translation>
@@ -5879,6 +5886,7 @@
 <translation id="5088427648965532275">ผู้ให้บริการ Passpoint</translation>
 <translation id="5090637338841444533">ไม่ได้รับอนุญาตให้ติดตามตำแหน่งของกล้อง</translation>
 <translation id="5091636240353511739">แสดง PIN</translation>
+<translation id="5092567114307895466">ตรวจสอบว่าคุณมีสิทธิ์และมีคุณสมบัติตรงตามข้อกำหนด</translation>
 <translation id="5093447877601682598">ส่งความคิดเห็นเกี่ยวกับแนวแท็บ</translation>
 <translation id="5093477827231450397">รายการเว็บไซต์ที่คุณบล็อกและไม่ต้องการให้แนะนำโฆษณาไปยังเว็บไซต์อื่นๆ</translation>
 <translation id="5093569275467863761">ซับเฟรมแคชย้อนหลังในโหมดไม่ระบุตัวตน: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7721,6 +7729,7 @@
 <translation id="6427752304227226701">รายงานเว็บไซต์ที่ไม่ปลอดภัย...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{ไม่มีรหัสผ่านที่บันทึกไว้}=1{กำลังตรวจสอบรหัสผ่าน {COUNT} รายการ...}other{กำลังตรวจสอบรหัสผ่าน {COUNT} รายการ...}}</translation>
 <translation id="6429384232893414837">เกิดข้อผิดพลาดในการอัปเดต</translation>
+<translation id="6430202563517028640">เพิ่มลิงก์ไปยังเรื่องรออ่าน</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, ใบรับรองเดี่ยว</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> จะติดตั้งการอัปเดตอัตโนมัติสำหรับผู้ใช้ทั้งหมดที่ใช้เครื่องคอมพิวเตอร์นี้</translation>
 <translation id="6434104957329207050">ความเร็วในการสแกนจุด</translation>
@@ -9600,6 +9609,7 @@
 <translation id="7753735457098489144">ติดตั้งไม่สำเร็จเนื่องจากมีพื้นที่เก็บข้อมูลไม่เพียงพอ หากต้องการเพิ่มพื้นที่ว่าง ให้ลบไฟล์ออกจากพื้นที่เก็บข้อมูลของอุปกรณ์</translation>
 <translation id="7754704193130578113">สอบถามที่เก็บไฟล์ก่อนดาวน์โหลด</translation>
 <translation id="7757592200364144203">เปลี่ยนชื่ออุปกรณ์</translation>
+<translation id="7757735653610827848">&amp;คัดลอก "<ph name="SELECTION" />"</translation>
 <translation id="7757739382819740102">รายชื่อติดต่อที่อยู่ใกล้เคียงจะแชร์กับคุณได้ โดยจะต้องมีการอนุมัติ</translation>
 <translation id="7757787379047923882">ข้อความที่แชร์จาก <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -10166,6 +10176,7 @@
 <translation id="8137559199583651773">จัดการส่วนขยาย</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{ตรวจสอบส่วนขยาย 1 รายการที่อาจไม่ปลอดภัย}other{ตรวจสอบส่วนขยาย {NUM_EXTENSIONS} รายการที่อาจไม่ปลอดภัย}}</translation>
 <translation id="8138217203226449454">คุณตั้งใจที่จะเปลี่ยนผู้ให้บริการการค้นหาใช่ไหม</translation>
+<translation id="813858113027420189">เปิดลิงก์ในมุมมองด้านบน</translation>
 <translation id="8138997515734480534">สถานะ <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">การเร่งความเร็วของเคอร์เซอร์</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>
@@ -11157,6 +11168,7 @@
 <translation id="8819510664278523111">EID ของอุปกรณ์คือ <ph name="EID_NUMBER" />, IMEI ของอุปกรณ์คือ <ph name="IMEI_NUMBER" /> และหมายเลขซีเรียลของอุปกรณ์คือ <ph name="SERIAL_NUMBER" /> คุณใช้หมายเลขเหล่านี้เพื่อช่วยเปิดใช้งานบริการได้</translation>
 <translation id="8820817407110198400">บุ๊กมาร์ก</translation>
 <translation id="8821045908425223359">กำหนดค่าที่อยู่ IP โดยอัตโนมัติ</translation>
+<translation id="8821206216942230957">บัญชีของคุณไม่มีสิทธิ์เข้าถึง Gemini ใน Chrome</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> พร้อมใช้งานแล้ว</translation>
 <translation id="882204272221080310">อัปเดตเฟิร์มแวร์เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="8823514049557262177">คัดลอก&amp;ข้อความของลิงก์</translation>

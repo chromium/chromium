@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">價格較低</translation>
 <translation id="3070005020161560471">自動翻譯</translation>
 <translation id="3072980200212375806">「<ph name="APP_NAME" />」將在 Chrome 中開啟。選擇繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。您也必須遵守《<ph name="BEGIN_LINK3" />隱私權政策<ph name="END_LINK3" />》。</translation>
+<translation id="3080375898390966733">使用 Google 智慧鏡頭搜尋分頁內容</translation>
 <translation id="3080525922482950719">你可以儲存頁面以便稍後閱讀或離線閱讀</translation>
 <translation id="3087734570205094154">置底</translation>
 <translation id="3091010850649238832">顯示剪貼簿內容</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3385749568468586663">Gemini 無法在無痕模式下使用</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
+<translation id="3391311825344469964">如要控管視窗，可以使用 Chrome 的視窗管理工具</translation>
 <translation id="3417835166382867856">搜尋分頁</translation>
 <translation id="3430670036890315772">如果關閉設定檔鎖定功能，系統將移除已儲存的資訊</translation>
 <translation id="3435575784518354875">如要繼續存取密碼，請立即匯出密碼、更新 Google Play 服務，再將密碼匯入回 Google 密碼管理工具。<ph name="BEGIN_LINK" />查看完整操作說明<ph name="END_LINK" />。</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">尚未閱讀 - 可離線閱讀</translation>
 <translation id="5631483240431073854">管理開啟的分頁</translation>
 <translation id="5632485077360054581">顯示操作說明</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> 需要你的授權才能執行「<ph name="EXTENSION_NAME" />」</translation>
 <translation id="564121214411935612">目前登入的帳戶是<ph name="USER_NAME" />。Google 帳戶錯誤。開啟設定。</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />搜尋記錄<ph name="END_LINK1" />和<ph name="BEGIN_LINK2" />其他形式的活動<ph name="END_LINK2" />可能會儲存至你的 Google 帳戶</translation>
 <translation id="5648166631817621825">過去 7 天</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome 發現低強度密碼，建議提高密碼強度}other{Chrome 發現 # 個低強度密碼，建議提高密碼強度}}</translation>
 <translation id="8766529642647037772">要建立類似的醒目顯示連結嗎？</translation>
 <translation id="8769783688897433958">查看網站資訊和權限</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> 需要你的授權才能執行 <ph name="COUNT" /> 個擴充功能</translation>
 <translation id="8788265440806329501">瀏覽記錄已關閉</translation>
 <translation id="8790193082819560975">輕觸即可在新分頁中搜尋產品的購買選項。</translation>
 <translation id="8798449543960971550">讀取</translation>

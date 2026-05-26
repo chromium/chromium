@@ -9381,12 +9381,6 @@ Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtli
       Ist die Richtlinie nicht konfiguriert, erscheint die Ablage standardmäßig unten auf dem Bildschirm und der Nutzer hat die Möglichkeit, diese Position zu ändern.</translation>
 <translation id="7039815268521168329">Ablauf „Voice Match mit Google Assistant“ bei der Ersteinrichtung anzeigen</translation>
 <translation id="7040229947030068419">Beispielwert</translation>
-<translation id="7044626519138840387">Eine Liste von Ursprüngen von Remote-Desktop-Client-Apps, die WebAuthn API-Anfragen ausführen können, die aus einer Browsersitzung auf einem Remote-Host stammen.
-
-Jeder in dieser Richtlinie konfigurierte Ursprung kann WebAuthn-Anfragen für Relying-Party-IDs (RP-IDs) stellen, die normalerweise nicht zulässig wären.
-
-Nur gültige HTTPS-Ursprünge sind zulässig. Platzhalter werden nicht unterstützt.
-Ungültige Einträge werden ignoriert.</translation>
 <translation id="7044883996351280650">Android-Dienst "Sicherung und Wiederherstellung" konfigurieren</translation>
 <translation id="7045221780834308118">Wenn die Richtlinie aktiviert ist, können Webanwendungen von Drittanbietern die Desk API verwenden, um <ph name="PRODUCT_OS_NAME" />-Desktops zu steuern. Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist die <ph name="DESK_API_NAME" /> nicht verfügbar. Die Richtlinie wird nur auf registrierten Geräten angewendet.</translation>
 <translation id="7046113122884041950">Smart Lock nicht zulassen</translation>

@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">History sync</translation>
 <translation id="1111673857033749125">Bookmarks saved on your other devices will appear here.</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />, picture-in-picture tab</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{Restore one window}other{Restore # windows}}</translation>
 <translation id="1126696498560056882">Manage accounts on this device</translation>
 <translation id="1135018701024399762">Incognito mode keeps your browsing private from others who use your device</translation>
 <translation id="113752097246673894">To get your bookmarks and more on all your devices, sign in to Chrome as <ph name="EMAIL" /></translation>
@@ -510,6 +511,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
 <translation id="3167258285411721858">You can request the mobile site for <ph name="HOST_NAME" /></translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />, multi-selected pinned muted Incognito tab</translation>
+<translation id="3183941812169784232">Restore all windows?</translation>
 <translation id="3187472288455401631">Ads measurement</translation>
 <translation id="3189635831478931757"><ph name="GROUP_TITLE" /> tab group</translation>
 <translation id="3200536777393523575">Close your current window?</translation>
@@ -723,6 +725,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4164642020717536140">Fast and secure web browsing</translation>
 <translation id="4165077084524712774">More tools</translation>
 <translation id="4170577491341606575">Getting your stuff\u2026</translation>
+<translation id="4176838562184310003">Chrome didn't shut down correctly and can try to restore your lost windows and tabs. Some windows may be minimised when restored.</translation>
 <translation id="4177222230309051052">Get all your bookmarks</translation>
 <translation id="4177501066905053472">Ad topics</translation>
 <translation id="417865198503699526">Search for a setting</translation>

@@ -2154,6 +2154,7 @@ Lorsque cette règle est définie, l'utilisateur ne peut pas remplacer la valeur
 
 Si elle n'est pas définie, l'écran de confidentialité est désactivé initialement, mais l'utilisateur peut le modifier.</translation>
 <translation id="2413899611035194909">Afficher les options d'accessibilité dans le menu de la barre d'état système de l'écran de connexion</translation>
+<translation id="2414712434655365347">Configurer l'injection d'en-tête HTTP pour des formats d'URL spécifiques</translation>
 <translation id="2415715982424988916">Explorer (disponible depuis la version 91)</translation>
 <translation id="2420958105721932612">Cette règle permet de configurer l'installation d'une appli. AVAILABLE : l'appli n'est pas installée automatiquement, mais l'utilisateur peut l'installer. Il s'agit du paramètre par défaut si cette règle n'est pas configurée. FORCE_INSTALLED : l'appli est installée automatiquement, et l'utilisateur ne peut pas la désinstaller. BLOCKED : l'appli est bloquée et ne peut pas être installée. Si elle a été installée d'après une règle précédente, elle sera désinstallée.</translation>
 <translation id="2421400544595297401">Ne pas autoriser les utilisateurs non affiliés à utiliser des applis Android</translation>
@@ -8030,6 +8031,25 @@ Le salage doit être une chaîne comprenant entre 8 et 32 caractères.
 <translation id="624219423122512710">Actions si le navigateur est inactif</translation>
 <translation id="6244061205361004687">Autoriser l'utilisateur à déconnecter ou modifier manuellement un VPN</translation>
 <translation id="6244210204546589761">URL à ouvrir au démarrage</translation>
+<translation id="6245828368576563662">Cette règle permet de définir une liste de règles pour l'injection d'en-têtes HTTP personnalisés dans les requêtes Web correspondant à des formats d'URL spécifiques. Les en-têtes définis par cette règle prévalent sur ceux qui étaient initialement présents dans la requête, ainsi que sur les modifications tentées par les utilisateurs ou les extensions.
+
+Un cas d'utilisation courant de cette règle consiste à appliquer des contrôles d'accès aux locataires en injectant des en-têtes personnalisés (par exemple, <ph name="EXAMPLE_HEADER_NAME" />).
+
+Cette règle accepte une liste de règles. Chaque règle contient :
+
+* <ph name="PATTERNS_KEY" /> : une liste de formats d'URL à mettre en correspondance. Découvrez les formats d'URL à respecter (https://support.google.com/chrome/a?p=url_blocklist_filter_format).
+
+* <ph name="HEADERS_KEY" /> : liste d'objets représentant les en-têtes à injecter, chacun contenant :
+
+  * <ph name="HEADER_NAME_KEY" /> : nom de l'en-tête à injecter.
+
+  * <ph name="HEADER_VALUE_KEY" /> : valeur de l'en-tête à injecter.
+
+Si une requête est concernée par plusieurs règles, les en-têtes de toutes les règles correspondantes seront appliqués. Si plusieurs en-têtes portent le même nom, celui dont le format d'URL est le plus spécifique sera appliqué. Si aucun format n'est plus spécifique qu'un autre, celui qui apparaît en dernier dans la liste sera appliqué.
+
+Les noms d'en-tête doivent être conformes à la norme RFC 2616 (https://www.rfc-editor.org/rfc/rfc2616). Les valeurs d'en-tête ne doivent pas contenir les symboles NUL, CR ni LF. La taille des en-têtes individuels ne doit pas dépasser 8 ko. Les en-têtes et les formats d'URL non valides seront ignorés.
+
+Cette règle est limitée à un total de 500 formats d'URL pour l'ensemble des règles. Chaque règle peut contenir au maximum 20 en-têtes. Les formats et les en-têtes au-delà de ces seuils seront ignorés.</translation>
 <translation id="624595269193747921">Limiter ou non la recherche d'une imprimante correspondant aux critères spécifiés à un groupe d'imprimantes spécifique.</translation>
 <translation id="6246290059248303618">Afficher les commandes multimédias pour les sessions <ph name="PRODUCT_NAME" /> lancées par d'autres appareils sur le réseau local</translation>
 <translation id="6247316685259031374">Cette règle permet de contrôler l'exécution en bac à sable du processus audio.
@@ -9375,12 +9395,6 @@ Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DE
       Si cette règle n'est pas configurée, l'étagère est placée par défaut au bas de l'écran. Toutefois, l'utilisateur peut la mettre à un autre endroit.</translation>
 <translation id="7039815268521168329">Afficher la procédure Voice Match pour l'Assistant Google lors de la configuration initiale</translation>
 <translation id="7040229947030068419">Exemple de valeur :</translation>
-<translation id="7044626519138840387">Liste des origines des applis clientes de bureau à distance pouvant exécuter des requêtes API WebAuthn envoyées à partir d'une session de navigation sur un hôte à distance.
-
-Toute origine configurée dans cette règle peut envoyer des requêtes WebAuthn pour des ID de tiers de confiance qu'elle ne devrait normalement pas pouvoir réclamer.
-
-Seules les origines HTTPS valides sont autorisées. Les caractères génériques ne sont pas pris en charge.
-Les entrées non valides sont ignorées.</translation>
 <translation id="7044883996351280650">Gérer le service de sauvegarde et de restauration Android</translation>
 <translation id="7045221780834308118">Si cette règle est activée, les applis Web tierces peuvent utiliser l'API Desk pour contrôler les bureaux <ph name="PRODUCT_OS_NAME" />. Si elle n'est pas configurée ou si elle est désactivée, <ph name="DESK_API_NAME" /> ne sera pas disponible. Cette règle ne s'applique qu'aux appareils enregistrés.</translation>
 <translation id="7046113122884041950">Ne pas autoriser Smart Lock</translation>

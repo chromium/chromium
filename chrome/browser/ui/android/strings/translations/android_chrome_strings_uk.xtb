@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Низька ціна</translation>
 <translation id="3070005020161560471">Мови, з яких потрібно автоматично перекладати</translation>
 <translation id="3072980200212375806">Додаток <ph name="APP_NAME" /> відкриється в Chrome. Продовжуючи, ви приймаєте <ph name="BEGIN_LINK1" />Загальні положення та умови Google<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />Додаткові умови використання Google Chrome та ОС Chrome<ph name="END_LINK2" />. Також застосовується <ph name="BEGIN_LINK3" />Політика конфіденційності<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Шукати на вкладці за допомогою Google Об’єктива</translation>
 <translation id="3080525922482950719">Зберігайте сторінки, щоб читати їх пізніше або в режимі офлайн</translation>
 <translation id="3087734570205094154">Низ</translation>
 <translation id="3091010850649238832">Показати вміст буфера обміну</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Поділитися зображенням</translation>
 <translation id="3385749568468586663">Gemini немає в анонімному режимі</translation>
 <translation id="3387650086002190359">Файл <ph name="FILE_NAME" /> не завантажено через помилки файлової системи.</translation>
+<translation id="3391311825344469964">Ви можете керувати вікнами в Менеджері вікон Chrome</translation>
 <translation id="3417835166382867856">Шукати вкладки</translation>
 <translation id="3430670036890315772">Якщо вимкнути блокування профілю, збережені дані буде вилучено</translation>
 <translation id="3435575784518354875">Щоб зберегти доступ до своїх паролів, експортуйте їх зараз, оновіть сервіси Google Play і знову імпортуйте паролі в Google Менеджер паролів. <ph name="BEGIN_LINK" />Переглянути докладні вказівки.<ph name="END_LINK" /></translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">Непрочитано: доступно в режимі офлайн</translation>
 <translation id="5631483240431073854">Керувати відкритими вкладками</translation>
 <translation id="5632485077360054581">Докладніше</translation>
+<translation id="5639031457248936693">Вебсайту <ph name="WEBSITE" /> потрібен дозвіл на запуск розширення <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Ви ввійшли як <ph name="USER_NAME" />. Помилка облікового запису Google. Ця опція відкриває налаштування.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Історія пошуку<ph name="END_LINK1" /> й <ph name="BEGIN_LINK2" />дані про інші дії<ph name="END_LINK2" /> можуть зберігатися в обліковому записі Google</translation>
 <translation id="5648166631817621825">Останні 7 днів</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Вебпереглядач Chrome виявив ненадійний пароль, який можна покращити}one{Вебпереглядач Chrome виявив # ненадійний пароль, які можна покращити}few{Вебпереглядач Chrome виявив # ненадійні паролі, які можна покращити}many{Вебпереглядач Chrome виявив # ненадійних паролів, які можна покращити}other{Вебпереглядач Chrome виявив # ненадійного пароля, які можна покращити}}</translation>
 <translation id="8766529642647037772">Створити виділене посилання, таке як це?</translation>
 <translation id="8769783688897433958">Переглянути інформацію про сайт і дозволи</translation>
+<translation id="8786293874273448556">Вебсайту <ph name="WEBSITE" /> потрібен дозвіл на запуск розширень (<ph name="COUNT" />)</translation>
 <translation id="8788265440806329501">Історію навігації закрито</translation>
 <translation id="8790193082819560975">Натисніть, щоб відкрити варіанти купівлі товару в новій вкладці.</translation>
 <translation id="8798449543960971550">Прочитані</translation>

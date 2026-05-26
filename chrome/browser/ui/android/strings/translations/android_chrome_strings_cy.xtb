@@ -493,6 +493,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3067505415088964188">Pris yn isel</translation>
 <translation id="3070005020161560471">Cyfieithu'n awtomatig</translation>
 <translation id="3072980200212375806">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a ChromeOS<ph name="END_LINK2" />. Mae'r <ph name="BEGIN_LINK3" />Polisi Preifatrwydd<ph name="END_LINK3" /> hefyd yn berthnasol.</translation>
+<translation id="3080375898390966733">Chwilio tab gyda Google Lens</translation>
 <translation id="3080525922482950719">Gallwch gadw tudalennau i'w darllen yn nes ymlaen neu'n all-lein</translation>
 <translation id="3087734570205094154">Gwaelod</translation>
 <translation id="3091010850649238832">Dangos cynnwys y clipfwrdd</translation>
@@ -551,6 +552,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3384347053049321195">Rhannu llun</translation>
 <translation id="3385749568468586663">Nid yw Gemini ar gael yn y Modd anhysbys</translation>
 <translation id="3387650086002190359">Methwyd â lawrlwytho <ph name="FILE_NAME" /> oherwydd gwallau system.</translation>
+<translation id="3391311825344469964">Gallwch reoli'ch ffenestri yn Rheolwr Ffenestri Chrome</translation>
 <translation id="3417835166382867856">Chwilio tabiau</translation>
 <translation id="3430670036890315772">Bydd diffodd eich clo proffil yn tynnu eich gwybodaeth sydd wedi'i chadw</translation>
 <translation id="3435575784518354875">Er mwyn cadw mynediad at eich cyfrineiriau, allforiwch nhw nawr, diweddarwch Google Play Services, ac yna eu mewnforio yn ôl i Reolwr Cyfrineiriau Google. <ph name="BEGIN_LINK" />Gweld y cyfarwyddiadau llawn<ph name="END_LINK" />.</translation>
@@ -1071,6 +1073,7 @@ Mae'n bosib y bydd gan eich cyfrif Google fathau eraill o hanes pori megis chwil
 <translation id="5628604359369369630">Heb eu darllen - Ar gael all-lein</translation>
 <translation id="5631483240431073854">Rheoli tabiau agored</translation>
 <translation id="5632485077360054581">Dangoswch i fi sut</translation>
+<translation id="5639031457248936693">Mae <ph name="WEBSITE" /> angen eich caniatâd i redeg <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Wedi mewngofnodi fel <ph name="USER_NAME" />. Gwall Cyfrif Google. Yn agor gosodiadau.</translation>
 <translation id="5641456720590409793">Mae'n bosib y bydd <ph name="BEGIN_LINK1" />hanes chwilio<ph name="END_LINK1" /> a <ph name="BEGIN_LINK2" />ffurfiau eraill o weithgarwch<ph name="END_LINK2" /> yn cael eu cadw yn eich Cyfrif Google</translation>
 <translation id="5648166631817621825">Saith diwrnod diwethaf</translation>
@@ -1878,6 +1881,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Daeth Chrome o hyd i gyfrinair gwan y gallech ei wella}zero{Daeth Chrome o hyd i # cyfrineiriau gwan y gallech eu gwella}two{Daeth Chrome o hyd i # gyfrinair gwan y gallech eu gwella}few{Daeth Chrome o hyd i # chyfrinair gwan y gallech eu gwella}many{Daeth Chrome o hyd i # chyfrinair gwan y gallech eu gwella}other{Daeth Chrome o hyd i # cyfrinair gwan y gallech eu gwella}}</translation>
 <translation id="8766529642647037772">Creu dolen sydd wedi'i hamlygu fel yr un hon?</translation>
 <translation id="8769783688897433958">Gweld gwybodaeth a chaniatadau gwefan</translation>
+<translation id="8786293874273448556">Mae <ph name="WEBSITE" /> angen eich caniatâd i redeg <ph name="COUNT" /> estyniad</translation>
 <translation id="8788265440806329501">Mae hanes llywio ar gau</translation>
 <translation id="8790193082819560975">Tapiwch i chwilio am opsiynau prynu ar gyfer y cynnyrch mewn tab newydd.</translation>
 <translation id="8798449543960971550">Wedi darllen</translation>

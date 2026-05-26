@@ -259,6 +259,7 @@
 <translation id="1392813880755413602">OpenDocument 簡報</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未傳送任何資料。</translation>
 <translation id="1393071644879491291">你嘗試前往的網站可能有攻擊者，會誘騙你安裝軟體或提供資訊，例如密碼、電話號碼或信用卡號碼。Chrome 強烈建議你不要造訪這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />進一步瞭解這項警告<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">這裡新增的網站即使在分頁中開啟，也不會用來生成回覆。如果你新增的網站目前正用於對話，系統最多需要 30 分鐘才會停止參考該網站。</translation>
 <translation id="1402151528875251561">在側邊面板中顯示歷史記錄</translation>
 <translation id="1405567553485452995">淺綠色</translation>
 <translation id="1406370515365284486">系統仍會保留付款方式</translation>
@@ -1550,6 +1551,7 @@
 <translation id="343474037147570563">你上傳或附加的檔案會傳送到 Google Cloud 或第三方進行分析。舉例來說，前述公司組織可能會掃描檔案，檢查是否含有敏感資料或惡意軟體，也可能會依據公司政策儲存這些檔案供系統管理員查看。</translation>
 <translation id="3435557549311968410">連續 (短邊)</translation>
 <translation id="3435738964857648380">安全性</translation>
+<translation id="3438509337461223476">自動與所有對話分享開啟的分頁</translation>
 <translation id="3440783957068352691">正方形</translation>
 <translation id="3441653493275994384">螢幕</translation>
 <translation id="3443504041532578451">光碟 (光滑)</translation>
@@ -2481,6 +2483,7 @@
 <translation id="4894390983254799375">例如裝置 ID、名稱、OS 版本和 OS 使用者名稱</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />、<ph name="TYPE_2" />，<ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">奧運</translation>
+<translation id="4897851261703006488">這項政策的標頭大小不得超過 <ph name="MAX_HEADER_SIZE_LIMIT" /> KB。</translation>
 <translation id="4898742041545089450">這個主題已解除封鎖。系統可能根據你的瀏覽記錄，將該主題設為有效主題</translation>
 <translation id="4900217275619098670">第九卷</translation>
 <translation id="4901052769830245369">標籤 (半光面)</translation>
@@ -2728,6 +2731,7 @@
 <translation id="5284295735376057059">文件屬性</translation>
 <translation id="528468243742722775">結束</translation>
 <translation id="5285468538058987167">透過嚴格客戶驗證 (SCA)</translation>
+<translation id="5286195392366054103">這項政策內的網址模式超過 <ph name="MAX_URL_PATTERNS_LIMIT" /> 個，系統只會使用前 <ph name="MAX_URL_PATTERNS_LIMIT" /> 個網址模式。</translation>
 <translation id="5287456746628258573">這個網站的安全性設定過舊，因此你傳送給這個網站的的資訊 (例如密碼或信用卡號碼) 可能會外洩。</translation>
 <translation id="5288108484102287882">政策值驗證作業出現警告訊息</translation>
 <translation id="5289384342738547352">多份文件處理</translation>
@@ -3846,6 +3850,7 @@
 <translation id="7016992613359344582">這些費用可能只收取一次，也可能屬於週期性費用，而且你不一定會注意到自己需要付費。</translation>
 <translation id="701757816833614688">視覺藝術與設計教育</translation>
 <translation id="7020464868401003526">捷徑網址長度超過上限 (<ph name="MAX_LENGTH" /> 個半形字元)。</translation>
+<translation id="7020581144940000377">使用大概位置</translation>
 <translation id="702275896380648118">這個網站會判斷你喜歡的內容，然後向其他網站建議廣告。這個網站也會從 Chrome 取得你的廣告主題，為你顯示更貼近需求的廣告。</translation>
 <translation id="7023162328967545559">管理員警告</translation>
 <translation id="7023765275461720661">要連結帳戶並透過「<ph name="BNPL_ISSUER_NAME" />」付款嗎？</translation>
@@ -3956,6 +3961,7 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">請於結帳時使用這個折扣碼。有效期限：<ph name="DATE" />。</translation>
 <translation id="7195852673246414183">開啟這項設定後，請返回這個分頁開始輸入內容</translation>
+<translation id="7196153352301578792">Chrome 會根據你的問題，自動將可能相關的分頁內容和網址傳送給 Google，以提供更貼近需求的回覆。Chrome 只會分享目前視窗中的分頁。</translation>
 <translation id="7196370964328811506">只要將這張卡片儲存到這部裝置，在 Chrome 中購物時就能自動填入卡片資訊</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">參考的已開啟分頁：</translation>
@@ -4370,6 +4376,7 @@
 <translation id="7805268272389338048">個人資訊均加密處理，隱私安全有保障</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7805906048382884326">關閉提示</translation>
+<translation id="780756914888723112">這項政策允許每項規則最多有 <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> 個標頭，系統只會使用每項規則的前 <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> 個標頭。</translation>
 <translation id="7810410097247356677">將卡片資訊和加密安全碼儲存在裝置上，下次就能更快完成付款程序</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">要從 Chrome 中移除建議嗎？</translation>
@@ -4678,6 +4685,7 @@
 <translation id="8301894345671534559">輸入驗證碼</translation>
 <translation id="830498451218851433">對折</translation>
 <translation id="8308653357438598313">即時影片串流</translation>
+<translation id="8310477433309274098">免手續費，年利率最低 0%</translation>
 <translation id="8311895354659782580">房地產資訊</translation>
 <translation id="8312841338723044391">直播</translation>
 <translation id="8316555157357957253">使用中</translation>

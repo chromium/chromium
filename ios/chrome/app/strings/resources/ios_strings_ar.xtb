@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">يمكنك الانتقال لليسار للتصفُّح في "وضع التصفّح المتخفي".</translation>
 <translation id="2079545284768500474">تراجع</translation>
 <translation id="2085876078937250610">حفظ…</translation>
+<translation id="2089180529062519164">تفعيل الميكروفون</translation>
 <translation id="2096239473850415494">تعذَّر التنزيل</translation>
 <translation id="2096716221239095980">حذف كل البيانات</translation>
 <translation id="2104436223719117661">طلبات البحث الرائجة</translation>
@@ -1504,6 +1505,7 @@
 <translation id="6241132809279377987">‏ميزات إضافية على هاتف iPhone تتيحها لك تطبيقات Google</translation>
 <translation id="6247557882553405851">‏مدير كلمات المرور في Google</translation>
 <translation id="6251835855431997163">ملء <ph name="VALUE" /> تلقائيًا</translation>
+<translation id="6253686838150111720">تسجيل الدخول إلى <ph name="URL" /></translation>
 <translation id="6254066287920239840">فتح الروابط في التطبيق بدلاً من المتصفح.</translation>
 <translation id="6259928806013786178">تعذَّر تفعيل "وضع القراءة"</translation>
 <translation id="6268773951964630964">البحث عن الصورة التي نسختها</translation>
@@ -2115,6 +2117,7 @@
 <translation id="8319282042900445670">‏تم ضبط التذكير على <ph name="TIME" />، ‎<ph name="DATE" /></translation>
 <translation id="8320212361750431956">الأنشطة الحديثة</translation>
 <translation id="8325455175867928593">إخفاء "مراجعات مقترَحة بناءً على اهتماماتك"</translation>
+<translation id="8333459276976141586">‏ستستخدم ميزة Live الميكروفون، ويمكنك تفعيله بمجرد النقر على زر الميزة. لإيقافه، يُرجى النقر على زر الإيقاف أو إغلاق Gemini.</translation>
 <translation id="833647236762414178">يمكنك إنشاء كلمات المرور ومفاتيح المرور وحفظها وإدارتها لتسجيل الدخول بسهولة إلى المواقع الإلكترونية والتطبيقات. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">يمكنك الاحتفاظ بنسخة احتياطية من بياناتك واستخدامها على أي جهاز.</translation>
 <translation id="8345328955902001853">{count,plural, =1{يجب إكمال مَهمّة واحدة أخرى للانتقال إلى مستوى أعلى}zero{يجب إكمال {count} مَهمّة إضافية للانتقال إلى مستوى أعلى}two{يجب إكمال مَهمّتَين إضافيتَين ({count}) للانتقال إلى مستوى أعلى}few{يجب إكمال {count} مهام إضافية للانتقال إلى مستوى أعلى}many{يجب إكمال {count} مَهمّة إضافية للانتقال إلى مستوى أعلى}other{يجب إكمال {count} مَهمّة إضافية للانتقال إلى مستوى أعلى}}</translation>
@@ -2191,6 +2194,7 @@
 <translation id="8571019948162152515">حذف <ph name="FILENAME" />؟</translation>
 <translation id="8571213806525832805">آخر 4 أسابيع</translation>
 <translation id="8577056989960190117">الملء التلقائي لسنة انتهاء الصلاحية <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">‏بدء محادثة مع Gemini باستخدام ميزة Live</translation>
 <translation id="8587001564479545614">أنشئ رقم تعريف شخصي لاسترداد الحساب</translation>
 <translation id="8588404856427128947">غير مفعَّل</translation>
 <translation id="8590286732816598906">مجموعة علامات التبويب "<ph name="GROUP_TITLE" />"، القائمة.</translation>
@@ -2265,6 +2269,7 @@
 <translation id="8803526663383843427">عندما يكون الإعداد مفعَّلاً</translation>
 <translation id="8803639129939845298">آمن</translation>
 <translation id="8813277370772331957">تذكيري لاحقًا</translation>
+<translation id="8814308045751067027">‏لاستخدام ميزة Live، يجب منح Chrome إذن الوصول إلى الميكروفون في الإعدادات</translation>
 <translation id="8814719628147284151">متابعة</translation>
 <translation id="881559332211266856">تعديل رقم التعويض</translation>
 <translation id="8817524703470045896">يمكنك تتبُّع الأسعار والحصول على تنبيهات عند انخفاضها على أي موقع إلكتروني</translation>

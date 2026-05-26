@@ -5650,6 +5650,7 @@
 <translation id="4910241725741323970">Апликација је већ инсталирана</translation>
 <translation id="4912643508233590958">Буђења из стања мировања</translation>
 <translation id="4913209098186576320">Овај фајл је можда опасан<ph name="LINE_BREAK" />Ова провера траје дуже него обично...</translation>
+<translation id="4913573660390710463">Приступ веб-апликацијама у пакету са побољшаним могућностима. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Не могу да пронађем податке апликације</translation>
 <translation id="4915961947098019832">Дозвољено им је да приказују слике</translation>
 <translation id="491779113051926205">Бројачи саобраћаја за ChromeOS</translation>
@@ -9617,6 +9618,7 @@
 <translation id="7753735457098489144">Инсталирање није успело због недостатка меморијског простора. Да бисте ослободили простор, избришите датотеке из меморијског простора уређаја.</translation>
 <translation id="7754704193130578113">Питај где треба сачувати сваку датотеку пре преузимања</translation>
 <translation id="7757592200364144203">Промените назив уређаја</translation>
+<translation id="7757735653610827848">&amp;Копирај <ph name="SELECTION" /></translation>
 <translation id="7757739382819740102">Контакти у близини могу да деле садржај са вама. То треба да одобрите.</translation>
 <translation id="7757787379047923882">Текст дељен са уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -11177,6 +11179,7 @@
 <translation id="8819510664278523111">EID уређаја је <ph name="EID_NUMBER" />, IMEI уређаја је <ph name="IMEI_NUMBER" />, а серијски број уређаја је <ph name="SERIAL_NUMBER" />. Ове бројеве можете да користите да бисте активирали услугу.</translation>
 <translation id="8820817407110198400">Обележивачи</translation>
 <translation id="8821045908425223359">Аутоматски конфигуриши IP адресу</translation>
+<translation id="8821206216942230957">Ваш налог нема приступ Gemini-ју у Chrome-у</translation>
 <translation id="8821268776955756404">Апликација <ph name="APP_NAME" /> је спремна за коришћење.</translation>
 <translation id="882204272221080310">Ажурирајте фирмвер ради веће безбедности.</translation>
 <translation id="8823514049557262177">Копирај тек&amp;ст линка</translation>

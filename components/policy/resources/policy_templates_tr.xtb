@@ -9570,14 +9570,6 @@ Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_
       Bu politika ayarlanmadan bırakılırsa raf varsayılan olarak ekranın alt tarafında konumlandırılır ve kullanıcı rafın yerini değiştirebilir.</translation>
 <translation id="7039815268521168329">İlk kurulum sırasında Google Asistan Voice Match akışını göster</translation>
 <translation id="7040229947030068419">Örnek değer:</translation>
-<translation id="7044626519138840387">Uzak bir ana makinedeki tarayıcı oturumundan gönderilen WebAuthn API isteklerini yürütebilen
-uzaktan masaüstü istemci uygulamalarının kaynak listesi.
-
-Bu politikada yapılandırılan tüm kaynaklar, normalde talep etmesine izin verilmeyen
-Güvenilen Taraf kimlikleri (RP kimlikleri) için WebAuthn istekleri gönderebilir.
-
-Yalnızca geçerli HTTPS kaynaklarına izin verilir. Joker karakterler desteklenmez.
-Geçersiz girişler yoksayılır.</translation>
 <translation id="7044883996351280650">Android yedekleme ve geri yükleme hizmetini kontrol etme</translation>
 <translation id="7045221780834308118">Politika, Etkin değerine ayarlanırsa üçüncü taraf web uygulamaları, <ph name="PRODUCT_OS_NAME" /> masalarını kontrol etmek için Desk API'yi kullanabilir. Politika ayarlanmaz veya devre dışı bırakılırsa <ph name="DESK_API_NAME" /> kullanılamaz. Politika yalnızca kayıtlı cihazlarda geçerli olur.</translation>
 <translation id="7046113122884041950">Smart Lock'a izin verme</translation>

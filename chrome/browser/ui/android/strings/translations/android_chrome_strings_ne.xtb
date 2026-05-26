@@ -493,6 +493,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3067505415088964188">सस्तो मूल्य</translation>
 <translation id="3070005020161560471">स्वतः अनुवाद गर्नुहोस्</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> Chrome मा खुल्ने छ। तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_LINK1" />Google का सेवाका सर्त<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />Google Chrome तथा ChromeOS का सेवाका अतिरिक्त सर्तहरू<ph name="END_LINK2" />मा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। यसका साथै, <ph name="BEGIN_LINK3" />गोपनीयता नीति<ph name="END_LINK3" /> पनि लागू हुन्छ।</translation>
+<translation id="3080375898390966733">Google लेन्स प्रयोग गरी ट्याब खोज्नुहोस्</translation>
 <translation id="3080525922482950719">तपाईं पृष्ठहरू सुरक्षित गरी ती पृष्ठ पछि वा इन्टरनेट नभएका बेलामा पढ्न सक्नुहुन्छ</translation>
 <translation id="3087734570205094154">तल</translation>
 <translation id="3091010850649238832">क्लिपबोर्डमा भएका सामग्री देखाउनुहोस्</translation>
@@ -550,6 +551,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3384347053049321195">फोटो सेयर गर्नुहोस्</translation>
 <translation id="3385749568468586663">इन्कोग्निटो मोडमा Gemini प्रयोग गर्न मिल्दैन</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> डाउनलोड फाइल प्रणाली त्रूटिका कारण असफल भयो।</translation>
+<translation id="3391311825344469964">तपाईं Chrome को विन्डो म्यानेजरमा गई आफ्ना विन्डोहरू व्यवस्थापन गर्न सक्नुहुन्छ</translation>
 <translation id="3417835166382867856">ट्याब खोज्नुहोस्</translation>
 <translation id="3430670036890315772">तपाईंले आफ्नो प्रोफाइल लक अफ गर्नुभयो भने तपाईंले सेभ गरेका जानकारी हट्ने छन्</translation>
 <translation id="3435575784518354875">आफ्ना पासवर्डहरूको एक्सेस प्राप्त गरिराख्न तिनलाई अहिले नै एक्स्पोर्ट गर्नुहोस्, Google Play services अपडेट गर्नुहोस् अनि आफ्नो रोजाइको पासवर्ड म्यानेजरमा फेरि इम्पोर्ट गर्नुहोस्। <ph name="BEGIN_LINK" />सम्पूर्ण निर्देशनहरू हेर्नुहोस्<ph name="END_LINK" />।</translation>
@@ -1069,6 +1071,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5628604359369369630">नपढिएको - अफलाइन उपलब्ध छ</translation>
 <translation id="5631483240431073854">खोलिएका ट्याबहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5632485077360054581">यसो गर्ने तरिका देखाउनुहोस्</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> लाई <ph name="EXTENSION_NAME" /> चलाउने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> का रूपमा साइन इन गरिएको छ। Google खातासम्बन्धी त्रुटि भयो। यसले सेटिङ खोल्छ।</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />सर्च हिस्ट्री<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK2" /> तपाईंको Google खातामा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="5648166631817621825">पछिल्ला ७ दिन</translation>
@@ -1876,6 +1879,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome ले एउटा कमजोर पासवर्ड भेट्टाएको छ। तपाईं उक्त पासवर्ड अझ सुरक्षित बनाउन सक्नुहुन्छ}other{Chrome ले # वटा कमजोर पासवर्ड भेट्टाएको छ। तपाईं ती पासवर्ड अझ सुरक्षित बनाउन सक्नुहुन्छ}}</translation>
 <translation id="8766529642647037772">यस्तै खालको हाइलाइट गरिएको लिंक बनाउने हो?</translation>
 <translation id="8769783688897433958">साइटसम्बन्धी जानकारी र अनुमतिहरू हेर्नुहोस्</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> लाई <ph name="COUNT" /> वटा एक्स्टेन्सन चलाउने अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="8788265440806329501">नेभिगेसनको इतिहास बन्द गरियो</translation>
 <translation id="8790193082819560975">उत्पादनको खरिदसम्बन्धी विकल्पहरू नयाँ ट्याबमा खोज्न ट्याप गर्नुहोस्।</translation>
 <translation id="8798449543960971550">पढिसकिएको</translation>

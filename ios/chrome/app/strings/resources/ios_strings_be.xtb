@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Каб праглядаць сайты ў рэжыме інкогніта, прагартайце экран управа.</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2085876078937250610">Захаваць…</translation>
+<translation id="2089180529062519164">Уключыце мікрафон</translation>
 <translation id="2096239473850415494">Не ўдалося спампаваць</translation>
 <translation id="2096716221239095980">Выдаліць усе даныя</translation>
 <translation id="2104436223719117661">Папулярныя пошукавыя запыты</translation>
@@ -1506,6 +1507,7 @@
 <translation id="6241132809279377987">Атрымайце доступ да большай колькасці функцый iPhone з дапамогай праграм Google</translation>
 <translation id="6247557882553405851">Менеджар пароляў Google</translation>
 <translation id="6251835855431997163">Запоўніць аўтаматычна "<ph name="VALUE" />"</translation>
+<translation id="6253686838150111720">Уваход на сайт <ph name="URL" /></translation>
 <translation id="6254066287920239840">Адкрываць спасылкі ў праграме замест браўзера.</translation>
 <translation id="6259928806013786178">Не ўдалося ўключыць рэжым чытання</translation>
 <translation id="6268773951964630964">Пошук скапіраванага відарыса</translation>
@@ -2116,6 +2118,7 @@
 <translation id="8319282042900445670">Напамін зададзены на <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Нядаўнія дзеянні</translation>
 <translation id="8325455175867928593">Не паказваць картку "Водгукі на аснове вашых інтарэсаў"</translation>
+<translation id="8333459276976141586">Live будзе выкарыстоўваць мікрафон. Каб уключыць мікрафон, націсніце на кнопку Live. Каб выключыць мікрафон, націсніце на кнопку "Спыніць" або закрыйце Gemini.</translation>
 <translation id="833647236762414178">Стварайце паролі і ключы доступу, захоўвайце іх і кіруйце імі, каб з лёгкасцю ўваходзіць ва ўліковыя запісы на сайтах і ў праграмах. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Стварайце рэзервовыя копіі сваіх даных, каб іх можна было выкарыстоўваць на іншых прыладах.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Выканайце яшчэ адну задачу, каб перайсці на новы ўзровень}one{Выканайце яшчэ {count} задачу, каб перайсці на новы ўзровень}few{Выканайце яшчэ {count} задачы, каб перайсці на новы ўзровень}many{Выканайце яшчэ {count} задач, каб перайсці на новы ўзровень}other{Выканайце яшчэ {count} задачы, каб перайсці на новы ўзровень}}</translation>
@@ -2192,6 +2195,7 @@
 <translation id="8571019948162152515">Выдаліць файл "<ph name="FILENAME" />"?</translation>
 <translation id="8571213806525832805">За апошнія 4 тыдні</translation>
 <translation id="8577056989960190117">Аўтаматычна запоўніць год заканчэння тэрміну дзеяння <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Выкарыстоўвайце Live з Gemini</translation>
 <translation id="8587001564479545614">Стварыце рэзервовы PIN-код</translation>
 <translation id="8588404856427128947">Выключаны</translation>
 <translation id="8590286732816598906">Група ўкладак, <ph name="GROUP_TITLE" />, меню.</translation>
@@ -2266,6 +2270,7 @@
 <translation id="8803526663383843427">Калі функцыя ўключана</translation>
 <translation id="8803639129939845298">Бяспечны сайт</translation>
 <translation id="8813277370772331957">Нагадаць пазней</translation>
+<translation id="8814308045751067027">Каб выкарыстоўваць Live, адкрыйце налады прылады і дайце праграме Chrome доступ да мікрафона</translation>
 <translation id="8814719628147284151">Працягнуць</translation>
 <translation id="881559332211266856">Змяніце ідэнтыфікатар Redress number</translation>
 <translation id="8817524703470045896">Адсочвайце цэны і атрымлівайце абвесткі пры зніжэнні цаны на любым сайце</translation>

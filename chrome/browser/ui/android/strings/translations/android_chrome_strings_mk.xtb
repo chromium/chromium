@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Цената е ниска</translation>
 <translation id="3070005020161560471">Автоматски преведувај</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ќе се отвори во Chrome. Ако продолжите, се согласувате со <ph name="BEGIN_LINK1" />Условите за користење на Google<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />Дополнителните услови за користење на Google Chrome и Chrome OS<ph name="END_LINK2" />. Важи и <ph name="BEGIN_LINK3" />Политиката за приватност<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Пребарајте ја картичката со Lens</translation>
 <translation id="3080525922482950719">Може да зачувувате страници за да ги читате подоцна или офлајн</translation>
 <translation id="3087734570205094154">Дно</translation>
 <translation id="3091010850649238832">Прикажи содржини од привремената меморија</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Сподели ја сликата</translation>
 <translation id="3385749568468586663">Gemini не е достапен во режимот „Инкогнито“</translation>
 <translation id="3387650086002190359">Преземањето на <ph name="FILE_NAME" /> не успеа поради грешки на системот со датотеки.</translation>
+<translation id="3391311825344469964">Со вашите прозорци може да управувате во „Управувачот со прозорци“ на Chrome</translation>
 <translation id="3417835166382867856">Пребарајте ги картичките</translation>
 <translation id="3430670036890315772">Ако го исклучите „Заклучувањето на профилот“, ќе се отстранат вашите зачувани податоци</translation>
 <translation id="3435575784518354875">За да го задржите пристапот до лозинките, извезете ги сега, ажурирајте ја „Услуги на Google Play“, па увезете ги повторно во Google Password Manager. <ph name="BEGIN_LINK" />Погледнете ги целосните инструкции<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">Непрочитани - Достапни офлајн</translation>
 <translation id="5631483240431073854">Управувајте со отворените картички</translation>
 <translation id="5632485077360054581">Покажи ми како</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> бара ваша дозвола за извршување на <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Најавени сте како <ph name="USER_NAME" />. Грешка на сметката на Google. Ги отвора поставките.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Историјата на пребарување<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други форми на активност<ph name="END_LINK2" /> може да се зачувуваат во вашата сметка на Google</translation>
 <translation id="5648166631817621825">Изминатите 7 дена</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome најде слаба лозинка што би можеле да ја подобрите}one{Chrome најде # слаба лозинка што би можеле да ги подобрите}other{Chrome најде # слаби лозинки што би можеле да ги подобрите}}</translation>
 <translation id="8766529642647037772">Да се создаде нагласен линк како овој?</translation>
 <translation id="8769783688897433958">Прегледајте ги податоците и дозволите за сајтот</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> бара ваша дозвола за извршување на <ph name="COUNT" /> екстензии</translation>
 <translation id="8788265440806329501">Историјата на навигација е затворена</translation>
 <translation id="8790193082819560975">Допрете за да пребарате опции за купување за производот во нова картичка.</translation>
 <translation id="8798449543960971550">Прочитано</translation>

@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">قیمت کم ہے</translation>
 <translation id="3070005020161560471">خودکار طور پر ترجمہ کریں</translation>
 <translation id="3072980200212375806">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔ <ph name="BEGIN_LINK3" />رازداری کی پالیسی<ph name="END_LINK3" /> بھی لاگو ہوتی ہے۔</translation>
+<translation id="3080375898390966733">‏‫Google لینز کے ساتھ ٹیب تلاش کریں</translation>
 <translation id="3080525922482950719">آپ بعد میں یا آف لائن پڑھنے کے لیے صفحات کو محفوظ کر سکتے ہیں</translation>
 <translation id="3087734570205094154">نیچے</translation>
 <translation id="3091010850649238832">کلپ بورڈ مواد دکھائیں</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">تصویر کا اشتراک کریں</translation>
 <translation id="3385749568468586663">‏‫Gemini پوشیدگی وضع میں دستیاب نہیں ہے</translation>
 <translation id="3387650086002190359">سسٹم کی خرابیوں کی وجہ سے <ph name="FILE_NAME" /> کو ڈاؤن لوڈ کرنا ناکام ہوگیا۔</translation>
+<translation id="3391311825344469964">‏آپ Chrome کے ونڈو مینیجر میں اپنی ونڈوز کا نظم کر سکتے ہیں</translation>
 <translation id="3417835166382867856">ٹیبز تلاش کریں</translation>
 <translation id="3430670036890315772">آپ کے پروفائل لاک کو آف کرنے سے آپ کی محفوظ کردہ معلومات ہٹ جائے گی</translation>
 <translation id="3435575784518354875">‏اپنے پاس ورڈز تک رسائی کو برقرار رکھنے کے لیے، انہیں ابھی برآمد کریں، Google Play سروسز کو اپ ڈیٹ کریں اور پھر انہیں واپس Google پاس ورڈ مینیجر میں درآمد کریں۔ <ph name="BEGIN_LINK" />مکمل ہدایات دیکھیں<ph name="END_LINK" />۔</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">نہ پڑھا ہوا - آف لائن دستیاب ہے</translation>
 <translation id="5631483240431073854">کھلے ٹیبز کا نظم کریں</translation>
 <translation id="5632485077360054581">مجھے طریقہ دکھائیں</translation>
+<translation id="5639031457248936693">‫<ph name="WEBSITE" /> کو <ph name="EXTENSION_NAME" /> چلانے کے لیے آپ کی اجازت درکار ہے</translation>
 <translation id="564121214411935612">‏‫<ph name="USER_NAME" /> کے بطور سائن ان کردہ۔ ‫Google اکاؤنٹ میں خرابی۔ ترتیبات کھولتا ہے۔</translation>
 <translation id="5641456720590409793">‏<ph name="BEGIN_LINK1" />تلاش کی سرگزشت<ph name="END_LINK1" /> اور<ph name="BEGIN_LINK2" /> سرگرمی کی دیگر اقسام<ph name="END_LINK2" /> آپ کے Google اکاؤنٹ میں محفوظ کی جا سکتی ہیں</translation>
 <translation id="5648166631817621825">آخری 7 دن</translation>
@@ -1877,6 +1880,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{‏‫Chrome کو ایک کمزور پاس ورڈ ملا ہے جسے آپ بہتر کر سکتے ہیں}other{‏‫Chrome کو # کمزور پاس ورڈز ملے ہیں جنہیں آپ بہتر کر سکتے ہیں}}</translation>
 <translation id="8766529642647037772">اس طرح کا نمایاں کردہ لنک تخلیق کریں؟</translation>
 <translation id="8769783688897433958">سائٹ کی معلومات اور اجازتیں دیکھیں</translation>
+<translation id="8786293874273448556">‫<ph name="WEBSITE" /> کو <ph name="COUNT" /> ایکسٹینشنز چلانے کے لیے آپ کی اجازت درکار ہے</translation>
 <translation id="8788265440806329501">نیویگیشن کی سرگزشت بند ہے</translation>
 <translation id="8790193082819560975">نئے ٹیب میں پروڈکٹ کے لیے خریداری کے اختیارات تلاش کرنے کیلئے تھپتھپائیں۔</translation>
 <translation id="8798449543960971550">پڑھا ہوا</translation>

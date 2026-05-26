@@ -665,6 +665,7 @@
 <translation id="1453561711872398978">傳送<ph name="BEGIN_LINK" />偵錯記錄<ph name="END_LINK" /> (建議)</translation>
 <translation id="1454223536435069390">擷取螢幕畫面(&amp;A)</translation>
 <translation id="145432137617179457">拼字檢查支援的語言</translation>
+<translation id="1454523475536875350">在下方畫面開啟連結</translation>
 <translation id="1455009947184333152">已刪除技能</translation>
 <translation id="1455119378540982311">預設視窗大小</translation>
 <translation id="1456849775870359518">你的分頁會重新開啟</translation>
@@ -803,6 +804,7 @@
 <translation id="1547123415014299762">已允許第三方 Cookie</translation>
 <translation id="1547808936554660006">我瞭解執行 Powerwash 將不會移除已安裝的 eSIM 設定檔</translation>
 <translation id="1547936895218027488">按一下側邊面板圖示即可開啟</translation>
+<translation id="1548265680751768570">無法使用 Chrome 內建 Gemini</translation>
 <translation id="1549275686094429035">已啟用 ARC</translation>
 <translation id="1549788673239553762">「<ph name="APP_NAME" />」要求存取 <ph name="VOLUME_NAME" />。您的檔案可能會遭到修改或刪除。</translation>
 <translation id="1549966883323105187">快速查看已儲存的密碼</translation>
@@ -959,6 +961,7 @@
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /> 鍵</translation>
 <translation id="1648528859488547844">使用 Wi-Fi 或行動網路判斷所在位置</translation>
 <translation id="1650407365859096313">在新分頁中開啟，權限為<ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">在下方畫面開啟連結</translation>
 <translation id="1650801028905250434">「我的雲端硬碟」中的檔案會自動同步至 Chromebook，這樣你就能在沒有網際網路連線的情況下存取檔案。你隨時可以依序前往「設定」&gt;「檔案」，變更這項設定。</translation>
 <translation id="1651008383952180276">你必須輸入兩次相同的通關密語</translation>
 <translation id="1651609627703324721">這個分頁正在對頭戴式裝置展示 VR 內容</translation>
@@ -1150,6 +1153,7 @@
 <translation id="1784849162047402014">裝置磁碟空間即將用盡</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{解除安裝「<ph name="APP_NAME" />」時，系統會同時解除安裝這個應用程式：}other{解除安裝「<ph name="APP_NAME" />」時，系統會同時解除安裝以下應用程式：}}</translation>
 <translation id="1786290960428378411">正在要求讀取及變更</translation>
+<translation id="179021551944139249">將連結加入閱讀清單</translation>
 <translation id="1790976235243700817">移除存取權</translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792619191750875668">擴充顯示畫面</translation>
@@ -1965,6 +1969,7 @@
 <translation id="2340239562261172947">無法安全下載「<ph name="FILE_NAME" />」</translation>
 <translation id="2341392013052489530">已解除安裝版本 <ph name="VERSION" />，原因：<ph name="REASON" /></translation>
 <translation id="2342180549977909852">你的孩子可以使用一組數字 (PIN 碼) 來解鎖這部裝置，這組數字與密碼不同。如要稍後再設定 PIN 碼，請前往「設定」。</translation>
+<translation id="2343005971389581619">在上方畫面開啟連結</translation>
 <translation id="2343160676229467122">不允許在 <ph name="SITE_NAME" /> 上使用擴充功能</translation>
 <translation id="2343390523044483367">洛磯山國家公園</translation>
 <translation id="2343747224442182863">將焦點移至這個分頁</translation>
@@ -4157,6 +4162,7 @@
 <translation id="3854348409770521214">油畫</translation>
 <translation id="3854967233147778866">詢問是否要翻譯其他語言的網站內容</translation>
 <translation id="3854976556788175030">輸出紙匣已滿</translation>
+<translation id="3855324045699437362">Chrome 內建 Gemini 的服務範圍正持續擴大，但目前尚未在所有地區推出。</translation>
 <translation id="3855441664322950881">封裝擴充功能</translation>
 <translation id="3855676282923585394">匯入書籤和設定...</translation>
 <translation id="3856023744577163821">從對話或已分享分頁開啟的分頁，也會分享給 Gemini。</translation>
@@ -5874,6 +5880,7 @@
 <translation id="5088427648965532275">Passpoint 供應商</translation>
 <translation id="5090637338841444533">不得追蹤攝影機位置</translation>
 <translation id="5091636240353511739">顯示 PIN 碼</translation>
+<translation id="5092567114307895466">請確認你符合資格條件及相關規定</translation>
 <translation id="5093447877601682598">提供對分頁列的意見</translation>
 <translation id="5093477827231450397">這份網站封鎖清單列出了你不希望向其他網站提供廣告建議的網站</translation>
 <translation id="5093569275467863761">無痕模式往返快取子頁框：<ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7715,6 +7722,7 @@
 <translation id="6427752304227226701">檢舉不安全的網站...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{未儲存密碼。}=1{正在檢查 {COUNT} 組密碼...}other{正在檢查 {COUNT} 組密碼...}}</translation>
 <translation id="6429384232893414837">更新錯誤</translation>
+<translation id="6430202563517028640">將連結加入閱讀清單</translation>
 <translation id="6430814529589430811">Base64-編碼 ASCII，單一憑證</translation>
 <translation id="6431347207794742960">「<ph name="PRODUCT_NAME" />」將為這部電腦的所有使用者設定自動更新。</translation>
 <translation id="6434104957329207050">點掃描速度</translation>
@@ -10160,6 +10168,7 @@
 <translation id="8137559199583651773">管理擴充功能</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{檢查 1 個可能不安全的擴充功能}other{檢查 {NUM_EXTENSIONS} 個可能不安全的擴充功能}}</translation>
 <translation id="8138217203226449454">你要變更搜尋引擎嗎？</translation>
+<translation id="813858113027420189">在上方畫面開啟連結</translation>
 <translation id="8138997515734480534">「<ph name="VM_NAME" />」狀態</translation>
 <translation id="8139440916039659819">游標加速</translation>
 <translation id="8140070492745508800">「<ph name="FIRST_DEVICE" />」、「<ph name="SECOND_DEVICE" />」</translation>

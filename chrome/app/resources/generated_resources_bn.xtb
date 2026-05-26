@@ -5666,6 +5666,7 @@
 <translation id="4910241725741323970">অ্যাপ আগে থেকেই ইনস্টল করা রয়েছে</translation>
 <translation id="4912643508233590958">নিষ্ক্রিয়তা সময়ের সমাপ্তি</translation>
 <translation id="4913209098186576320">এই ফাইল বিপজ্জনক হতে পারে<ph name="LINE_BREAK" />এটি চেক করতে সাধারণের থেকে বেশি সময় লাগতে পারে...</translation>
+<translation id="4913573660390710463">আরও উন্নত কার্যকারিতা সহ প্যাকেজ করা ওয়েব অ্যাপ্লিকেশন। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">অ্যাপ ডেটা পাওয়া যাচ্ছে না</translation>
 <translation id="4915961947098019832">ছবি দেখানোর অনুমতি দেওয়া হয়েছে</translation>
 <translation id="491779113051926205">ChromeOS ট্রাফিক কাউন্টার</translation>
@@ -9633,6 +9634,7 @@
 <translation id="7753735457098489144">স্টোরেজের জন্য যথেষ্ট জায়গা নেই বলে ইনস্টল করা যায়নি। জায়গা খালি করতে, ডিভাইসের স্টোরেজ থেকে ফাইল মুছুন।</translation>
 <translation id="7754704193130578113">প্রতিটি ফাইল ডাউনলোড করার আগে তা কোথায় সংরক্ষণ করতে হবে জিজ্ঞাসা করুন</translation>
 <translation id="7757592200364144203">ডিভাইসের নাম পরিবর্তন করুন</translation>
+<translation id="7757735653610827848">&amp;Copy "<ph name="SELECTION" />"</translation>
 <translation id="7757739382819740102">আশেপাশের পরিচিতি আপনার সাথে শেয়ার করা যেতে পারে। অনুমোদনের প্রয়োজন।</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> থেকে টেক্সট শেয়ার করা হয়েছে</translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -11192,6 +11194,7 @@
 <translation id="8819510664278523111">আপনার ডিভাইসের EID নম্বর <ph name="EID_NUMBER" /> IMEI নম্বর <ph name="IMEI_NUMBER" /> এবং ডিভাইসের সিরিয়াল নম্বর <ph name="SERIAL_NUMBER" />। পরিষেবা চালু করতে সাহায্য করার জন্য এইসব নম্বর ব্যবহার করা যেতে পারে।</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8821045908425223359">আইপি অ্যাড্রেস অটোমেটিক কনফিগার করুন</translation>
+<translation id="8821206216942230957">আপনার অ্যাকাউন্টের কাছে Chrome-এ Gemini অ্যাক্সেস করার সুবিধা নেই</translation>
 <translation id="8821268776955756404">এবার <ph name="APP_NAME" /> ব্যবহার করতে পারবেন।</translation>
 <translation id="882204272221080310">নিরাপত্তা আরও সুরক্ষার জন্য ফার্মওয়্যার আপডেট করুন।</translation>
 <translation id="8823514049557262177">লিঙ্ক টেক্সট কপি করুন</translation>

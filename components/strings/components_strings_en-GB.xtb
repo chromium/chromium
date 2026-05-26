@@ -139,6 +139,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="121201262018556460">You attempted to reach <ph name="DOMAIN" />, but the server presented a certificate containing a weak key. An attacker could have broken the private key and the server may not be the server you expected (you may be communicating with an attacker).</translation>
 <translation id="1212527389003717329">Download started. To see it, press and hold |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Use info saved in your Google Account to autofill passwords, passkeys, addresses, payment methods and other info</translation>
+<translation id="1216257595811043403">Automatically share tabs</translation>
 <translation id="1219129156119358924">System Security</translation>
 <translation id="1219134100826635117">Your administrator has blocked this action</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 With RSA Encryption</translation>
@@ -1121,6 +1122,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2719233594187778789">Ignored non-unique URL: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Request succeeded</translation>
 <translation id="2722622039067384533">Living Room Furniture</translation>
+<translation id="2723284907371508295">More tabs from other devices button, press Enter to see more tabs from other devices</translation>
 <translation id="2723669454293168317">Run a safety check in Chrome settings</translation>
 <translation id="2726001110728089263">Side tray</translation>
 <translation id="272616190148046464">All your loyalty cards</translation>
@@ -2217,6 +2219,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4434045419905280838">Pop-ups and redirects</translation>
 <translation id="443673843213245140">Use of a proxy is disabled but an explicit proxy configuration is specified.</translation>
 <translation id="4438821706955556403">Typical price</translation>
+<translation id="4439687924334332880">Get more tailored responses by automatically sharing open tabs in this window if they're related to this thread. You can turn this on for all threads in Settings.</translation>
 <translation id="4441832193888514600">Ignored because the policy can only be set as a cloud user policy.</translation>
 <translation id="4444062564459679679">Already sent to Chrome on your <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Enter to search tabs</translation>
@@ -3186,6 +3189,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5995727681868049093">Manage your info, privacy and security in your Google Account</translation>
 <translation id="5996255674476750320">Vehicle shows</translation>
 <translation id="5997247540087773573">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends changing it now and checking your saved passwords.</translation>
+<translation id="5997915162652837008">You can save time by turning on automatic tab sharing for all threads. Learn more about</translation>
 <translation id="6000528814684428358">Hard rock and progressive</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> results for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="6002122790816966947">Your devices</translation>
@@ -3330,6 +3334,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6203231073485539293">Check your Internet connection</translation>
 <translation id="6205314730813004066">Ads privacy</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
+<translation id="6213685130162740188">Known traveller numbers</translation>
 <translation id="6215936431492593050">Metal (satin)</translation>
 <translation id="6217950634729714357">Kitchen and Dining Furniture</translation>
 <translation id="6218305986815100395">Can't turn on virtual card</translation>
@@ -3423,6 +3428,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6351658970066645919">Delete browsing data</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{None}=1{1 password (for <ph name="DOMAIN_LIST" />, synced)}=2{2 passwords (for <ph name="DOMAIN_LIST" />, synced)}other{# passwords (for <ph name="DOMAIN_LIST" />, synced)}}</translation>
 <translation id="6354918092619878358">SECG elliptic curve secp256r1 (aka ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab, then Enter for more tabs from other devices</translation>
 <translation id="6355392890578844978">This browser is not managed by a company or other organisation. Activity on this device may be managed outside of Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">'<ph name="GROUP_TITLE_1" />' and '<ph name="GROUP_TITLE_2" />' tab groups no longer available</translation>
 <translation id="6358088212770985041">edit payment methods</translation>
@@ -3749,11 +3755,13 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6874604403660855544">&amp;Redo add</translation>
 <translation id="6875873347995743859">Send to assistant</translation>
 <translation id="6875894866901426843">Your administrator will delete your local files, including any files in the Bin, on <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">Always share open tabs for better responses?</translation>
 <translation id="6880941331070119097">High-priced option</translation>
 <translation id="6881240511396774766">Create a new Google Doc quickly</translation>
 <translation id="6883221904761970440">Secure payment credential authentication sheet is closed</translation>
 <translation id="6883745783646124431">work address</translation>
 <translation id="6886283082988906333">ZIP archive</translation>
+<translation id="6886431827310382613">Share relevant tabs</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Use location</translation>
 <translation id="6888584790432772780">Chrome simplified this page to make it easier to read. Chrome retrieved the original page over an insecure connection.</translation>
@@ -4042,6 +4050,7 @@ Additional details:
 <translation id="7337706099755338005">Not available on your platform.</translation>
 <translation id="733923710415886693">The server's certificate was not disclosed via Certificate Transparency.</translation>
 <translation id="73398226265793546">AI Mode button, activate to ask AI Mode in Google Search</translation>
+<translation id="7343620778718789463">ID cards</translation>
 <translation id="7346048084945669753">Is affiliated:</translation>
 <translation id="7346062987309535530">Tableware</translation>
 <translation id="7346081071264046066">'reply yes to this wedding invite with excitement'</translation>
@@ -4218,6 +4227,7 @@ Additional details:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">Remove credit card from Chrome?</translation>
 <translation id="7569983096843329377">Black</translation>
+<translation id="7570862164055912832">Redress numbers</translation>
 <translation id="7571813784389228510">Google AI Mode</translation>
 <translation id="7574998639136359461">Winter Sports Equipment</translation>
 <translation id="7575207903026901870">Remove Suggestion button, press Enter to remove this suggestion</translation>
@@ -4732,6 +4742,7 @@ Additional details:
 <translation id="8381674639488873545">These charges could be one-time or recurring and may not be obvious. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Automatic full screen</translation>
 <translation id="838307841291975086">Estate cars</translation>
+<translation id="838953173259347825">Get more tailored responses by automatically sharing open tabs in this window if they're related to this thread. You can turn this on for all threads in</translation>
 <translation id="8389532092404711541">Typically <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Custom and performance vehicles</translation>
 <translation id="8390725133630534698">Sharing from <ph name="ORIGIN_NAME" /> to <ph name="VM_NAME" /> has been blocked by administrator policy</translation>
@@ -5016,6 +5027,7 @@ Additional details:
 <translation id="8861482055962701239">Couldn't save this info to your Google Wallet. It's been saved to Chrome on this device instead. Chrome will offer to save it to Wallet next time you use it.</translation>
 <translation id="8863218129525348270">To pay faster next time, save your card to your device</translation>
 <translation id="8864939224504814334">Suits and Business Attire</translation>
+<translation id="8865650218866129025">Automatically share open tabs for better responses in this thread?</translation>
 <translation id="8866132857352163524">Soundtracks</translation>
 <translation id="8866481888320382733">Error parsing policy settings</translation>
 <translation id="8866928039507595380">Fold</translation>
@@ -5264,6 +5276,7 @@ Additional details:
 <translation id="955429569736351433">VR allowed</translation>
 <translation id="955627189349169688">You can opt out of this policy in <ph name="BEGIN_LINK" />Chrome Sync settings<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Yellow 2</translation>
+<translation id="958952958906914932">More tabs from other devices</translation>
 <translation id="961372935451193190">Tabs and files</translation>
 <translation id="961663415146723894">Bind bottom</translation>
 <translation id="961856697154696964">Delete browsing data</translation>

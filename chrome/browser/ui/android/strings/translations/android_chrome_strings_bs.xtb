@@ -493,6 +493,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3067505415088964188">Cijena je niska</translation>
 <translation id="3070005020161560471">Automatski prevodi</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> će se otvoriti u Chromeu. Ako nastavite, pristajete na <ph name="BEGIN_LINK1" />Googleove Uslove korištenja usluge<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />dodatne Uslove korištenja usluge za Google Chrome i ChromeOS<ph name="END_LINK2" />. Također se primjenjuju <ph name="BEGIN_LINK3" />Pravila privatnosti<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Pretraži karticu putem Google Objektiva</translation>
 <translation id="3080525922482950719">Možete sačuvati stranice da ih čitate kasnije ili van mreže</translation>
 <translation id="3087734570205094154">Dolje</translation>
 <translation id="3091010850649238832">Prikažite sadržaj međumemorije</translation>
@@ -550,6 +551,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3384347053049321195">Dijeli sliku</translation>
 <translation id="3385749568468586663">Gemini nije dostupan u anonimnom načinu rada</translation>
 <translation id="3387650086002190359">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo zbog sistemskih grešaka.</translation>
+<translation id="3391311825344469964">Prozorima možete upravljati u Chromeovom Upravitelju prozora</translation>
 <translation id="3417835166382867856">Pretraživanje kartica</translation>
 <translation id="3430670036890315772">Isključenjem zaključavanja profila će se ukloniti sačuvane informacije</translation>
 <translation id="3435575784518354875">Da zadržite pristup lozinkama, izvezite ih sada, ažurirajte Google Play usluge, a zatim ponovo uvezite lozinke na Google upravitelj lozinki. <ph name="BEGIN_LINK" />Pogledajte sva uputstva<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5628604359369369630">Nepročitano – Dostupno offline</translation>
 <translation id="5631483240431073854">Upravljanje otvorenim karticama</translation>
 <translation id="5632485077360054581">Pokaži mi kako</translation>
+<translation id="5639031457248936693">Web lokacija <ph name="WEBSITE" /> treba vaše odobrenje za pokretanje ekstenzije <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Prijavljeni ste kao <ph name="USER_NAME" />. Greška u vezi s Google računom. Otvara postavke.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Historija pretraživanja<ph name="END_LINK1" /> i <ph name="BEGIN_LINK2" />drugi oblici aktivnosti<ph name="END_LINK2" /> mogu ostati sačuvani na Google računu</translation>
 <translation id="5648166631817621825">Posljednjih 7 dana</translation>
@@ -1877,6 +1880,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome je pronašao slabu lozinku koju možete poboljšati}one{Chrome je pronašao # slabu lozinku koje možete poboljšati}few{Chrome je pronašao # slabe lozinke koje možete poboljšati}other{Chrome je pronašao # slabih lozinki koje možete poboljšati}}</translation>
 <translation id="8766529642647037772">Kreirati istaknuti link poput ovoga?</translation>
 <translation id="8769783688897433958">Pregledajte informacije o web lokaciji i odobrenja za nju</translation>
+<translation id="8786293874273448556">Web lokacija <ph name="WEBSITE" /> treba vaše odobrenje za pokretanje <ph name="COUNT" /> ekstenzije/a</translation>
 <translation id="8788265440806329501">Historija navigacije je zatvorena</translation>
 <translation id="8790193082819560975">Pretraživanje opcija kupovine za proizvod na novoj kartici dodirom.</translation>
 <translation id="8798449543960971550">Pročitano</translation>

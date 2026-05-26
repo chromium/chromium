@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">អ្នកអាច​រំកិលទៅស្ដាំ​ដើម្បីរុករក​នៅក្នុង​មុខងារឯកជន។</translation>
 <translation id="2079545284768500474">ត្រឡប់វិញ</translation>
 <translation id="2085876078937250610">រក្សាទុក…</translation>
+<translation id="2089180529062519164">បើក​មីក្រូហ្វូន</translation>
 <translation id="2096239473850415494">មិនអាច​ទាញយក​បានទេ</translation>
 <translation id="2096716221239095980">លុប​ទិន្នន័យ​ទាំងអស់</translation>
 <translation id="2104436223719117661">ការស្វែងរក​ដែលកំពុង​ពេញនិយម</translation>
@@ -2117,6 +2118,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8319282042900445670">បាន​កំណត់​ការរំលឹក​សម្រាប់​ម៉ោង <ph name="TIME" /> នៅថ្ងៃទី <ph name="DATE" /></translation>
 <translation id="8320212361750431956">សកម្មភាព​ថ្មីៗ</translation>
 <translation id="8325455175867928593">លាក់ "មតិវាយតម្លៃ​ដែល​ផ្អែកលើ​ចំណាប់​អារម្មណ៍​របស់អ្នក"</translation>
+<translation id="8333459276976141586">Live នឹងប្រើ​មីក្រូហ្វូន​របស់អ្នក។ ការចុច​ប៊ូតុង Live នឹងបើក​មីក្រូហ្វូន។ ដើម្បីបិទ​មីក្រូហ្វូន សូមចុច​ប៊ូតុង​បញ្ឈប់ ឬបិទ Gemini។</translation>
 <translation id="833647236762414178">បង្កើត រក្សាទុក និង​គ្រប់គ្រង​កូដសម្ងាត់ និង​ពាក្យសម្ងាត់​របស់អ្នក ដើម្បី​ងាយស្រួល​ចូលគេហទំព័រ និង​កម្មវិធី។ <ph name="BEGIN_LINK" />ស្វែងយល់បន្ថែម<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">បម្រុង​ទុក​ទិន្នន័យ​របស់​អ្នក និង​ប្រើ​វា​នៅ​លើ​ឧបករណ៍​ណា​ក៏បាន។</translation>
 <translation id="8345328955902001853">{count,plural, =1{បញ្ចប់​កិច្ចការ 1 ទៀត ដើម្បី​ឡើង​កម្រិត}other{បញ្ចប់​កិច្ចការ {count} ទៀត ដើម្បី​ឡើង​កម្រិត}}</translation>
@@ -2193,6 +2195,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8571019948162152515">លុប "<ph name="FILENAME" />" ឬ?</translation>
 <translation id="8571213806525832805">4 សប្តាហ៍មុន</translation>
 <translation id="8577056989960190117">បំពេញ​ឆ្នាំផុតកំណត់ <ph name="YEAR" /> ដោយ​ស្វ័យប្រវត្តិ</translation>
+<translation id="8582026929965253036">ប្រើ Live ជាមួយ Gemini</translation>
 <translation id="8587001564479545614">បង្កើត​កូដ PIN ស្ដារឡើងវិញ</translation>
 <translation id="8588404856427128947">បិទ</translation>
 <translation id="8590286732816598906">ក្រុមផ្ទាំង, <ph name="GROUP_TITLE" />, ម៉ឺនុយ។</translation>
@@ -2267,6 +2270,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="8803526663383843427">នៅពេលបើក</translation>
 <translation id="8803639129939845298">សុវត្ថិភាព</translation>
 <translation id="8813277370772331957">រំលឹក​ខ្ញុំ​ពេលក្រោយ</translation>
+<translation id="8814308045751067027">ដើម្បី​ប្រើ Live សូមផ្ដល់​សិទ្ធិឱ្យ Chrome ចូលប្រើ​មីក្រូហ្វូន​របស់អ្នក​នៅក្នុង​ការកំណត់</translation>
 <translation id="8814719628147284151">បន្ត</translation>
 <translation id="881559332211266856">ធ្វើ​បច្ចុប្បន្នភាព​លេខកែតម្រូវ</translation>
 <translation id="8817524703470045896">តាមដានតម្លៃ និងទទួលបានការជូនដំណឹង នៅពេលដែលតម្លៃធ្លាក់ចុះនៅលើគេហទំព័រណាមួយ</translation>

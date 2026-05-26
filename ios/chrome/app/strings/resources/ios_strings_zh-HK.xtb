@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">向右碌就可以用無痕模式瀏覽。</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2085876078937250610">儲存…</translation>
+<translation id="2089180529062519164">開啟「麥克風」</translation>
 <translation id="2096239473850415494">無法下載</translation>
 <translation id="2096716221239095980">刪除所有資料</translation>
 <translation id="2104436223719117661">熱門搜尋</translation>
@@ -2117,6 +2118,7 @@
 <translation id="8319282042900445670">提醒時間已設定為 <ph name="DATE" /><ph name="TIME" /></translation>
 <translation id="8320212361750431956">近期活動</translation>
 <translation id="8325455175867928593">隱藏「按興趣顯示的評論」</translation>
+<translation id="8333459276976141586">Live 將會使用你的麥克風。輕按「Live」按鈕即可開啟麥克風。如要關閉麥克風，請輕按「停止」按鈕或關閉 Gemini。</translation>
 <translation id="833647236762414178">建立、儲存及管理密碼和密鑰，輕鬆登入網站和應用程式。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">備份資料即可在任何裝置上使用。</translation>
 <translation id="8345328955902001853">{count,plural, =1{完成多 1 項任務即可升級}other{完成多 {count} 項任務即可升級}}</translation>
@@ -2193,6 +2195,7 @@
 <translation id="8571019948162152515">要刪除「<ph name="FILENAME" />」嗎？</translation>
 <translation id="8571213806525832805">過去 4 週</translation>
 <translation id="8577056989960190117">自動填入到期年份 <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">與 Gemini 進行 Live 對話</translation>
 <translation id="8587001564479545614">建立復原 PIN</translation>
 <translation id="8588404856427128947">閂</translation>
 <translation id="8590286732816598906">分頁群組，<ph name="GROUP_TITLE" />，選單。</translation>
@@ -2267,6 +2270,7 @@
 <translation id="8803526663383843427">開啟時</translation>
 <translation id="8803639129939845298">安全</translation>
 <translation id="8813277370772331957">稍後提醒我</translation>
+<translation id="8814308045751067027">如要使用 Live，請在設定中向 Chrome 授予麥克風存取權</translation>
 <translation id="8814719628147284151">繼續</translation>
 <translation id="881559332211266856">更新身分識別碼</translation>
 <translation id="8817524703470045896">追蹤價格，並在任何網站降價時接收通知</translation>

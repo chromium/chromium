@@ -259,6 +259,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="1392813880755413602">Prezentace ve formátu OpenDocument</translation>
 <translation id="139305205187523129">Web <ph name="HOST_NAME" /> neodeslal žádná data.</translation>
 <translation id="1393071644879491291">Útočníci na webu, který jste se pokusili navštívit, by vás mohli přimět k instalaci softwaru nebo prozrazení věcí, jako jsou vaše hesla, telefon nebo čísla kreditních karet. Chrome důrazně doporučuje vrátit se do bezpečí. <ph name="BEGIN_LEARN_MORE_LINK" />Další informace o tomto upozornění<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Weby přidané sem se nebudou používat pro referenci při generování odpovědí, ani když budou otevřené na kartách. Pokud se web, který přidáte, právě používá ve vlákně, může trvat až 30 minut, než na něj vlákno přestane odkazovat.</translation>
 <translation id="1402151528875251561">Zobrazit historii na bočním panelu</translation>
 <translation id="1405567553485452995">Světle zelená</translation>
 <translation id="1406370515365284486">Vaše platební metody zůstanou uložené</translation>
@@ -1549,6 +1550,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="343474037147570563">Soubory, které nahrajete nebo připojíte, se odesílají k analýze do služby Google Cloud nebo třetím stranám. Může se u nich například kontrolovat přítomnost citlivých údajů nebo malwaru, mohou být uchovávány v souladu se zásadami společnosti a může k nim mít přístup váš administrátor.</translation>
 <translation id="3435557549311968410">Nepřetržité (spojené kratšími okraji)</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
+<translation id="3438509337461223476">Automaticky v každém vlákně sdílet relevantní otevřené karty</translation>
 <translation id="3440783957068352691">čtverec</translation>
 <translation id="3441653493275994384">Obrazovka</translation>
 <translation id="3443504041532578451">Optický disk (saténový)</translation>
@@ -2479,6 +2481,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4894390983254799375">Například ID zařízení, název zařízení, verze OS a uživatelské jméno v OS</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olympijské hry</translation>
+<translation id="4897851261703006488">Tato zásada by neměla mít záhlaví větší než <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
 <translation id="4898742041545089450">Toto téma je odblokováno a může na základě vaší historie procházení začít být aktivní</translation>
 <translation id="4900217275619098670">Devátá role</translation>
 <translation id="4901052769830245369">Štítky (pololesklé)</translation>
@@ -2726,6 +2729,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5284295735376057059">Vlastnosti dokumentu</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5285468538058987167">Prostřednictvím silného ověření zákazníka (SCA)</translation>
+<translation id="5286195392366054103">Tato zásada má více než tento počet vzorů adres URL: <ph name="MAX_URL_PATTERNS_LIMIT" />. Použijí se jen první vzory adres URL (celkem <ph name="MAX_URL_PATTERNS_LIMIT" />).</translation>
 <translation id="5287456746628258573">Tento web používá zastaralou konfiguraci zabezpečení, která vaše informace odesílané na tento web (například hesla nebo čísla kreditních karet) vystavuje riziku odhalení.</translation>
 <translation id="5288108484102287882">Ověření hodnot zásad vygenerovalo upozornění</translation>
 <translation id="5289384342738547352">Zpracování více dokumentů</translation>
@@ -3843,6 +3847,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7016992613359344582">Může se jednat o jednorázové nebo opakované poplatky, které nemusejí být jasně patrné.</translation>
 <translation id="701757816833614688">Vzdělávání ve výtvarném umění a designu</translation>
 <translation id="7020464868401003526">Adresa URL zkratky překračuje maximální povolenou délku <ph name="MAX_LENGTH" /> znaků.</translation>
+<translation id="7020581144940000377">Použít přibližnou polohu</translation>
 <translation id="702275896380648118">Tento web určuje, co se vám líbí, a pak navrhuje reklamy jiným webům. Tento web také získává témata reklam z Chromu, aby vám mohl zobrazovat relevantnější reklamy.</translation>
 <translation id="7023162328967545559">Upozornění administrátora</translation>
 <translation id="7023765275461720661">Připojit účet a zaplatit pomocí služby <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3953,6 +3958,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Při placení použijte tento kód. Platné do <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Po zapnutí tohoto nastavení se vraťte na tuto kartu a začněte psát</translation>
+<translation id="7196153352301578792">Chrome automaticky odešle obsah stránek a adresy URL otevřených karet, které mohou být relevantní pro vaši otázku, do Googlu, aby získal personalizovanější odpovědi. Chrome bude sdílet jen karty z okna, ve kterém pracujete.</translation>
 <translation id="7196370964328811506">Při nákupech v Chromu automaticky vyplňovat tuhle kartu, když je uložená na tomhle zařízení</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Vzali jsme v potaz následující otevřené karty:</translation>
@@ -4366,6 +4372,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7805268272389338048">Vaše osobní údaje jsou chráněny šifrováním</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7805906048382884326">Zavřít tip</translation>
+<translation id="780756914888723112">U této zásady je povolen maximálně tento počet záhlaví na pravidlo: <ph name="MAX_HEADERS_PER_RULE_LIMIT" />. U každého pravidla se použije jen tento počet prvních záhlaví: <ph name="MAX_HEADERS_PER_RULE_LIMIT" />.</translation>
 <translation id="7810410097247356677">Pokud příště chcete zaplatit rychleji, uložte si kartu a zašifrovaný bezpečnostní kód do zařízení</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Odstranit návrh položky formuláře z Chromu?</translation>
@@ -4674,6 +4681,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="8301894345671534559">Zadejte kód</translation>
 <translation id="830498451218851433">Přeložení napůl</translation>
 <translation id="8308653357438598313">Živé přenosy videí</translation>
+<translation id="8310477433309274098">Žádné poplatky, RPSN od 0 %</translation>
 <translation id="8311895354659782580">Realitní katalogy</translation>
 <translation id="8312841338723044391">ŽIVĚ</translation>
 <translation id="8316555157357957253">Právě používáno</translation>

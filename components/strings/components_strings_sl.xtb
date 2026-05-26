@@ -259,6 +259,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1392813880755413602">Predstavitev OpenDocument</translation>
 <translation id="139305205187523129">Spletno mesto <ph name="HOST_NAME" /> ni poslalo nobenih podatkov.</translation>
 <translation id="1393071644879491291">Napadalci vas lahko na spletnem mestu, ki ste ga poskušali obiskati, zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so gesla, telefonske številke ali številke kreditnih kartic. Chrome močno priporoča, da se vrnete na varno. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Tukaj dodana spletna mesta ne bodo upoštevana pri odgovorih, tudi če je zavihek odprt. Če se spletno mesto, ki ga dodate, trenutno uporablja v niti, lahko traja do 30 minut, da se nit neha sklicevati nanj.</translation>
 <translation id="1402151528875251561">Prikaži zgodovino v stranskem podoknu</translation>
 <translation id="1405567553485452995">Svetlo zelena</translation>
 <translation id="1406370515365284486">Plačilna sredstva bodo še vedno shranjena</translation>
@@ -1120,6 +1121,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2719233594187778789">Prezrt URL, ki ni enoličen: <ph name="URL_NAME" /></translation>
 <translation id="2721148159707890343">Zahteva je uspela</translation>
 <translation id="2722622039067384533">Pohištvo za dnevne sobe</translation>
+<translation id="2723284907371508295">Gumb za več zavihkov iz drugih naprav, pritisnite Enter, če si želite ogledati več zavihkov iz drugih naprav</translation>
 <translation id="2723669454293168317">V nastavitvah Chroma zaženite varnostno preverjanje.</translation>
 <translation id="2726001110728089263">Stranski pladenj</translation>
 <translation id="272616190148046464">Vse vaše kartice zvestobe</translation>
@@ -1552,6 +1554,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="343474037147570563">Datoteke, ki jih naložite ali pripnete, so poslane v oblak Google Cloud ali drugim ponudnikom v analizo. Lahko so na primer pregledane glede tega, ali vsebujejo občutljive podatke ali zlonamerno programsko opremo, in shranjene glede na pravilnike podjetja ter vidne vašemu skrbniku.</translation>
 <translation id="3435557549311968410">Continuous (Short)</translation>
 <translation id="3435738964857648380">Varnost</translation>
+<translation id="3438509337461223476">Samodejno deli ustrezne zavihke v vsaki niti</translation>
 <translation id="3440783957068352691">kvadrat</translation>
 <translation id="3441653493275994384">Zaslon</translation>
 <translation id="3443504041532578451">Optical Disc (Satin)</translation>
@@ -2483,6 +2486,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="4894390983254799375">Na primer ID naprave, ime, različica operacijskega sistema in uporabniško ime operacijskega sistema</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Olimpijske igre</translation>
+<translation id="4897851261703006488">Glave v tem pravilniku ne smejo presegati <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
 <translation id="4898742041545089450">Ta tema je odblokirana in bo morda postala aktivna glede na vašo zgodovino brskanja</translation>
 <translation id="4900217275619098670">Kolut 9</translation>
 <translation id="4901052769830245369">Labels (Semi-Gloss)</translation>
@@ -2730,6 +2734,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5284295735376057059">Lastnosti dokumenta</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5285468538058987167">Prek močnega preverjanja identitete stranke (SCA)</translation>
+<translation id="5286195392366054103">Ta pravilnik ima več kot toliko vzorcev URL-jev: <ph name="MAX_URL_PATTERNS_LIMIT" />. Uporabljenih bo samo prvih toliko vzorcev URL-jev: <ph name="MAX_URL_PATTERNS_LIMIT" />.</translation>
 <translation id="5287456746628258573">To spletno mesto uporablja zastarelo varnostno konfiguracijo, zaradi česar so lahko vaši podatki ob pošiljanju temu spletnemu mestu izpostavljeni (npr. gesla ali številke kreditnih kartic).</translation>
 <translation id="5288108484102287882">Preverjanje vrednosti pravilnika je aktiviralo opozorila</translation>
 <translation id="5289384342738547352">Obravnava več dokumentov</translation>
@@ -3419,6 +3424,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6351658970066645919">Brisanje podatkov brskanja</translation>
 <translation id="6353505687280762741">{COUNT,plural, =0{Nič}=1{Eno geslo (za <ph name="DOMAIN_LIST" />, sinhronizirano)}=2{Dve gesli (za <ph name="DOMAIN_LIST" />, sinhronizirano)}one{# geslo (za <ph name="DOMAIN_LIST" />, sinhronizirano)}two{# gesli (za <ph name="DOMAIN_LIST" />, sinhronizirano)}few{# gesla (za <ph name="DOMAIN_LIST" />, sinhronizirano)}other{# gesel (za <ph name="DOMAIN_LIST" />, sinhronizirano)}}</translation>
 <translation id="6354918092619878358">Eliptična krivulja SECG secp256r1 (oziroma ANSI X9.62 prime256v1, NIST P-256)</translation>
+<translation id="6355224247005550277"><ph name="CROSS_DEVICE_TAB_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter za več zavihkov iz drugih naprav</translation>
 <translation id="6355392890578844978">Tega brskalnika ne upravlja podjetje ali druga organizacija. Dejavnost v tej napravi morda upravljajo zunaj Chromiuma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="6357546827188504216">Skupini zavihkov »<ph name="GROUP_TITLE_1" />« in »<ph name="GROUP_TITLE_2" />« nista več na voljo</translation>
 <translation id="6358088212770985041">urediti plačilna sredstva</translation>
@@ -3848,6 +3854,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="7016992613359344582">Te bremenitve so lahko enkratne ali ponavljajoče se in morda niso očitne.</translation>
 <translation id="701757816833614688">Izobraževanje, povezano z vizualno umetnostjo in oblikovanjem</translation>
 <translation id="7020464868401003526">URL bližnjice presega največjo dovoljeno dolžino znakov: <ph name="MAX_LENGTH" />.</translation>
+<translation id="7020581144940000377">Uporaba približne lokacije</translation>
 <translation id="702275896380648118">To spletno mesto določi stvari, ki so vam všeč, in nato predlaga oglase drugim spletnim mestom. To spletno mesto tudi pridobi vaše teme oglasov iz Chroma, da vam prikaže ustreznejše oglase.</translation>
 <translation id="7023162328967545559">Opozorilo skrbnika</translation>
 <translation id="7023765275461720661">Želite povezati račun in plačevati s ponudnikom <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3958,6 +3965,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Na blagajni uporabite to kodo. Veljavno do <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">Po vklopu te nastavitve se vrnite na ta zavihek in začnite pisati</translation>
+<translation id="7196153352301578792">Chrome bo Googlu samodejno poslal vsebino strani in URL-je odprtih zavihkov, ki so morda ustrezni za vaše vprašanje, da boste prejeli bolj osebno prilagojene odgovore. Chrome bo delil samo zavihke iz okna, v katerem delate.</translation>
 <translation id="7196370964328811506">Samodejno izpolnjevanje te kartice za nakupe v Chromu, ko je shranjena v tej napravi</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Upoštevali smo naslednje odprte zavihke:</translation>
@@ -4372,6 +4380,7 @@ Dodatne podrobnosti:
 <translation id="7805268272389338048">Šifriranje ščiti vaše osebne podatke</translation>
 <translation id="7805768142964895445">Stanje</translation>
 <translation id="7805906048382884326">Zapri nasvet</translation>
+<translation id="780756914888723112">Ta pravilnik dovoljuje do toliko glav na pravilnik: <ph name="MAX_HEADERS_PER_RULE_LIMIT" />. Uporabljenih bo samo prve toliko glav na pravilnik: <ph name="MAX_HEADERS_PER_RULE_LIMIT" />.</translation>
 <translation id="7810410097247356677">Če želite naslednjič hitreje plačati, shranite kartico in šifrirano varnostno kodo v napravi</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Želite odstraniti predlog obrazca iz Chroma?</translation>
@@ -4680,6 +4689,7 @@ Dodatne podrobnosti:
 <translation id="8301894345671534559">Vnos kode</translation>
 <translation id="830498451218851433">Prepogibanje na pol</translation>
 <translation id="8308653357438598313">Oddajanje prek videa v živo</translation>
+<translation id="8310477433309274098">Brez stroškov, 0-odstotna EOM</translation>
 <translation id="8311895354659782580">Nepremičninski trg</translation>
 <translation id="8312841338723044391">V ŽIVO</translation>
 <translation id="8316555157357957253">Pravkar se uporablja</translation>
@@ -5256,6 +5266,7 @@ Dodatne podrobnosti:
 <translation id="955429569736351433">Navidezna resničnost je dovoljena</translation>
 <translation id="955627189349169688">Ta pravilnik lahko onemogočite v <ph name="BEGIN_LINK" />nastavitvah sinhronizacije za Chrome<ph name="END_LINK" />.</translation>
 <translation id="95721182352849470">Rumena 2</translation>
+<translation id="958952958906914932">Več zavihkov iz drugih naprav</translation>
 <translation id="961372935451193190">Zavihki in datoteke</translation>
 <translation id="961663415146723894">Vezava spodaj</translation>
 <translation id="961856697154696964">Brisanje podatkov brskanja</translation>

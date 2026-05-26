@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">ဈေးနှုန်း နိမ့်သည်</translation>
 <translation id="3070005020161560471">အလိုအလျောက် ဘာသာပြန်ပါ</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK3" /> အတွက်လည်း အကျုံးဝင်သည်။</translation>
+<translation id="3080375898390966733">Google Lens ဖြင့် တဘ်ရှာရန်</translation>
 <translation id="3080525922482950719">စာမျက်နှာများကို နောက်မှဖတ်ရန် သို့မဟုတ် အော့ဖ်လိုင်းတွင်ဖတ်ရန် သိမ်းနိုင်သည်</translation>
 <translation id="3087734570205094154">အောက်ခြေပိုင်း</translation>
 <translation id="3091010850649238832">ကလစ်ဘုတ်အကြောင်းအရာများကို ပြရန်</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">ပုံကို ဝေမျှပါ</translation>
 <translation id="3385749568468586663">Gemini ကို ‘ရုပ်ဖျက်မုဒ်’ တွင် မရနိုင်ပါ</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> ဒေါင်းလုဒ်မှာ စနစ် အမှားများကြောင့် မအောင်မြင်ခဲ့ပါ။</translation>
+<translation id="3391311825344469964">Chrome ၏ ‘ဝင်းဒိုးမန်နေဂျာ’ တွင် သင့်ဝင်းဒိုးများကို စီမံနိုင်သည်</translation>
 <translation id="3417835166382867856">တဘ်များတွင် ရှာရန်</translation>
 <translation id="3430670036890315772">ပရိုဖိုင်လော့ခ်ချခြင်းကို ပိတ်ခြင်းဖြင့် သင်၏သိမ်းထားသော အချက်အလက်ကို ဖယ်ရှားပါမည်</translation>
 <translation id="3435575784518354875">သင့်စကားဝှက်များကို ဆက်သုံးနိုင်ရန်အတွက် ၎င်းတို့ကို ယခုထုတ်ယူပါ။ Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပြီး ၎င်းတို့ကို Google Password Manager တွင် ပြန်ထည့်သွင်းပါ။ <ph name="BEGIN_LINK" />ညွှန်ကြားချက်အပြည့်အစုံ ကြည့်ရန်<ph name="END_LINK" />။</translation>
@@ -1070,6 +1072,7 @@
 <translation id="5628604359369369630">မဖတ်ရသေး - အော့ဖ်လိုင်းရနိုင်သည်</translation>
 <translation id="5631483240431073854">ဖွင့်ထားသည့်တဘ်များ စီမံရန်</translation>
 <translation id="5632485077360054581">လုပ်နည်း ပြရန်</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> သည် <ph name="EXTENSION_NAME" /> ကို လုပ်ဆောင်ရန် သင့်ခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> အဖြစ် လက်မှတ်ထိုးဝင်ထားသည်။ Google Account အမှား။ ဆက်တင်များ ဖွင့်ပေးသည်။</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />ရှာဖွေမှတ်တမ်း<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />အခြားလုပ်ဆောင်ချက် ပုံစံများ<ph name="END_LINK2" /> ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်</translation>
 <translation id="5648166631817621825">ပြီးခဲ့သည့် ၇ ရက်</translation>
@@ -1876,6 +1879,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{ပိုကောင်းအောင်လုပ်သင့်သော အားနည်းသည့် စကားဝှက်ကို Chrome က တွေ့ထားသည်}other{ပိုကောင်းအောင်လုပ်သင့်သော အားနည်းသည့် စကားဝှက် # ခုကို Chrome က တွေ့ထားသည်}}</translation>
 <translation id="8766529642647037772">ဤတစ်ခုကဲ့သို့ မြင်သာသည့်လင့်ခ် ပြုလုပ်လိုပါသလား။</translation>
 <translation id="8769783688897433958">ဝဘ်ဆိုက်အချက်အလက်နှင့် ခွင့်ပြုချက်များ ကြည့်ရန်</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> သည် နောက်ဆက်တွဲ <ph name="COUNT" /> ခုကို လုပ်ဆောင်ရန် သင့်ခွင့်ပြုချက် လိုအပ်သည်</translation>
 <translation id="8788265440806329501">လမ်းညွှန်မှု မှတ်တမ်း ပိတ်ထားသည်</translation>
 <translation id="8790193082819560975">ကုန်ပစ္စည်းအတွက် ဝယ်ယူခြင်းရွေးစရာများကို တဘ်အသစ်တွင်ရှာရန် တို့ပါ။</translation>
 <translation id="8798449543960971550">ဖတ်ပြီးသည်များ</translation>

@@ -259,6 +259,7 @@
 <translation id="1392813880755413602">የOpenDocument የዝግጅት አቀራረብ</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ምንም ውሂብ አልላከም።</translation>
 <translation id="1393071644879491291">እርስዎ ለመጎብኘት በሞከሩት ጣቢያ ላይ ያሉ አጥቂዎች ሶፍትዌር እንዲጭኑ ወይም እንደ የእርስዎ የይለፍ ቃሎች፣ ስልክ ወይም የክሬዲት ካርድ ቁጥሮች ያሉ ነገሮችን እንዲገልፁ ሊያታልሉዎት ይችላሉ። Chrome ደህንነቱ ወደተጠበቀ ቦታ እንዲመለሱ አጥብቆ ይመክራል። <ph name="BEGIN_LEARN_MORE_LINK" />ስለዚህ ማስጠንቀቂያ የበለጠ ለመረዳት<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">እዚህ የሚያክሏቸው ጣቢያዎች ትሩ ክፍት ቢሆንም እንኳን ለምላሾች ዋቢ አይደረጉም። የሚያክሉት ጣቢያ በአሁኑ ጊዜ ተከታታይ ውስጥ ጥቅም ላይ እየዋለ ከሆነ ተከታታዩ ዋቢ ማድረጉን ለማቆም እስከ 30 ደቂቃዎች ሊወስድ ይችላል።</translation>
 <translation id="1402151528875251561">ታሪክን በጎን ፓነል ውስጥ አሳይ</translation>
 <translation id="1405567553485452995">ፈካ ያለ አረንጓዴ</translation>
 <translation id="1406370515365284486">የመክፈያ ዘዴዎችዎ አሁንም ይቀመጣሉ</translation>
@@ -1551,6 +1552,7 @@
 <translation id="343474037147570563">እርስዎ የሚሰቅሏቸው ወይም ዓባሪ የሚያደርጓቸው ፋይሎች ለትንታኔ ወደ Google ደመና ወይም ሦስተኛ ወገኖች ይላካሉ። ለምሳሌ፣ አደጋ ሊያስከትል ለሚችል ውሂብ ወይም ለተንኮል አዘል ዌር ሊቃኙ ይችላሉ እና በኩባንያ መመሪያ መሠረት ሊከማቹ እና ለአስተዳዳሪዎ የሚታዩ ሊሆኑ ይችላሉ።</translation>
 <translation id="3435557549311968410">ቀጣይነት ያለው (አጭር)</translation>
 <translation id="3435738964857648380">የደህንነት ጥበቃ</translation>
+<translation id="3438509337461223476">በእያንዳንዱ ተከታታይ ውስጥ ክፍት ትሮች በራስ-ሰር ያጋሩ</translation>
 <translation id="3440783957068352691">ካሬ</translation>
 <translation id="3441653493275994384">ማያ ገፅ</translation>
 <translation id="3443504041532578451">ኦፕቲካል ዲስክ (ሳትን)</translation>
@@ -2482,6 +2484,7 @@
 <translation id="4894390983254799375">እንደ የመሣሪያ መታወቂያ፣ ስም፣ የሥርዓተ ክወና ሥሪት እና የሥርዓተ ክወና የተጠቃሚ ስም ያለ</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />፣ <ph name="TYPE_2" />፣, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">ኦሊምፒክስ</translation>
+<translation id="4897851261703006488">ይህ መመሪያ ከ<ph name="MAX_HEADER_SIZE_LIMIT" /> ኪባ የሚበልጡ ራስጌዎች ሊኖሩት አይገባም።</translation>
 <translation id="4898742041545089450">ይህ ርዕስ እገዳው ተነስቷል እና በአሰሳ ታሪክዎ ላይ በመመርኮዝ ንቁ ሊሆን ይችላል</translation>
 <translation id="4900217275619098670">ዘጠነኛ ጥቅልል</translation>
 <translation id="4901052769830245369">መሰየሚያዎች (በግማሽ አንጸባራቂ)</translation>
@@ -2729,6 +2732,7 @@
 <translation id="5284295735376057059">የሰነድ ባሕሪያት</translation>
 <translation id="528468243742722775">ጨርስ</translation>
 <translation id="5285468538058987167">በጠንካራ የደንበኛ ማረጋገጫ (SCA) በኩል</translation>
+<translation id="5286195392366054103">ይህ መመሪያ ከ<ph name="MAX_URL_PATTERNS_LIMIT" /> በላይ የዩአርኤል ሥርዓተ ጥለቶች አሉት። የመጀመሪያዎቹ <ph name="MAX_URL_PATTERNS_LIMIT" /> የዩአርኤል ቅጦች ብቻ ጥቅም ላይ ይውላሉ።</translation>
 <translation id="5287456746628258573">ይህ ጣቢያ ጊዜ ያለፈበት የደህንነት ውቅረትን ይጠቀማል፣ ይህ ወደዚህ ጣቢያ ሲላክ መረጃዎን (ለምሳሌ፦ የይለፍ ቃላት ወይም የክሬዲት ካርድ ቁጥሮች) ሊያጋልጥ ይችላል።</translation>
 <translation id="5288108484102287882">የመመሪያ እሴቶችን ማረጋገጥ ማስጠንቀቂያዎችን አስነስቷል</translation>
 <translation id="5289384342738547352">የበርካታ ሰነዶች አያያዝ</translation>
@@ -3847,6 +3851,7 @@
 <translation id="7016992613359344582">እነዚህ ክፍያዎች የአንድ ጊዜ ወይም ተደጋጋሚ፣ እና የማያስታውቁ ሊሆኑ ይችላሉ።</translation>
 <translation id="701757816833614688">የሚታይ ሥነ ጥበብ እና ዲዛይን ትምህርት</translation>
 <translation id="7020464868401003526">የአቋራጭ ዩአርኤል ከሚፈቀደው ከፍተኛ የ<ph name="MAX_LENGTH" /> ቁምፊዎች ርዝመት ይበልጣል።</translation>
+<translation id="7020581144940000377">ግምታዊ አካባቢን ተጠቀም</translation>
 <translation id="702275896380648118">ይህ ጣቢያ እርስዎ የሚወዷቸውን ነገሮች ይወስናል እና ከዚያም ማስታወቂያዎችን ለሌሎች ጣቢያዎች ይጠቁማል። እንዲሁም ይህ ጣቢያ ይበልጥ አግባብነት ያላቸው ማስታወቂያዎችን ለእርስዎ ለማሳየት የእርስዎን የማስታወቂያ ርዕሶች ከChrome ያገኛል።</translation>
 <translation id="7023162328967545559">የአስተዳዳሪ ማስጠንቀቂያ</translation>
 <translation id="7023765275461720661">መለያ ይገናኝ እና በ<ph name="BNPL_ISSUER_NAME" /> ይከፈል?</translation>
@@ -3957,6 +3962,7 @@
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">ክፍይ ማጠናቀቅ ላይ ይህን ኮድ ይጠቀሙ። እስከ <ph name="DATE" /> ድረስ ይሠራል።</translation>
 <translation id="7195852673246414183">ይህን ቅንብር ካበሩት በኋላ፣ መጻፍ ለመጀመር ወደዚህ ትር ይመለሱ</translation>
+<translation id="7196153352301578792">Chrome የበለጠ ግላዊነት የተላበሱ ምላሾችን ለማግኘት ለጥያቄዎ አግባብነት ያላቸው ሊሆኑ የሚችሉትን የገጽ ይዘት እና የክፍት ትሮች ዩአርኤሎች በራስ-ሰር ወደ Google ይልካል። Chrome የሚያጋራው እየሰሩበት ካለው መስኮት ትሮችን ብቻ ነው።</translation>
 <translation id="7196370964328811506">በዚህ መሣሪያ ላይ ሲቀመጥ Chrome ውስጥ ለተደረጉ ግዢዎች ይህ ካርድ በራስ-ይሙሉ</translation>
 <translation id="7199278868241956094">ኦፊኮ</translation>
 <translation id="7200963436813710587">የሚከተሉትን ክፍት ትሮች ከግምት ውስጥ አስገብተናል፦</translation>
@@ -4371,6 +4377,7 @@
 <translation id="7805268272389338048">ምሥጠራ ግላዊ መረጃዎን ይጠብቃል</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7805906048382884326">ጠቃሚ ምክር ዝጋ</translation>
+<translation id="780756914888723112">ይህ መመሪያ በአንድ ደንብ እስከ <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> ራስጌዎች ይፈቅዳል። በደንብ የመጀመሪያዎቹ <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> ራስጌዎች ብቻ ጥቅም ላይ ይውላሉ።</translation>
 <translation id="7810410097247356677">በሚቀጥለው ጊዜ በበለጠ ፍጥነት ለመክፈል የእርስዎን ካርድ እና የተመሰጠረ የደህንነት ኮድ ወደ መሣሪያዎ ያስቀምጡ</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">የአስተያየት ጥቆማ ከChrome ይወገድ?</translation>
@@ -4679,6 +4686,7 @@
 <translation id="8301894345671534559">ኮድ ያስገቡ</translation>
 <translation id="830498451218851433">ግማሽ እጠፍ</translation>
 <translation id="8308653357438598313">የቀጥታ ስርጭት የቪድዮ ዥረት</translation>
+<translation id="8310477433309274098">ምንም ክፍያዎች የሉም፣ እስከ 0% ዓመታዊ መቶኛ ተመን ድረስ ዝቅ የሚል</translation>
 <translation id="8311895354659782580">የሪል ስቴት ዝርዝሮች</translation>
 <translation id="8312841338723044391">ቀጥታ ስርጭት</translation>
 <translation id="8316555157357957253">አሁን ጥቅም ላይ እየወለ ያለ</translation>

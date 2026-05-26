@@ -5661,6 +5661,7 @@
 <translation id="4910241725741323970">已安裝應用程式</translation>
 <translation id="4912643508233590958">閒置喚醒</translation>
 <translation id="4913209098186576320">此檔案可能不安全<ph name="LINE_BREAK" />此檢查所需時間比一般長…</translation>
+<translation id="4913573660390710463">使用具備進階功能的套裝網絡軟件。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">無法尋找應用程式資料</translation>
 <translation id="4915961947098019832">已允許顯示圖片</translation>
 <translation id="491779113051926205">ChromeOS 流量計數器</translation>
@@ -9618,6 +9619,7 @@
 <translation id="7753735457098489144">儲存空間不足，因此無法完成安裝。如要釋出空間，請刪除裝置儲存空間內的檔案。</translation>
 <translation id="7754704193130578113">下載每個檔案前先詢問儲存位置</translation>
 <translation id="7757592200364144203">變更裝置名稱</translation>
+<translation id="7757735653610827848">&amp;複製「<ph name="SELECTION" />」</translation>
 <translation id="7757739382819740102">附近所有聯絡人都可與您分享內容。此操作需要您的核准。</translation>
 <translation id="7757787379047923882">透過 <ph name="DEVICE_NAME" /> 分享的文字</translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -11172,6 +11174,7 @@
 <translation id="8819510664278523111">你嘅裝置 EID 係 <ph name="EID_NUMBER" />，裝置 IMEI 係 <ph name="IMEI_NUMBER" />，而裝置序號係 <ph name="SERIAL_NUMBER" />。呢啲數字可以用嚟啟用服務。</translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8821045908425223359">自動設定 IP 位址</translation>
+<translation id="8821206216942230957">你的帳戶無法使用 Chrome 版 Gemini</translation>
 <translation id="8821268776955756404"><ph name="APP_NAME" /> 已可使用。</translation>
 <translation id="882204272221080310">更新韌體以提高安全性。</translation>
 <translation id="8823514049557262177">複製連結文字(&amp;X)</translation>

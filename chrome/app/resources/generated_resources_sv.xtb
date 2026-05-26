@@ -666,6 +666,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
     felsökningsloggar<ph name="END_LINK" /> (rekommenderas)</translation>
 <translation id="1454223536435069390">T&amp;a en skärmbild</translation>
 <translation id="145432137617179457">Språk för stavningskontroll</translation>
+<translation id="1454523475536875350">Öppna länken i visning nedifrån</translation>
 <translation id="1455009947184333152">Färdigheten har raderats</translation>
 <translation id="1455119378540982311">Förinställda fönsterstorlekar</translation>
 <translation id="1456849775870359518">Flikarna öppnas igen</translation>
@@ -804,6 +805,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1547123415014299762">Tredjepartscookies tillåts</translation>
 <translation id="1547808936554660006">Jag är medveten om att installerade eSIM-profiler inte tas bort vid en powerwash</translation>
 <translation id="1547936895218027488">Klicka på ikonen för sidopanelen för att öppna den</translation>
+<translation id="1548265680751768570">Gemini i Chrome är inte tillgänglig</translation>
 <translation id="1549275686094429035">ARC aktiverat</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> vill ha åtkomst till <ph name="VOLUME_NAME" />. Den kan ändra eller ta bort dina filer.</translation>
 <translation id="1549966883323105187">Kom åt dina sparade lösenord snabbare</translation>
@@ -960,6 +962,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1648439345221797326">ctrl + skift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Fastställ platsen utifrån wifi eller mobilnätverk</translation>
 <translation id="1650407365859096313">Öppnas på en ny flik. Behörigheten är <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">Öppna länken i visning nedifrån</translation>
 <translation id="1650801028905250434">Filerna på Min enhet synkroniseras automatiskt med Chromebook så att du kan komma åt dem utan internetanslutning. Du kan när som helst ändra detta i Inställningar &gt; Filer.</translation>
 <translation id="1651008383952180276">Du måste ange samma lösenfras två gånger</translation>
 <translation id="1651609627703324721">På den här fliken visas VR-innehåll för en kikare</translation>
@@ -1159,6 +1162,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1784849162047402014">Enheten har ont om diskutrymme</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Om du avinstallerar <ph name="APP_NAME" /> avinstalleras även den här appen:}other{Om du avinstallerar <ph name="APP_NAME" /> avinstalleras även dessa appar:}}</translation>
 <translation id="1786290960428378411">Begär att få läsa och ändra</translation>
+<translation id="179021551944139249">Lägg till länken i läslistan</translation>
 <translation id="1790976235243700817">Ta bort åtkomst</translation>
 <translation id="1791662854739702043">Installerat</translation>
 <translation id="1792619191750875668">Utökad skärm</translation>
@@ -1978,6 +1982,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2340239562261172947">Det går inte att ladda ned <ph name="FILE_NAME" /> på ett säkert sätt</translation>
 <translation id="2341392013052489530">Version <ph name="VERSION" /> har avinstallerats. Orsak: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">Ditt barn kan låsa upp enheten med en sifferkod (pinkod) i stället för ett lösenord. Du kan ange en pinkod senare i inställningarna.</translation>
+<translation id="2343005971389581619">Öppna länken i visning uppifrån</translation>
 <translation id="2343160676229467122">Tillägg tillåts inte på <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">Klippiga bergens nationalpark</translation>
 <translation id="2343747224442182863">Fokusera på den här fliken</translation>
@@ -4173,6 +4178,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3854348409770521214">Oljemålning</translation>
 <translation id="3854967233147778866">Erbjud översättning av webbplatser på andra språk</translation>
 <translation id="3854976556788175030">Utmatningsfacket är fullt</translation>
+<translation id="3855324045699437362">Gemini i Chrome kommer till olika platser men är inte tillgänglig överallt.</translation>
 <translation id="3855441664322950881">Paketera tillägg</translation>
 <translation id="3855676282923585394">Importera bokmärken och inställningar...</translation>
 <translation id="3856023744577163821">Flikar som öppnas från en chatt eller en delad flik delas också med Gemini.</translation>
@@ -5895,6 +5901,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5088427648965532275">Passpoint-leverantör</translation>
 <translation id="5090637338841444533">Får inte registrera kamerans position</translation>
 <translation id="5091636240353511739">Visa pinkod</translation>
+<translation id="5092567114307895466">Kontrollera att du är kvalificerad och uppfyller kraven</translation>
 <translation id="5093447877601682598">Skicka feedback om flikhuvudet</translation>
 <translation id="5093477827231450397">En lista över webbplatser som du har blockerat som du inte vill ska föreslå annonser till andra webbplatser</translation>
 <translation id="5093569275467863761">Inkognitounderram i vilocacheminne: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7741,6 +7748,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6427752304227226701">Rapportera en osäker webbplats …</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Inga sparade lösenord.}=1{{COUNT} lösenord kontrolleras …}other{{COUNT} lösenord kontrolleras …}}</translation>
 <translation id="6429384232893414837">Uppdateringsfel</translation>
+<translation id="6430202563517028640">Lägg till länken i läslistan</translation>
 <translation id="6430814529589430811">Base64-kodad ASCII, enstaka certifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> konfigurerar automatiska uppdateringar för alla användare på den här datorn.</translation>
 <translation id="6434104957329207050">Hastighet för punktgenomsökning</translation>
@@ -10187,6 +10195,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8137559199583651773">Hantera tillägg</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Granska 1 tillägg som kan vara osäkert}other{Granska {NUM_EXTENSIONS} tillägg som kan vara osäkra}}</translation>
 <translation id="8138217203226449454">Ville du ändra sökleverantör?</translation>
+<translation id="813858113027420189">Öppna länken i visning uppifrån</translation>
 <translation id="8138997515734480534">Status för <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Marköracceleration</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

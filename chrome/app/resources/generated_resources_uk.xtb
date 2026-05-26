@@ -669,6 +669,7 @@
     журнали налагодження<ph name="END_LINK" /> (рекомендовано)</translation>
 <translation id="1454223536435069390">З&amp;робити знімок екрана</translation>
 <translation id="145432137617179457">Мови перевірки орфографії</translation>
+<translation id="1454523475536875350">Відкрити посилання на нижньому екрані</translation>
 <translation id="1455009947184333152">Навичку видалено</translation>
 <translation id="1455119378540982311">Стандартні розміри вікон</translation>
 <translation id="1456849775870359518">Вкладки відкриються знову</translation>
@@ -807,6 +808,7 @@
 <translation id="1547123415014299762">Сторонні файли cookie дозволено</translation>
 <translation id="1547808936554660006">Я розумію, що функція Powerwash не видаляє встановлені профілі eSIM-карти</translation>
 <translation id="1547936895218027488">Щоб відкрити бічну панель, натисніть відповідний значок.</translation>
+<translation id="1548265680751768570">Сервіс Gemini у Chrome недоступний</translation>
 <translation id="1549275686094429035">ARC ввімкнено</translation>
 <translation id="1549788673239553762">Додатку <ph name="APP_NAME" /> потрібен доступ до тому <ph name="VOLUME_NAME" />. Він може змінювати або видаляти ваші файли.</translation>
 <translation id="1549966883323105187">Швидше отримуйте доступ до збережених паролів</translation>
@@ -963,6 +965,7 @@
 <translation id="1648439345221797326">ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">Визначати місцезнаходження за допомогою Wi-Fi або мобільних мереж</translation>
 <translation id="1650407365859096313">Відкриється в новій вкладці; дозвіл: <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">Відкрити посилання на нижньому екрані</translation>
 <translation id="1650801028905250434">Файли з папки "Мій диск" синхронізуються з Chromebook автоматично, щоб ви могли відкривати їх без інтернет-з’єднання. Цей параметр можна будь-коли змінити в розділі "Налаштування &gt; Файли".</translation>
 <translation id="1651008383952180276">Потрібно двічі ввести однакову парольну фразу</translation>
 <translation id="1651609627703324721">VR-контент цієї вкладки транслюється на гарнітуру</translation>
@@ -1162,6 +1165,7 @@
 <translation id="1784849162047402014">На диску пристрою мало вільного місця</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Цей додаток буде видалено разом із додатком <ph name="APP_NAME" />:}one{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}few{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}many{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}other{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}}</translation>
 <translation id="1786290960428378411">Запит на читання й зміну сайту</translation>
+<translation id="179021551944139249">Додати посилання в список читання</translation>
 <translation id="1790976235243700817">Скасувати доступ</translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792619191750875668">Розширений дисплей</translation>
@@ -1981,6 +1985,7 @@
 <translation id="2340239562261172947">Не вдається безпечно завантажити файл "<ph name="FILE_NAME" />"</translation>
 <translation id="2341392013052489530">Видалено версію <ph name="VERSION" />. Причина: <ph name="REASON" />.</translation>
 <translation id="2342180549977909852">Для розблокування пристрою дитина може використовувати замість пароля число (PIN-код). PIN-код можна задати й пізніше в налаштуваннях.</translation>
+<translation id="2343005971389581619">Відкрити посилання на верхньому екрані</translation>
 <translation id="2343160676229467122">Розширення на сайті <ph name="SITE_NAME" /> заборонено</translation>
 <translation id="2343390523044483367">Національний парк "Рокі-Маунтінc"</translation>
 <translation id="2343747224442182863">Виділити цю вкладку</translation>
@@ -4176,6 +4181,7 @@
 <translation id="3854348409770521214">Олійний живопис</translation>
 <translation id="3854967233147778866">Пропонувати перекладати веб-сайти іншими мовами</translation>
 <translation id="3854976556788175030">Вихідний лоток заповнено</translation>
+<translation id="3855324045699437362">Ми запускаємо Gemini у Chrome у різних країнах і регіонах, проте цей сервіс доступний не всюди.</translation>
 <translation id="3855441664322950881">Запакувати розширення</translation>
 <translation id="3855676282923585394">Імпорт закладок і налаштувань...</translation>
 <translation id="3856023744577163821">Gemini також отримує доступ до вкладок, відкритих із чату або інших спільних вкладок.</translation>
@@ -5661,6 +5667,7 @@
 <translation id="4910241725741323970">Додаток уже встановлено</translation>
 <translation id="4912643508233590958">Вихід зі стану неактивності</translation>
 <translation id="4913209098186576320">Цей файл може бути небезпечним.<ph name="LINE_BREAK" />Перевірка триває довше, ніж зазвичай…</translation>
+<translation id="4913573660390710463">Користуйтеся пакетними вебдодатками з розширеними можливостями. <ph name="BEGIN_LINK_LEARN_MORE" />Докладніше<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="4913695564084524048">Не вдалося знайти дані додатка</translation>
 <translation id="4915961947098019832">Дозволено показувати зображення</translation>
 <translation id="491779113051926205">Лічильники трафіку в ChromeOS</translation>
@@ -5897,6 +5904,7 @@
 <translation id="5088427648965532275">Постачальник Passpoint</translation>
 <translation id="5090637338841444533">Заборонено відстежувати положення камери</translation>
 <translation id="5091636240353511739">Показати PIN-код</translation>
+<translation id="5092567114307895466">Переконайтеся, що ви відповідаєте вимогам</translation>
 <translation id="5093447877601682598">Надіслати відгук про панель вкладок</translation>
 <translation id="5093477827231450397">Список заблокованих сайтів, які не мають пропонувати свою рекламу іншим сайтам</translation>
 <translation id="5093569275467863761">Додатковий фрейм зворотного кешу в анонімному режимі: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7739,6 +7747,7 @@
 <translation id="6427752304227226701">Поскаржитися на &amp;небезпечний сайт…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{Немає збережених паролів.}=1{Перевірка {COUNT} пароля…}one{Перевірка {COUNT} пароля…}few{Перевірка {COUNT} паролів…}many{Перевірка {COUNT} паролів…}other{Перевірка {COUNT} пароля…}}</translation>
 <translation id="6429384232893414837">Помилка оновлення</translation>
+<translation id="6430202563517028640">Додати посилання в список читання</translation>
 <translation id="6430814529589430811">ASCII Base64-кодування, єдиний сертифікат</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> налаштує автоматичні оновлення для всіх користувачів цього комп'ютера.</translation>
 <translation id="6434104957329207050">Швидкість точкового сканування</translation>
@@ -9624,6 +9633,7 @@
 <translation id="7753735457098489144">Не вдалося завершити встановлення. Замало місця. Щоб звільнити місце, видаліть файли з пристрою.</translation>
 <translation id="7754704193130578113">Запитувати, де зберігати кожен файл перед завантаженням</translation>
 <translation id="7757592200364144203">Змінити назву пристрою</translation>
+<translation id="7757735653610827848">&amp;Копіювати "<ph name="SELECTION" />"</translation>
 <translation id="7757739382819740102">Контакти поблизу можуть передавати вам дані. Вам потрібно буде схвалювати такі дії.</translation>
 <translation id="7757787379047923882">Текст, надісланий із пристрою <ph name="DEVICE_NAME" /></translation>
 <translation id="7758143121000533418">Family Link</translation>
@@ -10190,6 +10200,7 @@
 <translation id="8137559199583651773">Керувати розширеннями</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{Перегляньте 1 потенційно небезпечне розширення}one{Перегляньте {NUM_EXTENSIONS} потенційно небезпечне розширення}few{Перегляньте {NUM_EXTENSIONS} потенційно небезпечні розширення}many{Перегляньте {NUM_EXTENSIONS} потенційно небезпечних розширень}other{Перегляньте {NUM_EXTENSIONS} потенційно небезпечного розширення}}</translation>
 <translation id="8138217203226449454">Ви хотіли змінити пошукову систему?</translation>
+<translation id="813858113027420189">Відкрити посилання на верхньому екрані</translation>
 <translation id="8138997515734480534">Статус віртуальної машини <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">Прискорення руху курсора</translation>
 <translation id="8140070492745508800">"<ph name="FIRST_DEVICE" />", "<ph name="SECOND_DEVICE" />"</translation>
@@ -11184,6 +11195,7 @@
 <translation id="8819510664278523111">EID пристрою: <ph name="EID_NUMBER" />, IMEI пристрою: <ph name="IMEI_NUMBER" />, серійний номер пристрою: <ph name="SERIAL_NUMBER" />. За допомогою цих номерів можна активувати сервіс.</translation>
 <translation id="8820817407110198400">Закладки</translation>
 <translation id="8821045908425223359">Автоматично налаштовувати ІР-адресу</translation>
+<translation id="8821206216942230957">Ваш обліковий запис не має доступу до Gemini у Chrome</translation>
 <translation id="8821268776955756404">Додаток <ph name="APP_NAME" /> установлено.</translation>
 <translation id="882204272221080310">Оновити мікропрограму для додаткового захисту</translation>
 <translation id="8823514049557262177">Копіювати те&amp;кст посилання</translation>

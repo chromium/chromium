@@ -667,6 +667,7 @@
     ਡੀਬੱਗ ਲੌਗ<ph name="END_LINK" /> ਭੇਜੋ (ਸਿਫ਼ਾਰਸ਼ੀ)</translation>
 <translation id="1454223536435069390">ਸਕ੍ਰੀਨਸ਼ਾਟ ਲ&amp;ਵੋ</translation>
 <translation id="145432137617179457">ਸ਼ਬਦ-ਜੋੜ ਜਾਂਚ ਵਾਲੀਆਂ ਭਾਸ਼ਾਵਾਂ</translation>
+<translation id="1454523475536875350">ਲਿੰਕ ਨੂੰ ਹੇਠਲੇ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1455009947184333152">ਮਿਟਾਇਆ ਗਿਆ ਹੁਨਰ</translation>
 <translation id="1455119378540982311">ਵਿੰਡੋ ਦੇ ਪ੍ਰੀਸੈੱਟ ਆਕਾਰ</translation>
 <translation id="1456849775870359518">ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਮੁੜ-ਖੁੱਲ੍ਹ ਜਾਣਗੀਆਂ</translation>
@@ -805,6 +806,7 @@
 <translation id="1547123415014299762">ਤੀਜੀ-ਧਿਰ ਦੀਆਂ ਕੁਕੀਜ਼ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="1547808936554660006">ਮੈਨੂੰ ਸਮਝ ਹੈ ਕਿ ਸਥਾਪਤ ਕੀਤੇ ਗਏ ਈ-ਸਿਮ ਪ੍ਰੋਫਾਈਲ ਪਾਵਰਵਾਸ਼ ਨਾਲ ਨਹੀਂ ਹਟਾਏ ਜਾਣਗੇ</translation>
 <translation id="1547936895218027488">ਇਸਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਸਾਈਡ ਪੈਨਲ ਪ੍ਰਤੀਕ 'ਤੇ ਕਲਿੱਕ ਕਰੋ</translation>
+<translation id="1548265680751768570">Chrome ਵਿੱਚ Gemini ਉਪਲਬਧ ਨਹੀਂ ਹੈ</translation>
 <translation id="1549275686094429035">ARC ਨੂੰ ਚਾਲੂ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> <ph name="VOLUME_NAME" /> ਤੱਕ ਪਹੁੰਚ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ। ਇਹ ਤੁਹਾਡੀਆਂ ਫਾਈਲਾਂ ਨੂੰ ਸੰਸ਼ੋਧਿਤ ਕਰ ਜਾਂ ਮਿਟਾ ਸਕਦੀ ਹੈ।</translation>
 <translation id="1549966883323105187">ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਤੱਕ ਤਤਕਾਲ ਪਹੁੰਚ ਕਰੋ</translation>
@@ -961,6 +963,7 @@
 <translation id="1648439345221797326">ctrl + shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">ਟਿਕਾਣੇ ਦਾ ਪਤਾ ਲਗਾਉਣ ਲਈ ਵਾਈ‑ਫਾਈ ਜਾਂ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਵਰਤੋ</translation>
 <translation id="1650407365859096313">ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਖੋਲ੍ਹਦਾ ਦਾ, ਇਜਾਜ਼ਤ <ph name="PERMISSION_STATE" /> ਹੈ</translation>
+<translation id="1650723160137517362">ਲਿੰਕ ਨੂੰ ਹੇਠਲੇ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="1650801028905250434">'ਮੇਰੀ ਡਰਾਈਵ' ਵਿੱਚ ਮੌਜੂਦ ਤੁਹਾਡੀਆਂ ਫ਼ਾਈਲਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਤੁਹਾਡੇ Chromebook ਨਾਲ ਸਿੰਕ ਹੋ ਜਾਣਗੀਆਂ, ਤਾਂ ਜੋ ਤੁਸੀਂ ਉਨ੍ਹਾਂ ਤੱਕ ਇੰਟਰਨੈੱਟ ਕਨੈਕਸ਼ਨ ਦੇ ਬਿਨਾਂ ਪਹੁੰਚ ਕਰ ਸਕੋ। ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; Files ਵਿੱਚ ਜਾ ਕੇ ਕਦੇ ਵੀ ਇਸਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ।</translation>
 <translation id="1651008383952180276">ਤੁਹਾਡੇ ਵੱਲੋਂ ਇੱਕੋ ਪਾਸਫਰੇਜ਼ ਦੋ ਵਾਰ ਦਾਖਲ ਕਰਨਾ ਲਾਜ਼ਮੀ ਹੈ</translation>
 <translation id="1651609627703324721">ਇਹ ਟੈਬ ਕਿਸੇ ਹੈੱਡਸੈੱਟ ਵਿੱਚ VR ਸਮੱਗਰੀ ਨੂੰ ਪੇਸ਼ ਕਰ ਰਹੀ ਹੈ</translation>
@@ -1160,6 +1163,7 @@
 <translation id="1784849162047402014">ਡੀਵਾਈਸ ਵਿੱਚ ਡਿਸਕ ਜਗ੍ਹਾ ਘੱਟ ਹੈ</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਵੇਗੀ:}one{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਵੇਗੀ:}other{"<ph name="APP_NAME" />" ਨੂੰ ਅਣਸਥਾਪਤ ਕਰਨ 'ਤੇ ਇਹ ਐਪਾਂ ਵੀ ਅਣਸਥਾਪਤ ਹੋ ਜਾਣਗੀਆਂ:}}</translation>
 <translation id="1786290960428378411">ਪੜ੍ਹਣ ਅਤੇ ਬਦਲਣ ਦੀ ਬੇਨਤੀ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
+<translation id="179021551944139249">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਲਿੰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="1790976235243700817">ਪਹੁੰਚ ਹਟਾਓ</translation>
 <translation id="1791662854739702043">ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1792619191750875668">ਵਿਸਤ੍ਰਿਤ ਡਿਸਪਲੇ</translation>
@@ -1979,6 +1983,7 @@
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਡਾਊਨਲੋਡ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ</translation>
 <translation id="2341392013052489530">ਅਣਸਥਾਪਤ ਕੀਤਾ ਗਿਆ ਵਰਜਨ <ph name="VERSION" />, ਕਾਰਨ: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">ਤੁਹਾਡੇ ਬੱਚੇ ਵੱਲੋਂ ਇਸ ਡੀਵਾਈਸ ਨੂੰ ਅਣਲਾਕ ਕਰਨ ਲਈ ਪਾਸਵਰਡ ਦੀ ਬਜਾਏ ਨੰਬਰ (ਪਿੰਨ) ਦੀ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ। ਬਾਅਦ ਵਿੱਚ ਪਿੰਨ ਸੈੱਟ ਕਰਨ ਲਈ, ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ।</translation>
+<translation id="2343005971389581619">ਲਿੰਕ ਨੂੰ ਉੱਪਰਲੇ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="2343160676229467122"><ph name="SITE_NAME" /> 'ਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="2343390523044483367">ਰੌਕੀ ਮਾਉਂਟੇਨ ਨੈਸ਼ਨਲ ਪਾਰਕ</translation>
 <translation id="2343747224442182863">ਇਸ ਟੈਬ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
@@ -4175,6 +4180,7 @@
 <translation id="3854348409770521214">ਆਇਲ ਪੇਂਟਿੰਗ</translation>
 <translation id="3854967233147778866">ਹੋਰ ਭਾਸ਼ਾਵਾਂ ਵਿੱਚ ਵੈੱਬਸਾਈਟਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰਨ ਲਈ ਪੇਸ਼ਕਸ਼ ਕਰੋ</translation>
 <translation id="3854976556788175030">ਆਊਟਪੁੱਟ ਟ੍ਰੇ ਭਰ ਗਈ ਹੈ</translation>
+<translation id="3855324045699437362">Chrome ਵਿੱਚ Gemini ਦਾ ਵਿਸਤਾਰ ਵੱਖ-ਵੱਖ ਟਿਕਾਣਿਆਂ ਤੱਕ ਹੋ ਰਿਹਾ ਹੈ, ਪਰ ਇਹ ਹਰ ਥਾਂ ਉਪਲਬਧ ਨਹੀਂ ਹੈ।</translation>
 <translation id="3855441664322950881">ਪੈਕ ਐਕਸਟੈਂਸ਼ਨ</translation>
 <translation id="3855676282923585394">ਬੁੱਕਮਾਰਕ ਅਤੇ ਸੈਟਿੰਗਾਂ ਆਯਾਤ ਕਰੋ...</translation>
 <translation id="3856023744577163821">ਚੈਟ ਜਾਂ ਸਾਂਝੀ ਕੀਤੀ ਟੈਬ ਤੋਂ ਖੋਲ੍ਹੀਆਂ ਗਈਆਂ ਟੈਬਾਂ ਨੂੰ ਵੀ Gemini ਨਾਲ ਸਾਂਝਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ।</translation>
@@ -5896,6 +5902,7 @@
 <translation id="5088427648965532275">ਪਾਸ ਪੁਆਇੰਟ ਪ੍ਰਦਾਨਕ</translation>
 <translation id="5090637338841444533">ਤੁਹਾਡੇ ਕੈਮਰੇ ਦੀ ਸਥਿਤੀ ਨੂੰ ਟਰੈਕ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5091636240353511739">ਪਿੰਨ ਦਿਖਾਓ</translation>
+<translation id="5092567114307895466">ਜਾਂਚ ਕਰੋ ਕਿ ਤੁਸੀਂ ਯੋਗ ਹੋ ਅਤੇ ਲੋੜਾਂ ਨੂੰ ਪੂਰਾ ਕਰਦੇ ਹੋ</translation>
 <translation id="5093447877601682598">ਟੈਬ ਪੱਟੀ ਬਾਰੇ ਵਿਚਾਰ ਭੇਜੋ</translation>
 <translation id="5093477827231450397">ਤੁਹਾਡੇ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਉਨ੍ਹਾਂ ਸਾਈਟਾਂ ਦੀ ਸੂਚੀ ਜੋ ਤੁਸੀਂ ਨਹੀਂ ਚਾਹੁੰਦੇ ਕਿ ਦੂਜੀਆਂ ਸਾਈਟਾਂ ਨੂੰ ਵਿਗਿਆਪਨਾਂ ਸੰਬੰਧੀ ਸੁਝਾਅ ਦੇਣ</translation>
 <translation id="5093569275467863761">ਪੂਰੇ ਪੰਨੇ ਦੇ ਕੈਸ਼ੇ ਵਿੱਚ ਸਟੋਰ ਕੀਤਾ ਇਨਕੋਗਨਿਟੋ ਸਬਫ੍ਰੇਮ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7742,6 +7749,7 @@
 <translation id="6427752304227226701">ਕਿਸੇ &amp;ਅਸੁਰੱਖਿਅਤ ਸਾਈਟ ਦੀ ਰਿਪੋਰਟ ਕਰੋ...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{ਕੋਈ ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ ਨਹੀਂ।}=1{{COUNT} ਪਾਸਵਰਡ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}other{{COUNT} ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...}}</translation>
 <translation id="6429384232893414837">ਅੱਪਡੇਟ ਗੜਬੜ</translation>
+<translation id="6430202563517028640">ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਲਿੰਕ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6430814529589430811">Base64-ਇਨਕੋਡ ਕੀਤਾ ASCII, ਸਿੰਗਲ ਸਰਟੀਫਿਕੇਟ</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> ਇਸ ਕੰਪਿਊਟਰ ਦੇ ਸਾਰੇ ਵਰਤੋਂਕਾਰਾਂ ਲਈ ਸਵੈਚਲਿਤ ਅੱਪਡੇਟਾਂ ਨੂੰ ਸੈੱਟ ਅੱਪ ਕਰੇਗਾ।</translation>
 <translation id="6434104957329207050">ਪੁਆਇੰਟ ਸਕੈਨ ਕਰਨ ਦੀ ਗਤੀ</translation>
@@ -10189,6 +10197,7 @@
 <translation id="8137559199583651773">ਐਕਸਟੈਂਸ਼ਨਾਂ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{ਉਸ 1 ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਸਮੀਖਿਆ ਕਰੋ ਜੋ ਅਸੁਰੱਖਿਅਤ ਹੋ ਸਕਦੀ ਹੈ}one{ਉਸ {NUM_EXTENSIONS} ਐਕਸਟੈਂਸ਼ਨ ਦੀ ਸਮੀਖਿਆ ਕਰੋ ਜੋ ਅਸੁਰੱਖਿਅਤ ਹੋ ਸਕਦੀ ਹੈ}other{ਉਨ੍ਹਾਂ {NUM_EXTENSIONS} ਐਕਸਟੈਂਸ਼ਨਾਂ ਦੀ ਸਮੀਖਿਆ ਕਰੋ ਜੋ ਅਸੁਰੱਖਿਅਤ ਹੋ ਸਕਦੀਆਂ ਹਨ}}</translation>
 <translation id="8138217203226449454">ਕੀ ਤੁਸੀਂ ਆਪਣਾ ਖੋਜ ਪ੍ਰਦਾਨਕ ਬਦਲਣਾ ਸੀ?</translation>
+<translation id="813858113027420189">ਲਿੰਕ ਨੂੰ ਉੱਪਰਲੇ ਦ੍ਰਿਸ਼ ਵਿੱਚ ਖੋਲ੍ਹੋ</translation>
 <translation id="8138997515734480534"><ph name="VM_NAME" /> ਸਥਿਤੀ</translation>
 <translation id="8139440916039659819">ਕਰਸਰ ਐਕਸੈੱਲਰੇਸ਼ਨ</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

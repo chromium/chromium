@@ -1072,6 +1072,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5628604359369369630">Ungelesen – offline verfügbar</translation>
 <translation id="5631483240431073854">Geöffnete Tabs verwalten</translation>
 <translation id="5632485077360054581">So gehts</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> benötigt deine Erlaubnis zum Ausführen von <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Angemeldet als <ph name="USER_NAME" />. Fehler bei Google-Konto. Die Einstellungen werden geöffnet.</translation>
 <translation id="5641456720590409793">Der <ph name="BEGIN_LINK1" />Suchverlauf<ph name="END_LINK1" /> und <ph name="BEGIN_LINK2" />andere Arten von Aktivitäten<ph name="END_LINK2" /> können in deinem Google-Konto gespeichert werden</translation>
 <translation id="5648166631817621825">Letzte 7 Tage</translation>
@@ -1879,6 +1880,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome hat ein schwaches Passwort gefunden, dessen Sicherheit du verbessern kannst}other{Chrome hat # schwache Passwörter gefunden, deren Sicherheit du verbessern kannst}}</translation>
 <translation id="8766529642647037772">Möchtest du einen hervorgehobenen Link wie diesen erstellen?</translation>
 <translation id="8769783688897433958">Website-Informationen und -Berechtigungen ansehen</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> benötigt deine Erlaubnis, um <ph name="COUNT" /> Erweiterungen auszuführen</translation>
 <translation id="8788265440806329501">Der Navigationsverlauf wurde geschlossen</translation>
 <translation id="8790193082819560975">Tippen, um auf einem neuen Tab nach Kaufoptionen für das Produkt zu suchen.</translation>
 <translation id="8798449543960971550">Gelesen</translation>

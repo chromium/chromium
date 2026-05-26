@@ -1073,6 +1073,7 @@
 <translation id="5628604359369369630">الصفحات غير المقروءة المتاحة بلا إنترنت</translation>
 <translation id="5631483240431073854">إدارة علامات التبويب المفتوحة</translation>
 <translation id="5632485077360054581">الاطّلاع على الإرشادات</translation>
+<translation id="5639031457248936693">يجب منح <ph name="WEBSITE" /> الإذن لتشغيل "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="564121214411935612">‏تم تسجيل الدخول باسم "<ph name="USER_NAME" />". حدث خطأ في حساب Google. يفتح هذا الزر صفحة الإعدادات.</translation>
 <translation id="5641456720590409793">‏قد يتم حفظ <ph name="BEGIN_LINK1" />سجلّ البحث<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />بيانات الأنشطة الأخرى<ph name="END_LINK2" /> في حسابك على Google</translation>
 <translation id="5648166631817621825">آخر 7 أيام</translation>
@@ -1883,6 +1884,7 @@
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{‏عثرَ Chrome على كلمة مرور ضعيفة يجب تحسينها}zero{‏عثرَ Chrome على # كلمة مرور ضعيفة يجب تحسينها}two{‏عثرَ Chrome على كلمتَي مرور ضعيفتين يجب تحسينهما}few{‏عثرَ Chrome على # كلمات مرور ضعيفة يجب تحسينها}many{‏عثرَ Chrome على # كلمة مرور ضعيفة يجب تحسينها}other{‏عثرَ Chrome على # كلمة مرور ضعيفة يجب تحسينها}}</translation>
 <translation id="8766529642647037772">هل تريد إنشاء رابط مميّز يشبه هذا الرابط؟</translation>
 <translation id="8769783688897433958">عرض معلومات الموقع الإلكتروني وأذوناته</translation>
+<translation id="8786293874273448556">يجب منح <ph name="WEBSITE" /> الإذن لتشغيل الإضافات (عددها <ph name="COUNT" />)</translation>
 <translation id="8788265440806329501">يتم إغلاق سجلّ التنقُّل.</translation>
 <translation id="8790193082819560975">انقر للبحث عن خيارات شراء المنتج في علامة تبويب جديدة.</translation>
 <translation id="8798449543960971550">الصفحات المقروءة</translation>

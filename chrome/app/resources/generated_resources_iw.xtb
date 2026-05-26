@@ -668,6 +668,7 @@
     יומני ניפוי באגים<ph name="END_LINK" /> (מומלץ)</translation>
 <translation id="1454223536435069390">צילום של המסך</translation>
 <translation id="145432137617179457">שפות שבהן בדיקת האיות זמינה</translation>
+<translation id="1454523475536875350">פתיחת הקישור בתצוגה התחתונה</translation>
 <translation id="1455009947184333152">המיומנות נמחקה</translation>
 <translation id="1455119378540982311">גדלים של חלונות בהגדרה קבועה מראש</translation>
 <translation id="1456849775870359518">הכרטיסיות ייפתחו מחדש</translation>
@@ -803,6 +804,7 @@
 <translation id="1547123415014299762">‏מותר להשתמש בקובצי cookie של צד שלישי</translation>
 <translation id="1547808936554660006">‏ברור לי שפרופילי ה-eSIM שהותקנו לא יוסרו על ידי Powerwash</translation>
 <translation id="1547936895218027488">כדי לפתוח את החלונית הצדדית, לוחצים על הסמל שלה</translation>
+<translation id="1548265680751768570">‏‫Gemini ב-Gemini לא זמין</translation>
 <translation id="1549275686094429035">‏ARC מופעל</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> רוצה לגשת אל <ph name="VOLUME_NAME" />. ייתכן שהוא יישנה או ימחק את הקבצים.</translation>
 <translation id="1549966883323105187">אפשר לגשת מהר יותר לסיסמאות השמורות</translation>
@@ -959,6 +961,7 @@
 <translation id="1648439345221797326">‏Ctrl ‏+ Shift +‏ <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">‏קביעת מיקום באמצעות Wi-Fi או רשתות סלולריות</translation>
 <translation id="1650407365859096313">פתיחה בכרטיסייה חדשה, ההרשאה היא <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">פתיחת הקישור בתצוגה התחתונה</translation>
 <translation id="1650801028905250434">‏הקבצים בתיקייה 'האחסון שלי' יסונכרנו באופן אוטומטי ב-Chromebook כדי שאפשר יהיה לגשת אליהם ללא חיבור לאינטרנט. תמיד אפשר לשנות זאת דרך 'הגדרות' &gt; 'קבצים'.</translation>
 <translation id="1651008383952180276">עליך להזין אותו ביטוי סיסמה פעמיים</translation>
 <translation id="1651609627703324721">‏הכרטיסייה הזו מציגה תוכן VR במשקפי VR</translation>
@@ -1158,6 +1161,7 @@
 <translation id="1784849162047402014">חסר מקום אחסון בדיסק של המכשיר</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{בהסרת האפליקציה ’<ph name="APP_NAME" />‘, תוסר גם האפליקציה:}one{בהסרת האפליקציה ’<ph name="APP_NAME" />‘, יוסרו גם האפליקציות הבאות:}two{בהסרת האפליקציה ’<ph name="APP_NAME" />‘, יוסרו גם האפליקציות הבאות:}other{בהסרת האפליקציה ’<ph name="APP_NAME" />‘, יוסרו גם האפליקציות הבאות:}}</translation>
 <translation id="1786290960428378411">התקבלה מהתוסף בקשה לקריאה ולשינוי</translation>
+<translation id="179021551944139249">הוספת הקישור לרשימת הקריאה</translation>
 <translation id="1790976235243700817">הסרת הגישה</translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792619191750875668">תצוגה מורחבת</translation>
@@ -1976,6 +1980,7 @@
 <translation id="2340239562261172947">לא ניתן להוריד את <ph name="FILE_NAME" /> בצורה מאובטחת</translation>
 <translation id="2341392013052489530">הגרסה <ph name="VERSION" /> הוסרה, הסיבה: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">לילד או לילדה שלך יש אפשרות להשתמש במספר (קוד אימות) במקום בסיסמה כדי לבטל את נעילת המכשיר הזה. ניתן להגדיר את הקוד מאוחר יותר ב'הגדרות'.</translation>
+<translation id="2343005971389581619">פתיחת הקישור בתצוגה העליונה</translation>
 <translation id="2343160676229467122">אין הרשאה לתוספים באתר <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">הפארק הלאומי הרי הרוקי</translation>
 <translation id="2343747224442182863">הדגשת הכרטיסייה הזו</translation>
@@ -4171,6 +4176,7 @@
 <translation id="3854348409770521214">ציור שמן</translation>
 <translation id="3854967233147778866">הצעה לתרגום אתרים בשפות אחרות</translation>
 <translation id="3854976556788175030">מגש הפלט מלא</translation>
+<translation id="3855324045699437362">‏‫Gemini ב-Chrome מתרחב למיקומים נוספים, אבל עדיין לא זמין בכל מקום.</translation>
 <translation id="3855441664322950881">אריזת תוסף</translation>
 <translation id="3855676282923585394">ייבוא סימניות והגדרות...</translation>
 <translation id="3856023744577163821">‏גם כרטיסיות שנפתחו מתוך כרטיסייה משותפת או שיחה משותפות עם Gemini.</translation>
@@ -5894,6 +5900,7 @@
 <translation id="5088427648965532275">‏הספק של Passpoint</translation>
 <translation id="5090637338841444533">לא מורשים לעקוב אחר מיקום המצלמה</translation>
 <translation id="5091636240353511739">הצגת קוד האימות</translation>
+<translation id="5092567114307895466">צריך לבדוק שהחשבון עומד בדרישות</translation>
 <translation id="5093447877601682598">שליחת משוב על שורת הכרטיסיות</translation>
 <translation id="5093477827231450397">רשימת האתרים החסומים שאינך רוצה שיציעו מודעות לאתרים אחרים</translation>
 <translation id="5093569275467863761">תת-המסגרת האנונימית השמורה במטמון לדף הקודם/הבא: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7740,6 +7747,7 @@
 <translation id="6427752304227226701">דיווח על אתר לא בטוח…</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{אין סיסמאות שמורות.}=1{סיסמה אחת ({COUNT}) בבדיקה…}one{{COUNT} סיסמאות בבדיקה…}two{{COUNT} סיסמאות בבדיקה…}other{{COUNT} סיסמאות בבדיקה…}}</translation>
 <translation id="6429384232893414837">שגיאת עדכון</translation>
+<translation id="6430202563517028640">הוספת הקישור לרשימת הקריאה</translation>
 <translation id="6430814529589430811">‏ASCII בקידוד Base64, אישור יחיד</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> יגדיר עדכונים אוטומטיים לכל המשתמשים במחשב זה.</translation>
 <translation id="6434104957329207050">מהירות סריקה של נקודות</translation>
@@ -10190,6 +10198,7 @@
 <translation id="8137559199583651773">ניהול תוספים</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{צריך לבדוק תוסף אחד (1) שעלול להיות לא בטוח}one{צריך לבדוק {NUM_EXTENSIONS} תוספים שעלולים להיות לא בטוחים}two{צריך לבדוק {NUM_EXTENSIONS} תוספים שעלולים להיות לא בטוחים}other{צריך לבדוק {NUM_EXTENSIONS} תוספים שעלולים להיות לא בטוחים}}</translation>
 <translation id="8138217203226449454">האם התכוונת לשנות את ספק החיפוש שלך?</translation>
+<translation id="813858113027420189">פתיחת הקישור בתצוגה העליונה</translation>
 <translation id="8138997515734480534">הסטטוס של <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">הגברת מהירות הסמן</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

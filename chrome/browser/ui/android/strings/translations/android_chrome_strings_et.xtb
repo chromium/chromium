@@ -1072,6 +1072,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5628604359369369630">Lugemata – võrguühenduseta saadaval</translation>
 <translation id="5631483240431073854">Avatud vahelehtede haldamine</translation>
 <translation id="5632485077360054581">Kuva juhised</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> vajab laienduse <ph name="EXTENSION_NAME" /> käitamiseks teie luba.</translation>
 <translation id="564121214411935612">Sisse logitud kasutajana <ph name="USER_NAME" />. Google'i konto viga. Avab seaded.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Otsinguajalugu<ph name="END_LINK1" /> ja <ph name="BEGIN_LINK2" />muud tegevused<ph name="END_LINK2" /> võidakse salvestada teie Google'i kontole</translation>
 <translation id="5648166631817621825">Viimased seitse päeva</translation>
@@ -1879,6 +1880,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome leidis nõrga parooli, mida saaksite tugevdada}other{Chrome leidis # nõrka parooli, mida saaksite tugevdada}}</translation>
 <translation id="8766529642647037772">Kas luua esiletõstetud link, nagu see?</translation>
 <translation id="8769783688897433958">Vaadake saidi teavet ja lubasid.</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> vajab <ph name="COUNT" /> laienduse käitamiseks teie luba.</translation>
 <translation id="8788265440806329501">Navigeerimisajalugu on suletud</translation>
 <translation id="8790193082819560975">Puudutage, et otsida toote ostuvõimalusi uuel vahekaardil.</translation>
 <translation id="8798449543960971550">Loetud</translation>

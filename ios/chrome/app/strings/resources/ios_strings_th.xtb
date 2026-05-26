@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">คุณสามารถเลื่อนไปทางขวาเพื่อท่องเว็บในโหมดไม่ระบุตัวตน</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2085876078937250610">บันทึก…</translation>
+<translation id="2089180529062519164">เปิดไมโครโฟน</translation>
 <translation id="2096239473850415494">ดาวน์โหลดไม่ได้</translation>
 <translation id="2096716221239095980">ลบข้อมูลทั้งหมด</translation>
 <translation id="2104436223719117661">การค้นหาที่มาแรง</translation>
@@ -1506,6 +1507,7 @@
 <translation id="6241132809279377987">ปลดล็อกฟีเจอร์เพิ่มเติมสำหรับ iPhone ด้วยแอป Google</translation>
 <translation id="6247557882553405851">เครื่องมือจัดการรหัสผ่านบน Google</translation>
 <translation id="6251835855431997163">ป้อนข้อความอัตโนมัติ <ph name="VALUE" /></translation>
+<translation id="6253686838150111720">ลงชื่อเข้าใช้ <ph name="URL" /></translation>
 <translation id="6254066287920239840">เปิดลิงก์ในแอปแทนเบราว์เซอร์</translation>
 <translation id="6259928806013786178">เปิดใช้โหมดการอ่านไม่สำเร็จ</translation>
 <translation id="6268773951964630964">ค้นหารูปภาพที่คัดลอก</translation>
@@ -2116,6 +2118,7 @@
 <translation id="8319282042900445670">ตั้งการช่วยเตือนเป็น <ph name="TIME" />, <ph name="DATE" /> แล้ว</translation>
 <translation id="8320212361750431956">กิจกรรมล่าสุด</translation>
 <translation id="8325455175867928593">ซ่อน "รีวิวที่อิงตามความสนใจของคุณ"</translation>
+<translation id="8333459276976141586">ฟีเจอร์ Live จะใช้ไมโครโฟนของคุณ การแตะปุ่ม Live จะเปิดไมค์ หากต้องการปิดไมค์ ให้แตะปุ่มหยุดหรือปิด Gemini</translation>
 <translation id="833647236762414178">สร้าง บันทึก และจัดการรหัสผ่านและพาสคีย์เพื่อให้ลงชื่อเข้าใช้เว็บไซต์และแอปได้โดยง่าย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">สำรองข้อมูลและใช้ในอุปกรณ์เครื่องใดก็ได้</translation>
 <translation id="8345328955902001853">{count,plural, =1{ทำงานอีก 1 รายการให้เสร็จเพื่อเลื่อนระดับ}other{ทำงานอีก {count} รายการให้เสร็จเพื่อเลื่อนระดับ}}</translation>
@@ -2192,6 +2195,7 @@
 <translation id="8571019948162152515">ลบ "<ph name="FILENAME" />" ใช่ไหม</translation>
 <translation id="8571213806525832805">4 สัปดาห์ที่ผ่านมา</translation>
 <translation id="8577056989960190117">ป้อนปีที่หมดอายุเป็น <ph name="YEAR" /> โดยอัตโนมัติ</translation>
+<translation id="8582026929965253036">ใช้ฟีเจอร์ Live กับ Gemini</translation>
 <translation id="8587001564479545614">สร้าง PIN สำหรับการกู้คืน</translation>
 <translation id="8588404856427128947">ปิด</translation>
 <translation id="8590286732816598906">กลุ่มแท็บ, <ph name="GROUP_TITLE" />, เมนู</translation>
@@ -2266,6 +2270,7 @@
 <translation id="8803526663383843427">เมื่อเปิด</translation>
 <translation id="8803639129939845298">ปลอดภัย</translation>
 <translation id="8813277370772331957">เตือนฉันภายหลัง</translation>
+<translation id="8814308045751067027">หากต้องการใช้ฟีเจอร์ Live โปรดให้สิทธิ์เข้าถึงไมโครโฟนแก่ Chrome ในการตั้งค่า</translation>
 <translation id="8814719628147284151">ดำเนินการต่อ</translation>
 <translation id="881559332211266856">อัปเดตเลขประจำตัวผู้ที่อยู่ในกลุ่มเสี่ยง</translation>
 <translation id="8817524703470045896">ติดตามราคาและรับการแจ้งเตือนเมื่อราคาต่ำลงในเว็บไซต์ใดก็ตาม</translation>

@@ -493,6 +493,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3067505415088964188">Kaina yra maža</translation>
 <translation id="3070005020161560471">Versti automatiškai</translation>
 <translation id="3072980200212375806">„<ph name="APP_NAME" />“ bus atidaryta naršyklėje „Chrome“. Tęsdami sutinkate su <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygomis<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />„Google Chrome“ bei „Chrome“ OS papildomomis paslaugų teikimo sąlygomis<ph name="END_LINK2" />. Taip pat taikoma <ph name="BEGIN_LINK3" />privatumo politika<ph name="END_LINK3" />.</translation>
+<translation id="3080375898390966733">Ieškoti skirtuke naudojant „Google Lens“</translation>
 <translation id="3080525922482950719">Išsaugoję puslapius galėsite skaityti juos vėliau arba neprisijungę</translation>
 <translation id="3087734570205094154">Apačia</translation>
 <translation id="3091010850649238832">Rodyti iškarpinės turinį</translation>
@@ -550,6 +551,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3384347053049321195">Bendrinti vaizdą</translation>
 <translation id="3385749568468586663">„Gemini“ nepasiekiamas inkognito režimu</translation>
 <translation id="3387650086002190359">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“ dėl failų sistemos klaidų.</translation>
+<translation id="3391311825344469964">Langus galite tvarkyti „Chrome“ langų tvarkytuvėje</translation>
 <translation id="3417835166382867856">Ieškoti skirtukų</translation>
 <translation id="3430670036890315772">Išjungus profilio užraktą bus pašalinta išsaugota informacija</translation>
 <translation id="3435575784518354875">Jei norite išsaugoti prieigą prie slaptažodžių, juos eksportuokite dabar, atnaujinkite „Google Play“ paslaugas ir tada importuokite juos atgal į „Google“ slaptažodžių tvarkyklę. <ph name="BEGIN_LINK" />Žr. išsamias instrukcijas<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Adresu <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> gali 
 <translation id="5628604359369369630">Neskaityta – pasiekiama neprisijungus</translation>
 <translation id="5631483240431073854">Tvarkyti atidarytus skirtukus</translation>
 <translation id="5632485077360054581">Peržiūrėti, kaip tai padaryti</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> reikalingas jūsų leidimas, kad būtų galima paleisti „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="564121214411935612">Prisijungta kaip <ph name="USER_NAME" />. „Google“ paskyros klaida. Atidaromi nustatymai.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Paieškos istorija<ph name="END_LINK1" /> ir <ph name="BEGIN_LINK2" />kitos veiklos formos<ph name="END_LINK2" /> gali būti išsaugotos jūsų „Google“ paskyroje</translation>
 <translation id="5648166631817621825">Pastarosios 7 dienos</translation>
@@ -1877,6 +1880,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{„Chrome“ aptiko nesudėtingą slaptažodį, kurį galėtumėte patobulinti}one{„Chrome“ aptiko # nesudėtingą slaptažodį, kurį galėtumėte patobulinti}few{„Chrome“ aptiko # nesudėtingus slaptažodžius, kuriuos galėtumėte patobulinti}many{„Chrome“ aptiko # nesudėtingo slaptažodžio, kuriuos galėtumėte patobulinti}other{„Chrome“ aptiko # nesudėtingų slaptažodžių, kuriuos galėtumėte patobulinti}}</translation>
 <translation id="8766529642647037772">Sukurti tokią kaip ši paryškintą nuorodą?</translation>
 <translation id="8769783688897433958">Peržiūrėkite svetainės informaciją ir leidimus</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> reikalingas jūsų leidimas, kad būtų galima paleisti <ph name="COUNT" /> plėtin.</translation>
 <translation id="8788265440806329501">Naršymo istorija uždaryta</translation>
 <translation id="8790193082819560975">Palieskite ir ieškokite produkto pirkimo parinkčių naujame skirtuke.</translation>
 <translation id="8798449543960971550">Skaityta</translation>

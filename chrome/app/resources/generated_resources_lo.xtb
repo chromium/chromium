@@ -666,6 +666,7 @@
     ບັນທຶກດີບັກ<ph name="END_LINK" /> (ແນະນຳ)</translation>
 <translation id="1454223536435069390">ຖ່າຍຮູບໜ້າຈໍ</translation>
 <translation id="145432137617179457">ພາສາທີ່ໃຊ້ໃນການກວດຄຳຜິດ</translation>
+<translation id="1454523475536875350">ເປີດລິ້ງໃນມຸມມອງທາງລຸ່ມ</translation>
 <translation id="1455009947184333152">ລຶບທັກສະແລ້ວ</translation>
 <translation id="1455119378540982311">ພຣີເຊັດຂະໜາດໜ້າຈໍ</translation>
 <translation id="1456849775870359518">ແຖບຂອງທ່ານຈະເປີດຂຶ້ນອີກຄັ້ງ</translation>
@@ -802,6 +803,7 @@
 <translation id="1547123415014299762">ອະນຸຍາດໃຫ້ໃຊ້ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="1547808936554660006">ຂ້ອຍເຂົ້າໃຈວ່າໂປຣໄຟລ໌ eSIM ທີ່ຕິດຕັ້ງໄວ້ຈະບໍ່ຖືກລຶບອອກໂດຍ Powerwash</translation>
 <translation id="1547936895218027488">ຄລິກໄອຄອນແຜງຄວບຄຸມດ້ານຂ້າງເພື່ອເປີດມັນ</translation>
+<translation id="1548265680751768570">Gemini ໃນ Chrome ບໍ່ພ້ອມນຳໃຊ້</translation>
 <translation id="1549275686094429035">ເປີດການນຳໃຊ້ ARC ແລ້ວ</translation>
 <translation id="1549788673239553762"><ph name="APP_NAME" /> ຕ້ອງ​ການ​ເຂົ້າ​ຫາ <ph name="VOLUME_NAME" />. ມັນ​ອາດ​ຈະ​ດັດ​ແປງ ຫຼື​ລຶບ​ໄຟ​ລ໌​ຂອງ​ທ່ານ.</translation>
 <translation id="1549966883323105187">ເບິ່ງລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ຂອງທ່ານໄດ້ໄວຂຶ້ນ</translation>
@@ -958,6 +960,7 @@
 <translation id="1648439345221797326">Ctrl + Shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="1648528859488547844">ໃຊ້ Wi‑Fi, Bluetooth ຫຼື ເຄືອຂ່າຍມືຖືເພື່ອກຳນົດສະຖານທີ່</translation>
 <translation id="1650407365859096313">ເປີດໃນແຖບໃໝ່, ການອະນຸຍາດແມ່ນ <ph name="PERMISSION_STATE" /></translation>
+<translation id="1650723160137517362">ເປີດລິ້ງໃນມຸມມອງທາງລຸ່ມ</translation>
 <translation id="1650801028905250434">ໄຟລ໌ຂອງທ່ານໃນໄດຣຟ໌ຂອງຂ້ອຍຈະຊິ້ງກັບ Chromebook ຂອງທ່ານໂດຍອັດຕະໂນມັດ ເພື່ອໃຫ້ທ່ານສາມາດເຂົ້າເຖິງໄດ້ໂດຍບໍ່ຕ້ອງມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ. ທ່ານສາມາດປ່ຽນສິ່ງນີ້ຕອນໃດກໍໄດ້ໃນການຕັ້ງຄ່າ &gt; ໄຟລ໌.</translation>
 <translation id="1651008383952180276">ທ່ານຕ້ອງປ້ອນວະລີຜ່ານອັນດຽວກັນສອງເທື່ອ</translation>
 <translation id="1651609627703324721">ແຖບນີ້ກຳລັງນໍາສະເໜີເນື້ອຫາ VR ໄປຫາຊຸດຫູຟັງ</translation>
@@ -1157,6 +1160,7 @@
 <translation id="1784849162047402014">ພື້ນທີ່ດິສກ໌ຂອງອຸປະກອນເຫຼືອໜ້ອຍ</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{ການຖອນການຕິດຕັ້ງ "<ph name="APP_NAME" />" ຈະຍັງຖອນການຕິດຕັ້ງແອັບນີ້ນຳ:}other{ການຖອນການຕິດຕັ້ງ "<ph name="APP_NAME" />" ຈະຍັງຖອນການຕິດຕັ້ງແອັບເຫຼົ່ານີ້ນຳ:}}</translation>
 <translation id="1786290960428378411">ຮ້ອງຂໍໃຫ້ອ່ານ ແລະ ປ່ຽນ</translation>
+<translation id="179021551944139249">ເພີ່ມລິ້ງໃສ່ລາຍຊື່ການອ່ານ</translation>
 <translation id="1790976235243700817">ລຶບສິດເຂົ້າເຖິງ</translation>
 <translation id="1791662854739702043">ຕິດຕັ້ງແລ້ວ</translation>
 <translation id="1792619191750875668">ຈໍຂະຫຍາຍໃຫຍ່</translation>
@@ -1977,6 +1981,7 @@
 <translation id="2340239562261172947">ບໍ່ສາມາດດາວໂຫຼດ <ph name="FILE_NAME" /> ໄດ້ຢ່າງປອດໄພ</translation>
 <translation id="2341392013052489530">ຖອນການຕິດຕັ້ງເວີຊັນ <ph name="VERSION" /> ແລ້ວ, ເຫດຜົນແມ່ນ: <ph name="REASON" /></translation>
 <translation id="2342180549977909852">ລູກຂອງທ່ານສາມາດໃຊ້ໝາຍເລກໃດໜຶ່ງ (PIN) ແທນລະຫັດຜ່ານເພື່ອປົດລັອກອຸປະກອນນີ້ໄດ້. ເພື່ອຕັ້ງ PIN ໃນພາຍຫຼັງ, ໃຫ້ເຂົ້າໄປການຕັ້ງຄ່າ.</translation>
+<translation id="2343005971389581619">ເປີດລິ້ງໃນມຸມມອງທາງເທິງ</translation>
 <translation id="2343160676229467122">ບໍ່ອະນຸຍາດໃຫ້ໃຊ້ສ່ວນຂະຫຍາຍໃນ <ph name="SITE_NAME" /></translation>
 <translation id="2343390523044483367">ອຸທະຍານແຫ່ງຊາດຣັອກກີ ເມົາເທນ</translation>
 <translation id="2343747224442182863">ໂຟກັສແຖບນີ້</translation>
@@ -4172,6 +4177,7 @@
 <translation id="3854348409770521214">ຮູບແຕ້ມສີນ້ຳມັນ</translation>
 <translation id="3854967233147778866">ສະເໜີໃຫ້ການແປເວັບໄຊເປັນພາສາອື່ນ</translation>
 <translation id="3854976556788175030">ຖາດຮັບເຈ້ຍອອກເຕັມແລ້ວ</translation>
+<translation id="3855324045699437362">Gemini ໃນ Chrome ກຳລັງຂະຫຍາຍໄປຫາສະຖານທີ່ຕ່າງໆ ແຕ່ຍັງບໍ່ພ້ອມນຳໃຊ້ຢູ່ທົ່ວທຸກບ່ອນ.</translation>
 <translation id="3855441664322950881">ບັນຈຸກ່ອງສ່ວນຂະຫຍາຍ</translation>
 <translation id="3855676282923585394">ນໍາເອົາບຸກມາກສ໌ ແລະການຕັ້ງຄ່າເຂົ້າມາ...</translation>
 <translation id="3856023744577163821">ລະບົບຍັງຈະແບ່ງປັນແຖບທີ່ເປີດຈາກການສົນທະນາ ຫຼື ແຖບທີ່ແບ່ງປັນກັບ Gemini ນຳ.</translation>
@@ -5894,6 +5900,7 @@
 <translation id="5088427648965532275">ຜູ້ໃຫ້ບໍລິການ Passpoint</translation>
 <translation id="5090637338841444533">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ຕິດຕາມຕຳແໜ່ງກ້ອງຂອງທ່ານ</translation>
 <translation id="5091636240353511739">ສະແດງ PIN</translation>
+<translation id="5092567114307895466">ກວດສອບວ່າທ່ານມີສິດ ແລະ ມີຄຸນສົມບັດກົງຕາມຂໍ້ກຳນົດ</translation>
 <translation id="5093447877601682598">ສົ່ງຄຳຕິຊົມກ່ຽວກັບລາຍແຖບ</translation>
 <translation id="5093477827231450397">ລາຍຊື່ຂອງເວັບໄຊທີ່ທ່ານບລັອກ ແລະ ບໍ່ຕ້ອງການໃຫ້ແນະນຳໂຄສະນາໃຫ້ເວັບໄຊອື່ນ</translation>
 <translation id="5093569275467863761">ເຟຣມບ່ອຍແຄສຍ້ອນຫຼັງແບບບໍ່ເປີດເຜີຍຕົວຕົນ: <ph name="BACK_FORWARD_CACHE_INCOGNITO_PAGE_URL" /></translation>
@@ -7739,6 +7746,7 @@
 <translation id="6427752304227226701">ລາຍງານເວັບໄຊທີ່ &amp;ບໍ່ປອດໄພ...</translation>
 <translation id="6427938854876261655">{COUNT,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້.}=1{ກຳລັງກວດສອບ {COUNT} ລະຫັດຜ່ານ...}other{ກຳລັງກວດສອບ {COUNT} ລະຫັດຜ່ານ...}}</translation>
 <translation id="6429384232893414837">ອັບເດດຜິດພາດ</translation>
+<translation id="6430202563517028640">ເພີ່ມລິ້ງໃສ່ລາຍຊື່ການອ່ານ</translation>
 <translation id="6430814529589430811">Base64-encoded ASCII, ໃບຢັ້ງຢືນດ່ຽວ</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> ຈະຕັ້ງການອັບເດດອັດຕະໂນມັດໃຫ້ກັບຜູ້ໃຊ້ຄອມພິວເຕີນີ້ທຸກຄົນ.</translation>
 <translation id="6434104957329207050">ຄວາມໄວການສະແກນຈຸດ</translation>
@@ -10183,6 +10191,7 @@
 <translation id="8137559199583651773">ຈັດ​ການ​ສ່ວນ​ຂະ​ຫຍາຍ</translation>
 <translation id="8137711267692884979">{NUM_EXTENSIONS,plural, =1{ກວດສອບສ່ວນຂະຫຍາຍ 1 ລາຍການທີ່ອາດບໍ່ປອດໄພ}other{ກວດສອບສ່ວນຂະຫຍາຍ {NUM_EXTENSIONS} ລາຍການທີ່ອາດບໍ່ປອດໄພ}}</translation>
 <translation id="8138217203226449454">ທ່ານຕັ້ງໃຈຈະປ່ຽນຜູ້ໃຫ້ບໍລິການຊອກຫາຂອງທ່ານບໍ?</translation>
+<translation id="813858113027420189">ເປີດລິ້ງໃນມຸມມອງທາງເທິງ</translation>
 <translation id="8138997515734480534">ສະຖານະ <ph name="VM_NAME" /></translation>
 <translation id="8139440916039659819">ການເລັ່ງຄວາມໄວຂອງເຄີເຊີ</translation>
 <translation id="8140070492745508800"><ph name="FIRST_DEVICE" />, <ph name="SECOND_DEVICE" /></translation>

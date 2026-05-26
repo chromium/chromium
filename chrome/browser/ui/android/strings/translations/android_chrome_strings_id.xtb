@@ -493,6 +493,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3067505415088964188">Harga rendah</translation>
 <translation id="3070005020161560471">Otomatis terjemahkan</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> akan dibuka di Chrome. Dengan melanjutkan, Anda menyetujui <ph name="BEGIN_LINK1" />Persyaratan Layanan Google<ph name="END_LINK1" /> serta <ph name="BEGIN_LINK2" />Persyaratan Layanan Tambahan Google Chrome dan ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Kebijakan Privasi<ph name="END_LINK3" /> juga akan berlaku.</translation>
+<translation id="3080375898390966733">Telusuri tab dengan Google Lens</translation>
 <translation id="3080525922482950719">Anda dapat menyimpan halaman untuk dibaca nanti atau saat offline</translation>
 <translation id="3087734570205094154">Bawah</translation>
 <translation id="3091010850649238832">Tampilkan konten papan klip</translation>
@@ -550,6 +551,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3384347053049321195">Bagikan gambar</translation>
 <translation id="3385749568468586663">Gemini tidak tersedia dalam mode Samaran</translation>
 <translation id="3387650086002190359">Download <ph name="FILE_NAME" /> gagal karena kesalahan sistem file.</translation>
+<translation id="3391311825344469964">Anda dapat mengelola jendela di Pengelola Jendela Chrome</translation>
 <translation id="3417835166382867856">Telusuri tab</translation>
 <translation id="3430670036890315772">Menonaktifkan kunci profil akan menghapus info yang Anda simpan</translation>
 <translation id="3435575784518354875">Untuk mempertahankan akses ke sandi Anda, ekspor sandi sekarang, update Layanan Google Play, lalu impor sandi tersebut kembali ke Pengelola Sandi Google. <ph name="BEGIN_LINK" />Lihat petunjuk lengkap<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="5628604359369369630">Belum dibaca - Tersedia secara offline</translation>
 <translation id="5631483240431073854">Kelola tab yang terbuka</translation>
 <translation id="5632485077360054581">Lihat caranya</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> memerlukan izin Anda untuk menjalankan <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Login sebagai <ph name="USER_NAME" />. Terjadi error pada Akun Google. Membuka setelan.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />Histori penelusuran<ph name="END_LINK1" /> dan <ph name="BEGIN_LINK2" />bentuk aktivitas lainnya<ph name="END_LINK2" /> dapat disimpan di Akun Google Anda</translation>
 <translation id="5648166631817621825">7 hari terakhir</translation>
@@ -1877,6 +1880,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome menemukan sandi lemah yang dapat Anda perkuat}other{Chrome menemukan # sandi lemah yang dapat Anda perkuat}}</translation>
 <translation id="8766529642647037772">Buat link yang ditandai seperti ini?</translation>
 <translation id="8769783688897433958">Lihat informasi dan izin situs</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> memerlukan izin Anda untuk menjalankan <ph name="COUNT" /> ekstensi</translation>
 <translation id="8788265440806329501">Histori navigasi tertutup</translation>
 <translation id="8790193082819560975">Ketuk untuk menelusuri opsi pembelian produk di tab baru.</translation>
 <translation id="8798449543960971550">Telah dibaca</translation>

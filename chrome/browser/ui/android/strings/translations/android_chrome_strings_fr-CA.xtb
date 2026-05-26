@@ -493,6 +493,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3067505415088964188">Le prix est bas</translation>
 <translation id="3070005020161560471">Traduire automatiquement les pages rédigées en</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> s'ouvrira dans Chrome. En continuant, vous acceptez les <ph name="BEGIN_LINK1" />conditions d'utilisation de Google<ph name="END_LINK1" /> et les <ph name="BEGIN_LINK2" />conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS<ph name="END_LINK2" />. La <ph name="BEGIN_LINK3" />politique de confidentialité<ph name="END_LINK3" /> s'applique également.</translation>
+<translation id="3080375898390966733">Rechercher avec Lentille Google</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages afin de les lire plus tard ou hors ligne</translation>
 <translation id="3087734570205094154">Bas</translation>
 <translation id="3091010850649238832">Afficher le contenu du presse-papier</translation>
@@ -550,6 +551,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3384347053049321195">Partager une image</translation>
 <translation id="3385749568468586663">Gemini n'est pas accessible en mode Navigation privée</translation>
 <translation id="3387650086002190359">Échec du téléchargement de <ph name="FILE_NAME" /> en raison d'erreurs du système de fichiers.</translation>
+<translation id="3391311825344469964">Vous pouvez gérer vos fenêtres dans le gestionnaire de fenêtres de Chrome</translation>
 <translation id="3417835166382867856">Rechercher dans les onglets</translation>
 <translation id="3430670036890315772">La désactivation du verrouillage de votre profil supprimera vos informations enregistrées</translation>
 <translation id="3435575784518354875">Pour conserver l'accès à vos mots de passe, exportez-les maintenant, mettez à jour les services Google Play, puis réimportez-les dans le gestionnaire de mots de passe Google. <ph name="BEGIN_LINK" />Affichez les instructions complètes.<ph name="END_LINK" /></translation>
@@ -1070,6 +1072,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="5628604359369369630">Non lus : accessibles hors ligne</translation>
 <translation id="5631483240431073854">Gérer les onglets ouverts</translation>
 <translation id="5632485077360054581">Afficher la marche à suivre</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> nécessite votre autorisation pour exécuter <ph name="EXTENSION_NAME" /></translation>
 <translation id="564121214411935612">Connecté en tant que <ph name="USER_NAME" />. Erreur de compte Google. Ouvre les paramètres.</translation>
 <translation id="5641456720590409793"><ph name="BEGIN_LINK1" />L'historique de recherches<ph name="END_LINK1" /> et <ph name="BEGIN_LINK2" />les autres formes d'activité<ph name="END_LINK2" /> peuvent être enregistrées dans votre compte Google</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
@@ -1877,6 +1880,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Chrome a trouvé un mot de passe faible que vous pourriez améliorer}one{Chrome a trouvé # mot de passe faible que vous pourriez améliorer}other{Chrome a trouvé # mots de passe faibles que vous pourriez améliorer}}</translation>
 <translation id="8766529642647037772">Créez un lien mis en évidence comme celui-ci?</translation>
 <translation id="8769783688897433958">Afficher les informations et les autorisations du site</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> nécessite votre autorisation pour exécuter <ph name="COUNT" /> extensions</translation>
 <translation id="8788265440806329501">L'historique de navigation est fermé</translation>
 <translation id="8790193082819560975">Toucher le bouton pour rechercher les options d'achat du produit dans un nouvel onglet.</translation>
 <translation id="8798449543960971550">Lu</translation>

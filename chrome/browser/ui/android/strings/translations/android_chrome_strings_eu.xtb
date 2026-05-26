@@ -493,6 +493,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3067505415088964188">Prezioa baxua da</translation>
 <translation id="3070005020161560471">Itzuli automatikoki edukia hizkuntza hauetako batean badago:</translation>
 <translation id="3072980200212375806">Chrome-n irekiko da <ph name="APP_NAME" />. Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_LINK1" />Google-ren Zerbitzu-baldintzak<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />Google Chrome-ren eta Chrome OS-ren Zerbitzu-baldintza gehigarriak<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Pribatutasun-gidalerroak<ph name="END_LINK3" /> ere aplikatuko dira.</translation>
+<translation id="3080375898390966733">Bilatu fitxan Google Lens-ekin</translation>
 <translation id="3080525922482950719">Orriak gorde ditzakezu, geroago edo konexiorik ez daukazunean irakurtzeko</translation>
 <translation id="3087734570205094154">Behekoa</translation>
 <translation id="3091010850649238832">Erakutsi arbeleko edukia</translation>
@@ -550,6 +551,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3384347053049321195">Partekatu irudia</translation>
 <translation id="3385749568468586663">Gemini ez dago erabilgarri ezkutuko moduan</translation>
 <translation id="3387650086002190359">Ezin izan da deskargatu <ph name="FILE_NAME" />, fitxategi-sisteman erroreak daudelako.</translation>
+<translation id="3391311825344469964">Chrome-ren leiho-kudeatzailean kudea ditzakezu leihoak</translation>
 <translation id="3417835166382867856">Bilatu fitxak</translation>
 <translation id="3430670036890315772">Profilaren blokeatzeko eginbidea desaktibatuz gero, gordeta daukazun informazioa kenduko da</translation>
 <translation id="3435575784518354875">Pasahitzak atzitzen jarraitu ahal izateko, esporta itzazu, eguneratu Google Play Services eta, gero, inporta itzazu berriro Google-ren Pasahitz-kudeatzailea zerbitzura. <ph name="BEGIN_LINK" />Ikusi argibide guztiak<ph name="END_LINK" />.</translation>
@@ -1070,6 +1072,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5628604359369369630">Irakurri gabeak (konexiorik gabe erabilgarri)</translation>
 <translation id="5631483240431073854">Kudeatu irekitako fitxak</translation>
 <translation id="5632485077360054581">Erakutsi nola</translation>
+<translation id="5639031457248936693"><ph name="WEBSITE" /> webguneak zure baimena behar du <ph name="EXTENSION_NAME" /> exekutatzeko</translation>
 <translation id="564121214411935612"><ph name="USER_NAME" /> gisa hasi duzu saioa. Google-ko kontuaren errorea. Ezarpenak irekitzen ditu.</translation>
 <translation id="5641456720590409793">Baliteke <ph name="BEGIN_LINK1" />bilaketa-historia<ph name="END_LINK1" /> eta <ph name="BEGIN_LINK2" />beste jarduera batzuk<ph name="END_LINK2" /> Google-ko kontuan gordetzea</translation>
 <translation id="5648166631817621825">Azken zazpi egunetakoak</translation>
@@ -1877,6 +1880,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8765617695893461815">{NUM_PASSWORDS,plural, =1{Hobe dezakezun pasahitz ez-seguru bat aurkitu du Chrome-k}other{Hobe ditzakezun # pasahitz ez-seguru aurkitu ditu Chrome-k}}</translation>
 <translation id="8766529642647037772">Honelako esteka nabarmendu bat sortu nahi duzu?</translation>
 <translation id="8769783688897433958">Ikusi webgunearen informazioa eta baimenak</translation>
+<translation id="8786293874273448556"><ph name="WEBSITE" /> webguneak zure baimena behar du <ph name="COUNT" /> luzapen exekutatzeko</translation>
 <translation id="8788265440806329501">Nabigazio-historia itxita dago</translation>
 <translation id="8790193082819560975">Produktua erosteko aukerak beste fitxa batean bilatzeko, sakatu hau.</translation>
 <translation id="8798449543960971550">Irakurrita</translation>

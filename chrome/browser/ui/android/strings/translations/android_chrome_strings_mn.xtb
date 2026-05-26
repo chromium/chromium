@@ -493,6 +493,7 @@
 <translation id="3067505415088964188">Үнэ хямд байна</translation>
 <translation id="3070005020161560471">Автоматаар орчуул</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />-г Chrome-д нээнэ. Үргэлжлүүлснээр та <ph name="BEGIN_LINK1" />Google-н үйлчилгээний нөхцөл<ph name="END_LINK1" /> болон <ph name="BEGIN_LINK2" />Google Chrome, ChromeOS-н үйлчилгээний нэмэлт нөхцөлийг<ph name="END_LINK2" /> зөвшөөрч байна. <ph name="BEGIN_LINK3" />Нууцлалын бодлого<ph name="END_LINK3" /> мөн хэрэгжинэ.</translation>
+<translation id="3080375898390966733">Google Lens-р таб хайх</translation>
 <translation id="3080525922482950719">Та хуудаснуудыг дараа, эсвэл офлайнаар уншихаар хадгалж болно</translation>
 <translation id="3087734570205094154">Доод</translation>
 <translation id="3091010850649238832">Түр санах ойн контентыг харуулах</translation>
@@ -550,6 +551,7 @@
 <translation id="3384347053049321195">Зураг хуваалцах</translation>
 <translation id="3385749568468586663">Gemini-г Нууцлалын горимд ашиглах боломжгүй</translation>
 <translation id="3387650086002190359">Файлын системийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>
+<translation id="3391311825344469964">Та цонхнуудаа Chrome-н Цонхны менежерт удирдах боломжтой</translation>
 <translation id="3417835166382867856">Табуудыг хайх</translation>
 <translation id="3430670036890315772">Профайлынхаа түгжээг унтраах нь таны хадгалсан мэдээллийг хасна</translation>
 <translation id="3435575784518354875">Нууц үгэндээ хандах эрхээ хадгалахын тулд одоо нууц үгээ экспортолж, Google Play үйлчилгээг шинэчилж, дараа нь буцааж Google Нууц үгний менежер лүү импортолно уу. <ph name="BEGIN_LINK" />Бүтэн зааварчилгааг харна уу<ph name="END_LINK" />.</translation>

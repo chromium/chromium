@@ -259,6 +259,7 @@
 <translation id="1392813880755413602">Prezentare OpenDocument</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> nu a trimis date.</translation>
 <translation id="1393071644879491291">Atacatorii de pe site-ul pe care ai încercat să-l accesezi te pot păcăli să instalezi software sau să dezvălui informații cum ar fi parolele, numărul de telefon sau numerele de carduri de credit. Chrome recomandă insistent să închizi pagina. <ph name="BEGIN_LEARN_MORE_LINK" />Află mai multe despre acest avertisment<ph name="END_LEARN_MORE_LINK" /></translation>
+<translation id="1398743098754840707">Site-urile pe care le adaugi aici nu vor fi folosite ca referință pentru răspunsuri, chiar dacă fila este deschisă. Dacă un site pe care îl adaugi este folosit într-un fir, poate dura până la 30 de minute pentru ca firul să nu mai facă referire la acesta.</translation>
 <translation id="1402151528875251561">Afișează istoricul în panoul lateral</translation>
 <translation id="1405567553485452995">Verde deschis</translation>
 <translation id="1406370515365284486">Metodele tale de plată se vor salva în continuare</translation>
@@ -1552,6 +1553,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="343474037147570563">Fișierele pe care le încarci sau atașezi sunt trimise la Google Cloud sau la terți spre analiză. De exemplu, se pot căuta date sensibile sau programe malware și pot să fie stocate conform politicilor companiei și să fie vizibile pentru administrator.</translation>
 <translation id="3435557549311968410">Continuu (scurt)</translation>
 <translation id="3435738964857648380">Securitate</translation>
+<translation id="3438509337461223476">Permite automat accesul la filele deschise relevante în fiecare fir</translation>
 <translation id="3440783957068352691">pătrată</translation>
 <translation id="3441653493275994384">Ecran</translation>
 <translation id="3443504041532578451">Disc optic (satin)</translation>
@@ -2483,6 +2485,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="4894390983254799375">de exemplu, ID-ul dispozitivului, numele, versiunea SO și numele de utilizator al SO.</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
 <translation id="4896809202198625921">Jocurile Olimpice</translation>
+<translation id="4897851261703006488">Această politică nu trebuie să aibă anteturi care depășesc <ph name="MAX_HEADER_SIZE_LIMIT" /> KB.</translation>
 <translation id="4898742041545089450">Acest subiect este deblocat și poate deveni activ pe baza istoricului tău de navigare</translation>
 <translation id="4900217275619098670">A noua rolă</translation>
 <translation id="4901052769830245369">Etichete (semilucioase)</translation>
@@ -2730,6 +2733,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5284295735376057059">Proprietățile documentului</translation>
 <translation id="528468243742722775">Oprește</translation>
 <translation id="5285468538058987167">Prin autentificare puternică pentru clienți (SCA)</translation>
+<translation id="5286195392366054103">Această politică are mai mult de <ph name="MAX_URL_PATTERNS_LIMIT" /> șabloane de adrese URL. Vor fi folosite doar primele <ph name="MAX_URL_PATTERNS_LIMIT" /> șabloane.</translation>
 <translation id="5287456746628258573">Site-ul folosește o configurație de securitate învechită, care îți poate expune informațiile (de exemplu, parolele sau numerele cardurilor de credit) când sunt trimise la acest site.</translation>
 <translation id="5288108484102287882">Validarea valorilor de politică a returnat avertismente</translation>
 <translation id="5289384342738547352">Gestionarea mai multor documente</translation>
@@ -3848,6 +3852,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="7016992613359344582">Aceste costuri pot fi unice sau recurente și ascunse.</translation>
 <translation id="701757816833614688">Educație în domeniul artelor vizuale și designului</translation>
 <translation id="7020464868401003526">Adresa URL a comenzii rapide depășește lungimea maximă permisă de <ph name="MAX_LENGTH" /> caractere.</translation>
+<translation id="7020581144940000377">Folosește locația aproximativă</translation>
 <translation id="702275896380648118">Acest site stabilește lucrurile care te interesează, apoi sugerează anunțuri altor site-uri. În plus, site-ul preia subiectele anunțurilor din Chrome pentru a-ți afișa anunțuri mai relevante.</translation>
 <translation id="7023162328967545559">Avertisment de la administrator</translation>
 <translation id="7023765275461720661">Conectezi contul și plătești cu <ph name="BNPL_ISSUER_NAME" />?</translation>
@@ -3958,6 +3963,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="719464814642662924">Visa</translation>
 <translation id="7195432682252510959">Folosește codul la finalizarea achiziției. Valabil până pe <ph name="DATE" />.</translation>
 <translation id="7195852673246414183">După ce activezi setarea, revino la această filă pentru a începe să scrii</translation>
+<translation id="7196153352301578792">Chrome va trimite automat la Google conținutul paginii și adresele URL ale filelor deschise care pot fi relevante pentru întrebarea ta, pentru a primi răspunsuri mai bine personalizate. Chrome va permite accesul numai la filele din fereastra în care lucrezi.</translation>
 <translation id="7196370964328811506">Completează automat acest card pentru achizițiile făcute în Chrome când este salvat pe acest dispozitiv</translation>
 <translation id="7199278868241956094">Oficio</translation>
 <translation id="7200963436813710587">Am luat în considerare următoarele file deschise:</translation>
@@ -4372,6 +4378,7 @@ Detalii suplimentare:
 <translation id="7805268272389338048">Criptarea îți protejează informațiile cu caracter personal</translation>
 <translation id="7805768142964895445">Stare</translation>
 <translation id="7805906048382884326">Închide sfatul</translation>
+<translation id="780756914888723112">Această politică permite până la <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> anteturi per regulă. Vor fi folosite doar primele <ph name="MAX_HEADERS_PER_RULE_LIMIT" /> anteturi.</translation>
 <translation id="7810410097247356677">Pentru a plăti mai rapid data viitoare, salvează cardul și codul de securitate pe dispozitiv</translation>
 <translation id="7812922009395017822">Mir</translation>
 <translation id="7813600968533626083">Elimini sugestia pentru formular din Chrome?</translation>
@@ -4680,6 +4687,7 @@ Detalii suplimentare:
 <translation id="8301894345671534559">Introdu codul</translation>
 <translation id="830498451218851433">Îndoire la jumătate</translation>
 <translation id="8308653357438598313">Streaming video live</translation>
+<translation id="8310477433309274098">Fără taxe, DAE de până la 0 %</translation>
 <translation id="8311895354659782580">Liste de imobiliare</translation>
 <translation id="8312841338723044391">LIVE</translation>
 <translation id="8316555157357957253">Se folosește acum</translation>
