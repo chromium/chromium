@@ -6,6 +6,8 @@
 
 #include "base/android/callback_android.h"
 #include "base/auto_reset.h"
+#include "base/byte_size.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -42,8 +44,9 @@ size_t GetMaxCacheSizeInBytes() {
 // static
 bool NavigationTransitionConfig::SupportsBackForwardTransitions(
     base::PassKey<ContentBrowserClient>) {
-  return base::SysInfo::AmountOfPhysicalMemory().InMiB() >=
-         g_min_required_physical_ram_mb;
+  return base::SysInfo::AmountOfTotalPhysicalMemory() >=
+         base::MiBU(
+             base::checked_cast<uint64_t>(g_min_required_physical_ram_mb));
 }
 
 // static
@@ -66,7 +69,7 @@ size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
       display_size_in_bytes * kMaxScreenshotCount;
 
   size_t physical_memory_budget =
-      (base::SysInfo::AmountOfPhysicalMemory().InBytes() *
+      (base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() *
        kPercentageOfRamToUse) /
       100;
   physical_memory_budget =

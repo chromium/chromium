@@ -5,6 +5,7 @@
 #include "content/browser/network/shared_dictionary_util.h"
 
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
@@ -24,7 +25,8 @@ constexpr base::ByteCount kMaxCacheMaxSizeForOnDisk = base::MiB(400);
 
 uint64_t CaliculateCacheMaxSizeForInMemory() {
   base::ByteCount cache_max_size = kDefaultCacheMaxSizeForInMemory;
-  const base::ByteCount total_memory = base::SysInfo::AmountOfPhysicalMemory();
+  const base::ByteCount total_memory =
+      base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount();
   if (total_memory.is_zero()) {
     return cache_max_size.InBytesUnsigned();
   }

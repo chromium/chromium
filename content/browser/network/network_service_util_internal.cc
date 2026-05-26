@@ -4,6 +4,7 @@
 
 #include "content/browser/network/network_service_util_internal.h"
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "build/build_config.h"
@@ -55,7 +56,7 @@ bool IsInProcessNetworkServiceImpl() {
 #if BUILDFLAG(IS_ANDROID)
   // Check RAM size before looking at kNetworkServiceInProcess flag
   // so that we can throttle the finch groups including control.
-  if (base::SysInfo::AmountOfPhysicalMemory() <=
+  if (base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount() <=
       kNetworkServiceOutOfProcessThreshold) {
     return true;
   }

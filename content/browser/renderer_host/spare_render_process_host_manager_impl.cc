@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory_coordinator/utils.h"
@@ -227,7 +228,7 @@ std::string GetNoSpareRendererAllocationForCOOPUMAName(
 // trial is not activated on excluded machines.
 size_t GetSpareRPHCount() {
   // Exclude machines with less than 4gigs of ram.
-  if (base::SysInfo::AmountOfPhysicalMemory() < base::GiB(4)) {
+  if (base::SysInfo::AmountOfTotalPhysicalMemory() < base::GiBU(4)) {
     return 1u;
   }
   return features::kMultipleSpareRPHsCount.Get();
@@ -1058,7 +1059,8 @@ bool SpareRenderProcessHostManagerImpl::
     return true;
   }
 
-  const int total_memory_mb = base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  const int total_memory_mb =
+      base::SysInfo::AmountOfTotalPhysicalMemory().InMiB();
   const int available_memory_threshold_mb =
       total_memory_mb >= kLargeMemoryDeviceThresholdMb.Get()
           ? kLargeMemoryDeviceAvailableMemoryThresholdMb.Get()
