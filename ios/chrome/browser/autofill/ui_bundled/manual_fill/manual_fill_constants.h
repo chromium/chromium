@@ -93,7 +93,7 @@ extern NSString* const kAccessoryKeyboardAccessibilityIdentifier;
 
 // Possible data types when manually filling a form.
 enum class ManualFillDataType {
-  kPassword = 0,
+  kCredential = 0,
   kPaymentMethod,
   kAddress,
   kOther,

@@ -21,7 +21,7 @@ class ExpandedManualFillViewControllerTest : public PlatformTest {
     delegate_ =
         OCMProtocolMock(@protocol(ExpandedManualFillViewControllerDelegate));
 
-    InitViewControllerForDataType(ManualFillDataType::kPassword);
+    InitViewControllerForDataType(ManualFillDataType::kCredential);
   }
 
   // Instanciate the view controller for the given `data_type` and load its view
@@ -88,7 +88,7 @@ TEST_F(ExpandedManualFillViewControllerTest, TestDataTypeSelection) {
   // Select the password segment and verify the delegate call.
   OCMExpect([delegate()
       expandedManualFillViewController:view_controller()
-                didSelectSegmentOfType:ManualFillDataType::kPassword]);
+                didSelectSegmentOfType:ManualFillDataType::kCredential]);
   segmented_control.selectedSegmentIndex = 0;
   [segmented_control sendActionsForControlEvents:UIControlEventValueChanged];
   EXPECT_OCMOCK_VERIFY(delegate());

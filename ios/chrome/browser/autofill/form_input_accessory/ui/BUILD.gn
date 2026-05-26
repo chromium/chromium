@@ -19,6 +19,7 @@ source_set("ui") {
     "//components/autofill/core/common",
     "//components/autofill/ios/browser",
     "//components/password_manager/ios",
+    "//components/webauthn/ios:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/autofill/form_input_accessory/public",
     "//ios/chrome/browser/autofill/model:constants",

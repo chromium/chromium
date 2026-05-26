@@ -157,7 +157,7 @@ void LoadForm(EmbeddedTestServer* test_server, ManualFillDataType data_type) {
   std::string_view form_url;
   std::string form_text;
   switch (data_type) {
-    case ManualFillDataType::kPassword:
+    case ManualFillDataType::kCredential:
       form_url = kPasswordFormURL;
       form_text = "Login form.";
       break;
@@ -341,7 +341,7 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
 // according to the device's orientation.
 - (void)testExpandedManualFillViewDeviceOrientation {
   [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
-                                                             kPassword
+                                                             kCredential
                                              fieldToFill:kPasswordFieldID];
 
   [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationLandscapeRight
@@ -363,7 +363,7 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
 - (void)testOpeningExpandedManualFillViewForPassword {
   // Open the expanded manual fill view for a password field.
   [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
-                                                             kPassword
+                                                             kCredential
                                              fieldToFill:kPasswordFieldID];
 
   // The password view controller should be visible.
@@ -403,7 +403,7 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
 // one data type to the other.
 - (void)testSwitchingDataTypes {
   [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
-                                                             kPassword
+                                                             kCredential
                                              fieldToFill:kPasswordFieldID];
 
   // Select the address tab and confirm that the address view controller is
@@ -432,7 +432,7 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
 // show the keyboard and keyboard accessory bar.
 - (void)testClosingExpandedManualFillView {
   [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
-                                                             kPassword
+                                                             kCredential
                                              fieldToFill:kPasswordFieldID];
 
   // Tap the close button.
@@ -540,7 +540,7 @@ GREYElementInteraction* SearchAutofillFormButton(id<GREYMatcher> scroll_view) {
 - (void)testNoAutofillFormButtonForNonPasswordTypes {
   // Open the expanded manual fill view for a password field.
   [self loadFormAndOpenExpandedManualFillViewForDataType:ManualFillDataType::
-                                                             kPassword
+                                                             kCredential
                                              fieldToFill:kPasswordFieldID];
 
   [[EarlGrey selectElementWithMatcher:AutofillFormButton()]

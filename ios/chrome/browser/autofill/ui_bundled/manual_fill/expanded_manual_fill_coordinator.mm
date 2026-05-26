@@ -196,7 +196,7 @@ using manual_fill::ManualFillDataType;
 // Shows the right manual filling options depending on `dataType`.
 - (void)showManualFillingOptionsForDataType:(ManualFillDataType)dataType {
   switch (dataType) {
-    case ManualFillDataType::kPassword:
+    case ManualFillDataType::kCredential:
       [self showPasswordManualFillingOptions];
       break;
     case ManualFillDataType::kPaymentMethod:
@@ -219,13 +219,13 @@ using manual_fill::ManualFillDataType;
   const GURL& URL = webStateList->GetActiveWebState()->GetLastCommittedURL();
 
   _manualFillPasswordCoordinator = [[ManualFillPasswordCoordinator alloc]
-         initWithBaseViewController:self.baseViewController
-                            browser:self.browser
-                                URL:URL
-                   injectionHandler:self.injectionHandler
-           invokedOnObfuscatedField:self.invokedOnObfuscatedField
-             showAutofillFormButton:(_focusedFieldDataType ==
-                                     ManualFillDataType::kPassword)];
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                             URL:URL
+                injectionHandler:self.injectionHandler
+        invokedOnObfuscatedField:self.invokedOnObfuscatedField
+          showAutofillFormButton:(_focusedFieldDataType ==
+                                  ManualFillDataType::kCredential)];
   _manualFillPasswordCoordinator.delegate = self.delegate;
   _manualFillPasswordCoordinator.consumer = self;
 

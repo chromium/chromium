@@ -78,7 +78,7 @@ constexpr CGFloat kSegmentedControlTrailingSpacingWideLayout = 15;
 // Helper method to get the right segment index depending on the `data_type`.
 int GetSegmentIndexForDataType(ManualFillDataType data_type) {
   switch (data_type) {
-    case ManualFillDataType::kPassword:
+    case ManualFillDataType::kCredential:
       return 0;
     case ManualFillDataType::kPaymentMethod:
       return 1;

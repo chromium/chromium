@@ -6,6 +6,7 @@
 
 #import "base/feature_list.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/webauthn/ios/features.h"
 
 namespace manual_fill {
 
@@ -103,10 +104,13 @@ NSString* const kAccessoryKeyboardAccessibilityIdentifier =
     case autofill::FillingProduct::kIban:
       return manual_fill::ManualFillDataType::kPaymentMethod;
     case autofill::FillingProduct::kPassword:
-      return manual_fill::ManualFillDataType::kPassword;
+      return manual_fill::ManualFillDataType::kCredential;
+    case autofill::FillingProduct::kPasskey:
+      return IsConditionalPasskeyLoginEnabled()
+                 ? manual_fill::ManualFillDataType::kCredential
+                 : manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kAutocomplete:
     case autofill::FillingProduct::kDataList:
-    case autofill::FillingProduct::kPasskey:
     case autofill::FillingProduct::kNone:
       return manual_fill::ManualFillDataType::kOther;
     case autofill::FillingProduct::kCompose:

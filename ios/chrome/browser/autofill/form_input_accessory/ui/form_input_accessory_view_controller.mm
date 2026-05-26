@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/core/browser/filling/filling_product.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/webauthn/ios/features.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_input_accessory_view_controller_delegate.h"
 #import "ios/chrome/browser/autofill/form_input_accessory/ui/form_suggestion_view.h"
 #import "ios/chrome/browser/autofill/model/features.h"
@@ -52,7 +53,7 @@ constexpr CGFloat kManualFillSymbolPointSize = 20;
 void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
                                              NSInteger suggestion_count) {
   switch (data_type) {
-    case ManualFillDataType::kPassword:
+    case ManualFillDataType::kCredential:
       base::RecordAction(
           base::UserMetricsAction("ManualFallback_ExpandIcon_OpenPassword"));
       UMA_HISTOGRAM_COUNTS_100(
@@ -246,7 +247,7 @@ void LogManualFallbackEntryThroughExpandIcon(ManualFillDataType data_type,
 - (void)passwordManualFillButtonPressed:(UIButton*)button {
   base::RecordAction(base::UserMetricsAction("ManualFallback_OpenPassword"));
   [self manualFillButtonPressed:button
-                    forDataType:ManualFillDataType::kPassword];
+                    forDataType:ManualFillDataType::kCredential];
 }
 
 - (void)creditCardManualFillButtonPressed:(UIButton*)button {
@@ -532,9 +533,20 @@ UIImage* GetManualFillSymbol() {
             IDS_IOS_AUTOFILL_ADDRESS_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
+      case FillingProduct::kPasskey:
+        // Passkey suggestions are only fetched and displayed if conditional
+        // passkey login is enabled. If conditional passkeys are disabled, we
+        // should never receive passkey suggestions. If we do, trigger an
+        // assertion. Otherwise, fall through to process the announcement.
+        if (!IsConditionalPasskeyLoginEnabled()) {
+          NOTREACHED();
+        }
+        [[fallthrough]];
       case FillingProduct::kPassword:
         mainFillingProductString = l10n_util::GetPluralStringFUTF16(
-            IDS_IOS_AUTOFILL_PASSWORD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
+            IsConditionalPasskeyLoginEnabled()
+                ? IDS_IOS_AUTOFILL_CREDENTIAL_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT
+                : IDS_IOS_AUTOFILL_PASSWORD_OPTIONS_AVAILABLE_ACCESSIBILITY_ANNOUNCEMENT,
             suggestionCount);
         break;
       case FillingProduct::kCreditCard:
@@ -564,7 +576,6 @@ UIImage* GetManualFillSymbol() {
       case FillingProduct::kIdentityCredential:
       case FillingProduct::kDataList:
       case FillingProduct::kOneTimePassword:
-      case FillingProduct::kPasskey:
       case FillingProduct::kAtMemory:
       case FillingProduct::kNone:
         // These FillingProduct types are currently not available
