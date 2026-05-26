@@ -14,8 +14,10 @@ def __step_config(ctx, step_config):
     #
     # How to remove a script from this list and enable remote execution:
     # 1. Remove the script path from `python_scripts` (or other lists below).
-    # 2. Run a remote build for the target using strict remote mode to check for missing inputs:
-    #    autoninja -C out/Default -strict_remote -config=default-remote <target>
+    # 2. Run a remote build in strict remote mode to check for missing inputs.
+    #    NOTE: By appending '^' to the script path, you can build targets that use
+    #    the script as an input:
+    #    autoninja -C out/Default -strict_remote -config=default-remote <script_path>^
     # 3. If the build fails due to missing inputs on RBE (e.g., helper scripts or assets):
     #    - Fix this in the corresponding `BUILD.gn` (not in Siso star files) by adding the
     #      missing files to the `inputs` list of the action target.
