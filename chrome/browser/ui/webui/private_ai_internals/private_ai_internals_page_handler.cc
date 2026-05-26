@@ -196,12 +196,29 @@ void PrivateAiInternalsPageHandler::SendFormsAiRequest(
   }
 
   optimization_guide::proto::AutofillAiTypeRequest forms_ai_request;
-  forms_ai_request.set_url(url);
+  forms_ai_request.mutable_page_context()->set_url(url);
+  forms_ai_request.mutable_page_context()->set_title("");
   auto* form_data = forms_ai_request.mutable_form_data();
-  form_data->set_form_name("webui_test_form");
-  auto* field = form_data->add_fields();
-  field->set_field_name("first_name");
-  field->set_field_label("First Name");
+  form_data->set_form_name("");
+
+  auto* to_field = form_data->add_fields();
+  to_field->set_field_name("");
+  to_field->set_field_label("To");
+  to_field->set_placeholder("Airport or City");
+  to_field->set_form_control_ax_node_id(0);
+  to_field->set_aria_label("");
+  to_field->set_aria_description("");
+
+  auto* from_field = form_data->add_fields();
+  from_field->set_field_name("");
+  from_field->set_field_label("From");
+  from_field->set_placeholder("Airport or City");
+  from_field->set_form_control_ax_node_id(0);
+  from_field->set_aria_label("");
+  from_field->set_aria_description("");
+
+  forms_ai_request.mutable_annotated_page_content();
+  forms_ai_request.set_include_reasoning(true);
 
   optimization_guide::proto::ExecuteRequest execute_request;
   execute_request.set_feature(
