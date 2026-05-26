@@ -4934,6 +4934,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mojo.Channel.WriteLatencyUs" units="microseconds"
+    expires_after="2027-05-22">
+  <owner>nafisabedin@google.com</owner>
+  <owner>pasko@chromium.org</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Measures the time taken to write a channel message to the underlying
+    transport in Mojo. The metric is downsampled to reduce its costs.
+
+    This is only recorded on clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Mojo.Channel.WriteMessageLatency" units="ms"
     expires_after="2026-09-27">
   <owner>amistry@chromium.org</owner>
