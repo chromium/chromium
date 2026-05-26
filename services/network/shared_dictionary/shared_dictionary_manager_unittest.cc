@@ -997,8 +997,12 @@ TEST_P(SharedDictionaryManagerTest, WriterForUseAsDictionaryMatchDestOption) {
       {"match=\"test\", match-dest=\"document\"",
        base::unexpected(
            mojom::SharedDictionaryError::kWriteErrorNonListMatchDestField)},
-      // Unknown `match-dest` value should be treated as empty.
-      {"match=\"test\", match-dest=(\"unknown\")", {}},
+      // Explicitly empty `match-dest` value acts as wildcard.
+      {"match=\"test\", match-dest=()", {}},
+      // Unknown `match-dest` value should return an error.
+      {"match=\"test\", match-dest=(\"unknown\")",
+       base::unexpected(
+           mojom::SharedDictionaryError::kWriteErrorInvalidMatchDestList)},
       //`match-dest` should not be a sf-token.
       // https://github.com/httpwg/http-extensions/issues/2723
       {"match=\"test\", match-dest=(document)",

@@ -346,6 +346,8 @@ protocol::String BuildSharedDictionaryError(
       return SharedDictionaryErrorEnum::WriteErrorNonStringIdField;
     case SharedDictionaryError::kWriteErrorNonStringInMatchDestList:
       return SharedDictionaryErrorEnum::WriteErrorNonStringInMatchDestList;
+    case SharedDictionaryError::kWriteErrorInvalidMatchDestList:
+      return SharedDictionaryErrorEnum::WriteErrorInvalidMatchDestList;
     case SharedDictionaryError::kWriteErrorNonStringMatchField:
       return SharedDictionaryErrorEnum::WriteErrorNonStringMatchField;
     case SharedDictionaryError::kWriteErrorNonTokenTypeField:

@@ -316,6 +316,7 @@ experimental domain Audits
       WriteErrorNonSecureContext
       WriteErrorNonStringIdField
       WriteErrorNonStringInMatchDestList
+      WriteErrorInvalidMatchDestList
       WriteErrorNonStringMatchField
       WriteErrorNonTokenTypeField
       WriteErrorRequestAborted

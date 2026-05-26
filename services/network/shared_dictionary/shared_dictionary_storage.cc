@@ -120,6 +120,12 @@ ParseDictionaryHeaderInfo(const std::string& use_as_dictionary_header) {
           match_dest_values.insert(*dest_value);
         }
       }
+      // A list that is entirely made up of unknown destinations will never
+      // match anything.
+      if (!entry.second.member.empty() && match_dest_values.empty()) {
+        return base::unexpected(
+            mojom::SharedDictionaryError::kWriteErrorInvalidMatchDestList);
+      }
     } else if (entry.first == shared_dictionary::kOptionNameType) {
       if ((entry.second.member.size() != 1u) ||
           !entry.second.member.front().item.is_token()) {

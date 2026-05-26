@@ -26,6 +26,7 @@ enum SharedDictionaryError {
   kWriteErrorNonSecureContext,
   kWriteErrorNonStringIdField,
   kWriteErrorNonStringInMatchDestList,
+  kWriteErrorInvalidMatchDestList,
   kWriteErrorNonStringMatchField,
   kWriteErrorNonTokenTypeField,
   kWriteErrorRequestAborted,
