@@ -14,12 +14,16 @@
 #include "chrome/browser/glic/test_support/interactive_glic_test.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
+#include "chrome/browser/ui/tabs/split_tab_metrics.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "components/split_tabs/split_tab_visual_data.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -44,6 +48,23 @@ auto GetPointWithOffset(int x, int y) {
     auto* view = views::test::InteractiveViewsTestApi::AsView<views::View>(el);
     return view->GetBoundsInScreen().origin() + gfx::Vector2d(x, y);
   });
+}
+
+views::View* GetOverlayView(content::WebContents* tab_contents) {
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(tab_contents);
+  if (!controller) {
+    return nullptr;
+  }
+  return controller->GetOverlayViewForTesting();
+}
+
+views::View* GetOverlayView(Browser* browser, int index) {
+  auto* tab_contents = browser->tab_strip_model()->GetWebContentsAt(index);
+  if (!tab_contents) {
+    return nullptr;
+  }
+  return GetOverlayView(tab_contents);
 }
 }  // namespace
 
@@ -90,6 +111,108 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
       // glic-selection-overlay is expected to be displayed.
       WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
                                                     "glic-selection-overlay"}));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       OverlayRemainsOnBackgroundedTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  auto get_overlay_visibility = [this]() {
+    auto* overlay_view = GetOverlayView(browser(), 0);
+    return overlay_view && overlay_view->GetVisible();
+  };
+
+  RunTestSequence(
+      Do([this]() {
+        chrome::AddTabAt(
+            browser(), embedded_test_server()->GetURL("/empty.html"), -1, true);
+      }),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      CheckResult(get_overlay_visibility, true),
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(1); }),
+      CheckResult(get_overlay_visibility, false));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       OverlayAttachToCorrectContainerInSplitView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() {
+        chrome::AddTabAt(
+            browser(), embedded_test_server()->GetURL("/empty.html"), -1, true);
+        browser()->tab_strip_model()->AddToNewSplit(
+            {0}, split_tabs::SplitTabVisualData(),
+            split_tabs::SplitTabCreatedSource::kToolbarButton);
+        int last_index = browser()->tab_strip_model()->count() - 1;
+        browser()->tab_strip_model()->ActivateTabAt(last_index);
+        TrackGlicInstanceWithTabIndex(last_index);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      // Verify that the overlay is in the correct container.
+      CheckResult(
+          [this]() {
+            auto* active_contents =
+                browser()->tab_strip_model()->GetActiveWebContents();
+            if (!active_contents) {
+              return false;
+            }
+            EXPECT_EQ(active_contents->GetURL(),
+                      embedded_test_server()->GetURL("/empty.html"));
+            return GetOverlayView(active_contents) != nullptr;
+          },
+          true));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       OverlayRemainsShownWhenChangeFocusInSplitView) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+
+  RunTestSequence(
+      Do([this]() {
+        // Add a new tab and make it split with the first one.
+        chrome::AddTabAt(
+            browser(), embedded_test_server()->GetURL("/empty.html"), -1, true);
+        browser()->tab_strip_model()->AddToNewSplit(
+            {0}, split_tabs::SplitTabVisualData(),
+            split_tabs::SplitTabCreatedSource::kToolbarButton);
+        int last_index = browser()->tab_strip_model()->count() - 1;
+        browser()->tab_strip_model()->ActivateTabAt(last_index);
+        TrackGlicInstanceWithTabIndex(last_index);
+      }),
+      OpenGlic(), ClickMockGlicElement({"#captureRegionBtn"}),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, {"selection-overlay-app"},
+                        "el => el.screenshot_ !== null"),
+      // Change focus to the other tab (index 0).
+      Do([this]() { browser()->tab_strip_model()->ActivateTabAt(0); }),
+      // Verify that the overlay is still visible on the second tab (index 1).
+      CheckResult(
+          [this]() {
+            auto* tab_contents =
+                browser()->tab_strip_model()->GetWebContentsAt(1);
+            if (!tab_contents) {
+              return false;
+            }
+            EXPECT_EQ(tab_contents->GetURL(),
+                      embedded_test_server()->GetURL("/empty.html"));
+            auto* overlay_view = GetOverlayView(tab_contents);
+            return overlay_view && overlay_view->GetVisible();
+          },
+          true));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, MultiRegionSelection) {
@@ -348,7 +471,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
 // therefore the selection overlay in the first tab.
 //
 // Fails on Wayland platforms and flaky on Mac.
-#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(SUPPORTS_OZONE_WAYLAND) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_EscDismissesFloatyOnSecondTab \
   DISABLED_EscDismissesFloatyOnSecondTab
 #else

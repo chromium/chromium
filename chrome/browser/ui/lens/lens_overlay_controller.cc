@@ -1352,10 +1352,6 @@ ui::ElementIdentifier LensOverlayController::GetViewContainerId() {
   return kLensOverlayViewElementId;
 }
 
-bool LensOverlayController::UsesContentsContainerView() {
-  return false;
-}
-
 SidePanelType LensOverlayController::GetSidePanelType() {
   return GetLensOverlaySidePanelCoordinator()->GetPanelType();
 }
@@ -1520,8 +1516,9 @@ LensOverlayController::GetPreselectionBubbleConfig() {
 }
 
 bool LensOverlayController::IsOverlayViewShared() const {
-  // The view that host's Lens's WebUI is a direct child of the BrowserView,
-  // which means it can be shared across different tabs.
+  // The view that hosts Lens's WebUI is a direct child of the BrowserView,
+  // which means it can be shared across different tabs. It also means Lens
+  // WebUI does not support split view at the moment.
   return true;
 }
 
