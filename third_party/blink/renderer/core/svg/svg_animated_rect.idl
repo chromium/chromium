@@ -29,5 +29,5 @@
 interface SVGAnimatedRect {
     // TODO(foolip): SVGRect should be DOMRectReadOnly.
     readonly attribute SVGRect baseVal;
-    readonly attribute SVGRect animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute SVGRect animVal;
 };

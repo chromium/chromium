@@ -30,5 +30,5 @@
     ImplementedAs=SVGAnimatedEnumerationBase
 ] interface SVGAnimatedEnumeration {
     [RaisesException=Setter] attribute unsigned short baseVal;
-    readonly attribute unsigned short animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute unsigned short animVal;
 };

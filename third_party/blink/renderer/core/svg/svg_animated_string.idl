@@ -28,5 +28,5 @@
 [Exposed=Window]
 interface SVGAnimatedString {
     [RaisesException=Setter] attribute (DOMString or TrustedScriptURL) baseVal;
-    readonly attribute DOMString animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute DOMString animVal;
 };

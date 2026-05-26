@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<title>SVGAnimVal use counter</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg id="svg">
+  <rect id="rect"/>
+  <text id="text"/>
+  <use id="use"/>
+  <marker id="marker"/>
+  <linearGradient>
+    <stop id="gradientStop"/>
+  </linearGradient>
+  <filter>
+    <feColorMatrix id="feColorMatrix"/>
+    <feConvolveMatrix id="feConvolveMatrix"/>
+  </filter>
+</svg>
+<script>
+// Must match WebFeature::kSVGAnimVal in
+// third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom
+const kSVGAnimVal = 5900;
+
+test(() => {
+  assert_true(!!window.internals,
+              'window.internals is required for this test');
+  // Each SVGAnimated* type should independently fire the SVGAnimVal counter.
+  // The counter is cleared between accesses so we don't rely on stickiness
+  // from a previous type.
+  const cases = [
+    ['SVGAnimatedLength',              () => rect.width.animVal],
+    ['SVGAnimatedLengthList',          () => text.x.animVal],
+    ['SVGAnimatedString',              () => use.href.animVal],
+    ['SVGAnimatedAngle',               () => marker.orientAngle.animVal],
+    ['SVGAnimatedEnumeration',         () => marker.orientType.animVal],
+    ['SVGAnimatedRect',                () => svg.viewBox.animVal],
+    ['SVGAnimatedPreserveAspectRatio', () => svg.preserveAspectRatio.animVal],
+    ['SVGAnimatedNumber',              () => gradientStop.offset.animVal],
+    ['SVGAnimatedNumberList',          () => feColorMatrix.values.animVal],
+    ['SVGAnimatedInteger',             () => feConvolveMatrix.targetX.animVal],
+    ['SVGAnimatedBoolean',             () => feConvolveMatrix.preserveAlpha.animVal],
+    ['SVGAnimatedTransformList',       () => rect.transform.animVal],
+  ];
+  for (const [name, readAnimVal] of cases) {
+    internals.clearUseCounter(document, kSVGAnimVal);
+    assert_false(internals.isUseCounted(document, kSVGAnimVal),
+                 `${name}: counter should be cleared before access`);
+    readAnimVal();
+    assert_true(internals.isUseCounted(document, kSVGAnimVal),
+                `${name}.animVal should trigger SVGAnimVal counter`);
+  }
+}, 'Each SVGAnimated* type independently triggers the SVGAnimVal counter');
+</script>

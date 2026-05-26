@@ -28,5 +28,5 @@
 [Exposed=Window]
 interface SVGAnimatedBoolean {
     [RaisesException=Setter] attribute boolean baseVal;
-    readonly attribute boolean animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute boolean animVal;
 };

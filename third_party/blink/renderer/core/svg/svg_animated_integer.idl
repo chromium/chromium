@@ -28,5 +28,5 @@
 [Exposed=Window]
 interface SVGAnimatedInteger {
     [RaisesException=Setter] attribute long baseVal;
-    readonly attribute long animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute long animVal;
 };

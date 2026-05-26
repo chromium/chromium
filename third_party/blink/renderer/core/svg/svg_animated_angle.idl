@@ -28,5 +28,5 @@
 [Exposed=Window]
 interface SVGAnimatedAngle {
     readonly attribute SVGAngle baseVal;
-    readonly attribute SVGAngle animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute SVGAngle animVal;
 };

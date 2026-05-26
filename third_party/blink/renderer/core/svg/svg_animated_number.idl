@@ -29,5 +29,5 @@
 [Exposed=Window]
 interface SVGAnimatedNumber {
     [RaisesException=Setter] attribute float baseVal;
-    readonly attribute float animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute float animVal;
 };

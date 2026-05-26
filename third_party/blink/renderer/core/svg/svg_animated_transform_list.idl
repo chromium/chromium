@@ -28,5 +28,5 @@
 [Exposed=Window]
 interface SVGAnimatedTransformList {
     [MeasureAs=SVGAnimatedTransformListBaseVal] readonly attribute SVGTransformList baseVal;
-    readonly attribute SVGTransformList animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute SVGTransformList animVal;
 };

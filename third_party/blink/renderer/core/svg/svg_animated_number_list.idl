@@ -28,5 +28,5 @@
 [Exposed=Window]
 interface SVGAnimatedNumberList {
     readonly attribute SVGNumberList baseVal;
-    readonly attribute SVGNumberList animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute SVGNumberList animVal;
 };

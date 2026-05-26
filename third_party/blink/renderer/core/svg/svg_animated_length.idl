@@ -28,5 +28,5 @@
 [Exposed=Window]
 interface SVGAnimatedLength {
     readonly attribute SVGLength baseVal;
-    readonly attribute SVGLength animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute SVGLength animVal;
 };

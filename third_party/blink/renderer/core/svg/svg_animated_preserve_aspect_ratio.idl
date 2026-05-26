@@ -28,5 +28,5 @@
 [Exposed=Window]
 interface SVGAnimatedPreserveAspectRatio {
     readonly attribute SVGPreserveAspectRatio baseVal;
-    readonly attribute SVGPreserveAspectRatio animVal;
+    [MeasureAs=SVGAnimVal] readonly attribute SVGPreserveAspectRatio animVal;
 };
