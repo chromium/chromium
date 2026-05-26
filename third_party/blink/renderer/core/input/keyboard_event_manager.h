@@ -57,13 +57,16 @@ class CORE_EXPORT KeyboardEventManager final
 
   bool is_handling_key_event() const { return is_handling_key_event_; }
 
+  // Moves focus forwards or backwards given a KeyboardEvent for the tab key.
+  // Returns true is focus was moved, otherwise false.
+  bool DefaultTabEventHandler(KeyboardEvent*);
+
  private:
   friend class Internals;
   // Allows overriding the current caps lock state for testing purposes.
   static void SetCurrentCapsLockState(OverrideCapsLockState);
 
   void DefaultSpaceEventHandler(KeyboardEvent*, Node*);
-  void DefaultTabEventHandler(KeyboardEvent*);
   void DefaultEscapeEventHandler(KeyboardEvent*);
   void DefaultEnterEventHandler(KeyboardEvent*);
   void DefaultImeSubmitHandler(KeyboardEvent*);

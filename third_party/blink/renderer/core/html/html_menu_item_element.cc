@@ -16,12 +16,15 @@
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/option_list.h"
 #include "third_party/blink/renderer/core/html/html_menu_bar_element.h"
 #include "third_party/blink/renderer/core/html/html_menu_list_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/input/keyboard_event_manager.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
@@ -114,13 +117,46 @@ FocusableState HTMLMenuItemElement::SupportsFocus(UpdateBehavior) const {
 
 bool HTMLMenuItemElement::IsKeyboardFocusableSlow(
     UpdateBehavior update_behavior) const {
-  // Menuitems are keyboard focusable if they are focusable and don't have a
-  // negative tabindex set.
-  return IsFocusable(update_behavior) && tabIndex() >= 0;
-}
+  if (!HTMLElement::IsKeyboardFocusableSlow(update_behavior)) {
+    return false;
+  }
+  if (!owning_menu_element_) {
+    return true;
+  }
 
-int HTMLMenuItemElement::DefaultTabIndex() const {
-  return 0;
+  // Moving focus between menuitems is done with arrow keys instead of the tab
+  // key, so all menuitems are not keyboard focusable except for the first
+  // menuitem in a menubar so that using tab to focus into a menubar focuses the
+  // first menuitem.
+  // TODO(crbug.com/513637242): Change this behavior when non-conforming
+  // interactive elements are added to the menu.
+  if (IsA<HTMLMenuBarElement>(owning_menu_element_.Get())) {
+    // If focus is inside of this tree of menu elements, then this menuitem
+    // should not be focusable in order to make sure that tabbing or
+    // shift+tabbing moves focus outside of the this tree of menu elements.
+    // Otherwise, if focus is outside, then the first menuitem in the menubar
+    // should be keyboard focusable in order to make sure that tabbing into this
+    // menubar focuses the first menuitem.
+    Element* adjusted_focused_element = GetTreeScope().AdjustedFocusedElement();
+    if (adjusted_focused_element &&
+        owning_menu_element_->MenuTreeContainsNode(*adjusted_focused_element)) {
+      return false;
+    } else {
+      // This code makes it so that when tabbing into a menubar, the first
+      // menuitem gets focus, regardless of which menuitem was focused the last
+      // time this menubar was focused or which direction sequential focus came
+      // from. This matches listboxes, but hasn't been discussed for menubars
+      // yet: https://github.com/openui/open-ui/issues/1436
+      MenuItemList item_list = owning_menu_element_->ItemList();
+      HTMLMenuItemElement* first_focusable_menuitem =
+          item_list.NextFocusableElement(*item_list.begin(),
+                                         /*inclusive=*/true);
+      return first_focusable_menuitem == this;
+    }
+  } else {
+    CHECK(IsA<HTMLMenuListElement>(owning_menu_element_.Get()));
+    return false;
+  }
 }
 
 bool HTMLMenuItemElement::ShouldHaveFocusAppearance() const {
@@ -233,8 +269,12 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
   if (!keyboard_event || event.type() != event_type_names::kKeydown) {
     return;
   }
-  // If any key modifiers are pressed, don't do anything.
-  if (keyboard_event->GetModifiers() & WebInputEvent::kKeyModifiers) {
+
+  // If any key modifiers are pressed, don't do anything, except for the shift
+  // key which we want to handle in tab key event handling.
+  constexpr int modifiers_except_shift =
+      WebInputEvent::kKeyModifiers & ~WebInputEvent::kShiftKey;
+  if (keyboard_event->GetModifiers() & modifiers_except_shift) {
     return;
   }
 
@@ -248,6 +288,52 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
   }
   MenuItemList menuitems = owning_menu_element_->ItemList();
   if (menuitems.Empty()) {
+    return;
+  }
+
+  if (key == keywords::kTab) {
+    // The tab key should close the entire tree of menu elements.
+    // In order to correctly focus the next or previous element of the menubar
+    // which may have invoked a submenu which this item is in, we need to move
+    // focus before actually closing the menus because once we close the menus
+    // we won't have invoker relationships to follow in order to figure out
+    // what the ancestor menubar is anymore, which is implemented in
+    // IsKeyboardFocusableSlow.
+    LocalFrame* frame = GetDocument().GetFrame();
+    if (!frame ||
+        !frame->GetEventHandler().DefaultTabEventHandler(keyboard_event)) {
+      return;
+    }
+
+    if (auto* menulist =
+            DynamicTo<HTMLMenuListElement>(owning_menu_element_.Get())) {
+      VectorOf<HTMLMenuListElement> menulists_to_close;
+      while (menulist) {
+        menulists_to_close.push_back(menulist);
+
+        if (HTMLMenuItemElement* invoker_menuitem =
+                menulist->InvokingMenuItem()) {
+          menulist = DynamicTo<HTMLMenuListElement>(
+              invoker_menuitem->owning_menu_element_.Get());
+        } else {
+          menulist = nullptr;
+        }
+      }
+
+      for (const Member<HTMLMenuListElement>& menulist_to_close :
+           menulists_to_close) {
+        menulist_to_close->HidePopoverInternal(
+            /*invoker=*/nullptr, HidePopoverFocusBehavior::kNone,
+            HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+            /*exception_state=*/nullptr);
+      }
+    }
+    event.SetDefaultHandled();
+    return;
+  }
+
+  // The remaining key handling code doesn't need to handle shift.
+  if (keyboard_event->GetModifiers() & WebInputEvent::kShiftKey) {
     return;
   }
 

@@ -29,6 +29,12 @@ class CORE_EXPORT HTMLMenuOwnerElement : public HTMLElement,
   int OptionCount() const override;
   String OptionAtIndex(int index) const override;
 
+  // MenuTreeContainsNode returns true if the provided node is within the
+  // light-dom "tree" of menu elements including and descendant from this menu
+  // owner element. "Tree" in this case includes submenus which are currently
+  // open and invoked by menuitems in this menu owner or submenus.
+  bool MenuTreeContainsNode(Node&);
+
  protected:
   HTMLMenuOwnerElement(HTMLQualifiedName, Document&);
 

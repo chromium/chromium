@@ -20,6 +20,10 @@ class CORE_EXPORT HTMLMenuListElement final : public HTMLMenuOwnerElement {
   }
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
+
+  // InvokingMenuItem returns the menuitem element which invoked this menulist
+  // element, if this menulist is currently open and was opened by a menuitem.
+  HTMLMenuItemElement* InvokingMenuItem();
 };
 
 }  // namespace blink

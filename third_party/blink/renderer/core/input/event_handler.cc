@@ -2428,6 +2428,10 @@ void EventHandler::DefaultKeyboardEventHandler(KeyboardEvent* event) {
       event, mouse_event_manager_->MousePressNode());
 }
 
+bool EventHandler::DefaultTabEventHandler(KeyboardEvent* event) {
+  return keyboard_event_manager_->DefaultTabEventHandler(event);
+}
+
 void EventHandler::DragSourceEndedAt(
     const WebMouseEvent& event,
     ui::mojom::blink::DragOperation operation) {

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_menu_owner_element.h"
 
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/html/html_hr_element.h"
@@ -86,6 +87,24 @@ String HTMLMenuOwnerElement::OptionAtIndex(int index) const {
   CHECK_GE(index, 0);
   DCHECK_LE((unsigned)index, ItemList().size());
   return ItemList().at((unsigned)index).textContent();
+}
+
+bool HTMLMenuOwnerElement::MenuTreeContainsNode(Node& node) {
+  HTMLMenuOwnerElement* ancestor_menuowner =
+      Traversal<HTMLMenuOwnerElement>::FirstAncestorOrSelf(node);
+  while (ancestor_menuowner) {
+    if (ancestor_menuowner == this) {
+      return true;
+    }
+    if (auto* menulist = DynamicTo<HTMLMenuListElement>(ancestor_menuowner)) {
+      if (HTMLMenuItemElement* invoker = menulist->InvokingMenuItem()) {
+        ancestor_menuowner = invoker->OwningMenuElement();
+        continue;
+      }
+    }
+    ancestor_menuowner = nullptr;
+  }
+  return false;
 }
 
 }  // namespace blink

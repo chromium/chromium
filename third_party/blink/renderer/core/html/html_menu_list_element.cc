@@ -62,4 +62,11 @@ bool HTMLMenuListElement::HandleCommandInternal(HTMLElement& invoker,
   return false;
 }
 
+HTMLMenuItemElement* HTMLMenuListElement::InvokingMenuItem() {
+  if (!popoverOpen() || !GetPopoverData()) {
+    return nullptr;
+  }
+  return DynamicTo<HTMLMenuItemElement>(GetPopoverData()->invoker());
+}
+
 }  // namespace blink
