@@ -4,6 +4,7 @@
 
 #include "ui/gl/gl_features.h"
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
@@ -374,7 +375,7 @@ BASE_FEATURE(kAndroidLimitRgb565DisplayToApi32,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool PreferRGB565ResourcesForDisplay() {
-  return base::SysInfo::AmountOfPhysicalMemory().InMiB() <= 512 &&
+  return base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() <= 512 &&
          (base::android::android_info::sdk_int() <=
               base::android::android_info::SDK_VERSION_Sv2 ||
           !base::FeatureList::IsEnabled(kAndroidLimitRgb565DisplayToApi32));
