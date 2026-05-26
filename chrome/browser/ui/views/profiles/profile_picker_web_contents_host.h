@@ -72,9 +72,9 @@ class ProfilePickerWebContentsHost {
       const std::variant<ForceSigninUIError, SigninUIError>& error,
       bool success) = 0;
 
-  // Changes the visibility of the host's native toolbar, which shows a back
-  // button.
-  virtual void SetNativeToolbarVisible(bool visible) = 0;
+  // Changes the visibility of the sign-in buttons (i.e. buttons associated with
+  // the sign-in Gaia page) in the native toolbar.
+  virtual void SetNativeToolbarSigninButtonsVisible(bool visible) = 0;
 
   // Changes the visibility of the "Don't sign in" button in the native toolbar.
   // Safe to call even if the button was not instantiated (no-op in that case).

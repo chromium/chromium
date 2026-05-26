@@ -77,9 +77,9 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void ShowSigninErrorDialog(
       const std::variant<ForceSigninUIError, SigninUIError>& error,
       bool success) override;
-  void SetNativeToolbarVisible(bool visible) override;
+  void SetNativeToolbarSigninButtonsVisible(bool visible) override;
   void SetNativeToolbarDontSignInButtonVisible(bool visible) override;
-  bool IsNativeToolbarVisibleForTesting() const;
+  bool AreNativeToolbarSigninButtonsVisibleForTesting() const;
   SkColor GetPreferredBackgroundColor() const override;
 
   // content::WebContentsDelegate:

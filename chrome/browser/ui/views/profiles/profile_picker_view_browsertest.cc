@@ -954,8 +954,8 @@ class ProfilePickerCreationFlowBrowserTest
 #endif
   }
 
-  bool IsNativeToolbarVisible() {
-    return view()->IsNativeToolbarVisibleForTesting();
+  bool AreNativeToolbarSigninButtonsVisible() {
+    return view()->AreNativeToolbarSigninButtonsVisibleForTesting();
   }
 
   static GURL GetHistorySyncOptinURL() {
@@ -1851,11 +1851,12 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   ASSERT_EQ(base::UTF16ToUTF8(entry->GetUserName()), email);
   ASSERT_TRUE(entry->IsSigninRequired());
 
-  // Opening the locked profile from the profile picker should trigger the
-  // reauth, and the back button toolbar should be visible.
+  // Expect the profile picker to be opened since it was the last step before
+  // reauth, toolbar sign-in buttons should be visible, and the profile to be
+  // still locked.
   OpenProfileFromPicker(entry->GetPath(), false);
   WaitForLoadStop(GetChromeReauthURL(email));
-  EXPECT_TRUE(IsNativeToolbarVisible());
+  EXPECT_TRUE(AreNativeToolbarSigninButtonsVisible());
 
   // Simulate a redirect within the reauth page (requesting a password for
   // example), the actual URL is not important for the testing purposes.
@@ -1875,10 +1876,11 @@ IN_PROC_BROWSER_TEST_P(ForceSigninProfilePickerCreationFlowBrowserTest,
   SimulateNavigateBack();
 
   // Expect the profile picker to be opened since it was the last step before
-  // reauth, toolbar should be hidden, and the profile to be still locked.
+  // reauth, the back button should be hidden, and the profile to be still
+  // locked.
   WaitForLoadStop(GURL("chrome://profile-picker"));
   EXPECT_TRUE(ProfilePicker::IsOpen());
-  EXPECT_FALSE(IsNativeToolbarVisible());
+  EXPECT_FALSE(AreNativeToolbarSigninButtonsVisible());
   EXPECT_EQ(GlobalBrowserCollection::GetInstance()->GetSize(),
             initial_browser_count);
   EXPECT_TRUE(entry->IsSigninRequired());
@@ -2238,11 +2240,11 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
                        CreateSignedInProfileDiceReenter) {
   ASSERT_EQ(1u, GlobalBrowserCollection::GetInstance()->GetSize());
   Profile* profile_being_created = StartDiceSignIn();
-  EXPECT_TRUE(IsNativeToolbarVisible());
+  EXPECT_TRUE(AreNativeToolbarSigninButtonsVisible());
 
   // Navigate back from the sign in step.
   SimulateNavigateBack();
-  EXPECT_FALSE(IsNativeToolbarVisible());
+  EXPECT_FALSE(AreNativeToolbarSigninButtonsVisible());
 
   // Simulate the sign-in screen get re-entered with a different color
   // (configured on the local profile screen).

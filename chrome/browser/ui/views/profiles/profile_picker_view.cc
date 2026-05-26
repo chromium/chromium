@@ -497,39 +497,16 @@ void ProfilePickerView::OnLocalProfileInitialized(
   GetProfilePickerFlowController()->SwitchToSignedOutPostIdentityFlow(profile);
 }
 
-void ProfilePickerView::SetNativeToolbarVisible(bool visible) {
-  if (!visible) {
-    toolbar_->SetVisible(false);
-    return;
-  }
-
-  if (toolbar_->children().empty()) {
-    base::RepeatingClosure dont_sign_in_callback;
-    if (ShouldBuildToolbarWithDontSignInButton(
-            Profile::FromBrowserContext(contents_->GetBrowserContext()),
-            params_.entry_point())) {
-      dont_sign_in_callback = base::BindRepeating(
-          &ProfileManagementFlowController::CancelSigninFlow,
-          // Unretained safe because the `flow_controller_` is owned by `this`
-          // and `this` outlives the `toolbar_` (parent view).
-          base::Unretained(flow_controller_.get()));
-    }
-    toolbar_->BuildToolbar(
-        base::BindRepeating(&ProfilePickerView::NavigateBack,
-                            // Binding as Unretained as `this` is the
-                            // `toolbar_`'s parent and outlives it.
-                            base::Unretained(this)),
-        std::move(dont_sign_in_callback));
-  }
-  toolbar_->SetVisible(true);
+void ProfilePickerView::SetNativeToolbarSigninButtonsVisible(bool visible) {
+  CHECK_DEREF(toolbar_).SetSigninButtonsVisible(visible);
 }
 
 void ProfilePickerView::SetNativeToolbarDontSignInButtonVisible(bool visible) {
   CHECK_DEREF(toolbar_).SetDontSignInButtonVisible(visible);
 }
 
-bool ProfilePickerView::IsNativeToolbarVisibleForTesting() const {
-  return toolbar_->GetVisible();
+bool ProfilePickerView::AreNativeToolbarSigninButtonsVisibleForTesting() const {
+  return CHECK_DEREF(toolbar_).AreSigninButtonsVisibleForTesting();  // IN-TEST
 }
 
 SkColor ProfilePickerView::GetPreferredBackgroundColor() const {
@@ -675,6 +652,18 @@ void ProfilePickerView::Init(Profile* picker_profile) {
   // The `FlowController` is created before the widget so it can be used to
   // determine certain aspects of it. E.g. see `GetAccessibleWindowTitle()`.
   flow_controller_ = CreateFlowController(picker_profile, GetClearClosure());
+
+  ProfilePickerToolbar::Builder toolbar_builder(base::BindRepeating(
+      &ProfilePickerView::NavigateBack, base::Unretained(this)));
+  if (ShouldBuildToolbarWithDontSignInButton(picker_profile,
+                                             params_.entry_point())) {
+    toolbar_builder.WithDontSignInButton(base::BindRepeating(
+        &ProfileManagementFlowController::CancelSigninFlow,
+        // Unretained safe because the `flow_controller_` is owned by `this`
+        // and `this` outlives the `toolbar_` (parent view).
+        base::Unretained(flow_controller_.get())));
+  }
+  toolbar_ = AddChildView(toolbar_builder.Build());
 
   // The widget is owned by the native widget.
   new ProfilePickerWidget(this);
@@ -884,10 +873,6 @@ void ProfilePickerView::BuildLayout() {
   auto web_view = std::make_unique<views::WebView>();
   web_view->set_allow_accelerators(true);
   web_view_ = AddChildView(std::move(web_view));
-
-  // Toolbar gets built and set visible once it's needed for the signin.
-  toolbar_ = AddChildView(std::make_unique<ProfilePickerToolbar>());
-  SetNativeToolbarVisible(false);
 
   web_contents_attached_subscription_ =
       web_view_->AddWebContentsAttachedCallback(base::BindRepeating(

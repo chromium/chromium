@@ -90,7 +90,7 @@ class SignInStepController : public ProfileManagementStepController {
   }
 
   void OnHidden() override {
-    host()->SetNativeToolbarVisible(false);
+    host()->SetNativeToolbarSigninButtonsVisible(false);
     // We don't reset the provider when we navigate back as we want to keep this
     // page and the ephemeral profile around for performance reasons.
     // The caller should delete the step if clearing the provider is needed.

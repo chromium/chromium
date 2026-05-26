@@ -132,7 +132,7 @@ void ProfilePickerSignInProvider::SwitchToSignIn(
     host_->ShowScreen(
         contents(), GURL(),
         base::BindOnce(std::move(switch_finished_callback.value()), true));
-    host_->SetNativeToolbarVisible(true);
+    host_->SetNativeToolbarSigninButtonsVisible(true);
     return;
   }
 
@@ -176,7 +176,7 @@ void ProfilePickerSignInProvider::NavigateBack() {
   // Do not load any url because the desired screen is still loaded in the
   // picker contents.
   host_->ShowScreenInPickerContents(GURL(), base::OnceClosure());
-  host_->SetNativeToolbarVisible(false);
+  host_->SetNativeToolbarSigninButtonsVisible(false);
 }
 
 bool ProfilePickerSignInProvider::HandleContextMenu(
@@ -326,10 +326,11 @@ void ProfilePickerSignInProvider::OnProfileInitialized(
       contents(), host_->GetPreferredBackgroundColor());
 
   base::OnceClosure navigation_finished_closure =
-      base::BindOnce(&ProfilePickerWebContentsHost::SetNativeToolbarVisible,
-                     // Unretained is enough as the callback is called by the
-                     // host itself.
-                     base::Unretained(host_), /*visible=*/true)
+      base::BindOnce(
+          &ProfilePickerWebContentsHost::SetNativeToolbarSigninButtonsVisible,
+          // Unretained is enough as the callback is called by the
+          // host itself.
+          base::Unretained(host_), /*visible=*/true)
           .Then(base::BindOnce(std::move(switch_finished_callback.value()),
                                true));
   host_->ShowScreen(contents(), BuildSigninURL(),
@@ -350,7 +351,7 @@ bool ProfilePickerSignInProvider::IsInitialized() const {
 void ProfilePickerSignInProvider::FinishFlow(
     const CoreAccountInfo& account_info) {
   DCHECK(IsInitialized());
-  host_->SetNativeToolbarVisible(false);
+  host_->SetNativeToolbarSigninButtonsVisible(false);
   ResetWebContentsDelegates();
   std::move(callback_).Run(profile_.get(), account_info, std::move(contents_),
                            StepSwitchFinishedCallback());

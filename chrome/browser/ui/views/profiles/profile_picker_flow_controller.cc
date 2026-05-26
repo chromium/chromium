@@ -295,7 +295,9 @@ class ReauthFlowStepController : public ProfileManagementStepController {
     reauth_provider_->SwitchToReauth(std::move(step_shown_callback));
   }
 
-  void OnHidden() override { host()->SetNativeToolbarVisible(false); }
+  void OnHidden() override {
+    host()->SetNativeToolbarSigninButtonsVisible(false);
+  }
 
   void OnNavigateBackRequested() override {
     NavigateBackInternal(reauth_provider_->contents());
