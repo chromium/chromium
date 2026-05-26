@@ -183,6 +183,9 @@ void FileInputType::HandleDOMActivateEvent(Event& event) {
         mojom::ConsoleMessageLevel::kWarning, message));
     return;
   }
+  if (RuntimeEnabledFeatures::FileColorPickerConsumeActivationEnabled()) {
+    LocalFrame::ConsumeTransientUserActivation(document.GetFrame());
+  }
 
   OpenPopupView();
   event.SetDefaultHandled();

@@ -2767,6 +2767,13 @@
       status: "stable",
     },
     {
+      // Consumes user activation when showing a picker via input.click() for
+      // file and color inputs to match input.showPicker() and avoid issues
+      // with multiple pickers trying to open at the same time.
+      name: "FileColorPickerConsumeActivation",
+      status: "stable",
+    },
+    {
       // Also enabled when blink::features::kFileHandlingAPI is overridden
       // on the command line (or via chrome://flags).
       name: "FileHandling",

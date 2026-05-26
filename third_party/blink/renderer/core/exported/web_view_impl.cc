@@ -1050,11 +1050,19 @@ WebInputEventResult WebViewImpl::SendContextMenuEvent() {
 }
 
 WebPagePopupImpl* WebViewImpl::OpenPagePopup(PagePopupClient* client) {
-  DCHECK(client);
+  CHECK(client);
 
   // This guarantees there is never more than 1 PagePopup active at a time.
+  // CancelPagePopup may fire a synchronous change event when a select element
+  // is closed, but that event handler shouldn't be able to open another picker
+  // because it would require multiple user activations to be created and
+  // consumed within the same task.
   CancelPagePopup();
-  DCHECK(!page_popup_);
+  if (RuntimeEnabledFeatures::FileColorPickerConsumeActivationEnabled()) {
+    CHECK(!page_popup_);
+  } else {
+    DCHECK(!page_popup_);
+  }
 
   LocalFrame* opener_frame = client->OwnerElement().GetDocument().GetFrame();
   WebLocalFrameImpl* web_opener_frame =
