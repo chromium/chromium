@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/views/picture_in_picture/document_pip_host.h"
 
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
@@ -35,14 +38,20 @@ class DocumentPipHostTest : public ChromeViewsTestBase {
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
 
+    // In production, ChromeViewsDelegate honours
+    // WidgetDelegate::use_desktop_widget_override() and selects
+    // DesktopNativeWidgetAura for the PiP widget. The test ViewsDelegate
+    // doesn't check that flag, so enable its equivalent here.
+    test_views_delegate()->set_use_desktop_native_widgets(true);
+
     opener_web_contents_ =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
     ASSERT_TRUE(opener_web_contents_);
 
     // Host the opener WebContents inside a test top-level widget so that
-    // `opener->GetTopLevelNativeWindow()` returns a real native window. On
-    // Aura this is required for `views::Widget::Init` (params.parent ||
-    // params.context).
+    // `opener->GetTopLevelNativeWindow()` returns a real native window —
+    // DesktopNativeWidgetAura uses it as `params.parent` when the PiP widget
+    // is initialized.
     opener_host_widget_ =
         CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
     auto* web_view = opener_host_widget_->SetContentsView(
@@ -62,14 +71,13 @@ class DocumentPipHostTest : public ChromeViewsTestBase {
 
   content::WebContents* opener() { return opener_web_contents_.get(); }
 
-  // Creates a DocumentPipHost attached to the opener, returns the host.
-  DocumentPipHost* CreateHost() {
+  // Creates a DocumentPipHost attached to the opener with a PiP widget open.
+  DocumentPipHost* CreateHostAndOpenPipWindow() {
+    DocumentPipHost::CreateForWebContents(opener());
+    auto* host = DocumentPipHost::FromWebContents(opener());
     auto child =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-    DocumentPipHost::CreateForWebContents(opener(), std::move(child),
-                                          MakeDefaultPipOptions());
-    auto* host = DocumentPipHost::FromWebContents(opener());
-    host->CreatePipWidget();
+    host->CreatePipWidget(std::move(child), MakeDefaultPipOptions());
     return host;
   }
 
@@ -84,26 +92,23 @@ class DocumentPipHostTest : public ChromeViewsTestBase {
 // Verify that CreateForWebContents creates and attaches a host.
 TEST_F(DocumentPipHostTest, CreateForWebContents_CreatesHost) {
   EXPECT_FALSE(DocumentPipHost::FromWebContents(opener()));
-  CreateHost();
+  CreateHostAndOpenPipWindow();
   EXPECT_TRUE(DocumentPipHost::FromWebContents(opener()));
 }
 
 // Calling CreateForWebContents a second time is a no-op.
 TEST_F(DocumentPipHostTest, CreateForWebContents_IdempotentWhenExists) {
-  DocumentPipHost* first = CreateHost();
+  DocumentPipHost* first = CreateHostAndOpenPipWindow();
   ASSERT_TRUE(first);
 
-  auto extra_child =
-      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
-  DocumentPipHost::CreateForWebContents(opener(), std::move(extra_child),
-                                        MakeDefaultPipOptions());
+  DocumentPipHost::CreateForWebContents(opener());
 
   EXPECT_EQ(first, DocumentPipHost::FromWebContents(opener()));
 }
 
 // The host should expose the opener, child WebContents, profile, and options.
 TEST_F(DocumentPipHostTest, Accessors) {
-  DocumentPipHost* host = CreateHost();
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
   ASSERT_TRUE(host);
 
   EXPECT_EQ(opener(), host->GetOpenerWebContents());
@@ -114,9 +119,9 @@ TEST_F(DocumentPipHostTest, Accessors) {
   EXPECT_EQ(300u, host->GetPipOptions().height);
 }
 
-// The host creates a placeholder Widget.
+// The host creates a Widget with a DocumentPipWidgetDelegate.
 TEST_F(DocumentPipHostTest, WidgetIsCreated) {
-  DocumentPipHost* host = CreateHost();
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
   ASSERT_TRUE(host);
 
   views::Widget* w = host->GetWidget();
@@ -124,19 +129,48 @@ TEST_F(DocumentPipHostTest, WidgetIsCreated) {
   EXPECT_FALSE(w->IsClosed());
 }
 
+// After CreatePipWidget(), the child WebContents is hosted in the
+// DocumentPipContentsView (a views::WebView).
+TEST_F(DocumentPipHostTest, ChildWebContentsInWebView) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  auto* delegate = static_cast<DocumentPipWidgetDelegate*>(
+      host->GetWidget()->widget_delegate());
+  ASSERT_TRUE(delegate);
+
+  auto* contents_view = delegate->GetDocumentPipContentsView();
+  ASSERT_TRUE(contents_view);
+  EXPECT_EQ(host->GetChildWebContents(), contents_view->web_contents());
+}
+
+// The widget delegate has the correct properties.
+TEST_F(DocumentPipHostTest, WidgetDelegateProperties) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  auto* delegate = host->GetWidget()->widget_delegate();
+  ASSERT_TRUE(delegate);
+
+  EXPECT_TRUE(delegate->CanResize());
+  EXPECT_FALSE(delegate->CanMaximize());
+  EXPECT_FALSE(delegate->CanMinimize());
+  EXPECT_FALSE(delegate->CanFullscreen());
+}
+
 // GetDisplayMode returns kPictureInPicture for the child WebContents.
 TEST_F(DocumentPipHostTest, GetDisplayMode_ReturnsPictureInPicture) {
-  DocumentPipHost* host = CreateHost();
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
   ASSERT_TRUE(host);
 
   EXPECT_EQ(blink::mojom::DisplayMode::kPictureInPicture,
             host->GetDisplayMode(host->GetChildWebContents()));
 }
 
-// When the child requests closure, the host tears down the widget and child
-// WebContents but stays alive on the opener.
+// When the child requests closure, the host tears down the widget (and with it
+// the child WebContents) but stays alive on the opener.
 TEST_F(DocumentPipHostTest, CloseContents_TearsDownWidgetAndChild) {
-  DocumentPipHost* host = CreateHost();
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
   ASSERT_TRUE(host);
   content::WebContents* child = host->GetChildWebContents();
   content::WebContentsDestroyedWatcher child_destroyed_watcher(child);
@@ -157,9 +191,66 @@ TEST_F(DocumentPipHostTest, CloseContents_TearsDownWidgetAndChild) {
 // when the opener WebContents is destroyed. The destructor calls
 // ClosePipWindow().
 TEST_F(DocumentPipHostTest, OpenerDestroyed_HostClosedCleanly) {
-  CreateHost();
+  CreateHostAndOpenPipWindow();
   ASSERT_TRUE(DocumentPipHost::FromWebContents(opener()));
 
   // Destroy the opener; the host is destroyed as UserData without crashing.
   opener_web_contents_.reset();
+}
+
+// After the PiP window is closed, CreatePipWidget() can be called again with a
+// new child WebContents to re-open the PiP window.
+TEST_F(DocumentPipHostTest, ReopenAfterClose) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  // Close the first PiP window.
+  host->CloseContents(host->GetChildWebContents());
+  EXPECT_EQ(nullptr, host->GetWidget());
+  EXPECT_EQ(nullptr, host->GetChildWebContents());
+
+  // Re-open with a new child WebContents.
+  auto new_child =
+      content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
+  host->CreatePipWidget(std::move(new_child), MakeDefaultPipOptions());
+
+  EXPECT_TRUE(host->GetWidget());
+  EXPECT_TRUE(host->GetChildWebContents());
+}
+
+// Regression test for a leak of the WidgetDelegate: with CLIENT_OWNS_WIDGET
+// and without SetOwnedByWidget(), the Widget never deletes its delegate, so
+// the host must own and destroy it. Verify the delegate is actually destroyed
+// (not just unlinked) both when the PiP window is closed and when the host
+// itself goes away.
+TEST_F(DocumentPipHostTest, ClosePipWindow_DestroysWidgetDelegate) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  auto* delegate = static_cast<DocumentPipWidgetDelegate*>(
+      host->GetWidget()->widget_delegate());
+  ASSERT_TRUE(delegate);
+  base::WeakPtr<DocumentPipWidgetDelegate> delegate_weak =
+      delegate->GetWeakPtr();
+
+  host->CloseContents(host->GetChildWebContents());
+
+  EXPECT_FALSE(delegate_weak);
+}
+
+TEST_F(DocumentPipHostTest, OpenerDestroyed_DestroysWidgetDelegate) {
+  DocumentPipHost* host = CreateHostAndOpenPipWindow();
+  ASSERT_TRUE(host);
+
+  auto* delegate = static_cast<DocumentPipWidgetDelegate*>(
+      host->GetWidget()->widget_delegate());
+  ASSERT_TRUE(delegate);
+  base::WeakPtr<DocumentPipWidgetDelegate> delegate_weak =
+      delegate->GetWeakPtr();
+
+  // Destroying the opener WebContents destroys the host (it is UserData),
+  // which in turn must destroy the delegate.
+  opener_web_contents_.reset();
+
+  EXPECT_FALSE(delegate_weak);
 }

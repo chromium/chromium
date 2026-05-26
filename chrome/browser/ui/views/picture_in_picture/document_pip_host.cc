@@ -6,58 +6,55 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_contents_view.h"
+#include "chrome/browser/ui/views/picture_in_picture/document_pip_widget_delegate.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DocumentPipHost);
 
-DocumentPipHost::DocumentPipHost(
-    content::WebContents* opener_web_contents,
-    std::unique_ptr<content::WebContents> child_web_contents,
-    blink::mojom::PictureInPictureWindowOptions pip_options)
+DocumentPipHost::DocumentPipHost(content::WebContents* opener_web_contents)
     : content::WebContentsUserData<DocumentPipHost>(*opener_web_contents),
-      content::WebContentsObserver(opener_web_contents),
-      child_web_contents_(std::move(child_web_contents)),
-      pip_options_(std::move(pip_options)) {
-  CHECK(child_web_contents_);
-
-  child_web_contents_->SetDelegate(this);
-}
+      content::WebContentsObserver(opener_web_contents) {}
 
 DocumentPipHost::~DocumentPipHost() {
   ClosePipWindow();
 }
 
-void DocumentPipHost::CreatePipWidget() {
+void DocumentPipHost::CreatePipWidget(
+    std::unique_ptr<content::WebContents> child_web_contents,
+    blink::mojom::PictureInPictureWindowOptions pip_options) {
   // Avoid creating a second widget if one already exists.
   if (widget_) {
     return;
   }
 
-  widget_delegate_ = std::make_unique<views::WidgetDelegate>();
+  CHECK(child_web_contents);
+  pip_options_ = std::move(pip_options);
+
+  child_web_contents->SetDelegate(this);
+
+  widget_delegate_ = std::make_unique<DocumentPipWidgetDelegate>(
+      GetProfile(), std::move(child_web_contents));
+
   views::Widget::InitParams params(
       views::Widget::InitParams::CLIENT_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW);
+  // The Widget stores `delegate` as a raw pointer. Ownership stays with
+  // `widget_delegate_` because we use CLIENT_OWNS_WIDGET without
+  // SetOwnedByWidget(); the Widget will not delete the delegate.
   params.delegate = widget_delegate_.get();
   params.z_order = ui::ZOrderLevel::kFloatingWindow;
   params.visible_on_all_workspaces = true;
   params.remove_standard_frame = true;
-  // TODO(jiayuchen): Remove once DocumentPipWidgetDelegate introduced
-  // and sets `params.native_widget` to a desktop native widget
-  // (e.g. BrowserNativeWidgetAura / BrowserNativeWidgetMac), mirroring how a
-  // real browser window is created. Until then we use a bare
-  // views::WidgetDelegate, so `views::Widget::Init` falls through to the
-  // ViewsDelegate-selected NativeWidget. On Aura that requires either
-  // `params.parent` or `params.context` (see NativeWidgetAura::InitNativeWidget
-  // DCHECK), so point at the opener's top-level native window to pin the PiP
-  // window to the same display as the opener.
-  params.context = web_contents()->GetTopLevelNativeWindow();
+
   widget_ = std::make_unique<views::Widget>();
   widget_->Init(std::move(params));
   // Intercept external close paths (OS close button, DialogDelegate, etc.) so
   // they route through our teardown logic.
+  // Safety: `this` owns `widget_` via unique_ptr, so the widget (and its
+  // close callback) cannot outlive this host.
   widget_->MakeCloseSynchronous(base::BindOnce(
       &DocumentPipHost::OnWidgetCloseRequested, base::Unretained(this)));
 }
@@ -71,7 +68,14 @@ content::WebContents* DocumentPipHost::GetOpenerWebContents() {
 }
 
 content::WebContents* DocumentPipHost::GetChildWebContents() {
-  return child_web_contents_.get();
+  // The child is owned by the DocumentPipContentsView (a views::WebView)
+  // inside the widget.
+  if (widget_delegate_) {
+    if (auto* contents_view = widget_delegate_->GetDocumentPipContentsView()) {
+      return contents_view->web_contents();
+    }
+  }
+  return nullptr;
 }
 
 views::Widget* DocumentPipHost::GetWidget() {
@@ -100,13 +104,19 @@ void DocumentPipHost::CloseContents(content::WebContents* source) {
 }
 
 void DocumentPipHost::ClosePipWindow() {
-  if (child_web_contents_) {
-    child_web_contents_->SetDelegate(nullptr);
+  // Clear the child's delegate before tearing down, since the host set itself
+  // as delegate in CreatePipWidget().
+  content::WebContents* child = GetChildWebContents();
+  if (child) {
+    child->SetDelegate(nullptr);
   }
-  // CLIENT_OWNS_WIDGET: synchronously destroy widget then child WebContents.
+
+  // CLIENT_OWNS_WIDGET: synchronously destroy the widget. This tears down the
+  // view tree → DocumentPipContentsView (the WebView) → child WebContents.
+  // The widget references `widget_delegate_` by raw pointer, so destroy the
+  // widget first, then the delegate.
   widget_.reset();
   widget_delegate_.reset();
-  child_web_contents_.reset();
 }
 
 void DocumentPipHost::OnWidgetCloseRequested(

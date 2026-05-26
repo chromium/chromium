@@ -11,11 +11,7 @@
 #include "third_party/blink/public/mojom/picture_in_picture_window_options/picture_in_picture_window_options.mojom.h"
 #include "ui/views/widget/widget.h"
 
-namespace views {
-class Widget;
-class WidgetDelegate;
-}  // namespace views
-
+class DocumentPipWidgetDelegate;
 class Profile;
 
 namespace content {
@@ -38,10 +34,12 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
   ~DocumentPipHost() override;
 
-  // Creates the PiP widget for the child WebContents. Must be called after
-  // construction (i.e. after CreateForWebContents). The host can exist as
-  // UserData without a widget; call this to actually open the PiP window.
-  void CreatePipWidget();
+  // Creates the PiP widget for the given child WebContents. Can be called
+  // multiple times over the host's lifetime — each call opens a new PiP window
+  // after the previous one has been closed via ClosePipWindow(). The child
+  // WebContents ownership is transferred to the widget's WebView.
+  void CreatePipWidget(std::unique_ptr<content::WebContents> child_web_contents,
+                       blink::mojom::PictureInPictureWindowOptions pip_options);
 
   // Accessors.
   Profile* GetProfile();
@@ -63,27 +61,27 @@ class DocumentPipHost : public content::WebContentsUserData<DocumentPipHost>,
 
   // Private constructor called by WebContentsUserData machinery via
   // CreateForWebContents().
-  DocumentPipHost(content::WebContents* opener_web_contents,
-                  std::unique_ptr<content::WebContents> child_web_contents,
-                  blink::mojom::PictureInPictureWindowOptions pip_options);
+  explicit DocumentPipHost(content::WebContents* opener_web_contents);
 
-  // Tears down the PiP widget and child WebContents. Safe to call multiple
-  // times; subsequent calls are no-ops. Uses widget_.reset() /
-  // child_web_contents_.reset() for synchronous CLIENT_OWNS_WIDGET teardown.
+  // Tears down the PiP widget (and with it the child WebContents, which is
+  // owned by the WebView inside the widget's contents view). Safe to call
+  // multiple times; subsequent calls are no-ops.
   void ClosePipWindow();
 
   // Callback for Widget::MakeCloseSynchronous(). Invoked when external code
   // (e.g. DialogDelegate, OS close button) requests the widget to close.
   void OnWidgetCloseRequested(views::Widget::ClosedReason reason);
 
-  // The child WebContents rendered inside the PiP window.
-  std::unique_ptr<content::WebContents> child_web_contents_;
+  // The delegate for the floating Widget. Owned by this host (not by the
+  // Widget): `CLIENT_OWNS_WIDGET` + not `SetOwnedByWidget()` means the Widget
+  // never deletes it, so the client must. Declared before `widget_` so it is
+  // destroyed after the Widget, since the Widget references it via a raw
+  // pointer set in Init().
+  std::unique_ptr<DocumentPipWidgetDelegate> widget_delegate_;
 
-  // Placeholder delegate for the floating Widget. Must be declared before
-  // |widget_| so it is destroyed after |widget_|.
-  std::unique_ptr<views::WidgetDelegate> widget_delegate_;
-
-  // The floating window hosting |child_web_contents_|.
+  // The floating window hosting the PiP child WebContents.
+  // Declared after `widget_delegate_` so it is destroyed first: members are
+  // destroyed in reverse declaration order.
   std::unique_ptr<views::Widget> widget_;
 
   // Initial options from the requestWindow() call.
