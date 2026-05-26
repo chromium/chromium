@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/memory/scoped_refptr.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"

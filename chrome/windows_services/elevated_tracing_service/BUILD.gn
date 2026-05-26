@@ -33,7 +33,6 @@ executable("elevated_tracing_service") {
     "//build/win:default_exe_manifest",
     "//chrome/windows_services/service_program:service_program_with_crashpad",
     "//components/crash/core/app:crash_export_thunks",
-    "//mojo/core/embedder",
   ]
 }
 
@@ -67,10 +66,7 @@ source_set("lib") {
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
-    "//services/tracing/public/cpp",
     "//services/tracing/public/cpp:traced_process",
-    "//services/tracing/public/mojom",
-    "//third_party/abseil-cpp:absl",
   ]
 
   public_deps = [
@@ -97,7 +93,9 @@ source_set("service_lib") {
     ":lib",
     "//chrome/common/win:eventlog_provider",
     "//chrome/install_static:install_static_util",
+    "//mojo/core/embedder",
     "//services/tracing/public/cpp",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 

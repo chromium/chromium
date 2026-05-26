@@ -8,7 +8,6 @@
 #include <optional>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/message_loop/message_pump_type.h"
 #include "base/threading/thread.h"
 #include "chrome/windows_services/service_program/service_delegate.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
