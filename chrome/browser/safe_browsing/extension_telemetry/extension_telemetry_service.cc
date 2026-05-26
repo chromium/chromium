@@ -6,6 +6,7 @@
 
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/command_line.h"
@@ -239,7 +240,8 @@ void RecordEnterpriseReportSize(size_t size) {
       "SafeBrowsing.ExtensionTelemetry.Enterprise.ReportSize", size);
 }
 
-static_assert(extensions::Manifest::Type::kNumLoadTypes == 10,
+static_assert(std::to_underlying(extensions::Manifest::Type::kNumLoadTypes) ==
+                  10,
               "ExtensionTelemetryReportRequest::ExtensionInfo::Type "
               "needs to match extensions::Manifest::Type.");
 ExtensionInfo::Type GetType(extensions::Manifest::Type type) {

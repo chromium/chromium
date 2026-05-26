@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string_view>
+#include <utility>
 
 #include "base/command_line.h"
 #include "base/logging.h"
@@ -48,7 +49,7 @@ testing::AssertionResult RunManifestVersionSuccess(
 
   if (extension->GetType() != expected_type) {
     return testing::AssertionFailure()
-           << "Wrong type: " << extension->GetType();
+           << "Wrong type: " << std::to_underlying(extension->GetType());
   }
 
   if (extension->manifest_version() != expected_manifest_version) {
@@ -101,7 +102,7 @@ testing::AssertionResult RunCreationWithFlags(
 
   if (extension->GetType() != expected_type) {
     return testing::AssertionFailure()
-           << "Wrong type: " << extension->GetType();
+           << "Wrong type: " << std::to_underlying(extension->GetType());
   }
   return testing::AssertionSuccess();
 }

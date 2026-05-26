@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include <utility>
 
 #include "base/barrier_closure.h"
 #include "base/files/file_util.h"
@@ -415,7 +416,8 @@ void ChromeExtensionRegistrarDelegate::OnExtensionInstalled(
       ExtensionManagement* management =
           ExtensionManagementFactory::GetForBrowserContext(profile_);
       LOG(WARNING) << "ShouldAllowInstall() returned false for " << id
-                   << " of type " << extension->GetType() << " and update URL "
+                   << " of type " << std::to_underlying(extension->GetType())
+                   << " and update URL "
                    << management->GetEffectiveUpdateURL(*extension).spec()
                    << "; not installing";
 

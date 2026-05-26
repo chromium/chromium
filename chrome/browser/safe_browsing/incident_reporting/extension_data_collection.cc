@@ -4,6 +4,8 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/extension_data_collection.h"
 
+#include <utility>
+
 #include "base/json/json_string_value_serializer.h"
 #include "base/time/time.h"
 #include "base/version.h"
@@ -55,7 +57,7 @@ void PopulateExtensionInfo(
   else if (extension_registry.terminated_extensions().Contains(extension_id))
     extension_info->set_state(Info::STATE_TERMINATED);
 
-  extension_info->set_type(extension.GetType());
+  extension_info->set_type(std::to_underlying(extension.GetType()));
   if (const std::string* update_url = extension.manifest()->FindStringPath(
           extensions::manifest_keys::kUpdateURL)) {
     extension_info->set_update_url(*update_url);

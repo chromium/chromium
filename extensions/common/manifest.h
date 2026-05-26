@@ -27,8 +27,7 @@ class Manifest final {
   // Do not change the order of entries or remove entries in this list as this
   // is used in ExtensionType enum in
   // tools/metrics/histograms/metadata/extensions/enums.xml.
-  // TODO(crbug.com/420858216): Add add "class" to declaration.
-  enum Type {
+  enum class Type {
     kUnknown = 0,
     kExtension = 1,
     kTheme = 2,

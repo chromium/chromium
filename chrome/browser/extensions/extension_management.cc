@@ -802,7 +802,7 @@ void ExtensionManagement::Refresh() {
     global_settings_->allowed_types.emplace();
     for (const auto& entry : *allowed_types_pref) {
       if (entry.is_int() && entry.GetInt() >= 0 &&
-          entry.GetInt() < Manifest::Type::kNumLoadTypes) {
+          entry.GetInt() < std::to_underlying(Manifest::Type::kNumLoadTypes)) {
         global_settings_->allowed_types->push_back(
             static_cast<Manifest::Type>(entry.GetInt()));
       } else if (entry.is_string()) {

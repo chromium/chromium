@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -534,8 +535,8 @@ TEST_F(ExtensionManagementServiceTest, LegacyInstallSources) {
 // handled well.
 TEST_F(ExtensionManagementServiceTest, LegacyAllowedTypes) {
   base::ListValue allowed_types_pref;
-  allowed_types_pref.Append(Manifest::Type::kTheme);
-  allowed_types_pref.Append(Manifest::Type::kUserScript);
+  allowed_types_pref.Append(std::to_underlying(Manifest::Type::kTheme));
+  allowed_types_pref.Append(std::to_underlying(Manifest::Type::kUserScript));
 
   SetPref(true, pref_names::kAllowedTypes,
           base::Value(std::move(allowed_types_pref)));
@@ -996,7 +997,7 @@ TEST_F(ExtensionManagementServiceTest, NewInstallSources) {
 TEST_F(ExtensionManagementServiceTest, NewAllowedTypes) {
   // Set the legacy preference, and verifies that it works.
   base::ListValue allowed_types_pref;
-  allowed_types_pref.Append(Manifest::Type::kUserScript);
+  allowed_types_pref.Append(std::to_underlying(Manifest::Type::kUserScript));
   SetPref(true, pref_names::kAllowedTypes,
           base::Value(allowed_types_pref.Clone()));
   ASSERT_TRUE(ReadGlobalSettings()->allowed_types);
@@ -1809,7 +1810,7 @@ TEST_F(ExtensionAdminPolicyTest, UserMayLoadAllowedTypes) {
   EXPECT_FALSE(
       UserMayLoad(nullptr, nullptr, &allowed_types, extension_.get(), nullptr));
 
-  allowed_types.Append(Manifest::Type::kExtension);
+  allowed_types.Append(std::to_underlying(Manifest::Type::kExtension));
   EXPECT_TRUE(
       UserMayLoad(nullptr, nullptr, &allowed_types, extension_.get(), nullptr));
 

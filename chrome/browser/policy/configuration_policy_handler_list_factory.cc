@@ -2569,7 +2569,8 @@ void GetExtensionAllowedTypesMap(
        extensions::schema_constants::kAllowedTypesMap) {
     result->push_back(
         std::make_unique<StringMappingListPolicyHandler::MappingEntry>(
-            name, std::make_unique<base::Value>(manifest_type)));
+            name,
+            std::make_unique<base::Value>(std::to_underlying(manifest_type))));
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
