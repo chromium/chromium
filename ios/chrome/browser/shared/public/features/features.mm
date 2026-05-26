@@ -1201,7 +1201,7 @@ bool IsAskAboutThisPageEnabled() {
 }
 
 BASE_FEATURE(kGridMediatorSnapshotUpdateBatchGuard,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGridMediatorSnapshotUpdateBatchGuardEnabled() {
   return base::FeatureList::IsEnabled(kGridMediatorSnapshotUpdateBatchGuard);
