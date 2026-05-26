@@ -6,6 +6,7 @@ source_set("bwg_api") {
   sources = [
     "bwg_api.h",
     "bwg_gateway_protocol.h",
+    "gemini_live_delegate.h",
   ]
   public_deps = [
     "//components/optimization_guide/proto:optimization_guide_proto",

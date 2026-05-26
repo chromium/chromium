@@ -3866,6 +3866,21 @@ const char kChromeAppStoreUrl[] =
   [_geminiFirstRunCoordinator start];
 }
 
+- (void)startGeminiLiveFREWithCompletion:(void (^)(BOOL success))completion {
+  // TODO(crbug.com/513889315): Implement this.
+  if (completion) {
+    completion(NO);
+  }
+}
+
+- (void)showGeminiLiveMicrophoneAlertWithCompletion:
+    (void (^)(BOOL granted))completion {
+  // TODO(crbug.com/513889315): Implement this.
+  if (completion) {
+    completion(NO);
+  }
+}
+
 - (void)hideFloatyIfInvokedAnimated:(BOOL)animated
                          fromSource:(gemini::FloatyUpdateSource)source {
   GeminiBrowserAgent* geminiBrowserAgent =

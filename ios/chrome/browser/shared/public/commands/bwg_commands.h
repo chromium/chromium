@@ -58,6 +58,13 @@ class WebState;
 - (void)startGeminiFREWithCompletion:(void (^)(BOOL success))completion
                       fromEntryPoint:(gemini::EntryPoint)entryPoint;
 
+// Starts the Gemini Live First Run Experience (FRE) consent flow.
+- (void)startGeminiLiveFREWithCompletion:(void (^)(BOOL success))completion;
+
+// Presents a Gemini Live microphone authorization alert or Settings prompt.
+- (void)showGeminiLiveMicrophoneAlertWithCompletion:
+    (void (^)(BOOL granted))completion;
+
 // Starts the full Gemini entry flow and checks sign-in state, handles
 // eligibility, and starts a Gemini session.
 // - `startupState`: Entry point and configuration for the Gemini session.

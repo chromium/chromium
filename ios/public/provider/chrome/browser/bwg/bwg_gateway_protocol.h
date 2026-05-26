@@ -15,6 +15,7 @@
 @protocol GeminiSessionDelegate;
 @protocol GeminiSuggestionDelegate;
 @protocol GeminiTabPickerDelegate;
+@protocol GeminiLiveDelegate;
 
 // Protocol for the BWG gateway, exposing what's needed upstream.
 @protocol BWGGatewayProtocol
@@ -33,6 +34,7 @@
 // TODO(crbug.com/512101817): Remove optional when internal is implemented.
 @optional
 @property(nonatomic, weak) id<GeminiTabPickerDelegate> tabPickerHandler;
+@property(nonatomic, weak) id<GeminiLiveDelegate> liveHandler;
 
 @end
 
