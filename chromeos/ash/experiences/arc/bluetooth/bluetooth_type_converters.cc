@@ -943,41 +943,11 @@ bluez::BluetoothServiceRecordBlueZ TypeConverter<
 bluez::BluetoothServiceRecordBlueZ
 TypeConverter<bluez::BluetoothServiceRecordBlueZ, floss::BtSdpRecord>::Convert(
     const floss::BtSdpRecord& record) {
-  if (std::holds_alternative<floss::BtSdpHeaderOverlay>(record)) {
-    return TypeConverter<bluez::BluetoothServiceRecordBlueZ,
-                         floss::BtSdpHeaderOverlay>::
-        Convert(std::get<floss::BtSdpHeaderOverlay>(record));
-  } else if (std::holds_alternative<floss::BtSdpMasRecord>(record)) {
-    return TypeConverter<bluez::BluetoothServiceRecordBlueZ,
-                         floss::BtSdpMasRecord>::
-        Convert(std::get<floss::BtSdpMasRecord>(record));
-  } else if (std::holds_alternative<floss::BtSdpMnsRecord>(record)) {
-    return TypeConverter<bluez::BluetoothServiceRecordBlueZ,
-                         floss::BtSdpMnsRecord>::
-        Convert(std::get<floss::BtSdpMnsRecord>(record));
-  } else if (std::holds_alternative<floss::BtSdpPseRecord>(record)) {
-    return TypeConverter<bluez::BluetoothServiceRecordBlueZ,
-                         floss::BtSdpPseRecord>::
-        Convert(std::get<floss::BtSdpPseRecord>(record));
-  } else if (std::holds_alternative<floss::BtSdpPceRecord>(record)) {
-    return TypeConverter<bluez::BluetoothServiceRecordBlueZ,
-                         floss::BtSdpPceRecord>::
-        Convert(std::get<floss::BtSdpPceRecord>(record));
-  } else if (std::holds_alternative<floss::BtSdpOpsRecord>(record)) {
-    return TypeConverter<bluez::BluetoothServiceRecordBlueZ,
-                         floss::BtSdpOpsRecord>::
-        Convert(std::get<floss::BtSdpOpsRecord>(record));
-  } else if (std::holds_alternative<floss::BtSdpSapRecord>(record)) {
-    return TypeConverter<bluez::BluetoothServiceRecordBlueZ,
-                         floss::BtSdpSapRecord>::
-        Convert(std::get<floss::BtSdpSapRecord>(record));
-  } else if (std::holds_alternative<floss::BtSdpDipRecord>(record)) {
-    return TypeConverter<bluez::BluetoothServiceRecordBlueZ,
-                         floss::BtSdpDipRecord>::
-        Convert(std::get<floss::BtSdpDipRecord>(record));
-  } else {
-    return bluez::BluetoothServiceRecordBlueZ();
-  }
+  return std::visit(
+      [](const auto& r) {
+        return ConvertTo<bluez::BluetoothServiceRecordBlueZ>(r);
+      },
+      record);
 }
 
 }  // namespace mojo

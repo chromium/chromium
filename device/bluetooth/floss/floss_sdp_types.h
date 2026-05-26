@@ -93,10 +93,10 @@ using BtSdpRecord = std::variant<BtSdpHeaderOverlay,
                                  BtSdpOpsRecord,
                                  BtSdpSapRecord,
                                  BtSdpDipRecord>;
-std::optional<floss::BtSdpHeaderOverlay> DEVICE_BLUETOOTH_EXPORT
+floss::BtSdpHeaderOverlay DEVICE_BLUETOOTH_EXPORT
 GetHeaderOverlayFromSdpRecord(const floss::BtSdpRecord& record);
 
-std::optional<device::BluetoothUUID> DEVICE_BLUETOOTH_EXPORT
+device::BluetoothUUID DEVICE_BLUETOOTH_EXPORT
 GetUUIDFromSdpRecord(const floss::BtSdpRecord& record);
 
 }  // namespace floss
