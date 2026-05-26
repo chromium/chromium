@@ -312,32 +312,43 @@ public class KeyboardFocusRowManagerTest {
     }
 
     private void assertOnToolbar() {
-        assertEquals(
-                "Expected focus to be on toolbar after invocation of keyboard focus row switch",
-                KeyboardFocusRow.TOOLBAR,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertEquals(
+                                "Expected focus to be on toolbar after invocation of keyboard"
+                                        + " focus row switch",
+                                KeyboardFocusRow.TOOLBAR,
+                                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting()));
     }
 
     private void assertOnTabStrip() {
-        assertEquals(
-                "Expected focus to be on tab strip after invocation of keyboard focus row switch",
-                KeyboardFocusRow.TAB_STRIP,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertEquals(
+                                "Expected focus to be on tab strip after invocation of keyboard"
+                                        + " focus row switch",
+                                KeyboardFocusRow.TAB_STRIP,
+                                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting()));
     }
 
     private void assertOnBookmarksBar() {
-        assertEquals(
-                "Expected focus to be on bookmarks bar after invocation of keyboard focus row"
-                    + " switch",
-                KeyboardFocusRow.BOOKMARKS_BAR,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertEquals(
+                                "Expected focus to be on bookmarks bar after invocation of"
+                                        + " keyboard focus row switch",
+                                KeyboardFocusRow.BOOKMARKS_BAR,
+                                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting()));
     }
 
     private void assertOnNone() {
-        assertEquals(
-                "Expected focus to be on none after invocation of keyboard focus row switch",
-                KeyboardFocusRow.NONE,
-                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting());
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertEquals(
+                                "Expected focus to be on none after invocation of keyboard focus"
+                                        + " row switch",
+                                KeyboardFocusRow.NONE,
+                                mKeyboardFocusRowManager.getKeyboardFocusRowForTesting()));
     }
 
     private void setUserPrefsShowBookmarksBar(boolean showBookmarksBar) {
