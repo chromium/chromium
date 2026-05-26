@@ -12,6 +12,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -350,13 +351,15 @@ class MockContextualTasksUiService
     : public contextual_tasks::ContextualTasksUiService {
  public:
   explicit MockContextualTasksUiService(Profile* profile)
-      : ContextualTasksUiService(profile,
-                                 /*delegate=*/nullptr,
-                                 /*contextual_tasks_service=*/nullptr,
-                                 /*identity_manager=*/nullptr,
-                                 /*aim_eligibility_service=*/nullptr,
-                                 /*eligibility_manager=*/nullptr,
-                                 /*cookie_synchronizer=*/nullptr) {}
+      : ContextualTasksUiService(
+            profile,
+            std::make_unique<testing::NiceMock<
+                contextual_tasks::MockContextualTasksUiServiceDelegate>>(),
+            /*contextual_tasks_service=*/nullptr,
+            /*identity_manager=*/nullptr,
+            /*aim_eligibility_service=*/nullptr,
+            /*eligibility_manager=*/nullptr,
+            /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(void,

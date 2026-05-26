@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -122,12 +123,15 @@ class MockContextualTasksUiService
       signin::IdentityManager* identity_manager)
       : contextual_tasks::ContextualTasksUiService(
             profile,
-            /*delegate=*/nullptr,
+            std::make_unique<testing::NiceMock<
+                contextual_tasks::MockContextualTasksUiServiceDelegate>>(),
             contextual_tasks_service,
             identity_manager,
             aim_eligibility_service,
             std::make_unique<MockContextualTasksEligibilityManager>(
-                profile->GetPrefs(), identity_manager, aim_eligibility_service),
+                profile->GetPrefs(),
+                identity_manager,
+                aim_eligibility_service),
             /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 

@@ -645,6 +645,7 @@ source_set("interactive_ui_tests") {
   deps = [
     ":contextual_tasks",
     ":impl",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//chrome/browser/tab_list",

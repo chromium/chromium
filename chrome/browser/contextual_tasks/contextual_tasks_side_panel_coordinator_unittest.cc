@@ -16,6 +16,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_panel_host.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -59,13 +60,15 @@ namespace {
 class MockContextualTasksUiService : public ContextualTasksUiService {
  public:
   explicit MockContextualTasksUiService(ContextualTasksService* controller)
-      : ContextualTasksUiService(nullptr,
-                                 nullptr,
-                                 controller,
-                                 nullptr,
-                                 nullptr,
-                                 /*eligibility_manager=*/nullptr,
-                                 /*cookie_synchronizer=*/nullptr) {}
+      : ContextualTasksUiService(
+            nullptr,
+            std::make_unique<
+                testing::NiceMock<MockContextualTasksUiServiceDelegate>>(),
+            controller,
+            nullptr,
+            nullptr,
+            /*eligibility_manager=*/nullptr,
+            /*cookie_synchronizer=*/nullptr) {}
   ~MockContextualTasksUiService() override = default;
 
   MOCK_METHOD(GURL,

@@ -1520,16 +1520,12 @@ ContextualTasksUiService::GetInitialEntryPointForTask(
 }
 void ContextualTasksUiService::OpenFeedbackUi(BrowserWindowInterface* browser,
                                               const GURL& page_url) {
-  if (delegate_) {
-    delegate_->OpenFeedbackUi(browser, page_url);
-  }
+  delegate_->OpenFeedbackUi(browser, page_url);
 }
 
 void ContextualTasksUiService::ShowUndoSnackbar(
     BrowserWindowInterface* browser_window_interface) {
-  if (delegate_) {
-    delegate_->ShowUndoSnackbar(browser_window_interface);
-  }
+  delegate_->ShowUndoSnackbar(browser_window_interface);
 }
 
 GURL ContextualTasksUiService::GetContextualTaskUrlForTask(
@@ -1724,10 +1720,7 @@ void ContextualTasksUiService::OnTaskChanged(
     return;
   }
 
-  if (delegate_) {
-    delegate_->OnTaskChanged(browser_window_interface, old_task_id,
-                             new_task_id);
-  }
+  delegate_->OnTaskChanged(browser_window_interface, old_task_id, new_task_id);
 
   ContextualTasksPanelController* controller =
       ContextualTasksPanelController::From(browser_window_interface);
@@ -1782,17 +1775,13 @@ void ContextualTasksUiService::OnWebUIReady(
     BrowserWindowInterface* browser_window_interface,
     const base::Uuid& task_id,
     content::WebContents* web_contents) {
-  if (delegate_) {
-    delegate_->OnWebUIReady(browser_window_interface, task_id, web_contents);
-  }
+  delegate_->OnWebUIReady(browser_window_interface, task_id, web_contents);
 }
 
 void ContextualTasksUiService::OnWebUIDestroyed(
     BrowserWindowInterface* browser_window_interface,
     const std::optional<base::Uuid>& task_id) {
-  if (delegate_) {
-    delegate_->OnWebUIDestroyed(browser_window_interface, task_id);
-  }
+  delegate_->OnWebUIDestroyed(browser_window_interface, task_id);
 }
 
 void ContextualTasksUiService::TurnOnSmartTabSharing(

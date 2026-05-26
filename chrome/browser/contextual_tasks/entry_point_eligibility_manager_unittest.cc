@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -91,7 +92,8 @@ class MockContextualTasksUiService : public ContextualTasksUiService {
                                AimEligibilityService* aim_eligibility_service)
       : ContextualTasksUiService(
             profile,
-            /*delegate=*/nullptr,
+            std::make_unique<
+                testing::NiceMock<MockContextualTasksUiServiceDelegate>>(),
             contextual_tasks_service,
             identity_manager,
             aim_eligibility_service,

@@ -137,7 +137,7 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
       AimEligibilityService* aim_eligibility_service)
       : ContextualTasksUiService(
             profile,
-            /*delegate=*/nullptr,
+            std::make_unique<NiceMock<MockContextualTasksUiServiceDelegate>>(),
             contextual_tasks_service,
             /*identity_manager=*/nullptr,
             aim_eligibility_service,
@@ -261,8 +261,10 @@ class ContextualTasksUiServiceTest : public content::RenderViewHostTestHarness {
     // Create a real service for testing non-mocked methods like GetAccessToken.
     // We pass the IdentityManager from the test environment.
     real_service_ = std::make_unique<ContextualTasksUiService>(
-        profile_.get(), /*delegate=*/nullptr, contextual_tasks_service_.get(),
-        identity_test_env_->identity_manager(), aim_eligibility_service_.get(),
+        profile_.get(),
+        std::make_unique<NiceMock<MockContextualTasksUiServiceDelegate>>(),
+        contextual_tasks_service_.get(), identity_test_env_->identity_manager(),
+        aim_eligibility_service_.get(),
         std::make_unique<ContextualTasksEligibilityManager>(
             profile_->GetPrefs(), identity_test_env_->identity_manager(),
             aim_eligibility_service_.get()),

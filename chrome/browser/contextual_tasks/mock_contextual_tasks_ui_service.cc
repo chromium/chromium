@@ -6,6 +6,7 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace contextual_tasks {
@@ -17,13 +18,15 @@ MockContextualTasksUiService::MockContextualTasksUiService(
     AimEligibilityService* aim_eligibility_service,
     std::unique_ptr<ContextualTasksEligibilityManager> eligibility_manager,
     std::unique_ptr<ContextualTasksCookieSynchronizer> cookie_synchronizer)
-    : ContextualTasksUiService(profile,
-                               nullptr,
-                               service,
-                               identity_manager,
-                               aim_eligibility_service,
-                               std::move(eligibility_manager),
-                               std::move(cookie_synchronizer)) {}
+    : ContextualTasksUiService(
+          profile,
+          std::make_unique<
+              testing::NiceMock<MockContextualTasksUiServiceDelegate>>(),
+          service,
+          identity_manager,
+          aim_eligibility_service,
+          std::move(eligibility_manager),
+          std::move(cookie_synchronizer)) {}
 
 MockContextualTasksUiService::~MockContextualTasksUiService() = default;
 
