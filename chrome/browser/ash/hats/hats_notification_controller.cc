@@ -230,10 +230,6 @@ HatsNotificationController::~HatsNotificationController() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::UmaHistogramEnumeration("Browser.ChromeOS.HatsStatus", state_);
-
-  if (NetworkHandler::IsInitialized()) {
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
-  }
 }
 
 void HatsNotificationController::Initialize(bool is_new_device) {
@@ -253,11 +249,8 @@ void HatsNotificationController::Initialize(bool is_new_device) {
     // is available.
     NetworkStateHandler* handler =
         NetworkHandler::Get()->network_state_handler();
-    // TODO(crbug.com/422687291): Move network observer ownership to
-    // base::ScopedObservation. The current manual
-    // AddObserver()/RemoveObserver() pattern is fragile if this controller
-    // survives profile destruction while it is still observing network changes.
-    handler->AddObserver(this);
+    CHECK(!network_state_observation_.IsObserving());
+    network_state_observation_.Observe(handler);
     // Create an immediate update for the current default network.
     const NetworkState* default_network = handler->DefaultNetwork();
     NetworkState::PortalState portal_state =
@@ -378,7 +371,7 @@ void HatsNotificationController::Click(
   state_ = HatsState::kNotificationClicked;
 
   // Remove the notification.
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+  network_state_observation_.Reset();
   message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
                                                            false /* by_user */);
   notification_id_.clear();
@@ -401,7 +394,7 @@ void HatsNotificationController::Close(bool by_user) {
 
   if (by_user) {
     UpdateLastInteractionTime();
-    NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+    network_state_observation_.Reset();
     message_center::MessageCenter::Get()->RemoveNotification(notification_id_,
                                                              by_user);
     notification_id_.clear();
@@ -452,7 +445,7 @@ void HatsNotificationController::PortalStateChanged(
 }
 
 void HatsNotificationController::OnShuttingDown() {
-  NetworkHandler::Get()->network_state_handler()->RemoveObserver(this);
+  network_state_observation_.Reset();
 }
 
 void HatsNotificationController::OnProfileWillBeDestroyed(Profile* profile) {
@@ -476,6 +469,7 @@ void HatsNotificationController::OnProfileWillBeDestroyed(Profile* profile) {
     notification_id_.clear();
   }
 
+  network_state_observation_.Reset();
   profile_ = nullptr;
   profile_observation_.Reset();
 }

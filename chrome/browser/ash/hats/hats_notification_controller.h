@@ -167,6 +167,7 @@ class HatsNotificationController : public message_center::NotificationDelegate,
 
   HatsState state_ = HatsState::kDeviceSelected;
 
+  NetworkStateHandlerScopedObservation network_state_observation_{this};
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 
   base::WeakPtrFactory<HatsNotificationController> weak_pointer_factory_{this};
