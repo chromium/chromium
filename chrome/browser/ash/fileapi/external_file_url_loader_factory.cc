@@ -6,9 +6,11 @@
 
 #include <algorithm>
 
+#include "base/byte_size.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/fileapi/external_file_resolver.h"
@@ -70,7 +72,6 @@ class FileSystemReaderDataPipeProducer {
       : producer_handle_(std::move(producer_handle)),
         stream_reader_(std::move(stream_reader)),
         remaining_bytes_(remaining_bytes),
-        total_bytes_written_(0),
         pipe_watcher_(std::make_unique<mojo::SimpleWatcher>(
             FROM_HERE,
             mojo::SimpleWatcher::ArmingPolicy::MANUAL,
@@ -130,7 +131,7 @@ class FileSystemReaderDataPipeProducer {
     CompleteWithResult(net::OK);
   }
 
-  int64_t total_bytes_written() { return total_bytes_written_; }
+  base::ByteSize total_bytes_written() { return total_bytes_written_; }
 
  private:
   net::Error FinishWrite(int read_size) {
@@ -141,7 +142,7 @@ class FileSystemReaderDataPipeProducer {
     if (result != MOJO_RESULT_OK)
       return MojoResultToErrorCode(result);
     remaining_bytes_ -= read_size;
-    total_bytes_written_ += read_size;
+    total_bytes_written_ += base::ByteSize(base::as_unsigned(read_size));
     return net::OK;
   }
 
@@ -191,7 +192,7 @@ class FileSystemReaderDataPipeProducer {
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   std::unique_ptr<storage::FileStreamReader> stream_reader_;
   int64_t remaining_bytes_;
-  int64_t total_bytes_written_;
+  base::ByteSize total_bytes_written_;
   std::unique_ptr<mojo::SimpleWatcher> pipe_watcher_;
   base::OnceCallback<void(net::Error)> callback_;
   base::WeakPtrFactory<FileSystemReaderDataPipeProducer> weak_ptr_factory_{
@@ -296,16 +297,16 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
   }
 
   void OnFileWritten(net::Error error) {
-    int64_t total_bytes_written = data_producer_->total_bytes_written();
+    base::ByteSize total_bytes_written = data_producer_->total_bytes_written();
     data_producer_.reset();
     if (error != net::OK) {
       CompleteWithError(error);
       return;
     }
     network::URLLoaderCompletionStatus status(net::OK);
-    status.encoded_data_length = total_bytes_written;
-    status.encoded_body_length = total_bytes_written;
-    status.decoded_body_length = total_bytes_written;
+    status.encoded_data_length = total_bytes_written.InBytes();
+    status.encoded_body_length = total_bytes_written.InBytes();
+    status.decoded_body_length = total_bytes_written.InBytes();
     client_->OnComplete(status);
     client_.reset();
     MaybeDeleteSelf();
