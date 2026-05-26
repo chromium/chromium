@@ -330,21 +330,19 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
 
   const base::WeakPtr<content::WebContents> web_contents =
       page_node->GetWebContents();
-  CHECK(web_contents, base::NotFatalUntil::M140);
-  if (web_contents) {
-    content::ChildProcessImportance subframe_importance =
-        content::ChildProcessImportance::NORMAL;
-    if (importance >= content::ChildProcessImportance::PERCEPTIBLE) {
-      if (is_perceptible_importance_supported_) {
-        subframe_importance = content::ChildProcessImportance::PERCEPTIBLE;
-      } else if (base::FeatureList::IsEnabled(
-                     chrome::android::kProtectedTabsAndroid) &&
-                 chrome::android::kFallbackToModerateParam.Get()) {
-        subframe_importance = content::ChildProcessImportance::MODERATE;
-      }
+  CHECK(web_contents);
+  content::ChildProcessImportance subframe_importance =
+      content::ChildProcessImportance::NORMAL;
+  if (importance >= content::ChildProcessImportance::PERCEPTIBLE) {
+    if (is_perceptible_importance_supported_) {
+      subframe_importance = content::ChildProcessImportance::PERCEPTIBLE;
+    } else if (base::FeatureList::IsEnabled(
+                   chrome::android::kProtectedTabsAndroid) &&
+               chrome::android::kFallbackToModerateParam.Get()) {
+      subframe_importance = content::ChildProcessImportance::MODERATE;
     }
-    web_contents->SetPrimaryPageImportance(importance, subframe_importance);
   }
+  web_contents->SetPrimaryPageImportance(importance, subframe_importance);
 }
 
 content::ChildProcessImportance ProcessRankPolicyAndroid::CalculateRank(
