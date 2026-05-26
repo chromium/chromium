@@ -764,16 +764,14 @@ void CompositorAnimations::AttachCompositedLayers(
   if (!compositor_animation)
     return;
 
-  CompositorElementIdNamespace element_id_namespace =
-      CompositorElementIdNamespace::kPrimary;
   // We create an animation namespace element id when an element has created all
   // property tree nodes which may be required by the keyframe effects. The
   // animation affects multiple element ids, and one is pushed each
   // KeyframeModel. See |GetAnimationOnCompositor|. We use the kPrimaryEffect
   // node to know if nodes have been created for animations.
-  element_id_namespace = CompositorElementIdNamespace::kPrimaryEffect;
   compositor_animation->AttachElement(CompositorElementIdFromUniqueObjectId(
-      element.GetLayoutObject()->UniqueId(), element_id_namespace));
+      element.GetLayoutObject()->UniqueId(),
+      CompositorElementIdNamespace::kPrimaryEffect));
 }
 
 bool CompositorAnimations::ConvertTimingForCompositor(
