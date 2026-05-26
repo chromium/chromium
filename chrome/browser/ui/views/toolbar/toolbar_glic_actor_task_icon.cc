@@ -8,6 +8,7 @@
 #include "chrome/browser/glic/browser_ui/glic_vector_icon_manager.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/views/glic/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -39,6 +40,12 @@ void ToolbarGlicActorTaskIcon::AddedToWidget() {
   UpdateIconsWithStandardColors(
       glic::GlicVectorIconManager::GetVectorIcon(IDR_ACTOR_AUTO_BROWSE_ICON));
   GlicActorTaskIcon<ToolbarButton>::AddedToWidget();
+}
+
+gfx::Size ToolbarGlicActorTaskIcon::GetMinimumSize() const {
+  int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight) +
+             kActorNudgeLabelMargin;
+  return gfx::Size(size, size);
 }
 
 void ToolbarGlicActorTaskIcon::SetForegroundFrameActiveColorId(

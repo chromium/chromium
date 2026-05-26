@@ -23,6 +23,7 @@ class ToolbarGlicActorTaskIcon : public GlicActorTaskIcon<ToolbarButton> {
   ~ToolbarGlicActorTaskIcon() override;
 
   void AddedToWidget() override;
+  gfx::Size GetMinimumSize() const override;
   void SetForegroundFrameActiveColorId(ui::ColorId new_color_id) override;
   void SetForegroundFrameInactiveColorId(ui::ColorId new_color_id) override;
   void SetBackgroundFrameActiveColorId(ui::ColorId new_color_id) override;
