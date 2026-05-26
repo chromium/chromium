@@ -419,6 +419,7 @@ public class LocationBarCoordinator
                         activityTabSupplier,
                         shareDelegateSupplier,
                         locationBarDataProvider,
+                        mLocationBarEmbedder,
                         profileObservableSupplier,
                         bringTabGroupToFrontCallback,
                         bookmarkState,

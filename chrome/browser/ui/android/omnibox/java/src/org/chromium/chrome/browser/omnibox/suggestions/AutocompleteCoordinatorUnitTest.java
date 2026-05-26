@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
@@ -69,6 +70,7 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private Supplier<Tab> mActivityTabSupplier;
     @Mock private Supplier<ShareDelegate> mShareDelegateSupplier;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
+    @Mock private LocationBarEmbedder mLocationBarEmbedder;
     @Mock private Callback<String> mBringToForegroundCallback;
     @Mock private BasicSuggestionProcessor.BookmarkState mBookmarkState;
     @Mock private OmniboxActionDelegateImpl mOmniboxActionDelegate;
@@ -111,6 +113,7 @@ public class AutocompleteCoordinatorUnitTest {
                         mActivityTabSupplier,
                         mShareDelegateSupplier,
                         mLocationBarDataProvider,
+                        mLocationBarEmbedder,
                         mProfileObservableSupplier,
                         mBringToForegroundCallback,
                         mBookmarkState,

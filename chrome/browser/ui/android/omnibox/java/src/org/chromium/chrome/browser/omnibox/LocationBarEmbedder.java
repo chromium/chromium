@@ -9,16 +9,29 @@ import android.transition.TransitionManager;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.ui.AsyncViewStub;
 
 /**
  * Interface defining capabilities provided by the view embedding the LocationBar. This allows the
- * the LocationBar to request changes to the embedding view without having direct knowledge of it.
- * setRequestFixedHeight is an instructive example; instead of attempting to change the parent's
- * layout params directly (fraught, likely to have competing changes), we use the embedder interface
- * and an ancestor view implements the sizing logic cleanly.
+ * LocationBar to request changes to the embedding view or access views within the embedding
+ * hierarchy without having direct knowledge of it.
+ *
+ * <p>setRequestFixedHeight is an instructive example of requesting changes; instead of attempting
+ * to change the parent's layout params directly (fraught, likely to have competing changes), we use
+ * the embedder interface and an ancestor view implements the sizing logic cleanly.
+ *
+ * <p>Providing access to the autocomplete result view stub is an example of accessing views; the
+ * embedder knows where the suggestions container should be placed in the hierarchy and provides it
+ * to the LocationBar components.
  */
 @NullMarked
 public interface LocationBarEmbedder {
+    /** Returns the {@link AsyncViewStub} for the suggestions container, if available. */
+    default @Nullable AsyncViewStub getSuggestionsContainerStub() {
+        return null;
+    }
+
     /**
      * Request that the embedding view remain fixed at its current height or stop fixing its height.
      */

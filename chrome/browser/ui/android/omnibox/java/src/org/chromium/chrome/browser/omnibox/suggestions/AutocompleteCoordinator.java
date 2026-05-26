@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.DeferredIMEWindowInsetApplicationCallback;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.LocationBarEmbedder;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
@@ -75,6 +76,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
     private final ObserverList<OmniboxSuggestionsDropdownScrollListener> mScrollListenerList =
             new ObserverList<>();
     private final SuggestionListViewHolderProvider mViewProvider;
+    private final LocationBarEmbedder mLocationBarEmbedder;
 
     /** An observer watching for changes to the visual state of the omnibox suggestions. */
     public interface OmniboxSuggestionsVisualStateObserver {
@@ -94,6 +96,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             Supplier<@Nullable Tab> activityTabSupplier,
             @Nullable Supplier<ShareDelegate> shareDelegateSupplier,
             LocationBarDataProvider locationBarDataProvider,
+            LocationBarEmbedder locationBarEmbedder,
             MonotonicObservableSupplier<Profile> profileObservableSupplier,
             Callback<String> bringTabGroupToForegroundCallback,
             BookmarkState bookmarkState,
@@ -105,6 +108,7 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
             DeferredIMEWindowInsetApplicationCallback deferredIMEWindowInsetApplicationCallback,
             FuseboxCoordinator fuseboxCoordinator) {
         mParent = parent;
+        mLocationBarEmbedder = locationBarEmbedder;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         Context context = parent.getContext();
 
@@ -233,9 +237,9 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         @Override
         @Initializer
         public void inflate() {
-            AsyncViewStub stub =
-                    mParent.getRootView().findViewById(R.id.omnibox_results_container_stub);
+            AsyncViewStub stub = mLocationBarEmbedder.getSuggestionsContainerStub();
             if (stub == null) return;
+
             stub.setShouldInflateOnBackgroundThread(
                     !mForceSyncInflate && OmniboxFeatures.sAsyncViewInflation.isEnabled());
             AsyncViewProvider<ViewGroup> asyncProvider =
