@@ -32,7 +32,7 @@ Adding {
             stackTrace : {
                 callFrames : [
                     [0] : {
-                        columnNumber : 31
+                        columnNumber : 30
                         functionName :
                         lineNumber : 16
                         scriptId : <string>
@@ -68,7 +68,7 @@ Adding {
             stackTrace : {
                 callFrames : [
                     [0] : {
-                        columnNumber : 35
+                        columnNumber : 34
                         functionName : window.registerNewTools
                         lineNumber : 19
                         scriptId : <string>

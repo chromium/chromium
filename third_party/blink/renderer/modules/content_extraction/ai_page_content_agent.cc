@@ -2786,8 +2786,8 @@ void AIPageContentAgent::ContentBuilder::AddFrameData(
 
   ComputeHitTestableNodesInViewport(frame);
 
-  if (auto* model_context = ModelContextSupplement::GetIfExists(
-          *frame.DomWindow()->navigator())) {
+  if (auto* model_context =
+          ModelContextSupplement::GetIfExists(*frame.GetDocument())) {
     model_context->ForEachScriptTool([&](const mojom::blink::ScriptTool& tool) {
       frame_data.script_tools.push_back(tool.Clone());
     });

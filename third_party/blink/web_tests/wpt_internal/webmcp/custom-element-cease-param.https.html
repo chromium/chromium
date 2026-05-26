@@ -2,7 +2,7 @@
 <title>WebMCP: Form-associated custom element ceasing to be a parameter</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/webmcp-helpers.js"></script>
+<script src="/webmcp/resources/helpers.js"></script>
 <script>
   class MyParam extends HTMLElement {
     static formAssociated = true;
@@ -27,8 +27,8 @@
   async function waitForFormToolSchemaToMatch(expected_schema) {
     await new Promise(resolve => {
       const ac = new AbortController();
-      navigator.modelContext.addEventListener('toolchange', async e => {
-        const [tool] = await navigator.modelContext.getTools();
+      document.modelContext.addEventListener('toolchange', async e => {
+        const [tool] = await document.modelContext.getTools();
         if (tool && tool.inputSchema === expected_schema) {
           resolve();
           ac.abort();

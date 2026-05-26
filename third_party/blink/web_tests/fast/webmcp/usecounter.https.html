@@ -22,7 +22,7 @@ promise_test(async () => {
     assert_false(internals.isUseCounted(document, kModelContextRegisterTool));
     assert_false(internals.isUseCounted(document, kModelContextRegisterDeclarativeTool));
 
-    navigator.modelContext.registerTool({
+    document.modelContext.registerTool({
         execute: () => {},
         name: "imperative",
         description: "dummy",

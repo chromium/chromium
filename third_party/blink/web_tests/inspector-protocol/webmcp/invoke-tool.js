@@ -5,7 +5,7 @@
         async function echo(obj) {
             return obj.text;
         }
-        navigator.modelContext.registerTool({
+        document.modelContext.registerTool({
           execute: echo,
           name: "test_tool",
           description: "A test WebMCP tool"
@@ -14,7 +14,7 @@
         async function fail() {
             throw new Error("This tool always fails");
         }
-        navigator.modelContext.registerTool({
+        document.modelContext.registerTool({
             execute: fail,
             name: "failing_tool",
             description: "A failing WebMCP tool"

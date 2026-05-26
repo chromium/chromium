@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+test(() => {
+    // 1. Access document.modelContext. This should not print any console warning.
+    const docContext = document.modelContext;
+    assert_not_equals(docContext, null);
+
+    // 2. Access navigator.modelContext. This should print a console warning.
+    const navContext = navigator.modelContext;
+    assert_not_equals(navContext, null);
+    assert_equals(docContext, navContext);
+}, "Document and Navigator ModelContext access warnings");
+</script>

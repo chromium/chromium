@@ -7918,10 +7918,7 @@ void Document::FinishedParsing() {
   DocumentParserTiming::From(*this).MarkParserStop();
 
   if (RuntimeEnabledFeatures::WebMCPEnabled(GetExecutionContext())) {
-    auto* navigator = domWindow() ? domWindow()->navigator() : nullptr;
-    auto* model_context =
-        navigator ? ModelContextSupplement::GetIfExists(*navigator) : nullptr;
-    if (model_context) {
+    if (auto* model_context = ModelContextSupplement::GetIfExists(*this)) {
       model_context->DidFinishParsing();
     }
   }

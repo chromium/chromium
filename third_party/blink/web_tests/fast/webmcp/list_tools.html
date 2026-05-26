@@ -6,7 +6,7 @@ async function echo(obj) {
   return obj.text;
 }
 
-navigator.modelContext.registerTool({
+document.modelContext.registerTool({
   execute: echo,
   name: "echo",
   description: "echo input",
@@ -30,7 +30,7 @@ function runTests() {
     if (window.testRunner)
         testRunner.dumpAsText();
 
-    if (!window.navigator.modelContext) {
+    if (!window.document.modelContext) {
         print("FAIL: modelContext API disabled");
         return;
     }

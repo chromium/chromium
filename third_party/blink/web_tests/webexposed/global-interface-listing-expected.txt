@@ -2039,6 +2039,7 @@ interface Document : Node
     getter lastModified
     getter linkColor
     getter links
+    getter modelContext
     getter onabort
     getter onanimationcancel
     getter onanimationend

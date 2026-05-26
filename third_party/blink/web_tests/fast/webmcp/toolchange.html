@@ -13,10 +13,10 @@ function greet(obj) {
 }
 
 promise_test(async t => {
-  assert_implements(navigator.modelContext, "modelContext API enabled");
+  assert_implements(document.modelContext, "modelContext API enabled");
   assert_implements(navigator.modelContextTesting, "modelContextTesting API enabled");
 
-  await navigator.modelContext.registerTool({
+  await document.modelContext.registerTool({
     execute: echo,
     name: "echo",
     description: "echo input",
@@ -57,7 +57,7 @@ promise_test(async t => {
       },
   };
   const controller = new AbortController();
-  navigator.modelContext.registerTool(greetTool, { signal: controller.signal });
+  document.modelContext.registerTool(greetTool, { signal: controller.signal });
   await eventPromise;
 
   tools = navigator.modelContextTesting.listTools();

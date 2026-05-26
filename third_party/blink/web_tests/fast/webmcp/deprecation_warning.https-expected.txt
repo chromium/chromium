@@ -1,0 +1,4 @@
+CONSOLE WARNING: navigator.modelContext is deprecated. Please use document.modelContext instead.
+This is a testharness.js-based test.
+Harness: the test ran to completion.
+

@@ -21,7 +21,7 @@ async function runTests() {
         testRunner.waitUntilDone();
     }
 
-    if (!window.navigator.modelContext) {
+    if (!window.document.modelContext) {
         print("FAIL: modelContext API disabled");
         if (window.testRunner) testRunner.notifyDone();
         return;

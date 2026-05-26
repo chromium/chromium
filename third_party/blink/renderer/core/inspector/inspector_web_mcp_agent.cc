@@ -40,14 +40,10 @@ ModelContext* InspectorWebMCPAgent::GetModelContext(LocalFrame* frame) {
     return nullptr;
   }
   auto* window = frame->DomWindow();
-  if (!window) {
+  if (!window || !window->document()) {
     return nullptr;
   }
-  auto* navigator = window->navigator();
-  if (!navigator) {
-    return nullptr;
-  }
-  return ModelContextSupplement::GetIfExists(*navigator);
+  return ModelContextSupplement::GetIfExists(*window->document());
 }
 
 namespace {

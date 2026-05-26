@@ -214,12 +214,9 @@ void HTMLFormElement::HTMLFormMcpTool::ExecuteTool(
     // Without `toolautosubmit`, we focus the submit button, tell the agent to
     // allow user input, and wait for the user to submit it.
     submit_button->Focus();
-    if (auto* window = form_->GetDocument().domWindow();
-        window && window->navigator()) {
-      if (auto* context =
-              ModelContextSupplement::modelContext(*window->navigator())) {
-        context->PauseExecution();
-      }
+    if (auto* context =
+            ModelContextSupplement::modelContext(form_->GetDocument())) {
+      context->PauseExecution();
     }
   } else {
     // With the `toolautosubmit` attribute, we immediately submit the form.
@@ -370,12 +367,8 @@ void HTMLFormElement::ScheduleDeclarativeWebMCPToolRegistration() {
       return;
     }
 
-    ModelContext* model_context = nullptr;
-    if (auto* window = GetDocument().domWindow();
-        window && window->navigator()) {
-      model_context =
-          ModelContextSupplement::modelContext(*window->navigator());
-    }
+    ModelContext* model_context =
+        ModelContextSupplement::modelContext(GetDocument());
     if (model_context) {
       if (!active_webmcp_tool_->IsHandlingSubmit()) {
         active_webmcp_tool_->CallDoneCallback(base::unexpected(
@@ -412,10 +405,8 @@ void HTMLFormElement::RegisterDeclarativeWebMCPTool() {
     return;
   }
 
-  ModelContext* model_context = nullptr;
-  if (auto* window = GetDocument().domWindow(); window && window->navigator()) {
-    model_context = ModelContextSupplement::modelContext(*window->navigator());
-  }
+  ModelContext* model_context =
+      ModelContextSupplement::modelContext(GetDocument());
   if (!model_context) {
     return;
   }

@@ -24,10 +24,10 @@
           annotations: { readOnlyHint: true, untrustedContentHint: false },
         };
         window.initialController = new AbortController();
-        navigator.modelContext.registerTool(initial_imperative_tool, { signal: window.initialController.signal });
+        document.modelContext.registerTool(initial_imperative_tool, { signal: window.initialController.signal });
 
         window.registerNewTools = function() {
-            navigator.modelContext.registerTool({
+            document.modelContext.registerTool({
               execute: echo,
               name: "new_imperative_tool",
               description: "Another imperative tool",
@@ -54,7 +54,7 @@
         };
 
         window.registerEvenMoreTools = function() {
-            navigator.modelContext.registerTool({
+            document.modelContext.registerTool({
               execute: echo,
               name: "newer_imperative_tool",
               description: "Another imperative tool",

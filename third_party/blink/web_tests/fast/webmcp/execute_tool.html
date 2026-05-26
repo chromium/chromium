@@ -9,7 +9,7 @@ async function echo(obj) {
   return obj.text;
 }
 
-navigator.modelContext.registerTool({
+document.modelContext.registerTool({
   execute: echo,
   name: "echo",
   description: "echo input",
@@ -29,7 +29,7 @@ async function longRunning() {
   await new Promise(r => { setTimeout(r, 5000); });
 }
 
-navigator.modelContext.registerTool({
+document.modelContext.registerTool({
   execute: longRunning,
   name: "longRunning",
   description: "show tool",
@@ -49,7 +49,7 @@ async function runTests() {
         testRunner.waitUntilDone();
     }
 
-    if (!window.navigator.modelContext) {
+    if (!window.document.modelContext) {
         print("FAIL: modelContext API disabled");
         return;
     }

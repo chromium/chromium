@@ -15,8 +15,8 @@ promise_test(async t => {
   // Register a tool with the initial about:blank Document [1].
   //
   // [1]: https://html.spec.whatwg.org/#is-initial-about:blank.
-  console.log(iframe.contentWindow.navigator.modelContext);
-  iframe.contentWindow.navigator.modelContext.registerTool({
+  console.log(iframe.contentWindow.document.modelContext);
+  iframe.contentWindow.document.modelContext.registerTool({
     name: "default-tool",
     description: "default desc",
     execute: async () => "hello"

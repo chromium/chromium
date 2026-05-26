@@ -2,7 +2,7 @@
 <title>WebMCP: Form-associated custom element with invalid schema</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="resources/webmcp-helpers.js"></script>
+<script src="/webmcp/resources/helpers.js"></script>
 <script>
   class ToolParameterInputElement extends HTMLElement {
     static formAssociated = true;
@@ -60,7 +60,7 @@
 <script>
   promise_test(async t => {
     await waitForTool('test');
-    let tools = await navigator.modelContext.getTools();
+    let tools = await document.modelContext.getTools();
     assert_equals(tools.length, 1);
     let schema = JSON.parse(tools[0].inputSchema);
     let properties = schema['properties'];

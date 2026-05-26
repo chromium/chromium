@@ -989,7 +989,7 @@ void LocalFrameMojoHandler::InvokeScriptToolForInspector(
     const String& input_arguments,
     InvokeScriptToolForInspectorCallback callback) {
   if (auto* model_context =
-          ModelContextSupplement::GetIfExists(*DomWindow()->navigator())) {
+          ModelContextSupplement::GetIfExists(*DomWindow()->document())) {
     if (model_context->GetScriptToolDeclaration(tool_name)) {
       frame_->GetTaskRunner(TaskType::kInternalInspector)
           ->PostTask(
@@ -1008,7 +1008,7 @@ void LocalFrameMojoHandler::InvokeScriptToolForInspector(
 void LocalFrameMojoHandler::NotifyInspectorOfCrossDocumentScriptToolResult(
     const base::UnguessableToken& invocation_id) {
   if (auto* model_context =
-          ModelContextSupplement::modelContext(*DomWindow()->navigator())) {
+          ModelContextSupplement::modelContext(*DomWindow()->document())) {
     model_context->GetCrossDocumentScriptToolResult(invocation_id,
                                                     base::DoNothing());
   }

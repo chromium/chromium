@@ -1,6 +1,7 @@
 CONSOLE MESSAGE: This test logs all exposed Worklets
 CONSOLE MESSAGE: layoutWorklet
 CONSOLE MESSAGE: paintWorklet
+CONSOLE WARNING: navigator.modelContext is deprecated. Please use document.modelContext instead.
 CONSOLE MESSAGE: AudioWorklet
 CONSOLE MESSAGE: IMPORTANT:
 CONSOLE MESSAGE: If you have added a new Worklet, do not just update this expectation file.

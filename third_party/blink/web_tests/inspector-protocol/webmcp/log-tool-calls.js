@@ -39,7 +39,7 @@
           required: ["text"]
         };
         async function imperative(obj) { return {text_was: obj.text}; }
-        navigator.modelContext.registerTool({
+        document.modelContext.registerTool({
           execute: imperative,
           name: "imperative_tool",
           description: "An imperative WebMCP tool",
@@ -47,7 +47,7 @@
         });
 
         async function failing_js(obj) { throw new Error("JS Error"); }
-        navigator.modelContext.registerTool({
+        document.modelContext.registerTool({
           execute: failing_js,
           name: "failing_js_tool",
           description: "Fails in JS",
@@ -60,7 +60,7 @@
             setTimeout(() => resolve({text_was: obj.text}), 10000);
           });
         }
-        navigator.modelContext.registerTool({
+        document.modelContext.registerTool({
           execute: abortable_tool,
           name: "abortable_tool",
           description: "Aborts in JS",

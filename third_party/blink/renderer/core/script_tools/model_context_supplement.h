@@ -22,8 +22,9 @@ class CORE_EXPORT ModelContextSupplement final
   static const char kSupplementName[];
 
   static ModelContextSupplement& From(Document&);
-  static ModelContext* GetIfExists(Navigator&);
+  static ModelContext* GetIfExists(Document&);
   static ModelContext* modelContext(Navigator&);
+  static ModelContext* modelContext(Document&);
   static ModelContextTesting* modelContextTesting(Navigator&);
 
   explicit ModelContextSupplement(Document&);

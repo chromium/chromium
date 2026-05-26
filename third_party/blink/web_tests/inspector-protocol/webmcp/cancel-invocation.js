@@ -7,7 +7,7 @@
                 // Do not resolve.
             });
         }
-        navigator.modelContext.registerTool({
+        document.modelContext.registerTool({
           execute: longTask,
           name: "test_tool",
           description: "A test WebMCP tool"

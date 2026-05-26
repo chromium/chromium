@@ -4,7 +4,7 @@ promise_test(async t => {
   const controller = new AbortController();
   const signal = controller.signal;
 
-  navigator.modelContext.registerTool(
+  document.modelContext.registerTool(
     {
       name: 'foo',
       description: 'bar',
@@ -22,7 +22,7 @@ promise_test(async t => {
   // Try to register the tool again. This should succeed because the old tool
   // should have been unregistered.
   try {
-    navigator.modelContext.registerTool(
+    document.modelContext.registerTool(
       {
         name: 'foo',
         description: 'bar',
