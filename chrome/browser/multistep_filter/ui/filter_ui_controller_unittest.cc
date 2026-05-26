@@ -103,9 +103,14 @@ std::vector<FilterAttributeUiLabel> DefaultAttributes() {
 UrlFilterSuggestion CreateDummySuggestion(
     const GURL& url,
     std::vector<FilterAttributeUiLabel> attribute_ui_labels = {}) {
-  return UrlFilterSuggestion(url, base::UTF8ToUTF16(GetEtldPlusOne(url)),
-                             base::Time::Now(), std::move(attribute_ui_labels),
-                             kTestNavigationId, GetEtldPlusOne(url), "task1");
+  return UrlFilterSuggestion(
+      {.navigation_url = url,
+       .source_domain = base::UTF8ToUTF16(GetEtldPlusOne(url)),
+       .extraction_timestamp = base::Time::Now(),
+       .attribute_ui_labels = std::move(attribute_ui_labels),
+       .triggering_navigation_id = kTestNavigationId,
+       .triggering_domain = GetEtldPlusOne(url),
+       .task_type = "task1"});
 }
 
 class FilterUiControllerTest : public ChromeRenderViewHostTestHarness {

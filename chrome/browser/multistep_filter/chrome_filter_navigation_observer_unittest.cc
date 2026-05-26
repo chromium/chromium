@@ -215,10 +215,14 @@ TEST_F(ChromeFilterNavigationObserverTest, DelegateOnSuggestionGenerated) {
   ASSERT_TRUE(captured_callback);
 
   const GURL suggestion_url("https://suggestion.com");
-  UrlFilterSuggestion suggestion(
-      suggestion_url, base::UTF8ToUTF16(GetEtldPlusOne(suggestion_url)),
-      base::Time::Now(), /*attribute_ui_labels=*/{}, kTestNavigationId,
-      GetEtldPlusOne(suggestion_url), "task1");
+  UrlFilterSuggestion suggestion(UrlFilterSuggestion::Params{
+      .navigation_url = suggestion_url,
+      .source_domain = base::UTF8ToUTF16(GetEtldPlusOne(suggestion_url)),
+      .extraction_timestamp = base::Time::Now(),
+      .attribute_ui_labels = {},
+      .triggering_navigation_id = kTestNavigationId,
+      .triggering_domain = GetEtldPlusOne(suggestion_url),
+      .task_type = "task1"});
   EXPECT_CALL(*mock_controller,
               OnSuggestionGenerated(testing::Optional(suggestion)));
   std::move(captured_callback).Run(suggestion);

@@ -121,11 +121,14 @@ TEST_F(FilterSuggestionGeneratorTest,
                                    attributes[0]);
   attribute_ui_labels.emplace_back(expected_candidate.attributes[1],
                                    attributes[1]);
-  UrlFilterSuggestion expected_suggestion(
-      expected_candidate.navigation_url,
-      base::UTF8ToUTF16(annotation.source_domain),
-      annotation.creation_timestamp, std::move(attribute_ui_labels),
-      kTestNavigationId, /*triggering_domain=*/"example.com", kShoppingTask);
+  UrlFilterSuggestion expected_suggestion(UrlFilterSuggestion::Params{
+      .navigation_url = expected_candidate.navigation_url,
+      .source_domain = base::UTF8ToUTF16(annotation.source_domain),
+      .extraction_timestamp = annotation.creation_timestamp,
+      .attribute_ui_labels = std::move(attribute_ui_labels),
+      .triggering_navigation_id = kTestNavigationId,
+      .triggering_domain = "example.com",
+      .task_type = kShoppingTask});
 
   EXPECT_CALL(mock_client(),
               GetFilterSuggestionCandidates(url, _, _, kTestNavigationId))

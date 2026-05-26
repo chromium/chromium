@@ -26,7 +26,7 @@ TEST(FilterAttributeUiLabelTest, ToString) {
       FilterSuggestionCandidateAttribute("key", u"label"),
       FilterAttribute("key", "value"));
   EXPECT_EQ(label.ToString(),
-            "FilterAttributeUiLabel(label=label, value=value)");
+            "FilterAttributeUiLabel(key=key, label=label, value=value)");
 }
 
 TEST(FilterAttributeUiLabelTest, Equality) {
@@ -40,15 +40,23 @@ TEST(FilterAttributeUiLabelTest, Equality) {
 
   label2.attribute_value = u"other";
   EXPECT_NE(label1, label2);
+
+  label2 = label1;
+  label2.key = "other_key";
+  EXPECT_NE(label1, label2);
 }
 
 TEST(UrlFilterSuggestionTest, CopyAndMove) {
-  UrlFilterSuggestion suggestion(
-      GURL("https://example.com"), u"domain", base::Time::Now(),
-      {FilterAttributeUiLabel(
+  UrlFilterSuggestion suggestion(UrlFilterSuggestion::Params{
+      .navigation_url = GURL("https://example.com"),
+      .source_domain = u"domain",
+      .extraction_timestamp = base::Time::Now(),
+      .attribute_ui_labels = {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
           FilterAttribute("key1", "val1"))},
-      kTriggeringNavigationId, "example.com", "task1");
+      .triggering_navigation_id = kTriggeringNavigationId,
+      .triggering_domain = "example.com",
+      .task_type = "task1"});
 
   UrlFilterSuggestion copy = suggestion;
   EXPECT_EQ(copy, suggestion);
@@ -58,12 +66,16 @@ TEST(UrlFilterSuggestionTest, CopyAndMove) {
 }
 
 TEST(UrlFilterSuggestionTest, Equality) {
-  UrlFilterSuggestion suggestion1(
-      GURL("https://example.com"), u"domain", base::Time::Now(),
-      {FilterAttributeUiLabel(
+  UrlFilterSuggestion suggestion1(UrlFilterSuggestion::Params{
+      .navigation_url = GURL("https://example.com"),
+      .source_domain = u"domain",
+      .extraction_timestamp = base::Time::Now(),
+      .attribute_ui_labels = {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
           FilterAttribute("key1", "val1"))},
-      kTriggeringNavigationId, "example.com", "task1");
+      .triggering_navigation_id = kTriggeringNavigationId,
+      .triggering_domain = "example.com",
+      .task_type = "task1"});
   UrlFilterSuggestion suggestion2 = suggestion1;
 
   EXPECT_EQ(suggestion1, suggestion2);
@@ -94,18 +106,26 @@ TEST(UrlFilterSuggestionTest, Equality) {
   suggestion2 = suggestion1;
   suggestion2.task_type = "other";
   EXPECT_NE(suggestion1, suggestion2);
+
+  suggestion2 = suggestion1;
+  suggestion2.suggestion_message = u"other_msg";
+  EXPECT_NE(suggestion1, suggestion2);
 }
 
 TEST(UrlFilterSuggestionTest, ToString) {
   base::Time timestamp;
   ASSERT_TRUE(base::Time::FromUTCString("2026-03-23 17:00:00 UTC", &timestamp));
 
-  UrlFilterSuggestion suggestion(
-      GURL("https://example.com"), u"domain", timestamp,
-      {FilterAttributeUiLabel(
+  UrlFilterSuggestion suggestion(UrlFilterSuggestion::Params{
+      .navigation_url = GURL("https://example.com"),
+      .source_domain = u"domain",
+      .extraction_timestamp = timestamp,
+      .attribute_ui_labels = {FilterAttributeUiLabel(
           FilterSuggestionCandidateAttribute("key1", u"label1"),
           FilterAttribute("key1", "val1"))},
-      kTriggeringNavigationId, "example.com", "task1");
+      .triggering_navigation_id = kTriggeringNavigationId,
+      .triggering_domain = "example.com",
+      .task_type = "task1"});
 
   EXPECT_EQ(suggestion.ToString(),
             "UrlFilterSuggestion(navigation_url=https://example.com/, "
@@ -113,7 +133,8 @@ TEST(UrlFilterSuggestionTest, ToString) {
             "extraction_timestamp=" +
                 base::NumberToString(
                     timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()) +
-                ", attribute_ui_labels=[FilterAttributeUiLabel(label=label1, "
+                ", attribute_ui_labels=[FilterAttributeUiLabel(key=key1, "
+                "label=label1, "
                 "value=val1)], triggering_navigation_id=" +
                 base::NumberToString(kTriggeringNavigationId) +
                 ", triggering_domain=example.com, task_type=task1)");
@@ -122,15 +143,21 @@ TEST(UrlFilterSuggestionTest, ToString) {
 TEST(UrlFilterSuggestionTest, ToStringMultipleAttributes) {
   base::Time timestamp = base::Time::Now();
 
-  UrlFilterSuggestion suggestion(
-      GURL("https://example.com"), u"domain", timestamp,
-      {FilterAttributeUiLabel(
-           FilterSuggestionCandidateAttribute("key1", u"label1"),
-           FilterAttribute("key1", "val1")),
-       FilterAttributeUiLabel(
-           FilterSuggestionCandidateAttribute("key2", u"label2"),
-           FilterAttribute("key2", "val2"))},
-      kTriggeringNavigationId, "example.com", "task1");
+  UrlFilterSuggestion suggestion(UrlFilterSuggestion::Params{
+      .navigation_url = GURL("https://example.com"),
+      .source_domain = u"domain",
+      .extraction_timestamp = timestamp,
+      .attribute_ui_labels =
+          {FilterAttributeUiLabel(
+               FilterSuggestionCandidateAttribute("key1", u"label1"),
+               FilterAttribute("key1", "val1")),
+           FilterAttributeUiLabel(
+               FilterSuggestionCandidateAttribute("key2", u"label2"),
+               FilterAttribute("key2", "val2"))},
+      .triggering_navigation_id = kTriggeringNavigationId,
+      .triggering_domain = "example.com",
+      .task_type = "task1",
+      .suggestion_message = u"Sample"});
 
   EXPECT_EQ(suggestion.ToString(),
             "UrlFilterSuggestion(navigation_url=https://example.com/, "
@@ -138,11 +165,38 @@ TEST(UrlFilterSuggestionTest, ToStringMultipleAttributes) {
             "extraction_timestamp=" +
                 base::NumberToString(
                     timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()) +
-                ", attribute_ui_labels=[FilterAttributeUiLabel(label=label1, "
-                "value=val1), FilterAttributeUiLabel(label=label2, "
+                ", attribute_ui_labels=[FilterAttributeUiLabel(key=key1, "
+                "label=label1, "
+                "value=val1), FilterAttributeUiLabel(key=key2, label=label2, "
                 "value=val2)], triggering_navigation_id=" +
                 base::NumberToString(kTriggeringNavigationId) +
-                ", triggering_domain=example.com, task_type=task1)");
+                ", triggering_domain=example.com, task_type=task1, "
+                "suggestion_message=Sample)");
+}
+
+TEST(UrlFilterSuggestionTest, ToStringWithSuggestionMessage) {
+  base::Time timestamp = base::Time::Now();
+
+  UrlFilterSuggestion suggestion(UrlFilterSuggestion::Params{
+      .navigation_url = GURL("https://example.com"),
+      .source_domain = u"domain",
+      .extraction_timestamp = timestamp,
+      .attribute_ui_labels = {},
+      .triggering_navigation_id = kTriggeringNavigationId,
+      .triggering_domain = "example.com",
+      .task_type = "task1",
+      .suggestion_message = u"Hello World"});
+
+  EXPECT_EQ(suggestion.ToString(),
+            "UrlFilterSuggestion(navigation_url=https://example.com/, "
+            "source_domain=domain, "
+            "extraction_timestamp=" +
+                base::NumberToString(
+                    timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds()) +
+                ", attribute_ui_labels=[], triggering_navigation_id=" +
+                base::NumberToString(kTriggeringNavigationId) +
+                ", triggering_domain=example.com, task_type=task1, "
+                "suggestion_message=Hello World)");
 }
 
 }  // namespace

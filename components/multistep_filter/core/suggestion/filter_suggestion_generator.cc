@@ -258,12 +258,14 @@ void FilterSuggestionGenerator::OnFilterSuggestionCandidatesFetched(
   // otherwise.
   failure_callback.ReplaceClosure(base::DoNothing());
 
-  UrlFilterSuggestion suggestion(
-      std::move(candidate.navigation_url),
-      base::UTF8ToUTF16(matching_annotation_it->source_domain),
-      matching_annotation_it->creation_timestamp,
-      std::move(attribute_ui_labels), navigation_id, std::string(domain),
-      std::move(matching_annotation_it->task_type));
+  UrlFilterSuggestion suggestion(UrlFilterSuggestion::Params{
+      .navigation_url = std::move(candidate.navigation_url),
+      .source_domain = base::UTF8ToUTF16(matching_annotation_it->source_domain),
+      .extraction_timestamp = matching_annotation_it->creation_timestamp,
+      .attribute_ui_labels = std::move(attribute_ui_labels),
+      .triggering_navigation_id = navigation_id,
+      .triggering_domain = std::string(domain),
+      .task_type = std::move(matching_annotation_it->task_type)});
   LogSuggestionGenerated(log_router_, navigation_id, domain, suggestion);
   std::move(success_callback).Run(std::move(suggestion));
 }
