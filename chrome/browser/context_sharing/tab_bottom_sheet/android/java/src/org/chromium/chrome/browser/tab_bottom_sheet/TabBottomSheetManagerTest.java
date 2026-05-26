@@ -202,7 +202,8 @@ public class TabBottomSheetManagerTest {
                                 CoBrowseViewFactory.buildCoBrowseViews(
                                         mWindowAndroid,
                                         webContents,
-                                        TabBottomSheetClientType.UNKNOWN));
+                                        TabBottomSheetClientType.UNKNOWN,
+                                        CoBrowseContainerType.BOTTOM_SHEET));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -248,7 +249,8 @@ public class TabBottomSheetManagerTest {
                                 CoBrowseViewFactory.buildCoBrowseViews(
                                         mWindowAndroid,
                                         webContents,
-                                        TabBottomSheetClientType.UNKNOWN));
+                                        TabBottomSheetClientType.UNKNOWN,
+                                        CoBrowseContainerType.BOTTOM_SHEET));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

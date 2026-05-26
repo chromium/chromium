@@ -7,13 +7,14 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
   sources = [
+    "co_browse_container_type.h",
     "co_browse_views_bridge.cc",
     "co_browse_views_bridge.h",
     "tab_bottom_sheet_bridge.cc",
     "tab_bottom_sheet_bridge.h",
+    "tab_bottom_sheet_client_type.h",
   ]
   deps = [
-    ":client_type_java_enum",
     ":jni_headers",
     "//base",
     "//chrome/browser/android:tabs_public",
@@ -30,8 +31,11 @@ generate_jni("jni_headers") {
   ]
 }
 
-java_cpp_enum("client_type_java_enum") {
-  sources = [ "tab_bottom_sheet_client_type.h" ]
+java_cpp_enum("enums_java") {
+  sources = [
+    "co_browse_container_type.h",
+    "tab_bottom_sheet_client_type.h",
+  ]
 }
 
 android_resources("java_resources") {
@@ -81,7 +85,7 @@ android_library("peek_view_java") {
 
 android_library("java") {
   srcjar_deps = [
-    ":client_type_java_enum",
+    ":enums_java",
     ":jni_headers",
   ]
   sources = [
@@ -233,7 +237,6 @@ source_set("browser_tests") {
   ]
   deps = [
     ":android",
-    ":client_type_java_enum",
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/tab_list",

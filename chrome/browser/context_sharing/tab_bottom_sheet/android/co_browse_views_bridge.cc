@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/context_sharing/tab_bottom_sheet/android/co_browse_container_type.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
@@ -35,8 +36,9 @@ CoBrowseViewsBridge::GetViewFromCoBrowseViews(
 
 CoBrowseViewsBridge::CoBrowseViewsBridge(
     tabs::TabInterface& tab,
-    context_sharing::TabBottomSheetClientType client_type)
-    : tab_(tab), client_type_(client_type) {}
+    context_sharing::TabBottomSheetClientType client_type,
+    context_sharing::CoBrowseContainerType container_type)
+    : tab_(tab), client_type_(client_type), container_type_(container_type) {}
 
 CoBrowseViewsBridge::~CoBrowseViewsBridge() {
   DestroyCoBrowseViews();
@@ -69,7 +71,8 @@ bool CoBrowseViewsBridge::CreateCoBrowseViews(
 
   JNIEnv* env = AttachCurrentThread();
   java_co_browse_views_.Reset(Java_CoBrowseViewFactory_buildCoBrowseViews(
-      env, window_android, web_contents, static_cast<int>(client_type_)));
+      env, window_android, web_contents, static_cast<int>(client_type_),
+      static_cast<int>(container_type_)));
 
   return !java_co_browse_views_.is_null();
 }

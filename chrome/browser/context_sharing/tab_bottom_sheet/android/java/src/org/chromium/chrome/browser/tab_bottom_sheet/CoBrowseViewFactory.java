@@ -95,7 +95,8 @@ public class CoBrowseViewFactory {
     CoBrowseViews buildCoBrowseViews(
             @Nullable WebContents webContents,
             @ColorInt int backgroundColor,
-            @TabBottomSheetClientType int clientType) {
+            @TabBottomSheetClientType int clientType,
+            @SuppressWarnings("unused") @CoBrowseContainerType int containerType) {
         View containerView =
                 LayoutInflater.from(mActivity).inflate(R.layout.tab_bottom_sheet, null);
         TabBottomSheetWebUi webUi =
@@ -139,7 +140,8 @@ public class CoBrowseViewFactory {
     public static @Nullable CoBrowseViews buildCoBrowseViews(
             @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @Nullable @JniType("content::WebContents*") WebContents webContents,
-            @TabBottomSheetClientType int clientType) {
+            @TabBottomSheetClientType int clientType,
+            @CoBrowseContainerType int containerType) {
         CoBrowseViewFactory factory = TabBottomSheetUtils.getFactoryFromWindow(windowAndroid);
         if (factory == null) {
             return null;
@@ -150,6 +152,6 @@ public class CoBrowseViewFactory {
                 clientType == TabBottomSheetClientType.GLIC
                         ? factory.mActivity.getColor(R.color.tab_bottom_sheet_glic_bg)
                         : factory.mActivity.getColor(R.color.tab_bottom_sheet_base_bg);
-        return factory.buildCoBrowseViews(webContents, backgroundColor, clientType);
+        return factory.buildCoBrowseViews(webContents, backgroundColor, clientType, containerType);
     }
 }

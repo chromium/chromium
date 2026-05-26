@@ -35,7 +35,8 @@ GlicSidePanelCoordinatorAndroid::GlicSidePanelCoordinatorAndroid(
   browser_observation_.Observe(GlobalBrowserCollection::GetInstance());
 
   views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
-      *tab, context_sharing::TabBottomSheetClientType::kGlic);
+      *tab, context_sharing::TabBottomSheetClientType::kGlic,
+      context_sharing::CoBrowseContainerType::kBottomSheet);
   tab_bottom_sheet_bridge_ =
       std::make_unique<context_sharing::TabBottomSheetBridge>(this, tab);
 }

@@ -125,7 +125,8 @@ ContextualTasksPanelHostAndroid::GetOrCreateBridge() {
     }
     views_bridge_ = std::make_unique<context_sharing::CoBrowseViewsBridge>(
         *tab_android,
-        context_sharing::TabBottomSheetClientType::kContextualTasks);
+        context_sharing::TabBottomSheetClientType::kContextualTasks,
+        context_sharing::CoBrowseContainerType::kBottomSheet);
     tab_bottom_sheet_bridge_ =
         std::make_unique<context_sharing::TabBottomSheetBridge>(this,
                                                                 tab_android);
