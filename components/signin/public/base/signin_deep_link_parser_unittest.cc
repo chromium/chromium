@@ -206,31 +206,4 @@ TEST_F(CrossDeviceSigninDeepLinkParserFactoryTest, FeatureDisabled) {
   ASSERT_FALSE(parser.has_value());
 }
 
-class SigninDeepLinkParserPayloadTest : public testing::Test {};
-
-TEST_F(SigninDeepLinkParserPayloadTest, HasAllRequiredFields) {
-  const SigninDeepLinkPayload payload = {
-      .entry_point_id = ExternalEntryPoint::kDesktopDefault,
-      .email = "test@gmail.com"};
-  EXPECT_TRUE(payload.HasAllRequiredFields());
-}
-
-TEST_F(SigninDeepLinkParserPayloadTest, MissingEntryPointId) {
-  const SigninDeepLinkPayload payload = {.entry_point_id = std::nullopt,
-                                         .email = "test@gmail.com"};
-  EXPECT_FALSE(payload.HasAllRequiredFields());
-}
-
-TEST_F(SigninDeepLinkParserPayloadTest, MissingEmail) {
-  const SigninDeepLinkPayload payload = {
-      .entry_point_id = ExternalEntryPoint::kDesktopDefault,
-      .email = std::nullopt};
-  EXPECT_FALSE(payload.HasAllRequiredFields());
-}
-
-TEST_F(SigninDeepLinkParserPayloadTest, MissingAllFields) {
-  const SigninDeepLinkPayload payload = {};
-  EXPECT_FALSE(payload.HasAllRequiredFields());
-}
-
 }  // namespace signin

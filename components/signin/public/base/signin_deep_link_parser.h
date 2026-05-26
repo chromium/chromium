@@ -10,37 +10,10 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
+#include "components/signin/public/base/signin_deep_link_payload.h"
 #include "url/gurl.h"
 
 namespace signin {
-
-// The external device entry point for sign-in flow.
-// LINT.IfChange(ExternalEntryPoint)
-enum class ExternalEntryPoint : int {
-  kUnknown = 0,
-  kDesktopDefault = 1,
-  kMaxValue = kDesktopDefault,
-};
-// LINT.ThenChange(//components/signin/public/base/signin_deep_link_parser.cc:ExternalEntryPoint)
-
-// The payload of the signin deep link.
-struct SigninDeepLinkPayload {
-  // The external device entry point ID value read from the deep link.
-  // Set to std::nullopt if the entry point ID query parameter is not present or
-  // cannot be parsed. Set to kUnknown if the entry point ID was specified as an
-  // integer but with unknown value. Otherwise, set to the value of the entry
-  // point ID.
-  std::optional<ExternalEntryPoint> entry_point_id = std::nullopt;
-  // The email address value read from the deep link.
-  // Set to std::nullopt if the email address query parameter is not present or
-  // cannot be parsed.
-  std::optional<std::string> email = std::nullopt;
-
-  bool operator==(const SigninDeepLinkPayload&) const = default;
-
-  // Returns true if the payload has all required fields.
-  bool HasAllRequiredFields() const;
-};
 
 class SigninDeepLinkParser {
  public:

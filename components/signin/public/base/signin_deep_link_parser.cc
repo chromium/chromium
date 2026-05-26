@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/signin/public/base/signin_deep_link_payload.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
@@ -34,7 +35,7 @@ std::optional<ExternalEntryPoint> TryParseEntryPointId(const GURL& deep_link) {
           return parsed_entry_point;
       }
       return ExternalEntryPoint::kUnknown;
-      // LINT.ThenChange(//components/signin/public/base/signin_deep_link_parser.h:ExternalEntryPoint)
+      // LINT.ThenChange(//components/signin/public/base/signin_deep_link_payload.h:ExternalEntryPoint)
     }
   }
   return std::nullopt;
@@ -51,10 +52,6 @@ std::optional<std::string> TryParseEmail(const GURL& deep_link) {
 }
 
 }  // namespace
-
-bool SigninDeepLinkPayload::HasAllRequiredFields() const {
-  return entry_point_id.has_value() && email.has_value();
-}
 
 std::optional<SigninDeepLinkPayload> SigninDeepLinkParser::Parse(
     const GURL& deep_link) const {

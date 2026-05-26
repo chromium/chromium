@@ -86,7 +86,7 @@ source_set("signin") {
       "signin_manager_android_factory.h",
     ]
     public_deps += [
-      "//components/signin/public/base:signin_deep_link_parser",
+      "//components/signin/public/base:signin_deep_link",
       "//components/signin/public/browser",
     ]
   }
