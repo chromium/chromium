@@ -350,7 +350,6 @@ using signin_metrics::PromoAction;
 }
 
 - (void)handleAlertCoordinatorCancel {
-  DCHECK(_confirmRemoveIdentityAlertCoordinator);
   [_confirmRemoveIdentityAlertCoordinator stop];
   _confirmRemoveIdentityAlertCoordinator = nil;
 }
