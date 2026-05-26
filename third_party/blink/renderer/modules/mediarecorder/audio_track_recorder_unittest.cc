@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -578,15 +579,11 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
     // the PCM encoder, so we can verify the output data later. Do not save it
     // if the recorder is paused.
     if (codec_ == media::AudioCodec::kPCM && !paused_) {
-      std::unique_ptr<media::AudioBus> cache_bus(
-          media::AudioBus::Create(bus->channels(), bus->frames()));
-      bus->CopyTo(cache_bus.get());
-
-      int current_size = first_source_cache_.size();
+      size_t current_size = first_source_cache_.size();
       first_source_cache_.resize(current_size +
-                                 cache_bus->frames() * cache_bus->channels());
-      cache_bus->ToInterleaved<media::Float32SampleTypeTraits>(
-          cache_bus->frames(), &first_source_cache_[current_size]);
+                                 bus->frames() * bus->channels());
+      bus->ToInterleaved<media::Float32SampleTypeTraits>(
+          base::span(first_source_cache_).subspan(current_size));
     }
 
     return bus;
