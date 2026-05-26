@@ -39,6 +39,9 @@ void RecordCueShownMetrics(ukm::SourceId source_id,
                            std::string_view cuj,
                            const CueTabMetrics& tab_metrics,
                            base::TimeDelta latency) {
+  base::UmaHistogramSparse("ContextualCueing.V2.CueShown",
+                           base::HashMetricName(cuj));
+
   auto* ukm_recorder = ukm::UkmRecorder::Get();
   ukm::builders::ContextualCueing_CueShown(source_id)
       .SetSuggestedCujCategory(base::HashMetricName(cuj))

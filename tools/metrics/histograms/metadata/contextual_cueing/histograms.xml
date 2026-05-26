@@ -174,16 +174,6 @@ chromium-metrics-reviews@google.com.
   <token key="CueType" variants="ContextualCueingCueType"/>
 </histogram>
 
-<histogram name="ContextualCueing.ShownCueCUJ" units="hash"
-    expires_after="2026-11-22">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>pulkitaga@google.com</owner>
-  <summary>
-    The hashed string of the CUJ for the contextual cue that was shown to the
-    user. Recorded once every time a contextual cue is shown to the user.
-  </summary>
-</histogram>
-
 <histogram name="ContextualCueing.V2.CueInteraction"
     enum="ContextualCueingInteraction" expires_after="2026-11-22">
   <owner>sophiechang@chromium.org</owner>
@@ -211,6 +201,16 @@ chromium-metrics-reviews@google.com.
     <variant name="Settings"
         summary="user opened 3 dot menu and clicked to go to settings"/>
   </token>
+</histogram>
+
+<histogram name="ContextualCueing.V2.CueShown" units="hash"
+    expires_after="2026-09-13">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>pulkitaga@google.com</owner>
+  <summary>
+    The hashed string of the CUJ for a contextual cue. Recorded when the
+    contextual cue is shown to the user.
+  </summary>
 </histogram>
 
 <histogram name="ContextualCueing.V2.Decision" enum="ContextualCueingDecision"

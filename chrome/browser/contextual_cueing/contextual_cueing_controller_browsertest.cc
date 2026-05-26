@@ -419,6 +419,9 @@ IN_PROC_BROWSER_TEST_F(ContextualCueingControllerBrowserTest,
   histogram_tester.ExpectUniqueSample(
       "ContextualCueing.V2.NumRequestedBackgroundTabs", 1, 1);
 
+  histogram_tester.ExpectUniqueSample("ContextualCueing.V2.CueShown",
+                                      base::HashMetricName("TestCUJ"), 1);
+
   auto entries = ukm_recorder.GetEntriesByName(
       ukm::builders::ContextualCueing_CueShown::kEntryName);
   ASSERT_EQ(1u, entries.size());
