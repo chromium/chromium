@@ -65,6 +65,13 @@ void RecordAutoOpenOutcome(AutoOpenOutcome outcome) {
                                 outcome);
 }
 
+void RecordFormFieldMatchOutcome(FormFieldMatchOutcome outcome, int count) {
+  for (int i = 0; i < count; ++i) {
+    base::UmaHistogramEnumeration(
+        "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome", outcome);
+  }
+}
+
 void RecordScrollPositionGenerationTime(base::TimeDelta time) {
   base::UmaHistogramTimes("Sharing.SendTabToSelf.ScrollPosition.GenerationTime",
                           time);

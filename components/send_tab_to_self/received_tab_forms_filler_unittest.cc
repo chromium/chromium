@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -119,6 +120,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillMatchingFields) {
                                autofill::mojom::ActionPersistence::kFill,
                                Eq(field_id), Eq(u"shared_value")));
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
@@ -126,6 +128,10 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillMatchingFields) {
   autofill_manager().OnFormsSeen({form}, {});
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kMatchedByIdNameAndType, 1);
 }
 
 // Tests that fallback signature matching works when names/IDs are dynamic
@@ -159,6 +165,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsByUniqueSignatureFallback) {
                                autofill::mojom::ActionPersistence::kFill,
                                Eq(field_id), Eq(u"shared_value")));
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
@@ -166,6 +173,10 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsByUniqueSignatureFallback) {
   autofill_manager().OnFormsSeen({form_receiver}, {});
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kMatchedBySignature, 1);
 }
 
 // Tests that fallback matching is skipped if the receiver form has multiple
@@ -201,6 +212,7 @@ TEST_F(ReceivedTabFormsFillerTest,
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
@@ -208,6 +220,10 @@ TEST_F(ReceivedTabFormsFillerTest,
   autofill_manager().OnFormsSeen({form_receiver}, {});
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kNoMatch, 1);
 }
 
 // Tests that fallback matching is skipped if there are multiple pending fields
@@ -244,6 +260,7 @@ TEST_F(ReceivedTabFormsFillerTest,
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
@@ -251,6 +268,10 @@ TEST_F(ReceivedTabFormsFillerTest,
   autofill_manager().OnFormsSeen({form_receiver}, {});
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kNoMatch, 2);
 }
 // Tests that fallback matching via semantic type works when names and IDs do
 // not match but there is a unique type match.
@@ -287,11 +308,16 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldFillFieldsBySemanticMatchFallback) {
                                autofill::mojom::ActionPersistence::kFill,
                                Eq(field_id), Eq(u"shared_value")));
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kMatchedByExactTypeSet, 1);
 }
 
 // Tests that matching is skipped if multiple pending fields share the same
@@ -331,11 +357,16 @@ TEST_F(ReceivedTabFormsFillerTest,
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kNoMatch, 2);
 }
 
 // Tests that matching is skipped if the semantic type is not unique within
@@ -375,11 +406,16 @@ TEST_F(ReceivedTabFormsFillerTest,
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kNoMatch, 1);
 }
 
 // Tests that fallback semantic matching works when both the pending field and
@@ -516,6 +552,7 @@ TEST_F(ReceivedTabFormsFillerTest,
                                Eq(first_field_id), Eq(u"shared_value")))
       .Times(1);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
@@ -523,6 +560,10 @@ TEST_F(ReceivedTabFormsFillerTest,
   autofill_manager().OnFormsSeen({form_receiver}, {});
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kMatchedByIdNameAndType, 1);
 }
 
 TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnManagerDestruction) {
@@ -531,6 +572,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnManagerDestruction) {
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(
       autofill_client(), url::Origin::Create(GURL("https://example.com")),
@@ -545,12 +587,17 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnManagerDestruction) {
   // Verifies that the completion callback gets invoked upon manager
   // destruction.
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kNoMatch, 1);
 }
 
 TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnTimeout) {
   PageContext::FormFieldInfo form_field_info;
   form_field_info.fields.push_back(MakeFormField(u"id1", u"", "text", u"val"));
 
+  base::HistogramTester histogram_tester;
   base::MockCallback<base::OnceClosure> completion_callback;
   ReceivedTabFormsFiller::Start(
       autofill_client(), url::Origin::Create(GURL("https://example.com")),
@@ -564,6 +611,10 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldStopOnTimeout) {
   // Should stop after 10 seconds.
   EXPECT_CALL(completion_callback, Run);
   task_environment_.FastForwardBy(base::Seconds(1));
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kNoMatch, 1);
 }
 
 TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillFieldsWithDifferentOrigin) {
@@ -584,6 +635,7 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillFieldsWithDifferentOrigin) {
 
   EXPECT_CALL(autofill_driver(), ApplyFieldAction).Times(0);
 
+  base::HistogramTester histogram_tester;
   base::RunLoop run_loop;
   ReceivedTabFormsFiller::Start(autofill_client(), kOrigin, form_field_info,
                                 run_loop.QuitClosure());
@@ -597,6 +649,10 @@ TEST_F(ReceivedTabFormsFillerTest, ShouldNotFillFieldsWithDifferentOrigin) {
       autofill::AutofillManager::LifecycleState::kPendingDeletion);
 
   run_loop.Run();
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome",
+      FormFieldMatchOutcome::kNoMatch, 1);
 }
 
 }  // namespace

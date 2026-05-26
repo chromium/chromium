@@ -55,6 +55,22 @@ enum class AutoOpenOutcome {
 // Records the outcome of an auto-open attempt.
 void RecordAutoOpenOutcome(AutoOpenOutcome outcome);
 
+// Outcome of matching a received form field to a field on the page.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SendTabToSelfFormFieldMatchOutcome)
+enum class FormFieldMatchOutcome {
+  kMatchedByIdNameAndType = 0,
+  kMatchedBySignature = 1,
+  kMatchedByExactTypeSet = 2,
+  kNoMatch = 3,
+  kMaxValue = kNoMatch,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfFormFieldMatchOutcome)
+
+// Records the outcome of matching a received form field.
+void RecordFormFieldMatchOutcome(FormFieldMatchOutcome outcome, int count = 1);
+
 // Status of scroll position generation when sending a tab.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.

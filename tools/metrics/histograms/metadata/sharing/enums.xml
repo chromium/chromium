@@ -99,6 +99,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:AutoOpenOutcome) -->
 
+<!-- LINT.IfChange(SendTabToSelfFormFieldMatchOutcome) -->
+
+<enum name="SendTabToSelfFormFieldMatchOutcome">
+  <int value="0" label="Strict Match (ID, Name, Type)"/>
+  <int value="1" label="Signature Match"/>
+  <int value="2" label="Exact Type Set Match"/>
+  <int value="3" label="No Match (includes origin mismatches)"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:FormFieldMatchOutcome) -->
+
 <!-- LINT.IfChange(SendTabToSelfScrollPositionGenerationOutcome) -->
 
 <enum name="SendTabToSelfScrollPositionGenerationOutcome">

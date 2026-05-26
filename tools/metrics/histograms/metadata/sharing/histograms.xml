@@ -424,6 +424,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.ReceivedTabFormFieldMatchOutcome"
+    enum="SendTabToSelfFormFieldMatchOutcome" expires_after="2027-05-08">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the outcome of matching a received form field to a field on the page
+    (Strict match, Signature match, Exact Type Set match, or No match). Recorded
+    on the receiving device when the filler instance is destroyed (either upon
+    timeout or navigation/destruction), which avoids timing skew between matches
+    and non-matches. Note: if the browser is closed before the filler is
+    destroyed, some samples might be lost. Fields that match in signature or
+    type but have a different origin are ignored for security reasons and
+    recorded as kNoMatch.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SendTabToSelf.Scroll.Volume{RestorationState}"
     units="pixels" expires_after="2027-03-05">
   <owner>mtatarski@google.com</owner>

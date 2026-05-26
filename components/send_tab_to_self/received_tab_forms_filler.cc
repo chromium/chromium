@@ -199,6 +199,16 @@ ReceivedTabFormsFiller::ReceivedTabFormsFiller(
 }
 
 ReceivedTabFormsFiller::~ReceivedTabFormsFiller() {
+  RecordFormFieldMatchOutcome(FormFieldMatchOutcome::kMatchedByIdNameAndType,
+                              matched_id_name_type_count_);
+  RecordFormFieldMatchOutcome(FormFieldMatchOutcome::kMatchedBySignature,
+                              matched_signature_count_);
+  RecordFormFieldMatchOutcome(FormFieldMatchOutcome::kMatchedByExactTypeSet,
+                              matched_type_count_);
+  // Record matching failures (kNoMatch) for received fields that were never
+  // matched, avoiding noise from extra (unshared) fields present on the page.
+  RecordFormFieldMatchOutcome(FormFieldMatchOutcome::kNoMatch,
+                              pending_fields_.size());
   std::move(on_completion_callback_for_test_).Run();
 }
 
@@ -249,20 +259,19 @@ void ReceivedTabFormsFiller::OnAutofillManagerStateChanged(
   }
 }
 
-// TODO(crbug.com/485145029): Add a metric to see which matching method is used.
-// This helps decide if we can clean up the code later.
-// TODO(crbug.com/485145029): Check if we really need all these matching methods
-// by looking at the metrics. If fallbacks are not used, we can remove them to
-// simplify the code and the proto.
-const PageContext::FormField* ReceivedTabFormsFiller::FindPendingFieldMatching(
+// TODO(crbug.com/511137786): Evaluate if we really need all these matching
+// methods by looking at the UMA metrics. If fallbacks are not heavily used,
+// we can remove them to simplify the code and the proto.
+ReceivedTabFormsFiller::MatchResult
+ReceivedTabFormsFiller::FindPendingFieldMatching(
     const autofill::FormStructure& form,
     const autofill::AutofillField& field,
     const base::flat_set<autofill::FieldSignature>& form_unique_signatures,
-    const base::flat_set<AutofillTypeSet>& form_unique_type_sets) {
+    const base::flat_set<AutofillTypeSet>& form_unique_type_sets) const {
   // 1. Try strict match based on ID, Name, and Type.
   if (const PageContext::FormField* match =
           FindPendingFieldByIdNameAndType(field)) {
-    return match;
+    return {match, FormFieldMatchOutcome::kMatchedByIdNameAndType};
   }
 
   // 2. Try fallback match using unique Autofill signatures.
@@ -270,16 +279,21 @@ const PageContext::FormField* ReceivedTabFormsFiller::FindPendingFieldMatching(
       form.form_signature(), field.GetFieldSignature()};
   if (const PageContext::FormField* match =
           FindPendingFieldBySignature(signature, form_unique_signatures)) {
-    return match;
+    return {match, FormFieldMatchOutcome::kMatchedBySignature};
   }
 
   // 3. Try fallback match using Autofill types (exact set match).
-  return FindPendingFieldByExactTypeSet(field, form_unique_type_sets);
+  if (const PageContext::FormField* match =
+          FindPendingFieldByExactTypeSet(field, form_unique_type_sets)) {
+    return {match, FormFieldMatchOutcome::kMatchedByExactTypeSet};
+  }
+
+  return {};
 }
 
 const PageContext::FormField*
 ReceivedTabFormsFiller::FindPendingFieldByIdNameAndType(
-    const autofill::AutofillField& field) {
+    const autofill::AutofillField& field) const {
   auto it = pending_fields_.find(std::make_tuple(
       field.id_attribute(), field.name_attribute(),
       autofill::FormControlTypeToString(field.form_control_type())));
@@ -289,7 +303,8 @@ ReceivedTabFormsFiller::FindPendingFieldByIdNameAndType(
 const PageContext::FormField*
 ReceivedTabFormsFiller::FindPendingFieldBySignature(
     const PageContext::FormFieldAutofillSignature& signature,
-    const base::flat_set<autofill::FieldSignature>& form_unique_signatures) {
+    const base::flat_set<autofill::FieldSignature>& form_unique_signatures)
+    const {
   // Check if the signature was unique in pending_fields_ initially.
   if (!received_unique_signatures_.contains(signature)) {
     return nullptr;
@@ -312,7 +327,7 @@ ReceivedTabFormsFiller::FindPendingFieldBySignature(
 const PageContext::FormField*
 ReceivedTabFormsFiller::FindPendingFieldByExactTypeSet(
     const autofill::AutofillField& field,
-    const base::flat_set<AutofillTypeSet>& form_unique_type_sets) {
+    const base::flat_set<AutofillTypeSet>& form_unique_type_sets) const {
   AutofillTypeSet local_type_set = GetFieldProtoTypes(field);
   if (local_type_set.empty()) {
     return nullptr;
@@ -346,22 +361,39 @@ void ReceivedTabFormsFiller::FillForms(autofill::AutofillManager& manager) {
     for (const std::unique_ptr<autofill::AutofillField>& field :
          form.fields()) {
       if (field->origin() != origin_) {
-        // Only same-origin fields are considered for security reasons.
+        // Only same-origin fields are filled for security reasons.
         continue;
       }
 
-      const PageContext::FormField* pending_field = FindPendingFieldMatching(
+      const MatchResult match = FindPendingFieldMatching(
           form, *field, form_unique_signatures, form_unique_type_sets);
-      if (!pending_field) {
+      if (!match.field) {
+        // Fields on the page that don't match any pending field are ignored for
+        // metrics purposes.
         continue;
+      }
+
+      switch (match.outcome) {
+        case FormFieldMatchOutcome::kMatchedByIdNameAndType:
+          ++matched_id_name_type_count_;
+          break;
+        case FormFieldMatchOutcome::kMatchedBySignature:
+          ++matched_signature_count_;
+          break;
+        case FormFieldMatchOutcome::kMatchedByExactTypeSet:
+          ++matched_type_count_;
+          break;
+        case FormFieldMatchOutcome::kNoMatch:
+          NOTREACHED();
       }
 
       manager.FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
                                  autofill::mojom::FieldActionType::kReplaceAll,
-                                 form.ToFormData(), *field,
-                                 pending_field->value,
+                                 form.ToFormData(), *field, match.field->value,
                                  autofill::FillingProduct::kNone, std::nullopt);
-      pending_fields_.erase(*pending_field);
+      // Erase the successfully filled field immediately to prevent duplicate
+      // fills or double-logging in the destructor.
+      pending_fields_.erase(*match.field);
     }
   });
 }
