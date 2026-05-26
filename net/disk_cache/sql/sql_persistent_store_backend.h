@@ -127,8 +127,6 @@ class SqlPersistentStore::Backend {
   //                       is used to select candidates.
   // `excluded_res_ids`: A set of resource IDs to exclude from eviction (e.g.,
   //                     currently active entries).
-  // `high_priority_res_ids`: A list of resource IDs that should be prioritized
-  //                          for staying in the cache.
   // `is_idle_time_eviction`: True if this is an eviction triggered by idle
   //                          time. If true, the eviction may be aborted if the
   //                          browser becomes active.
@@ -143,17 +141,18 @@ class SqlPersistentStore::Backend {
   //                             high watermark. Once this value becomes <= 0,
   //                             and `abort_flag` is set, the eviction will
   //                             stop.
+  // `index`: The in-memory index to be updated.
   // `callback`: Called when the eviction finishes or is aborted.
   void StartEviction(
       int64_t size_to_be_removed,
       base::flat_set<ResId> excluded_res_ids,
-      std::vector<ResId> high_priority_res_ids,
       bool is_idle_time_eviction,
       scoped_refptr<EvictionCandidateAggregator> aggregator,
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
           remaining_mandatory_size,
-      EvictionResultOrErrorAndStoreStatusCallback callback);
+      std::optional<SqlPersistentStoreInMemoryIndex> index,
+      EvictionResultWithMetadataCallback callback);
 
   // Resumes a previously paused eviction.
   //
@@ -167,14 +166,16 @@ class SqlPersistentStore::Backend {
   // `is_idle_time_eviction`: See `StartEviction`.
   // `abort_flag`: See `StartEviction`.
   // `remaining_mandatory_size`: See `StartEviction`.
+  // `index`: The in-memory index to be updated.
   // `start_time`: The time when the resume operation was posted.
-  EvictionResultOrErrorAndStoreStatus ResumePendingEviction(
+  EvictionResultWithMetadata ResumePendingEviction(
       EvictionTargetQueue eviction_targets,
       base::flat_set<ResId> excluded_res_ids,
       bool is_idle_time_eviction,
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
           remaining_mandatory_size,
+      std::optional<SqlPersistentStoreInMemoryIndex> index,
       base::TimeTicks start_time);
 
   InMemoryIndexAndDoomedResIdsOrError LoadInMemoryIndex();
@@ -367,17 +368,18 @@ class SqlPersistentStore::Backend {
   base::expected<EvictionCandidateList, Error> SelectEvictionCandidates(
       int64_t size_to_be_removed,
       base::flat_set<ResId> excluded_res_ids,
-      std::vector<ResId> high_priority_res_ids,
+      const std::optional<SqlPersistentStoreInMemoryIndex>& index,
       bool is_idle_time_eviction,
       size_t& scanned_count);
   // Called by the `EvictionCandidateAggregator` to evict a list of selected
   // entries.
   void EvictEntries(
-      EvictionResultOrErrorAndStoreStatusCallback callback,
+      EvictionResultWithMetadataCallback callback,
       bool is_idle_time_eviction,
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
           remaining_mandatory_size,
+      std::optional<SqlPersistentStoreInMemoryIndex> index,
       EvictionTargetQueue eviction_targets,
       base::TimeTicks post_task_time);
 
@@ -386,15 +388,18 @@ class SqlPersistentStore::Backend {
   // from `eviction_targets` (used for new eviction). If false, entries that are
   // not found in the DB are ignored, and the size is retrieved from the DB
   // (used for resuming eviction).
-  EvictionResultOrError EvictEntriesHelper(
-      EvictionTargetQueue eviction_targets,
+  Error EvictEntriesHelper(
+      EvictionTargetQueue& eviction_targets,
       const base::flat_set<ResId>& excluded_res_ids,
       bool is_idle_time_eviction,
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
           remaining_mandatory_size,
       bool trust_target_size,
-      bool& corruption_detected);
+      bool& corruption_detected,
+      bool& index_mismatch_detected,
+      size_t& evicted_entry_count,
+      std::optional<SqlPersistentStoreInMemoryIndex>& index);
 
   // Updates the in-memory `store_status_` by `entry_count_delta` and
   // `total_size_delta`. If the update results in an overflow or a negative

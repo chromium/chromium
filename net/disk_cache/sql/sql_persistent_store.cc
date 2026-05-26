@@ -426,7 +426,7 @@ void SqlPersistentStore::ResumePendingEviction(
       base::MakeRefCounted<base::RefCountedData<std::atomic_int64_t>>(
           std::in_place,
           std::max<int64_t>(size_of_all_entries - high_watermark_, 0));
-  auto barrier_callback = base::BarrierCallback<HashAndResIdListOrError>(
+  auto barrier_callback = base::BarrierCallback<EvictionResult>(
       GetSizeOfShards(),
       base::BindOnce(&SqlPersistentStore::OnPendingEvictionFinished,
                      weak_factory_.GetWeakPtr(), excluded_res_id_sets,
@@ -445,15 +445,14 @@ void SqlPersistentStore::OnPendingEvictionFinished(
     scoped_refptr<base::RefCountedData<std::atomic_bool>> eviction_abort_flag,
     base::TimeTicks start_time,
     ErrorCallback callback,
-    std::vector<HashAndResIdListOrError> results) {
+    std::vector<EvictionResult> results) {
   Error error = Error::kOk;
   size_t count = 0;
   for (const auto& result : results) {
-    if (!result.has_value()) {
-      error = result.error();
-      break;
+    if (result.error != Error::kOk) {
+      error = result.error;
     }
-    count += result.value().size();
+    count += result.evicted_entry_count;
   }
   RecordEvictionHistograms(
       is_idle_time_eviction ? "ResumeEvictionOnIdleTime" : "ResumeEviction",
@@ -488,7 +487,7 @@ void SqlPersistentStore::StartNewEviction(
           std::in_place,
           std::max<int64_t>(size_of_all_entries - high_watermark_, 0));
   eviction_result_callback_ = std::move(callback);
-  auto barrier_callback = base::BarrierCallback<HashAndResIdListOrError>(
+  auto barrier_callback = base::BarrierCallback<EvictionResult>(
       GetSizeOfShards(),
       base::BindOnce(&SqlPersistentStore::OnEvictionFinished,
                      weak_factory_.GetWeakPtr(), is_idle_time_eviction,
@@ -506,15 +505,14 @@ void SqlPersistentStore::StartNewEviction(
 void SqlPersistentStore::OnEvictionFinished(
     bool is_idle_time_eviction,
     base::TimeTicks start_time,
-    std::vector<HashAndResIdListOrError> results) {
+    std::vector<EvictionResult> results) {
   Error error = Error::kOk;
   size_t count = 0;
   for (const auto& result : results) {
-    if (!result.has_value()) {
-      error = result.error();
-      break;
+    if (result.error != Error::kOk) {
+      error = result.error;
     }
-    count += result.value().size();
+    count += result.evicted_entry_count;
   }
 
   RecordEvictionHistograms(
@@ -869,15 +867,32 @@ SqlPersistentStore::EvictionTarget::operator=(const EvictionTarget&) = default;
 bool SqlPersistentStore::EvictionTarget::operator==(
     const EvictionTarget& other) const = default;
 
-SqlPersistentStore::EvictionResult::EvictionResult(
-    HashAndResIdList deleted_hash_and_res_ids,
-    EvictionTargetQueue pending_eviction_targets)
-    : deleted_hash_and_res_ids(std::move(deleted_hash_and_res_ids)),
-      pending_eviction_targets(std::move(pending_eviction_targets)) {}
+SqlPersistentStore::EvictionResult::EvictionResult(Error error,
+                                                   size_t evicted_entry_count)
+    : error(error), evicted_entry_count(evicted_entry_count) {}
 SqlPersistentStore::EvictionResult::~EvictionResult() = default;
 SqlPersistentStore::EvictionResult::EvictionResult(EvictionResult&&) = default;
 SqlPersistentStore::EvictionResult&
 SqlPersistentStore::EvictionResult::operator=(EvictionResult&&) = default;
+
+SqlPersistentStore::EvictionResultWithMetadata::EvictionResultWithMetadata(
+    EvictionResult result,
+    EvictionTargetQueue pending_eviction_targets,
+    std::optional<SqlPersistentStoreInMemoryIndex> index,
+    StoreStatus store_status,
+    bool index_mismatch_detected)
+    : result(std::move(result)),
+      pending_eviction_targets(std::move(pending_eviction_targets)),
+      index(std::move(index)),
+      store_status(std::move(store_status)),
+      index_mismatch_detected(index_mismatch_detected) {}
+SqlPersistentStore::EvictionResultWithMetadata::~EvictionResultWithMetadata() =
+    default;
+SqlPersistentStore::EvictionResultWithMetadata::EvictionResultWithMetadata(
+    EvictionResultWithMetadata&&) = default;
+SqlPersistentStore::EvictionResultWithMetadata&
+SqlPersistentStore::EvictionResultWithMetadata::operator=(
+    EvictionResultWithMetadata&&) = default;
 
 SqlPersistentStore::InitResult::InitResult(
     std::optional<int64_t> max_bytes,

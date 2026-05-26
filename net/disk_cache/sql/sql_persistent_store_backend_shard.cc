@@ -4,6 +4,7 @@
 
 #include "net/disk_cache/sql/sql_persistent_store_backend_shard.h"
 
+#include <set>
 #include <string_view>
 #include <utility>
 
@@ -107,10 +108,11 @@ void SqlPersistentStore::BackendShard::DoomEntry(const CacheEntryKey& key,
     } else if (!accept_index_mismatch) {
       RecordIndexMismatch(IndexMismatchLocation::kDoomEntry);
     }
-  } else if (loading_index_) {
-    // If the in-memory index is being loaded, add to
-    // `pending_doomed_hash_and_res_ids_` to be removed from the index upon
-    // completion of the index loading.
+  } else {
+    // If the in-memory index is not available (e.g. it is being loaded or
+    // moved to the backend during eviction), add to
+    // `pending_doomed_hash_and_res_ids_` to be removed from the index once it
+    // becomes available.
     pending_doomed_hash_and_res_ids_.push_back({key.hash(), res_id});
   }
   backend_.AsyncCall(&SqlPersistentStore::Backend::DoomEntry)
@@ -123,8 +125,13 @@ void SqlPersistentStore::BackendShard::DoomEntry(const CacheEntryKey& key,
               // If the DoomEntry operation fails in the database, the entry
               // needs to be re-inserted into the in-memory index to maintain
               // consistency.
+              // Note: Optimistic write failure may trigger a call to DoomEntry,
+              // which occurs without exclusive control. In this case, if
+              // eviction runs immediately after Backend::DoomEntry, the index
+              // might be missing.
               if (need_recovery_on_failure && result.result != Error::kOk &&
-                  result.result != Error::kNotFound) {
+                  result.result != Error::kNotFound &&
+                  weak_ptr->index_.has_value()) {
                 weak_ptr->index_->Insert(hash, res_id);
               }
               weak_ptr->store_status_ = result.store_status;
@@ -299,27 +306,19 @@ void SqlPersistentStore::BackendShard::StartEviction(
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
         remaining_mandatory_size,
-    HashAndResIdListOrErrorCallback callback) {
-  EvictionResultOrErrorAndStoreStatusCallback result_callback =
+    EvictionResultCallback callback) {
+  EvictionResultWithMetadataCallback result_callback =
       base::BindPostTaskToCurrentDefault(
           base::BindOnce(&BackendShard::OnEvictionFinished,
                          weak_factory_.GetWeakPtr(), std::move(callback))
               .Then(base::OnceClosure(base::DoNothingWithBoundArgs(
                   async_task_manager_->StartTask()))));
 
-  std::vector<ResId> high_priority_res_ids;
-  if (net::features::kSqlDiskCacheSizeAndPriorityAwareEviction.Get()) {
-    CHECK(index_);
-    // Retrieve the list of high priority resource IDs from the in-memory index
-    // to pass to the backend for prioritized eviction.
-    high_priority_res_ids =
-        index_->GetResIdsWithHints(MemoryEntryDataHints(HINT_HIGH_PRIORITY));
-  }
   backend_.AsyncCall(&SqlPersistentStore::Backend::StartEviction)
       .WithArgs(size_to_be_removed, std::move(excluded_res_ids),
-                std::move(high_priority_res_ids), is_idle_time_eviction,
-                std::move(aggregator), std::move(abort_flag),
-                std::move(remaining_mandatory_size),
+                is_idle_time_eviction, std::move(aggregator),
+                std::move(abort_flag), std::move(remaining_mandatory_size),
+                std::exchange(index_, std::nullopt),
                 std::move(result_callback));
 }
 
@@ -329,16 +328,17 @@ void SqlPersistentStore::BackendShard::ResumePendingEviction(
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
         remaining_mandatory_size,
-    HashAndResIdListOrErrorCallback callback) {
+    EvictionResultCallback callback) {
   if (pending_eviction_targets_.empty()) {
-    std::move(callback).Run(HashAndResIdList());
+    std::move(callback).Run(
+        EvictionResult(Error::kOk, /*evicted_entry_count=*/0));
     return;
   }
   backend_.AsyncCall(&SqlPersistentStore::Backend::ResumePendingEviction)
       .WithArgs(std::move(pending_eviction_targets_),
                 std::move(excluded_res_ids), is_idle_time_eviction,
                 std::move(abort_flag), std::move(remaining_mandatory_size),
-                base::TimeTicks::Now())
+                std::move(index_), base::TimeTicks::Now())
       .Then(base::BindOnce(&BackendShard::OnEvictionFinished,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
 }
@@ -359,9 +359,7 @@ int64_t SqlPersistentStore::BackendShard::GetSizeOfAllEntries() const {
 
 void SqlPersistentStore::BackendShard::LoadInMemoryIndex(
     ErrorCallback callback) {
-  CHECK(!loading_index_);
   CHECK(!index_.has_value());
-  loading_index_ = true;
   backend_.AsyncCall(&SqlPersistentStore::Backend::LoadInMemoryIndex)
       .Then(base::BindOnce(
           [](base::WeakPtr<BackendShard> weak_ptr, ErrorCallback callback,
@@ -369,14 +367,20 @@ void SqlPersistentStore::BackendShard::LoadInMemoryIndex(
             if (weak_ptr) {
               if (result.has_value()) {
                 weak_ptr->index_ = std::move(result->index);
-                weak_ptr->to_be_deleted_res_ids_ =
-                    std::move(result->doomed_entry_res_ids);
-                weak_ptr->loading_index_ = false;
+                std::set<ResId> doomed_res_id_set(
+                    result->doomed_entry_res_ids.begin(),
+                    result->doomed_entry_res_ids.end());
                 for (const auto& hash_and_res_id :
                      weak_ptr->pending_doomed_hash_and_res_ids_) {
                   weak_ptr->index_->Remove(hash_and_res_id.hash,
                                            hash_and_res_id.res_id);
+                  // If an entry is doomed while the index is being loaded, it
+                  // should also be removed from the list of entries to be
+                  // deleted if it was previously marked for deletion.
+                  doomed_res_id_set.erase(hash_and_res_id.res_id);
                 }
+                weak_ptr->to_be_deleted_res_ids_.assign(
+                    doomed_res_id_set.begin(), doomed_res_id_set.end());
                 weak_ptr->pending_doomed_hash_and_res_ids_.clear();
               }
               std::move(callback).Run(result.has_value() ? Error::kOk
@@ -565,25 +569,21 @@ SqlPersistentStore::BackendShard::WrapErrorCallbackToRemoveFromIndex(
 }
 
 void SqlPersistentStore::BackendShard::OnEvictionFinished(
-    HashAndResIdListOrErrorCallback callback,
-    EvictionResultOrErrorAndStoreStatus result) {
-  if (result.result.has_value()) {
-    if (index_.has_value()) {
-      for (const auto& hash_and_res_id :
-           result.result->deleted_hash_and_res_ids) {
-        if (!index_->Remove(hash_and_res_id.hash, hash_and_res_id.res_id)) {
-          RecordIndexMismatch(IndexMismatchLocation::kStartEviction);
-        }
-      }
+    EvictionResultCallback callback,
+    EvictionResultWithMetadata result) {
+  if (result.index.has_value()) {
+    index_ = std::move(result.index);
+    for (const auto& hash_and_res_id : pending_doomed_hash_and_res_ids_) {
+      index_->Remove(hash_and_res_id.hash, hash_and_res_id.res_id);
     }
-    pending_eviction_targets_ =
-        std::move(result.result->pending_eviction_targets);
+    pending_doomed_hash_and_res_ids_.clear();
   }
+  if (result.index_mismatch_detected) {
+    RecordIndexMismatch(IndexMismatchLocation::kStartEviction);
+  }
+  pending_eviction_targets_ = std::move(result.pending_eviction_targets);
   store_status_ = result.store_status;
-  std::move(callback).Run(result.result.has_value()
-                              ? HashAndResIdListOrError(std::move(
-                                    result.result->deleted_hash_and_res_ids))
-                              : base::unexpected(result.result.error()));
+  std::move(callback).Run(std::move(result.result));
 }
 
 void SqlPersistentStore::BackendShard::RecordIndexMismatch(

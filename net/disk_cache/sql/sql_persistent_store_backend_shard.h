@@ -120,14 +120,14 @@ class SqlPersistentStore::BackendShard {
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
           remaining_mandatory_size,
-      HashAndResIdListOrErrorCallback callback);
+      EvictionResultCallback callback);
   void ResumePendingEviction(
       base::flat_set<ResId> excluded_res_ids,
       bool is_idle_time_eviction,
       scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
       scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
           remaining_mandatory_size,
-      HashAndResIdListOrErrorCallback callback);
+      EvictionResultCallback callback);
   bool HasPendingEviction() const { return !pending_eviction_targets_.empty(); }
 
   int32_t GetEntryCount() const;
@@ -220,8 +220,8 @@ class SqlPersistentStore::BackendShard {
   base::OnceCallback<void(HashAndResIdListOrErrorAndStoreStatus)>
   WrapErrorCallbackToRemoveFromIndex(ErrorCallback callback,
                                      IndexMismatchLocation location);
-  void OnEvictionFinished(HashAndResIdListOrErrorCallback callback,
-                          EvictionResultOrErrorAndStoreStatus result);
+  void OnEvictionFinished(EvictionResultCallback callback,
+                          EvictionResultWithMetadata result);
   void RecordIndexMismatch(IndexMismatchLocation location);
 
   const raw_ref<SqlAsyncTaskManager> async_task_manager_;
@@ -238,12 +238,10 @@ class SqlPersistentStore::BackendShard {
   // and are scheduled for deletion.
   ResIdList to_be_deleted_res_ids_;
 
-  // True while the in-memory index is being loaded from the database.
-  bool loading_index_ = false;
-
-  // A list of resource IDs of entries that are doomed during the in-memory
-  // index is being loaded. Once loading is complete, these entries are removed
-  // from the newly loaded index to ensure consistency.
+  // A list of resource IDs of entries that are doomed while the in-memory
+  // index is not available (e.g. it is being loaded or moved to the backend
+  // during eviction). Once the index is available, these entries are removed
+  // from the index to ensure consistency.
   HashAndResIdList pending_doomed_hash_and_res_ids_;
 
   bool strict_corruption_check_enabled_ = false;

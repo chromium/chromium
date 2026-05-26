@@ -5599,6 +5599,40 @@ TEST_P(SqlPersistentStoreTest, DoomEntryWhileIndexLoading) {
   EXPECT_FALSE(open_result3->has_value());
 }
 
+TEST_P(SqlPersistentStoreTest,
+       DoomedEntryBeforeIndexLoadNotIncorrectlyCleanedUp) {
+  const CacheEntryKey kKey("my-key");
+  const std::string kData = "hello world";
+
+  CreateAndInitStore();
+  const auto res_id = CreateEntryAndGetResId(kKey);
+
+  WriteDataAndAssertSuccess(kKey, res_id, /*old_body_end=*/0, /*offset=*/0,
+                            kData, /*truncate=*/false);
+
+  // 1. Doom the entry before the index is loaded. This adds it to
+  // `pending_doomed_hash_and_res_ids_`.
+  EXPECT_EQ(DoomEntry(kKey, res_id), SqlPersistentStore::Error::kOk);
+
+  // Verify that the entry's data is still readable before index load.
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/kData.size(),
+                    /*body_end=*/kData.size(), /*sparse_reading=*/false, kData);
+
+  // 2. Load the index. The entry should be filtered out from the background
+  // cleanup list by the logic in `LoadInMemoryIndex`.
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  // 3. Run background cleanup. It should return false if the entry was
+  // correctly filtered out.
+  base::test::TestFuture<SqlPersistentStore::Error> cleanup_future;
+  EXPECT_FALSE(
+      store_->MaybeRunCleanupDoomedEntries(cleanup_future.GetCallback()));
+
+  // 4. Verify data is still readable, ensuring it wasn't incorrectly deleted.
+  ReadAndVerifyData(kKey, res_id, /*offset=*/0, /*buffer_len=*/kData.size(),
+                    /*body_end=*/kData.size(), /*sparse_reading=*/false, kData);
+}
+
 TEST_P(SqlPersistentStoreTest, DoomEntryRecoversIndexOnDbFailure) {
   CreateAndInitStore();
 
@@ -5645,6 +5679,106 @@ TEST_P(SqlPersistentStoreTest, DoomEntryRecoversIndexOnDbFailure) {
   open_result = OpenEntry(kKey);
   ASSERT_TRUE(open_result.has_value());
   EXPECT_FALSE(open_result->has_value());
+}
+
+TEST_P(SqlPersistentStoreTest,
+       DoomedEntryDuringEvictionRemovedFromIndexAfterReturn) {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  ASSERT_TRUE(LoadInMemoryIndex());
+
+  const CacheEntryKey kKey1("key1");
+  const auto res_id1 = CreateEntryAndGetResId(kKey1);
+  const CacheEntryKey kKey2("key2");
+  const auto res_id2 = CreateEntryAndGetResId(kKey2);
+
+  // Fill data for kKey2 to exceed the high watermark.
+  FillDataInRange(kKey2, res_id2, 0, 0, 9600, 'a');
+  EXPECT_GT(GetSizeOfAllEntries(), kHighWatermark);
+
+  // Trigger eviction. This will move the index to the backend.
+  // We exclude res_id1 to ensure it's not doomed by the eviction itself.
+  std::vector<SqlPersistentStore::ResIdAndShardId> excluded_list;
+  excluded_list.emplace_back(res_id1, SqlPersistentStore::ShardId(0));
+  base::test::TestFuture<SqlPersistentStore::Error> eviction_future;
+  store_->StartEviction(
+      std::move(excluded_list), /*is_idle_time_eviction=*/false,
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false),
+      eviction_future.GetCallback());
+
+  // At this point, the index should be missing from the IO thread.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kNotReady);
+
+  // Doom kKey1 while the index is on the backend.
+  base::test::TestFuture<SqlPersistentStore::Error> doom_future;
+  store_->DoomEntry(kKey1, res_id1, /*accept_index_mismatch=*/false,
+                    doom_future.GetCallback());
+
+  // Wait for eviction and doom to complete.
+  EXPECT_EQ(eviction_future.Get(), SqlPersistentStore::Error::kOk);
+  EXPECT_EQ(doom_future.Get(), SqlPersistentStore::Error::kOk);
+
+  // The index should be back on the IO thread, and kKey1 should be missing
+  // because it was removed from `pending_doomed_hash_and_res_ids_`.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey1.hash()),
+            SqlPersistentStore::IndexState::kHashNotFound);
+}
+
+TEST_P(SqlPersistentStoreTest, DoomEntryDbFailureEvictionRace) {
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;  // 9500
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+
+  // Load the in-memory index, which is necessary for the index recovery
+  // mechanism.
+  ASSERT_TRUE(LoadInMemoryIndex());
+
+  const CacheEntryKey kKey("my-key");
+  const auto res_id = CreateEntryAndGetResId(kKey);
+
+  // Fill data to exceed the high watermark (9500 for 10000 max).
+  FillDataInRange(kKey, res_id, 0, 0, 9600, 'a');
+  EXPECT_GT(GetSizeOfAllEntries(), kHighWatermark);
+
+  // The entry should be in the index.
+  EXPECT_EQ(store_->GetIndexStateForHash(kKey.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  // Simulate a database failure.
+  store_->SetSimulateDbFailureForTesting(true);
+
+  // Try to doom the entry, but don't wait for it to finish.
+  base::test::TestFuture<SqlPersistentStore::Error> doom_future;
+  store_->DoomEntry(kKey, res_id, /*accept_index_mismatch=*/false,
+                    doom_future.GetCallback());
+
+  // Immediately start an eviction. This will steal the index from the shard.
+  // When DoomEntry's DB task completes and returns to the shard, it will try
+  // to recover the index because of the DB failure, but the index will be
+  // missing. This tests that we don't crash when `weak_ptr->index_.has_value()`
+  // is false.
+  auto abort_flag =
+      base::MakeRefCounted<base::RefCountedData<std::atomic_bool>>(
+          std::in_place, false);
+  base::test::TestFuture<SqlPersistentStore::Error> eviction_future;
+  store_->StartEviction({}, /*is_idle_time_eviction=*/false, abort_flag,
+                        eviction_future.GetCallback());
+
+  // Wait for both to finish.
+  ASSERT_EQ(doom_future.Get(), SqlPersistentStore::Error::kFailedForTesting);
+  ASSERT_EQ(eviction_future.Get(),
+            SqlPersistentStore::Error::kFailedForTesting);
+
+  // Disable the failure simulation to ensure a successful cleanup.
+  store_->SetSimulateDbFailureForTesting(false);
 }
 
 TEST_P(SqlPersistentStoreTest, SetAndGetEntryInMemoryData) {

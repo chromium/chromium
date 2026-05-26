@@ -84,9 +84,7 @@ using OptionalEntryInfoWithKeyAndIterator =
 
 using InMemoryIndexAndDoomedResIds =
     SqlPersistentStore::InMemoryIndexAndDoomedResIds;
-using EvictionResultOrError = SqlPersistentStore::EvictionResultOrError;
-using EvictionResultOrErrorAndStoreStatus =
-    SqlPersistentStore::EvictionResultOrErrorAndStoreStatus;
+
 namespace {
 
 bool IsBlobSizeValid(int64_t blob_start,
@@ -162,11 +160,6 @@ void PopulateTraceDetails(const InMemoryIndexAndDoomedResIds& result,
                           perfetto::TracedDictionary& dict) {
   dict.Add("index_size", result.index.size());
   dict.Add("doomed_entry_count", result.doomed_entry_res_ids.size());
-}
-void PopulateTraceDetails(const SqlPersistentStore::EvictionResult& result,
-                          perfetto::TracedDictionary& dict) {
-  dict.Add("deleted", result.deleted_hash_and_res_ids.size());
-  dict.Add("pending", result.pending_eviction_targets.size());
 }
 void PopulateTraceDetails(Error error,
                           const StoreStatus& store_status,
@@ -2422,27 +2415,25 @@ SqlPersistentStore::Backend::OpenNextEntryInternal(
 void SqlPersistentStore::Backend::StartEviction(
     int64_t size_to_be_removed,
     base::flat_set<ResId> excluded_res_ids,
-    std::vector<ResId> high_priority_res_ids,
     bool is_idle_time_eviction,
     scoped_refptr<EvictionCandidateAggregator> aggregator,
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
         remaining_mandatory_size,
-    EvictionResultOrErrorAndStoreStatusCallback callback) {
+    std::optional<SqlPersistentStoreInMemoryIndex> index,
+    EvictionResultWithMetadataCallback callback) {
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.StartEviction", "data",
                      [&](perfetto::TracedValue trace_context) {
                        auto dict = std::move(trace_context).WriteDictionary();
                        dict.Add("size_to_be_removed", size_to_be_removed);
                        dict.Add("is_idle_time_eviction", is_idle_time_eviction);
                        dict.Add("excluded_res_ids", excluded_res_ids.size());
-                       dict.Add("high_priority_res_ids",
-                                high_priority_res_ids.size());
                      });
   base::ElapsedTimer timer;
   size_t scanned_count = 0;
-  auto result = SelectEvictionCandidates(
-      size_to_be_removed, std::move(excluded_res_ids),
-      std::move(high_priority_res_ids), is_idle_time_eviction, scanned_count);
+  auto result =
+      SelectEvictionCandidates(size_to_be_removed, std::move(excluded_res_ids),
+                               index, is_idle_time_eviction, scanned_count);
   const std::string_view eviction_type =
       !is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
   const std::string_view result_type =
@@ -2472,8 +2463,8 @@ void SqlPersistentStore::Backend::StartEviction(
       result.has_value() ? std::move(*result) : EvictionCandidateList(),
       base::BindOnce(&Backend::EvictEntries, weak_factory_.GetWeakPtr(),
                      std::move(callback), is_idle_time_eviction,
-                     std::move(abort_flag),
-                     std::move(remaining_mandatory_size)));
+                     std::move(abort_flag), std::move(remaining_mandatory_size),
+                     std::move(index)));
 }
 
 base::expected<SqlPersistentStore::Backend::EvictionCandidateList,
@@ -2481,7 +2472,7 @@ base::expected<SqlPersistentStore::Backend::EvictionCandidateList,
 SqlPersistentStore::Backend::SelectEvictionCandidates(
     int64_t size_to_be_removed,
     base::flat_set<ResId> excluded_res_ids,
-    std::vector<ResId> high_priority_res_ids,
+    const std::optional<SqlPersistentStoreInMemoryIndex>& index,
     bool is_idle_time_eviction,
     size_t& scanned_count) {
   if (is_idle_time_eviction && !IsBrowserIdle()) {
@@ -2505,6 +2496,10 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
 
   base::flat_set<ResId> high_priority_res_ids_set;
   if (size_and_priority_aware_eviction) {
+    CHECK(index);
+    // Retrieve the list of high priority resource IDs from the in-memory index.
+    std::vector<ResId> high_priority_res_ids =
+        index->GetResIdsWithHints(MemoryEntryDataHints(HINT_HIGH_PRIORITY));
     std::sort(high_priority_res_ids.begin(), high_priority_res_ids.end());
     high_priority_res_ids_set = base::flat_set<ResId>(
         base::sorted_unique, std::move(high_priority_res_ids));
@@ -2585,11 +2580,12 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
 }
 
 void SqlPersistentStore::Backend::EvictEntries(
-    EvictionResultOrErrorAndStoreStatusCallback callback,
+    EvictionResultWithMetadataCallback callback,
     bool is_idle_time_eviction,
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
         remaining_mandatory_size,
+    std::optional<SqlPersistentStoreInMemoryIndex> index,
     EvictionTargetQueue eviction_targets,
     base::TimeTicks post_task_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - post_task_time;
@@ -2603,28 +2599,31 @@ void SqlPersistentStore::Backend::EvictEntries(
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
+  bool index_mismatch_detected = false;
+  size_t evicted_entry_count = 0;
   // Entries in excluded_res_ids are excluded from candidates at the
   // SelectEvictionCandidates stage, so pass an empty excluded_res_ids here.
-  auto result =
-      EvictEntriesHelper(std::move(eviction_targets), /*excluded_res_ids=*/{},
-                         is_idle_time_eviction, std::move(abort_flag),
-                         std::move(remaining_mandatory_size),
-                         /*trust_target_size=*/true, corruption_detected);
+  auto error = EvictEntriesHelper(
+      eviction_targets, /*excluded_res_ids=*/{}, is_idle_time_eviction,
+      std::move(abort_flag), std::move(remaining_mandatory_size),
+      /*trust_target_size=*/true, corruption_detected, index_mismatch_detected,
+      evicted_entry_count, index);
+
   RecordTimeAndErrorResultHistogram(
       !is_idle_time_eviction ? "EvictEntries" : "EvictEntriesOnIdleTime",
-      posting_delay, timer.Elapsed(), result.error_or(Error::kOk),
-      corruption_detected);
+      posting_delay, timer.Elapsed(), error, corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.EvictEntries", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
+                     PopulateTraceDetails(error, store_status_, dict);
                    });
   MaybeCrashIfCorrupted(corruption_detected);
-  std::move(callback).Run(
-      EvictionResultOrErrorAndStoreStatus(std::move(result), store_status_));
+  std::move(callback).Run(EvictionResultWithMetadata(
+      EvictionResult(error, evicted_entry_count), std::move(eviction_targets),
+      std::move(index), store_status_, index_mismatch_detected));
 }
 
-EvictionResultOrErrorAndStoreStatus
+SqlPersistentStore::EvictionResultWithMetadata
 SqlPersistentStore::Backend::ResumePendingEviction(
     EvictionTargetQueue eviction_targets,
     base::flat_set<ResId> excluded_res_ids,
@@ -2632,6 +2631,7 @@ SqlPersistentStore::Backend::ResumePendingEviction(
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
         remaining_mandatory_size,
+    std::optional<SqlPersistentStoreInMemoryIndex> index,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.ResumePendingEviction", "data",
@@ -2643,34 +2643,42 @@ SqlPersistentStore::Backend::ResumePendingEviction(
                      });
   base::ElapsedTimer timer;
   bool corruption_detected = false;
-  auto result = EvictEntriesHelper(
-      std::move(eviction_targets), excluded_res_ids, is_idle_time_eviction,
+  bool index_mismatch_detected = false;
+  size_t evicted_entry_count = 0;
+  auto error = EvictEntriesHelper(
+      eviction_targets, excluded_res_ids, is_idle_time_eviction,
       std::move(abort_flag), std::move(remaining_mandatory_size),
-      /*trust_target_size=*/false, corruption_detected);
+      /*trust_target_size=*/false, corruption_detected, index_mismatch_detected,
+      evicted_entry_count, index);
+
   RecordTimeAndErrorResultHistogram(
       !is_idle_time_eviction ? "ResumePendingEviction"
                              : "ResumePendingEvictionOnIdleTime",
-      posting_delay, timer.Elapsed(), result.error_or(Error::kOk),
-      corruption_detected);
+      posting_delay, timer.Elapsed(), error, corruption_detected);
   TRACE_EVENT_END1("disk_cache", "SqlBackend.ResumePendingEviction", "result",
                    [&](perfetto::TracedValue trace_context) {
                      auto dict = std::move(trace_context).WriteDictionary();
-                     PopulateTraceDetails(result, store_status_, dict);
+                     PopulateTraceDetails(error, store_status_, dict);
                    });
-  return EvictionResultOrErrorAndStoreStatus(std::move(result), store_status_);
+  return EvictionResultWithMetadata(
+      EvictionResult(error, evicted_entry_count), std::move(eviction_targets),
+      std::move(index), store_status_, index_mismatch_detected);
 }
 
-EvictionResultOrError SqlPersistentStore::Backend::EvictEntriesHelper(
-    EvictionTargetQueue eviction_targets,
+SqlPersistentStore::Error SqlPersistentStore::Backend::EvictEntriesHelper(
+    EvictionTargetQueue& eviction_targets,
     const base::flat_set<ResId>& excluded_res_ids,
     bool is_idle_time_eviction,
     scoped_refptr<base::RefCountedData<std::atomic_bool>> abort_flag,
     scoped_refptr<base::RefCountedData<std::atomic_int64_t>>
         remaining_mandatory_size,
     bool trust_target_size,
-    bool& corruption_detected) {
+    bool& corruption_detected,
+    bool& index_mismatch_detected,
+    size_t& evicted_entry_count,
+    std::optional<SqlPersistentStoreInMemoryIndex>& index) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
-    return base::unexpected(db_error);
+    return db_error;
   }
   HashAndResIdList deleted_hash_and_res_ids;
   while (!eviction_targets.empty()) {
@@ -2682,13 +2690,13 @@ EvictionResultOrError SqlPersistentStore::Backend::EvictEntriesHelper(
          remaining_mandatory_size->data.load(std::memory_order_relaxed) <= 0)) {
       break;
     }
+    eviction_targets.pop();
     if (excluded_res_ids.contains(res_id)) {
-      eviction_targets.pop();
       continue;
     }
     sql::Transaction transaction(&db_);
     if (!transaction.Begin()) {
-      return base::unexpected(Error::kFailedToExecute);
+      return Error::kFailedToExecute;
     }
     if (eviction_hook_) {
       eviction_hook_.Run();
@@ -2699,7 +2707,7 @@ EvictionResultOrError SqlPersistentStore::Backend::EvictEntriesHelper(
     if (trust_target_size) {
       auto hash_or_error = DeleteResourceByResIdReturnHash(res_id);
       if (!hash_or_error.has_value()) {
-        return base::unexpected(hash_or_error.error());
+        return hash_or_error.error();
       }
       cache_key_hash = *hash_or_error;
       // store_status_.total_size tracks payload only, so subtract overhead.
@@ -2712,7 +2720,6 @@ EvictionResultOrError SqlPersistentStore::Backend::EvictEntriesHelper(
         // as an error. In that case, continue eviction by ignoring the entry
         // instead of aborting.
         CHECK_EQ(usage_and_hash_or_error.error(), Error::kNotFound);
-        eviction_targets.pop();
         continue;
       }
       deleted_byte = usage_and_hash_or_error->bytes_usage;
@@ -2720,22 +2727,24 @@ EvictionResultOrError SqlPersistentStore::Backend::EvictEntriesHelper(
     }
 
     if (auto error = DeleteBlobsByResId(res_id); error != Error::kOk) {
-      return base::unexpected(error);
+      return error;
     }
 
     deleted_hash_and_res_ids.push_back({cache_key_hash, res_id});
+    if (index && !index->Remove(cache_key_hash, res_id)) {
+      index_mismatch_detected = true;
+    }
     if (const auto error = UpdateStoreStatusAndCommitTransaction(
             transaction, -1, -deleted_byte, corruption_detected);
         error != Error::kOk) {
-      return base::unexpected(error);
+      return error;
     }
     remaining_mandatory_size->data.fetch_sub(
         deleted_byte + kSqlBackendStaticResourceSize,
         std::memory_order_relaxed);
-    eviction_targets.pop();
+    ++evicted_entry_count;
   }
-  return EvictionResult(std::move(deleted_hash_and_res_ids),
-                        std::move(eviction_targets));
+  return Error::kOk;
 }
 
 Error SqlPersistentStore::Backend::UpdateStoreStatusAndCommitTransaction(

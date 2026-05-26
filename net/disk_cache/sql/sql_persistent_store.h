@@ -226,14 +226,31 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
 
   // The result of an eviction operation.
   struct EvictionResult {
-    EvictionResult(HashAndResIdList deleted_hash_and_res_ids,
-                   EvictionTargetQueue pending_eviction_targets);
+    EvictionResult(Error error, size_t evicted_entry_count);
     ~EvictionResult();
     EvictionResult(EvictionResult&& other);
     EvictionResult& operator=(EvictionResult&& other);
 
-    HashAndResIdList deleted_hash_and_res_ids;
+    Error error;
+    size_t evicted_entry_count;
+  };
+
+  struct EvictionResultWithMetadata {
+    EvictionResultWithMetadata(
+        EvictionResult result,
+        EvictionTargetQueue pending_eviction_targets,
+        std::optional<SqlPersistentStoreInMemoryIndex> index,
+        StoreStatus store_status,
+        bool index_mismatch_detected);
+    ~EvictionResultWithMetadata();
+    EvictionResultWithMetadata(EvictionResultWithMetadata&& other);
+    EvictionResultWithMetadata& operator=(EvictionResultWithMetadata&& other);
+
+    EvictionResult result;
     EvictionTargetQueue pending_eviction_targets;
+    std::optional<SqlPersistentStoreInMemoryIndex> index;
+    StoreStatus store_status;
+    bool index_mismatch_detected;
   };
 
   // A helper struct to bundle an operation's result with a flag indicating
@@ -293,11 +310,9 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
     CacheEntryKey::Hash hash;
   };
   using UsageAndHashOrError = base::expected<UsageAndHash, Error>;
-  using EvictionResultOrError = base::expected<EvictionResult, Error>;
-  using EvictionResultOrErrorAndStoreStatus =
-      ResultAndStoreStatus<EvictionResultOrError>;
-  using EvictionResultOrErrorAndStoreStatusCallback =
-      base::OnceCallback<void(EvictionResultOrErrorAndStoreStatus)>;
+  using EvictionResultCallback = base::OnceCallback<void(EvictionResult)>;
+  using EvictionResultWithMetadataCallback =
+      base::OnceCallback<void(EvictionResultWithMetadata)>;
   using InMemoryIndexAndDoomedResIdsOrError =
       base::expected<InMemoryIndexAndDoomedResIds, Error>;
 
@@ -668,7 +683,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       scoped_refptr<base::RefCountedData<std::atomic_bool>> eviction_abort_flag,
       base::TimeTicks start_time,
       ErrorCallback callback,
-      std::vector<HashAndResIdListOrError> results);
+      std::vector<EvictionResult> results);
   void StartNewEviction(
       std::vector<base::flat_set<SqlPersistentStore::ResId>>
           excluded_res_id_sets,
@@ -677,7 +692,7 @@ class NET_EXPORT_PRIVATE SqlPersistentStore {
       ErrorCallback callback);
   void OnEvictionFinished(bool is_idle_time_eviction,
                           base::TimeTicks start_time,
-                          std::vector<HashAndResIdListOrError> results);
+                          std::vector<EvictionResult> results);
 
   void RunNextCheckpoint(base::OnceCallback<void(bool)> callback,
                          std::vector<bool> results);
