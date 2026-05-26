@@ -617,7 +617,8 @@ public class FeedSurfaceCoordinator
                         () -> mProfile,
                         NtpCustomizationCoordinator.BottomSheetType.MAIN,
                         mWindowAndroid,
-                        moduleRegistry)
+                        moduleRegistry,
+                        mSnackbarManager)
                 .showBottomSheet();
         NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                 NtpCustomizationCoordinator.EntryPointType.NEW_TAB_PAGE);

@@ -3465,7 +3465,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                         mTabModelProfileSupplier,
                                         NtpCustomizationCoordinator.BottomSheetType.THEME,
                                         getWindowAndroid(),
-                                        mModuleRegistrySupplier.get());
+                                        mModuleRegistrySupplier.get(),
+                                        getSnackbarManager());
                 coordinator.showBottomSheet();
             }
 
@@ -4406,7 +4407,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             profileSupplier,
                             NtpCustomizationCoordinator.BottomSheetType.MAIN,
                             getWindowAndroid(),
-                            mModuleRegistrySupplier.get())
+                            mModuleRegistrySupplier.get(),
+                            getSnackbarManager())
                     .showBottomSheet();
             NtpCustomizationMetricsUtils.recordOpenBottomSheetEntry(
                     NtpCustomizationCoordinator.EntryPointType.MAIN_MENU);

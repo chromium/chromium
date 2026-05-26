@@ -153,6 +153,20 @@ public class NtpCustomizationPromoManager {
         showSnackBar(context, snackbarManager);
     }
 
+    /**
+     * Shows a homepage customization snackbar if the appearance bottom sheet is closed without
+     * applying a new NTP theme.
+     *
+     * @param context The application context.
+     * @param snackbarManager The {@link SnackbarManager} to display the snackbar.
+     */
+    public static void maybeShowHomepageCustomizationSnackbarOnDismiss(
+            Context context, SnackbarManager snackbarManager) {
+        if (sState != SnackBarState.PROMO_OPEN) return;
+
+        showSnackBar(context, snackbarManager);
+    }
+
     private static void showSnackBar(Context context, SnackbarManager snackbarManager) {
         sState = SnackBarState.SHOWN;
         String messageText = context.getString(R.string.ntp_customization_theme_snackbar_text);

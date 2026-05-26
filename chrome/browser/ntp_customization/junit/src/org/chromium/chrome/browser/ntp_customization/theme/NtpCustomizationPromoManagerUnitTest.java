@@ -347,4 +347,26 @@ public class NtpCustomizationPromoManagerUnitTest {
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
         assertEquals(SnackBarState.PROMO_OPEN, NtpCustomizationPromoManager.getStateForTesting());
     }
+
+    @Test
+    public void testMaybeShowHomepageCustomizationSnackbarOnDismiss_success() {
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.PROMO_OPEN);
+
+        NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnDismiss(
+                mContext, mSnackbarManager);
+
+        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+        assertEquals(SnackBarState.SHOWN, NtpCustomizationPromoManager.getStateForTesting());
+    }
+
+    @Test
+    public void testMaybeShowHomepageCustomizationSnackbarOnDismiss_wrongState() {
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.NOT_SET);
+
+        NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnDismiss(
+                mContext, mSnackbarManager);
+
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+        assertEquals(SnackBarState.NOT_SET, NtpCustomizationPromoManager.getStateForTesting());
+    }
 }

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeStateProvider
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -99,7 +100,8 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
             PropertyModel viewFlipperPropertyModel,
             @Nullable PropertyModel containerPropertyModel,
             Supplier<@Nullable Profile> profileSupplier,
-            WindowAndroid windowAndroid) {
+            WindowAndroid windowAndroid,
+            SnackbarManager snackbarManager) {
         mBottomSheetController = bottomSheetController;
         mBottomSheetContent = bottomSheetContent;
         mViewFlipperPropertyModel = viewFlipperPropertyModel;
@@ -145,6 +147,10 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
                             NtpCustomizationUtils.setLastApplyThemeTimestampToSharedPreference(
                                     TimeUtils.uptimeMillis());
                             NtpThemeStateProvider.getInstance().notifyApplyThemeChanges();
+                        } else {
+                            NtpCustomizationPromoManager
+                                    .maybeShowHomepageCustomizationSnackbarOnDismiss(
+                                            context, snackbarManager);
                         }
                     }
                 };

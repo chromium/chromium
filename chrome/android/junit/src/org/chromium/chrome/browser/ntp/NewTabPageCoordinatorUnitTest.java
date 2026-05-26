@@ -301,7 +301,7 @@ public class NewTabPageCoordinatorUnitTest {
         NtpCustomizationCoordinatorFactory.setInstanceForTesting(factory);
         NtpCustomizationCoordinator customizationCoordinator =
                 mock(NtpCustomizationCoordinator.class);
-        when(factory.create(any(), any(), any(), anyInt(), any(), any()))
+        when(factory.create(any(), any(), any(), anyInt(), any(), any(), any()))
                 .thenReturn(customizationCoordinator);
         assertFalse(NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference());
 

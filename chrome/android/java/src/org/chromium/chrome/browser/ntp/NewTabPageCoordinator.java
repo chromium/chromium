@@ -1196,7 +1196,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                                 mTab::getProfile,
                                 NtpCustomizationCoordinator.BottomSheetType.THEME_TIP,
                                 mWindowAndroid,
-                                mModuleRegistrySupplier.get());
+                                mModuleRegistrySupplier.get(),
+                                mSnackbarManager);
         mNtpCustomizationCoordinator.showBottomSheet();
         NtpCustomizationUtils.setThemeTipBottomSheetShownTimestampToSharedPreference(
                 TimeUtils.uptimeMillis());
@@ -1238,7 +1239,8 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                         mTab::getProfile,
                         NtpCustomizationCoordinator.BottomSheetType.NTP_CARDS,
                         mWindowAndroid,
-                        mModuleRegistrySupplier.get())
+                        mModuleRegistrySupplier.get(),
+                        mSnackbarManager)
                 .showBottomSheet();
     }
 
