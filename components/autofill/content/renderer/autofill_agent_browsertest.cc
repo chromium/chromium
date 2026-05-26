@@ -23,6 +23,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -55,6 +56,7 @@
 #include "third_party/blink/public/web/web_option_element.h"
 #include "third_party/blink/public/web/web_select_element.h"
 #include "third_party/blink/public/web/web_view.h"
+#include "v8/include/v8.h"
 
 namespace autofill {
 
@@ -821,11 +823,11 @@ TEST_F(AutofillAgentTest,
     first_input = form.querySelectorAll('input')[0];
     first_input.id = 'new_name'
   )");
-  base::test::RunUntil([&] {
+  EXPECT_TRUE(base::test::RunUntil([&] {
     return !test_api(autofill_agent())
                 .process_forms_after_dynamic_change_timer()
                 .IsRunning();
-  });
+  }));
 
   ASSERT_EQ(num_extracted_forms(), 1u);
   ASSERT_EQ(extracted_forms.rbegin()->second->fields().size(), 1u);
@@ -854,11 +856,11 @@ TEST_F(AutofillAgentTest,
     second_input.id = 'new_field';
     form.appendChild(second_input);
   )");
-  base::test::RunUntil([&] {
+  EXPECT_TRUE(base::test::RunUntil([&] {
     return !test_api(autofill_agent())
                 .process_forms_after_dynamic_change_timer()
                 .IsRunning();
-  });
+  }));
 
   ASSERT_EQ(num_extracted_forms(), 1u);
   // The added input should be visible in the cache now.
@@ -882,11 +884,11 @@ TEST_F(AutofillAgentTest, DynamicElementNotificationFiltering_AddForm) {
     second_form.appendChild(input);
     document.body.appendChild(second_form);
   )");
-  base::test::RunUntil([&] {
+  EXPECT_TRUE(base::test::RunUntil([&] {
     return !test_api(autofill_agent())
                 .process_forms_after_dynamic_change_timer()
                 .IsRunning();
-  });
+  }));
 
   ASSERT_EQ(num_extracted_forms(), 2u);
 }
@@ -1186,6 +1188,54 @@ TEST_F(AutofillAgentTestFocus, FireFocusEventsForNullElement) {
   FocusedElementChanged("contenteditable");
   checkpoint.Call("null");
   FocusedElementChanged(blink::WebElement());
+}
+
+// Tests that focusing an input element, removing it from the DOM, and then
+// shifting focus away allows the input element to be garbage collected (i.e.,
+// it doesn't leak memory via C++ persistent roots in AutofillAgent).
+TEST_F(AutofillAgentTestFocus, InputElementIsGarbageCollectedAfterRemoval) {
+  // Setup FinalizationRegistry in JS to track the element.
+  ExecuteJavaScriptForTests(R"(
+    window.element_collected = false;
+    window.registry = new FinalizationRegistry(() => {
+      window.element_collected = true;
+    });
+
+    // Create and append input.
+    window.input_element = document.createElement("input");
+    window.input_element.id = "test_leak_input";
+    document.body.appendChild(window.input_element);
+
+    // Register it.
+    window.registry.register(window.input_element, "token");
+  )");
+
+  // Focus the element using JS focus.
+  Focus("test_leak_input");
+  EXPECT_EQ(autofill_agent().last_queried_element(),
+            GetWebElementById("test_leak_input"));
+
+  // Remove the element and release JS reference.
+  ExecuteJavaScriptForTests(R"(
+    {
+      let el = document.getElementById("test_leak_input");
+      el.remove();
+    }
+    window.input_element = null; // Release JS reference.
+  )");
+
+  // Focus uneditable to trigger focus loss in AutofillAgent.
+  Focus("uneditable");
+
+  // Trigger GC and wait until the element is collected.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    Isolate()->RequestGarbageCollectionForTesting(
+        v8::Isolate::kFullGarbageCollection);
+    int collected = 0;
+    return ExecuteJavaScriptAndReturnIntValue(
+               u"window.element_collected ? 1 : 0", &collected) &&
+           collected == 1;
+  }));
 }
 
 // This test fixture initializes the agent to use platform autofill. The agent

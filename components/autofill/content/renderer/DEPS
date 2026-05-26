@@ -14,3 +14,9 @@ include_rules = [
   "+third_party/blink/public/web",
   "+third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 ]
+
+specific_include_rules = {
+  ".*test.*": [
+    "+v8/include",
+  ],
+}
