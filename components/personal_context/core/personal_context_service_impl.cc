@@ -5,7 +5,7 @@
 #include "components/personal_context/core/personal_context_service_impl.h"
 
 #include "base/functional/callback.h"
-#include "components/personal_context/core/personal_context_manager.h"
+#include "components/personal_context/core/network/personal_context_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace personal_context {

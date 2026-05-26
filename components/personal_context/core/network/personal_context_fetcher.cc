@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/personal_context/core/personal_context_fetcher.h"
+#include "components/personal_context/core/network/personal_context_fetcher.h"
 
 #include <optional>
 #include <string>
@@ -100,8 +100,10 @@ proto::FetchContextRequest PersonalContextFetcher::ToFetchContextRequest(
 }
 
 PersonalContextFetcher::PersonalContextFetcher(
+    signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : url_loader_factory_(std::move(url_loader_factory)) {}
+    : identity_manager_(identity_manager),
+      url_loader_factory_(std::move(url_loader_factory)) {}
 
 PersonalContextFetcher::~PersonalContextFetcher() {
   if (fetch_callback_) {
@@ -113,7 +115,6 @@ PersonalContextFetcher::~PersonalContextFetcher() {
 
 void PersonalContextFetcher::FetchContext(
     proto::ContextMemoryFeature feature,
-    signin::IdentityManager* identity_manager,
     const google::protobuf::MessageLite& request_metadata,
     std::optional<base::TimeDelta> timeout,
     FetchContextResponseCallback callback) {
@@ -135,15 +136,15 @@ void PersonalContextFetcher::FetchContext(
   request.SerializeToString(&serialized_request);
 
   HandleTokenRequestFlow(
-      identity_manager, signin::OAuthConsumerId::kContextMemoryService,
+      identity_manager_, signin::OAuthConsumerId::kContextMemoryService,
       base::BindOnce(&PersonalContextFetcher::OnAccessTokenReceived,
                      weak_ptr_factory_.GetWeakPtr(), feature,
-                     serialized_request, timeout));
+                     std::move(serialized_request), timeout));
 }
 
 void PersonalContextFetcher::OnAccessTokenReceived(
     proto::ContextMemoryFeature feature,
-    std::string_view serialized_request,
+    std::string serialized_request,
     std::optional<base::TimeDelta> timeout,
     std::string_view access_token) {
   if (access_token.empty()) {
@@ -169,7 +170,7 @@ void PersonalContextFetcher::OnAccessTokenReceived(
   active_url_loader_ = network::SimpleURLLoader::Create(
       std::move(resource_request), GetNetworkTrafficAnnotation(feature));
 
-  active_url_loader_->AttachStringForUpload(std::string(serialized_request),
+  active_url_loader_->AttachStringForUpload(std::move(serialized_request),
                                             kRequestContentType);
   active_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),

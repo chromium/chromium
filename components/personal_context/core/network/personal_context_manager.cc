@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/personal_context/core/personal_context_manager.h"
+#include "components/personal_context/core/network/personal_context_manager.h"
 
 #include <algorithm>
 #include <optional>
@@ -15,8 +15,8 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/personal_context/core/context_memory_error.h"
+#include "components/personal_context/core/network/personal_context_fetcher.h"
 #include "components/personal_context/core/personal_context_features.h"
-#include "components/personal_context/core/personal_context_fetcher.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -83,7 +83,8 @@ void PersonalContextManager::FetchContext(
   }
 
   FetcherId fetcher_id = next_fetcher_id_++;
-  auto fetcher = std::make_unique<PersonalContextFetcher>(url_loader_factory_);
+  auto fetcher = std::make_unique<PersonalContextFetcher>(identity_manager_,
+                                                          url_loader_factory_);
   if (!fetcher) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -98,7 +99,7 @@ void PersonalContextManager::FetchContext(
   auto fetcher_it =
       fetchers_for_feature.emplace(fetcher_id, std::move(fetcher));
   fetcher_it.first->second->FetchContext(
-      feature, identity_manager_, request_metadata, timeout,
+      feature, request_metadata, timeout,
       base::BindOnce(&PersonalContextManager::OnFetchContextResponse,
                      weak_ptr_factory_.GetWeakPtr(), feature, fetcher_id,
                      std::move(callback)));

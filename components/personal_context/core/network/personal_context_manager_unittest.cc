@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/personal_context/core/personal_context_manager.h"
+#include "components/personal_context/core/network/personal_context_manager.h"
 
 #include <memory>
 #include <optional>
@@ -21,7 +21,6 @@
 #include "base/time/time.h"
 #include "components/personal_context/core/context_memory_error.h"
 #include "components/personal_context/core/personal_context_features.h"
-#include "components/personal_context/core/personal_context_fetcher.h"
 #include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/personal_context/core/personal_context_fetcher.h"
+#include "components/personal_context/core/network/personal_context_fetcher.h"
 
 #include <memory>
 #include <string>
@@ -38,8 +38,8 @@ class PersonalContextFetcherTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
 
-    fetcher_ =
-        std::make_unique<PersonalContextFetcher>(shared_url_loader_factory_);
+    fetcher_ = std::make_unique<PersonalContextFetcher>(
+        identity_test_env_.identity_manager(), shared_url_loader_factory_);
   }
 
   void SetUp() override {
@@ -61,8 +61,8 @@ TEST_F(PersonalContextFetcherTest, FetchSuccess) {
   base::RunLoop run_loop;
   base::test::TestMessage request_metadata;
   fetcher_->FetchContext(
-      proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
-      identity_test_env_.identity_manager(), request_metadata, std::nullopt,
+      proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, request_metadata,
+      std::nullopt,
       base::BindLambdaForTesting(
           [&](base::expected<const proto::FetchContextResponse,
                              ContextMemoryError> response) {
@@ -89,8 +89,7 @@ TEST_F(PersonalContextFetcherTest, FetchWithTimeout) {
   base::RunLoop run_loop;
   base::test::TestMessage request_metadata;
   fetcher_->FetchContext(
-      proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL,
-      identity_test_env_.identity_manager(), request_metadata,
+      proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL, request_metadata,
       base::Seconds(30),
       base::BindLambdaForTesting(
           [&](base::expected<const proto::FetchContextResponse,

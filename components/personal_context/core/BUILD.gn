@@ -7,13 +7,13 @@ source_set("core") {
     "context_memory_error.cc",
     "context_memory_error.h",
     "country_type.h",
+    "network/personal_context_fetcher.cc",
+    "network/personal_context_fetcher.h",
+    "network/personal_context_manager.cc",
+    "network/personal_context_manager.h",
     "personal_context_enablement_service.h",
     "personal_context_enablement_service_impl.cc",
     "personal_context_enablement_service_impl.h",
-    "personal_context_fetcher.cc",
-    "personal_context_fetcher.h",
-    "personal_context_manager.cc",
-    "personal_context_manager.h",
     "personal_context_service.h",
     "personal_context_service_impl.cc",
     "personal_context_service_impl.h",
@@ -70,9 +70,9 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "network/personal_context_fetcher_unittest.cc",
+    "network/personal_context_manager_unittest.cc",
     "personal_context_enablement_service_impl_unittest.cc",
-    "personal_context_fetcher_unittest.cc",
-    "personal_context_manager_unittest.cc",
     "personal_context_service_impl_unittest.cc",
   ]
 

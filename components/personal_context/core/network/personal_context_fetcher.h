@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_FETCHER_H_
-#define COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_FETCHER_H_
+#ifndef COMPONENTS_PERSONAL_CONTEXT_CORE_NETWORK_PERSONAL_CONTEXT_FETCHER_H_
+#define COMPONENTS_PERSONAL_CONTEXT_CORE_NETWORK_PERSONAL_CONTEXT_FETCHER_H_
 
 #include <memory>
 #include <optional>
@@ -11,14 +11,18 @@
 #include <string_view>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/personal_context/core/context_memory_error.h"
-#include "components/personal_context/core/personal_context_types.h"
 #include "components/personal_context/proto/context_memory_service.pb.h"
+
+namespace google::protobuf {
+class MessageLite;
+}  // namespace google::protobuf
 
 namespace network {
 class SharedURLLoaderFactory;
@@ -34,10 +38,11 @@ namespace personal_context {
 using FetchContextResponseCallback = base::OnceCallback<void(
     base::expected<const proto::FetchContextResponse, ContextMemoryError>)>;
 
-// Fetches personal context from the remote Context Memory Service.
+// PersonalContextFetcher issues requests to the Personal Context backend.
 class PersonalContextFetcher {
  public:
-  explicit PersonalContextFetcher(
+  PersonalContextFetcher(
+      signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   PersonalContextFetcher(const PersonalContextFetcher&) = delete;
   PersonalContextFetcher& operator=(const PersonalContextFetcher&) = delete;
@@ -45,7 +50,6 @@ class PersonalContextFetcher {
 
   // Starts the HTTP fetch and invokes the callback with the response.
   void FetchContext(proto::ContextMemoryFeature feature,
-                    signin::IdentityManager* identity_manager,
                     const google::protobuf::MessageLite& request_metadata,
                     std::optional<base::TimeDelta> timeout,
                     FetchContextResponseCallback callback);
@@ -58,7 +62,7 @@ class PersonalContextFetcher {
 
   // Invoked when the access token is received, to continue with the request.
   void OnAccessTokenReceived(proto::ContextMemoryFeature feature,
-                             std::string_view serialized_request,
+                             std::string serialized_request,
                              std::optional<base::TimeDelta> timeout,
                              std::string_view access_token);
 
@@ -72,6 +76,7 @@ class PersonalContextFetcher {
   // Holds the currently active url request.
   std::unique_ptr<network::SimpleURLLoader> active_url_loader_;
 
+  raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   SEQUENCE_CHECKER(sequence_checker_);
@@ -81,4 +86,4 @@ class PersonalContextFetcher {
 
 }  // namespace personal_context
 
-#endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_PERSONAL_CONTEXT_FETCHER_H_
+#endif  // COMPONENTS_PERSONAL_CONTEXT_CORE_NETWORK_PERSONAL_CONTEXT_FETCHER_H_
