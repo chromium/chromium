@@ -5,6 +5,9 @@
 #include "components/enterprise/connectors/core/cloud_content_scanning/files_request_handler_base.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
+#include "base/task/bind_post_task.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/features.h"
@@ -225,8 +228,18 @@ void FilesRequestHandlerBase::FinishRequestEarly(
           enterprise_connectors::ContentAnalysisResponse());
 #endif
 
-  request->FinishRequest(result,
-                         enterprise_connectors::ContentAnalysisResponse());
+  BinaryUploadRequest* request_ptr = request.get();
+  if (request->digest().empty() && request->register_on_got_hash_callback_) {
+    // The hash is still being computed for this request. Keep the request alive
+    // in a DoNothing callback so the hash can be used for reporting. Register
+    // it as a task so that it doesn't delete itself while OnGotHash is running.
+    std::move(request_ptr->register_on_got_hash_callback_)
+        .Run(true, base::BindPostTaskToCurrentDefault(
+                       static_cast<enterprise_connectors::OnGotHashCallback>(
+                           base::DoNothingWithBoundArgs(std::move(request)))));
+  }
+  request_ptr->FinishRequest(result,
+                             enterprise_connectors::ContentAnalysisResponse());
 }
 
 void FilesRequestHandlerBase::UploadFileForDeepScanning(
