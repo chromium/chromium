@@ -7,7 +7,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
+#include "base/time/time.h"
 #include "chrome/browser/glic/experimental_opt_in/glic_experimental_opt_in_dialog_view.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -23,7 +28,7 @@ namespace glic {
 
 GlicExperimentalOptInController::GlicExperimentalOptInController(
     Profile* profile)
-    : profile_(profile) {}
+    : profile_(profile), tick_clock_(base::DefaultTickClock::GetInstance()) {}
 
 GlicExperimentalOptInController::~GlicExperimentalOptInController() = default;
 
@@ -70,6 +75,18 @@ views::Widget* GlicExperimentalOptInController::ShowDialog(
                            dialog_view_.get(),
                            std::make_unique<tabs::TabDialogManager::Params>());
 
+  dialog_open_time_ = tick_clock_->NowTicks();
+  if (tab_interface->IsVisible()) {
+    visibility_start_time_ = dialog_open_time_;
+  }
+
+  tab_subscriptions_.push_back(tab_interface->RegisterDidBecomeVisible(
+      base::BindRepeating(&GlicExperimentalOptInController::TabDidBecomeVisible,
+                          weak_ptr_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_interface->RegisterWillBecomeHidden(
+      base::BindRepeating(&GlicExperimentalOptInController::TabWillBecomeHidden,
+                          weak_ptr_factory_.GetWeakPtr())));
+
   dialog_widget_->MakeCloseSynchronous(
       base::BindOnce(&GlicExperimentalOptInController::CloseWidget,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -84,6 +101,27 @@ void GlicExperimentalOptInController::CloseDialog(bool accepted) {
 
 void GlicExperimentalOptInController::CloseWidget(
     views::Widget::ClosedReason reason) {
+  tab_subscriptions_.clear();
+
+  if (dialog_widget_) {
+    if (!dialog_open_time_.is_null()) {
+      base::UmaHistogramMediumTimes(
+          "Glic.ExperimentalTriggering.OptInDialog.ShowDuration",
+          tick_clock_->NowTicks() - dialog_open_time_);
+      dialog_open_time_ = base::TimeTicks();
+    }
+
+    if (!visibility_start_time_.is_null()) {
+      visible_duration_ += tick_clock_->NowTicks() - visibility_start_time_;
+      visibility_start_time_ = base::TimeTicks();
+    }
+
+    base::UmaHistogramMediumTimes(
+        "Glic.ExperimentalTriggering.OptInDialog.VisibleDuration",
+        visible_duration_);
+    visible_duration_ = base::TimeDelta();
+  }
+
   bool accepted = (reason == views::Widget::ClosedReason::kAcceptButtonClicked);
   for (auto& callback : std::exchange(callbacks_, {})) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -92,6 +130,21 @@ void GlicExperimentalOptInController::CloseWidget(
 
   dialog_widget_.reset();
   dialog_view_.reset();
+}
+
+void GlicExperimentalOptInController::TabDidBecomeVisible(
+    tabs::TabInterface* tab_interface) {
+  if (visibility_start_time_.is_null()) {
+    visibility_start_time_ = tick_clock_->NowTicks();
+  }
+}
+
+void GlicExperimentalOptInController::TabWillBecomeHidden(
+    tabs::TabInterface* tab_interface) {
+  if (!visibility_start_time_.is_null()) {
+    visible_duration_ += tick_clock_->NowTicks() - visibility_start_time_;
+    visibility_start_time_ = base::TimeTicks();
+  }
 }
 
 }  // namespace glic

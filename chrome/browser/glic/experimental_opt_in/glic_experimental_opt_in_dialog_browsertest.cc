@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/functional/callback_helpers.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
@@ -165,6 +167,66 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpensDialog) {
             GURL(chrome::kChromeUIGlicExperimentalOptInURL));
 
   service()->opt_in_controller().CloseDialog(false);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
+                       RecordsOptInDialogShowDuration) {
+  base::HistogramTester histogram_tester;
+
+  views::Widget* widget = ShowDialogAndWait();
+  ASSERT_TRUE(widget);
+
+  service()->opt_in_controller().CloseDialog(false);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.OptInDialog.ShowDuration", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.OptInDialog.VisibleDuration", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest,
+                       RecordsOptInDialogShowDurationIgnoresBackgroundTime) {
+  base::SimpleTestTickClock test_clock;
+  test_clock.Advance(base::Seconds(1));
+  service()->opt_in_controller().SetTickClockForTesting(&test_clock);
+
+  base::HistogramTester histogram_tester;
+
+  content::WebContents* tab1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  views::Widget* widget = ShowDialogAndWait(tab1);
+  ASSERT_TRUE(widget);
+
+  // Open a new tab, causing tab1 (and the dialog) to enter the background.
+  chrome::AddSelectedTabWithURL(browser(), GURL("about:blank"),
+                                ui::PAGE_TRANSITION_LINK);
+  content::WebContents* tab2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_NE(tab1, tab2);
+
+  views::test::WidgetVisibleWaiter(widget).WaitUntilInvisible();
+  EXPECT_FALSE(widget->IsVisible());
+
+  // Advance simulated time while the dialog is hidden in the background tab.
+  test_clock.Advance(base::Milliseconds(1500));
+
+  // Close the dialog while still on tab2.
+  service()->opt_in_controller().CloseDialog(false);
+
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.OptInDialog.ShowDuration", 1);
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.OptInDialog.VisibleDuration", 1);
+
+  int64_t show_duration_ms = histogram_tester.GetTotalSum(
+      "Glic.ExperimentalTriggering.OptInDialog.ShowDuration");
+  EXPECT_GE(show_duration_ms, 1500);
+
+  int64_t visible_duration_ms = histogram_tester.GetTotalSum(
+      "Glic.ExperimentalTriggering.OptInDialog.VisibleDuration");
+  // The 1.5 seconds spent in the background tab should not be counted.
+  EXPECT_LT(visible_duration_ms, 1000);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, TabModality) {

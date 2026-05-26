@@ -485,6 +485,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.ExperimentalTriggering.OptInDialog.ShowDuration"
+    units="ms" expires_after="2027-05-19">
+  <owner>sauski@google.com</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records the total duration of time from when the Glic experimental
+    triggering device opt-in dialog is opened until the user makes a decision or
+    dismisses it, including time spent in the background.
+  </summary>
+</histogram>
+
+<histogram name="Glic.ExperimentalTriggering.OptInDialog.VisibleDuration"
+    units="ms" expires_after="2027-05-19">
+  <owner>sauski@google.com</owner>
+  <owner>qinmin@chromium.org</owner>
+  <summary>
+    Records the total visible duration of time that the Glic experimental
+    triggering device opt-in dialog is actively shown to the user before they
+    make a decision or dismiss it. Excludes time when the dialog's tab is in the
+    background.
+  </summary>
+</histogram>
+
 <histogram name="Glic.ExperimentalTriggering.StateOnActuationRequest"
     enum="GlicExperimentalTriggeringState" expires_after="2027-05-06">
   <owner>sauski@google.com</owner>

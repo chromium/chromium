@@ -8,12 +8,18 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "ui/views/widget/widget.h"
 
 class Profile;
+
+namespace base {
+class TickClock;
+}
 
 namespace content {
 class WebContents;
@@ -21,6 +27,10 @@ class WebContents;
 
 namespace views {
 class Widget;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace glic {
@@ -52,14 +62,25 @@ class GlicExperimentalOptInController {
     return dialog_view_.get();
   }
 
+  void SetTickClockForTesting(const base::TickClock* clock) {
+    tick_clock_ = clock;
+  }
+
  private:
   void CloseWidget(views::Widget::ClosedReason reason);
+  void TabDidBecomeVisible(tabs::TabInterface* tab_interface);
+  void TabWillBecomeHidden(tabs::TabInterface* tab_interface);
 
   raw_ptr<Profile> profile_;
+  raw_ptr<const base::TickClock> tick_clock_;
   std::unique_ptr<GlicExperimentalOptInDialogView> dialog_view_;
   std::unique_ptr<views::Widget> dialog_widget_;
 
   std::vector<base::OnceCallback<void(bool)>> callbacks_;
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+  base::TimeTicks dialog_open_time_;
+  base::TimeTicks visibility_start_time_;
+  base::TimeDelta visible_duration_;
 
   base::WeakPtrFactory<GlicExperimentalOptInController> weak_ptr_factory_{this};
 };
