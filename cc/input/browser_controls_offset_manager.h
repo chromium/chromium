@@ -208,8 +208,16 @@ class CC_EXPORT BrowserControlsOffsetManager {
   void SetupAnimation(AnimationDirection direction,
                       int64_t duration_ms,
                       gfx::Tween::Type tween_type = gfx::Tween::LINEAR);
+
+  // Sets up the snap animation in the given direction based on the given scroll
+  // delta.
+  //
+  // `use_minimum_can_hide_region` indicates whether to use the smallest
+  // possible value for the can-hide region height when deciding whether to
+  // trigger the snap animation.
   void SetupSnapAnimation(AnimationDirection direction,
-                          const gfx::Vector2dF& scroll_delta);
+                          const gfx::Vector2dF& scroll_delta,
+                          bool use_minimum_can_hide_region);
   void StartAnimationIfNecessary();
   void ResetBaseline();
   float OldTopControlsMinShownRatio();

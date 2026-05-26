@@ -40,7 +40,7 @@ const int64_t kHeightChangeDurationMs = 200;
 const int64_t kShowHideMinDurationMs = 75;
 constexpr float kAlwaysShownRegionMultiplier = 0.5f;
 constexpr float kCanHideRegionMinMultiplier = 1.5f;
-constexpr float kCanHideRegionMaxMultiplier = 4.5f;
+constexpr float kCanHideRegionMaxMultiplier = 3.0f;
 static_assert(
     kCanHideRegionMinMultiplier >= kAlwaysShownRegionMultiplier + 1.0f,
     "Can hide region must start after always shown region and account for "
@@ -768,12 +768,16 @@ void BrowserControlsOffsetManager::ScrollBySnap(
     return;
   }
 
-  SetupSnapAnimation(direction, pending_delta);
+  // Use inertial scrolling as a proxy for if the user has lifted their finger
+  // off the screen and to allow the minimum can-hide region to be used.
+  SetupSnapAnimation(direction, pending_delta,
+                     /*use_minimum_can_hide_region=*/is_inertial);
 }
 
 void BrowserControlsOffsetManager::SetupSnapAnimation(
     AnimationDirection direction,
-    const gfx::Vector2dF& scroll_delta) {
+    const gfx::Vector2dF& scroll_delta,
+    bool use_minimum_can_hide_region) {
   CHECK(direction == AnimationDirection::kHidingControls ||
         direction == AnimationDirection::kShowingControls);
   DCHECK((direction == AnimationDirection::kShowingControls &&
@@ -853,13 +857,16 @@ void BrowserControlsOffsetManager::SetupSnapAnimation(
   //    show animation can start.
 
   if (direction == AnimationDirection::kHidingControls) {
+    const float can_hide_region_height = SnapAnimationCanHideRegionHeight(
+        use_minimum_can_hide_region ? 0.0f : slowness);
+
     // Animate to hide the controls when the user scrolls down:
     //  - If the viewport offset is in the can-hide region
     //  - If the accumulated delta for this scroll is greater than the trigger
     //    threshold in the direction of hiding the controls
     //  - At most once per scroll to prevent the controls from thrashing between
     //    the shown and hidden states
-    if (viewport_offset_y <= SnapAnimationCanHideRegionHeight(slowness) ||
+    if (viewport_offset_y <= can_hide_region_height ||
         accumulated_scroll_delta_ < trigger_threshold) {
       return;
     }
@@ -913,14 +920,20 @@ void BrowserControlsOffsetManager::ScrollEnd(
     return;
 
   if (use_snap_animation_) {
-    // Animate on scroll end in the direction of the current velocity so that
-    // the user can hide the controls a second time or to reveal them in the
-    // always-shown region if an animation was not triggered during the scroll.
-    // Animation only runs if the controls are not at the final position.
+    // When browser controls offset manager receives a scroll end event, it
+    // means that the user has lifted their finger off the screen. At this
+    // point, the browser controls can be animated with very little risk of the
+    // user scrolling in the opposite direction before the animation completes.
+    // Thus, use minimum can-hide region and trigger the animation based on the
+    // current velocity (animation will run only if the controls are not at the
+    // final position). This allows the user to hide the controls a second time
+    // in the same scroll sequence, reveal the controls in the always-shown
+    // region, and reliably hide the controls near the top of the page even when
+    // scrolling slowly.
     SetupSnapAnimation(scroll_velocity_tracker_.CurrentVelocity().y() >= 0.f
                            ? AnimationDirection::kHidingControls
                            : AnimationDirection::kShowingControls,
-                       gfx::Vector2dF());
+                       gfx::Vector2dF(), /*use_minimum_can_hide_region=*/true);
     scroll_velocity_tracker_.Reset();
     did_hide_this_scroll_ = false;
     return;
@@ -1022,7 +1035,8 @@ gfx::Vector2dF BrowserControlsOffsetManager::Animate(
   if (use_snap_animation_ && animation_completed &&
       client_->ViewportScrollOffset().y() <=
           SnapAnimationAlwaysShownRegionHeight()) {
-    SetupSnapAnimation(AnimationDirection::kShowingControls, gfx::Vector2dF());
+    SetupSnapAnimation(AnimationDirection::kShowingControls, gfx::Vector2dF(),
+                       /*use_minimum_can_hide_region=*/false);
   }
 
   if (top_min_height_change_in_progress_) {
