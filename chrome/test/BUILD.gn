@@ -3020,6 +3020,7 @@ if (!is_android) {
       "//chrome/browser/ui/views/accessibility_annotator:browser_tests",
       "//chrome/browser/ui/views/bubble",
       "//chrome/browser/ui/views/download",
+      "//chrome/browser/ui/views/eye_dropper:browser_tests",
       "//chrome/browser/ui/views/frame",
       "//chrome/browser/ui/views/glic",
       "//chrome/browser/ui/views/interaction:browser_tests",
@@ -3963,7 +3964,6 @@ if (!is_android) {
       "../browser/ui/views/digital_credentials/digital_identity_multi_step_dialog_browsertest.cc",
       "../browser/ui/views/exclusive_access_bubble_views_browsertest.cc",
       "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
-      "../browser/ui/views/eye_dropper/eye_dropper_browsertest.cc",
       "../browser/ui/views/file_system_access/file_system_access_restore_permission_bubble_view_browsertest.cc",
       "../browser/ui/views/frame/horizontal_tab_strip_region_view_browsertest.cc",
       "../browser/ui/views/frame/multi_contents_view_browsertest.cc",
@@ -5219,10 +5219,7 @@ if (!is_android) {
     }
 
     if (use_aura) {
-      deps += [
-        "//chrome/browser/ui/aura/accessibility",
-        "//components/eye_dropper",
-      ]
+      deps += [ "//chrome/browser/ui/aura/accessibility" ]
 
       if (use_nss_certs) {
         sources += [ "../browser/ui/views/crypto_module_password_dialog_view_browsertest.cc" ]
@@ -11861,14 +11858,11 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (use_aura) {
-      sources += [
-        "../browser/ui/views/drag_and_drop_interactive_uitest.cc",
-        "../browser/ui/views/eye_dropper/eye_dropper_view_aura_interactive_uitest.cc",
-      ]
+      sources += [ "../browser/ui/views/drag_and_drop_interactive_uitest.cc" ]
 
       deps += [
         "//chrome/browser/ui/aura/accessibility:interactive_ui_tests",
-        "//components/eye_dropper",
+        "//chrome/browser/ui/views/eye_dropper:interactive_ui_tests",
         "//ui/aura:test_support",
         "//ui/base/dragdrop:types",
         "//ui/base/dragdrop/mojom",

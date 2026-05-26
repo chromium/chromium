@@ -1,0 +1,89 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/views/features.gni")
+
+source_set("eye_dropper") {
+  public = []
+  sources = []
+  deps = []
+  public_deps = []
+
+  if (!is_android) {
+    public += [ "eye_dropper.h" ]
+    sources += [ "eye_dropper.cc" ]
+    deps += [ "//content/public/browser" ]
+  }
+
+  if (is_mac) {
+    public += [ "eye_dropper_view_mac.h" ]
+    sources += [ "eye_dropper_view_mac.mm" ]
+    public_deps += [
+      "//base",
+      "//content/public/browser/",
+    ]
+    deps += [
+      "//skia",
+      "//ui/base:features",
+    ]
+  }
+
+  if (use_aura) {
+    sources += [ "eye_dropper_aura.cc" ]
+    deps += [
+      "//chrome/browser/ui/color:color_headers",
+      "//components/eye_dropper",
+      "//ui/base:features",
+    ]
+
+    if (is_chromeos) {
+      deps += [
+        "//ash/public/cpp",
+        "//ui/aura",
+      ]
+    }
+  }
+}
+
+if (!is_android && !is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = []
+    deps = []
+
+    if (use_aura) {
+      sources += [ "eye_dropper_view_aura_interactive_uitest.cc" ]
+      deps = [
+        ":eye_dropper",
+        "//chrome/browser/ui",
+        "//chrome/test:test_support_ui",
+        "//components/eye_dropper",
+        "//content/public/browser",
+        "//content/test:test_support",
+      ]
+    }
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "eye_dropper_browsertest.cc" ]
+    deps = [
+      ":eye_dropper",
+      "//base",
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/test:dialog",
+      "//chrome/test:test_support_ui",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+    ]
+    if (use_aura) {
+      deps += [ "//components/eye_dropper" ]
+    }
+  }
+}
