@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/strings/string_view_util.h"
 #include "crypto/aead.h"
 #include "third_party/boringssl/src/include/openssl/curve25519.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -55,25 +56,22 @@ bool PerformSymmetricEncryption(base::span<const uint8_t, kKeySize> key,
                                 std::string_view input_data,
                                 std::string* output_data) {
   // Encrypt the data with symmetric key using AEAD interface.
-  crypto::Aead aead(crypto::Aead::CHACHA20_POLY1305);
-  CHECK_EQ(aead.KeyLength(), kKeySize);
-
-  // Use the symmetric key for data encryption.
-  aead.Init(key);
+  CHECK_EQ(kKeySize, crypto::aead::KeySizeFor(crypto::aead::CHACHA20_POLY1305));
+  CHECK_EQ(kNonceSize,
+           crypto::aead::NonceSizeFor(crypto::aead::CHACHA20_POLY1305));
 
   // Set nonce to 0s, since a symmetric key is only used once.
   // Note: if we ever start reusing the same symmetric key, we will need
   // to generate new nonce for every record and transfer it to the peer.
-  CHECK_EQ(aead.NonceLength(), kNonceSize);
-  std::string nonce(kNonceSize, 0);
+  std::array<uint8_t, kNonceSize> nonce = {0};
 
-  // Encrypt the whole record.
-  if (1 != aead.Seal(input_data, nonce, std::string(), output_data)) {
-    return false;
-  }
+  std::vector<uint8_t> ciphertext = crypto::aead::Seal(
+      crypto::aead::CHACHA20_POLY1305, key, base::as_byte_span(input_data),
+      nonce, /*associated_data=*/{});
 
+  *output_data = std::string(base::as_string_view(ciphertext));
   // Success. Attach nonce at the head, for compatibility with Tink.
-  output_data->insert(0, nonce);
+  output_data->insert(0, base::as_string_view(nonce));
   return true;
 }
 

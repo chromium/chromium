@@ -10,6 +10,7 @@
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/strings/string_view_util.h"
 #include "components/reporting/encryption/primitives.h"
 #include "crypto/aead.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -43,20 +44,21 @@ void PerformSymmetricDecryption(base::span<const uint8_t, kKeySize> key,
                                 std::string_view input_data,
                                 std::string* output_data) {
   // Decrypt the data with symmetric key using AEAD interface.
-  crypto::Aead aead(crypto::Aead::CHACHA20_POLY1305);
-  CHECK_EQ(aead.KeyLength(), kKeySize);
-
-  // Use the symmetric key for data decryption.
-  aead.Init(key);
+  CHECK_EQ(kKeySize, crypto::aead::KeySizeFor(crypto::aead::CHACHA20_POLY1305));
+  CHECK_EQ(kNonceSize,
+           crypto::aead::NonceSizeFor(crypto::aead::CHACHA20_POLY1305));
 
   // Get nonce at the head of input_data.
-  CHECK_EQ(aead.NonceLength(), kNonceSize);
   std::string_view nonce = input_data.substr(0, kNonceSize);
 
   // Decrypt collected record.
-  std::string decrypted;
-  ASSERT_TRUE(aead.Open(input_data.substr(kNonceSize), nonce, std::string(),
-                        output_data));
+  std::optional<std::vector<uint8_t>> decrypted =
+      crypto::aead::Open(crypto::aead::CHACHA20_POLY1305, key,
+                         base::as_byte_span(input_data.substr(kNonceSize)),
+                         base::as_byte_span(nonce), /*associated_data=*/{});
+
+  ASSERT_TRUE(decrypted.has_value());
+  *output_data = std::string(base::as_string_view(*decrypted));
 }
 
 void GenerateSigningKeyPair(base::span<uint8_t, kSignKeySize> private_key,
