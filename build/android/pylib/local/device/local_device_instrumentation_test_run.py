@@ -646,11 +646,13 @@ class LocalDeviceInstrumentationTestRun(
               'Enabling Gboard and setting preferences for non-desktop Baklava+'
           )
           dev.SetAppEnabled(device_utils.GBOARD_PKG, True)
-          with dev.GboardPreferences() as gboard_prefs:
-            # Disable the stylus.
-            gboard_prefs.SetBoolean('enable_scribe', False)
-            # Always show the soft keyboard.
-            gboard_prefs.SetBoolean('pk_always_show_vk', True)
+          # Writing Gboard's private prefs requires root; skip on non-rooted devices.
+          if dev.HasRoot():
+            with dev.GboardPreferences() as gboard_prefs:
+              # Disable the stylus.
+              gboard_prefs.SetBoolean('enable_scribe', False)
+              # Always show the soft keyboard.
+              gboard_prefs.SetBoolean('pk_always_show_vk', True)
 
         def _get_variations_seed_path_arg(seed_path):
           seed_path_components = device_dependencies.DevicePathComponentsFor(
