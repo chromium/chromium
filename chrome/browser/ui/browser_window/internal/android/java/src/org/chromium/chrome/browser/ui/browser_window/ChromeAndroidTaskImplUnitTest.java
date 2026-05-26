@@ -4125,6 +4125,50 @@ public class ChromeAndroidTaskImplUnitTest {
         verify(observer, times(2)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
     }
 
+    @Test
+    public void androidBrowserWindowObserver_notifiesOnSimulatedOverviewMode() {
+        // Start with the Chrome app active.
+        // Simulate opening overview mode, and then selecting the Chrome app again. The window
+        // should be deactivated and then activated again.
+
+        // Arrange
+        var chromeAndroidTaskWithMockDeps = createChromeAndroidTaskWithMockDeps(/* taskId= */ 1);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityWindowAndroidMocks = chromeAndroidTaskWithMockDeps.mActivityWindowAndroidMocks;
+
+        shadowOf(getMainLooper()).idle();
+
+        // Register observer.
+        var observer = mock(AndroidBrowserWindowObserver.class);
+        chromeAndroidTask.addAndroidBrowserWindowObserver(observer);
+
+        // 1. Start in foreground/active state.
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+
+        // Verify normal window is immediately activated since it's in the foreground.
+        verify(observer, times(1)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
+        // 2. Act: Move task to background. Event ordering is important.
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(false);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(false);
+
+        // Assert: normal window is deactivated correctly.
+        verify(observer, times(1))
+                .onBrowserWindowDeactivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+
+        // 3. Act: Move task back to foreground. Event ordering is important.
+        when(activityWindowAndroidMocks.mMockActivityWindowAndroid.isTopResumedActivity())
+                .thenReturn(true);
+        chromeAndroidTask.onTopResumedActivityChangedWithNative(true);
+
+        // Assert: normal window is activated again correctly.
+        verify(observer, times(2)).onBrowserWindowActivated(FAKE_NATIVE_ANDROID_BROWSER_WINDOW_PTR);
+    }
+
     private static final class TestChromeAndroidTaskFeature implements ChromeAndroidTaskFeature {
 
         final CallbackHelper mOnFeatureRemovedHelper = new CallbackHelper();

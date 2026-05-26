@@ -1791,11 +1791,13 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
-        super.onTopResumedActivityChanged(isTopResumedActivity);
+        // Update WindowAndroid state first so code triggered by super.onTopResumedActivityChanged()
+        // can get the correct states from WindowAndroid.
         WindowAndroid windowAndroid = getWindowAndroid();
         if (windowAndroid != null) {
             windowAndroid.onActivityTopResumedChanged(isTopResumedActivity);
         }
+        super.onTopResumedActivityChanged(isTopResumedActivity);
     }
 
     /**
