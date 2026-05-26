@@ -414,7 +414,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void UpdateScrollbarTheme(
       mojom::UpdateScrollbarThemeParamsPtr params) override;
   void OnSystemColorsChanged(int32_t aqua_color_variant) override;
-  void OnRegisteredFontsChanged() override;
 #endif
   void UpdateSystemColorInfo(
       mojom::UpdateSystemColorInfoParamsPtr params) override;

@@ -276,6 +276,17 @@ bool IsSystemFontName(const AtomicString& font_name) {
   return !font_name.empty() && font_name[0] == '.';
 }
 
+void FontCacheRegisteredFontsChangedNotificationCallback(
+    CFNotificationCenterRef,
+    void* observer,
+    CFStringRef name,
+    const void*,
+    CFDictionaryRef) {
+  DCHECK_EQ(observer, &FontCache::Get());
+  DCHECK(CFEqual(name, kCTFontManagerRegisteredFontsChangedNotification));
+  FontCache::InvalidateFromAnyThread();
+}
+
 }  // namespace
 
 const char kColorEmojiFontMac[] = "Apple Color Emoji";
@@ -294,6 +305,14 @@ void FontCache::InvalidateFromAnyThread() {
     return;
   }
   FontCache::Get().Invalidate();
+}
+
+void FontCache::PlatformInit() {
+  CFNotificationCenterAddObserver(
+      CFNotificationCenterGetLocalCenter(), this,
+      FontCacheRegisteredFontsChangedNotificationCallback,
+      kCTFontManagerRegisteredFontsChangedNotification, /*object=*/nullptr,
+      CFNotificationSuspensionBehaviorDeliverImmediately);
 }
 
 const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(

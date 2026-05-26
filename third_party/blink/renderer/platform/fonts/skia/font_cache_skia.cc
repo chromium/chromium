@@ -114,6 +114,8 @@ const FontPlatformData* FontCache::CreateFontPlatformDataForCharacter(
 }
 #endif
 
+void FontCache::PlatformInit() {}
+
 const SimpleFontData* FontCache::FallbackOnStandardFontStyle(
     const FontDescription& font_description,
     UChar32 character) {

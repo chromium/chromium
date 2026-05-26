@@ -55,8 +55,6 @@ BLINK_EXPORT void ColorSchemeChanged();
 // This invalidates paint for all local frames hosted in the renderer.
 BLINK_EXPORT void ColorProvidersChanged();
 
-BLINK_EXPORT void RegisteredFontsChanged();
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_RENDER_THEME_H_

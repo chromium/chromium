@@ -110,10 +110,6 @@ interface Renderer {
   [EnableIf=is_mac]
   OnSystemColorsChanged(int32 aqua_color_variant);
 
-  // Tells the renderer process that the system font families have changed.
-  [EnableIf=is_mac]
-  OnRegisteredFontsChanged();
-
   // Tells the renderer process the new system color info.
   UpdateSystemColorInfo(UpdateSystemColorInfoParams params);
 

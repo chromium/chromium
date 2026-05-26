@@ -61,7 +61,6 @@ class FontPlatformDataCache final {
   void Clear() { map_.clear(); }
 
  private:
-  friend class FontCacheMacTest;
   HeapHashMap<FontCacheKey, WeakMember<const FontPlatformData>> map_;
 
   // A maximum float value to which we limit incoming font sizes. This is the

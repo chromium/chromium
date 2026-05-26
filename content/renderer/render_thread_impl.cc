@@ -1474,10 +1474,6 @@ void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
   // that rely on system colors, such as the accent and highlight colors.
   blink::SystemColorsChanged();
 }
-
-void RenderThreadImpl::OnRegisteredFontsChanged() {
-  blink::RegisteredFontsChanged();
-}
 #endif
 
 void RenderThreadImpl::UpdateSystemColorInfo(
