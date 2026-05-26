@@ -55,8 +55,12 @@ class AnchoredMessageBubbleViewTest
         .WillByDefault(Return(AnchoredMessageActionIconType::kNone));
     ON_CALL(model_, GetAnchoredMessageMenuModel())
         .WillByDefault(Return(nullptr));
+    ON_CALL(model_, GetAnchoredMessageExpandableContent())
+        .WillByDefault(ReturnRef(empty_expandable_content_));
     ON_CALL(model_, GetImage()).WillByDefault(ReturnRef(test_image_));
     ON_CALL(model_, GetText()).WillByDefault(ReturnRef(test_text_));
+    ON_CALL(model_, GetAccessibleName()).WillByDefault(ReturnRef(empty_text_));
+    ON_CALL(model_, GetTooltipText()).WillByDefault(ReturnRef(empty_text_));
   }
 
   void TearDown() override {
@@ -76,6 +80,8 @@ class AnchoredMessageBubbleViewTest
   NiceMock<MockPageActionModel> model_;
   NiceMock<MockAnchoredMessageDelegate> delegate_;
   std::optional<ui::ImageModel> no_icon_ = std::nullopt;
+  std::optional<AnchoredMessageExpandableContent> empty_expandable_content_ =
+      std::nullopt;
   std::optional<ui::ImageModel> test_icon_opt_ = ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled() ? vector_icons::kInstallDesktopIcon
                                         : vector_icons::kInstallDesktopOldIcon);

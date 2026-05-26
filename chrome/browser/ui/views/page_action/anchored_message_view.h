@@ -34,6 +34,7 @@ class Widget;
 namespace page_actions {
 
 class ChipContainerView;
+class MultiIconButton;
 
 // AnchoredMessageBubbleView is the view displaying the anchored message for a
 // given page action. It is created and destroyed dynamically.
@@ -49,6 +50,8 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageChipLabelId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageCloseIconId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageMenuIconId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageExpandButtonId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAnchoredMessageExpandedContentId);
 
   // Delegate is the interface for the AnchoredMessageBubbleView to use the
   // callbacks registered in the PageActionView.
@@ -86,8 +89,12 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   void ChipCallback();
   void MenuButtonPressed();
   void OnMenuClosed();
+  void OnExpandButtonPressed();
 
+  raw_ptr<views::View> top_row_ = nullptr;
+  raw_ptr<views::View> bottom_container_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
+  raw_ptr<MultiIconButton> expand_button_ = nullptr;
   raw_ptr<ChipContainerView> chip_container_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
   raw_ptr<views::MenuButton> menu_button_ = nullptr;

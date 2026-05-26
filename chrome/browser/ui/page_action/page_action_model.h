@@ -84,6 +84,9 @@ class PageActionModelInterface {
   virtual void SetAnchoredMessageIcon(
       PageActionPassKey pass_key,
       const std::optional<ui::ImageModel>& icon) = 0;
+  virtual void SetAnchoredMessageExpandableContent(
+      PageActionPassKey pass_key,
+      std::optional<AnchoredMessageExpandableContent> expandable_content) = 0;
   virtual void SetActionActive(PageActionPassKey pass_key, bool is_active) = 0;
   virtual void SetIsSuppressedByOmnibox(PageActionPassKey pass_key,
                                         bool is_suppressed) = 0;
@@ -110,6 +113,8 @@ class PageActionModelInterface {
   virtual const std::u16string& GetAnchoredMessageText() const = 0;
   virtual const std::optional<ui::ImageModel>& GetAnchoredMessageIcon()
       const = 0;
+  virtual const std::optional<AnchoredMessageExpandableContent>&
+  GetAnchoredMessageExpandableContent() const = 0;
   virtual AnchoredMessageActionIconType GetAnchoredMessageActionIconType()
       const = 0;
   virtual ui::SimpleMenuModel* GetAnchoredMessageMenuModel() const = 0;
@@ -177,6 +182,11 @@ class PageActionModel : public PageActionModelInterface {
       PageActionPassKey pass_key,
       const std::optional<ui::ImageModel>& icon) override;
 
+  void SetAnchoredMessageExpandableContent(
+      PageActionPassKey pass_key,
+      std::optional<AnchoredMessageExpandableContent> expandable_content)
+      override;
+
   void SetActionActive(PageActionPassKey pass_key, bool is_active) override;
 
   void SetIsSuppressedByOmnibox(PageActionPassKey pass_key,
@@ -209,6 +219,8 @@ class PageActionModel : public PageActionModelInterface {
       const override;
   ui::SimpleMenuModel* GetAnchoredMessageMenuModel() const override;
   const std::optional<ui::ImageModel>& GetAnchoredMessageIcon() const override;
+  const std::optional<AnchoredMessageExpandableContent>&
+  GetAnchoredMessageExpandableContent() const override;
   const std::u16string& GetTooltipText() const override;
   bool GetActionItemIsShowingBubble() const override;
   bool GetActionActive() const override;
@@ -239,7 +251,8 @@ class PageActionModel : public PageActionModelInterface {
     kAnchoredMessageActionIcon,
     kIsAnchoredMessageShowing,
     kAnchoredMessageIcon,
-    kMaxValue = kAnchoredMessageIcon,
+    kAnchoredMessageExpandableContent,
+    kMaxValue = kAnchoredMessageExpandableContent,
   };
   using PropertySet =
       base::EnumSet<Property, Property::kShowRequested, Property::kMaxValue>;
@@ -309,6 +322,11 @@ class PageActionModel : public PageActionModelInterface {
   // Special anchored message icon. If set, the normal page action icon will not
   // show on the anchored message.
   std::optional<ui::ImageModel> anchored_message_icon_ = std::nullopt;
+
+  // Optional content that resides on an expandable area of the anchored
+  // message.
+  std::optional<AnchoredMessageExpandableContent> expandable_content_ =
+      std::nullopt;
 
   // When set, it will always take precedence over `text_` because by default
   // `text_` will be used.

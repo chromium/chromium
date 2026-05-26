@@ -318,6 +318,16 @@ void PageActionModel::SetAnchoredMessageIcon(
   NotifyChange(Property::kAnchoredMessageIcon);
 }
 
+void PageActionModel::SetAnchoredMessageExpandableContent(
+    PageActionPassKey,
+    std::optional<AnchoredMessageExpandableContent> expandable_content) {
+  if (expandable_content_ == expandable_content) {
+    return;
+  }
+  expandable_content_ = std::move(expandable_content);
+  NotifyChange(Property::kAnchoredMessageExpandableContent);
+}
+
 bool PageActionModel::ShouldShowAnchoredMessage() const {
   return should_show_anchored_message_;
 }
@@ -352,6 +362,11 @@ ui::SimpleMenuModel* PageActionModel::GetAnchoredMessageMenuModel() const {
 const std::optional<ui::ImageModel>& PageActionModel::GetAnchoredMessageIcon()
     const {
   return anchored_message_icon_;
+}
+
+const std::optional<AnchoredMessageExpandableContent>&
+PageActionModel::GetAnchoredMessageExpandableContent() const {
+  return expandable_content_;
 }
 
 }  // namespace page_actions
