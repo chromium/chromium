@@ -807,6 +807,8 @@ chromium-metrics-reviews@google.com.
   <int value="100378" label="iOSPriceTrackingPromoOptOut"/>
   <int value="100379" label="AccessibilityReadAnythingLineFocusEnabledMode"/>
   <int value="100380" label="AppRatingPromptShown"/>
+  <int value="100381"
+      label="AccessibilityReadAnythingLastOpenedPresentationState"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
