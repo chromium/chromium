@@ -5,9 +5,8 @@
   <link rel="help" href="https://github.com/WICG/html-in-canvas">
   <script src='/resources/testharness.js'></script>
   <script src='/resources/testharnessreport.js'></script>
-  <script src='../support/getPixel.js'></script>
   <script src="/wpt_internal/resources/canvas-draw-element/waitForCanvasPaint.js"></script>
-  <style>
+   <style>
     #child {
       width: 100px;
       height: 200px;
@@ -33,7 +32,9 @@
     </div>
   </canvas>
 
-  <script>
+  <script type="module">
+    import { getPixelFromImageData } from "/wpt_internal/resources/canvas-draw-element/util.js";
+
     window.onload = () => {
       promise_test(async function(t) {
         await waitForCanvasPaint(canvas);
@@ -44,10 +45,10 @@
         // Fetch all pixel data once to avoid multiple slow readbacks.
         const imgData = context.getImageData(0, 0, canvas.width, canvas.height);
 
-        let pixel = getPixel(imgData, 50, 50);
+        let pixel = getPixelFromImageData(imgData, 50, 50);
         assert_array_equals(pixel, [0, 255, 0, 255], "Same origin plugin should be drawn");
 
-        pixel = getPixel(imgData, 50, 150);
+        pixel = getPixelFromImageData(imgData, 50, 150);
         assert_array_equals(pixel, [0, 0, 255, 255], "Cross origin plugin should not be drawn");
       });
     };

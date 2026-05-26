@@ -1,3 +1,8 @@
+function getPixelFromImageData(imageData, x, y) {
+  const index = (y * imageData.width + x) * 4;
+  return imageData.data.slice(index, index + 4);
+}
+
 function resizeToPixelGrid(canvas) {
   return new Promise(resolve => {
     new ResizeObserver(entries => {
@@ -280,7 +285,8 @@ function copyElementImageToWebGPUCanvas(queue, ctx, target, scaleX, scaleY,
   }
 }
 
-export { resizeToPixelGrid,
+export { getPixelFromImageData,
+         resizeToPixelGrid,
          computeScaledDestinationSize,
          computeExplicitDestinationSize,
          SimpleGLProgram,
