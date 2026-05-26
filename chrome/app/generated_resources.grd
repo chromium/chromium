@@ -11176,69 +11176,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Try using tab groups to organize tasks, for online shopping, and more
       </message>
 
-      <!-- Saved Tab Group Tutorial Strings -->
-      <if expr="use_titlecase">
-        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the 'right click and save' step">
-          Right-click a tab and select "Add Tab to New Group"
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_ADD_TAB_TO_GROUP" desc="The description of the 'right click and save' step">
-          Right-click a tab and select "Add tab to new group"
-        </message>
-      </if>
-
-      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_OPEN_EDITOR" desc="The description of the 'open editor' step">
-        Right-click on the group
-      </message>
-
-      <if expr="use_titlecase">
-        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP" desc="The description of the 'name, save and exit' step">
-          Turn on "Save Group"
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_NAME_SAVE_GROUP" desc="The description of the 'name, save and exit' step">
-          Turn on "Save group"
-        </message>
-      </if>
-
-      <if expr="use_titlecase">
-        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_HIDE_GROUP" desc="The description of the 'hide group' step">
-          Select "Hide Group" to remove the group from your tab strip
-        </message>
-      </if>
-      <if expr="not use_titlecase">
-        <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_HIDE_GROUP" desc="The description of the 'hide group' step">
-          Select "Hide group" to remove the group from your tab strip
-        </message>
-      </if>
-
-      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_REOPEN_GROUP" desc="The description of the 'name, save and exit' step">
-        To reopen the group, click on the group
-      </message>
-
-      <message name="IDS_TUTORIAL_SAVED_TAB_GROUP_SUCCESS_DESCRIPTION" desc="The description of the success step">
-        You can now use saved tab groups across your signed in desktop devices
-      </message>
-
-      <!-- Side Panel Tutorial Strings -->
-      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_OPEN_SIDE_PANEL" desc="The description of the 'open side panel' step in side panel reading list tutorial">
-        Click the side panel icon to open it
-      </message>
-      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_ADD_TAB" desc="The description of the 'add tab' step in side panel reading list tutorial">
-        Now add the current tab to your list
-      </message>
-      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_MARK_READ" desc="The description of the 'mark as read' step in side panel reading list tutorial">
-        Select “Mark as read” to move the page to the bottom of your list
-      </message>
-      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_CLICK_DROPDOWN" desc="The description of the 'click drop down' step in side panel reading list tutorial">
-        Click the drop down to choose another panel
-      </message>
-      <message name="IDS_TUTORIAL_SIDE_PANEL_READING_LIST_SUCCESS_BODY" desc="The description of the body text in the 'success' step in side panel reading list tutorial">
-        Try using the side panel for bookmarks, journeys, and more
-      </message>
-
       <!-- Customize Chrome Tutorial Strings -->
       <message name="IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH" desc="The description of the IPH to start the customize chrome tutorial">
         Customize Chrome to give your browser a new look
@@ -11263,9 +11200,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Password Manager Tutorial Strings -->
-      <message name="IDS_TUTORIAL_PASSWORD_MANAGER_OPEN_MENU" desc="The description of the 'open menu' step in password manager tutorial">
-        Open the menu
-      </message>
       <if expr="use_titlecase">
         <message name="IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_PASSWORDS_MENU" desc="The description of the 'click passwords and autofill' step in password manager tutorial">
           Click “Passwords and Autofill”
@@ -11276,9 +11210,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Click “Passwords and autofill”
         </message>
       </if>
-      <message name="IDS_TUTORIAL_PASSWORD_MANAGER_SELECT_SETTINGS" desc="The description of the 'select settings' step in password manager tutorial">
-        Click “Settings”
-      </message>
       <message name="IDS_TUTORIAL_PASSWORD_MANAGER_ADD_SHORTCUT" desc="The description of the 'add shortcut' step in password manager tutorial">
         Click “Add Shortcut”
       </message>
@@ -11287,17 +11218,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Lens Overlay Tutorial Strings -->
-      <message name="IDS_TUTORIAL_LENS_OVERLAY_INTRO_HEADER" desc="Header for the intro of the Lens overlay tutorial">
-        Search what’s on your screen with Google Lens
-      </message>
-      <message name="IDS_TUTORIAL_LENS_OVERLAY_INTRO_BODY" desc="Description for the intro of the Lens overlay tutorial">
-        Learn more about products, places, or text you see on your screen
-      </message>
       <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_ADDRESS_BAR" desc="The description of the 'click the address bar' step in Lens overlay tutorial">
         Click the address bar
-      </message>
-      <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_LENS" desc="The description of the 'select the Google Lens button' step in Lens overlay tutorial">
-        Select the Google Lens button
       </message>
       <message name="IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_INTRO_HEADER" desc="Header for the intro of the Lens overlay homework tutorial">
         Get homework help with Google Lens
@@ -11308,17 +11230,8 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TUTORIAL_LENS_OVERLAY_HOMEWORK_CLICK_LENS" desc="The description of the 'select Search with Google Lens' step in Lens overlay tutorial">
         Select the Google Lens button, then click and drag over a problem
       </message>
-      <message name="IDS_TUTORIAL_LENS_OVERLAY_SELECT" desc="The description of the 'click and drag to search' step in Lens overlay tutorial">
-        Click and drag over images or highlight text to search
-      </message>
       <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_SEARCH_BOX" desc="The description of the 'search box' step in Lens overlay tutorial">
         Add more details or ask a question about your selection to refine your search
-      </message>
-      <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_PIN_ICON" desc="The description of the 'pin to toolbar' step in Lens overlay tutorial">
-        Pin Google Lens to your toolbar for easy access next time
-      </message>
-      <message name="IDS_TUTORIAL_LENS_OVERLAY_SUCCESS_BODY" desc="Success text at the end of Lens overlay tutorial">
-        You can now use Google Lens to search anything you see on your screen
       </message>
 
       <!-- Browser Hung Plugin Detector -->
