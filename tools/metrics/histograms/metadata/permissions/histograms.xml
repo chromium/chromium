@@ -895,7 +895,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Permissions.Experimental.Usage.{PermissionType}.IsBlockedDueToActuation"
-    enum="Boolean" expires_after="2026-06-01">
+    enum="Boolean" expires_after="2026-11-26">
   <owner>michelleabreo@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
