@@ -174,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
                 .vector_icon()
                 ->name,
             features::IsRoundedIconsEnabled()
-                ? kKeyboardControlKeyIcon.name
+                ? kKeyboardArrowUpIcon.name
                 : kKeyboardArrowUpChromeRefreshOldIcon.name);
 
   // Collapse the tab group and verify the collapse icon is correctly updated.

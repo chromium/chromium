@@ -45,7 +45,7 @@ TEST_F(ProjectsPanelRecentThreadsExpandButtonTest, ShowsCorrectTextAndIcon) {
   EXPECT_TRUE(icon_model.IsVectorIcon());
   EXPECT_EQ(icon_model.GetVectorIcon().vector_icon()->name,
             features::IsRoundedIconsEnabled()
-                ? kKeyboardControlKeyIcon.name
+                ? kKeyboardArrowUpIcon.name
                 : kKeyboardArrowUpChromeRefreshOldIcon.name);
 
   // Switch back to collapsed.

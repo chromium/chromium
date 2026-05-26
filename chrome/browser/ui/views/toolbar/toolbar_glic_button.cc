@@ -155,7 +155,7 @@ void ToolbarGlicButton::AddCloseButton(PressedCallback pressed_callback) {
 
   const ui::ImageModel icon_image_model = ui::ImageModel::FromVectorIcon(
       features::IsRoundedIconsEnabled()
-          ? vector_icons::kCloseIcon
+          ? vector_icons::kCloseSmallIcon
           : vector_icons::kCloseChromeRefreshOldIcon,
       kColorTabSearchButtonCRForegroundFrameActive, kCloseButtonSize);
 

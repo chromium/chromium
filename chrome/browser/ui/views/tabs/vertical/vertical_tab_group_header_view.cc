@@ -494,7 +494,7 @@ void VerticalTabGroupHeaderView::OnDataChanged(
                   ? kKeyboardArrowDownIcon
                   : kKeyboardArrowDownChromeRefreshOldIcon
         : features::IsRoundedIconsEnabled()
-            ? kKeyboardControlKeyIcon
+            ? kKeyboardArrowUpIcon
             : kKeyboardArrowUpChromeRefreshOldIcon,
         foreground_color, kIconSize));
 

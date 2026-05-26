@@ -61,7 +61,7 @@ void ProjectsPanelRecentThreadsExpandButton::SetExpanded(bool expanded) {
       expanded ? IDS_THREADS_SHOW_LESS : IDS_THREADS_SHOW_MORE;
   const gfx::VectorIcon& icon = expanded
                                     ? features::IsRoundedIconsEnabled()
-                                          ? kKeyboardControlKeyIcon
+                                          ? kKeyboardArrowUpIcon
                                           : kKeyboardArrowUpChromeRefreshOldIcon
                                 : features::IsRoundedIconsEnabled()
                                     ? kKeyboardArrowDownIcon

@@ -919,9 +919,8 @@ void BrowserActions::InitializeChromeMenuActions() {
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_NEW_TAB)))
           .SetImage(ui::ImageModel::FromVectorIcon(
-              features::IsRoundedIconsEnabled()   ? kAddIcon
-              : features::IsRoundedIconsEnabled() ? vector_icons::kAddIcon
-                                                  : vector_icons::kAddOldIcon,
+              features::IsRoundedIconsEnabled() ? vector_icons::kAdd2Icon
+                                                : vector_icons::kAddOldIcon,
               ui::kColorIcon))
           .Build());
 

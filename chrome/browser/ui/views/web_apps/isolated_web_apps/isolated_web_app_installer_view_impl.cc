@@ -307,7 +307,7 @@ class UpdateSettingsPane : public views::BoxLayoutView {
         16, {ui::kColorIcon, ui::kColorIconDisabled});
     views::SetToggledImageFromVectorIconWithColor(
         button.get(),
-        features::IsRoundedIconsEnabled() ? kKeyboardControlKeyIcon
+        features::IsRoundedIconsEnabled() ? kKeyboardArrowUpIcon
                                           : kKeyboardArrowUpOldIcon,
         16, {ui::kColorIcon, ui::kColorIconDisabled});
 

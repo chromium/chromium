@@ -300,7 +300,7 @@ void ZoomBubbleView::Init() {
   // Add Zoom In ("+") button.
   zoom_in_button_ = AddChildView(CreateZoomButton(
       zoom_callback(content::PAGE_ZOOM_IN),
-      features::IsRoundedIconsEnabled() ? kAddIcon : kAddOldIcon,
+      features::IsRoundedIconsEnabled() ? kAdd2Icon : kAddOldIcon,
       IDS_ACCNAME_ZOOM_PLUS2));
   zoom_in_button_->SetProperty(views::kMarginsKey,
                                gfx::Insets(vector_button_margin));

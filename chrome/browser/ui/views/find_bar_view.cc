@@ -276,19 +276,19 @@ FindBarView::FindBarView(FindBarHost* host) {
   // Theme-aware image models.
   views::SetImageFromVectorIconWithColor(
       find_previous_button_,
-      features::IsRoundedIconsEnabled() ? kKeyboardControlKeyIcon
+      features::IsRoundedIconsEnabled() ? kKeyboardArrowUpIcon
                                         : kKeyboardArrowUpChromeRefreshOldIcon,
       {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
   find_previous_button_->SetImageModel(
       views::Button::STATE_HOVERED,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kKeyboardControlKeyIcon
+                                         ? kKeyboardArrowUpIcon
                                          : kKeyboardArrowUpChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
   find_previous_button_->SetImageModel(
       views::Button::STATE_PRESSED,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kKeyboardControlKeyIcon
+                                         ? kKeyboardArrowUpIcon
                                          : kKeyboardArrowUpChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
 
@@ -315,19 +315,19 @@ FindBarView::FindBarView(FindBarHost* host) {
 
   views::SetImageFromVectorIconWithColor(
       close_button_,
-      features::IsRoundedIconsEnabled() ? kCloseIcon
+      features::IsRoundedIconsEnabled() ? kCloseSmallIcon
                                         : kCloseChromeRefreshOldIcon,
       {kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled});
   close_button_->SetImageModel(
       views::Button::STATE_HOVERED,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kCloseIcon
+                                         ? kCloseSmallIcon
                                          : kCloseChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
   close_button_->SetImageModel(
       views::Button::STATE_PRESSED,
       ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
-                                         ? kCloseIcon
+                                         ? kCloseSmallIcon
                                          : kCloseChromeRefreshOldIcon,
                                      kColorFindBarButtonIconHovered));
 

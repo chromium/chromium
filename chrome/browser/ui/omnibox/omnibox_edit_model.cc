@@ -564,7 +564,7 @@ ui::ImageModel OmniboxEditModel::GetSuperGIcon(int image_size,
 
 ui::ImageModel OmniboxEditModel::GetAddContextIcon(int image_size) const {
   return ui::ImageModel::FromVectorIcon(
-      features::IsRoundedIconsEnabled() ? kAddIcon : kAddChromeRefreshOldIcon,
+      features::IsRoundedIconsEnabled() ? kAdd2Icon : kAddChromeRefreshOldIcon,
       ui::kColorSysPrimary, image_size);
 }
 

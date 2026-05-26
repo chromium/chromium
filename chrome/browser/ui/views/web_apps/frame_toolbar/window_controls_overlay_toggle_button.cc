@@ -44,7 +44,7 @@ void WindowControlsOverlayToggleButton::UpdateState() {
   SetVectorIcon(enabled ? features::IsRoundedIconsEnabled()
                               ? kKeyboardArrowDownIcon
                               : kKeyboardArrowDownOldIcon
-                : features::IsRoundedIconsEnabled() ? kKeyboardControlKeyIcon
+                : features::IsRoundedIconsEnabled() ? kKeyboardArrowUpIcon
                                                     : kKeyboardArrowUpOldIcon);
   SetTooltipText(l10n_util::GetStringUTF16(
       enabled ? IDS_WEB_APP_DISABLE_WINDOW_CONTROLS_OVERLAY_TOOLTIP

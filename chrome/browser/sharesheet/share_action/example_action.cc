@@ -26,7 +26,7 @@ const std::u16string ExampleAction::GetActionName() {
 }
 
 const gfx::VectorIcon& ExampleAction::GetActionIcon() {
-  return features::IsRoundedIconsEnabled() ? kAddIcon : kAddOldIcon;
+  return features::IsRoundedIconsEnabled() ? kAdd2Icon : kAddOldIcon;
 }
 
 void ExampleAction::LaunchAction(SharesheetController* controller,
