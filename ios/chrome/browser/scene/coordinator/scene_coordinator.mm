@@ -1206,6 +1206,13 @@ void OnListFamilyMembersResponse(
   }];
 }
 
+- (void)showAutofillAndPasswordsSettings {
+  __weak SceneCoordinator* weakSelf = self;
+  [self dismissModalDialogsWithCompletion:^{
+    [weakSelf showAutofillAndPasswordsSettingsAfterModalDismiss];
+  }];
+}
+
 - (void)showPasswordManagerForCredentialImport:(NSUUID*)UUID
     API_AVAILABLE(ios(26.0)) {
   if (!_settingsNavigationController) {
@@ -1745,6 +1752,22 @@ void OnListFamilyMembersResponse(
   [baseViewController presentViewController:_settingsNavigationController
                                    animated:YES
                                  completion:nil];
+}
+
+// Shows the Autofill and Passwords settings in the settings UI.
+- (void)showAutofillAndPasswordsSettingsAfterModalDismiss {
+  DCHECK(!self.isSigninInProgress);
+
+  if (_settingsNavigationController) {
+    [_settingsNavigationController showAutofillAndPasswordsSettings];
+    return;
+  }
+  _settingsNavigationController = [SettingsNavigationController
+      autofillAndPasswordsControllerForBrowser:_regularBrowser.get()
+                                      delegate:self];
+  [self.activeViewController presentViewController:_settingsNavigationController
+                                          animated:YES
+                                        completion:nil];
 }
 
 // Stops the Incognito interstitial coordinator.

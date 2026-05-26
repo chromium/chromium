@@ -44,6 +44,8 @@ extern NSString* const kSettingsDoneButtonId;
 
 @end
 
+// TODO(crbug.com/516717892): Refactor to remove all delegate arguments from
+// creation methods.
 // Controller to modify user settings.
 @interface SettingsNavigationController
     : UINavigationController <KeyCommandActions, SettingsCommands>
@@ -128,6 +130,15 @@ extern NSString* const kSettingsDoneButtonId;
     savePasswordsControllerForBrowser:(Browser*)browser
                              delegate:(id<SettingsNavigationControllerDelegate>)
                                           delegate;
+
+// Creates a new view controller presenting the Autofill and Passwords settings
+// and the chrome around it. `browser` is the browser where settings are being
+// displayed and should not be nil. `delegate` may be nil.
++ (instancetype)
+    autofillAndPasswordsControllerForBrowser:(Browser*)browser
+                                    delegate:
+                                        (id<SettingsNavigationControllerDelegate>)
+                                            delegate;
 
 // Creates a new PasswordManagerViewController in search mode and the chrome
 // around it. `browser` is the browser where settings are being displayed and

@@ -58,6 +58,9 @@ enum class PushNotificationClientId;
 - (void)showSavedPasswordsSettingsFromViewController:
     (UIViewController*)baseViewController;
 
+// Shows the Autofill and Passwords settings page.
+- (void)showAutofillAndPasswordsSettings;
+
 // Shows password manager on main page with a purpose to run the credential
 // exchange import flow. `UUID` is a token received from the OS during app
 // launch needed to receive credentials from an OS library.
