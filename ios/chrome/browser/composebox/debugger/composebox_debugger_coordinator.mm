@@ -40,6 +40,8 @@ const CGSize kOptionsButtonSize = {80.0f, 40.0f};
 
 - (void)stop {
   [self dismissAimDebuggerWithAnimation:NO];
+  [_optionsButton removeFromSuperview];
+  _optionsButton = nil;
 }
 
 - (void)logEvent:(ComposeboxDebuggerEvent*)event {

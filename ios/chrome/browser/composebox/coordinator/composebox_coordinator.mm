@@ -165,8 +165,11 @@
 }
 
 - (void)stop {
-  [_viewController.presentingViewController dismissViewControllerAnimated:NO
-                                                               completion:nil];
+  if (!_viewController.isBeingDismissed) {
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:NO
+                           completion:nil];
+  }
   [self cleanup];
 }
 
