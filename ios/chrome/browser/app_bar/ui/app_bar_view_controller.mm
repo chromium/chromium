@@ -974,7 +974,9 @@ CGFloat ButtonHighlightAlpha(UIButton* button) {
     }
   } else {
     _openNewTabButton.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_NEW_TAB);
+        _backgroundView.incognito
+            ? l10n_util::GetNSString(IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO)
+            : l10n_util::GetNSString(IDS_IOS_TOOLBAR_OPEN_NEW_TAB);
   }
 }
 
