@@ -520,6 +520,9 @@ enum class UIUpdatePhase {
       // recorded.
       base::UmaHistogramTimes(histogram_name + ".InputToDisplay",
                               inputToCommitTimeDelta + scanoutDelayTimeDelta);
+
+      base::UmaHistogramCounts1000(histogram_name + ".DroppedFrames",
+                                   droppedFrames);
     }
   }
 
