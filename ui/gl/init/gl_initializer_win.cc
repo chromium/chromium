@@ -8,6 +8,7 @@
 
 #include "base/at_exit.h"
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -21,6 +22,7 @@
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_display_initializer.h"
 #include "ui/gl/vsync_provider_win.h"
@@ -58,7 +60,6 @@ bool LoadD3DCompiler() {
   return LoadD3DXLibrary(module_path, kD3DCompiler);
 }
 
-#if !BUILDFLAG(USE_STATIC_ANGLE)
 bool InitializeStaticEGLInternalFromLibrary() {
   base::FilePath gles_path;
   if (!base::PathService::Get(base::DIR_MODULE, &gles_path)) {
@@ -110,7 +111,6 @@ bool InitializeStaticEGLInternalFromLibrary() {
 
   return true;
 }
-#endif  // !BUILFDLAG(USE_STATIC_ANGLE)
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
   DCHECK(implementation.gl == kGLImplementationEGLANGLE);
@@ -120,14 +120,21 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
   }
 
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  if (!InitializeStaticANGLEEGL()) {
-    return false;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseDynamicAngle)) {
+    if (!InitializeStaticANGLEEGL()) {
+      return false;
+    }
+  } else {
+    if (!InitializeStaticEGLInternalFromLibrary()) {
+      return false;
+    }
   }
 #else
   if (!InitializeStaticEGLInternalFromLibrary()) {
     return false;
   }
-#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
+#endif  // BUILDFLAG(USE_STATIC_ANGLE)
 
   SetGLImplementationParts(implementation);
   InitializeStaticGLBindingsGL();

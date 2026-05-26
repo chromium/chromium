@@ -7,6 +7,7 @@
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
@@ -20,6 +21,7 @@
 #include "ui/gl/gl_gl_api_implementation.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gpu_switching_manager.h"
 #include "ui/gl/init/gl_display_initializer.h"
@@ -29,7 +31,6 @@ namespace init {
 
 namespace {
 
-#if !BUILDFLAG(USE_STATIC_ANGLE)
 const char kGLESv2ANGLELibraryName[] = "libGLESv2.dylib";
 const char kEGLANGLELibraryName[] = "libEGL.dylib";
 
@@ -87,20 +88,26 @@ bool InitializeStaticEGLInternalFromLibrary() {
 
   return true;
 }
-#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
 
 bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
   DCHECK(implementation.gl == kGLImplementationEGLANGLE);
 
 #if BUILDFLAG(USE_STATIC_ANGLE)
-  if (!InitializeStaticANGLEEGL()) {
-    return false;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseDynamicAngle)) {
+    if (!InitializeStaticANGLEEGL()) {
+      return false;
+    }
+  } else {
+    if (!InitializeStaticEGLInternalFromLibrary()) {
+      return false;
+    }
   }
 #else
   if (!InitializeStaticEGLInternalFromLibrary()) {
     return false;
   }
-#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
+#endif  // BUILDFLAG(USE_STATIC_ANGLE)
 
   SetGLImplementationParts(implementation);
   InitializeStaticGLBindingsGL();

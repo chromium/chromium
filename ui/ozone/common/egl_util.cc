@@ -4,6 +4,7 @@
 
 #include "ui/ozone/common/egl_util.h"
 
+#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/trace_event/trace_event.h"
@@ -12,6 +13,7 @@
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_implementation.h"
+#include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(USE_OPENGL_APITRACE)
 #include <stdlib.h>
@@ -39,12 +41,11 @@ const base::FilePath::CharType kDefaultEglSoname[] =
 const base::FilePath::CharType kDefaultGlesSoname[] =
     FILE_PATH_LITERAL("libGLESv2.so.2");
 #endif
-#if !BUILDFLAG(USE_STATIC_ANGLE)
+
 const base::FilePath::CharType kAngleEglSoname[] =
     FILE_PATH_LITERAL("libEGL.so");
 const base::FilePath::CharType kAngleGlesSoname[] =
     FILE_PATH_LITERAL("libGLESv2.so");
-#endif  // !BUILDFLAG(USE_STATIC_ANGLE)
 
 bool LoadEGLGLES2Bindings(const base::FilePath& egl_library_path,
                           const base::FilePath& gles_library_path) {
@@ -144,18 +145,22 @@ bool LoadDefaultEGLGLES2Bindings(
 
   if (implementation.gl == gl::kGLImplementationEGLANGLE) {
 #if BUILDFLAG(USE_STATIC_ANGLE)
-    gl::SetGLGetProcAddressProc(&EGL_GetProcAddress);
-    return true;
-#else
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kUseDynamicAngle)) {
+      gl::SetGLGetProcAddressProc(&EGL_GetProcAddress);
+      return true;
+    }
+#endif  // BUILDFLAG(USE_STATIC_ANGLE)
+
     base::FilePath module_path;
 #if !BUILDFLAG(IS_FUCHSIA)
-    if (!base::PathService::Get(base::DIR_MODULE, &module_path))
+    if (!base::PathService::Get(base::DIR_MODULE, &module_path)) {
       return false;
+    }
 #endif
 
     glesv2_path = module_path.Append(kAngleGlesSoname);
     egl_path = module_path.Append(kAngleEglSoname);
-#endif  // BUILDFLAG(USE_STATIC_ANGLE)
   } else {
     glesv2_path = base::FilePath(kDefaultGlesSoname);
     egl_path = base::FilePath(kDefaultEglSoname);

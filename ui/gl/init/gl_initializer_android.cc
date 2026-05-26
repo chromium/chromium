@@ -14,6 +14,7 @@
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_egl_api_implementation.h"
 #include "ui/gl/gl_gl_api_implementation.h"
+#include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_display_initializer.h"
 
@@ -63,7 +64,9 @@ bool InitializeStaticEGLInternal(GLImplementationParts implementation) {
 
 #if BUILDFLAG(USE_STATIC_ANGLE)
   // Use ANGLE if it is requested and it is statically linked
-  if (implementation.gl == kGLImplementationEGLANGLE) {
+  if (implementation.gl == kGLImplementationEGLANGLE &&
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseDynamicAngle)) {
     initialized = InitializeStaticANGLEEGL();
   }
 #endif  // BUILDFLAG(USE_STATIC_ANGLE)
