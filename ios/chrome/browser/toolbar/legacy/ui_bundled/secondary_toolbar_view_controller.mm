@@ -356,4 +356,17 @@
   self.view.alpha = faded ? 0 : 1;
 }
 
+#pragma mark - Properties
+
+- (void)setLocationBarViewController:
+    (UIViewController*)locationBarViewController {
+  // Resets `locationIndicatorActive` when the location bar is removed. This
+  // prevents an inconsistent active indicator state (and potential crash) when
+  // the secondary toolbar no longer has an omnibox.
+  [super setLocationBarViewController:locationBarViewController];
+  if (!self.hasOmnibox && self.locationIndicatorActive) {
+    self.locationIndicatorActive = NO;
+  }
+}
+
 @end

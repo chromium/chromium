@@ -189,7 +189,10 @@ source_set("ui") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "adaptive_toolbar_mediator_unittest.mm" ]
+  sources = [
+    "adaptive_toolbar_mediator_unittest.mm",
+    "secondary_toolbar_view_controller_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     ":ui",
@@ -231,6 +234,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/buttons",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen",
     "//ios/chrome/browser/toolbar/legacy/ui_bundled/public",
