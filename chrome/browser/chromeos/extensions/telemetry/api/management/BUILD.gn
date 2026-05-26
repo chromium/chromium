@@ -12,25 +12,16 @@ source_set("management") {
   sources = [
     "management_api.cc",
     "management_api.h",
-    "remote_telemetry_management_service_strategy.cc",
-    "remote_telemetry_management_service_strategy.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/chromeos/extensions/telemetry/api/common",
-    "//chrome/browser/extensions",
     "//chrome/common/chromeos/extensions/api",
     "//chromeos/ash/components/audio",
-    "//chromeos/ash/components/telemetry_extension/management",
-    "//chromeos/crosapi/mojom",
     "//extensions/browser",
     "//extensions/common",
-    "//mojo/public/cpp/bindings",
-    "//third_party/abseil-cpp:absl",
   ]
-
-  public_deps = [ "//extensions/browser" ]
 }
 
 source_set("browser_tests") {
@@ -38,13 +29,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "fake_telemetry_management_service.cc",
-    "fake_telemetry_management_service.h",
-    "fake_telemetry_management_service_factory.cc",
-    "fake_telemetry_management_service_factory.h",
-    "management_api_browsertest.cc",
-  ]
+  sources = [ "management_api_browsertest.cc" ]
 
   deps = [
     ":management",
@@ -52,13 +37,7 @@ source_set("browser_tests") {
     "//chrome/browser/chromeos/extensions/telemetry/api/common:test_support",
     "//chromeos/ash/components/audio",
     "//chromeos/ash/components/dbus/audio",
-    "//chromeos/ash/components/telemetry_extension/management",
-    "//chromeos/crosapi/mojom",
     "//content/test:test_support",
-    "//extensions/common",
-    "//mojo/public/cpp/bindings",
     "//testing/gtest",
   ]
-
-  data = [ "//chrome/test/data" ]
 }

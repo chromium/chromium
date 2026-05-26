@@ -12,7 +12,6 @@ import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_diagnostic_routine_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
-import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
 import "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "mojo/public/mojom/base/generic_pending_receiver.mojom";
@@ -210,13 +209,7 @@ interface Crosapi {
     pending_receiver<TelemetryDiagnosticRoutinesService> receiver);
 
   // BindTelemetryEventService@109 was removed.
-
-  // Binds the TelemetryManagementService interface for managing ChromeOS
-  // settings in Lacros-Chrome.
-  // Added in M122.
-  [MinVersion=127] BindTelemetryManagementService@129(
-    pending_receiver<TelemetryManagementService> receiver);
-
+  // BindTelemetryManagementService@129 was removed.
   // BindTelemetryProbeService@97 was removed.
   // BindTestController@14 was removed.
   // BindTimeZoneService@65 was removed.

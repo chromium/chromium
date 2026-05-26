@@ -22,7 +22,6 @@
 namespace ash {
 class ProbeServiceAsh;
 class TelemetryDiagnosticsRoutineServiceAsh;
-class TelemetryManagementServiceAsh;
 
 namespace auth {
 class InSessionAuth;
@@ -80,9 +79,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindTelemetryDiagnosticRoutinesService(
       mojo::PendingReceiver<mojom::TelemetryDiagnosticRoutinesService> receiver)
       override;
-  void BindTelemetryManagementService(
-      mojo::PendingReceiver<mojom::TelemetryManagementService> receiver)
-      override;
 
   LocalPrinterAsh* local_printer_ash() { return local_printer_ash_.get(); }
 
@@ -95,8 +91,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<LocalPrinterAsh> local_printer_ash_;
   std::unique_ptr<ash::TelemetryDiagnosticsRoutineServiceAsh>
       telemetry_diagnostic_routine_service_ash_;
-  std::unique_ptr<ash::TelemetryManagementServiceAsh>
-      telemetry_management_service_ash_;
   std::unique_ptr<ash::ProbeServiceAsh> probe_service_ash_;
 
   mojo::ReceiverSet<mojom::Crosapi, CrosapiId> receiver_set_;
