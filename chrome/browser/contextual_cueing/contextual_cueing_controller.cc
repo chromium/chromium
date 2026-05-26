@@ -228,7 +228,13 @@ void ContextualCueingController::OnPageContentAnnotated(
     return;
   }
 
-  if (!IsAllowedToShowCue()) {
+  if (auto decision = IsAllowedToShowCue();
+      decision != ContextualCueingDecision::kUnspecified) {
+    CUEING_LOG(
+        base::StringPrintf("%s ineligible for cue with reason: %d.",
+                           active_web_contents->GetLastCommittedURL().spec(),
+                           static_cast<int>(decision)));
+    // Cueing decision already recorded in IsAllowedToShowCue().
     return;
   }
 
@@ -440,7 +446,7 @@ void ContextualCueingController::OnModelExecutionResponseReceived(
     return;
   }
 
-  if (IsAllowedToShowCue()) {
+  if (IsAllowedToShowCue() == ContextualCueingDecision::kUnspecified) {
     ShowCue(*target_type, *target, std::move(*response));
   }
 }
@@ -492,7 +498,7 @@ bool ContextualCueingController::IsUrlEligibleForCue(const GURL& url) {
   return true;
 }
 
-bool ContextualCueingController::IsAllowedToShowCue() {
+ContextualCueingDecision ContextualCueingController::IsAllowedToShowCue() {
   ukm::SourceId source_id = GetActiveTabSourceId();
 
   if (!sync_service_ ||
@@ -502,7 +508,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
     // If history sync is off, we cannot proceed to generate or show the cue.
     RecordContextualCueingDecision(source_id,
                                    ContextualCueingDecision::kHistorySyncOff);
-    return false;
+    return ContextualCueingDecision::kHistorySyncOff;
   }
 
   // Check if the user has opted out of contextual cues.
@@ -518,7 +524,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
         "contextual cues.");
     RecordContextualCueingDecision(source_id,
                                    ContextualCueingDecision::kUserOptedOut);
-    return false;
+    return ContextualCueingDecision::kUserOptedOut;
   }
 
   // Check enterprise policy.
@@ -531,7 +537,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
         "disabled contextual cues.");
     RecordContextualCueingDecision(
         source_id, ContextualCueingDecision::kDisabledByEnterprisePolicy);
-    return false;
+    return ContextualCueingDecision::kDisabledByEnterprisePolicy;
   }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -544,7 +550,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
         "active.");
     RecordContextualCueingDecision(
         source_id, ContextualCueingDecision::kFeaturePromoActive);
-    return false;
+    return ContextualCueingDecision::kFeaturePromoActive;
   }
 #endif
 
@@ -555,7 +561,7 @@ bool ContextualCueingController::IsAllowedToShowCue() {
         "Not attempting to show/generate cue because infobar is visible.");
     RecordContextualCueingDecision(source_id,
                                    ContextualCueingDecision::kInfobarVisible);
-    return false;
+    return ContextualCueingDecision::kInfobarVisible;
   }
 
   if (auto* side_panel_ui =
@@ -565,10 +571,10 @@ bool ContextualCueingController::IsAllowedToShowCue() {
         "Not attempting to show/generate cue because side panel is visible.");
     RecordContextualCueingDecision(source_id,
                                    ContextualCueingDecision::kSidePanelShowing);
-    return false;
+    return ContextualCueingDecision::kSidePanelShowing;
   }
 
-  return true;
+  return ContextualCueingDecision::kUnspecified;
 }
 
 void ContextualCueingController::ShowCue(

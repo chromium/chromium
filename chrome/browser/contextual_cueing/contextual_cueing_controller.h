@@ -106,8 +106,9 @@ class ContextualCueingController
   // Whether the URL is eligible for a cue.
   bool IsUrlEligibleForCue(const GURL& url);
 
-  // Returns true if the cue should be shown to the user.
-  bool IsAllowedToShowCue();
+  // Returns ContextualCueingDecision::kUnspecified if the cue should be shown
+  // to the user, or the specific decision explaining why it is not allowed.
+  ContextualCueingDecision IsAllowedToShowCue();
 
   // Returns true if the user is subject to age restrictions.
   bool IsUserSubjectToAgeRestrictions();
