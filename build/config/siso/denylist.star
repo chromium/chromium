@@ -25,6 +25,8 @@ def __step_config(ctx, step_config):
     python_scripts = [
         "base/win/embedded_i18n/create_string_rc.py",
         "build/modules/unified/generate_system_modulemap.py",
+        # Reads .gclient_entries which is outside of the source tree.
+        "build/private_code_test/list_gclient_deps.py",
         "build/private_code_test/ninja_parser.py",
         "build/rust/gni_impl/rustc_print_cfg.py",
         "build/rust/gni_impl/write_rustflags.py",
