@@ -12,10 +12,12 @@
 #include "base/format_macros.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/unicodestring.h"
-#include "base/lazy_instance.h"
+#include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/thread_local.h"
 #include "third_party/icu/source/common/unicode/ustring.h"
 #include "third_party/icu/source/i18n/unicode/numfmt.h"
 
@@ -23,34 +25,45 @@ namespace base {
 
 namespace {
 
-// A simple wrapper around icu::NumberFormat that allows for resetting it
-// (as LazyInstance does not).
-struct NumberFormatWrapper {
-  NumberFormatWrapper() { Reset(); }
+// ICU formatters are not thread-safe for mutation. Using thread-local storage
+// ensures that each thread has its own instance, preventing data races and
+// potential Use-After-Free when multiple threads concurrently call
+// FormatDouble with different digit requirements. See crbug.com/506477192.
+base::ThreadLocalOwnedPointer<icu::NumberFormat>& GetIntFormatterStorage() {
+  static base::NoDestructor<base::ThreadLocalOwnedPointer<icu::NumberFormat>>
+      instance;
+  return *instance;
+}
 
-  void Reset() {
-    // There's no ICU call to destroy a NumberFormat object other than
-    // operator delete, so use the default Delete, which calls operator delete.
-    // This can cause problems if a different allocator is used by this file
-    // than by ICU.
-    UErrorCode status = U_ZERO_ERROR;
-    number_format.reset(icu::NumberFormat::createInstance(status));
-    DCHECK(U_SUCCESS(status));
+base::ThreadLocalOwnedPointer<icu::NumberFormat>& GetFloatFormatterStorage() {
+  static base::NoDestructor<base::ThreadLocalOwnedPointer<icu::NumberFormat>>
+      instance;
+  return *instance;
+}
+
+icu::NumberFormat* GetFormatter(
+    base::ThreadLocalOwnedPointer<icu::NumberFormat>& storage) {
+  icu::NumberFormat* formatter = storage.Get();
+  if (formatter) {
+    return formatter;
   }
-
-  std::unique_ptr<icu::NumberFormat> number_format;
-};
-
-LazyInstance<NumberFormatWrapper>::DestructorAtExit g_number_format_int =
-    LAZY_INSTANCE_INITIALIZER;
-LazyInstance<NumberFormatWrapper>::DestructorAtExit g_number_format_float =
-    LAZY_INSTANCE_INITIALIZER;
+  // There's no ICU call to destroy a NumberFormat object other than
+  // operator delete, so use the default Delete, which calls operator delete.
+  // This can cause problems if a different allocator is used by this file
+  // than by ICU.
+  UErrorCode status = U_ZERO_ERROR;
+  std::unique_ptr<icu::NumberFormat> instance(
+      icu::NumberFormat::createInstance(status));
+  DCHECK(U_SUCCESS(status));
+  formatter = instance.get();
+  storage.Set(std::move(instance));
+  return formatter;
+}
 
 }  // namespace
 
 std::u16string FormatNumber(int64_t number) {
-  icu::NumberFormat* number_format =
-      g_number_format_int.Get().number_format.get();
+  icu::NumberFormat* number_format = GetFormatter(GetIntFormatterStorage());
 
   if (!number_format) {
     // As a fallback, just return the raw number in a string.
@@ -69,8 +82,7 @@ std::u16string FormatDouble(double number, int fractional_digits) {
 std::u16string FormatDouble(double number,
                             int min_fractional_digits,
                             int max_fractional_digits) {
-  icu::NumberFormat* number_format =
-      g_number_format_float.Get().number_format.get();
+  icu::NumberFormat* number_format = GetFormatter(GetFloatFormatterStorage());
 
   if (!number_format) {
     // As a fallback, just return the raw number in a string.
@@ -90,8 +102,8 @@ std::u16string FormatPercent(int number) {
 }
 
 void ResetFormattersForTesting() {
-  g_number_format_int.Get().Reset();
-  g_number_format_float.Get().Reset();
+  GetIntFormatterStorage().Set(nullptr);
+  GetFloatFormatterStorage().Set(nullptr);
 }
 
 }  // namespace base
