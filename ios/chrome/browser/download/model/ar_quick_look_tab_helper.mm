@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/escape.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/thread_pool.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper_delegate.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
@@ -137,8 +138,9 @@ void ARQuickLookTabHelper::Download(
   LogHistogram(download_task_.get());
   download_task_->AddObserver(this);
 
-  download_task_->Start(
-      download_dir.Append(download_task_->GenerateFileName()));
+  base::FilePath task_dir = download_dir.Append(
+      base::SysNSStringToUTF8(download_task_->GetIdentifier()));
+  download_task_->Start(task_dir.Append(download_task_->GenerateFileName()));
 
   // Calling DownloadTask::Start() may cause the task to be immediately
   // destroyed (e.g. if it is in error). Only call `LogHistogram` is it

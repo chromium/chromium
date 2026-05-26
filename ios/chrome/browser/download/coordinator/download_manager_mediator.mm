@@ -123,8 +123,9 @@ void DownloadManagerMediator::StartDownloading() {
   // "Start Download" button.
   [consumer_ setState:DownloadManagerState::kInProgress];
 
-  download_task_->Start(
-      download_dir.Append(download_task_->GenerateFileName()));
+  base::FilePath task_dir = download_dir.Append(
+      base::SysNSStringToUTF8(download_task_->GetIdentifier()));
+  download_task_->Start(task_dir.Append(download_task_->GenerateFileName()));
   // If an upload task associated with the current download task exists, start
   // to observe it.
   UpdateUploadTask();
