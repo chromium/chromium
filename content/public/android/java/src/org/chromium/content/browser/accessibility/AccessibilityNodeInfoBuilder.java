@@ -641,36 +641,10 @@ public class AccessibilityNodeInfoBuilder {
                 node.getExtras().remove(EXTRAS_KEY_OFFSCREEN);
             }
 
-            updateNodeVisibilityForOcclusion(node);
-        }
-    }
-
-    /**
-     * Updates the visibility of an accessibility node based on whether it is occluded by other
-     * rects. If it is, it should be invisible to accessibility.
-     *
-     * @param info The {@link AccessibilityNodeInfoCompat} for the web content node.
-     */
-    private void updateNodeVisibilityForOcclusion(AccessibilityNodeInfoCompat info) {
-        if (!AccessibilityFeaturesMap.isEnabled(
-                AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)) {
-            return;
-        }
-
-        if (!info.isVisibleToUser()) return;
-
-        Rect webNodeBounds = new Rect();
-        info.getBoundsInScreen(webNodeBounds);
-        if (webNodeBounds.isEmpty()) return;
-
-        SparseArray<Rect> occludingRects = mDelegate.getOccludingRects();
-        for (int i = 0; i < occludingRects.size(); i++) {
-            Rect occludingRect = occludingRects.valueAt(i);
-            Rect intersection = new Rect(webNodeBounds);
-            if (intersection.intersect(occludingRect)) {
-                info.setVisibleToUser(false);
-                // No need to check other occluding rects if the node is already invisible.
-                return;
+            if (AccessibilityFeaturesMap.isEnabled(
+                    AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)) {
+                AccessibilityNodeInfoUtils.updateNodeForOcclusion(
+                        node, mDelegate.getOccludingRects());
             }
         }
     }

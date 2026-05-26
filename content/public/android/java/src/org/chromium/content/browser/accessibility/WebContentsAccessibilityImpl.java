@@ -122,6 +122,8 @@ import org.chromium.content_public.browser.WebContents.UserDataFactory;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeatures;
+import org.chromium.ui.accessibility.AccessibilityFeaturesMap;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -615,6 +617,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public void setMaxContentChangedEventsToFireForTesting(int maxEvents) {
         WebContentsAccessibilityImplJni.get()
                 .setMaxContentChangedEventsToFireForTesting(mNativeObj, maxEvents);
+    }
+
+    public SparseArray<Rect> getOccludingRectsForTesting() {
+        return mOccludingRects;
     }
 
     public int @Nullable [] getChildIdsForTesting(int virtualViewId) {
@@ -2712,7 +2718,18 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     mDelegate.getAccessibilityCoordinates(),
                     mView,
                     isScreenCoordinates);
-            boundingRects[i] = new RectF(rect);
+            if (AccessibilityFeaturesMap.isEnabled(
+                    AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)) {
+                Rect resizedRect =
+                        AccessibilityNodeInfoUtils.resizedRectOnOcclusion(rect, mOccludingRects);
+                if (resizedRect != null) {
+                    boundingRects[i] = new RectF(resizedRect);
+                } else {
+                    boundingRects[i] = new RectF();
+                }
+            } else {
+                boundingRects[i] = new RectF(rect);
+            }
         }
 
         info.getExtras()

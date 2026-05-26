@@ -105,5 +105,8 @@ specific_include_rules = {
   ],
   "ToolbarPhoneTest\.java": [
     "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/ButtonData.java",
+  ],
+  "MessageTest\.java": [
+    "+content/public/android/java/src/org/chromium/content/browser/accessibility/WebContentsAccessibilityImpl.java",
   ]
 }
