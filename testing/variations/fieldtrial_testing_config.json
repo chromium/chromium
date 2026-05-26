@@ -7737,7 +7737,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "probability": "0.05"
+                        "probability": "1.0"
                     },
                     "enable_features": [
                         "ClearBrowsingHistoryJourney",
