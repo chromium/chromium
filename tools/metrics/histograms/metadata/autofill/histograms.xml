@@ -9989,11 +9989,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 
 <histogram name="Autofill.YourSavedInfoSettingsPage.CategoryLinkClick"
     enum="YourSavedInfoDataCategory" expires_after="2026-10-28">
-  <owner>ireneuszszulc@google.com</owner>
+  <owner>mikhe@google.com</owner>
   <owner>chrome-autofill-alerts@google.com</owner>
   <summary>
     Records clicks on data categories in the 'Your saved info' settings page.
-    Emitted on every click on such a data category. Recorded on Desktop only.
+    Emitted on every click on such a data category. Recorded on Desktop and
+    Android.
   </summary>
 </histogram>
 
