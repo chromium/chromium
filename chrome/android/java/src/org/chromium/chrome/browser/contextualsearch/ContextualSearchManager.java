@@ -410,6 +410,11 @@ public class ContextualSearchManager
      */
     @SuppressWarnings("NullAway")
     public void destroy() {
+        if (mContext != null) {
+            mContext.destroy();
+            mContext = null;
+        }
+
         if (!mIsInitialized) return;
 
         hideContextualSearch(StateChangeReason.UNKNOWN);
