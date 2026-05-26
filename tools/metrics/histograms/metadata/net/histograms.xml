@@ -2624,6 +2624,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsPlatformAndroidAttempt.ResponseSize.{QueryType}"
+    units="bytes" expires_after="2027-05-22">
+  <owner>stefanoduo@chromium.org</owner>
+  <owner>src/net/dns/OWNERS</owner>
+  <summary>
+    The size of the DNS response in bytes returned by android_res_nresult for
+    {QueryType} resource records. Reported when successfully reading a platform
+    DNS attempt response on Android.
+  </summary>
+  <token key="QueryType" variants="DnsQueryType"/>
+</histogram>
+
 <histogram name="Net.DNS.DnsTask.AdditionalHttps.Requested"
     enum="AdditionalHttpsRecordStatus" expires_after="2026-11-01">
   <owner>awillia@chromium.org</owner>

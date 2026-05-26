@@ -22,6 +22,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
+#include "base/strings/strcat.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/io_buffer.h"
@@ -63,6 +64,28 @@ int MapSystemErrorWithoutPending(int system_error) {
 }
 
 constexpr int kInvalidFd = -1;
+
+void LogResponseSize(int response_size, uint16_t query_type) {
+  std::string_view query_type_string;
+  switch (query_type) {
+    case dns_protocol::kTypeA:
+      query_type_string = "A";
+      break;
+    case dns_protocol::kTypeAAAA:
+      query_type_string = "AAAA";
+      break;
+    case dns_protocol::kTypeHttps:
+      query_type_string = "HTTPS";
+      break;
+    default:
+      // We are not interested in other query types.
+      return;
+  }
+  base::UmaHistogramCounts10000(
+      base::StrCat({"Net.DNS.DnsPlatformAndroidAttempt.ResponseSize.",
+                    query_type_string}),
+      response_size);
+}
 
 bool IsFdReadable(int fd) {
   struct pollfd pfd = {
@@ -229,6 +252,8 @@ int DnsPlatformAndroidAttempt::DoReadResponse() {
   if (rv < 0) {
     return MapSystemErrorWithoutPending(-rv);
   }
+
+  LogResponseSize(rv, dns_query_type_);
 
   // TODO(https://crbug.com/458035179): We currently communicate the DNS
   // response size via this IOBuffer's capacity. Investigate whether we care and
