@@ -22,17 +22,15 @@ TabContextMenuController::TabContextMenuController(tabs::TabHandle tab_handle,
 TabContextMenuController::~TabContextMenuController() = default;
 
 void TabContextMenuController::LoadModel(
-    std::unique_ptr<TabMenuModel> model,
-    base::RepeatingClosure on_menu_closed) {
-  tab_menu_model_ = model.get();
-  LoadModel(std::unique_ptr<ui::SimpleMenuModel>(std::move(model)),
-            std::move(on_menu_closed));
-}
-
-void TabContextMenuController::LoadModel(
     std::unique_ptr<ui::SimpleMenuModel> model,
+    TabMenuModel* tab_menu_model,
     base::RepeatingClosure on_menu_closed) {
   model_ = std::move(model);
+
+  tab_menu_model_ = nullptr;
+  if (tab_menu_model && tab_menu_model == model_.get()) {
+    tab_menu_model_ = tab_menu_model;
+  }
 
   const int run_flags =
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;

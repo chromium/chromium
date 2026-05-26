@@ -226,8 +226,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabContextMenuApiTest,
   auto context_menu_controller = std::make_unique<TabContextMenuController>(
       tab_strip->GetTabAtIndex(index)->GetHandle(), &fake_delegate);
 
-  context_menu_controller->LoadModel(std::make_unique<TabMenuModel>(
-      context_menu_controller.get(), nullptr, tab_strip, index));
+  auto tab_menu_model = std::make_unique<TabMenuModel>(
+      context_menu_controller.get(), nullptr, tab_strip, index);
+  TabMenuModel* tab_menu_model_ptr = tab_menu_model.get();
+  context_menu_controller->LoadModel(std::move(tab_menu_model),
+                                     tab_menu_model_ptr);
 
   TabMenuModel* loaded_model = context_menu_controller->GetTabMenuModel();
   size_t loaded_submenu_index = loaded_model->GetItemCount();

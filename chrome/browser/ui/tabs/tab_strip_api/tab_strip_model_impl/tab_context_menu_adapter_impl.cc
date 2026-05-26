@@ -46,7 +46,8 @@ TabContextMenuAdapterImpl::ShowTabContextMenu(tabs::TabHandle handle,
       browser_->GetFeatures().tab_menu_model_delegate(), tab_strip_model_,
       tab_index);
 
-  context_menu_controller_->LoadModel(std::move(menu_model));
+  TabMenuModel* menu_model_ptr = menu_model.get();
+  context_menu_controller_->LoadModel(std::move(menu_model), menu_model_ptr);
 
   views::Widget* widget = views::Widget::GetWidgetForNativeWindow(
       browser_->GetWindow()->GetNativeWindow());

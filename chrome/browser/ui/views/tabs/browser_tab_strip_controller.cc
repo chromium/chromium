@@ -525,7 +525,9 @@ void BrowserTabStripController::ShowContextMenuForTab(
       GetBrowserWindowInterface()->GetFeatures().tab_menu_model_delegate(),
       model_, tab_index.value());
 
-  context_menu_controller_->LoadModel(std::move(model));
+  ui::SimpleMenuModel* model_ptr = model.get();
+  context_menu_controller_->LoadModel(
+      std::move(model), menu_model_factory_->AsTabMenuModel(model_ptr));
 
   context_menu_controller_->RunMenuAt(p, source_type, tabstrip_->GetWidget());
   base::UmaHistogramEnumeration("TabStrip.Tab.Views.ActivationAction",

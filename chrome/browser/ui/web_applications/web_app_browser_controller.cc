@@ -102,6 +102,10 @@ class SystemAppTabMenuModelFactory : public TabMenuModelFactory {
       delete;
   ~SystemAppTabMenuModelFactory() override = default;
 
+  TabMenuModel* AsTabMenuModel(ui::SimpleMenuModel* model) override {
+    return nullptr;
+  }
+
   std::unique_ptr<ui::SimpleMenuModel> Create(
       ui::SimpleMenuModel::Delegate* delegate,
       TabMenuModelDelegate* tab_menu_model_delegate,

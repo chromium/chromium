@@ -57,11 +57,14 @@ class TabContextMenuController : public ui::SimpleMenuModel::Delegate {
 
   ~TabContextMenuController() override;
 
-  // Loads the menu model and initializes the menu runner. This must be called
-  // before RunMenuAt.
-  void LoadModel(std::unique_ptr<TabMenuModel> model,
-                 base::RepeatingClosure on_menu_closed = base::DoNothing());
+  // Loads the menu model and initializes the menu runner.
+  // `model` is the menu model managed by this controller.
+  // `tab_menu_model` must point to the same instance as `model` if it is indeed
+  // a `TabMenuModel`. This downcast pointer is cached to query tab-specific
+  // properties (e.g., extension items), decoupling the controller from the
+  // menu factory.
   void LoadModel(std::unique_ptr<ui::SimpleMenuModel> model,
+                 TabMenuModel* tab_menu_model = nullptr,
                  base::RepeatingClosure on_menu_closed = base::DoNothing());
 
   // Runs the menu model at the specified point within the given widget.
