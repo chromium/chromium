@@ -724,6 +724,17 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Token binding challenge success"/>
 </enum>
 
+<!-- LINT.IfChange(OAuth2UpgradeTokenFlowResult) -->
+
+<enum name="OAuth2UpgradeTokenFlowResult">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kNetworkError"/>
+  <int value="2" label="kServerError"/>
+  <int value="3" label="kTokenGenerationFailure"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/internal/identity_manager/oauth2_upgrade_token_flow.h:OAuth2UpgradeTokenFlowResult) -->
+
 <!-- LINT.IfChange(OAuthConsumerId) -->
 
 <enum name="OAuthConsumerId">

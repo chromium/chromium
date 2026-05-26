@@ -3954,6 +3954,49 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.TokenBinding.UpgradeDuration" units="ms"
+    expires_after="2026-11-15">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    Records the total end-to-end duration required to perform an opportunistic
+    refresh token binding upgrade against GAIA servers, including both local
+    binding key registration JWT generation and the subsequent network API call.
+    When an unbound session refresh token encounters a server challenge during
+    access token minting, Chrome initiates this opportunistic upgrade. Recorded
+    immediately upon the final completion or abortion of the upgrade flow
+    (regardless of success or failure).
+  </summary>
+</histogram>
+
+<histogram name="Signin.TokenBinding.UpgradeHttpResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2026-11-15">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the network error code or HTTP response status of the opportunistic
+    refresh token binding upgrade request sent to GAIA servers. When an unbound
+    session refresh token encounters a server challenge during access token
+    minting, Chrome initiates this opportunistic upgrade. Recorded immediately
+    upon the completion of the upgrade API network call.
+  </summary>
+</histogram>
+
+<histogram name="Signin.TokenBinding.UpgradeResult"
+    enum="OAuth2UpgradeTokenFlowResult" expires_after="2026-11-15">
+  <owner>alexilin@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the overall result of an opportunistic refresh token binding upgrade
+    attempt, indicating whether it succeeded, failed due to local registration
+    token generation error, or encountered network/server errors. When an
+    unbound session refresh token encounters a server challenge during access
+    token minting, Chrome initiates this opportunistic upgrade. Recorded upon
+    the final completion or abortion of the token upgrade attempt.
+  </summary>
+</histogram>
+
 <histogram name="Signin.TokenTable.GetAllTokensSqlStatementValidity"
     enum="BooleanValid" expires_after="never">
 <!-- expires-never: This reports SQL validity statements for loading

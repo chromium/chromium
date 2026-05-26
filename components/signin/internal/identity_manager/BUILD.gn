@@ -103,6 +103,8 @@ source_set("identity_manager") {
     sources += [
       "mutable_profile_oauth2_token_service_delegate.cc",
       "mutable_profile_oauth2_token_service_delegate.h",
+      "oauth2_upgrade_token_flow.cc",
+      "oauth2_upgrade_token_flow.h",
       "token_binding_helper.cc",
       "token_binding_helper.h",
       "token_binding_oauth2_access_token_fetcher.cc",
@@ -226,6 +228,7 @@ source_set("unit_tests") {
   if (enable_dice_support) {
     sources += [
       "mutable_profile_oauth2_token_service_delegate_unittest.cc",
+      "oauth2_upgrade_token_flow_unittest.cc",
       "token_binding_helper_unittest.cc",
       "token_binding_oauth2_access_token_fetcher_unittest.cc",
     ]
