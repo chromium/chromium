@@ -24,6 +24,7 @@ import android.view.View;
 import androidx.annotation.VisibleForTesting;
 import androidx.lifecycle.Lifecycle;
 import androidx.preference.Preference;
+import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -218,7 +219,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
 
     /** Saves the preference list view state. */
     public void saveListState() {
-        var layoutManager = getListView() != null ? getListView().getLayoutManager() : null;
+        var layoutManager = getLayoutManager();
         if (layoutManager != null) mSavedListState = layoutManager.onSaveInstanceState();
     }
 
@@ -226,9 +227,21 @@ public class MainSettings extends ChromeBaseSettingsFragment
     public void restoreListState() {
         if (mSavedListState == null) return;
 
-        var layoutManager = getListView() != null ? getListView().getLayoutManager() : null;
+        var layoutManager = getLayoutManager();
         if (layoutManager != null) layoutManager.onRestoreInstanceState(mSavedListState);
         mSavedListState = null;
+    }
+
+    private @Nullable LayoutManager getLayoutManager() {
+        if (!isAdded() || getView() == null) return null;
+        if (!getViewLifecycleOwner()
+                .getLifecycle()
+                .getCurrentState()
+                .isAtLeast(Lifecycle.State.CREATED)) {
+            return null;
+        }
+        var listView = getListView();
+        return listView != null ? listView.getLayoutManager() : null;
     }
 
     @Override
