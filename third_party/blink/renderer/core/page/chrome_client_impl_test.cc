@@ -329,6 +329,7 @@ class MockFileChooserClient : public GarbageCollected<MockFileChooserClient>,
   // FilesChosen() and WillOpenPopup() are never called in the test.
   void FilesChosen(FileChooserFileInfoList, const base::FilePath&) override {}
   void WillOpenPopup() override {}
+  void FileChooserCanceled() override {}
 
   LocalFrame* FrameOrNull() const override { return frame_.Get(); }
 

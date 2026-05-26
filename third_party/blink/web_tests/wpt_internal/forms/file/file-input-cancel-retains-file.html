@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://issues.chromium.org/issues/40219625">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<input type=file id="fileInput">
+
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async t => {
+  const fileInput = document.getElementById('fileInput');
+
+  const filePaths = ['../OWNERS'];
+
+  // First selection
+  mockFileChooserFactory.setPathsToBeChosen(filePaths);
+
+  let changePromise = new Promise((resolve, reject) => {
+    fileInput.addEventListener('change', () => {
+      resolve();
+    }, {once: true});
+    setTimeout(() => reject(new Error('Timed out waiting for change event')), 3000);
+  });
+
+  await test_driver.click(fileInput);
+  await changePromise;
+  assert_equals(fileInput.files.length, 1, 'File should be selected');
+  assert_equals(fileInput.files[0].name, 'OWNERS', 'Correct file should be selected');
+
+  // Second selection - Cancel
+  await new Promise(setTimeout);
+  mockFileChooserFactory.setCancel();
+
+  let openPromise = new Promise(resolve => {
+    mockFileChooserFactory.addEventListener('open', resolve, {once: true});
+  });
+
+  await test_driver.click(fileInput);
+  await openPromise;
+  // Wait a bit to ensure any async processing completes.
+  await new Promise(setTimeout);
+
+  assert_equals(fileInput.files.length, 1, 'File should still be selected after cancel');
+  assert_equals(fileInput.files[0].name, 'OWNERS', 'Correct file should still be selected after cancel');
+}, 'Canceling file picker should not clear selected files.');
+</script>

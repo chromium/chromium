@@ -2781,6 +2781,12 @@
       base_feature: "none",
     },
     {
+      // For <input type=file>, fires change event when same file is chosen
+      // again, and retains files when cancel is pressed.
+      name: "FilePickerEventsFix",
+      status: "stable",
+    },
+    {
       name: "FileSystem",
       public: true,
       status: "stable",

@@ -6,13 +6,15 @@ class MockFileChooserFactory extends EventTarget {
     this.paths_ = [];
     this.baseDir_ = undefined;
     this.receiver_ = undefined;
+    this.cancel_ = false;
     this.interceptor_ =
         new MojoInterfaceInterceptor(FileChooser.$interfaceName);
     this.interceptor_.oninterfacerequest = e => {
       this.receiver_ = new FileChooserReceiver(
-          new MockFileChooser(this, this.paths_, this.baseDir_));
+          new MockFileChooser(this, this.paths_, this.baseDir_, this.cancel_));
       this.receiver_.$.bindHandle(e.handle);
       this.paths_ = [];
+      this.cancel_ = false;
     };
     this.interceptor_.start();
   }
@@ -22,6 +24,11 @@ class MockFileChooserFactory extends EventTarget {
     // TODO(tkent): Need to ensure each of paths is an absolute path.
     this.paths_ = paths;
     this.baseDir_ = opt_baseDir;
+    this.cancel_ = false;
+  }
+
+  setCancel() {
+    this.cancel_ = true;
   }
 }
 
@@ -42,10 +49,11 @@ function modeToString(mode) {
 }
 
 class MockFileChooser {
-  constructor(factory, paths, baseDir) {
+  constructor(factory, paths, baseDir, cancel) {
     this.factory_ = factory;
     this.paths_ = paths;
     this.baseDir_ = baseDir;
+    this.cancel_ = cancel;
   }
 
   openFileChooser(params) {
@@ -54,7 +62,11 @@ class MockFileChooser {
     this.factory_.dispatchEvent(
         new CustomEvent('open', {detail: modeToString(params.mode)}));
     return new Promise((resolve, reject) => {
-      setTimeout(() => this.chooseFiles_(resolve), 1);
+      if (this.cancel_) {
+        setTimeout(() => resolve({result: null}), 1);
+      } else {
+        setTimeout(() => this.chooseFiles_(resolve), 1);
+      }
     });
   }
 

@@ -53,6 +53,7 @@ class CORE_EXPORT FileChooserClient : public PopupOpeningObserver {
  public:
   virtual void FilesChosen(FileChooserFileInfoList,
                            const base::FilePath& base_dir) = 0;
+  virtual void FileChooserCanceled() = 0;
   virtual LocalFrame* FrameOrNull() const = 0;
   ~FileChooserClient() override;
 

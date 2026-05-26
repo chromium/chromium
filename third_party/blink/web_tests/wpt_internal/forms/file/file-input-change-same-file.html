@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://issues.chromium.org/issues/40257839">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+
+<input type=file id="fileInput">
+
+<script type="module">
+import {mockFileChooserFactory} from '../resources/mock-file-chooser.js';
+
+promise_test(async t => {
+  const fileInput = document.getElementById('fileInput');
+  let changeEventCount = 0;
+  fileInput.addEventListener('change', () => {
+    changeEventCount++;
+  });
+
+  const filePaths = ['../OWNERS'];
+
+  // First selection
+  mockFileChooserFactory.setPathsToBeChosen(filePaths);
+
+  let changePromise = new Promise((resolve, reject) => {
+    fileInput.addEventListener('change', () => {
+      resolve();
+    }, {once: true});
+    setTimeout(() => reject(new Error('Timed out waiting for change event (1st)')), 3000);
+  });
+
+  await test_driver.click(fileInput);
+  await changePromise;
+  assert_equals(changeEventCount, 1, 'Change event should fire on first selection');
+
+  // Second selection
+  await new Promise(setTimeout);
+  mockFileChooserFactory.setPathsToBeChosen(filePaths);
+
+  let openPromise = new Promise((resolve, reject) => {
+    mockFileChooserFactory.addEventListener('open', resolve, {once: true});
+    setTimeout(() => reject(new Error('Timed out waiting for open event (2nd)')), 3000);
+  });
+
+  changePromise = new Promise((resolve, reject) => {
+    fileInput.addEventListener('change', resolve, {once: true});
+    setTimeout(() => reject(new Error('Timed out waiting for change event (2nd)')), 3000);
+  });
+
+  await test_driver.click(fileInput);
+  await openPromise;
+  await changePromise;
+  assert_equals(changeEventCount, 2, 'Change event should fire on second selection with same file');
+}, 'Choosing the same file again should fire change event.');
+</script>
