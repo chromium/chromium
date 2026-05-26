@@ -180,7 +180,7 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
 // https://cs.chromium.org/chromium/src/chrome/browser/ui/search_engines/search_engine_tab_helper.cc
 void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
     const GURL& searchable_url) {
-  if (!searchable_url.is_valid()) {
+  if (!searchable_url.is_valid() || !searchable_url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
 
