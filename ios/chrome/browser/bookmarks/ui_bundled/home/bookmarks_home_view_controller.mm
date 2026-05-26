@@ -272,7 +272,6 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (instancetype)initWithBrowser:(Browser*)browser {
   CHECK(browser, base::NotFatalUntil::M152);
-
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
@@ -1109,6 +1108,12 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     BookmarksHomeViewController* controller =
         [self createControllerWithDisplayedFolderNode:folder];
     [self.navigationController pushViewController:controller animated:YES];
+    if (![self.navigationController.viewControllers
+            containsObject:controller]) {
+      // This push can fail if the navigation controller’s list of VC is
+      // currently changing. See crbug.com/515121885.
+      [controller shutdown];
+    }
     return;
   }
   [self jumpToFolder:folder];
