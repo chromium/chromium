@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 
 namespace base {
@@ -22,8 +23,8 @@ base::ScopedFD CreateSocketAndBind(const base::FilePath& path);
 // Reads a null terminated string from the given socket.
 std::string ReadString(const base::ScopedFD& sock);
 
-// Reads `byte_size` bytes from the socket into the given buffer.
-void ReadBuffer(const base::ScopedFD& sock, void* buf, int byte_size);
+// Reads bytes from the socket into the given buffer.
+void ReadBuffer(const base::ScopedFD& sock, base::span<uint8_t> buf);
 
 // Sends a string with a null terminator appended to the given socket.
 void SendString(const base::ScopedFD& sock, std::string_view str);

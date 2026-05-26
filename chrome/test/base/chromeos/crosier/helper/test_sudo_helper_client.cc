@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -171,10 +172,10 @@ base::ScopedFD TestSudoHelperClient::ConnectToServer(
     const base::FilePath& client_path) {
   base::ScopedFD client_sock = crosier::CreateSocketAndBind(client_path);
 
-  struct sockaddr_un addr = {0};
+  struct sockaddr_un addr = {};
   addr.sun_family = AF_UNIX;
-  UNSAFE_TODO(strncpy(addr.sun_path, server_path_.c_str(),
-                      sizeof(sockaddr_un::sun_path)));
+  auto sun_path_span = base::span(addr.sun_path);
+  sun_path_span.first(server_path_.size()).copy_from(base::span(server_path_));
 
   socklen_t addr_len =
       offsetof(struct sockaddr_un, sun_path) + server_path_.size();
@@ -216,7 +217,7 @@ TestSudoHelperClient::Result TestSudoHelperClient::SendDictAndGetResult(
 
   // Reads the 1 byte return code.
   signed char byte_buffer = 0;
-  crosier::ReadBuffer(sock, &byte_buffer, 1);
+  crosier::ReadBuffer(sock, base::byte_span_from_ref(byte_buffer));
   result.return_code = byte_buffer;
 
   // Reads the output.
@@ -244,7 +245,7 @@ void TestSudoHelperClient::ReadSessionManagerEventOnWatcherThread(
            base::PlatformThread::CurrentId());
 
   signed char byte_buffer = 0;
-  crosier::ReadBuffer(sock, &byte_buffer, 1);
+  crosier::ReadBuffer(sock, base::byte_span_from_ref(byte_buffer));
   CHECK_EQ(byte_buffer, 0);
 
   std::string output = crosier::ReadString(sock);

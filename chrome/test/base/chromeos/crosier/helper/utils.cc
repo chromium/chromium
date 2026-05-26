@@ -8,12 +8,14 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+#include <array>
 #include <string>
 #include <string_view>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/notreached.h"
@@ -23,16 +25,13 @@ namespace crosier {
 
 namespace {
 
-void SendBuffer(const base::ScopedFD& sock, const char* buf, int byte_size) {
-  const char* p = buf;
-  int remaining = byte_size;
-
-  while (remaining > 0) {
-    ssize_t bytes_sent = HANDLE_EINTR(send(sock.get(), p, remaining, 0));
+void SendBuffer(const base::ScopedFD& sock, base::span<const uint8_t> buf) {
+  base::span<const uint8_t> remaining = buf;
+  while (!remaining.empty()) {
+    ssize_t bytes_sent =
+        HANDLE_EINTR(send(sock.get(), remaining.data(), remaining.size(), 0));
     CHECK_GT(bytes_sent, 0);
-
-    UNSAFE_TODO(p += bytes_sent);
-    remaining -= bytes_sent;
+    remaining = remaining.subspan(static_cast<size_t>(bytes_sent));
   }
 }
 
@@ -44,12 +43,15 @@ base::ScopedFD CreateSocketAndBind(const base::FilePath& path) {
   base::ScopedFD socket(fd);
 
   // `unlink` just in case there was left over from previous runs.
-  unlink(path.value().c_str());
+  std::string path_str = path.value();
+  unlink(path_str.c_str());
 
-  struct sockaddr_un addr;
+  struct sockaddr_un addr = {};
   addr.sun_family = AF_UNIX;
-  UNSAFE_TODO(strncpy(addr.sun_path, path.value().c_str(),
-                      sizeof(sockaddr_un::sun_path)));
+  CHECK_LT(path_str.size(), sizeof(addr.sun_path));
+  base::span(addr.sun_path)
+      .first(path_str.size())
+      .copy_from(base::span(path_str));
 
   PCHECK(bind(socket.get(), reinterpret_cast<struct sockaddr*>(&addr),
               sizeof(addr)) == 0);
@@ -59,49 +61,49 @@ base::ScopedFD CreateSocketAndBind(const base::FilePath& path) {
 
 std::string ReadString(const base::ScopedFD& sock) {
   constexpr int buf_size = 1024;
-  char buf[buf_size];
+  std::array<char, buf_size> buf;
 
   std::string result;
   bool done = false;
   while (!done) {
-    ssize_t bytes_read = HANDLE_EINTR(recv(sock.get(), buf, buf_size, 0));
+    ssize_t bytes_read =
+        HANDLE_EINTR(recv(sock.get(), buf.data(), buf.size(), 0));
     CHECK_GE(bytes_read, 0);
     if (bytes_read == 0) {
       done = true;
       break;
     }
 
-    if (UNSAFE_TODO(buf[bytes_read - 1]) == 0) {
+    auto read_span = base::span(buf).first(static_cast<size_t>(bytes_read));
+    if (read_span.back() == 0) {
       done = true;
-      --bytes_read;  // No need to copy the null terminator.
+      read_span = read_span.first(read_span.size() - 1);
     }
-    result.append(buf, bytes_read);
+    // Strip the null terminator.
+    result.append(read_span.begin(), read_span.end());
   }
   return result;
 }
 
-void ReadBuffer(const base::ScopedFD& sock, void* buf, int byte_size) {
-  char* p = reinterpret_cast<char*>(buf);
-  int remaining = byte_size;
-
-  while (remaining > 0) {
-    ssize_t bytes_read = HANDLE_EINTR(recv(sock.get(), p, remaining, 0));
+void ReadBuffer(const base::ScopedFD& sock, base::span<uint8_t> buf) {
+  base::span<uint8_t> remaining = buf;
+  while (!remaining.empty()) {
+    ssize_t bytes_read =
+        HANDLE_EINTR(recv(sock.get(), remaining.data(), remaining.size(), 0));
     CHECK_GE(bytes_read, 0);
     if (bytes_read == 0) {
       // The connection is lost before finishing read. Not supported.
       NOTREACHED() << "Connection lost";
     }
-
-    UNSAFE_TODO(p += bytes_read);
-    remaining -= bytes_read;
+    remaining = remaining.subspan(static_cast<size_t>(bytes_read));
   }
 }
 
 void SendString(const base::ScopedFD& sock, std::string_view str) {
-  SendBuffer(sock, str.data(), str.size());
+  SendBuffer(sock, base::as_byte_span(str));
 
   char terminator = 0;
-  SendBuffer(sock, &terminator, 1);
+  SendBuffer(sock, base::byte_span_from_ref(terminator));
 }
 
 }  // namespace crosier
