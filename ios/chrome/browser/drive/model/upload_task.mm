@@ -24,6 +24,7 @@ bool UploadTask::IsDone() const {
     case State::kCancelled:
     case State::kComplete:
     case State::kFailed:
+    case State::kFailedNotResumable:
       return true;
   }
 }

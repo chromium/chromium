@@ -94,6 +94,20 @@ id<GREYMatcher> DownloadManagerTryAgainButton() {
       grey_enabled(), grey_interactable(), nil);
 }
 
+// Matcher for "Couldn't download" error label (non-resumable failure).
+id<GREYMatcher> DownloadManagerCannotBeRetriedLabel() {
+  return grey_allOf(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED)),
+                    grey_sufficientlyVisible(), nil);
+}
+
+// Matcher for the close button on the Download Manager UI.
+id<GREYMatcher> DownloadManagerCloseButton() {
+  return grey_allOf(
+      grey_accessibilityID(kDownloadManagerCloseButtonAccessibilityIdentifier),
+      grey_sufficientlyVisible(), nil);
+}
+
 // Matcher for the account picker.
 id<GREYMatcher> AccountPicker() {
   return grey_allOf(
@@ -185,7 +199,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       [self isRunningTest:@selector
             (testSaveToDriveWhenSignedOutWithAccountOnDevice)] ||
       [self isRunningTest:@selector(testDriveFullStorageSignedOut)] ||
-      [self isRunningTest:@selector(testCanDownloadToDrive)]) {
+      [self isRunningTest:@selector(testCanDownloadToDrive)] ||
+      [self isRunningTest:@selector(testSaveToDriveAccountRemoved)]) {
     configuration.features_enabled.push_back(kIOSSaveToDriveSignedOut);
   }
   if ([self isRunningTest:@selector(testCanRetryDownloadToDrive)]) {
@@ -701,6 +716,54 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
       selectElementWithMatcher:chrome_test_util::AccountChooserButtonMatcher(
                                    fakeIdentity2)]
       assertWithMatcher:grey_interactable()];
+}
+
+// Tests that removing the account while a Save to Drive download is in progress
+// fails the download and shows an error, instead of getting stuck.
+- (void)testSaveToDriveAccountRemoved {
+  // Sign-in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+
+  // Check that the "Drive" button is presented and tap it.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
+      performAction:grey_tap()];
+
+  // Wait for the account picker to appear, select "Drive" and tap "Save".
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:FileDestinationDriveButton()];
+  [[EarlGrey selectElementWithMatcher:FileDestinationDriveButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
+      performAction:grey_tap()];
+
+  // Wait for the download manager to appear (signifying that the picker was
+  // successfully dismissed and download has started).
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:DownloadManagerCloseButton()];
+
+  // While download is in progress, remove account.
+  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
+
+  // Verify that the user is signed out.
+  [SigninEarlGrey verifySignedOut];
+
+  // Verify that "Couldn't download" error is displayed.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:DownloadManagerCannotBeRetriedLabel()
+                                  timeout:base::test::ios::
+                                              kWaitForDownloadTimeout];
+
+  // Verify that the "Try Again" button does NOT appear (non-resumable).
+  [[EarlGrey selectElementWithMatcher:DownloadManagerTryAgainButton()]
+      assertWithMatcher:grey_nil()];
 }
 
 @end

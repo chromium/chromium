@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_DRIVE_MODEL_DRIVE_UPLOAD_TASK_H_
 
 #import "base/files/file_path.h"
+#import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/drive/model/drive_file_uploader.h"
 #import "ios/chrome/browser/drive/model/upload_task.h"
 
@@ -30,6 +31,7 @@ class DriveUploadTask final : public UploadTask {
   State GetState() const final;
   void Start() final;
   void Cancel() final;
+  void Fail(NSError* error, bool resumable) final;
   id<SystemIdentity> GetIdentity() const final;
   float GetProgress() const final;
   std::optional<GURL> GetResponseLink(

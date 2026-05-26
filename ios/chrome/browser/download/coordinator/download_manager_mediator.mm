@@ -165,6 +165,8 @@ DownloadManagerState DownloadManagerMediator::GetDownloadManagerState() const {
           return DownloadManagerState::kSucceeded;
         case UploadTask::State::kFailed:
           return DownloadManagerState::kFailed;
+        case UploadTask::State::kFailedNotResumable:
+          return DownloadManagerState::kFailedNotResumable;
       }
     case web::DownloadTask::State::kFailed:
       return DownloadManagerState::kFailed;

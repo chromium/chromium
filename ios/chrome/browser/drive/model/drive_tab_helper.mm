@@ -26,11 +26,57 @@
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service.h"
 #import "ios/chrome/browser/enterprise/connectors/connectors_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 
 using drive::DriveService;
 using drive::DriveServiceFactory;
+
+namespace {
+
+NSErrorDomain const kSaveToDriveErrorDomain = @"SaveToDriveErrorDomain";
+
+enum class SaveToDriveErrorCode : NSInteger {
+  kAccountNotFound = -1,
+};
+
+// Returns an NSError indicating that the account used for the upload is no
+// longer present on the device or has invalid credentials.
+NSError* CreateAccountNotFoundError() {
+  NSDictionary* userInfo = @{
+    NSLocalizedDescriptionKey :
+        @"The account used for Save to Drive was removed from the device."
+  };
+  return [NSError errorWithDomain:kSaveToDriveErrorDomain
+                             code:static_cast<NSInteger>(
+                                      SaveToDriveErrorCode::kAccountNotFound)
+                         userInfo:userInfo];
+}
+
+// Returns true if `identity` is valid and has valid authentication on the
+// device.
+bool IsIdentityOnDeviceWithValidAuth(id<SystemIdentity> identity,
+                                     SystemIdentityManager* manager) {
+  if (!identity || !manager) {
+    return false;
+  }
+  __block BOOL identity_found_and_valid = NO;
+  manager->IterateOverIdentities(
+      base::BindRepeating(^(id<SystemIdentity> sys_identity) {
+        if ([sys_identity.hashedGaiaID isEqualToString:identity.hashedGaiaID]) {
+          // This identity is present on this device.
+          identity_found_and_valid = sys_identity.hasValidAuth;
+          return SystemIdentityManager::IteratorResult::kInterruptIteration;
+        }
+        return SystemIdentityManager::IteratorResult::kContinueIteration;
+      }));
+  return identity_found_and_valid;
+}
+
+}  // namespace
 
 DriveTabHelper::DriveTabHelper(web::WebState* web_state)
     : web_state_(web_state) {}
@@ -190,6 +236,17 @@ void DriveTabHelper::MaybeUploadDownloadToDrive(web::DownloadTask* task,
   upload_task_->SetFileToUpload(task->GetResponsePath(),
                                 task->GenerateFileName(), task->GetMimeType(),
                                 task->GetTotalBytes());
+
+  id<SystemIdentity> identity = upload_task_->GetIdentity();
+  SystemIdentityManager* manager =
+      GetApplicationContext()->GetSystemIdentityManager();
+  if (!IsIdentityOnDeviceWithValidAuth(identity, manager)) {
+    upload_task_->Fail(CreateAccountNotFoundError(), /*resumable=*/false);
+    files_request_handler_.reset();
+    content_analysis_info_.reset();
+    return;
+  }
+
   upload_task_->Start();
 
   // Ensure the handler and content_analysis_info_ are destroyed as soon as they

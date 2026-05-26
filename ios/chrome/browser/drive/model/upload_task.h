@@ -28,6 +28,8 @@ class UploadTask {
     kComplete,
     // Upload has failed but can be retried.
     kFailed,
+    // Upload has failed and cannot be retried.
+    kFailedNotResumable,
   };
 
   UploadTask();
@@ -42,6 +44,8 @@ class UploadTask {
   virtual void Start() = 0;
   // Cancels the upload.
   virtual void Cancel() = 0;
+  // Fails the upload with an error.
+  virtual void Fail(NSError* error, bool resumable) = 0;
 
   // Returns the identity used to upload the file, if any.
   virtual id<SystemIdentity> GetIdentity() const = 0;

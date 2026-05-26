@@ -22,6 +22,7 @@ class TestUploadTask final : public UploadTask {
   State GetState() const final { return State::kNotStarted; }
   void Start() final {}
   void Cancel() final {}
+  void Fail(NSError* error, bool resumable) final {}
   id<SystemIdentity> GetIdentity() const final { return nil; }
   float GetProgress() const final { return 0; }
   std::optional<GURL> GetResponseLink(bool add_user_identifier) const final {

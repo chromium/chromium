@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/drive/model/upload_task.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/scan_decision_helper.h"
 #import "ios/chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/test/fakes/fake_enterprise_commands_handler.h"
 #import "ios/components/enterprise/analysis/features.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -84,6 +86,15 @@ class DriveTabHelperTest : public PlatformTest {
     download_task_ =
         std::make_unique<web::FakeDownloadTask>(GURL(kTestUrl), kTestMimeType);
     download_task_->SetWebState(web_state_);
+
+    SystemIdentityManager* system_identity_manager =
+        GetApplicationContext()->GetSystemIdentityManager();
+    FakeSystemIdentityManager* fake_system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            system_identity_manager);
+    fake_system_identity_manager->AddIdentity(
+        [FakeSystemIdentity fakeIdentity1]);
+
     DriveTabHelper::CreateForWebState(web_state_);
     helper_ = DriveTabHelper::FromWebState(web_state_);
   }
@@ -268,4 +279,34 @@ TEST_F(DriveTabHelperTest, ScanningFailureTriggersSnackbarAndCancels) {
 
   // The upload task should be cleared.
   EXPECT_EQ(nullptr, helper_->GetUploadTaskForDownload(download_task_.get()));
+}
+
+// Tests that if the identity is removed from the device before calling
+// `MaybeUploadDownloadToDrive`, the upload task fails.
+TEST_F(DriveTabHelperTest, UploadFailsIfIdentityRemovedBeforeStart) {
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  helper_->AddDownloadToSaveToDrive(download_task_.get(), identity);
+
+  UploadTask* upload_task =
+      helper_->GetUploadTaskForDownload(download_task_.get());
+  ASSERT_NE(nullptr, upload_task);
+  EXPECT_EQ(UploadTask::State::kNotStarted, upload_task->GetState());
+
+  // Remove the identity from the system identity manager.
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
+  FakeSystemIdentityManager* fake_system_identity_manager =
+      FakeSystemIdentityManager::FromSystemIdentityManager(
+          system_identity_manager);
+  fake_system_identity_manager->ForgetIdentityFromOtherApplication(identity);
+
+  // Wait for the asynchronous forget operation in fake manager to complete.
+  fake_system_identity_manager->WaitForServiceCallbacksToComplete();
+
+  // Simulate completion of the download task (initializes
+  // files_request_handler_).
+  download_task_->SetDone(true);
+
+  // Upload should have failed and not be resumable.
+  EXPECT_EQ(UploadTask::State::kFailedNotResumable, upload_task->GetState());
 }

@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/drive/model/drive_metrics.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
 #import "url/gurl.h"
@@ -41,6 +42,7 @@ const char* HistogramSuffixForUploadTaskState(UploadTask::State state) {
     case UploadTask::State::kComplete:
       return kHistogramSuffixTaskComplete;
     case UploadTask::State::kFailed:
+    case UploadTask::State::kFailedNotResumable:
       return kHistogramSuffixTaskFailed;
   }
 }
@@ -57,6 +59,7 @@ UploadTaskStateHistogram UploadTaskStateToHistogram(UploadTask::State state) {
     case UploadTask::State::kComplete:
       return UploadTaskStateHistogram::kComplete;
     case UploadTask::State::kFailed:
+    case UploadTask::State::kFailedNotResumable:
       return UploadTaskStateHistogram::kFailed;
   }
 }
@@ -150,6 +153,7 @@ void DriveUploadTask::Start() {
   }
   upload_progress_.reset();
   upload_result_.reset();
+
   SetState(State::kInProgress);
   number_of_attempts_++;
   FetchClientFolderThenUploadFile();
@@ -162,6 +166,16 @@ void DriveUploadTask::Cancel() {
   upload_progress_.reset();
   upload_result_.reset();
   SetState(State::kCancelled);
+}
+
+void DriveUploadTask::Fail(NSError* error, bool resumable) {
+  if (state_ == State::kComplete || state_ == State::kFailed ||
+      state_ == State::kFailedNotResumable || state_ == State::kCancelled) {
+    return;
+  }
+  upload_progress_.reset();
+  upload_result_ = DriveFileUploadResult({.error = error});
+  SetState(resumable ? State::kFailed : State::kFailedNotResumable);
 }
 
 float DriveUploadTask::GetProgress() const {
