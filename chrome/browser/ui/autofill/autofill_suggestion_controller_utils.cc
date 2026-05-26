@@ -144,7 +144,8 @@ bool IsStandaloneSuggestionType(SuggestionType type) {
     case SuggestionSection::kBody:
       return true;
     case SuggestionSection::kFooter:
-      return type == SuggestionType::kScanCreditCard;
+      return type == SuggestionType::kScanCreditCard ||
+             type == SuggestionType::kWebauthnSignInWithAnotherDevice;
     case SuggestionSection::kStructure:
       return false;
   }

@@ -1196,6 +1196,32 @@ TEST_F(AutofillPopupControllerImplTest, UnselectingClearsPreview) {
   client().suggestion_controller(manager()).UnselectSuggestion();
 }
 
+TEST_F(AutofillPopupControllerImplTest,
+       HasSuggestionsWebauthnHybridFlowStandalone) {
+  ShowSuggestions(manager(),
+                  {SuggestionType::kWebauthnSignInWithAnotherDevice});
+  AutofillPopupControllerImpl& controller =
+      static_cast<AutofillPopupControllerImpl&>(
+          client().suggestion_controller(manager()));
+
+  // kWebauthnSignInWithAnotherDevice should be classified as a standalone
+  // suggestion type on Desktop, so HasSuggestions() evaluates to true!
+  EXPECT_TRUE(test_api(controller).HasSuggestions());
+}
+
+TEST_F(AutofillPopupControllerImplTest,
+       HasSuggestionsSeparatorsAndNonStandaloneFootersAreNotStandalone) {
+  ShowSuggestions(manager(), {SuggestionType::kSeparator,
+                              SuggestionType::kAllSavedPasswordsEntry});
+  AutofillPopupControllerImpl& controller =
+      static_cast<AutofillPopupControllerImpl&>(
+          client().suggestion_controller(manager()));
+
+  // A list containing only a separator or a non-standalone settings footer
+  // (like kAllSavedPasswordsEntry) does NOT have any standalone suggestions!
+  EXPECT_FALSE(test_api(controller).HasSuggestions());
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 class MockAutofillDriver : public ContentAutofillDriver {
  public:

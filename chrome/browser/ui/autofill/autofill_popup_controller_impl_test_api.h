@@ -42,6 +42,7 @@ class AutofillPopupControllerImplTestApi {
     controller_->controller_common_
         .prefer_prev_arrow_side_on_suggestions_update = prefer_prev_arrow_side;
   }
+  bool HasSuggestions() const { return controller_->HasSuggestions(); }
 
  private:
   const raw_ref<AutofillPopupControllerImpl> controller_;
