@@ -5148,6 +5148,11 @@ void RenderViewContextMenu::ExecProtocolHandlerSettings(int event_flags) {
 void RenderViewContextMenu::MaybeAppendOpenGlicItem() {
   // Append an item for opening Glic
   if (glic::GlicEnabling::IsContextualMenuItemEnabled(GetProfile())) {
+    if (content_type_->SupportsGroup(
+            ContextMenuContentType::ITEM_GROUP_GLICSHAREIMAGE) &&
+        CanAppendGlicShareImageItem()) {
+      return;
+    }
     std::string arm = features::kGlicContextMenuArm.Get();
     bool show_summarize_page = (arm == "arm2");
     menu_model_.AddItemWithStringIdAndIcon(
