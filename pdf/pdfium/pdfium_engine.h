@@ -1485,6 +1485,8 @@ class PDFiumEngine : public DocumentLoader::Client,
   std::map<InkTextId, InkTextData> ink_text_data_;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
+  bool in_dtor_ = false;
+
   base::WeakPtrFactory<PDFiumEngine> weak_factory_{this};
 
   // Weak pointers from this factory are used to bind the ContinueFind()
