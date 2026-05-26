@@ -48,7 +48,7 @@ class PdfToolbarViewBinder {
             view.findViewById(R.id.zoom_increase_button).setOnClickListener(listener);
             view.findViewById(R.id.zoom_decrease_button).setOnClickListener(listener);
             view.findViewById(R.id.fit_to_page_button).setOnClickListener(listener);
-            view.findViewById(R.id.two_page_button).setOnClickListener(listener);
+            view.findViewById(R.id.more_menu_button).setOnClickListener(listener);
         } else if (PdfToolbarProperties.TITLE == key) {
             TextView title = view.findViewById(R.id.pdf_title);
             title.setText(model.get(PdfToolbarProperties.TITLE));
@@ -96,9 +96,6 @@ class PdfToolbarViewBinder {
             } else {
                 fitToPageButton.setImageResource(R.drawable.ic_fit_page_width_24dp);
             }
-        } else if (PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE == key) {
-            view.findViewById(R.id.two_page_button)
-                    .setActivated(model.get(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE));
         }
     }
 }

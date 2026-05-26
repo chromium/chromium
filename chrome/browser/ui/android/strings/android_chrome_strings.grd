@@ -4832,6 +4832,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_PDF_PAGE_DOWNLOAD_IPH_TEXT" desc="Text shown in the text bubble to inform users about the option to download a PDF when the PDF document is opened in Chrome.">
         You can download PDFs here
       </message>
+      <message name="IDS_PDF_TWO_PAGE_VIEW" desc="Menu option to enable two-page view in PDF.">
+        Two-page view
+      </message>
+      <message name="IDS_PDF_SINGLE_PAGE_VIEW" desc="Menu option to enable single page view in PDF.">
+        Single-page view
+      </message>
+      <message name="IDS_PDF_DOCUMENT_PROPERTIES" desc="Menu option to view PDF document properties.">
+        Document properties
+      </message>
 
       <!-- Accessibility -->
 

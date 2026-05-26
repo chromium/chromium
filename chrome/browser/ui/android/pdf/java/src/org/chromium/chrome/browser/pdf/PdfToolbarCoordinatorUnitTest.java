@@ -7,12 +7,20 @@ package org.chromium.chrome.browser.pdf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -29,6 +37,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.widget.UiWidgetFactory;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.INLINE_PDF_V2)
@@ -43,11 +52,22 @@ public class PdfToolbarCoordinatorUnitTest {
     private View mPdfPageView;
     private PdfToolbarCoordinator mPdfToolbarCoordinator;
     private AutoCloseable mCloseableMocks;
+    private UiWidgetFactory mMockUiWidgetFactory;
+    private PopupWindow mSpyPopupWindow;
 
     @Before
     public void setUp() {
         mCloseableMocks = MockitoAnnotations.openMocks(this);
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+
+        mMockUiWidgetFactory = mock(UiWidgetFactory.class);
+        mSpyPopupWindow = spy(new PopupWindow(mActivity));
+        UiWidgetFactory.setInstance(mMockUiWidgetFactory);
+        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
+        doNothing()
+                .when(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+
         mPdfPageView = LayoutInflater.from(mActivity).inflate(R.layout.pdf_page, null);
         mPdfToolbarCoordinator = new PdfToolbarCoordinator(mPdfPageView, mDelegate);
         mPdfToolbarCoordinator.onDocumentLoaded(100, "test_title.pdf");
@@ -58,6 +78,7 @@ public class PdfToolbarCoordinatorUnitTest {
     @After
     public void tearDown() throws Exception {
         mCloseableMocks.close();
+        UiWidgetFactory.setInstance(null);
     }
 
     @Test
@@ -191,16 +212,57 @@ public class PdfToolbarCoordinatorUnitTest {
     }
 
     @Test
-    public void testTwoPagesPerRowToggle() {
-        // Default current page is 99 (1-indexed) and zoom level is 1.0f
-        View twoPageButton = mPdfPageView.findViewById(R.id.two_page_button);
+    public void testTwoPagesPerRowToggle_viaMenu_toggleBehavior() {
+        // 1. Initial State: Single Page View is active (TWO_PAGES_PER_ROW_ACTIVE = false)
+        // Click more menu button
+        View moreMenuButton = mPdfPageView.findViewById(R.id.more_menu_button);
+        org.junit.Assert.assertNotNull("More menu button should not be null", moreMenuButton);
+        moreMenuButton.performClick();
 
-        // Initial state: click toggles two pages per row to active (true)
-        twoPageButton.performClick();
+        // Get content view
+        View contentView = mSpyPopupWindow.getContentView();
+        org.junit.Assert.assertNotNull("Popup content view should not be null", contentView);
+        android.widget.ListView listView = contentView.findViewById(R.id.menu_list);
+        org.junit.Assert.assertNotNull("List view should be found", listView);
+
+        // Verify first item is "Two-page view" and has NO checkmark
+        View itemView = listView.getAdapter().getView(0, null, listView);
+        TextView textView = itemView.findViewById(R.id.menu_item_text);
+        assertEquals(
+                mActivity.getString(R.string.pdf_two_page_view), textView.getText().toString());
+        ImageView endIcon = itemView.findViewById(R.id.menu_item_end_icon);
+        assertTrue(endIcon.getVisibility() == View.GONE || endIcon.getDrawable() == null);
+
+        // Click "Two-page view" -> toggles to true
+        itemView.performClick();
         verify(mDelegate).toggleTwoPagesPerRow(true, 1.0f, 98);
+        verify(mSpyPopupWindow).dismiss();
 
-        // Second click: click toggles two pages per row to inactive (false)
-        twoPageButton.performClick();
+        // 2. Second State: Two Page View is active (TWO_PAGES_PER_ROW_ACTIVE = true)
+        // Reset the spy for the next popup window creation
+        mSpyPopupWindow = spy(new PopupWindow(mActivity));
+        when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
+        doNothing()
+                .when(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+
+        // Click more menu button again
+        moreMenuButton.performClick();
+
+        contentView = mSpyPopupWindow.getContentView();
+        listView = contentView.findViewById(R.id.menu_list);
+
+        // Verify first item is now "Single page view" and has NO checkmark
+        itemView = listView.getAdapter().getView(0, null, listView);
+        textView = itemView.findViewById(R.id.menu_item_text);
+        assertEquals(
+                mActivity.getString(R.string.pdf_single_page_view), textView.getText().toString());
+        endIcon = itemView.findViewById(R.id.menu_item_end_icon);
+        assertTrue(endIcon.getVisibility() == View.GONE || endIcon.getDrawable() == null);
+
+        // Click "Single page view" -> toggles to false
+        itemView.performClick();
         verify(mDelegate).toggleTwoPagesPerRow(false, 1.0f, 98);
+        verify(mSpyPopupWindow).dismiss();
     }
 }

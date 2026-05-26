@@ -4,13 +4,23 @@
 
 package org.chromium.chrome.browser.pdf;
 
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewStub;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
+import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.ui.listmenu.BasicListMenu;
+import org.chromium.ui.listmenu.ListMenu;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+import org.chromium.ui.widget.AnchoredPopupWindow;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 
@@ -25,6 +35,7 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             List.of(
                     0.25f, 0.33f, 0.5f, 0.67f, 0.75f, 0.8f, 0.9f, 1.0f, 1.1f, 1.25f, 1.5f, 1.75f,
                     2.0f, 2.5f, 3.0f, 4.0f, 5.0f);
+    private @Nullable AnchoredPopupWindow mMenuWindow;
 
     public PdfToolbarCoordinator(View parentView, PdfToolbarActionsDelegate delegate) {
         mDelegate = delegate;
@@ -67,11 +78,87 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
             boolean showFitToHeight = mModel.get(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON);
             mDelegate.toggleFitToPage(showFitToHeight, currentPageNumber - 1);
             mModel.set(PdfToolbarProperties.SHOW_FIT_TO_HEIGHT_ICON, !showFitToHeight);
-        } else if (actionId == R.id.two_page_button) {
-            boolean isCurrentlyActive = mModel.get(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE);
-            boolean newState = !isCurrentlyActive;
-            mModel.set(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, newState);
-            mDelegate.toggleTwoPagesPerRow(newState, currentZoomFactor, currentPageNumber - 1);
+        } else if (actionId == R.id.more_menu_button) {
+            showMenu(view);
+        }
+    }
+
+    private void toggleTwoPageView() {
+        float currentZoomFactor = mModel.get(PdfToolbarProperties.ZOOM_LEVEL);
+        int currentPageNumber = mModel.get(PdfToolbarProperties.CURRENT_PAGE_NUMBER);
+        boolean isCurrentlyActive = mModel.get(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE);
+        boolean newState = !isCurrentlyActive;
+        mModel.set(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE, newState);
+        mDelegate.toggleTwoPagesPerRow(newState, currentZoomFactor, currentPageNumber - 1);
+    }
+
+    private void showMenu(View anchorView) {
+        ModelList modelList = new ModelList();
+
+        // Two-page view / Single page view item
+        boolean isTwoPageActive = mModel.get(PdfToolbarProperties.TWO_PAGES_PER_ROW_ACTIVE);
+        int titleRes = isTwoPageActive ? R.string.pdf_single_page_view : R.string.pdf_two_page_view;
+        ListItemBuilder twoPageItem =
+                new ListItemBuilder()
+                        .withTitleRes(titleRes)
+                        .withClickListener(
+                                v -> {
+                                    toggleTwoPageView();
+                                    dismissMenu();
+                                });
+        modelList.add(twoPageItem.build());
+
+        // Document properties item
+        modelList.add(
+                new ListItemBuilder()
+                        .withTitleRes(R.string.pdf_document_properties)
+                        .withClickListener(
+                                v -> {
+                                    // TODO (crbug.com/479585910): Display document properties.
+                                    dismissMenu();
+                                })
+                        .build());
+
+        ListMenu.Delegate delegate =
+                (model, view) -> {
+                    View.OnClickListener listener =
+                            model.get(ListMenuItemProperties.CLICK_LISTENER);
+                    if (listener != null) {
+                        listener.onClick(view);
+                    }
+                };
+
+        BasicListMenu listMenu =
+                BrowserUiListMenuUtils.getBasicListMenu(
+                        anchorView.getContext(), modelList, delegate);
+
+        View contentView = listMenu.getContentView();
+        int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+        int widthPx = listMenu.getMaxItemWidth() + lateralPadding;
+
+        mMenuWindow =
+                new AnchoredPopupWindow.Builder(
+                                anchorView.getContext(),
+                                anchorView.getRootView(),
+                                new ColorDrawable(android.graphics.Color.TRANSPARENT),
+                                () -> contentView,
+                                new ViewRectProvider(anchorView))
+                        .setFocusable(true)
+                        .setTouchModal(true)
+                        .setDismissOnTouchInteraction(true)
+                        .setHorizontalOverlapAnchor(true)
+                        .setVerticalOverlapAnchor(false)
+                        .setDesiredContentWidth(widthPx)
+                        .setAllowNonTouchableSize(true)
+                        .build();
+
+        mMenuWindow.show();
+    }
+
+    private void dismissMenu() {
+        if (mMenuWindow != null) {
+            mMenuWindow.dismiss();
+            mMenuWindow = null;
         }
     }
 
@@ -135,5 +222,6 @@ public class PdfToolbarCoordinator implements View.OnClickListener {
     /** Destroys the coordinator and releases references held by the change processor. */
     public void destroy() {
         mPropertyModelChangeProcessor.destroy();
+        dismissMenu();
     }
 }
