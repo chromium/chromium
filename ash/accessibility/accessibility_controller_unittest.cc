@@ -2860,6 +2860,9 @@ class AccessibilityControllerSyncablePrefsOnSigninTest
           user_prefs->GetBoolean(kAccessibilityCursorHighlightEnabled));
       EXPECT_TRUE(IsPrefLockedWithValueForTesting(
           kAccessibilityCursorHighlightEnabled, base::Value(false)));
+      EXPECT_TRUE(
+          user_prefs->FindPreference(kAccessibilityCursorHighlightEnabled)
+              ->IsDefaultValue());
     } else {
       EXPECT_FALSE(accessibility->large_cursor().enabled());
       EXPECT_FALSE(accessibility->spoken_feedback().enabled());
@@ -3030,6 +3033,9 @@ TEST_P(AccessibilityControllerSyncablePrefsOnSigninTest,
     EXPECT_FALSE(
         signin_prefs->FindPreference(kAccessibilityCursorHighlightEnabled)
             ->IsUserControlled());
+    EXPECT_TRUE(
+        signin_prefs->FindPreference(kAccessibilityCursorHighlightEnabled)
+            ->IsDefaultValue());
   }
 
   // The type of user (new or existing) will trigger the copying of
