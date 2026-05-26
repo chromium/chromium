@@ -72,7 +72,9 @@ suite('ReadonlyOmnibox', function() {
   });
 
   test('Setting text without selection', async () => {
-    omnibox.omniboxViewState = {
+    omnibox.browserOmniboxState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'Hello',
@@ -89,7 +91,9 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('Hello', omnibox.$.textInput.value);
 
     // Now set to blank
-    omnibox.omniboxViewState = {
+    omnibox.browserOmniboxState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [],
       inlineAutocompletion: '',
       selection: null,
@@ -101,7 +105,9 @@ suite('ReadonlyOmnibox', function() {
   });
 
   test('Setting text with multiple pieces', async () => {
-    omnibox.omniboxViewState = {
+    omnibox.browserOmniboxState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'He',
@@ -124,7 +130,9 @@ suite('ReadonlyOmnibox', function() {
   });
 
   test('Text formatting', async () => {
-    omnibox.omniboxViewState = {
+    omnibox.browserOmniboxState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'A0',
@@ -188,7 +196,9 @@ suite('ReadonlyOmnibox', function() {
 
   test('RTL mode handling', async () => {
     omnibox.style.setProperty('direction', 'rtl');
-    omnibox.omniboxViewState = {
+    omnibox.browserOmniboxState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'example.com',
@@ -229,7 +239,9 @@ suite('ReadonlyOmnibox', function() {
   });
 
   test('Inline completion', async () => {
-    omnibox.omniboxViewState = {
+    omnibox.browserOmniboxState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'example.com',
@@ -298,5 +310,149 @@ suite('ReadonlyOmnibox', function() {
     assertEquals('example.com/articlo', omnibox.$.textContainer.textContent);
     assertEquals('example.com/articlo', omnibox.$.textInput.value);
     assertEquals('', getStringSelection());
+  });
+
+  test('Inline completion race vs. browser handling', async () => {
+    omnibox.browserOmniboxState = {
+      browserVersion: 0,
+      uiVersion: 0,
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+        {
+          text: '/artic',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxTextDimmed,
+        },
+      ],
+      inlineAutocompletion: 'les/1/',
+      selection: {start: 1, end: 2},
+      textIsUrl: true,
+    };
+    await microtasksFinished();
+
+    // The inline autocompletion gets rendered as selected text in the input,
+    // overriding the selection field.
+    assertEquals('example.com/artic', omnibox.$.textContainer.textContent);
+    assertEquals('example.com/articles/1/', omnibox.$.textInput.value);
+    assertEquals('les/1/', getStringSelection());
+
+    // Typing 'l' should accept one character from inline completion, and
+    // send a textInput event over mojo.
+    fakeKeyDown('l');
+    await microtasksFinished();
+    assertEquals(1, uiHandler.getCallCount('onOmniboxAction'));
+    {
+      const lastArgs = uiHandler.getArgs('onOmniboxAction').at(-1);
+      assertTrue(!!lastArgs.textInput);
+      const kExpectedInput1 = 'example.com/articl';
+      assertEquals(kExpectedInput1, lastArgs.textInput.text);
+      assertEquals(kExpectedInput1.length, lastArgs.textInput.selection.start);
+      assertEquals(kExpectedInput1.length, lastArgs.textInput.selection.end);
+      assertEquals(0, lastArgs.textInput.browserVersion);
+      assertEquals(1, lastArgs.textInput.uiVersion);
+      assertEquals('es/1/', lastArgs.textInput.inlineAutocompletion);
+
+      // And input is updated appropriately.
+      assertEquals('example.com/articl', omnibox.$.textContainer.textContent);
+      assertEquals('example.com/articles/1/', omnibox.$.textInput.value);
+      assertEquals('es/1/', getStringSelection());
+    }
+
+    // Similarly simulate 'e'.
+    fakeKeyDown('e');
+    await microtasksFinished();
+    assertEquals(2, uiHandler.getCallCount('onOmniboxAction'));
+    {
+      const lastArgs = uiHandler.getArgs('onOmniboxAction').at(-1);
+      assertTrue(!!lastArgs.textInput);
+      const kExpectedInput2 = 'example.com/article';
+      assertEquals(kExpectedInput2, lastArgs.textInput.text);
+      assertEquals(kExpectedInput2.length, lastArgs.textInput.selection.start);
+      assertEquals(kExpectedInput2.length, lastArgs.textInput.selection.end);
+      assertEquals(0, lastArgs.textInput.browserVersion);
+      assertEquals(2, lastArgs.textInput.uiVersion);
+      assertEquals('s/1/', lastArgs.textInput.inlineAutocompletion);
+      assertEquals('example.com/article', omnibox.$.textContainer.textContent);
+      assertEquals('example.com/articles/1/', omnibox.$.textInput.value);
+      assertEquals('s/1/', getStringSelection());
+    }
+
+    // Now an update comes from the browser that's after the 'l'. It should
+    // get ignored.
+    omnibox.browserOmniboxState = {
+      browserVersion: 0,
+      uiVersion: 1,
+      textPieces: [
+        {
+          text: 'example.com',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+        {
+          text: '/articl',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxTextDimmed,
+        },
+      ],
+      inlineAutocompletion: 'es/1/',
+      selection: {start: 1, end: 2},
+      textIsUrl: true,
+    };
+    await microtasksFinished();
+
+    assertEquals('example.com/article', omnibox.$.textContainer.textContent);
+    assertEquals('example.com/articles/1/', omnibox.$.textInput.value);
+    assertEquals('s/1/', getStringSelection());
+
+    // If something totally different gets loaded, however, it should get
+    // honored due to bumped browserVersion.
+    omnibox.browserOmniboxState = {
+      browserVersion: 1,
+      uiVersion: 0,
+      textPieces: [
+        {
+          text: 'example.org',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxText,
+        },
+        {
+          text: '/ess',
+          strikethrough: false,
+          color: OmniboxTextColor.kOmniboxTextDimmed,
+        },
+      ],
+      inlineAutocompletion: 'ay',
+      selection: {start: 1, end: 2},
+      textIsUrl: true,
+    };
+    await microtasksFinished();
+
+    assertEquals('example.org/ess', omnibox.$.textContainer.textContent);
+    assertEquals('example.org/essay', omnibox.$.textInput.value);
+    assertEquals('ay', getStringSelection());
+
+    // Similate a. This should advance completion and send updates with
+    // new browserVersion numbers.
+    fakeKeyDown('a');
+    await microtasksFinished();
+    assertEquals(3, uiHandler.getCallCount('onOmniboxAction'));
+    {
+      const lastArgs = uiHandler.getArgs('onOmniboxAction').at(-1);
+      assertTrue(!!lastArgs.textInput);
+      const kExpectedInput3 = 'example.org/essa';
+      assertEquals(kExpectedInput3, lastArgs.textInput.text);
+      assertEquals(kExpectedInput3.length, lastArgs.textInput.selection.start);
+      assertEquals(kExpectedInput3.length, lastArgs.textInput.selection.end);
+      assertEquals(1, lastArgs.textInput.browserVersion);
+      assertEquals(1, lastArgs.textInput.uiVersion);
+      assertEquals('y', lastArgs.textInput.inlineAutocompletion);
+      assertEquals('example.org/essa', omnibox.$.textContainer.textContent);
+      assertEquals('example.org/essay', omnibox.$.textInput.value);
+      assertEquals('y', getStringSelection());
+    }
   });
 });

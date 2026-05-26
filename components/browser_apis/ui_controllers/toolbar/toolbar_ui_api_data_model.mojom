@@ -123,6 +123,15 @@ struct OmniboxActionTextInput {
   // characters).
   mojo_base.mojom.String16 inline_autocompletion;
 
+  // The version of the input on the browser side, incremented when the
+  // state is reset due to navigation or selection from completion popup.
+  // (Wraparound is OK, it looks for equality).
+  uint32 browser_version;
+
+  // The version of the input on the WebUI side, incremented during typing.
+  // (Wraparound is OK, it looks for equality).
+  uint32 ui_version;
+
   gfx.mojom.Range selection;
 };
 
@@ -286,6 +295,15 @@ struct OmniboxTextPortion {
 };
 
 struct OmniboxViewState {
+  // Latest version of the input from the WebUI seen by the browser side;
+  // used to discard updates that are out-of-date. This gets reset to 0
+  // when `browser_version` changes.
+  uint32 ui_version = 0;
+
+  // Latest version of the input from the browser side. Used to discard
+  // input if something dramatic happened clearing the entire state.
+  uint32 browser_version = 0;
+
   // Text to display in the omnibox view.
   array<OmniboxTextPortion> text_pieces;
 

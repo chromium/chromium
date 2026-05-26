@@ -165,6 +165,8 @@ export class ToolbarAppElement extends AppElementBase {
     },
     locationBarState: {
       omniboxViewState: {
+        browserVersion: 0,
+        uiVersion: 0,
         textPieces: [],
         inlineAutocompletion: '',
         selection: null,

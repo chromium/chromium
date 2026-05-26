@@ -191,6 +191,8 @@ void WebUIReadOnlyOmnibox::RevertAll() {
   if (auto* popup_closer = controller()->client()->GetOmniboxPopupCloser()) {
     popup_closer->CloseWithReason(omnibox::PopupCloseReason::kRevertAll);
   }
+  ResetBrowserVersion();
+  RequestUpdateWebUI();
 }
 
 void WebUIReadOnlyOmnibox::SetFocus(bool is_user_initiated) {
@@ -216,6 +218,7 @@ void WebUIReadOnlyOmnibox::OnTemporaryTextMaybeChanged(
   }
 
   // This will call RequestUpdateWebUI(), so we don't have to.
+  ResetBrowserVersion();
   SetWindowTextAndCaretPos(display_text, display_text.length(),
                            /*update_popup=*/false, notify_text_changed);
 }
@@ -327,6 +330,8 @@ void WebUIReadOnlyOmnibox::UpdateSchemeStyle(const gfx::Range& range) {
 toolbar_ui_api::mojom::OmniboxViewStatePtr
 WebUIReadOnlyOmnibox::ComputeMojoState() const {
   auto state = toolbar_ui_api::mojom::OmniboxViewState::New();
+  state->ui_version = ui_version_;
+  state->browser_version = browser_version_;
   if (selection_.IsValid()) {
     state->selection = selection_;
   }
@@ -373,6 +378,11 @@ void WebUIReadOnlyOmnibox::ResetFormatting() {
       toolbar_ui_api::mojom::OmniboxTextColor::kOmniboxText);
 }
 
+void WebUIReadOnlyOmnibox::ResetBrowserVersion() {
+  ++browser_version_;
+  ui_version_ = 0;
+}
+
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIReadOnlyOmnibox::OnFocusChange(
     const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change) {
@@ -394,10 +404,13 @@ WebUIReadOnlyOmnibox::OnFocusChange(
 base::expected<std::monostate, mojo_base::mojom::ErrorPtr>
 WebUIReadOnlyOmnibox::OnTextInput(
     const toolbar_ui_api::mojom::OmniboxActionTextInput& text_input) {
-  OnBeforePossibleChange();
-  SetTextAndSelectedRange(text_input.text, text_input.inline_autocompletion,
-                          gfx::Range(text_input.text.size()));
-  OnAfterPossibleChange(/*allow_keyword_ui_change=*/true);
+  if (text_input.browser_version == browser_version_) {
+    OnBeforePossibleChange();
+    ui_version_ = text_input.ui_version;
+    SetTextAndSelectedRange(text_input.text, text_input.inline_autocompletion,
+                            gfx::Range(text_input.text.size()));
+    OnAfterPossibleChange(/*allow_keyword_ui_change=*/true);
+  }
   return base::ok(std::monostate());
 }
 

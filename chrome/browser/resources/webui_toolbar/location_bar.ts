@@ -43,6 +43,8 @@ export class LocationBarElement extends CrLitElement {
 
   accessor locationBarState: LocationBarState = {
     omniboxViewState: {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [],
       inlineAutocompletion: '',
       selection: null,

@@ -26,7 +26,7 @@ ${this.locationBarState.lhsChipsState.permissionDashboard ?
   </permission-dashboard>
 ` : nothing}
 <readonly-omnibox id="omnibox"
-  .omniboxViewState="${this.locationBarState.omniboxViewState}">
+  .browserOmniboxState="${this.locationBarState.omniboxViewState}">
 </readonly-omnibox>
 <content-settings-icons id="contentSettings"
     .contentSettingImageStates=

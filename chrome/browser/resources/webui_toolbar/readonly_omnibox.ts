@@ -40,16 +40,25 @@ export class ReadonlyOmniboxElement extends CrLitElement {
 
   static override get properties() {
     return {
+      // State pushed by browser.
+      browserOmniboxState: {type: Object},
+
+      // Current state on this side.
       omniboxViewState: {type: Object},
     };
   }
 
-  accessor omniboxViewState: OmniboxViewState = {
+  accessor browserOmniboxState: OmniboxViewState = {
+    browserVersion: 0,
+    uiVersion: 0,
     textPieces: [],
     inlineAutocompletion: '',
     selection: null,
     textIsUrl: false,
   };
+
+  accessor omniboxViewState: OmniboxViewState =
+      Object.assign(this.browserOmniboxState);
 
   // The portion of the text that the user entered or accepted (rather than
   // what's being merely suggested by inline autocompletion).
@@ -70,6 +79,22 @@ export class ReadonlyOmniboxElement extends CrLitElement {
       'ArrowDown',
       ' ',
     ]);
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>): void {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('browserOmniboxState')) {
+      // Updates are accepted either if browser version changes, or if the
+      // ui version matches.
+      if ((this.browserOmniboxState.browserVersion ===
+           this.omniboxViewState.browserVersion) &&
+          (this.browserOmniboxState.uiVersion !==
+           this.omniboxViewState.uiVersion)) {
+        return;
+      }
+
+      this.omniboxViewState = Object.assign(this.browserOmniboxState);
+    }
   }
 
   override firstUpdated(changedProperties: PropertyValues<this>): void {
@@ -178,11 +203,14 @@ export class ReadonlyOmniboxElement extends CrLitElement {
     this.userText = this.$.textInput.value;
 
     // Sync up the read-only view to have the right text.
+    ++this.omniboxViewState.uiVersion;
     this.omniboxViewState.inlineAutocompletion = '';
     this.updateTextPiecesFromUserText();
 
     this.browserProxy_.toolbarUIHandler.onOmniboxAction({
       textInput: {
+        uiVersion: this.omniboxViewState.uiVersion,
+        browserVersion: this.omniboxViewState.browserVersion,
         text: this.$.textInput.value,
         inlineAutocompletion: '',
         selection: this.getSelection(),
@@ -211,10 +239,13 @@ export class ReadonlyOmniboxElement extends CrLitElement {
         this.userText = inputValue.substr(0, textPortionLength);
         this.omniboxViewState.inlineAutocompletion =
             inlineAutocompletion.substr(1);
+        ++this.omniboxViewState.uiVersion;
         this.updateTextPiecesFromUserText();
 
         this.browserProxy_.toolbarUIHandler.onOmniboxAction({
           textInput: {
+            uiVersion: this.omniboxViewState.uiVersion,
+            browserVersion: this.omniboxViewState.browserVersion,
             text: this.userText,
             inlineAutocompletion: this.omniboxViewState.inlineAutocompletion,
             selection: {

@@ -104,6 +104,7 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
  private:
   void RequestUpdateWebUI();
   void ResetFormatting();
+  void ResetBrowserVersion();
 
   base::expected<std::monostate, mojo_base::mojom::ErrorPtr> OnFocusChange(
       const toolbar_ui_api::mojom::OmniboxActionFocusChange& focus_change);
@@ -117,6 +118,12 @@ class WebUIReadOnlyOmnibox : public OmniboxView {
   raw_ref<UpdatePropagator> update_propagator_;
 
   absl::flat_hash_map<std::string, ui::DomKey> key_code_cache_;
+
+  // Versions of the text on both ends. The browser end increments its version
+  // number when the entire URL is reset, due to navigation or interaction
+  // with popup; the UI end increments it on user user input.
+  uint32_t ui_version_ = 0;
+  uint32_t browser_version_ = 0;
 
   // Text and selection (or caret) we were asked to display (e.g. via
   // SetWindowTextAndCaretPos()) by either the base class or OmniboxEditModel.

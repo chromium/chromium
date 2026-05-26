@@ -51,6 +51,8 @@ suite('ReadOnlyOmniboxFocus', function() {
 
   test('Setting text with selection', async () => {
     omnibox.omniboxViewState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'Hello',
@@ -72,6 +74,8 @@ suite('ReadOnlyOmniboxFocus', function() {
 
   test('Setting multi-piece text with selection', async () => {
     omnibox.omniboxViewState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'He',
@@ -100,6 +104,8 @@ suite('ReadOnlyOmniboxFocus', function() {
   // <input>.
   test('Selection on focus out and back in', async () => {
     omnibox.omniboxViewState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'Hello',
@@ -129,6 +135,8 @@ suite('ReadOnlyOmniboxFocus', function() {
 
   test('Event forwarding via mojo', async () => {
     omnibox.omniboxViewState = {
+      browserVersion: 0,
+      uiVersion: 0,
       textPieces: [
         {
           text: 'Hello',

@@ -88,6 +88,9 @@ void WebUIReadOnlyOmniboxTest::SetUp() {
   omnibox_controller_ =
       std::make_unique<OmniboxController>(std::move(omnibox_client));
 
+  EXPECT_CALL(*omnibox_client_, GetPrefs())
+      .WillRepeatedly(testing::Return(profile_->GetPrefs()));
+
   omnibox_view_ = std::make_unique<WebUIReadOnlyOmnibox>(
       omnibox_controller_.get(), update_propagator_);
 
@@ -264,6 +267,84 @@ TEST_F(WebUIReadOnlyOmniboxTest, SSLError) {
                   IsSpan("version", OmniboxTextColor::kOmniboxText),
                   IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
   EXPECT_TRUE(mojo_state->text_is_url);
+}
+
+TEST_F(WebUIReadOnlyOmniboxTest, InputVersion) {
+  location_bar_model()->set_url(GURL("https://www.example.org/"));
+  omnibox_view_->Update();
+
+  // Send some input as if from the WebUI.
+  EXPECT_TRUE(
+      omnibox_view_
+          ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewTextInput(
+              toolbar_ui_api::mojom::OmniboxActionTextInput::New(
+                  /*text=*/u"https://en.wikiped", /*inline_completion=*/u"",
+                  /*browser_version=*/1, /*ui_version=*/10, gfx::Range(18))))
+          .has_value());
+
+  // State will reflect it, including the version.
+  auto mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  // Views omnibox would highlight in this case, but we can't render that
+  // when editable anyway, so might as well not spend the cycles.
+  EXPECT_THAT(mojo_state->text_pieces,
+              ElementsAre(IsSpan("https://en.wikiped",
+                                 OmniboxTextColor::kOmniboxText)));
+  EXPECT_EQ(1, mojo_state->browser_version);
+  EXPECT_EQ(10, mojo_state->ui_version);
+
+  // Resetting the URL should bump the browser version and send the new URL.
+  omnibox_view_->RevertAll();
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("www.example.org", OmniboxTextColor::kOmniboxText),
+                  IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
+  EXPECT_EQ(2, mojo_state->browser_version);
+  EXPECT_EQ(0, mojo_state->ui_version);
+
+  // Racing input gets ignored.
+  EXPECT_TRUE(
+      omnibox_view_
+          ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewTextInput(
+              toolbar_ui_api::mojom::OmniboxActionTextInput::New(
+                  /*text=*/u"https://en.wikipedi", /*inline_completion=*/u"",
+                  /*browser_version=*/1, /*ui_version=*/11, gfx::Range(19))))
+          .has_value());
+  mojo_state = update_propagator_.TakeState();
+  // Nothing got updated, so update_propagator_ didn't see anything.
+  EXPECT_FALSE(mojo_state);
+  // We can ask to compute the state explicitly to verify it, however.
+  mojo_state = omnibox_view_->ComputeMojoState();
+  ASSERT_TRUE(mojo_state);
+  EXPECT_THAT(
+      mojo_state->text_pieces,
+      ElementsAre(IsSpan("https://", OmniboxTextColor::kOmniboxTextDimmed),
+                  IsSpan("www.example.org", OmniboxTextColor::kOmniboxText),
+                  IsSpan("/", OmniboxTextColor::kOmniboxTextDimmed)));
+  EXPECT_EQ(2, mojo_state->browser_version);
+  EXPECT_EQ(0, mojo_state->ui_version);
+
+  // Now an update with appropriate browser version will work.
+  EXPECT_TRUE(
+      omnibox_view_
+          ->OnOmniboxAction(toolbar_ui_api::mojom::OmniboxAction::NewTextInput(
+              toolbar_ui_api::mojom::OmniboxActionTextInput::New(
+                  /*text=*/u"https://www.example.org/a",
+                  /*inline_completion=*/u"",
+                  /*browser_version=*/2, /*ui_version=*/1, gfx::Range(25))))
+          .has_value());
+  mojo_state = update_propagator_.TakeState();
+  ASSERT_TRUE(mojo_state);
+  // Views omnibox would highlight in this case, but we can't render that
+  // when editable anyway, so might as well not spend the cycles.
+  EXPECT_THAT(mojo_state->text_pieces,
+              ElementsAre(IsSpan("https://www.example.org/a",
+                                 OmniboxTextColor::kOmniboxText)));
+  EXPECT_EQ(2, mojo_state->browser_version);
+  EXPECT_EQ(1, mojo_state->ui_version);
 }
 
 }  // namespace
