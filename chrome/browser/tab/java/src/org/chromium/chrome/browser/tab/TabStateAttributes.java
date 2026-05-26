@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tab;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CancelableRunnable;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.Token;
@@ -58,6 +59,7 @@ public class TabStateAttributes extends TabWebContentsUserData {
 
     private @Nullable WebContentsObserver mWebContentsObserver;
     private boolean mPendingLowPrioritySave;
+    private @Nullable CancelableRunnable mPendingLowPrioritySaveTask;
 
     /**
      * When this number is greater than zero, all dirty observations are currently being suppressed.
@@ -154,15 +156,19 @@ public class TabStateAttributes extends TabWebContentsUserData {
                         } else {
                             if (mPendingLowPrioritySave) return;
                             mPendingLowPrioritySave = true;
+                            mPendingLowPrioritySaveTask =
+                                    new CancelableRunnable(
+                                            () -> {
+                                                assert mPendingLowPrioritySave;
+                                                if (mDirtinessState == DirtinessState.UNTIDY) {
+                                                    updateIsDirty(DirtinessState.DIRTY);
+                                                }
+                                                mPendingLowPrioritySave = false;
+                                                mPendingLowPrioritySaveTask = null;
+                                            });
                             PostTask.postDelayedTask(
                                     TaskTraits.UI_DEFAULT,
-                                    () -> {
-                                        assert mPendingLowPrioritySave;
-                                        if (mDirtinessState == DirtinessState.UNTIDY) {
-                                            updateIsDirty(DirtinessState.DIRTY);
-                                        }
-                                        mPendingLowPrioritySave = false;
-                                    },
+                                    mPendingLowPrioritySaveTask,
                                     DEFAULT_LOW_PRIORITY_SAVE_DELAY_MS);
                         }
                     }
@@ -259,6 +265,16 @@ public class TabStateAttributes extends TabWebContentsUserData {
     /** Signals that the tab state is no longer dirty (e.g. has been successfully persisted). */
     public void clearTabStateDirtiness() {
         updateIsDirty(DirtinessState.CLEAN);
+    }
+
+    @Override
+    protected void destroyInternal() {
+        // Cancel the pending low-priority save task so it stops retaining this object (and the
+        // tab/activity it transitively holds) via the static TaskRunnerImpl task queue.
+        if (mPendingLowPrioritySaveTask != null) {
+            mPendingLowPrioritySaveTask.cancel();
+            mPendingLowPrioritySaveTask = null;
+        }
     }
 
     @VisibleForTesting
