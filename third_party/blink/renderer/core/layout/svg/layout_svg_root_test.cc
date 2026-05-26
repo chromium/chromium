@@ -149,4 +149,28 @@ TEST_P(LayoutSVGRootTest, PaintLayerType) {
   EXPECT_FALSE(root.Layer()->IsSelfPaintingLayer());
 }
 
+TEST_P(LayoutSVGRootTest, VisualRectMappingWithReferenceFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <svg id='root' style='width: 300px; height: 300px; overflow: visible'>
+       <defs>
+         <filter id='shadow'>
+           <feDropShadow dx='50' dy='50' stdDeviation='0'/>
+         </filter>
+       </defs>
+       <g id='group' style='filter: url(#shadow)'>
+         <rect id='rect' x='50' y='50' width='100' height='100'/>
+       </g>
+    </svg>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  const auto& root = *To<LayoutSVGRoot>(GetLayoutObjectByElementId("root"));
+  const auto& rect = *GetLayoutObjectByElementId("rect");
+
+  auto visual_rect = SVGLayoutSupport::VisualRectInAncestorSpace(rect, root);
+
+  EXPECT_EQ(PhysicalRect(50, 50, 110, 110), visual_rect);
+}
+
 }  // namespace blink

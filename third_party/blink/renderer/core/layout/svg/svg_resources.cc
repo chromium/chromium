@@ -207,17 +207,22 @@ void SVGResources::ClearMarkers(const LayoutObject& object,
 class SVGElementResourceClient::FilterData final
     : public GarbageCollected<SVGElementResourceClient::FilterData> {
  public:
-  FilterData(FilterEffect* last_effect, SVGFilterGraphNodeMap* node_map)
-      : last_effect_(last_effect), node_map_(node_map) {}
+  FilterData(Filter* filter, SVGFilterGraphNodeMap* node_map)
+      : filter_(filter), node_map_(node_map) {}
 
-  bool HasEffects() const { return last_effect_ != nullptr; }
+  FilterEffect* LastEffect() const {
+    return filter_ ? filter_->LastEffect() : nullptr;
+  }
+
+  bool HasEffects() const { return LastEffect(); }
   bool OriginTainted() const {
-    return last_effect_ ? last_effect_->OriginTainted() : false;
+    return LastEffect() ? LastEffect()->OriginTainted() : false;
   }
   sk_sp<PaintFilter> BuildPaintFilter() {
-    return paint_filter_builder::Build(last_effect_.Get(),
-                                       kInterpolationSpaceSRGB);
+    return paint_filter_builder::Build(LastEffect(), kInterpolationSpaceSRGB);
   }
+
+  Filter* GetFilter() const { return filter_.Get(); }
 
   // Perform a finegrained invalidation of the filter chain for the
   // specified filter primitive and attribute. Returns false if no
@@ -234,18 +239,19 @@ class SVGElementResourceClient::FilterData final
 
   void Dispose() {
     node_map_ = nullptr;
-    if (last_effect_)
-      last_effect_->DisposeImageFiltersRecursive();
-    last_effect_ = nullptr;
+    if (LastEffect()) {
+      LastEffect()->DisposeImageFiltersRecursive();
+    }
+    filter_ = nullptr;
   }
 
   void Trace(Visitor* visitor) const {
-    visitor->Trace(last_effect_);
+    visitor->Trace(filter_);
     visitor->Trace(node_map_);
   }
 
  private:
-  Member<FilterEffect> last_effect_;
+  Member<Filter> filter_;
   Member<SVGFilterGraphNodeMap> node_map_;
 };
 
@@ -359,7 +365,7 @@ SVGElementResourceClient::CreateFilterDataWithNodeMap(
     return nullptr;
   paint_filter_builder::PopulateSourceGraphicImageFilters(
       filter->GetSourceGraphic(), kInterpolationSpaceSRGB);
-  return MakeGarbageCollected<FilterData>(filter->LastEffect(), node_map);
+  return MakeGarbageCollected<FilterData>(filter, node_map);
 }
 
 void SVGElementResourceClient::UpdateFilterData(
@@ -389,6 +395,8 @@ void SVGElementResourceClient::UpdateFilterData(
     }
     operations.Clear();
     if (filter_data_) {
+      FilterOperation* op = filter.Operations()[0].Get();
+      To<ReferenceFilterOperation>(*op).SetFilter(filter_data_->GetFilter());
       // If the referenced filter exists but does not contain any primitives,
       // then the rendering of the element should be disabled.
       if (filter_data_->HasEffects()) {
