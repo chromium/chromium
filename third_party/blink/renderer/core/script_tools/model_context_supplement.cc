@@ -74,11 +74,7 @@ ModelContext* ModelContextSupplement::modelContext() {
   if (!model_context_) {
     Document* document = GetSupplementable();
     CHECK(document);
-    auto* window = document->domWindow();
-    if (window) {
-      model_context_ = MakeGarbageCollected<ModelContext>(
-          *document, window->GetTaskRunner(TaskType::kUserInteraction));
-    }
+    model_context_ = MakeGarbageCollected<ModelContext>(*document);
   }
   return model_context_.Get();
 }

@@ -241,11 +241,9 @@ class ModelContext::ToolFunctionFinishedCallback
   const bool success_;
 };
 
-ModelContext::ModelContext(
-    Document& document,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+ModelContext::ModelContext(Document& document)
     : document_(document),
-      task_runner_(std::move(task_runner)),
+      task_runner_(document.GetTaskRunner(TaskType::kUserInteraction)),
       script_tool_host_remote_(document.GetExecutionContext()),
       model_context_host_remote_(document.GetExecutionContext()),
       model_context_receiver_(this, document.GetExecutionContext()) {

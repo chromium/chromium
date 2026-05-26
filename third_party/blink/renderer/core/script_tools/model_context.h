@@ -120,7 +120,7 @@ class CORE_EXPORT ModelContext : public EventTarget,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  ModelContext(Document& document, scoped_refptr<base::SingleThreadTaskRunner>);
+  ModelContext(Document& document);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(toolchange, kToolchange)
 
