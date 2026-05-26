@@ -5,8 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
 #define IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_COMMANDS_H_
 
-#import "components/plus_addresses/core/browser/plus_address_types.h"
-
 namespace autofill {
 struct AutofillAiErrorDialogContext;
 struct AutofillErrorDialogContext;
@@ -39,9 +37,6 @@ class WebState;
 // Shows the scan card save and fill suggestion bottom sheet view controller.
 - (void)showScanCardSaveAndFillBottomSheet:
     (const autofill::FormActivityParams&)params;
-
-// Shows the plus address bottom sheet view controller.
-- (void)showPlusAddressesBottomSheet;
 
 // Commands to manage save card bottomsheet.
 - (void)showSaveCardBottomSheetOnOriginWebState:(web::WebState*)originWebState;

@@ -132,9 +132,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Dismiss the card unmask authentication prompt.
 - (void)dismissCardUnmaskAuthentication;
 
-// Dismiss the plus address bottom sheet.
-- (void)dismissPlusAddressBottomSheet;
-
 // Dismiss the virtual card enrollment bottom sheet.
 - (void)dismissVirtualCardEnrollmentBottomSheet;
 

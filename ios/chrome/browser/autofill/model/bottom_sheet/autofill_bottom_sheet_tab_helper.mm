@@ -29,7 +29,6 @@
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
-#import "components/plus_addresses/core/browser/plus_address_types.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer.h"
@@ -142,12 +141,6 @@ void AutofillBottomSheetTabHelper::ShowCardUnmaskAuthenticationSelection(
   card_unmask_authentication_selection_controller_ =
       std::move(model_controller);
   [commands_handler_ showCardUnmaskAuthentication];
-}
-
-void AutofillBottomSheetTabHelper::ShowPlusAddressesBottomSheet(
-    plus_addresses::PlusAddressCallback callback) {
-  pending_plus_address_callback_ = std::move(callback);
-  [commands_handler_ showPlusAddressesBottomSheet];
 }
 
 void AutofillBottomSheetTabHelper::ShowSaveCardBottomSheet(
@@ -716,11 +709,6 @@ std::unique_ptr<autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
 AutofillBottomSheetTabHelper::
     GetCardUnmaskAuthenticationSelectionDialogController() {
   return std::move(card_unmask_authentication_selection_controller_);
-}
-
-plus_addresses::PlusAddressCallback
-AutofillBottomSheetTabHelper::GetPendingPlusAddressFillCallback() {
-  return std::move(pending_plus_address_callback_);
 }
 
 std::unique_ptr<autofill::SaveCardBottomSheetModel>

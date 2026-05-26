@@ -208,7 +208,6 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/passwords/password_suggestion/coordinator",
     "//ios/chrome/browser/permissions/ui_bundled:eg_app_support+eg2",
     "//ios/chrome/browser/phone_number/ui_bundled:eg_app_support+eg2",
-    "//ios/chrome/browser/plus_addresses/ui:eg_app_support+eg2",
     "//ios/chrome/browser/policy/model:eg_app_support+eg2",
     "//ios/chrome/browser/popup_menu/coordinator",
     "//ios/chrome/browser/popup_menu/public",

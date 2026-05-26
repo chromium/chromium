@@ -1,6 +1,0 @@
-include_rules = [
-  # keep-sorted start
-  "+components/resources"
-  "+ios/chrome/browser/shared/ui/symbols/symbols.h",
-  # keep-sorted end
-]

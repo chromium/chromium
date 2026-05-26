@@ -223,8 +223,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/phone_number/ui_bundled:coordinator",
     "//ios/chrome/browser/picture_in_picture/coordinator",
     "//ios/chrome/browser/picture_in_picture/public",
-    "//ios/chrome/browser/plus_addresses/coordinator",
-    "//ios/chrome/browser/plus_addresses/ui",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/popup_menu/coordinator",
     "//ios/chrome/browser/prefs/model",

@@ -14,7 +14,6 @@
 #import "components/autofill/core/browser/foundations/autofill_manager.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/password_manager/ios/password_generation_provider.h"
-#import "components/plus_addresses/core/browser/plus_address_types.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/save_card_bottom_sheet_model.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/virtual_card_enrollment_callbacks.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -78,12 +77,6 @@ class AutofillBottomSheetTabHelper
       std::unique_ptr<
           autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
           model_controller);
-
-  // Shows the plus address bottom sheet, taken in response to choosing a
-  // `kCreateNewPlusAddress` autofill suggestion. Also stores `callback` for
-  // if/when the UI completes successfully.
-  void ShowPlusAddressesBottomSheet(
-      plus_addresses::PlusAddressCallback callback);
 
   // Send a command to show save card bottomsheet.
   void ShowSaveCardBottomSheet(
@@ -175,9 +168,6 @@ class AutofillBottomSheetTabHelper
   std::unique_ptr<
       autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
   GetCardUnmaskAuthenticationSelectionDialogController();
-
-  // Used to get the callback to be run on completion of the plus_address UI.
-  plus_addresses::PlusAddressCallback GetPendingPlusAddressFillCallback();
 
   // Returns the model for save card bottomsheet. The caller takes ownership and
   // subsequent calls will return nullptr until another instance of the
@@ -295,10 +285,6 @@ class AutofillBottomSheetTabHelper
   std::unique_ptr<
       autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
       card_unmask_authentication_selection_controller_;
-
-  // A callback to be run on completion of the plus address bottom sheet UI
-  // flow.
-  plus_addresses::PlusAddressCallback pending_plus_address_callback_;
 
   // Model providing resources and callbacks for save card bottomsheet. This
   // will be reset once GetSaveCardBottomSheetModel() is called.
