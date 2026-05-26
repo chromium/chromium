@@ -443,6 +443,7 @@ constexpr CGFloat kThresholdForCompleteVisibility = 0.3;
 // Sets up the header view.
 - (void)setUpHeader {
   _headerView = [[AssistantAIMHeaderView alloc] init];
+  _headerView.actionHandler = _mutator;
   _headerView.translatesAutoresizingMaskIntoConstraints = NO;
   // TODO(crbug.com/492442806): Update title.
   [_headerView setTitle:@"Commuter Bike"];
