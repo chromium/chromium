@@ -173,6 +173,9 @@ class MultiContentsView
 
   void SetShouldShowTopSeparator(bool should_show);
   void SetSplitViewInsets(const gfx::Insets& insets);
+  const gfx::Insets& split_view_insets_for_testing() const {
+    return split_view_insets_;
+  }
 
   void set_min_contents_size_for_testing(int size) {
     min_contents_size_for_testing_ = std::make_optional(size);
@@ -308,8 +311,8 @@ class MultiContentsView
   // Nullopt if not currently resizing.
   std::optional<double> initial_start_width_on_resize_;
 
-  // Insets of the start and end contents view when in split view
-  gfx::Insets contents_view_insets_;
+  // Insets of the start and end contents view when in split view.
+  gfx::Insets split_view_insets_;
 
   bool active_contents_view_highlighted_ = false;
 

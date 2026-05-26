@@ -198,6 +198,27 @@ class BrowserViewTabbedLayoutImplUiTest : public InteractiveBrowserTest {
                       SetTemporaryValue(kSubregion, el->GetScreenBounds());
                     })
             .AddDescriptionPrefix("Get element bounds"),
+        // For the purposes of handling overlap between the main region and the
+        // vertical tab strip, when screenshotting the main region, do not
+        // include that overlap. This should be largely solved later when we no
+        // longer slide the main background under the tabstrip.
+        IfView(
+            kBrowserViewElementId,
+            [spec](const BrowserView* browser_view) {
+              return spec == BrowserViewLayoutViews::
+                                 kMainBackgroundRegionElementId &&
+                     browser_view->ShouldDrawVerticalTabStrip();
+            },
+            Then(WithElement(
+                kTabStripRegionElementId,
+                [=, this](ui::TrackedElement* el) {
+                  gfx::Rect rect = GetTemporaryValue(kSubregion);
+                  const gfx::Rect tab_strip_bounds = el->GetScreenBounds();
+                  rect.Inset(gfx::Insets::TLBR(
+                      0, std::max(0, tab_strip_bounds.right() - rect.x()), 0,
+                      0));
+                  SetTemporaryValue(kSubregion, rect);
+                }))),
         WithView(
             kBrowserViewElementId,
             [=, this,

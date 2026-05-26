@@ -214,8 +214,7 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
     return;
   }
 
-  // Do any adjustments required before layout takes place.
-  DoPreLayoutVisualAdjustments(params);
+  DoPreLayoutComputations(params);
 
   // Lay out the browser view itself.
   auto layout = CalculateProposedLayout(params);
@@ -288,6 +287,8 @@ void BrowserViewLayoutImpl::Layout(views::View* host) {
 
   // Update bubbles (like the find bar).
   UpdateBubbles();
+
+  DoPostLayoutCleanup();
 }
 
 void BrowserViewLayoutImpl::ConfigureTopContainerBackground(
@@ -306,11 +307,13 @@ void BrowserViewLayoutImpl::ConfigureTopContainerBackground(
   }
 }
 
-void BrowserViewLayoutImpl::DoPreLayoutVisualAdjustments(
+void BrowserViewLayoutImpl::DoPreLayoutComputations(
     const BrowserLayoutParams& params) {}
 
 void BrowserViewLayoutImpl::DoPostLayoutVisualAdjustments(
     const BrowserLayoutParams& params) {}
+
+void BrowserViewLayoutImpl::DoPostLayoutCleanup() {}
 
 // Dialog positioning.
 

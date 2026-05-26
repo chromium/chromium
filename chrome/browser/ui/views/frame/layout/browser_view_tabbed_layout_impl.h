@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_LAYOUT_BROWSER_VIEW_TABBED_LAYOUT_IMPL_H_
 
+#include <memory>
 #include <utility>
 
 #include "chrome/browser/ui/animation/browser_animation_types.h"
@@ -41,16 +42,25 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   void ConfigureTopContainerBackground(
       const BrowserLayoutParams& params,
       CustomCornersBackground* background) override;
-  void DoPreLayoutVisualAdjustments(const BrowserLayoutParams& params) override;
+  void DoPreLayoutComputations(const BrowserLayoutParams& params) override;
   void DoPostLayoutVisualAdjustments(
       const BrowserLayoutParams& params) override;
+  void DoPostLayoutCleanup() override;
 
  private:
-  // Does the works of laying out the top container.
-  gfx::Rect CalculateTopContainerLayoutImpl(ProposedLayout& layout,
-                                            BrowserLayoutParams params,
-                                            bool needs_exclusion,
-                                            bool suppress_top_separator) const;
+  struct HorizontalLayout;
+  struct SeparatorInfo;
+  struct TransientLayoutData;
+  struct VerticalTabStripAnimation;
+
+  enum class TabStripType { kNone, kVertical, kHorizontal };
+
+  enum class VerticalTabStripCollapsedState {
+    kExpanded,
+    kCollapsing,
+    kCollapsed,
+    kExpanding
+  };
 
   // Gets the amount of padding to place between
   int GetMinimumGrabHandlePadding() const;
@@ -63,84 +73,6 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   std::pair<gfx::Size, gfx::Size> GetMinimumTabStripSize(
       const BrowserLayoutParams& params) const;
 
-  // Represents the state of the vertical tabstrip.
-  enum class VerticalTabStripCollapsedState {
-    kExpanded,
-    kCollapsing,
-    kCollapsed,
-    kExpanding
-  };
-
-  // Allocate space across the vertical tabstrip, toolbar, and side panels,
-  // possibly modifying `params` to allocate grab handle space, and
-  // determining how much space to give to each of the left-size elements.
-  struct HorizontalLayout {
-    VerticalTabStripCollapsedState vertical_tab_strip_collapsed_state =
-        VerticalTabStripCollapsedState::kExpanded;
-    int vertical_tab_strip_width = 0;
-    int side_panel_width = 0;
-    int min_content_width = 0;
-
-    // The padding placed around a number of UI elements when the side panel is
-    // present.
-    int side_panel_padding = 0;
-
-    // In some cases, even when there is a side panel, the top container
-    // (containing the toolbar, etc.) are laid out at the top of the screen,
-    // above the side panels - this is usually due to other layout
-    // constraints.
-    bool force_top_container_to_top = false;
-
-    bool has_side_panel() const { return side_panel_width > 0; }
-  };
-  HorizontalLayout CalculateHorizontalLayout(BrowserLayoutParams& params) const;
-
-  // Describes how to render the top of the vertical tab strip.
-  struct VerticalTabStripAnimation {
-    // Is the vertical tab strip animating?
-    BrowserAnimationMotion current_motion;
-    // The y-value of the top of the tab strip.
-    int top_offset = 0;
-    // The relative size of the top corner.
-    double top_corner = 0.0;
-    // The relative size of the bottom corner.
-    double bottom_corner = 0.0;
-    // How much of the expand-on-hover is shown.
-    double expand_on_hover = 0.0;
-    // How much the tab strip is expanded, not on-hover.
-    double tab_strip_width = 0.0;
-  };
-  VerticalTabStripAnimation CalculateVerticalTabStripAnimation(
-      const BrowserLayoutParams& params,
-      WindowState window_state) const;
-
-  // Returns the type of tabstrip present.
-  enum class TabStripType { kNone, kVertical, kHorizontal };
-  TabStripType GetTabStripType() const;
-
-  // Returns whether the shadow overlay (with its attendant margin) around the
-  // main area is visible. This is usually tied to the presence of the
-  // toolbar-height side panel, but may not be in some browser states.
-  bool ShadowOverlayVisible() const;
-
-  // Returns the current state of the vertical tabstrip.
-  VerticalTabStripCollapsedState GetVerticalTabStripCollapsedState() const;
-
-  // Returns where the vertical tabstrip starts vertically in collapsed mode.
-  // This is relative to the top of the visual client area of `params`, and will
-  // be zero if the vertical tabstrip should go all the way to the top of the
-  // visual area.
-  int GetCollapsedVerticalTabStripRelativeTop(
-      const BrowserLayoutParams& params) const;
-
-  // Returns the type of top separator.
-  enum class TopSeparatorType {
-    kNone,
-    kTopContainer,
-    kMultiContents
-  };
-  TopSeparatorType GetTopSeparatorType() const;
-
   // Returns the leading margin for the horizontal tab strip region.
   int GetHorizontalTabStripLeadingMargin(
       const BrowserLayoutParams& params) const;
@@ -150,6 +82,21 @@ class BrowserViewTabbedLayoutImpl : public BrowserViewLayoutImpl {
   // https://crbug.com/436278099 for more information on the Pixel Canvas
   // project which aims to permanently avoid this issue.
   bool AvoidCrackingForFractionalDisplay() const;
+
+  // Returns the type of tabstrip present.
+  TabStripType GetTabStripType() const;
+
+  // Returns the current state of the vertical tabstrip.
+  VerticalTabStripCollapsedState GetVerticalTabStripCollapsedState() const;
+
+  // These helper functions are called during `DoPreLayoutCalculations()` to set
+  // up `layout_data_`.
+  HorizontalLayout CalculateHorizontalLayout(BrowserLayoutParams& params) const;
+  VerticalTabStripAnimation CalculateVerticalTabStripAnimation();
+  int GetCollapsedVerticalTabStripRelativeTop() const;
+  SeparatorInfo CalculateSeparatorInfo() const;
+
+  std::unique_ptr<TransientLayoutData> layout_data_;
 
   // Ensure that the tab strip width changes monotonically when expanding.
   mutable int last_vertical_tab_strip_width_ = 0;

@@ -627,7 +627,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
 
   MultiContentsView* multi_contents_view =
       browser()->GetBrowserView().multi_contents_view();
-  EXPECT_EQ(multi_contents_view->width(),
+  EXPECT_EQ(multi_contents_view->width() -
+                multi_contents_view->split_view_insets_for_testing().width(),
             BrowserViewLayout::kContentsContainerMinimumWidth +
                 views::Separator::kThickness - 1);
 }

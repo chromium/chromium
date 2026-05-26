@@ -71,10 +71,10 @@ MultiContentsView::MultiContentsView(
     std::unique_ptr<MultiContentsViewDelegate> delegate)
     : browser_view_(browser_view),
       delegate_(std::move(delegate)),
-      contents_view_insets_(gfx::Insets::TLBR(0,
-                                              kSplitViewContentInset,
-                                              kSplitViewContentInset,
-                                              kSplitViewContentInset)) {
+      split_view_insets_(gfx::Insets::TLBR(0,
+                                           kSplitViewContentInset,
+                                           kSplitViewContentInset,
+                                           kSplitViewContentInset)) {
   SetLayoutManager(std::make_unique<views::DelegatingLayoutManager>(this));
   SetProperty(views::kElementIdentifierKey, kMultiContentsViewElementId);
 
@@ -519,19 +519,19 @@ views::ProposedLayout MultiContentsView::CalculateProposedLayout(
 
   if (IsInSplitView()) {
     if (GetSplitLayout() == split_tabs::SplitTabLayout::kStacked) {
-      start_rect.Inset(gfx::Insets::TLBR(contents_view_insets_.top(),
-                                         contents_view_insets_.left(), 0,
-                                         contents_view_insets_.right()));
-      end_rect.Inset(gfx::Insets::TLBR(0, contents_view_insets_.left(),
-                                       contents_view_insets_.bottom(),
-                                       contents_view_insets_.right()));
+      start_rect.Inset(gfx::Insets::TLBR(split_view_insets_.top(),
+                                         split_view_insets_.left(), 0,
+                                         split_view_insets_.right()));
+      end_rect.Inset(gfx::Insets::TLBR(0, split_view_insets_.left(),
+                                       split_view_insets_.bottom(),
+                                       split_view_insets_.right()));
     } else {
-      start_rect.Inset(gfx::Insets::TLBR(contents_view_insets_.top(),
-                                         contents_view_insets_.left(),
-                                         contents_view_insets_.bottom(), 0));
-      end_rect.Inset(gfx::Insets::TLBR(contents_view_insets_.top(), 0,
-                                       contents_view_insets_.bottom(),
-                                       contents_view_insets_.right()));
+      start_rect.Inset(gfx::Insets::TLBR(split_view_insets_.top(),
+                                         split_view_insets_.left(),
+                                         split_view_insets_.bottom(), 0));
+      end_rect.Inset(gfx::Insets::TLBR(split_view_insets_.top(), 0,
+                                       split_view_insets_.bottom(),
+                                       split_view_insets_.right()));
     }
   }
 
@@ -836,10 +836,10 @@ void MultiContentsView::SetShouldShowTopSeparator(bool should_show) {
 }
 
 void MultiContentsView::SetSplitViewInsets(const gfx::Insets& insets) {
-  if (contents_view_insets_ == insets) {
+  if (split_view_insets_ == insets) {
     return;
   }
-  contents_view_insets_ = insets;
+  split_view_insets_ = insets;
   // This can be called during BrowserView layout, so protect against creating a
   // layout loop.
   InvalidateLayout(/*avoid_propagate_during_layout=*/true);
