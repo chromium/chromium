@@ -106,6 +106,8 @@ class SqlBackendImplTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
+  void RunSparseDataExceedsMaxFileSizeTest(bool doom_entry);
+
   std::unique_ptr<SqlBackendImpl> CreateBackend() {
     return std::make_unique<SqlBackendImpl>(
         temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE);
@@ -3373,6 +3375,110 @@ TEST_F(SqlBackendImplTest, AsyncDoomEntryAndFlushBuffer) {
   disk_cache::EntryResult open_result = cb_open.GetResult(
       backend->OpenEntry(kKey, net::HIGHEST, cb_open.callback()));
   EXPECT_THAT(open_result.net_error(), IsError(net::ERR_FAILED));
+}
+
+void SqlBackendImplTest::RunSparseDataExceedsMaxFileSizeTest(bool doom_entry) {
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+  backend->EnableStrictCorruptionCheckForTesting();
+  const std::string kKey = "my-key";
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  if (doom_entry) {
+    entry->Doom();
+  }
+
+  const int chunk_size = 32 * 1024;
+  const int num_chunks = backend->GetSqlStoreForTest()->MaxSize() / chunk_size;
+  auto buf = base::MakeRefCounted<net::IOBufferWithSize>(chunk_size);
+  std::ranges::fill(buf->span(), 'a');
+
+  base::HistogramTester histogram_tester;
+
+  for (int i = 0; i < num_chunks; ++i) {
+    net::TestCompletionCallback cb;
+    EXPECT_EQ(cb.GetResult(entry->WriteSparseData(i * chunk_size, buf.get(),
+                                                  chunk_size, cb.callback())),
+              chunk_size);
+    backend->RunUntilAllTasksCompleteForTest();
+  }
+
+  // Truncating older sparse data prevents a single entry from exceeding the
+  // cache size limit and causing excessive evictions on every write. Ensure
+  // eviction was not triggered.
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.RunEviction.ScannedEntriesCount.Success", 0);
+
+  // Check if the first chunk is truncated.
+  TestRangeResultCompletionCallback cb_range;
+  EXPECT_EQ(cb_range
+                .GetResult(entry->GetAvailableRange(0, chunk_size,
+                                                    cb_range.callback()))
+                .available_len,
+            0);
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, SparseDataExceedsMaxFileSize) {
+  RunSparseDataExceedsMaxFileSizeTest(/*doom_entry=*/false);
+}
+
+TEST_F(SqlBackendImplTest, SparseDataExceedsMaxFileSizeDoomedEntry) {
+  RunSparseDataExceedsMaxFileSizeTest(/*doom_entry=*/true);
+}
+
+TEST_F(SqlBackendImplTest, SparseDataExceedsMaxFileSizeBackwards) {
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+  backend->EnableStrictCorruptionCheckForTesting();
+  const std::string kKey = "my-key";
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+
+  const int chunk_size = 32 * 1024;
+  const int num_chunks = backend->GetSqlStoreForTest()->MaxSize() / chunk_size;
+  auto buf = base::MakeRefCounted<net::IOBufferWithSize>(chunk_size);
+  std::ranges::fill(buf->span(), 'a');
+
+  base::HistogramTester histogram_tester;
+
+  // Write chunks in reverse order.
+  for (int i = num_chunks - 1; i >= 0; --i) {
+    net::TestCompletionCallback cb;
+    EXPECT_EQ(cb.GetResult(entry->WriteSparseData(i * chunk_size, buf.get(),
+                                                  chunk_size, cb.callback())),
+              chunk_size);
+    backend->RunUntilAllTasksCompleteForTest();
+  }
+
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.RunEviction.ScannedEntriesCount.Success", 0);
+
+  // The truncation logic trims data before and after the current write when
+  // the size limit is exceeded. Since we wrote backwards, the last written
+  // chunk was at offset 0. Thus, the previously written chunks at higher
+  // offsets were truncated to keep the total size within the limit.
+  TestRangeResultCompletionCallback cb_range;
+  EXPECT_EQ(
+      cb_range
+          .GetResult(entry->GetAvailableRange((num_chunks - 1) * chunk_size,
+                                              chunk_size, cb_range.callback()))
+          .available_len,
+      0);
+
+  entry->Close();
 }
 
 }  // namespace

@@ -1481,6 +1481,9 @@ ResIdOrErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
     EntryWriteBuffer buffer,
     bool truncate,
     bool doomed_new_entry,
+    bool sparse_write,
+    int64_t header_size,
+    int64_t max_sparse_data_size,
     base::TimeTicks start_time) {
   const base::TimeDelta posting_delay = base::TimeTicks::Now() - start_time;
   TRACE_EVENT_BEGIN1("disk_cache", "SqlBackend.WriteEntryData", "data",
@@ -1507,7 +1510,8 @@ ResIdOrErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
   bool corruption_detected = false;
   auto result = WriteEntryDataInternal(
       key, res_id_or_last_used_time, old_body_end, std::move(buffer), truncate,
-      doomed_new_entry, corruption_detected);
+      doomed_new_entry, sparse_write, header_size, max_sparse_data_size,
+      corruption_detected);
   RecordTimeAndErrorResultHistogram(
       "WriteEntryData", posting_delay, timer.Elapsed(),
       result.has_value() ? Error::kOk : result.error(), corruption_detected);
@@ -1522,6 +1526,40 @@ ResIdOrErrorAndStoreStatus SqlPersistentStore::Backend::WriteEntryData(
   return ResIdOrErrorAndStoreStatus(result, store_status_);
 }
 
+base::expected<SqlPersistentStore::Backend::UpdateResourceResult,
+               SqlPersistentStore::Error>
+SqlPersistentStore::Backend::UpdateResourceForWriteEntry(
+    ResId res_id,
+    int64_t body_end_delta,
+    int64_t total_size_delta,
+    int64_t expected_new_body_end,
+    bool& corruption_detected) {
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, GetQuery(Query::kWriteEntryData_UpdateResource)));
+  statement.BindInt64(0, body_end_delta);
+  statement.BindInt64(1, total_size_delta);
+  statement.BindInt64(2, res_id.value());
+  if (!statement.Step()) {
+    return base::unexpected(Error::kNotFound);
+  }
+
+  // Consistency check: The `RETURNING` clause gives us the `body_end` value
+  // after the update. If this doesn't match our calculated
+  // `expected_new_body_end`, it means the `body_end` in the database was not
+  // the `old_body_end` we expected. This indicates data corruption, so we
+  // return an error.
+  const int64_t returned_new_body_end = statement.ColumnInt64(0);
+  if (returned_new_body_end != expected_new_body_end) {
+    corruption_detected = true;
+    return base::unexpected(Error::kBodyEndMismatch);
+  }
+
+  return UpdateResourceResult{
+      .doomed = statement.ColumnBool(1),
+      .bytes_usage = statement.ColumnInt64(2),
+  };
+}
+
 ResIdOrError SqlPersistentStore::Backend::WriteEntryDataInternal(
     const CacheEntryKey& key,
     const ResIdOrTime& res_id_or_last_used_time,
@@ -1529,6 +1567,9 @@ ResIdOrError SqlPersistentStore::Backend::WriteEntryDataInternal(
     EntryWriteBuffer buffer,
     bool truncate,
     bool doomed_new_entry,
+    bool sparse_write,
+    int64_t header_size,
+    int64_t max_sparse_data_size,
     bool& corruption_detected) {
   if (auto db_error = CheckDatabaseStatus(); db_error != Error::kOk) {
     return base::unexpected(db_error);
@@ -1574,6 +1615,12 @@ ResIdOrError SqlPersistentStore::Backend::WriteEntryDataInternal(
     res_id = std::get<ResId>(res_id_or_last_used_time);
   }
 
+  const int64_t current_buffer_offset = buffer.offset;
+  int64_t current_buffer_end = 0;
+  if (!base::CheckAdd<int64_t>(current_buffer_offset, buffer.size)
+           .AssignIfValid(&current_buffer_end)) {
+    return base::unexpected(SqlPersistentStore::Error::kInvalidArgument);
+  }
   int64_t body_end_delta = 0;
   int64_t new_body_end = 0;
 
@@ -1603,30 +1650,56 @@ ResIdOrError SqlPersistentStore::Backend::WriteEntryDataInternal(
   } else if (body_end_delta || total_size_delta) {
     // Update the entry's metadata in the `resources` table if the body size
     // changed or if the total size of blobs changed.
-    sql::Statement statement(db_.GetCachedStatement(
-        SQL_FROM_HERE, GetQuery(Query::kWriteEntryData_UpdateResource)));
-    statement.BindInt64(0, body_end_delta);
-    statement.BindInt64(1, total_size_delta);
-    statement.BindInt64(2, res_id.value());
-    if (statement.Step()) {
-      // Consistency check: The `RETURNING` clause gives us the `body_end` value
-      // after the update. If this doesn't match our calculated `new_body_end`,
-      // it means the `body_end` in the database was not the `old_body_end` we
-      // expected. This indicates data corruption, so we return an error.
-      const int64_t returned_new_body_end = statement.ColumnInt64(0);
-      if (returned_new_body_end != new_body_end) {
-        corruption_detected = true;
-        return base::unexpected(Error::kBodyEndMismatch);
+    auto update_result =
+        UpdateResourceForWriteEntry(res_id, body_end_delta, total_size_delta,
+                                    new_body_end, corruption_detected);
+    if (!update_result.has_value()) {
+      return base::unexpected(update_result.error());
+    }
+
+    // If the entry is doomed, its size is no longer tracked in the cache's
+    // total size, so we don't update the store status.
+    if (update_result->doomed) {
+      total_size_delta = 0;
+    }
+
+    // Truncate older sparse data if the total sparse size exceeds the limit.
+    // This prevents a single entry from growing indefinitely and triggering
+    // excessive cache evictions.
+    if (sparse_write && !is_new_entry) {
+      const int64_t total_sparse_data_size =
+          update_result->bytes_usage - key.string().size() - header_size;
+      if (total_sparse_data_size > max_sparse_data_size) {
+        base::CheckedNumeric<int64_t> checked_trim_delta = 0;
+        // Trim data before and after the current write range.
+        if (Error result = TrimOverlappingBlobs(
+                key, res_id, /*offset=*/0, /*end=*/current_buffer_offset,
+                /*truncate=*/false, checked_trim_delta, corruption_detected);
+            result != Error::kOk) {
+          return base::unexpected(result);
+        }
+        if (Error result = TrimOverlappingBlobs(
+                key, res_id, /*offset=*/current_buffer_end,
+                /*end=*/std::numeric_limits<int64_t>::max(),
+                /*truncate=*/false, checked_trim_delta, corruption_detected);
+            result != Error::kOk) {
+          return base::unexpected(result);
+        }
+        // Update the entry's metadata in the `resources` table if the body size
+        // changed or if the total size of blobs changed.
+        if (checked_trim_delta.ValueOrDefault(0) != 0) {
+          auto trim_update_result = UpdateResourceForWriteEntry(
+              res_id, /*body_end_delta=*/0, checked_trim_delta.ValueOrDie(),
+              new_body_end, corruption_detected);
+          if (!trim_update_result.has_value()) {
+            return base::unexpected(trim_update_result.error());
+          }
+          if (!trim_update_result->doomed) {
+            total_size_delta +=
+                static_cast<int64_t>(checked_trim_delta.ValueOrDie());
+          }
+        }
       }
-      // If the entry is doomed, its size is no longer tracked in the cache's
-      // total size, so we don't update the store status.
-      const bool doomed = statement.ColumnBool(1);
-      if (doomed) {
-        total_size_delta = 0;
-      }
-    } else {
-      // If no rows were updated, it means the entry was not found.
-      return base::unexpected(Error::kNotFound);
     }
   }
 

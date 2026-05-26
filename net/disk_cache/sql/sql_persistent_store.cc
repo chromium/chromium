@@ -261,9 +261,14 @@ void SqlPersistentStore::WriteEntryData(
     EntryWriteBuffer buffer,
     bool truncate,
     bool doomed_new_entry,
+    bool sparse_write,
+    int64_t header_size,
     ResIdOrErrorCallback callback) {
+  const int64_t max_sparse_data_size =
+      max_bytes_ / kSqlBackendMaxSparseDataRatioDenominator;
   GetShard(key).WriteEntryData(key, res_id_or_last_used_time, old_body_end,
                                std::move(buffer), truncate, doomed_new_entry,
+                               sparse_write, header_size, max_sparse_data_size,
                                std::move(callback));
 }
 

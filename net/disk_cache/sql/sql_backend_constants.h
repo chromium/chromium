@@ -19,6 +19,12 @@ namespace disk_cache {
 // Maximum fraction of the cache that one entry can consume.
 inline constexpr int kSqlBackendMaxFileRatioDenominator = 8;
 
+// This constant defines the denominator for the maximum fraction of the cache
+// that a single entry's sparse data can consume. For example, if this value is
+// 10, a single entry's sparse data can consume at most 1/10th of the total
+// cache size.
+inline constexpr int kSqlBackendMaxSparseDataRatioDenominator = 10;
+
 // A maximum file size when the overall cache size is very small, meaning there
 // is very little free disk space.
 inline constexpr int64_t kSqlBackendMinFileSizeLimit = 5 * 1024 * 1024;

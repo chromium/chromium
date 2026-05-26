@@ -232,10 +232,14 @@ void SqlPersistentStore::BackendShard::WriteEntryData(
     EntryWriteBuffer buffer,
     bool truncate,
     bool doomed_new_entry,
+    bool sparse_write,
+    int64_t header_size,
+    int64_t max_sparse_data_size,
     ResIdOrErrorCallback callback) {
   backend_.AsyncCall(&SqlPersistentStore::Backend::WriteEntryData)
       .WithArgs(key, res_id_or_last_used_time, old_body_end, std::move(buffer),
-                truncate, doomed_new_entry, base::TimeTicks::Now())
+                truncate, doomed_new_entry, sparse_write, header_size,
+                max_sparse_data_size, base::TimeTicks::Now())
       .Then(WrapCallbackWithStoreStatusAndIndexUpdate(
           std::move(callback), key,
           /*is_new_entry=*/
