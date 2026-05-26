@@ -154,9 +154,6 @@
   <message name="IDS_CHECKING_FOR_UPDATES" desc="Notification for checking for update">
     Checking for updates
   </message>
-  <message name="IDS_QUICK_FIX_RELEASE_BUILD" desc="Quick Fix build which is ChromeOS release build displayed string instead of canary/dev/beta.">
-    QuickFix
-  </message>
   <message name="IDS_UPDATE_VERIFYING" desc="Message that the system is verifying an update">
     Verifying...
   </message>
@@ -444,12 +441,6 @@
   <message name="IDS_DOWNLOADING_TIME_LEFT_SMALL" desc="The status text for downloading estimated time left, when estimated time is less than one minute">
     Less than 1 minute left
   </message>
-  <message name="IDS_DRIVE_OFFLINE_NOTIFICATION_MESSAGE" desc="Message shown in notification when Google Drive offline mode is automatically enabled.">
-    Your Docs, Sheets, Slides, and Drawings files are being synced. Open the Google Drive app to access them online or offline.
-  </message>
-  <message name="IDS_DRIVE_OFFLINE_NOTIFICATION_BUTTON" desc="Label on button in notification when Google Drive offline mode is automatically enabled.">
-    Learn More
-  </message>
   <message name="IDS_UPDATE_CANCEL" desc="Message telling to press Escape to cancel update on a non-official build">
     Press ESCAPE to skip (Non-official builds only).
   </message>
@@ -500,9 +491,6 @@
   </message>
   <message name="IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME" desc="OOBE network screen list entry that opens 'Add New WiFi Network' dialog">
     Add other WiFi network
-  </message>
-  <message name="IDS_AUTOSTART_WARNING_TITLE" desc="Title of the kiosk autostart screen">
-    Auto-launch permission requested
   </message>
   <message name="IDS_RESET_SCREEN_TITLE" desc="Title of the reset screen">
     Factory reset
@@ -575,9 +563,6 @@
   </message>
   <message name="IDS_HID_DETECTION_BLUETOOTH_PAIRING_CODE_EXPLANATION" desc="Explanation to the user on how to type in the PIN while connecting to a bluetooth keyboard on the HID detection screen.">
     Type the bluetooth pairing code then press Return or Enter.
-  </message>
-  <message name="IDS_HID_DETECTION_DEFAULT_KEYBOARD_NAME" desc="Default keyboard name used at HID-detection labels and messages at HID-detection OOBE screen.">
-    Unknown keyboard
   </message>
   <message name="IDS_HID_DETECTION_BLUETOOTH_ENTER_KEY" meaning="Label on the button representing Enter key at the HID detection screen.">
     enter
@@ -981,12 +966,6 @@
     Enrolling in Demo Mode
   </message>
   <!-- Demo setup flow errors -->
-  <message name="IDS_DEMO_SETUP_OFFLINE_POLICY_ERROR" desc="Error message shown on demo setup screen when loading or parsing offline policy failed.">
-    Could not read offline demo mode policy.
-  </message>
-  <message name="IDS_DEMO_SETUP_OFFLINE_STORE_ERROR" desc="Error message shown on demo setup screen when loading or parsing offline policy failed.">
-    Failed to install offline policy on the device.
-  </message>
   <message name="IDS_DEMO_SETUP_OFFLINE_UNAVAILABLE_ERROR" desc="Error message shown on demo setup screen when offline demo mode is not available on the device.">
     This device cannot be set up in offline demo mode.
   </message>
@@ -1321,13 +1300,6 @@
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_DECLINE2" desc="Alternate label on the button that closes the dialog while not agreeing to sync.">
     No thanks
   </message>
-  <!-- Strings for OS sync consent screen options -->
-  <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_TEXT" desc="Text of the disclaimer to the toggle of the Apps item in sync screen option." >
-    Once turned on, your apps will be available on any ChromeOS devices after you sign in with your Google Account. Web apps installed from Chrome browser will be synced even if browser sync is turned off.
-  </message>
-   <message name="IDS_LOGIN_OS_SYNC_CONSENT_SCREEN_TOOLTIP_ADDITIONAL_TEXT" desc="Additional text of the disclaimer to the toggle of the Apps item in sync screen option.">
-    If you also chose to send diagnostic and usage data in the previous step, this data will be collected for installed apps.
-  </message>
   <!-- Strings for categories selection screen-->
   <message name="IDS_LOGIN_CATEGORIES_SCREEN_LOADING" desc="Message shown while the categories are being fetched for the server.">
     Please wait...
@@ -1476,9 +1448,6 @@
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SUBTITLE_WITH_DEVICE_NAME" desc="The sub-title of the marketing opt in screen which will also include the name of the user's device.">
     You are ready to start using your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>.
   </message>
-  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_GET_CHROMEBOOK_UPDATES" desc="A lablel next to the checkbox that controls user subscription to marketing updates and useful information about the user's Chrome device.">
-    Tips and updates on <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
-  </message>
   <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_GET_CHROMEBOOK_UPDATES_SIGN_ME_UP" desc="A lablel next to the checkbox that controls user subscription to marketing updates and useful information about the user's Chrome device.">
     Sign me up
   </message>
@@ -1586,9 +1555,6 @@
   </message>
   <message name="IDS_LOGIN_QUICK_START_CONFIRM_ACCOUNT_SUBTITLE" desc="A subtitle used on OOBE's Quick Start flow when the user must confirm (on the source device) which Google account they wish to set up on the ChromeOS device.">
     Follow the instructions on your phone
-  </message>
-  <message name="IDS_LOGIN_MARKETING_OPT_IN_SCREEN_SWIPE_FROM_SHELF_LABEL" desc="The label shown in ChromeOS system shelf above a drag handle UI on the last dialog in the set of screens displayed to the user on the first login to the ChromeOS device. The label informs the user that swiping up from the shelf will start the session.">
-    Swipe up to get started
   </message>
   <message name="IDS_MARKETING_OPT_IN_ACCESSIBILITY_BUTTON_LABEL" desc="The label of the button which appears at the bottom left of the last OOBE dialog shown to the user on the first login. Clicking the button will show a screen that allows the user to change certain accessibility settings.">
     Accessibility
@@ -2087,9 +2053,6 @@
   <message name="IDS_ENABLE_DEBUGGING_CONFIRM_PASSWORD_LABEL" desc="Text for root password entry field label from enable debugging features dialog.">
    confirm password
   </message>
-  <message name="IDS_ENABLE_DEBUGGING_WAIT_MESSAGE" desc="Confirmation message in dialog for enabling debugging features.">
-    Please wait...
-  </message>
   <message name="IDS_ENABLE_DEBUGGING_EMPTY_ROOT_PASSWORD_LABEL" desc="Text for root password entry field label from enable debugging features dialog.">
     leave empty if you want to set the root password to the default test image value
   </message>
@@ -2270,14 +2233,6 @@
   <message name="IDS_CONTROLLED_SETTING_DEMO_SESSION" desc="Text displayed in the controlled settings bubble when a setting's value is enforced by demo session.">
     This setting can't be changed in a demo session.
   </message>
-  <message name="IDS_STATUSBAR_DISABLE_SPOKEN_FEEDBACK" desc="The menu option to disable spoken feedback accessibility feature.">
-    Disable ChromeVox (spoken feedback)
-  </message>
-
-  <!-- Status bar -->
-  <message name="IDS_STATUSBAR_NO_NETWORKS_MESSAGE" desc="No networks are available">
-    No networks are available
-  </message>
 
   <!-- Accessibility strings, to be spoken -->
   <message name="IDS_CHROMEOS_ACC_LOGIN_SIGNING_IN" desc="Status when signing in.">
@@ -2454,9 +2409,6 @@
   <message name="IDS_LOGIN_ERROR_AUTHENTICATING_NEW" desc="Couldn't sign in because username or password invalid">
     Sorry, your email or password could not be verified. Please try again.
   </message>
-  <message name="IDS_LOGIN_ERROR_AUTHENTICATING_KIOSK" desc="Couldn't pass kiosk lock screen to configure network.">
-    Sorry, your password could not be verified. Please try again.
-  </message>
   <message name="IDS_LOGIN_ERROR_OFFLINE_FAILED_NETWORK_NOT_CONNECTED" desc="Couldn't sign in because offline sign-in has failed and network is not connected">
     Sorry, your email or password could not be verified. Try connecting to a network first.
   </message>
@@ -2498,9 +2450,6 @@
   <message name="IDS_LOGIN_ERROR_TITLE" desc="A title of screen containing a message about login error, like proxy error or corruption of the local state.">
     Oops, something went wrong with signing in
   </message>
-  <message name="IDS_LOGIN_ERROR_DETACHABLE_BASE_CHANGED" desc="Text for error dialog shown on the login screen when a detachable base different than the base last used by the user is attached.">
-        A different keyboard has been connected since you last entered your password. It may be attempting to steal your keystrokes.
-      </message>
   <message name="IDS_LOGIN_ERROR_TPM_UPDATE_REQUIRED" desc="Text for error dialog shown on the login screen when the Trusted Platform Module needs to be updated due to a vulnerability.">
     An update for the Trusted Platform Module firmware needs to be installed. See <ph name="TPM_FIRMWARE_UPDATE_LINK">https://www.chromium.org/chromium-os/tpm_firmware_update</ph>
   </message>
@@ -2554,9 +2503,6 @@
   </message>
   <message name="IDS_LOGIN_API_KEYS_NOTICE" desc="Notice displayed on the login screen in case if API keys are missing.">
     You will not be able to add users because Google API keys are missing. See <ph name="DETAILS_URL">$1<ex>http://www.example.com</ex></ph> for details.
-  </message>
-  <message name="IDS_LOGIN_CONFIRM_KIOSK_DIAGNOSTIC_FORMAT" desc="Text to be shown on a dialog to confirm launching kiosk app in diagnostic mode.">
-    Are you sure you want to launch "<ph name="APP_NAME">$1<ex>Kiosk App</ex></ph>" in diagnostic mode?
   </message>
   <message name="IDS_LOGIN_GUEST_SIGNIN_FIX_NETWORK">
     You may also try to <ph name="GUEST_SIGNIN_LINK_START">$1<ex>&gt;a&lt;</ex></ph>browse as guest<ph name="GUEST_SIGNIN_LINK_END">$2<ex>&gt;/a&lt;</ex></ph> to fix this network error.
@@ -3272,9 +3218,6 @@
   <message name="IDS_NETWORK_UI_NO_CELLULAR_ERROR_TEXT" desc="Text displayed when the cellular activation UI cannot be opened because no cellular network exists.">
     No cellular network exists
   </message>
-  <message name="IDS_NETWORK_UI_RESET_ESIM_PROFILES_LABEL" desc="Label for section of the debug networking page which allows developers and QA testers to reset the cache of eSIM profile metadata stored in ChromeOS.">
-    Reset eSIM profiles
-  </message>
   <message name="IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT" desc="Text for button in the debug networking page which allows developers and QA testers to reset the cache of eSIM profile metadata stored in ChromeOS. After this button is clicked, Chrome needs to request that the hardware re-scan for installed profiles.">
     Reset eSIM profile cache
   </message>
@@ -3465,12 +3408,6 @@
   </message>
   <message name="IDS_LOW_DISK_NOTIFICATION_BUTTON" desc="Button on the low disk notification to open storage management.">
     Manage storage
-  </message>
-  <message name="IDS_HATS_DONE_BUTTON_LABEL" desc="Label used for the done button at the end of survey">
-    Done
-  </message>
-  <message name="IDS_WAIT_FOR_CONTAINER_READY_INTRO_MESSAGE" desc="Introduction message for the wait for container ready OOBE screen">
-    Ask it questions. Tell it to do things. It's your personal Google, always ready to help.
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_HEADER" desc="Title of the consolidated consent screen.">
     Review these terms and control your data
@@ -3711,12 +3648,6 @@
   <message name="IDS_SMART_PRIVACY_PROTECTION_SCREEN_LOCK_DESCRIPTION" desc="Description of the lock-on-leave feature.">
     If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake longer. If lock screen is disabled, your device will sleep instead of lock.
   </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION" desc="Title of the viewing protection section.">
-    Viewing protection
-  </message>
-  <message name="IDS_SMART_PRIVACY_PROTECTION_SNOOPING_DETECTION_DESCRIPTION" desc="Description of the viewing protection feature.">
-    When someone else looks at your screen, you'll get an alert and notification content will be hidden.
-  </message>
   <message name="IDS_SMART_PRIVACY_PROTECTION_CONTENT" desc="Description of the privacy protection features implementation. This message is followed by a 'Learn more' link.">
     Your Chromebook uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google.
   </message>
@@ -3888,11 +3819,6 @@
   <!-- Launcher Searchable ChromeOS internal apps -->
   <message name="IDS_INTERNAL_APP_SETTINGS" desc="The name of Settings.">
     Settings
-  </message>
-
-  <!-- Launcher Settings shortcuts -->
-  <message name="IDS_LAUNCHER_SHORTCUTS_BLUETOOTH" desc="The name of bluetooth shortcut.">
-    Bluetooth
   </message>
 
   <message name="IDS_CROSTINI_LINUX" desc="Name shown for crostini Linux. Do not translate.">
@@ -4266,12 +4192,6 @@
   <message name="IDS_EASY_UNLOCK_SCREENLOCK_USER_POD_AUTH_VALUE" desc="Message on lock screen user pod shown in place of password field when Easy Unlock is enabled and a phone that can unlock the Chromebook is detected in proximity.">
     Select your photo
   </message>
-  <message name="IDS_SMART_LOCK_SPINNER_ACCESSIBILITY_LABEL" desc="Label for the spinner icon used for accessibility purposes. This label is needed because this state does not have a tooltip.">
-    Finding your phone
-  </message>
-  <message name="IDS_SMART_LOCK_SCREENLOCK_AUTHENTICATED_LABEL" desc="Label for the Smart Lock icon used for accessibility purposes. Describes when a phone eligible to unlock the Chromebook is detected and authenticated.">
-    Your device can be unlocked with Smart Lock. Press Enter to unlock.
-  </message>
 
   <!-- Strings for EcheApp -->
   <message name="IDS_ECHE_APP_NAME" desc="Public facing name for the Eche App.">
@@ -4291,16 +4211,6 @@
   </message>
   <message name="IDS_ECHE_APP_NOTIFICATION_OPEN_AGAIN_BUTTON" desc="Label for the inactivity notification button of EcheApp to open open.">
     Open again
-  </message>
-
-  <!-- User Image Selection Dialog -->
-  <message name="IDS_USER_IMAGE_SCREEN_TITLE" desc="String to be displayed in the title bar of the oobe/login user image selection dialog">
-    Set your profile picture
-  </message>
-  <message name="IDS_USER_IMAGE_SCREEN_DESCRIPTION" desc="Description text for the oobe/login user image selection dialog.">
-    Take a new photo or choose an existing photo or icon.
-    <ph name="LINE_BREAK">&lt;br&gt;&lt;br&gt;</ph>
-    This picture will show up on the Chromebook sign in screen and lock screen.
   </message>
 
   <!-- Strings for OOBE fingerprint setup screen and Settings fingerprint setup dialog -->
@@ -4747,9 +4657,6 @@
   <message name="IDS_PLUGIN_VM_INSTALLER_DOWNLOAD_PROGRESS_MESSAGE" desc="Text of the Plugin VM installer during downloading Plugin VM image, showing download progress.">
     <ph name="DOWNLOADED_SIZE">$1<ex>1.2</ex></ph>/<ph name="DOWNLOAD_SIZE">$2<ex>3.4 GB</ex></ph>
   </message>
-  <message name="IDS_PLUGIN_VM_INSTALLER_CONTINUE_BUTTON" desc="Label for the button in the Plugin VM installer to continue installation.">
-    Continue
-  </message>
   <message name="IDS_PLUGIN_VM_INSTALLER_LAUNCH_BUTTON" desc="Label for the button in the Plugin VM installer to launch Plugin VM after successful installation.">
     Launch
   </message>
@@ -4815,15 +4722,6 @@
   </message>
 
   <!-- Strings for camera/mic permission -->
-  <message name="IDS_CAMERA_NOTIFICATION_SOURCE" desc="The name of the source of a camera notification">
-    Camera
-  </message>
-  <message name="IDS_MIC_NOTIFICATION_SOURCE" desc="The name of the source of a mic notification">
-    Microphone
-  </message>
-  <message name="IDS_CAMERA_MIC_NOTIFICATION_SOURCE" desc="The name of the source of a 'camera and mic' notification">
-    Camera &amp; microphone
-  </message>
   <if expr="reven">
     <message name="IDS_CHROME_OS_NOTIFICATION_SOURCE" desc="The name of the source of a ChromeOS Flex notification">
       ChromeOS Flex
@@ -4857,9 +4755,6 @@
   <message name="IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE" desc="Message for a notification shown to the users when an app tries to use a camera while the camera privacy switch, which disables camera feed, is turned on">
     An app is trying to access <ph name="DEVICE_NAME">$1<ex>Camera</ex></ph>. Turn off <ph name="DEVICE_NAME">$1<ex>Camera</ex></ph> privacy switch to allow access.
   </message>
-  <message name="IDS_CAMERA_PRIVACY_SWITCH_ON_NOTIFICATION_MESSAGE_WITH_APP_NAME" desc="Message for a notification shown to the users when an app tries to use a camera while the camera privacy switch, which disables camera feed, is turned on">
-    <ph name="APP_NAME">$1<ex>Parallels Desktop</ex></ph> is trying to access <ph name="DEVICE_NAME">$2<ex>Camera</ex></ph>. Turn off <ph name="DEVICE_NAME">$2<ex>Camera</ex></ph> privacy switch to allow access.
-  </message>
 
   <!-- Strings for Account Manager error screen -->
   <message name="IDS_ACCOUNT_MANAGER_SECONDARY_ACCOUNTS_DISABLED_TITLE" desc="Title for the ChromeOS Account Manager error screen when addition of secondary Google Accounts is disabled.">
@@ -4881,11 +4776,6 @@
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_WITHOUT_INCOGNITO" desc="Text body for the Welcome screen in ChromeOS 'Add account' dialog without Incognito link.">
     You can manage signed-in Google Accounts from <ph name="LINK_BEGIN">&lt;a id="osSettingsLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="LINK_END">&lt;/a&gt;</ph>. Permissions you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign into your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> as a guest.
-  </message>
-  <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_ARC" desc="Text body for the Welcome screen in ChromeOS 'Add account' dialog.">
-You can use this account with Android apps. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> instead.
-
-Permissions you've already given to apps may apply to this account. You can control permissions for Android apps in <ph name="APPS_LINK_BEGIN">&lt;a id="appsSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Apps Settings<ph name="APPS_LINK_END">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_ACCOUNT_MANAGER_DIALOG_ADD_ACCOUNT_LABEL" desc="Label of the Add account button on Account picker screen.">
     Add Google Account
@@ -4963,12 +4853,6 @@ Permissions you've already given to apps may apply to this account. You can cont
   <message name="IDS_EDU_LOGIN_WELCOME_REAUTH_BODY" desc="Text on the reauthentication screen in EDU account addition flow informing user to ask their parent for permission to reauthenticate the account.">
     To sign in again for access to educational resources, ask a parent to give you permission
   </message>
-  <message name="IDS_EDU_LOGIN_PARENTS_LIST_TITLE" desc="Title for the parent sign-in screen asking the user to ask a parent to sign-in to approve EDU account addition.">
-    Parent sign-in
-  </message>
-  <message name="IDS_EDU_LOGIN_PARENTS_LIST_BODY" desc="Text on the parent sign-in screen asking the user to ask a parent to sign-in to approve EDU account addition.">
-    Ask a parent to sign in to grant permission to add a school account
-  </message>
   <message name="IDS_EDU_LOGIN_PARENT_SIGNIN_TITLE" desc="Title for the parent sign-in screen asking parent to sign-in to approve EDU account addition.">
     Hi <ph name="PARENT_NAME">$1<ex>Francis</ex></ph>
   </message>
@@ -4994,11 +4878,6 @@ Permissions you've already given to apps may apply to this account. You can cont
     IDS_EDU_LOGIN_INFO_* strings END
     ==================================================================================
   -->
-
-  <!-- Borealis strings -->
-  <message name="IDS_BOREALIS_INSTALLER_INSTALL_BUTTON" desc="Button on installer to install 'Steam for Chromebook'.">
-    Install
-  </message>
 
   <!-- TPM firmware auto-update notifications -->
   <message name="IDS_TPM_AUTO_UPDATE_PLANNED_NOTIFICATION_TITLE" desc="Title for the notification informing the user that local data will be deleted.">
@@ -5141,9 +5020,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
   <message name="IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_SUBTITLE" desc="Subtitle on the security token PIN input dialog during the SAML user sign-in.">
     Provide the PIN that’s associated with your smart card.
-  </message>
-  <message name="IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_TRY_AGAIN" desc="Message asking the user to try again in the security token PIN input dialog during the SAML sign-in.">
-    Please try again.
   </message>
 
   <!-- Shared (OOBE, settings) auth setup webuis -->
@@ -5310,11 +5186,6 @@ You can manage this account’s settings by installing the Family Link app on yo
   <!-- Strings for orca-->
   <message name="IDS_ACCNAME_ORCA" desc="The name for the orca feature in the task manager">
     Tool: Help me write
-  </message>
-
-  <!-- Strings for Custom Tab UI -->
-  <message name="IDS_CUSTOM_TABS_ACTION_MENU_ACCESSIBLE_NAME" desc="Accessible name for the overflow menu of the Chrome Custom Tab toolbar.">
-    Action menu button
   </message>
 
   <!-- Strings for the System-proxy authentication dialog that requests proxy credentials for network traffic at OS level (outside the Browser) -->
@@ -5949,12 +5820,6 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
   </message>
   <message name="IDS_GAIA_INFO_QUICK_START_FLOW" desc="Label for the option on the Gaia Info screen to use quick start to enter account and credentials.">
     Automatically get account from Android phone
-  </message>
-
-  <!-- Shortcut Accessibility Label-->
-  <message name="IDS_APP_SHORTCUT_ACCESSIBILITY_LABEL"
-    desc="The accessibility label of an app shortcut. Example: 'Funny Cat Video, Google Chrome'">
-    <ph name="SHORTCUT_NAME">$1<ex>Funny Cat Video</ex></ph>, <ph name="APP_FULL_NAME">$2<ex>Google Chrome</ex></ph>
   </message>
 
   <!-- Remote activity notification dialog -->
