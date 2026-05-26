@@ -43,6 +43,7 @@
     // 'safe_search' property validation (optional boolean)
     assert_true("safe_search" in schema.properties, "Schema should contain 'safe_search' property");
     assert_equals(schema.properties.safe_search.type, "boolean", "safe_search property type should be boolean");
+    assert_equals(schema.properties.safe_search.description, "Enable safe search filtering", "safe_search property description is correct");
   }, "Test that getTools() returns the correct inputSchema for a declarative tool");
 </script>
 </body>

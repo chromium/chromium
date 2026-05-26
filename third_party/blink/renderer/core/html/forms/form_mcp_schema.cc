@@ -806,6 +806,7 @@ std::unique_ptr<JSONObject> FormMCPSchema::ComputeCheckboxParameterSchema(
         To<HTMLFormControlElement>(controls_for_name.front()->ToHTMLElement());
     schema->SetString("type", "boolean");
     required = control.IsRequired();
+    AddDescription(controls_for_name, *schema);
     return schema;
   }
 
