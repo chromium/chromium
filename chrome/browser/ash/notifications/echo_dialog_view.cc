@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ash/notifications/echo_dialog_listener.h"
 #include "chrome/grit/generated_resources.h"

@@ -19,6 +19,7 @@
 #include "ash/public/cpp/login_screen.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"

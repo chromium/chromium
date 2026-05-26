@@ -9673,6 +9673,20 @@ To shut down the device, press and hold the power button on the device again.
         Shut down Bruschetta
       </message>
 
+      <!-- Accessibility strings, to be spoken -->
+      <message name="IDS_CHROMEOS_ACC_LOGIN_SIGNING_IN" desc="Status when signing in.">
+        Signing in.
+      </message>
+      <message name="IDS_CHROMEOS_ACC_LOGIN_SIGNIN_OFFRECORD" desc="Status when signing in Incognito.">
+        Entering as Guest.
+      </message>
+      <message name="IDS_CHROMEOS_ACC_LOGIN_SIGNIN_PUBLIC_ACCOUNT" desc="Status when signing in into a public account.">
+        Entering managed session.
+      </message>
+      <message name="IDS_CHROMEOS_ACC_LEARN_MORE" desc="Dialog button [?] linking to more information.">
+        Learn more.
+      </message>
+
       <!-- Floating Workspace -->
       <message name="IDS_FLOATING_WORKSPACE_STARTUP_DIALOG_TITLE" desc="Title for floating workspace startup dialog.">
         Restoring windows from your previous session...
