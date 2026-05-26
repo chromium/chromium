@@ -42,6 +42,9 @@ class MetricsScheduler {
   // not its matching TaskDone()).
   bool IsCallbackPending() { return callback_pending_; }
 
+  // Returns the interval for the currently scheduled task.
+  base::TimeDelta GetIntervalForTesting() { return interval_; }
+
   // Returns the initial delay before the task is run for the first time.
   static int GetInitialIntervalSeconds();
 

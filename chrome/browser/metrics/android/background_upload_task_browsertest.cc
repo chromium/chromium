@@ -27,6 +27,7 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_logs_event_manager.h"
 #include "components/metrics/metrics_reporting_service.h"
+#include "components/metrics/metrics_upload_scheduler.h"
 #include "components/metrics/private_metrics/private_metrics_reporting_service.h"
 #include "components/metrics/reporting_service.h"
 #include "components/metrics/structured/reporting/structured_metrics_reporting_service.h"
@@ -63,8 +64,10 @@ class BackgroundUploadTaskBrowserTest
       public testing::WithParamInterface<MetricServiceType> {
  public:
   BackgroundUploadTaskBrowserTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMetricsLogJobSchedulerUpload);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kMetricsLogJobSchedulerUpload,
+         features::kMetricsLogJobSchedulerUploadBackoffOnStopTask},
+        {});
   }
 
   ~BackgroundUploadTaskBrowserTest() override = default;
@@ -256,6 +259,13 @@ IN_PROC_BROWSER_TEST_P(BackgroundUploadTaskBrowserTest, BackgroundUploadTask) {
   ASSERT_FALSE(log_store()->has_staged_log());
   ASSERT_TRUE(log_store()->has_unsent_logs());
   ASSERT_FALSE(client()->uploader()->is_uploading());
+  // Verify that the ReportingService has scheduled the next upload normally
+  // (i.e. without a backoff).
+  MetricsUploadScheduler* scheduler =
+      reporting_service()->GetUploadSchedulerForTesting();
+  EXPECT_TRUE(scheduler->IsRunning());
+  EXPECT_EQ(scheduler->GetIntervalForTesting(),
+            MetricsUploadScheduler::GetUnsentLogsInterval());
   // Wait until we have started uploading. This should mean that the second
   // BackgroundUploadTask that was scheduled with JobScheduler has run.
   ASSERT_TRUE(base::test::RunUntil(
@@ -343,6 +353,53 @@ IN_PROC_BROWSER_TEST_P(BackgroundUploadTaskBrowserTest, ReportingServiceNull) {
   histogram_tester.ExpectTotalCount(expected_histogram_name(), 0);
 
   // The ReportingService override is unset in TearDownOnMainThread().
+}
+
+// Verifies that if there is a request to stop the background task by the OS,
+// the ReportingService schedules the next upload with a backoff.
+IN_PROC_BROWSER_TEST_P(BackgroundUploadTaskBrowserTest,
+                       BackgroundUploadTaskStopped) {
+  ASSERT_FALSE(client()->uploader());
+  ASSERT_FALSE(log_store()->has_staged_log());
+  ASSERT_TRUE(log_store()->has_unsent_logs());
+  reporting_service()->EnableReporting();
+
+  // Wait until we have started uploading the first log.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return client()->uploader() && client()->uploader()->is_uploading();
+  }));
+  ASSERT_TRUE(log_store()->has_staged_log());
+
+  // Now, simulate the OS stopping/interrupting the task in-flight.
+  BackgroundUploadTask task(reporting_service()->background_upload_task_id());
+  static_cast<background_task::BackgroundTask*>(&task)->OnStopTask(
+      background_task::TaskParameters());
+
+  // Complete the upload of the first log.
+  client()->uploader()->CompleteUpload(200);
+  EXPECT_FALSE(log_store()->has_staged_log());
+  ASSERT_TRUE(log_store()->has_unsent_logs());
+  EXPECT_FALSE(client()->uploader()->is_uploading());
+
+  // Verify that the ReportingService is now scheduling the next upload with a
+  // backoff.
+  MetricsUploadScheduler* scheduler =
+      reporting_service()->GetUploadSchedulerForTesting();
+  EXPECT_TRUE(scheduler->IsRunning());
+  EXPECT_EQ(scheduler->GetIntervalForTesting(),
+            MetricsUploadScheduler::GetInitialBackoffInterval());
+
+  // Verify that when the next upload is successful (with no OnStopTask() call),
+  // backoff is reset.
+  // Restart the scheduler to trigger the next upload now rather than having to
+  // wait the whole backoff interval.
+  scheduler->RestartWithUnsentLogsInterval();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return client()->uploader()->is_uploading(); }));
+  client()->uploader()->CompleteUpload(200);
+  // The next interval should be the regular interval, not the backoff one.
+  EXPECT_EQ(scheduler->GetIntervalForTesting(),
+            MetricsUploadScheduler::GetUnsentLogsInterval());
 }
 
 INSTANTIATE_TEST_SUITE_P(

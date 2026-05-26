@@ -96,10 +96,19 @@ class ReportingService {
   background_task::TaskIds background_upload_task_id() const {
     return background_upload_task_id_;
   }
+
+  // Sets `on_stop_task_called_`, which indicates that OnStopTask() was called
+  // for the active background upload task. This is usually triggered by the OS
+  // when it wants to urgently stop the background task.
+  void OnStopTask(base::PassKey<BackgroundUploadTask>);
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // True iff reporting is currently enabled.
   bool reporting_active() const;
+
+  MetricsUploadScheduler* GetUploadSchedulerForTesting() const {
+    return upload_scheduler_.get();
+  }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   void OnAppEnterBackground();
@@ -225,6 +234,9 @@ class ReportingService {
   // Used to track the time taken between the task being scheduled and the time
   // the task actually runs.
   std::optional<base::TimeTicks> background_upload_task_scheduled_time_;
+
+  // True if OnStopTask() was called for the active background task.
+  bool on_stop_task_called_ = false;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);

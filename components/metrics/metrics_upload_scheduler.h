@@ -36,8 +36,7 @@ class MetricsUploadScheduler : public MetricsScheduler {
   // GetUnsentLogsInterval() below). This is useful for resetting the scheduler
   // when it is using backoff logic (see GetInitialBackoffInterval() below).
   // This should only be called while the scheduler is running, but not while
-  // a callback is pending. This is currently only used for the feature
-  // kResetMetricsUploadBackoffOnForeground.
+  // a callback is pending.
   void RestartWithUnsentLogsInterval();
 
   // Callback from MetricsService when an upload is cancelled because it would

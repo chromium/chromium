@@ -54,6 +54,12 @@ BASE_DECLARE_FEATURE(kNoResetMetricsUploadBackoffOnForeground);
 // Controls whether various metrics services (UMA, UKM, etc.) should upload logs
 // through a JobScheduler on Android.
 BASE_DECLARE_FEATURE(kMetricsLogJobSchedulerUpload);
+
+// When enabled, when the Android OS requests a background upload task to be
+// stopped (e.g. due to the device being under pressure), the ReportingService
+// will increase the backoff interval for the next upload. Only has an effect if
+// `kMetricsLogJobSchedulerUpload` above is also enabled.
+BASE_DECLARE_FEATURE(kMetricsLogJobSchedulerUploadBackoffOnStopTask);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Creates the ProfileMetricsService, which can be used to log per-profile UMA

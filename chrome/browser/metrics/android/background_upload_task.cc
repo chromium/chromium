@@ -116,6 +116,13 @@ void BackgroundUploadTask::OnFullBrowserLoaded(
 bool BackgroundUploadTask::OnStopTask(
     const background_task::TaskParameters& task_params) {
   // This is called when the OS wants to urgently stop this background task.
+
+  if (ReportingService* reporting_service = GetReportingService(task_id_)) {
+    // Notify ReportingService so that it can increase the backoff delays
+    // between uploads.
+    reporting_service->OnStopTask(base::PassKey<BackgroundUploadTask>());
+  }
+
   // Return false to indicate that there is no need to re-schedule the task.
   // The various metrics services already have their own rescheduling mechanism.
   // (E.g., if as a result of this call, the network request to upload a log
