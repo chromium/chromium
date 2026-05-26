@@ -27,11 +27,7 @@ class IOSChromeOAuthConsumerRegistry : public signin::OAuthConsumerRegistry {
  protected:
   signin::OAuthConsumer GetOAuthConsumerForEnterprisePlusAddress()
       const override {
-    CHECK(base::FeatureList::IsEnabled(
-        plus_addresses::features::kPlusAddressesEnabled));
-    return signin::OAuthConsumer(
-        signin::oauth_consumer_name::kEnterprisePlusAddressName,
-        {plus_addresses::features::kEnterprisePlusAddressOAuthScope.Get()});
+    NOTREACHED();
   }
 
   signin::OAuthConsumer GetOAuthConsumerForGlicUserStatus() const override {

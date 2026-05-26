@@ -44,7 +44,6 @@ PlusAddressServiceFactory::PlusAddressServiceFactory()
                                     ServiceCreation::kCreateWithProfile,
                                     TestingCreation::kNoServiceForTests) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ios::WebDataServiceFactory::GetInstance());
   DependsOn(IOSChromeAffiliationServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());
   DependsOn(GoogleGroupsManagerFactory::GetInstance());
@@ -81,9 +80,7 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(ProfileIOS* profile) const {
           PlusAddressSettingServiceFactory::GetForProfile(profile),
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, profile->GetSharedURLLoaderFactory()),
-          ios::WebDataServiceFactory::GetPlusAddressWebDataForProfile(
-              profile, ServiceAccessType::EXPLICIT_ACCESS),
-          affiliation_service, std::move(feature_check));
+          nullptr, affiliation_service, std::move(feature_check));
 
   affiliation_service->RegisterSource(
       std::make_unique<plus_addresses::PlusAddressAffiliationSourceAdapter>(

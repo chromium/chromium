@@ -341,6 +341,7 @@ void CommonControllerBuilder::SetPasswordStore(
   account_password_store_.Set(account_password_store);
 }
 
+#if !BUILDFLAG(IS_IOS)
 void CommonControllerBuilder::SetPlusAddressServices(
     plus_addresses::PlusAddressSettingService* plus_address_setting_service,
     const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
@@ -348,6 +349,7 @@ void CommonControllerBuilder::SetPlusAddressServices(
   plus_address_setting_service_.Set(plus_address_setting_service);
   plus_address_webdata_service_.Set(plus_address_webdata_service);
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 void CommonControllerBuilder::SetPrefService(PrefService* pref_service) {
   pref_service_.Set(pref_service);
@@ -487,6 +489,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
         CreateOutgoingPasswordSharingInvitationDataTypeController(sync_service));
   }
 
+#if !BUILDFLAG(IS_IOS)
   if (!disabled_types.Has(syncer::PLUS_ADDRESS)) {
     add_controller(CreatePlusAddressDataTypeController());
   }
@@ -494,6 +497,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
   if (!disabled_types.Has(syncer::PLUS_ADDRESS_SETTING)) {
     add_controller(CreatePlusAddressSettingDataTypeController());
   }
+#endif  // !BUILDFLAG(IS_IOS)
 
   if (!disabled_types.Has(syncer::PREFERENCES)) {
     add_controller(CreatePreferencesDataTypeController(channel));
@@ -818,6 +822,7 @@ std::unique_ptr<syncer::DataTypeController> CommonControllerBuilder::
       sync_service, password_sender_service_.value(), pref_service_.value());
 }
 
+#if !BUILDFLAG(IS_IOS)
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreatePlusAddressDataTypeController() {
   // `plus_address_webdata_service_` is null on iOS WebView.
@@ -849,6 +854,7 @@ CommonControllerBuilder::CreatePlusAddressSettingDataTypeController() {
       plus_address_setting_service_.value()->GetSyncControllerDelegate(),
       google_groups_manager_.value());
 }
+#endif  // !BUILDFLAG(IS_IOS)
 
 std::unique_ptr<syncer::DataTypeController>
 CommonControllerBuilder::CreatePreferencesDataTypeController(

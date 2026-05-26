@@ -194,10 +194,12 @@ class CommonControllerBuilder {
           profile_password_store,
       const scoped_refptr<password_manager::PasswordStoreInterface>&
           account_password_store);
+#if !BUILDFLAG(IS_IOS)
   void SetPlusAddressServices(
       plus_addresses::PlusAddressSettingService* plus_address_setting_service,
       const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
           plus_address_webdata_service);
+#endif  // !BUILDFLAG(IS_IOS)
   void SetPrefService(PrefService* pref_service);
   void SetPrefServiceSyncable(
       sync_preferences::PrefServiceSyncable* pref_service_syncable);
@@ -269,10 +271,12 @@ class CommonControllerBuilder {
   std::unique_ptr<syncer::DataTypeController>
   CreateOutgoingPasswordSharingInvitationDataTypeController(
       syncer::SyncService* sync_service);
+#if !BUILDFLAG(IS_IOS)
   std::unique_ptr<syncer::DataTypeController>
   CreatePlusAddressDataTypeController();
   std::unique_ptr<syncer::DataTypeController>
   CreatePlusAddressSettingDataTypeController();
+#endif  // !BUILDFLAG(IS_IOS)
   std::unique_ptr<syncer::DataTypeController>
   CreatePreferencesDataTypeController(version_info::Channel channel);
   std::unique_ptr<syncer::DataTypeController>
@@ -408,10 +412,12 @@ class CommonControllerBuilder {
   SafeOptional<raw_ptr<bookmarks::BookmarkModel>> bookmark_model_;
   SafeOptional<raw_ptr<supervised_user::FamilyLinkSettingsService>>
       family_link_settings_service_;
+#if !BUILDFLAG(IS_IOS)
   SafeOptional<raw_ptr<plus_addresses::PlusAddressSettingService>>
       plus_address_setting_service_;
   SafeOptional<scoped_refptr<plus_addresses::PlusAddressWebDataService>>
       plus_address_webdata_service_;
+#endif  // !BUILDFLAG(IS_IOS)
   SafeOptional<raw_ptr<collaboration::CollaborationService>>
       collaboration_service_;
   SafeOptional<raw_ptr<contextual_tasks::ContextualTasksService>>

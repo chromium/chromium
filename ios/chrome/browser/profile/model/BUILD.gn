@@ -209,7 +209,6 @@ source_set("keyed_service_factories") {
     "//ios/chrome/browser/passwords/model:sharing_factory",
     "//ios/chrome/browser/passwords/model:store_factory",
     "//ios/chrome/browser/photos/model:photos_service_factory",
-    "//ios/chrome/browser/plus_addresses/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/policy_url_blocking/model",
     "//ios/chrome/browser/power_bookmarks/model",
