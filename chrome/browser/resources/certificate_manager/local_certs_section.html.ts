@@ -16,7 +16,7 @@ export function getHtml(this: LocalCertsSectionElement) {
   <if expr="not is_chromeos">
     <h3 class="section-title">$i18n{certificateManagerV2Platform}</h3>
     <div class="card">
-      <div class="cr-row">
+      <div class="cr-row first">
         <div class="cr-padded-text">
           <div>
             $i18n{certificateManagerV2PlatformCertsToggleLabel}
