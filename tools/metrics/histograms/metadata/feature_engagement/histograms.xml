@@ -464,7 +464,7 @@ chromium-metrics-reviews@google.com.
                browse in incognito"/>
   <variant name="IPH_iOSTabGroupsDesktop"
       summary="showing the tab groups promo on desktop"/>
-  <variant name="IPH_iOSWelcomeBackFeature"
+  <variant name="IPH_iOSWelcomeBack"
       summary="shows returning users features they may be interested in"/>
   <variant name="IPH_KeyboardAccessoryAddressFilling"
       summary="address autofill suggestions"/>

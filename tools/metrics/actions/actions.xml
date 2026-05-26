@@ -622,8 +622,7 @@ should be able to be added at any place in this file.
       summary="For iOSTabGridSwipeRightForIncognito feature"/>
   <variant name="_iOSTabGroupsDesktop"
       summary="For iOSTabGroupsDesktopFeature"/>
-  <variant name="_iOSWelcomeBackFeature"
-      summary="For iOSWelcomeBackFeature feature"/>
+  <variant name="_iOSWelcomeBack" summary="For iOSWelcomeBack feature"/>
   <variant name="_KeyboardAccessoryAddressFilling"
       summary="For KeyboardAccessoryAddressFilling feature."/>
   <variant name="_KeyboardAccessoryBarSwiping"
