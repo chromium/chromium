@@ -342,6 +342,11 @@ ImmersiveFullscreenController* ImmersiveFullscreenController::Get(
 ////////////////////////////////////////////////////////////////////////////////
 // private:
 
+void ImmersiveFullscreenController::SetRevealState(RevealState state) {
+  reveal_state_ = state;
+  UpdateTopContainerPaintLock();
+}
+
 void ImmersiveFullscreenController::EnableWindowObservers(bool enable) {
   if (enable) {
     top_container_observation_.Observe(top_container_.get());
@@ -623,7 +628,7 @@ void ImmersiveFullscreenController::MaybeStartReveal(Animate animate) {
   }
 
   RevealState previous_reveal_state = reveal_state_;
-  reveal_state_ = SLIDING_OPEN;
+  SetRevealState(SLIDING_OPEN);
   if (previous_reveal_state == CLOSED) {
     EnableTouchInsets(false);
 
@@ -646,7 +651,7 @@ void ImmersiveFullscreenController::MaybeStartReveal(Animate animate) {
 
 void ImmersiveFullscreenController::OnSlideOpenAnimationCompleted() {
   DCHECK_EQ(SLIDING_OPEN, reveal_state_);
-  reveal_state_ = REVEALED;
+  SetRevealState(REVEALED);
   delegate_->SetVisibleFraction(1);
 
   // The user may not have moved the mouse since the reveal was initiated.
@@ -668,7 +673,7 @@ void ImmersiveFullscreenController::MaybeEndReveal(Animate animate) {
     return;
   }
 
-  reveal_state_ = SLIDING_CLOSED;
+  SetRevealState(SLIDING_CLOSED);
   base::TimeDelta duration = GetAnimationDuration(animate);
   if (duration.is_positive()) {
     animation_->SetSlideDuration(duration);
@@ -681,7 +686,7 @@ void ImmersiveFullscreenController::MaybeEndReveal(Animate animate) {
 
 void ImmersiveFullscreenController::OnSlideClosedAnimationCompleted() {
   DCHECK_EQ(SLIDING_CLOSED, reveal_state_);
-  reveal_state_ = CLOSED;
+  SetRevealState(CLOSED);
 
   EnableTouchInsets(true);
   delegate_->OnImmersiveRevealEnded();
@@ -820,7 +825,7 @@ void ImmersiveFullscreenController::UpdateEnabled() {
     EnableEventObservers(false);
     // Stop cursor-at-top tracking.
     top_edge_hover_timer_.Stop();
-    reveal_state_ = CLOSED;
+    SetRevealState(CLOSED);
 
     widget_->GetNativeWindow()->SetEventTargeter(std::move(normal_targeter_));
 
@@ -846,6 +851,16 @@ void ImmersiveFullscreenController::CleanupOnWindowDestroy() {
   // MaybeEndReveal() have no effect.
   enabled_ = false;
   widget_ = nullptr;
+  UpdateTopContainerPaintLock();
+}
+
+void ImmersiveFullscreenController::UpdateTopContainerPaintLock() {
+  if (!enabled_ || IsRevealed()) {
+    top_container_paint_lock_.reset();
+  } else if (!top_container_paint_lock_.has_value()) {
+    CHECK(top_container_);
+    top_container_paint_lock_.emplace(top_container_);
+  }
 }
 
 }  // namespace chromeos

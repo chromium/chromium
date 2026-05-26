@@ -6,6 +6,7 @@
 #define CHROMEOS_UI_FRAME_IMMERSIVE_IMMERSIVE_FULLSCREEN_CONTROLLER_H_
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -18,6 +19,7 @@
 #include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/views/scoped_paint_lock.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -166,6 +168,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   };
   enum SwipeType { SWIPE_OPEN, SWIPE_CLOSE, SWIPE_NONE };
 
+  void SetRevealState(RevealState state);
+
   // Enables or disables observers for the widget's aura::Window and
   // |top_container_|.
   void EnableWindowObservers(bool enable);
@@ -269,6 +273,10 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   // cleanup.
   void CleanupOnWindowDestroy();
 
+  // Adds or removes the paint lock on `top_container_` based on its reveal
+  // state.
+  void UpdateTopContainerPaintLock();
+
   // Not owned.
   raw_ptr<ImmersiveFullscreenControllerDelegate, DanglingUntriaged> delegate_ =
       nullptr;
@@ -324,6 +332,11 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenController
   // entered, if any. Will be re-installed on the window after leaving immersive
   // fullscreen.
   std::unique_ptr<aura::WindowTargeter> normal_targeter_;
+
+  // Locks painting of the top container when in immersive fullscreen
+  // but not revealed. This prevents unnecessary painting of the top container
+  // when it is fully obscured or not needed.
+  std::optional<views::ScopedPaintLock> top_container_paint_lock_;
 
   // |animations_disabled_for_test_| is initialized to this. See
   // ImmersiveFullscreenControllerTestApi::GlobalAnimationDisabler for details.

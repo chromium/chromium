@@ -1117,4 +1117,23 @@ TEST_F(ImmersiveFullscreenControllerTest, Shelf) {
   EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
 }
 
+TEST_F(ImmersiveFullscreenControllerTest, ScopedPaintLock) {
+  chromeos::ImmersiveFullscreenControllerTestApi test_api(controller());
+
+  SetEnabled(true);
+  EXPECT_FALSE(controller()->IsRevealed());
+  EXPECT_TRUE(test_api.IsTopContainerPaintLocked());
+
+  AttemptReveal(MODALITY_MOUSE);
+  EXPECT_TRUE(controller()->IsRevealed());
+  EXPECT_FALSE(test_api.IsTopContainerPaintLocked());
+
+  AttemptUnreveal(MODALITY_MOUSE);
+  EXPECT_FALSE(controller()->IsRevealed());
+  EXPECT_TRUE(test_api.IsTopContainerPaintLocked());
+
+  SetEnabled(false);
+  EXPECT_FALSE(test_api.IsTopContainerPaintLocked());
+}
+
 }  // namespace ash

@@ -49,6 +49,8 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) ImmersiveFullscreenControllerTestApi {
 
   bool IsRevealLocked() const;
 
+  bool IsTopContainerPaintLocked() const;
+
   void EndAnimation();
 
   const gfx::SlideAnimation* GetAnimation() const;

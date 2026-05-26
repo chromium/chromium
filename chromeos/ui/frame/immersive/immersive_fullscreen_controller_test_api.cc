@@ -44,6 +44,11 @@ bool ImmersiveFullscreenControllerTestApi::IsRevealLocked() const {
   return immersive_fullscreen_controller_->revealed_lock_count_ > 0;
 }
 
+bool ImmersiveFullscreenControllerTestApi::IsTopContainerPaintLocked() const {
+  return immersive_fullscreen_controller_->top_container_paint_lock_
+      .has_value();
+}
+
 void ImmersiveFullscreenControllerTestApi::EndAnimation() {
   immersive_fullscreen_controller_->animation_->End();
 }
