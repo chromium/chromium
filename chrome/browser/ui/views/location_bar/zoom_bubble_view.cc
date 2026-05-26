@@ -373,12 +373,15 @@ void ZoomBubbleView::UpdateZoomPercent() {
   double default_zoom_level = zoom_controller->GetDefaultZoomLevel();
   std::vector<double> zoom_levels =
       zoom::PageZoom::PresetZoomLevels(default_zoom_level);
-  DCHECK(zoom_out_button_);
+  CHECK(zoom_out_button_);
   zoom_out_button_->SetEnabled(
       !blink::ZoomValuesEqual(zoom_levels.front(), current_zoom_level));
-  DCHECK(zoom_in_button_);
+  CHECK(zoom_in_button_);
   zoom_in_button_->SetEnabled(
       !blink::ZoomValuesEqual(zoom_levels.back(), current_zoom_level));
+  CHECK(reset_button_);
+  reset_button_->SetEnabled(
+      !blink::ZoomValuesEqual(current_zoom_level, default_zoom_level));
 }
 
 void ZoomBubbleView::StartTimerIfNecessary() {

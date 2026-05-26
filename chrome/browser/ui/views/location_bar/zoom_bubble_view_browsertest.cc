@@ -464,11 +464,43 @@ IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest, FocusPreventsClose) {
 
   // Focus is usually gained via a key combination like alt+shift+a. The test
   // simulates this by focusing the bubble and then sending an empty KeyEvent.
-  focus_manager->SetFocusedView(bubble->GetResetButtonForTesting());
+  // Focus the Zoom In button instead of the Reset button because the Reset
+  // button is disabled at the default zoom level.
+  focus_manager->SetFocusedView(bubble->GetZoomInButtonForTesting());
   bubble->OnKeyEventForTesting(nullptr);
   // |auto_close_timer_| should not be running since focus should prevent the
   // bubble from closing.
   EXPECT_FALSE(bubble->GetAutoCloseTimerForTesting()->IsRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(ZoomBubbleBrowserTest,
+                       ResetButtonDisabledAtDefaultZoom) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  zoom::ZoomController* zoom_controller =
+      zoom::ZoomController::FromWebContents(web_contents);
+  ASSERT_TRUE(zoom_controller);
+
+  // Ensure we are at default zoom.
+  zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel());
+
+  zoom_bubble_coordinator_->Show(web_contents, ZoomBubbleView::USER_GESTURE);
+  ZoomBubbleView* bubble = zoom_bubble_coordinator_->bubble();
+  ASSERT_TRUE(bubble);
+
+  views::Button* reset_button = bubble->GetResetButtonForTesting();
+  ASSERT_TRUE(reset_button);
+
+  // At default zoom, reset button should be disabled.
+  EXPECT_FALSE(reset_button->GetEnabled());
+
+  // Change zoom level.
+  zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel() + 1.0);
+  EXPECT_TRUE(reset_button->GetEnabled());
+
+  // Reset zoom level.
+  zoom_controller->SetZoomLevel(zoom_controller->GetDefaultZoomLevel());
+  EXPECT_FALSE(reset_button->GetEnabled());
 }
 
 }  // namespace
