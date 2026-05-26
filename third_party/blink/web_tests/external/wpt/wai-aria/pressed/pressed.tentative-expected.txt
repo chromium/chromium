@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
 [FAIL] button with missing aria-pressed
-  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
-[FAIL] button with aria-pressed true
-  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
-[FAIL] button with aria-pressed false
-  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
-[FAIL] button with aria-pressed mixed
-  promise_test: Unhandled rejection with value: object "Error: get_accessibility_properties_for_element is a testdriver.js function which cannot be run in this context."
+  assert_equals: pressed: <div data-testname="button with missing aria-pressed" role="button" data-expectedproperties="{ &quot;pressed&quot;: &quot;undefined&quot; }" class="ex-props"></div> expected (string) "undefined" but got (undefined) undefined
 Harness: the test ran to completion.
 

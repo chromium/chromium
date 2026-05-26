@@ -14,4 +14,14 @@
     // Get the computed accessible role of the given element.
     // See https://w3c.github.io/webdriver/#dfn-get-computed-role
     DOMString getComputedRole(Element element);
+
+    // Get accessibility properties for a given element.
+    // The definition of this API is in progress, see
+    // https://github.com/WICG/aom/issues/203
+    AccessibilityProperties getAccessibilityPropertiesForElement(Element element);
+
+    // Get accessibility properties for an accessibility node by AXID.
+    // The definition of this API is in progress, see
+    // https://github.com/WICG/aom/issues/203
+    AccessibilityProperties getAccessibilityPropertiesForAccessibilityNode(Element element, long accessibility_id);
 };

@@ -30,6 +30,7 @@
 
 namespace blink {
 
+class AccessibilityProperties;
 class Element;
 class Internals;
 
@@ -41,6 +42,16 @@ class InternalsAccessibility {
 
   static String getComputedLabel(Internals&, const Element* element);
   static String getComputedRole(Internals&, const Element* element);
+  static AccessibilityProperties* getAccessibilityPropertiesForElement(
+      Internals&,
+      const Element* element);
+
+  // The `accessibility_id` indicates the node to test. The `element` argument
+  // contains the document root which is only used to get the correct Document.
+  static AccessibilityProperties*
+  getAccessibilityPropertiesForAccessibilityNode(Internals&,
+                                                 const Element* element,
+                                                 int32_t accessibility_id);
 };
 
 }  // namespace blink

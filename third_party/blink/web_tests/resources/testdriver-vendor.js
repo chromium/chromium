@@ -346,6 +346,14 @@
     return internals.getComputedRole(element);
   }
 
+  window.test_driver_internal.get_accessibility_properties_for_element = function(element) {
+    return internals.getAccessibilityPropertiesForElement(element);
+  }
+
+  window.test_driver_internal.get_accessibility_properties_for_accessibility_node = function(accessibilityId) {
+    return internals.getAccessibilityPropertiesForAccessibilityNode(document.documentElement, accessibilityId);
+  }
+
   window.test_driver_internal.minimize_window = async () => {
     window.testRunner.setFrameWindowHidden(true);
     // Wait until the new state is reflected in the document

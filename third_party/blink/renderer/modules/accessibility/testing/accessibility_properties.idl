@@ -1,0 +1,16 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(crbug.com/486968069): The required properties of AccessibilityProperties
+// is in the process of being standardized, update when standardization is
+// complete.
+dictionary AccessibilityProperties {
+    DOMString label;
+    DOMString role;
+    DOMString checked;
+    DOMString pressed;
+    long accessibilityId;
+    long parent;
+    sequence<long> children;
+};
