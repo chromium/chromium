@@ -2523,8 +2523,6 @@ void RenderViewContextMenu::AppendCopyItem() {
   std::u16string selected_text = PrintableSelectionText();
   base::TrimWhitespace(selected_text, base::TRIM_ALL, &selected_text);
   if (features::IsMenuSimplificationEnabled() && !selected_text.empty()) {
-    selected_text =
-        gfx::TruncateString(selected_text, 25, gfx::CHARACTER_BREAK);
     menu_model_.AddItem(IDC_CONTENT_CONTEXT_COPY,
                         l10n_util::GetStringFUTF16(
                             IDS_CONTENT_CONTEXT_COPY_SELECTION, selected_text));
@@ -4091,8 +4089,17 @@ void RenderViewContextMenu::NotifyMenuShown() {
 }
 
 std::u16string RenderViewContextMenu::PrintableSelectionText() {
-  return gfx::TruncateString(params_.selection_text, kMaxSelectionTextLength,
-                             gfx::WORD_BREAK);
+  if (features::IsMenuSimplificationEnabled()) {
+    return GetElidedSelectionText(25, gfx::CHARACTER_BREAK);
+  }
+
+  return GetElidedSelectionText(kMaxSelectionTextLength, gfx::WORD_BREAK);
+}
+
+std::u16string RenderViewContextMenu::GetElidedSelectionText(
+    size_t max_length,
+    gfx::BreakType break_type) {
+  return gfx::TruncateString(params_.selection_text, max_length, break_type);
 }
 
 void RenderViewContextMenu::EscapeAmpersands(std::u16string* text) {

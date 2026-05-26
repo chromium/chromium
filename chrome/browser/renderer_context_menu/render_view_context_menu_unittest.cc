@@ -1923,6 +1923,41 @@ TEST_F(RenderViewContextMenuPrefsTest, PrintSelectionLabel) {
 }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 
+TEST_F(RenderViewContextMenuPrefsTest, CopySelectionLabel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kMenuSimplification);
+
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  // 30 characters long string.
+  params.selection_text = u"012345678901234567890123456789";
+
+  AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(),
+      base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
+
+  ChromeTranslateClient::CreateForWebContents(web_contents());
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_CONTENT_CONTEXT_COPY));
+
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu.GetMenuModelAndItemIndex(IDC_CONTENT_CONTEXT_COPY);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
+
+  std::u16string label = model->GetLabelAt(index);
+  // The label should contain the truncated text.
+  // Expected truncated text: 24 chars + ellipsis.
+  std::u16string expected_selection =
+      u"012345678901234567890123" + std::u16string(1, 0x2026);
+
+  EXPECT_NE(label.find(expected_selection), std::u16string::npos);
+}
 TEST_F(RenderViewContextMenuPrefsTest,
        ReadingModeSidePanelContextMenuAllowlist) {
   // Simulate a context menu request with page level options.

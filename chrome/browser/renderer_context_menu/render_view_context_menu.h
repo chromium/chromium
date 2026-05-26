@@ -36,6 +36,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/menus/simple_menu_model.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -244,6 +245,9 @@ class RenderViewContextMenu
                                bool started_from_context_menu) override;
 
  private:
+  std::u16string GetElidedSelectionText(size_t max_length,
+                                        gfx::BreakType break_type);
+
   void ExecGlic();
 
   friend class RenderViewContextMenuTest;
