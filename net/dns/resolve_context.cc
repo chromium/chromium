@@ -373,6 +373,13 @@ base::TimeDelta ResolveContext::NextDohFallbackPeriod(
       0 /* num_backoffs */);
 }
 
+base::TimeDelta ResolveContext::NextPlatformFallbackPeriod(
+    const DnsSession* session) {
+  // TODO(crbug.com/493024959): Experiment with different fallback periods
+  // specific to platform queries.
+  return max_fallback_period_;
+}
+
 base::TimeDelta ResolveContext::ClassicTransactionTimeout(
     const DnsSession* session) {
   if (!IsCurrentSession(session))
@@ -401,6 +408,13 @@ base::TimeDelta ResolveContext::SecureTransactionTimeout(
 
   return TransactionTimeoutHelper(doh_server_stats_.cbegin(),
                                   doh_server_stats_.cend());
+}
+
+base::TimeDelta ResolveContext::PlatformTransactionTimeout(
+    const DnsSession* session) {
+  // TODO(crbug.com/493024959): Experiment with different transaction timeouts
+  // specific to platform queries.
+  return features::kDnsMinTransactionTimeout.Get();
 }
 
 void ResolveContext::RegisterDohStatusObserver(DohStatusObserver* observer) {

@@ -188,20 +188,31 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   base::TimeDelta NextDohFallbackPeriod(size_t doh_server_index,
                                         const DnsSession* session);
 
-  // Return a timeout for an insecure transaction (from Transaction::Start()).
+  // Return the period the next platform query should run before fallback to
+  // next attempt.
+  base::TimeDelta NextPlatformFallbackPeriod(const DnsSession* session);
+
+  // Return a timeout for an insecure transaction (from DnsTransaction::Start()).
   // Expected that the transaction will skip waiting for this timeout if it is
   // using fast timeouts, and also expected that transactions will always wait
   // for all attempts to run for at least their fallback period before dying
   // with timeout.
   base::TimeDelta ClassicTransactionTimeout(const DnsSession* session);
 
-  // Return a timeout for a secure transaction (from Transaction::Start()).
+  // Return a timeout for a secure transaction (from DnsTransaction::Start()).
   // Expected that the transaction will skip waiting for this timeout if it is
   // using fast timeouts, and also expected that transactions will always wait
   // for all attempts to run for at least their fallback period before dying
   // with timeout.
   base::TimeDelta SecureTransactionTimeout(SecureDnsMode secure_dns_mode,
                                            const DnsSession* session);
+
+  // Return a timeout for a platform transaction (from DnsTransaction::Start()).
+  // Expected that the transaction will skip waiting for this timeout if it is
+  // using fast timeouts, and also expected that transactions will always wait
+  // for all attempts to run for at least their fallback period before dying
+  // with timeout.
+  base::TimeDelta PlatformTransactionTimeout(const DnsSession* session);
 
   void RegisterDohStatusObserver(DohStatusObserver* observer);
   void UnregisterDohStatusObserver(const DohStatusObserver* observer);

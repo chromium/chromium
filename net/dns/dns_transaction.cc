@@ -1012,9 +1012,7 @@ class DnsTransactionImpl final : public DnsTransaction {
         timeout = resolve_context_->ClassicTransactionTimeout(session_.get());
         break;
       case DnsTransactionFactory::AttemptMode::kPlatform:
-        // TODO(crbug.com/493024959): Consider whether this should be changed to
-        // a platform specific value.
-        timeout = features::kDnsMinTransactionTimeout.Get();
+        timeout = resolve_context_->PlatformTransactionTimeout(session_.get());
         break;
       default:
         NOTREACHED();
@@ -1047,9 +1045,9 @@ class DnsTransactionImpl final : public DnsTransaction {
         &DnsTransactionImpl::OnAttemptComplete, base::Unretained(this),
         attempt_number, /*record_rtt=*/false, base::TimeTicks::Now()));
     if (rv == ERR_IO_PENDING) {
-      // TODO(crbug.com/493024959): Consider whether this should be changed to
-      // a platform specific value.
-      timer_.Start(FROM_HERE, features::kDnsMinTransactionTimeout.Get(), this,
+      base::TimeDelta fallback_period =
+          resolve_context_->NextPlatformFallbackPeriod(session_.get());
+      timer_.Start(FROM_HERE, fallback_period, this,
                    &DnsTransactionImpl::OnFallbackPeriodExpired);
     }
     return AttemptResult(rv, attempt);

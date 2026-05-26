@@ -4415,7 +4415,8 @@ TEST_F(DnsTransactionTestWithMockTime, PlatformAttemptTimeout) {
         transaction_factory_.get(), "www.google.com", dns_protocol::kTypeA,
         DnsTransactionFactory::AttemptMode::kPlatform, resolve_context_.get());
     EXPECT_FALSE(helper.has_completed());
-    FastForwardBy(features::kDnsMinTransactionTimeout.Get());
+    FastForwardBy(
+        resolve_context_->NextPlatformFallbackPeriod(session_.get()));
     helper.RunUntilComplete();
     ASSERT_TRUE(helper.has_completed());
   } else {
