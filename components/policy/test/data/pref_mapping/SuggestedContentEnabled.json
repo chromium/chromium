@@ -1,39 +1,16 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "settings.suggested_content_enabled": {
-            "check_for_recommended": false,
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "SuggestedContentEnabled": false
-        },
-        "prefs": {
-          "settings.suggested_content_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "SuggestedContentEnabled": true
-        },
-        "prefs": {
-          "settings.suggested_content_enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.suggested_content_enabled",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

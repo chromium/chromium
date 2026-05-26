@@ -296,6 +296,8 @@ class SimplePolicyPrefMappingTest {
       if (default_for_enterprise_users) {
         default_value_pref_dict.Set("value",
                                     default_for_enterprise_users->Clone());
+        default_value_pref_dict.Set("check_for_recommended",
+                                    base::Value(false));
       } else {
         default_value_pref_dict.Set("default_value", default_value->Clone());
       }
