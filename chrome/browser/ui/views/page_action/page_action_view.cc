@@ -114,14 +114,14 @@ void PageActionView::SetClickCallback(
   click_callback_ = std::move(callback);
 }
 
-void PageActionView::SetAnchoredMessagePauseCallback(
+void PageActionView::SetAnchoredMessageExpandCallback(
     base::RepeatingClosure callback) {
-  anchored_message_pause_callback_ = std::move(callback);
+  anchored_message_expand_callback_ = std::move(callback);
 }
 
-void PageActionView::SetAnchoredMessageResumeCallback(
+void PageActionView::SetAnchoredMessageCollapseCallback(
     base::RepeatingClosure callback) {
-  anchored_message_resume_callback_ = std::move(callback);
+  anchored_message_collapse_callback_ = std::move(callback);
 }
 
 void PageActionView::OnNewActiveController(PageActionController* controller) {
@@ -446,12 +446,12 @@ void PageActionView::CloseAnchoredMessage() {
   anchored_message_close_callback_.Run();
 }
 
-void PageActionView::PauseAnchoredMessageTimeout() {
-  anchored_message_pause_callback_.Run();
+void PageActionView::AnchoredMessageExpanded() {
+  anchored_message_expand_callback_.Run();
 }
 
-void PageActionView::ResumeAnchoredMessageTimeout() {
-  anchored_message_resume_callback_.Run();
+void PageActionView::AnchoredMessageCollapsed() {
+  anchored_message_collapse_callback_.Run();
 }
 
 AnchoredMessageBubbleView* PageActionView::GetAnchoredMessageForTesting() {

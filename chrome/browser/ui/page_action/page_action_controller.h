@@ -167,18 +167,18 @@ class PageActionController {
     using IsChipShowingChangedCallback =
         base::RepeatingCallback<void(bool is_chip_showing)>;
     using AnchoredMessageCloseCallback = base::RepeatingClosure;
-    using AnchoredMessagePauseCallback = base::RepeatingClosure;
-    using AnchoredMessageResumeCallback = base::RepeatingClosure;
+    using AnchoredMessageExpandCallback = base::RepeatingClosure;
+    using AnchoredMessageCollapseCallback = base::RepeatingClosure;
     using ClickCallback = base::RepeatingCallback<void(PageActionTrigger)>;
 
     virtual void SetIsChipShowingChangedCallback(
         IsChipShowingChangedCallback callback) = 0;
     virtual void SetAnchoredMessageCloseCallback(
         AnchoredMessageCloseCallback callback) = 0;
-    virtual void SetAnchoredMessagePauseCallback(
-        AnchoredMessagePauseCallback callback) = 0;
-    virtual void SetAnchoredMessageResumeCallback(
-        AnchoredMessageResumeCallback callback) = 0;
+    virtual void SetAnchoredMessageExpandCallback(
+        AnchoredMessageExpandCallback callback) = 0;
+    virtual void SetAnchoredMessageCollapseCallback(
+        AnchoredMessageCollapseCallback callback) = 0;
     virtual void SetClickCallback(ClickCallback callback) = 0;
   };
 
@@ -468,6 +468,8 @@ class PageActionControllerImpl : public PageActionController,
       on_will_destroy_callback_list_;
   std::unique_ptr<ChipSelector> chip_selector_;
   base::RetainingOneShotTimer anchored_message_timeout_;
+  int anchored_message_timeout_pause_count_ = 0;
+  bool anchored_message_has_timeout_ = false;
   std::optional<actions::ActionId> active_anchored_message_;
   std::map<actions::ActionId, PageActionPriorityCategory> default_priorities_;
 

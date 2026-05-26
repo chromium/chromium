@@ -72,6 +72,30 @@ using TestPageActionModelObservation =
 using MockPageActionModelFactory =
     FakePageActionModelFactory<MockPageActionModel>;
 
+class TestDelegate : public PageActionController::Delegate {
+ public:
+  void SetIsChipShowingChangedCallback(
+      IsChipShowingChangedCallback callback) override {}
+  void SetAnchoredMessageCloseCallback(
+      base::RepeatingClosure callback) override {}
+  void SetAnchoredMessageExpandCallback(
+      base::RepeatingClosure callback) override {
+    expand_callback_ = std::move(callback);
+  }
+  void SetAnchoredMessageCollapseCallback(
+      base::RepeatingClosure callback) override {
+    collapse_callback_ = std::move(callback);
+  }
+  void SetClickCallback(
+      base::RepeatingCallback<void(PageActionTrigger)> callback) override {
+    click_callback_ = std::move(callback);
+  }
+
+  base::RepeatingClosure expand_callback_;
+  base::RepeatingClosure collapse_callback_;
+  base::RepeatingCallback<void(PageActionTrigger)> click_callback_;
+};
+
 class PageActionTestObserver : public PageActionModelObserver {
  public:
   PageActionTestObserver() = default;
@@ -412,24 +436,6 @@ TEST_F(PageActionControllerTest, NotifyActionClickedLogsHistogram) {
   // sample).
   controller()->Show(kFirstActionItemId);
 
-  class TestDelegate : public PageActionController::Delegate {
-   public:
-    void SetIsChipShowingChangedCallback(
-        IsChipShowingChangedCallback callback) override {}
-    void SetAnchoredMessageCloseCallback(
-        base::RepeatingClosure callback) override {}
-    void SetAnchoredMessagePauseCallback(
-        base::RepeatingClosure callback) override {}
-    void SetAnchoredMessageResumeCallback(
-        base::RepeatingClosure callback) override {}
-    void SetClickCallback(
-        base::RepeatingCallback<void(PageActionTrigger)> callback) override {
-      click_callback_ = std::move(callback);
-    }
-
-    base::RepeatingCallback<void(PageActionTrigger)> click_callback_;
-  };
-
   TestDelegate delegate;
   controller()->RegisterCallbacks(PageActionPassKey::PassKeyForTesting(),
                                   kFirstActionItemId, &delegate);
@@ -468,14 +474,116 @@ class PageActionControllerMockModelTest : public testing::Test {
 
  protected:
   TestPageActionPropertiesProvider properties_provider_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   MockPageActionModelFactory model_factory_;
   PageActionControllerImpl controller_;
   FakeTabInterface tab_interface_;
 };
+
+TEST_F(PageActionControllerMockModelTest,
+       AnchoredMessageTimeoutUserInteraction) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, true));
+  controller().ShowAnchoredMessage(
+      kFirstActionItemId,
+      {.priority = PageActionPriorityCategory::kUserInteraction});
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
+      .Times(0);
+  task_environment_.FastForwardBy(base::Seconds(16));
+}
+
+TEST_F(PageActionControllerMockModelTest,
+       AnchoredMessageTimeoutNonUserInteraction) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, true));
+  controller().ShowAnchoredMessage(
+      kFirstActionItemId,
+      {.priority = PageActionPriorityCategory::kPrivacySecurity});
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
+      .Times(1);
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, false))
+      .Times(1);
+  task_environment_.FastForwardBy(base::Seconds(16));
+}
+
+TEST_F(PageActionControllerMockModelTest,
+       AnchoredMessageTimeoutMultiplePauses) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  TestDelegate delegate;
+  controller().RegisterCallbacks(PageActionPassKey::PassKeyForTesting(),
+                                 kFirstActionItemId, &delegate);
+
+  controller().ShowAnchoredMessage(
+      kFirstActionItemId,
+      {.priority = PageActionPriorityCategory::kPrivacySecurity});
+
+  delegate.expand_callback_.Run();
+  delegate.expand_callback_.Run();
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
+      .Times(0);
+  task_environment_.FastForwardBy(base::Seconds(16));
+
+  delegate.collapse_callback_.Run();
+  task_environment_.FastForwardBy(base::Seconds(16));
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
+      .Times(1);
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, false))
+      .Times(1);
+  delegate.collapse_callback_.Run();
+  task_environment_.FastForwardBy(base::Seconds(16));
+}
+
+TEST_F(PageActionControllerMockModelTest, AnchoredMessageTimeoutResetOnHide) {
+  controller().Initialize(tab_interface(), {kFirstActionItemId},
+                          properties_provider_);
+
+  TestDelegate delegate;
+  controller().RegisterCallbacks(PageActionPassKey::PassKeyForTesting(),
+                                 kFirstActionItemId, &delegate);
+
+  controller().ShowAnchoredMessage(
+      kFirstActionItemId,
+      {.priority = PageActionPriorityCategory::kPrivacySecurity});
+
+  delegate.expand_callback_.Run();
+  controller().HideAnchoredMessage(kFirstActionItemId);
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, true));
+  controller().ShowAnchoredMessage(
+      kFirstActionItemId,
+      {.priority = PageActionPriorityCategory::kPrivacySecurity});
+
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowSuggestionChip(_, true))
+      .Times(1);
+  EXPECT_CALL(models().Get(kFirstActionItemId),
+              SetShouldShowAnchoredMessage(_, false))
+      .Times(1);
+  task_environment_.FastForwardBy(base::Seconds(16));
+}
 
 TEST_F(PageActionControllerMockModelTest, SetAndClearOverrideText) {
   controller().Initialize(tab_interface(), {kFirstActionItemId},

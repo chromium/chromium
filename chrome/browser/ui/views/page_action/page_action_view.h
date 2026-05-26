@@ -81,9 +81,9 @@ class PageActionView : public IconLabelBubbleView,
       IsChipShowingChangedCallback callback) override;
   void SetAnchoredMessageCloseCallback(
       base::RepeatingClosure callback) override;
-  void SetAnchoredMessagePauseCallback(
+  void SetAnchoredMessageExpandCallback(
       base::RepeatingClosure callback) override;
-  void SetAnchoredMessageResumeCallback(
+  void SetAnchoredMessageCollapseCallback(
       base::RepeatingClosure callback) override;
   void SetClickCallback(
       base::RepeatingCallback<void(PageActionTrigger)> callback) override;
@@ -111,8 +111,8 @@ class PageActionView : public IconLabelBubbleView,
   // AnchoredMessageBubbleView::Delegate:
   void AnchoredMessageChipClick() override;
   void CloseAnchoredMessage() override;
-  void PauseAnchoredMessageTimeout() override;
-  void ResumeAnchoredMessageTimeout() override;
+  void AnchoredMessageExpanded() override;
+  void AnchoredMessageCollapsed() override;
 
   actions::ActionId GetActionId() const;
 
@@ -190,8 +190,9 @@ class PageActionView : public IconLabelBubbleView,
   std::unique_ptr<views::Widget> anchored_message_widget_;
 
   base::RepeatingClosure anchored_message_close_callback_ = base::DoNothing();
-  base::RepeatingClosure anchored_message_pause_callback_ = base::DoNothing();
-  base::RepeatingClosure anchored_message_resume_callback_ = base::DoNothing();
+  base::RepeatingClosure anchored_message_expand_callback_ = base::DoNothing();
+  base::RepeatingClosure anchored_message_collapse_callback_ =
+      base::DoNothing();
   base::WeakPtrFactory<PageActionView> weak_factory_{this};
 };
 

@@ -458,7 +458,7 @@ void AnchoredMessageBubbleView::MenuButtonPressed() {
       GetWidget(), nullptr, menu_button_->GetBoundsInScreen(),
       views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
   if (menu_runner_->IsRunning()) {
-    delegate_->PauseAnchoredMessageTimeout();
+    delegate_->AnchoredMessageExpanded();
   } else {
     pressed_lock_.reset();
   }
@@ -466,7 +466,7 @@ void AnchoredMessageBubbleView::MenuButtonPressed() {
 
 void AnchoredMessageBubbleView::OnMenuClosed() {
   pressed_lock_.reset();
-  delegate_->ResumeAnchoredMessageTimeout();
+  delegate_->AnchoredMessageCollapsed();
 }
 
 void AnchoredMessageBubbleView::OnWidgetDestroying(views::Widget* widget) {

@@ -17,8 +17,8 @@ class MockAnchoredMessageDelegate : public AnchoredMessageBubbleView::Delegate {
 
   MOCK_METHOD(void, AnchoredMessageChipClick, (), (override));
   MOCK_METHOD(void, CloseAnchoredMessage, (), (override));
-  MOCK_METHOD(void, PauseAnchoredMessageTimeout, (), (override));
-  MOCK_METHOD(void, ResumeAnchoredMessageTimeout, (), (override));
+  MOCK_METHOD(void, AnchoredMessageExpanded, (), (override));
+  MOCK_METHOD(void, AnchoredMessageCollapsed, (), (override));
 };
 
 }  // namespace page_actions

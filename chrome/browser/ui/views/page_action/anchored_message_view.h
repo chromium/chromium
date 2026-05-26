@@ -59,8 +59,8 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
    public:
     virtual void AnchoredMessageChipClick() = 0;
     virtual void CloseAnchoredMessage() = 0;
-    virtual void PauseAnchoredMessageTimeout() = 0;
-    virtual void ResumeAnchoredMessageTimeout() = 0;
+    virtual void AnchoredMessageExpanded() = 0;
+    virtual void AnchoredMessageCollapsed() = 0;
   };
 
   AnchoredMessageBubbleView(views::BubbleAnchor parent,
