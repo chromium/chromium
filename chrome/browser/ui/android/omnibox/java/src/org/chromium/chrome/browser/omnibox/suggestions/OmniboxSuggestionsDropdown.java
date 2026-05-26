@@ -71,6 +71,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Nullable GestureObserver mGestureObserver;
+    private @Nullable NavigationListener mNavigationListener;
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
     private boolean mToolbarOnTop = true;
@@ -91,6 +92,19 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
          * @param timestamp The timestamp associated with the event.
          */
         void onGesture(boolean isGestureUp, long timestamp);
+    }
+
+    /**
+     * Interface that will receive notifications when the user navigates the Suggestions list
+     * using tab or arrow keys.
+     */
+    public interface NavigationListener {
+        /**
+         * Called when the suggestion list navigation state changes.
+         *
+         * @param isParkedAtSentinel Whether the keyboard selection is parked at the sentinel.
+         */
+        void onNavigationStateChange(boolean isParkedAtSentinel);
     }
 
     /** Scroll manager that propagates scroll event notification to registered observers. */
@@ -366,6 +380,15 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mGestureObserver = observer;
     }
 
+    /**
+     * Sets the listener for when the user navigates the Suggestions list using tab or arrow keys.
+     *
+     * @param listener a listener of this navigation.
+     */
+    public void setNavigationListener(@Nullable NavigationListener listener) {
+        mNavigationListener = listener;
+    }
+
     /** Resets selection typically in response to changes to the list. */
     public void resetSelection() {
         mLayoutScrollListener.scrollToPositionWithOffset(0, 0);
@@ -483,10 +506,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         if (KeyNavigationUtil.isTabNavigation(event)) {
             boolean maybeProcessed = super.onKeyDown(keyCode, event);
             if (maybeProcessed) return true;
-            if (event.isShiftPressed()) {
-                return mSelectionController.selectPreviousItem();
-            }
-            return mSelectionController.selectNextItem();
+            boolean ret =
+                    event.isShiftPressed()
+                            ? mSelectionController.selectPreviousItem()
+                            : mSelectionController.selectNextItem();
+            handleSelectionChange();
+            return ret;
         }
 
         boolean isGoDownKey = KeyNavigationUtil.isGoDown(event);
@@ -494,9 +519,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
         if ((mToolbarOnTop && isGoDownKey) || (!mToolbarOnTop && isGoUpKey)) {
             mSelectionController.selectNextItem();
+            handleSelectionChange();
             return true;
         } else if ((mToolbarOnTop && isGoUpKey) || (!mToolbarOnTop && isGoDownKey)) {
             mSelectionController.selectPreviousItem();
+            handleSelectionChange();
             return true;
         } else if (KeyNavigationUtil.isEnter(event)) {
             if (selectedView != null && !hasAdditionalModifiers) {
@@ -504,6 +531,16 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             }
         }
         return super.onKeyDown(keyCode, event);
+    }
+
+    private void handleSelectionChange() {
+        boolean isParked = mSelectionController.isParkedAtSentinel();
+        if (isParked) {
+            mLayoutScrollListener.scrollToPositionWithOffset(0, 0);
+        }
+        if (mNavigationListener != null) {
+            mNavigationListener.onNavigationStateChange(isParked);
+        }
     }
 
     @Override

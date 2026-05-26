@@ -149,6 +149,9 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
         mScrollListenerList.addObserver(mMediator);
         listModel.set(SuggestionListProperties.GESTURE_OBSERVER, mMediator);
         listModel.set(
+                SuggestionListProperties.NAVIGATION_LISTENER,
+                mMediator::onSuggestionDropdownNavigation);
+        listModel.set(
                 SuggestionListProperties.DROPDOWN_HEIGHT_CHANGE_LISTENER,
                 mMediator::onSuggestionDropdownHeightChanged);
         listModel.set(SuggestionListProperties.DROPDOWN_SCROLL_LISTENER, this::dropdownScrolled);

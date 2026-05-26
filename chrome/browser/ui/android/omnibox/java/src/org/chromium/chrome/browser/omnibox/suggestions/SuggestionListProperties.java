@@ -47,6 +47,13 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
     WritableObjectPropertyKey<OmniboxSuggestionsDropdown.GestureObserver> GESTURE_OBSERVER =
             new WritableObjectPropertyKey<>();
 
+    /**
+     * The listener that will receive notifications when the user navigates the Suggestions list
+     * using tab or arrow keys.
+     */
+    WritableObjectPropertyKey<OmniboxSuggestionsDropdown.NavigationListener> NAVIGATION_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /** The listener that will receive the new height of the suggestion list in pixels. */
     WritableObjectPropertyKey<Callback<Integer>> DROPDOWN_HEIGHT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -107,6 +114,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
                 GESTURE_OBSERVER,
                 IS_LARGE_SCREEN,
                 LIST_IS_FINAL,
+                NAVIGATION_LISTENER,
                 OMNIBOX_SESSION_ACTIVE,
                 ROUND_TOP_CORNERS,
                 SUGGESTION_MODELS,

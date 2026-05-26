@@ -2191,4 +2191,17 @@ public class AutocompleteMediatorUnitTest {
 
         verifyLoadUrl(JUnitTestGURLs.RED_1);
     }
+
+    @Test
+    public void onNavigation_parkedAtSentinelInZeroPrefixState_clearsText() {
+        var session = createEmptySession();
+        session.getAutocompleteInput().setUserText("");
+        mMediator.beginInput(session);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        mMediator.onSuggestionDropdownNavigation(true);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mAutocompleteDelegate).setOmniboxEditingText("");
+    }
 }

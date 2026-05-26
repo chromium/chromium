@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
@@ -54,6 +55,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     private @Mock Runnable mDropdownScrollToTopListener;
     private @Mock OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Mock View mView;
+    private @Mock OmniboxSuggestionsDropdown.NavigationListener mNavigationListener;
 
     private Context mContext;
     private OmniboxSuggestionsDropdown mDropdown;
@@ -393,5 +395,17 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
         mDropdown.setAllowParkingAtSentinel(false);
         assertFalse(controller.isParkedAtSentinel());
+    }
+
+    @Test
+    public void testNavigationListener_notifiedOnKeyDown() {
+        mDropdown.setNavigationListener(mNavigationListener);
+        when(mDropdown.isShown()).thenReturn(true);
+
+        mDropdown.onKeyDown(
+                KeyEvent.KEYCODE_TAB,
+                new KeyEvent(0, 0, KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_TAB, 0));
+
+        verify(mNavigationListener).onNavigationStateChange(anyBoolean());
     }
 }

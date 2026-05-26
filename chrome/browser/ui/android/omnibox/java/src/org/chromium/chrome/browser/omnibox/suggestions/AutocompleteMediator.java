@@ -867,6 +867,12 @@ class AutocompleteMediator
         }
     }
 
+    /* package */ void onSuggestionDropdownNavigation(boolean isParkedAtSentinel) {
+        if (isParkedAtSentinel && Boolean.TRUE.equals(mOmniboxInZeroPrefixState)) {
+            mDelegate.setOmniboxEditingText("");
+        }
+    }
+
     /**
      * Triggered when the user long presses the omnibox suggestion. A delete confirmation dialog
      * will be shown.
@@ -1075,12 +1081,11 @@ class AutocompleteMediator
         // is final, which, in turn, may suppress certain functionality from getting invoked if the
         // subsequent push is immediately `final`.
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, false);
-
+        mIgnoreOmniboxItemSelection = true;
         boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
         boolean allowParking =
                 isInZeroPrefixContext || !OmniboxCapabilities.hasDesktopExperience(mContext);
         mListPropertyModel.set(SuggestionListProperties.ALLOW_PARKING_AT_SENTINEL, allowParking);
-        mIgnoreOmniboxItemSelection = true;
         cancelAutocompleteRequests();
 
         // The user recently focused the Omnibox, began typing, or cleared the Omnibox.

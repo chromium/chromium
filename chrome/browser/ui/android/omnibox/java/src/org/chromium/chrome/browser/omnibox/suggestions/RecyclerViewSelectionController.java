@@ -42,6 +42,15 @@ public class RecyclerViewSelectionController extends SelectionController
     }
 
     @Override
+    boolean setPosition(int newPosition) {
+        boolean retVal = super.setPosition(newPosition);
+        if (isParkedAtSentinel()) {
+            mLastSelectedItemIndex = RecyclerView.NO_POSITION;
+        }
+        return retVal;
+    }
+
+    @Override
     public void onChildViewAttachedToWindow(View view) {
         // Force update selection of the view that might come from a recycle pool.
         setItemState(mLastSelectedItemIndex, true);
