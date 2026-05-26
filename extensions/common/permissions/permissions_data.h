@@ -208,6 +208,11 @@ class PermissionsData {
                            int tab_id,
                            std::string* error) const;
 
+  // Returns true if there's a user host restriction that blocks `document_url`,
+  // unless there is one that explicitly allows it. Returns false if feature
+  // kExtensionsMenuAccessControl is not enabled.
+  bool IsUrlBlockedByUser(const GURL& document_url) const;
+
   // Returns true if the associated extension has permission to inject a
   // content script on the page.
   // If this returns false and `error` is non-NULL, `error` will be popualted

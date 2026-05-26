@@ -34,6 +34,8 @@ namespace extensions {
 
 namespace {
 
+constexpr char kErrorBlocked[] = "Blocked";
+
 PermissionsData::PolicyDelegate* g_policy_delegate = nullptr;
 
 struct URLPatternAccessSet {
@@ -529,6 +531,17 @@ bool PermissionsData::CanCaptureVisiblePage(
       return false;
     }
 
+    // We can't use GetPageAccess() here because that would require developers
+    // using the pageCapture API to declare host_permissions in their manifest,
+    // and that's not part of the API spec. In lieu of that, check for URLs the
+    // user has specifically disallowed. https://crbug.com/514503077
+    if (IsUrlBlockedByUser(origin_url)) {
+      if (error) {
+        *error = kErrorBlocked;
+      }
+      return false;
+    }
+
     // If the URL is a typical web URL, the pageCapture permission is
     // sufficient.
     if ((origin_url.SchemeIs(url::kHttpScheme) ||
@@ -611,6 +624,30 @@ bool PermissionsData::IsPolicyBlockedHostUnsafe(const GURL& url) const {
          !policy_allowed_hosts_unsafe_.MatchesURL(url);
 }
 
+bool PermissionsData::IsUrlBlockedByUser(const GURL& document_url) const {
+  // Only applies when per-URL extension blocking is enabled.
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl)) {
+    return false;
+  }
+
+  if (!context_id_ || location_ == mojom::ManifestLocation::kComponent ||
+      Manifest::IsPolicyLocation(location_)) {
+    return false;
+  }
+
+  base::AutoLock lock(GetContextPermissionsLock());
+  auto& context_permissions = GetContextPermissions(*context_id_);
+  // Check if the host is restricted by the user. `allowed_hosts` takes
+  // precedent over `blocked_hosts`. Note that, today, PermissionsManager
+  // ensures there's no overlap, but this will change if/when
+  // PermissionsManager uses URLPatterns instead of origins.
+  return context_permissions.user_restrictions.blocked_hosts.MatchesURL(
+             document_url) &&
+         !context_permissions.user_restrictions.allowed_hosts.MatchesURL(
+             document_url);
+}
+
 PermissionsData::PageAccess PermissionsData::CanRunOnPage(
     const GURL& document_url,
     const URLPatternSet& permitted_url_patterns,
@@ -628,28 +665,14 @@ PermissionsData::PageAccess PermissionsData::CanRunOnPage(
   if (IsRestrictedUrl(document_url, error))
     return PageAccess::kDenied;
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl) &&
-      context_id_ && location_ != mojom::ManifestLocation::kComponent &&
-      !Manifest::IsPolicyLocation(location_)) {
-    base::AutoLock lock(GetContextPermissionsLock());
-    auto& context_permissions = GetContextPermissions(*context_id_);
-    // Check if the host is restricted by the user. `allowed_hosts` takes
-    // precedent over `blocked_hosts`. Note that, today, PermissionsManager
-    // ensures there's no overlap, but this will change if/when
-    // PermissionsManager uses URLPatterns instead of origins.
-    if (context_permissions.user_restrictions.blocked_hosts.MatchesURL(
-            document_url) &&
-        !context_permissions.user_restrictions.allowed_hosts.MatchesURL(
-            document_url)) {
-      if (error) {
-        // TODO(crbug.com/40803363): What level of information should
-        // we specify here? Policy host restrictions pass a descriptive error
-        // back to the extension; is there any harm in doing so?
-        *error = "Blocked";
-      }
-      return PageAccess::kDenied;
+  if (IsUrlBlockedByUser(document_url)) {
+    if (error) {
+      // TODO(crbug.com/40803363): What level of information should
+      // we specify here? Policy host restrictions pass a descriptive error
+      // back to the extension; is there any harm in doing so?
+      *error = kErrorBlocked;
     }
+    return PageAccess::kDenied;
   }
 
   if (tab_url_patterns && tab_url_patterns->MatchesURL(document_url))

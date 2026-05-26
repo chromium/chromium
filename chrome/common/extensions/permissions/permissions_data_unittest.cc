@@ -1791,4 +1791,30 @@ TEST_F(CaptureVisiblePageTest, PolicyBlockedURLs) {
   }
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+// TODO(crbug.com/427298257): Enable on desktop Android.
+TEST_F(CaptureVisiblePageTest, PageCapture_UserBlockedURLs) {
+  // Allow per-host user restrictions.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      extensions_features::kExtensionsMenuAccessControl);
+
+  // Apply a user host restriction.
+  URLPattern blocked_url(URLPattern::SCHEME_ALL, "https://blocked.com/*");
+  int context_id = 8;
+  URLPatternSet blocked_patterns({blocked_url});
+  PermissionsData::SetUserHostRestrictions(
+      context_id, std::move(blocked_patterns), URLPatternSet());
+  page_capture().permissions_data()->SetContextId(context_id);
+
+  // The user restricted URL can't be captured.
+  EXPECT_FALSE(CanCapture(page_capture(), GURL("https://blocked.com"),
+                          extensions::CaptureRequirement::kPageCapture));
+
+  // An arbitrary URL can be captured.
+  EXPECT_TRUE(CanCapture(page_capture(), GURL("https://allowed.com/"),
+                         extensions::CaptureRequirement::kPageCapture));
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
 }  // namespace extensions
