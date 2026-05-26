@@ -17258,8 +17258,7 @@
                         "on_device_model_free_space_mb_required_to_background_install": "50000"
                     },
                     "enable_features": [
-                        "OnDeviceModelBackgroundDownload",
-                        "ShowOnDeviceAiSettings"
+                        "OnDeviceModelBackgroundDownload"
                     ]
                 }
             ]

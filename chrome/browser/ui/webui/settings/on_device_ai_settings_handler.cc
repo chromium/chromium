@@ -20,7 +20,7 @@ using optimization_guide::model_execution::prefs::localstate::
 
 namespace features {
 // Feature flag for "On-device AI" toggle on chrome://settings page.
-BASE_FEATURE(kShowOnDeviceAiSettings, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kShowOnDeviceAiSettings, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace features
 
 namespace settings {
