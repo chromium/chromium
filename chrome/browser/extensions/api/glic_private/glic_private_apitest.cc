@@ -45,7 +45,7 @@ class GlicPrivateApiTest : public GlicPrivateApiTestBase {
          {extensions_features::kApiGlicAccessFromGoogleWebpage, {}},
          {features::kGlicActor,
           {{"glic_actor_policy_control_exemption", "true"}}}},
-        {});
+        {{features::kGlicShowForSignedOut}});
   }
 
  private:

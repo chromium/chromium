@@ -169,6 +169,16 @@ BASE_FEATURE(kGlicContentsInitiallyHidden,
 BASE_FEATURE(kGlicAnchorEntryPointForOnboardedUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If kGlicShowForSignedOut is enabled, the GiC panel can be shown to signed out
+// users to show the sign-in promotion.
+BASE_FEATURE(kGlicShowForSignedOut,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
+
 // Killswitch that controls whether to update the WebContents visibility state
 // when toggling the Glic panel.
 BASE_FEATURE(kGlicSetWebContentsVisibilityWhenToggling,

@@ -697,7 +697,28 @@ TEST_F(GlicEnablingAnchorEntryPointTestBase,
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(GlicEnablingTrustFirstOnboardingTest, NotSignedIn_ReturnsIneligible) {
+TEST_F(GlicEnablingTrustFirstOnboardingTest,
+       NotSignedIn_ReturnsSignInRequired) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kGlicShowForSignedOut);
+
+  glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
+      prefs::FreStatus::kIncomplete);
+
+  // Simulate "Not signed in" by removing the primary account.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  signin::ClearPrimaryAccount(identity_manager);
+
+  EXPECT_EQ(GlicEnabling::GetProfileReadyState(profile()),
+            mojom::ProfileReadyState::kSignInRequired);
+}
+
+TEST_F(GlicEnablingTrustFirstOnboardingTest,
+       NotSignedIn_FeatureDisabled_ReturnsIneligible) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kGlicShowForSignedOut);
+
   glic::GlicKeyedService::Get(profile())->enabling().SetCompletedFre(
       prefs::FreStatus::kIncomplete);
 

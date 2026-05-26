@@ -345,7 +345,6 @@ void GlicEnabling::ProfileEnablement::RecordMetrics(
       base::StrCat(
           {"Glic.ProfileEnablement.IsPrimaryAccountFullySignedIn.", suffix}),
       primary_account_is_fully_signed_in);
-
   if (suffix == "Startup" && anchor_entrypoint_override_active) {
     auto record_disabled_reason = [&](FeatureDisabledReason reason) {
       base::UmaHistogramEnumeration(
@@ -357,6 +356,11 @@ void GlicEnabling::ProfileEnablement::RecordMetrics(
 
     RecordFeatureDisabledReasonsWith(*this, record_disabled_reason);
   }
+
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Glic.ProfileEnablement.IsPrimaryAccountNeedsSignedIn.", suffix}),
+      primary_account_needs_signed_in);
 }
 
 void GlicEnabling::ProfileEnablement::RecordFeatureDisabledReason(
@@ -419,10 +423,14 @@ GlicEnabling::ProfileEnablement GlicEnabling::EnablementForProfile(
             identity_manager->GetPrimaryAccountId(
                 signin::ConsentLevel::kSignin));
 
-    // Not having a primary account is considered ineligible, as is kUnknown
-    // for the required account capability (checked further below).
+    // Not having a primary account is considered not fully signed in if the
+    // kGlicShowForSignedOut feature is enabled. Otherwise, it is ineligible.
     if (primary_account.IsEmpty()) {
-      result.primary_account_is_capable = false;
+      if (base::FeatureList::IsEnabled(features::kGlicShowForSignedOut)) {
+        result.primary_account_needs_signed_in = true;
+      } else {
+        result.primary_account_is_capable = false;
+      }
     } else {
       // Check if the profile is currently paused.
       if (identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
@@ -681,7 +689,8 @@ mojom::ProfileReadyState GlicEnabling::GetProfileReadyState(Profile* profile) {
     return mojom::ProfileReadyState::kDisabledByAdmin;
   }
 
-  if (!enablement.primary_account_is_fully_signed_in) {
+  if (!enablement.primary_account_is_fully_signed_in ||
+      enablement.primary_account_needs_signed_in) {
     return mojom::ProfileReadyState::kSignInRequired;
   }
 

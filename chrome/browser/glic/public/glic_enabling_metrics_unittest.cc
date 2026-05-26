@@ -62,6 +62,8 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
       "Glic.ProfileEnablement.EligibleForLive.Startup", true, 1);
   histograms.ExpectUniqueSample(
       "Glic.ProfileEnablement.IsPrimaryAccountFullySignedIn.Startup", true, 1);
+  histograms.ExpectUniqueSample(
+      "Glic.ProfileEnablement.IsPrimaryAccountNeedsSignedIn.Startup", false, 1);
   histograms.ExpectTotalCount("Glic.ProfileEnablement.DisabledReason.Startup",
                               0);
 
@@ -71,6 +73,7 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
   enablement.fre_is_consented = false;
   enablement.live_allowed = false;
   enablement.primary_account_is_fully_signed_in = false;
+  enablement.primary_account_needs_signed_in = true;
 
   enablement.RecordSteadyStateMetrics();
 
@@ -94,6 +97,9 @@ TEST(GlicProfileEnablementTest, RecordMetrics) {
       "Glic.ProfileEnablement.EligibleForLive.SteadyState", false, 1);
   histograms.ExpectUniqueSample(
       "Glic.ProfileEnablement.IsPrimaryAccountFullySignedIn.SteadyState", false,
+      1);
+  histograms.ExpectUniqueSample(
+      "Glic.ProfileEnablement.IsPrimaryAccountNeedsSignedIn.SteadyState", true,
       1);
 }
 

@@ -226,6 +226,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     bool is_rolled_out : 1 = true;
     bool primary_account_is_capable : 1 = true;
     bool primary_account_is_fully_signed_in : 1 = true;
+    // The profile is signed out, but kGlicShowForSignedOut is enabled, so the
+    // GiC panel can be shown to show the sign-in promotion.
+    bool primary_account_needs_signed_in : 1 = false;
     bool allowed_by_chrome_policy : 1 = true;
     bool allowed_by_remote_admin : 1 = true;
     bool allowed_by_remote_other : 1 = true;

@@ -125,10 +125,11 @@ AuthController::TokenState AuthController::GetTokenState() const {
 
   CoreAccountId account_id =
       identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
-  // If the user is signed-out, Glic shouldn't be running. Return an error
-  // to avoid crashing if sign-out happens while Glic is loading.
+  // If the user is signed-out, they need to sign in if the feature is enabled.
   if (account_id.empty()) {
-    return TokenState::kUnknownError;
+    return base::FeatureList::IsEnabled(features::kGlicShowForSignedOut)
+               ? TokenState::kRequiresSignIn
+               : TokenState::kUnknownError;
   }
 
   if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
