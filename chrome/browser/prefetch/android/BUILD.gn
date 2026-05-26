@@ -100,6 +100,7 @@ generate_jni("jni_headers") {
     ":*",
     "//chrome/android:jni_headers",
     "//chrome/browser",
+    "//chrome/browser/android",
   ]
   sources = [ "java/src/org/chromium/chrome/browser/prefetch/settings/PreloadPagesSettingsBridge.java" ]
 }

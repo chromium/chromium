@@ -329,6 +329,7 @@ source_set("unit_tests") {
 
   if (is_android) {
     deps += [
+      "//chrome/browser/android",
       "//chrome/browser/bookmarks",
       "//chrome/browser/ui/android/tab_model:test_support",
     ]

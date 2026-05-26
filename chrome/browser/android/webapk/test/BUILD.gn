@@ -14,4 +14,8 @@ source_set("webapk_test_support") {
     "//chrome/browser/android/webapk:webapk_sources",
     "//components/sync:test_support",
   ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/android" ]
+  }
 }

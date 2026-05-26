@@ -2068,6 +2068,10 @@ if (_is_default_toolchain) {
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+
+    if (is_android) {
+      deps += [ "//chrome/browser/android" ]
+    }
   }
 
   chrome_public_apk_or_module_tmpl("chrome_public_apk") {
@@ -3182,6 +3186,10 @@ if (_is_default_toolchain) {
       "//components/variations",
       "//url",
     ]
+
+    if (is_android) {
+      deps += [ "//chrome/browser/android" ]
+    }
   }
 
   # This is a list of all base module jni headers. New features should add their

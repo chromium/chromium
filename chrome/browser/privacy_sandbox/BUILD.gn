@@ -349,6 +349,10 @@ source_set("settings_delegate_unittest") {
     "//content/public/common",
     "//content/test:test_support",
   ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/android" ]
+  }
 }
 
 source_set("utils_unittest") {

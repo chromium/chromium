@@ -16,7 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
-#include "chrome/browser/android/profile_key_util.h"
+#include "chrome/browser/android/profile_key_util.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #include "chrome/browser/download/android/download_dialog_utils.h"

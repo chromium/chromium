@@ -361,7 +361,10 @@ robolectric_library("junit") {
 }
 
 source_set("android") {
-  visibility = [ "//chrome/browser" ]
+  visibility = [
+    "//chrome/browser",
+    "//chrome/browser/android",
+  ]
 
   sources = [ "rename_utils.cc" ]
 

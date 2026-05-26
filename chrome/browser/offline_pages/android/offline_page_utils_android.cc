@@ -5,7 +5,7 @@
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_web_contents_delegate_android.h"
+#include "chrome/browser/android/tab_web_contents_delegate_android.h"  // nogncheck crbug.com/40147906
 #include "chrome/browser/download/android/download_dialog_utils.h"
 #include "chrome/browser/download/android/duplicate_download_dialog_bridge.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"

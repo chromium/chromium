@@ -24,6 +24,7 @@ source_set("clients") {
     "//media/test/*",
 
     # TODO(liberato): can we avoid this?
+    "//chrome/browser/android",
     "//content/test/*",
     "//third_party/blink/renderer/modules/mediarecorder",
     "//third_party/blink/renderer/modules/peerconnection",

@@ -123,6 +123,7 @@ source_set("sync_integration_tests_impl") {
     # (upstream) and android_live_sync_integration_tests (downstream).
     deps += [
       "//chrome:chrome_android_core",
+      "//chrome/browser/android",
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/ui:ui_features",
       "//chrome/test:chrome_test_launcher",
@@ -542,6 +543,7 @@ source_set("sync_integration_test_support") {
     ]
 
     deps += [
+      "//chrome/browser/android",
       "//chrome/browser/android:tabs_public",
       "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/password_manager/android:utils",

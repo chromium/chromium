@@ -89,6 +89,7 @@ generate_jni("jni_headers") {
   visibility = [
     ":*",
     "//chrome/browser",
+    "//chrome/browser/android",
     "//chrome/browser/sync",
   ]
   sources = [

@@ -1644,6 +1644,7 @@ if (is_android) {
       "//chrome/browser:defaults",
       "//chrome/browser:process_singleton",
       "//chrome/browser:startup_data",
+      "//chrome/browser/android",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/lifetime",
       "//chrome/browser/payments:impl",

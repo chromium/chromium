@@ -29,7 +29,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/tab_printer.h"
+#include "chrome/browser/android/tab_printer.h"  // nogncheck crbug.com/40147906
 #include "printing/printing_context_android.h"
 #endif
 
