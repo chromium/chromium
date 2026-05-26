@@ -89,7 +89,6 @@ def __step_config(ctx, step_config):
         "tools/grit/pak_util.py",
         "tools/grit/preprocess_if_expr.py",
         "tools/licenses/licenses.py",
-        "tools/media_engagement_preload/make_dafsa.py",
 
         # merge_xml.py relies on expand_owners.py, which
         # executes dirmd (depot_tools) that queries local git repository

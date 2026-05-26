@@ -19,7 +19,7 @@ action_foreach("generate_preload_list") {
   ]
 
   deps = [
-    "//chrome/browser/media:media_engagement_preload_proto",
+    "//chrome/browser/media:media_engagement_preload_proto_gen",
     "//third_party/protobuf:py_proto",
   ]
 }
