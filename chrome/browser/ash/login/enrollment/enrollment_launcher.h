@@ -9,10 +9,17 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/memory/scoped_refptr.h"
 
 class GoogleServiceAuthError;
+class PrefService;
+
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
 
 namespace policy {
+class BrowserPolicyConnectorAsh;
 struct EnrollmentConfig;
 class EnrollmentStatus;
 }  // namespace policy
@@ -74,7 +81,12 @@ class EnrollmentLauncher {
   };
 
   // Factory method. Caller takes ownership of the returned object.
+  // `local_state` and `browser_policy_connector_ash` must be non-null and must
+  // outlive the returned object. `shared_url_loader_factory` must be non-null.
   static std::unique_ptr<EnrollmentLauncher> Create(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       EnrollmentStatusConsumer* status_consumer,
       const policy::EnrollmentConfig& enrollment_config,
       const std::string& enrolling_user_domain);

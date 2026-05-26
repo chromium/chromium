@@ -84,7 +84,7 @@ class EnrollmentScreen
   EnrollmentScreen(
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-      const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
       base::WeakPtr<EnrollmentScreenView> view,
       ErrorScreen* error_screen,
       const ScreenExitCallback& exit_callback);
@@ -280,7 +280,7 @@ class EnrollmentScreen
   const raw_ref<PrefService> local_state_;
   const scoped_refptr<network::SharedURLLoaderFactory>
       shared_url_loader_factory_;
-  const raw_ref<const policy::BrowserPolicyConnectorAsh>
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
       browser_policy_connector_ash_;
 
   base::WeakPtr<EnrollmentScreenView> view_;

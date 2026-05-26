@@ -23,8 +23,10 @@
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_launcher.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_launcher.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_requisition_manager.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
+#include "chrome/browser/ash/settings/scoped_test_device_settings_service.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -38,6 +40,8 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -126,18 +130,27 @@ class DemoSetupControllerTest : public testing::Test {
   ~DemoSetupControllerTest() override = default;
 
   void SetUp() override {
+    device_settings_service_ =
+        std::make_unique<ScopedTestDeviceSettingsService>();
+    test_install_attributes_ = std::make_unique<ScopedStubInstallAttributes>();
+
     SystemSaltGetter::Initialize();
     DBusThreadManager::Initialize();
     SessionManagerClient::InitializeFake();
-    DeviceSettingsService::Initialize();
     policy::EnrollmentRequisitionManager::Initialize(
         CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state()));
 
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->InitializeComponentManager();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
     tested_controller_.emplace(
         TestingBrowserProcess::GetGlobal()->local_state(),
+        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
+        TestingBrowserProcess::GetGlobal()
+            ->platform_part()
+            ->browser_policy_connector_ash(),
         TestingBrowserProcess::GetGlobal()
             ->platform_part()
             ->component_manager_ash());
@@ -152,7 +165,14 @@ class DemoSetupControllerTest : public testing::Test {
     SessionManagerClient::Shutdown();
     DBusThreadManager::Shutdown();
     SystemSaltGetter::Shutdown();
-    DeviceSettingsService::Shutdown();
+
+    // TestingBrowserProcess::DeleteInstance() is needed here because
+    // InstallAttributes must outlive DeviceCloudPolicyStoreAsh, which is
+    // transitively owned by TestingBrowserProcess.
+    TestingBrowserProcess::DeleteInstance();
+
+    test_install_attributes_.reset();
+    device_settings_service_.reset();
   }
 
   static std::string GetDeviceRequisition() {
@@ -172,8 +192,10 @@ class DemoSetupControllerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  private:
-  ScopedStubInstallAttributes test_install_attributes_;
+  std::unique_ptr<ScopedTestDeviceSettingsService> device_settings_service_;
+  std::unique_ptr<ScopedStubInstallAttributes> test_install_attributes_;
   system::ScopedFakeStatisticsProvider statistics_provider_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 TEST_F(DemoSetupControllerTest, OnlineSuccess) {

@@ -48,6 +48,8 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace arc {
@@ -621,7 +623,12 @@ TEST_F(ChromeArcUtilTest, ArcUnmanagedToManagedTransition) {
 class ArcOobeTest : public ChromeArcUtilTest,
                     public testing::WithParamInterface<bool> {
  public:
-  ArcOobeTest() {
+  ArcOobeTest() = default;
+  ArcOobeTest(const ArcOobeTest&) = delete;
+  ArcOobeTest& operator=(const ArcOobeTest&) = delete;
+  ~ArcOobeTest() override = default;
+
+  void SetUp() override {
     if (GetParam()) {
       scoped_feature_list_.InitAndEnableFeature(ash::features::kCrosPrivacyHub);
     } else {
@@ -634,19 +641,24 @@ class ArcOobeTest : public ChromeArcUtilTest,
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->InitializeComponentManager();
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+        test_url_loader_factory_.GetSafeWeakWrapper());
+
+    ChromeArcUtilTest::SetUp();
   }
 
-  ArcOobeTest(const ArcOobeTest&) = delete;
-  ArcOobeTest& operator=(const ArcOobeTest&) = delete;
-
-  ~ArcOobeTest() override {
+  void TearDown() override {
     // Fake display host have to be shut down first, as it may access
     // configuration.
     fake_login_display_host_.reset();
 
+    ChromeArcUtilTest::TearDown();
+
+    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     TestingBrowserProcess::GetGlobal()
         ->platform_part()
         ->ShutdownComponentManager();
+
     oobe_configuration_.reset();
     ash::ConciergeClient::Shutdown();
   }
@@ -666,6 +678,7 @@ class ArcOobeTest : public ChromeArcUtilTest,
   std::unique_ptr<ash::OobeConfiguration> oobe_configuration_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  network::TestURLLoaderFactory test_url_loader_factory_;
 };
 
 // Testing both states of the `ash::features::kCrosPrivacyHub` feature.

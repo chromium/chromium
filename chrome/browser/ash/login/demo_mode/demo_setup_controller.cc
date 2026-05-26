@@ -482,9 +482,14 @@ std::string DemoSetupController::GetDemoSetupStepString(
 
 DemoSetupController::DemoSetupController(
     PrefService* local_state,
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     scoped_refptr<component_updater::ComponentManagerAsh> component_manager_ash)
     : local_state_(CHECK_DEREF(local_state)),
+      shared_url_loader_factory_(std::move(shared_url_loader_factory)),
+      browser_policy_connector_ash_(CHECK_DEREF(browser_policy_connector_ash)),
       component_manager_ash_(std::move(component_manager_ash)) {
+  CHECK(shared_url_loader_factory_);
   CHECK(component_manager_ash_);
 }
 
@@ -637,8 +642,10 @@ void DemoSetupController::OnDemoComponentsLoaded() {
   policy::EnrollmentConfig config =
       policy::EnrollmentConfig::GetDemoModeEnrollmentConfig();
 
-  enrollment_launcher_ =
-      EnrollmentLauncher::Create(this, config, policy::kDemoModeDomain);
+  enrollment_launcher_ = EnrollmentLauncher::Create(
+      &local_state_.get(), shared_url_loader_factory_,
+      &browser_policy_connector_ash_.get(), this, config,
+      policy::kDemoModeDomain);
   enrollment_launcher_->EnrollUsingAttestation();
 }
 

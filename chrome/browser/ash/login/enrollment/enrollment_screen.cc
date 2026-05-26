@@ -139,7 +139,7 @@ EnrollmentScreen* EnrollmentScreen::Get(ScreenManager* manager) {
 EnrollmentScreen::EnrollmentScreen(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    const policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+    policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
     base::WeakPtr<EnrollmentScreenView> view,
     ErrorScreen* error_screen,
     const ScreenExitCallback& exit_callback)
@@ -235,8 +235,10 @@ bool EnrollmentScreen::AdvanceToNextAuth() {
 
 void EnrollmentScreen::CreateEnrollmentLauncher() {
   if (!enrollment_launcher_) {
-    enrollment_launcher_ = EnrollmentLauncher::Create(this, effective_config_,
-                                                      enrolling_user_domain_);
+    enrollment_launcher_ = EnrollmentLauncher::Create(
+        &local_state_.get(), shared_url_loader_factory_,
+        &browser_policy_connector_ash_.get(), this, effective_config_,
+        enrolling_user_domain_);
   }
 }
 

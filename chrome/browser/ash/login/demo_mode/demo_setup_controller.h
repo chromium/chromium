@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -19,9 +20,14 @@
 
 class PrefService;
 
+namespace network {
+class SharedURLLoaderFactory;
+}  // namespace network
+
 namespace policy {
+class BrowserPolicyConnectorAsh;
 class EnrollmentStatus;
-}
+}  // namespace policy
 
 namespace ash {
 
@@ -230,12 +236,15 @@ class DemoSetupController
   // Converts a step enum to a string e.g. to sent to JavaScript.
   static std::string GetDemoSetupStepString(const DemoSetupStep step_enum);
 
-  // `local_state` must be non-null and must be valid while the main run loop is
-  // running.
-  // `component_manager_ash` must be non-null.
-  DemoSetupController(PrefService* local_state,
-                      scoped_refptr<component_updater::ComponentManagerAsh>
-                          component_manager_ash);
+  // `local_state` and `browser_policy_connector_ash` must be non-null and must
+  // outlive `this`.
+  // `shared_url_loader_factory` and `component_manager_ash` must be non-null.
+  DemoSetupController(
+      PrefService* local_state,
+      scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
+      policy::BrowserPolicyConnectorAsh* browser_policy_connector_ash,
+      scoped_refptr<component_updater::ComponentManagerAsh>
+          component_manager_ash);
 
   DemoSetupController(const DemoSetupController&) = delete;
   DemoSetupController& operator=(const DemoSetupController&) = delete;
@@ -315,6 +324,10 @@ class DemoSetupController
   void Reset();
 
   const raw_ref<PrefService> local_state_;
+  const scoped_refptr<network::SharedURLLoaderFactory>
+      shared_url_loader_factory_;
+  const raw_ref<policy::BrowserPolicyConnectorAsh>
+      browser_policy_connector_ash_;
   const scoped_refptr<component_updater::ComponentManagerAsh>
       component_manager_ash_;
 
