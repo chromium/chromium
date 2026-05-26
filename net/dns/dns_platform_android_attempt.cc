@@ -6,6 +6,7 @@
 
 #include <android/multinetwork.h>
 #include <android/versioning.h>
+#include <poll.h>
 #include <stdint.h>
 
 #include <set>
@@ -17,6 +18,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/sequence_checker.h"
 #include "base/strings/cstring_view.h"
@@ -61,6 +63,17 @@ int MapSystemErrorWithoutPending(int system_error) {
 }
 
 constexpr int kInvalidFd = -1;
+
+bool IsFdReadable(int fd) {
+  struct pollfd pfd = {
+    .fd = fd,
+    .events = POLLIN};
+  int rv = HANDLE_EINTR(poll(&pfd, 1, 0));
+  bool readable = rv > 0 && (pfd.revents & POLLIN);
+  base::UmaHistogramBoolean(
+      "Net.DNS.DnsPlatformAndroidAttempt.FdAlreadyReadable", readable);
+  return readable;
+}
 
 }  // namespace
 
@@ -183,14 +196,16 @@ int DnsPlatformAndroidAttempt::DoQueryComplete(int result) {
     return result;
   }
 
-  if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
-          fd_, /*persistent=*/false, base::MessagePumpForIO::WATCH_READ,
-          &read_fd_watcher_, this)) {
+  int rv = ERR_IO_PENDING;
+  if (IsFdReadable(fd_)) {
+    rv = OK;
+  } else if (!base::CurrentIOThread::Get()->WatchFileDescriptor(
+                 fd_, /*persistent=*/false, base::MessagePumpForIO::WATCH_READ,
+                 &read_fd_watcher_, this)) {
     return ERR_UNEXPECTED;
   }
-
   next_state_ = State::kReadResponse;
-  return ERR_IO_PENDING;
+  return rv;
 }
 
 int DnsPlatformAndroidAttempt::DoReadResponse() {
