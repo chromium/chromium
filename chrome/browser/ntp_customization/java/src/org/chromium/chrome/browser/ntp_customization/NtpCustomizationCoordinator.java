@@ -32,6 +32,8 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.ntp_customization.feed.FeedSettingsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.most_visited_tiles.MvtSettingsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.ntp_cards.NtpCardsCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager.SnackBarState;
 import org.chromium.chrome.browser.ntp_customization.theme.NtpThemeCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.tip.NtpThemeTipCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -278,11 +280,17 @@ public class NtpCustomizationCoordinator {
                     new NtpThemeTipCoordinator(
                             mContext,
                             mDelegate,
-                            view -> showThemeBottomSheet(),
+                            this::onCustomizeButtonClicked,
                             () -> mMediator.dismissBottomSheet(/* animate= */ false));
         }
         mMediator.setParentForBackOperations(THEME, THEME_TIP);
         mMediator.showBottomSheet(THEME_TIP);
+    }
+
+    private void onCustomizeButtonClicked(View view) {
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PROMO_OPEN, /* taskId= */ 0);
+        showThemeBottomSheet();
     }
 
     void dismissBottomSheet() {

@@ -7,10 +7,18 @@ package org.chromium.chrome.browser.ntp_customization.theme;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.os.Build;
+import android.view.ContextThemeWrapper;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -31,8 +39,12 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManag
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationTestHelper;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
+import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager.SnackBarState;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.url.JUnitTestGURLs;
@@ -49,12 +61,18 @@ public class NtpCustomizationPromoManagerUnitTest {
 
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Tab mTab;
+    @Mock private SnackbarManager mSnackbarManager;
+    private Context mContext;
 
     private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
 
     @Before
     public void setUp() {
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
         NtpCustomizationPolicyManager policyManager = mock(NtpCustomizationPolicyManager.class);
         NtpCustomizationPolicyManager.setInstanceForTesting(policyManager);
         when(policyManager.isNtpCustomBackgroundEnabled()).thenReturn(true);
@@ -64,6 +82,7 @@ public class NtpCustomizationPromoManagerUnitTest {
 
     @After
     public void tearDown() {
+        NtpCustomizationPromoManager.resetForTesting();
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
         mEdgeToEdgeStateProvider.detach();
     }
@@ -213,5 +232,119 @@ public class NtpCustomizationPromoManagerUnitTest {
         // Reset flag and preferences.
         ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
+    }
+
+    @Test
+    public void testMaybeUpdateShowThemeTipSnackbarState_transitions() {
+        int taskId = 123;
+
+        // Initial state
+        assertEquals(SnackBarState.NOT_SET, NtpCustomizationPromoManager.getStateForTesting());
+
+        // NOT_SET -> PROMO_OPEN
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PROMO_OPEN, taskId);
+        assertEquals(SnackBarState.PROMO_OPEN, NtpCustomizationPromoManager.getStateForTesting());
+
+        // PROMO_OPEN -> PENDING_ON_RECREATE
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PENDING_ON_RECREATE, taskId);
+        assertEquals(
+                SnackBarState.PENDING_ON_RECREATE,
+                NtpCustomizationPromoManager.getStateForTesting());
+        assertEquals(taskId, NtpCustomizationPromoManager.getTaskIdForRecreateForTesting());
+    }
+
+    @Test
+    public void testMaybeUpdateShowThemeTipSnackbarState_shownNoForceShow() {
+        int taskId = 123;
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.SHOWN);
+
+        // Try to transition to PROMO_OPEN when SHOWN and forceShow is false
+        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PROMO_OPEN, taskId);
+        assertEquals(SnackBarState.SHOWN, NtpCustomizationPromoManager.getStateForTesting());
+    }
+
+    @Test
+    public void testMaybeUpdateShowThemeTipSnackbarState_shownWithForceShow() {
+        int taskId = 123;
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.SHOWN);
+
+        // Try to transition to PROMO_OPEN when SHOWN and forceShow is true
+        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PROMO_OPEN, taskId);
+        assertEquals(SnackBarState.PROMO_OPEN, NtpCustomizationPromoManager.getStateForTesting());
+
+        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+    }
+
+    @Test
+    public void testMaybeUpdateShowThemeTipSnackbarState_promoOpenFailsIfNotNotSet() {
+        int taskId = 123;
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.PENDING_ON_RECREATE);
+
+        // Try to transition to PROMO_OPEN when state is PENDING_ON_RECREATE and forceShow is false
+        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PROMO_OPEN, taskId);
+        assertEquals(
+                SnackBarState.PENDING_ON_RECREATE,
+                NtpCustomizationPromoManager.getStateForTesting());
+    }
+
+    @Test
+    public void testMaybeUpdateShowThemeTipSnackbarState_pendingOnRecreateFailsIfNotPromoOpen() {
+        int taskId = 123;
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.NOT_SET);
+
+        // Try to transition to PENDING_ON_RECREATE when state is NOT_SET
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PENDING_ON_RECREATE, taskId);
+        assertEquals(SnackBarState.NOT_SET, NtpCustomizationPromoManager.getStateForTesting());
+    }
+
+    @Test
+    public void testMaybeShowHomepageCustomizationSnackbarOnRecreate_success() {
+        int taskId = 123;
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.PENDING_ON_RECREATE);
+        NtpCustomizationPromoManager.setTaskIdForRecreateForTesting(taskId);
+
+        clearInvocations(mSnackbarManager);
+        NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnRecreate(
+                mContext, mSnackbarManager, taskId);
+
+        verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+        assertEquals(SnackBarState.SHOWN, NtpCustomizationPromoManager.getStateForTesting());
+    }
+
+    @Test
+    public void testMaybeShowHomepageCustomizationSnackbarOnRecreate_wrongTaskId() {
+        int taskId = 123;
+        int wrongTaskId = 456;
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.PENDING_ON_RECREATE);
+        NtpCustomizationPromoManager.setTaskIdForRecreateForTesting(taskId);
+
+        NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnRecreate(
+                mContext, mSnackbarManager, wrongTaskId);
+
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+        assertEquals(
+                SnackBarState.PENDING_ON_RECREATE,
+                NtpCustomizationPromoManager.getStateForTesting());
+    }
+
+    @Test
+    public void testMaybeShowHomepageCustomizationSnackbarOnRecreate_wrongState() {
+        int taskId = 123;
+        NtpCustomizationPromoManager.setStateForTesting(SnackBarState.PROMO_OPEN);
+
+        NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnRecreate(
+                mContext, mSnackbarManager, taskId);
+
+        verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+        assertEquals(SnackBarState.PROMO_OPEN, NtpCustomizationPromoManager.getStateForTesting());
     }
 }

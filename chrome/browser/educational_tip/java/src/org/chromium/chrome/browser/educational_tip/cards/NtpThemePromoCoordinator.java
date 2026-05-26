@@ -11,6 +11,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.educational_tip.EducationTipModuleActionDelegate;
 import org.chromium.chrome.browser.educational_tip.EducationalTipCardProvider;
 import org.chromium.chrome.browser.educational_tip.R;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager;
+import org.chromium.chrome.browser.ntp_customization.theme.NtpCustomizationPromoManager.SnackBarState;
 
 /** Coordinator for the NTP theme promo card. */
 @NullMarked
@@ -65,6 +67,8 @@ public class NtpThemePromoCoordinator implements EducationalTipCardProvider {
 
     @Override
     public void onCardClicked() {
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PROMO_OPEN, /* taskId= */ 0);
         mOnClickedRunnable.run();
     }
 

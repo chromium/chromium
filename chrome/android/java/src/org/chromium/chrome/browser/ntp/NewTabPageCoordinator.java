@@ -20,6 +20,7 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
@@ -293,6 +294,9 @@ public class NewTabPageCoordinator implements ModuleDelegateHost {
                 };
         mModel.set(NewTabPageLayoutProperties.DELEGATE, mLayoutDelegate);
         sCount++;
+
+        NtpCustomizationPromoManager.maybeShowHomepageCustomizationSnackbarOnRecreate(
+                mActivity, mSnackbarManager, ApplicationStatus.getTaskId(mActivity));
     }
 
     /**

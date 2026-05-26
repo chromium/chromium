@@ -1481,6 +1481,9 @@
       <message name="IDS_NTP_CUSTOMIZATION_THEME_TIP_CUSTOMIZE_BUTTON" desc="Button text for the NTP theme tip bottom sheet to go to customization.">
         Customize my homepage
       </message>
+      <message name="IDS_NTP_CUSTOMIZATION_THEME_SNACKBAR_TEXT" desc="A notification snackbar message advising the user that they can customize their homepage later from the three dots menu.">
+        Edit your homepage later via the 3-dots menu.
+      </message>
       <message name="IDS_NTP_CUSTOMIZATION_MAIN_BOTTOM_SHEET_OPENED_FULL" desc="Accessibility string that describes the new tab page customization main bottom sheet is fully opened.">
         Customize your new tab page bottom sheet opened at full height
       </message>
