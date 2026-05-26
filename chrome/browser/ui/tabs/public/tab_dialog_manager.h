@@ -167,6 +167,9 @@ class TabDialogManager : public content::WebContentsObserver,
   void TabWillEnterBackground(TabInterface* tab_interface);
   void TabWillDetach(TabInterface* tab_interface,
                      TabInterface::DetachReason reason);
+  void OnDiscardContents(TabInterface* tab,
+                         content::WebContents* old_contents,
+                         content::WebContents* new_contents);
 
   bool GetDialogWidgetVisibility();
 
