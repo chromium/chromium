@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/presentation_time_recorder.h"
 
@@ -48,8 +49,9 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionInitializing() {
       start_action_ == OverviewStartAction::kDragWindowFromShelf) {
     base::trace_event::EmitNamedTrigger("ash-overview-start");
   }
-  TRACE_EVENT_BEGIN("ui", "OverviewController::EnterOverview",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "ui", "OverviewController::EnterOverview",
+      perfetto::NamedTrack::FromPointer("ash::OverviewSession", this));
 
   auto enter_presentation_time_recorder =
       CreatePresentationTimeHistogramRecorder(
@@ -73,8 +75,9 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionInitialized(
 void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
   RecordOverviewEndAction(session_->overview_end_action());
 
-  TRACE_EVENT_BEGIN("ui", "OverviewController::ExitOverview",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "ui", "OverviewController::ExitOverview",
+      perfetto::NamedTrack::FromPointer("ash::OverviewSession", this));
 
   const DeskBarVisibility desk_bar_visibility =
       desk_bar_shown_immediately_
@@ -101,15 +104,19 @@ void OverviewSessionMetricsRecorder::OnOverviewSessionEnding() {
 
 void OverviewSessionMetricsRecorder::OnOverviewModeStartingAnimationComplete(
     bool canceled) {
-  TRACE_EVENT_END("ui", /* OverviewController::EnterOverview */
-                  perfetto::Track::FromPointer(this), "canceled", canceled);
+  TRACE_EVENT_END(
+      "ui", /* OverviewController::EnterOverview */
+      perfetto::NamedTrack::FromPointer("ash::OverviewSession", this),
+      "canceled", canceled);
 }
 
 void OverviewSessionMetricsRecorder::OnOverviewModeEndingAnimationComplete(
     bool canceled) {
   has_finished_exit_overview_trace_event_ = true;
-  TRACE_EVENT_END("ui", /* OverviewController::ExitOverview */
-                  perfetto::Track::FromPointer(this), "canceled", canceled);
+  TRACE_EVENT_END(
+      "ui", /* OverviewController::ExitOverview */
+      perfetto::NamedTrack::FromPointer("ash::OverviewSession", this),
+      "canceled", canceled);
 }
 
 bool OverviewSessionMetricsRecorder::IsDeskBarOpen() const {
