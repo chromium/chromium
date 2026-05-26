@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_user_status_code.h"
 #include "chrome/browser/glic/glic_user_status_fetcher.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
@@ -108,12 +109,6 @@ std::ostream& operator<<(
 }
 
 namespace {
-
-bool IsLikelyDogfoodClient() {
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
-  return variations_service && variations_service->IsLikelyDogfoodClient();
-}
 
 bool ActuationEnabledForManagedUser(Profile& profile,
                                     actor::AggregatedJournal& journal) {
@@ -410,7 +405,7 @@ GlicActorPolicyChecker::ComputeActOnWebCapability() {
                           CannotActReason::kAccountCapabilityIneligible);
   }
 
-  bool is_likely_dogfood_client = IsLikelyDogfoodClient();
+  bool is_likely_dogfood_client = GlicEnabling::IsLikelyDogfoodClient();
   if (is_likely_dogfood_client) {
     return log_and_return(CanActOutcome::kYes, "is likely dogfood client");
   }

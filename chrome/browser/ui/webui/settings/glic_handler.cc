@@ -468,8 +468,7 @@ bool GlicHandler::ShouldShowWebActuationToggle(Profile* profile) {
   if (base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
     // Always show the toggle for internal dogfooders, mirroring the bypass in
     // GlicActorPolicyChecker.
-    auto* variations_service = g_browser_process->variations_service();
-    if (variations_service && variations_service->IsLikelyDogfoodClient()) {
+    if (glic::GlicEnabling::IsLikelyDogfoodClient()) {
       return true;
     }
     // Strict subscription check for external users.

@@ -128,6 +128,10 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
   // will not change at runtime.
   static bool IsEnabledByGlobalCriteria();
 
+  // Checks whether this client is likely a dogfooder, taking the ignore dogfood
+  // feature into account.
+  static bool IsLikelyDogfoodClient();
+
   // Returns true if a profile is eligible for Glic. Some profiles - such as
   // incognito, guest, system profile, etc. - are never eligible. An eligible
   // profile is one where Glic could potentially be enabled, regardless of

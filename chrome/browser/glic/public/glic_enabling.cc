@@ -556,6 +556,16 @@ bool GlicEnabling::IsEnabledByGlobalCriteria() {
 }
 
 // static
+bool GlicEnabling::IsLikelyDogfoodClient() {
+  if (base::FeatureList::IsEnabled(features::kGlicIgnoreDogfoodClient)) {
+    return false;
+  }
+  variations::VariationsService* variations_service =
+      g_browser_process->variations_service();
+  return variations_service && variations_service->IsLikelyDogfoodClient();
+}
+
+// static
 bool GlicEnabling::IsProfileEligible(Profile* profile) {
   if (g_bypass_enablement_checks_for_testing) {
     return true;
@@ -999,10 +1009,7 @@ GlicEnabling::GetExperimentalTriggeringState() const {
   bool is_managed = is_device_managed || has_managed_account;
 
   // Apply policy if managed, unless it's a dogfood client.
-  variations::VariationsService* variations_service =
-      g_browser_process->variations_service();
-  bool is_likely_dogfood_client =
-      variations_service && variations_service->IsLikelyDogfoodClient();
+  bool is_likely_dogfood_client = IsLikelyDogfoodClient();
 
   if (is_managed && !is_likely_dogfood_client) {
     // Check policy
