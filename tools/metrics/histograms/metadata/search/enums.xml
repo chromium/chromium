@@ -571,6 +571,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Invalid choice metadata: Other"/>
   <int value="7" label="Missing default search engine"/>
   <int value="8" label="Choice remade after import"/>
+  <int value="9" label="Program changed"/>
 </enum>
 
 <!-- LINT.IfChange(SearchPolicyConflictType) -->
