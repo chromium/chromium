@@ -3133,7 +3133,7 @@ class CONTENT_EXPORT NavigationRequest
   // navigation.
   CrossOriginOpenerPolicyStatus coop_status_{this};
 
-#if DCHECK_IS_ON()
+#if !BUILDFLAG(IS_ANDROID)
   bool is_safe_to_delete_ = true;
 #endif
 

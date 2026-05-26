@@ -2288,14 +2288,15 @@ NavigationRequest::~NavigationRequest() {
   TRACE_EVENT("navigation", "NavigationRequest::~NavigationRequest",
               perfetto::TerminatingFlow::FromPointer(this));
   is_destructing_ = true;
-#if DCHECK_IS_ON()
+
+#if !BUILDFLAG(IS_ANDROID)
   // If |is_safe_to_delete_| is false, it means |this| is being deleted at an
   // unexpected time, more specifically a time that is likely to lead to
   // crashing when the stack unwinds (use after free). The typical scenario for
   // this is calling to the delegate when the delegate is not expected to make
   // any sort of state change. For example, when the delegate is informed that a
   // navigation has started the delegate is not expected to call Stop().
-  DCHECK(is_safe_to_delete_);
+  CHECK(is_safe_to_delete_);
 #endif
 
   // Close "Initializing", or the last child event emitted in
@@ -2501,7 +2502,15 @@ void NavigationRequest::BeginNavigation() {
   // Cancel the navigation if it is an invalid attempt to navigate away from
   // an initial WebUI page.
   if (should_cancel_on_leaving_initial_webui_) {
+#if BUILDFLAG(IS_ANDROID)
+    base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
+#endif
     StartNavigation();
+#if BUILDFLAG(IS_ANDROID)
+    if (!this_ptr) {
+      return;
+    }
+#endif
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
         /*skip_throttles=*/false, /*error_page_content=*/std::nullopt,
@@ -2534,7 +2543,19 @@ void NavigationRequest::BeginNavigation() {
               "CSP Embedded Enforcement is specified by the embedder",
               sanitized_blocked_url.spec().c_str()));
 
+#if BUILDFLAG(IS_ANDROID)
+      base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
+#endif
       StartNavigation();
+#if BUILDFLAG(IS_ANDROID)
+      if (!this_ptr) {
+        // DO NOT ADD CODE after this. The previous call to StartNavigation has
+        // destroyed the NavigationRequest.
+        // TODO(crbug.com/504574017): Remove if we can disallow StartNavigation
+        // from triggering synchronous deletion.
+        return;
+      }
+#endif
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_BLOCKED_BY_CSP),
           false /*skip_throttles*/, std::nullopt /*error_page_content*/,
@@ -2796,7 +2817,19 @@ void NavigationRequest::OnFencedFrameURLMappingComplete(
       return;
     }
 
+#if BUILDFLAG(IS_ANDROID)
+    base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
+#endif
     StartNavigation();
+#if BUILDFLAG(IS_ANDROID)
+    if (!this_ptr) {
+      // DO NOT ADD CODE after this. The previous call to StartNavigation has
+      // destroyed the NavigationRequest.
+      // TODO(crbug.com/504574017): Remove if we can disallow StartNavigation
+      // from triggering synchronous deletion.
+      return;
+    }
+#endif
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
         false /* skip_throttles */, std::nullopt /* error_page_content*/,
@@ -2919,6 +2952,15 @@ void NavigationRequest::BeginNavigationImpl() {
     // Create a navigation handle so that the correct error code can be set on
     // it by OnRequestFailedInternal().
     StartNavigation();
+#if BUILDFLAG(IS_ANDROID)
+    if (!this_ptr) {
+      // DO NOT ADD CODE after this. The previous call to StartNavigation has
+      // destroyed the NavigationRequest.
+      // TODO(crbug.com/504574017): Remove if we can disallow StartNavigation
+      // from triggering synchronous deletion.
+      return;
+    }
+#endif
     OnRequestFailedInternal(network::URLLoaderCompletionStatus(net_error),
                             false /* skip_throttles */,
                             std::nullopt /* error_page_content */,
@@ -2933,6 +2975,15 @@ void NavigationRequest::BeginNavigationImpl() {
     // Create a navigation handle so that the correct error code can be set on
     // it by OnRequestFailedInternal().
     StartNavigation();
+#if BUILDFLAG(IS_ANDROID)
+    if (!this_ptr) {
+      // DO NOT ADD CODE after this. The previous call to StartNavigation has
+      // destroyed the NavigationRequest.
+      // TODO(crbug.com/504574017): Remove if we can disallow StartNavigation
+      // from triggering synchronous deletion.
+      return;
+    }
+#endif
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_ABORTED);
     error_navigation_trigger_ =
@@ -2951,6 +3002,15 @@ void NavigationRequest::BeginNavigationImpl() {
     // Create a navigation handle so that the correct error code can be set on
     // it by OnRequestFailedInternal().
     StartNavigation();
+#if BUILDFLAG(IS_ANDROID)
+    if (!this_ptr) {
+      // DO NOT ADD CODE after this. The previous call to StartNavigation has
+      // destroyed the NavigationRequest.
+      // TODO(crbug.com/504574017): Remove if we can disallow StartNavigation
+      // from triggering synchronous deletion.
+      return;
+    }
+#endif
     auto completion_status =
         network::URLLoaderCompletionStatus(net::ERR_NETWORK_ACCESS_REVOKED);
     OnRequestFailedInternal(completion_status, false /* skip_throttles  */,
@@ -2963,6 +3023,15 @@ void NavigationRequest::BeginNavigationImpl() {
   }
 
   StartNavigation();
+#if BUILDFLAG(IS_ANDROID)
+  if (!this_ptr) {
+    // DO NOT ADD CODE after this. The previous call to StartNavigation has
+    // destroyed the NavigationRequest.
+    // TODO(crbug.com/504574017): Remove if we can disallow StartNavigation
+    // from triggering synchronous deletion.
+    return;
+  }
+#endif
 
   // The previous call to `StartNavigation()` could have changed the
   // is_overriding_user_agent value in CommitNavigationParams. If we're trying
@@ -3353,12 +3422,26 @@ void NavigationRequest::StartNavigation() {
   }
 
   {
-#if DCHECK_IS_ON()
-    DCHECK(is_safe_to_delete_);
-    base::AutoReset<bool> resetter(&is_safe_to_delete_, false);
-#endif
-    base::AutoReset<bool> resetter2(&ua_change_requires_reload_, false);
+#if !BUILDFLAG(IS_ANDROID)
+    {
+      CHECK(is_safe_to_delete_);
+      base::AutoReset<bool> resetter(&is_safe_to_delete_, false);
+      base::AutoReset<bool> resetter2(&ua_change_requires_reload_, false);
+      GetDelegate()->DidStartNavigation(this);
+    }
+#else
+    // Since there's no `is_safe_to_delete_` check, do a manual
+    // `ua_change_requires_reload_` reset so that AutoReset does not write to a
+    // deleted object if observers of DidStartNavigation cancel this
+    // NavigationRequest.
+    const bool saved_ua_change_requires_reload = ua_change_requires_reload_;
+    ua_change_requires_reload_ = false;
+    base::WeakPtr<NavigationRequest> weak_this = weak_factory_.GetWeakPtr();
     GetDelegate()->DidStartNavigation(this);
+    if (weak_this) {
+      ua_change_requires_reload_ = saved_ua_change_requires_reload;
+    }
+#endif
   }
 }
 
@@ -8309,11 +8392,21 @@ void NavigationRequest::OnWillRedirectRequestProcessed(
   if (result.action() == NavigationThrottle::PROCEED) {
     // Notify the delegate that a redirect was encountered and will be followed.
     if (GetDelegate()) {
-#if DCHECK_IS_ON()
-      DCHECK(is_safe_to_delete_);
+      // TODO(crbug.com/504574017): Remove the WeakPtr check once Android
+      // WebView can avoid the synchronous deletion case.
+#if BUILDFLAG(IS_ANDROID)
+      base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
+#else
+      CHECK(is_safe_to_delete_);
       base::AutoReset<bool> resetter(&is_safe_to_delete_, false);
 #endif
       GetDelegate()->DidRedirectNavigation(this);
+#if BUILDFLAG(IS_ANDROID)
+      if (!this_ptr) {
+        // The NavigationRequest was deleted during the above call.
+        return;
+      }
+#endif
     }
   } else {
     SetState(CANCELING);
@@ -9173,11 +9266,21 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
   commit_params_->origin_to_commit = origin_to_commit.value();
 
   if (!IsSameDocument()) {
-#if DCHECK_IS_ON()
-    DCHECK(is_safe_to_delete_);
+    // TODO(crbug.com/504574017): Remove the WeakPtr check once Android
+    // WebView can avoid the synchronous deletion case.
+#if BUILDFLAG(IS_ANDROID)
+    base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
+#else
+    CHECK(is_safe_to_delete_);
     base::AutoReset<bool> resetter(&is_safe_to_delete_, false);
 #endif
     GetDelegate()->ReadyToCommitNavigation(this);
+#if BUILDFLAG(IS_ANDROID)
+    if (!this_ptr) {
+      // The NavigationRequest was deleted during the above call.
+      return;
+    }
+#endif
   }
 
 #if !BUILDFLAG(IS_ANDROID)

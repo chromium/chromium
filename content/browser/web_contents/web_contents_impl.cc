@@ -7584,17 +7584,29 @@ bool WebContentsImpl::FocusLocationBarByDefault() {
 void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidStartNavigation",
                "navigation_handle", navigation_handle);
+  const bool is_in_main_frame = navigation_handle->IsInMainFrame();
+  const bool is_in_primary_main_frame =
+      navigation_handle->IsInPrimaryMainFrame();
+  const bool is_renderer_initiated = navigation_handle->IsRendererInitiated();
+  const GURL url = navigation_handle->GetURL();
+
   base::ElapsedTimer duration;
   observers_.NotifyObservers(&WebContentsObserver::DidStartNavigation,
                              navigation_handle);
+  // WARNING: DO NOT use |navigation_handle| after this point. An observer may
+  // have destroyed the NavigationRequest, rendering the pointer invalid. See
+  // crbug.com/504574017. We set `navigation_handle` to nullptr here to prevent
+  // accidental usage in that case.
+  navigation_handle = nullptr;
   base::TimeDelta elapsed = duration.Elapsed();
   base::UmaHistogramTimes("WebContentsObserver.DidStartNavigation", elapsed);
+
   base::UmaHistogramTimes(
-      base::StrCat(
-          {"WebContentsObserver.DidStartNavigation.",
-           navigation_handle->IsInMainFrame() ? "MainFrame" : "Subframe"}),
+      base::StrCat({"WebContentsObserver.DidStartNavigation.",
+                    is_in_main_frame ? "MainFrame" : "Subframe"}),
       elapsed);
-  if (navigation_handle->IsInPrimaryMainFrame()) {
+
+  if (is_in_primary_main_frame) {
     // `notify_disconnection_` may be reset during discard operations, ensure
     // this is restored when the when contents is re-navigated.
     notify_disconnection_ = true;
@@ -7611,9 +7623,8 @@ void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
     // are all aimed at ensuring no such attacker-controlled navigation can
     // trigger this.
     should_focus_location_bar_by_default_ =
-        GetController().IsInitialNavigation() &&
-        !navigation_handle->IsRendererInitiated() &&
-        navigation_handle->GetURL() == url::kAboutBlankURL;
+        GetController().IsInitialNavigation() && !is_renderer_initiated &&
+        url == url::kAboutBlankURL;
   }
 }
 
@@ -7621,19 +7632,31 @@ void WebContentsImpl::DidRedirectNavigation(
     NavigationHandle* navigation_handle) {
   TRACE_EVENT1("navigation", "WebContentsImpl::DidRedirectNavigation",
                "navigation_handle", navigation_handle);
+  const ReloadType reload_type = navigation_handle->GetReloadType();
+  base::WeakPtr<RenderFrameHostImpl> rfh_weak;
+  if (reload_type != ReloadType::NONE) {
+    rfh_weak = NavigationRequest::From(navigation_handle)
+                   ->frame_tree_node()
+                   ->current_frame_host()
+                   ->GetWeakPtr();
+  }
+
   {
     SCOPED_UMA_HISTOGRAM_TIMER("WebContentsObserver.DidRedirectNavigation");
     observers_.NotifyObservers(&WebContentsObserver::DidRedirectNavigation,
                                navigation_handle);
   }
+  // WARNING: DO NOT use |navigation_handle| after this point. An observer may
+  // have destroyed the NavigationRequest, rendering the pointer invalid. See
+  // crbug.com/504574017. We set `navigation_handle` to nullptr here to prevent
+  // accidental usage in that case.
+  navigation_handle = nullptr;
+
   // Notify accessibility if this is a reload. This has to called on the
   // BrowserAccessibilityManager associated with the old RFHI.
-  if (navigation_handle->GetReloadType() != ReloadType::NONE) {
-    NavigationRequest* request = NavigationRequest::From(navigation_handle);
+  if (reload_type != ReloadType::NONE && rfh_weak) {
     ui::BrowserAccessibilityManager* manager =
-        request->frame_tree_node()
-            ->current_frame_host()
-            ->browser_accessibility_manager();
+        rfh_weak->browser_accessibility_manager();
     if (manager) {
       manager->UserIsReloading();
     }
@@ -7646,10 +7669,16 @@ void WebContentsImpl::ReadyToCommitNavigation(
                "navigation_handle", navigation_handle);
   CHECK(!navigation_handle->IsSameDocument());
 
+  const bool is_in_main_frame = navigation_handle->IsInMainFrame();
+  const bool is_renderer_initiated = navigation_handle->IsRendererInitiated();
+  const GURL url = navigation_handle->GetURL();
+  const net::Error net_error_code = navigation_handle->GetNetErrorCode();
+  const std::optional<net::SSLInfo> ssl_info = navigation_handle->GetSSLInfo();
+
   // Notify the OS that the workload is about to increase for main frame
   // navigations only. This a trade off between latency and power - we don't
   // want to do it for every navigation.
-  if (navigation_handle->IsInMainFrame()) {
+  if (is_in_main_frame) {
     auto* gpu_process_host =
         GpuProcessHost::Get(GPU_PROCESS_KIND_SANDBOXED, /*force_create=*/false);
     if (gpu_process_host) {
@@ -7662,6 +7691,11 @@ void WebContentsImpl::ReadyToCommitNavigation(
 
   observers_.NotifyObservers(&WebContentsObserver::ReadyToCommitNavigation,
                              navigation_handle);
+  // WARNING: DO NOT use |navigation_handle| after this point. An observer may
+  // have destroyed the NavigationRequest, rendering the pointer invalid. See
+  // crbug.com/504574017. We set `navigation_handle` to nullptr here to prevent
+  // accidental usage in that case.
+  navigation_handle = nullptr;
 
   // If any domains are blocked from accessing 3D APIs because they may
   // have caused the GPU to reset recently, unblock them here if the user
@@ -7678,9 +7712,8 @@ void WebContentsImpl::ReadyToCommitNavigation(
   //
   // TODO(crbug.com/40571460): HasUserGesture comes from the renderer
   // process and isn't validated. Until it is, don't trust it.
-  if (!navigation_handle->IsRendererInitiated()) {
-    GpuDataManagerImpl::GetInstance()->UnblockDomainFrom3DAPIs(
-        navigation_handle->GetURL());
+  if (!is_renderer_initiated) {
+    GpuDataManagerImpl::GetInstance()->UnblockDomainFrom3DAPIs(url);
   }
 
   // SSLInfo is not needed on subframe navigations since the main-frame
@@ -7690,19 +7723,11 @@ void WebContentsImpl::ReadyToCommitNavigation(
   // existing cert exceptions being revoked, which leads to weird behavior with
   // committed interstitials or while offline. We only need the error check for
   // the main frame case.
-  if (navigation_handle->IsInMainFrame() &&
-      navigation_handle->GetNetErrorCode() == net::OK) {
-    static_cast<NavigationRequest*>(navigation_handle)
-        ->frame_tree_node()
-        ->frame_tree()
-        .controller()
-        .ssl_manager()
-        ->DidStartResourceResponse(
-            url::SchemeHostPort(navigation_handle->GetURL()),
-            navigation_handle->GetSSLInfo().has_value()
-                ? net::IsCertStatusError(
-                      navigation_handle->GetSSLInfo()->cert_status)
-                : false);
+  if (is_in_main_frame && net_error_code == net::OK) {
+    GetController().ssl_manager()->DidStartResourceResponse(
+        url::SchemeHostPort(url),
+        ssl_info.has_value() ? net::IsCertStatusError(ssl_info->cert_status)
+                             : false);
   }
 }
 
