@@ -48,20 +48,25 @@ bool PushableMediaStreamAudioSource::Broker::IsRunning() {
 }
 
 void PushableMediaStreamAudioSource::Broker::PushAudioData(
-    scoped_refptr<media::AudioBuffer> data) {
+    scoped_refptr<media::AudioBuffer> data,
+    base::TimeTicks capture_time) {
   base::AutoLock locker(lock_);
   if (!source_)
     return;
 
+  if (capture_time.is_null()) {
+    capture_time = base::TimeTicks() + data->timestamp();
+  }
+
   if (!should_deliver_audio_on_audio_task_runner_ ||
       audio_task_runner_->RunsTasksInCurrentSequence()) {
-    source_->DeliverData(std::move(data));
+    source_->DeliverData(std::move(data), capture_time);
   } else {
     PostCrossThreadTask(
         *audio_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
             &PushableMediaStreamAudioSource::Broker::PushAudioData,
-            WrapRefCounted(this), std::move(data)));
+            WrapRefCounted(this), std::move(data), capture_time));
   }
 }
 
@@ -135,7 +140,8 @@ void PushableMediaStreamAudioSource::PushAudioData(
 }
 
 void PushableMediaStreamAudioSource::DeliverData(
-    scoped_refptr<media::AudioBuffer> data) {
+    scoped_refptr<media::AudioBuffer> data,
+    base::TimeTicks capture_time) {
   DCHECK(data);
   broker_->AssertLockAcquired();
 
@@ -166,7 +172,7 @@ void PushableMediaStreamAudioSource::DeliverData(
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBuffer::WrapOrCopyToAudioBus(data);
 
-  DeliverDataToTracks(*audio_bus, base::TimeTicks() + data->timestamp(), {});
+  DeliverDataToTracks(*audio_bus, capture_time, {});
 }
 
 bool PushableMediaStreamAudioSource::EnsureSourceIsStarted() {
