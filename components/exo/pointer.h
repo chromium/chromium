@@ -272,6 +272,12 @@ class Pointer : public SurfaceTreeHost,
   // this is not null.
   raw_ptr<aura::Window> capture_window_ = nullptr;
 
+  // True iff `this` is currently registered as a pre-target handler on
+  // aura::Env. Tracked explicitly because EnablePointerCapture() can be called
+  // for multiple surfaces without an intervening DisablePointerCapture(), and
+  // EventTarget permits duplicate handlers but only removes one per call.
+  bool env_pre_target_handler_added_ = false;
+
   // True if this pointer is permitted to be captured.
   //
   // Set false when a user action (except focus loss) breaks pointer capture.

