@@ -47,6 +47,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/controls/separator.h"
+#include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_types.h"
@@ -194,7 +195,15 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   set_corner_radius(kAnchoredMessageHeight / 2);
   set_margins(kAnchoredMessageMarginsInset);
 
-  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  auto* animating_layout =
+      SetLayoutManager(std::make_unique<views::AnimatingLayoutManager>());
+  animating_layout
+      ->SetBoundsAnimationMode(
+          views::AnimatingLayoutManager::BoundsAnimationMode::kAnimateMainAxis)
+      .SetOrientation(views::LayoutOrientation::kVertical);
+
+  auto* layout = animating_layout->SetTargetLayoutManager(
+      std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kVertical);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
 
