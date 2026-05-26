@@ -22,9 +22,12 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/layout/layout_provider.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -188,6 +191,14 @@ IndigoOnboardingDialog::IndigoOnboardingDialog(
   widget_ = tab_dialog_manager->CreateTabScopedDialog(delegate_.get());
   widget_->MakeCloseSynchronous(base::BindOnce(
       &IndigoOnboardingDialog::OnWidgetClosed, base::Unretained(this)));
+
+  // Request rounded corners. See WebUIBubbleDialogView and
+  // SearchEngineChoiceDialogView for similar examples.
+  views::WebView* web_view_ptr =
+      static_cast<views::WebView*>(delegate_->GetContentsView());
+  web_view_ptr->holder()->SetCornerRadii(
+      gfx::RoundedCornersF(views::LayoutProvider::Get()->GetCornerRadiusMetric(
+          views::ShapeContextTokens::kDialogRadius)));
 
   auto params = std::make_unique<tabs::TabDialogManager::Params>();
   tab_dialog_manager->ShowDialog(widget_.get(), std::move(params));
