@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>
-      Test MediaStreamAudioSourceNode with renderSizeHint
+      Test MediaStreamAudioDestinationNode with renderSizeHint
     </title>
     <script src="../../resources/testharness.js"></script>
     <script src="../../resources/testharnessreport.js"></script>
@@ -19,26 +19,26 @@
         {hint: 500, label: 'non-power-of-two (500)'}
       ];
 
-      let mediaStream = null;
-
-      promise_setup(async () => {
-        mediaStream =
-            await navigator.mediaDevices.getUserMedia({audio: true});
-      });
-
       for (const {hint, label} of TEST_CASES) {
-        // Verify MediaStreamAudioSourceNode with custom renderSizeHint.
-        // This ensures that WebAudioMediaStreamAudioSink correctly accommodates
-        // custom render quantum sizes when pulling data from a live stream,
-        // preventing hardcoded buffer size mismatches (Bug 502311300).
+        // Verify MediaStreamAudioDestinationNode with custom renderSizeHint.
+        // This ensures that WebAudioMediaStreamAudioSink and the destination
+        // node correctly handle custom render quantum sizes in a loopback
+        // configuration without crashes.
         promise_test(async (t) => {
           const context = new AudioContext({renderSizeHint: hint});
           t.add_cleanup(() => context.close());
 
-          const source =
-              new MediaStreamAudioSourceNode(context, {mediaStream});
-          const result =
-              await probeRenderSizeHint(context, source, processorPath);
+          const srcNode = new ConstantSourceNode(context);
+          const dest = new MediaStreamAudioDestinationNode(context);
+          srcNode.connect(dest);
+          srcNode.start();
+
+          const mediaStreamSource = new MediaStreamAudioSourceNode(context, {
+            mediaStream: dest.stream
+          });
+
+          const result = await probeRenderSizeHint(
+              context, mediaStreamSource, processorPath);
 
           assert_equals(
               result.probedRenderQuantumSize,
@@ -49,7 +49,7 @@
               result.processBlockSize,
               hint,
               'Process block size should match negotiated size');
-        }, `MediaStreamAudioSourceNode block size matches custom ` +
+        }, `MediaStreamAudioDestinationNode block size matches custom ` +
            `renderSizeHint: ${label}`);
       }
     </script>
