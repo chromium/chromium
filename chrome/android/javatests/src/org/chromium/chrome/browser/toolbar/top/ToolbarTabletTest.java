@@ -11,6 +11,7 @@ import static org.chromium.ui.test.util.RenderTestRule.Component.UI_BROWSER_TOOL
 
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.test.filters.SmallTest;
 
@@ -28,8 +29,10 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -275,5 +278,53 @@ public class ToolbarTabletTest {
                 (ViewGroup.MarginLayoutParams) bookmarkButton.getLayoutParams();
         assertEquals("Start margin mismatch", marginHorizontal, lp.getMarginStart());
         assertEquals("End margin mismatch", marginHorizontal, lp.getMarginEnd());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.TOOLBAR_SNAPSHOT_REFACTOR)
+    public void testToolbarSnapshotRefactorFlagEnabled() {
+        int expectedTabStripHeight =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.tab_strip_height);
+        int expectedToolbarHeight =
+                mActivityTestRule
+                        .getActivity()
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+
+        // Capture live view locations directly off the active UI hierarchy tree.
+        View toolbarContainer =
+                mActivityTestRule.getActivity().findViewById(R.id.toolbar_container);
+        View hairline = mActivityTestRule.getActivity().findViewById(R.id.toolbar_hairline);
+        View toolbarView = mActivityTestRule.getActivity().findViewById(R.id.toolbar);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    MarginLayoutParams toolbarContainerParams =
+                            (MarginLayoutParams) toolbarContainer.getLayoutParams();
+                    MarginLayoutParams hairlineParams =
+                            (MarginLayoutParams) hairline.getLayoutParams();
+                    MarginLayoutParams toolbarParams =
+                            (MarginLayoutParams) toolbarView.getLayoutParams();
+
+                    assertEquals(
+                            "Toolbar container top margin should be the tab strip height.",
+                            expectedTabStripHeight,
+                            toolbarContainerParams.topMargin);
+
+                    assertEquals(
+                            "Hairline top margin should be the toolbar height.",
+                            expectedToolbarHeight,
+                            hairlineParams.topMargin);
+
+                    assertEquals(
+                            "Inner toolbar view top margin should be stripped down to 0 under the"
+                                    + " snapshot refactor.",
+                            0,
+                            toolbarParams.topMargin);
+                });
     }
 }
