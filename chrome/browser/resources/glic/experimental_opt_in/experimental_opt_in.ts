@@ -11,6 +11,13 @@ import {ExperimentalOptInPageHandler} from './glic_experimental_opt_in.mojom-web
 
 const handler = ExperimentalOptInPageHandler.getRemote();
 
+function onNewWindow(e: Event) {
+  const newWindowEvent = e as unknown as chrome.webviewTag.NewWindowEvent;
+  newWindowEvent.preventDefault();
+  handler.validateAndOpenLinkInNewTab(newWindowEvent.targetUrl);
+  newWindowEvent.stopPropagation();
+}
+
 async function init() {
   const webview = getRequiredElement<chrome.webviewTag.WebView>('webview');
 
@@ -46,6 +53,8 @@ async function init() {
                         handler.reject();
                       }
                     }) as EventListener);
+
+  webview.addEventListener('newwindow', onNewWindow as EventListener);
 }
 
 if (document.readyState === 'loading') {

@@ -18,11 +18,14 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/widget.h"
+#include "url/gurl.h"
 
 namespace glic {
 
@@ -63,6 +66,8 @@ views::Widget* GlicExperimentalOptInController::ShowDialog(
     CloseDialog(false);
     return nullptr;
   }
+
+  tab_interface_ = tab_interface->GetWeakPtr();
 
   dialog_view_ = std::make_unique<GlicExperimentalOptInDialogView>(
       profile_, tab_interface);
@@ -130,6 +135,16 @@ void GlicExperimentalOptInController::CloseWidget(
 
   dialog_widget_.reset();
   dialog_view_.reset();
+  tab_interface_.reset();
+}
+
+void GlicExperimentalOptInController::OpenLinkInNewTab(const GURL& url) {
+  if (!tab_interface_) {
+    return;
+  }
+  if (auto* browser_window = tab_interface_->GetBrowserWindowInterface()) {
+    browser_window->OpenGURL(url, WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  }
 }
 
 void GlicExperimentalOptInController::TabDidBecomeVisible(

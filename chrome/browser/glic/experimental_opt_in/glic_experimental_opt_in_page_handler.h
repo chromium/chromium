@@ -12,6 +12,7 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
+class GURL;
 class Profile;
 
 namespace glic {
@@ -35,6 +36,7 @@ class GlicExperimentalOptInPageHandler
   void Accept() override;
   void Reject() override;
   void SyncCookies(SyncCookiesCallback callback) override;
+  void ValidateAndOpenLinkInNewTab(const GURL& url) override;
 
  private:
   GlicKeyedService* GetGlicService();

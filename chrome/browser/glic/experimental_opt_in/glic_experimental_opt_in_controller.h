@@ -16,6 +16,7 @@
 #include "ui/views/widget/widget.h"
 
 class Profile;
+class GURL;
 
 namespace base {
 class TickClock;
@@ -57,6 +58,7 @@ class GlicExperimentalOptInController {
   views::Widget* ShowDialog(content::WebContents* web_contents,
                             base::OnceCallback<void(bool)> callback);
   void CloseDialog(bool accepted);
+  void OpenLinkInNewTab(const GURL& url);
 
   GlicExperimentalOptInDialogView* GetDialogViewForTesting() {
     return dialog_view_.get();
@@ -73,6 +75,7 @@ class GlicExperimentalOptInController {
 
   raw_ptr<Profile> profile_;
   raw_ptr<const base::TickClock> tick_clock_;
+  base::WeakPtr<tabs::TabInterface> tab_interface_;
   std::unique_ptr<GlicExperimentalOptInDialogView> dialog_view_;
   std::unique_ptr<views::Widget> dialog_widget_;
 

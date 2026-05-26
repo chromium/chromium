@@ -15,6 +15,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition_config.h"
+#include "url/gurl.h"
 
 namespace glic {
 
@@ -72,6 +73,13 @@ void GlicExperimentalOptInPageHandler::SyncCookies(
     SyncCookiesCallback callback) {
   cookie_synchronizer_->CopyCookiesToWebviewStoragePartition(
       std::move(callback));
+}
+
+void GlicExperimentalOptInPageHandler::ValidateAndOpenLinkInNewTab(
+    const GURL& url) {
+  if (url.DomainIs("google.com")) {
+    GetGlicService()->opt_in_controller().OpenLinkInNewTab(url);
+  }
 }
 
 }  // namespace glic

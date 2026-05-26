@@ -677,4 +677,31 @@ IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, NoAccountCookieSyncFails) {
   service_ptr->opt_in_controller().CloseDialog(false);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicExperimentalOptInTest, OpenGoogleLinkInNewTab) {
+  service()->enabling().SetCompletedFre(glic::prefs::FreStatus::kIncomplete);
+  views::Widget* widget = ShowDialogAndWait();
+  ASSERT_TRUE(widget);
+
+  content::WebContents* guest_contents = WaitForGuestContents();
+  ASSERT_TRUE(guest_contents);
+
+  EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
+
+  // Open a google link.
+  ASSERT_TRUE(content::ExecJs(
+      guest_contents,
+      "window.open('https://policies.google.com/', '_blank');"));
+
+  // Wait for the new tab to be created.
+  bool tab_created = base::test::RunUntil(
+      [this]() { return browser()->tab_strip_model()->count() == 2; });
+  EXPECT_TRUE(tab_created);
+  EXPECT_EQ(browser()->tab_strip_model()->GetWebContentsAt(1)->GetVisibleURL(),
+            GURL("https://policies.google.com/"));
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents(),
+            browser()->tab_strip_model()->GetWebContentsAt(1));
+
+  service()->opt_in_controller().CloseDialog(false);
+}
+
 }  // namespace glic
