@@ -254,7 +254,7 @@ public class StripDragShadowViewUnitTest {
     @Test
     public void testUpdate_OriginalFavicon() {
         TabFavicon.setInstanceForTesting(mMockTabFavicon);
-        when(mMockTabFavicon.getFavicon()).thenReturn(mMockOriginalFaviconBitmap);
+        when(mMockTabFavicon.getFavicon(anyBoolean())).thenReturn(mMockOriginalFaviconBitmap);
 
         mStripDragShadowView.prepareForTabDrag(mMockTab, 0);
         assertEquals(

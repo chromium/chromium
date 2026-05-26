@@ -4,11 +4,14 @@
 
 #include "chrome/browser/android/tab_favicon.h"
 
+#include "base/android/callback_android.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/android/tab_android.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/android/view_android.h"
 #include "ui/display/display.h"
@@ -38,20 +41,92 @@ SkBitmap RescaleSkBitmap(const SkBitmap& original, int new_size_dip) {
   return resized;
 }
 
+TabFavicon* FromTabAndroid(TabAndroid* tab_android) {
+  if (!tab_android) {
+    return nullptr;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  jlong native_ptr = Java_TabFavicon_getNativePtrForTab(env, tab_android);
+  return reinterpret_cast<TabFavicon*>(native_ptr);
+}
+
 }  // namespace
 
 // static
-SkBitmap TabFavicon::GetBitmapForTab(TabAndroid* tab_android) {
+SkBitmap TabFavicon::GetBitmapForTab(TabAndroid* tab_android,
+                                     bool allow_fallback) {
   if (!tab_android) {
     return SkBitmap();
   }
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> bitmap =
-      Java_TabFavicon_getBitmap(env, tab_android->GetJavaObject());
+      Java_TabFavicon_getBitmapWithFallback(env, tab_android, allow_fallback);
   if (bitmap.is_null()) {
     return SkBitmap();
   }
   return gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(bitmap));
+}
+
+// static
+void TabFavicon::GetFaviconOrFallback(
+    TabAndroid* tab_android,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  if (!tab_android) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+  JNIEnv* env = base::android::AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> j_tab_favicon =
+      Java_TabFavicon_from(env, tab_android);
+  if (j_tab_favicon.is_null()) {
+    std::move(callback).Run(SkBitmap());
+    return;
+  }
+  auto j_callback = base::android::ToJniCallback(
+      env, base::BindOnce(&TabFavicon::OnGetFaviconOrFallbackFinished,
+                          std::move(callback)));
+
+  Java_TabFavicon_getFaviconOrFallback(env, j_tab_favicon, j_callback);
+}
+
+// static
+void TabFavicon::OnGetFaviconOrFallbackFinished(
+    base::OnceCallback<void(const SkBitmap&)> callback,
+    const base::android::JavaRef<jobject>& j_bitmap) {
+  SkBitmap bitmap;
+  if (!j_bitmap.is_null()) {
+    bitmap = gfx::CreateSkBitmapFromJavaBitmap(gfx::JavaBitmap(j_bitmap));
+  }
+
+  std::move(callback).Run(bitmap);
+}
+
+// static
+void TabFavicon::AddObserver(TabAndroid* tab_android, Observer* observer) {
+  TabFavicon* tab_favicon = FromTabAndroid(tab_android);
+  if (tab_favicon) {
+    tab_favicon->observers_.AddObserver(observer);
+  }
+}
+
+// static
+void TabFavicon::RemoveObserver(TabAndroid* tab_android, Observer* observer) {
+  TabFavicon* tab_favicon = FromTabAndroid(tab_android);
+  if (tab_favicon) {
+    tab_favicon->observers_.RemoveObserver(observer);
+  }
+}
+
+// static
+void TabFavicon::GetBitmapForTabOrFallback(
+    TabAndroid* tab_android,
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  SkBitmap bitmap = GetBitmapForTab(tab_android, /*allow_fallback=*/false);
+  if (!bitmap.empty()) {
+    std::move(callback).Run(bitmap);
+    return;
+  }
+  GetFaviconOrFallback(tab_android, std::move(callback));
 }
 
 TabFavicon::TabFavicon(JNIEnv* env,
@@ -60,13 +135,23 @@ TabFavicon::TabFavicon(JNIEnv* env,
     : navigation_transition_favicon_size_(navigation_transition_favicon_size),
       tab_android_(tab_android) {}
 
-TabFavicon::~TabFavicon() = default;
+TabFavicon::~TabFavicon() {
+  if (favicon_driver_) {
+    favicon_driver_->RemoveObserver(this);
+    favicon_driver_ = nullptr;
+  }
+}
 
 void TabFavicon::SetWebContents(JNIEnv* env,
                                 content::WebContents* web_contents) {
+  if (favicon_driver_) {
+    favicon_driver_->RemoveObserver(this);
+  }
   active_web_contents_ = web_contents;
   favicon_driver_ =
-      favicon::ContentFaviconDriver::FromWebContents(active_web_contents_);
+      active_web_contents_
+          ? favicon::ContentFaviconDriver::FromWebContents(active_web_contents_)
+          : nullptr;
   if (favicon_driver_) {
     favicon_driver_->AddObserver(this);
   }
@@ -131,6 +216,11 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
     return;
   }
 
+  // Notify C++ observers!
+  for (auto& observer : observers_) {
+    observer.OnFaviconUpdated(favicon);
+  }
+
   CHECK(tab_android_);
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -139,10 +229,8 @@ void TabFavicon::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
   auto new_height = image.Height();
   if (static_cast<bool>(Java_TabFavicon_shouldUpdateFaviconForBrowserUi(
           env, tab_android_, new_width, new_height))) {
-    ScopedJavaLocalRef<jobject> j_icon_url =
-        url::GURLAndroid::FromNativeGURL(env, icon_url);
     Java_TabFavicon_onFaviconAvailable(
-        env, tab_android_, gfx::ConvertToJavaBitmap(favicon), j_icon_url);
+        env, tab_android_, gfx::ConvertToJavaBitmap(favicon), icon_url);
   }
   if (content::BackForwardTransitionAnimationManager::
           ShouldAnimateBackForwardTransitions()) {

@@ -61,6 +61,7 @@ include_rules = [
   "+chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarManager.java",
   "+chrome/browser/ui/android/multiwindow/java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceOrchestratorFactory.java",
   "+chrome/browser/ui/android/ephemeraltab/java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabCoordinator.java",
+  "+chrome/browser/ui/android/favicon/java/src/org/chromium/chrome/browser/ui/favicon/FaviconHelper.java",
   "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/TabObscuringHandler.java",
   "+chrome/browser/url_constants/android/java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolver.java",
   "+chrome/browser/url_constants/android/java/src/org/chromium/chrome/browser/url_constants/UrlConstantResolverFactory.java",

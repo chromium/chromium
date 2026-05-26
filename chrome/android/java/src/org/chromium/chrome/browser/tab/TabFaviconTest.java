@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.tab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doReturn;
@@ -22,14 +25,17 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.base.Promise;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
@@ -61,6 +67,7 @@ public class TabFaviconTest {
     @Mock private Context mContext;
     @Mock private Resources mResources;
     @Mock private WebContents mWebContents;
+    @Mock private FaviconHelper mFaviconHelper;
 
     private UserDataHost mUserDataHost;
     private TabFavicon mTabFavicon;
@@ -68,6 +75,7 @@ public class TabFaviconTest {
     @Before
     public void setUp() {
         TabFaviconJni.setInstanceForTesting(mTabFaviconJni);
+        doReturn(12345L).when(mTabFaviconJni).init(any(), anyInt());
 
         mUserDataHost = new UserDataHost();
         doReturn(mUserDataHost).when(mTab).getUserDataHost();
@@ -99,7 +107,8 @@ public class TabFaviconTest {
         // Mimic the behavior of the native call, where `TabFavicon#shouldUpdateFaviconForBrowserUi`
         // is checked first before sending the bitmap into Java layer.
         if (mTabFavicon.shouldUpdateFaviconForBrowserUi(bitmap.getWidth(), bitmap.getHeight())) {
-            mTabFavicon.onFaviconAvailable(bitmap, JUnitTestGURLs.EXAMPLE_URL);
+            mTabFavicon.onFaviconAvailable(
+                    bitmap, JUnitTestGURLs.EXAMPLE_URL, /* isFallback= */ false);
         }
     }
 
@@ -171,5 +180,96 @@ public class TabFaviconTest {
         doReturn(new LoadUrlParams("foo.com")).when(mTab).getPendingLoadParams();
 
         assertNull(TabFavicon.getBitmap(mTab));
+    }
+
+    @Test
+    public void testGetFavicon_ColdTabCacheOptimization() {
+        // Cache a favicon for the tab
+        onFaviconAvailable(makeBitmap(IDEAL_SIZE, Color.GREEN));
+
+        // Make WebContents null to simulate a cold tab
+        doReturn(null).when(mTab).getWebContents();
+
+        // When URL matches, it should return the cached favicon even if WebContents is null!
+        Bitmap bitmap = mTabFavicon.getFavicon(true);
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+    }
+
+    @Test
+    public void testNonFallbackWins() {
+        // 1. Store a live favicon
+        mTabFavicon.onFaviconAvailable(
+                makeBitmap(IDEAL_SIZE, Color.GREEN),
+                JUnitTestGURLs.EXAMPLE_URL,
+                /* isFallback= */ false);
+        Bitmap bitmap = mTabFavicon.getFavicon();
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0));
+
+        // 2. Receive a fallback database favicon. Since we already have a live favicon, it should
+        // NOT overwrite it!
+        mTabFavicon.onFaviconAvailable(
+                makeBitmap(IDEAL_SIZE, Color.RED),
+                JUnitTestGURLs.EXAMPLE_URL,
+                /* isFallback= */ true);
+        bitmap = mTabFavicon.getFavicon();
+        assertNotNull(bitmap);
+        assertEquals(Color.GREEN, bitmap.getPixel(0, 0)); // Still green!
+    }
+
+    @Test
+    public void testFallbackWinsIfNoCachedIcon() {
+        // 1. Store a fallback favicon when cache is empty
+        mTabFavicon.onFaviconAvailable(
+                makeBitmap(IDEAL_SIZE, Color.RED),
+                JUnitTestGURLs.EXAMPLE_URL,
+                /* isFallback= */ true);
+        Bitmap bitmap = mTabFavicon.getFavicon(true);
+        assertNotNull(bitmap);
+        assertEquals(Color.RED, bitmap.getPixel(0, 0)); // Red!
+    }
+
+    @Test
+    public void testGetFaviconOrFallback_AsyncDBFetch() {
+        mTabFavicon.mFaviconHelper = mFaviconHelper;
+        ArgumentCaptor<FaviconHelper.FaviconImageCallback> callbackCaptor =
+                ArgumentCaptor.forClass(FaviconHelper.FaviconImageCallback.class);
+        doReturn(true)
+                .when(mFaviconHelper)
+                .getLocalFaviconImageForURL(
+                        any(), any(), anyInt(), anyBoolean(), callbackCaptor.capture());
+
+        Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
+        assertNotNull(promise);
+        assertTrue(promise.isPending());
+
+        Bitmap fallbackBitmap = makeBitmap(IDEAL_SIZE, Color.BLUE);
+        callbackCaptor.getValue().onFaviconAvailable(fallbackBitmap, JUnitTestGURLs.EXAMPLE_URL);
+
+        assertTrue(promise.isFulfilled());
+        Bitmap result = promise.getResult();
+        assertNotNull(result);
+        assertEquals(Color.BLUE, result.getPixel(0, 0));
+    }
+
+    @Test
+    public void testGetFaviconOrFallback_RejectsOnTabDestroyed() {
+        mTabFavicon.mFaviconHelper = mFaviconHelper;
+        doReturn(true)
+                .when(mFaviconHelper)
+                .getLocalFaviconImageForURL(any(), any(), anyInt(), anyBoolean(), any());
+
+        Promise<Bitmap> promise1 = mTabFavicon.getFaviconOrFallback();
+        Promise<Bitmap> promise2 = mTabFavicon.getFaviconOrFallback();
+        assertNotNull(promise1);
+        assertNotNull(promise2);
+        assertTrue(promise1.isPending());
+        assertTrue(promise2.isPending());
+
+        mTabFavicon.destroyInternal();
+
+        assertTrue(promise1.isRejected());
+        assertTrue(promise2.isRejected());
     }
 }
