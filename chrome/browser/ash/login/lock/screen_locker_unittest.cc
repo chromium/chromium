@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service.h"
 #include "chrome/browser/ash/certificate_provider/certificate_provider_service_factory.h"
+#include "chrome/browser/ash/login/quick_unlock/pin_backend.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -104,6 +105,8 @@ class ScreenLockerUnitTest : public testing::Test {
             ->platform_part()
             ->browser_policy_connector_ash());
 
+    quick_unlock::PinBackend::Initialize();
+
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
@@ -163,6 +166,10 @@ class ScreenLockerUnitTest : public testing::Test {
     BiodClient::Shutdown();
     ConciergeClient::Shutdown();
     SystemSaltGetter::Shutdown();
+
+    // TODO(crbug.com/498416395): We should refactor PinBackend and
+    // shutdown/destroy it in the reverse order of initialization.
+    quick_unlock::PinBackend::Shutdown();
   }
 
   void CreateSessionForUser(bool is_public_account) {

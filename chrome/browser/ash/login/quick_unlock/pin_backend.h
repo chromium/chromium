@@ -31,6 +31,11 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   using AvailabilityCallback =
       base::OnceCallback<void(bool, std::optional<base::Time>)>;
 
+  // Creates the singleton object.
+  // TODO(crbug.com/498416395): Use std::unique_ptr<PinBackend> for memory
+  // management, and remove this.
+  static void Initialize();
+
   // Fetch the PinBackend instance.
   static PinBackend* GetInstance();
 
@@ -46,9 +51,6 @@ class PinBackend : public ash::auth::PinBackendDelegate {
   static std::string ComputeSecret(const std::string& pin,
                                    const std::string& salt,
                                    Key::KeyType key_type);
-
-  // Use GetInstance().
-  PinBackend();
 
   PinBackend(const PinBackend&) = delete;
   PinBackend& operator=(const PinBackend&) = delete;
@@ -104,9 +106,6 @@ class PinBackend : public ash::auth::PinBackendDelegate {
                        Purpose purpose,
                        AuthOperationCallback result);
 
-  // Resets any cached state for testing purposes.
-  static void ResetForTesting();
-
   // Interface for the lock/login screen to access the user's PIN length.
   // Ensures that the UI is always consistent with the pref values without the
   // need for individual observers.
@@ -154,6 +153,9 @@ class PinBackend : public ash::auth::PinBackendDelegate {
     std::optional<bool> is_supported_;
     std::unique_ptr<PinStorageCryptohome> cryptohome_backend_;
   };
+
+  // Use Initialize().
+  PinBackend();
 
   // Called when we know if the cryptohome supports PIN.
   void OnIsCryptohomeBackendSupported(bool is_supported);
