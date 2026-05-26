@@ -17,7 +17,6 @@ public final class NonembeddedSafeModeActionsList {
      * specified by the service) will be executed in the order listed below.
      */
     public static final SafeModeAction[] sList = {
-        new ComponentUpdaterResetSafeModeAction(),
         new NonEmbeddedFastVariationsSeedSafeModeAction(),
     };
 }

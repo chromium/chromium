@@ -192,9 +192,6 @@ const base::FeatureParam<double> kWebViewCodeCacheSizeLimitMultiplier{
     &kWebViewCacheSizeLimitDerivedFromAppCacheQuota,
     "WebViewCodeCacheSizeLimitMultiplier", 0.5};
 
-// Connect to the non-embedded components provider from a background thread.
-BASE_FEATURE(kWebViewConnectToComponentProviderInBackground,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables phase 2 of using startup tasks logic for webview chromium
 // initialization which also starts browser process asynchronously, when
@@ -273,10 +270,6 @@ const base::FeatureParam<base::TimeDelta> kWebViewRendererKeepAliveDuration{
     &kWebViewRendererKeepAlive, "webview_renderer_keep_alive_duration",
     base::Seconds(30)};
 
-// Enables fetching the Origin Trials configuration update component in the
-// embedded WebView.
-BASE_FEATURE(kWebViewFetchOriginTrialsComponent,
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables recording user actions for API calls.
 BASE_FEATURE(kWebViewEnableApiCallUserActions,

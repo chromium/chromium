@@ -68,9 +68,8 @@ public class MainActivity extends FragmentActivity {
     public static final int FRAGMENT_ID_HOME = 0;
     public static final int FRAGMENT_ID_CRASHES = 1;
     public static final int FRAGMENT_ID_FLAGS = 2;
-    public static final int FRAGMENT_ID_COMPONENTS = 3;
-    public static final int FRAGMENT_ID_SAFEMODE = 4;
-    public static final int FRAGMENT_ID_NETLOGS = 5;
+    public static final int FRAGMENT_ID_SAFEMODE = 3;
+    public static final int FRAGMENT_ID_NETLOGS = 4;
 
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
@@ -153,9 +152,6 @@ public class MainActivity extends FragmentActivity {
                 break;
             case FRAGMENT_ID_FLAGS:
                 sample = FragmentNavigation.FLAGS_FRAGMENT;
-                break;
-            case FRAGMENT_ID_COMPONENTS:
-                sample = FragmentNavigation.COMPONENTS_LIST_FRAGMENT;
                 break;
             case FRAGMENT_ID_SAFEMODE:
                 sample = FragmentNavigation.SAFEMODE_FRAGMENT;
@@ -285,9 +281,6 @@ public class MainActivity extends FragmentActivity {
                 }
                 // Enable the UI if we don't need a permission check
                 fragment = new FlagsFragment(!needPermissionCheck, shouldResetFlags);
-                break;
-            case FRAGMENT_ID_COMPONENTS:
-                fragment = new ComponentsListFragment();
                 break;
             case FRAGMENT_ID_SAFEMODE:
                 fragment = new SafeModeFragment();
@@ -450,12 +443,6 @@ public class MainActivity extends FragmentActivity {
                     new Intent(Intent.ACTION_VIEW, uri),
                     SafeIntentUtils.NO_BROWSER_FOUND_ERROR);
             return true;
-            // Component updater is disabled and the menu option is hidden for now;
-            // see crbug.com/438310407
-            // } else if (item.getItemId() == R.id.options_menu_components) {
-            //     logMenuSelection(MenuChoice.COMPONENTS_UI);
-            //     switchFragment(FRAGMENT_ID_COMPONENTS, false);
-            //     return true;
         } else if (item.getItemId() == R.id.options_menu_safe_mode) {
             logMenuSelection(MenuChoice.SAFEMODE_UI);
             switchFragment(FRAGMENT_ID_SAFEMODE, false);

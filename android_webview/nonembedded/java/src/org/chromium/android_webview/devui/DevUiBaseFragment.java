@@ -89,8 +89,6 @@ public abstract class DevUiBaseFragment extends Fragment {
             suffix = "FlagsFragment";
         } else if (this instanceof CrashesListFragment) {
             suffix = "CrashesListFragment";
-        } else if (this instanceof ComponentsListFragment) {
-            suffix = "ComponentsListFragment";
         } else if (this instanceof SafeModeFragment) {
             suffix = "SafeModeFragment";
         } else if (this instanceof NetLogsFragment) {

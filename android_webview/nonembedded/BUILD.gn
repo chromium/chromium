@@ -8,10 +8,8 @@ import("//third_party/protobuf/proto_library.gni")
 
 generate_jni("nonembedded_jni_headers") {
   sources = [
-    "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
     "java/src/org/chromium/android_webview/nonembedded/NetworkFetcherTask.java",
     "java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
-    "java/src/org/chromium/android_webview/services/ComponentsProviderPathUtil.java",
   ]
 }
 
@@ -20,7 +18,6 @@ generate_jni("nonembedded_jni_headers") {
 android_library("nonembedded_java") {
   srcjar_deps = [ ":nonembedded_jni_headers" ]
   sources = [
-    "java/src/org/chromium/android_webview/nonembedded/AwComponentUpdateService.java",
     "java/src/org/chromium/android_webview/nonembedded/AwNonembeddedUmaRecorder.java",
     "java/src/org/chromium/android_webview/nonembedded/AwPureJavaExceptionReporter.java",
     "java/src/org/chromium/android_webview/nonembedded/LicenseActivity.java",
@@ -57,7 +54,6 @@ android_library("nonembedded_java") {
 
 android_library("devui_java") {
   sources = [
-    "java/src/org/chromium/android_webview/devui/ComponentsListFragment.java",
     "java/src/org/chromium/android_webview/devui/CrashesListFragment.java",
     "java/src/org/chromium/android_webview/devui/DevUiBaseFragment.java",
     "java/src/org/chromium/android_webview/devui/FlagsFragment.java",
@@ -67,8 +63,6 @@ android_library("devui_java") {
     "java/src/org/chromium/android_webview/devui/PersistentErrorView.java",
     "java/src/org/chromium/android_webview/devui/SafeModeFragment.java",
     "java/src/org/chromium/android_webview/devui/WebViewPackageError.java",
-    "java/src/org/chromium/android_webview/devui/util/ComponentInfo.java",
-    "java/src/org/chromium/android_webview/devui/util/ComponentsInfoLoader.java",
     "java/src/org/chromium/android_webview/devui/util/CrashBugUrlFactory.java",
     "java/src/org/chromium/android_webview/devui/util/CrashInfoLoader.java",
     "java/src/org/chromium/android_webview/devui/util/SafeIntentUtils.java",
@@ -109,10 +103,6 @@ android_library("services_java") {
     "java/src/org/chromium/android_webview/services/AwMinidumpUploaderDelegate.java",
     "java/src/org/chromium/android_webview/services/AwNetLogService.java",
     "java/src/org/chromium/android_webview/services/AwVariationsSeedFetcher.java",
-    "java/src/org/chromium/android_webview/services/ComponentUpdaterResetSafeModeAction.java",
-    "java/src/org/chromium/android_webview/services/ComponentUpdaterSafeModeUtils.java",
-    "java/src/org/chromium/android_webview/services/ComponentsProviderPathUtil.java",
-    "java/src/org/chromium/android_webview/services/ComponentsProviderService.java",
     "java/src/org/chromium/android_webview/services/CrashLoggingUtils.java",
     "java/src/org/chromium/android_webview/services/CrashReceiverService.java",
     "java/src/org/chromium/android_webview/services/DeveloperModeContentProvider.java",
@@ -141,7 +131,6 @@ android_library("services_java") {
     "//base:base_java",
     "//base/version_info/android:version_constants_java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
-    "//components/component_updater/android:component_provider_service_aidl_java",
     "//components/metrics:metrics_java",
     "//components/minidump_uploader:minidump_uploader_java",
     "//components/variations/android:variations_java",
@@ -183,16 +172,6 @@ source_set("nonembedded") {
     "//android_webview/test:*",
   ]
   sources = [
-    "component_updater/aw_component_installer_policy.cc",
-    "component_updater/aw_component_installer_policy.h",
-    "component_updater/aw_component_installer_policy_shim.cc",
-    "component_updater/aw_component_installer_policy_shim.h",
-    "component_updater/aw_component_update_service.cc",
-    "component_updater/aw_component_update_service.h",
-    "component_updater/aw_component_updater_configurator.cc",
-    "component_updater/aw_component_updater_configurator.h",
-    "component_updater/registration.cc",
-    "component_updater/registration.h",
     "net/network_fetcher_task.cc",
     "net/network_fetcher_task.h",
     "net/network_impl.cc",
@@ -205,13 +184,8 @@ source_set("nonembedded") {
     ":nonembedded_jni_headers",
     "//android_webview/common",
     "//base",
-    "//components/component_updater",
-    "//components/component_updater/android:embedded_component_loader",
-    "//components/component_updater/installer_policies:installer_policies_no_content_deps",
     "//components/prefs",
     "//components/update_client",
-    "//components/update_client:in_process_patcher",
-    "//components/update_client:in_process_unzipper",
     "//components/version_info",
     "//components/version_info/android:channel_getter",
     "//mojo/public/cpp/base:protobuf_support",
@@ -244,12 +218,10 @@ android_resources("devui_resources") {
     "java/res_devui/drawable/ic_flag.xml",
     "java/res_devui/drawable/ic_net_log.xml",
     "java/res_devui/layout/activity_main.xml",
-    "java/res_devui/layout/components_list_item.xml",
     "java/res_devui/layout/crashes_list_item_body.xml",
     "java/res_devui/layout/crashes_list_item_header.xml",
     "java/res_devui/layout/flag_states.xml",
     "java/res_devui/layout/flag_ui_warning.xml",
-    "java/res_devui/layout/fragment_components_list.xml",
     "java/res_devui/layout/fragment_crashes_list.xml",
     "java/res_devui/layout/fragment_flags.xml",
     "java/res_devui/layout/fragment_home.xml",
@@ -261,7 +233,6 @@ android_resources("devui_resources") {
     "java/res_devui/layout/toggleable_flag.xml",
     "java/res_devui/layout/two_line_list_item.xml",
     "java/res_devui/layout/two_line_sublist_item.xml",
-    "java/res_devui/menu/components_options_menu.xml",
     "java/res_devui/menu/crashes_options_menu.xml",
     "java/res_devui/menu/net_log_menu.xml",
     "java/res_devui/menu/options_menu.xml",

@@ -696,9 +696,6 @@ public class WebViewChromiumAwInit {
         addBrowserProcessStartTasksToQueue(
                 preBrowserProcessStartTasks, postBrowserProcessStartTasks);
 
-        // This has to be done after variations are initialized, so components could
-        // be registered or not depending on the variations flags.
-        postBrowserProcessStartTasks.addLast(AwBrowserProcess::loadComponents);
         postBrowserProcessStartTasks.addLast(
                 () -> {
                     AwBrowserProcess.initializeMetricsLogUploader();

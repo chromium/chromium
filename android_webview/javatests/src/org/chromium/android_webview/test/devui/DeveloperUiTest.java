@@ -316,18 +316,6 @@ public class DeveloperUiTest {
     @MediumTest
     @Feature({"AndroidWebView"})
     @DisabledTest(message = "https://crbug.com/369532182")
-    public void testMenuOptions_components() throws Throwable {
-        launchHomeFragment();
-        openOptionsMenu();
-
-        onView(withText("Components")).check(matches(isDisplayed())).perform(click());
-        onView(withId(R.id.fragment_components_list)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"AndroidWebView"})
-    @DisabledTest(message = "https://crbug.com/369532182")
     public void testMenuOptions_safeMode() throws Throwable {
         launchHomeFragment();
 

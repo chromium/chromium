@@ -7,7 +7,6 @@
 #include "android_webview/browser/aw_browser_context.h"
 #include "android_webview/browser/aw_content_browser_client.h"
 #include "android_webview/browser/aw_enterprise_authentication_app_link_manager.h"
-#include "android_webview/browser/component_updater/registration.h"
 #include "android_webview/browser/lifecycle/aw_contents_lifecycle_notifier.h"
 #include "android_webview/browser/metrics/visibility_metrics_logger.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
@@ -25,7 +24,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/component_updater/android/component_loader_policy.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/embedder_support/origin_trials/origin_trials_settings_storage.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
@@ -373,13 +371,6 @@ static void JNI_AwBrowserProcess_SetProcessNameCrashKey(
   static ::crash_reporter::CrashKeyString<64> crash_key(
       crash_keys::kAppProcessName);
   crash_key.Set(processName);
-}
-
-static base::android::ScopedJavaLocalRef<jobjectArray>
-JNI_AwBrowserProcess_GetComponentLoaderPolicies(JNIEnv* env) {
-  return component_updater::AndroidComponentLoaderPolicy::
-      ToJavaArrayOfAndroidComponentLoaderPolicy(env,
-                                                GetComponentLoaderPolicies());
 }
 
 static void JNI_AwBrowserProcess_InitTracing(JNIEnv* env,
