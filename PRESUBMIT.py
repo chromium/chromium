@@ -8223,6 +8223,118 @@ def CheckBaseFeatureMacro(input_api, output_api):
     ]
 
 
+def CheckBaseFeatureParamMacro(input_api, output_api):
+    """Checks for correct usage of BASE_FEATURE_PARAM/ENUM_PARAM macros."""
+    # Helpers mirroring testing/variations/presubmit/find_features.py so the
+    # macro arguments are tokenized consistently (e.g. commas inside quoted
+    # string literals or template arguments do not split args incorrectly).
+    # Matches a single C++ double-quoted string literal, handling backslash
+    # escape sequences such as \" or \\.
+    quote_str = r'"(?:\\.|[^"\\])*"'
+    # Matches a single macro argument, handling commas inside quoted strings,
+    # balanced parentheses (nested function calls), or balanced angle brackets
+    # (template types). quote_str is listed first in each alternation so
+    # quoted strings are matched atomically and any parens/angle brackets
+    # inside them are not counted as structural delimiters.
+    arg = (r'(?:' + quote_str + r'|[^,()<>"]'
+           r'|\((?:' + quote_str + r'|[^()"])*\)'
+           r'|<(?:' + quote_str + r'|[^<>"])*>)*')
+
+    # 5-arg BASE_FEATURE_PARAM(type, var, &feature, "name", default);
+    # The 4th arg is a string literal followed by a comma (discouraged form).
+    param_5_args_re = input_api.re.compile(
+        r'\bBASE_FEATURE_PARAM\(' + arg + r',\s*(\w+)\s*,' + arg + r','
+        r'\s*' + quote_str + r'\s*,(?:[^;"]|' + quote_str + r')*?\);',
+        input_api.re.MULTILINE | input_api.re.DOTALL)
+
+    # 4-arg BASE_FEATURE_PARAM(type, kVar, &feature, default);
+    # The 4th arg is NOT a string literal followed by a comma.
+    param_4_args_re = input_api.re.compile(
+        r'\bBASE_FEATURE_PARAM\(' + arg + r',\s*(\w+)\s*,' + arg + r','
+        r'\s*(?!' + quote_str + r'\s*,)(?:[^;,"]|' + quote_str + r')*?\);',
+        input_api.re.MULTILINE | input_api.re.DOTALL)
+
+    # 6-arg BASE_FEATURE_ENUM_PARAM(type, var, &feature, "name", default,
+    # &opts); The 4th arg is a string literal (discouraged form).
+    enum_param_6_args_re = input_api.re.compile(
+        r'\bBASE_FEATURE_ENUM_PARAM\(' + arg + r',\s*(\w+)\s*,' + arg + r','
+        r'\s*' + quote_str + r'\s*,' + arg
+        + r',(?:[^;"]|' + quote_str + r')*?\);',
+        input_api.re.MULTILINE | input_api.re.DOTALL)
+
+    # 5-arg BASE_FEATURE_ENUM_PARAM(type, kVar, &feature, default, &opts);
+    # The 4th arg is NOT a string literal.
+    enum_param_5_args_re = input_api.re.compile(
+        r'\bBASE_FEATURE_ENUM_PARAM\(' + arg + r',\s*(\w+)\s*,' + arg + r','
+        r'\s*(?!' + quote_str + r'\s*,)' + arg
+        + r',(?:[^;"]|' + quote_str + r')*?\);',
+        input_api.re.MULTILINE | input_api.re.DOTALL)
+
+    warnings = []
+
+    def _check_matches(f, contents, lines, changed_line_numbers, regex,
+                       discouraged_msg):
+        for match in regex.finditer(contents):
+            start_line = contents.count('\n', 0, match.start()) + 1
+            end_line = contents.count('\n', 0, match.end()) + 1
+
+            if not changed_line_numbers.intersection(
+                    range(start_line, end_line + 1)):
+                continue
+
+            if lines[start_line - 1].strip().startswith('//'):
+                continue
+
+            identifier = match.group(1).strip()
+
+            if discouraged_msg:
+                warnings.append('    %s:%d: %s' %
+                                (f.LocalPath(), start_line, discouraged_msg))
+
+            if not input_api.re.match(r'^k[A-Z]', identifier):
+                warnings.append(
+                    '    %s:%d: Feature param identifier "%s" should start '
+                    'with "k" followed by an uppercase letter.' %
+                    (f.LocalPath(), start_line, identifier))
+
+    for f in input_api.AffectedFiles():
+        if not f.LocalPath().endswith(('.cc', '.mm')):
+            continue
+
+        changed_line_numbers = {
+            line_num
+            for line_num, _ in f.ChangedContents()
+        }
+        if not changed_line_numbers:
+            continue
+
+        lines = list(f.NewContents())
+        contents = '\n'.join(lines)
+
+        _check_matches(
+            f, contents, lines, changed_line_numbers, param_5_args_re,
+            'The 5-argument BASE_FEATURE_PARAM macro with a string literal '
+            'name is discouraged. Use the 4-argument version instead.')
+        _check_matches(f, contents, lines, changed_line_numbers,
+                       param_4_args_re, None)
+        _check_matches(
+            f, contents, lines, changed_line_numbers, enum_param_6_args_re,
+            'The 6-argument BASE_FEATURE_ENUM_PARAM macro with a string '
+            'literal name is discouraged. Use the 5-argument version '
+            'instead.')
+        _check_matches(f, contents, lines, changed_line_numbers,
+                       enum_param_5_args_re, None)
+
+    if not warnings:
+        return []
+
+    return [
+        output_api.PresubmitPromptWarning(
+            'BASE_FEATURE_PARAM()/BASE_FEATURE_ENUM_PARAM() macro naming:',
+            warnings)
+    ]
+
+
 def CheckTestFileNamesOnUpload(input_api, output_api):
     """Warns if file names end with _unittests.cc or _browsertests.cc."""
     bad_files = []
