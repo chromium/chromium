@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -605,7 +606,7 @@ TEST_F(ReplaceSelectionCommandTest, NormalizeNbspCrossNodeBoundaries) {
       GetSelectionTextFromBody());
 }
 
-TEST_F(ReplaceSelectionCommandTest, NormalizeNbspInPlaintextOnly) {
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspSkippedForPlaintextOnly) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable=\"plaintext-only\">|</div>"),
       SetSelectionOptions());
@@ -619,11 +620,12 @@ TEST_F(ReplaceSelectionCommandTest, NormalizeNbspInPlaintextOnly) {
       InputEvent::InputType::kInsertFromPaste);
 
   EXPECT_TRUE(command.Apply());
-  EXPECT_EQ("<div contenteditable=\"plaintext-only\">Hello World|</div>",
+  EXPECT_EQ("<div contenteditable=\"plaintext-only\">Hello\u00A0World|</div>",
             GetSelectionTextFromBody());
 }
 
-TEST_F(ReplaceSelectionCommandTest, NormalizeNbspInPlaintextOnlyFromHTML) {
+TEST_F(ReplaceSelectionCommandTest,
+       NormalizeNbspSkippedForPlaintextOnlyFromHTML) {
   Selection().SetSelection(
       SetSelectionTextToBody("<div contenteditable=\"plaintext-only\">|</div>"),
       SetSelectionOptions());
@@ -639,8 +641,42 @@ TEST_F(ReplaceSelectionCommandTest, NormalizeNbspInPlaintextOnlyFromHTML) {
       InputEvent::InputType::kInsertFromPaste);
 
   EXPECT_TRUE(command.Apply());
-  EXPECT_EQ("<div contenteditable=\"plaintext-only\">Hello World|</div>",
+  EXPECT_EQ("<div contenteditable=\"plaintext-only\">Hello\u00A0World|</div>",
             GetSelectionTextFromBody());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspSkippedForInput) {
+  SetBodyContent("<input>");
+  auto* input = ToTextControl(QuerySelector("input"));
+  input->Focus();
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"Hello\u00A0World"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ(String(u"Hello\u00A0World"), input->InnerEditorValue());
+}
+
+TEST_F(ReplaceSelectionCommandTest, NormalizeNbspSkippedForTextarea) {
+  SetBodyContent("<textarea></textarea>");
+  auto* textarea = ToTextControl(QuerySelector("textarea"));
+  textarea->Focus();
+
+  DocumentFragment& fragment = *GetDocument().createDocumentFragment();
+  fragment.appendChild(Text::Create(GetDocument(), u"Hello\u00A0World"));
+
+  auto& command = *MakeGarbageCollected<ReplaceSelectionCommand>(
+      GetDocument(), &fragment, /* options */ 0,
+      EditCommand::PasswordEchoBehavior::kDoNotEcho,
+      InputEvent::InputType::kInsertFromPaste);
+
+  EXPECT_TRUE(command.Apply());
+  EXPECT_EQ(String(u"Hello\u00A0World"), textarea->InnerEditorValue());
 }
 
 }  // namespace blink
