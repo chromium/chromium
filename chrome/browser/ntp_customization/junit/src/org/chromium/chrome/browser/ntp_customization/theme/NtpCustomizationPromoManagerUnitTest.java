@@ -208,7 +208,7 @@ public class NtpCustomizationPromoManagerUnitTest {
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.NTP_URL);
 
         // Enable force show flag.
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(true);
+        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(true);
 
         // Case 1: Bottom sheet not shown yet -> should not show IPH.
         assertFalse(
@@ -230,7 +230,7 @@ public class NtpCustomizationPromoManagerUnitTest {
                         mTab, mWindowAndroid, /* isTablet= */ false));
 
         // Reset flag and preferences.
-        ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.setForTesting(false);
+        ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.setForTesting(false);
         NtpCustomizationUtils.resetSharedPreferenceForTesting();
     }
 

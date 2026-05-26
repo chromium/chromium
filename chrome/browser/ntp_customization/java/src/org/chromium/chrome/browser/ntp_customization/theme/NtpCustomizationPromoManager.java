@@ -110,7 +110,7 @@ public class NtpCustomizationPromoManager {
             return false;
         }
 
-        if (ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.getValue()) {
+        if (ChromeFeatureList.sNewTabPageCustomizationV2ShowTipBottomSheet.getValue()) {
             if (!NtpCustomizationUtils.isThemeTipBottomSheetShownFromSharedPreference()) {
                 return false;
             }
