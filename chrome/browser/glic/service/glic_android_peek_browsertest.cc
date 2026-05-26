@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(GlicAndroidPeekBrowserTest,
   // destroying the embedder. GlicInstanceImpl::Show will then call Focus() on
   // the destroyed embedder, causing a SIGSEGV crash.
   instance->Toggle(ShowOptions::ForSidePanel(*tab), /*prevent_close=*/false,
-                   mojom::InvocationSource::kTopChromeButton, std::nullopt);
+                   mojom::InvocationSource::kTopChromeButton);
 
   coordinator_android->SuppressBottomSheetForTesting(false);
 }

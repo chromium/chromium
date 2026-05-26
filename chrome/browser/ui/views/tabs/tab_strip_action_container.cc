@@ -24,6 +24,7 @@
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/resources/grit/glic_browser_resources.h"
@@ -589,10 +590,21 @@ void TabStripActionContainer::OnGlicButtonClicked() {
                  : glic::mojom::InvocationSource::kTopChromeButton;
   }
 
-  glic::GlicKeyedServiceFactory::GetGlicKeyedService(
-      browser_window_interface_->GetProfile())
-      ->ToggleUI(browser_window_interface_,
-                 /*prevent_close=*/false, source, prompt_suggestion);
+  auto* glic_service = glic::GlicKeyedServiceFactory::GetGlicKeyedService(
+      browser_window_interface_->GetProfile());
+  const bool is_panel_showing =
+      glic_service->IsPanelShowingForBrowser(*browser_window_interface_);
+  if (!is_panel_showing && prompt_suggestion.has_value() &&
+      !prompt_suggestion->empty()) {
+    tabs::TabInterface* active_tab =
+        TabListInterface::From(browser_window_interface_)->GetActiveTab();
+    glic::GlicInvokeOptions options(glic::Target(active_tab), source);
+    options.prompts.push_back(std::move(*prompt_suggestion));
+    glic_service->Invoke(std::move(options));
+  } else {
+    glic_service->ToggleUI(browser_window_interface_,
+                           /*prevent_close=*/false, source);
+  }
 
   if (glic_button_->GetIsShowingNudge()) {
     glic_nudge_controller_->OnNudgeActivity(

@@ -54,6 +54,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
 #include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_invoke_options.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -1988,10 +1989,10 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 
 IN_PROC_BROWSER_TEST_P(GlicApiTest, testPanelWillOpenHasPromptSuggestion) {
   // Simulate click on contextual cue with prompt suggestion.
+  glic::GlicInvokeOptions options(glic::mojom::InvocationSource::kNudge);
+  options.prompts.push_back("Prompt Suggestion");
   glic::GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
-      ->ToggleUI(browser(),
-                 /*prevent_close=*/false, glic::mojom::InvocationSource::kNudge,
-                 "Prompt Suggestion");
+      ->Invoke(std::move(options));
 
   ExecuteJsTest();
 }

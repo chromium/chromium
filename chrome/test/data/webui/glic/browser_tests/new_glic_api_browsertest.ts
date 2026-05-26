@@ -616,7 +616,7 @@ class InvokeClient extends WebClient {
     return super.notifyPanelWillOpen!(panelOpeningData);
   }
 
-  async invoke?(_options: InvokeOptions): Promise<void> {
+  override async invoke(_options: InvokeOptions): Promise<void> {
     this.calls.push('invoke');
   }
 }

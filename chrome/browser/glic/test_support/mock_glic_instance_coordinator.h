@@ -31,10 +31,7 @@ class MockGlicInstanceCoordinator
 
   MOCK_METHOD(void,
               Toggle,
-              (BrowserWindowInterface*,
-               bool,
-               mojom::InvocationSource,
-               std::optional<std::string>),
+              (BrowserWindowInterface*, bool, mojom::InvocationSource),
               (override));
   MOCK_METHOD(void, EnsurePreload, (), (override));
   MOCK_METHOD(base::WeakPtr<GlicInstance>,

@@ -173,8 +173,7 @@ class GlicInstanceImpl : public GlicInstance,
   // Returns true when toggle shows the instance and false when it is closed.
   bool Toggle(ShowOptions&& options,
               bool prevent_close,
-              glic::mojom::InvocationSource source,
-              std::optional<std::string> prompt_suggestion);
+              glic::mojom::InvocationSource source);
 
   // NOTE: This method may result in the deletion of `this`.
   void UnbindEmbedder(EmbedderKey key);

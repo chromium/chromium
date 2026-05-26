@@ -786,8 +786,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        SidePanelActivationStopsFloatyListening) {
   // Open floaty and start listening
   coordinator().Toggle(/*browser=*/nullptr, /*prevent_close=*/true,
-                       mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt);
+                       mojom::InvocationSource::kTopChromeButton);
   GlicInstanceImpl* floaty_instance =
       static_cast<GlicInstanceImpl*>(coordinator().GetActiveInstance());
   ASSERT_TRUE(floaty_instance);
@@ -805,8 +804,7 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 
   coordinator().Toggle(tab2->GetBrowserWindowInterface(),
                        /*prevent_close=*/true,
-                       mojom::InvocationSource::kTopChromeButton,
-                       /*deprecated_prompt_suggestion=*/std::nullopt);
+                       mojom::InvocationSource::kTopChromeButton);
   ASSERT_OK_AND_ASSIGN(auto side_panel_instance, WaitForGlicOpen(tab2));
   ASSERT_EQ(side_panel_instance->GetPanelState().kind,
             mojom::PanelStateKind::kAttached);

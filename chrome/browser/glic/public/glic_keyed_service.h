@@ -103,10 +103,6 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
 
   virtual void ToggleUI(BrowserWindowInterface* bwi,
                         bool prevent_close,
-                        mojom::InvocationSource source,
-                        std::optional<std::string> prompt_suggestion);
-  virtual void ToggleUI(BrowserWindowInterface* bwi,
-                        bool prevent_close,
                         mojom::InvocationSource source);
 
   // Invokes Glic with the given options and automatically submits the prompt.
@@ -251,15 +247,7 @@ class GlicKeyedService : public KeyedService, public base::SupportsUserData {
           GetZeroStateSuggestionsForFocusedTabCallback callback,
       std::vector<std::string> returned_suggestions);
 
-  // Shared implementation for ToggleUI.
-  void ToggleUIInternal(BrowserWindowInterface* bwi,
-                        bool prevent_close,
-                        mojom::InvocationSource source,
-                        std::optional<std::string> prompt_suggestion);
-
-  bool MaybeInvoke(BrowserWindowInterface* bwi,
-                   mojom::InvocationSource source,
-                   const std::optional<std::string>& prompt_suggestion);
+  bool MaybeInvoke(BrowserWindowInterface* bwi, mojom::InvocationSource source);
 
   void InitializeAfterConstruction();
 

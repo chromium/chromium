@@ -81,11 +81,9 @@ class GlicInstanceCoordinator {
 
   // Show, summon, or activate the panel if needed, or close it if it's already
   // active and prevent_close is false.
-  virtual void Toggle(
-      BrowserWindowInterface* bwi,
-      bool prevent_close,
-      mojom::InvocationSource source,
-      std::optional<std::string> deprecated_prompt_suggestion) = 0;
+  virtual void Toggle(BrowserWindowInterface* bwi,
+                      bool prevent_close,
+                      mojom::InvocationSource source) = 0;
 
   // Readies glic to show.
   virtual void EnsurePreload() = 0;

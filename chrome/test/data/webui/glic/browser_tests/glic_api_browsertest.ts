@@ -2344,8 +2344,8 @@ class ApiTests extends ApiTestFixtureBase {
   }
 
   async testPanelWillOpenHasPromptSuggestion() {
-    const openData = await observeSequence(this.client.panelOpenData).next();
-    assertEquals('Prompt Suggestion', openData.promptSuggestion);
+    const invokeOptions = await observeSequence(this.client.invokeData).next();
+    assertEquals('Prompt Suggestion', invokeOptions.prompts?.[0]);
   }
 
 
@@ -2605,7 +2605,7 @@ class InitiallyNotResizableTest extends ApiTestFixtureBase {
 
 class WebClientWithInvoke extends WebClient {
   invokePromise = Promise.withResolvers<InvokeOptions>();
-  async invoke(options: InvokeOptions): Promise<void> {
+  override async invoke(options: InvokeOptions): Promise<void> {
     this.invokePromise.resolve(options);
   }
 }
@@ -2624,7 +2624,7 @@ class ApiTestWithInvoke extends ApiTestFixtureBase {
 
 class WebClientForCreateTabInInvoke extends WebClient {
   createTabResult = Promise.withResolvers<TabData>();
-  async invoke(_options: InvokeOptions): Promise<void> {
+  override async invoke(_options: InvokeOptions): Promise<void> {
     try {
       const url = location.href + '#invoking';
       const data = await this.host!.createTab!(url, {openInBackground: false});

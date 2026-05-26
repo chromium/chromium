@@ -290,11 +290,9 @@ void GlicInstanceCoordinatorImpl::ShowInstanceForTabs(
   ShowInstanceForTabs(target_instance, tabs, GlicPinTrigger::kContextMenu);
 }
 
-void GlicInstanceCoordinatorImpl::Toggle(
-    BrowserWindowInterface* browser,
-    bool prevent_close,
-    mojom::InvocationSource source,
-    std::optional<std::string> deprecated_prompt_suggestion) {
+void GlicInstanceCoordinatorImpl::Toggle(BrowserWindowInterface* browser,
+                                         bool prevent_close,
+                                         mojom::InvocationSource source) {
   if (!browser) {
     if (!GlicEnabling::IsLiveAndFloatyEnabledByFlags()) {
 #if !BUILDFLAG(IS_ANDROID)
@@ -306,12 +304,12 @@ void GlicInstanceCoordinatorImpl::Toggle(
         return;
       }
     } else {
-      ToggleFloaty(prevent_close, source, deprecated_prompt_suggestion);
+      ToggleFloaty(prevent_close, source);
       return;
     }
   }
 
-  ToggleSidePanel(browser, prevent_close, source, deprecated_prompt_suggestion);
+  ToggleSidePanel(browser, prevent_close, source);
 }
 
 void GlicInstanceCoordinatorImpl::EnsurePreload() {
@@ -709,19 +707,17 @@ GlicInstanceCoordinatorImpl::GetOrCreateInstanceImplForFloaty() {
 
 void GlicInstanceCoordinatorImpl::ToggleFloaty(
     bool prevent_close,
-    glic::mojom::InvocationSource source,
-    std::optional<std::string> prompt_suggestion) {
+    glic::mojom::InvocationSource source) {
   CHECK(GlicEnabling::IsLiveAndFloatyEnabledByFlags());
   GetOrCreateInstanceImplForFloaty()->Toggle(
       ShowOptions::ForFloating(/*source_tab=*/tabs::TabHandle::Null()),
-      prevent_close, source, prompt_suggestion);
+      prevent_close, source);
 }
 
 void GlicInstanceCoordinatorImpl::ToggleSidePanel(
     BrowserWindowInterface* browser,
     bool prevent_close,
-    mojom::InvocationSource source,
-    std::optional<std::string> prompt_suggestion) {
+    mojom::InvocationSource source) {
   auto* tab = TabListInterface::From(browser)->GetActiveTab();
   if (!tab) {
     LOG(ERROR) << "Active tab is null";
@@ -746,8 +742,7 @@ void GlicInstanceCoordinatorImpl::ToggleSidePanel(
   ShowOptions options = ShowOptions::ForSidePanel(
       *tab, GlicPinTrigger::kInstanceCreation, source);
 
-  instance->Toggle(std::move(options), prevent_close, source,
-                   prompt_suggestion);
+  instance->Toggle(std::move(options), prevent_close, source);
 }
 
 void GlicInstanceCoordinatorImpl::RemoveInstance(GlicInstanceImpl* instance) {

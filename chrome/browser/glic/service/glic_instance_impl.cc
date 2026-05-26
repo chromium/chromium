@@ -517,8 +517,7 @@ bool GlicInstanceImpl::ShouldUnbindOnClose(EmbedderKey key,
 
 bool GlicInstanceImpl::Toggle(ShowOptions&& options,
                               bool prevent_close,
-                              glic::mojom::InvocationSource source,
-                              std::optional<std::string> prompt_suggestion) {
+                              glic::mojom::InvocationSource source) {
   VLOG(1) << "Glic [InstanceImpl] Toggle, id=" << id_.value();
   instance_metrics_.OnToggle(source, options, IsShowing());
   EmbedderKey key = GetEmbedderKey(options);
@@ -532,7 +531,6 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
 
   // We assume that a toggle is user initiated so focus on show.
   options.focus_on_show = true;
-  options.prompt_suggestion = prompt_suggestion;
   options.invocation_source = source;
   Show(options);
   return true;

@@ -7,7 +7,7 @@
 //   --gn_target chrome/test/data/webui/glic:build_ts
 
 import {WebClientMode} from '/glic/glic_api/glic_api.js';
-import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, Observable, OpenPanelInfo, PanelOpeningData, PanelStateKind} from '/glic/glic_api/glic_api.js';
+import type {GlicBrowserHost, GlicHostRegistry, GlicWebClient, InvokeOptions, Observable, OpenPanelInfo, PanelOpeningData, PanelStateKind} from '/glic/glic_api/glic_api.js';
 import {ObservableValue, Subject, type Subscriber} from '/glic/observable.js';
 import {TaskQueue} from '/glic/task_queue.js';
 
@@ -167,6 +167,11 @@ export class WebClient implements GlicWebClient {
   panelOpenState = ObservableValue.withValue<boolean>(false);
   panelOpenStateKind = ObservableValue.withNoValue<PanelStateKind>();
   panelOpenData = ObservableValue.withNoValue<PanelOpeningData>();
+  invokeData = ObservableValue.withNoValue<InvokeOptions>();
+
+  async invoke(options: InvokeOptions): Promise<void> {
+    this.invokeData.assignAndSignal(options);
+  }
 
   async initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     this.host = glicBrowserHost;
