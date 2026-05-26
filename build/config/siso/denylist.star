@@ -44,6 +44,7 @@ def __step_config(ctx, step_config):
         "components/vector_icons/aggregate_vector_icons.py",
         "components/zucchini/fuzzers/generate_fuzzer_data.py",
         "mojo/public/tools/bindings/minify_with_terser.py",
+        "remoting/tools/build/remoting_copy_locales.py",
         "testing/libfuzzer/fuzzers/generate_v8_inspector_fuzzer_corpus.py",
         "testing/libfuzzer/research/domatolpm/fuzzer_generator.py",
         "testing/libfuzzer/research/domatolpm/generator.py",
@@ -63,6 +64,7 @@ def __step_config(ctx, step_config):
         "third_party/dawn/generator/dawn_version_generator.py",
         "third_party/dawn/generator/opengl_loader_generator.py",
         "third_party/dawn/src/tint/cmd/bench/generate_benchmark_inputs.py",
+        "third_party/dawn/tools/run.py",
         "third_party/dawn/webgpu-cts/scripts/compile_src.py",
         "third_party/dawn/webgpu-cts/scripts/copy_files.py",
         "third_party/dawn/webgpu-cts/scripts/gen_ts_dep_lists.py",
@@ -88,6 +90,8 @@ def __step_config(ctx, step_config):
         "tools/grit/grit.py",
         "tools/grit/pak_util.py",
         "tools/grit/preprocess_if_expr.py",
+        "tools/json_schema_compiler/compiler.py",
+        "tools/json_schema_compiler/feature_compiler.py",
         "tools/licenses/licenses.py",
 
         # merge_xml.py relies on expand_owners.py, which
