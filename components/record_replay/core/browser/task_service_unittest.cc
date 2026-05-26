@@ -118,6 +118,8 @@ TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
   TaskDefinition definition;
   definition.set_title("Test Journey");
   definition.set_url("https://example.com/start");
+  TaskStep* step = definition.add_task_steps();
+  step->set_url("https://example.com/end");
 
   EXPECT_CALL(
       mock_data_manager_,

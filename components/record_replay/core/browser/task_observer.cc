@@ -29,17 +29,15 @@ void TaskObserver::StartObserving(const GURL& visited_url) {
 
 void TaskObserver::OnURLVisited(const GURL& visited_url) {
   if (visited_url == final_url_) {
-    // TODO(crbug.com/514323476): Implement.
-    // Perform parameter extraction and then call
-    // TaskObserver::OnTaskCompleted.
+    // TODO(crbug.com/514323476): Make OnTaskParameterExtractionCompleted
+    // called only after parameter extraction is complete and pass the success
+    // parameter.
+    OnTaskParameterExtractionCompleted(/*success=*/true);
   }
 }
 
 void TaskObserver::OnTaskParameterExtractionCompleted(bool success) {
-  // TODO(crbug.com/514323476): Implement.
-  // Triggered when we land on the task-end URL, receives a boolean indicating
-  // whether parameter extraction was successful. Should trigger the
-  // completion callback if successful.
+  completion_callback_.Run(observation_);
 }
 
 }  // namespace record_replay
