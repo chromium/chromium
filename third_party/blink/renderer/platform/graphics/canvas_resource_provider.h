@@ -215,8 +215,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
                          const gfx::ColorSpace& color_space,
                          Delegate* delegate);
 
-  virtual void RasterRecordForCanvas2D(cc::PaintRecord) = 0;
-  void UnacceleratedRasterRecordForCanvas2D(cc::PaintRecord);
+  virtual void RasterRecord(cc::PaintRecord) = 0;
+  void UnacceleratedRasterRecord(cc::PaintRecord);
 
   CanvasImageProvider* GetOrCreateSWCanvasImageProviderForCanvas2D();
 
@@ -247,7 +247,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   // Disables lines drawing as paths if necessary. Drawing lines as paths is
   // only needed for ganesh.
-  virtual void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() {}
+  virtual void DisableLineDrawingAsPathsIfNecessary() {}
 
  protected:
   // Should only be called from static Create*() methods.
@@ -299,7 +299,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderBitmap
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault) override;
 
-  void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
+  void RasterRecord(cc::PaintRecord last_recording) override;
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,
                    size_t row_bytes,
@@ -420,7 +420,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
 
   // CanvasResourceProvider:
   void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
-  void RasterRecordForCanvas2D(cc::PaintRecord last_recording) override;
+  void RasterRecord(cc::PaintRecord last_recording) override;
   bool IsValid() const override;
   Canvas2DResourceProviderSharedImage* As2DSharedImageProvider() final {
     return this;
@@ -465,7 +465,7 @@ class PLATFORM_EXPORT Canvas2DResourceProviderSharedImage
   // Notifies before any unaccelerated drawing will be done on the resource used
   // by this provider.
   void WillDrawUnaccelerated();
-  void DisableLineDrawingAsPathsIfNecessaryForCanvas2D() override;
+  void DisableLineDrawingAsPathsIfNecessary() override;
 
   sk_sp<SkSurface> CreateSkSurface() const override;
   gpu::raster::RasterInterface* RasterInterface() const;

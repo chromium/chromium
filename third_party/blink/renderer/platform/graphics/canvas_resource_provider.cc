@@ -170,9 +170,9 @@ sk_sp<SkSurface> Canvas2DResourceProviderBitmap::CreateSkSurface() const {
   return SkSurfaces::Raster(info, &props);
 }
 
-void Canvas2DResourceProviderBitmap::RasterRecordForCanvas2D(
+void Canvas2DResourceProviderBitmap::RasterRecord(
     cc::PaintRecord last_recording) {
-  return UnacceleratedRasterRecordForCanvas2D(last_recording);
+  return UnacceleratedRasterRecord(last_recording);
 }
 
 bool Canvas2DResourceProviderBitmap::WritePixels(const SkImageInfo& orig_info,
@@ -510,7 +510,7 @@ Canvas2DResourceProviderSharedImage::CreateScopedRasterTimerForCanvas2D() {
 }
 
 void Canvas2DResourceProviderSharedImage::
-    DisableLineDrawingAsPathsIfNecessaryForCanvas2D() {
+    DisableLineDrawingAsPathsIfNecessary() {
   if (context_provider_wrapper_ &&
       context_provider_wrapper_->ContextProvider()
               .GetGpuFeatureInfo()
@@ -1104,11 +1104,11 @@ Canvas2DResourceProviderSharedImage::GetOrCreateCanvasImageProvider() {
   return canvas_2d_image_provider_.get();
 }
 
-void Canvas2DResourceProviderSharedImage::RasterRecordForCanvas2D(
+void Canvas2DResourceProviderSharedImage::RasterRecord(
     cc::PaintRecord last_recording) {
   if (!is_accelerated_) {
     WillDrawUnaccelerated();
-    UnacceleratedRasterRecordForCanvas2D(std::move(last_recording));
+    UnacceleratedRasterRecord(std::move(last_recording));
     return;
   }
 
@@ -1703,7 +1703,7 @@ CanvasResourceProvider::ReleaseRecorder() {
   auto recorder = std::make_unique<MemoryManagedPaintRecorder>(Size(), this);
   recorder_->SetClient(nullptr);
   recorder_.swap(recorder);
-  DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
+  DisableLineDrawingAsPathsIfNecessary();
   return recorder;
 }
 
@@ -1711,7 +1711,7 @@ void CanvasResourceProvider::SetRecorder(
     std::unique_ptr<MemoryManagedPaintRecorder> recorder) {
   recorder->SetClient(this);
   recorder_ = std::move(recorder);
-  DisableLineDrawingAsPathsIfNecessaryForCanvas2D();
+  DisableLineDrawingAsPathsIfNecessary();
 }
 
 void CanvasResourceProvider::FlushIfRecordingLimitExceeded() {
@@ -1944,7 +1944,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   clear_frame_for_canvas2d_ = false;
   cc::PaintRecord recording;
   recording = recorder_->ReleaseMainRecording();
-  RasterRecordForCanvas2D(recording);
+  RasterRecord(recording);
   // Images are locked for the duration of the rasterization, in case they get
   // used multiple times. We can unlock them once the rasterization is complete.
   if (canvas_2d_image_provider_) {
@@ -1957,7 +1957,7 @@ std::optional<cc::PaintRecord> CanvasResourceProvider::Flush(
   return recording;
 }
 
-void CanvasResourceProvider::UnacceleratedRasterRecordForCanvas2D(
+void CanvasResourceProvider::UnacceleratedRasterRecord(
     cc::PaintRecord last_recording) {
   CHECK(!IsAccelerated());
 
@@ -2550,7 +2550,7 @@ void CanvasResourceProvider::ClearAtCreationForCanvas2D() {
     recorder.getRecordingCanvas().clear(SkColors::kTransparent);
   }
 
-  RasterRecordForCanvas2D(recorder.ReleaseMainRecording());
+  RasterRecord(recorder.ReleaseMainRecording());
 }
 
 void CanvasResourceProvider::RestoreBackBufferForCanvas2D(

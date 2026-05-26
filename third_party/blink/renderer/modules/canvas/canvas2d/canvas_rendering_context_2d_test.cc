@@ -614,9 +614,7 @@ class FakeCanvasResourceProvider : public Canvas2DResourceProviderSharedImage {
     return SkSurfaces::Raster(info);
   }
 
-  MOCK_METHOD((void),
-              RasterRecordForCanvas2D,
-              (cc::PaintRecord last_recording));
+  MOCK_METHOD((void), RasterRecord, (cc::PaintRecord last_recording));
 
   MOCK_METHOD((scoped_refptr<StaticBitmapImage>),
               Snapshot,
@@ -1371,7 +1369,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_FullCoverage) {
   // The recording will be cleared, so nothing will be rastered before
   // `WritePixels` is called.
   InSequence s;
-  EXPECT_CALL(*provider, RasterRecordForCanvas2D).Times(0);
+  EXPECT_CALL(*provider, RasterRecord).Times(0);
   EXPECT_CALL(*provider, WritePixels).Times(1);
 
   Context2D()->SetCanvas2DResourceProviderForTesting(std::move(provider), size);
@@ -1401,8 +1399,7 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, PutImageData_PartialCoverage) {
   // `putImageData` forces a flush, so the `fillRect` will get rasterized before
   // `WritePixels` is called.
   InSequence s;
-  EXPECT_CALL(*provider,
-              RasterRecordForCanvas2D(RecordedOpsAre(PaintOpIs<DrawRectOp>())))
+  EXPECT_CALL(*provider, RasterRecord(RecordedOpsAre(PaintOpIs<DrawRectOp>())))
       .Times(1);
   EXPECT_CALL(*provider, WritePixels).Times(1);
 
@@ -3226,10 +3223,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
 
   // Recorded draw ops are resterized on hibernation. The provider gets replaced
   // when getting out of hibernation, so this mock will not see the later calls
-  // to `RasterRecordForCanvas2D`.
+  // to `RasterRecord`.
   cc::PaintRecord hibernation_raster;
   EXPECT_CALL(*provider, Snapshot(_)).Times(1);
-  EXPECT_CALL(*provider, RasterRecordForCanvas2D)
+  EXPECT_CALL(*provider, RasterRecord)
       .Times(1)
       .WillOnce(SaveArg<0>(&hibernation_raster));
 
