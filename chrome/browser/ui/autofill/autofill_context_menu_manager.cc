@@ -315,7 +315,8 @@ void AutofillContextMenuManager::MaybeAddAutofillFeedbackItem() {
         IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK,
         ui::ImageModel::FromVectorIcon(::features::IsRoundedIconsEnabled()
                                            ? vector_icons::kPetsIcon
-                                           : vector_icons::kDogfoodOldIcon));
+                                           : vector_icons::kDogfoodOldIcon,
+                                       ui::kColorIcon, kContextMenuIconSize));
 
     menu_model_->AddSeparator(ui::NORMAL_SEPARATOR);
   }
