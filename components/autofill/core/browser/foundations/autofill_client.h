@@ -674,7 +674,8 @@ class AutofillClient {
 
 #if BUILDFLAG(IS_ANDROID)
   // Shows the @memory bottom sheet. Triggered by keyboard accessory controller.
-  virtual void ShowAtMemoryBottomSheet();
+  virtual void ShowAtMemoryBottomSheet(
+      base::span<const Suggestion> suggestions);
 
   // The AutofillSnackbarController is used to show a snackbar notification
   // on Android.

@@ -35,7 +35,7 @@ TEST_F(AtMemoryBottomSheetBridgeTest, OnDismissedCallsDelegate) {
   MockAtMemoryBottomSheetDelegate* delegate_ptr = delegate.get();
 
   EXPECT_CALL(*delegate_ptr, OnDismissed());
-  bridge_->RequestShowContent(std::move(delegate));
+  bridge_->RequestShowContent(std::move(delegate), {});
 }
 
 }  // namespace

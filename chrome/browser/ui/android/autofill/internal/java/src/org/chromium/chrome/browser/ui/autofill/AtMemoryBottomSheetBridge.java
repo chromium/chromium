@@ -8,13 +8,17 @@ import android.content.Context;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
+
+import java.util.List;
 
 /** JNI wrapper for the @memory bottom sheet. */
 @NullMarked
@@ -50,8 +54,19 @@ public class AtMemoryBottomSheetBridge implements AtMemoryBottomSheetCoordinator
     }
 
     @CalledByNative
-    public void show() {
-        mCoordinator.show();
+    public void show(@JniType("std::vector") List<AutofillSuggestion> suggestions) {
+        mCoordinator.show(suggestions);
+    }
+
+    @CalledByNative
+    public static AutofillSuggestion createAutofillSuggestion(
+            String label, String subLabel, int iconId, int suggestionType) {
+        return new AutofillSuggestion.Builder()
+                .setLabel(label)
+                .setSubLabel(subLabel)
+                .setIconId(iconId)
+                .setSuggestionType(suggestionType)
+                .build();
     }
 
     @CalledByNative

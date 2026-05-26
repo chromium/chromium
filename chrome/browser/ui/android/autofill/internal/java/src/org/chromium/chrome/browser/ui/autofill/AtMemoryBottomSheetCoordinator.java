@@ -7,11 +7,14 @@ package org.chromium.chrome.browser.ui.autofill;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
 
 /** Coordinator for the AtMemoryBottomSheet. */
 @NullMarked
@@ -55,11 +58,12 @@ public class AtMemoryBottomSheetCoordinator {
         PropertyModelChangeProcessor.create(model, view, AtMemoryBottomSheetViewBinder::bind);
     }
 
-    public void show() {
+    public void show(List<AutofillSuggestion> suggestions) {
         mBottomSheetController.addObserver(mBottomSheetObserver);
         if (!mBottomSheetController.requestShowContent(mContent, /* animate= */ true)) {
             onDismissed();
         }
+        // TODO(crbug.com/513143734): Display suggestions.
     }
 
     public void hide() {

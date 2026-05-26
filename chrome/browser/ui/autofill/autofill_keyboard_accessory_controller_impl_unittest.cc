@@ -27,6 +27,7 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::InSequence;
@@ -173,6 +174,22 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 
   std::vector<Suggestion> suggestions = {
       Suggestion(u"test", SuggestionType::kAddressEntry)};
+  client().suggestion_controller(manager()).Show(
+      AutofillSuggestionController::GenerateSuggestionUiSessionId(),
+      suggestions, AutofillSuggestionTriggerSource::kAtMemory,
+      AutoselectFirstSuggestion(false),
+      AutofillSuggestionsIgnoreFocusLoss(false));
+}
+
+TEST_F(AutofillKeyboardAccessoryControllerImplTest,
+       ShowAtMemoryBottomSheetPassesSuggestions) {
+  client().suggestion_controller(manager());
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"test", SuggestionType::kAddressEntry)};
+
+  EXPECT_CALL(client(), ShowAtMemoryBottomSheet(ElementsAreArray(suggestions)));
+
   client().suggestion_controller(manager()).Show(
       AutofillSuggestionController::GenerateSuggestionUiSessionId(),
       suggestions, AutofillSuggestionTriggerSource::kAtMemory,

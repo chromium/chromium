@@ -27,6 +27,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
+import java.util.List;
+
 /** Unit tests for {@link AtMemoryBottomSheetCoordinator}. */
 @NullMarked
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,7 +60,7 @@ public class AtMemoryBottomSheetCoordinatorTest {
     public void testShow_Success() {
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(true);
 
-        mCoordinator.show();
+        mCoordinator.show(List.of());
 
         verify(mBottomSheetController).requestShowContent(any(), eq(true));
     }
@@ -67,7 +69,7 @@ public class AtMemoryBottomSheetCoordinatorTest {
     public void testShow_Failed() {
         when(mBottomSheetController.requestShowContent(any(), eq(true))).thenReturn(false);
 
-        mCoordinator.show();
+        mCoordinator.show(List.of());
 
         verify(mMockDelegate).onDismissed();
     }

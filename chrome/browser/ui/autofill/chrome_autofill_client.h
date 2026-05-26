@@ -237,7 +237,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   // on Android.
   AutofillSnackbarControllerImpl* GetAutofillSnackbarController() final;
 
-  void ShowAtMemoryBottomSheet() final;
+  void ShowAtMemoryBottomSheet(base::span<const Suggestion> suggestions) final;
 
   // Returns the AtMemoryBottomSheetBridge for the current tab.
   AtMemoryBottomSheetBridge* GetOrCreateAtMemoryBottomSheetBridge();

@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
+#include "components/autofill/core/browser/suggestions/suggestion.h"
 
 namespace ui {
 class WindowAndroid;
@@ -33,8 +34,8 @@ class AtMemoryBottomSheetBridge {
   virtual ~AtMemoryBottomSheetBridge();
 
   // Requests to show the bottom sheet.
-  void RequestShowContent(
-      std::unique_ptr<AtMemoryBottomSheetDelegate> delegate);
+  void RequestShowContent(std::unique_ptr<AtMemoryBottomSheetDelegate> delegate,
+                          base::span<const Suggestion> suggestions);
 
   // -- JNI calls bridged to AtMemoryBottomSheetDelegate --
   void OnDismissed(JNIEnv* env);
