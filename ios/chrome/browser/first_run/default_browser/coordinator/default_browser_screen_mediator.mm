@@ -71,6 +71,11 @@
     _localState->SetBoolean(prefs::kEulaAccepted, true);
     _localState->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
                             self.UMAReportingUserChoice);
+    metrics::MetricsReportingLevel level =
+        self.UMAReportingUserChoice ? metrics::MetricsReportingLevel::kBasic
+                                    : metrics::MetricsReportingLevel::kNone;
+    metrics::MetricsReportingChoiceService::SetMetricsReportingLevel(
+        _localState, level);
     _localState->CommitPendingWrite();
   }
 }

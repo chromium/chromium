@@ -247,6 +247,11 @@ enum class SigninScreenState {
     self.localPrefService->SetBoolean(prefs::kEulaAccepted, true);
     self.localPrefService->SetBoolean(metrics::prefs::kMetricsReportingEnabled,
                                       self.UMAReportingUserChoice);
+    metrics::MetricsReportingLevel level =
+        self.UMAReportingUserChoice ? metrics::MetricsReportingLevel::kBasic
+                                    : metrics::MetricsReportingLevel::kNone;
+    metrics::MetricsReportingChoiceService::SetMetricsReportingLevel(
+        self.localPrefService, level);
     self.localPrefService->CommitPendingWrite();
   }
 }
