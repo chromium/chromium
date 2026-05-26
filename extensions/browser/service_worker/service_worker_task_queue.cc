@@ -970,7 +970,7 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
                           base::Time::Now() - start_time);
 
   worker_registered_.insert(context_id);
-  pending_storage_registrations_.emplace(
+  pending_storage_registrations_.insert_or_assign(
       extension->id(), *GetCurrentActivationToken(extension->id()));
 
   if (HasPendingTasks(context_id)) {
