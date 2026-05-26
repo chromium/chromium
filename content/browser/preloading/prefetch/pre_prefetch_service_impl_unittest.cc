@@ -42,8 +42,9 @@ class PrePrefetchServiceImplTest : public testing::Test {
                 &test_url_loader_factory_)) {}
 
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kPrefetchOffTheMainThread},
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/{{features::kPrefetchOffTheMainThread,
+                               {{"update_missing_header_cache", "true"}}}},
         /*disabled_features=*/{
             blink::features::kRemovePurposeHeaderForPrefetch});
     PrePrefetchServiceImpl::SetURLLoaderFactoryForTesting(

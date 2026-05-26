@@ -732,7 +732,10 @@ BASE_FEATURE(kPeriodicBackgroundSync, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Allow starting prefetch request from off the main thread. Please see
 // crbug.com/452389538 for more details.
-BASE_FEATURE(kPrefetchOffTheMainThread, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrefetchOffTheMainThread, base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<bool>
+    kPrefetchOffTheMainThreadUpdateMissingHeaderCache{
+        &kPrefetchOffTheMainThread, "update_missing_header_cache", true};
 
 // Use code paths for prefetch/prerender integration.
 // See also `kPrerender2FallbackPrefetchSpecRules`.

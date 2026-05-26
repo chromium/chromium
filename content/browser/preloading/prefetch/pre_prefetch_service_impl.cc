@@ -195,11 +195,13 @@ class PrePrefetchServiceCore {
         it != ui_thread_pre_calculated_headers_map_.end()) {
       ui_thread_pre_calculated_headers = &it->second;
     } else {
-      // Refreshing the headers requires a thread hop to the UI thread, which
-      // would delay this request and nullify the benefit of PrePrefetch.
-      // Instead, we fail the current request quickly and asynchronously trigger
-      // pre-calculation for future requests.
-      PostTaskToPreCalculateHeaders(key);
+      if (features::kPrefetchOffTheMainThreadUpdateMissingHeaderCache.Get()) {
+        // Refreshing the headers requires a thread hop to the UI thread, which
+        // would delay this request and nullify the benefit of PrePrefetch.
+        // Instead, we fail the current request quickly and asynchronously
+        // trigger pre-calculation for future requests.
+        PostTaskToPreCalculateHeaders(key);
+      }
       RecordPrePrefetchStartResultHistogram(
           PrePrefetchStartResult::kFailedPreCalculatedHeadersNotMatched);
       *out_handle = nullptr;

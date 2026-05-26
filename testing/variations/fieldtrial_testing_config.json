@@ -26414,6 +26414,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "update_missing_header_cache": "true"
+                    },
                     "enable_features": [
                         "PrefetchOffTheMainThread",
                         "WebViewPrefetchOffTheMainThread"
