@@ -31,8 +31,6 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#import "components/plus_addresses/core/common/features.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/prefs/pref_service.h"
@@ -106,9 +104,6 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kTravel = {
     autofill::EntityTypeName::kRedressNumber,
     autofill::EntityTypeName::kVehicle};
 
-// Plus Address Section header height.
-const CGFloat kPlusAddressSectionHeaderHeight = 24;
-
 // TODO(crbug.com/480934103): Update this URL.
 constexpr std::string_view kWalletUrlString =
     "https://wallet.google.com/wallet/settings/managepassesdata";
@@ -119,7 +114,6 @@ const CGFloat kEntityIconPointSize = 20;
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSwitches = kSectionIdentifierEnumZero,
   SectionIdentifierProfiles,
-  SectionIdentifierPlusAddress,
   SectionIdentifierEnhancedAutofill,
   SectionIdentifierVerificationSwitch,
   SectionIdentifierWalletPromo,
@@ -134,8 +128,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeAddress,
   ItemTypeHeader,
   ItemTypeFooter,
-  ItemTypePlusAddress,
-  ItemTypePlusAddressFooter,
   ItemTypeEnhancedAutofill,
   ItemTypeEnhancedAutofillManaged,
   ItemTypeVerificationSwitch,
@@ -361,17 +353,6 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   [model setFooter:[self addressSwitchFooter]
       forSectionWithIdentifier:SectionIdentifierSwitches];
 
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      _userEmail) {
-    [model addSectionWithIdentifier:SectionIdentifierPlusAddress];
-    [model addItem:[self plusAddressItem]
-        toSectionWithIdentifier:SectionIdentifierPlusAddress];
-
-    [model setFooter:[self plusAddressFooter]
-        forSectionWithIdentifier:SectionIdentifierPlusAddress];
-  }
-
   bool isEnhancedAutofillEnabled = base::FeatureList::IsEnabled(
       autofill::features::kAutofillAiWithDataSchema);
   if (isEnhancedAutofillEnabled) {
@@ -492,24 +473,6 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   switchItem.on = [self isAutofillProfileEnabled];
   switchItem.accessibilityIdentifier = kAutofillAddressSwitchViewId;
   return switchItem;
-}
-
-- (TableViewItem*)plusAddressItem {
-  TableViewDetailTextItem* plusAddressItem =
-      [[TableViewDetailTextItem alloc] initWithType:ItemTypePlusAddress];
-
-  plusAddressItem.text =
-      l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
-  plusAddressItem.accessorySymbol =
-      TableViewDetailTextCellAccessorySymbolExternalLink;
-  return plusAddressItem;
-}
-
-- (TableViewHeaderFooterItem*)plusAddressFooter {
-  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
-      initWithType:ItemTypePlusAddressFooter];
-  footer.text = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL);
-  return footer;
 }
 
 - (TableViewItem*)enhancedAutofillItem {
@@ -893,34 +856,6 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   return ![self isServerWalletItemAtIndexPath:indexPath];
 }
 
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForHeaderInSection:(NSInteger)section {
-  NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSectionIndex:section];
-
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      sectionIdentifier == SectionIdentifierPlusAddress) {
-    return kPlusAddressSectionHeaderHeight;
-  }
-
-  return [super tableView:tableView heightForHeaderInSection:section];
-}
-
-- (CGFloat)tableView:(UITableView*)tableView
-    heightForFooterInSection:(NSInteger)section {
-  NSInteger sectionIdentifier =
-      [self.tableViewModel sectionIdentifierForSectionIndex:section];
-
-  if (base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressesEnabled) &&
-      sectionIdentifier == SectionIdentifierPlusAddress) {
-    return kTableViewHeaderFooterViewHeight;
-  }
-
-  return [super tableView:tableView heightForFooterInSection:section];
-}
-
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   [super setEditing:editing animated:animated];
   if (_settingsAreDismissed) {
@@ -948,15 +883,6 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
   switch (itemType) {
-    case ItemTypePlusAddress: {
-      base::RecordAction(
-          base::UserMetricsAction("Settings.ManageOptionOnSettingsSelected"));
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:
-              GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
-      [self.sceneHandler closePresentedViewsAndOpenURL:command];
-      return;
-    }
     case ItemTypeEnhancedAutofill: {
       if (![self canModifyEnhancedAutofill]) {
         [self.tableView deselectRowAtIndexPath:indexPath animated:YES];

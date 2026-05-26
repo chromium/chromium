@@ -20,8 +20,6 @@
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/plus_addresses/core/browser/grit/plus_addresses_strings.h"
-#import "components/plus_addresses/core/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
@@ -177,32 +175,6 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
   EXPECT_EQ(4, NumberOfSections());
   // Expect address section to contain one row (the address itself).
   EXPECT_EQ(1, NumberOfItemsInSection(3));
-}
-
-// Checks if there is a plus address section when
-// `plus_addresses::features::kPlusAddressesEnabled` is enabled.
-TEST_F(AutofillProfileTableViewControllerTest, TestPlusAddressSection) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      plus_addresses::features::kPlusAddressesEnabled);
-
-  SignIn();
-
-  LegacyChromeTableViewController* controller =
-      LegacyChromeTableViewControllerTest::controller();
-  CheckController();
-
-  // Expect 4 sections (address toggle, plus address, enhanced autofill, user
-  // verification).
-  EXPECT_EQ(4, NumberOfSections());
-  // Expect plus address section to contain one row.
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
-  // Expect subtitle section to contain one row.
-  EXPECT_NE(nil, [controller.tableViewModel footerForSectionIndex:1]);
-
-  // Check the footer of the sections.
-  CheckSectionFooterWithId(IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_SUBLABEL, 0);
-  CheckSectionFooterWithId(IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL, 1);
 }
 
 // Checks if city is set as the default `detailText` when the
