@@ -4,6 +4,8 @@
 
 source_set("ui") {
   sources = [
+    "level_up_all_tasks_view_controller.h",
+    "level_up_all_tasks_view_controller.mm",
     "level_up_consumer.h",
     "level_up_profile_consumer.h",
     "level_up_progress_view.h",
@@ -21,6 +23,7 @@ source_set("ui") {
   deps = [
     "//base",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/level_up/model",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/elements/gradient",
     "//ios/chrome/browser/shared/ui/symbols",

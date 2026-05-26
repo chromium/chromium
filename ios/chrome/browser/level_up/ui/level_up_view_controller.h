@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/level_up/ui/level_up_profile_consumer.h"
 
 @protocol LevelUpCommands;
+@protocol LevelUpTableViewControllerDelegate;
 
 // View controller displaying Level Up bottom sheet.
 @interface LevelUpViewController
@@ -18,6 +19,9 @@
 
 // Command handler for Level Up commands.
 @property(nonatomic, weak) id<LevelUpCommands> handler;
+
+// The consumer interface for the default tasks list card.
+@property(nonatomic, strong, readonly) id<LevelUpConsumer> tasksConsumer;
 
 @end
 

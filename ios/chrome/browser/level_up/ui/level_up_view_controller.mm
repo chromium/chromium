@@ -33,10 +33,14 @@ const CGFloat kUserNameLineHeightMultiple = 1.08;
 @implementation LevelUpViewController {
   // Subview displaying the task progress indicator card.
   LevelUpProgressView* _progressView;
-  // Child view controller managing the task table view cells.
+  // The table view controller.
   LevelUpTableViewController* _tableViewController;
-  // Height constraint for the tasks table view.
-  NSLayoutConstraint* _tableHeightConstraint;
+
+  // The root scroll view enclosing all contents.
+  UIScrollView* _scrollView;
+  // The main vertical container.
+  UIStackView* _mainContainer;
+
   // View displaying the welcome user header profile.
   UIView* _welcomeHeaderView;
   // Image view containing user's sign-in avatar.
@@ -47,97 +51,40 @@ const CGFloat kUserNameLineHeightMultiple = 1.08;
   NSString* _userFullName;
   // User's avatar image.
   UIImage* _userAvatar;
+
+  // Stored copies of levels and tasks.
+  NSArray<LevelUpTask*>* _tasks;
+  NSInteger _level;
 }
+
+@synthesize tasksConsumer = _tableViewController;
 
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _progressView = [[LevelUpProgressView alloc] init];
-    _progressView.translatesAutoresizingMaskIntoConstraints = NO;
-
     _tableViewController = [[LevelUpTableViewController alloc]
-        initWithStyle:UITableViewStylePlain];
+        initWithHeaderTitle:l10n_util::GetNSString(IDS_IOS_LEVEL_UP_YOUR_TASKS)
+          showsSeeAllButton:YES
+                      style:UITableViewStylePlain];
   }
   return self;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  [self setupChildControllers];
+  [self setupNavigationItems];
+  [self setupContentView];
 
-  UIView* tableView = _tableViewController.tableView;
-
-  [self addChildViewController:_tableViewController];
-  [_tableViewController didMoveToParentViewController:self];
-
-  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-  self.title = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_LEVEL_UP);
-
-  UIButton* menuButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  menuButton.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  menuButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-  [menuButton setImage:DefaultSymbolTemplateWithPointSize(
-                           kEllipsisSymbol, kSymbolAccessoryPointSize)
-              forState:UIControlStateNormal];
-
-  menuButton.menu = [UIMenu menuWithTitle:@"" children:@[]];
-  menuButton.showsMenuAsPrimaryAction = YES;
-  self.navigationItem.leftBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:menuButton];
-
-  UIButton* dismissButton = [UIButton buttonWithType:UIButtonTypeSystem];
-  dismissButton.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-  dismissButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
-  [dismissButton setImage:DefaultSymbolTemplateWithPointSize(
-                              kXMarkSymbol, kSymbolAccessoryPointSize)
-                 forState:UIControlStateNormal];
-
-  [dismissButton addTarget:self
-                    action:@selector(dismiss)
-          forControlEvents:UIControlEventTouchUpInside];
-  self.navigationItem.rightBarButtonItem =
-      [[UIBarButtonItem alloc] initWithCustomView:dismissButton];
-
-  _welcomeHeaderView = [self createWelcomeHeaderView];
-  _userNameLabel.attributedText =
-      [self attributedUserNameStringWithName:_userFullName];
-  _userAvatarImageView.image = _userAvatar;
-
-  UIStackView* mainContainer = [[UIStackView alloc] initWithArrangedSubviews:@[
-    _welcomeHeaderView, _progressView, tableView
-  ]];
-  mainContainer.translatesAutoresizingMaskIntoConstraints = NO;
-  mainContainer.axis = UILayoutConstraintAxisVertical;
-  mainContainer.spacing = kLayoutSpacing;
-  mainContainer.alignment = UIStackViewAlignmentFill;
-
-  [self.view addSubview:mainContainer];
-
-  _tableHeightConstraint =
-      [tableView.heightAnchor constraintEqualToConstant:0.0];
-  _tableHeightConstraint.active = YES;
-
-  [self updateTableHeightConstraint];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [mainContainer.topAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor
-                       constant:kLayoutSpacing],
-    [mainContainer.leadingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.leadingAnchor
-                       constant:kLayoutSpacing],
-    [mainContainer.trailingAnchor
-        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor
-                       constant:-kLayoutSpacing],
-  ]];
+  [_progressView setLevel:_level tasksForLevel:_tasks];
+  [_tableViewController setLevel:_level tasksForLevel:_tasks];
 }
 
 #pragma mark - LevelUpConsumer
 
 - (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks {
-  [_progressView setLevel:level tasksForLevel:tasks];
-  [_tableViewController setLevel:level tasksForLevel:tasks];
-
-  [self updateTableHeightConstraint];
+  _level = level;
+  _tasks = [tasks copy];
 }
 
 #pragma mark - LevelUpProfileConsumer
@@ -156,20 +103,73 @@ const CGFloat kUserNameLineHeightMultiple = 1.08;
 
 #pragma mark - Private
 
-// Updates the table height constraint constant to match the header and cells
-// combined.
-- (void)updateTableHeightConstraint {
-  if (!_tableHeightConstraint) {
-    return;
-  }
-  UITableView* tableView = _tableViewController.tableView;
-  [tableView layoutIfNeeded];
+// Configures and layouts the child task card controllers.
+- (void)setupChildControllers {
+  _progressView = [[LevelUpProgressView alloc] init];
+  _progressView.translatesAutoresizingMaskIntoConstraints = NO;
 
-  NSInteger taskCount = [_tableViewController tableView:tableView
-                                  numberOfRowsInSection:0];
-  CGFloat headerHeight = [tableView rectForHeaderInSection:0].size.height;
-  CGFloat rowHeight = tableView.rowHeight;
-  _tableHeightConstraint.constant = headerHeight + (taskCount * rowHeight);
+  [self addChildViewController:_tableViewController];
+  [_tableViewController didMoveToParentViewController:self];
+}
+
+// Configures the custom navigation bar button items.
+- (void)setupNavigationItems {
+  self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.title = l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_LEVEL_UP);
+
+  UIButton* menuButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  menuButton.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  menuButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+  [menuButton setImage:DefaultSymbolTemplateWithPointSize(
+                           kEllipsisSymbol, kSymbolAccessoryPointSize)
+              forState:UIControlStateNormal];
+  menuButton.menu = [UIMenu menuWithTitle:@"" children:@[]];
+  menuButton.showsMenuAsPrimaryAction = YES;
+  self.navigationItem.leftBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:menuButton];
+
+  UIButton* dismissButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  dismissButton.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  dismissButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
+  [dismissButton setImage:DefaultSymbolTemplateWithPointSize(
+                              kXMarkSymbol, kSymbolAccessoryPointSize)
+                 forState:UIControlStateNormal];
+  [dismissButton addTarget:self
+                    action:@selector(dismiss)
+          forControlEvents:UIControlEventTouchUpInside];
+  self.navigationItem.rightBarButtonItem =
+      [[UIBarButtonItem alloc] initWithCustomView:dismissButton];
+}
+
+// Configures the scroll view, welcome header view, and container stack layouts.
+- (void)setupContentView {
+  _scrollView = [[UIScrollView alloc] init];
+  _scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  _scrollView.alwaysBounceVertical = YES;
+  [self.view addSubview:_scrollView];
+  AddSameConstraints(_scrollView, self.view);
+
+  _welcomeHeaderView = [self createWelcomeHeaderView];
+  _userNameLabel.attributedText =
+      [self attributedUserNameStringWithName:_userFullName];
+  _userAvatarImageView.image = _userAvatar;
+
+  _mainContainer = [[UIStackView alloc] initWithArrangedSubviews:@[
+    _welcomeHeaderView, _progressView, _tableViewController.view
+  ]];
+  _mainContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _mainContainer.axis = UILayoutConstraintAxisVertical;
+  _mainContainer.spacing = kLayoutSpacing;
+  _mainContainer.alignment = UIStackViewAlignmentFill;
+  [_scrollView addSubview:_mainContainer];
+
+  AddSameConstraintsWithInsets(
+      _mainContainer, _scrollView.contentLayoutGuide,
+      NSDirectionalEdgeInsetsMake(kLayoutSpacing, kLayoutSpacing,
+                                  kLayoutSpacing, kLayoutSpacing));
+  [_mainContainer.widthAnchor constraintEqualToAnchor:_scrollView.widthAnchor
+                                             constant:-2 * kLayoutSpacing]
+      .active = YES;
 }
 
 - (void)dismiss {
@@ -246,7 +246,7 @@ const CGFloat kUserNameLineHeightMultiple = 1.08;
     NSForegroundColorAttributeName : [UIColor colorNamed:kTextPrimaryColor],
     NSParagraphStyleAttributeName : paragraphStyle
   };
-  return [[NSAttributedString alloc] initWithString:name
+  return [[NSAttributedString alloc] initWithString:name ?: @""
                                          attributes:userNameTextAttributes];
 }
 

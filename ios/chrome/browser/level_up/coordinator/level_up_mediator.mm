@@ -19,6 +19,8 @@
   raw_ptr<AuthenticationService> _authService;
   // Image cache for user avatars.
   ResizedAvatarCache* _avatarCache;
+  // The list of task categories.
+  NSArray<LevelUpCategory*>* _categories;
 }
 
 - (instancetype)initWithAuthenticationService:
@@ -47,35 +49,177 @@
        taskDescription:@"Use Chrome as your primary default browser"
         iconSymbolName:kDefaultBrowserSymbol
              completed:YES
-      navigationAction:^{
-      }];
-  LevelUpTask* task2 =
-      [[LevelUpTask alloc] initWithTaskID:@"bookmarks_sync"
-                                    title:@"Sync your bookmarks"
-                          taskDescription:@"Access your bookmarks on any device"
-                           iconSymbolName:kBookmarksSymbol
-                                completed:YES
-                         navigationAction:^{
-                         }];
-  LevelUpTask* task3 = [[LevelUpTask alloc]
-        initWithTaskID:@"password_manager"
-                 title:@"Enable Password Manager"
-       taskDescription:@"Check and autofill your passwords securely"
-        iconSymbolName:kKeySymbol
-             completed:YES
-      navigationAction:^{
-      }];
-  LevelUpTask* task4 = [[LevelUpTask alloc]
-        initWithTaskID:@"widgets"
-                 title:@"Add widgets to Home Screen"
-       taskDescription:@"Access search and bookmarks from the Home Screen"
-        iconSymbolName:kPlusInSquareSymbol
-             completed:NO
+              category:LevelUpTaskCategory::kProductivity
       navigationAction:^{
       }];
 
-  [self.consumer setLevel:level tasksForLevel:@[ task1, task2, task3, task4 ]];
+  LevelUpTask* task2 = [[LevelUpTask alloc]
+        initWithTaskID:@"password_autofill"
+                 title:@"Save passwords and autofill"
+       taskDescription:
+           @"Quickly sign into sites and apps with your saved passwords"
+        iconSymbolName:kKeySymbol
+             completed:YES
+              category:LevelUpTaskCategory::kProductivity
+      navigationAction:^{
+      }];
+
+  LevelUpTask* task3 = [[LevelUpTask alloc]
+        initWithTaskID:@"pin_tabs"
+                 title:@"Pin tabs"
+       taskDescription:@"Save your favorite sites by pinning them"
+        iconSymbolName:kPlusInSquareSymbol
+             completed:YES
+              category:LevelUpTaskCategory::kProductivity
+      navigationAction:^{
+      }];
+
+  LevelUpTask* task4 =
+      [[LevelUpTask alloc] initWithTaskID:@"tab_group"
+                                    title:@"Create a tab group"
+                          taskDescription:@"Stay organized with tab groups"
+                           iconSymbolName:kBookmarksSymbol
+                                completed:NO
+                                 category:LevelUpTaskCategory::kProductivity
+                         navigationAction:^{
+                         }];
+
+  LevelUpTask* task5 = [[LevelUpTask alloc]
+        initWithTaskID:@"gemini"
+                 title:@"Use Gemini in Chrome"
+       taskDescription:@"Get answers faster with Gemini in Chrome"
+        iconSymbolName:kDefaultBrowserSymbol
+             completed:NO
+              category:LevelUpTaskCategory::kProductivity
+      navigationAction:^{
+      }];
+
+  LevelUpTask* task6 = [[LevelUpTask alloc]
+        initWithTaskID:@"payment_methods"
+                 title:@"Manage payment methods"
+       taskDescription:
+           @"Add new payment methods or edit saved ones to check out faster"
+        iconSymbolName:kKeySymbol
+             completed:NO
+              category:LevelUpTaskCategory::kProductivity
+      navigationAction:^{
+      }];
+
+  // Safety category tasks.
+  LevelUpTask* task7 = [[LevelUpTask alloc]
+        initWithTaskID:@"quick_delete"
+                 title:@"Quick delete"
+       taskDescription:
+           @"Manage your history, cookies and more to protect your privacy"
+        iconSymbolName:kPlusInSquareSymbol
+             completed:YES
+              category:LevelUpTaskCategory::kSafety
+      navigationAction:^{
+      }];
+
+  LevelUpTask* task8 = [[LevelUpTask alloc]
+        initWithTaskID:@"safe_browsing"
+                 title:@"Enhanced Safe Browsing"
+       taskDescription:
+           @"Add an extra layer of protection against online threats"
+        iconSymbolName:kBookmarksSymbol
+             completed:NO
+              category:LevelUpTaskCategory::kSafety
+      navigationAction:^{
+      }];
+
+  LevelUpTask* task9 = [[LevelUpTask alloc]
+        initWithTaskID:@"incognito"
+                 title:@"Go Incognito"
+       taskDescription:@"Open incognito tabs to browse the web privately"
+        iconSymbolName:kDefaultBrowserSymbol
+             completed:NO
+              category:LevelUpTaskCategory::kSafety
+      navigationAction:^{
+      }];
+
+  // Search category tasks.
+  LevelUpTask* task10 = [[LevelUpTask alloc]
+        initWithTaskID:@"lens_search"
+                 title:@"Search with Google Lens"
+       taskDescription:@"Draw, highlight, or tap to search and get results "
+                       @"without leaving your tab"
+        iconSymbolName:kKeySymbol
+             completed:YES
+              category:LevelUpTaskCategory::kSearch
+      navigationAction:^{
+      }];
+
+  LevelUpTask* task11 = [[LevelUpTask alloc]
+        initWithTaskID:@"ai_search"
+                 title:@"Search with AI Mode"
+       taskDescription:@"Ask anything and get the best of the web"
+        iconSymbolName:kPlusInSquareSymbol
+             completed:NO
+              category:LevelUpTaskCategory::kSearch
+      navigationAction:^{
+      }];
+
+  LevelUpTask* task12 = [[LevelUpTask alloc]
+        initWithTaskID:@"camera_search"
+                 title:@"Search with camera"
+       taskDescription:
+           @"Shop, translate and identify what you see with your camera"
+        iconSymbolName:kBookmarksSymbol
+             completed:NO
+              category:LevelUpTaskCategory::kSearch
+      navigationAction:^{
+      }];
+
+  if ([self.consumer respondsToSelector:@selector(setLevel:tasksForLevel:)]) {
+    [self.consumer setLevel:level
+              tasksForLevel:@[ task1, task2, task3, task4 ]];
+  }
+
+  NSMutableArray* productivityTasks = [[NSMutableArray alloc] init];
+  NSMutableArray* safetyTasks = [[NSMutableArray alloc] init];
+  NSMutableArray* searchTasks = [[NSMutableArray alloc] init];
+
+  NSArray<LevelUpTask*>* allTasks = @[
+    task1, task2, task3, task4, task5, task6, task7, task8, task9, task10,
+    task11, task12
+  ];
+
+  for (LevelUpTask* task in allTasks) {
+    switch (task.category) {
+      case LevelUpTaskCategory::kProductivity:
+        [productivityTasks addObject:task];
+        break;
+      case LevelUpTaskCategory::kSafety:
+        [safetyTasks addObject:task];
+        break;
+      case LevelUpTaskCategory::kSearch:
+        [searchTasks addObject:task];
+        break;
+    }
+  }
+
+  _categories = @[
+    [[LevelUpCategory alloc] initWithTitle:@"Productivity"
+                                     tasks:productivityTasks],
+    [[LevelUpCategory alloc] initWithTitle:@"Safety" tasks:safetyTasks],
+    [[LevelUpCategory alloc] initWithTitle:@"Search" tasks:searchTasks]
+  ];
+
+  if ([self.consumer respondsToSelector:@selector(addCategoryCard:)]) {
+    for (LevelUpCategory* category in _categories) {
+      [self.consumer addCategoryCard:category];
+    }
+  }
   [self.profileConsumer setUserFullName:userFullName userAvatar:userAvatar];
+}
+
+- (void)configureAllTasksConsumer:(id<LevelUpConsumer>)allTasksConsumer {
+  if ([allTasksConsumer respondsToSelector:@selector(addCategoryCard:)]) {
+    for (LevelUpCategory* category in _categories) {
+      [allTasksConsumer addCategoryCard:category];
+    }
+  }
 }
 
 @end

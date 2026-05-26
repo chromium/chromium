@@ -31,6 +31,23 @@ NSString* const kCellIdentifier = @"LevelUpTaskCellIdentifier";
   NSArray<LevelUpTask*>* _tasks;
   // The section header view.
   UIView* _headerView;
+  // The card header title text.
+  NSString* _headerTitle;
+  // Whether to show the "See All" button in the card header.
+  BOOL _showsSeeAllButton;
+  // The height constraint.
+  NSLayoutConstraint* _heightConstraint;
+}
+
+- (instancetype)initWithHeaderTitle:(NSString*)headerTitle
+                  showsSeeAllButton:(BOOL)showsSeeAllButton
+                              style:(UITableViewStyle)style {
+  self = [super initWithStyle:style];
+  if (self) {
+    _headerTitle = headerTitle;
+    _showsSeeAllButton = showsSeeAllButton;
+  }
+  return self;
 }
 
 - (void)viewDidLoad {
@@ -50,6 +67,10 @@ NSString* const kCellIdentifier = @"LevelUpTaskCellIdentifier";
   [self.tableView registerClass:[LevelUpTaskCell class]
          forCellReuseIdentifier:kCellIdentifier];
 
+  _heightConstraint =
+      [self.tableView.heightAnchor constraintEqualToConstant:0.0];
+  _heightConstraint.active = YES;
+
   [self setupSectionHeaderView];
 }
 
@@ -58,6 +79,12 @@ NSString* const kCellIdentifier = @"LevelUpTaskCellIdentifier";
 - (void)setLevel:(NSInteger)level tasksForLevel:(NSArray<LevelUpTask*>*)tasks {
   _tasks = [tasks copy];
   [self.tableView reloadData];
+
+  [self.tableView layoutIfNeeded];
+  NSInteger taskCount = [self tableView:self.tableView numberOfRowsInSection:0];
+  CGFloat headerHeight = [self.tableView rectForHeaderInSection:0].size.height;
+  CGFloat rowHeight = self.tableView.rowHeight;
+  _heightConstraint.constant = headerHeight + (taskCount * rowHeight);
 }
 
 #pragma mark - UITableViewDataSource
@@ -148,7 +175,7 @@ NSString* const kCellIdentifier = @"LevelUpTaskCellIdentifier";
   UIFontDescriptor* titleBoldDescriptor = [subheadFont.fontDescriptor
       fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
   titleLabel.font = [UIFont fontWithDescriptor:titleBoldDescriptor size:0.0];
-  titleLabel.text = l10n_util::GetNSString(IDS_IOS_LEVEL_UP_YOUR_TASKS);
+  titleLabel.text = _headerTitle;
 
   UIButton* seeAllButton = [UIButton buttonWithType:UIButtonTypeSystem];
   seeAllButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -161,6 +188,11 @@ NSString* const kCellIdentifier = @"LevelUpTaskCellIdentifier";
       fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
   seeAllButton.titleLabel.font = [UIFont fontWithDescriptor:seeAllBoldDescriptor
                                                        size:0.0];
+  seeAllButton.hidden = !_showsSeeAllButton;
+
+  [seeAllButton addTarget:self
+                   action:@selector(didTapSeeAll)
+         forControlEvents:UIControlEventTouchUpInside];
 
   UIView* spacer = [[UIView alloc] init];
   [spacer setContentHuggingPriority:UILayoutPriorityDefaultLow
@@ -182,6 +214,11 @@ NSString* const kCellIdentifier = @"LevelUpTaskCellIdentifier";
   headerSeparator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
   [headerSeparator.heightAnchor constraintEqualToConstant:1.0].active = YES;
   return headerSeparator;
+}
+
+// Target helper executed when user taps the "See All" action link.
+- (void)didTapSeeAll {
+  [self.delegate didTapSeeAllTasks:self];
 }
 
 @end

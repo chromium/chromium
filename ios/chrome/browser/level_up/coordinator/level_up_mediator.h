@@ -25,6 +25,9 @@ class AuthenticationService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
+// Configures the consumer for all tasks.
+- (void)configureAllTasksConsumer:(id<LevelUpConsumer>)allTasksConsumer;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LEVEL_UP_COORDINATOR_LEVEL_UP_MEDIATOR_H_

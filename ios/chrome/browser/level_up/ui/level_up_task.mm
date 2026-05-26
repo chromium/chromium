@@ -11,15 +11,31 @@
                taskDescription:(NSString*)taskDescription
                 iconSymbolName:(NSString*)iconSymbolName
                      completed:(BOOL)completed
+                      category:(LevelUpTaskCategory)category
               navigationAction:(void (^)(void))navigationAction {
   self = [super init];
   if (self) {
     _taskID = [taskID copy];
-    _title = [title copy];
+    _title = title;
     _taskDescription = [taskDescription copy];
     _iconSymbolName = [iconSymbolName copy];
     _completed = completed;
+    _category = category;
     _navigationAction = [navigationAction copy];
+  }
+  return self;
+}
+
+@end
+
+@implementation LevelUpCategory
+
+- (instancetype)initWithTitle:(NSString*)title
+                        tasks:(NSArray<LevelUpTask*>*)tasks {
+  self = [super init];
+  if (self) {
+    _title = title;
+    _tasks = [tasks copy];
   }
   return self;
 }

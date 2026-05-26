@@ -11,4 +11,14 @@ enum class TaskType {
   kTabGroups = 1,
 };
 
+// Categories grouping the level-up tasks.
+enum class LevelUpTaskCategory {
+  // Tasks related to user productivity.
+  kProductivity,
+  // Tasks related to browsing safety.
+  kSafety,
+  // Tasks related to search integrations.
+  kSearch,
+};
+
 #endif  // IOS_CHROME_BROWSER_LEVEL_UP_MODEL_TASK_TYPES_H_

@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/level_up/model/task_types.h"
+
 // Model representing a single level-up task item.
 @interface LevelUpTask : NSObject
 
@@ -25,6 +27,9 @@
 // The user task completion state.
 @property(nonatomic, assign, readonly) BOOL completed;
 
+// The category grouping this task belongs to.
+@property(nonatomic, assign, readonly) LevelUpTaskCategory category;
+
 // The action executed when the task is selected to navigate to the relevant
 // destination inside Chrome, enabling the user to perform the task.
 @property(nonatomic, copy, readonly) void (^navigationAction)(void);
@@ -34,10 +39,25 @@
                taskDescription:(NSString*)taskDescription
                 iconSymbolName:(NSString*)iconSymbolName
                      completed:(BOOL)completed
+                      category:(LevelUpTaskCategory)category
               navigationAction:(void (^)(void))navigationAction
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+@end
+
+// Model representing a task category.
+@interface LevelUpCategory : NSObject
+
+// The title of this category.
+@property(nonatomic, copy, readonly) NSString* title;
+
+// The list of tasks.
+@property(nonatomic, copy, readonly) NSArray<LevelUpTask*>* tasks;
+
+- (instancetype)initWithTitle:(NSString*)title
+                        tasks:(NSArray<LevelUpTask*>*)tasks;
 
 @end
 
