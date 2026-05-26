@@ -946,7 +946,7 @@ public class AccessibilityNodeInfoBuilder {
 
     public static void convertWebRectToAndroidCoordinates(
             Rect rect,
-            Bundle extras,
+            @Nullable Bundle extras,
             AccessibilityDelegate.AccessibilityCoordinates accessibilityCoordinates,
             View view,
             boolean isScreenCoordinates) {
@@ -982,13 +982,16 @@ public class AccessibilityNodeInfoBuilder {
         int clippedLeft = viewLocation[0];
         int clippedRight = clippedLeft + ac.getLastFrameViewportWidthPixInt();
 
-        // Always provide the unclipped bounds in the Bundle for any interested downstream client.
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, rect.top);
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_BOTTOM, rect.bottom);
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, rect.left);
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_RIGHT, rect.right);
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, rect.width());
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, rect.height());
+        if (extras != null) {
+            // Always provide the unclipped bounds in the Bundle for any interested downstream
+            // client.
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, rect.top);
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_BOTTOM, rect.bottom);
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, rect.left);
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_RIGHT, rect.right);
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, rect.width());
+            extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, rect.height());
+        }
 
         if (rect.top < clippedTop) {
             rect.top = clippedTop;

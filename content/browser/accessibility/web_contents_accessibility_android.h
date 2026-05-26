@@ -21,9 +21,11 @@
 #include "third_party/abseil-cpp/absl/container/node_hash_map.h"
 #include "ui/accessibility/platform/ax_node_id_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace ui {
+enum class AXOffscreenResult;
 class MotionEventAndroid;
 struct AXTreeUpdate;
 }  // namespace ui
@@ -550,6 +552,10 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
       const base::android::JavaRef<jobject>& info,
       int32_t id,
       BrowserAccessibilityAndroid* node);
+
+  gfx::Rect GetAbsoluteBoundsForNode(
+      BrowserAccessibilityAndroid* node,
+      ui::AXOffscreenResult* offscreen_result = nullptr);
 
   base::android::ScopedJavaLocalRef<jobject> ToJavaCanonicalStringRangesMap(
       JNIEnv* env,

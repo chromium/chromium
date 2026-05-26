@@ -103,7 +103,8 @@ public final class AccessibilityNodeInfoUtils {
     }
 
     /**
-     * Determine if web content node is mostly occluded.
+     * Determine if web content node is mostly occluded. If the node is invisible, we mark as mostly
+     * occluded.
      *
      * @param info The {@link AccessibilityNodeInfoCompat} for which we want to check major
      *     occlusion.
@@ -111,10 +112,10 @@ public final class AccessibilityNodeInfoUtils {
      */
     public static boolean isNodeMostlyOccluded(
             AccessibilityNodeInfoCompat info, SparseArray<Rect> occludingRects) {
-        if (!info.isVisibleToUser()) return false;
+        if (!info.isVisibleToUser()) return true;
         Rect rect = new Rect();
         info.getBoundsInScreen(rect);
-        return resizedRectOnOcclusion(rect, occludingRects) == null;
+        return computeUnoccludedRect(rect, occludingRects) == null;
     }
 
     /**
@@ -131,7 +132,7 @@ public final class AccessibilityNodeInfoUtils {
         Rect rect = new Rect();
         node.getBoundsInScreen(rect);
 
-        Rect newBounds = resizedRectOnOcclusion(rect, occludingRects);
+        Rect newBounds = computeUnoccludedRect(rect, occludingRects);
         if (newBounds == null) {
             node.setVisibleToUser(false);
         } else if (!newBounds.equals(rect)) {
@@ -146,7 +147,7 @@ public final class AccessibilityNodeInfoUtils {
      * @param occludingRects The set of rects that are occluding the view.
      */
     @Nullable
-    public static Rect resizedRectOnOcclusion(Rect rect, SparseArray<Rect> occludingRects) {
+    public static Rect computeUnoccludedRect(Rect rect, SparseArray<Rect> occludingRects) {
         if (rect.isEmpty()) return rect;
         Rect occludingRect = largestOccludingRect(rect, occludingRects);
         if (occludingRect != null) {

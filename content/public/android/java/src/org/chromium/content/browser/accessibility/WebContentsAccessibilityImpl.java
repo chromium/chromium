@@ -2457,9 +2457,26 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    private void handleHover(int id) {
+    protected void handleHover(int id) {
         if (mLastHoverId == id) return;
         if (!mIsHovering) return;
+
+        if (AccessibilityFeaturesMap.isEnabled(
+                AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)) {
+            Rect rect = getAbsolutePositionForNode(id);
+            if (rect != null) {
+                AccessibilityNodeInfoBuilder.convertWebRectToAndroidCoordinates(
+                        rect,
+                        /* extras= */ null,
+                        mDelegate.getAccessibilityCoordinates(),
+                        mView,
+                        /* isScreenCoordinates= */ true);
+                if (AccessibilityNodeInfoUtils.computeUnoccludedRect(rect, mOccludingRects)
+                        == null) {
+                    return;
+                }
+            }
+        }
 
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_HOVER_ENTER);
         // The above call doesn't work reliably for nodes that weren't in the viewport when
@@ -2721,7 +2738,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             if (AccessibilityFeaturesMap.isEnabled(
                     AccessibilityFeatures.ACCESSIBILITY_HANDLE_OCCLUDING_VIEWS)) {
                 Rect resizedRect =
-                        AccessibilityNodeInfoUtils.resizedRectOnOcclusion(rect, mOccludingRects);
+                        AccessibilityNodeInfoUtils.computeUnoccludedRect(rect, mOccludingRects);
                 if (resizedRect != null) {
                     boundingRects[i] = new RectF(resizedRect);
                 } else {

@@ -88,9 +88,9 @@ public class AccessibilityContentShellTestUtils {
     /**
      * Main AccessibilityDelegate for accessibility content shell tests.
      *
-     * The delegate will set values in the |AccessibilityContentShellTestData| singleton based
-     * on the event type. The method will always return |false| so that the AccessibilityEvent
-     * is not actually sent to AT, which would make the test fail.
+     * <p>The delegate will set values in the |AccessibilityContentShellTestData| singleton based on
+     * the event type. The method will always return |false| so that the AccessibilityEvent is not
+     * actually sent to AT, which would make the test fail.
      */
     public static View.AccessibilityDelegate sContentShellDelegate =
             new View.AccessibilityDelegate() {
@@ -102,14 +102,14 @@ public class AccessibilityContentShellTestUtils {
 
                     // Switch on eventType and save relevant data as needed.
                     switch (event.getEventType()) {
-                            // Save the text of proactive announcements.
+                        // Save the text of proactive announcements.
                         case AccessibilityEvent.TYPE_ANNOUNCEMENT:
                             {
                                 data.setAnnouncementText(event.getText().get(0).toString());
                                 break;
                             }
 
-                            // Save the traverse and selection indices during text traversal.
+                        // Save the traverse and selection indices during text traversal.
                         case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
                             {
                                 data.setSelectionFromIndex(event.getFromIndex());
@@ -125,7 +125,7 @@ public class AccessibilityContentShellTestUtils {
                                 break;
                             }
 
-                            // Save that a particular type of event has been sent.
+                        // Save that a particular type of event has been sent.
                         case AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED:
                             {
                                 data.setReceivedAccessibilityFocusEvent(true);
@@ -142,7 +142,7 @@ public class AccessibilityContentShellTestUtils {
                                 break;
                             }
 
-                            // Currently unused/ignored for content shell test purposes.
+                        // Currently unused/ignored for content shell test purposes.
                         case AccessibilityEvent.TYPE_ASSIST_READING_CONTEXT:
                         case AccessibilityEvent.TYPE_GESTURE_DETECTION_END:
                         case AccessibilityEvent.TYPE_GESTURE_DETECTION_START:
@@ -156,6 +156,10 @@ public class AccessibilityContentShellTestUtils {
                         case AccessibilityEvent.TYPE_VIEW_CONTEXT_CLICKED:
                         case AccessibilityEvent.TYPE_VIEW_FOCUSED:
                         case AccessibilityEvent.TYPE_VIEW_HOVER_ENTER:
+                            {
+                                data.setReceivedHoverEvent(true);
+                                break;
+                            }
                         case AccessibilityEvent.TYPE_VIEW_HOVER_EXIT:
                         case AccessibilityEvent.TYPE_VIEW_LONG_CLICKED:
                         case AccessibilityEvent.TYPE_VIEW_SELECTED:
