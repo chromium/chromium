@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/synchronization/lock.h"
+#include "base/synchronization/waitable_event.h"
+#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
@@ -31,6 +33,7 @@
 #include "third_party/blink/renderer/modules/webaudio/testing/mock_web_audio_device.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
+#include "third_party/blink/renderer/platform/mediastream/webaudio_media_stream_source.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -76,14 +79,22 @@ class MediaStreamAudioDestinationHandlerTest : public testing::Test {
     node_ = MediaStreamAudioDestinationNode::Create(
         *audio_context, 2, ASSERT_NO_EXCEPTION);
     bus_ = AudioBus::Create(2, 10);
+    consumer_ =
+        base::MakeRefCounted<StrictMock<MockWebAudioDestinationConsumer>>();
+  }
+
+  void TearDown() override {
+    // Clear the consumer to avoid leaking the mock object.
+    CallRemoveDestinationConsumer();
   }
 
   ~MediaStreamAudioDestinationHandlerTest() override = default;
 
-  void CallSetDestinationConsumer(WebAudioDestinationConsumer* consumer,
-                                  int num_channels,
-                                  float sample_rate) {
-    Handler().SetConsumer(consumer, num_channels, sample_rate);
+  void CallSetDestinationConsumer(
+      scoped_refptr<WebAudioDestinationConsumer> consumer,
+      int num_channels,
+      float sample_rate) {
+    Handler().SetConsumer(std::move(consumer), num_channels, sample_rate);
   }
 
   bool CallRemoveDestinationConsumer() {
@@ -100,7 +111,7 @@ class MediaStreamAudioDestinationHandlerTest : public testing::Test {
 
  protected:
   Persistent<MediaStreamAudioDestinationNode> node_;
-  StrictMock<MockWebAudioDestinationConsumer> consumer_;
+  scoped_refptr<StrictMock<MockWebAudioDestinationConsumer>> consumer_;
   scoped_refptr<AudioBus> bus_;
   ScopedTestingPlatformSupport<AudioContextTestPlatform> platform_;
   test::TaskEnvironment task_environment_;
@@ -113,29 +124,29 @@ TEST_F(MediaStreamAudioDestinationHandlerTest, SetDestinationConsumerWithNull) {
 
 TEST_F(MediaStreamAudioDestinationHandlerTest, SetDestinationConsumer) {
   // Expect SetFormat() to be called with these arguments.
-  EXPECT_CALL(consumer_, SetFormat(2, 44100));
-  CallSetDestinationConsumer(&consumer_, 2, 44100);
+  EXPECT_CALL(*consumer_, SetFormat(2, 44100));
+  CallSetDestinationConsumer(consumer_, 2, 44100);
 
-  EXPECT_CALL(consumer_, ConsumeAudio(_, 10));
+  EXPECT_CALL(*consumer_, ConsumeAudio(_, 10));
   CallConsumeAudio(bus_.get(), 10);
 }
 
 TEST_F(MediaStreamAudioDestinationHandlerTest, RemoveDestinationConsumer) {
-  EXPECT_CALL(consumer_, SetFormat(2, 44100));
-  CallSetDestinationConsumer(&consumer_, 2, 44100);
+  EXPECT_CALL(*consumer_, SetFormat(2, 44100));
+  CallSetDestinationConsumer(consumer_, 2, 44100);
 
   // The removal should be successful.
   EXPECT_TRUE(CallRemoveDestinationConsumer());
 
   // The consumer should not be called.
-  EXPECT_CALL(consumer_, ConsumeAudio(_, 10)).Times(0);
+  EXPECT_CALL(*consumer_, ConsumeAudio(_, 10)).Times(0);
   CallConsumeAudio(bus_.get(), 10);
 }
 
 TEST_F(MediaStreamAudioDestinationHandlerTest,
        ConsumeInvalidDestinationConsumer) {
   // The consumer should get no calls.
-  EXPECT_CALL(consumer_, ConsumeAudio(_, 10)).Times(0);
+  EXPECT_CALL(*consumer_, ConsumeAudio(_, 10)).Times(0);
   CallConsumeAudio(bus_.get(), 10);
 }
 
@@ -148,6 +159,50 @@ TEST_F(MediaStreamAudioDestinationHandlerTest,
 
   // Resetting it for the second time should return false.
   EXPECT_FALSE(CallRemoveDestinationConsumer());
+}
+
+TEST_F(MediaStreamAudioDestinationHandlerTest, AudioConsumerStressTest) {
+  std::atomic<bool> stop_requested{false};
+  base::WaitableEvent done_event;
+
+  Vector<float> data_l(128, 0.0f);
+  Vector<float> data_r(128, 0.0f);
+  Vector<const float*> audio_data = {data_l.data(), data_r.data()};
+
+  auto source = std::make_unique<WebAudioMediaStreamSource>(
+      task_environment_.GetMainThreadTaskRunner());
+  scoped_refptr<WebAudioDestinationConsumer> consumer = source->Consumer();
+  consumer->SetFormat(2, 44100);
+
+  // Start a background thread to continuously consume audio data.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](scoped_refptr<WebAudioDestinationConsumer> consumer,
+             Vector<const float*> audio_data, std::atomic<bool>* stop,
+             base::WaitableEvent* done) {
+            while (!stop->load(std::memory_order_relaxed)) {
+              consumer->ConsumeAudio(audio_data, 10);
+            }
+            done->Signal();
+          },
+          consumer, audio_data, base::Unretained(&stop_requested),
+          base::Unretained(&done_event)));
+
+  // Stress test by recreating the media source on the main thread while the
+  // background thread continuously uses the *original* consumer. This verifies
+  // that the background thread can safely use the consumer even after the
+  // source that created it has been destroyed (testing Detach() safety).
+  for (int i = 0; i < 500; ++i) {
+    source.reset();
+    source = std::make_unique<WebAudioMediaStreamSource>(
+        task_environment_.GetMainThreadTaskRunner());
+    consumer = source->Consumer();
+    consumer->SetFormat(2, 44100);
+  }
+
+  stop_requested.store(true, std::memory_order_relaxed);
+  done_event.Wait();
 }
 
 }  // namespace blink
