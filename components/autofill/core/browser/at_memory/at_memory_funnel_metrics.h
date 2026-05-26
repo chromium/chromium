@@ -39,10 +39,9 @@ class AtMemoryFunnelMetrics {
   // Virtual for testing.
   virtual void OnSuggestionAccepted();
 
-  // Records the final state of the funnel when the UI is hidden.
-  // Emits summary metrics (like QuerySubmitted) only if the popup was shown.
+  // Records that the suggestion was successfully filled.
   // Virtual for testing.
-  virtual void OnPopupHidden();
+  virtual void MarkFilled();
 
  private:
   // The trigger source of the popup. It is `std::nullopt` until `OnPopupShown`
@@ -50,6 +49,7 @@ class AtMemoryFunnelMetrics {
   std::optional<AutofillMetrics::AtMemoryTriggerSource> source_;
   bool query_submitted_ = false;
   bool suggestion_accepted_ = false;
+  bool was_filled_ = false;
 };
 
 }  // namespace autofill

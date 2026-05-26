@@ -96,20 +96,24 @@ class AtMemoryManager {
   void FillIban(const Suggestion::AtMemoryPayload::Identifier& identifier,
                 const FormData& form,
                 const FormFieldData& field,
-                const Suggestion& suggestion);
+                const Suggestion& suggestion,
+                std::unique_ptr<AtMemoryFunnelMetrics> metrics);
 
   // Fills the unmasked credit card value after fetching it.
   void FillCreditCard(const Suggestion::AtMemoryPayload::Identifier& identifier,
                       const FormData& form,
                       const FormFieldData& field,
-                      const Suggestion& suggestion);
+                      const Suggestion& suggestion,
+                      std::unique_ptr<AtMemoryFunnelMetrics> metrics);
 
   // Fills the unmasked AutofillAI value after fetching it.
-  void FillSensitiveAutofillAiData(const EntityInstance::EntityId& entity_id,
-                                   const FormData& form,
-                                   const FormFieldData& field,
-                                   const Suggestion& suggestion,
-                                   const AtMemoryDataType& data_type);
+  void FillSensitiveAutofillAiData(
+      const EntityInstance::EntityId& entity_id,
+      const FormData& form,
+      const FormFieldData& field,
+      const Suggestion& suggestion,
+      const AtMemoryDataType& data_type,
+      std::unique_ptr<AtMemoryFunnelMetrics> metrics);
 
   // Callback handler when the unmasked AutofillAI entity has been fetched.
   void OnAutofillAiFetched(
@@ -117,6 +121,7 @@ class AtMemoryManager {
       const FormFieldData& field,
       const Suggestion& suggestion,
       const AtMemoryDataType& data_type,
+      std::unique_ptr<AtMemoryFunnelMetrics> metrics,
       base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
           result,
       bool reauth_attempted);

@@ -54,50 +54,76 @@ TEST_F(AtMemoryFunnelMetricsTest, OnPopupShown_Idempotent) {
       AutofillMetrics::AtMemoryTriggerSource::kTypedTrigger, 1);
 }
 
-// Tests that `OnPopupHidden` correctly logs that a query was submitted.
-TEST_F(AtMemoryFunnelMetricsTest, OnPopupHidden_QuerySubmitted_True) {
-  AtMemoryFunnelMetrics metrics;
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
-  metrics.OnQuerySubmitted();
-  metrics.OnPopupHidden();
+// Tests that the destructor correctly logs that a query was submitted.
+TEST_F(AtMemoryFunnelMetricsTest, Destructor_QuerySubmitted_True) {
+  {
+    AtMemoryFunnelMetrics metrics;
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnQuerySubmitted();
+  }
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.QuerySubmitted", true, 1);
 }
 
-// Tests that `OnPopupHidden` correctly logs that no query was submitted
+// Tests that the destructor correctly logs that no query was submitted
 // during a shown session.
-TEST_F(AtMemoryFunnelMetricsTest, OnPopupHidden_QuerySubmitted_False) {
-  AtMemoryFunnelMetrics metrics;
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
-  // No query submitted.
-  metrics.OnPopupHidden();
+TEST_F(AtMemoryFunnelMetricsTest, Destructor_QuerySubmitted_False) {
+  {
+    AtMemoryFunnelMetrics metrics;
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    // No query submitted.
+  }
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.QuerySubmitted", false, 1);
 }
 
-// Tests that `OnPopupHidden` correctly logs that a suggestion was accepted.
-TEST_F(AtMemoryFunnelMetricsTest, OnPopupHidden_SuggestionAccepted_True) {
-  AtMemoryFunnelMetrics metrics;
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
-  metrics.OnSuggestionAccepted();
-  metrics.OnPopupHidden();
+// Tests that the destructor correctly logs that a suggestion was accepted.
+TEST_F(AtMemoryFunnelMetricsTest, Destructor_SuggestionAccepted_True) {
+  {
+    AtMemoryFunnelMetrics metrics;
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnSuggestionAccepted();
+  }
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionAccepted", true, 1);
 }
 
-// Tests that `OnPopupHidden` correctly logs that no suggestion was accepted
+// Tests that the destructor correctly logs that no suggestion was accepted
 // during a shown session.
-TEST_F(AtMemoryFunnelMetricsTest, OnPopupHidden_SuggestionAccepted_False) {
-  AtMemoryFunnelMetrics metrics;
-  metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
-  // No suggestion accepted.
-  metrics.OnPopupHidden();
+TEST_F(AtMemoryFunnelMetricsTest, Destructor_SuggestionAccepted_False) {
+  {
+    AtMemoryFunnelMetrics metrics;
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    // No suggestion accepted.
+  }
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.Funnel.SuggestionAccepted", false, 1);
+}
+
+// Tests that `MarkFilled` correctly logs whether a suggestion was filled.
+TEST_F(AtMemoryFunnelMetricsTest, MarkFilled_Filled) {
+  {
+    AtMemoryFunnelMetrics metrics;
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics.OnSuggestionAccepted();
+    metrics.MarkFilled();
+  }
+
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.AtMemory.Funnel.SuggestionFilled", true, 1);
+
+  {
+    AtMemoryFunnelMetrics metrics2;
+    metrics2.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemory);
+    metrics2.OnSuggestionAccepted();
+  }
+
+  histogram_tester_.ExpectBucketCount(
+      "Autofill.AtMemory.Funnel.SuggestionFilled", false, 1);
 }
 
 }  // namespace autofill

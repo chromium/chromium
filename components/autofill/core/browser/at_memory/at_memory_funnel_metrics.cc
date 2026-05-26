@@ -13,7 +13,22 @@ namespace autofill {
 
 AtMemoryFunnelMetrics::AtMemoryFunnelMetrics() = default;
 
-AtMemoryFunnelMetrics::~AtMemoryFunnelMetrics() = default;
+AtMemoryFunnelMetrics::~AtMemoryFunnelMetrics() {
+  // Only log summary metrics if the popup was successfully shown.
+  // This avoids polluting the "No Query Submitted" data with cases where the
+  // popup was hidden immediately after initialization (e.g., due to focus
+  // loss) before the user could see or interact with it.
+  if (source_.has_value()) {
+    base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.QuerySubmitted",
+                              query_submitted_);
+    base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionAccepted",
+                              suggestion_accepted_);
+    if (suggestion_accepted_) {
+      base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionFilled",
+                                was_filled_);
+    }
+  }
+}
 
 void AtMemoryFunnelMetrics::OnPopupShown(
     AutofillSuggestionTriggerSource trigger_source) {
@@ -63,17 +78,8 @@ void AtMemoryFunnelMetrics::OnSuggestionAccepted() {
   suggestion_accepted_ = true;
 }
 
-void AtMemoryFunnelMetrics::OnPopupHidden() {
-  // Only log summary metrics if the popup was successfully shown.
-  // This avoids polluting the "No Query Submitted" data with cases where the
-  // popup was hidden immediately after initialization (e.g., due to focus
-  // loss) before the user could see or interact with it.
-  if (source_.has_value()) {
-    base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.QuerySubmitted",
-                              query_submitted_);
-    base::UmaHistogramBoolean("Autofill.AtMemory.Funnel.SuggestionAccepted",
-                              suggestion_accepted_);
-  }
+void AtMemoryFunnelMetrics::MarkFilled() {
+  was_filled_ = true;
 }
 
 }  // namespace autofill

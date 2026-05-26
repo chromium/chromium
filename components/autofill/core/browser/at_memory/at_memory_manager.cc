@@ -510,7 +510,6 @@ void AtMemoryManager::OnPopupHidden() {
   trigger_source_ = AutofillSuggestionTriggerSource::kUnspecified;
   update_callback_.Reset();
   if (at_memory_funnel_metrics_) {
-    at_memory_funnel_metrics_->OnPopupHidden();
     at_memory_funnel_metrics_.reset();
   }
   is_searching_ = false;
@@ -534,17 +533,27 @@ void AtMemoryManager::FillOrPreviewSearchResult(
           form, field, payload.value, FillingProduct::kAtMemory,
           /*field_type_used=*/std::nullopt);
       break;
-    case mojom::ActionPersistence::kFill:
+    case mojom::ActionPersistence::kFill: {
+      if (at_memory_funnel_metrics_) {
+        at_memory_funnel_metrics_->OnSuggestionAccepted();
+      }
+      // Transfer ownership of the metrics session to the filling path.
+      // Ensures that the metrics will be properly recorded once the suggestion
+      // is filled or one of the async steps in between fails.
+      std::unique_ptr<AtMemoryFunnelMetrics> metrics =
+          std::move(at_memory_funnel_metrics_);
       switch (payload.entry_type) {
         case accessibility_annotator::EntryType::kIban: {
           CHECK(!std::holds_alternative<std::monostate>(payload.identifier));
-          FillIban(payload.identifier, form, field, suggestion);
+          FillIban(payload.identifier, form, field, suggestion,
+                   std::move(metrics));
           break;
         }
         case accessibility_annotator::EntryType::kCreditCardNumber:
         case accessibility_annotator::EntryType::kCreditCardSecurityCode: {
           CHECK(std::holds_alternative<std::string>(payload.identifier));
-          FillCreditCard(payload.identifier, form, field, suggestion);
+          FillCreditCard(payload.identifier, form, field, suggestion,
+                         std::move(metrics));
           break;
         }
         case accessibility_annotator::EntryType::kPassportFull:
@@ -566,13 +575,13 @@ void AtMemoryManager::FillOrPreviewSearchResult(
                  std::holds_alternative<EntityType>(*data_type)));
           FillSensitiveAutofillAiData(
               std::get<EntityInstance::EntityId>(payload.identifier), form,
-              field, suggestion, *data_type);
+              field, suggestion, *data_type, std::move(metrics));
           break;
         }
 
         default: {
-          if (at_memory_funnel_metrics_) {
-            at_memory_funnel_metrics_->OnSuggestionAccepted();
+          if (metrics) {
+            metrics->MarkFilled();
           }
           owner_->FillOrPreviewField(
               action_persistence,
@@ -583,6 +592,7 @@ void AtMemoryManager::FillOrPreviewSearchResult(
         }
       }
       break;
+    }
   }
 }
 
@@ -711,7 +721,8 @@ void AtMemoryManager::FillIban(
     const Suggestion::AtMemoryPayload::Identifier& identifier,
     const FormData& form,
     const FormFieldData& field,
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    std::unique_ptr<AtMemoryFunnelMetrics> metrics) {
   Suggestion::Payload iban_payload;
   if (const Iban::Guid* guid = std::get_if<Iban::Guid>(&identifier)) {
     iban_payload = Suggestion::Guid(guid->value());
@@ -732,12 +743,13 @@ void AtMemoryManager::FillIban(
       base::BindOnce(
           [](base::WeakPtr<AtMemoryManager> manager, const FormData& form,
              const FormFieldData& field, const Suggestion& suggestion,
+             std::unique_ptr<AtMemoryFunnelMetrics> metrics,
              const std::u16string& unmasked_value) {
             if (!manager) {
               return;
             }
-            if (manager->at_memory_funnel_metrics_) {
-              manager->at_memory_funnel_metrics_->OnSuggestionAccepted();
+            if (metrics) {
+              metrics->MarkFilled();
             }
             manager->owner_->FillOrPreviewField(
                 mojom::ActionPersistence::kFill,
@@ -745,14 +757,16 @@ void AtMemoryManager::FillIban(
                 unmasked_value, FillingProduct::kAtMemory,
                 /*field_type_used=*/std::nullopt);
           },
-          fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
+          fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion,
+          std::move(metrics)));
 }
 
 void AtMemoryManager::FillCreditCard(
     const Suggestion::AtMemoryPayload::Identifier& identifier,
     const FormData& form,
     const FormFieldData& field,
-    const Suggestion& suggestion) {
+    const Suggestion& suggestion,
+    std::unique_ptr<AtMemoryFunnelMetrics> metrics) {
   CHECK(std::holds_alternative<std::string>(identifier));
   const std::string& guid = std::get<std::string>(identifier);
 
@@ -775,12 +789,13 @@ void AtMemoryManager::FillCreditCard(
       base::BindOnce(
           [](base::WeakPtr<AtMemoryManager> manager, const FormData& form,
              const FormFieldData& field, const Suggestion& suggestion,
+             std::unique_ptr<AtMemoryFunnelMetrics> metrics,
              const CreditCard& fetched_card) {
             if (!manager) {
               return;
             }
-            if (manager->at_memory_funnel_metrics_) {
-              manager->at_memory_funnel_metrics_->OnSuggestionAccepted();
+            if (metrics) {
+              metrics->MarkFilled();
             }
             const Suggestion::AtMemoryPayload& payload =
                 suggestion.GetPayload<Suggestion::AtMemoryPayload>();
@@ -802,7 +817,8 @@ void AtMemoryManager::FillCreditCard(
                 fill_value, FillingProduct::kAtMemory,
                 /*field_type_used=*/std::nullopt);
           },
-          fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion));
+          fill_weak_ptr_factory_.GetWeakPtr(), form, field, suggestion,
+          std::move(metrics)));
 }
 
 void AtMemoryManager::FillSensitiveAutofillAiData(
@@ -810,7 +826,8 @@ void AtMemoryManager::FillSensitiveAutofillAiData(
     const FormData& form,
     const FormFieldData& field,
     const Suggestion& suggestion,
-    const AtMemoryDataType& data_type) {
+    const AtMemoryDataType& data_type,
+    std::unique_ptr<AtMemoryFunnelMetrics> metrics) {
   EntityDataManager* entity_data_manager =
       owner_->client().GetEntityDataManager();
   CHECK(entity_data_manager);
@@ -825,7 +842,7 @@ void AtMemoryManager::FillSensitiveAutofillAiData(
       *entity, /*will_fill_sensitive_info=*/true,
       base::BindOnce(&AtMemoryManager::OnAutofillAiFetched,
                      fill_weak_ptr_factory_.GetWeakPtr(), form, field,
-                     suggestion, data_type));
+                     suggestion, data_type, std::move(metrics)));
 }
 
 void AtMemoryManager::OnAutofillAiFetched(
@@ -833,6 +850,7 @@ void AtMemoryManager::OnAutofillAiFetched(
     const FormFieldData& field,
     const Suggestion& suggestion,
     const AtMemoryDataType& data_type,
+    std::unique_ptr<AtMemoryFunnelMetrics> metrics,
     base::expected<EntityInstance, AutofillAiAccessManager::FailureReason>
         result,
     bool reauth_attempted) {
@@ -842,10 +860,6 @@ void AtMemoryManager::OnAutofillAiFetched(
       owner_->client().ShowAutofillAiFetchFromWalletFailureNotification();
     }
     return;
-  }
-
-  if (at_memory_funnel_metrics_) {
-    at_memory_funnel_metrics_->OnSuggestionAccepted();
   }
 
   const EntityInstance& fetched_entity = result.value();
@@ -866,6 +880,10 @@ void AtMemoryManager::OnAutofillAiFetched(
       fetched_entity, *target_attribute_type, form, field, *owner_);
   if (!attribute_fill_value) {
     return;
+  }
+
+  if (metrics) {
+    metrics->MarkFilled();
   }
 
   owner_->FillOrPreviewField(mojom::ActionPersistence::kFill,
