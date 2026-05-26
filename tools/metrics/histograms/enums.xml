@@ -9473,6 +9473,8 @@ from previous Chrome versions.
   <int value="-1529631789" label="enable-unsafe-fast-js-calls"/>
   <int value="-1529140321" label="ReadLater:enabled"/>
   <int value="-1528455406" label="OmniboxPedalSuggestions:enabled"/>
+  <int value="-1527831808"
+      label="UseDefaultDeadlineWhenAnimatingBounds:disabled"/>
   <int value="-1527783093" label="VideoPictureInPictureMinimizeButton:enabled"/>
   <int value="-1527309909" label="ProfileDiscOnAllPages:enabled"/>
   <int value="-1527094429" label="ArcRtVcpuQuadCore:disabled"/>
@@ -11474,6 +11476,8 @@ from previous Chrome versions.
   <int value="-883608641" label="enable-cros-action-recorder"/>
   <int value="-882434910" label="EnableAggregatedMlSearchRanking:enabled"/>
   <int value="-881903516" label="DeskButton:disabled"/>
+  <int value="-881586518"
+      label="UseDefaultDeadlineWhenAnimatingBounds:enabled"/>
   <int value="-881569502" label="VcRetouchInferenceBackend:disabled"/>
   <int value="-881477103" label="PageInfoAboutThisSiteNonEn:enabled"/>
   <int value="-881447505" label="ash-disable-shelf-model-synchronization"/>

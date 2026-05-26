@@ -2300,14 +2300,11 @@ const FeatureEntry::FeatureVariation kTabGroupsFocusingVariations[] = {
 
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kSidePanelFlyoverAnimationDuration250Ms[] = {
-    {"flyover_animation_duration_ms", "250"},
-    {"flyover_animation_use_default_deadline", "false"}};
+    {"flyover_animation_duration_ms", "250"}};
 const FeatureEntry::FeatureParam kSidePanelFlyoverAnimationDuration300Ms[] = {
-    {"flyover_animation_duration_ms", "300"},
-    {"flyover_animation_use_default_deadline", "false"}};
+    {"flyover_animation_duration_ms", "300"}};
 const FeatureEntry::FeatureParam kSidePanelFlyoverAnimationDuration350Ms[] = {
-    {"flyover_animation_duration_ms", "350"},
-    {"flyover_animation_use_default_deadline", "true"}};
+    {"flyover_animation_duration_ms", "350"}};
 
 const FeatureEntry::FeatureVariation kSidePanelFlyoverAnimationVariations[] = {
     {"- 250ms Duration", kSidePanelFlyoverAnimationDuration250Ms},
@@ -6927,6 +6924,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kSidePanelFlyoverAnimation,
                                     kSidePanelFlyoverAnimationVariations,
                                     "SidePanelFlyoverAnimation")},
+
+    {"use-default-deadline-when-animating-bounds",
+     flag_descriptions::kUseDefaultDeadlineWhenAnimatingBoundsName,
+     flag_descriptions::kUseDefaultDeadlineWhenAnimatingBoundsDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kUseDefaultDeadlineWhenAnimatingBounds)},
 
 #endif
 

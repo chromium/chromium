@@ -4171,6 +4171,12 @@ inline constexpr char kSidePanelFlyoverAnimationDescription[] =
     "elements will appear to float over the contents, which resize at the "
     "beginning or end of the animation.";
 
+inline constexpr char kUseDefaultDeadlineWhenAnimatingBoundsName[] =
+    "Use Default Deadline Resizing Policy";
+inline constexpr char kUseDefaultDeadlineWhenAnimatingBoundsDescription[] =
+    "Use Default Deadline Resizing Policy when animating vertical tabstrip "
+    "and side panels.";
+
 inline constexpr char kTabGroupColorRefreshName[] = "Tab Group Color Refresh";
 inline constexpr char kTabGroupColorRefreshDescription[] =
     "Update the color selection for tab groups.";

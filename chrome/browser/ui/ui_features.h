@@ -245,7 +245,8 @@ BASE_DECLARE_FEATURE(kSidePanelFlyoverAnimation);
 bool UseSidePanelFlyoverAnimation();
 
 BASE_DECLARE_FEATURE_PARAM(int, kSidePanelFlyoverDurationMs);
-BASE_DECLARE_FEATURE_PARAM(bool, kSidePanelFlyoverUseDefaultDeadline);
+
+BASE_DECLARE_FEATURE(kUseDefaultDeadlineWhenAnimatingBounds);
 
 // TODO(crbug.com/460764864): Cleanup all the enterprise badging feature flags.
 BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);

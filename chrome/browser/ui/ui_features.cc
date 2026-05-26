@@ -245,11 +245,8 @@ BASE_FEATURE_PARAM(int,
                    "flyover_animation_duration_ms",
                    350);
 
-BASE_FEATURE_PARAM(bool,
-                   kSidePanelFlyoverUseDefaultDeadline,
-                   &kSidePanelFlyoverAnimation,
-                   "flyover_animation_use_default_deadline",
-                   false);
+BASE_FEATURE(kUseDefaultDeadlineWhenAnimatingBounds,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
 // and in the profile menu. On managed profiles, a building icon will be used as
