@@ -295,7 +295,7 @@ SoftNavigationHeuristics::GetRelevantContextForNavigation(
 
   CHECK(!context_for_task || !context_for_id ||
             context_for_task == context_for_id,
-        base::NotFatalUntil::M151);
+        base::NotFatalUntil::M153);
 
   return context_for_id ? context_for_id : context_for_task;
 }

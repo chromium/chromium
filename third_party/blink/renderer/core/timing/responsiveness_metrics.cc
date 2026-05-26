@@ -497,6 +497,16 @@ void ResponsivenessMetrics::HandlePointerInteraction(
       pending_pointerdown_entries_.erase(pointer_id);
       return;
     }
+    // Uncommon: Click event is nested in another click event. This happens when
+    // clicking on the label of a labeled form control, which forwards the event
+    // to the control. This gets an id of 0. Note: the duration is also
+    // attributed to the outermost event.
+    if (auto* scoped_entry = window_performance_->GetTopMostEventTimingEntry();
+        scoped_entry && scoped_entry->IsInteraction() &&
+        scoped_entry->name() == event_type_names::kClick) {
+      SetInteractionId(new_entry, PerformanceTimelineEntryIdInfo::kNone);
+      return;
+    }
     // Uncommon: Click event all on its own. Still gets a new id.
     SetInteractionId(new_entry, interaction_id_generator_.IncrementId());
     return;

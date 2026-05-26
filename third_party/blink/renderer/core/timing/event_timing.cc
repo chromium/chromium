@@ -115,9 +115,16 @@ EventTiming::EventTiming(LocalFrame* frame, const Event& event) {
   }
   LocalDOMWindow* window = frame->DomWindow();
   // The context is needed for performance->EventTimingProcessingStart.
-  if (!window || window->IsContextDestroyed()) {
+  //
+  // Note: It's possible that we try to dispatch an input event while the
+  // context is paused, e.g. if a pending input is queued during a task that
+  // calls window.print(), the input task still runs since input tasks aren't
+  // paused during nested event loops. We end up dropping the event later on, so
+  // ignore such events here. See also crbug.com/500983020.
+  if (!window || window->IsContextDestroyed() || window->IsContextPaused()) {
     return;
   }
+
   WindowPerformance* performance = DOMWindowPerformance::performance(*window);
   if (!performance) {
     return;
