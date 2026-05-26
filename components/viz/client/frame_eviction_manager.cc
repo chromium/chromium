@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -100,11 +101,12 @@ FrameEvictionManager::FrameEvictionManager() {
 #if BUILDFLAG(IS_ANDROID)
       // If the amount of memory on the device is >= 3.5 GB, save up to 5
       // frames.
-      base::SysInfo::AmountOfPhysicalMemory().InGiBF() < 3.5f ? 1 : 5;
+      base::SysInfo::AmountOfTotalPhysicalMemory().InGiBF() < 3.5f ? 1 : 5;
 #else
       std::min(
           5, static_cast<int>(
-                 2 + (base::SysInfo::AmountOfPhysicalMemory().InMiB() / 256)));
+                 2 +
+                 (base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() / 256)));
 #endif
 
   // For WebView, we may not have a default task runner.

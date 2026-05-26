@@ -4,10 +4,12 @@
 
 #include "components/site_isolation/site_isolation_policy.h"
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
@@ -53,7 +55,7 @@ bool ShouldDisableSiteIsolationDueToMemorySlow(
   //   partial and strict site isolation thresholds can be overridden via
   //   params defined in a kSiteIsolationMemoryThresholds field trial.
   // - Desktop does not enforce a default memory threshold.
-  int default_memory_threshold_mb;
+  uint64_t default_memory_threshold_mb;
   if (site_isolation_mode == content::SiteIsolationMode::kStrictSiteIsolation) {
     default_memory_threshold_mb = 3200;
   } else {
@@ -74,12 +76,12 @@ bool ShouldDisableSiteIsolationDueToMemorySlow(
     int memory_threshold_mb = base::GetFieldTrialParamByFeatureAsInt(
         features::kSiteIsolationMemoryThresholdsAndroid, param_name,
         default_memory_threshold_mb);
-    return base::SysInfo::AmountOfPhysicalMemory().InMiB() <=
-           memory_threshold_mb;
+    return base::SysInfo::AmountOfTotalPhysicalMemory() <=
+           base::MiBU(base::saturated_cast<uint64_t>(memory_threshold_mb));
   }
 
-  if (base::SysInfo::AmountOfPhysicalMemory().InMiB() <=
-      default_memory_threshold_mb) {
+  if (base::SysInfo::AmountOfTotalPhysicalMemory() <=
+      base::MiBU(default_memory_threshold_mb)) {
     return true;
   }
 #endif
@@ -119,8 +121,8 @@ bool ShouldDisableOriginIsolationDueToMemorySlow() {
         features::kOriginIsolationMemoryThreshold,
         features::kOriginIsolationMemoryThresholdParamName,
         default_memory_threshold_mb);
-    return base::SysInfo::AmountOfPhysicalMemory().InMiB() <=
-           memory_threshold_mb;
+    return base::SysInfo::AmountOfTotalPhysicalMemory() <=
+           base::MiBU(base::saturated_cast<uint64_t>(memory_threshold_mb));
   }
   return false;
 #endif
@@ -222,7 +224,7 @@ bool SiteIsolationPolicy::IsEnterprisePolicyApplicable() {
   // exactly 1GB of RAM won't get included because of inaccuracies or off-by-one
   // errors.
   bool have_enough_memory =
-      base::SysInfo::AmountOfPhysicalMemory().InMiB() > 1077;
+      base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() > 1077u;
   return have_enough_memory;
 #else
   return true;

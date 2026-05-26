@@ -12,6 +12,7 @@
 #include <string_view>
 
 #include "base/allocator/partition_alloc_support.h"
+#include "base/byte_size.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -582,7 +583,7 @@ void MaybeEnableExtremeLightweightDetector(bool boost_sampling,
   // `base::FeatureList::IsEnabled` gets called so that the finch system applies
   // the experiments to the right devices equally and collects the accurate
   // statistics from the devices.
-  if (base::SysInfo::AmountOfPhysicalMemory() < base::GiB(8)) {
+  if (base::SysInfo::AmountOfTotalPhysicalMemory() < base::GiBU(8)) {
     return;
   }
 #endif  // PA_BUILDFLAG(IS_ANDROID)

@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
@@ -314,7 +315,7 @@ bool CustomInputProcessor::AddDeviceRAMInMB(
   if (custom_input.tensor_length() != 1) {
     return false;
   }
-  float device_ram_in_mb = base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  float device_ram_in_mb = base::SysInfo::AmountOfTotalPhysicalMemory().InMiB();
   out_tensor.emplace_back(device_ram_in_mb);
   return true;
 }

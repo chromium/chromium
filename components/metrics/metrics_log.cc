@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/build_time.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/logging.h"
@@ -430,7 +431,8 @@ void MetricsLog::RecordCoreSystemProfile(
   if (!app_os_arch.empty()) {
     hardware->set_app_cpu_architecture(app_os_arch);
   }
-  hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemory().InMiB());
+  hardware->set_system_ram_mb(
+      base::SysInfo::AmountOfTotalPhysicalMemory().InMiB());
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
 #if BUILDFLAG(IS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));

@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -208,9 +209,8 @@ uint64_t GetDefaultMaxBytes() {
 #endif
 
   // Allow 25% of physical memory to be used for discardable memory.
-  return std::min(
-      default_max_bytes,
-      base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() / 4);
+  return std::min(default_max_bytes,
+                  base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() / 4);
 }
 
 const int kEnforceMemoryPolicyDelayMs = 1000;

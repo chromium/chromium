@@ -14,6 +14,7 @@
 
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/cpu.h"
 #include "base/functional/bind.h"
@@ -311,7 +312,7 @@ void FingerprintDataLoader::FillFingerprint() {
   machine->set_browser_language(app_locale_);
   machine->set_charset(charset_);
   machine->set_user_agent(user_agent_);
-  machine->set_ram(base::SysInfo::AmountOfPhysicalMemory().InBytes());
+  machine->set_ram(base::SysInfo::AmountOfTotalPhysicalMemory().InBytes());
   machine->set_browser_build(version_);
   machine->set_browser_feature(
       Fingerprint::MachineCharacteristics::FEATURE_REQUEST_AUTOCOMPLETE);

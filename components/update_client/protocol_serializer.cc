@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
@@ -43,7 +44,8 @@ namespace {
 
 // Returns the amount of physical memory in GB, rounded to the nearest GB.
 int GetPhysicalMemoryGB() {
-  return base::ClampRound(base::SysInfo::AmountOfPhysicalMemory().InGiBF());
+  return base::ClampRound(
+      base::SysInfo::AmountOfTotalPhysicalMemory().InGiBF());
 }
 
 std::string GetOSVersion() {
