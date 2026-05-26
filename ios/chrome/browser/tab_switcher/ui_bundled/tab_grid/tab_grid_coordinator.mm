@@ -632,7 +632,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     if (!strongSelf) {
       return;
     }
+
     [strongSelf.delegate tabGridDismissTransitionDidEnd:strongSelf];
+    if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+      [strongSelf->_viewController setContentVisible:NO];
+    }
     // In search mode, the tabgrid mode is not reset before the animation so
     // the animation can start from the correct cell. Once the animation is
     // complete, reset the tab grid mode.

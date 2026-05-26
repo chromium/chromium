@@ -247,6 +247,10 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   }
 
   [self scrollToPage:self.currentPage animated:NO];
+
+  if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+    [self setContentVisible:self.viewVisible];
+  }
 }
 
 - (void)viewDidLoad {
@@ -453,6 +457,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 #pragma mark - Public Methods
 
 - (void)contentWillAppearAnimated:(BOOL)animated {
+  if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
+    [self setContentVisible:YES];
+  }
   [self setupChildViewsIfNeeded];
 
   _pageChangedSinceEntering = NO;
@@ -512,6 +519,19 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.pinnedTabsViewController contentWillDisappear];
 
   self.tabGridEnterTime = base::TimeTicks();
+}
+
+- (void)setContentVisible:(BOOL)visible {
+  CHECK(IsChromeNextIaEnabled());
+  CHECK(!IsFullscreenRefactoringEnabled());
+  if (!_childViewsAreSetUp) {
+    return;
+  }
+
+  self.scrollView.hidden = !visible;
+  self.topToolbar.hidden = !visible;
+  self.bottomToolbar.hidden = !visible;
+  self.pinnedTabsViewController.view.hidden = !visible;
 }
 
 - (void)setCurrentPageAndPageControl:(TabGridPage)page animated:(BOOL)animated {
