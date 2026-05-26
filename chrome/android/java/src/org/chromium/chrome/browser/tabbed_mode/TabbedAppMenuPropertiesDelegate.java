@@ -1919,7 +1919,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
                 AppMenuHandler.AppMenuItemType.STANDARD,
                 buildModelForStandardMenuItem(
                         R.id.glic_menu_id,
-                        R.string.glic_button_entrypoint_ask_gemini_label,
+                        R.string.glic_button_entrypoint_open_gemini_label,
                         shouldShowIconBeforeItem() ? R.drawable.ic_spark_24dp : Resources.ID_NULL));
     }
 

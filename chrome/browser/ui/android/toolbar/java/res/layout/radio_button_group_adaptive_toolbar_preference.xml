@@ -52,7 +52,7 @@ found in the LICENSE file.
           android:minHeight="@dimen/min_touch_target_size"
           android:paddingTop="10dp"
           app:iconSrc="@drawable/ic_spark_24dp"
-          app:primaryText="@string/glic_button_entrypoint_label" />
+          app:primaryText="@string/glic_button_entrypoint_open_gemini_label" />
 
       <org.chromium.components.browser_ui.widget.RadioButtonWithDescription
           android:id="@+id/adaptive_option_voice_search"

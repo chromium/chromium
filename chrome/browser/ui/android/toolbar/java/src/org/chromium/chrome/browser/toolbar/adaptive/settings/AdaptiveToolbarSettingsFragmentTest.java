@@ -260,7 +260,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
                             getButton(AdaptiveToolbarButtonVariant.GLIC).getId());
                     selectButton(AdaptiveToolbarButtonVariant.GLIC);
                     assertButtonCheckedCorrectly(
-                            R.string.glic_button_entrypoint_label,
+                            R.string.glic_button_entrypoint_open_gemini_label,
                             AdaptiveToolbarButtonVariant.GLIC);
                     assertEquals(
                             AdaptiveToolbarButtonVariant.GLIC, mRadioPreference.getSelection());

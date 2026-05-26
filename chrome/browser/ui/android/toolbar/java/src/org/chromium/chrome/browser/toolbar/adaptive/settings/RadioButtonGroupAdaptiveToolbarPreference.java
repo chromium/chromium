@@ -272,7 +272,7 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends ContainedRadioBut
                 stringRes = R.string.adaptive_toolbar_button_preference_read_aloud;
                 break;
             case AdaptiveToolbarButtonVariant.GLIC:
-                stringRes = R.string.glic_button_entrypoint_label;
+                stringRes = R.string.glic_button_entrypoint_open_gemini_label;
                 break;
             case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
                 stringRes = R.string.menu_open_in_product_default;
