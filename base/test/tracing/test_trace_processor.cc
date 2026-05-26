@@ -9,6 +9,10 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/path_utils.h"
+#endif
 #include "base/strings/string_util.h"
 #include "base/test/chrome_track_event.descriptor.h"
 #include "base/test/perfetto_sql_stdlib.h"
@@ -164,7 +168,20 @@ absl::Status TestTraceProcessor::StopAndParseTrace() {
 
   if (CommandLine::ForCurrentProcess()->HasSwitch(kSaveTraceSwitch)) {
     ScopedAllowBlockingForTesting allow;
-    WriteFile(base::FilePath::FromASCII("test.pftrace"), as_byte_span(trace));
+    base::FilePath trace_path;
+#if BUILDFLAG(IS_ANDROID)
+    base::FilePath downloads_dir;
+    if (base::android::GetDownloadsDirectory(&downloads_dir)) {
+      trace_path = downloads_dir.Append("test.pftrace");
+    } else {
+      LOG(ERROR) << "Failed to get downloads directory to save trace.";
+    }
+#else
+    trace_path = base::FilePath::FromASCII("test.pftrace");
+#endif
+    if (!trace_path.empty()) {
+      WriteFile(trace_path, as_byte_span(trace));
+    }
   }
 
   return test_trace_processor_.ParseTrace(trace);

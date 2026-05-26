@@ -21,6 +21,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PathUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -141,9 +142,11 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
                 basename = "chrome-profile-results-" + formatter.format(new Date());
             }
 
-            Context context = ContextUtils.getApplicationContext();
-            File dir = context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-            File file = new File(dir, basename);
+            String downloadsDir = PathUtils.getDownloadsDirectory();
+            if (downloadsDir.isEmpty()) {
+                return null;
+            }
+            File file = new File(downloadsDir, basename);
             return file.getPath();
         }
     }
