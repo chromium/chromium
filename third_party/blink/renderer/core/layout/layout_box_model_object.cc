@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_section.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
@@ -513,14 +514,7 @@ PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
     float_rect = layer->MapRectForFilter(float_rect);
   } else {
     CHECK(IsSVGChild());
-    const gfx::RectF filter_reference_box =
-        SVGResources::ReferenceBoxForEffects(*this);
-    if (!filter_reference_box.size().IsZero()) {
-      float_rect.UnionEvenIfEmpty(filter_reference_box);
-    }
-    // TODO(crbug.com/513988889): Update this to call
-    // `SVGLayoutSupport::ApplyFiltersToRect`.
-    float_rect = StyleRef().Filter().MapRect(float_rect);
+    float_rect = SVGLayoutSupport::ApplyFiltersToRect(*this, float_rect);
   }
   return PhysicalRect::EnclosingRect(float_rect);
 }

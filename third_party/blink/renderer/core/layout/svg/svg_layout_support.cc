@@ -132,8 +132,11 @@ static gfx::RectF MapToSVGRootIncludingFilter(
   const LayoutObject* parent = &object;
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
     const ComputedStyle& style = parent->StyleRef();
-    if (style.HasFilter())
+    if (style.HasFilter()) {
+      // TODO(crbug.com/513988889): Update this to call
+      // `SVGLayoutSupport::ApplyFiltersToRect`.
       visual_rect = style.Filter().MapRect(visual_rect);
+    }
     visual_rect = parent->LocalToSVGParentTransform().MapRect(visual_rect);
   }
 
