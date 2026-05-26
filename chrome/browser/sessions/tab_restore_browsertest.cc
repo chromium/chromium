@@ -2979,6 +2979,101 @@ IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest, RestoreGroupWithSplitAfterRestart) {
                          /*expected_split_tabs=*/2);
 }
 
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest,
+                       PRE_RestoreWindowWithSplitAfterRestart) {
+  EnableSessionService();
+
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a split with tabs 1 and 2.
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest,
+                       RestoreWindowWithSplitAfterRestart) {
+  EnableSessionService();
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  CHECK(tab_restore_service);
+
+  // Restore the closed window.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  RestoreMostRecentlyClosed(browser());
+  Browser* restored_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(restored_browser);
+
+  // The restored window should have the split view intact.
+  TabStripModel* tab_strip_model = restored_browser->GetTabStripModel();
+  EXPECT_EQ(3, tab_strip_model->count());
+
+  auto splits = tab_strip_model->ListSplits();
+  EXPECT_EQ(1u, splits.size());
+
+  split_tabs::SplitTabId split_id = *splits.begin();
+  auto* split_data = tab_strip_model->GetSplitData(split_id);
+  ASSERT_TRUE(split_data);
+  EXPECT_EQ(2u, split_data->ListTabs().size());
+
+  EXPECT_EQ(split_id, tab_strip_model->GetTabAtIndex(1)->GetSplit().value());
+  EXPECT_EQ(split_id, tab_strip_model->GetTabAtIndex(2)->GetSplit().value());
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest,
+                       PRE_RestoreWindowWithGroupedSplitAfterRestart) {
+  EnableSessionService();
+
+  AddHTTPSSchemeTabs(browser(), 2);
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+
+  // Create a group with tabs 1 and 2.
+  tab_strip_model->AddToNewGroup({1, 2});
+
+  // Create a split with tabs 1 and 2.
+  tab_strip_model->ActivateTabAt(1);
+  tab_strip_model->AddToNewSplit(
+      {2}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+}
+
+IN_PROC_BROWSER_TEST_F(SplitTabRestoreTest,
+                       RestoreWindowWithGroupedSplitAfterRestart) {
+  EnableSessionService();
+
+  sessions::TabRestoreService* tab_restore_service =
+      TabRestoreServiceFactory::GetForProfile(browser()->profile());
+  CHECK(tab_restore_service);
+
+  // Restore the closed window.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  RestoreMostRecentlyClosed(browser());
+  Browser* restored_browser = browser_created_observer.Wait();
+  ASSERT_TRUE(restored_browser);
+
+  // Verify that the tabs are back, in the group, and in a split.
+  TabStripModel* tab_strip_model = restored_browser->GetTabStripModel();
+
+  std::optional<tab_groups::TabGroupId> group;
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    std::optional<tab_groups::TabGroupId> g =
+        tab_strip_model->GetTabGroupForTab(i);
+    if (g.has_value()) {
+      group = g;
+      break;
+    }
+  }
+  ASSERT_TRUE(group.has_value());
+
+  VerifySplitViewInGroup(tab_strip_model, group.value(),
+                         /*expected_total_tabs=*/3,
+                         /*expected_grouped_tabs=*/2,
+                         /*expected_split_tabs=*/2);
+}
+
 class SoftNavigationTabRestoreTest : public TabRestoreTest {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
