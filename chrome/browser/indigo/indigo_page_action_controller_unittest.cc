@@ -99,6 +99,7 @@ class IndigoPageActionControllerTest : public testing::Test {
     profile_.reset();
     testing_profile_manager_ = nullptr;
     TestingBrowserProcess::GetGlobal()->TearDownGlobalFeaturesForTesting();
+    glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
   }
 
   void CreateController(CreateControllerOptions options = {}) {
