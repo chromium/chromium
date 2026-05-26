@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tab_contents/chrome_web_contents_view_focus_helper.h"
 
 #include "base/memory/ptr_util.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/sad_tab_controller.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
@@ -14,6 +15,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/views/focus/focus_manager.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
 ChromeWebContentsViewFocusHelper::ChromeWebContentsViewFocusHelper(
@@ -77,9 +79,32 @@ bool ChromeWebContentsViewFocusHelper::TakeFocus(bool reverse) {
 
 void ChromeWebContentsViewFocusHelper::StoreFocus() {
   last_focused_view_tracker_.SetView(nullptr);
-  if (GetFocusManager()) {
-    last_focused_view_tracker_.SetView(GetFocusManager()->GetFocusedView());
+  if (!GetFocusManager()) {
+    return;
   }
+
+  views::View* focused_view = GetFocusManager()->GetFocusedView();
+  if (!focused_view) {
+    return;
+  }
+
+  // Iterate through the focused view's ancestors to check if it's inside the
+  // toolbar. We don't want to store the focus in the toolbar WebContents to
+  // match the behavior in C++ views.
+  // TODO(crbug.com/508632926): this is a temporary fix to differentiate the
+  // focus behavior between normal WebContents and top Chrome WebUI. In the
+  // long term, we should propose a more general fix from the focus system to
+  // avoid doing this special checks against the element identifier. (e.g. the
+  // focus behavior of the WebUI reload button is correct when the user clicks
+  // the button, and the tab-key focus should follow the same way).
+  for (views::View* v = focused_view; v; v = v->parent()) {
+    if (v->GetProperty(views::kElementIdentifierKey) ==
+        kWebUIToolbarElementIdentifier) {
+      return;
+    }
+  }
+
+  last_focused_view_tracker_.SetView(focused_view);
 }
 
 bool ChromeWebContentsViewFocusHelper::RestoreFocus() {
