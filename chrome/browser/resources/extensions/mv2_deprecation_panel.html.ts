@@ -35,14 +35,6 @@ export function getHtml(this: ExtensionsMv2DeprecationPanelElement) {
             role="presentation">
         <div class="panel-extension-info text-elide">${item.name}</div>
         <div class="extension-buttons">
-          <cr-button class="find-alternative-button"
-              data-recommendations-url="${item.recommendationsUrl}"
-              @click="${this.onFindAlternativeButtonClick_}"
-              ?hidden="${!this.showExtensionFindAlternativeButton_(item)}"
-              aria-label="${this.getFindAlternativeButtonLabelFor_(item.name)}">
-            $i18n{mv2DeprecationPanelFindAlternativeButton}
-            <cr-icon icon="cr:open-in-new" slot="suffix-icon"></cr-icon>
-          </cr-button>
           <cr-icon-button id="removeButton" class="icon-delete-gray"
               data-id="${item.id}" @click="${this.onRemoveButtonClick_}"
               title="$i18n{remove}"
@@ -64,16 +56,6 @@ export function getHtml(this: ExtensionsMv2DeprecationPanelElement) {
           @click="${this.onFindAlternativeExtensionActionClick_}"
           ?hidden="${!this.showExtensionFindAlternativeAction_()}">
         Find alternatives
-      </button>
-      <button class="dropdown-item" id="keepAction"
-          @click="${this.onKeepExtensionActionClick_}"
-          ?hidden="${!this.showExtensionKeepAction_()}">
-        $i18n{mv2DeprecationPanelKeepForNowButton}
-      </button>
-      <button class="dropdown-item" id="removeAction"
-          @click="${this.onRemoveExtensionActionClick_}"
-          ?hidden="${!this.showExtensionRemoveAction_()}">
-        $i18n{mv2DeprecationPanelRemoveExtensionButton}
       </button>
     </cr-action-menu>
   </div>

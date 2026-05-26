@@ -41,7 +41,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/manifest_v2_experiment_manager.h"
-#include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/grit/extensions_browser_resources.h"
@@ -354,9 +353,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
        IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_FIND_ALTERNATIVE_BUTTON_ACC_LABEL},
       {"mv2DeprecationPanelRemoveButtonAccLabel",
        IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_REMOVE_BUTTON_ACC_LABEL},
-      {"mv2DeprecationPanelKeepForNowButton",
-       IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_KEEP_FOR_NOW_BUTTON},
-      {"mv2DeprecationPanelRemoveExtensionButton", IDS_EXTENSIONS_UNINSTALL},
       {"mv2DeprecationMessageDisabledHeader",
        IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_HEADER},
       {"mv2DeprecationMessageDisabledSubtitle",
@@ -493,9 +489,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
 
   // MV2 deprecation.
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
-  MV2ExperimentStage experiment_stage =
-      mv2_experiment_manager->GetCurrentExperimentStage();
-  source->AddInteger("MV2ExperimentStage", static_cast<int>(experiment_stage));
   source->AddBoolean(
       "MV2DeprecationNoticeDismissed",
       mv2_experiment_manager->DidUserAcknowledgeNoticeGlobally());

@@ -9,8 +9,6 @@ import './review_panel.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -18,7 +16,6 @@ import {DummyItemDelegate} from './item.js';
 import type {ExtensionsItemElement, ItemDelegate} from './item.js';
 import {getCss} from './item_list.css.js';
 import {getHtml} from './item_list.html.js';
-import {getMv2ExperimentStage, Mv2ExperimentStage} from './mv2_deprecation_util.js';
 
 type Filter = (info: chrome.developerPrivate.ExtensionInfo) => boolean;
 
@@ -71,11 +68,6 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
       unsafeExtensions_: {type: Array},
 
       /**
-       * Current Manifest V2 experiment stage.
-       */
-      mv2ExperimentStage_: {type: Number},
-
-      /**
        * List of extensions that are affected by the mv2 deprecation and should
        * be visible in the mv2 deprecation panel.
        */
@@ -113,8 +105,6 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   protected accessor maxColumns_: number = 3;
   protected accessor unsafeExtensions_:
       chrome.developerPrivate.ExtensionInfo[] = [];
-  protected accessor mv2ExperimentStage_: Mv2ExperimentStage =
-      getMv2ExperimentStage(loadTimeData.getInteger('MV2ExperimentStage'));
   protected accessor mv2DeprecatedExtensions_:
       chrome.developerPrivate.ExtensionInfo[] = [];
   protected accessor shownAppsCount_: number = 0;
@@ -222,22 +212,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   private computeMv2DeprecatedExtensions_():
       chrome.developerPrivate.ExtensionInfo[] {
     return this.extensions.filter((extension) => {
-      switch (this.mv2ExperimentStage_) {
-        case Mv2ExperimentStage.NONE:
-          return false;
-        case Mv2ExperimentStage.WARNING:
-          return extension.isAffectedByMV2Deprecation &&
-              !extension.didAcknowledgeMV2DeprecationNotice;
-        case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-          return extension.isAffectedByMV2Deprecation &&
-              extension.disableReasons.unsupportedManifestVersion &&
-              !extension.didAcknowledgeMV2DeprecationNotice;
-        case Mv2ExperimentStage.UNSUPPORTED:
-          return extension.isAffectedByMV2Deprecation &&
-              extension.disableReasons.unsupportedManifestVersion;
-        default:
-          assertNotReachedCase(this.mv2ExperimentStage_);
-      }
+      return extension.isAffectedByMV2Deprecation &&
+          extension.disableReasons.unsupportedManifestVersion;
     });
   }
 
@@ -288,19 +264,8 @@ export class ExtensionsItemListElement extends ExtensionsItemListElementBase {
    * Returns whether the manifest v2 deprecation panel should be visible.
    */
   protected shouldShowMv2DeprecationPanel_(): boolean {
-    switch (this.mv2ExperimentStage_) {
-      case Mv2ExperimentStage.NONE:
-        return false;
-      case Mv2ExperimentStage.WARNING:
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-      case Mv2ExperimentStage.UNSUPPORTED:
-        // Panel is visible when it has not been dismissed and at least one
-        // extension is affected by the MV2 deprecation.
-        return !this.isMv2DeprecationNoticeDismissed &&
-            this.mv2DeprecatedExtensions_?.length !== 0;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage_);
-    }
+    return !this.isMv2DeprecationNoticeDismissed &&
+        this.mv2DeprecatedExtensions_?.length > 0;
   }
 
   protected shouldShowEmptyItemsMessage_(): boolean {

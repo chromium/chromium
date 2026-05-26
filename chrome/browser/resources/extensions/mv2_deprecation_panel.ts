@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -20,7 +20,6 @@ import type {ItemDelegate} from './item.js';
 import type {Mv2DeprecationDelegate} from './mv2_deprecation_delegate.js';
 import {getCss} from './mv2_deprecation_panel.css.js';
 import {getHtml} from './mv2_deprecation_panel.html.js';
-import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 
 export interface ExtensionsMv2DeprecationPanelElement {
   $: {
@@ -53,11 +52,6 @@ export class ExtensionsMv2DeprecationPanelElement extends
        */
       extensions: {type: Array},
 
-      /*
-       * Current Manifest V2 experiment stage.
-       */
-      mv2ExperimentStage: {type: Number},
-
       /**
        * Whether the panel title should be shown.
        */
@@ -85,7 +79,6 @@ export class ExtensionsMv2DeprecationPanelElement extends
 
   accessor extensions: chrome.developerPrivate.ExtensionInfo[] = [];
   accessor delegate: ItemDelegate&Mv2DeprecationDelegate|undefined;
-  accessor mv2ExperimentStage: Mv2ExperimentStage = Mv2ExperimentStage.NONE;
   accessor showTitle: boolean = false;
   protected accessor headerString_: string = '';
   private accessor subtitleString_: string = '';
@@ -104,27 +97,10 @@ export class ExtensionsMv2DeprecationPanelElement extends
    * Updates properties after extensions change.
    */
   private async onExtensionsChanged_(): Promise<void> {
-    let headerVar: string;
-    let subtitleVar: string;
-    let subtitleLink: string;
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-        assertNotReached();
-      case Mv2ExperimentStage.WARNING:
-        headerVar = 'mv2DeprecationPanelWarningHeader';
-        subtitleVar = 'mv2DeprecationPanelWarningSubtitle';
-        subtitleLink = 'https://chromewebstore.google.com/category/extensions';
-        break;
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-      case Mv2ExperimentStage.UNSUPPORTED:
-        headerVar = 'mv2DeprecationPanelDisabledHeader';
-        subtitleVar = 'mv2DeprecationPanelDisabledSubtitle';
-        subtitleLink = 'https://support.google.com/chrome_webstore?' +
-            'p=unsupported_extensions';
-        break;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
+    const headerVar = 'mv2DeprecationPanelDisabledHeader';
+    const subtitleVar = 'mv2DeprecationPanelDisabledSubtitle';
+    const subtitleLink = 'https://support.google.com/chrome_webstore?' +
+        'p=unsupported_extensions';
 
     this.headerString_ =
         await PluralStringProxyImpl.getInstance().getPluralString(
@@ -137,32 +113,11 @@ export class ExtensionsMv2DeprecationPanelElement extends
   }
 
   /**
-   * Returns whether the extension's find alternative button should be
-   * displayed.
-   */
-  protected showExtensionFindAlternativeButton_(
-      extension: chrome.developerPrivate.ExtensionInfo): boolean {
-    // Button is only visible for the warning stage iff extension has a
-    // recommendations url.
-    return this.mv2ExperimentStage === Mv2ExperimentStage.WARNING &&
-        !!extension.recommendationsUrl;
-  }
-
-  /**
    * Returns whether the extension's remove button should be displayed.
    */
   protected showExtensionRemoveButton_(
       extension: chrome.developerPrivate.ExtensionInfo): boolean {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-      case Mv2ExperimentStage.WARNING:
-        return false;
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-      case Mv2ExperimentStage.UNSUPPORTED:
-        return !extension.mustRemainInstalled;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
+    return !extension.mustRemainInstalled;
   }
 
   /**
@@ -170,17 +125,7 @@ export class ExtensionsMv2DeprecationPanelElement extends
    */
   protected showActionMenu_(extension: chrome.developerPrivate.ExtensionInfo):
       boolean {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-        assertNotReached();
-      case Mv2ExperimentStage.WARNING:
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-        return true;
-      case Mv2ExperimentStage.UNSUPPORTED:
-        return !!extension.recommendationsUrl;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
+    return !!extension.recommendationsUrl;
   }
 
   /**
@@ -188,55 +133,8 @@ export class ExtensionsMv2DeprecationPanelElement extends
    * should be displayed.
    */
   protected showExtensionFindAlternativeAction_(): boolean {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-        assertNotReached();
-      case Mv2ExperimentStage.WARNING:
-        return false;
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-      case Mv2ExperimentStage.UNSUPPORTED:
-        return !!this.extensionWithActionMenuOpened_ &&
-            !!this.extensionWithActionMenuOpened_.recommendationsUrl;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
-  }
-
-  /**
-   * Returns whether the keep button in the extension's action menu should be
-   * displayed.
-   */
-  protected showExtensionKeepAction_(): boolean {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-        assertNotReached();
-      case Mv2ExperimentStage.WARNING:
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-        return true;
-      case Mv2ExperimentStage.UNSUPPORTED:
-        return false;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
-  }
-
-  /**
-   * Returns whether the remove button in the extension's action menu should be
-   * displayed.
-   */
-  protected showExtensionRemoveAction_(): boolean {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-        assertNotReached();
-      case Mv2ExperimentStage.WARNING:
-        return !!this.extensionWithActionMenuOpened_ &&
-            !this.extensionWithActionMenuOpened_.mustRemainInstalled;
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-      case Mv2ExperimentStage.UNSUPPORTED:
-        return false;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
+    return !!this.extensionWithActionMenuOpened_ &&
+        !!this.extensionWithActionMenuOpened_.recommendationsUrl;
   }
 
   /**
@@ -266,55 +164,14 @@ export class ExtensionsMv2DeprecationPanelElement extends
   }
 
   /**
-   * Returns the accessible label for the find alternative button
-   * corresponding to `extensionName`.
-   */
-  protected getFindAlternativeButtonLabelFor_(extensionName: string): string {
-    return this.i18n(
-        'mv2DeprecationPanelFindAlternativeButtonAccLabel', extensionName);
-  }
-
-  /**
    * Triggers the MV2 deprecation notice dismissal when the dismiss button is
    * clicked.
    */
   protected onDismissButtonClick_() {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-        assertNotReached();
-      case Mv2ExperimentStage.WARNING:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Warning.Dismissed');
-        break;
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Disabled.Dismissed');
-        break;
-      case Mv2ExperimentStage.UNSUPPORTED:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Unsupported.Dismissed');
-        break;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
-
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.Unsupported.Dismissed');
     assert(this.delegate);
     this.delegate.dismissMv2DeprecationNotice();
-  }
-
-  /**
-   * Opens a URL in the Web Store with extensions recommendations for the
-   * extension whose find alternative button is clicked.
-   */
-  protected onFindAlternativeButtonClick_(event: Event): void {
-    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
-    chrome.metricsPrivate.recordUserAction(
-      'Extensions.Mv2Deprecation.Warning.FindAlternativeForExtension');
-    const recommendationsUrl: string|undefined =
-        (event.target as HTMLElement).dataset['recommendationsUrl'];
-    assert(!!recommendationsUrl);
-    assert(this.delegate);
-    this.delegate.openUrl(recommendationsUrl);
   }
 
   /**
@@ -322,21 +179,8 @@ export class ExtensionsMv2DeprecationPanelElement extends
    * extension.
    */
   protected onRemoveButtonClick_(event: Event): void {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-      case Mv2ExperimentStage.WARNING:
-        assertNotReached();
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Disabled.RemoveExtension');
-        break;
-      case Mv2ExperimentStage.UNSUPPORTED:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Unsupported.RemoveExtension');
-        break;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.Unsupported.RemoveExtension');
 
     this.$.actionMenu.close();
     const id = (event.target as HTMLElement).dataset['id'];
@@ -362,70 +206,14 @@ export class ExtensionsMv2DeprecationPanelElement extends
    * extension whose find alternative action is clicked.
    */
   protected onFindAlternativeExtensionActionClick_(): void {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-      case Mv2ExperimentStage.WARNING:
-        assertNotReached();
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Disabled.FindAlternativeForExtensionV2');
-        break;
-      case Mv2ExperimentStage.UNSUPPORTED:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Unsupported.FindAlternativeForExtension');
-        break;
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
+    chrome.metricsPrivate.recordUserAction(
+        'Extensions.Mv2Deprecation.Unsupported.FindAlternativeForExtension');
 
     const recommendationsUrl: string|undefined =
         this.extensionWithActionMenuOpened_?.recommendationsUrl;
     assert(!!recommendationsUrl);
     assert(this.delegate);
     this.delegate.openUrl(recommendationsUrl);
-  }
-
-  /**
-   * Triggers an extension removal when the remove button in the action menu
-   * is clicked for an extension.
-   */
-  protected onRemoveExtensionActionClick_(): void {
-    assert(this.mv2ExperimentStage === Mv2ExperimentStage.WARNING);
-    chrome.metricsPrivate.recordUserAction(
-        'Extensions.Mv2Deprecation.Warning.RemoveExtension');
-    this.$.actionMenu.close();
-    assert(this.delegate);
-    assert(this.extensionWithActionMenuOpened_);
-    this.delegate.deleteItem(this.extensionWithActionMenuOpened_.id);
-  }
-
-  /**
-   * Dismisses the notice for a given extension for the rest of the stage
-   * duration.
-   */
-  protected onKeepExtensionActionClick_(): void {
-    switch (this.mv2ExperimentStage) {
-      case Mv2ExperimentStage.NONE:
-        assertNotReached();
-      case Mv2ExperimentStage.WARNING:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Warning.DismissedForExtension');
-        break;
-      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
-        chrome.metricsPrivate.recordUserAction(
-            'Extensions.Mv2Deprecation.Disabled.DismissedForExtension');
-        break;
-      case Mv2ExperimentStage.UNSUPPORTED:
-        assertNotReached();
-      default:
-        assertNotReachedCase(this.mv2ExperimentStage);
-    }
-
-    this.$.actionMenu.close();
-    assert(this.delegate);
-    assert(this.extensionWithActionMenuOpened_);
-    this.delegate.dismissMv2DeprecationNoticeForExtension(
-        this.extensionWithActionMenuOpened_.id);
   }
 }
 

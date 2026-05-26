@@ -27,7 +27,6 @@ import {getHtml} from './item.html.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, createDummyExtensionInfo, EnableControl, getEnableControl, getEnableToggleAriaLabel, getItemSource, getItemSourceString, isEnabled, sortViews, SourceType, userCanChangeEnablement} from './item_util.js';
 import {UPLOAD_EXTENSION_TO_ACCOUNT_ITEMS_LIST_PAGE_HISTOGRAM_NAME} from './metrics_util.js';
-import {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 import {navigation, Page} from './navigation_helper.js';
 
 export interface ItemDelegate {
@@ -158,7 +157,6 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
       // bindings.
       data: {type: Object},
 
-      mv2ExperimentStage: {type: Number},
 
       // First inspectable view after sorting.
       firstInspectView_: {type: Object},
@@ -168,7 +166,6 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
 
   accessor delegate: ItemDelegate|null = null;
   accessor inDevMode: boolean = false;
-  accessor mv2ExperimentStage: Mv2ExperimentStage = Mv2ExperimentStage.NONE;
   accessor safetyCheckShowing: boolean = false;
   accessor data: chrome.developerPrivate.ExtensionInfo =
       createDummyExtensionInfo();
@@ -294,7 +291,7 @@ export class ExtensionsItemElement extends ExtensionsItemElementBase {
   }
 
   protected isEnableToggleEnabled_(): boolean {
-    return userCanChangeEnablement(this.data, this.mv2ExperimentStage);
+    return userCanChangeEnablement(this.data);
   }
 
   /** @return Whether the reload button should be shown. */

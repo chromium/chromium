@@ -56,7 +56,6 @@ build_webui("build") {
     "mv2_deprecation_delegate.ts",
     "mv2_deprecation_panel.html.ts",
     "mv2_deprecation_panel.ts",
-    "mv2_deprecation_util.ts",
     "navigation_helper.ts",
     "options_dialog.html.ts",
     "options_dialog.ts",

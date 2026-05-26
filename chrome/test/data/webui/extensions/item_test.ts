@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for extension-item. */
 
 import type {CrIconElement, ExtensionsItemElement} from 'chrome://extensions/extensions.js';
-import {Mv2ExperimentStage, navigation, Page} from 'chrome://extensions/extensions.js';
+import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -563,23 +563,12 @@ suite('ExtensionItemTest', function() {
     testVisible(item, '#enableToggle', true);
     assertFalse(item.$.enableToggle.disabled);
 
-    // MV2 deprecation tests cases.
-    // Extension toggle is visible and enabled when MV2 experiment is 'disable
-    // with re-enable' and extension is disabled due to unsupported manifest
-    // version.
+    // Extension toggle is visible and disabled when extension is disabled
+    // due to unsupported manifest version.
     data = createExtensionInfo(item.data);
     data.disableReasons.custodianApprovalRequired = false;
     data.disableReasons.unsupportedManifestVersion = true;
-    item.mv2ExperimentStage = Mv2ExperimentStage.DISABLE_WITH_REENABLE;
     item.data = data;
-    await microtasksFinished();
-    testVisible(item, '#enableToggle', true);
-    assertFalse(item.$.enableToggle.disabled);
-
-    // Extension toggle is visible and disabled when MV2 experiment is
-    // 'unsupported' and extension is disabled due to unsupported manifest
-    // version.
-    item.mv2ExperimentStage = Mv2ExperimentStage.UNSUPPORTED;
     await microtasksFinished();
     testVisible(item, '#enableToggle', true);
     assertTrue(item.$.enableToggle.disabled);

@@ -659,9 +659,6 @@
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_FIND_ALTERNATIVE_BUTTON" desc="The label for a button to find an alternative extension in the manifest v2 deprecation panel">
     Find alternative
   </message>
-  <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_KEEP_FOR_NOW_BUTTON" desc="The label for a button to dismiss the deprecation warning for a given extension, keeping it installed for the time being.">
-    Keep for now
-  </message>
   <message name="IDS_EXTENSIONS_MV2_DEPRECATION_PANEL_ACTION_MENU_BUTTON_LABEL" desc="The (accessible) label for the button whichs opens an extension's action menu.">
     More options for <ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>
   </message>

@@ -13806,16 +13806,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action
-    name="Extensions.Mv2Deprecation.Warning.FindAlternativeForExtension.Entry">
-  <owner>emiliapaz@chomium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <description>
-    The user clicked on the find alternative button in the extension's detailed
-    page in chrome://extensions during the MV2 'warning' experiment stage.
-  </description>
-</action>
-
 <action name="Extensions.Mv2Deprecation.Warning.RemoveExtension">
   <owner>emiliapaz@chomium.org</owner>
   <owner>extensions-core@chromium.org</owner>

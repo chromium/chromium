@@ -26,7 +26,6 @@ export function getHtml(this: ExtensionsItemListElement) {
         <extensions-mv2-deprecation-panel
             .extensions="${this.mv2DeprecatedExtensions_}"
             .delegate="${this.delegate as ServiceInterface}"
-            .mv2ExperimentStage="${this.mv2ExperimentStage_}"
             ?show-title="${this.showSafetyCheckReviewPanel_}">
         </extensions-mv2-deprecation-panel>
       </div>` : ''}
@@ -58,8 +57,7 @@ export function getHtml(this: ExtensionsItemListElement) {
               ?safety-check-showing="${
                   this.hasSafetyCheckTriggeringExtension_()}"
               .delegate="${this.delegate as ServiceInterface}"
-              ?in-dev-mode="${this.inDevMode}"
-              .mv2ExperimentStage="${this.mv2ExperimentStage_}">
+              ?in-dev-mode="${this.inDevMode}">
           </extensions-item>`, 6)}
       </div>
     </div>

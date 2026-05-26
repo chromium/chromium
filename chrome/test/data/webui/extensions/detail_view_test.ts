@@ -5,7 +5,7 @@
 /** @fileoverview Suite of tests for extensions-detail-view. */
 
 import type {CrCheckboxElement, ExtensionsDetailViewElement, ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
-import {Mv2ExperimentStage, navigation, Page} from 'chrome://extensions/extensions.js';
+import {navigation, Page} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -413,25 +413,8 @@ suite('ExtensionDetailViewTest', function() {
   });
 
   test('MV2DeprecationDisabledExtension', async () => {
-    // Extension toggle is visible and enabled for MV2 experiment is 'disable
-    // with re-enable' and extension is disabled due to unsupported manifest
-    // version.
-    loadTimeData.overrideValues(
-        {MV2ExperimentStage: Mv2ExperimentStage.DISABLE_WITH_REENABLE});
-    setupElement();
-    const toggle = item.$.enableToggle;
-
-    await updateItemDisableReasons({unsupportedManifestVersion: true});
-    assertTrue(isVisible(toggle));
-    assertFalse(toggle.disabled);
-  });
-
-  test('MV2DeprecationUnsupportedDisabledExtension', async () => {
-    // Extension toggle is visible and disabled when MV2 experiment is
-    // 'unsupported' and extension is disabled due to unsupported manifest
-    // version.
-    loadTimeData.overrideValues(
-        {MV2ExperimentStage: Mv2ExperimentStage.UNSUPPORTED});
+    // Extension toggle is visible and disabled when extension is disabled
+    // due to unsupported manifest version.
     setupElement();
     const toggle = item.$.enableToggle;
     await updateItemDisableReasons({unsupportedManifestVersion: true});
@@ -788,216 +771,29 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(safetyWarningText.textContent.includes('Test Message'));
   });
 
-  test('Mv2DeprecationMessage_None', () => {
-    // Message is hidden for experiment on 'none' stage.
-    loadTimeData.overrideValues({MV2ExperimentStage: Mv2ExperimentStage.NONE});
-    setupElement();
-    testVisible(item, '#mv2DeprecationMessage', false);
-  });
-
-  test('Mv2DeprecationMessage_Warning', async function() {
-    // Message is hidden for experiment on 'warning' stage when extension is
-    // not affected by the MV2 deprecation.
-    loadTimeData.overrideValues(
-        {MV2ExperimentStage: Mv2ExperimentStage.WARNING});
+  test('Mv2DeprecationMessage_Visibility', async function() {
+    // Message is hidden when extension is not affected by the MV2 deprecation.
     setupElement();
     await microtasksFinished();
     testVisible(item, '#mv2DeprecationMessage', false);
 
-    // Message is visible for experiment on 'warning' stage when extension is
-    // affected by the MV2 deprecation.
-    await updateItemData({isAffectedByMV2Deprecation: true});
-    testVisible(item, '#mv2DeprecationMessage', true);
-
-    // Find alternative button is hidden when the extension doesn't have a
-    // recommendations url.
-    const findAlternativeButton =
-        item.shadowRoot.querySelector<HTMLElement>('#mv2DeprecationMessage')!
-            .querySelector<HTMLButtonElement>('.find-alternative-button');
-    assertTrue(!!findAlternativeButton);
-    assertFalse(isVisible(findAlternativeButton));
-
-    // Remove button is always hidden.
-    const removeButton =
-        item.shadowRoot.querySelector<HTMLElement>('#mv2DeprecationMessage')!
-            .querySelector<HTMLButtonElement>('.remove-button');
-    assertTrue(!!removeButton);
-    assertFalse(isVisible(removeButton));
-
-    // Action menu is always hidden.
-    const actionMenu =
-        item.shadowRoot.querySelector<HTMLElement>('#mv2DeprecationMessage')!
-            .querySelector<HTMLButtonElement>('#actionMenu');
-    assertTrue(!!actionMenu);
-    assertFalse(isVisible(actionMenu));
-
-    // Add a recommendations url to the extension.
-    const id = 'a'.repeat(32);
-    const recommendationsUrl =
-        `https://chromewebstore.google.com/detail/${id}` +
-        `/related-recommendations`;
-    await updateItemData({recommendationsUrl: recommendationsUrl});
-
-    // Find alternative button is visible when the extension has a
-    // recommendations url.
-    assertTrue(isVisible(findAlternativeButton));
-
-    // Click on the find alternative button, and verify it triggered the
-    // correct delegate call.
-    await mockDelegate.testClickingCalls(
-        findAlternativeButton, 'openUrl', [recommendationsUrl]);
-  });
-
-  test('Mv2DeprecationMessage_DisableWithReEnable_Visbility', async function() {
-    // Message is hidden for experiment on 'disable with re-enable' stage when
-    // extension is not affected by the MV2 deprecation.
-    loadTimeData.overrideValues(
-        {MV2ExperimentStage: Mv2ExperimentStage.DISABLE_WITH_REENABLE});
-    setupElement();
-    await microtasksFinished();
-    testVisible(item, '#mv2DeprecationMessage', false);
-
-    // Message is hidden for experiment on stage 2 (disable with re-enable)
-    // when extension is affected by the MV2 deprecation but it's not disabled
-    // due to unsupported manifest version.
-    // Note: This can happen when the user chose to re-enable a MV2 disabled
-    // extension.
+    // Message is hidden when extension is affected by the MV2 deprecation but
+    // it's not disabled due to unsupported manifest version.
     await updateItemData({isAffectedByMV2Deprecation: true});
     await updateItemDisableReasons({unsupportedManifestVersion: false});
     testVisible(item, '#mv2DeprecationMessage', false);
 
-    // Message is visible for experiment on stage 2 (disable with re-enable)
-    // when extension is affected by the MV2 deprecation and extension is
-    // disabled due to unsupported manifest version.
-    await updateItemDisableReasons({unsupportedManifestVersion: true});
-    testVisible(item, '#mv2DeprecationMessage', true);
-
-    // Message is hidden for experiment on stage 2 (disable with re-enable)
-    // when extension is affected by the MV2 deprecation and has been
-    // acknowledged.
-    await updateItemData({didAcknowledgeMV2DeprecationNotice: true});
-    testVisible(item, '#mv2DeprecationMessage', false);
-  });
-
-  test('Mv2DeprecationMessage_DisableWithReEnable_Content', async function() {
-    // Show the message for experiment on 'disable with re-enable' stage by
-    // setting the corresponding properties.
-    loadTimeData.overrideValues(
-        {MV2ExperimentStage: Mv2ExperimentStage.DISABLE_WITH_REENABLE});
-    setupElement();
-    await updateItemData({isAffectedByMV2Deprecation: true});
-    await updateItemDisableReasons({unsupportedManifestVersion: true});
-    testVisible(item, '#mv2DeprecationMessage', true);
-
-    // Find alternative button is always hidden.
-    const findAlternativeButton =
-        item.shadowRoot.querySelector<HTMLElement>('#mv2DeprecationMessage')!
-            .querySelector<HTMLButtonElement>('.find-alternative-button');
-    assertTrue(!!findAlternativeButton);
-    assertFalse(isVisible(findAlternativeButton));
-
-    // Remove button is hidden if extension must remain installed.
-    await updateItemData({mustRemainInstalled: true});
-    const removeButton =
-        item.shadowRoot.querySelector<HTMLElement>('#mv2DeprecationMessage')!
-            .querySelector<HTMLButtonElement>('.remove-button');
-    assertTrue(!!removeButton);
-    assertFalse(isVisible(removeButton));
-
-    // Remove button is visible if extension doesn't need to remain installed.
-    await updateItemData({mustRemainInstalled: false});
-    assertTrue(isVisible(removeButton));
-
-    // Click on the remove button, and verify it triggered the correct delegate
-    // call.
-    await mockDelegate.testClickingCalls(
-        removeButton, 'deleteItem', [extensionData.id]);
-
-    // Action menu is always visible.
-    const actionMenu =
-        item.shadowRoot.querySelector<HTMLElement>('#mv2DeprecationMessage')!
-            .querySelector<HTMLButtonElement>('#actionMenuButton');
-    assertTrue(!!actionMenu);
-    assertTrue(isVisible(actionMenu));
-
-    // Open the action menu to verify its items.
-    actionMenu.click();
-
-    // Find alternative action is not visible when the extension doesn't have a
-    // recommendations url.
-    const findAlternativeAction =
-        item.shadowRoot.querySelector<HTMLElement>('#findAlternativeAction');
-    assertTrue(!!findAlternativeAction);
-    assertFalse(isVisible(findAlternativeAction));
-
-    // Add a recommendations url to the extension.
-    const id = 'a'.repeat(32);
-    const recommendationsUrl =
-        `https://chromewebstore.google.com/detail/${id}` +
-        `/related-recommendations`;
-    await updateItemData({recommendationsUrl: recommendationsUrl});
-
-    // Find alternative action is visible when the extension has a
-    // recommendations url.
-    assertTrue(isVisible(findAlternativeAction));
-
-    // Click on the find alternative action, and verify it triggered the
-    // correct delegate call.
-    await mockDelegate.testClickingCalls(
-        findAlternativeAction, 'openUrl', [recommendationsUrl]);
-
-    // Keep action is always visible.
-    actionMenu.click();
-    const keepAction =
-        item.shadowRoot.querySelector<HTMLElement>('#keepAction');
-    assertTrue(!!keepAction);
-    assertTrue(isVisible(keepAction));
-
-    // Click on the keep action, and verify it triggered the correct delegate
-    // call.
-    await mockDelegate.testClickingCalls(
-        keepAction, 'dismissMv2DeprecationNoticeForExtension', [id]);
-  });
-
-  test('Mv2DeprecationMessage_Unsupported_Visbility', async function() {
-    // Message is hidden for experiment on 'unsupported' stage when extension
-    // is not affected by the MV2 deprecation.
-    loadTimeData.overrideValues(
-        {MV2ExperimentStage: Mv2ExperimentStage.UNSUPPORTED});
-    setupElement();
-    await microtasksFinished();
-    testVisible(item, '#mv2DeprecationMessage', false);
-
-    // Message is hidden for experiment on stage 3 (unsupported) when extension
-    // is affected by the MV2 deprecation but it's not disabled due to
-    // unsupported manifest version.
-    await updateItemData({isAffectedByMV2Deprecation: true});
-    await updateItemDisableReasons({unsupportedManifestVersion: false});
-    testVisible(item, '#mv2DeprecationMessage', false);
-
-    // Message is visible for experiment on stage 3 (unsupported) when extension
-    // is affected by the MV2 deprecation and extension is disabled due to
-    // unsupported manifest version.
+    // Message is visible when extension is affected by the MV2 deprecation and
+    // extension is disabled due to unsupported manifest version.
     await updateItemDisableReasons({unsupportedManifestVersion: true});
     testVisible(item, '#mv2DeprecationMessage', true);
   });
 
-  test('Mv2DeprecationMessage_Unsupported_Content', async function() {
-    // Show the message for experiment on 'unsupported' stage by setting the
-    // corresponding properties.
-    loadTimeData.overrideValues(
-        {MV2ExperimentStage: Mv2ExperimentStage.UNSUPPORTED});
+  test('Mv2DeprecationMessage_Content', async function() {
     setupElement();
     await updateItemData({isAffectedByMV2Deprecation: true});
     await updateItemDisableReasons({unsupportedManifestVersion: true});
     testVisible(item, '#mv2DeprecationMessage', true);
-
-    // Find alternative button is always hidden.
-    const findAlternativeButton =
-        item.shadowRoot.querySelector<HTMLElement>('#mv2DeprecationMessage')!
-            .querySelector<HTMLButtonElement>('.find-alternative-button');
-    assertTrue(!!findAlternativeButton);
-    assertFalse(isVisible(findAlternativeButton));
 
     // Remove button is hidden if extension must remain installed.
     await updateItemData({mustRemainInstalled: true});

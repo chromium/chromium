@@ -73,16 +73,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsTest, HostPermissionsToggleList) {
 // V2 is not supported on desktop android, so tests are disabled.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
-                       MAYBE(ExtensionsMV2DeprecationPanelWarningStage)) {
-  RunTest("extensions/mv2_deprecation_panel_warning_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
-                       MAYBE(ExtensionsMV2DeprecationPanelDisabledStage)) {
-  RunTest("extensions/mv2_deprecation_panel_disabled_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsTest,
                        MAYBE(ExtensionsMV2DeprecationPanelUnsupportedStage)) {
   RunTest("extensions/mv2_deprecation_panel_unsupported_test.js",
           "mocha.run()");
@@ -310,11 +300,6 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
   RunTestCase("MV2DeprecationDisabledExtension");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       MV2DeprecationUnsupportedDisabledExtension) {
-  RunTestCase("MV2DeprecationUnsupportedDisabledExtension");
-}
-
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, ClickableElements) {
   RunTestCase("ClickableElements");
 }
@@ -350,33 +335,14 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, SafetyCheckWarning) {
   RunTestCase("SafetyCheckWarning");
 }
 
-IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, Mv2DeprecationMessage_None) {
-  RunTestCase("Mv2DeprecationMessage_None");
+IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
+                       Mv2DeprecationMessage_Visibility) {
+  RunTestCase("Mv2DeprecationMessage_Visibility");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       Mv2DeprecationMessage_Warning) {
-  RunTestCase("Mv2DeprecationMessage_Warning");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       Mv2DeprecationMessage_DisableWithReEnable_Visbility) {
-  RunTestCase("Mv2DeprecationMessage_DisableWithReEnable_Visbility");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       Mv2DeprecationMessage_DisableWithReEnable) {
-  RunTestCase("Mv2DeprecationMessage_DisableWithReEnable_Content");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       Mv2DeprecationMessage_Unsupported_Visbility) {
-  RunTestCase("Mv2DeprecationMessage_Unsupported_Visbility");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest,
-                       Mv2DeprecationMessage_Unsupported) {
-  RunTestCase("Mv2DeprecationMessage_Unsupported_Content");
+                       Mv2DeprecationMessage_Content) {
+  RunTestCase("Mv2DeprecationMessage_Content");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsDetailViewTest, PinnedToToolbar) {
@@ -436,23 +402,8 @@ IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
-                       ManifestV2DeprecationPanel_None) {
-  RunTestCase("ManifestV2DeprecationPanel_None");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
-                       ManifestV2DeprecationPanel_Warning) {
-  RunTestCase("ManifestV2DeprecationPanel_Warning");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
-                       ManifestV2DeprecationPanel_DisableWithReEnable) {
-  RunTestCase("ManifestV2DeprecationPanel_DisableWithReEnable");
-}
-
-IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,
-                       ManifestV2DeprecationPanel_Unsupported) {
-  RunTestCase("ManifestV2DeprecationPanel_Unsupported");
+                       ManifestV2DeprecationPanel_Visibility) {
+  RunTestCase("ManifestV2DeprecationPanel_Visibility");
 }
 
 IN_PROC_BROWSER_TEST_F(CrExtensionsItemListTest,

@@ -75,11 +75,6 @@ this text can be found by Ctrl + F because it isn't hidden. -->
               .innerHTML="${this.getMv2DeprecationMessageSubtitle_()}">
           </div>
         </div>
-        <cr-button class="find-alternative-button"
-            @click="${this.onFindAlternativeButtonClick_}"
-            ?hidden="${!this.shouldShowMv2DeprecationFindAlternativeButton_()}">
-          $i18n{mv2DeprecationPanelFindAlternativeButton}
-        </cr-button>
         <cr-button class="remove-button" @click="${this.onRemoveButtonClick_}"
             ?hidden="${!this.shouldShowMv2DeprecationRemoveButton_()}">
           $i18n{mv2DeprecationMessageRemoveButton}
@@ -97,14 +92,8 @@ this text can be found by Ctrl + F because it isn't hidden. -->
               @click="${this.onFindAlternativeActionClick_}">
             $i18n{mv2DeprecationPanelFindAlternativeButton}
           </button>
-          <button class="dropdown-item" id="keepAction"
-              ?hidden="${!this.shouldShowMv2DeprecationKeepAction_()}"
-              @click="${this.onKeepActionClick_}">
-            $i18n{mv2DeprecationPanelKeepForNowButton}
-          </button>
         </cr-action-menu>
       </div>` : ''}
-
     <div class="cr-row first control-line" id="enable-section">
       <span class="${this.computeEnabledStyle_()}">
         ${this.computeEnabledText_()}

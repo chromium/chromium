@@ -34,7 +34,6 @@ export {LoadErrorElement} from './load_error.js';
 export {ExtensionsManagerElement} from './manager.js';
 export {UserAction} from './metrics_util.js';
 export {ExtensionsMv2DeprecationPanelElement} from './mv2_deprecation_panel.js';
-export {Mv2ExperimentStage} from './mv2_deprecation_util.js';
 export type {PageState} from './navigation_helper.js';
 export {Dialog, navigation, NavigationHelper, Page} from './navigation_helper.js';
 export {ExtensionsOptionsDialogElement, OptionsDialogMaxHeight, OptionsDialogMinWidth} from './options_dialog.js';
