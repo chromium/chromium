@@ -83,6 +83,11 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
     return content_.ObjectBoundingBox();
   }
 
+  gfx::RectF ComputeContentVisualOverflowRectIncludingFilters() const {
+    NOT_DESTROYED();
+    return content_.ComputeVisualOverflowRectIncludingFilters();
+  }
+
  protected:
   LayoutObjectChildList* VirtualChildren() final {
     NOT_DESTROYED();

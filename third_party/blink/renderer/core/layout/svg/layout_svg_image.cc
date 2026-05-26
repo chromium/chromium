@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
@@ -226,13 +227,21 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
     return false;
   }
 
-  if (hit_rules.can_hit_fill || hit_rules.can_hit_bounding_box) {
-    if (local_location->Intersects(object_bounding_box_)) {
+  bool is_visual_overflow =
+      result.GetHitTestRequest().IsHitTestVisualOverflow();
+  if (is_visual_overflow || hit_rules.can_hit_fill ||
+      hit_rules.can_hit_bounding_box) {
+    gfx::RectF bounds = object_bounding_box_;
+    if (is_visual_overflow) [[unlikely]] {
+      bounds = SVGLayoutSupport::ApplyFiltersToRect(*this, bounds);
+    }
+    if (local_location->Intersects(bounds)) {
       UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
       if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
-          kStopHitTesting)
+          kStopHitTesting) {
         return true;
+      }
     }
   }
   return false;

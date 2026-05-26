@@ -236,6 +236,17 @@ PhysicalRect LayoutSVGRoot::ComputeContentsVisualOverflow() const {
                       PhysicalRect(InfiniteIntRect()));
 }
 
+PhysicalRect LayoutSVGRoot::VisualOverflowRectIncludingFilters() const {
+  NOT_DESTROYED();
+  gfx::RectF content_visual_rect =
+      content_.ComputeVisualOverflowRectIncludingFilters();
+  content_visual_rect =
+      local_to_border_box_transform_.MapRect(content_visual_rect);
+  PhysicalRect rect = PhysicalRect::EnclosingRect(content_visual_rect);
+  rect = ApplyFiltersToRect(rect);
+  return Intersection(rect, PhysicalRect(InfiniteIntRect()));
+}
+
 void LayoutSVGRoot::PaintReplaced(const PaintInfo& paint_info,
                                   const PhysicalOffset& paint_offset) const {
   NOT_DESTROYED();

@@ -9,6 +9,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom-blink.h"
+#include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/hit_test_location.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -557,6 +558,30 @@ TEST_P(BoxFragmentPainterTest, GapDecorationsUseCountColorOnlyNotCounted) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_FALSE(GetDocument().IsWebDXFeatureCounted(
       mojom::blink::WebDXFeature::kGapDecorations));
+}
+
+TEST_P(BoxFragmentPainterTest, NodeAtPointWithFilterOnInline) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      body { margin: 0; }
+      #container { position: absolute; left: 0; top: 0; width: 200px; height: 200px; }
+      #target { filter: drop-shadow(100px 100px red); background: green; font-size: 20px; }
+    </style>
+    <div id="container">
+      <span id="target">Text</span>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  gfx::PointF hit_point(105, 105);
+  HitTestLocation location(hit_point);
+  HitTestRequest::HitTestRequestType hit_type =
+      HitTestRequest::kReadOnly | HitTestRequest::kHitTestVisualOverflow;
+  HitTestResult result =
+      GetDocument().GetFrame()->GetEventHandler().HitTestResultAtLocation(
+          location, hit_type);
+  EXPECT_EQ(result.InnerElement(), target);
 }
 
 }  // namespace blink

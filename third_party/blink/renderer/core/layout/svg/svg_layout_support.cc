@@ -100,6 +100,19 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
   return visual_rect;
 }
 
+gfx::RectF SVGLayoutSupport::ApplyFiltersToRect(const LayoutObject& object,
+                                                const gfx::RectF& rect) {
+  CHECK(!object.NeedsPaintPropertyUpdate());
+  if (!object.StyleRef().HasFilter()) {
+    return rect;
+  }
+  gfx::RectF float_rect = rect;
+  const gfx::RectF filter_reference_box =
+      SVGResources::ReferenceBoxForEffects(object);
+  float_rect.UnionEvenIfEmpty(filter_reference_box);
+  return object.StyleRef().Filter().MapRect(float_rect);
+}
+
 PhysicalRect SVGLayoutSupport::VisualRectInAncestorSpace(
     const LayoutObject& object,
     const LayoutBoxModelObject& ancestor,

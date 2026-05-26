@@ -33,6 +33,7 @@ class SVGContentContainer {
   const gfx::RectF& DecoratedBoundingBox() const {
     return decorated_bounding_box_;
   }
+  gfx::RectF ComputeVisualOverflowRectIncludingFilters() const;
   void MarkBoundsDirtyFromRemovedChild() {
     bounds_dirty_from_removed_child_ = true;
   }

@@ -518,6 +518,8 @@ PhysicalRect LayoutBoxModelObject::ApplyFiltersToRect(
     if (!filter_reference_box.size().IsZero()) {
       float_rect.UnionEvenIfEmpty(filter_reference_box);
     }
+    // TODO(crbug.com/513988889): Update this to call
+    // `SVGLayoutSupport::ApplyFiltersToRect`.
     float_rect = StyleRef().Filter().MapRect(float_rect);
   }
   return PhysicalRect::EnclosingRect(float_rect);

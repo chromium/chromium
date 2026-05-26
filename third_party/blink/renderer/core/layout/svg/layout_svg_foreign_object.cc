@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_info.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -212,6 +213,19 @@ bool LayoutSVGForeignObject::NodeAtPointFromSVG(
                                             LocalToSVGParentTransform());
   if (!local_location) {
     return false;
+  }
+
+  if (result.GetHitTestRequest().IsHitTestVisualOverflow()) [[unlikely]] {
+    gfx::RectF bounds =
+        SVGLayoutSupport::ApplyFiltersToRect(*this, DecoratedBoundingBox());
+    if (local_location->Intersects(bounds)) {
+      UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
+                                      local_location->TransformedPoint()));
+      if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
+          kStopHitTesting) {
+        return true;
+      }
+    }
   }
 
   // |local_location| already includes the offset of the <foreignObject>

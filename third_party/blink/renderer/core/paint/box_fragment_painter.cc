@@ -555,11 +555,13 @@ void BoxFragmentPainter::PaintAdHighlightIfNeeded(
 }
 
 PhysicalRect BoxFragmentPainter::InkOverflowIncludingFilters() const {
-  if (box_item_)
-    return box_item_->SelfInkOverflowRect();
+  if (box_item_) {
+    return To<LayoutBoxModelObject>(GetPhysicalFragment().GetLayoutObject())
+        ->ApplyFiltersToRect(box_item_->SelfInkOverflowRect());
+  }
   const auto& fragment = GetPhysicalFragment();
   DCHECK(!fragment.IsInlineBox());
-  return To<LayoutBox>(fragment.GetLayoutObject())
+  return To<LayoutBoxModelObject>(fragment.GetLayoutObject())
       ->VisualOverflowRectIncludingFilters();
 }
 
@@ -2435,7 +2437,9 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     } else if (fragment.IsSvgText()) {
       pointer_events_bounding_box =
           fragment.Style().UsedPointerEvents() == EPointerEvents::kBoundingBox;
-      hit_test_self = pointer_events_bounding_box;
+      hit_test_self =
+          pointer_events_bounding_box ||
+          hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow();
     }
   }
 
@@ -2460,15 +2464,9 @@ bool BoxFragmentPainter::NodeAtPoint(const HitTestContext& hit_test,
     PhysicalRect bounds_rect(physical_offset, size);
     if (hit_test.result->GetHitTestRequest().IsHitTestVisualOverflow())
         [[unlikely]] {
-      // We'll include overflow from children here (in addition to self-overflow
-      // caused by filters), because we want to record a match if we hit the
-      // overflow of a child below the stop node. This matches legacy behavior
-      // in LayoutBox::NodeAtPoint(); see call to
-      // VisualOverflowRectIncludingFilters().
       bounds_rect = InkOverflowIncludingFilters();
       bounds_rect.Move(physical_offset);
-    }
-    if (pointer_events_bounding_box) [[unlikely]] {
+    } else if (pointer_events_bounding_box) [[unlikely]] {
       bounds_rect = PhysicalRect::EnclosingRect(
           GetPhysicalFragment().GetLayoutObject()->ObjectBoundingBox());
     }

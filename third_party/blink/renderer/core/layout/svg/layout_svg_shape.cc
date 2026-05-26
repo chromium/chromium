@@ -543,9 +543,21 @@ bool LayoutSVGShape::HitTestShape(const HitTestRequest& request,
                                   const HitTestLocation& local_location,
                                   PointerEventsHitRules hit_rules) {
   NOT_DESTROYED();
-  if (hit_rules.can_hit_bounding_box &&
-      local_location.Intersects(ObjectBoundingBox()))
+  bool is_visual_overflow = request.IsHitTestVisualOverflow();
+
+  if (is_visual_overflow) [[unlikely]] {
+    gfx::RectF bounds =
+        SVGLayoutSupport::ApplyFiltersToRect(*this, DecoratedBoundingBox());
+    if (!local_location.Intersects(bounds)) {
+      return false;
+    }
     return true;
+  }
+
+  if (hit_rules.can_hit_bounding_box &&
+      local_location.Intersects(ObjectBoundingBox())) {
+    return true;
+  }
 
   // TODO(chrishtr): support rect-based intersections in the cases below.
   const ComputedStyle& style = StyleRef();
