@@ -34,6 +34,7 @@ template("json_features") {
     inputs = [
       "$compiler_root/code_util.py",
       "$compiler_root/json_parse.py",
+      "//tools/json_comment_eater/json_comment_eater.py",
     ]
     if (defined(invoker.inputs)) {
       inputs += invoker.inputs
