@@ -26,7 +26,7 @@ public class FuseboxScrollView extends ScrollView {
         void onSwipeDown();
     }
 
-    private final GestureDetector mGestureDetector;
+    private @Nullable GestureDetector mGestureDetector;
     private final int mMinFlingVelocity;
 
     @VisibleForTesting
@@ -59,7 +59,6 @@ public class FuseboxScrollView extends ScrollView {
     public FuseboxScrollView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         mMinFlingVelocity = ViewConfiguration.get(context).getScaledMinimumFlingVelocity();
-        mGestureDetector = new GestureDetector(context, mGestureListener);
     }
 
     /**
@@ -69,6 +68,14 @@ public class FuseboxScrollView extends ScrollView {
      */
     public void setOnSwipeDownListener(@Nullable OnSwipeDownListener listener) {
         mOnSwipeDownListener = listener;
+    }
+
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (mGestureDetector == null) {
+            mGestureDetector = new GestureDetector(getContext(), mGestureListener);
+        }
     }
 
     @Override
@@ -84,6 +91,8 @@ public class FuseboxScrollView extends ScrollView {
     }
 
     private boolean handleFling(MotionEvent ev) {
-        return mOnSwipeDownListener != null && mGestureDetector.onTouchEvent(ev);
+        return mOnSwipeDownListener != null
+                && mGestureDetector != null
+                && mGestureDetector.onTouchEvent(ev);
     }
 }
