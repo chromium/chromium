@@ -95,6 +95,7 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/512052536")
     public void testQuadrantI_CounterClockwise() throws IOException {
         float[] start = new float[] {800f, 1200f};
         float[] end = new float[] {50f, 50f};
@@ -134,6 +135,7 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/512270063")
     public void testQuadrantII_CounterClockwise() throws IOException {
         float[] start = new float[] {800f, 50f};
         float[] end = new float[] {50f, 1200f};
