@@ -24,6 +24,7 @@ template("mac_toolchain") {
 
       if (target_os == "ios") {
         # Use LLD for the host part of a chrome/ios build.
+        use_apple_linker = false
         use_lld = true
 
         # Override `is_component_build` for the host toolchain.

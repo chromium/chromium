@@ -106,9 +106,28 @@ template("single_apple_toolchain") {
     # passed to the build. They are ignored when this is the default toolchain.
     assert(defined(invoker.toolchain_args),
            "Toolchains must declare toolchain_args")
+    _toolchain_args = invoker.toolchain_args
     toolchain_args = {
       # Populate toolchain args from the invoker.
       forward_variables_from(invoker.toolchain_args, "*")
+
+      # Re-evaluate use_apple_linker inside toolchain_args to resolve the GN
+      # parent-child context evaluation mismatch.
+      #
+      # Since GN arguments inside toolchain_args are static values and do not
+      # dynamically propagate their global dependency formulas inside the
+      # toolchain() definition block (which is processed in the default
+      # toolchain context), we must explicitly duplicate the evaluation logic
+      # here to force both contexts to stay in sync.
+      # LINT.IfChange(use_apple_linker)
+      use_apple_linker =
+          host_os == "mac" && _toolchain_args.current_os == "mac" &&
+          !use_thin_lto && host_cpu == "arm64" &&
+          _toolchain_args.current_cpu == "arm64" &&
+          !(use_remoteexec && use_system_xcode)
+      use_lld = !use_apple_linker
+
+      # LINT.ThenChange(//build/config/compiler/compiler.gni:use_apple_linker)
 
       # The host toolchain value computed by the default toolchain's setup
       # needs to be passed through unchanged to all secondary toolchains to
