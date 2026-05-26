@@ -46,8 +46,8 @@ enum class NameForm {
 // TODO(381117479): Currently we support two different OIDC enrollment flows:
 // 1. by sending both Auth and ID token through URL param and
 // 2. by sending encrypted user information in the auth header
-// Method 1 is completed but it will be deprecated once we completely implement,
-// test and rollout method 2.
+// Usage for method 1 has been removed and we will deprecate related support
+// code in a follow up.
 struct ProfileManagementOidcTokens {
   ProfileManagementOidcTokens();
   ProfileManagementOidcTokens(const std::string& auth_token,

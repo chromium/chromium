@@ -38,15 +38,6 @@ using url_matcher::URLMatcher;
 
 namespace {
 
-constexpr char kEnrollmentFallbackUrl[] =
-    "https://chromeenterprise.google/enroll";
-
-// We consider this common host for Microsoft authentication to be valid
-// redirection source.
-constexpr char kEntraLoginHost[] = "https://login.microsoftonline.com";
-// Valid redirection from MSFT Cloud App Security portal.
-constexpr char kEntraMcasHost[] = "https://mcas.ms";
-
 // Chrome Enterprise page that handles OIDC authentication redirection, this
 // page should receive the proper payload in its auth header to start OIDC
 // profile creation/registration.
@@ -55,49 +46,9 @@ constexpr char kEnterpriseOidcRegisterUrl[] =
 
 constexpr char kRegistrationHeaderField[] = "X-Profile-Registration-Payload";
 
-constexpr char kQuerySeparator[] = "&";
-constexpr char kKeyValueSeparator[] = "=";
-constexpr char kAuthTokenHeader[] = "access_token";
-constexpr char kIdTokenHeader[] = "id_token";
-constexpr char kOidcStateHeader[] = "state";
-
 constexpr char kPayloadIssuerFieldName[] = "issuer";
 constexpr char kPayloadSubjectFieldName[] = "subject";
 constexpr char kPayloadCodeFieldName[] = "encrypted_user_information";
-
-base::flat_map<std::string, std::string> SplitUrl(const std::string& url) {
-  std::vector<std::string> fragments = base::SplitString(
-      url, kQuerySeparator, base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  base::flat_map<std::string, std::string> url_map;
-  for (auto& fragment : fragments) {
-    size_t start = fragment.find(kKeyValueSeparator);
-    if (start == std::string::npos) {
-      continue;
-    }
-    std::string key = fragment.substr(0, start);
-    std::string val = fragment.substr(start + 1, fragment.size());
-    url_map.emplace(key, val);
-  }
-
-  return url_map;
-}
-
-std::unique_ptr<URLMatcher> CreateEnrollmentRedirectUrlMatcher() {
-  auto matcher = std::make_unique<URLMatcher>();
-  url_matcher::util::AddAllowFiltersWithLimit(
-      matcher.get(), std::vector<std::string>({kEnrollmentFallbackUrl}));
-  return matcher;
-}
-
-const url_matcher::URLMatcher* GetEnrollmentRedirectUrlMatcher() {
-  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
-      CreateEnrollmentRedirectUrlMatcher());
-  return matcher->get();
-}
-
-bool IsEnrollmentUrl(GURL& url) {
-  return !GetEnrollmentRedirectUrlMatcher()->MatchURL(url).empty();
-}
 
 std::unique_ptr<URLMatcher> CreateEnrollmentHeaderUrlMatcher() {
   auto matcher = std::make_unique<URLMatcher>();
@@ -137,31 +88,6 @@ bool IsEnrollmentHeaderUrl(GURL& url) {
   return !GetEnrollmentHeaderUrlMatcher()->MatchURL(url).empty();
 }
 
-std::unique_ptr<URLMatcher> CreateOidcEnrollmentUrlMatcher() {
-  auto matcher = std::make_unique<URLMatcher>();
-
-  std::vector<std::string> allowed_hosts({kEntraLoginHost, kEntraMcasHost});
-  if (base::FeatureList::IsEnabled(
-          profile_management::features::kOidcEnrollmentAuthSource)) {
-    const std::vector<std::string>& hosts = base::SplitString(
-        profile_management::features::kOidcAuthAdditionalHosts.Get(), ",",
-        base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
-    for (const std::string& host : hosts) {
-      allowed_hosts.push_back(host);
-    }
-  }
-
-  url_matcher::util::AddAllowFiltersWithLimit(matcher.get(), allowed_hosts);
-  return matcher;
-}
-
-const url_matcher::URLMatcher* GetOidcEnrollmentUrlMatcher() {
-  static base::NoDestructor<std::unique_ptr<URLMatcher>> matcher(
-      CreateOidcEnrollmentUrlMatcher());
-  return matcher->get();
-}
-
 bool IsProfileValidForOidcEnrollment(Profile* profile) {
   // OIDC enrollment cannot be initiated from an incognito or guest profile.
   if (!profile || profile->IsOffTheRecord() || profile->IsGuestSession()) {
@@ -172,15 +98,6 @@ bool IsProfileValidForOidcEnrollment(Profile* profile) {
   }
 
   return true;
-}
-
-void RecordUntrustedRedirectChain(
-    content::NavigationHandle& navigation_handle) {
-  ukm::SourceId source_id = ukm::ConvertToSourceId(
-      navigation_handle.GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
-  ukm::builders::Enterprise_Profile_Enrollment(source_id)
-      .SetIsUntrustedOidcRedirect(true)
-      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace
@@ -207,206 +124,20 @@ OidcAuthResponseCaptureNavigationThrottle::
     ~OidcAuthResponseCaptureNavigationThrottle() = default;
 
 ThrottleCheckResult
-OidcAuthResponseCaptureNavigationThrottle::WillRedirectRequest() {
-  return AttemptToTriggerUrlInterception();
-}
-
-ThrottleCheckResult
 OidcAuthResponseCaptureNavigationThrottle::WillProcessResponse() {
-  ThrottleCheckResult header_enrollment_check_result = PROCEED;
   if (base::FeatureList::IsEnabled(
           profile_management::features::kOidcAuthHeaderInterception)) {
-    header_enrollment_check_result = AttemptToTriggerHeaderInterception();
+    return AttemptToTriggerHeaderInterception();
   }
 
-  // Skip the URL interception attempt if a header interception was successful,
-  // or if response capturing is not enabled.
-  return (base::FeatureList::IsEnabled(
-              profile_management::features::kOidcAuthResponseInterception) &&
-          header_enrollment_check_result.action() == PROCEED)
-             ? AttemptToTriggerUrlInterception()
-             : header_enrollment_check_result;
+  return PROCEED;
 }
 
 const char* OidcAuthResponseCaptureNavigationThrottle::GetNameForLogging() {
   return "OidcAuthResponseCaptureNavigationThrottle";
 }
 
-// static
-std::unique_ptr<URLMatcher> OidcAuthResponseCaptureNavigationThrottle::
-    GetOidcEnrollmentUrlMatcherForTesting() {
-  return CreateOidcEnrollmentUrlMatcher();
-}
 
-ThrottleCheckResult
-OidcAuthResponseCaptureNavigationThrottle::AttemptToTriggerUrlInterception() {
-  if (interception_triggered_) {
-    return PROCEED;
-  }
-
-  if (navigation_handle()->GetRedirectChain().empty()) {
-    return PROCEED;
-  }
-
-  auto url = navigation_handle()->GetURL();
-  // Only try kicking off OIDC enrollment process if a valid enroll URL is seen.
-  if (!IsEnrollmentUrl(url)) {
-    return PROCEED;
-  }
-
-  VLOG_POLICY(1, OIDC_ENROLLMENT)
-      << "Valid enrollment URL from OIDC redirection is found: " << url;
-
-  if (!base::FeatureList::IsEnabled(
-          profile_management::features::
-              kEnableGenericOidcAuthProfileManagement)) {
-    bool accept_redirect = false;
-
-    for (const auto& chain_url : navigation_handle()->GetRedirectChain()) {
-      if (!GetOidcEnrollmentUrlMatcher()->MatchURL(chain_url).empty()) {
-        accept_redirect = true;
-        break;
-      }
-    }
-
-    if (!accept_redirect) {
-      RecordUntrustedRedirectChain(*navigation_handle());
-      VLOG_POLICY(1, OIDC_ENROLLMENT)
-          << "Enrollment flow cannot be initiated due to an untrusted chain of "
-             "redirects.";
-      return PROCEED;
-    }
-  }
-
-  RecordOidcInterceptionFunnelStep(
-      OidcInterceptionFunnelStep::kValidRedirectionCaptured);
-
-  auto* profile = Profile::FromBrowserContext(
-      navigation_handle()->GetWebContents()->GetBrowserContext());
-  if (!IsProfileValidForOidcEnrollment(profile)) {
-    return PROCEED;
-  }
-
-  // Extract parameters from the fragment part (#) of the URL. The auth token
-  // from OIDC authentication will be decoded and parsed by data_decoder for
-  // security reasons. Example URL:
-  // https://chromeenterprise.google/enroll/#access_token=<oauth_token>&token_type=Bearer&expires_in=4887&scope=email+openid+profile&id_token=<id_token>&session_state=<session_state>
-  std::string url_ref = url.GetRef();
-  base::flat_map<std::string, std::string> url_map = SplitUrl(url_ref);
-  if (url_map.size() == 0) {
-    VLOG_POLICY(1, OIDC_ENROLLMENT)
-        << "Failed to extract details from the enrollment URL: " << url;
-    return PROCEED;
-  }
-
-  // In the case that we are preforming a generic OIDC profile enrollment, an
-  // additional OIDC state field is present in the URL.
-  std::string state = "";
-  if (base::FeatureList::IsEnabled(
-          profile_management::features::
-              kEnableGenericOidcAuthProfileManagement)) {
-    if (auto it = url_map.find(kOidcStateHeader); it != url_map.end()) {
-      state = it->second;
-    } else {
-      LOG_POLICY(WARNING, OIDC_ENROLLMENT)
-          << "OIDC state is missing from the OIDC enrollment URL.";
-    }
-  }
-
-  auto auth_token_it = url_map.find(kAuthTokenHeader);
-  std::string auth_token =
-      auth_token_it != url_map.end() ? auth_token_it->second : "";
-  auto id_token_it = url_map.find(kIdTokenHeader);
-  std::string id_token =
-      id_token_it != url_map.end() ? id_token_it->second : "";
-
-  if (auth_token.empty() || id_token.empty()) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "Tokens missing from OIDC Redirection URL";
-    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
-    return PROCEED;
-  }
-
-  std::vector<std::string_view> jwt_sections = base::SplitStringPiece(
-      id_token, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (jwt_sections.size() != 3) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "Oauth token from OIDC response has Invalid JWT format.";
-    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
-    return CANCEL_AND_IGNORE;
-  }
-
-  std::string json_payload;
-  if (!base::Base64UrlDecode(jwt_sections[1],
-                             base::Base64UrlDecodePolicy::IGNORE_PADDING,
-                             &json_payload)) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "Oauth token payload from OIDC response can't be decoded.";
-    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
-    return CANCEL_AND_IGNORE;
-  }
-
-  interception_triggered_ = true;
-  data_decoder::DataDecoder::ParseJsonIsolated(
-      json_payload,
-      base::BindOnce(
-          &OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens,
-          weak_ptr_factory_.GetWeakPtr(),
-          ProfileManagementOidcTokens(std::move(auth_token),
-                                      std::move(id_token), std::move(state))));
-  return DEFER;
-}
-
-void OidcAuthResponseCaptureNavigationThrottle::RegisterWithOidcTokens(
-    ProfileManagementOidcTokens tokens,
-    data_decoder::DataDecoder::ValueOrError result) {
-  if (!result.has_value()) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "Failed to parse decoded Oauth token payload.";
-    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
-    return Resume();
-  }
-  const base::DictValue* parsed_json = result->GetIfDict();
-
-  if (!parsed_json) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "Decoded Oauth token payload is empty.";
-    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
-    return Resume();
-  }
-
-  const std::string* subject_id = parsed_json->FindString("sub");
-  const std::string* issuer_id = parsed_json->FindString("iss");
-  if (!subject_id || (*subject_id).empty()) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "Subject ID is missing in token payload.";
-    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
-    return Resume();
-  }
-
-  if (!issuer_id || (*issuer_id).empty()) {
-    LOG_POLICY(ERROR, OIDC_ENROLLMENT)
-        << "Issuer identifier is missing in token payload.";
-    RecordOidcInterceptionResult(OidcInterceptionResult::kInvalidUrlOrTokens);
-    return Resume();
-  }
-
-  auto* interceptor = OidcAuthenticationSigninInterceptorFactory::GetForProfile(
-      Profile::FromBrowserContext(
-          navigation_handle()->GetWebContents()->GetBrowserContext()));
-
-  VLOG_POLICY(2, OIDC_ENROLLMENT)
-      << "OIDC redirection meets all requirements, starting enrollment "
-         "process.";
-  RecordOidcInterceptionFunnelStep(
-      OidcInterceptionFunnelStep::kSuccessfulInfoParsed);
-
-  interceptor->MaybeInterceptOidcAuthentication(
-      navigation_handle()->GetWebContents(), tokens, *issuer_id, *subject_id,
-      std::string(),
-      base::BindOnce(&OidcAuthResponseCaptureNavigationThrottle::Resume,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
 
 ThrottleCheckResult OidcAuthResponseCaptureNavigationThrottle::
     AttemptToTriggerHeaderInterception() {

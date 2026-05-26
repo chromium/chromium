@@ -5,13 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_PROFILE_MANAGEMENT_OIDC_AUTH_RESPONSE_CAPTURE_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_ENTERPRISE_PROFILE_MANAGEMENT_OIDC_AUTH_RESPONSE_CAPTURE_NAVIGATION_THROTTLE_H_
 
-#include <memory>
-
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/profiles/profile_attributes_entry.h"
-#include "components/url_matcher/url_matcher.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace profile_management {
 
@@ -37,24 +32,12 @@ class OidcAuthResponseCaptureNavigationThrottle
   ~OidcAuthResponseCaptureNavigationThrottle() override;
 
   // content::NavigationThrottle implementation:
-  ThrottleCheckResult WillRedirectRequest() override;
   ThrottleCheckResult WillProcessResponse() override;
 
   const char* GetNameForLogging() override;
 
-  // Method to get a new URL matcher instead of the usual static one for
-  // testing, due the feature flag value may have changed in different cases.
-  static std::unique_ptr<url_matcher::URLMatcher>
-  GetOidcEnrollmentUrlMatcherForTesting();
-
  private:
-  ThrottleCheckResult AttemptToTriggerUrlInterception();
   ThrottleCheckResult AttemptToTriggerHeaderInterception();
-
-  // Starts OIDC registration and profile creation process if the response is
-  // valid.
-  void RegisterWithOidcTokens(ProfileManagementOidcTokens tokens,
-                              data_decoder::DataDecoder::ValueOrError result);
 
   bool interception_triggered_ = false;
   base::WeakPtrFactory<OidcAuthResponseCaptureNavigationThrottle>
