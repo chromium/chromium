@@ -257,6 +257,22 @@ Called by update_document_policy_enum.py.-->
   <int value="16" label="NetworkEfficiencyGuardrails"/>
 </enum>
 
+<!-- LINT.IfChange(EvpPermissionUiStatus) -->
+
+<enum name="EvpPermissionUiStatus">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Declined"/>
+  <int value="2" label="UserAborted"/>
+  <int value="3" label="Navigation"/>
+  <int value="4" label="TabGone"/>
+  <int value="5" label="WidgetChanged"/>
+  <int value="6" label="OverlappingPrompt"/>
+  <int value="7" label="Other"/>
+  <int value="8" label="ViewDestroyedDirectly"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/autofill/email_verification_popup_controller.h:EvpPermissionUiStatus) -->
+
 <!-- LINT.IfChange(EvpRequestStatus) -->
 
 <enum name="EvpRequestStatus">

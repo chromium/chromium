@@ -1462,6 +1462,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Evp.PermissionUi.Status" enum="EvpPermissionUiStatus"
+    expires_after="2026-11-01">
+  <owner>yigu@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the outcome and dismissal reasons of the Email Verification
+    Permission UI. Recorded once per permission UI showing when it is dismissed
+    or accepted.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Evp.Status.Request" enum="EvpRequestStatus"
     expires_after="2026-11-01">
   <owner>yigu@chromium.org</owner>

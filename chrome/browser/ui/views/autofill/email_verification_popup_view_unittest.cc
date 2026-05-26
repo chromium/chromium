@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/autofill/email_verification_popup_controller.h"
 #include "chrome/test/base/testing_profile.h"
@@ -38,11 +39,19 @@ class MockEmailVerificationPopupView : public EmailVerificationPopupView {
             parent_widget,
             net::SchemefulSite(GURL("https://issuer.com")),
             u"user@example.com",
-            std::move(callback)) {}
+            base::NullCallback()),
+        decision_callback_(std::move(callback)) {}
+
+  base::OnceCallback<void(bool)>& decision_callback() {
+    return decision_callback_;
+  }
 
   MOCK_METHOD(void, Show, (), (override));
   MOCK_METHOD(void, Hide, (), (override));
   MOCK_METHOD(bool, OverlapsWithPictureInPictureWindow, (), (const, override));
+
+ private:
+  base::OnceCallback<void(bool)> decision_callback_;
 };
 
 class EmailVerificationPopupViewTest : public ChromeViewsTestBase {
@@ -72,6 +81,22 @@ class EmailVerificationPopupViewTest : public ChromeViewsTestBase {
   content::WebContents* web_contents() { return test_web_contents_.get(); }
 
  protected:
+  void SetupMockViewFactory(
+      EmailVerificationPopupController* controller,
+      std::unique_ptr<MockEmailVerificationPopupView>& mock_view_out) {
+    controller->set_view_factory_for_testing(base::BindRepeating(
+        [](std::unique_ptr<MockEmailVerificationPopupView>* mock_view_ptr,
+           base::WeakPtr<EmailVerificationPopupController> delegate,
+           views::Widget* parent_widget, const net::SchemefulSite& issuer_site,
+           const std::u16string& email,
+           base::OnceCallback<void(bool)> callback) {
+          *mock_view_ptr = std::make_unique<MockEmailVerificationPopupView>(
+              delegate, parent_widget, std::move(callback));
+          return (*mock_view_ptr)->GetWeakPtr();
+        },
+        base::Unretained(&mock_view_out)));
+  }
+
   content::RenderViewHostTestEnabler test_render_host_factories_;
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> test_web_contents_;
@@ -79,23 +104,16 @@ class EmailVerificationPopupViewTest : public ChromeViewsTestBase {
 };
 
 // Tests that the popup view can be successfully shown and that hiding the popup
-// correctly triggers the callback with `false` (cancelling the flow).
+// correctly triggers the callback with `false` (cancelling the flow) and logs
+// the correct histogram sample.
 TEST_F(EmailVerificationPopupViewTest, Show) {
+  base::HistogramTester histogram_tester;
   auto controller =
       std::make_unique<EmailVerificationPopupController>(web_contents());
 
   std::unique_ptr<MockEmailVerificationPopupView> mock_view;
 
-  controller->set_view_factory_for_testing(base::BindRepeating(
-      [](std::unique_ptr<MockEmailVerificationPopupView>* mock_view,
-         base::WeakPtr<EmailVerificationPopupController> delegate,
-         views::Widget* parent_widget, const net::SchemefulSite& issuer_site,
-         const std::u16string& email, base::OnceCallback<void(bool)> callback) {
-        *mock_view = std::make_unique<MockEmailVerificationPopupView>(
-            delegate, parent_widget, std::move(callback));
-        return (*mock_view)->GetWeakPtr();
-      },
-      base::Unretained(&mock_view)));
+  SetupMockViewFactory(controller.get(), mock_view);
 
   TestFuture<bool> confirmed_future;
 
@@ -110,6 +128,127 @@ TEST_F(EmailVerificationPopupViewTest, Show) {
   controller->Hide(SuggestionHidingReason::kTabGone);
   EXPECT_TRUE(confirmed_future.IsReady());
   EXPECT_FALSE(confirmed_future.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPopupController::EvpPermissionUiStatus::kTabGone, 1);
+}
+
+TEST_F(EmailVerificationPopupViewTest, AllowedLogged) {
+  base::HistogramTester histogram_tester;
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+
+  SetupMockViewFactory(controller.get(), mock_view);
+
+  TestFuture<bool> confirmed_future;
+
+  controller->Show(gfx::RectF(0, 0, 10, 10),
+                   net::SchemefulSite(GURL("https://issuer.com")),
+                   u"user@example.com", confirmed_future.GetCallback());
+
+  ASSERT_TRUE(mock_view);
+  EXPECT_CALL(*mock_view, Hide);
+
+  // Simulate confirming the prompt
+  std::move(mock_view->decision_callback()).Run(true);
+
+  EXPECT_TRUE(confirmed_future.IsReady());
+  EXPECT_TRUE(confirmed_future.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPopupController::EvpPermissionUiStatus::kAllowed, 1);
+}
+
+TEST_F(EmailVerificationPopupViewTest, DeclinedLogged) {
+  base::HistogramTester histogram_tester;
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+
+  SetupMockViewFactory(controller.get(), mock_view);
+
+  TestFuture<bool> confirmed_future;
+
+  controller->Show(gfx::RectF(0, 0, 10, 10),
+                   net::SchemefulSite(GURL("https://issuer.com")),
+                   u"user@example.com", confirmed_future.GetCallback());
+
+  ASSERT_TRUE(mock_view);
+  EXPECT_CALL(*mock_view, Hide);
+
+  // Simulate declining the prompt
+  std::move(mock_view->decision_callback()).Run(false);
+
+  EXPECT_TRUE(confirmed_future.IsReady());
+  EXPECT_FALSE(confirmed_future.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPopupController::EvpPermissionUiStatus::kDeclined, 1);
+}
+
+TEST_F(EmailVerificationPopupViewTest, ClickOutsideLogged) {
+  base::HistogramTester histogram_tester;
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+
+  SetupMockViewFactory(controller.get(), mock_view);
+
+  TestFuture<bool> confirmed_future;
+
+  controller->Show(gfx::RectF(0, 0, 10, 10),
+                   net::SchemefulSite(GURL("https://issuer.com")),
+                   u"user@example.com", confirmed_future.GetCallback());
+
+  ASSERT_TRUE(mock_view);
+  EXPECT_CALL(*mock_view, Hide);
+
+  // Simulate clicking outside the popup UI
+  blink::WebMouseEvent event;
+  controller->DidGetUserInteraction(event);
+
+  EXPECT_TRUE(confirmed_future.IsReady());
+  EXPECT_FALSE(confirmed_future.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPopupController::EvpPermissionUiStatus::kUserAborted, 1);
+}
+
+TEST_F(EmailVerificationPopupViewTest, FocusChangedLogged) {
+  base::HistogramTester histogram_tester;
+  auto controller =
+      std::make_unique<EmailVerificationPopupController>(web_contents());
+
+  std::unique_ptr<MockEmailVerificationPopupView> mock_view;
+
+  SetupMockViewFactory(controller.get(), mock_view);
+
+  TestFuture<bool> confirmed_future;
+
+  controller->Show(gfx::RectF(0, 0, 10, 10),
+                   net::SchemefulSite(GURL("https://issuer.com")),
+                   u"user@example.com", confirmed_future.GetCallback());
+
+  ASSERT_TRUE(mock_view);
+  EXPECT_CALL(*mock_view, Hide);
+
+  // Simulate focus loss (e.g. user clicking outside or focusing another window)
+  controller->Hide(SuggestionHidingReason::kFocusChanged);
+
+  EXPECT_TRUE(confirmed_future.IsReady());
+  EXPECT_FALSE(confirmed_future.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "Blink.Evp.PermissionUi.Status",
+      EmailVerificationPopupController::EvpPermissionUiStatus::kUserAborted, 1);
 }
 
 }  // namespace

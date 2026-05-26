@@ -76,6 +76,23 @@ class EmailVerificationPopupController
           const std::u16string& email,
           base::OnceCallback<void(bool)> callback)>;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(EvpPermissionUiStatus)
+  enum class EvpPermissionUiStatus {
+    kAllowed = 0,
+    kDeclined = 1,
+    kUserAborted = 2,            // e.g. ESC key or clicking outside
+    kNavigation = 3,             // page navigated
+    kTabGone = 4,                // tab closed or hidden
+    kWidgetChanged = 5,          // e.g. window resized
+    kOverlappingPrompt = 6,      // overlapped by another prompt/pip
+    kOther = 7,                  // any other reason
+    kViewDestroyedDirectly = 8,  // view destroyed without explicit Hide()
+    kMaxValue = kViewDestroyedDirectly,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:EvpPermissionUiStatus)
+
   void set_view_factory_for_testing(ViewFactoryForTesting factory) {
     view_factory_for_testing_ = std::move(factory);
   }
@@ -83,7 +100,7 @@ class EmailVerificationPopupController
  private:
   void OnConfirm();
   void OnCancel();
-  void HideImpl(bool confirmed);
+  void HideImpl(bool confirmed, EvpPermissionUiStatus status);
   bool OverlapsWithPictureInPictureWindow() const;
 
   gfx::RectF element_bounds_;
