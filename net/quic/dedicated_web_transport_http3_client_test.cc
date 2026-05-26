@@ -226,8 +226,8 @@ class DedicatedWebTransportHttp3Test : public TestWithTaskEnvironment {
 TEST_F(DedicatedWebTransportHttp3Test, Connect) {
   StartServer();
   client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
-      GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
-      WebTransportParameters());
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
 
   EXPECT_CALL(visitor_, OnBeforeConnect);
   EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
@@ -245,8 +245,8 @@ TEST_F(DedicatedWebTransportHttp3Test, Connect) {
 TEST_F(DedicatedWebTransportHttp3Test, ConnectLocalNetworkAccessCheckFail) {
   StartServer();
   client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
-      GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
-      WebTransportParameters());
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
 
   EXPECT_CALL(visitor_, OnLocalNetworkAccessCheck)
       .WillOnce(InvokeCallbackArgument<2, CompletionOnceCallback>(
@@ -272,8 +272,8 @@ TEST_F(DedicatedWebTransportHttp3Test, ConnectViaProxy) {
           TRAFFIC_ANNOTATION_FOR_TESTS));
   StartServer();
   client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
-      GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
-      WebTransportParameters());
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
 
   client_->Connect();
 }
@@ -287,8 +287,8 @@ TEST_F(DedicatedWebTransportHttp3Test, ConnectViaProxy) {
 TEST_F(DedicatedWebTransportHttp3Test, MAYBE_CloseTimeout) {
   StartServer();
   client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
-      GetURL("/echo"), origin_, &visitor_, anonymization_key_, context_.get(),
-      WebTransportParameters());
+      GetURL("/echo"), origin_, &visitor_, anonymization_key_,
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
 
   EXPECT_CALL(visitor_, OnBeforeConnect);
   EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
@@ -315,7 +315,7 @@ TEST_F(DedicatedWebTransportHttp3Test, CloseReason) {
   StartServer();
   client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
       GetURL("/session-close"), origin_, &visitor_, anonymization_key_,
-      context_.get(), WebTransportParameters());
+      handles::kInvalidNetworkHandle, context_.get(), WebTransportParameters());
 
   EXPECT_CALL(visitor_, OnBeforeConnect);
   EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());
@@ -347,7 +347,7 @@ TEST_F(DedicatedWebTransportHttp3Test, SubprotocolHeader) {
   // protocols by default, and echoes it on a unidirectional stream.
   client_ = std::make_unique<DedicatedWebTransportHttp3Client>(
       GetURL("/selected-subprotocol"), origin_, &visitor_, anonymization_key_,
-      context_.get(), parameters);
+      handles::kInvalidNetworkHandle, context_.get(), parameters);
 
   bool stream_received = false;
   EXPECT_CALL(visitor_, OnConnected).WillOnce(StopRunning());

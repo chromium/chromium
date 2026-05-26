@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -53,6 +54,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
       const url::Origin& origin,
       WebTransportClientVisitor* visitor,
       const NetworkAnonymizationKey& anonymization_key,
+      handles::NetworkHandle target_network,
       URLRequestContext* context,
       const WebTransportParameters& parameters);
   ~DedicatedWebTransportHttp3Client() override;
@@ -66,6 +68,8 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   void CloseIfNonceMatches(base::UnguessableToken nonce) override;
 
   quic::WebTransportSession* session() override;
+
+  handles::NetworkHandle target_network() const { return target_network_; }
 
   void OnSettingsReceived();
   void OnHeadersComplete(const quiche::HttpHeaderBlock& headers);
@@ -155,6 +159,7 @@ class NET_EXPORT DedicatedWebTransportHttp3Client
   const GURL url_;
   const url::Origin origin_;
   const NetworkAnonymizationKey anonymization_key_;
+  const handles::NetworkHandle target_network_;
   const std::vector<std::string> application_protocols_;
   const WebTransportParameters::CongestionControlHint congestion_control_hint_;
   const raw_ptr<URLRequestContext> context_;          // Unowned.

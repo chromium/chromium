@@ -84,6 +84,7 @@ std::unique_ptr<WebTransportClient> CreateWebTransportClient(
     const url::Origin& origin,
     WebTransportClientVisitor* visitor,
     const NetworkAnonymizationKey& anonymization_key,
+    handles::NetworkHandle target_network,
     URLRequestContext* context,
     const WebTransportParameters& parameters) {
   if (url.GetScheme() == url::kHttpsScheme) {
@@ -92,7 +93,8 @@ std::unique_ptr<WebTransportClient> CreateWebTransportClient(
           ERR_DISALLOWED_URL_SCHEME, visitor);
     }
     return std::make_unique<DedicatedWebTransportHttp3Client>(
-        url, origin, visitor, anonymization_key, context, parameters);
+        url, origin, visitor, anonymization_key, target_network, context,
+        parameters);
   }
 
   return std::make_unique<FailedWebTransportClient>(ERR_UNKNOWN_URL_SCHEME,

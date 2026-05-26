@@ -385,11 +385,13 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
     const url::Origin& origin,
     WebTransportClientVisitor* visitor,
     const NetworkAnonymizationKey& anonymization_key,
+    handles::NetworkHandle target_network,
     URLRequestContext* context,
     const WebTransportParameters& parameters)
     : url_(url),
       origin_(origin),
       anonymization_key_(anonymization_key),
+      target_network_(target_network),
       application_protocols_(parameters.application_protocols),
       congestion_control_hint_(parameters.congestion_control_hint),
       context_(context),

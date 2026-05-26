@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/io_buffer.h"
+#include "net/base/network_handle.h"
 #include "net/http/http_response_headers.h"
 #include "net/log/net_log_with_source.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_session.h"
@@ -440,6 +441,9 @@ WebTransport::WebTransport(
           origin,
           this,
           key,
+          // TODO(crbug.com/495684670): Consider exposing this at the network
+          // service layer once a need arises.
+          net::handles::kInvalidNetworkHandle,
           context->url_request_context(),
           CreateParameters(fingerprints,
                            std::move(application_protocols),
