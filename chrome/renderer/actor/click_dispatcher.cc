@@ -124,7 +124,11 @@ void ClickDispatcher::DoMouseDown(WebMouseEvent::Button button,
 }
 
 void ClickDispatcher::DoMouseUp() {
+  base::WeakPtr<ClickDispatcher> weak_this = weak_ptr_factory_.GetWeakPtr();
   DoMouseUpImpl();
+  if (!weak_this) {
+    return;
+  }
   Finish(MakeOkResult());
 }
 
