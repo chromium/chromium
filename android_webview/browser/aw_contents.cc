@@ -119,6 +119,7 @@
 #include "net/cert/x509_util.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "third_party/skia/include/core/SkPicture.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -285,8 +286,9 @@ AwContents::AwContents(std::unique_ptr<WebContents> web_contents)
                              content::GetUIThreadTaskRunner({}),
                              content::GetIOThreadTaskRunner({})),
       web_contents_(std::move(web_contents)) {
-  TRACE_EVENT_BEGIN("android_webview.timeline", "WebView Instance",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_BEGIN(
+      "android_webview.timeline", "WebView Instance",
+      perfetto::NamedTrack::FromPointer("WebView Instance", this));
   g_instance_count.fetch_add(1, std::memory_order_relaxed);
   icon_helper_ = std::make_unique<IconHelper>(web_contents_.get());
   icon_helper_->SetListener(this);
@@ -446,7 +448,7 @@ AwContents::~AwContents() {
       this);
   // Corresponds to "WebView Instance" in AwContents's constructor.
   TRACE_EVENT_END("android_webview.timeline",
-                  perfetto::Track::FromPointer(this));
+                  perfetto::NamedTrack::FromPointer("WebView Instance", this));
 }
 
 base::android::ScopedJavaLocalRef<jobject> AwContents::GetWebContents(
