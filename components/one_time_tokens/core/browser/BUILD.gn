@@ -7,6 +7,8 @@ static_library("browser") {
   sources = [
     "email_one_time_token_fetch_coordinator.cc",
     "email_one_time_token_fetch_coordinator.h",
+    "email_one_time_token_fetch_error_converter.cc",
+    "email_one_time_token_fetch_error_converter.h",
     "email_one_time_token_fetcher.cc",
     "email_one_time_token_fetcher.h",
     "gmail_otp_backend.cc",
@@ -59,6 +61,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "email_one_time_token_fetch_coordinator_unittest.cc",
+    "email_one_time_token_fetch_error_converter_unittest.cc",
     "email_one_time_token_fetcher_unittest.cc",
     "gmail_otp_backend_unittest.cc",
     "one_time_token_service_impl_unittest.cc",

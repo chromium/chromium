@@ -1,4 +1,4 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,19 @@ enum class OneTimeTokenRetrievalError {
   kGmailOtpBackendNetworkError = 9,
   kGmailOtpBackendInvalidResponse = 10,
   kSmsOtpUnknown = 11,
-  kMaxValue = kSmsOtpUnknown,
+  kGmailOtpUnknown = 12,
+  kGmailOtpBackendApiNotAvailable = 13,
+  kGmailOtpBackendInitializationFailed = 14,
+  kGmailOtpBackendSmartFeaturesInGmailConsentRequired = 15,
+  kGmailOtpBackendSmartFeaturesInOtherGoogleProductsConsentRequired = 16,
+  kGmailOtpBackendDmaCrossProductSharingConsentRequired = 17,
+  kGmailOtpBackendBadMessageReference = 18,
+  kGmailOtpBackendMessageIdNotFound = 19,
+  kGmailOtpBackendWrongTokenTypeRequested = 20,
+  kGmailOtpBackendOneTimeTokenExpired = 21,
+  kGmailOtpBackendOtpAttributeNotFound = 22,
+  kGmailOtpBackendServerError = 23,
+  kMaxValue = kGmailOtpBackendServerError,
 };
 
 }  // namespace one_time_tokens
