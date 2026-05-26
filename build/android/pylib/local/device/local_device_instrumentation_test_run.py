@@ -1134,16 +1134,18 @@ class LocalDeviceInstrumentationTestRun(
 
       test_names, timeouts = list(zip(*(name_and_timeout(t) for t in test)))
 
-      test_name = instrumentation_test_instance.GetTestName(
-          test[0]) + _BATCH_SUFFIX
-      extras['class'] = ','.join(test_names)
+      test_method_name = instrumentation_test_instance.GetTestName(test[0])
+      test_name = test_method_name + _BATCH_SUFFIX
       test_display_name = test_name
+      extras['testMethodName'] = test_method_name
+      extras['class'] = ','.join(test_names)
       timeout = min(MAX_BATCH_TEST_TIMEOUT,
                     FIXED_TEST_TIMEOUT_OVERHEAD + sum(timeouts))
     else:
       test_name = instrumentation_test_instance.GetTestName(test)
       test_display_name = self._GetUniqueTestName(test)
 
+      extras['testMethodName'] = test_name
       extras['class'] = test_name
       if 'flags' in test and test['flags']:
         flags_to_add.extend(test['flags'])

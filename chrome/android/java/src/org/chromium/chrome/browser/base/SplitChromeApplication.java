@@ -242,14 +242,7 @@ public class SplitChromeApplication extends SplitCompatApplication {
                     // For test builds, we should initialize the feature list early to apply the
                     // fieldtrial_testing_config.json.
                     ContextUtils.sDoFeatureListInitHookForTesting =
-                            () -> {
-                                // TODO(469477255): Remove this if statement to always initialize
-                                // the feature list early for test builds.
-                                if (CommandLine.getInstance()
-                                        .hasSwitch(ChromeSwitches.FORCE_INIT_FEATURE_LIST_EARLY)) {
-                                    InitializeFeatureList.initializeFeatureList();
-                                }
-                            };
+                            InitializeFeatureList::initializeFeatureList;
                 } else if (!BuildConfig.IS_CHROME_BRANDED
                         || !VariationsSeedFetcher.shouldFetchSeed()) {
                     // For non-Chrome branded builds, we should initialize the feature list early to

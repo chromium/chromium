@@ -46,7 +46,9 @@ import org.chromium.base.test.util.RestrictionSkipCheck;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.base.test.util.TestAnimations;
 import org.chromium.base.test.util.TestLocale;
+import org.chromium.build.annotations.Nullable;
 
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -532,7 +534,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         SharedPreferencesTestUtil.deleteOnDiskSharedPreferences(getApplication());
 
         JniTestInstancesSnapshot.clearAllForTesting();
-        CommandLineFlags.reset(testClass.getAnnotations(), null);
+        // Test cases are batched based on the set of features they enable in their annotations,
+        // so all test cases in the same run have the same set of features enabled,
+        // so we can set the method-level command-line flags here in onBeforeTestClass().
+        Annotation[] testMethodAnnotations = getTestMethodAnnotations();
+        CommandLineFlags.reset(testClass.getAnnotations(), testMethodAnnotations);
         TestAnimations.reset(testClass, null);
 
         // Allows tests to set the locale before the feature list is initialized.
@@ -548,6 +554,46 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         for (ClassHook hook : getPreClassHooks()) {
             hook.run(targetContext, testClass);
         }
+    }
+
+    // Return the annotations of the test method with a specified name.
+    private Annotation @Nullable [] getTestMethodAnnotations() {
+        String testMethodName = InstrumentationRegistry.getArguments().getString("testMethodName");
+        String extractedName = extractTestMethodName(testMethodName);
+        if (extractedName == null) {
+            return null;
+        }
+        for (FrameworkMethod method : getTestClass().getAnnotatedMethods()) {
+            if (method.getName().equals(extractedName)) {
+                return method.getAnnotations();
+            }
+        }
+        return null;
+    }
+
+    // Extract the actual test method name. For example, return "testShowBottomSheet" when given
+    // "org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.
+    // AllPasswordsBottomSheetRenderTest#testShowBottomSheet__NightMode".
+    private static @Nullable String extractTestMethodName(@Nullable String testMethodName) {
+        if (testMethodName == null) {
+            Log.e(TAG, "Expected testMethodName to be passed");
+            return null;
+        }
+        int index = testMethodName.indexOf('#');
+        if (index == -1) {
+            Log.e(TAG, "Encountered a test method name without #");
+            return null;
+        }
+        String sanitized = testMethodName.substring(index + 1);
+        index = sanitized.indexOf("__");
+        if (index != -1) {
+            sanitized = sanitized.substring(0, index);
+        }
+        index = sanitized.indexOf('[');
+        if (index != -1) {
+            sanitized = sanitized.substring(0, index);
+        }
+        return sanitized;
     }
 
     // Allows test classes to set the locale before the feature list is initialized.
