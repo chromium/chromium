@@ -209,6 +209,10 @@ bool ScrollSnapshotTimeline::UpdateSnapshotInternal(bool service_animations) {
   timeline_state_snapshotted_ = new_state;
   ResolveTimelineOffsets();
 
+  if (snapshot_changed) {
+    SetHasPendingCompositorUpdate(true);
+  }
+
   const HeapHashSet<WeakMember<Animation>>& animations = GetAnimations();
 
   if (RuntimeEnabledFeatures::TimelineTriggerEnabled() &&
@@ -258,6 +262,8 @@ void ScrollSnapshotTimeline::UpdateCompositorTimeline() {
   if (!compositor_timeline_) {
     return;
   }
+
+  has_pending_compositor_update_ = false;
 
   ToScrollTimeline(compositor_timeline_.get())
       ->UpdateScrollerIdAndScrollOffsets(

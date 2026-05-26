@@ -133,6 +133,7 @@ class CORE_EXPORT AnimationTimeline : public ScriptWrappable {
   }
   virtual cc::AnimationTimeline* EnsureCompositorTimeline() = 0;
   virtual void UpdateCompositorTimeline() {}
+  virtual bool HasPendingCompositorUpdate() const { return false; }
 
   void MarkAnimationsCompositorPending(bool source_changed = false);
 

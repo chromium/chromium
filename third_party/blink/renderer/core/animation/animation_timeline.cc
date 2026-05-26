@@ -120,7 +120,10 @@ void AnimationTimeline::ServiceAnimations(TimingUpdateReason reason) {
   auto current_phase_and_time = CurrentPhaseAndTime();
 
   if (IsProgressBased()) {
-    if (last_current_phase_and_time_ != current_phase_and_time) {
+    // TODO(crbug.com/508229282): We probably want to move this call to be at
+    // the same time that compositor animations are updated, i.e.
+    // Animation::PreCommit.
+    if (HasPendingCompositorUpdate()) {
       UpdateCompositorTimeline();
     }
   }

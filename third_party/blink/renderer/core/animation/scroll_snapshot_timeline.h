@@ -178,6 +178,13 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
   bool ShouldScheduleNextService() override;
   void UpdateSnapshotForServiceAnimations() override;
 
+  void SetHasPendingCompositorUpdate(bool has_pending) {
+    has_pending_compositor_update_ = true;
+  }
+  bool HasPendingCompositorUpdate() const override {
+    return has_pending_compositor_update_;
+  }
+
  public:
   // Public for DeferredTimeline::ComputeTimelineState.
   virtual TimelineState ComputeTimelineState() const = 0;
@@ -191,6 +198,8 @@ class CORE_EXPORT ScrollSnapshotTimeline : public AnimationTimeline,
 
   // Snapshotted value produced by the last SnapshotState call.
   TimelineState timeline_state_snapshotted_;
+
+  bool has_pending_compositor_update_;
 };
 
 template <>
