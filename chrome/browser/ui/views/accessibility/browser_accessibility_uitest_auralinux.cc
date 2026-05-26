@@ -179,8 +179,9 @@ void AuraLinuxAccessibilityInProcessBrowserTest::VerifyEmbedRelationships() {
   g_object_unref(relations);
 }
 
+// TODO(crbug.com/513888745): Flaky test.
 IN_PROC_BROWSER_TEST_F(AuraLinuxAccessibilityInProcessBrowserTest,
-                       EmbeddedRelationship) {
+                       DISABLED_EmbeddedRelationship) {
   // Force the creation of the document's native object which sets up the
   // relationship.
   content::WebContents* active_web_contents =
