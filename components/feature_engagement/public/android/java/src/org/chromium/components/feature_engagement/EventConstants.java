@@ -51,6 +51,12 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_PAGE_SUMMARY_WEB_USED =
             "adaptive_toolbar_page_summary_web_used";
 
+    /** The user interacted with the GLIC button on the new bottom bar. */
+    public static final String ANDROID_BOTTOM_BAR_GLIC_USED = "android_bottom_bar_glic_used";
+
+    /** The user interacted with the New Tab button on the new bottom bar. */
+    public static final String ANDROID_BOTTOM_BAR_NEW_TAB_USED = "android_bottom_bar_new_tab_used";
+
     /** A generic event that any startup promo should notify when it is shown. */
     public static final String ANDROID_STARTUP_PROMO_SHOWN = "android_startup_promo_shown";
 
