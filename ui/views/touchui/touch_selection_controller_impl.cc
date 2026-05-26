@@ -601,11 +601,7 @@ bool TouchSelectionControllerImpl::ShouldShowHandleFor(
 
 bool TouchSelectionControllerImpl::IsCommandIdEnabled(int command_id,
                                                       bool can_paste) const {
-  if (command_id ==
-      std::to_underlying(ui::TouchEditable::MenuCommands::kPaste)) {
-    return can_paste && client_view_->IsCommandIdEnabled(command_id);
-  }
-  return client_view_->IsCommandIdEnabled(command_id);
+  return client_view_->IsCommandIdEnabled(command_id, can_paste);
 }
 
 void TouchSelectionControllerImpl::ExecuteCommand(int command_id,
