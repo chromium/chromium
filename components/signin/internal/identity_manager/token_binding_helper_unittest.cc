@@ -18,10 +18,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/signin/internal/identity_manager/oauth2_upgrade_token_flow.h"
 #include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/hybrid_encryption_key.h"
 #include "components/signin/public/base/hybrid_encryption_key_test_utils.h"
 #include "components/signin/public/base/session_binding_test_utils.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/background_task_origin.h"
 #include "components/unexportable_keys/features.h"
 #include "components/unexportable_keys/service_error.h"
@@ -36,6 +38,10 @@
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_urls.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -476,8 +482,105 @@ TEST_F(TokenBindingHelperTest,
   EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
 }
 
-TEST_F(TokenBindingHelperTest, PerformTokenBindingUpgrade) {
+class TokenBindingHelperUpgradeTest : public TokenBindingHelperTest {
+ public:
+  void StartUpgrade(const CoreAccountId& account_id) {
+    helper().PerformTokenBindingUpgrade(account_id, "test_token",
+                                        shared_factory_, "test_device_id",
+                                        "test_challenge");
+  }
+
+  network::TestURLLoaderFactory* test_url_loader_factory() {
+    return &test_url_loader_factory_;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kEnableChromeRefreshTokenBindingUpgrade};
+  network::TestURLLoaderFactory test_url_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_factory_ =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_url_loader_factory_);
+};
+
+TEST_F(TokenBindingHelperUpgradeTest, PerformTokenBindingUpgrade) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
-  // Currently a stub, verifies it runs without crashing.
-  helper().PerformTokenBindingUpgrade(account_id, "test_challenge");
+  StartUpgrade(account_id);
+  RunBackgroundTasks();
+
+  const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
+      *test_url_loader_factory()->pending_requests();
+  ASSERT_EQ(pending.size(), 1u);
+  EXPECT_EQ(pending[0].request.url,
+            GaiaUrls::GetInstance()->oauth2_upgrade_token_url());
+
+  test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GaiaUrls::GetInstance()->oauth2_upgrade_token_url().spec(), "");
+
+  // TODO(crbug.com/514242898): verify that the binding key was saved to the
+  // token database.
+
+  histogram_tester().ExpectUniqueSample("Signin.TokenBinding.UpgradeHttpResult",
+                                        net::HTTP_OK, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.TokenBinding.UpgradeResult",
+      signin::OAuth2UpgradeTokenFlowResult::kSuccess, 1);
+}
+
+TEST_F(TokenBindingHelperUpgradeTest,
+       PerformTokenBindingUpgradeGenerationFailure) {
+  crypto::MockUnexportableKeyProvider& mock_key_provider =
+      SwitchToMockKeyProvider().mock();
+  // Fail the binding key generation at the first algorithm selection step.
+  EXPECT_CALL(mock_key_provider, SelectAlgorithm)
+      .WillOnce(Return(std::nullopt));
+
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  StartUpgrade(account_id);
+  RunBackgroundTasks();
+
+  EXPECT_EQ(test_url_loader_factory()->pending_requests()->size(), 0u);
+  histogram_tester().ExpectUniqueSample(
+      "Signin.TokenBinding.UpgradeResult",
+      signin::OAuth2UpgradeTokenFlowResult::kTokenGenerationFailure, 1);
+  histogram_tester().ExpectTotalCount("Signin.TokenBinding.UpgradeDuration", 1);
+}
+
+TEST_F(TokenBindingHelperUpgradeTest, DeduplicateUpgradeRequests) {
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  StartUpgrade(account_id);
+  // Calling StartUpgrade again immediately for the same account should be
+  // deduplicated.
+  StartUpgrade(account_id);
+  RunBackgroundTasks();
+
+  EXPECT_EQ(test_url_loader_factory()->pending_requests()->size(), 1u);
+}
+
+TEST_F(TokenBindingHelperUpgradeTest, MultipleAccountsConcurrentUpgrades) {
+  CoreAccountId account_id_1 =
+      CoreAccountId::FromGaiaId(GaiaId("test_gaia_id_1"));
+  CoreAccountId account_id_2 =
+      CoreAccountId::FromGaiaId(GaiaId("test_gaia_id_2"));
+  StartUpgrade(account_id_1);
+  StartUpgrade(account_id_2);
+  RunBackgroundTasks();
+
+  EXPECT_EQ(test_url_loader_factory()->pending_requests()->size(), 2u);
+}
+
+TEST_F(TokenBindingHelperUpgradeTest, SubsequentUpgradeAfterCompletion) {
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  StartUpgrade(account_id);
+  RunBackgroundTasks();
+
+  ASSERT_EQ(test_url_loader_factory()->pending_requests()->size(), 1u);
+  test_url_loader_factory()->SimulateResponseForPendingRequest(
+      GaiaUrls::GetInstance()->oauth2_upgrade_token_url().spec(), "");
+
+  // Calling StartUpgrade again after completion should start a new request.
+  StartUpgrade(account_id);
+  RunBackgroundTasks();
+
+  EXPECT_EQ(test_url_loader_factory()->pending_requests()->size(), 1u);
 }

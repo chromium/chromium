@@ -25,9 +25,11 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "components/signin/internal/identity_manager/oauth2_upgrade_token_flow.h"
 #include "components/signin/public/base/binding_key_registration_token_helper.h"
 #include "components/signin/public/base/binding_key_registration_token_result.h"
 #include "components/signin/public/base/session_binding_utils.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
@@ -42,6 +44,8 @@
 namespace {
 
 constexpr std::string_view kTokenBindingNamespace = "TokenBinding";
+// TODO(crbug.com/514242898): Use the supported algorithms from the server.
+constexpr std::string_view kAcceptableAlgorithmsForUpgrade = "ES256 RS256";
 
 constexpr unexportable_keys::BackgroundTaskPriority kTokenBindingPriority =
     unexportable_keys::BackgroundTaskPriority::kBestEffort;
@@ -227,9 +231,64 @@ void TokenBindingHelper::CopyBindingKeyFromAnotherTokenService(
 
 void TokenBindingHelper::PerformTokenBindingUpgrade(
     const CoreAccountId& account_id,
+    std::string_view refresh_token,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::string_view device_id,
     std::string_view challenge) {
-  // TODO(crbug.com/514242898): Perform an LST upgrade after creating a
-  // registration token with the upgrade key.
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kEnableChromeRefreshTokenBindingUpgrade));
+  std::unique_ptr<signin::OAuth2UpgradeTokenFlow>& upgrade_flow =
+      upgrade_flows_[account_id];
+  if (upgrade_flow != nullptr) {
+    // Do nothing if an upgrade is already in progress for this account.
+    return;
+  }
+
+  // `base::Unretained()` is safe because `this` owns `upgrade_flow`.
+  upgrade_flow = std::make_unique<signin::OAuth2UpgradeTokenFlow>(
+      std::string(refresh_token),
+      switches::kRefreshTokenBindingUpgradeType.Get(), std::string(device_id),
+      std::move(url_loader_factory),
+      base::BindOnce(&TokenBindingHelper::OnUpgradeTokenFinished,
+                     base::Unretained(this), account_id));
+
+  // `base::Unretained()` is safe because `this` owns
+  // `registration_token_helper_`.
+  GenerateBindingKeyRegistrationToken(
+      kAcceptableAlgorithmsForUpgrade, challenge,
+      base::BindOnce(&TokenBindingHelper::OnUpgradeRegistrationTokenGenerated,
+                     base::Unretained(this), account_id));
+}
+
+void TokenBindingHelper::OnUpgradeRegistrationTokenGenerated(
+    const CoreAccountId& account_id,
+    std::optional<signin::BindingKeyRegistrationTokenResult> result) {
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kEnableChromeRefreshTokenBindingUpgrade));
+
+  auto it = upgrade_flows_.find(account_id);
+  CHECK(it != upgrade_flows_.end());
+  std::unique_ptr<signin::OAuth2UpgradeTokenFlow>& upgrade_flow = it->second;
+
+  if (!result.has_value()) {
+    upgrade_flow->AbortWithError(
+        signin::OAuth2UpgradeTokenFlowResult::kTokenGenerationFailure);
+    return;
+  }
+  // TODO(crbug.com/514242898): Save binding key to the token database before
+  // proceeding with the fetch. Abort the flow if the refresh token no longer
+  // exists.
+
+  upgrade_flow->StartWithRegistrationToken(result->registration_token);
+}
+
+void TokenBindingHelper::OnUpgradeTokenFinished(
+    const CoreAccountId& account_id) {
+  CHECK(base::FeatureList::IsEnabled(
+      switches::kEnableChromeRefreshTokenBindingUpgrade));
+
+  size_t removed_count = upgrade_flows_.erase(account_id);
+  CHECK_EQ(removed_count, 1U);
 }
 
 base::WeakPtr<TokenBindingHelper> TokenBindingHelper::GetWeakPtr() {

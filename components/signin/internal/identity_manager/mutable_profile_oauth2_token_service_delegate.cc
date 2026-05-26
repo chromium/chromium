@@ -396,22 +396,24 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
     // unknown and the only way of getting it requires an access token, which
     // requires a known Gaia ID (see https://crbug.com/386841916).
     const GaiaId gaia_id(account_id.ToString());
+    const std::string device_id =
+        signin::GetSigninScopedDeviceId(client_->GetPrefs());
     // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
     auto fetcher = std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
         consumer, url_loader_factory, gaia_id, refresh_token,
-        mtls_token_binding, is_refresh_token_bound,
-        signin::GetSigninScopedDeviceId(client_->GetPrefs()),
+        mtls_token_binding, is_refresh_token_bound, device_id,
         std::string(version_info::GetVersionNumber()),
         std::string(
             version_info::GetChannelString(client_->GetClientChannel())));
-    if (base::FeatureList::IsEnabled(
-            switches::kEnableChromeRefreshTokenBindingUpgrade) &&
-        token_binding_helper_) {
+    if (token_binding_helper_ &&
+        base::FeatureList::IsEnabled(
+            switches::kEnableChromeRefreshTokenBindingUpgrade)) {
       // TODO(crbug.com/514242898): Add an extra condition to check if an
       // upgrade key was successfully pre-generated.
       fetcher->EnableTokenUpgradeEligibility(
           base::BindOnce(&TokenBindingHelper::PerformTokenBindingUpgrade,
-                         token_binding_helper_->GetWeakPtr(), account_id));
+                         token_binding_helper_->GetWeakPtr(), account_id,
+                         refresh_token, url_loader_factory, device_id));
     }
     if (token_binding_challenge.empty() || !is_refresh_token_bound) {
       return fetcher;
