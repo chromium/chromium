@@ -5,6 +5,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/byte_size.h"
 #include "base/system/sys_info.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "gpu/config/gpu_info.h"
@@ -41,7 +42,7 @@ static int JNI_SystemInfoFeedbackSource_GetAvailableMemoryMB(JNIEnv* env) {
 }
 
 static int JNI_SystemInfoFeedbackSource_GetTotalMemoryMB(JNIEnv* env) {
-  return base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  return base::SysInfo::AmountOfTotalPhysicalMemory().InMiB();
 }
 
 }  // namespace android

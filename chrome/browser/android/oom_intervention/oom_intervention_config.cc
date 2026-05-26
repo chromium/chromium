@@ -4,6 +4,7 @@
 
 #include "chrome/browser/android/oom_intervention/oom_intervention_config.h"
 
+#include "base/byte_size.h"
 #include "base/feature_list.h"
 #include "base/process/process_metrics.h"
 #include "base/system/sys_info.h"
@@ -33,7 +34,7 @@ OomInterventionConfig::OomInterventionConfig()
   // If no threshold is specified, set blink_workload_threshold to 10% of the
   // RAM size.
   renderer_detection_args_->private_footprint_threshold =
-      base::SysInfo::AmountOfPhysicalMemory().InBytesUnsigned() * 0.14;
+      base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() * 0.14;
 }
 
 // static

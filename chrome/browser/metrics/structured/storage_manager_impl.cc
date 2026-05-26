@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -160,8 +161,9 @@ StorageManagerConfig StorageManagerImpl::GetStorageManagerConfig() {
 
   free_disk_space = GetMaxDiskSizeRatio() * free_disk_space;
 
-  int64_t buffer_max_size = base::SysInfo::AmountOfPhysicalMemory().InBytes() *
-                            GetMaxBufferSizeRatio();
+  int64_t buffer_max_size =
+      base::SysInfo::AmountOfTotalPhysicalMemory().InBytes() *
+      GetMaxBufferSizeRatio();
 
   return StorageManagerConfig{
       .buffer_max_bytes = std::max(buffer_max_size, kMinBufferSize),

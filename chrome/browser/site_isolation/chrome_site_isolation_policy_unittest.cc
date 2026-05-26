@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/base_switches.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
@@ -61,7 +62,7 @@ class ChromeSiteIsolationPolicyTest : public testing::Test {
     // available in the testing environment.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kEnableLowEndDeviceMode);
-    EXPECT_EQ(512, base::SysInfo::AmountOfPhysicalMemory().InMiB());
+    EXPECT_EQ(512u, base::SysInfo::AmountOfTotalPhysicalMemory().InMiB());
 
     mode_feature_.InitWithFeatures(
         {features::kSitePerProcess, features::kOriginKeyedProcessesByDefault},

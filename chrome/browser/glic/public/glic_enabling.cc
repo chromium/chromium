@@ -6,6 +6,7 @@
 
 #include <ranges>
 
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/functional/function_ref.h"
@@ -511,7 +512,7 @@ GlicGlobalEnabling::~GlicGlobalEnabling() = default;
 
 bool GlicGlobalEnabling::IsSystemRequirementMet() const {
   static const bool supported_system_requirements = [] {
-    if (base::SysInfo::AmountOfPhysicalMemory() <
+    if (base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount() <
         base::MiB(features::kGlicMinRequiredRamMb.Get())) {
       return false;
     }
@@ -522,7 +523,8 @@ bool GlicGlobalEnabling::IsSystemRequirementMet() const {
     const bool bypass_cbx_requirement =
         base::FeatureList::IsEnabled(
             chromeos::features::kGlicEnableFor8GbDevices) &&
-        base::SysInfo::AmountOfPhysicalMemory() >= kMinimumMemoryThreshold;
+        base::SysInfo::AmountOfTotalPhysicalMemory().AsDeprecatedByteCount() >=
+            kMinimumMemoryThreshold;
 
     return (bypass_cbx_requirement ||
             base::FeatureList::IsEnabled(
