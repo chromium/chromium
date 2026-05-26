@@ -162,7 +162,8 @@ enum class MessageIdentifier {
   // Insert new values before this line.
   COUNT
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:MessageIdentifier)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/android/histograms.xml:MessageIdentifier,
+// //components/messages/android/java/src/org/chromium/components/messages/MessagesMetrics.java:MessageIdentifierToHistogramSuffix)
 
 // The behavior the message should follow when the primary button is clicked,
 // after running the primary action callback.

@@ -233,9 +233,9 @@ public class MessagesMetrics {
 
     /**
      * Returns a histogram suffix string that corresponds to message identifier of the current
-     * message.
-     * Update this function when adding a new message identifier.
+     * message. Update this function when adding a new message identifier.
      */
+    // LINT.IfChange(MessageIdentifierToHistogramSuffix)
     public static String messageIdentifierToHistogramSuffix(
             @MessageIdentifier int messageIdentifier) {
         switch (messageIdentifier) {
@@ -363,6 +363,7 @@ public class MessagesMetrics {
                 return "Unknown";
         }
     }
+    // LINT.ThenChange(//components/messages/android/message_enums.h:MessageIdentifier)
 
     static String getEnqueuedHistogramNameForTesting() {
         return ENQUEUED_HISTOGRAM_NAME;
