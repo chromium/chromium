@@ -5,6 +5,7 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 
 #include <algorithm>
+#include <atomic>
 #include <memory>
 #include <optional>
 #include <string>
@@ -93,6 +94,7 @@
 #include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
@@ -327,7 +329,7 @@ class ProfileNetworkContextServiceCacheChangeBrowsertest
 };
 
 // The first time we load, even if we're in an experiment there's no reset
-// from the unknown state.
+// from the unknown state (new profile).
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheChangeBrowsertest,
                        PRE_TestCacheResetParameter) {
   NavigateToCreateHttpCache();
@@ -381,6 +383,8 @@ class ProfileNetworkContextServiceCacheCredentialsBrowserTest
 IN_PROC_BROWSER_TEST_F(ProfileNetworkContextServiceCacheCredentialsBrowserTest,
                        PRE_TestCacheResetParameter) {
   NavigateToCreateHttpCache();
+  // Even if we're in an experiment there's no reset from the unknown state
+  // (new profile).
   CheckCacheResetStatus(&histograms_, false);
 
   // At this point, we have already called the initialization.
@@ -449,6 +453,8 @@ IN_PROC_BROWSER_TEST_P(
     ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest,
     PRE_TestCacheResetParameter) {
   NavigateToCreateHttpCache();
+  // Even if we're in an experiment there's no reset from the unknown state
+  // (new profile).
   CheckCacheResetStatus(&histograms_, false);
 
   // At this point, we have already called the initialization.
@@ -490,6 +496,104 @@ INSTANTIATE_TEST_SUITE_P(
                        net::features::DiskCacheBackend::kSql
 #endif  // ENABLE_DISK_CACHE_SQL_BACKEND
     }));
+
+class ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest
+    : public ProfileNetworkContextServiceBrowsertest {
+ public:
+  ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest() {
+    const ::testing::TestInfo* const test_info =
+        ::testing::UnitTest::GetInstance()->current_test_info();
+    if (std::string_view(test_info->name()).starts_with("PRE_")) {
+      // PRE_ test: no experiment (default)
+      feature_list_.InitAndDisableFeature(
+          net::features::kDiskCacheBackendExperiment);
+    } else {
+      // non-PRE test: experiment active (use simple backend)
+      feature_list_.InitAndEnableFeatureWithParameters(
+          net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+        &ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest::
+            HandleCacheResetTest,
+        base::Unretained(this)));
+    ProfileNetworkContextServiceBrowsertest::SetUpOnMainThread();
+  }
+
+ protected:
+  void FetchUrl(const GURL& url) {
+    std::unique_ptr<network::ResourceRequest> request =
+        std::make_unique<network::ResourceRequest>();
+    request->url = url;
+    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+
+    content::SimpleURLLoaderTestHelper simple_loader_helper;
+    std::unique_ptr<network::SimpleURLLoader> simple_loader =
+        network::SimpleURLLoader::Create(std::move(request),
+                                         TRAFFIC_ANNOTATION_FOR_TESTS);
+    simple_loader->DownloadToString(loader_factory(),
+                                    simple_loader_helper.GetCallback(),
+                                    /*max_body_size=*/1024 * 1024);
+    simple_loader_helper.WaitForCallback();
+    EXPECT_TRUE(simple_loader_helper.response_body());
+  }
+
+  std::atomic<int> cache_reset_test_request_count_{0};
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleCacheResetTest(
+      const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/cache_reset_test") {
+      return nullptr;
+    }
+    cache_reset_test_request_count_++;
+    auto http_response =
+        std::make_unique<net::test_server::BasicHttpResponse>();
+    http_response->set_content("data");
+    http_response->set_content_type("text/plain");
+    http_response->AddCustomHeader("Cache-Control", "max-age=3600");
+    return http_response;
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest,
+    PRE_TestCacheResetOnUpgrade) {
+  GURL url = embedded_test_server()->GetURL("/cache_reset_test");
+
+  // Populate cache.
+  FetchUrl(url);
+  EXPECT_EQ(1, cache_reset_test_request_count_);
+
+  // Request again to make sure it is cached.
+  FetchUrl(url);
+  EXPECT_EQ(1, cache_reset_test_request_count_);
+
+  // Simulate upgrade by clearing the pref.
+  PrefService* profile_prefs = browser()->profile()->GetPrefs();
+  profile_prefs->SetString(
+      "profile_network_context_service.http_cache_finch_experiment_groups", "");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ProfileNetworkContextServiceCacheResetOnUpgradeBrowserTest,
+    TestCacheResetOnUpgrade) {
+  GURL url = embedded_test_server()->GetURL("/cache_reset_test");
+
+  // cache_reset_test_request_count_ is reset to 0 in this new process.
+  EXPECT_EQ(0, cache_reset_test_request_count_);
+
+  // Request the cached resource.
+  FetchUrl(url);
+
+  // Since we upgraded and are now in an experiment, the cache should have
+  // been reset. Thus, the request should have gone to the server.
+  EXPECT_EQ(1, cache_reset_test_request_count_);
+}
 
 class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
  public:
@@ -981,5 +1085,3 @@ IN_PROC_BROWSER_TEST_F(CacheEncryptionDisabledByPolicyTest,
   EXPECT_FALSE(
       prefs->HasPrefPath(enterprise_connectors::kEncryptedCachePrimaryKey));
 }
-
-
