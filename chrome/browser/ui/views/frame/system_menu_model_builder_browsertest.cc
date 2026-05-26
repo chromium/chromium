@@ -143,19 +143,50 @@ class SystemMenuModelBuilderSimplificationTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderSimplificationTest,
+                       WindowsMenuOrder) {
+  ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
+                            ->browser_widget()
+                            ->GetSystemMenuModel();
+
+  EXPECT_EQ(menu->GetCommandIdAt(0), IDC_RESTORE_WINDOW);
+  EXPECT_EQ(menu->GetCommandIdAt(1), IDC_MOVE_WINDOW);
+  EXPECT_EQ(menu->GetCommandIdAt(2), IDC_SIZE_WINDOW);
+  EXPECT_EQ(menu->GetCommandIdAt(3), IDC_MINIMIZE_WINDOW);
+  EXPECT_EQ(menu->GetCommandIdAt(4), IDC_MAXIMIZE_WINDOW);
+
+  size_t count = menu->GetItemCount();
+  EXPECT_EQ(menu->GetCommandIdAt(count - 1), IDC_CLOSE_WINDOW);
+}
+#endif
+
 #if BUILDFLAG(IS_LINUX)
+// On Linux the system menu is much more dynamic than that of Windows. In order
+// to accommodate all the variations that could run in the commit queue this
+// test would need to recreate the implementation of
+// SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow. Now that wouldn't be
+// a very good test so instead this one verifies what is known to be stable
+// (the top and botom of the menus).
 IN_PROC_BROWSER_TEST_F(SystemMenuModelBuilderSimplificationTest,
                        LinuxMenuOrder) {
   ui::MenuModel* menu = BrowserView::GetBrowserViewForBrowser(browser())
                             ->browser_widget()
                             ->GetSystemMenuModel();
 
-  ASSERT_GE(menu->GetItemCount(), 6u);
+  size_t count = menu->GetItemCount();
+  ASSERT_GE(count, 11u);  // Expect at least 11 items total
+
+  // Check top items
   EXPECT_EQ(menu->GetCommandIdAt(0), IDC_MINIMIZE_WINDOW);
   EXPECT_EQ(menu->GetCommandIdAt(1), IDC_MAXIMIZE_WINDOW);
   EXPECT_EQ(menu->GetCommandIdAt(2), IDC_RESTORE_WINDOW);
   EXPECT_EQ(menu->GetTypeAt(3), ui::MenuModel::TYPE_SEPARATOR);
   EXPECT_EQ(menu->GetCommandIdAt(4), IDC_NEW_TAB);
   EXPECT_EQ(menu->GetCommandIdAt(5), IDC_RESTORE_TAB);
+
+  // Check bottom items (reverse order)
+  EXPECT_EQ(menu->GetCommandIdAt(count - 1), IDC_CLOSE_WINDOW);
+  EXPECT_EQ(menu->GetTypeAt(count - 2), ui::MenuModel::TYPE_SEPARATOR);
 }
 #endif

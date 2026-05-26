@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_metrics.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/common/pref_names.h"
@@ -34,6 +35,13 @@
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/common/pref_names.h"
 #endif
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 SystemMenuModelDelegate::SystemMenuModelDelegate(
     ui::AcceleratorProvider* provider,
@@ -65,6 +73,27 @@ bool SystemMenuModelDelegate::IsCommandIdEnabled(int command_id) const {
   if (command_id == IDC_GLIC_TOGGLE_PIN) {
     return glic::GlicEnabling::IsEnabledForProfile(browser_->profile());
   }
+
+#if BUILDFLAG(IS_WIN)
+  if (features::IsMenuSimplificationEnabled()) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+    if (browser_view) {
+      switch (command_id) {
+        case IDC_RESTORE_WINDOW:
+          return browser_view->IsMaximized() || browser_view->IsMinimized();
+        case IDC_MOVE_WINDOW:
+          return !browser_view->IsMaximized();
+        case IDC_SIZE_WINDOW:
+          return !browser_view->IsMaximized() && browser_view->CanResize();
+        case IDC_MINIMIZE_WINDOW:
+          return browser_view->CanMinimize();
+        case IDC_MAXIMIZE_WINDOW:
+          return !browser_view->IsMaximized() && browser_view->CanMaximize();
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   return chrome::IsCommandEnabled(browser_, command_id);
 }
 

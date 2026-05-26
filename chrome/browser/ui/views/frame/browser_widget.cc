@@ -389,7 +389,8 @@ void BrowserWidget::ShowContextMenuForViewImpl(
   gfx::Point point_in_view_coords(p);
   views::View::ConvertPointFromScreen(non_client_view(), &point_in_view_coords);
   int hit_test = non_client_view()->NonClientHitTest(point_in_view_coords);
-  if (hit_test == HTCAPTION || hit_test == HTNOWHERE) {
+  if (source_type == ui::mojom::MenuSourceType::kKeyboard ||
+      hit_test == HTCAPTION || hit_test == HTNOWHERE) {
     menu_runner_ = std::make_unique<views::MenuRunner>(
         GetSystemMenuModel(),
         views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU,
