@@ -136,6 +136,13 @@ class TokenBindingHelper {
   void CopyBindingKeyFromAnotherTokenService(
       base::span<const uint8_t> wrapped_binding_key);
 
+  // Initiates an opportunistic refresh token binding upgrade upon receiving a
+  // challenge from the server.
+  void PerformTokenBindingUpgrade(const CoreAccountId& account_id,
+                                  std::string_view challenge);
+
+  base::WeakPtr<TokenBindingHelper> GetWeakPtr();
+
  private:
   struct BindingKeyData {
     explicit BindingKeyData(std::vector<uint8_t> wrapped_key);

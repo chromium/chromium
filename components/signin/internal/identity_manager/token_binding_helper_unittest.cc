@@ -475,3 +475,9 @@ TEST_F(TokenBindingHelperTest,
   ASSERT_TRUE(future_2.Get().has_value());
   EXPECT_EQ(future_1.Get()->binding_key_id, future_2.Get()->binding_key_id);
 }
+
+TEST_F(TokenBindingHelperTest, PerformTokenBindingUpgrade) {
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  // Currently a stub, verifies it runs without crashing.
+  helper().PerformTokenBindingUpgrade(account_id, "test_challenge");
+}

@@ -103,12 +103,14 @@ class MockOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
   void SimulateMintTokenSuccess(const std::string& access_token,
                                 const std::set<std::string>& granted_scopes,
                                 int time_to_live,
-                                bool is_encrypted) {
+                                bool is_encrypted,
+                                const std::string& upgrade_challenge = "") {
     MintTokenResult result;
     result.access_token = access_token;
     result.granted_scopes = granted_scopes;
     result.time_to_live = base::Seconds(time_to_live);
     result.is_token_encrypted = is_encrypted;
+    result.bound_token_upgrade_challenge = upgrade_challenge;
     delegate_->OnMintTokenSuccess(result);
   }
   void SimulateMintTokenFailure(const GoogleServiceAuthError& error) {
@@ -165,7 +167,10 @@ Matcher<const OAuth2MintTokenFlow::Parameters&> ParamsEq(
       Field("bound_oauth_token", &Parameters::bound_oauth_token,
             expected.bound_oauth_token),
       Field("use_mtls_endpoints", &Parameters::use_mtls_endpoints,
-            expected.use_mtls_endpoints));
+            expected.use_mtls_endpoints),
+      Field("check_bound_token_upgrade_eligibility",
+            &Parameters::check_bound_token_upgrade_eligibility,
+            expected.check_bound_token_upgrade_eligibility));
 }
 
 OAuth2MintTokenFlow::Parameters GetTestOAuth2MintTokenFlowParameters(
@@ -297,6 +302,35 @@ TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, ParamsUnbound) {
   OAuth2MintTokenFlow::Parameters expected_params =
       GetTestOAuth2MintTokenFlowParameters(/*bound_oauth_token=*/std::string());
   EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, ParamsUpgradeEligibility) {
+  auto fetcher = CreateFetcher(/*is_refresh_token_bound=*/false);
+  base::MockCallback<OAuth2MintAccessTokenFetcherAdapter::TokenUpgradeCallback>
+      mock_upgrade_callback;
+  fetcher->EnableTokenUpgradeEligibility(mock_upgrade_callback.Get());
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  EXPECT_TRUE(mock_flow());
+  OAuth2MintTokenFlow::Parameters expected_params =
+      GetTestOAuth2MintTokenFlowParameters(/*bound_oauth_token=*/std::string());
+  expected_params.check_bound_token_upgrade_eligibility = true;
+  EXPECT_THAT(mock_flow()->params(), ParamsEq(expected_params));
+}
+
+TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, SuccessWithUpgradeEligibility) {
+  auto fetcher = CreateFetcher(/*is_refresh_token_bound=*/false);
+  base::MockCallback<OAuth2MintAccessTokenFetcherAdapter::TokenUpgradeCallback>
+      mock_upgrade_callback;
+  fetcher->EnableTokenUpgradeEligibility(mock_upgrade_callback.Get());
+  fetcher->Start(kTestClientId, kTestClientSecret, {kTestScope});
+  base::TimeDelta kTimeToLive = base::Hours(4);
+  EXPECT_CALL(*mock_consumer(), OnGetTokenSuccess(HasAccessTokenWithTtl(
+                                    kTestAccessToken, kTimeToLive)));
+  EXPECT_CALL(mock_upgrade_callback, Run("challenge"));
+  mock_flow()->SimulateMintTokenSuccess(kTestAccessToken, {kTestScope},
+                                        kTimeToLive.InSeconds(),
+                                        /*is_encrypted=*/false, "challenge");
+  VerifyUnboundFetchAuthErrorHistograms(GoogleServiceAuthError::NONE);
 }
 
 TEST_F(OAuth2MintAccessTokenFetcherAdapterTest, Success) {

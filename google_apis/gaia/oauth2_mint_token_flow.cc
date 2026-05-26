@@ -433,6 +433,9 @@ std::string OAuth2MintTokenFlow::CreateApiCallBody() {
         kOAuth2IssueTokenBodyFormatConsentResultAddendum,
         base::EscapeUrlEncodedData(parameters_.consent_result, true).c_str()));
   }
+  if (parameters_.check_bound_token_upgrade_eligibility) {
+    body.append("&check_bound_token_upgrade_eligibility=true");
+  }
   return body;
 }
 
@@ -561,6 +564,12 @@ OAuth2MintTokenFlow::ParseMintTokenResponse(const base::DictValue& dict) {
   result.is_token_encrypted =
       token_binding_response &&
       token_binding_response->FindDict(kDirectedResponseKey);
+
+  const std::string* challenge =
+      dict.FindStringByDottedPath("bound_token_upgrade_info.challenge");
+  if (challenge) {
+    result.bound_token_upgrade_challenge = *challenge;
+  }
 
   return result;
 }

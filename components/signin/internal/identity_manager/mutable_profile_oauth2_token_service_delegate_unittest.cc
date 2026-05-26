@@ -69,6 +69,7 @@
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_network_connection_tracker.h"
+#include "services/network/test/test_utils.h"
 #include "sql/statement.h"
 #include "sql/test/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -81,8 +82,10 @@ using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
+using ::testing::HasSubstr;
 using ::testing::IsEmpty;
 using ::testing::Key;
+using ::testing::Not;
 using ::testing::SizeIs;
 
 constexpr char kTestTokenDatabase[] = "TestTokenDatabase";
@@ -2297,6 +2300,61 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
                   unexportable_keys::BackgroundTaskPriority::kBestEffort, _));
 
   oauth2_service_delegate_->ExtractCredentials(&dest_token_service, account_id);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
+       TokenUpgradeEligibilityFlagFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      switches::kEnableChromeRefreshTokenBindingUpgrade);
+  const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
+      GaiaId("account_id"), "test@google.com");
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  oauth2_service_delegate_->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      signin::TokenBindingInfo(kFakeWrappedBindingKey,
+                               /*mtls_token_binding=*/false));
+  std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
+      oauth2_service_delegate_->CreateAccessTokenFetcher(
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          /*token_binding_challenge=*/"");
+  fetcher->Start("foo", "bar", {"scope"});
+  ASSERT_GE(client_->GetTestURLLoaderFactory()->pending_requests()->size(), 1u);
+  const std::string request_body = network::GetUploadData(
+      client_->GetTestURLLoaderFactory()->pending_requests()->back().request);
+  EXPECT_THAT(request_body,
+              HasSubstr("&check_bound_token_upgrade_eligibility=true"));
+  ShutdownOAuth2ServiceDelegate();
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateBoundTokensTest,
+       TokenUpgradeEligibilityFlagFeatureDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kEnableChromeRefreshTokenBindingUpgrade);
+  const CoreAccountId account_id = account_tracker_service_.SeedAccountInfo(
+      GaiaId("account_id"), "test@google.com");
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+
+  InitializeOAuth2ServiceDelegateWithTokenBinding();
+  oauth2_service_delegate_->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      signin::TokenBindingInfo(kFakeWrappedBindingKey,
+                               /*mtls_token_binding=*/false));
+  std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
+      oauth2_service_delegate_->CreateAccessTokenFetcher(
+          account_id, oauth2_service_delegate_->GetURLLoaderFactory(), this,
+          /*token_binding_challenge=*/"");
+  fetcher->Start("foo", "bar", {"scope"});
+  ASSERT_GE(client_->GetTestURLLoaderFactory()->pending_requests()->size(), 1u);
+  const std::string request_body = network::GetUploadData(
+      client_->GetTestURLLoaderFactory()->pending_requests()->back().request);
+  EXPECT_THAT(request_body,
+              Not(HasSubstr("&check_bound_token_upgrade_eligibility=true")));
+  ShutdownOAuth2ServiceDelegate();
 }
 
 class MutableProfileOAuth2TokenServiceDelegateWithChallengeParamTest

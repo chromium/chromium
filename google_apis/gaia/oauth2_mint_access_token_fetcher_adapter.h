@@ -62,6 +62,10 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
   virtual void SetBindingKeyAssertion(std::string assertion);
   virtual void SetTokenDecryptor(TokenDecryptor decryptor);
 
+  using TokenUpgradeCallback = base::OnceCallback<void(std::string_view)>;
+  virtual void EnableTokenUpgradeEligibility(
+      TokenUpgradeCallback token_upgrade_callback);
+
   void SetOAuth2MintTokenFlowFactoryForTesting(
       OAuth2MintTokenFlowFactory factory);
 
@@ -86,6 +90,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
 
   std::string binding_key_assertion_;
   TokenDecryptor token_decryptor_;
+
+  TokenUpgradeCallback token_upgrade_callback_;
 
   OAuth2MintTokenFlowFactory mint_token_flow_factory_for_testing_;
 

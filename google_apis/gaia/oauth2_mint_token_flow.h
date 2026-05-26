@@ -134,6 +134,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
     std::string consent_result;
     std::string bound_oauth_token;
     bool use_mtls_endpoints = false;
+    bool check_bound_token_upgrade_eligibility = false;
 
    private:
     // Only an explicit copy with `Clone()` is allowed.
@@ -155,6 +156,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
     std::set<std::string> granted_scopes;
     base::TimeDelta time_to_live;
     bool is_token_encrypted = false;
+    std::string bound_token_upgrade_challenge;
   };
 
   class COMPONENT_EXPORT(GOOGLE_APIS) Delegate {

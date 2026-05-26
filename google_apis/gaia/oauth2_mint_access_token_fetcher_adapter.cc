@@ -112,6 +112,8 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
       client_id, std::vector<std::string_view>(scopes.begin(), scopes.end()),
       client_version_, client_channel_, device_id_, bound_oauth_token,
       use_mtls_endpoints_for_fetching_tokens_);
+  params.check_bound_token_upgrade_eligibility =
+      !token_upgrade_callback_.is_null();
   if (mint_token_flow_factory_for_testing_) {
     CHECK_IS_TEST();
     mint_token_flow_ =
@@ -138,6 +140,12 @@ void OAuth2MintAccessTokenFetcherAdapter::SetTokenDecryptor(
     TokenDecryptor decryptor) {
   CHECK(!decryptor.is_null());
   token_decryptor_ = std::move(decryptor);
+}
+
+void OAuth2MintAccessTokenFetcherAdapter::EnableTokenUpgradeEligibility(
+    TokenUpgradeCallback token_upgrade_callback) {
+  CHECK(!token_upgrade_callback.is_null());
+  token_upgrade_callback_ = std::move(token_upgrade_callback);
 }
 
 void OAuth2MintAccessTokenFetcherAdapter::
@@ -188,6 +196,11 @@ void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenSuccess(
       .WithExpirationTime(expiration_time);
   RecordFetchAuthError(GoogleServiceAuthError::AuthErrorNone(),
                        is_refresh_token_bound_, binding_key_assertion_);
+  if (!result.bound_token_upgrade_challenge.empty() &&
+      token_upgrade_callback_) {
+    std::move(token_upgrade_callback_)
+        .Run(result.bound_token_upgrade_challenge);
+  }
   FireOnGetTokenSuccess(response_builder.build());
 }
 void OAuth2MintAccessTokenFetcherAdapter::OnMintTokenFailure(

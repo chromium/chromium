@@ -225,6 +225,17 @@ void TokenBindingHelper::CopyBindingKeyFromAnotherTokenService(
       wrapped_binding_key, kTokenBindingPriority, base::DoNothing());
 }
 
+void TokenBindingHelper::PerformTokenBindingUpgrade(
+    const CoreAccountId& account_id,
+    std::string_view challenge) {
+  // TODO(crbug.com/514242898): Perform an LST upgrade after creating a
+  // registration token with the upgrade key.
+}
+
+base::WeakPtr<TokenBindingHelper> TokenBindingHelper::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 TokenBindingHelper::BindingKeyData::BindingKeyData(
     std::vector<uint8_t> in_wrapped_key)
     : wrapped_key(in_wrapped_key) {}
