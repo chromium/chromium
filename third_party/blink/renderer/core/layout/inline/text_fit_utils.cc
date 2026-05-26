@@ -151,6 +151,14 @@ FontDescription PercentageSpacingDescription(const FontDescription& desc) {
   return copy;
 }
 
+float RestrictScale(float scale, bool is_grow, std::optional<float> limit) {
+  if (!limit) {
+    return scale;
+  }
+  return is_grow ? std::min(scale, std::max(*limit, 1.0f))
+                 : std::max(scale, std::min(*limit, 1.0f));
+}
+
 // A helper for font-size scaling.
 FontDescription ScaledFontDescription(const Font& font,
                                       float scale_factor,
@@ -368,12 +376,9 @@ ParagraphScale MeasurePerBlockScale(const InlineNode node,
     }
   }
   if (std::isfinite(minimum_scale)) {
-    if (text_fit.ScaleFactorLimit().has_value()) {
-      float limit = *text_fit.ScaleFactorLimit();
-      minimum_scale = text_fit.Type() == TextFitType::kGrow
-                          ? std::min(minimum_scale, std::max(limit, 1.0f))
-                          : std::max(minimum_scale, std::min(limit, 1.0f));
-    }
+    minimum_scale =
+        RestrictScale(minimum_scale, text_fit.Type() == TextFitType::kGrow,
+                      text_fit.ScaleFactorLimit());
     return {minimum_scale, additional_paint_time_scale};
   } else {
     return {1.0f, additional_paint_time_scale};
@@ -445,13 +450,8 @@ float LineFitter::MeasureScale() {
 
   float scale_factor = (container_width - static_total_size).ToFloat() /
                        flexible_total_size.ToFloat();
-  if (text_fit.ScaleFactorLimit().has_value()) {
-    float limit = *text_fit.ScaleFactorLimit();
-    return text_fit.Type() == TextFitType::kGrow
-               ? std::min(scale_factor, std::max(limit, 1.0f))
-               : std::max(scale_factor, std::min(limit, 1.0f));
-  }
-  return scale_factor;
+  return RestrictScale(scale_factor, text_fit.Type() == TextFitType::kGrow,
+                       text_fit.ScaleFactorLimit());
 }
 
 bool LineFitter::FitLine(float scale_factor,
@@ -525,11 +525,18 @@ bool LineFitter::FitLine(float scale_factor,
   // value.
   float total_scale = scale_factor;
   if (!restricted) {
+    const auto scale_limit = text_fit.ScaleFactorLimit();
+    std::optional<float> paint_scale_limit;
+    if (scale_limit) {
+      paint_scale_limit = *scale_limit / total_scale;
+    }
     if (additional_paint_time_scale) {
       // TextFitTarget::kConsistent case:
       if (*additional_paint_time_scale != 1.0f) {
-        ScaleLine(is_grow, *additional_paint_time_scale, limit, line_info_);
-        total_scale = *additional_paint_time_scale;
+        float paint_scale = RestrictScale(*additional_paint_time_scale, is_grow,
+                                          paint_scale_limit);
+        ScaleLine(is_grow, paint_scale, limit, line_info_);
+        total_scale = paint_scale;
       }
     } else {
       // TextFitTarget::kPerLine case:
@@ -537,6 +544,7 @@ bool LineFitter::FitLine(float scale_factor,
       if ((container_width - line_info_.ComputeWidth()).Abs() >= epsilon_) {
         float paint_scale = (container_width - static_total_size).ToFloat() /
                             flexible_total_size.ToFloat();
+        paint_scale = RestrictScale(paint_scale, is_grow, paint_scale_limit);
         ScaleLine(is_grow, paint_scale, limit, line_info_);
         total_scale *= paint_scale;
       }
