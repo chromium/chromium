@@ -3291,8 +3291,10 @@ TEST_P(HistoryBackendDBTest, MetaTableDoesNotExist) {
               BucketsAre(Bucket(false, /*count=*/1)));
 }
 
-TEST_P(HistoryBackendDBTest, KeepOldDatabaseByDefault) {
+TEST_P(HistoryBackendDBTest, KeepOldDatabaseIfFeatureDisabled) {
   base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList raze_old_db;
+  raze_old_db.InitAndDisableFeature(kRazeOldHistoryDatabase);
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
 
@@ -3309,9 +3311,8 @@ TEST_P(HistoryBackendDBTest, KeepOldDatabaseByDefault) {
   EXPECT_EQ(GetDatabaseVersion(), 10);
 }
 
-TEST_P(HistoryBackendDBTest, RazeOldDatabaseIfEnabled) {
+TEST_P(HistoryBackendDBTest, RazeOldDatabaseByDefault) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList raze_old_db(kRazeOldHistoryDatabase);
   ASSERT_NO_FATAL_FAILURE(
       CreateDBVersion(HistoryDatabase::GetCurrentVersion()));
 
