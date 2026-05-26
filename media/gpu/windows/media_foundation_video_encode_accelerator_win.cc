@@ -442,6 +442,7 @@ EncoderStatus MediaFoundationVideoEncodeAccelerator::Initialize(
                                   frame_rate_, config.input_visible_size);
   gop_length_ = config.gop_length.value_or(kDefaultGOPLength);
   low_latency_mode_ = config.require_low_delay;
+  drop_frame_thresh_percentage_ = config.drop_frame_thresh_percentage;
 
   if (config.HasTemporalLayer())
     num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
@@ -579,6 +580,11 @@ EncoderStatus MediaFoundationVideoEncodeAccelerator::Initialize(
     // track frame rate suddenly drops, this avoids encoder FPS dropping even
     // more than the track FPS dropped, see https://crbug.com/402910373. This
     // risks overshooting but that seems like less of a concern on Intel.
+    encoder_info_.has_trusted_rate_controller = true;
+  }
+  if (rate_ctrl_ && drop_frame_thresh_percentage_ > 0) {
+    // When SW BRC frame dropping is enabled, trust the rate controller so
+    // WebRTC disables its own frame dropper and avoids double-dropping.
     encoder_info_.has_trusted_rate_controller = true;
   }
   DCHECK(encoder_info_.is_hardware_accelerated);
@@ -1824,33 +1830,40 @@ void MediaFoundationVideoEncodeAccelerator::NotifyErrorStatus(
 }
 
 void MediaFoundationVideoEncodeAccelerator::FeedInputs() {
-  if (pending_input_queue_.empty()) {
-    return;
-  }
+  bool is_drop_frame;
+  do {
+    if (pending_input_queue_.empty()) {
+      return;
+    }
 
-  // There's no point in trying to feed more than one input here,
-  // because MF encoder never accepts more than one input in a row.
-  auto& next_input = pending_input_queue_.front();
-  if (next_input.resolving_shared_image) {
-    return;
-  }
+    // There's no point in trying to feed more than one input here,
+    // because MF encoder never accepts more than one input in a row.
+    auto& next_input = pending_input_queue_.front();
+    if (next_input.resolving_shared_image) {
+      return;
+    }
 
-  HRESULT hr = ProcessInput(next_input);
-  if (hr == MF_E_NOTACCEPTING) {
-    return;
-  }
-  if (FAILED(hr)) {
-    NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
-                       "Failed to encode pending frame: " + PrintHr(hr)});
-    return;
-  }
+    HRESULT hr = ProcessInput(next_input, is_drop_frame);
+    if (hr == MF_E_NOTACCEPTING) {
+      return;
+    }
+
+    if (FAILED(hr)) {
+      NotifyErrorStatus({EncoderStatus::Codes::kSystemAPICallError,
+                         "Failed to encode pending frame: " + PrintHr(hr)});
+      return;
+    }
+
+    pending_input_queue_.pop_front();
+    input_since_keyframe_count_++;
+  } while (is_drop_frame);
+
   encoder_needs_input_counter_--;
-  pending_input_queue_.pop_front();
-  input_since_keyframe_count_++;
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
-    const PendingInput& input) {
+    const PendingInput& input,
+    bool& is_drop_frame) {
   DVLOG(3) << __func__;
   CHECK(input.input_sample);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1860,6 +1873,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
                input.discard_output);
 
   HRESULT hr = S_OK;
+  is_drop_frame = false;
   if (has_not_accepted_sample_) {
     // Let's validate that prepared sample actually matches the metadata.
     const OutOfBandMetadata& metadata = sample_metadata_queue_.back();
@@ -1896,17 +1910,35 @@ HRESULT MediaFoundationVideoEncodeAccelerator::ProcessInput(
       // set on sample metadata and carried over from input to output.
       int computed_qp = rate_ctrl_->ComputeQP(frame_params);
       if (computed_qp < 0) {
-        // Negative QP values mean that the frame should be dropped. We use
-        // maximum QP in that case.
-        // Drop frame functionality is not supported yet.
-        // TODO(b/361250558): Support drop frame for H.264/HEVC Rate Controller
-        computed_qp = max_quantizer;
+        // Negative QP values mean that the frame should be dropped.
+        if (drop_frame_thresh_percentage_ > 0) {
+          is_drop_frame = true;
+        } else {
+          quantizer = max_quantizer;
+        }
+      } else {
+        quantizer = std::clamp(computed_qp, 1, max_quantizer);
       }
-      quantizer = std::clamp(computed_qp, 1, max_quantizer);
     } else if (input.discard_output) {
       // Set up encoder for maximum speed if we're anyway going to discard the
       // output.
       quantizer = max_quantizer;
+    }
+
+    if (is_drop_frame) {
+      DVLOG(3) << "Frame dropped by software rate control";
+      BitstreamBufferMetadata md =
+          BitstreamBufferMetadata::CreateForDropFrame(input.timestamp);
+      SendOutputBuffer(md, base::span<uint8_t>());
+      VideoRateControlWrapper::FrameParams drop_frame_params{};
+      drop_frame_params.frame_type =
+          input.options.key_frame
+              ? VideoRateControlWrapper::FrameParams::FrameType::kKeyFrame
+              : VideoRateControlWrapper::FrameParams::FrameType::kInterFrame;
+      drop_frame_params.temporal_layer_id = temporal_id;
+      drop_frame_params.timestamp = input.timestamp.InMilliseconds();
+      rate_ctrl_->PostEncodeUpdate(0, drop_frame_params);
+      return S_OK;
     }
 
     if (quantizer.has_value()) {
@@ -2577,6 +2609,10 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
         }
       }
     }
+  } else if (codec_ == VideoCodec::kH264 && rate_ctrl_) {
+    // The Intel H.264 MF encoder produces Prefix NALUs in Quality rate control
+    // mode. The h264 metadata should be available in this case.
+    md.h264.emplace().temporal_idx = 0;
   }
 
   if (rate_ctrl_) {
@@ -2598,37 +2634,7 @@ void MediaFoundationVideoEncodeAccelerator::ProcessOutput() {
   }
 
   // If no bit stream buffer presents, queue the output first.
-  if (bitstream_buffer_queue_.empty()) {
-    DVLOG(3) << "No bitstream buffers.";
-
-    // We need to copy the output so that encoding can continue.
-    auto encode_output =
-        std::make_unique<EncodeOutput>(output_buffer_span.size(), md);
-    encode_output->as_span().copy_from(output_buffer_span);
-    encoder_output_queue_.push_back(std::move(encode_output));
-    return;
-  }
-
-  // If `bitstream_buffer_queue_` is not empty,
-  // meaning we have output buffers to spare, `encoder_output_queue_` must
-  // be empty, otherwise outputs should've already been returned using those
-  // buffers.
-  DCHECK(encoder_output_queue_.empty());
-
-  // Immediately return encoded buffer with BitstreamBuffer to client.
-  auto buffer_ref = std::move(bitstream_buffer_queue_.back());
-  bitstream_buffer_queue_.pop_back();
-
-  if (!buffer_ref->mapping.IsValid() ||
-      buffer_ref->mapping.size() < output_buffer_span.size()) {
-    NotifyErrorStatus({EncoderStatus::Codes::kInvalidOutputBuffer,
-                       "Failed to copy bitstream media buffer."});
-    return;
-  }
-
-  buffer_ref->mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(
-      output_buffer_span);
-  client_->BitstreamBufferReady(buffer_ref->id, md);
+  SendOutputBuffer(md, output_buffer_span);
 }
 
 void MediaFoundationVideoEncodeAccelerator::MediaEventHandler(
@@ -2719,6 +2725,49 @@ void MediaFoundationVideoEncodeAccelerator::SetState(State state) {
 
   DVLOG(3) << "Setting state to: " << state;
   state_ = state;
+}
+
+void MediaFoundationVideoEncodeAccelerator::SendOutputBuffer(
+    const BitstreamBufferMetadata& metadata,
+    base::span<uint8_t> output_buffer_span) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (bitstream_buffer_queue_.empty()) {
+    DVLOG(3) << "No bitstream buffers available.";
+
+    // We need to copy the output so that encoding can continue.
+    auto encode_output =
+        std::make_unique<EncodeOutput>(output_buffer_span.size(), metadata);
+    if (!metadata.dropped_frame()) {
+      encode_output->as_span().copy_from(output_buffer_span);
+    }
+    encoder_output_queue_.push_back(std::move(encode_output));
+    return;
+  }
+
+  // If `bitstream_buffer_queue_` is not empty,
+  // meaning we have output buffers to spare, `encoder_output_queue_` must
+  // be empty, otherwise outputs should've already been returned using those
+  // buffers.
+  DCHECK(encoder_output_queue_.empty());
+
+  // Immediately return encoded buffer with BitstreamBuffer to client.
+  auto buffer_ref = std::move(bitstream_buffer_queue_.back());
+  bitstream_buffer_queue_.pop_back();
+
+  if (!metadata.dropped_frame()) {
+    if (!buffer_ref->mapping.IsValid() ||
+        buffer_ref->mapping.size() < output_buffer_span.size()) {
+      NotifyErrorStatus({EncoderStatus::Codes::kInvalidOutputBuffer,
+                         "Failed to copy bitstream media buffer."});
+      return;
+    }
+
+    buffer_ref->mapping.GetMemoryAsSpan<uint8_t>().copy_prefix_from(
+        output_buffer_span);
+  }
+
+  client_->BitstreamBufferReady(buffer_ref->id, metadata);
 }
 
 HRESULT MediaFoundationVideoEncodeAccelerator::InitializeD3DVideoProcessing(

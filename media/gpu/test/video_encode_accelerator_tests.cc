@@ -657,6 +657,43 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 }
 
+#if BUILDFLAG(IS_WIN)
+// Test frame dropping by Bitrate Controller for H.264 video encoding.
+TEST_F(VideoEncoderTest, DropFrameCheck) {
+  if (g_env->SpatialLayers().size() > 1) {
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+  }
+  const VideoCodec codec = VideoCodecProfileToVideoCodec(g_env->Profile());
+  if (codec != media::VideoCodec::kH264) {
+    GTEST_SKIP()
+        << "VideoEncodeAccelerator on this device doesn't support drop "
+        << "frame with codec=" << GetCodecName(codec);
+  }
+  if (g_env->BitrateAllocation().GetMode() == Bitrate::Mode::kVariable) {
+    GTEST_SKIP() << "Drop frame doesn't support in VBR encoding";
+  }
+
+  auto config = GetDefaultConfig();
+  constexpr uint8_t kDropFrameThreshold = 80;
+  config.drop_frame_thresh = kDropFrameThreshold;
+  config.bitrate_allocation = AllocateDefaultBitrateForTesting(
+      config.num_spatial_layers, config.num_temporal_layers,
+      Bitrate::ConstantBitrate(config.bitrate_allocation.GetSumBps() / 10));
+  auto encoder = CreateVideoEncoder(g_env->Video(), config);
+
+  encoder->Encode();
+  EXPECT_TRUE(encoder->WaitForFlushDone());
+  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
+  EXPECT_EQ(encoder->GetFrameReleasedCount(), g_env->Video()->NumFrames());
+  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
+
+  auto stats = encoder->GetStats();
+  VLOG(1) << "Dropped frames: " << stats.num_dropped_frames << " / "
+          << stats.total_num_encoded_frames;
+  EXPECT_GT(stats.num_dropped_frames, 0u);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // TODO(https://crbugs.com/350994517): NV12 DMABuf test does not apply to
 // Windows. There should be similar test for this with NV12 DXGI buffers added.
@@ -940,8 +977,9 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf_EnableDropFrame) {
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
 
   auto stats = encoder->GetStats();
-  VLOG(0) << "Dropped frames: " << stats.num_dropped_frames << " / "
+  VLOG(1) << "Dropped frames: " << stats.num_dropped_frames << " / "
           << stats.total_num_encoded_frames;
+  EXPECT_GT(stats.num_dropped_frames, 0u);
 }
 #endif  // BUILDFLAG(USE_VAAPI)
 

@@ -185,10 +185,6 @@ void BitstreamValidator::ProcessBitstream(scoped_refptr<BitstreamRef> bitstream,
   LOG_ASSERT(frame_index <= last_frame_index_)
       << "frame_index is larger than last frame index, frame_index="
       << frame_index << ", last_frame_index_=" << last_frame_index_;
-  if (bitstream->metadata.dropped_frame()) {
-    // Drop frame. Do nothing.
-    return;
-  }
   base::AutoLock lock(validator_lock_);
   // If many pending buffers are accumulated in this validator class and the
   // allocated memory size becomes large, the test process is killed by the
@@ -214,7 +210,10 @@ void BitstreamValidator::ProcessBitstreamTask(
   DCHECK_CALLED_ON_VALID_SEQUENCE(validator_thread_sequence_checker_);
   bool should_decode = false;
   bool should_flush = false;
-  if (!spatial_layer_index_to_decode_ && !temporal_layer_index_to_decode_) {
+  if (bitstream->metadata.dropped_frame()) {
+    should_flush = frame_index == last_frame_index_;
+  } else if (!spatial_layer_index_to_decode_ &&
+             !temporal_layer_index_to_decode_) {
     should_decode = true;
     should_flush = frame_index == last_frame_index_;
   } else if (bitstream->metadata.vp9) {
