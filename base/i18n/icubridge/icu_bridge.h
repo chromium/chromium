@@ -5,8 +5,20 @@
 #ifndef BASE_I18N_ICUBRIDGE_ICU_BRIDGE_H_
 #define BASE_I18N_ICUBRIDGE_ICU_BRIDGE_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
+#include <variant>
+#include <vector>
+
+#include "base/files/file_path.h"
 #include "base/i18n/base_i18n_export.h"
+#include "base/i18n/time_formatting_types.h"
 #include "base/no_destructor.h"
+#include "base/time/time.h"
+#include "base/types/pass_key.h"
+#include "build/build_config.h"
 
 namespace base::i18n {
 
@@ -20,11 +32,19 @@ class BASE_I18N_EXPORT IcuBridge {
   IcuBridge(const IcuBridge&) = delete;
   IcuBridge& operator=(const IcuBridge&) = delete;
 
+  class BASE_I18N_EXPORT DateTimeFormatter;
+
+  const DateTimeFormatter& date_time_formatter() const {
+    return *date_time_formatter_;
+  }
+
  private:
   friend class base::NoDestructor<IcuBridge>;
 
   IcuBridge();
   ~IcuBridge();
+
+  std::unique_ptr<DateTimeFormatter> date_time_formatter_;
 };
 
 }  // namespace base::i18n

@@ -77,6 +77,11 @@ source_set("language_code") {
   ]
 }
 
+source_set("unicodestring") {
+  sources = [ "unicodestring.h" ]
+  public_deps = [ "//third_party/icu" ]
+}
+
 source_set("time_formatting_types") {
   sources = [ "time_formatting_types.h" ]
 }

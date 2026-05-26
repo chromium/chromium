@@ -3106,6 +3106,7 @@ component("i18n") {
     "//base/i18n:base_i18n_export",
     "//base/i18n:language_code",
     "//base/i18n:time_formatting_types",
+    "//base/i18n/icubridge",
     "//third_party/ced",
     "//third_party/icu",
   ]
@@ -3994,6 +3995,7 @@ test("base_unittests") {
     ":rust_sequences_unittests",
     ":sanitizer_buildflags",
     "//base/allocator:buildflags",
+    "//base/i18n/icubridge:unittests",
     "//base/logging/rust_logger:unittests",
     "//base/numerics:unittests",
     "//base/test:proto_test_support",

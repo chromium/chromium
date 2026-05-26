@@ -4,8 +4,11 @@
 
 source_set("icubridge") {
   sources = [
+    "date_time_formatter.cc",
+    "date_time_formatter.h",
     "icu_bridge.cc",
     "icu_bridge.h",
+    "icu_bridge_helpers.h",
   ]
 
   defines = [ "BASE_I18N_IMPLEMENTATION" ]
@@ -21,17 +24,19 @@ source_set("icubridge") {
   deps = [ "//third_party/icu" ]
 
   visibility = [
-    ":unit_tests",
+    ":*",
+    ":unittests",
     "//base:i18n",
     "//base/i18n:*",
   ]
 }
 
-source_set("unit_tests") {
+source_set("unittests") {
   testonly = true
+  sources = [ "date_time_formatter_unittest.cc" ]
   deps = [
-    ":icubridge",
     "//base",
+    "//base:i18n",
     "//base/test:test_support",
     "//testing/gtest",
   ]
