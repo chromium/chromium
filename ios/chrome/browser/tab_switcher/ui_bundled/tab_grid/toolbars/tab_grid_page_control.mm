@@ -131,7 +131,8 @@ UIImage* SymbolForTabGridPage(TabGridPage page, bool selected) {
       symbol_name = kSquareNumberSymbol;
       break;
     case TabGridPageIncognitoTabs:
-      symbol_name = kIncognitoSymbol;
+      symbol_name =
+          IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol;
       break;
     case TabGridPageTabGroups:
       symbol_name = kTabGroupsSymbol;

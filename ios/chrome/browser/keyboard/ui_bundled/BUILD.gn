@@ -12,6 +12,7 @@ source_set("ui_bundled") {
   ]
   deps = [
     "//base",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
   ]
 }

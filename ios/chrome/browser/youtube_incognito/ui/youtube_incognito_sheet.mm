@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ntp/ui_bundled/incognito/incognito_view_util.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_url_loader_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/youtube_incognito/ui/youtube_incognito_sheet_delegate.h"
 #import "ios/chrome/common/string_util.h"
@@ -335,8 +336,9 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   _icognitoIconView.translatesAutoresizingMaskIntoConstraints = NO;
   _icognitoIconView.layer.cornerRadius = kTitleContainerCornerRadius;
   _icognitoIconView.backgroundColor = LargeIncognitoBackgroundColor();
-  UIImage* incognitoLogo =
-      CustomSymbolWithPointSize(kIncognitoSymbol, kIncognitoLogoSize);
+  UIImage* incognitoLogo = CustomSymbolWithPointSize(
+      IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol,
+      kIncognitoLogoSize);
   UIImageView* incognitoLogoView =
       [[UIImageView alloc] initWithImage:incognitoLogo];
   incognitoLogoView.tintColor = LargeIncognitoForegroundColor();

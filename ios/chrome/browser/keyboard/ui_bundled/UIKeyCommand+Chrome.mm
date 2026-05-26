@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/key_command_actions.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 
 namespace {
@@ -41,7 +42,8 @@ const char kMobileKeyCommandClose[] = "MobileKeyCommandClose";
 }
 
 + (UIKeyCommand*)cr_openNewIncognitoTab {
-  UIImage* image = CustomSymbolWithConfiguration(kIncognitoSymbol, nil);
+  UIImage* image = CustomSymbolWithConfiguration(
+      IsChromeNextIaEnabled() ? kIncognitoSymbol : kLegacyIncognitoSymbol, nil);
   return [self cr_commandWithInput:@"n"
                      modifierFlags:ShiftCommand
                             action:@selector(keyCommand_openNewIncognitoTab)

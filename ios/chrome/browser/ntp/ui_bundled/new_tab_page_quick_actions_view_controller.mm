@@ -73,7 +73,9 @@ UIColor* ButtonBackgroundColor(NewTabPageColorPalette* colorPalette) {
   }
 
   _incognitoButton = [self
-      createButtonWithSymbolName:kIncognitoSymbol
+      createButtonWithSymbolName:IsChromeNextIaEnabled()
+                                     ? kIncognitoSymbol
+                                     : kLegacyIncognitoSymbol
                            title:l10n_util::GetNSString(
                                      IDS_IOS_NTP_QUICK_ACTIONS_INCOGNITO)];
   [_buttonStackView addArrangedSubview:_incognitoButton];
