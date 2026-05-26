@@ -340,8 +340,6 @@ ts_library("library") {
   # TODO(b/229804752): Clean up and find the minimal set of necessary resources.
   definitions = [
     # TAG(reproduce.sh) START_DEFINITIONS
-    "components-chromium/node_modules/@types/trusted-types/lib/index.d.ts",
-    "components-chromium/node_modules/@types/trusted-types/index.d.ts",
     "components-chromium/node_modules/lit-element/lit-element.d.ts",
     "components-chromium/node_modules/lit-element/index.d.ts",
     "components-chromium/node_modules/lit-element/decorators.d.ts",
