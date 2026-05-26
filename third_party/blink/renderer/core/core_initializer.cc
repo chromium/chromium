@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/script_type_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/timezone/timezone_controller.h"
+#include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_names.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
@@ -153,6 +154,10 @@ void CoreInitializer::Initialize() {
   shadow_element_names::Init();
   script_type_names::Init();
   trusted_types_names::Init();
+
+  // Ensure that the qualified names are constructed on the main thread
+  // (crbug.com/503618702).
+  TrustedTypePolicyFactory::EagerlyInitializeOnMainThread();
 
   MediaQueryEvaluator::Init();
 
