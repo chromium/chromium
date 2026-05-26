@@ -58,7 +58,7 @@ TabStripAnimations::GroupInfos TabStripAnimations::GenerateAnimations() const {
       features::UseSidePanelFlyoverAnimation() ? 250 : 350;
   const gfx::Tween::Type expand_collapse_tween =
       features::UseSidePanelFlyoverAnimation()
-          ? gfx::Tween::ACCEL_30_DECEL_20_85
+          ? gfx::Tween::ACCEL_80_DECEL_20
           : gfx::Tween::EASE_IN_OUT_EMPHASIZED;
   // The sequence goes: one corner disappears, the top animates, and then the
   // other corner appears. These are the percentages of the animation at which

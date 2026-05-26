@@ -53,7 +53,7 @@ SidePanelAnimations::GroupInfos SidePanelAnimations::GenerateAnimations()
   const int kDefaultAnimationMs = features::kSidePanelFlyoverDurationMs.Get();
   const bool use_flyover = features::UseSidePanelFlyoverAnimation();
   const gfx::Tween::Type tween = use_flyover
-                                     ? gfx::Tween::Type::ACCEL_30_DECEL_20_85
+                                     ? gfx::Tween::Type::ACCEL_80_DECEL_20
                                      : gfx::Tween::Type::ACCEL_45_DECEL_88;
   const gfx::Tween::Type content_transition_tween =
       gfx::Tween::Type::ACCEL_45_DECEL_88;
