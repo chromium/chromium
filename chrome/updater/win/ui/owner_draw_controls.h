@@ -217,6 +217,7 @@ class CustomDlgColors {
   COLORREF text_color_ = RGB(0xFF, 0xFF, 0xFF);
   COLORREF bk_color_ = RGB(0, 0, 0);
   base::win::ScopedGDIObject<HBRUSH> bk_brush_;
+  base::win::ScopedGDIObject<HBRUSH> dark_bk_brush_;
 };
 
 // Subclassed (via `SetWindowSubclass`) progress bar control providing a

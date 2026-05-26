@@ -23,14 +23,16 @@ namespace {
 
 // Creates a font given a point size in tenths of a point at the system DPI.
 // Mirrors WTL's `CFont::CreatePointFont` helper.
-HFONT CreatePointFontW(int point_size_tenths, LPCWSTR face_name) {
+HFONT CreatePointFontW(int point_size_tenths,
+                       LPCWSTR face_name,
+                       int weight = FW_NORMAL) {
   HDC screen_dc = ::GetDC(nullptr);
   const int logical_pixels_y = ::GetDeviceCaps(screen_dc, LOGPIXELSY);
   ::ReleaseDC(nullptr, screen_dc);
-  // Height in logical pixels: -MulDiv(point_size_tenths, dpi, 720)
+  // Height in logical pixels: MulDiv(point_size_tenths, dpi, 720)
   // (720 = 72 points/inch * 10 tenths).
-  const int height = -::MulDiv(point_size_tenths, logical_pixels_y, 720);
-  return ::CreateFontW(height, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 0,
+  const int height = ::MulDiv(point_size_tenths, logical_pixels_y, 720);
+  return ::CreateFontW(-height, 0, 0, 0, weight, FALSE, FALSE, 0,
                        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                        CLEARTYPE_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
                        face_name);
@@ -137,17 +139,17 @@ void OmahaWnd::InitializeDialog() {
 
   progress_bar_.SubclassWindow(::GetDlgItem(hwnd(), IDC_PROGRESS));
 
-  default_font_.reset(CreatePointFontW(90, kDialogFont));
+  default_font_.reset(CreatePointFontW(100, kDialogFont, FW_NORMAL));
   SendMessageToDescendants(hwnd(), WM_SETFONT,
                            reinterpret_cast<WPARAM>(default_font_.get()), 0);
 
-  font_.reset(CreatePointFontW(150, kDialogFont));
-  SetItemFont(hwnd(), IDC_INSTALLER_STATE_TEXT, font_.get());
+  header_font_.reset(CreatePointFontW(180, kDialogFont, FW_MEDIUM));
+  SetItemFont(hwnd(), IDC_INSTALLER_STATE_TEXT, header_font_.get());
+
+  font_.reset(CreatePointFontW(160, kDialogFont, FW_NORMAL));
   SetItemFont(hwnd(), IDC_INFO_TEXT, font_.get());
   SetItemFont(hwnd(), IDC_COMPLETE_TEXT, font_.get());
-
-  error_font_.reset(CreatePointFontW(110, kDialogFont));
-  SetItemFont(hwnd(), IDC_ERROR_TEXT, error_font_.get());
+  SetItemFont(hwnd(), IDC_ERROR_TEXT, font_.get());
 
   CreateOwnerDrawTitleBar(hwnd(), ::GetDlgItem(hwnd(), IDC_TITLE_BAR_SPACER),
                           kBkColor);
@@ -237,11 +239,11 @@ void OmahaWnd::Show() {
 
 void OmahaWnd::ApplyDpiScaling(int dpi) {
   // Calculate new font height: (DesiredPointSize * dpi) / 72. Use a negative
-  // number for height to request the character height.
-  const int font_height = -::MulDiv(9, dpi, 72);
+  // number for height to request the character height in CreateFontW.
+  const int font_height = ::MulDiv(10, dpi, 72);
 
   default_font_.reset(::CreateFontW(
-      font_height,                  // nHeight
+      -font_height,                 // nHeight
       0,                            // nWidth
       0,                            // nEscapement
       0,                            // nOrientation
@@ -257,9 +259,25 @@ void OmahaWnd::ApplyDpiScaling(int dpi) {
       kDialogFont                   // lpszFacename
       ));
 
-  // Tell all child controls to use the new font.
+  // Tell all child controls to use the new font by default.
   SendMessageToDescendants(hwnd(), WM_SETFONT,
                            reinterpret_cast<WPARAM>(default_font_.get()), TRUE);
+
+  const int header_height = ::MulDiv(18, dpi, 72);
+  header_font_.reset(::CreateFontW(
+      -header_height, 0, 0, 0, FW_MEDIUM, FALSE, FALSE, 0, DEFAULT_CHARSET,
+      OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
+      DEFAULT_PITCH | FF_DONTCARE, kDialogFont));
+  SetItemFont(hwnd(), IDC_INSTALLER_STATE_TEXT, header_font_.get());
+
+  const int body_height = ::MulDiv(16, dpi, 72);
+  font_.reset(::CreateFontW(-body_height, 0, 0, 0, FW_NORMAL, FALSE, FALSE, 0,
+                            DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+                            CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY,
+                            DEFAULT_PITCH | FF_DONTCARE, kDialogFont));
+  SetItemFont(hwnd(), IDC_INFO_TEXT, font_.get());
+  SetItemFont(hwnd(), IDC_COMPLETE_TEXT, font_.get());
+  SetItemFont(hwnd(), IDC_ERROR_TEXT, font_.get());
 }
 
 bool OmahaWnd::OnComplete() {

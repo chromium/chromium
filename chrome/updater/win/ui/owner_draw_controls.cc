@@ -653,10 +653,42 @@ BOOL CustomDlgColors::ProcessWindowMessage(HWND,
                                            LPARAM,
                                            LRESULT& result,
                                            DWORD) {
-  if (msg != WM_CTLCOLORDLG && msg != WM_CTLCOLORSTATIC) {
+  if (msg != WM_CTLCOLORDLG && msg != WM_CTLCOLORSTATIC &&
+      msg != WM_CTLCOLORBTN) {
     return FALSE;
   }
   HDC dc = reinterpret_cast<HDC>(wparam);
+
+  if (IsHighContrastOn()) {
+    int text_color_idx =
+        (msg == WM_CTLCOLORBTN) ? COLOR_BTNTEXT : COLOR_WINDOWTEXT;
+    int bk_color_idx = (msg == WM_CTLCOLORBTN) ? COLOR_BTNFACE : COLOR_WINDOW;
+    ::SetTextColor(dc, ::GetSysColor(text_color_idx));
+    ::SetBkColor(dc, ::GetSysColor(bk_color_idx));
+    result = reinterpret_cast<LRESULT>(::GetSysColorBrush(bk_color_idx));
+    return TRUE;
+  }
+
+  if (IsDarkModeOn()) {
+    COLORREF text_color =
+        (msg == WM_CTLCOLORBTN) ? RGB(0xA8, 0xC7, 0xFA) : RGB(0xFF, 0xFF, 0xFF);
+    ::SetTextColor(dc, text_color);
+    ::SetBkColor(dc, RGB(0x20, 0x20, 0x20));
+    if (!dark_bk_brush_.is_valid()) {
+      dark_bk_brush_.reset(::CreateSolidBrush(RGB(0x20, 0x20, 0x20)));
+    }
+    result = reinterpret_cast<LRESULT>(dark_bk_brush_.get());
+    return TRUE;
+  }
+
+  // Light Mode
+  if (msg == WM_CTLCOLORBTN) {
+    ::SetTextColor(dc, GetColor(text_color_, COLOR_BTNTEXT));
+    ::SetBkColor(dc, GetColor(bk_color_, COLOR_BTNFACE));
+    result = reinterpret_cast<LRESULT>(::GetStockObject(NULL_BRUSH));
+    return TRUE;
+  }
+
   ::SetBkColor(dc, GetColor(bk_color_, COLOR_WINDOW));
   ::SetTextColor(dc, GetColor(text_color_, COLOR_WINDOWTEXT));
   result =
@@ -740,7 +772,7 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM) {
   // intended dark track color renders.)
   COLORREF track_color = GetColor(empty_fill_color_, COLOR_WINDOW);
   if (!IsHighContrastOn() && IsDarkModeOn()) {
-    track_color = RGB(0x3F, 0x3F, 0x3F);
+    track_color = RGB(0x44, 0x47, 0x46);
   }
 
   // `outside_pill_color` fills the area of the high-res bitmap that falls
@@ -756,29 +788,23 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM) {
 
   FillSolidRect(dc_hi_res, high_res_rect, outside_pill_color);
 
-  // Setup GDI objects for rounded drawing. In dark mode, suppress the pen
-  // entirely (`NULL_PEN`) so the pill is purely a colored fill against the
-  // dark background. In high-contrast mode, stroke the perimeter with
-  // `COLOR_WINDOWTEXT` (the always-opposite-of-`COLOR_WINDOW` system color)
-  // so the pill outline is visible regardless of which HC theme is active,
-  // including themes where `COLOR_WINDOW` resolves to the same color as the
-  // dialog background. In light mode, leave `dc_hi_res`'s default
-  // `BLACK_PEN` selected: it strokes a 1-unit-wide line on the 4x
-  // high-resolution bitmap which, after the `HALFTONE` downscale, becomes
-  // an anti-aliased soft gray edge along the pill perimeter. This matches
-  // the look the WTL build shipped (the legacy code only selected
-  // `NULL_PEN` into the offscreen compositing DC, so the high-res
-  // `RoundRect` ran with `dc_hi_res`'s default `BLACK_PEN`).
+  // Setup GDI objects for rounded drawing. In dark/light mode, suppress the pen
+  // entirely (`NULL_PEN`) so the pill is purely a colored fill without borders.
+  // In high-contrast mode, stroke the perimeter with `COLOR_WINDOWTEXT` so it's
+  // visible.
   base::win::ScopedGDIObject<HPEN> hc_pen;
   HGDIOBJ old_pen = nullptr;
   if (IsHighContrastOn()) {
     hc_pen.reset(
         ::CreatePen(PS_SOLID, kScale, ::GetSysColor(COLOR_WINDOWTEXT)));
     old_pen = ::SelectObject(dc_hi_res, hc_pen.get());
-  } else if (IsDarkModeOn()) {
+  } else {
     old_pen = ::SelectObject(dc_hi_res, ::GetStockObject(NULL_PEN));
   }
-  const int corner_size = Height(high_res_rect);
+
+  const int corner_size = std::min(
+      Height(high_res_rect), ::MulDiv(16 * kScale, ::GetDpiForWindow(hwnd()),
+                                      USER_DEFAULT_SCREEN_DPI));
 
   // Draw the Background Track.
   base::win::ScopedGDIObject<HBRUSH> bg_brush(::CreateSolidBrush(track_color));
@@ -808,7 +834,9 @@ LRESULT CustomProgressBarCtrl::OnPaint(UINT, WPARAM, LPARAM) {
     if (!IsRectEmpty(progress_rect) &&
         Width(progress_rect) > (corner_size / 2)) {
       base::win::ScopedGDIObject<HBRUSH> fill_brush(
-          ::CreateSolidBrush(GetColor(bar_color_, COLOR_HIGHLIGHT)));
+          ::CreateSolidBrush((!IsHighContrastOn() && IsDarkModeOn())
+                                 ? RGB(0xA8, 0xC7, 0xFA)
+                                 : GetColor(bar_color_, COLOR_HIGHLIGHT)));
       ::SelectObject(dc_hi_res, fill_brush.get());
       ::RoundRect(dc_hi_res, progress_rect.left, progress_rect.top,
                   progress_rect.right, progress_rect.bottom, corner_size,

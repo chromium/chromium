@@ -147,8 +147,8 @@ class OmahaWnd : public DialogImpl,
   base::win::ScopedGDIObject<HICON> hicon_;
 
   base::win::ScopedGDIObject<HFONT> default_font_;
+  base::win::ScopedGDIObject<HFONT> header_font_;
   base::win::ScopedGDIObject<HFONT> font_;
-  base::win::ScopedGDIObject<HFONT> error_font_;
 
   CustomProgressBarCtrl progress_bar_;
 
