@@ -8,6 +8,7 @@ source_set("infobars") {
   public = [
     "browser_infobar_manager.h",
     "confirm_infobar_creator.h",
+    "infobar_features.h",
     "infobar_responder.h",
     "infobar_spec.h",
     "simple_alert_infobar_creator.h",
@@ -16,6 +17,7 @@ source_set("infobars") {
   sources = [
     "browser_infobar_manager.cc",
     "confirm_infobar_creator.cc",
+    "infobar_features.cc",
     "infobar_responder.cc",
     "infobar_spec.cc",
     "simple_alert_infobar_creator.cc",
