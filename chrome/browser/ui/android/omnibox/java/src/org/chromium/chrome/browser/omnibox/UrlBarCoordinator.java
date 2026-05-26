@@ -364,6 +364,10 @@ public class UrlBarCoordinator
             // to update a view that accepts text input.
             imm.viewClicked(mUrlBar);
             mUrlBar.setCursorVisible(true);
+            // Force IME to re-establish InputConnection on focus gain. Some devices
+            // (e.g. Samsung foldables) don't proactively call onCreateInputConnection
+            // after the UrlBar regains focus, causing keyboard input to stop working.
+            restartImfInput();
         } else {
             // Moving focus away from UrlBar(EditText) to a non-editable focus holder, such as
             // ToolbarPhone, won't automatically hide keyboard app, but restart it with TYPE_NULL,
