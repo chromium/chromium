@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
@@ -323,7 +324,7 @@ void EmailVerificationRequest::OnAccountStatusFetched(
 
   bool email_matched = false;
   for (const auto& account : accounts->data.value()) {
-    if (account->email == email) {
+    if (base::EqualsCaseInsensitiveASCII(account->email, email)) {
       email_matched = true;
       break;
     }

@@ -262,6 +262,144 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                    ->GetEmailVerificationRequestIssueCount(std::nullopt));
 }
 
+TEST_F(EmailVerificationRequestTest, CaseInsensitiveEmailMatch) {
+  base::HistogramTester histogram_tester;
+  NavigateAndCommit(GURL("https://rp.example.com"));
+
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
+  NiceMock<MockDnsRequest>* mock_dns_request = mock_dns_request_ptr.get();
+  auto mock_network_manager_ptr =
+      std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();
+  NiceMock<MockEmailVerifierNetworkRequestManager>* mock_network_manager =
+      mock_network_manager_ptr.get();
+  auto mock_idp_network_manager_ptr =
+      std::make_unique<NiceMock<MockIdpNetworkRequestManager>>();
+  NiceMock<MockIdpNetworkRequestManager>* mock_idp_network_manager_ =
+      mock_idp_network_manager_ptr.get();
+  webid::EmailVerificationRequest email_verification_request_(
+      std::move(mock_network_manager_ptr),
+      std::move(mock_idp_network_manager_ptr), std::move(mock_dns_request_ptr),
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetSafeRef());
+
+  const std::string kEmail = "test@example.com";
+  const std::string kEmailUpper = "TEST@EXAMPLE.COM";
+  const std::string kNonce = "test_nonce";
+  const std::string kIssuer = "issuer.example.com";
+  const GURL kIssuerUrl = GURL("https://issuer.example.com");
+  const GURL kIssuanceEndpoint = GURL("https://issuer.example.com/token");
+
+  EXPECT_CALL(*mock_dns_request,
+              SendRequest("_email-verification.example.com", _))
+      .WillOnce(WithArgs<1>([&](DnsRequest::DnsRequestCallback callback) {
+        std::move(callback).Run(
+            std::vector<std::string>{"iss=issuer.example.com"});
+      }));
+
+  EXPECT_CALL(*mock_network_manager, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](EmailVerifierNetworkRequestManager::FetchWellKnownCallback
+                  callback) {
+            EmailVerifierNetworkRequestManager::WellKnown well_known;
+            well_known.issuance_endpoint = kIssuanceEndpoint;
+            well_known.signing_alg_values_supported.push_back("RS256");
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  const GURL kAccountsEndpoint = GURL("https://issuer.example.com/accounts");
+
+  EXPECT_CALL(*mock_idp_network_manager_, FetchWellKnown(kIssuerUrl, _))
+      .WillOnce(WithArgs<1>(
+          [&](IdpNetworkRequestManager::FetchWellKnownCallback callback) {
+            IdpNetworkRequestManager::WellKnown well_known;
+            well_known.accounts = kAccountsEndpoint;
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    well_known);
+          }));
+
+  EXPECT_CALL(*mock_idp_network_manager_,
+              SendAccountsRequest(_, kAccountsEndpoint, _, _))
+      .WillOnce(WithArgs<3>(
+          [&](IdpNetworkRequestManager::AccountsRequestCallback callback) {
+            IdpNetworkRequestManager::AccountsResponse response;
+            auto account = base::MakeRefCounted<IdentityRequestAccount>(
+                "id", "email", "name", kEmailUpper, "name", "given_name",
+                GURL(), "phone", "username", std::vector<std::string>(),
+                std::vector<std::string>(), std::vector<std::string>(),
+                std::vector<std::string>());
+            response.accounts.push_back(account);
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(response));
+            return true;
+          }));
+
+  EXPECT_CALL(*mock_network_manager, SendTokenRequest(kIssuanceEndpoint, _, _))
+      .WillOnce(WithArgs<1, 2>(
+          [&](const std::string& url_encoded_post_data,
+              EmailVerifierNetworkRequestManager::TokenRequestCallback
+                  callback) {
+            base::StringPairs params;
+            EXPECT_TRUE(base::SplitStringIntoKeyValuePairs(
+                url_encoded_post_data, '=', '&', &params));
+            EXPECT_EQ(params.size(), 1u);
+            EXPECT_EQ(params[0].first, "request_token");
+            EXPECT_FALSE(params[0].second.empty());
+
+            auto jwt_json = sdjwt::Jwt::Parse(params[0].second);
+            EXPECT_TRUE(jwt_json);
+
+            auto jwt = sdjwt::Jwt::From(*jwt_json);
+            EXPECT_TRUE(jwt);
+
+            auto header = sdjwt::Header::From(*base::JSONReader::ReadDict(
+                jwt->header.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+            EXPECT_TRUE(header);
+            EXPECT_EQ(header->typ, "JWT");
+            EXPECT_EQ(header->alg, "RS256");
+            EXPECT_TRUE(header->jwk);
+
+            auto payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
+                jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
+            EXPECT_TRUE(payload);
+            EXPECT_EQ(payload->aud,
+                      main_rfh()->GetLastCommittedOrigin().Serialize());
+            EXPECT_EQ(payload->email, kEmail);
+
+            sdjwt::SdJwt token;
+            sdjwt::Header h;
+            h.typ = "web-identity+sd-jwt";
+            h.alg = "RS256";
+            sdjwt::Payload p;
+            p.iss = url::Origin::Create(kIssuerUrl).Serialize();
+            p.email = kEmail;
+            sdjwt::ConfirmationKey cnf;
+            cnf.jwk = *(header->jwk);
+            p.cnf = cnf;
+
+            auto key = crypto::keypair::PrivateKey::GenerateRsa2048();
+            auto signer = sdjwt::CreateJwtSigner(key);
+
+            sdjwt::Jwt issued_jwt;
+            issued_jwt.header = *(h.ToJson());
+            issued_jwt.payload = *(p.ToJson());
+            EXPECT_TRUE(issued_jwt.Sign(std::move(signer)));
+
+            token.jwt = issued_jwt;
+
+            EmailVerifierNetworkRequestManager::TokenResult result;
+            result.token = base::Value(token.Serialize());
+            std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
+                                    std::move(result));
+          }));
+
+  base::test::TestFuture<std::optional<EmailVerifier::Result>> future;
+  email_verification_request_.Send(kEmail, kNonce, future.GetCallback());
+  std::optional<EmailVerifier::Result> result = future.Get();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->issuer_site,
+            net::SchemefulSite(GURL("https://example.com")));
+}
+
 TEST_F(EmailVerificationRequestTest, CrossOriginIssuanceEndpointRejected) {
   base::HistogramTester histogram_tester;
   NavigateAndCommit(GURL("https://rp.example.com"));
