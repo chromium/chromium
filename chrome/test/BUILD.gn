@@ -8065,7 +8065,6 @@ test("unit_tests") {
       "../browser/signin/logout_tab_helper_unittest.cc",
       "../browser/signin/process_dice_header_delegate_impl_unittest.cc",
       "../browser/ui/views/profiles/dice_web_signin_interception_bubble_view_unittest.cc",
-      "../browser/ui/views/profiles/feature_showcase/feature_showcase_eligibility_tracker_unittest.cc",
     ]
     deps += [ "//chrome/browser/profiles/batch_upload:unit_tests" ]
   }
