@@ -56,7 +56,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 const CGFloat kFooterSpacing = 16.0;
 
 // Margins for the footer view (top, left, bottom, right).
-const UIEdgeInsets kFooterMargins = {8.0, 16.0, 16.0, 16.0};
+const UIEdgeInsets kFooterMargins = {24.0, 16.0, 16.0, 16.0};
 
 // Estimated height of the footer view.
 const CGFloat kEstimatedFooterHeight = 50.0;

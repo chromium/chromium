@@ -59,6 +59,8 @@ class SaveCardBottomSheetCoordinatorTest : public PlatformTest {
     autofill::AutofillSaveCardUiInfo ui_info =
         autofill::AutofillSaveCardUiInfo();
     ui_info.logo_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
+    // Coordinator tests simulate a server upload save flow.
+    ui_info.is_for_upload = true;
     ui_info.card_label = std::u16string(u"CardName ****2345");
     ui_info.card_sub_label = std::u16string(u"01/29");
 

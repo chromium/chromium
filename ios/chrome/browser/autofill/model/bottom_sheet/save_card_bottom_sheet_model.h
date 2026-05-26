@@ -139,6 +139,9 @@ class SaveCardBottomSheetModel {
 
   inline SaveCardState save_card_state() const { return save_card_state_; }
 
+  // Returns whether the card save is an upload save.
+  inline bool is_for_upload() const { return ui_info_.is_for_upload; }
+
   base::WeakPtr<SaveCardBottomSheetModel> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
