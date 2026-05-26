@@ -6,6 +6,7 @@
 
 #include <inttypes.h>
 
+#include "base/byte_size.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 
@@ -63,7 +64,7 @@ void DetermineGrCacheLimitsFromAvailableMemory(
   if (base::SysInfo::IsLowEndDevice()) {
     *max_resource_cache_bytes = kMaxLowEndGaneshResourceCacheBytes;
     *max_glyph_cache_texture_bytes = kMaxLowEndGlyphCacheTextureBytes;
-  } else if (base::SysInfo::AmountOfPhysicalMemory().InMiB() >=
+  } else if (base::SysInfo::AmountOfTotalPhysicalMemory().InMiB() >=
              kHighEndMemoryThresholdInMB) {
     *max_resource_cache_bytes = kMaxHighEndGaneshResourceCacheBytes;
   }
