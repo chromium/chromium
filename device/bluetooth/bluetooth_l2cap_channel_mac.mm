@@ -31,6 +31,7 @@
 
 - (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel
                    l2capChannel:(IOBluetoothL2CAPChannel*)l2capChannel;
+- (void)setL2capChannel:(IOBluetoothL2CAPChannel*)l2capChannel;
 
 @end
 
@@ -48,6 +49,7 @@
 
 - (void)l2capChannelOpenComplete:(IOBluetoothL2CAPChannel*)l2capChannel
                           status:(IOReturn)error {
+  CHECK(_l2capChannel);
   if (error == kIOReturnSuccess) {
     // Keep the delegate alive until l2capChannelClosed.
     _strongSelf = self;
@@ -95,6 +97,11 @@
   _channel = nullptr;
 }
 
+- (void)setL2capChannel:(IOBluetoothL2CAPChannel*)l2capChannel {
+  CHECK(!_l2capChannel);
+  _l2capChannel = l2capChannel;
+}
+
 @end
 
 namespace device {
@@ -131,10 +138,12 @@ std::unique_ptr<BluetoothL2capChannelMac> BluetoothL2capChannelMac::OpenAsync(
   *status = [device openL2CAPChannelAsync:&l2cap_channel
                                   withPSM:psm
                                  delegate:channel->delegate_];
-  if (*status == kIOReturnSuccess)
+  if (*status == kIOReturnSuccess) {
     channel->channel_ = l2cap_channel;
-  else
+    [channel->delegate_ setL2capChannel:l2cap_channel];
+  } else {
     channel.reset();
+  }
 
   return channel;
 }
