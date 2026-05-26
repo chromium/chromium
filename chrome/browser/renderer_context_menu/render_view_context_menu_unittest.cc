@@ -101,6 +101,7 @@
 #include "extensions/browser/test_extension_prefs.h"
 #include "extensions/common/url_pattern.h"
 #include "media/base/media_switches.h"
+#include "printing/buildflags/buildflags.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -1884,6 +1885,43 @@ TEST_F(RenderViewContextMenuPrefsTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+
+#if BUILDFLAG(ENABLE_PRINTING)
+TEST_F(RenderViewContextMenuPrefsTest, PrintSelectionLabel) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kMenuSimplification);
+
+  AutocompleteClassifierFactory::GetInstance()->SetTestingFactoryAndUse(
+      profile(),
+      base::BindRepeating(&AutocompleteClassifierFactory::BuildInstanceFor));
+
+  content::ContextMenuParams params = CreateParams(MenuItem::SELECTION);
+  params.selection_text = u"hello world";
+
+  // Setup TranslateClient to avoid crash in AppendTranslateItem.
+  ChromeTranslateClient::CreateForWebContents(web_contents());
+
+  // Ensure printing is enabled.
+  profile()->GetPrefs()->SetBoolean(prefs::kPrintingEnabled, true);
+
+  TestRenderViewContextMenu menu(*web_contents()->GetPrimaryMainFrame(),
+                                 params);
+  menu.SetBrowser(GetBrowser());
+  menu.Init();
+
+  EXPECT_TRUE(menu.IsItemPresent(IDC_PRINT));
+
+  std::optional<std::pair<ui::MenuModel*, size_t>> model_and_index =
+      menu.GetMenuModelAndItemIndex(IDC_PRINT);
+  ASSERT_TRUE(model_and_index);
+  ui::MenuModel* model = model_and_index->first;
+  size_t index = model_and_index->second;
+
+  // Verify that the print menu item contains the selection text.
+  std::u16string label = model->GetLabelAt(index);
+  EXPECT_NE(label.find(u"hello world"), std::u16string::npos);
+}
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 
 TEST_F(RenderViewContextMenuPrefsTest,
        ReadingModeSidePanelContextMenuAllowlist) {

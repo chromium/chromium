@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstdio>
 #include <memory>
 #include <optional>
 #include <set>
@@ -2564,7 +2565,8 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
 }
 
 void RenderViewContextMenu::AppendPrintItem() {
-  if (features::IsMenuSimplificationEnabled() && IsPasswordField()) {
+  const bool use_simplified_text_selection = ShouldUseSimplifiedTextSelection();
+  if (use_simplified_text_selection && IsPasswordField()) {
     return;
   }
 
@@ -2573,24 +2575,47 @@ void RenderViewContextMenu::AppendPrintItem() {
       (params_.media_type == ContextMenuDataMediaType::kNone ||
        params_.media_flags & ContextMenuData::kMediaCanPrint) &&
       params_.misspelled_word.empty()) {
-    AddItemWithOptionalIcon(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT,
-                            kPrintMenuOldIcon);
+    const std::u16string printable_selection_text = PrintableSelectionText();
+    if (use_simplified_text_selection && !printable_selection_text.empty()) {
+      menu_model_.AddItemWithIcon(
+          IDC_PRINT,
+          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_PRINT_SELECTION,
+                                     printable_selection_text),
+          ui::ImageModel::FromVectorIcon(
+              kPrintMenuOldIcon, ui::kColorMenuIcon,
+              ui::SimpleMenuModel::kDefaultIconSize));
+    } else {
+      AddItemWithOptionalIcon(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT,
+                              kPrintMenuOldIcon);
+    }
   }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
 void RenderViewContextMenu::AppendPartialTranslateItem() {
-  if (features::IsMenuSimplificationEnabled() && IsPasswordField()) {
+  const bool is_menu_simplification_enabled =
+      features::IsMenuSimplificationEnabled();
+  if (is_menu_simplification_enabled && IsPasswordField()) {
     return;
   }
 
-  menu_model_.AddItem(
-      IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
-      l10n_util::GetStringFUTF16(
-          IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
-          GetTargetLanguageDisplayName(/*is_full_page_translation=*/false)));
+  const std::u16string printable_selection_text = PrintableSelectionText();
+  std::u16string label;
 
-  if (features::IsMenuSimplificationEnabled()) {
+  if (is_menu_simplification_enabled && !printable_selection_text.empty()) {
+    label = l10n_util::GetStringFUTF16(
+        IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_SELECTION,
+        printable_selection_text,
+        GetTargetLanguageDisplayName(/*is_full_page_translation=*/false));
+  } else {
+    label = l10n_util::GetStringFUTF16(
+        IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
+        GetTargetLanguageDisplayName(/*is_full_page_translation=*/false));
+  }
+
+  menu_model_.AddItem(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE, label);
+
+  if (is_menu_simplification_enabled) {
     menu_model_.SetIconForCommandId(
         IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE,
         ui::ImageModel::FromVectorIcon(vector_icons::kGTranslateIcon,
@@ -2620,7 +2645,9 @@ void RenderViewContextMenu::AppendMediaRouterItem() {
 }
 
 void RenderViewContextMenu::AppendReadAnythingItem() {
-  if (features::IsMenuSimplificationEnabled() && params_.is_editable) {
+  const bool is_menu_simplification_enabled =
+      features::IsMenuSimplificationEnabled();
+  if (is_menu_simplification_enabled && params_.is_editable) {
     return;
   }
 
@@ -2628,9 +2655,24 @@ void RenderViewContextMenu::AppendReadAnythingItem() {
   if (GetBrowser() &&
       GetBrowser()->GetType() == BrowserWindowInterface::TYPE_NORMAL &&
       !IsReadAnythingEntryShowing(GetBrowser())) {
-    AddItemWithOptionalIcon(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
-                            IDS_CONTENT_CONTEXT_READING_MODE,
-                            kMenuBookChromeRefreshOldIcon);
+    std::u16string label;
+    const std::u16string printable_selection_text = PrintableSelectionText();
+    if (is_menu_simplification_enabled && !printable_selection_text.empty()) {
+      label = l10n_util::GetStringFUTF16(
+          IDS_CONTENT_CONTEXT_READING_MODE_SELECTION, printable_selection_text);
+    } else {
+      label = l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_READING_MODE);
+    }
+
+    menu_model_.AddItem(IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE, label);
+
+    if (is_menu_simplification_enabled) {
+      menu_model_.SetIconForCommandId(
+          IDC_CONTENT_CONTEXT_OPEN_IN_READING_MODE,
+          ui::ImageModel::FromVectorIcon(kMenuBookChromeRefreshOldIcon,
+                                         ui::kColorMenuIcon, kTabMenuIconSize));
+    }
+
     if (features::IsImprovedReadAloudEnabled()) {
       menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE,
                                       IDS_CONTENT_CONTEXT_LISTEN_TO_THIS_PAGE);
