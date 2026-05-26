@@ -161,13 +161,24 @@ void WebNNTensorImpl::ImportTensor(uint64_t flow_id,
       {fence});
 }
 
-void WebNNTensorImpl::ExportTensor(uint64_t flow_id,
-                                   const gpu::SyncToken& release) {
+void WebNNTensorImpl::ExportTensor(uint64_t flow_id, uint64_t release_count) {
   ScopedTrace scoped_trace("WebNNTensorImpl::ExportTensor");
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
+  }
+
+  if (!context_->gpu_sequence()) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  gpu::SyncToken release;
+  if (release_count != 0) {
+    release = gpu::SyncToken(context_->gpu_sequence()->namespace_id(),
+                             context_->gpu_sequence()->command_buffer_id(),
+                             release_count);
   }
 
   context_->RunOrScheduleTask(
@@ -193,13 +204,25 @@ void WebNNTensorImpl::ExportTensor(uint64_t flow_id,
 }
 
 void WebNNTensorImpl::ExportTensorSync(uint64_t flow_id,
-                                       const gpu::SyncToken& release,
+                                       uint64_t release_count,
                                        ExportTensorSyncCallback callback) {
   ScopedTrace scoped_trace("WebNNTensorImpl::ExportTensorSync");
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
+  }
+
+  if (!context_->gpu_sequence()) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  gpu::SyncToken release;
+  if (release_count != 0) {
+    release = gpu::SyncToken(context_->gpu_sequence()->namespace_id(),
+                             context_->gpu_sequence()->command_buffer_id(),
+                             release_count);
   }
 
   context_->RunOrScheduleTask(

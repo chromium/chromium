@@ -131,9 +131,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNTensorImpl
   void ReadTensor(ReadTensorCallback callback) override;
   void WriteTensor(mojo_base::BigBuffer src_buffer) override;
   void ImportTensor(uint64_t flow_id, const gpu::SyncToken& fence) override;
-  void ExportTensor(uint64_t flow_id, const gpu::SyncToken& release) override;
+  void ExportTensor(uint64_t flow_id, uint64_t release_count) override;
   void ExportTensorSync(uint64_t flow_id,
-                        const gpu::SyncToken& release,
+                        uint64_t release_count,
                         ExportTensorSyncCallback callback) override;
 
   // `OnDisconnect` is called from two places.

@@ -56,6 +56,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) ScopedGpuSequence {
                        gpu::SyncToken fence = gpu::SyncToken(),
                        gpu::SyncToken release = gpu::SyncToken());
 
+  gpu::CommandBufferNamespace namespace_id() const { return namespace_id_; }
   gpu::CommandBufferId command_buffer_id() const { return command_buffer_id_; }
 
  private:

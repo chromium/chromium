@@ -380,21 +380,32 @@ void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access) {
   NOTREACHED();
 }
 
-void TensorImplCoreml::ExportTensor(uint64_t flow_id,
-                                    const gpu::SyncToken& release) {
+void TensorImplCoreml::ExportTensor(uint64_t flow_id, uint64_t release_count) {
   // Since we currently depend on `ResourceTask`, we can't support the
   // asynchronous `ExportTensor`.
   NOTIMPLEMENTED();
 }
 
 void TensorImplCoreml::ExportTensorSync(uint64_t flow_id,
-                                        const gpu::SyncToken& release,
+                                        uint64_t release_count,
                                         ExportTensorSyncCallback callback) {
   ScopedTrace scoped_trace("TensorImplCoreml::ExportTensorSync");
 
   if (!usage().Has(MLTensorUsageFlags::kWebGpuInterop)) {
     GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
     return;
+  }
+
+  if (!context_->gpu_sequence()) {
+    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    return;
+  }
+
+  gpu::SyncToken release;
+  if (release_count != 0) {
+    release = gpu::SyncToken(context_->gpu_sequence()->namespace_id(),
+                             context_->gpu_sequence()->command_buffer_id(),
+                             release_count);
   }
 
   // Ensure the Mojo callback is posted back to the task runner. Running

@@ -432,9 +432,9 @@ GPUBuffer* MLTensor::ExportToGPUImpl(
   // buffer to ensure that the SyncToken has arrived on the GPU process before
   // we attempt to export the tensor to WebGPU.
   if (fallback_to_sync_method_for_export_) {
-    remote_tensor_->ExportTensorSync(flow_id, sync_token);
+    remote_tensor_->ExportTensorSync(flow_id, sync_token.release_count());
   } else {
-    remote_tensor_->ExportTensor(flow_id, sync_token);
+    remote_tensor_->ExportTensor(flow_id, sync_token.release_count());
   }
 
   auto webgpu_finished_access_callback = blink::BindOnce(
