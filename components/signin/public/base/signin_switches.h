@@ -30,9 +30,6 @@ extern const char kClearTokenService[];
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kForceFreDefaultBrowserStep[];
-
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kForceFreFeatureShowcaseSteps[];
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // Feature declarations, sorted by the name of the BASE_DECLARE_FEATURE in each
