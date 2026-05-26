@@ -54,7 +54,8 @@ FetchParameters CSSImageValue::PrepareFetch(
   const CSSUrlData& url_data = UrlData();
   const CSSUrlRequestModifiers& modifiers = url_data.GetModifiers();
   const Referrer& referrer = url_data.GetReferrer();
-  ResourceRequest resource_request(url_data.ResolveUrl(document));
+  ResourceRequest resource_request(
+      url_data.ResolveUrl(*document.GetExecutionContext()));
 
   if (modifiers.referrer_policy) {
     resource_request.SetReferrerPolicy(*modifiers.referrer_policy);

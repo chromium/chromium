@@ -147,7 +147,7 @@ FontResource& CSSFontFaceSrcValue::Fetch(ExecutionContext* context,
     const CSSUrlData& url_data = src_value_->UrlData();
     const CSSUrlRequestModifiers& modifiers = url_data.GetModifiers();
     const Referrer& referrer = url_data.GetReferrer();
-    ResourceRequest resource_request(url_data.ResolvedUrl());
+    ResourceRequest resource_request(url_data.ResolveUrl(*context));
 
     if (modifiers.referrer_policy) {
       resource_request.SetReferrerPolicy(*modifiers.referrer_policy);

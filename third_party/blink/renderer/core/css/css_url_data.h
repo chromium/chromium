@@ -35,6 +35,7 @@
 namespace blink {
 
 class Document;
+class ExecutionContext;
 class KURL;
 class StringBuilder;
 class TextEncoding;
@@ -77,9 +78,9 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
   // computed values - the above should otherwise be preferred.
   explicit CSSUrlData(const AtomicString& resolved_url);
 
-  // Returns the resolved URL, potentially reresolving against passed Document
-  // if there's a potential risk of "dangling markup".
-  KURL ResolveUrl(const Document&) const;
+  // Returns the resolved URL, potentially reresolving against the passed
+  // ExecutionContext if there's a potential risk of "dangling markup".
+  KURL ResolveUrl(const ExecutionContext&) const;
 
   // Re-resolve the URL against the base provided by the passed
   // Document. Returns true if the resolved URL changed, otherwise false.
@@ -114,6 +115,9 @@ class CORE_EXPORT CSSUrlData : public GarbageCollected<CSSUrlData> {
     return is_from_origin_clean_style_sheet_;
   }
   bool IsAdRelated() const { return is_ad_related_; }
+  bool IsPotentiallyDanglingMarkup() const {
+    return potentially_dangling_markup_;
+  }
   const CSSUrlRequestModifiers& GetModifiers() const { return modifiers_; }
 
   // Returns true if this URL is "local" to the specified Document (either by
