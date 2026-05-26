@@ -122,20 +122,6 @@ export const fakeInternalUserFeedbackContext: FeedbackContext = {
   wifiDebugLogsAllowed: false,
 };
 
-export const fakeFeedbackContextWithoutLinkedCrossDevicePhone:
-    FeedbackContext = {
-      autofillMetadata: '',
-      categoryTag: '',
-      email: 'test.user@google.com',
-      extraDiagnostics: null,
-      fromAutofill: false,
-      settingsSearchDoNotRecordMetrics: false,
-      isInternalAccount: true,
-      pageUrl: 'chrome://tab/',
-      traceId: 1,
-      wifiDebugLogsAllowed: false,
-    };
-
 export const fakeFeedbackContextWithExtraDiagnostics: FeedbackContext = {
   autofillMetadata: '',
   categoryTag: '',

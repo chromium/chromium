@@ -619,24 +619,11 @@ export class FeedbackFlowElement extends PolymerElement {
      * bluetooth checkbox should be hidden and skip the relative check.
      */
     const isRelatedToBluetooth = btRegEx.test(textInput) ||
-        cantConnectRegEx.test(textInput) ||
-        this.isDescriptionRelatedToCrossDevice(textInput) ||
-        fastPairRegEx.test(textInput) || btDeviceRegEx.test(textInput);
-    return isRelatedToBluetooth;
-  }
-
-  /**
-   * If the user is not signed in with a internal google account, the Cross
-   * Device checkbox should be hidden and skip the relative check.
-   *
-   * Checks if any keywords related to Cross Device have been typed. If they
-   * are, we show the cross device checkbox, otherwise hide it.
-   */
-  protected isDescriptionRelatedToCrossDevice(textInput: string): boolean {
-    const isRelatedToCrossDevice = phoneHubRegEx.test(textInput) ||
+        cantConnectRegEx.test(textInput) || phoneHubRegEx.test(textInput) ||
         tetherRegEx.test(textInput) || smartLockRegEx.test(textInput) ||
-        nearbyShareRegEx.test(textInput);
-    return isRelatedToCrossDevice;
+        nearbyShareRegEx.test(textInput) || fastPairRegEx.test(textInput) ||
+        btDeviceRegEx.test(textInput);
+    return isRelatedToBluetooth;
   }
 }
 
