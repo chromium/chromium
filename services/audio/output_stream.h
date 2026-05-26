@@ -30,6 +30,7 @@
 #include "services/audio/loopback_coordinator.h"
 #include "services/audio/output_controller.h"
 #include "services/audio/sync_reader.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace base {
 class UnguessableToken;
@@ -148,6 +149,7 @@ class OutputStream final : public media::mojom::AudioOutputStream,
   // reports changes to OnAudibleStateChanged().
   std::unique_ptr<AudibilityHelper> audibility_helper_;
 
+  const perfetto::NamedTrack trace_track_;
   base::WeakPtrFactory<OutputStream> weak_factory_{this};
 };
 

@@ -256,10 +256,10 @@ class OutputDeviceMixerImpl::MixableOutputStream final
   void Start(AudioSourceCallback* callback) final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
     DCHECK(callback);
-    TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("audio"),
-                      "MixableOutputStream::IsPlaying",
-                      perfetto::Track::FromPointer(this), "device_id",
-                      mixer_ ? mixer_->device_id() : "device changed");
+    TRACE_EVENT_BEGIN(
+        TRACE_DISABLED_BY_DEFAULT("audio"), "MixableOutputStream::IsPlaying",
+        perfetto::NamedTrack::FromPointer("audio::MixableOutputStream", this),
+        "device_id", mixer_ ? mixer_->device_id() : "device changed");
     if (!mixer_) {
       LOG(ERROR) << "Stream start failed: device changed";
       callback->OnError(ErrorType::kDeviceChange);
@@ -270,8 +270,9 @@ class OutputDeviceMixerImpl::MixableOutputStream final
 
   void Stop() final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-    TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("audio"),
-                    perfetto::Track::FromPointer(this));
+    TRACE_EVENT_END(
+        TRACE_DISABLED_BY_DEFAULT("audio"),
+        perfetto::NamedTrack::FromPointer("audio::MixableOutputStream", this));
     if (!mixer_)
       return;
     mixer_->StopStream(mix_track_);
@@ -336,8 +337,10 @@ OutputDeviceMixerImpl::OutputDeviceMixerImpl(
   DCHECK(mixing_graph_output_params_.IsValid());
   DCHECK_EQ(mixing_graph_output_params_.format(),
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY);
-  TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("audio"), "OutputDeviceMixerImpl",
-                    perfetto::Track::FromPointer(this), "device_id", device_id);
+  TRACE_EVENT_BEGIN(
+      TRACE_DISABLED_BY_DEFAULT("audio"), "OutputDeviceMixerImpl",
+      perfetto::NamedTrack::FromPointer("audio::OutputDeviceMixerImpl", this),
+      "device_id", device_id);
 }
 
 OutputDeviceMixerImpl::~OutputDeviceMixerImpl() {
@@ -347,8 +350,9 @@ OutputDeviceMixerImpl::~OutputDeviceMixerImpl() {
   DCHECK(!MixingInProgress());
   DCHECK(!mixing_graph_output_stream_);
 
-  TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("audio"),
-                  perfetto::Track::FromPointer(this));
+  TRACE_EVENT_END(
+      TRACE_DISABLED_BY_DEFAULT("audio"),
+      perfetto::NamedTrack::FromPointer("audio::OutputDeviceMixerImpl", this));
 }
 
 media::AudioOutputStream* OutputDeviceMixerImpl::MakeMixableStream(
@@ -685,7 +689,8 @@ void OutputDeviceMixerImpl::StartMixingGraphPlayback() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_BEGIN(
       TRACE_DISABLED_BY_DEFAULT("audio"), "OutputDeviceMixerImpl mixing",
-      perfetto::Track::FromPointer(this), "device_id", device_id());
+      perfetto::NamedTrack::FromPointer("audio::OutputDeviceMixerImpl", this),
+      "device_id", device_id());
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("audio"),
                "OutputDeviceMixerImpl::StartMixingGraphPlayback", "device_id",
                device_id());
@@ -731,7 +736,8 @@ void OutputDeviceMixerImpl::StopMixingGraphPlayback(MixingError error) {
       mix_track->StopProvidingAudioToMixingGraph();
 
     TRACE_EVENT_END(TRACE_DISABLED_BY_DEFAULT("audio"),
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        "audio::OutputDeviceMixerImpl", this));
   }
 
   DCHECK(!mixing_graph_output_stream_);

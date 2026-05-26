@@ -206,7 +206,9 @@ AudioSystemToServiceAdapter::AudioSystemToServiceAdapter(
 AudioSystemToServiceAdapter::~AudioSystemToServiceAdapter() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (system_info_.is_bound()) {
-    TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this),
+    TRACE_EVENT_END("audio",
+                    perfetto::NamedTrack::FromPointer(
+                        "audio::AudioSystemToServiceAdapter", this),
                     "disconnect reason", "destroyed");
   }
 }
@@ -291,7 +293,8 @@ mojom::SystemInfo* AudioSystemToServiceAdapter::GetSystemInfo() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!system_info_) {
     TRACE_EVENT_BEGIN("audio", "AudioSystemToServiceAdapter bound",
-                      perfetto::Track::FromPointer(this));
+                      perfetto::NamedTrack::FromPointer(
+                          "audio::AudioSystemToServiceAdapter", this));
     system_info_binder_.Run(system_info_.BindNewPipeAndPassReceiver());
     system_info_.set_disconnect_handler(
         base::BindOnce(&AudioSystemToServiceAdapter::OnConnectionError,
@@ -305,7 +308,9 @@ mojom::SystemInfo* AudioSystemToServiceAdapter::GetSystemInfo() {
 
 void AudioSystemToServiceAdapter::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  TRACE_EVENT_END("audio", perfetto::Track::FromPointer(this),
+  TRACE_EVENT_END("audio",
+                  perfetto::NamedTrack::FromPointer(
+                      "audio::AudioSystemToServiceAdapter", this),
                   "disconnect reason", "connection error");
   system_info_.reset();
 }

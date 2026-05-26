@@ -24,6 +24,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/audio/input_controller.h"
 #include "services/audio/loopback_mixin.h"
+#include "third_party/perfetto/include/perfetto/tracing/track.h"
 
 namespace media {
 class AecdumpRecordingManager;
@@ -107,6 +108,7 @@ class InputStream final : public media::mojom::AudioInputStream,
   const std::unique_ptr<InputSyncWriter> writer_;
   std::unique_ptr<InputController> controller_;
 
+  const perfetto::NamedTrack trace_track_;
   base::WeakPtrFactory<InputStream> weak_factory_{this};
 };
 

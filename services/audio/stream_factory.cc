@@ -102,9 +102,10 @@ void StreamFactory::CreateInputStream(
     media::mojom::AudioProcessingConfigPtr processing_config,
     CreateInputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_INSTANT("audio", "CreateInputStream",
-                      perfetto::Track::FromPointer(this), "device id",
-                      device_id, "params", params.AsHumanReadableString());
+  TRACE_EVENT_INSTANT(
+      "audio", "CreateInputStream",
+      perfetto::NamedTrack::FromPointer("audio::StreamFactory", this),
+      "device id", device_id, "params", params.AsHumanReadableString());
 
   // Unretained is safe since |this| indirectly owns the InputStream.
   auto deleter_callback = base::BindOnce(&StreamFactory::DestroyInputStream,
@@ -169,7 +170,8 @@ void StreamFactory::CreateOutputStream(
     CreateOutputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_INSTANT(
-      "audio", "CreateOutputStream", perfetto::Track::FromPointer(this),
+      "audio", "CreateOutputStream",
+      perfetto::NamedTrack::FromPointer("audio::StreamFactory", this),
       "device id", output_device_id, "params", params.AsHumanReadableString());
 
   CreateOutputStreamInternal(std::move(stream_receiver), mojo::NullReceiver(),
@@ -190,10 +192,10 @@ void StreamFactory::CreateSwitchableOutputStream(
     const base::UnguessableToken& group_id,
     CreateOutputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_INSTANT("audio", "CreateSwitchableOutputStream",
-                      perfetto::Track::FromPointer(this), "device id",
-                      output_device_id, "params",
-                      params.AsHumanReadableString());
+  TRACE_EVENT_INSTANT(
+      "audio", "CreateSwitchableOutputStream",
+      perfetto::NamedTrack::FromPointer("audio::StreamFactory", this),
+      "device id", output_device_id, "params", params.AsHumanReadableString());
   DCHECK(device_switch_receiver.is_valid());
 
   CreateOutputStreamInternal(
@@ -206,8 +208,10 @@ void StreamFactory::BindMuter(
     mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
     const base::UnguessableToken& group_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_INSTANT("audio", "BindMuter", perfetto::Track::FromPointer(this),
-                      "group id", group_id);
+  TRACE_EVENT_INSTANT(
+      "audio", "BindMuter",
+      perfetto::NamedTrack::FromPointer("audio::StreamFactory", this),
+      "group id", group_id);
 
   // Find the existing LocalMuter for this group, or create one on-demand.
   auto it = std::ranges::find(muters_, group_id, &LocalMuter::group_id);
@@ -236,9 +240,10 @@ void StreamFactory::CreateLoopbackStream(
     const base::UnguessableToken& group_id,
     CreateLoopbackStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
-  TRACE_EVENT_INSTANT("audio", "CreateLoopbackStream",
-                      perfetto::Track::FromPointer(this), "group id", group_id,
-                      "params", params.AsHumanReadableString());
+  TRACE_EVENT_INSTANT(
+      "audio", "CreateLoopbackStream",
+      perfetto::NamedTrack::FromPointer("audio::StreamFactory", this),
+      "group id", group_id, "params", params.AsHumanReadableString());
 
   // All LoopbackStreams share a single realtime worker thread. This is because
   // the execution timing of scheduled tasks must be precise, and top priority
@@ -348,7 +353,8 @@ void StreamFactory::CreateOutputStreamInternal(
     CreateOutputStreamCallback created_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);
   TRACE_EVENT_INSTANT(
-      "audio", "CreateOutputStream", perfetto::Track::FromPointer(this),
+      "audio", "CreateOutputStream",
+      perfetto::NamedTrack::FromPointer("audio::StreamFactory", this),
       "device id", output_device_id, "params", params.AsHumanReadableString());
 
   // Unretained is safe since |this| indirectly owns the OutputStream.
