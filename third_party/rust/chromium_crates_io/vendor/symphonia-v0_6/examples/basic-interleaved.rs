@@ -52,7 +52,7 @@ fn main() {
     // Read and decode all packets from the format reader.
     while let Some(packet) = format.next_packet().unwrap() {
         // If the packet does not belong to the selected track, skip it.
-        if packet.track_id() != track_id {
+        if packet.track_id != track_id {
             continue;
         }
 

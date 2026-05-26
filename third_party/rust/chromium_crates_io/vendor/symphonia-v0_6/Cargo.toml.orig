@@ -101,75 +101,75 @@ exp-video-codecs = ["symphonia-core/exp-video-codecs"]
 lazy_static = { workspace = true }
 
 [dependencies.symphonia-core]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-core"
 
 [dependencies.symphonia-metadata]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-metadata"
 # Standalone crate enables all metadata formats by default.
 default-features = false
 
 [dependencies.symphonia-bundle-flac]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-bundle-flac"
 optional = true
 
 [dependencies.symphonia-bundle-mp3]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-bundle-mp3"
 optional = true
 # Standalone crate enables all MP1, MP2, and MP3 decoders by default.
 default-features = false
 
 [dependencies.symphonia-codec-aac]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-codec-aac"
 optional = true
 
 [dependencies.symphonia-codec-adpcm]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-codec-adpcm"
 optional = true
 
 [dependencies.symphonia-codec-alac]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-codec-alac"
 optional = true
 
 [dependencies.symphonia-codec-pcm]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-codec-pcm"
 optional = true
 
 [dependencies.symphonia-codec-vorbis]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-codec-vorbis"
 optional = true
 
 [dependencies.symphonia-format-riff]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-format-riff"
 optional = true
 # Standalone crate enables AIFF and WAVE by default.
 default-features = false
 
 [dependencies.symphonia-format-ogg]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-format-ogg"
 optional = true
 
 [dependencies.symphonia-format-isomp4]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-format-isomp4"
 optional = true
 
 [dependencies.symphonia-format-mkv]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-format-mkv"
 optional = true
 
 [dependencies.symphonia-format-caf]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-format-caf"
 optional = true

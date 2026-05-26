@@ -78,7 +78,7 @@ fn main() {
         }
 
         // If the packet does not belong to the selected track, skip over it.
-        if packet.track_id() != track_id {
+        if packet.track_id != track_id {
             continue;
         }
 

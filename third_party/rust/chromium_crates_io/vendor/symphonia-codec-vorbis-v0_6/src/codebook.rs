@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -92,16 +92,14 @@ fn unpack_vq_lookup_type2(
         vq_lookup.chunks_exact_mut(codebook_dimensions as usize).enumerate()
     {
         let mut last = 0.0;
-        let mut multiplicand_offset = lookup_offset * codebook_dimensions as usize;
+        let offset = lookup_offset * codebook_dimensions as usize;
 
-        for value in value_vector.iter_mut() {
-            *value = f32::from(multiplicands[multiplicand_offset]) * delta_value + min_value + last;
+        for (offset, value) in (offset..).zip(value_vector.iter_mut()) {
+            *value = f32::from(multiplicands[offset]) * delta_value + min_value + last;
 
             if sequence_p {
                 last = *value;
             }
-
-            multiplicand_offset += 1;
         }
     }
 
@@ -148,14 +146,19 @@ fn synthesize_codewords(code_lens: &[u8]) -> Result<Vec<u32>> {
             return decode_error("vorbis: codebook overspecified");
         }
 
-        for i in (0..codeword_len + 1).rev() {
+        for i in (1..codeword_len + 1).rev() {
             // If the least significant bit (LSb) of the next codeword for codewords of length N
             // toggles from 1 to 0, that indicates the next-least-LSb will toggle. This means that
             // the next codeword will branch off a new parent node. Therefore, the next codeword for
             // codewords of length N will use the next codeword for codewords of length N-1 as its
             // prefix.
             if next_codeword[i] & 1 == 1 {
-                next_codeword[i] = next_codeword[i - 1] << 1;
+                if i == 1 {
+                    next_codeword[1] += 1;
+                }
+                else {
+                    next_codeword[i] = next_codeword[i - 1] << 1;
+                }
                 break;
             }
 
@@ -431,5 +434,12 @@ mod tests {
         const EXPECTED_CODEWORDS: &[u32] = &[0, 0x4, 0x5, 0x6, 0x7, 0x2, 0x6, 0x7];
         let codewords = synthesize_codewords(CODEWORD_LENGTHS).unwrap();
         assert_eq!(&codewords, EXPECTED_CODEWORDS);
+    }
+
+    #[test]
+    fn verify_synthesize_codewords_overspecified() {
+        // These codebooks are overspecified and shouldn't panic.
+        assert!(synthesize_codewords(&[1, 1, 1]).is_err());
+        assert!(synthesize_codewords(&[1, 1, 32]).is_err());
     }
 }

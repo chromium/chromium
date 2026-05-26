@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2024 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -418,8 +418,8 @@ pub fn read_vorbis_comment<B: ReadBytes>(
     // If chapter information is present, try to build a chapter group.
     if !chapters.is_empty() {
         let items = chapters
-            .into_iter()
-            .filter_map(|(_, infos)| {
+            .into_values()
+            .filter_map(|infos| {
                 let mut time = None;
                 let mut tags = Vec::new();
 

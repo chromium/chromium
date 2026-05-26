@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -41,6 +41,7 @@ const FLAC_FORMAT_INFO: FormatInfo = FormatInfo {
 /// Free Lossless Audio Codec (FLAC) native frame reader.
 pub struct FlacReader<'s> {
     reader: MediaSourceStream<'s>,
+    media_info: MediaInfo,
     tracks: Vec<Track>,
     attachments: Vec<Attachment>,
     chapters: Option<ChapterGroup>,
@@ -167,9 +168,9 @@ impl<'s> FlacReader<'s> {
 
         // A single stream information block is mandatory. So it is an error for track to be `None`
         // after iterating over all metadata blocks.
-        let tracks = match track {
-            Some(track) => vec![track],
-            _ => return decode_error("flac: missing stream info block"),
+        let Some(track) = track
+        else {
+            return decode_error("flac: missing stream info block");
         };
 
         // Commit any read metadata to the metadata log.
@@ -185,7 +186,8 @@ impl<'s> FlacReader<'s> {
 
         Ok(FlacReader {
             reader,
-            tracks,
+            media_info: MediaInfo::from_track(&track),
+            tracks: vec![track],
             attachments,
             chapters,
             metadata,
@@ -220,6 +222,10 @@ impl FormatReader for FlacReader<'_> {
         &FLAC_FORMAT_INFO
     }
 
+    fn media_info(&self) -> &MediaInfo {
+        &self.media_info
+    }
+
     fn attachments(&self) -> &[Attachment] {
         &self.attachments
     }
@@ -249,7 +255,7 @@ impl FormatReader for FlacReader<'_> {
         // Get the timestamp of the desired audio frame.
         let ts = match to {
             // Frame timestamp given.
-            SeekTo::TimeStamp { ts, .. } => ts,
+            SeekTo::Timestamp { ts, .. } => ts,
             // Time value given, calculate frame timestamp using the track's timebase.
             SeekTo::Time { time, .. } => {
                 // The timebase is required to calculate the timestamp.
@@ -434,6 +440,8 @@ fn read_stream_info_block<B: ReadBytes + FiniteStream>(
     // Total samples per channel (also the total number of frames) is optional.
     if let Some(num_frames) = info.n_samples {
         track.with_num_frames(num_frames);
+        // Duration equals the number of frames because the timebase is always 1 / sample rate.
+        track.with_duration(Duration::from(num_frames));
     }
 
     // Reset the packet parser.

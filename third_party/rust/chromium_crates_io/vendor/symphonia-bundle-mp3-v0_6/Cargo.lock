@@ -58,7 +58,7 @@ checksum = "67b1b7a3b5fe4f1376887184045fcf45c69e92af734b7aaddc05fb777b6fbd03"
 
 [[package]]
 name = "symphonia-bundle-mp3"
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 dependencies = [
  "lazy_static",
  "log",
@@ -67,9 +67,9 @@ dependencies = [
 
 [[package]]
 name = "symphonia-core"
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3be2e760147497d7f939f18b7739387c7e6b5322d9ce0cf10cd93cf96f4d815c"
+checksum = "95ec293b5f288383b72a7bffcade6b2860b642cf66f28b3bd5967349a49938b1"
 dependencies = [
  "bitflags",
  "bytemuck",

@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -39,6 +39,7 @@ const MP3_FORMAT_INFO: FormatInfo =
 /// `MpaReader` implements a demuxer for the MPEG1 and MPEG2 audio elementary stream.
 pub struct MpaReader<'s> {
     reader: MediaSourceStream<'s>,
+    media_info: MediaInfo,
     tracks: Vec<Track>,
     chapters: Option<ChapterGroup>,
     metadata: MetadataLog,
@@ -145,6 +146,10 @@ impl FormatReader for MpaReader<'_> {
         }
     }
 
+    fn media_info(&self) -> &MediaInfo {
+        &self.media_info
+    }
+
     fn next_packet(&mut self) -> Result<Option<Packet>> {
         let (header, data) = loop {
             // Read the next MPEG frame.
@@ -224,7 +229,7 @@ impl FormatReader for MpaReader<'_> {
         // Get the timestamp of the desired audio frame.
         let required_ts = match to {
             // Frame timestamp given.
-            SeekTo::TimeStamp { ts, .. } => ts,
+            SeekTo::Timestamp { ts, .. } => ts,
             // Time value given, calculate frame timestamp using the timebase.
             SeekTo::Time { time, .. } => {
                 // The timebase is required to calculate the timestamp.
@@ -459,11 +464,17 @@ impl<'s> MpaReader<'s> {
             }
         }
 
+        if let Some(num_frames) = track.num_frames {
+            // Duration equals the number of frames because the timebase is always 1 / sample rate.
+            track.with_duration(Duration::from(num_frames));
+        }
+
         let first_packet_pos = mss.pos();
         let next_packet_ts = Timestamp::from(-i64::from(track.delay.unwrap_or(0)));
 
         Ok(MpaReader {
             reader: mss,
+            media_info: MediaInfo::from_track(&track),
             tracks: vec![track],
             chapters: opts.external_data.chapters,
             metadata: opts.external_data.metadata.unwrap_or_default(),
@@ -874,8 +885,9 @@ fn try_read_info_tag_inner(buf: &[u8], header: &FrameHeader) -> Result<Option<Xi
             None
         };
 
-        // If there is no CRC, then assume the tag is correct. Otherwise, use the CRC.
-        let is_tag_ok = crc.is_none_or(|crc| crc == reader.monitor().crc());
+        // If there was no CRC written, then assume the tag is correct. Otherwise, use the CRC.
+        // Accept a written CRC of 0 which defacto means to ignore the CRC.
+        let is_tag_ok = crc.is_none_or(|crc| crc == 0 || crc == reader.monitor().crc());
 
         if is_tag_ok {
             // The CRC matched or is not present.

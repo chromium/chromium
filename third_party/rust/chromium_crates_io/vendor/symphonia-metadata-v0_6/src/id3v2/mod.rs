@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -238,7 +238,7 @@ fn read_id3v2p4_extended_header<B: ReadBytes>(reader: &mut B) -> Result<Extended
             _ => unreachable!(),
         };
 
-        let text_encoding = match (restrictions & 0x40) >> 5 {
+        let text_encoding = match (restrictions & 0x20) >> 5 {
             0 => TextEncodingRestriction::None,
             1 => TextEncodingRestriction::Utf8OrIso88591,
             _ => unreachable!(),

@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2024 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -15,7 +15,7 @@ use crate::common::FourCc;
 #[cfg(feature = "exp-subtitle-codecs")]
 use crate::errors::Result;
 #[cfg(feature = "exp-subtitle-codecs")]
-use crate::packet::Packet;
+use crate::packet::{Packet, PacketRef};
 #[cfg(feature = "exp-subtitle-codecs")]
 use crate::subtitle::GenericSubtitleBufferRef;
 
@@ -123,7 +123,15 @@ pub trait SubtitleDecoder: Send + Sync {
     /// discarded. Decoding may be continued with the next packet.
     ///
     /// Implementors of decoders *must* `clear` the last decoded subtitle if an error occurs.
-    fn decode(&mut self, packet: &Packet) -> Result<GenericSubtitleBufferRef<'_>>;
+    fn decode(&mut self, packet: &Packet) -> Result<GenericSubtitleBufferRef<'_>> {
+        self.decode_ref(&packet.as_packet_ref())
+    }
+
+    /// Decodes a `PacketRef` of subtitle data and returns a generic (untyped) subtitle buffer reference
+    /// containing the decoded subtitles.
+    ///
+    /// This method is identical to `decode` but takes a `PacketRef` for zero-copy packet passing.
+    fn decode_ref(&mut self, packet: &PacketRef<'_>) -> Result<GenericSubtitleBufferRef<'_>>;
 
     /// Allows read access to the internal audio buffer.
     ///

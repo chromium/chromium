@@ -111,7 +111,7 @@ checksum = "fe895eb47f22e2ddd4dabc02bce419d2e643c8e3b585c78158b349195bc24d82"
 
 [[package]]
 name = "symphonia-core"
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 dependencies = [
  "bitflags",
  "bytemuck",

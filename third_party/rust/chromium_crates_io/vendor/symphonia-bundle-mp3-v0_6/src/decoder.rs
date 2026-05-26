@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -13,7 +13,7 @@ use symphonia_core::codecs::audio::{
 use symphonia_core::codecs::registry::{RegisterableAudioDecoder, SupportedAudioCodec};
 use symphonia_core::errors::{Result, decode_error, unsupported_error};
 use symphonia_core::io::FiniteStream;
-use symphonia_core::packet::Packet;
+use symphonia_core::packet::PacketRef;
 use symphonia_core::support_audio_codec;
 
 #[cfg(feature = "mp1")]
@@ -82,7 +82,7 @@ impl MpaDecoder {
         Ok(MpaDecoder { opts: *opts, params: params.clone(), state, buf: Default::default() })
     }
 
-    fn decode_inner(&mut self, packet: &Packet) -> Result<()> {
+    fn decode_inner(&mut self, packet: &PacketRef<'_>) -> Result<()> {
         let mut reader = packet.as_buf_reader();
 
         let header = header::read_frame_header(&mut reader)?;
@@ -128,7 +128,7 @@ impl MpaDecoder {
 
         // Trim gaps.
         if self.opts.gapless {
-            self.buf.trim(packet.trim_start().get() as usize, packet.trim_end().get() as usize);
+            self.buf.trim(packet.trim_start.get() as usize, packet.trim_end.get() as usize);
         }
 
         Ok(())
@@ -150,7 +150,7 @@ impl AudioDecoder for MpaDecoder {
         self.state = State::new(self.params.codec);
     }
 
-    fn decode(&mut self, packet: &Packet) -> Result<GenericAudioBufferRef<'_>> {
+    fn decode_ref(&mut self, packet: &PacketRef<'_>) -> Result<GenericAudioBufferRef<'_>> {
         if let Err(e) = self.decode_inner(packet) {
             self.buf.clear();
             Err(e)

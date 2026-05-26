@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -28,8 +28,8 @@ pub mod prelude {
     pub use crate::units::{Duration, TimeBase, Timestamp};
 
     pub use super::{
-        Attachment, FileAttachment, FormatId, FormatInfo, FormatOptions, FormatReader, SeekMode,
-        SeekTo, SeekedTo, Track, VendorDataAttachment,
+        Attachment, FileAttachment, FormatId, FormatInfo, FormatOptions, FormatReader, MediaInfo,
+        SeekMode, SeekTo, SeekedTo, Track, VendorDataAttachment,
     };
 }
 
@@ -75,7 +75,7 @@ pub struct FormatInfo {
 
 /// `SeekTo` specifies a position to seek to.
 pub enum SeekTo {
-    /// Seek to a `Time` in regular time units.
+    /// Seek to a `Time` in regular time units (i.e., seconds).
     Time {
         /// The `Time` to seek to.
         time: Time,
@@ -84,9 +84,9 @@ pub enum SeekTo {
         /// a default track, then the first track's timestamp is returned.
         track_id: Option<u32>,
     },
-    /// Seek to a track's `TimeStamp` in that track's timebase units.
-    TimeStamp {
-        /// The `TimeStamp` to seek to.
+    /// Seek to a track's `Timestamp` in that track's timebase units.
+    Timestamp {
+        /// The `Timestamp` to seek to.
         ts: Timestamp,
         /// Specifies which track `ts` is relative to.
         track_id: u32,
@@ -358,6 +358,19 @@ impl Track {
         self.flags |= flags;
         self
     }
+
+    /// Get the track type.
+    ///
+    /// Determining the track type requires knowing the codec parameters. If codec parameters is
+    /// `None`, then this function will also return `None`.
+    pub fn track_type(&self) -> Option<TrackType> {
+        match self.codec_params {
+            Some(CodecParameters::Audio(_)) => Some(TrackType::Audio),
+            Some(CodecParameters::Video(_)) => Some(TrackType::Video),
+            Some(CodecParameters::Subtitle(_)) => Some(TrackType::Subtitle),
+            None => None,
+        }
+    }
 }
 
 /// An attachment is additional data that is carried along with the container format.
@@ -389,8 +402,138 @@ pub struct VendorDataAttachment {
     pub data: Box<[u8]>,
 }
 
-/// A `FormatReader` is a container demuxer. It provides methods to probe a media container for
-/// information and access the tracks encapsulated in the container.
+/// Information about a piece of media as a whole.
+#[non_exhaustive]
+#[derive(Copy, Clone, Debug, Default)]
+pub struct MediaInfo {
+    /// The timebase of the media.
+    ///
+    /// The timebase is the length of time in seconds of a single tick of a timestamp or duration.
+    /// It can be used to convert any timestamp or duration related to the media into seconds.
+    ///
+    /// # For Implementations
+    ///
+    /// If a container writes an explicit timebase for the media as a whole, then this field should
+    /// be populated using that timebase. Otherwise, this field should make sense for the duration
+    /// and start timestamp fields (i.e., use the timebase of the track they're derived from).
+    pub time_base: Option<TimeBase>,
+    /// The duration of the media in timebase units.
+    ///
+    /// If a timebase is available, this field can be used to calculate the total duration of the
+    /// media in seconds by using [`TimeBase::calc_time`] and passing the duration as the argument.
+    ///
+    /// # For Implementations
+    ///
+    /// If a container writes an explicit duration for the media as a whole, then this field should
+    /// be populated using that value. Otherwise, for single track media, this field should be
+    /// duration of the sole track. For media with multiple tracks, but an explicit media duration
+    /// is not provided, this should usually be equal to the duration of the longest track.
+    pub duration: Option<Duration>,
+    /// The timestamp of the first frame in timebase units.
+    ///
+    /// If a timebase is available, this field can be used to calculate the start time of the
+    /// media in seconds by using [`TimeBase::calc_time`] and passing the timestamp as the argument.
+    ///
+    /// # For Implementations
+    ///
+    /// If a container writes an explicit start timestamp for the media as a whole, then this field
+    /// should be populated using that value. Otherwise, for single track media, this field should
+    /// be the start timestamp of the sole track. For media with multiple tracks, but an explicit
+    /// start timestamp is not provided, this should usually be equal to the start timestamp of the
+    /// track that has the earliest start timestamp.
+    pub start_ts: Timestamp,
+}
+
+impl MediaInfo {
+    /// For media that contains a single track, populates and returns `MediaInfo` from that track.
+    ///
+    /// # For Implementations
+    ///
+    /// This function only populates the timebase, duration, and start timestamp. Other fields
+    /// are defaulted and must be populated manually.
+    pub fn from_track(track: &Track) -> Self {
+        MediaInfo { time_base: track.time_base, duration: track.duration, start_ts: track.start_ts }
+    }
+
+    /// For media that contains multiple tracks, populates and returns `MediaInfo` using the
+    /// documented recommendations.
+    ///
+    /// If `tracks` is an empty slice, returns a default media information.
+    ///
+    /// # For Implementations
+    ///
+    /// This function only populates the timebase, duration, and start timestamp. Other fields
+    /// are defaulted and must be populated manually.
+    pub fn from_tracks(tracks: &[Track]) -> Self {
+        match tracks {
+            // No tracks, return defaulted media information.
+            [] => Default::default(),
+            // Single track, use information from the sole track.
+            [track] => Self::from_track(track),
+            // Multiple tracks.
+            tracks => {
+                let mut media_info: MediaInfo = Default::default();
+
+                // Earliest start timestamp.
+                if let Some(track) = tracks.iter().min_by_key(|t| t.start_ts) {
+                    media_info.start_ts = track.start_ts;
+                }
+
+                // Longest duration (only considering tracks with a timebase and duration).
+                if let Some(track) = tracks
+                    .iter()
+                    .filter_map(|t| {
+                        let tb = t.time_base?;
+                        let dur = t.duration?;
+
+                        // Calculate the duration of the track in seconds. Saturate here because if
+                        // the track is too long then skipping this track to pick a shorter one that
+                        // does not saturate is more wrong.
+                        let dur_as_ts =
+                            dur.timestamp_from(Timestamp::ZERO).unwrap_or(Timestamp::MAX);
+
+                        let dur_time = tb.calc_time_saturating(dur_as_ts);
+
+                        Some((dur_time, t))
+                    })
+                    .max_by_key(|(dur_time, _)| *dur_time)
+                    .map(|(_, t)| t)
+                {
+                    media_info.time_base = track.time_base;
+                    media_info.duration = track.duration;
+                }
+
+                media_info
+            }
+        }
+    }
+
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    /// Provide the `TimeBase`.
+    pub fn with_time_base(&mut self, time_base: TimeBase) -> &mut Self {
+        self.time_base = Some(time_base);
+        self
+    }
+
+    /// Provide the duration in timebase units.
+    pub fn with_duration(&mut self, duration: Duration) -> &mut Self {
+        self.duration = Some(duration);
+        self
+    }
+
+    /// Provide the timestamp of the first frame.
+    pub fn with_start_ts(&mut self, start_ts: Timestamp) -> &mut Self {
+        self.start_ts = start_ts;
+        self
+    }
+}
+
+/// A `FormatReader` is a media container demuxer. It provides methods to read a media container
+/// and iterate over the codec bitstream packets of all encapsulated tracks. Additionally, it
+/// provides methods to access any metadata, chapters, or attachments.
 ///
 /// Most, if not all, media containers contain metadata, then a number of packetized, and
 /// interleaved codec bitstreams. These bitstreams are usually referred to as tracks. Generally,
@@ -408,6 +551,9 @@ pub struct VendorDataAttachment {
 pub trait FormatReader: Send + Sync {
     /// Get basic information about the container format.
     fn format_info(&self) -> &FormatInfo;
+
+    /// Get information about the media as a whole.
+    fn media_info(&self) -> &MediaInfo;
 
     /// Get a list of all attachments.
     ///

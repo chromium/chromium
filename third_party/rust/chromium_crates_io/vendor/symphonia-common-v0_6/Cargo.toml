@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "symphonia-common"
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
 build = false
 autolib = false
@@ -47,9 +47,9 @@ path = "src/lib.rs"
 version = "0.4"
 
 [dependencies.symphonia-core]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 
 [dependencies.symphonia-metadata]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 features = ["flac"]
 default-features = false

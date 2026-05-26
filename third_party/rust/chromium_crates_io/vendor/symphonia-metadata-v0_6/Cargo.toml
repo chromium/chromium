@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "symphonia-metadata"
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 authors = ["Philip Deljanov <philip.deljanov@gmail.com>"]
 build = false
 autolib = false
@@ -75,4 +75,4 @@ version = "0.1.6"
 version = "1.13.1"
 
 [dependencies.symphonia-core]
-version = "0.6.0-alpha.2"
+version = "0.6.0"

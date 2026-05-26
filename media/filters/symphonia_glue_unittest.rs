@@ -298,8 +298,8 @@ fn test_packet_conversion() {
         ffi::SymphoniaPacket { timestamp_us: 12345, duration_us: 6789, data: &[0xAA, 0xBB, 0xCC] };
     let sym_packet = symphonia::core::packet::Packet::from(&ffi_packet);
 
-    expect_eq!(sym_packet.pts(), 12345_i64.into());
-    expect_eq!(sym_packet.dur(), 6789u64.into());
+    expect_eq!(sym_packet.pts, 12345_i64.into());
+    expect_eq!(sym_packet.dur, 6789u64.into());
     expect_eq!(&*sym_packet.data, &[0xAA, 0xBB, 0xCC]);
 }
 

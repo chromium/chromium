@@ -38,4 +38,4 @@ lazy_static = { workspace = true }
 log = { workspace = true }
 regex-lite = "0.1.6"
 smallvec = { workspace = true }
-symphonia-core = { version = "0.6.0-alpha.2", path = "../symphonia-core" }
+symphonia-core = { version = "0.6.0", path = "../symphonia-core" }

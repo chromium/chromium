@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -20,7 +20,7 @@ use symphonia_core::codecs::audio::{AudioDecoder, FinalizeResult, VerificationCh
 use symphonia_core::codecs::registry::{RegisterableAudioDecoder, SupportedAudioCodec};
 use symphonia_core::errors::{Error, Result, decode_error, unsupported_error};
 use symphonia_core::io::{BitReaderLtr, BufReader, ReadBitsLtr};
-use symphonia_core::packet::Packet;
+use symphonia_core::packet::PacketRef;
 use symphonia_core::support_audio_codec;
 use symphonia_core::util::bits::sign_extend_leq32_to_i32;
 
@@ -135,7 +135,7 @@ impl FlacDecoder {
         })
     }
 
-    fn decode_inner(&mut self, packet: &Packet) -> Result<()> {
+    fn decode_inner(&mut self, packet: &PacketRef<'_>) -> Result<()> {
         let mut reader = packet.as_buf_reader();
 
         // Synchronize to a frame and get the synchronization code.
@@ -259,7 +259,7 @@ impl AudioDecoder for FlacDecoder {
         &self.params
     }
 
-    fn decode(&mut self, packet: &Packet) -> Result<GenericAudioBufferRef<'_>> {
+    fn decode_ref(&mut self, packet: &PacketRef<'_>) -> Result<GenericAudioBufferRef<'_>> {
         if let Err(e) = self.decode_inner(packet) {
             self.buf.clear();
             Err(e)

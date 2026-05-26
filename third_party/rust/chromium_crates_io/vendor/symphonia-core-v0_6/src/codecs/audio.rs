@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2024 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -14,7 +14,7 @@ use crate::audio::{Channels, GenericAudioBufferRef};
 use crate::codecs::{CodecInfo, CodecProfile};
 use crate::common::FourCc;
 use crate::errors::Result;
-use crate::packet::Packet;
+use crate::packet::{Packet, PacketRef};
 
 /// An `AudioCodecId` is a unique identifier used to identify a specific audio codec.
 ///
@@ -85,10 +85,21 @@ pub struct AudioCodecParameters {
     /// The sample format of an audio sample.
     pub sample_format: Option<SampleFormat>,
     /// The number of bits per one decoded audio sample.
+    ///
+    /// This may be less-than the intrinsic bit-width of the data type of the decoded samples. In
+    /// such cases, any extra bits are 0 and shouldn't be considered as part of the sample. It will
+    /// never be greater-than the intrinsic bit-width of the sample data type.
     pub bits_per_sample: Option<u32>,
     /// The number of bits per one encoded audio sample.
+    ///
+    /// In rare cases where audio samples are encoded with fewer bits than the decoded
+    /// bits-per-sample, this indicates the number of bits per one encoded audio sample so that a
+    /// decoder may scale the sample to the correct number of bits. This will never be greater-than
+    /// the number of bits per decoded sample.
+    ///
+    /// If `None`, assumed to equal `bits_per_sample`.
     pub bits_per_coded_sample: Option<u32>,
-    /// A bitmask of all channels in the stream.
+    /// Audio channels.
     pub channels: Option<Channels>,
     /// The maximum number of frames a packet will contain.
     pub max_frames_per_packet: Option<u64>,
@@ -265,7 +276,15 @@ pub trait AudioDecoder: Send + Sync {
     /// the decoded audio buffer to change. All other errors are unrecoverable.
     ///
     /// Implementors of decoders *must* `clear` the internal audio buffer if an error occurs.
-    fn decode(&mut self, packet: &Packet) -> Result<GenericAudioBufferRef<'_>>;
+    fn decode(&mut self, packet: &Packet) -> Result<GenericAudioBufferRef<'_>> {
+        self.decode_ref(&packet.as_packet_ref())
+    }
+
+    /// Decodes a `PacketRef` of audio data and returns a generic (untyped) audio buffer reference
+    /// containing the decoded audio.
+    ///
+    /// This method is identical to `decode` but takes a `PacketRef` for zero-copy packet passing.
+    fn decode_ref(&mut self, packet: &PacketRef<'_>) -> Result<GenericAudioBufferRef<'_>>;
 
     /// Optionally, obtain post-decode information such as the verification status.
     fn finalize(&mut self) -> FinalizeResult;

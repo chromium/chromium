@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -89,6 +89,11 @@ pub enum CodecParameters {
 }
 
 impl CodecParameters {
+    /// Returns `true` if the codec parameters are for an audio codec.
+    pub fn is_audio(&self) -> bool {
+        matches!(self, CodecParameters::Audio(_))
+    }
+
     /// If the codec parameters are for an audio codec, returns an immutable reference to the
     /// contained audio codec parameters. Otherwise, returns `None`.
     pub fn audio(&self) -> Option<&AudioCodecParameters> {
@@ -107,6 +112,11 @@ impl CodecParameters {
         }
     }
 
+    /// Returns `true` if the codec parameters are for a video codec.
+    pub fn is_video(&self) -> bool {
+        matches!(self, CodecParameters::Video(_))
+    }
+
     /// If the codec parameters are for an video codec, returns an immutable reference to the
     /// contained video codec parameters. Otherwise, returns `None`.
     pub fn video(&self) -> Option<&VideoCodecParameters> {
@@ -123,6 +133,11 @@ impl CodecParameters {
             CodecParameters::Video(params) => Some(params),
             _ => None,
         }
+    }
+
+    /// Returns `true` if the codec parameters are for an subtitle codec.
+    pub fn is_subtitle(&self) -> bool {
+        matches!(self, CodecParameters::Subtitle(_))
     }
 
     /// If the codec parameters are for an subtitle codec, returns an immutable reference to the

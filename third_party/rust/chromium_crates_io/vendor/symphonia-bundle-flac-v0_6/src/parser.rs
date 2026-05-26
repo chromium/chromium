@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -37,17 +37,13 @@ impl<const N: usize> MovingAverage<N> {
     /// Calculate the moving average.
     pub fn average(&self) -> usize {
         if self.count >= N {
-            // If greater-than N values were pushed, then all samples must be averaged.
+            // If greater-than N values were pushed, then N samples must be averaged.
             self.samples.iter().sum::<usize>() / N
         }
-        else if self.count > 0 {
-            // If less-than N values were pushed, then only the first 0..N samples need to be
-            // averaged.
-            self.samples.iter().take(self.count).sum::<usize>() / self.count
-        }
         else {
-            // No samples.
-            0
+            // If less-than N values were pushed, then only the available samples need to be
+            // averaged. If 0 samples were pushed, then the average is also 0.
+            self.samples.iter().take(self.count).sum::<usize>().checked_div(self.count).unwrap_or(0)
         }
     }
 }

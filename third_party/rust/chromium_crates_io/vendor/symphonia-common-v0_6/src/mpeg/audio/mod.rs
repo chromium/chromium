@@ -6,6 +6,8 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 use symphonia_core::audio::{Channels, layouts};
+use symphonia_core::codecs::CodecProfile;
+use symphonia_core::codecs::audio::well_known::profiles::*;
 use symphonia_core::errors::{Result, decode_error, unsupported_error};
 use symphonia_core::io::{BitReaderLtr, FiniteBitStream, ReadBitsLtr};
 
@@ -225,7 +227,7 @@ pub struct AudioSpecificConfig {
 }
 
 impl AudioSpecificConfig {
-    /// Read the audio specific configuration from the provided buffer.
+    /// Read the audio specific configuration from the provided buffer. ISO14496-3-2009
     pub fn read(buf: &[u8]) -> Result<AudioSpecificConfig> {
         let mut bs = BitReaderLtr::new(buf);
 
@@ -242,6 +244,10 @@ impl AudioSpecificConfig {
         asc.channels = Self::read_channel_config(&mut bs)?;
 
         if (asc.object_type == AudioObjectType::Sbr) || (asc.object_type == AudioObjectType::Ps) {
+            asc.sbr_present = true;
+            if asc.object_type == AudioObjectType::Ps {
+                asc.ps_present = true;
+            }
             let ext_srate = Self::read_sampling_frequency(&mut bs)?;
             asc.object_type = Self::read_audio_object_type(&mut bs)?;
 
@@ -455,5 +461,25 @@ impl AudioSpecificConfig {
             }
         };
         Ok(channels)
+    }
+}
+
+pub fn get_audio_codec_profile(asc: &AudioSpecificConfig) -> Option<CodecProfile> {
+    match asc.object_type {
+        AudioObjectType::Main => Some(CODEC_PROFILE_AAC_MAIN),
+        AudioObjectType::Ssr => Some(CODEC_PROFILE_AAC_SSR),
+        AudioObjectType::Ltp => Some(CODEC_PROFILE_AAC_LTP),
+        AudioObjectType::Lc => {
+            if asc.ps_present {
+                Some(CODEC_PROFILE_AAC_HE_V2)
+            }
+            else if asc.sbr_present {
+                Some(CODEC_PROFILE_AAC_HE)
+            }
+            else {
+                Some(CODEC_PROFILE_AAC_LC)
+            }
+        }
+        _ => None,
     }
 }

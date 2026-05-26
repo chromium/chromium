@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -45,19 +45,17 @@ use symphonia_core::audio::sample::SampleFormat;
 use symphonia_core::codecs::audio::well_known::{CODEC_ID_PCM_ALAW, CODEC_ID_PCM_MULAW};
 use symphonia_core::errors::{Result, decode_error, unsupported_error};
 use symphonia_core::io::ReadBytes;
-use symphonia_core::packet::Packet;
+use symphonia_core::packet::PacketRef;
 
 macro_rules! read_pcm_signed {
-    ($buf:expr, $fmt:tt, $read:expr, $width:expr, $coded_width:expr) => {
+    ($buf:expr, $fmt:tt, $read:expr, $width:expr, $shift:expr) => {
         // Get buffer of the correct sample format.
         match $buf {
             GenericAudioBuffer::$fmt(ref mut buf) => {
                 // Read samples.
-                let shift = $width - $coded_width;
-
                 buf.render_with(None, |idx, audio_planes| -> Result<()> {
                     for plane in audio_planes.iter_mut() {
-                        plane[idx] = ($read << shift).into_sample();
+                        plane[idx] = ($read << $shift).into_sample();
                     }
                     Ok(())
                 })
@@ -68,15 +66,14 @@ macro_rules! read_pcm_signed {
 }
 
 macro_rules! read_pcm_unsigned {
-    ($buf:expr, $fmt:tt, $read:expr, $width:expr, $coded_width:expr) => {
+    ($buf:expr, $fmt:tt, $read:expr, $width:expr, $shift:expr) => {
         // Get buffer of the correct sample format.
         match $buf {
             GenericAudioBuffer::$fmt(ref mut buf) => {
                 // Read samples.
-                let shift = $width - $coded_width;
                 buf.render_with(None, |idx, audio_planes| -> Result<()> {
                     for plane in audio_planes.iter_mut() {
-                        plane[idx] = ($read << shift).into_sample();
+                        plane[idx] = ($read << $shift).into_sample();
                     }
                     Ok(())
                 })
@@ -212,8 +209,8 @@ fn is_supported_pcm_codec(codec_id: AudioCodecId) -> bool {
 /// Pulse Code Modulation (PCM) decoder for all raw PCM, and log-PCM codecs.
 pub struct PcmDecoder {
     params: AudioCodecParameters,
-    /// The number of bits in a coded sample that are valid.
-    coded_width: u32,
+    /// The number of bits a coded sample should be shifted up to reach the decoded sample width.
+    shift: u32,
     /// The number of bytes per coded frame.
     bytes_per_coded_frame: usize,
     buf: GenericAudioBuffer,
@@ -264,30 +261,50 @@ impl PcmDecoder {
             _ => unreachable!(),
         };
 
-        // Signed and unsigned integer PCM codecs may code fewer bits per sample than the actual
-        // sample format. The number of coded bits is therefore required to shift the decoded
-        // samples into the range of the sample format. Try to get the bits per coded sample
-        // parameter, or, if failing that, the bits per sample parameter.
-        let coded_width =
-            params.bits_per_coded_sample.unwrap_or_else(|| params.bits_per_sample.unwrap_or(0));
-
-        // If the coded sample width is unknown, then the bits per coded sample may be constant and
-        // implicit to the codec.
-        if coded_width == 0 {
-            // A-Law, Mu-Law, and floating point codecs have an implicit coded sample bit-width. If
-            // the codec is none of those, then decoding is not possible.
-            match params.codec {
-                CODEC_ID_PCM_F32LE | CODEC_ID_PCM_F32BE => (),
-                CODEC_ID_PCM_F64LE | CODEC_ID_PCM_F64BE => (),
-                CODEC_ID_PCM_ALAW | CODEC_ID_PCM_MULAW => (),
-                _ => return unsupported_error("pcm: unknown bits per (coded) sample"),
+        // Do not allow the stated bits per coded sample to exceed the intrinsic width of the sample
+        // format.
+        if let Some(bits_per_coded_sample) = params.bits_per_coded_sample {
+            if bits_per_coded_sample > sample_format_width {
+                return decode_error("pcm: bits per coded sample greater-than sample format");
             }
         }
-        else if coded_width > sample_format_width {
-            // If the coded sample width is greater than the width of the sample format, then the
-            // stream has incorrect parameters.
-            return decode_error("pcm: coded bits per sample is greater than the sample format");
+
+        // Do not allow the stated bits per sample to exceed the intrinsic width of the sample
+        // format.
+        if let Some(bits_per_sample) = params.bits_per_sample {
+            if bits_per_sample > sample_format_width {
+                return decode_error("pcm: bits per sample is greater-than sample format");
+            }
+
+            // Do not allow the bits per coded sample to exceed the bits per sample.
+            if let Some(bits_per_coded_sample) = params.bits_per_coded_sample {
+                if bits_per_coded_sample > bits_per_sample {
+                    return decode_error("pcm: bits per coded sample greater-than bits per sample");
+                }
+            }
         }
+
+        let decoded_width = params.bits_per_sample.unwrap_or(sample_format_width);
+        let coded_width = params.bits_per_coded_sample.unwrap_or(decoded_width);
+
+        // A-Law, Mu-Law, and floating point codecs have an implicit coded sample bit-width. Check
+        // the decoded and coded widths are not illogical.
+        match params.codec {
+            CODEC_ID_PCM_F32LE | CODEC_ID_PCM_F32BE | CODEC_ID_PCM_F64LE | CODEC_ID_PCM_F64BE
+            | CODEC_ID_PCM_ALAW | CODEC_ID_PCM_MULAW => {
+                if decoded_width != sample_format_width {
+                    return decode_error("pcm: unexpected bits per sample");
+                }
+                if coded_width != sample_format_width {
+                    return decode_error("pcm: unexpected bits per coded sample");
+                }
+            }
+            _ => (),
+        }
+
+        // Signed and unsigned integer PCM codecs may code fewer bits per sample than the actual
+        // decoded sample width.
+        let shift = decoded_width - coded_width;
 
         // The number of bytes per coded audio frame.
         let bytes_per_coded_frame = bytes_per_coded_sample * spec.channels().count();
@@ -295,12 +312,12 @@ impl PcmDecoder {
         // Create an audio buffer of the correct sample format.
         let buf = GenericAudioBuffer::new(sample_format, spec, capacity);
 
-        Ok(PcmDecoder { params: params.clone(), coded_width, bytes_per_coded_frame, buf })
+        Ok(PcmDecoder { params: params.clone(), shift, bytes_per_coded_frame, buf })
     }
 
-    fn decode_inner(&mut self, packet: &Packet) -> Result<()> {
+    fn decode_inner(&mut self, packet: &PacketRef<'_>) -> Result<()> {
         // Calculate the number of complete audio frames per-packet.
-        let num_frames = packet.buf().len() / self.bytes_per_coded_frame;
+        let num_frames = packet.data.len() / self.bytes_per_coded_frame;
 
         // Clear and grow the audio buffer to the required capacity.
         self.buf.clear();
@@ -310,46 +327,46 @@ impl PcmDecoder {
 
         let _ = match self.params.codec {
             CODEC_ID_PCM_S32LE => {
-                read_pcm_signed!(self.buf, S32, reader.read_i32()?, 32, self.coded_width)
+                read_pcm_signed!(self.buf, S32, reader.read_i32()?, 32, self.shift)
             }
             CODEC_ID_PCM_S32BE => {
-                read_pcm_signed!(self.buf, S32, reader.read_be_i32()?, 32, self.coded_width)
+                read_pcm_signed!(self.buf, S32, reader.read_be_i32()?, 32, self.shift)
             }
             CODEC_ID_PCM_S24LE => {
-                read_pcm_signed!(self.buf, S24, reader.read_i24()? << 8, 24, self.coded_width)
+                read_pcm_signed!(self.buf, S24, reader.read_i24()? << 8, 24, self.shift)
             }
             CODEC_ID_PCM_S24BE => {
-                read_pcm_signed!(self.buf, S24, reader.read_be_i24()? << 8, 24, self.coded_width)
+                read_pcm_signed!(self.buf, S24, reader.read_be_i24()? << 8, 24, self.shift)
             }
             CODEC_ID_PCM_S16LE => {
-                read_pcm_signed!(self.buf, S16, reader.read_i16()?, 16, self.coded_width)
+                read_pcm_signed!(self.buf, S16, reader.read_i16()?, 16, self.shift)
             }
             CODEC_ID_PCM_S16BE => {
-                read_pcm_signed!(self.buf, S16, reader.read_be_i16()?, 16, self.coded_width)
+                read_pcm_signed!(self.buf, S16, reader.read_be_i16()?, 16, self.shift)
             }
             CODEC_ID_PCM_S8 => {
-                read_pcm_signed!(self.buf, S8, reader.read_i8()?, 8, self.coded_width)
+                read_pcm_signed!(self.buf, S8, reader.read_i8()?, 8, self.shift)
             }
             CODEC_ID_PCM_U32LE => {
-                read_pcm_unsigned!(self.buf, U32, reader.read_u32()?, 32, self.coded_width)
+                read_pcm_unsigned!(self.buf, U32, reader.read_u32()?, 32, self.shift)
             }
             CODEC_ID_PCM_U32BE => {
-                read_pcm_unsigned!(self.buf, U32, reader.read_be_u32()?, 32, self.coded_width)
+                read_pcm_unsigned!(self.buf, U32, reader.read_be_u32()?, 32, self.shift)
             }
             CODEC_ID_PCM_U24LE => {
-                read_pcm_unsigned!(self.buf, U24, reader.read_u24()? << 8, 24, self.coded_width)
+                read_pcm_unsigned!(self.buf, U24, reader.read_u24()? << 8, 24, self.shift)
             }
             CODEC_ID_PCM_U24BE => {
-                read_pcm_unsigned!(self.buf, U24, reader.read_be_u24()? << 8, 24, self.coded_width)
+                read_pcm_unsigned!(self.buf, U24, reader.read_be_u24()? << 8, 24, self.shift)
             }
             CODEC_ID_PCM_U16LE => {
-                read_pcm_unsigned!(self.buf, U16, reader.read_u16()?, 16, self.coded_width)
+                read_pcm_unsigned!(self.buf, U16, reader.read_u16()?, 16, self.shift)
             }
             CODEC_ID_PCM_U16BE => {
-                read_pcm_unsigned!(self.buf, U16, reader.read_be_u16()?, 16, self.coded_width)
+                read_pcm_unsigned!(self.buf, U16, reader.read_be_u16()?, 16, self.shift)
             }
             CODEC_ID_PCM_U8 => {
-                read_pcm_unsigned!(self.buf, U8, reader.read_u8()?, 8, self.coded_width)
+                read_pcm_unsigned!(self.buf, U8, reader.read_u8()?, 8, self.shift)
             }
             CODEC_ID_PCM_F32LE => {
                 read_pcm_floating!(self.buf, F32, reader.read_f32()?)
@@ -408,7 +425,7 @@ impl AudioDecoder for PcmDecoder {
         &self.params
     }
 
-    fn decode(&mut self, packet: &Packet) -> Result<GenericAudioBufferRef<'_>> {
+    fn decode_ref(&mut self, packet: &PacketRef<'_>) -> Result<GenericAudioBufferRef<'_>> {
         if let Err(e) = self.decode_inner(packet) {
             self.buf.clear();
             Err(e)

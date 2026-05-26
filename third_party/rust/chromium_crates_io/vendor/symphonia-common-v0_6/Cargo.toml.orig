@@ -15,10 +15,10 @@ version.workspace = true
 
 [dependencies]
 log = { workspace = true }
-symphonia-core = { version = "0.6.0-alpha.2", path = "../symphonia-core" }
+symphonia-core = { version = "0.6.0", path = "../symphonia-core" }
 
 [dependencies.symphonia-metadata]
-version = "0.6.0-alpha.2"
+version = "0.6.0"
 path = "../symphonia-metadata"
 default-features = false
 features = ["flac"]

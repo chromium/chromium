@@ -7,23 +7,12 @@
 </p>
 -->
 
-<p>
-    <a href="https://crates.io/crates/symphonia">
-        <img alt="Crate Info" src="https://img.shields.io/crates/v/symphonia.svg"/>
-    </a>
-    <a href="https://docs.rs/symphonia/">
-        <img alt="API Docs" src="https://img.shields.io/badge/docs.rs-symphonia-brightgreen"/>
-    </a>
-    <a href="https://github.com/pdeljanov/Symphonia/actions/workflows/ci.yml">
-        <img src="https://github.com/pdeljanov/Symphonia/actions/workflows/ci.yml/badge.svg" />
-    </a>
-    <a href="https://deps.rs/repo/github/pdeljanov/symphonia">
-        <img src="https://deps.rs/repo/github/pdeljanov/symphonia/status.svg" />
-    </a>
-    <a href="https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/">
-        <img alt="Rustc Version 1.85+" src="https://img.shields.io/badge/rustc-1.85%2B-lightgrey.svg"/>
-    </a>
-</p>
+[<img alt="Crates.io" src="https://img.shields.io/crates/v/symphonia?style=for-the-badge" height="22"/>](https://crates.io/crates/symphonia)
+[<img alt="Docs.rs" src="https://img.shields.io/badge/docs.rs-symphonia-brightgreen?style=for-the-badge" height="22"/>](https://docs.rs/symphonia)
+[<img alt="GitHub Actions Status" src="https://img.shields.io/github/actions/workflow/status/pdeljanov/symphonia/ci.yml?branch=main&style=for-the-badge" height="22"/>](https://github.com/pdeljanov/Symphonia/actions/workflows/ci.yml)
+[<img alt="Deps.rs" src="https://deps.rs/repo/github/pdeljanov/symphonia/status.svg?style=for-the-badge" height="22"/>](https://deps.rs/repo/github/pdeljanov/symphonia)
+[<img alt="Crates.io MSRV" src="https://img.shields.io/crates/msrv/symphonia?style=for-the-badge" height="22"/>](https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/)
+[<img alt="MPL License" src="https://img.shields.io/crates/l/symphonia?style=for-the-badge" height="22"/>](https://www.mozilla.org/en-US/MPL/2.0/)
 
 <p>
     <strong>
@@ -66,7 +55,8 @@ Additionally, planned features include:
 
 Support for individual audio codecs and media formats are provided by separate crates. By default, Symphonia only enables support royalty-free open standard codecs and formats, but others may be enabled using feature flags.
 
-> **Tip:** All formats and codecs can be enabled with the `all` feature flag.
+> [!TIP]
+> All formats and codecs can be enabled with the `all` feature flag.
 
 ### Status
 
@@ -95,13 +85,14 @@ A status of *Excellent* is only assigned after the feature passes all compliance
 
 \* Gapless playback requires support from both the demuxer and decoder.
 
-[`symphonia-format-caf`]: https://docs.rs/symphonia-format-caf
-[`symphonia-format-isomp4`]: https://docs.rs/symphonia-format-isomp4
-[`symphonia-format-mkv`]: https://docs.rs/symphonia-format-mkv
-[`symphonia-format-ogg`]: https://docs.rs/symphonia-format-ogg
-[`symphonia-format-riff`]: https://docs.rs/symphonia-format-riff
+[`symphonia-format-caf`]: https://crates.io/crates/symphonia-format-caf
+[`symphonia-format-isomp4`]: https://crates.io/crates/symphonia-format-isomp4
+[`symphonia-format-mkv`]: https://crates.io/crates/symphonia-format-mkv
+[`symphonia-format-ogg`]: https://crates.io/crates/symphonia-format-ogg
+[`symphonia-format-riff`]: https://crates.io/crates/symphonia-format-riff
 
-> **Tip:** All formats can be enabled with the `all-formats` feature flag.
+> [!TIP]
+> All formats can be enabled with the `all-formats` feature flag.
 
 ### Codecs (Decoders)
 
@@ -119,15 +110,16 @@ A status of *Excellent* is only assigned after the feature passes all compliance
 
 A `symphonia-bundle-*` package is a combination of a decoder and a native demuxer.
 
-[`symphonia-codec-aac`]: https://docs.rs/symphonia-codec-aac
-[`symphonia-codec-adpcm`]: https://docs.rs/symphonia-codec-adpcm
-[`symphonia-codec-alac`]: https://docs.rs/symphonia-codec-alac
-[`symphonia-bundle-flac`]: https://docs.rs/symphonia-bundle-flac
-[`symphonia-bundle-mp3`]: https://docs.rs/symphonia-bundle-mp3
-[`symphonia-codec-pcm`]: https://docs.rs/symphonia-codec-pcm
-[`symphonia-codec-vorbis`]: https://docs.rs/symphonia-codec-vorbis
+[`symphonia-codec-aac`]: https://crates.io/crates/symphonia-codec-aac
+[`symphonia-codec-adpcm`]: https://crates.io/crates/symphonia-codec-adpcm
+[`symphonia-codec-alac`]: https://crates.io/crates/symphonia-codec-alac
+[`symphonia-bundle-flac`]: https://crates.io/crates/symphonia-bundle-flac
+[`symphonia-bundle-mp3`]: https://crates.io/crates/symphonia-bundle-mp3
+[`symphonia-codec-pcm`]: https://crates.io/crates/symphonia-codec-pcm
+[`symphonia-codec-vorbis`]: https://crates.io/crates/symphonia-codec-vorbis
 
-> **Tip:** All codecs can be enabled with the `all-codecs` feature flag. Similarly, all MPEG audio codecs can be enabled with the `mpa` feature flag.
+> [!TIP]
+> All codecs can be enabled with the `all-codecs` feature flag. Similarly, all MPEG audio codecs can be enabled with the `mpa` feature flag.
 
 ### Tags (Readers)
 
@@ -146,7 +138,23 @@ For metadata formats that are standalone and not part of the media container, a 
 | Vorbis comment (FLAC) | Perfect   | N/A          | N/A     |
 | Vorbis comment (OGG)  | Perfect   | N/A          | N/A     |
 
-> **Tip:** All metadata formats can be enabled with the `all-meta` feature flag.
+> [!TIP]
+> All metadata formats can be enabled with the `all-meta` feature flag.
+
+### Third-party Demuxers and Decoders
+
+Symphonia is a designed around a modular framework that allows the registration of third-party demuxers and decoders. This table provides a list of crates that implement such components.
+
+> [!IMPORTANT]
+> This is not an endorsement of the quality, safety, or performance of these implementations. Please exercise your own judgement.
+
+| Crate                         | Provides                                     |
+|-------------------------------|----------------------------------------------|
+| [`symphonia-adapter-fdk-aac`] | AAC-LC, HE-AAC, & HE-AACv2 via. `libfdk-aac` |
+| [`symphonia-adapter-libopus`] | Opus via. `libopus`                          |
+
+[`symphonia-adapter-fdk-aac`]: https://crates.io/crates/symphonia-adapter-fdk-aac
+[`symphonia-adapter-libopus`]: https://crates.io/crates/symphonia-adapter-libopus
 
 ## Quality
 
@@ -173,7 +181,8 @@ All SIMD optimizations are enabled by default. SIMD support will pull in the `ru
 | AVX             | `opt-simd-avx`  | Yes     |
 | Neon            | `opt-simd-neon` | Yes     |
 
-> **Tip:** All SIMD optimizations can be enabled with the `opt-simd` feature flag.
+> [!TIP]
+> All SIMD optimizations can be enabled with the `opt-simd` feature flag.
 
 ## Examples
 
@@ -190,7 +199,7 @@ Symphonia provides the following tools for debugging purposes:
 
 ## Minimum Supported Rust Version
 
-The minimum supported Rust version (MSRV) for Symphonia 0.6.x releases is 1.77.
+The minimum supported Rust version (MSRV) for Symphonia 0.6.x releases is 1.85.
 
 This project considers incrementing the MSRV to be a SemVer breaking change.
 

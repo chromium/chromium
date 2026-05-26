@@ -1,10 +1,11 @@
 # Symphonia Metadata Utilities
 
-[![Docs](https://docs.rs/symphonia-metadata/badge.svg)](https://docs.rs/symphonia-metadata)
+[<img alt="Docs.rs" src="https://img.shields.io/badge/docs.rs-symphonia_metadata-brightgreen?style=for-the-badge" height="22"/>](https://docs.rs/symphonia-metadata)
 
 Project Symphonia metadata format readers and helper utilities.
 
-**Note:** This crate is part of Symphonia. Please use the [`symphonia`](https://crates.io/crates/symphonia) crate instead of this one directly.
+> [!NOTE]
+> This crate is part of Symphonia. Please use the [`symphonia`](https://crates.io/crates/symphonia) crate instead of this one directly.
 
 ## License
 

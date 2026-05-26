@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -417,7 +417,7 @@ pub fn read_chap_frame(mut reader: BufReader<'_>, frame: &FrameInfo<'_>) -> Resu
         }?;
 
         match frame {
-            FrameResult::MultipleTags(tag_list) => tags.extend(tag_list.into_iter()),
+            FrameResult::MultipleTags(tag_list) => tags.extend(tag_list),
             FrameResult::Tag(mut tag) => {
                 // The TIT2 (track title) and TIT3 (track subtitle/description) ID3v2 frames are
                 // repurposed for chapter title and description, respectively.
@@ -590,7 +590,7 @@ pub fn read_ctoc_frame(mut reader: BufReader<'_>, frame: &FrameInfo<'_>) -> Resu
         }?;
 
         match frame {
-            FrameResult::MultipleTags(tag_list) => tags.extend(tag_list.into_iter()),
+            FrameResult::MultipleTags(tag_list) => tags.extend(tag_list),
             FrameResult::Tag(tag) => tags.push(tag),
             FrameResult::Visual(visual) => visuals.push(visual),
             _ => {}

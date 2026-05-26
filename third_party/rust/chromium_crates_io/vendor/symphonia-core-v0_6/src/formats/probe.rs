@@ -1,5 +1,5 @@
 // Symphonia
-// Copyright (c) 2019-2022 The Project Symphonia Developers.
+// Copyright (c) 2019-2026 The Project Symphonia Developers.
 //
 // This Source Code Form is subject to the terms of the Mozilla Public
 // License, v. 2.0. If a copy of the MPL was not distributed with this
@@ -459,7 +459,9 @@ impl Probe {
                 // If metadata was found, instantiate the metadata reader, read the metadata, and
                 // push it onto the metadata log.
                 ProbeMatch::Metadata { factory, .. } => {
-                    mss = read_and_append_metadata(factory, mss, meta_opts, &mut fmt_opts)?;
+                    let mut reader = factory(mss, meta_opts)?;
+                    read_and_append_metadata(&mut reader, &mut fmt_opts)?;
+                    mss = reader.into_inner();
                 }
             }
         }
@@ -513,10 +515,27 @@ impl Probe {
                 if let Some(ProbeMatch::Metadata { factory, .. }) =
                     self.find_best_reader(&mut mss, true)?
                 {
-                    mss = read_and_append_metadata(factory, mss, meta_opts, fmt_opts)?;
+                    let mut reader = factory(mss, meta_opts)?;
 
-                    // a reader, and reading from the stream.
-                    last_reader_end = mss.pos();
+                    // When reading anchored metadata fails it is reasonable to just ignore the
+                    // error and continue because the MSS will be repositioned immediately after
+                    // anyways.
+                    let is_ok = read_and_append_metadata(&mut reader, fmt_opts).is_ok();
+
+                    if !is_ok {
+                        warn!(
+                            "skipping trailing '{}' metdata due to error while reading it",
+                            reader.metadata_info().short_name
+                        );
+                    }
+
+                    mss = reader.into_inner();
+
+                    // If metadata was successfully read, then only anchor positions that are after
+                    // the reader's current position need to be checked.
+                    if is_ok {
+                        last_reader_end = mss.pos();
+                    }
                 }
             }
         }
@@ -619,14 +638,9 @@ impl Probe {
 }
 
 fn read_and_append_metadata<'s>(
-    factory: MetadataFactoryFn,
-    mss: MediaSourceStream<'s>,
-    meta_opts: MetadataOptions,
+    reader: &mut Box<dyn MetadataReader + 's>,
     fmt_opts: &mut FormatOptions,
-) -> Result<MediaSourceStream<'s>> {
-    // Create the metadata reader using the provided factory function.
-    let mut reader = factory(mss, meta_opts)?;
-
+) -> Result<()> {
     // Read all metadata and get a metdata revision.
     let metadata = reader.read_all()?;
 
@@ -647,7 +661,7 @@ fn read_and_append_metadata<'s>(
     }
 
     // Consume the metadata reader and return the media source stream to the caller.
-    Ok(reader.into_inner())
+    Ok(())
 }
 
 fn find_reader(

@@ -1,10 +1,11 @@
 # Symphonia Common Utilities
 
-[![Docs](https://docs.rs/symphonia-common/badge.svg)](https://docs.rs/symphonia-common)
+[<img alt="Docs.rs" src="https://img.shields.io/badge/docs.rs-symphonia_common-brightgreen?style=for-the-badge" height="22"/>](https://docs.rs/symphonia-common)
 
 Common utilities for codecs and formats for Project Symphonia.
 
-**Note:** This crate is part of Symphonia. Please use the [`symphonia`](https://crates.io/crates/symphonia) crate instead of this one directly.
+> [!WARNING]
+> This crate is considered an internal-only implementation detail of Symphonia and should never be used by crates that are not first-party Symphonia demuxers or decoders.
 
 ## License
 

@@ -1,12 +1,13 @@
 # Symphonia FLAC Codec
 
-[![Docs](https://docs.rs/symphonia-bundle-flac/badge.svg)](https://docs.rs/symphonia-bundle-flac)
+[<img alt="Docs.rs" src="https://img.shields.io/badge/docs.rs-symphonia_bundle_flac-brightgreen?style=for-the-badge" height="22"/>](https://docs.rs/symphonia-bundle-flac)
 
  > Come for the fidelity, stay for the memory safety!
 
 FLAC decoder for Project Symphonia.
 
-**Note:** This crate is part of Symphonia. Please use the [`symphonia`](https://crates.io/crates/symphonia) crate instead of this one directly.
+> [!NOTE]
+> This crate is part of Symphonia. Please use the [`symphonia`](https://crates.io/crates/symphonia) crate instead of this one directly.
 
 ## License
 
