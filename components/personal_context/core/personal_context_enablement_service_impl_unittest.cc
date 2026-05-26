@@ -74,11 +74,12 @@ class PersonalContextEnablementServiceImplTest : public testing::Test {
     identity_test_env_.UpdateAccountInfoForAccount(builder.Build());
   }
 
-  void CreateService(const std::string& country_code) {
+  void CreateService(const std::string& country_code,
+                     const std::string& locale = "en-US") {
     service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
         &mock_account_settings_service_, identity_test_env_.identity_manager(),
         subscription_eligibility_service_.get(), &pref_service_,
-        GeoIpCountryCode(base::ToUpperASCII(country_code)));
+        GeoIpCountryCode(base::ToUpperASCII(country_code)), locale);
   }
 
   void SetPrefs() {
@@ -248,7 +249,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
   service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
       nullptr, identity_test_env_.identity_manager(),
       subscription_eligibility_service_.get(), &pref_service_,
-      GeoIpCountryCode("US"));
+      GeoIpCountryCode("US"), "en-US");
 
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kDisabledNotEligible);
@@ -420,7 +421,7 @@ TEST_F(PersonalContextEnablementServiceImplTest,
   service_ = std::make_unique<PersonalContextEnablementServiceImpl>(
       nullptr, identity_test_env_.identity_manager(),
       subscription_eligibility_service_.get(), &pref_service_,
-      GeoIpCountryCode("US"));
+      GeoIpCountryCode("US"), "en-US");
 
   EXPECT_EQ(service().GetEnablementState(),
             PersonalContextEnablementState::kDisabledNotEligible);
@@ -501,6 +502,30 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(PersonalContextEnablementServiceImplGeolocationTest,
        CheckCountryEnablement) {
   CreateService(std::get<0>(GetParam()));
+  EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
+}
+
+class PersonalContextEnablementServiceImplLocaleTest
+    : public PersonalContextEnablementServiceImplTest,
+      public testing::WithParamInterface<
+          std::tuple<std::string, PersonalContextEnablementState>> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    PersonalContextEnablementServiceImplLocaleTest,
+    testing::Values(
+        std::make_tuple(/*locale=*/"fr-FR",
+                        PersonalContextEnablementState::kDisabledNotEligible),
+        std::make_tuple(/*locale=*/"de-DE",
+                        PersonalContextEnablementState::kDisabledNotEligible),
+        std::make_tuple(/*locale=*/"en-US",
+                        PersonalContextEnablementState::kEnabled),
+        std::make_tuple(/*locale=*/"en-GB",
+                        PersonalContextEnablementState::kDisabledNotEligible)));
+
+// Verifies that the service is only enabled for the en-US locale.
+TEST_P(PersonalContextEnablementServiceImplLocaleTest, CheckLocaleEnablement) {
+  CreateService("us", std::get<0>(GetParam()));
   EXPECT_EQ(service().GetEnablementState(), std::get<1>(GetParam()));
 }
 

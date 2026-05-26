@@ -7,9 +7,11 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/personal_context/core/country_type.h"
 #include "components/personal_context/core/personal_context_enablement_service_impl.h"
 #include "components/personal_context/core/personal_context_features.h"
@@ -84,5 +86,6 @@ PersonalContextEnablementServiceFactory::BuildServiceInstanceForBrowserContext(
       personal_context::PersonalContextEnablementServiceImpl>(
       account_settings_service, identity_manager,
       subscription_eligibility_service, profile->GetPrefs(),
-      GetCountryCodeFromVariations());
+      GetCountryCodeFromVariations(),
+      g_browser_process->GetFeatures()->application_locale_storage()->Get());
 }

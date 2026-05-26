@@ -32,7 +32,8 @@ class PersonalContextEnablementServiceImpl
       subscription_eligibility::SubscriptionEligibilityService*
           subscription_eligibility_service,
       PrefService* pref_service,
-      GeoIpCountryCode country_code);
+      GeoIpCountryCode country_code,
+      std::string locale);
   PersonalContextEnablementServiceImpl(
       const PersonalContextEnablementServiceImpl&) = delete;
   PersonalContextEnablementServiceImpl& operator=(
@@ -72,6 +73,7 @@ class PersonalContextEnablementServiceImpl
       subscription_eligibility_service_;
   const raw_ptr<PrefService> pref_service_;
   const GeoIpCountryCode country_code_;
+  const std::string locale_;
   base::ObserverList<PersonalContextEnablementService::Observer> observers_;
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>

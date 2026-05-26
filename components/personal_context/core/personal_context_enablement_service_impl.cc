@@ -154,13 +154,19 @@ const base::flat_set<int32_t>& GetPersonalContextEligibleTiers() {
   return true;
 }
 
-// Checks whether miscellaneous "other" requirements (e.g. Geo-IP)
+// Checks whether miscellaneous "other" requirements (e.g. Geo-IP, locale)
 // are satisfied.
 [[nodiscard]] bool SatisfiesMiscellaneousRequirements(
     GeoIpCountryCode country_code,
+    std::string_view locale,
     std::string* debug_message = nullptr) {
   if (country_code != GeoIpCountryCode("US")) {
     MaybeOutputReason(debug_message, "Unsupported GeoIp.");
+    return false;
+  }
+
+  if (locale != "en-US") {
+    MaybeOutputReason(debug_message, "Unsupported locale.");
     return false;
   }
 
@@ -194,12 +200,14 @@ PersonalContextEnablementServiceImpl::PersonalContextEnablementServiceImpl(
     subscription_eligibility::SubscriptionEligibilityService*
         subscription_eligibility_service,
     PrefService* pref_service,
-    GeoIpCountryCode country_code)
+    GeoIpCountryCode country_code,
+    std::string locale)
     : account_settings_service_(account_settings_service),
       identity_manager_(identity_manager),
       subscription_eligibility_service_(subscription_eligibility_service),
       pref_service_(pref_service),
-      country_code_(std::move(country_code)) {
+      country_code_(std::move(country_code)),
+      locale_(std::move(locale)) {
   if (account_settings_service_) {
     account_settings_observation_.Observe(account_settings_service_);
   }
@@ -258,7 +266,7 @@ PersonalContextEnablementServiceImpl::ComputeEnablementState() {
     return kDisabledNotEligible;
   }
 
-  if (!SatisfiesMiscellaneousRequirements(country_code_)) {
+  if (!SatisfiesMiscellaneousRequirements(country_code_, locale_)) {
     return kDisabledNotEligible;
   }
 
