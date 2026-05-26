@@ -169,6 +169,7 @@ public class NtpCustomizationPromoManager {
 
     private static void showSnackBar(Context context, SnackbarManager snackbarManager) {
         sState = SnackBarState.SHOWN;
+        NtpCustomizationUtils.setThemeSnackbarShownToSharedPreference(true);
         String messageText = context.getString(R.string.ntp_customization_theme_snackbar_text);
         Snackbar snackbar =
                 Snackbar.make(
@@ -192,7 +193,11 @@ public class NtpCustomizationPromoManager {
             @SnackBarState int newState, int taskId) {
         boolean forceBottomSheetShow =
                 ChromeFeatureList.sNewTabPageCustomizationV2ForceShowTipBottomSheet.getValue();
-        if (sState == SnackBarState.SHOWN && !forceBottomSheetShow) return;
+        if ((sState == SnackBarState.SHOWN
+                        || NtpCustomizationUtils.isThemeSnackbarShownFromSharedPreference())
+                && !forceBottomSheetShow) {
+            return;
+        }
 
         if (newState == SnackBarState.PROMO_OPEN) {
             if (sState == SnackBarState.NOT_SET || forceBottomSheetShow) {

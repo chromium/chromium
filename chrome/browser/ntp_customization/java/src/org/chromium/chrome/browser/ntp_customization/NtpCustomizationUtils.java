@@ -31,6 +31,7 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS;
 import static org.chromium.components.browser_ui.styles.SemanticColorUtils.getDefaultIconColor;
 
@@ -906,6 +907,18 @@ public class NtpCustomizationUtils {
         return prefsManager.contains(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
     }
 
+    /** Sets whether the customized NTP theme snackbar has been shown to the SharedPreference. */
+    public static void setThemeSnackbarShownToSharedPreference(boolean shown) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeBoolean(NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN, shown);
+    }
+
+    /** Gets whether the customized NTP theme snackbar has been shown from the SharedPreference. */
+    public static boolean isThemeSnackbarShownFromSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readBoolean(NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN, false);
+    }
+
     /**
      * Sets the timestamp of the last time when a daily refreshed theme color or background image
      * was set.
@@ -1558,6 +1571,7 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP);
         prefsManager.removeKey(NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN);
         prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_APPLY_THEME_TIMESTAMP_MS);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_COLOR_ID);
         prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);

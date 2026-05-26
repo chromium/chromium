@@ -835,9 +835,11 @@ public class NtpCustomizationMediatorUnitTest {
         if (expectSnackbarShown) {
             // Verify snackbar is shown
             verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
+            assertTrue(NtpCustomizationUtils.isThemeSnackbarShownFromSharedPreference());
         } else {
             // Verify snackbar isn't shown.
             verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+            assertFalse(NtpCustomizationUtils.isThemeSnackbarShownFromSharedPreference());
         }
 
         assertEquals(expectedState, NtpCustomizationPromoManager.getStateForTesting());

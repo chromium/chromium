@@ -318,6 +318,7 @@ public class NtpCustomizationPromoManagerUnitTest {
 
         verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
         assertEquals(SnackBarState.SHOWN, NtpCustomizationPromoManager.getStateForTesting());
+        assertTrue(NtpCustomizationUtils.isThemeSnackbarShownFromSharedPreference());
     }
 
     @Test
@@ -357,6 +358,7 @@ public class NtpCustomizationPromoManagerUnitTest {
 
         verify(mSnackbarManager).showSnackbar(any(Snackbar.class));
         assertEquals(SnackBarState.SHOWN, NtpCustomizationPromoManager.getStateForTesting());
+        assertTrue(NtpCustomizationUtils.isThemeSnackbarShownFromSharedPreference());
     }
 
     @Test
@@ -367,6 +369,21 @@ public class NtpCustomizationPromoManagerUnitTest {
                 mContext, mSnackbarManager);
 
         verify(mSnackbarManager, never()).showSnackbar(any(Snackbar.class));
+        assertEquals(SnackBarState.NOT_SET, NtpCustomizationPromoManager.getStateForTesting());
+    }
+
+    @Test
+    public void testMaybeUpdateShowThemeTipSnackbarState_alreadyShownInSharedPreference() {
+        int taskId = 123;
+
+        // Set preference to true (already shown)
+        NtpCustomizationUtils.setThemeSnackbarShownToSharedPreference(true);
+
+        // Try to transition to PROMO_OPEN
+        NtpCustomizationPromoManager.maybeUpdateShowThemeTipSnackbarState(
+                SnackBarState.PROMO_OPEN, taskId);
+
+        // State should remain NOT_SET because it was already shown
         assertEquals(SnackBarState.NOT_SET, NtpCustomizationPromoManager.getStateForTesting());
     }
 }
