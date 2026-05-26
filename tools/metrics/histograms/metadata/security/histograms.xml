@@ -119,8 +119,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OSCrypt.BackendUsage" enum="LinuxPasswordStoreUsage"
     expires_after="2026-08-09">
-  <owner>vasilii@chromium.org</owner>
   <owner>mamir@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     The backend selected for this user and whether it was initialised
     successfully.

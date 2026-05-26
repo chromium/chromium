@@ -752,8 +752,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="ProfileChooser.HasProfilesShown" enum="BooleanShown"
     expires_after="2026-10-11">
-  <owner>vasilii@chromium.org</owner>
-  <owner>ewald@chromium.org</owner>
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <summary>
     Whether any profile was shown in the list when the profile chooser was
     opened.

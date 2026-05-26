@@ -11685,19 +11685,22 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="CredentialManager_AccountChooser_Accepted">
-  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <description>
     The user chose a credential via the account chooser.
   </description>
 </action>
 
 <action name="CredentialManager_AccountChooser_Dismissed">
-  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <description>The user dismissed the account chooser.</description>
 </action>
 
 <action name="CredentialManager_Autosignin">
-  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <description>
     The website tried to automatically sign the user in and got a credential
     back from the browser.
@@ -24730,7 +24733,7 @@ should be able to be added at any place in this file.
 
 <action name="ManageGoogleAccount_Clicked">
   <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
   <description>
     Recorded when the user clicked the &quot;Manage your Google Account&quot;
     link in the settings WebUI.
@@ -36941,20 +36944,19 @@ should be able to be added at any place in this file.
 
 <action name="Options_ShowPasswordCheck">
   <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
   <description>Settings: passwords check</description>
 </action>
 
 <action name="Options_ShowPasswordDetailsInPasswordManager">
   <owner>mamir@chromium.org</owner>
   <owner>vsemeniuk@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
   <description>Settings: credential details for domain</description>
 </action>
 
 <action name="Options_ShowPasswordManager">
   <owner>kazinova@google.com</owner>
-  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
   <description>Settings: saved passwords</description>
 </action>
 
@@ -38080,7 +38082,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordManager_Autofilled">
-  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <description>Username/password were autofilled on pageload.</description>
 </action>
 
@@ -38120,7 +38123,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordManager_LoginFailed">
-  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <description>
     The user submitted a password form, but the website appeared to reject the
     credentials. This action reflects the password manager component's logic for
@@ -38132,7 +38136,8 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordManager_LoginPassed">
-  <owner>vasilii@chromium.org</owner>
+  <owner>kazinova@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <description>
     The user submitted a password form and the website appeared to accept the
     credentials. This action reflects the password manager component's logic for
@@ -38150,7 +38155,7 @@ should be able to be added at any place in this file.
 
 <action name="PasswordManager_RemovePasskey">
   <owner>nsatragno@chromium.org</owner>
-  <owner>vasilii@chromium.org</owner>
+  <owner>markusheintz@google.com</owner>
   <description>
     The user removed a Google Password Manager passkey from within the Password
     Manager. Desktop only.
@@ -38158,14 +38163,16 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="PasswordManager_RemovePasswordException">
-  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <description>
     The user deleted a blocklisted credential from within the Password Manager.
   </description>
 </action>
 
 <action name="PasswordManager_RemoveSavedPassword">
-  <owner>vasilii@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
   <description>
     The user deleted a stored credential from within the Password Manager.
   </description>
