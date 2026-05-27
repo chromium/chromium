@@ -39,11 +39,14 @@ std::vector<ColorPlaneLayout> CreatePlanes(VideoPixelFormat format,
                                            const std::vector<size_t>& strides,
                                            const gfx::Size& coded_size) {
   std::vector<ColorPlaneLayout> planes(strides.size());
+  size_t offset = 0;
   for (size_t i = 0; i < strides.size(); i++) {
     size_t rows =
         VideoFrame::PlaneSizeInSamples(format, i, coded_size).height();
     planes[i].stride = strides[i];
+    planes[i].offset = offset;
     planes[i].size = strides[i] * rows;
+    offset += planes[i].size;
   }
   return planes;
 }
