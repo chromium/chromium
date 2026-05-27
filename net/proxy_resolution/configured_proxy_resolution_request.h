@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_config.h"
@@ -41,6 +42,7 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
       const GURL& url,
       const std::string& method,
       const NetworkAnonymizationKey& network_anonymization_key,
+      handles::NetworkHandle target_network,
       ProxyInfo* results,
       const CompletionOnceCallback user_callback,
       const NetLogWithSource& net_log,
@@ -88,6 +90,8 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   void OnDnsHostResolved(const url::SchemeHostPort& host,
                          const ResolveHostResult& result);
 
+  handles::NetworkHandle target_network() const { return target_network_; }
+
   NetLogWithSource* net_log() { return &net_log_; }
 
   // Request implementation:
@@ -117,6 +121,7 @@ class ConfiguredProxyResolutionRequest final : public ProxyResolutionRequest {
   const GURL url_;
   const std::string method_;
   const NetworkAnonymizationKey network_anonymization_key_;
+  const handles::NetworkHandle target_network_;
   std::unique_ptr<ProxyResolver::Request> resolve_job_;
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
   NetLogWithSource net_log_;

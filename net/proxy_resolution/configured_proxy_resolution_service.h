@@ -29,6 +29,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/network_handle.h"
 #include "net/dns/host_resolver.h"
 #include "net/log/net_log_with_source.h"
 #include "net/proxy_resolution/proxy_config_service.h"
@@ -144,6 +145,7 @@ class NET_EXPORT ConfiguredProxyResolutionService
   int ResolveProxy(const GURL& url,
                    const std::string& method,
                    const NetworkAnonymizationKey& network_anonymization_key,
+                   handles::NetworkHandle target_network,
                    ProxyInfo* results,
                    CompletionOnceCallback callback,
                    std::unique_ptr<ProxyResolutionRequest>* request,

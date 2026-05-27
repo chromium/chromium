@@ -117,8 +117,9 @@ class SystemProxyResolutionServiceTest : public TestWithTaskEnvironment {
     NetLogWithSource log;
     std::unique_ptr<ProxyResolutionRequest> request;
     int result = this->service()->ResolveProxy(
-        kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
-        callback.callback(), &request, log, DEFAULT_PRIORITY);
+        kResourceUrl, std::string(), NetworkAnonymizationKey(),
+        handles::kInvalidNetworkHandle, &info, callback.callback(), &request,
+        log, DEFAULT_PRIORITY);
 
     ASSERT_THAT(result, IsError(ERR_IO_PENDING));
     ASSERT_NE(request, nullptr);
@@ -157,8 +158,9 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest, ResolveProxyCancelled) {
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
   int result = this->service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, log, DEFAULT_PRIORITY);
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request, log,
+      DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -192,7 +194,8 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   TestCompletionCallback first_callback;
   std::unique_ptr<ProxyResolutionRequest> first_request;
   int result = this->service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &first_proxy_info,
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &first_proxy_info,
       first_callback.callback(), &first_request, log, DEFAULT_PRIORITY);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(first_request, nullptr);
@@ -202,8 +205,8 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   std::unique_ptr<ProxyResolutionRequest> second_request;
   result = this->service()->ResolveProxy(
       kResourceUrl, std::string(), NetworkAnonymizationKey(),
-      &second_proxy_info, second_callback.callback(), &second_request, log,
-      DEFAULT_PRIORITY);
+      handles::kInvalidNetworkHandle, &second_proxy_info,
+      second_callback.callback(), &second_request, log, DEFAULT_PRIORITY);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(second_request, nullptr);
 
@@ -230,7 +233,8 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   TestCompletionCallback first_callback;
   std::unique_ptr<ProxyResolutionRequest> first_request;
   int result = this->service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &first_proxy_info,
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &first_proxy_info,
       first_callback.callback(), &first_request, log, DEFAULT_PRIORITY);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(first_request, nullptr);
@@ -240,8 +244,8 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   std::unique_ptr<ProxyResolutionRequest> second_request;
   result = this->service()->ResolveProxy(
       kResourceUrl, std::string(), NetworkAnonymizationKey(),
-      &second_proxy_info, second_callback.callback(), &second_request, log,
-      DEFAULT_PRIORITY);
+      handles::kInvalidNetworkHandle, &second_proxy_info,
+      second_callback.callback(), &second_request, log, DEFAULT_PRIORITY);
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(second_request, nullptr);
 
@@ -428,8 +432,9 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
   int result = this->service()->ResolveProxy(
-      kResourceUrl, "GET", NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, log, DEFAULT_PRIORITY);
+      kResourceUrl, "GET", NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request, log,
+      DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -551,8 +556,9 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
   int result = this->service()->ResolveProxy(
-      kResourceUrl, "GET", NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, log, DEFAULT_PRIORITY);
+      kResourceUrl, "GET", NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request, log,
+      DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -591,8 +597,9 @@ TYPED_TEST_P(SystemProxyResolutionServiceTest,
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
   int result = this->service()->ResolveProxy(
-      kResourceUrl, "GET", NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, log, DEFAULT_PRIORITY);
+      kResourceUrl, "GET", NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request, log,
+      DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);

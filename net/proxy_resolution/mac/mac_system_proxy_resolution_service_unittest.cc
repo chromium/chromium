@@ -138,8 +138,9 @@ TEST_F(MacSystemProxyResolutionServiceTest, ResolveProxyFailed) {
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
   int result = service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, log, DEFAULT_PRIORITY);
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request, log,
+      DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -200,8 +201,9 @@ TEST_F(MacSystemProxyResolutionServiceTest,
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
   int result = service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, log, DEFAULT_PRIORITY);
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request, log,
+      DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -227,8 +229,9 @@ TEST_F(MacSystemProxyResolutionServiceTest,
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
   int result = service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, log, DEFAULT_PRIORITY);
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request, log,
+      DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);
@@ -273,8 +276,9 @@ TEST_F(MacSystemProxyResolutionServiceTest,
   NetLogWithSource log;
   std::unique_ptr<ProxyResolutionRequest> request;
   int result = service()->ResolveProxy(
-      kResourceUrl, std::string(), NetworkAnonymizationKey(), &info,
-      callback.callback(), &request, log, DEFAULT_PRIORITY);
+      kResourceUrl, std::string(), NetworkAnonymizationKey(),
+      handles::kInvalidNetworkHandle, &info, callback.callback(), &request, log,
+      DEFAULT_PRIORITY);
 
   ASSERT_THAT(result, IsError(ERR_IO_PENDING));
   ASSERT_NE(request, nullptr);

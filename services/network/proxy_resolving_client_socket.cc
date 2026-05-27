@@ -240,7 +240,10 @@ int ProxyResolvingClientSocket::DoProxyResolve() {
   // |proxy_resolve_request_| is destroyed.
   return network_session_->proxy_resolution_service()->ResolveProxy(
       url_, net::HttpRequestHeaders::kPostMethod, network_anonymization_key_,
-      &proxy_info_,
+      // There is currently no use case for targeting a specific network when
+      // ProxyResolvingClientSocket is used. Expose this capability once (if)
+      // there is a need. Until then, we always use kInvalidNetworkHandle.
+      net::handles::kInvalidNetworkHandle, &proxy_info_,
       base::BindOnce(&ProxyResolvingClientSocket::OnIOComplete,
                      base::Unretained(this)),
       &proxy_resolve_request_, net_log_, net::DEFAULT_PRIORITY);

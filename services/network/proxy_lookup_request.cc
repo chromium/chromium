@@ -46,11 +46,16 @@ void ProxyLookupRequest::Start(const GURL& url) {
   int result =
       network_context_->url_request_context()
           ->proxy_resolution_service()
-          ->ResolveProxy(
-              url, std::string(), network_anonymization_key_, &proxy_info_,
-              base::BindOnce(&ProxyLookupRequest::OnResolveComplete,
-                             base::Unretained(this)),
-              &request_, net::NetLogWithSource(), net::DEFAULT_PRIORITY);
+          ->ResolveProxy(url, std::string(), network_anonymization_key_,
+                         // There is currently no use case for targeting a
+                         // specific network when ProxyLookupRequest is used.
+                         // Expose this capability once (if) there is a need.
+                         // Until then, we always use kInvalidNetworkHandle.
+                         net::handles::kInvalidNetworkHandle, &proxy_info_,
+                         base::BindOnce(&ProxyLookupRequest::OnResolveComplete,
+                                        base::Unretained(this)),
+                         &request_, net::NetLogWithSource(),
+                         net::DEFAULT_PRIORITY);
   if (result != net::ERR_IO_PENDING)
     OnResolveComplete(result);
 }

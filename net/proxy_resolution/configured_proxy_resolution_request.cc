@@ -49,6 +49,7 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
     const GURL& url,
     const std::string& method,
     const NetworkAnonymizationKey& network_anonymization_key,
+    handles::NetworkHandle target_network,
     ProxyInfo* results,
     CompletionOnceCallback user_callback,
     const NetLogWithSource& net_log,
@@ -59,6 +60,7 @@ ConfiguredProxyResolutionRequest::ConfiguredProxyResolutionRequest(
       url_(url),
       method_(method),
       network_anonymization_key_(network_anonymization_key),
+      target_network_(target_network),
       net_log_(net_log),
       priority_(priority),
       creation_time_(base::TimeTicks::Now()) {

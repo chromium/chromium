@@ -13,6 +13,7 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_anonymization_key.h"
+#include "net/base/network_handle.h"
 #include "net/base/proxy_server.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_with_source.h"
@@ -55,6 +56,7 @@ class NET_EXPORT ProxyResolutionService {
       const GURL& url,
       const std::string& method,
       const NetworkAnonymizationKey& network_anonymization_key,
+      handles::NetworkHandle target_network,
       ProxyInfo* results,
       CompletionOnceCallback callback,
       std::unique_ptr<ProxyResolutionRequest>* request,

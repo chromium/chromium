@@ -844,8 +844,9 @@ int HttpStreamFactory::JobController::DoResolveProxy() {
       base::BindOnce(&JobController::OnIOComplete, base::Unretained(this));
   return session_->proxy_resolution_service()->ResolveProxy(
       request_info_.url, request_info_.method,
-      request_info_.network_anonymization_key, &proxy_info_,
-      std::move(io_callback), &proxy_resolve_request_, net_log_, priority_);
+      request_info_.network_anonymization_key, request_info_.target_network,
+      &proxy_info_, std::move(io_callback), &proxy_resolve_request_, net_log_,
+      priority_);
 }
 
 int HttpStreamFactory::JobController::DoResolveProxyComplete(int rv) {
