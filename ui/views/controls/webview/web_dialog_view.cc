@@ -542,7 +542,10 @@ void WebDialogView::InitDialog() {
   WebDialogUI::SetDelegate(web_contents, this);
 
   if (!disable_url_load_for_test_) {
-    web_view_->LoadInitialURL(GetDialogContentURL());
+    auto policy = (delegate_ && delegate_->ShouldDisableHttpsUpgrades())
+                      ? views::WebView::HttpsUpgradePolicy::kNoUpgrade
+                      : views::WebView::HttpsUpgradePolicy::kAllowUpgrade;
+    web_view_->LoadInitialURL(delegate_->GetDialogContentURL(), policy);
   }
 }
 

@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/webui/ash/floating_workspace/floating_workspace_dialog.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
@@ -61,7 +62,8 @@ bool ProxyActive(PrefService& local_state, Profile* profile) {
 
 class SigninWebDialogDelegate : public ui::WebDialogDelegate {
  public:
-  explicit SigninWebDialogDelegate(GURL url) {
+  SigninWebDialogDelegate(GURL url, bool disable_https_upgrades)
+      : disable_https_upgrades_(disable_https_upgrades) {
     set_can_close(true);
     set_can_resize(false);
     set_dialog_content_url(url);
@@ -77,9 +79,16 @@ class SigninWebDialogDelegate : public ui::WebDialogDelegate {
 
   ~SigninWebDialogDelegate() override = default;
 
+  bool ShouldDisableHttpsUpgrades() const override {
+    return disable_https_upgrades_;
+  }
+
   void OnLoadingStateChanged(content::WebContents* source) override {
     NetworkHandler::Get()->network_state_handler()->RequestPortalDetection();
   }
+
+ private:
+  const bool disable_https_upgrades_;
 };
 
 }  // namespace
@@ -147,9 +156,12 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
 
   switch (mode) {
     case SigninMode::kSigninDialog:
-      // OOBE/Login needs to show the portal signin UI in a dialog.
+    case SigninMode::kFloatingWorkspaceDialog: {
+      // OOBE/Login and the Floating Workspace Dialog require the portal signin
+      // UI to be shown in a dialog.
       ShowSigninDialog(url);
       break;
+    }
     case SigninMode::kNormalTab:
       ShowActiveProfileTab(url);
       break;
@@ -168,9 +180,6 @@ void NetworkPortalSigninController::ShowSignin(SigninSource source) {
       ShowSigninWindow(url);
       break;
     }
-    case SigninMode::kFloatingWorkspaceDialog:
-      ShowSigninDialog(url);
-      break;
   }
 }
 
@@ -290,7 +299,15 @@ void NetworkPortalSigninController::ShowSigninDialog(const GURL& url) {
     return;
   }
 
-  auto web_dialog_delegate = std::make_unique<SigninWebDialogDelegate>(url);
+  // Disable ABH/HTTPS-First Mode when logged out because captive portals
+  // require unencrypted HTTP redirects to serve login pages. Forcing HTTPS
+  // would block these redirects with SSL error. See crbug.com/493517524
+  // for details.
+  const bool disable_https_upgrades = ash::LoginState::IsInitialized() &&
+                                      !ash::LoginState::Get()->IsUserLoggedIn();
+
+  auto web_dialog_delegate =
+      std::make_unique<SigninWebDialogDelegate>(url, disable_https_upgrades);
 
   dialog_widget_ = views::Widget::GetWidgetForNativeWindow(
       // ui::WebDialogDelegate is self-deleting, so pass ownership of it (as a

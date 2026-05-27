@@ -183,4 +183,8 @@ void WebDialogDelegate::SetAccessibleTitleChangedCallback(
   accessible_title_changed_callback_ = std::move(callback);
 }
 
+bool WebDialogDelegate::ShouldDisableHttpsUpgrades() const {
+  return false;
+}
+
 }  // namespace ui
