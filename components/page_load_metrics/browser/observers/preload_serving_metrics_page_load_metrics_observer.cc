@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/page_load_metrics/observers/preload_serving_metrics_page_load_metrics_observer.h"
+#include "components/page_load_metrics/browser/observers/preload_serving_metrics_page_load_metrics_observer.h"
 
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
