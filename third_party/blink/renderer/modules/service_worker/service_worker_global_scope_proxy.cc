@@ -178,7 +178,8 @@ void ServiceWorkerGlobalScopeProxy::WillEvaluateScript() {
   DCHECK_CALLED_ON_VALID_THREAD(worker_thread_checker_);
   TRACE_EVENT_BEGIN("ServiceWorker",
                     "ServiceWorkerGlobalScopeProxy::EvaluateTopLevelScript",
-                    perfetto::Track::FromPointer(this));
+                    perfetto::NamedTrack::FromPointer(
+                        "blink::ServiceWorkerGlobalScopeProxy", this));
   ScriptState::Scope scope(
       WorkerGlobalScope()->ScriptController()->GetScriptState());
   Client().WillEvaluateScript(
@@ -196,7 +197,9 @@ void ServiceWorkerGlobalScopeProxy::DidEvaluateTopLevelScript(
       base::TimeTicks::Now() - top_level_script_evaluation_start_time_);
   WorkerGlobalScope()->DidEvaluateScript();
   Client().DidEvaluateScript(success);
-  TRACE_EVENT_END("ServiceWorker", perfetto::Track::FromPointer(this),
+  TRACE_EVENT_END("ServiceWorker",
+                  perfetto::NamedTrack::FromPointer(
+                      "blink::ServiceWorkerGlobalScopeProxy", this),
                   "success", success);
 }
 
