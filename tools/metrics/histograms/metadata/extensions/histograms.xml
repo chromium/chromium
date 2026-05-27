@@ -566,22 +566,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ContentScripts.ScriptsWithoutPrefixRetrieved"
-    enum="Boolean" expires_after="2026-07-02">
-  <owner>kelvinjiang@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Logged when at least one of an extension's dynamic content scripts is
-    retrieved from the StateStore and the script's id is not prefixed, so a
-    prefix will be added, since content script Objects should have a prefix to
-    their ids to indicate their source. Will be removed if this histogram is not
-    emitted for an extended period of time.
-
-    Warning: this histogram was expired from 2025-07-02 to 2025-10-06; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram
     name="Extensions.ContentSettings.PrimaryPatternMatchesExtensionOrigin"
     enum="ContentType" expires_after="2025-12-28">
