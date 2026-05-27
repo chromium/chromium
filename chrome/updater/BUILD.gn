@@ -565,6 +565,7 @@ if (is_win || is_mac || is_linux) {
     visibility = [
       "//chrome/browser",
       "//chrome/browser/ui",
+      "//chrome/browser/ui/webui/updater:*",
       "//chrome/browser/updater:*",
       "//chrome/enterprise_companion:*",
       "//chrome/enterprise_companion/device_management_storage:*",

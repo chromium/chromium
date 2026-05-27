@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sync_internals") {
+  sources = [
+    "chrome_sync_internals_message_handler.cc",
+    "sync_internals_ui.cc",
+  ]
+  public = [
+    "chrome_sync_internals_message_handler.h",
+    "sync_internals_ui.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//chrome/browser/sync",
+    "//components/browser_sync",
+    "//components/sync/service",
+    "//components/sync/service/resources",
+    "//services/network/public/mojom",
+    "//ui/webui",
+  ]
+}

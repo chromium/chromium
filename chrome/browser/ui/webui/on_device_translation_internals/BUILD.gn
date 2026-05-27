@@ -9,3 +9,29 @@ mojom("mojo_bindings") {
   public_deps = [ "//mojo/public/mojom/base" ]
   webui_module_path = "/"
 }
+
+if (is_win || is_mac || is_linux) {
+  source_set("on_device_translation_internals") {
+    sources = [
+      "on_device_translation_internals_page_handler_impl.cc",
+      "on_device_translation_internals_ui.cc",
+    ]
+    public = [
+      "on_device_translation_internals_page_handler_impl.h",
+      "on_device_translation_internals_ui.h",
+    ]
+    deps = [
+      ":mojo_bindings",
+      "//base",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/on_device_translation_internals:resources",
+      "//chrome/common",
+      "//components/on_device_translation",
+      "//components/prefs",
+      "//content/public/browser",
+      "//mojo/public/cpp/bindings",
+      "//ui/webui",
+    ]
+  }
+}

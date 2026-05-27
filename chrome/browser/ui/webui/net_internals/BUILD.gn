@@ -1,0 +1,43 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("net_internals") {
+  sources = [ "net_internals_ui.cc" ]
+  public = [ "net_internals_ui.h" ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/net_internals:resources",
+    "//components/prefs",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//ui/webui",
+    "//url",
+  ]
+}
+
+if (!is_android) {
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "net_internals_ui_browsertest.cc",
+      "net_internals_ui_browsertest.h",
+    ]
+    deps = [
+      ":net_internals",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//content/public/browser",
+      "//services/network:test_support",
+    ]
+  }
+}

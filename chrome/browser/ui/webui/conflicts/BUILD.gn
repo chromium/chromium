@@ -1,0 +1,32 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_win) {
+  source_set("conflicts") {
+    sources = [
+      "conflicts_data_fetcher.cc",
+      "conflicts_handler.cc",
+      "conflicts_ui.cc",
+    ]
+    public = [
+      "conflicts_data_fetcher.h",
+      "conflicts_handler.h",
+      "conflicts_ui.h",
+    ]
+    public_deps = [
+      "//chrome/common",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/conflicts:resources",
+      "//chrome/browser/win",
+      "//chrome/browser/win/conflicts:module_info",
+      "//services/network/public/mojom",
+      "//ui/base",
+      "//ui/webui",
+    ]
+  }
+}

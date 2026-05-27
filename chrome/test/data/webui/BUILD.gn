@@ -44,6 +44,10 @@ source_set("browser_tests") {
     "//ui/compositor",
   ]
 
+  if (!is_android) {
+    deps += [ "//chrome/browser/ui/webui/net_internals:test_support" ]
+  }
+
   data = []
 
   if (!is_android) {

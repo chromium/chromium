@@ -14,3 +14,56 @@ mojom("mojo_bindings") {
   ]
   webui_module_path = "/"
 }
+
+source_set("updater") {
+  sources = [
+    "updater_page_handler.cc",
+    "updater_ui.cc",
+  ]
+  public = [
+    "updater_page_handler.h",
+    "updater_ui.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:primitives",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/updater:resources",
+    "//chrome/browser/ui/webui:plural_string_handler",
+    "//chrome/browser/updater",
+    "//chrome/enterprise_companion:constants_prod",
+    "//chrome/enterprise_companion:installer_paths",
+    "//chrome/updater:browser_sources",
+    "//components/services/unzip/content",
+    "//components/services/unzip/public/cpp",
+    "//components/services/unzip/public/mojom",
+    "//mojo/public/cpp/base",
+    "//mojo/public/cpp/bindings",
+    "//ui/webui",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "updater_page_handler_unittest.cc" ]
+  deps = [
+    ":mojo_bindings",
+    ":updater",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/enterprise_companion:constants_prod",
+    "//chrome/updater:browser_sources",
+    "//components/services/unzip:in_process",
+    "//components/services/unzip/content",
+    "//components/services/unzip/public/mojom",
+    "//mojo/public/cpp/bindings",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/zlib/google:zip",
+  ]
+}

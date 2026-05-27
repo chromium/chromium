@@ -1,0 +1,24 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("system") {
+  sources = [ "system_info_ui.cc" ]
+  public = [ "system_info_ui.h" ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/feedback",
+    "//chrome/browser/feedback:feedback_impl",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/about_sys:resources",
+    "//chrome/browser/resources/key_value_pair_viewer_shared:resources",
+    "//chrome/common:constants",
+    "//components/feedback",
+    "//ui/webui",
+  ]
+}

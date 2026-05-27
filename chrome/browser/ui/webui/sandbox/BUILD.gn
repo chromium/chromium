@@ -1,0 +1,36 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_win || is_android || is_linux || is_chromeos) {
+  source_set("sandbox") {
+    sources = [ "sandbox_internals_ui.cc" ]
+    public = [ "sandbox_internals_ui.h" ]
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/sandbox_internals:resources",
+      "//chrome/common",
+      "//content/public/browser",
+      "//services/network/public/mojom",
+      "//ui/webui",
+    ]
+    if (is_android) {
+      deps += [
+        "//chrome/common:mojo_bindings",
+        "//third_party/blink/public/common",
+      ]
+    }
+    if (is_linux || is_chromeos) {
+      deps += [ "//sandbox/policy" ]
+    }
+    if (is_win) {
+      sources += [ "sandbox_handler.cc" ]
+      public += [ "sandbox_handler.h" ]
+      deps += [
+        "//content/public/common",
+        "//sandbox/policy",
+      ]
+    }
+  }
+}

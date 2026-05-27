@@ -1,0 +1,51 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//content/browser/devtools/features.gni")
+
+if (enable_devtools_frontend) {
+  source_set("devtools") {
+    sources = [
+      "devtools_ui.cc",
+      "devtools_ui_data_source.cc",
+    ]
+    public = [
+      "devtools_ui.h",
+      "devtools_ui_data_source.h",
+    ]
+    deps = [
+      "//base",
+      "//build/util:chromium_git_revision",
+      "//chrome/browser/devtools",
+      "//chrome/browser/profiles:profile",
+      "//chrome/common",
+      "//content/public/browser",
+      "//content/public/common",
+      "//net",
+      "//services/network/public/cpp",
+      "//third_party/blink/public:buildflags",
+    ]
+
+    # devtools_window.cc (in //chrome/browser/devtools) includes devtools_ui.h.
+    # Access is granted via allow_circular_includes_from since
+    # //chrome/browser/devtools is already a dep of this target.
+    allow_circular_includes_from = [ "//chrome/browser/devtools" ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "devtools_ui_data_source_unittest.cc" ]
+    deps = [
+      ":devtools",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/common",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//services/network:test_support",
+      "//services/network/public/cpp",
+      "//testing/gtest",
+    ]
+  }
+}

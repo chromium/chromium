@@ -12,6 +12,7 @@ import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//components/spellcheck/spellcheck_build_features.gni")
+import("//content/browser/devtools/features.gni")
 import("//content/public/common/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -1581,6 +1582,10 @@ source_set("extensions") {
       "api/tabs/app_window_helper.h",
     ]
   }
+
+  if (enable_devtools_frontend) {
+    deps += [ "//chrome/browser/ui/webui/devtools" ]
+  }
 }
 
 static_library("test_support") {
@@ -1743,6 +1748,7 @@ source_set("chrome_extensions_browser_client") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/runtime",
       "//chrome/browser/profiles",
+      "//chrome/browser/ui/webui/devtools",
       "//chrome/common",
       "//components/signin/core/browser",
       "//components/update_client",

@@ -1,0 +1,33 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("crashes") {
+  sources = [ "crashes_ui.cc" ]
+  public = [ "crashes_ui.h" ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/crash_upload_list",
+    "//chrome/browser/metrics",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/crash/core/app",
+    "//components/crash/core/browser",
+    "//components/crash/core/browser/resources",
+    "//components/resources",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//google_apis",
+    "//ui/base",
+    "//ui/webui",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/ash/components/dbus/debug_daemon" ]
+  }
+}

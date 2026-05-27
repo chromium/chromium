@@ -1,12 +1,82 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+
 import("//mojo/public/tools/bindings/mojom.gni")
+
 mojom("mojo_bindings") {
   sources = [ "zero_state_promo.mojom" ]
   webui_module_path = "/"
   public_deps = [
     "//mojo/public/mojom/base",
     "//ui/base/mojom",
+  ]
+}
+
+source_set("extensions_zero_state_promo") {
+  sources = [
+    "zero_state_promo_page_handler.cc",
+    "zero_state_promo_ui.cc",
+  ]
+  public = [
+    "zero_state_promo_page_handler.h",
+    "zero_state_promo_ui.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":mojo_bindings",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/extensions_zero_state_promo:resources",
+    "//chrome/browser/ui/navigator",
+    "//chrome/browser/ui/webui/top_chrome",
+    "//chrome/common",
+    "//components/feature_engagement/public",
+    "//content/public/browser",
+    "//extensions/common",
+    "//mojo/public/cpp/bindings",
+    "//ui/base",
+    "//ui/views",
+    "//ui/webui",
+    "//url",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "zero_state_promo_page_handler_browsertest.cc" ]
+  deps = [
+    ":extensions_zero_state_promo",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//url",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "extensions_zero_state_promo_interactive_uitest.cc" ]
+  deps = [
+    ":extensions_zero_state_promo",
+    ":mojo_bindings",
+    "//base/test:test_support",
+    "//chrome/browser/ui",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//components/user_education/common",
+    "//components/user_education/views",
+    "//content/test:test_support",
+    "//extensions/common",
+    "//url",
   ]
 }

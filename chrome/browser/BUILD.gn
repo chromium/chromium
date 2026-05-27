@@ -1185,6 +1185,7 @@ source_set("core") {
     deps += [
       "//chrome/browser/apps/platform_apps",
       "//chrome/browser/controlled_frame",
+      "//chrome/browser/ui/webui/extensions_zero_state_promo",
       "//extensions/components/javascript_dialog_extensions_client",
     ]
   }
@@ -1194,6 +1195,8 @@ source_set("core") {
       "//chrome/browser/browser_switcher",
       "//chrome/browser/ui/startup/default_browser_prompt",
       "//chrome/browser/ui/webui/app_settings",
+      "//chrome/browser/ui/webui/on_device_translation_internals",
+      "//chrome/browser/ui/webui/updater",
     ]
   }
 
@@ -1540,6 +1543,10 @@ source_set("core") {
 
   if (is_chrome_for_testing) {
     deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+  }
+
+  if (safe_browsing_mode == 1) {
+    deps += [ "//chrome/browser/ui/webui/reset_password" ]
   }
 }
 
@@ -2681,6 +2688,7 @@ static_library("browser") {
       "//chrome/browser/incognito:jni_headers",
       "//chrome/browser/prefetch/android:jni_headers",
       "//chrome/browser/preloading/android:jni_headers",
+      "//chrome/browser/ui/webui/feed_internals",
       "//chrome/browser/ui/webui/notifications_internals",
       "//chrome/browser/util:jni_headers",
       "//components/webxr/android",
@@ -2978,6 +2986,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
+      "//chrome/browser/ui/webui/webui_gallery",
       "//chrome/browser/ui/webui/webui_toolbar",
       "//chrome/browser/ui/webui/whats_new",
       "//chrome/browser/ui/webui/whats_new:impl",
@@ -4703,6 +4712,8 @@ static_library("browser") {
     deps += [
       "//chrome/browser/browser_switcher",
       "//chrome/browser/browser_switcher:impl",
+      "//chrome/browser/ui/webui/on_device_translation_internals",
+      "//chrome/browser/ui/webui/updater",
     ]
 
     allow_circular_includes_from += [

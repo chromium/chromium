@@ -1,0 +1,42 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_win || is_mac || is_linux) {
+  source_set("browser_switch") {
+    sources = [ "browser_switch_ui.cc" ]
+    public = [ "browser_switch_ui.h" ]
+
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+    deps = [
+      "//base",
+      "//chrome/browser/browser_switcher",
+      "//chrome/browser/browser_switcher:impl",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/browser_switch:resources",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common",
+      "//components/prefs",
+      "//content/public/browser",
+      "//ui/base",
+      "//ui/webui",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "browser_switch_ui_unittest.cc" ]
+    deps = [
+      ":browser_switch",
+      "//chrome/browser/browser_switcher",
+      "//chrome/browser/browser_switcher:impl",
+      "//chrome/test:test_support",
+      "//components/sync_preferences:test_support",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

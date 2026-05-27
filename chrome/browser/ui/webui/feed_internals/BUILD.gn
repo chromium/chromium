@@ -14,3 +14,34 @@ mojom("mojo_bindings") {
     "//url/mojom:url_mojom_gurl",
   ]
 }
+
+if (is_android) {
+  source_set("feed_internals") {
+    sources = [
+      "feed_internals_ui.cc",
+      "feedv2_internals_page_handler.cc",
+    ]
+    public = [
+      "feed_internals_ui.h",
+      "feedv2_internals_page_handler.h",
+    ]
+    public_deps = [
+      ":mojo_bindings",
+      "//chrome/common",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/feed",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/feed_internals:resources",
+      "//components/feed:feature_list",
+      "//components/feed/core/shared_prefs:feed_shared_prefs",
+      "//components/feed/core/v2:feed_core_v2",
+      "//components/feed/core/v2/public:common",
+      "//components/prefs",
+      "//mojo/public/cpp/bindings",
+      "//ui/webui",
+    ]
+  }
+}

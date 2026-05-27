@@ -1,0 +1,29 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("webui_gallery") {
+  sources = [ "webui_gallery_ui.cc" ]
+  public = [ "webui_gallery_ui.h" ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  # webui_gallery_ui.cc includes favicon_source.h which is in
+  # //chrome/browser/ui:ui.
+  allow_circular_includes_from =
+      [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/resources/side_panel/shared:resources",
+    "//chrome/browser/resources/webui_gallery:resources",
+    "//chrome/common",
+    "//components/favicon_base",
+    "//components/strings:components_strings_grit",
+    "//content/public/browser",
+    "//services/network/public/mojom",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}

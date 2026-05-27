@@ -1,0 +1,30 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+
+if (enable_session_service) {
+  source_set("internals") {
+    sources = [
+      "internals_ui.cc",
+      "sessions/session_service_internals_handler.cc",
+    ]
+    public = [
+      "internals_ui.h",
+      "sessions/session_service_internals_handler.h",
+    ]
+    public_deps = [
+      "//chrome/common",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/sessions",
+      "//chrome/browser/ui:browser_element_identifiers",
+      "//mojo/public/cpp/bindings",
+      "//ui/webui",
+    ]
+  }
+}

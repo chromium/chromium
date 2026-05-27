@@ -1,0 +1,28 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("download_internals") {
+  sources = [
+    "download_internals_ui.cc",
+    "download_internals_ui_message_handler.cc",
+  ]
+  public = [
+    "download_internals_ui.h",
+    "download_internals_ui_message_handler.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser/download",
+    "//chrome/browser/policy",
+    "//chrome/browser/profiles:profile",
+    "//components/download/public/background_service:public",
+    "//components/download/resources/download_internals:resources",
+    "//net",
+    "//services/network/public/mojom",
+  ]
+}

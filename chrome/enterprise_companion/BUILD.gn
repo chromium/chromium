@@ -374,6 +374,7 @@ static_library("installer_paths") {
   visibility = [
     ":*",
     "//chrome/browser/ui:*",
+    "//chrome/browser/ui/webui/updater:*",
     "//chrome/updater:*",
   ]
 
@@ -399,6 +400,7 @@ static_library("constants_prod") {
   visibility = [
     ":*",
     "//chrome/browser/ui:*",
+    "//chrome/browser/ui/webui/updater:*",
     "//chrome/enterprise_companion/mac:*",
     "//chrome/test:*",
     "//chrome/updater:*",

@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("translate_internals") {
+  sources = [
+    "chrome_translate_internals_handler.cc",
+    "translate_internals_ui.cc",
+  ]
+  public = [
+    "chrome_translate_internals_handler.h",
+    "translate_internals_ui.h",
+  ]
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/translate",
+    "//components/prefs",
+    "//components/translate/core/common",
+    "//components/translate/translate_internals",
+    "//components/translate/translate_internals:resources",
+    "//components/variations/service",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}

@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  source_set("webapks") {
+    sources = [
+      "webapks_handler.cc",
+      "webapks_ui.cc",
+    ]
+    public = [
+      "webapks_handler.h",
+      "webapks_ui.h",
+    ]
+    public_deps = [
+      "//chrome/common",
+      "//content/public/browser",
+    ]
+    deps = [
+      "//base",
+      "//chrome/browser/android:shortcut_helper",
+      "//chrome/browser/android/webapk:webapk_sources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/webapks:resources",
+      "//third_party/blink/public/common",
+      "//ui/android",
+      "//ui/gfx",
+      "//ui/webui",
+    ]
+  }
+}

@@ -2,9 +2,40 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/safe_browsing/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "reset_password.mojom" ]
   webui_module_path = "/"
+}
+
+if (safe_browsing_mode == 1) {
+  source_set("reset_password") {
+    sources = [ "reset_password_ui.cc" ]
+    public = [ "reset_password_ui.h" ]
+
+    deps = [
+      ":mojo_bindings",
+      "//base",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/reset_password:resources",
+      "//chrome/browser/safe_browsing",
+      "//chrome/common",
+      "//components/password_manager/core/browser:metrics_util",
+      "//components/safe_browsing/content/browser/password_protection",
+      "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+      "//components/safe_browsing/core/common",
+      "//components/safe_browsing/core/common/proto:crx_info_proto",
+      "//components/safe_browsing/core/common/proto:csd_proto",
+      "//components/strings:components_strings_grit",
+      "//components/url_formatter",
+      "//components/user_prefs",
+      "//content/public/browser",
+      "//content/public/common",
+      "//mojo/public/cpp/bindings",
+      "//ui/base",
+      "//ui/webui",
+    ]
+  }
 }

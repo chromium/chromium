@@ -46,6 +46,11 @@ source_set("configs") {
   }
 
   deps = [
+    ":gcm_internals_ui",
+    ":memory_internals_ui",
+    ":net_export_ui",
+    ":ntp_tiles_internals_ui",
+    ":signin_internals_ui",
     ":webui",
     "//chrome/browser/actor/ui:actor_overlay",
     "//chrome/browser/contextual_tasks:ui",
@@ -60,15 +65,20 @@ source_set("configs") {
     "//chrome/browser/ui/webui/autofill_and_password_manager_internals",
     "//chrome/browser/ui/webui/browsing_topics",
     "//chrome/browser/ui/webui/components",
+    "//chrome/browser/ui/webui/crashes",
     "//chrome/browser/ui/webui/data_sharing_internals",
     "//chrome/browser/ui/webui/device_log",
+    "//chrome/browser/ui/webui/download_internals",
     "//chrome/browser/ui/webui/engagement",
     "//chrome/browser/ui/webui/internal_debug_pages_disabled",
     "//chrome/browser/ui/webui/local_state",
+    "//chrome/browser/ui/webui/net_internals",
     "//chrome/browser/ui/webui/predictors",
     "//chrome/browser/ui/webui/regional_capabilities_internals",
     "//chrome/browser/ui/webui/saved_tab_groups_unsupported",
     "//chrome/browser/ui/webui/segmentation_internals",
+    "//chrome/browser/ui/webui/sync_internals",
+    "//chrome/browser/ui/webui/translate_internals",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -115,7 +125,15 @@ source_set("configs") {
     }
   } else {
     #is_android
-    deps += [ "//chrome/browser/ui/webui/notifications_internals" ]
+    deps += [
+      "//chrome/browser/ui/webui/feed_internals",
+      "//chrome/browser/ui/webui/notifications_internals",
+      "//chrome/browser/ui/webui/webapks",
+    ]
+  }
+
+  if (safe_browsing_mode == 1) {
+    deps += [ "//chrome/browser/ui/webui/reset_password" ]
   }
 
   if (safe_browsing_mode != 0) {
@@ -163,19 +181,48 @@ source_set("configs") {
   }
 
   if (enable_session_service) {
-    deps += [ "//chrome/browser/ui/webui/tab_strip_internals" ]
+    deps += [
+      "//chrome/browser/ui/webui/internals",
+      "//chrome/browser/ui/webui/tab_strip_internals",
+    ]
   }
 
   if (is_mac) {
     deps += [ "//chrome/browser/ui/webui/unexportable_keys_internals" ]
   }
 
+  if (is_win || is_linux || is_chromeos || is_android) {
+    deps += [ "//chrome/browser/ui/webui/sandbox" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [
+      "//chrome/browser/ui/webui/browser_switch",
+      "//chrome/browser/ui/webui/on_device_translation_internals",
+      "//chrome/browser/ui/webui/updater",
+    ]
+  }
+
   if (is_win) {
-    deps += [ "//chrome/browser/ui/webui/default_browser:visual_guided_setter" ]
+    deps += [
+      "//chrome/browser/ui/webui/conflicts",
+      "//chrome/browser/ui/webui/default_browser:visual_guided_setter",
+    ]
   }
 
   if (enable_extensions_core) {
     deps += [ "//chrome/browser/ui/webui/page_not_available_for_guest" ]
+  }
+
+  if (enable_extensions) {
+    deps += [ "//chrome/browser/ui/webui/extensions_zero_state_promo" ]
+  }
+
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui/webui/system",
+      "//chrome/browser/ui/webui/webui_gallery",
+    ]
   }
 }
 
@@ -296,5 +343,130 @@ if (!is_android) {
       "//base",
       "//content/public/browser",
     ]
+  }
+}
+
+source_set("ntp_tiles_internals_ui") {
+  sources = [ "ntp_tiles_internals_ui.cc" ]
+  public = [ "ntp_tiles_internals_ui.h" ]
+
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/favicon",
+    "//chrome/browser/history",
+    "//chrome/browser/ntp_tiles",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/search_engines",
+    "//components/history/core/browser",
+    "//components/image_fetcher/core",
+    "//components/ntp_tiles",
+    "//components/prefs",
+    "//services/network/public/mojom",
+    "//ui/webui",
+  ]
+
+  if (is_android) {
+    deps += [ "//chrome/browser/flags:flags_android" ]
+  }
+  if (enable_webui_ntp) {
+    deps += [ "//chrome/browser/new_tab_page" ]
+  }
+}
+
+source_set("gcm_internals_ui") {
+  sources = [ "gcm_internals_ui.cc" ]
+  public = [ "gcm_internals_ui.h" ]
+
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/gcm",
+    "//chrome/browser/profiles:profile",
+    "//components/gcm_driver",
+    "//components/gcm_driver/resources:resources_grit",
+    "//ui/webui",
+  ]
+}
+
+source_set("signin_internals_ui") {
+  sources = [ "signin_internals_ui.cc" ]
+  public = [ "signin_internals_ui.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common",
+    "//components/signin/core/browser",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin",
+    "//components/resources",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//services/network/public/mojom",
+    "//ui/webui",
+  ]
+}
+
+source_set("memory_internals_ui") {
+  sources = [ "memory_internals_ui.cc" ]
+  public = [ "memory_internals_ui.h" ]
+
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome:resources",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/profiling_host",
+    "//chrome/browser/resources/memory_internals:resources",
+    "//chrome/browser/ui/select_file_policy",
+    "//components/heap_profiling/multi_process",
+    "//components/services/heap_profiling/public/cpp",
+    "//components/services/heap_profiling/public/mojom",
+    "//mojo/public/cpp/system",
+    "//ui/shell_dialogs",
+  ]
+}
+
+source_set("net_export_ui") {
+  sources = [ "net_export_ui.cc" ]
+  public = [ "net_export_ui.h" ]
+
+  public_deps = [
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:primitives",
+    "//chrome/browser/download",
+    "//chrome/browser/net",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/select_file_policy",
+    "//components/net_log",
+    "//services/network/public/mojom",
+    "//ui/shell_dialogs",
+    "//ui/webui",
+  ]
+
+  if (is_android) {
+    deps += [ "//components/browser_ui/share/android" ]
   }
 }
