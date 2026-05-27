@@ -88,6 +88,15 @@ void ClientControlledState::HandleTransitionEvents(WindowState* window_state,
   }
 }
 
+void ClientControlledState::OnWMEvent(WindowState* window_state,
+                                      const WMEvent* event) {
+  // A window state change should not lead to the window destruction.
+  // It is the caller's responsibility to delete the window in a safe way
+  // after the transition is completed if necessary. (crbug.com/513489429)
+  aura::Window::ScopedDeleteBlocker blocker(window_state->window());
+  BaseState::OnWMEvent(window_state, event);
+}
+
 void ClientControlledState::AttachState(
     WindowState* window_state,
     WindowState::State* state_in_previous_mode) {
