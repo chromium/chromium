@@ -2,7 +2,7 @@
 {{object 1 0}} <<
   /Type /Catalog
   /Pages 2 0 R
-  /OpenAction 3 0 R
+  /OpenAction 4 0 R
 >>
 endobj
 {{object 2 0}} <<
@@ -17,13 +17,13 @@ endobj
   /MediaBox [0 0 612 792]
 >>
 endobj
-{{object 3 0}} <<
+{{object 4 0}} <<
   /Type /Action
   /S /JavaScript
-  /JS 4 0 R
+  /JS 5 0 R
 >>
 endobj
-{{object 4 0}} <<
+{{object 5 0}} <<
   {{streamlen}}
 >>
 stream
