@@ -5,6 +5,7 @@
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//third_party/sqlite/sqlite_chromium_configuration_flags.gni")
 import("//third_party/sqlite/sqlite_common_configuration_flags.gni")
@@ -588,7 +589,7 @@ config("lpm_fuzzer_omit_non_websql") {
   ]
 }
 
-proto_library("sqlite3_lpm_fuzzer_input") {
+fuzzable_proto_library("sqlite3_lpm_fuzzer_input") {
   sources = [
     "fuzz/icu_codes.proto",
     "fuzz/sql_queries.proto",
