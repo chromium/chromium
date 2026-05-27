@@ -1,0 +1,13 @@
+license_approval {
+  # Path to the license file, relative to this directory.
+  license_path: "source/libaom/PATENTS"
+
+  # SPDX ID, or ID provided by license classifier.
+  id: "Alliance-for-Open-Media-Patent"
+
+  # The bug ID for tracking (just the number).
+  bug: 515617836
+
+  # Relevant info for maintainers / context of approval.
+  note: "Only approved for AV1 video bitstream decoding and encoding."
+}
