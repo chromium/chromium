@@ -1439,16 +1439,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.EffectiveZoom" units="%" expires_after="2026-07-05">
-  <owner>pdr@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    The EffectiveZoom as reported by ComputedStyle in a Blink renderer. The
-    value is reported each time the effective zoom is set to a new value. The
-    maximum zoom reported is 400% to keep the histogram of reasonable size.
-  </summary>
-</histogram>
-
 <histogram name="Blink.Evp.PermissionUi.Status" enum="EvpPermissionUiStatus"
     expires_after="2026-11-01">
   <owner>yigu@chromium.org</owner>
