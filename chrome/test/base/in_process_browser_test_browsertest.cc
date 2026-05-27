@@ -8,6 +8,7 @@
 #include <string.h>
 
 #include <array>
+#include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/path_service.h"
@@ -78,10 +79,10 @@ class LoadFailObserver : public content::WebContentsObserver {
 
 class InProcessBrowserTestP
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<const char*> {};
+      public ::testing::WithParamInterface<std::string_view> {};
 
 IN_PROC_BROWSER_TEST_P(InProcessBrowserTestP, TestP) {
-  UNSAFE_TODO(EXPECT_EQ(0, strcmp("foo", GetParam())));
+  EXPECT_EQ(GetParam(), "foo");
 }
 
 INSTANTIATE_TEST_SUITE_P(IPBTP,
