@@ -744,6 +744,15 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.Startup.CreationTime.TotalFactoryInitTime",
                     mInitInfo.mTotalFactoryInitDuration);
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                RecordHistogram.recordTimesHistogram(
+                        "Android.WebView.Startup.CreationTime.TotalFactoryInitTime.MainLooper",
+                        mInitInfo.mTotalFactoryInitDuration);
+            } else {
+                RecordHistogram.recordTimesHistogram(
+                        "Android.WebView.Startup.CreationTime.TotalFactoryInitTime.NotMainLooper",
+                        mInitInfo.mTotalFactoryInitDuration);
+            }
             RecordHistogram.recordTimesHistogram(
                     "Android.WebView.Startup.CreationTime.CreateContextTime",
                     startupTimestamps.getCreateContextEnd()

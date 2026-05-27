@@ -9199,6 +9199,38 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Android.WebView.Startup.CreationTime.TotalFactoryInitTime.MainLooper"
+    units="ms" expires_after="2027-05-01">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The total time to initialize WebViewChromiumFactoryProvider if the
+    initialization is done on the main looper. Reported on S+.
+
+    This measurement is different from Stage1.FactoryInit as it takes into
+    account time spent in framework. Does not overlap with
+    Android.WebView.Startup.CreationTime.Stage2.* measurements.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.Startup.CreationTime.TotalFactoryInitTime.NotMainLooper"
+    units="ms" expires_after="2027-05-01">
+  <owner>abhijithnair@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <improvement direction="LOWER_IS_BETTER"/>
+  <summary>
+    The total time to initialize WebViewChromiumFactoryProvider if
+    initialization is not on the main looper. Reported on S+.
+
+    This measurement is different from Stage1.FactoryInit as it takes into
+    account time spent in framework. Does not overlap with
+    Android.WebView.Startup.CreationTime.Stage2.* measurements.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Startup.CreationTime.waitForUIThreadInit"
     units="ms" expires_after="2025-12-31">
   <owner>torne@chromium.org</owner>
