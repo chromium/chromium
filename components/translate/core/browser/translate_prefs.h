@@ -33,6 +33,16 @@ class LanguagePrefs;
 
 namespace translate {
 
+// LINT.IfChange(DataRegion)
+// Enum representing the data region for translation.
+// Must match the integer values of prefs::kTranslateDataRegionSetting.
+enum class DataRegion {
+  kNoPreference = 0,
+  kUnitedStates = 1,
+  kEurope = 2,
+};
+// LINT.ThenChange(//components/translate/core/browser/translate_pref_names.h:DataRegion)
+
 // Enables or disables using the most recent target language as the default
 // target language option.
 BASE_DECLARE_FEATURE(kTranslateRecentTarget);

@@ -9,12 +9,15 @@
 #include <string>
 
 #include "base/callback_list.h"
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "components/translate/core/browser/translate_prefs.h"
 
 class GURL;
+class PrefService;
 
 namespace translate {
 
@@ -45,10 +48,14 @@ class TranslateScript {
   // Clears the translate script, so it will be fetched next time we translate.
   void Clear() { data_.clear(); }
 
+  // Clears the translate script if the data region has changed.
+  void ClearIfDataRegionChanged(PrefService* prefs);
+
   // Fetches the JS translate script (the script that is injected in the page
   // to translate it). |is_incognito| is used during the fetch to determine
-  // which variations headers to add.
-  void Request(RequestCallback callback, bool is_incognito);
+  // which variations headers to add. |prefs| is used to retrieve the data
+  // region preference (which is set by the ChromeDataRegionSetting policy).
+  void Request(RequestCallback callback, bool is_incognito, PrefService* prefs);
 
   // Returns the URL to be used to load the translate script.
   static GURL GetTranslateScriptURL();
@@ -105,6 +112,9 @@ class TranslateScript {
   // Delay after which the translate script is fetched again from the translate
   // server.
   base::TimeDelta expiration_delay_;
+
+  // The data region of the fetched script.
+  DataRegion fetched_data_region_ = DataRegion::kNoPreference;
 
   // The callbacks called when the server sends a response.
   using RequestCallbackList = base::OnceCallbackList<RequestCallback::RunType>;

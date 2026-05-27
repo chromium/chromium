@@ -17,4 +17,7 @@ BASE_FEATURE(kTranslateElementExperimentFeatures,
 const base::FeatureParam<std::string> kTranslateElementExperimentFeaturesParam{
     &kTranslateElementExperimentFeatures, "ef", ""};
 
+BASE_FEATURE(kTranslateElementRegionalization,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace translate

@@ -394,6 +394,8 @@ void TranslateManager::TranslatePage(std::string_view original_source_lang,
   TranslateScript* script = TranslateDownloadManager::GetInstance()->script();
   DCHECK(script != nullptr);
 
+  script->ClearIfDataRegionChanged(translate_client_->GetPrefs());
+
   const std::string& script_data = script->data();
   if (!script_data.empty()) {
     DoTranslatePage(script_data, source_lang, target_lang);
@@ -406,7 +408,8 @@ void TranslateManager::TranslatePage(std::string_view original_source_lang,
       &TranslateManager::OnTranslateScriptFetchComplete, GetWeakPtr(),
       std::string(source_lang), std::string(target_lang));
 
-  script->Request(std::move(callback), translate_driver_->IsIncognito());
+  script->Request(std::move(callback), translate_driver_->IsIncognito(),
+                  translate_client_->GetPrefs());
 }
 
 void TranslateManager::RevertTranslation() {

@@ -24,6 +24,9 @@ BASE_DECLARE_FEATURE(kTranslateElementExperimentFeatures);
 extern const base::FeatureParam<std::string>
     kTranslateElementExperimentFeaturesParam;
 
+// Feature flag for enabling regional endpoints for webpage translation.
+BASE_DECLARE_FEATURE(kTranslateElementRegionalization);
+
 }  // namespace translate
 
 #endif  // COMPONENTS_TRANSLATE_CORE_COMMON_TRANSLATE_FEATURES_H_

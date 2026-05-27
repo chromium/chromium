@@ -24,6 +24,13 @@ inline constexpr char kBlockedLanguages[] = "translate_blocked_languages";
 inline constexpr char kPrefNeverPromptSitesWithTime[] =
     "translate_site_blocklist_with_time";
 
+// LINT.IfChange(DataRegion)
+// The data region setting. 0: Unset, 1: US, 2: EU.
+// Same value as chrome::prefs::kChromeDataRegionSetting.
+inline constexpr char kTranslateDataRegionSetting[] =
+    "chrome_data_region_setting";
+// LINT.ThenChange(//components/translate/core/browser/translate_prefs.h:DataRegion)
+
 }  // namespace translate::prefs
 
 #endif  // COMPONENTS_TRANSLATE_CORE_BROWSER_TRANSLATE_PREF_NAMES_H_

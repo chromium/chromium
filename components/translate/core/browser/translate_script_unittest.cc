@@ -6,14 +6,19 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/common/translate_features.h"
 #include "components/translate/core/common/translate_switches.h"
+#include "components/translate/core/common/translate_util.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
 #include "net/base/load_flags.h"
@@ -53,12 +58,34 @@ class TranslateScriptTest : public testing::Test {
   void Request() {
     script_->Request(base::BindRepeating(&TranslateScriptTest::OnComplete,
                                          base::Unretained(this)),
-                     /*is_incognito=*/false);
+                     /*is_incognito=*/false, nullptr);
+  }
+
+  void RequestAndWait() {
+    base::RunLoop run_loop;
+    script_->Request(base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }),
+                     /*is_incognito=*/false, nullptr);
+    run_loop.Run();
+  }
+
+  void RequestWithPrefs(PrefService* prefs) {
+    script_->Request(base::BindRepeating(&TranslateScriptTest::OnComplete,
+                                         base::Unretained(this)),
+                     /*is_incognito=*/false, prefs);
+  }
+
+  void RequestWithPrefsAndWait(PrefService* prefs) {
+    base::RunLoop run_loop;
+    script_->Request(base::BindLambdaForTesting([&](bool) { run_loop.Quit(); }),
+                     /*is_incognito=*/false, prefs);
+    run_loop.Run();
   }
 
   const std::string& GetData() { return script_->data(); }
 
-  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
+  void ClearIfDataRegionChanged(PrefService* prefs) {
+    script_->ClearIfDataRegionChanged(prefs);
+  }
 
   network::TestURLLoaderFactory* GetTestURLLoaderFactory() {
     return &test_url_loader_factory_;
@@ -119,22 +146,21 @@ TEST_F(TranslateScriptTest, CheckScriptParameters) {
             experiment_filter);
 
   std::string callback;
-  net::GetValueForKeyInQuery(
-      url, TranslateScript::kCallbackQueryName, &callback);
+  net::GetValueForKeyInQuery(url, TranslateScript::kCallbackQueryName,
+                             &callback);
   EXPECT_EQ(std::string(TranslateScript::kCallbackQueryValue), callback);
 
 #if !BUILDFLAG(IS_IOS)
   // iOS does not have specific loaders for the isolated world.
   std::string css_loader_callback;
-  net::GetValueForKeyInQuery(
-      url, TranslateScript::kCssLoaderCallbackQueryName, &css_loader_callback);
+  net::GetValueForKeyInQuery(url, TranslateScript::kCssLoaderCallbackQueryName,
+                             &css_loader_callback);
   EXPECT_EQ(std::string(TranslateScript::kCssLoaderCallbackQueryValue),
             css_loader_callback);
 
   std::string javascript_loader_callback;
   net::GetValueForKeyInQuery(
-      url,
-      TranslateScript::kJavascriptLoaderCallbackQueryName,
+      url, TranslateScript::kJavascriptLoaderCallbackQueryName,
       &javascript_loader_callback);
   EXPECT_EQ(std::string(TranslateScript::kJavascriptLoaderCallbackQueryValue),
             javascript_loader_callback);
@@ -240,16 +266,95 @@ TEST_F(TranslateScriptTest, CheckScriptURL) {
   script_.reset();
 }
 
+TEST_F(TranslateScriptTest, CheckScriptRegionalization) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kTranslateElementRegionalization);
+
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(prefs::kTranslateDataRegionSetting, 0);
+
+  // Test US region.
+  prefs.SetInteger(prefs::kTranslateDataRegionSetting, 1);
+  network::ResourceRequest last_resource_request;
+  GetTestURLLoaderFactory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        last_resource_request = request;
+      }));
+
+  RequestWithPrefs(&prefs);
+  std::string region_us;
+  net::GetValueForKeyInQuery(last_resource_request.url, "region", &region_us);
+  EXPECT_EQ("us", region_us);
+
+  // Test EU region.
+  script_ = std::make_unique<TranslateScript>();
+  prefs.SetInteger(prefs::kTranslateDataRegionSetting, 2);
+  RequestWithPrefs(&prefs);
+  std::string region_eu;
+  net::GetValueForKeyInQuery(last_resource_request.url, "region", &region_eu);
+  EXPECT_EQ("eu", region_eu);
+
+  // Test no preference region.
+  script_ = std::make_unique<TranslateScript>();
+  prefs.SetInteger(prefs::kTranslateDataRegionSetting, 0);
+  RequestWithPrefs(&prefs);
+  std::string region_none;
+  bool has_region = net::GetValueForKeyInQuery(last_resource_request.url,
+                                               "region", &region_none);
+  EXPECT_FALSE(has_region);
+  script_.reset();
+}
+
+TEST_F(TranslateScriptTest, CheckScriptRegionalizationCacheClear) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kTranslateElementRegionalization);
+
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(prefs::kTranslateDataRegionSetting, 0);
+
+  GetTestURLLoaderFactory()->SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        GetTestURLLoaderFactory()->AddResponse(request.url.spec(),
+                                               "console.log('test');");
+      }));
+
+  // Start with US region.
+  prefs.SetInteger(prefs::kTranslateDataRegionSetting, 1);
+  RequestWithPrefsAndWait(&prefs);
+
+  EXPECT_FALSE(GetData().empty());
+
+  // Call ClearIfDataRegionChanged with the same prefs.
+  // It should not clear the data.
+  ClearIfDataRegionChanged(&prefs);
+  EXPECT_FALSE(GetData().empty());
+
+  // Change region to EU.
+  prefs.SetInteger(prefs::kTranslateDataRegionSetting, 2);
+  ClearIfDataRegionChanged(&prefs);
+  EXPECT_TRUE(GetData().empty());
+
+  // Request again with EU region to populate data.
+  RequestWithPrefsAndWait(&prefs);
+  EXPECT_FALSE(GetData().empty());
+
+  // Change region to NO_PREFERENCE.
+  prefs.SetInteger(prefs::kTranslateDataRegionSetting, 0);
+  ClearIfDataRegionChanged(&prefs);
+  EXPECT_TRUE(GetData().empty());
+  script_.reset();
+}
+
 TEST_F(TranslateScriptTest, CheckResponse) {
   const std::string test_response =
       "(function() { console.log(\"Hello, world!\"); }());";
   GURL full_url = TranslateScript::GetTranslateScriptURL();
   GetTestURLLoaderFactory()->AddResponse(full_url.spec(), test_response);
 
-  Request();
-  RunUntilIdle();
+  RequestAndWait();
 
   EXPECT_NE(std::string::npos, GetData().find(test_response));
+  script_.reset();
 }
 
 }  // namespace translate

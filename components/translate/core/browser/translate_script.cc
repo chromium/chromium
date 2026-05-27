@@ -9,12 +9,15 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/grit/components_resources.h"
+#include "components/prefs/pref_service.h"
+#include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_url_fetcher.h"
 #include "components/translate/core/browser/translate_url_util.h"
 #include "components/translate/core/common/translate_features.h"
@@ -31,6 +34,21 @@ namespace translate {
 namespace {
 
 const int kExpirationDelayDays = 1;
+
+DataRegion GetDataRegionFromPref(PrefService* prefs) {
+  if (prefs && prefs->HasPrefPath(prefs::kTranslateDataRegionSetting)) {
+    switch (prefs->GetInteger(prefs::kTranslateDataRegionSetting)) {
+      case 0:
+        return DataRegion::kNoPreference;
+      case 1:
+        return DataRegion::kUnitedStates;
+      case 2:
+        return DataRegion::kEurope;
+    }
+    NOTREACHED();
+  }
+  return DataRegion::kNoPreference;
+}
 
 }  // namespace
 
@@ -57,7 +75,19 @@ TranslateScript::TranslateScript()
 
 TranslateScript::~TranslateScript() = default;
 
-void TranslateScript::Request(RequestCallback callback, bool is_incognito) {
+void TranslateScript::ClearIfDataRegionChanged(PrefService* prefs) {
+  if (!base::FeatureList::IsEnabled(kTranslateElementRegionalization)) {
+    return;
+  }
+
+  if (GetDataRegionFromPref(prefs) != fetched_data_region_) {
+    Clear();
+  }
+}
+
+void TranslateScript::Request(RequestCallback callback,
+                              bool is_incognito,
+                              PrefService* prefs) {
   script_fetch_start_time_ = base::Time::Now().InMillisecondsFSinceUnixEpoch();
 
   DCHECK(data_.empty()) << "Do not fetch the script if it is already fetched";
@@ -71,6 +101,25 @@ void TranslateScript::Request(RequestCallback callback, bool is_incognito) {
 
   GURL translate_script_url = GetTranslateScriptURL();
 
+  if (base::FeatureList::IsEnabled(kTranslateElementRegionalization)) {
+    DataRegion data_region = GetDataRegionFromPref(prefs);
+
+    fetched_data_region_ = data_region;
+
+    switch (data_region) {
+      case DataRegion::kUnitedStates:
+        translate_script_url =
+            net::AppendQueryParameter(translate_script_url, "region", "us");
+        break;
+      case DataRegion::kEurope:
+        translate_script_url =
+            net::AppendQueryParameter(translate_script_url, "region", "eu");
+        break;
+      case DataRegion::kNoPreference:
+        // Do nothing, no region parameter needed.
+        break;
+    }
+  }
 
   net::HttpRequestHeaders headers;
   headers.SetHeader(TranslateScript::kRequestHeaderName,
