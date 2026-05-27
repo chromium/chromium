@@ -26,6 +26,7 @@
 #include "chrome/browser/profiles/profile_shortcut_manager_win.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/shell_integration_win.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -227,4 +228,63 @@ IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest, DISABLED_HostedApp) {
   ASSERT_NE(app_browser, browser());
 
   ValidateHostedAppWindowProperties(app_browser, extension);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
+                       PictureInPictureWithAppName) {
+  std::string app_name = "TestAppName";
+  Browser::CreateParams params =
+      Browser::CreateParams::CreateForPictureInPicture(
+          app_name, true, browser()->profile(), true);
+  Browser* pip_browser = Browser::Create(params);
+  ASSERT_TRUE(pip_browser->is_type_picture_in_picture());
+  ASSERT_EQ(app_name, pip_browser->app_name());
+
+  content::RunAllTasksUntilIdle();
+
+  HWND hwnd =
+      views::HWNDForNativeWindow(pip_browser->window()->GetNativeWindow());
+
+  Microsoft::WRL::ComPtr<IPropertyStore> pps;
+  HRESULT result = SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps));
+  EXPECT_TRUE(SUCCEEDED(result));
+
+  base::win::ScopedPropVariant prop_var;
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_ID, prop_var.Receive()));
+  EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
+
+  std::wstring expected_app_id =
+      shell_integration::win::GetAppUserModelIdForApp(
+          base::UTF8ToWide(app_name), browser()->profile()->GetPath());
+
+  EXPECT_EQ(expected_app_id, prop_var.get().pwszVal);
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserWindowPropertyManagerTest,
+                       PictureInPictureWithoutAppName) {
+  Browser::CreateParams params =
+      Browser::CreateParams::CreateForPictureInPicture(
+          "", true, browser()->profile(), true);
+  Browser* pip_browser = Browser::Create(params);
+  ASSERT_TRUE(pip_browser->is_type_picture_in_picture());
+  ASSERT_TRUE(pip_browser->app_name().empty());
+
+  content::RunAllTasksUntilIdle();
+
+  HWND hwnd =
+      views::HWNDForNativeWindow(pip_browser->window()->GetNativeWindow());
+
+  Microsoft::WRL::ComPtr<IPropertyStore> pps;
+  HRESULT result = SHGetPropertyStoreForWindow(hwnd, IID_PPV_ARGS(&pps));
+  EXPECT_TRUE(SUCCEEDED(result));
+
+  base::win::ScopedPropVariant prop_var;
+  EXPECT_EQ(S_OK, pps->GetValue(PKEY_AppUserModel_ID, prop_var.Receive()));
+  EXPECT_EQ(VT_LPWSTR, prop_var.get().vt);
+
+  std::wstring expected_app_id =
+      shell_integration::win::GetAppUserModelIdForBrowser(
+          browser()->profile()->GetPath());
+
+  EXPECT_EQ(expected_app_id, prop_var.get().pwszVal);
 }
