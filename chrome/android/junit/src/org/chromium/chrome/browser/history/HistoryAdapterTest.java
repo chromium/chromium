@@ -50,7 +50,12 @@ public class HistoryAdapterTest {
         mHistoryProvider = new StubbedHistoryProvider();
         mAdapter =
                 new HistoryAdapter(
-                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, false);
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ false,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
         doReturn(mTextView).when(mAppFilterChip).getPrimaryTextView();
@@ -106,7 +111,12 @@ public class HistoryAdapterTest {
         doReturn(true).when(mContentManager).showAppFilter();
         mAdapter =
                 new HistoryAdapter(
-                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, false);
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ false,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
 
         mAdapter.generateHeaderItemsForTest();
         mAdapter.generateFooterItemsForTest(mMockButton);
@@ -386,7 +396,12 @@ public class HistoryAdapterTest {
         // Re-instantiate adapter with clustering enabled
         mAdapter =
                 new HistoryAdapter(
-                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ true,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -431,7 +446,12 @@ public class HistoryAdapterTest {
     public void testRemoveClusterHead() {
         mAdapter =
                 new HistoryAdapter(
-                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ true,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -457,7 +477,12 @@ public class HistoryAdapterTest {
     public void testRemoveSubItem() {
         mAdapter =
                 new HistoryAdapter(
-                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ true,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -499,7 +524,12 @@ public class HistoryAdapterTest {
     public void testStableIdInvariantOnClusterDeletion() {
         mAdapter =
                 new HistoryAdapter(
-                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ true,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();
@@ -535,7 +565,12 @@ public class HistoryAdapterTest {
     public void testDistinctClustersSameDomain() {
         mAdapter =
                 new HistoryAdapter(
-                        mContentManager, mHistoryProvider, mHistorySyncPromoCoordinator, true);
+                        mContentManager,
+                        mHistoryProvider,
+                        mHistorySyncPromoCoordinator,
+                        /* shouldClusterByDomain= */ true,
+                        /* snackbarManager= */ null,
+                        /* profile= */ null);
         mAdapter.generateHeaderItemsForTest();
 
         Date today = new Date();

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.finds;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -99,5 +100,7 @@ public class FindsService {
         void maybeRescheduleNotifications(long nativeFindsServiceAndroid);
 
         void onCheckAreFindsNotificationsEnabled(long callbackId, boolean result);
+
+        boolean isHistorySyncAndMsbbEnabled(@JniType("Profile*") Profile profile);
     }
 }

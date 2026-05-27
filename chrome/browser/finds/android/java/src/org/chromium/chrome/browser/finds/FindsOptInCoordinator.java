@@ -17,14 +17,11 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions.ChannelId;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -149,13 +146,6 @@ public class FindsOptInCoordinator {
 
                         if (mUserInteractionType == FindsOptInUserInteraction.DISMISSED) {
                             FindsMetrics.recordOptInDismissed();
-                        } else if (mUserInteractionType == FindsOptInUserInteraction.ACCEPTED) {
-                            // Only show the snackbar if both app-level notifications and finds
-                            // channel are activated.
-                            FindsUtils.areFindsNotificationsEnabled(
-                                    isEnabled -> {
-                                        if (isEnabled) showOptInSnackbar();
-                                    });
                         }
                         // Reset mUserInteractionType.
                         mUserInteractionType = FindsOptInUserInteraction.DISMISSED;
@@ -167,51 +157,7 @@ public class FindsOptInCoordinator {
     @VisibleForTesting
     void onOptInAccepted() {
         mUserInteractionType = FindsOptInUserInteraction.ACCEPTED;
-        FindsUtils.isFindsChannelCreated(
-                (channelExists) -> {
-                    boolean firstTime = !channelExists;
-                    if (firstTime) {
-                        // For first time opt-in, initialize the notification channel as enabled.
-                        new ChannelsInitializer(
-                                        BaseNotificationManagerProxyFactory.create(),
-                                        ChromeChannelDefinitions.getInstance(),
-                                        mContext.getResources())
-                                .ensureInitialized(ChannelId.CHROME_FINDS);
-                    }
-
-                    // Verify if notifications are fully enabled (both app-level and channel).
-                    // If not, redirect to settings so the user can finalize their opt-in.
-                    // This handles first-time users with app-level disabled and testing
-                    // configuration flow where app-level/channel notifications aren't enabled.
-                    FindsUtils.areFindsNotificationsEnabled(
-                            (enabled) -> {
-                                if (!enabled) {
-                                    FindsUtils.launchFindsNotificationSettings(mContext);
-                                }
-                                FindsMetrics.recordOptInAccepted(firstTime);
-                                FindsUtils.setOptInPromoInteracted(mProfile);
-                                dismiss();
-                            });
-                });
-    }
-
-    private void showOptInSnackbar() {
-        mSnackbarManager.showSnackbar(
-                Snackbar.make(
-                                mContext.getString(R.string.chrome_finds_opt_in_snackbar_message),
-                                new SnackbarController() {
-                                    @Override
-                                    public void onAction(@Nullable Object actionData) {
-                                        FindsUtils.launchFindsNotificationSettings(mContext);
-                                        FindsMetrics.recordSnackbarActionClicked();
-                                    }
-                                },
-                                Snackbar.TYPE_NOTIFICATION,
-                                Snackbar.UMA_CHROME_FINDS_OPT_IN)
-                        .setAction(
-                                mContext.getString(
-                                        R.string.chrome_finds_opt_in_snackbar_action_text),
-                                null));
+        FindsUtils.acceptOptIn(mContext, mProfile, mSnackbarManager, () -> dismiss());
     }
 
     @VisibleForTesting

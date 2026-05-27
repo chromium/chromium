@@ -31,6 +31,9 @@ public final class FindsFeatures {
     public static final MutableBooleanParamWithSafeDefault sAlwaysShowOptInPromo =
             sChromeFinds.newBooleanParam("always_show_opt_in_promo", false);
 
+    public static final MutableBooleanParamWithSafeDefault sEnableHistoryPageOptIn =
+            sChromeFinds.newBooleanParam("enable_history_page_opt_in", false);
+
     // LINT.IfChange(OptInPromoParams)
     public static final MutableIntParamWithSafeDefault sMaxOptInPromoInteractionCount =
             sChromeFinds.newIntParam("finds_opt_in_promo_max_interacted_count", 2);

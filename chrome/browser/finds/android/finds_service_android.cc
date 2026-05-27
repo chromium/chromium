@@ -10,13 +10,22 @@
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/finds/core/finds_service.h"
+#include "chrome/browser/finds/core/finds_utils.h"
 #include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
+#include "components/user_prefs/user_prefs.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/finds/android/jni_headers/FindsService_jni.h"
 
 namespace finds {
+
+static bool JNI_FindsService_IsHistorySyncAndMsbbEnabled(JNIEnv* env,
+                                                         Profile* profile) {
+  return IsHistorySyncAndMsbbEnabled(SyncServiceFactory::GetForProfile(profile),
+                                     user_prefs::UserPrefs::Get(profile));
+}
 
 static void JNI_FindsService_OnCheckAreFindsNotificationsEnabled(
     JNIEnv* env,

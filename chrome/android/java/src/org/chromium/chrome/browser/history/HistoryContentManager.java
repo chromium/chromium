@@ -407,7 +407,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                         this,
                         sProviderForTests != null ? sProviderForTests : historyProvider,
                         mHistorySyncPromoCoordinator,
-                        shouldClusterByDomain);
+                        shouldClusterByDomain,
+                        snackbarManager,
+                        mProfile.isOffTheRecord() ? null : mProfile);
 
         // Create a recycler view.
         mRecyclerView =
