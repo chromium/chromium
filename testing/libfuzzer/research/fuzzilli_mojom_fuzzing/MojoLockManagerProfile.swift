@@ -436,5 +436,6 @@ let mojoLockManagerProfile = Profile(
     additionalEnumerations: [
         .jsLockMode, .jsWaitMode,
     ],
+    additionalOptionsBags: [],
     optionalPostProcessor: nil
 )
