@@ -31,6 +31,7 @@ public final class SigninAndHistorySyncBundleHelper {
     private static final String SIGNIN_CONFIG_DISABLE_SIGNIN = "Signin.SigninConfig.DisableSignin";
     private static final String SIGNIN_CONFIG_SELECTED_ACCOUNT_EMAIL =
             "Signin.SigninConfig.SelectedAccountEmail";
+    private static final String SIGNIN_CONFIG_FLOW = "Signin.SigninConfig.Flow";
 
     // Fields of {@link HistorySyncConfig}.
     private static final String HISTORY_SYNC_CONFIG_TITLE = "Signin.HistorySyncConfig.Title";
@@ -71,6 +72,7 @@ public final class SigninAndHistorySyncBundleHelper {
         bundle.putInt(HISTORY_OPT_IN_MODE, config.historyOptInMode);
         bundle.putString(
                 SIGNIN_CONFIG_SELECTED_ACCOUNT_EMAIL, config.signinConfig.selectedAccountEmail);
+        bundle.putInt(SIGNIN_CONFIG_FLOW, config.signinConfig.signinFlow);
         return bundle;
     }
 
@@ -86,6 +88,10 @@ public final class SigninAndHistorySyncBundleHelper {
         builder.shouldDisableSignin(bundle.getBoolean(SIGNIN_CONFIG_DISABLE_SIGNIN, false));
         builder.historyOptInMode(bundle.getInt(HISTORY_OPT_IN_MODE, 0));
         builder.selectedAccountEmail(bundle.getString(SIGNIN_CONFIG_SELECTED_ACCOUNT_EMAIL));
+        builder.signinFlow(
+                bundle.getInt(
+                        SIGNIN_CONFIG_FLOW,
+                        SigninAndHistorySyncCoordinator.SigninFlow.DEFAULT_SIGNIN));
         return builder.build();
     }
 

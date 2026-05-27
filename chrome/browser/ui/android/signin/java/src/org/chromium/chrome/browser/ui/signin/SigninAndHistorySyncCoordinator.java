@@ -11,6 +11,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
@@ -32,6 +34,8 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.widget.Toast;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Objects;
 
 /**
@@ -40,6 +44,20 @@ import java.util.Objects;
  */
 @NullMarked
 public abstract class SigninAndHistorySyncCoordinator {
+
+    /** Flow for the sign-in routine. */
+    @IntDef({SigninFlow.DEFAULT_SIGNIN, SigninFlow.SWITCH_ACCOUNT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SigninFlow {
+        /** Regular sign-in flow, i.e. the user is signed out and wants to sign in. */
+        int DEFAULT_SIGNIN = 0;
+
+        /**
+         * Sign-in flow for switching accounts, i.e. the user is already signed in but wants to sign
+         * in to a different account.
+         */
+        int SWITCH_ACCOUNT = 1;
+    }
 
     /** Indicates the sign-in flow completion status. */
     public static class Result {

@@ -10,6 +10,7 @@ import androidx.annotation.DrawableRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
 
 import java.util.Objects;
@@ -24,6 +25,7 @@ public final class FullscreenSigninConfig {
     public final boolean shouldDisableSignin;
     public final @Nullable @SigninSurveyController.SigninSurveyType Integer signinSurveyType;
     public final @Nullable String selectedAccountEmail;
+    public final @SigninAndHistorySyncCoordinator.SigninFlow int signinFlow;
 
     /**
      * Constructor of FullscreenSigninConfig.
@@ -38,6 +40,8 @@ public final class FullscreenSigninConfig {
      *     button.
      * @param surveyType The survey type to use for the sign-in flow.
      * @param selectedAccountEmail the email of the account to auto-select in the sign-in flow.
+     * @param signinFlow The {@link SigninAndHistorySyncCoordinator.SigninFlow} for the sign-in
+     *     routine.
      */
     public FullscreenSigninConfig(
             String title,
@@ -46,7 +50,8 @@ public final class FullscreenSigninConfig {
             @DrawableRes int logoId,
             boolean shouldDisableSignin,
             @Nullable @SigninSurveyController.SigninSurveyType Integer surveyType,
-            @Nullable String selectedAccountEmail) {
+            @Nullable String selectedAccountEmail,
+            @SigninAndHistorySyncCoordinator.SigninFlow int signinFlow) {
         assert !TextUtils.isEmpty(title);
         assert !TextUtils.isEmpty(subtitle);
         assert !TextUtils.isEmpty(dismissText);
@@ -57,6 +62,7 @@ public final class FullscreenSigninConfig {
         this.shouldDisableSignin = shouldDisableSignin;
         this.signinSurveyType = surveyType;
         this.selectedAccountEmail = selectedAccountEmail;
+        this.signinFlow = signinFlow;
     }
 
     @Override
@@ -72,7 +78,8 @@ public final class FullscreenSigninConfig {
                 && logoId == other.logoId
                 && shouldDisableSignin == other.shouldDisableSignin
                 && Objects.equals(signinSurveyType, other.signinSurveyType)
-                && Objects.equals(selectedAccountEmail, other.selectedAccountEmail);
+                && Objects.equals(selectedAccountEmail, other.selectedAccountEmail)
+                && signinFlow == other.signinFlow;
     }
 
     @Override
@@ -84,6 +91,7 @@ public final class FullscreenSigninConfig {
                 logoId,
                 shouldDisableSignin,
                 signinSurveyType,
-                selectedAccountEmail);
+                selectedAccountEmail,
+                signinFlow);
     }
 }
