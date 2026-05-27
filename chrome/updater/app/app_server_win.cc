@@ -27,6 +27,7 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected_macros.h"
 #include "base/win/atl.h"
@@ -266,8 +267,13 @@ void AppServerWin::Stop() {
     // service process.
     // It is possible for `Stop` to be called multiple times, so check for a
     // valid `on_service_stopping_` callback before calling `Run`.
-    if (on_service_stopping_) {
-      std::move(on_service_stopping_).Run();
+    base::OnceClosure on_service_stopping;
+    {
+      base::AutoLock lock(on_service_stopping_lock_);
+      on_service_stopping = std::move(on_service_stopping_);
+    }
+    if (on_service_stopping) {
+      std::move(on_service_stopping).Run();
     }
   }
   UnregisterClassObjects();
@@ -283,8 +289,12 @@ void AppServerWin::Stop() {
 }
 
 HRESULT AppServerWin::RunCOMServer(base::OnceClosure on_service_stopping) {
-  on_service_stopping_ = std::move(on_service_stopping);
+  {
+    base::AutoLock lock(on_service_stopping_lock_);
+    on_service_stopping_ = std::move(on_service_stopping);
+  }
   absl::Cleanup reset_on_service_stopping = [&] {
+    base::AutoLock lock(on_service_stopping_lock_);
     on_service_stopping_.Reset();
   };
   return Run();

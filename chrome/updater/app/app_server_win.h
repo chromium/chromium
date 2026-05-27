@@ -11,7 +11,9 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/thread_annotations.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/update_service_internal.h"
@@ -110,7 +112,9 @@ class AppServerWin : public AppServer {
   std::unique_ptr<UpdateServiceInternalStub> active_duty_internal_stub_;
   std::unique_ptr<UpdateServiceStub> active_duty_stub_;
 
-  base::OnceClosure on_service_stopping_;
+  // Guards `on_service_stopping_`, which is accessed on COM RPC threads.
+  base::Lock on_service_stopping_lock_;
+  base::OnceClosure on_service_stopping_ GUARDED_BY(on_service_stopping_lock_);
 };
 
 // Returns the singleton AppServerWin instance.
