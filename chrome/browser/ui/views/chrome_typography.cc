@@ -87,7 +87,8 @@ void ApplyCommonFontStyles(int context,
       break;
     case CONTEXT_SIDE_PANEL_TITLE:
     case CONTEXT_TOAST_BODY_TEXT:
-      details.size_delta = gfx::PlatformFont::GetFontSizeDelta(13);
+      details.size_delta =
+          gfx::PlatformFont::GetFontSizeDeltaIgnoringUserOrLocaleSettings(13);
       break;
   }
 }
