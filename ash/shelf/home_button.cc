@@ -707,9 +707,14 @@ void HomeButton::CreateQuickAppButton() {
   quick_app_button_ = expandable_container_->AddChildView(
       std::make_unique<views::ImageButton>(base::BindRepeating(
           &HomeButton::QuickAppButtonPressed, base::Unretained(this))));
-  quick_app_button_->GetViewAccessibility().SetName(
-      AppListModelProvider::Get()->quick_app_access_model()->GetAppName());
-
+  auto app_name =
+      AppListModelProvider::Get()->quick_app_access_model()->GetAppName();
+  if (app_name.empty()) {
+    quick_app_button_->GetViewAccessibility().SetName(
+        "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    quick_app_button_->GetViewAccessibility().SetName(app_name);
+  }
   const int control_size =
       ShelfControlButton::CalculatePreferredSize({}).width();
 

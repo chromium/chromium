@@ -100,6 +100,9 @@ void DeskSwitchButton::Init(DeskButtonContainer* desk_button_container,
 
   SetInstallFocusRingOnFocus(true);
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  // TODO(crbug.com/515903501): Set the correct accessibility name.
+  GetViewAccessibility().SetName(
+      "", ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
   views::FocusRing::Get(this)->SetOutsetFocusRingDisabled(true);
   views::FocusRing::Get(this)->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::InstallRoundRectHighlightPathGenerator(
