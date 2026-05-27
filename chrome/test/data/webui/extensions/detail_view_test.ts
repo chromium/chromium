@@ -15,7 +15,6 @@ import {createExtensionInfo, MockItemDelegate, testVisible} from './test_util.js
 
 class MockDelegate extends MockItemDelegate {
   dismissMv2DeprecationNotice() {}
-  dismissMv2DeprecationNoticeForExtension(_id: string) {}
 }
 
 suite('ExtensionDetailViewTest', function() {

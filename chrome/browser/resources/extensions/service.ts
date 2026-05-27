@@ -578,10 +578,6 @@ export class Service implements ServiceInterface {
         {isMv2DeprecationNoticeDismissed: true});
   }
 
-  dismissMv2DeprecationNoticeForExtension(id: string): Promise<void> {
-    return chrome.developerPrivate.dismissMv2DeprecationNoticeForExtension(id);
-  }
-
   uploadItemToAccount(id: string): Promise<boolean> {
     return chrome.developerPrivate.uploadExtensionToAccount(id);
   }

@@ -72,7 +72,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/manifest_v2_experiment_manager.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/browser/permissions/permissions_updater.h"
@@ -3414,61 +3413,6 @@ TEST_F(DeveloperPrivateApiSupervisedUserUnitTest,
         function.get(), "[]", profile());
     EXPECT_THAT(error, testing::HasSubstr("Child account"));
 }
-
-// Test suite for cases where the user is in the  MV2 deprecation "disabled"
-// experiment phase.
-class DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest
-    : public DeveloperPrivateApiUnitTest {
- public:
-  DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest() {
-    feature_list_.InitAndDisableFeature(
-        extensions_features::kExtensionManifestV2Unsupported);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-// Extension of manifest version 2 is not supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(DeveloperPrivateApiWithMV2DeprecationDisabledUnitTest,
-       TestAcknowledgingAnExtension) {
-  // Add an extension that is affected by the MV2 deprecation.
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("ext").SetManifestVersion(2).Build();
-  registrar()->AddExtension(extension.get());
-
-  ManifestV2ExperimentManager* experiment_manager =
-      ManifestV2ExperimentManager::Get(browser_context());
-  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
-
-  base::ListValue args;
-  args.Append(extension->id());
-
-  // Call the dismiss notice function, and cancel the dismissal.
-  auto dismiss_notice_function = base::MakeRefCounted<
-      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
-  dismiss_notice_function->set_source_context_type(mojom::ContextType::kWebUi);
-  dismiss_notice_function->accept_bubble_for_testing(false);
-  EXPECT_TRUE(RunFunction(dismiss_notice_function, args));
-
-  // Extension notice should NOT be marked as acknowledged.
-  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
-
-  // Call the dismiss notice function, and accept the dismissal.
-  dismiss_notice_function = base::MakeRefCounted<
-      api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
-  dismiss_notice_function->set_source_context_type(mojom::ContextType::kWebUi);
-  dismiss_notice_function->accept_bubble_for_testing(true);
-  EXPECT_TRUE(RunFunction(dismiss_notice_function, args));
-
-  // Extension's notice should be marked as acknowledged.
-  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Signing into transport mode and Sign outs are not supported for ChromeOS
 // hence DeveloperPrivateApiTransportModeUnitTest is not run for ChromeOS.

@@ -49,8 +49,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
-#include "extensions/browser/manifest_v2_experiment_manager.h"
-#include "extensions/browser/mv2_experiment_stage.h"
 #include "extensions/browser/permissions/permissions_test_util.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
@@ -1326,89 +1324,6 @@ TEST_F(ExtensionInfoGeneratorUnitTest, UploadAsAccountExtension_TransportMode) {
   EXPECT_FALSE(info->can_upload_as_account_extension);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
-
-class ExtensionInfoGeneratorWithMV2DeprecationUnitTest
-    : public ExtensionInfoGeneratorUnitTest,
-      public testing::WithParamInterface<MV2ExperimentStage> {
- public:
-  ExtensionInfoGeneratorWithMV2DeprecationUnitTest() {
-    std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
-
-    experiment_stage_ = GetParam();
-    switch (experiment_stage_) {
-      case MV2ExperimentStage::kDisableWithReEnable:
-        disabled_features.push_back(
-            extensions_features::kExtensionManifestV2Unsupported);
-        break;
-      case MV2ExperimentStage::kUnsupported:
-        enabled_features.push_back(
-            extensions_features::kExtensionManifestV2Unsupported);
-        break;
-    }
-
-    feature_list_.InitWithFeatures(enabled_features, disabled_features);
-  }
-  ~ExtensionInfoGeneratorWithMV2DeprecationUnitTest() override = default;
-
-  MV2ExperimentStage experiment_stage() { return experiment_stage_; }
-
- private:
-  bool ShouldUseSafetyHubFeatures() override { return false; }
-
-  base::test::ScopedFeatureList feature_list_;
-  MV2ExperimentStage experiment_stage_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
-    testing::Values(MV2ExperimentStage::kDisableWithReEnable,
-                    MV2ExperimentStage::kUnsupported),
-    [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
-      switch (info.param) {
-        case MV2ExperimentStage::kDisableWithReEnable:
-          return "DisableExperiment";
-        case MV2ExperimentStage::kUnsupported:
-          return "UnsupportedExperiment";
-      }
-    });
-
-// Tests that acknowledging the MV2 deprecation notice updates the extension
-// info.
-TEST_P(ExtensionInfoGeneratorWithMV2DeprecationUnitTest,
-       DidAcknowledgeMv2DeprecationNotice) {
-  scoped_refptr<const Extension> extension =
-      ExtensionBuilder("ext").SetManifestVersion(2).Build();
-  registrar()->AddExtension(extension.get());
-
-  ManifestV2ExperimentManager* experiment_manager =
-      ManifestV2ExperimentManager::Get(browser_context());
-
-  // Extensions with manifest version 2 are affected in the other stages.
-  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_FALSE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
-
-  {
-    std::unique_ptr<developer::ExtensionInfo> info =
-        GenerateExtensionInfo(extension->id());
-    EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_notice);
-  }
-
-  experiment_manager->MarkNoticeAsAcknowledged(extension->id());
-
-  {
-    std::unique_ptr<developer::ExtensionInfo> info =
-        GenerateExtensionInfo(extension->id());
-    if (experiment_stage() == MV2ExperimentStage::kUnsupported) {
-      // Cannot acknowledge a notice that cannot be dismissed (unsupported
-      // stage).
-      EXPECT_FALSE(info->did_acknowledge_mv2_deprecation_notice);
-    } else {
-      EXPECT_TRUE(info->did_acknowledge_mv2_deprecation_notice);
-    }
-  }
-}
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 

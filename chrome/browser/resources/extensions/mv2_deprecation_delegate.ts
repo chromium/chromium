@@ -4,5 +4,4 @@
 
 export interface Mv2DeprecationDelegate {
   dismissMv2DeprecationNotice(): void;
-  dismissMv2DeprecationNoticeForExtension(id: string): void;
 }

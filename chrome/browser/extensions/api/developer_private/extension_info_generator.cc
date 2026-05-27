@@ -871,8 +871,6 @@ void ExtensionInfoGenerator::FillExtensionInfo(const Extension& extension,
   CHECK(mv2_experiment_manager);
   info.is_affected_by_mv2_deprecation =
       mv2_experiment_manager->IsExtensionAffected(extension);
-  info.did_acknowledge_mv2_deprecation_notice =
-      mv2_experiment_manager->DidUserAcknowledgeNotice(extension.id());
   if (info.web_store_url.length() > 0) {
     info.recommendations_url =
         extension_urls::GetNewWebstoreItemRecommendationsUrl(extension.id())

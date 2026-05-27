@@ -43,7 +43,6 @@ import type {ExtensionsToggleRowElement} from './toggle_row.js';
 
 class DummyDetailViewDelegate extends DummyItemDelegate {
   dismissMv2DeprecationNotice() {}
-  dismissMv2DeprecationNoticeForExtension(_id: string) {}
 }
 
 export interface ExtensionsDetailViewElement {

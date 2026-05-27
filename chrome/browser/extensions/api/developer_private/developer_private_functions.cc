@@ -2302,9 +2302,6 @@ void DeveloperPrivateUploadExtensionToAccountFunction::OnDialogCancelled() {
 #if BUILDFLAG(IS_ANDROID)
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(DeveloperPrivateLoadDirectoryFunction,
                                         "developerPrivate.loadDirectory")
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
-    DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction,
-    "developerPrivate.dismissMv2DeprecationNoticeForExtension")
 
 ExtensionFunction::ResponseAction
 DeveloperPrivateShowSiteSettingsFunction::Run() {
@@ -2547,114 +2544,6 @@ DeveloperPrivateLoadDirectoryFunction::DeveloperPrivateLoadDirectoryFunction()
 
 DeveloperPrivateLoadDirectoryFunction::
     ~DeveloperPrivateLoadDirectoryFunction() {}
-
-DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
-    DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() = default;
-DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
-    ~DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction() =
-        default;
-
-ExtensionFunction::ResponseAction
-DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::Run() {
-  std::optional<developer::DismissMv2DeprecationNoticeForExtension::Params>
-      params =
-          developer::DismissMv2DeprecationNoticeForExtension::Params::Create(
-              args());
-  EXTENSION_FUNCTION_VALIDATE(params);
-  extension_id_ = std::move(params->extension_id);
-
-  ManifestV2ExperimentManager* experiment_manager =
-      ManifestV2ExperimentManager::Get(browser_context());
-
-  // Extension must be affected by the MV2 deprecation.
-  const Extension* extension =
-      ExtensionRegistry::Get(browser_context())
-          ->GetExtensionById(extension_id_, ExtensionRegistry::EVERYTHING);
-  if (!extension) {
-    return RespondNow(Error(
-        ErrorUtils::FormatErrorMessage(kNoExtensionError, extension_id_)));
-  }
-  if (!experiment_manager->IsExtensionAffected(*extension)) {
-    return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-        kExtensionNotAffectedByMV2Deprecation, extension_id_)));
-  }
-
-  MV2ExperimentStage experiment_stage =
-      experiment_manager->GetCurrentExperimentStage();
-  switch (experiment_stage) {
-    case MV2ExperimentStage::kDisableWithReEnable: {
-      // Prompt for user confirmation before dismissing the notice.
-      if (accept_bubble_for_testing_.has_value()) {
-        if (*accept_bubble_for_testing_) {
-          OnDialogAccepted();
-        } else {
-          OnDialogCancelled();
-        }
-        return AlreadyResponded();
-      }
-
-      BrowserWindowInterface* const browser =
-          ProfileBrowserCollection::GetForProfile(
-              Profile::FromBrowserContext(browser_context()))
-              ->GetLastActiveBrowser();
-      if (!browser) {
-        return RespondNow(Error(kCouldNotFindWebContentsError));
-      }
-
-      ShowMv2DeprecationKeepDialog(
-          browser, *extension,
-          base::BindOnce(
-              &DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
-                  OnDialogAccepted,
-              this),
-          base::BindOnce(
-              &DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
-                  OnDialogCancelled,
-              this));
-
-      return RespondLater();
-    }
-
-    case MV2ExperimentStage::kUnsupported:
-      return RespondNow(Error(ErrorUtils::FormatErrorMessage(
-          kCannotDismissExtensionOnUnsupportedStage, extension_id_)));
-  }
-}
-
-void DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
-    DismissExtensionNotice() {
-  ManifestV2ExperimentManager* experiment_manager =
-      ManifestV2ExperimentManager::Get(browser_context());
-  experiment_manager->MarkNoticeAsAcknowledged(extension_id_);
-
-  // There isn't a separate observer for the MV2 acknowledged state changing,
-  // but this is the only place it's changed. Just fire the event directly.
-  DeveloperPrivateEventRouter* event_router =
-      DeveloperPrivateAPI::Get(browser_context())
-          ->developer_private_event_router();
-  if (event_router) {
-    event_router->OnExtensionConfigurationChanged(extension_id_);
-  }
-}
-
-void DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
-    OnDialogAccepted() {
-  if (!browser_context()) {
-    return;
-  }
-
-  DismissExtensionNotice();
-  Respond(NoArguments());
-}
-
-void DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction::
-    OnDialogCancelled() {
-  if (!browser_context()) {
-    return;
-  }
-
-  Respond(NoArguments());
-}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace api

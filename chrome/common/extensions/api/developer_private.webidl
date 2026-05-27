@@ -253,7 +253,6 @@ dictionary ExtensionInfo {
   required boolean showAccessRequestsInToolbar;
   boolean pinnedToToolbar;
   required boolean isAffectedByMV2Deprecation;
-  required boolean didAcknowledgeMV2DeprecationNotice;
   required boolean canUploadAsAccountExtension;
 };
 
@@ -788,10 +787,6 @@ interface DeveloperPrivate {
   // Dismisses the menu notification for the extensions module in Safety Hub
   // if one is active.
   static undefined dismissSafetyHubExtensionsMenuNotification();
-
-  // Triggers the dismissal of the mv2 deprecation notice for `extensionId`.
-  static undefined dismissMv2DeprecationNoticeForExtension(
-      DOMString extensionId);
 
   // Uploads an extension to the signed in user's account and returns whether
   // the extension is actually uploaded in `callback`. If the extension is not

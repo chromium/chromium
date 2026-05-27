@@ -358,8 +358,6 @@ export class ExtensionsManagerElement extends ExtensionsManagerElementBase {
         this.updateItem_(
             'extensions_', index,
             Object.assign({}, this.getData_(eventData.item_id), {
-              didAcknowledgeMV2DeprecationNotice:
-                  eventData.extensionInfo?.didAcknowledgeMV2DeprecationNotice,
               safetyCheckText: eventData.extensionInfo?.safetyCheckText,
             }));
         break;
