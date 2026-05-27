@@ -552,10 +552,7 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2,
-        ChromeFeatureList.ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE
-    })
+    @DisableFeatures({ChromeFeatureList.ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE})
     @Restriction(DeviceFormFactor.PHONE)
     // TODO(crbug.com/485814887): Clean up this test.
     public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarTop() throws Exception {
@@ -565,23 +562,8 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP,
-        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2 + ":force_bottom_for_focused_omnibox/true"
-    })
-    @DisableFeatures(ChromeFeatureList.ENABLE_TOOLBAR_POSITIONING_IN_RESIZE_MODE)
-    @Restriction(DeviceFormFactor.PHONE)
-    // TODO(crbug.com/485814887): Clean up this test.
-    public void testRender_incognitoNtpWithOmniboxAutofocus_toolbarBottom() throws Exception {
-        loadAndRenderIncognitoNtp("incognito_ntp_omnibox_autofocus_toolbar_bottom", true);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
     @DisableFeatures({
         ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP,
-        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2
     })
     @Restriction(DeviceFormFactor.PHONE)
     public void testRender_incognitoNtp_keyboardOverlay_toolbarTop() throws Exception {
@@ -591,34 +573,10 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @EnableFeatures(
-            ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2 + ":force_bottom_for_focused_omnibox/true")
-    @DisableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
-    @Restriction(DeviceFormFactor.PHONE)
-    public void testRender_incognitoNtp_keyboardOverlay_toolbarBottom() throws Exception {
-        loadAndRenderIncognitoNtp("incognito_ntp_keyboard_overlay_toolbar_bottom", false);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     @Restriction(DeviceFormFactor.PHONE)
     public void testRender_incognitoNtp_keyboardResize_toolbarTop() throws Exception {
         loadAndRenderIncognitoNtp("incognito_ntp_keyboard_resize_toolbar_top", true);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({
-        ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP,
-        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2 + ":force_bottom_for_focused_omnibox/true"
-    })
-    @Restriction(DeviceFormFactor.PHONE)
-    public void testRender_incognitoNtp_keyboardResize_toolbarBottom() throws Exception {
-        loadAndRenderIncognitoNtp("incognito_ntp_keyboard_resize_toolbar_bottom", true);
     }
 
     private void loadAndRenderIncognitoNtp(String goldenId, boolean withOmniboxAutofocus)

@@ -19,7 +19,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisableLeakChecks;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -67,7 +66,6 @@ public class OmniboxPTTest {
     @Test
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288411
     public void testOpenTypeDelete_fromWebPage() {
-        ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         var omniboxAndKeyboard = mBlankPage.openOmnibox(sFakeSuggestions);
 
         doOpenTypeDelete(omniboxAndKeyboard);
@@ -79,7 +77,6 @@ public class OmniboxPTTest {
     @Test
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288411
     public void testOpenTypeDelete_fromNtp() {
-        ChromeFeatureList.sAndroidBottomToolbarV2ForceBottomForFocusedOmnibox.setForTesting(false);
         RegularNewTabPageStation ntp = mBlankPage.openNewTabFast();
         var omnibox = ntp.openOmnibox(sFakeSuggestions);
 

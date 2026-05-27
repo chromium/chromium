@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.text.TextUtils;
 
@@ -16,7 +14,6 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxImageSupplier;
 import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionProcessor;
@@ -268,17 +265,8 @@ class DropdownItemViewInfoListBuilder {
             }
         }
 
-        boolean toolbarOnBottom =
-                ChromeFeatureList.sAndroidBottomToolbarV2ReverseOrderSuggestionsList.getValue()
-                        && assumeNonNull(mToolbarPositionSupplier.get()) == ControlsPosition.BOTTOM;
-        var roundingStartEdge =
-                toolbarOnBottom
-                        ? SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED
-                        : SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED;
-        var roundingEndEdge =
-                toolbarOnBottom
-                        ? SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED
-                        : SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED;
+        var roundingStartEdge = SuggestionCommonProperties.BG_TOP_CORNER_ROUNDED;
+        var roundingEndEdge = SuggestionCommonProperties.BG_BOTTOM_CORNER_ROUNDED;
 
         for (int indexInList = 0; indexInList < numGroupMatches; indexInList++) {
             var indexOnList = firstVerticalPosition + indexInList;
