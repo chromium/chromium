@@ -26,6 +26,7 @@ class DefaultState : public BaseState {
   ~DefaultState() override;
 
   // WindowState::State:
+  void OnWMEvent(WindowState* window_state, const WMEvent* event) override;
   void AttachState(WindowState* window_state,
                    WindowState::State* previous_state) override;
   void DetachState(WindowState* window_state) override;
