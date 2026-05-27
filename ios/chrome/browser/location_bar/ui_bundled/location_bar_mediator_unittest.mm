@@ -57,6 +57,7 @@ class LocationBarMediatorTest : public PlatformTest {
 
     mediator_ =
         [[LocationBarMediator alloc] initWithURLLoadingBrowsingAgent:nil
+                                               aimEligibilityService:nullptr
                                                          isIncognito:NO];
     mediator_.templateURLService = template_url_service_;
     mediator_.placeholderService = placeholder_service_.get();
@@ -119,8 +120,10 @@ TEST_F(LocationBarMediatorTest, SetConsumerUpdatesPlaceholderIconImmediately) {
 TEST_F(LocationBarMediatorTest, SetPlaceholderServiceUpdatesConsumer) {
   // Re-create mediator without placeholder service set initially
   [mediator_ disconnect];
-  mediator_ = [[LocationBarMediator alloc] initWithURLLoadingBrowsingAgent:nil
-                                                               isIncognito:NO];
+  mediator_ =
+      [[LocationBarMediator alloc] initWithURLLoadingBrowsingAgent:nil
+                                             aimEligibilityService:nullptr
+                                                       isIncognito:NO];
   mediator_.templateURLService = template_url_service_;
 
   id mock_consumer = OCMProtocolMock(@protocol(LocationBarConsumer));

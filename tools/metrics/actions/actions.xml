@@ -32779,6 +32779,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileToolbarPlusButtonTap">
+  <owner>radunitescu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>User tapped on Plus button on toolbar.</description>
+</action>
+
 <action name="MobileToolbarReload">
   <owner>tedchoc@chromium.org</owner>
   <description>

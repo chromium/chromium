@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "ios/chrome/browser/fullscreen/model/fullscreen_browser_agent_observer_bridge.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_mutator.h"
@@ -26,6 +27,8 @@ class WebStateList;
 
 - (instancetype)initWithURLLoadingBrowsingAgent:
                     (UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+                          aimEligibilityService:
+                              (AimEligibilityService*)aimEligibilityService
                                     isIncognito:(BOOL)isIncognito
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

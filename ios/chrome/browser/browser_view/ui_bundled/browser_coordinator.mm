@@ -101,6 +101,7 @@
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_coordinator.h"
+#import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 #import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
@@ -859,6 +860,9 @@ const char kChromeAppStoreUrl[] =
 
   // The coordinator for Cobalt popups.
   ChromeCoordinator* _cobaltPopupCoordinator;
+
+  // The coordinator showing the multimodal composebox menu.
+  ComposeboxMenuCoordinator* _composeboxMenuCoordinator;
 }
 
 #pragma mark - SnackbarCoordinatorDelegate
@@ -2003,6 +2007,7 @@ const char kChromeAppStoreUrl[] =
   [self dismissDockingPromo];
   [self hideWelcomeBackPromo];
   [self hideComposeboxImmediately:YES completion:nil];
+  [self dismissMultimodalActionsMenu];
 }
 
 // Starts independent mediators owned by this coordinator.
@@ -3068,6 +3073,25 @@ const char kChromeAppStoreUrl[] =
   [_signinCoordinator start];
 }
 
+- (void)showMultimodalActionsMenu {
+  if (IsComposeboxPlusButtonBottomSheet()) {
+    [_composeboxMenuCoordinator stop];
+    _composeboxMenuCoordinator = [[ComposeboxMenuCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser
+                        entrypoint:ComposeboxEntrypoint::kNTPPlusButton];
+    [_composeboxMenuCoordinator start];
+  } else {
+    [self showComposeboxFromEntrypoint:ComposeboxEntrypoint::kNTPPlusButton
+                             withQuery:nil];
+  }
+}
+
+- (void)dismissMultimodalActionsMenu {
+  [_composeboxMenuCoordinator stop];
+  _composeboxMenuCoordinator = nil;
+}
+
 - (void)showComposebox {
   [self exitFullscreen];
 
@@ -3245,7 +3269,7 @@ const char kChromeAppStoreUrl[] =
 
   [self cancelCollaborationFlows];
   [self.NTPCoordinator clearPresentedState];
-
+  [self dismissMultimodalActionsMenu];
   // The composebox replaces the omnibox.
   if (dismissOmnibox) {
     [self hideComposebox];

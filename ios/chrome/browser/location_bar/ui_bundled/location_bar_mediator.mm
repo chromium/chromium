@@ -44,6 +44,7 @@
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "skia/ext/skia_utils_ios.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -72,10 +73,15 @@ const CGFloat kIconPointSize = 16.0;
   BOOL _isIncognito;
   raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
   NSHashTable<id<FullscreenUIElement>>* _fullscreenUIElements;
+  raw_ptr<AimEligibilityService> _aimEligibilityService;
+  // AIM eligibility subscription.
+  base::CallbackListSubscription _aimEligibilitySubscription;
 }
 
 - (instancetype)initWithURLLoadingBrowsingAgent:
                     (UrlLoadingBrowserAgent*)URLLoadingBrowserAgent
+                          aimEligibilityService:
+                              (AimEligibilityService*)aimEligibilityService
                                     isIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
@@ -85,6 +91,15 @@ const CGFloat kIconPointSize = 16.0;
     _isIncognito = isIncognito;
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _fullscreenUIElements = [NSHashTable weakObjectsHashTable];
+    _aimEligibilityService = aimEligibilityService;
+    if (_aimEligibilityService) {
+      __weak __typeof(self) weakSelf = self;
+      _aimEligibilitySubscription =
+          _aimEligibilityService->RegisterEligibilityChangedCallback(
+              base::BindRepeating(^(void) {
+                [weakSelf updateAIMAvailability];
+              }));
+    }
   }
   return self;
 }
@@ -94,6 +109,8 @@ const CGFloat kIconPointSize = 16.0;
     _webStateList->RemoveObserver(_webStateListObserver.get());
     _webStateList = nullptr;
   }
+  _aimEligibilitySubscription = {};
+  _aimEligibilityService = nullptr;
   _webStateListObserver = nullptr;
   _searchEngineObserver = nullptr;
   self.placeholderService = nullptr;
@@ -261,6 +278,35 @@ const CGFloat kIconPointSize = 16.0;
 
 #pragma mark - Private
 
+// Called when AIM availability is updated.
+- (void)updateAIMAvailability {
+  [self updatePlaceholderType];
+}
+
+// Whether to show the plus button in NTP.
+- (BOOL)shouldShowPlusButton {
+  if (!_aimEligibilityService) {
+    return NO;
+  }
+
+  web::WebState* webState = [self activeWebState];
+  if (!webState) {
+    return NO;
+  }
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(webState->GetBrowserState());
+  if (profile->IsOffTheRecord()) {
+    return NO;
+  }
+
+  BOOL allowedOnDevice = IsComposeboxIOSEnabled() &&
+                         !IsComposeboxAIMDisabled() &&
+                         IsPlusButtonInFakeboxEnabled();
+  BOOL fuseboxEligible = _aimEligibilityService->IsFuseboxEligible();
+  return fuseboxEligible && allowedOnDevice;
+}
+
 /// Returns whether the Lens overlay is currently available for the web state.
 - (BOOL)isLensOverlayAvailable {
   if (IsChromeNextIaEnabled() && !IsChromeNextIaLensIconVisible()) {
@@ -341,8 +387,13 @@ const CGFloat kIconPointSize = 16.0;
 /// Updates the placeholder.
 - (void)updatePlaceholderType {
   if ([self isCurrentPageNTP]) {
-    [self.consumer setPlaceholderType:LocationBarPlaceholderType::
-                                          kDefaultSearchEngineIcon];
+    if ([self shouldShowPlusButton]) {
+      [self.consumer
+          setPlaceholderType:LocationBarPlaceholderType::kPlusButton];
+    } else {
+      [self.consumer setPlaceholderType:LocationBarPlaceholderType::
+                                            kDefaultSearchEngineIcon];
+    }
     return;
   } else {
     [self.consumer setPlaceholderType:LocationBarPlaceholderType::kNone];

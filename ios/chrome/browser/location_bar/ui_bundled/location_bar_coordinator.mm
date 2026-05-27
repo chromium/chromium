@@ -10,6 +10,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/supports_user_data.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/aim_eligibility_service.h"
 #import "components/omnibox/browser/location_bar_model_impl.h"
 #import "components/omnibox/browser/omnibox_text_util.h"
 #import "components/omnibox/common/omnibox_features.h"
@@ -18,6 +19,7 @@
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/search_engines/util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_browser_agent.h"
 #import "ios/chrome/browser/autocomplete/model/autocomplete_scheme_classifier_impl.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_button_factory.h"
@@ -408,9 +410,12 @@ struct AIHubBadgeActiveWindowsData : public base::SupportsUserData::Data {
 
   UrlLoadingBrowserAgent* URLLoading =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
-  self.mediator =
-      [[LocationBarMediator alloc] initWithURLLoadingBrowsingAgent:URLLoading
-                                                       isIncognito:isIncognito];
+  AimEligibilityService* aimEligibilityService =
+      IOSChromeAimEligibilityServiceFactory::GetForProfile(self.profile);
+  self.mediator = [[LocationBarMediator alloc]
+      initWithURLLoadingBrowsingAgent:URLLoading
+                aimEligibilityService:aimEligibilityService
+                          isIncognito:isIncognito];
   self.mediator.templateURLService =
       ios::TemplateURLServiceFactory::GetForProfile(self.profile);
   self.mediator.consumer = self.viewController;

@@ -230,7 +230,7 @@ CGFloat const kSheetTopPadding = 40.0f;
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  [self.delegate composeboxMenuCoordinatorDidDismissMenu:self];
+  [self requestMenuDismissal];
 }
 
 #pragma mark - ComposeboxMenuMediatorDelegate
@@ -470,12 +470,22 @@ CGFloat const kSheetTopPadding = 40.0f;
   [commands showComposeboxWithParams:params];
 }
 
+// Requests the dismissal of the menu UI.
+- (void)requestMenuDismissal {
+  if (_isStandaloneMenu) {
+    id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+    [commands dismissMultimodalActionsMenu];
+  } else {
+    [self.delegate composeboxMenuCoordinatorDidDismissMenu:self];
+  }
+}
+
 #pragma mark - ComposeboxMenuViewControllerDelegate
 
 - (void)composeboxMenuViewControllerDidRequestClose:
     (ComposeboxMenuViewController*)composeboxMenuViewController {
-  // Calls stop to dismiss the view controller.
-  [self.delegate composeboxMenuCoordinatorDidDismissMenu:self];
+  [self requestMenuDismissal];
 }
 
 @end
