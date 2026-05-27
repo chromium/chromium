@@ -1582,6 +1582,12 @@ static MutableCSSPropertyValueSet* StyleFromMatchedRulesForElement(
   return style;
 }
 
+const CSSPropertyValueSet* EditingStyle::MatchedRulesStyleForElement(
+    Element* element,
+    unsigned rules_to_include) {
+  return StyleFromMatchedRulesForElement(element, rules_to_include);
+}
+
 void EditingStyle::MergeStyleFromRules(Element* element) {
   MutableCSSPropertyValueSet* style_from_matched_rules =
       StyleFromMatchedRulesForElement(element, StyleResolver::kAuthorCSSRules);

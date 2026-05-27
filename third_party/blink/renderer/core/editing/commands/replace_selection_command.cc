@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -70,6 +71,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -634,6 +636,129 @@ bool ReplaceSelectionCommand::ShouldMerge(const VisiblePosition& source,
          !IsEnclosingBlock(destination_node);
 }
 
+static bool HasWhiteSpaceProperty(const CSSPropertyValueSet* style) {
+  return style && (style->HasProperty(CSSPropertyID::kWhiteSpaceCollapse) ||
+                   style->HasProperty(CSSPropertyID::kTextWrapMode));
+}
+
+// Returns true if `element` has an author-origin declaration for
+// white-space-collapse or text-wrap-mode — either via the inline style
+// attribute or via any author-origin CSS rule that matched the element
+// itself. UA-origin rules and pure inheritance from an ancestor return
+// false. This distinguishes "the destination block introduces its own
+// white-space context (author-driven)" from "the block inherits its
+// white-space from a shared ancestor" and from "the block's non-default
+// white-space is UA-imposed (form controls etc.)".
+static bool HasAuthorWhiteSpaceRule(Element* element) {
+  if (HasWhiteSpaceProperty(element->InlineStyle())) {
+    return true;
+  }
+  return HasWhiteSpaceProperty(EditingStyle::MatchedRulesStyleForElement(
+      element, StyleResolver::kAuthorCSSRules));
+}
+
+// Elements that already preserve their content's white-space, either via the
+// UA stylesheet (<pre>, <listing>, <xmp>, <plaintext> apply `white-space: pre`)
+// or because they hold raw text that is never rendered as markup (<style>,
+// <script>). A "white-space: normal" span wrapper would either fight their
+// intrinsic behavior or appear as literal text, so they are skipped.
+// TODO(editing-dev): This list is not exhaustive. Other elements also get a
+// non-normal white-space from the UA stylesheet (e.g. <option>, <textarea>,
+// <select>, <nobr>). Those are currently handled indirectly by
+// HasAuthorWhiteSpaceRule (they carry no author white-space declaration), so
+// this list must be revisited if that gate changes or if any such element can
+// be authored with its own white-space declaration.
+static bool PreservesWhiteSpaceByDefault(const Element* element) {
+  return element->HasTagName(html_names::kPreTag) ||
+         element->HasTagName(html_names::kListingTag) ||
+         element->HasTagName(html_names::kXmpTag) ||
+         element->HasTagName(html_names::kPlaintextTag) ||
+         element->HasTagName(html_names::kStyleTag) ||
+         element->HasTagName(html_names::kScriptTag);
+}
+
+// When moving a paragraph into a block with non-normal white-space from
+// author styles, wrap the node with "white-space: normal" to prevent silent
+// inheritance. Returns the wrapping span, or nullptr if no wrapping was needed.
+HTMLSpanElement* ReplaceSelectionCommand::PreserveWhiteSpaceForNode(
+    Node* node,
+    EditingState* editing_state) {
+  if (!moving_paragraph_) {
+    return nullptr;
+  }
+
+  Element* parent = node->parentElement();
+  if (!parent || !IsEnclosingBlock(parent)) {
+    return nullptr;
+  }
+
+  // Skip elements whose UA-imposed white-space should win. Cheap tag check,
+  // done before the style-resolver query below.
+  if (PreservesWhiteSpaceByDefault(parent)) {
+    return nullptr;
+  }
+  // Only wrap when an author declaration sets white-space on the destination
+  // block itself — the inline style attribute, or a matched author rule via
+  // any selector (id, type, attribute, descendant, ...), not just a class.
+  // Returning early here covers the two cases that must NOT be wrapped and
+  // that the PreservesWhiteSpaceByDefault list above does not catch:
+  //   - the block inherits its white-space from a shared ancestor of the
+  //     source and destination, so the moved content already rendered with
+  //     that value (the block carries no author declaration of its own); and
+  //   - the block's non-normal white-space is UA-imposed but the element is
+  //     not in PreservesWhiteSpaceByDefault's list (e.g. <option>,
+  //     <textarea>), so it likewise has no author declaration to honor.
+  if (!HasAuthorWhiteSpaceRule(parent)) {
+    return nullptr;
+  }
+
+  auto* elem = DynamicTo<Element>(node);
+  if (elem && HasWhiteSpaceProperty(elem->InlineStyle())) {
+    return nullptr;
+  }
+
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  const ComputedStyle* parent_style = parent->GetComputedStyle();
+  if (!parent_style) {
+    return nullptr;
+  }
+
+  // During MoveParagraph, both source and destination are within the same
+  // editing host. If the destination parent's computed white-space matches the
+  // editing host's, the source content also had this white-space via
+  // inheritance from the same host, so wrapping is unnecessary. Any explicit
+  // white-space overrides on the source's ancestors would have been captured
+  // by the serialization's wrapping style during CreateMarkup.
+  Element* root = RootEditableElementOf(Position::FirstPositionInNode(*parent));
+  if (root) {
+    const ComputedStyle* root_style = root->GetComputedStyle();
+    if (root_style &&
+        root_style->ShouldCollapseBreaks() ==
+            parent_style->ShouldCollapseBreaks() &&
+        root_style->ShouldWrapLine() == parent_style->ShouldWrapLine()) {
+      return nullptr;
+    }
+  }
+
+  // Wrap the node with a span with "white-space: normal".
+  auto* span = MakeGarbageCollected<HTMLSpanElement>(GetDocument());
+  span->setAttribute(html_names::kStyleAttr,
+                     AtomicString("white-space: normal"));
+  InsertNodeBefore(span, node, editing_state);
+  if (editing_state->IsAborted()) {
+    return nullptr;
+  }
+  RemoveNode(node, editing_state);
+  if (editing_state->IsAborted()) {
+    return nullptr;
+  }
+  AppendNode(node, span, editing_state);
+  if (editing_state->IsAborted()) {
+    return nullptr;
+  }
+  return span;
+}
+
 // Style rules that match just inserted elements could change their appearance,
 // like a div inserted into a document with div { display:inline; }.
 void ReplaceSelectionCommand::RemoveRedundantStylesAndKeepStyleSpanInline(
@@ -641,14 +766,23 @@ void ReplaceSelectionCommand::RemoveRedundantStylesAndKeepStyleSpanInline(
     EditingState* editing_state) {
   Node* past_end_node = inserted_nodes.PastLastLeaf();
   Node* next = nullptr;
+
   for (Node* node = inserted_nodes.FirstNodeInserted();
        node && node != past_end_node; node = next) {
     // FIXME: <rdar://problem/5371536> Style rules that match pasted content can
     // change it's appearance
 
     next = NodeTraversal::Next(*node);
-    if (!node->IsStyledElement())
+
+    if (!node->IsStyledElement()) {
+      if (auto* span = PreserveWhiteSpaceForNode(node, editing_state)) {
+        next = NodeTraversal::NextSkippingChildren(*span);
+      }
+      if (editing_state->IsAborted()) {
+        return;
+      }
       continue;
+    }
 
     auto* element = To<Element>(node);
 
@@ -746,6 +880,13 @@ void ReplaceSelectionCommand::RemoveRedundantStylesAndKeepStyleSpanInline(
     if (element->parentNode() && IsRichlyEditable(*element->parentNode()) &&
         IsRichlyEditable(*element)) {
       RemoveElementAttribute(element, html_names::kContenteditableAttr);
+    }
+
+    if (auto* span = PreserveWhiteSpaceForNode(node, editing_state)) {
+      next = NodeTraversal::NextSkippingChildren(*span);
+    }
+    if (editing_state->IsAborted()) {
+      return;
     }
   }
 }

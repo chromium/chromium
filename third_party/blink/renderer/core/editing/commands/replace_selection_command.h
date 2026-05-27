@@ -33,6 +33,7 @@
 namespace blink {
 
 class DocumentFragment;
+class HTMLSpanElement;
 class ReplacementFragment;
 
 class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
@@ -63,6 +64,7 @@ class CORE_EXPORT ReplaceSelectionCommand final : public CompositeEditCommand {
   void DoApply(EditingState*) override;
   InputEvent::InputType GetInputType() const override;
   bool IsReplaceSelectionCommand() const override;
+  HTMLSpanElement* PreserveWhiteSpaceForNode(Node* node, EditingState*);
   void HandleStyleSpansBeforeInsertion(ReplacementFragment& fragment,
                                        const Position& insertion_pos);
 

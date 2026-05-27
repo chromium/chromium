@@ -165,6 +165,14 @@ class CORE_EXPORT EditingStyle final : public GarbageCollected<EditingStyle> {
                                            CSSPropertyID,
                                            const String& value);
 
+  // Returns the read-only cascaded style produced by merging all rules from
+  // the given origins (see StyleResolver::CSSRuleFilter) that matched
+  // `element`. Note this does not include the element's inline style
+  // attribute, only its matched stylesheet rules.
+  static const CSSPropertyValueSet* MatchedRulesStyleForElement(
+      Element* element,
+      unsigned rules_to_include);
+
  private:
   void Init(Node*, PropertiesToInclude);
   void RemoveInheritedColorsIfNeeded(const ComputedStyle*);
