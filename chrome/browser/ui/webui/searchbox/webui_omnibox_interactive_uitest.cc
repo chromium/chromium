@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -848,13 +849,13 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 // TODO(crbug.com/505527138): The tests are flaky on Mac builders.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 #define MAYBE_ClassicContextMenuUploadTriggersAimPopup \
   DISABLED_ClassicContextMenuUploadTriggersAimPopup
 #else
 #define MAYBE_ClassicContextMenuUploadTriggersAimPopup \
   ClassicContextMenuUploadTriggersAimPopup
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 IN_PROC_BROWSER_TEST_P(OmniboxAimUploadInteractiveTest,
                        MAYBE_ClassicContextMenuUploadTriggersAimPopup) {
   base::FilePath test_data_dir;
