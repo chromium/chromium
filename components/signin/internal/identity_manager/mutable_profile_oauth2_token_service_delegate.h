@@ -148,6 +148,9 @@ class MutableProfileOAuth2TokenServiceDelegate
       TokenBindingHelper::GenerateAssertionCallback callback) override;
   void AddBindingKeyToService(
       base::span<const uint8_t> wrapped_binding_key) override;
+  bool UpdateRefreshTokenBindingKey(const CoreAccountId& account_id,
+                                    std::string_view refresh_token,
+                                    std::vector<uint8_t> wrapped_binding_key);
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
       const override;

@@ -28,7 +28,8 @@ enum class OAuth2UpgradeTokenFlowResult {
   kNetworkError = 1,
   kServerError = 2,
   kTokenGenerationFailure = 3,
-  kMaxValue = kTokenGenerationFailure
+  kFailedToSaveBindingKey = 4,
+  kMaxValue = kFailedToSaveBindingKey
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuth2UpgradeTokenFlowResult)
 
@@ -45,6 +46,8 @@ class OAuth2UpgradeTokenFlow : public OAuth2ApiCallFlow {
   OAuth2UpgradeTokenFlow& operator=(const OAuth2UpgradeTokenFlow&) = delete;
 
   ~OAuth2UpgradeTokenFlow() override;
+
+  const std::string& refresh_token() const { return refresh_token_; }
 
   void StartWithRegistrationToken(std::string binding_registration_token);
   void AbortWithError(OAuth2UpgradeTokenFlowResult result);

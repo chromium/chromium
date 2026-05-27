@@ -356,6 +356,12 @@ MutableProfileOAuth2TokenServiceDelegate::
   DCHECK(account_tracker_service_);
   DCHECK(network_connection_tracker_);
   network_connection_tracker_->AddNetworkConnectionObserver(this);
+  if (token_binding_helper_) {
+    // `base::Unretained()` is safe because `this` owns `token_binding_helper`.
+    token_binding_helper_->SetSaveBindingKeyCallback(base::BindRepeating(
+        &MutableProfileOAuth2TokenServiceDelegate::UpdateRefreshTokenBindingKey,
+        base::Unretained(this)));
+  }
 }
 
 MutableProfileOAuth2TokenServiceDelegate::
@@ -547,6 +553,29 @@ void MutableProfileOAuth2TokenServiceDelegate::AddBindingKeyToService(
     token_binding_helper_->CopyBindingKeyFromAnotherTokenService(
         wrapped_binding_key);
   }
+}
+
+bool MutableProfileOAuth2TokenServiceDelegate::UpdateRefreshTokenBindingKey(
+    const CoreAccountId& account_id,
+    std::string_view refresh_token,
+    std::vector<uint8_t> wrapped_binding_key) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  auto iter = refresh_tokens_.find(account_id);
+  if (iter == refresh_tokens_.end() ||
+      iter->second.refresh_token.value() != refresh_token) {
+    return false;
+  }
+
+  CHECK(token_binding_helper_);
+
+  token_binding_helper_->SetBindingKey(account_id, wrapped_binding_key);
+  signin::TokenBindingInfo token_binding_info(std::move(wrapped_binding_key),
+                                              iter->second.mtls_token_binding);
+  // TODO(crbug.com/514242898): Wait until `PersistCredentials()` completes
+  // successfully before resuming the upgrade flow.
+  PersistCredentials(account_id, iter->second.refresh_token.value(),
+                     token_binding_info);
+  return true;
 }
 
 std::vector<CoreAccountId>

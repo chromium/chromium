@@ -15,6 +15,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -49,6 +50,7 @@ namespace {
 
 using GenerateAssertionFuture = base::test::TestFuture<std::string>;
 using ::base::test::ErrorIs;
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Return;
@@ -484,6 +486,11 @@ TEST_F(TokenBindingHelperTest,
 
 class TokenBindingHelperUpgradeTest : public TokenBindingHelperTest {
  public:
+  TokenBindingHelperUpgradeTest() {
+    ON_CALL(mock_save_callback_, Run).WillByDefault(Return(true));
+    helper().SetSaveBindingKeyCallback(mock_save_callback_.Get());
+  }
+
   void StartUpgrade(const CoreAccountId& account_id) {
     helper().PerformTokenBindingUpgrade(account_id, "test_token",
                                         shared_factory_, "test_device_id",
@@ -494,6 +501,11 @@ class TokenBindingHelperUpgradeTest : public TokenBindingHelperTest {
     return &test_url_loader_factory_;
   }
 
+  base::MockCallback<TokenBindingHelper::SaveBindingKeyCallback>&
+  mock_save_callback() {
+    return mock_save_callback_;
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableChromeRefreshTokenBindingUpgrade};
@@ -501,10 +513,16 @@ class TokenBindingHelperUpgradeTest : public TokenBindingHelperTest {
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_ =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory_);
+  base::MockCallback<TokenBindingHelper::SaveBindingKeyCallback>
+      mock_save_callback_;
 };
 
 TEST_F(TokenBindingHelperUpgradeTest, PerformTokenBindingUpgrade) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  EXPECT_CALL(mock_save_callback(),
+              Run(account_id, std::string_view("test_token"), testing::_))
+      .WillOnce(Return(true));
+
   StartUpgrade(account_id);
   RunBackgroundTasks();
 
@@ -517,14 +535,29 @@ TEST_F(TokenBindingHelperUpgradeTest, PerformTokenBindingUpgrade) {
   test_url_loader_factory()->SimulateResponseForPendingRequest(
       GaiaUrls::GetInstance()->oauth2_upgrade_token_url().spec(), "");
 
-  // TODO(crbug.com/514242898): verify that the binding key was saved to the
-  // token database.
-
   histogram_tester().ExpectUniqueSample("Signin.TokenBinding.UpgradeHttpResult",
                                         net::HTTP_OK, 1);
   histogram_tester().ExpectUniqueSample(
       "Signin.TokenBinding.UpgradeResult",
       signin::OAuth2UpgradeTokenFlowResult::kSuccess, 1);
+}
+
+TEST_F(TokenBindingHelperUpgradeTest,
+       PerformTokenBindingUpgradeFailedToSaveBindingKey) {
+  CoreAccountId account_id = CoreAccountId::FromGaiaId(GaiaId("test_gaia_id"));
+  EXPECT_CALL(mock_save_callback(),
+              Run(account_id, std::string_view("test_token"), _))
+      .WillOnce(Return(false));
+
+  StartUpgrade(account_id);
+  RunBackgroundTasks();
+
+  EXPECT_EQ(test_url_loader_factory()->pending_requests()->size(), 0u);
+
+  histogram_tester().ExpectUniqueSample(
+      "Signin.TokenBinding.UpgradeResult",
+      signin::OAuth2UpgradeTokenFlowResult::kFailedToSaveBindingKey, 1);
+  histogram_tester().ExpectTotalCount("Signin.TokenBinding.UpgradeDuration", 1);
 }
 
 TEST_F(TokenBindingHelperUpgradeTest,

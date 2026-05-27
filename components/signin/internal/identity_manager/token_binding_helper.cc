@@ -37,6 +37,7 @@
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "crypto/signature_verifier.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
@@ -237,6 +238,7 @@ void TokenBindingHelper::PerformTokenBindingUpgrade(
     std::string_view challenge) {
   CHECK(base::FeatureList::IsEnabled(
       switches::kEnableChromeRefreshTokenBindingUpgrade));
+  CHECK_NE(refresh_token, GaiaConstants::kInvalidRefreshToken);
   std::unique_ptr<signin::OAuth2UpgradeTokenFlow>& upgrade_flow =
       upgrade_flows_[account_id];
   if (upgrade_flow != nullptr) {
@@ -260,6 +262,13 @@ void TokenBindingHelper::PerformTokenBindingUpgrade(
                      base::Unretained(this), account_id));
 }
 
+void TokenBindingHelper::SetSaveBindingKeyCallback(
+    SaveBindingKeyCallback callback) {
+  CHECK(!save_binding_key_callback_);
+  CHECK(callback);
+  save_binding_key_callback_ = std::move(callback);
+}
+
 void TokenBindingHelper::OnUpgradeRegistrationTokenGenerated(
     const CoreAccountId& account_id,
     std::optional<signin::BindingKeyRegistrationTokenResult> result) {
@@ -275,11 +284,17 @@ void TokenBindingHelper::OnUpgradeRegistrationTokenGenerated(
         signin::OAuth2UpgradeTokenFlowResult::kTokenGenerationFailure);
     return;
   }
-  // TODO(crbug.com/514242898): Save binding key to the token database before
-  // proceeding with the fetch. Abort the flow if the refresh token no longer
-  // exists.
 
-  upgrade_flow->StartWithRegistrationToken(result->registration_token);
+  CHECK(save_binding_key_callback_);
+  if (!save_binding_key_callback_.Run(account_id, upgrade_flow->refresh_token(),
+                                      std::move(result->wrapped_binding_key))) {
+    upgrade_flow->AbortWithError(
+        signin::OAuth2UpgradeTokenFlowResult::kFailedToSaveBindingKey);
+    return;
+  }
+
+  upgrade_flow->StartWithRegistrationToken(
+      std::move(result->registration_token));
 }
 
 void TokenBindingHelper::OnUpgradeTokenFinished(

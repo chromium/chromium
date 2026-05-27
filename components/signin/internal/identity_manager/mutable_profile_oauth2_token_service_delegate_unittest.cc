@@ -2741,6 +2741,66 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
       "ES256", "test_code_2", future_2.GetCallback()));
   EXPECT_FALSE(future_2.Get().has_value());
 }
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       UpdateRefreshTokenBindingKey) {
+  testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
+      mock_unexportable_key_service;
+  oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
+      std::make_unique<TokenBindingHelper>(mock_unexportable_key_service));
+  oauth2_service_delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
+
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
+  oauth2_service_delegate_->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      signin::TokenBindingInfo({}, /*mtls_token_binding=*/false));
+
+  EXPECT_TRUE(
+      oauth2_service_delegate_->GetWrappedBindingKey(account_id).empty());
+
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  EXPECT_TRUE(oauth2_service_delegate_->UpdateRefreshTokenBindingKey(
+      account_id, "refresh_token", kFakeWrappedBindingKey));
+
+  // Verify in memory state.
+  EXPECT_EQ(oauth2_service_delegate_->GetWrappedBindingKey(account_id),
+            kFakeWrappedBindingKey);
+
+  // Verify on disk state.
+  token_web_data_->GetAllTokens(this);
+  auto tokens = token_web_data_result_.Get()->GetValue().tokens;
+  ASSERT_TRUE(tokens.contains("AccountId-account_id"));
+  EXPECT_EQ(tokens.at("AccountId-account_id").wrapped_binding_key,
+            kFakeWrappedBindingKey);
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
+       UpdateRefreshTokenBindingKeyRevoked) {
+  testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
+      mock_unexportable_key_service;
+  oauth2_service_delegate_ = CreateOAuth2ServiceDelegate(
+      std::make_unique<TokenBindingHelper>(mock_unexportable_key_service));
+  oauth2_service_delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
+
+  const CoreAccountId account_id =
+      CoreAccountId::FromGaiaId(GaiaId("account_id"));
+  oauth2_service_delegate_->UpdateCredentials(
+      account_id, "refresh_token",
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown,
+      signin::TokenBindingInfo({}, /*mtls_token_binding=*/false));
+
+  // Simulate token revocation before the binding key update arrives.
+  oauth2_service_delegate_->RevokeCredentials(account_id);
+
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+  EXPECT_FALSE(oauth2_service_delegate_->UpdateRefreshTokenBindingKey(
+      account_id, "refresh_token", kFakeWrappedBindingKey));
+
+  EXPECT_TRUE(
+      oauth2_service_delegate_->GetWrappedBindingKey(account_id).empty());
+}
 #endif
 
 class MutableProfileOAuth2TokenServiceDelegateGarbageCollectionTest

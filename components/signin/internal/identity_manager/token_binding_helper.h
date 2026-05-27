@@ -13,7 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -65,6 +65,10 @@ class TokenBindingHelper {
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:TokenBindingGenerateAssertionResult)
 
   using GenerateAssertionCallback = base::OnceCallback<void(std::string)>;
+  using SaveBindingKeyCallback =
+      base::RepeatingCallback<bool(const CoreAccountId& account_id,
+                                   std::string_view refresh_token,
+                                   std::vector<uint8_t> wrapped_binding_key)>;
 
   explicit TokenBindingHelper(
       unexportable_keys::UnexportableKeyService& unexportable_key_service);
@@ -152,6 +156,10 @@ class TokenBindingHelper {
       std::string_view device_id,
       std::string_view challenge);
 
+  // Sets the callback to persist the binding key after a token binding upgrade.
+  // Must be called exactly once.
+  void SetSaveBindingKeyCallback(SaveBindingKeyCallback callback);
+
   base::WeakPtr<TokenBindingHelper> GetWeakPtr();
 
  private:
@@ -191,6 +199,7 @@ class TokenBindingHelper {
 
   const raw_ref<unexportable_keys::UnexportableKeyService>
       unexportable_key_service_;
+  SaveBindingKeyCallback save_binding_key_callback_;
 
   base::flat_map<CoreAccountId, BindingKeyData> binding_keys_;
   std::unique_ptr<signin::BindingKeyRegistrationTokenHelper>
