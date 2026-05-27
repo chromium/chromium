@@ -14,6 +14,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.annotation.Px;
 
@@ -428,6 +429,9 @@ public class TabBottomSheetCoordinator {
 
                 if (state == SheetState.HALF || state == SheetState.FULL) {
                     observeCompositorViewInteractions();
+                    if (mContentView != null) {
+                        mContentView.sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+                    }
                 } else {
                     stopObservingCompositorViewInteractions();
                 }

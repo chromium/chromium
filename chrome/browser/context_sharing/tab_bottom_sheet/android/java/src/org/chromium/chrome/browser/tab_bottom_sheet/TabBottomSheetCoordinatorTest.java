@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -34,6 +35,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.accessibility.AccessibilityEvent;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -136,8 +138,9 @@ public class TabBottomSheetCoordinatorTest {
         containerView.setFocusable(true);
         containerView.setFocusableInTouchMode(true);
 
+        View containerViewSpy = spy(containerView);
         mWebViewResizingHelper =
-                new WebViewResizingHelper(containerView, mWindowAndroid, Color.WHITE);
+                new WebViewResizingHelper(containerViewSpy, mWindowAndroid, Color.WHITE);
         when(mMockWebUi.getWebViewResizingHelper()).thenReturn(mWebViewResizingHelper);
         View webUiView = new View(mContext);
         when(mMockWebUi.getWebUiView()).thenReturn(webUiView);
@@ -145,12 +148,12 @@ public class TabBottomSheetCoordinatorTest {
         mCoBrowseViews =
                 spy(
                         new CoBrowseViews(
-                                containerView,
+                                containerViewSpy,
                                 TabBottomSheetClientType.UNKNOWN,
                                 mMockWebUi,
                                 null,
                                 0));
-        mView = containerView;
+        mView = containerViewSpy;
         assertNotNull(
                 "actor_control_container should be found in CoBrowseViews",
                 mView.findViewById(R.id.actor_control_container));
@@ -966,5 +969,23 @@ public class TabBottomSheetCoordinatorTest {
 
         // Verify onBottomSheetOpened was called with true (expanded).
         verify(mMockSheetEventsCallback, times(2)).onBottomSheetOpened(true);
+    }
+
+    @Test
+    public void testAccessibilityFocusSentOnStableStates() {
+        BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
+
+        // 1. Transition to a stable showing state (HALF)
+        observer.onSheetStateChanged(SheetState.HALF, StateChangeReason.NONE);
+
+        // Verify accessibility focus event was sent
+        verify(mView).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
+
+        clearInvocations(mView);
+
+        // 2. Transition to stable showing state (FULL)
+        observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
+        // Verify it was called again (1 time after clearing)
+        verify(mView).sendAccessibilityEvent(AccessibilityEvent.TYPE_VIEW_FOCUSED);
     }
 }

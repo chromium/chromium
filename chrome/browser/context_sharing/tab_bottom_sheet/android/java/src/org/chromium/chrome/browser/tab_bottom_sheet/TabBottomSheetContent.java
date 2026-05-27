@@ -30,6 +30,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
     private final @ColorInt int mBackgroundColor;
     private final @Nullable GlowSpec mGlowSpec;
     private final BooleanSupplier mCanNotBeSuppressedSupplier;
+    private final @TabBottomSheetClientType int mClientType;
 
     /**
      * Constructor.
@@ -50,6 +51,7 @@ public class TabBottomSheetContent implements BottomSheetContent {
         mFullHeightRatio = fullHeightRatio;
         mBackgroundColor = backgroundColor;
         mCanNotBeSuppressedSupplier = canNotBeSuppressedSupplier;
+        mClientType = clientType;
         // TODO(crbug.com/502611927): Remove or tweak this for AIM.
         mGlowSpec =
                 clientType == TabBottomSheetClientType.GLIC
@@ -145,6 +147,9 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public String getSheetContentDescription(Context context) {
+        if (mClientType == TabBottomSheetClientType.GLIC) {
+            return context.getString(R.string.glic_button_entrypoint_label);
+        }
         return "";
     }
 

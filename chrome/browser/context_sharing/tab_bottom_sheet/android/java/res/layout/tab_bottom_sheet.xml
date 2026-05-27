@@ -11,7 +11,9 @@ found in the LICENSE file.
     android:id="@+id/tab_bottom_sheet"
     tools:ignore="HardcodedText"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <!-- Tab Bottom Sheet Content: Appears when BottomSheet is expanded -->
     <FrameLayout
