@@ -82,6 +82,8 @@ class CORE_EXPORT CaretDisplayItemClient final
 
   bool ShouldPaintCaret(const PhysicalBoxFragment& box_fragment) const;
 
+  const LayoutBlock* GetLayoutBlock() const { return layout_block_; }
+
   void PaintCaret(GraphicsContext&,
                   const PhysicalOffset& paint_offset,
                   DisplayItem::Type) const;

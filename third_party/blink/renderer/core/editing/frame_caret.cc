@@ -249,6 +249,10 @@ bool FrameCaret::ShouldPaintCaret(
   return display_item_client_->ShouldPaintCaret(box_fragment);
 }
 
+const LayoutBlock* FrameCaret::GetCaretLayoutBlock() const {
+  return display_item_client_->GetLayoutBlock();
+}
+
 void FrameCaret::SetVisibleIfActive(bool visible) {
   if (visible == IsVisibleIfActive())
     return;

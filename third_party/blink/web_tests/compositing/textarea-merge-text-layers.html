@@ -1,0 +1,39 @@
+<!doctype html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+  #t {
+    width: 400px; height: 200px;
+    font-size: 12px;
+    line-height: 10px;
+    resize: none;
+    overflow: hidden;
+  }
+</style>
+<textarea id="t">line1
+
+line2
+
+line3</textarea>
+<script>
+function layerNames() {
+  return JSON.parse(internals.layerTreeAsText(document))
+      .layers.map(l => l.name);
+}
+
+test(() => {
+  const t = document.getElementById('t');
+  t.focus();
+
+  t.setSelectionRange(0, 0);
+  const baseline = layerNames();
+
+  const emptyLineOffset = 'line1\n'.length;
+  t.setSelectionRange(emptyLineOffset, emptyLineOffset);
+  const moved = layerNames();
+
+  assert_array_equals(moved, baseline,
+    `caret on empty per-line block must not change the cc layer set. ` +
+    `baseline: [${baseline.join(' | ')}]  after-move: [${moved.join(' | ')}]`);
+}, 'caret on empty per-line block does not split textarea into multiple layers');
+</script>

@@ -776,6 +776,10 @@ void FrameSelection::PaintCaret(GraphicsContext& context,
   frame_caret_->PaintCaret(context, paint_offset);
 }
 
+const LayoutBlock* FrameSelection::GetCaretLayoutBlock() const {
+  return frame_caret_->GetCaretLayoutBlock();
+}
+
 bool FrameSelection::Contains(const PhysicalOffset& point) {
   if (!GetDocument().GetLayoutView())
     return false;

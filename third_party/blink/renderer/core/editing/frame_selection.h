@@ -242,6 +242,7 @@ class CORE_EXPORT FrameSelection final
   void EnsureInvalidationOfPreviousLayoutBlock();
 
   void PaintCaret(GraphicsContext&, const PhysicalOffset&);
+  const LayoutBlock* GetCaretLayoutBlock() const;
 
   // Used to suspend caret blinking while the mouse is down.
   void SetCaretBlinkingSuspended(bool);

@@ -89,6 +89,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   bool ShouldPaintCaret(const LayoutBlock&) const;
   bool ShouldPaintCaret(const PhysicalBoxFragment&) const;
   void PaintCaret(GraphicsContext&, const PhysicalOffset&) const;
+  const LayoutBlock* GetCaretLayoutBlock() const;
 
   const EffectPaintPropertyNode& CaretEffectNode() const { return *effect_; }
 
