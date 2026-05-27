@@ -226,6 +226,9 @@ crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt
 crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled no-clang-coverage nvidia-0x2184 nvidia_lt_32.0.15.8180 release target-cpu-32 win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
+# Very Flaky on all win platforms
+crbug.com/517156647 [ win ] SwapChainTraceTest_IsOpaque [ Failure ]
+
 # Win/AMD RX 7600 / RX 5500XT failures
 crbug.com/402989071 [ win11 amd ] TraceTest_MediaFoundationD3D11VideoCapture [ Failure ]
 
