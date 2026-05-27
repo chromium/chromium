@@ -82,7 +82,7 @@ class COMPONENTS_DOWNLOAD_EXPORT SimpleDownloadManager {
   virtual void CheckForHistoryFilesRemoval() {}
 
  protected:
-  // Called when the manager is initailized.
+  // Called when the manager is initialized.
   void OnInitialized();
 
   // Called when a new download is created.
