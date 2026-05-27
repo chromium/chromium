@@ -347,7 +347,7 @@ final class SigninButtonMediator
     }
 
     private void onClick(View view) {
-        if (mProfile == null) {
+        if (mProfile == null || mProfile.isOffTheRecord()) {
             return;
         }
         recordSigninButtonUsed(mProfile);
