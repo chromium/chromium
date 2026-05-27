@@ -56,7 +56,7 @@ public class ConnectionInfoView implements OnClickListener {
     private final WebContents mWebContents;
     private final int mPaddingSides;
     private final int mPaddingVertical;
-    private final long mNativeConnectionInfoView;
+    private long mNativeConnectionInfoView;
     private final CertificateViewer mCertificateViewer;
     private @Nullable TextView mCertificateViewerTextView;
     private @Nullable TextView mMoreInfoLink;
@@ -211,7 +211,7 @@ public class ConnectionInfoView implements OnClickListener {
 
     @Override
     public void onClick(View v) {
-        if (mResetCertDecisionsButton == v) {
+        if (mResetCertDecisionsButton == v && mNativeConnectionInfoView != 0) {
             ConnectionInfoViewJni.get().resetCertDecisions(mNativeConnectionInfoView, mWebContents);
             mDelegate.dismiss(DialogDismissalCause.ACTION_ON_CONTENT);
         }
@@ -224,9 +224,13 @@ public class ConnectionInfoView implements OnClickListener {
 
     /** Called when the embedding view is removed. */
     public void onDismiss() {
-        assert mNativeConnectionInfoView != 0;
-        org.chromium.components.page_info.ConnectionInfoViewJni.get()
-                .destroy(mNativeConnectionInfoView);
+        // Guard against double-free: onDismiss() can be called more than once if the dialog is
+        // dismissed while a WebContentsObserver callback (e.g. webContentsDestroyed) also triggers
+        // dismissal. Zero the pointer before calling destroy to prevent re-entrant calls.
+        if (mNativeConnectionInfoView == 0) return;
+        long nativePtr = mNativeConnectionInfoView;
+        mNativeConnectionInfoView = 0;
+        ConnectionInfoViewJni.get().destroy(nativePtr);
     }
 
     private void showConnectionSecurityInfo() {
