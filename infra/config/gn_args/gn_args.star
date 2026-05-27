@@ -1048,6 +1048,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "no_mold",
+    args = {
+        "use_mold": False,
+    },
+)
+
+gn_args.config(
     name = "no_reclient",
     args = {
         "use_reclient": False,
