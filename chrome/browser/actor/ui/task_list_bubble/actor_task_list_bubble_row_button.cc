@@ -68,24 +68,24 @@ ui::ColorId GetRowColor(actor::ActorTask::State state,
 std::u16string GetRowSubtitle(actor::ActorTask::State state, bool has_tab) {
   if (!has_tab) {
     return l10n_util::GetStringUTF16(
-        IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE);
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE);
   }
   if (glic::GlicActorTaskIconManager::RequiresAttention(state)) {
     return l10n_util::GetStringUTF16(
-        IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
   }
   if (state == actor::ActorTask::State::kFinished) {
     return l10n_util::GetStringUTF16(
-        IDR_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE);
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE);
   } else if (state == actor::ActorTask::State::kFailed) {
     return l10n_util::GetStringUTF16(
-        IDR_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE);
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE);
   } else if (state == actor::ActorTask::State::kPausedByUser) {
     return l10n_util::GetStringUTF16(
-        IDR_ACTOR_TASK_LIST_BUBBLE_ROW_PAUSED_TASK_SUBTITLE);
+        IDS_ACTOR_TASK_LIST_BUBBLE_ROW_PAUSED_TASK_SUBTITLE);
   }
   return l10n_util::GetStringUTF16(
-      IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE);
+      IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE);
 }
 
 }  // namespace

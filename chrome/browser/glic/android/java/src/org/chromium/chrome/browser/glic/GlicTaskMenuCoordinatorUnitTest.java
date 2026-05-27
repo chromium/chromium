@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.glic;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -76,9 +77,11 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
         ListItem item1 = modelList.get(0);
         assertEquals("Task One", item1.model.get(ListMenuItemProperties.TITLE));
+        assertNull(item1.model.get(ListMenuItemProperties.SUBTITLE));
 
         ListItem item2 = modelList.get(1);
         assertEquals("Task Two", item2.model.get(ListMenuItemProperties.TITLE));
+        assertNull(item2.model.get(ListMenuItemProperties.SUBTITLE));
     }
 
     @Test
@@ -91,9 +94,15 @@ public class GlicTaskMenuCoordinatorUnitTest {
 
         ListItem item1 = modelList.get(0);
         assertEquals("Task One", item1.model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                mContext.getString(R.string.actor_task_list_bubble_row_tab_closed_subtitle),
+                item1.model.get(ListMenuItemProperties.SUBTITLE));
 
         ListItem item2 = modelList.get(1);
         assertEquals("Task Two", item2.model.get(ListMenuItemProperties.TITLE));
+        assertEquals(
+                mContext.getString(R.string.actor_task_list_bubble_row_tab_closed_subtitle),
+                item2.model.get(ListMenuItemProperties.SUBTITLE));
     }
 
     @Test

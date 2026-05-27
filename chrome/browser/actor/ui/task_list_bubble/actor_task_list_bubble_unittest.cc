@@ -221,24 +221,24 @@ TEST_F(ActorTaskListBubbleTest, CreateAndShowBubbleWithTasksInOrder) {
   EXPECT_EQ(4u, content_view->children().size());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(
-          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
+          IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
       static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(0))
           ->GetSubtitleText());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(
-          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
+          IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE),
       static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(1))
           ->GetSubtitleText());
   // Last tab is removed on Stop, so the finished task will have a tab closed
   // subtitle.
   EXPECT_EQ(
       l10n_util::GetStringUTF16(
-          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
+          IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE),
       static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(2))
           ->GetSubtitleText());
   EXPECT_EQ(
       l10n_util::GetStringUTF16(
-          IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
+          IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE),
       static_cast<ActorTaskListBubbleRowButton*>(content_view->children().at(3))
           ->GetSubtitleText());
 }

@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
+import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -196,6 +197,10 @@ public class GlicTaskMenuCoordinator {
                 builder.withStartIconRes(R.drawable.ic_arrow_selector_spark_24dp);
             }
 
+            if (AndroidSidePanelEnabledFn.isEnabled()) {
+                builder.withSubtitle(getTaskSubtitle(mContext, task));
+            }
+
             modelList.add(builder.build());
         }
 
@@ -219,17 +224,51 @@ public class GlicTaskMenuCoordinator {
         return modelList;
     }
 
-    private boolean shouldShowAskGemini() {
-        return !AndroidSidePanelEnabledFn.isEnabled();
+    private String getTaskSubtitle(Context context, ActorTask task) {
+        boolean hasTab = false;
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector != null) {
+            for (int tabId : task.getLastActedTabs()) {
+                if (selector.getTabById(tabId) != null) {
+                    hasTab = true;
+                    break;
+                }
+            }
+        }
+
+        if (!hasTab) {
+            return context.getString(R.string.actor_task_list_bubble_row_tab_closed_subtitle);
+        }
+
+        switch (task.getState()) {
+            case ActorTaskState.WAITING_ON_USER:
+            case ActorTaskState.PAUSED_BY_ACTOR:
+                return context.getString(R.string.actor_task_list_bubble_row_check_task_subtitle);
+            case ActorTaskState.FINISHED:
+                return context.getString(
+                        R.string.actor_task_list_bubble_row_completed_task_subtitle);
+            case ActorTaskState.FAILED:
+                return context.getString(R.string.actor_task_list_bubble_row_failed_task_subtitle);
+            case ActorTaskState.PAUSED_BY_USER:
+                return context.getString(R.string.actor_task_list_bubble_row_paused_task_subtitle);
+            default:
+                return context.getString(R.string.actor_task_list_bubble_row_acting_task_subtitle);
+        }
     }
 
     private void switchToActuatingTab(Set<Integer> tabs) {
-        if (!tabs.isEmpty()) {
-            int tabId = tabs.iterator().next();
-            TabModelSelector selector = mTabModelSelectorSupplier.get();
-            if (selector != null) {
-                TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
+        TabModelSelector selector = mTabModelSelectorSupplier.get();
+        if (selector != null) {
+            for (int tabId : tabs) {
+                if (selector.getTabById(tabId) != null) {
+                    TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
+                    break;
+                }
             }
         }
+    }
+
+    private boolean shouldShowAskGemini() {
+        return !AndroidSidePanelEnabledFn.isEnabled();
     }
 }

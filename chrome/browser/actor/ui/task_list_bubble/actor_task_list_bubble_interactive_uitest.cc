@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       CheckViewProperty(
           kFirstTaskItem, &ActorTaskListBubbleRowButton::GetSubtitleText,
           l10n_util::GetStringUTF16(
-              IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
+              IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
       PressButton(kFirstTaskItem),
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 }
@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(ActorTaskListBubbleInteractiveUiTest,
       CheckViewProperty(
           kFirstTaskItem, &ActorTaskListBubbleRowButton::GetSubtitleText,
           l10n_util::GetStringUTF16(
-              IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
+              IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
       PressButton(kFirstTaskItem),
       InAnyContext(WaitForHide(kActorTaskListBubbleView)));
 
@@ -171,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(GlicActorTaskListBubbleInteractiveUiTest,
       CheckViewProperty(
           kFirstTaskItem, &ActorTaskListBubbleRowButton::GetSubtitleText,
           l10n_util::GetStringUTF16(
-              IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
+              IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE)),
       // Set up a promise to listen for the row clicked event.
       ExecuteInGlic(base::BindLambdaForTesting(
           [](content::WebContents* glic_web_contents) {

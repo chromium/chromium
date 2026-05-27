@@ -26,13 +26,13 @@
       =1 {Task done}
       other {Tasks done}}
   </message>
-  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the tab associated with a task no longer exists or was closed." translateable="true">
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the tab associated with a task no longer exists or was closed." formatter_data="android_java" translateable="true">
     Tab closed
   </message>
-  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task needs attention." translateable="true">
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task needs attention." formatter_data="android_java" translateable="true">
     Waiting for your help
   </message>
-  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is acting." translateable="true">
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_ROW_ACTING_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is acting." formatter_data="android_java" translateable="true">
    Working on your task…
   </message>
   <message name="IDS_ACTOR_TASK_LIST_BUBBLE_A11Y_LABEL" desc="Text used by screenreaders for the list of tasks the user is running." translateable="true">
@@ -41,13 +41,13 @@
   <message name="IDS_ACTOR_TASK_INDICATOR_TOOLTIP" desc="Tooltip text for the task indicator button. The button will open a bubble containing the list of tasks currently running." formatter_data="android_java" translateable="true">
     Check your tasks
   </message>
-  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_PAUSED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is paused." translateable="true">
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_ROW_PAUSED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is paused." formatter_data="android_java" translateable="true">
    Paused
   </message>
-  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is completed." translateable="true">
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_ROW_COMPLETED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task is completed." formatter_data="android_java" translateable="true">
    Done
   </message>
-  <message name="IDR_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task has failed." translateable="true">
+  <message name="IDS_ACTOR_TASK_LIST_BUBBLE_ROW_FAILED_TASK_SUBTITLE" desc="Subtitle shown for a task in the task list bubble informing the user that the task has failed." formatter_data="android_java" translateable="true">
    Something went wrong
   </message>
   <message name="IDS_TOOLTIP_TAB_ALERT_STATE_ACTOR_ACCESSING" desc="Extra tool tip text, when the tab's context is being shared with Gemini" translateable="true">
