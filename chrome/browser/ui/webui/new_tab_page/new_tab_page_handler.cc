@@ -535,14 +535,10 @@ NewTabPageHandler::NewTabPageHandler(
 #endif
       ntp_navigation_start_time_(ntp_navigation_start_time),
       module_id_details_(module_id_details),
-// TODO(b/502297163): Implement for Android.
-#if BUILDFLAG(IS_ANDROID)
-      promo_service_(nullptr),
-      microsoft_auth_service_(nullptr),
-#else
       promo_service_(PromoServiceFactory::GetForProfile(profile)),
       microsoft_auth_service_(
           MicrosoftAuthServiceFactory::GetForProfile(profile)),
+#if !BUILDFLAG(IS_ANDROID)
       interaction_module_id_trigger_dict_(
           MakeModuleInteractionTriggerIdDictionary()),
 #endif
@@ -557,19 +553,20 @@ NewTabPageHandler::NewTabPageHandler(
   CHECK(ntp_custom_background_service_);
   CHECK(logo_service_);
   CHECK(web_contents_);
-// TODO(b/502297163): Implement for Android.
+  CHECK(promo_service_);
 #if !BUILDFLAG(IS_ANDROID)
   CHECK(theme_service_);
-  CHECK(promo_service_);
   CHECK(feature_promo_helper_);
   theme_service_observation_.Observe(theme_service_.get());
 #endif  // !BUILDFLAG(IS_ANDROID)
   native_theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
   ntp_custom_background_service_observation_.Observe(
       ntp_custom_background_service_.get());
-// TODO(b/502297163): Implement for Android.
-#if !BUILDFLAG(IS_ANDROID)
   promo_service_observation_.Observe(promo_service_.get());
+  if (microsoft_auth_service_) {
+    microsoft_auth_service_->AddObserver(this);
+  }
+#if !BUILDFLAG(IS_ANDROID)
   if (customize_chrome::IsWallpaperSearchEnabledForProfile(profile_)) {
     optimization_guide_keyed_service_ =
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile_);
@@ -577,10 +574,6 @@ NewTabPageHandler::NewTabPageHandler(
       optimization_guide_keyed_service_
           ->AddModelExecutionSettingsEnabledObserver(this);
     }
-  }
-
-  if (microsoft_auth_service_) {
-    microsoft_auth_service_->AddObserver(this);
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

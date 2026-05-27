@@ -259,14 +259,15 @@ class NewTabPageHandler
   bool SyncMicrosoftModulesWithAuth();
 
   NTPUserDataLogger logger_;
-// TODO(b/502297163): Implement for Android.
 #if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
       theme_service_observation_{this};
+#endif
   base::ScopedObservation<PromoService, PromoServiceObserver>
       promo_service_observation_{this};
   base::ScopedObservation<MicrosoftAuthService, MicrosoftAuthServiceObserver>
       microsoft_auth_service_observation_{this};
+#if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<new_tab_footer::NewTabFooterController,
                           new_tab_footer::NewTabFooterControllerObserver>
       footer_controller_observation_{this};
