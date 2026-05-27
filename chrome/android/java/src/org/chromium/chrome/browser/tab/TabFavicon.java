@@ -214,11 +214,12 @@ public class TabFavicon extends TabWebContentsUserData {
             mFaviconHelper = new FaviconHelper();
         }
         int desiredSize = getIdealFaviconSize();
+        final GURL queryUrl = mTab.getUrl();
         mPendingPromises.add(promise);
         boolean success =
                 mFaviconHelper.getLocalFaviconImageForURL(
                         mTab.getProfile(),
-                        mTab.getUrl(),
+                        queryUrl,
                         desiredSize,
                         /* fallbackToHost= */ false,
                         new FaviconHelper.FaviconImageCallback() {
@@ -227,6 +228,11 @@ public class TabFavicon extends TabWebContentsUserData {
                                 if (!promise.isPending()) return;
                                 mPendingPromises.remove(promise);
 
+                                if (!queryUrl.equals(mTab.getUrl())) {
+                                    promise.reject(new Exception("URL changed during DB fetch."));
+                                    return;
+                                }
+
                                 if (image != null
                                         && image.getWidth() != 0
                                         && image.getHeight() != 0) {
@@ -234,7 +240,7 @@ public class TabFavicon extends TabWebContentsUserData {
                                             image, iconUrl, /* isFallback= */ true);
                                 }
 
-                                if (mFavicon != null) {
+                                if (mFavicon != null && !TabFavicon.this.pageUrlChanged()) {
                                     promise.fulfill(mFavicon);
                                 } else {
                                     promise.reject(new Exception("No favicon after DB fetch."));
@@ -281,7 +287,7 @@ public class TabFavicon extends TabWebContentsUserData {
         return width == idealFaviconSize && height == idealFaviconSize;
     }
 
-    private boolean pageUrlChanged() {
+    boolean pageUrlChanged() {
         GURL currentTabUrl = mTab.getUrl();
         return !currentTabUrl.equals(mFaviconTabUrl);
     }

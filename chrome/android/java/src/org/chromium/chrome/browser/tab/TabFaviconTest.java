@@ -272,4 +272,71 @@ public class TabFaviconTest {
         assertTrue(promise1.isRejected());
         assertTrue(promise2.isRejected());
     }
+
+    @Test
+    public void testGetFaviconOrFallback_RejectsIfNoFaviconAndCachedIconStale() {
+        mTabFavicon.mFaviconHelper = mFaviconHelper;
+
+        // 1. Cache a favicon for EXAMPLE_URL
+        mTabFavicon.onFaviconAvailable(
+                makeBitmap(IDEAL_SIZE, Color.GREEN),
+                JUnitTestGURLs.EXAMPLE_URL,
+                /* isFallback= */ false);
+
+        // Verify it is cached
+        assertEquals(Color.GREEN, mTabFavicon.getFavicon().getPixel(0, 0));
+
+        // 2. Navigate to URL_1 (different URL)
+        doReturn(JUnitTestGURLs.URL_1).when(mTab).getUrl();
+
+        // Mock DB fetch to return null (no favicon)
+        ArgumentCaptor<FaviconHelper.FaviconImageCallback> callbackCaptor =
+                ArgumentCaptor.forClass(FaviconHelper.FaviconImageCallback.class);
+        doReturn(true)
+                .when(mFaviconHelper)
+                .getLocalFaviconImageForURL(
+                        any(), any(), anyInt(), anyBoolean(), callbackCaptor.capture());
+
+        // 3. Call getFaviconOrFallback
+        Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
+        assertNotNull(promise);
+        assertTrue(promise.isPending());
+
+        // Trigger DB callback with null (no favicon found)
+        callbackCaptor.getValue().onFaviconAvailable(null, null);
+
+        // 4. Verify promise is rejected (should NOT return the green favicon)
+        assertTrue(promise.isRejected());
+    }
+
+    @Test
+    public void testGetFaviconOrFallback_RejectsIfUrlChangesDuringFetch() {
+        mTabFavicon.mFaviconHelper = mFaviconHelper;
+
+        // Mock DB fetch to capture callback
+        ArgumentCaptor<FaviconHelper.FaviconImageCallback> callbackCaptor =
+                ArgumentCaptor.forClass(FaviconHelper.FaviconImageCallback.class);
+        doReturn(true)
+                .when(mFaviconHelper)
+                .getLocalFaviconImageForURL(
+                        any(), any(), anyInt(), anyBoolean(), callbackCaptor.capture());
+
+        // 1. Call getFaviconOrFallback while at EXAMPLE_URL
+        Promise<Bitmap> promise = mTabFavicon.getFaviconOrFallback();
+        assertNotNull(promise);
+        assertTrue(promise.isPending());
+
+        // 2. Navigate to URL_1 before DB fetch completes
+        doReturn(JUnitTestGURLs.URL_1).when(mTab).getUrl();
+
+        // 3. Trigger DB callback with a valid image (e.g. Blue)
+        Bitmap dbBitmap = makeBitmap(IDEAL_SIZE, Color.BLUE);
+        callbackCaptor.getValue().onFaviconAvailable(dbBitmap, JUnitTestGURLs.EXAMPLE_URL);
+
+        // 4. Verify promise is rejected due to URL change
+        assertTrue(promise.isRejected());
+
+        // 5. Verify cache is not polluted (getFavicon for URL_1 should be null)
+        assertNull(mTabFavicon.getFavicon());
+    }
 }
