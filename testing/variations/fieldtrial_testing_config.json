@@ -17036,6 +17036,31 @@
             ]
         }
     ],
+    "OmniboxDriveTrafficReduction": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "DocumentProviderBackoffDuration": "60m",
+                        "DocumentProviderBackoffOn429": "true",
+                        "DocumentProviderDebounceDelayMs": "600",
+                        "DocumentProviderMinQueryLength": "5",
+                        "DocumentProviderScopeBackoffToProfile": "true"
+                    },
+                    "enable_features": [
+                        "OmniboxDocumentProvider"
+                    ]
+                }
+            ]
+        }
+    ],
     "OmniboxItemDecoration": [
         {
             "platforms": [
