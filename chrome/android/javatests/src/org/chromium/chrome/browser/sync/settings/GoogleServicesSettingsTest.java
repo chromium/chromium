@@ -284,7 +284,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     public void testUsageAndCrashReportingHidden_MetricsConsentRestructureTrue() {
-        when(mMockPrivacyPreferencesManager.shouldUseMetricsConsentRestructure()).thenReturn(true);
+        when(mMockPrivacyPreferencesManager.shouldUseMetricsChoiceRestructure()).thenReturn(true);
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 
@@ -304,7 +304,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     public void testUsageAndCrashReportingShown_MetricsConsentRestructureFalse() {
-        when(mMockPrivacyPreferencesManager.shouldUseMetricsConsentRestructure()).thenReturn(false);
+        when(mMockPrivacyPreferencesManager.shouldUseMetricsChoiceRestructure()).thenReturn(false);
 
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
 

@@ -230,8 +230,8 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
         return getCrashUploadPermittedSupplier();
     }
 
-    public boolean shouldUseMetricsConsentRestructure() {
-        return PrivacyPreferencesManagerImplJni.get().shouldUseMetricsConsentRestructure();
+    public boolean shouldUseMetricsChoiceRestructure() {
+        return PrivacyPreferencesManagerImplJni.get().shouldUseMetricsChoiceRestructure();
     }
 
     @NativeMethods
@@ -242,6 +242,6 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
         boolean isMetricsReportingDisabledByPolicy();
 
-        boolean shouldUseMetricsConsentRestructure();
+        boolean shouldUseMetricsChoiceRestructure();
     }
 }

@@ -132,7 +132,7 @@ public class GoogleServicesSettings extends ChromeBaseSettingsFragment
         mUsageAndCrashReporting.setOnPreferenceChangeListener(this);
         mUsageAndCrashReporting.setManagedPreferenceDelegate(mManagedPreferenceDelegate);
         // TODO(b/483043192): Add UI for new Metrics Consent settings.
-        if (mPrivacyPrefManager.shouldUseMetricsConsentRestructure()) {
+        if (mPrivacyPrefManager.shouldUseMetricsChoiceRestructure()) {
             mUsageAndCrashReporting.setVisible(false);
         }
 
