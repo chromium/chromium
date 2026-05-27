@@ -2677,6 +2677,28 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testOnSearchBoxHintTextChanged_SiteSearchActive_HidesHintText() {
+        mProfileSupplier.set(mProfile);
+        mMediator.onFinishNativeInitialization();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        // Begin input to set mCurrentInput.
+        var input = mSessionState.getAutocompleteInput();
+        mMediator.beginInput(input);
+
+        // Set site search data.
+        input.setSiteSearchData(new SiteSearchData("keyword", "Search keyword"));
+
+        // Verify hint text is set to empty.
+        verify(mUrlCoordinator).setUrlBarHintText(eq(""));
+
+        // Triggering it again should also set it to empty.
+        clearInvocations(mUrlCoordinator);
+        mMediator.onSearchBoxHintTextChanged();
+        verify(mUrlCoordinator).setUrlBarHintText(eq(""));
+    }
+
+    @Test
     public void testEndInputResetsHint() {
         mProfileSupplier.set(mProfile);
         mMediator.onFinishNativeInitialization();

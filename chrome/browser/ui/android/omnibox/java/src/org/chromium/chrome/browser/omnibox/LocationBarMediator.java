@@ -276,6 +276,8 @@ class LocationBarMediator
     private @Nullable FuseboxAttachmentModelList mFuseboxAttachmentModelList;
     private final Callback<@AutocompleteRequestType Integer> mAutocompleteRequestTypeObserver =
             this::onAutocompleteRequestTypeChanged;
+    private final Callback<AutocompleteInput.@Nullable SiteSearchData> mSiteSearchDataObserver =
+            (siteSearchData) -> onSearchBoxHintTextChanged();
     private @Nullable Callback<Boolean> mOnSpecializedFuseboxModeActivatedCallback;
 
     private final ButtonToolbarWidthConsumer mBookmarkButtonToolbarWidthConsumer;
@@ -1195,6 +1197,7 @@ class LocationBarMediator
         // If we're switching tab (active -> active), just reanchor observer.
         if (mCurrentInput != null) {
             mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
+            mCurrentInput.getSiteSearchDataSupplier().removeObserver(mSiteSearchDataObserver);
         }
         // To avoid the async gap between now and on activate, null out here as well.
         setAttachmentModelList(null);
@@ -1231,6 +1234,9 @@ class LocationBarMediator
         mCurrentInput
                 .getRequestTypeSupplier()
                 .addSyncObserverAndCallIfNonNull(mAutocompleteRequestTypeObserver);
+        mCurrentInput
+                .getSiteSearchDataSupplier()
+                .addSyncObserverAndCallIfNonNull(mSiteSearchDataObserver);
 
         UrlBarData data = getUrlBarDataForCurrentInput(mCurrentInput);
         mUrlCoordinator.setUrlBarData(
@@ -1293,6 +1299,7 @@ class LocationBarMediator
 
         if (mScrimHandler != null) mScrimHandler.setVisibility(false);
         mCurrentInput.getRequestTypeSupplier().removeObserver(mAutocompleteRequestTypeObserver);
+        mCurrentInput.getSiteSearchDataSupplier().removeObserver(mSiteSearchDataObserver);
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);
         if (state != null) {
             state.deactivate();
@@ -2715,6 +2722,11 @@ class LocationBarMediator
         // SearchEngineUtils) is available.
         if (mSearchEngineUtils == null) return;
         if (mEmbedderUiOverrides.isEmbedderControlledHint()) return;
+
+        if (mCurrentInput != null && mCurrentInput.getSiteSearchData() != null) {
+            mUrlCoordinator.setUrlBarHintText("");
+            return;
+        }
 
         @AutocompleteRequestType
         int requestType =
