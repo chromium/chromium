@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../../resources/js-test.js"></script>
+</head>
+<body>
+<script id="worker" type="javascript/worker">
+  self.onmessage = function(e) {
+    const newOffscreenCanvas = e.data.data;
+    // Request animation frame to trigger presentation pipeline from worker.
+    requestAnimationFrame(() => {
+        postMessage({});
+    });
+  };
+</script>
+<script>
+  description("Test OffscreenCanvas transferable and doesn't crash on RaF.");
+  window.jsTestIsAsync = true;
+
+  const blob = new Blob([document.getElementById('worker').textContent]);
+  const worker = new Worker(window.URL.createObjectURL(blob));
+
+  const offscreenCanvas = new OffscreenCanvas(50, 50);
+  worker.postMessage({data: offscreenCanvas}, [offscreenCanvas]);
+  worker.onmessage = () => {
+    finishJSTest()
+  };
+</script>
+</body>
+</html>

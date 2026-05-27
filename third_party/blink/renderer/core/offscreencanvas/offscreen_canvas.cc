@@ -180,7 +180,7 @@ void OffscreenCanvas::SetPlaceholderCanvasId(DOMNodeId canvas_id) {
     OffscreenCanvasRegistry::From(GetExecutionContext())
         .Register(canvas_id, this);
   }
-  if (GetTopExecutionContext() &&
+  if (HasPlaceholderCanvas() && GetTopExecutionContext() &&
       GetTopExecutionContext()->IsDedicatedWorkerGlobalScope()) {
     WorkerAnimationFrameProvider* animation_frame_provider =
         To<DedicatedWorkerGlobalScope>(GetTopExecutionContext())
