@@ -41,8 +41,8 @@ TEST_F(FocusgroupFlagsTest, EmptyAttributeGeneratesError) {
 
   auto messages = CopyConsoleMessages();
   ASSERT_EQ(messages.size(), 1u);
-  EXPECT_TRUE(messages[0].contains("focusgroup requires a behavior token"));
-  EXPECT_TRUE(messages[0].contains("first value"));
+  EXPECT_TRUE(
+      messages[0].contains("focusgroup requires a recognized behavior token"));
 }
 
 TEST_F(FocusgroupFlagsTest, InvalidFirstTokenGeneratesError) {
@@ -59,8 +59,8 @@ TEST_F(FocusgroupFlagsTest, InvalidFirstTokenGeneratesError) {
 
   auto messages = CopyConsoleMessages();
   ASSERT_EQ(messages.size(), 1u);
-  EXPECT_TRUE(messages[0].contains("focusgroup requires a behavior token"));
-  EXPECT_TRUE(messages[0].contains("Found: 'invalid'"));
+  EXPECT_TRUE(
+      messages[0].contains("focusgroup requires a recognized behavior token"));
 }
 
 TEST_F(FocusgroupFlagsTest, MultipleBehaviorTokensGenerateWarning) {
@@ -73,8 +73,8 @@ TEST_F(FocusgroupFlagsTest, MultipleBehaviorTokensGenerateWarning) {
   FocusgroupData result =
       ParseFocusgroup(element, AtomicString("toolbar tablist"));
 
-  // Current implementation: toolbar is parsed as behavior, tablist as invalid
-  // modifier.  Toolbar defaults to inline-only axis.
+  // Toolbar is the first recognized behavior token. Tablist is a second
+  // behavior token and is reported as unrecognized.
   EXPECT_EQ(result.behavior, FocusgroupBehavior::kToolbar);
   EXPECT_EQ(result.flags, FocusgroupFlags::kInline);
 
@@ -103,7 +103,7 @@ TEST_F(FocusgroupFlagsTest, UnknownTokenGeneratesWarning) {
   EXPECT_TRUE(messages[0].contains("Valid tokens are"));
 }
 
-TEST_F(FocusgroupFlagsTest, NoneWithOtherTokensGeneratesWarning) {
+TEST_F(FocusgroupFlagsTest, NoneWithOtherTokensSilentlyOptsOut) {
   ScopedFocusgroupForTest focusgroup_scope(true);
 
   auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
@@ -116,9 +116,7 @@ TEST_F(FocusgroupFlagsTest, NoneWithOtherTokensGeneratesWarning) {
   EXPECT_EQ(result.flags, FocusgroupFlags::kNone);
 
   auto messages = CopyConsoleMessages();
-  ASSERT_EQ(messages.size(), 1u);
-  EXPECT_TRUE(messages[0].contains("disables focusgroup behavior"));
-  EXPECT_TRUE(messages[0].contains("all other tokens are ignored"));
+  EXPECT_EQ(messages.size(), 0u);
 }
 
 TEST_F(FocusgroupFlagsTest, RedundantInlineBlockGeneratesWarning) {
@@ -458,6 +456,138 @@ TEST_F(FocusgroupFlagsTest, NomemoryModifierSetsFlag) {
 
   auto messages = CopyConsoleMessages();
   EXPECT_EQ(messages.size(), 0u);
+}
+
+TEST_F(FocusgroupFlagsTest, NoneAnywhereOptsOut) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  // "none" after a behavior token still opts out.
+  ClearConsoleMessages();
+  FocusgroupData result =
+      ParseFocusgroup(element, AtomicString("toolbar none"));
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kOptOut);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kNone);
+  auto messages = CopyConsoleMessages();
+  EXPECT_EQ(messages.size(), 0u);
+
+  // "none" before a behavior token also opts out.
+  ClearConsoleMessages();
+  FocusgroupData result2 =
+      ParseFocusgroup(element, AtomicString("none toolbar"));
+  EXPECT_EQ(result2.behavior, FocusgroupBehavior::kOptOut);
+  EXPECT_EQ(result2.flags, FocusgroupFlags::kNone);
+
+  // "none" between modifiers opts out.
+  ClearConsoleMessages();
+  FocusgroupData result3 =
+      ParseFocusgroup(element, AtomicString("toolbar wrap none block"));
+  EXPECT_EQ(result3.behavior, FocusgroupBehavior::kOptOut);
+  EXPECT_EQ(result3.flags, FocusgroupFlags::kNone);
+}
+
+TEST_F(FocusgroupFlagsTest, NoneAnywhereWithGridDisabled) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+  ScopedFocusgroupGridForTest grid_scope(false);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  // "grid none" should opt out even though grid is disabled. The none check
+  // must short-circuit before grid validation.
+  ClearConsoleMessages();
+  FocusgroupData result = ParseFocusgroup(element, AtomicString("grid none"));
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kOptOut);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kNone);
+}
+
+TEST_F(FocusgroupFlagsTest, BehaviorTokenAnywhere) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  // Behavior token not at position 0: modifier before behavior.
+  ClearConsoleMessages();
+  FocusgroupData result =
+      ParseFocusgroup(element, AtomicString("wrap toolbar"));
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kToolbar);
+  // Toolbar default is inline; explicit wrap applies to inline axis.
+  EXPECT_EQ(result.flags,
+            FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline);
+  EXPECT_EQ(CopyConsoleMessages().size(), 0u);
+
+  // Unrecognized token before behavior: behavior still found.
+  ClearConsoleMessages();
+  FocusgroupData result2 =
+      ParseFocusgroup(element, AtomicString("invalid toolbar"));
+  EXPECT_EQ(result2.behavior, FocusgroupBehavior::kToolbar);
+  EXPECT_EQ(result2.flags, FocusgroupFlags::kInline);
+  auto messages2 = CopyConsoleMessages();
+  ASSERT_GE(messages2.size(), 1u);
+  EXPECT_TRUE(messages2[0].contains("Unrecognized"));
+  EXPECT_TRUE(messages2[0].contains("invalid"));
+
+  // Multiple modifiers around a behavior token.
+  ClearConsoleMessages();
+  FocusgroupData result3 =
+      ParseFocusgroup(element, AtomicString("wrap tablist nomemory"));
+  EXPECT_EQ(result3.behavior, FocusgroupBehavior::kTablist);
+  // Tablist default is inline+wrap; explicit wrap still applies, nomemory set.
+  EXPECT_TRUE(result3.flags & FocusgroupFlags::kInline);
+  EXPECT_TRUE(result3.flags & FocusgroupFlags::kWrapInline);
+  EXPECT_TRUE(result3.flags & FocusgroupFlags::kNoMemory);
+}
+
+TEST_F(FocusgroupFlagsTest, NoBehaviorTokenIsError) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  // Only modifiers, no behavior token: error, no focusgroup.
+  ClearConsoleMessages();
+  FocusgroupData result = ParseFocusgroup(element, AtomicString("wrap block"));
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(result.flags, FocusgroupFlags::kNone);
+  auto messages = CopyConsoleMessages();
+  ASSERT_EQ(messages.size(), 1u);
+  EXPECT_TRUE(
+      messages[0].contains("focusgroup requires a recognized behavior token"));
+
+  // Single modifier, no behavior.
+  ClearConsoleMessages();
+  FocusgroupData result2 = ParseFocusgroup(element, AtomicString("nomemory"));
+  EXPECT_EQ(result2.behavior, FocusgroupBehavior::kNoBehavior);
+  EXPECT_EQ(result2.flags, FocusgroupFlags::kNone);
+  auto messages2 = CopyConsoleMessages();
+  ASSERT_EQ(messages2.size(), 1u);
+  EXPECT_TRUE(
+      messages2[0].contains("focusgroup requires a recognized behavior token"));
+}
+
+TEST_F(FocusgroupFlagsTest, CaseInsensitiveParsing) {
+  ScopedFocusgroupForTest focusgroup_scope(true);
+
+  auto* element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->appendChild(element);
+
+  // Mixed-case tokens should be recognized.
+  ClearConsoleMessages();
+  FocusgroupData result =
+      ParseFocusgroup(element, AtomicString("Toolbar Wrap"));
+  EXPECT_EQ(result.behavior, FocusgroupBehavior::kToolbar);
+  EXPECT_EQ(result.flags,
+            FocusgroupFlags::kInline | FocusgroupFlags::kWrapInline);
+  EXPECT_EQ(CopyConsoleMessages().size(), 0u);
+
+  // ALL CAPS.
+  ClearConsoleMessages();
+  FocusgroupData result2 = ParseFocusgroup(element, AtomicString("NONE"));
+  EXPECT_EQ(result2.behavior, FocusgroupBehavior::kOptOut);
+  EXPECT_EQ(result2.flags, FocusgroupFlags::kNone);
 }
 
 }  // namespace blink::focusgroup

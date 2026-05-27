@@ -1576,20 +1576,26 @@ TEST_F(ElementTest, ParseFocusgroupAttrBehaviorFirstRequirement) {
       invalid_empty->GetFocusgroupData(),
       FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
 
-  // Non-behavior token first should be invalid
-  auto* invalid_inline_first =
+  // The parser scans the entire token list for the first recognized behavior
+  // token, so a modifier before the behavior is valid.
+  auto* inline_first =
       document.getElementById(AtomicString("invalid_inline_first"));
-  ASSERT_TRUE(invalid_inline_first);
+  ASSERT_TRUE(inline_first);
+  // "inline toolbar": toolbar found as behavior, explicit inline matches
+  // toolbar's default axis.
   EXPECT_EQ(
-      invalid_inline_first->GetFocusgroupData(),
-      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
+      inline_first->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kToolbar, FocusgroupFlags::kInline));
 
-  auto* invalid_wrap_first =
+  auto* wrap_first =
       document.getElementById(AtomicString("invalid_wrap_first"));
-  ASSERT_TRUE(invalid_wrap_first);
+  ASSERT_TRUE(wrap_first);
+  // "wrap menu": menu found as behavior, explicit wrap applies to menu's
+  // default block axis.
   EXPECT_EQ(
-      invalid_wrap_first->GetFocusgroupData(),
-      FocusgroupData(FocusgroupBehavior::kNoBehavior, FocusgroupFlags::kNone));
+      wrap_first->GetFocusgroupData(),
+      FocusgroupData(FocusgroupBehavior::kMenu,
+                     FocusgroupFlags::kBlock | FocusgroupFlags::kWrapBlock));
 
   // Valid behavior tokens should work
   auto* valid_toolbar = document.getElementById(AtomicString("valid_toolbar"));

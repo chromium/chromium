@@ -23,6 +23,12 @@
 namespace blink::focusgroup {
 
 namespace {
+
+// "nowrap" is a valid modifier token but has no corresponding flag bits (it
+// suppresses wrapping rather than enabling it), so it is not in kModifierMap
+// and needs its own constant.
+constexpr const char kNowrapToken[] = "nowrap";
+
 struct FlagMapping {
   const char* token;
   FocusgroupFlags flag;
@@ -97,6 +103,10 @@ String ValidBehaviorTokenListString(ExecutionContext* context) {
         behavior_mapping.behavior == FocusgroupBehavior::kGrid) {
       continue;
     }
+    // Filter out the opt-out token: "none".
+    if (behavior_mapping.behavior == FocusgroupBehavior::kOptOut) {
+      continue;
+    }
     if (!assembled.empty()) {
       assembled.append(", ");
     }
@@ -126,7 +136,7 @@ String ValidTokenListString(ExecutionContext* context) {
   if (!assembled.empty()) {
     assembled.append(", ");
   }
-  assembled.append("nowrap");
+  assembled.append(kNowrapToken);
   return String(assembled);
 }
 
@@ -202,13 +212,12 @@ FocusgroupData ParseFocusgroup(const Element* element,
             mojom::blink::ConsoleMessageLevel::kError, msg));
   };
 
-  SpaceSplitString tokens(input);
+  SpaceSplitString tokens(AtomicString(input.GetString().ToAsciiLower()));
 
   // Build a consolidated error message for missing/invalid first token.
   auto FirstTokenErrorMessage = [&]() {
-    return String(StrCat({"focusgroup requires a behavior token (",
-                          ValidBehaviorTokenListString(context),
-                          ") or 'none' as the first value."}));
+    return String(StrCat({"focusgroup requires a recognized behavior token (",
+                          ValidBehaviorTokenListString(context), ")."}));
   };
 
   // Two step process - first parse all flags, then validate the combination for
@@ -221,15 +230,31 @@ FocusgroupData ParseFocusgroup(const Element* element,
     return {};
   }
 
-  // Validate and consume the first token before iterating the rest.
-  AtomicString first_token = tokens[0].ToAsciiLower();
-  // First token is the single allowed behavior.
+  // Check for "none" anywhere in the token list. If present, the
+  // element opts out regardless of other tokens. This matches the spec
+  // algorithm: "If input contains 'none', then the element opts out."
+  for (unsigned i = 0; i < tokens.size(); i++) {
+    if (FocusgroupBehaviorFromString(tokens[i]) ==
+        FocusgroupBehavior::kOptOut) {
+      return {FocusgroupBehavior::kOptOut, FocusgroupFlags::kNone};
+    }
+  }
+
+  // Find the first recognized behavior token anywhere in the token list.
   FocusgroupData data;
-  data.behavior = FocusgroupBehaviorFromString(first_token);
+  unsigned behavior_index = tokens.size();  // Sentinel: no behavior found.
+  for (unsigned i = 0; i < tokens.size(); i++) {
+    FocusgroupBehavior behavior = FocusgroupBehaviorFromString(tokens[i]);
+    DCHECK_NE(behavior, FocusgroupBehavior::kOptOut);
+    if (behavior != FocusgroupBehavior::kNoBehavior) {
+      data.behavior = behavior;
+      behavior_index = i;
+      break;
+    }
+  }
 
   if (data.behavior == FocusgroupBehavior::kNoBehavior) {
-    // Unrecognized first token, emit error and return.
-    Error(StrCat({FirstTokenErrorMessage(), " Found: '", first_token, "'."}));
+    Error(FirstTokenErrorMessage());
     return {};
   }
 
@@ -240,27 +265,33 @@ FocusgroupData ParseFocusgroup(const Element* element,
     return {};
   }
 
-  if (data.behavior == FocusgroupBehavior::kOptOut) {
-    if (tokens.size() > 1) {
-      Warn(
-          "focusgroup attribute value 'none' disables focusgroup behavior; all "
-          "other tokens are ignored.");
-    }
-    return {FocusgroupBehavior::kOptOut, FocusgroupFlags::kNone};
-  }
-
   StringBuilder invalid_tokens;
-  // Start at the second token.
-  for (unsigned i = 1; i < tokens.size(); i++) {
-    AtomicString lowercase_token = tokens[i].ToAsciiLower();
+  // Iterate all tokens, skipping the behavior token.
+  for (unsigned i = 0; i < tokens.size(); i++) {
+    if (i == behavior_index) {
+      continue;
+    }
+    const AtomicString& lowercase_token = tokens[i];
 
     // Handle nowrap specially (not in kModifierMap since it has no flag bits).
-    if (lowercase_token == "nowrap") {
+    if (lowercase_token == kNowrapToken) {
       has_nowrap = true;
       continue;
     }
 
-    // The first token is always a behavior, subsequent tokens are modifiers.
+    // Skip additional behavior tokens (the first recognized one is used). Treat
+    // them as unrecognized for warning purposes.
+    FocusgroupBehavior extra_behavior =
+        FocusgroupBehaviorFromString(lowercase_token);
+    if (extra_behavior != FocusgroupBehavior::kNoBehavior) {
+      if (!invalid_tokens.empty()) {
+        invalid_tokens.Append(", ");
+      }
+      invalid_tokens.Append(tokens[i]);
+      continue;
+    }
+
+    // Try to match as a modifier token.
     FocusgroupFlags flag = FocusgroupFlagFromString(lowercase_token);
     // If this is a grid-only modifier flag and the grid feature is disabled,
     // warn and ignore it (do not classify as invalid for easier to understand
@@ -361,10 +392,12 @@ FocusgroupData ParseFocusgroup(const Element* element,
             "omitted because focusgroup already wraps in both axes.");
       }
     } else {
-      if (has_row_wrap)
+      if (has_row_wrap) {
         data.flags |= FocusgroupFlags::kWrapInline;
-      if (has_col_wrap)
+      }
+      if (has_col_wrap) {
         data.flags |= FocusgroupFlags::kWrapBlock;
+      }
 
       if (has_row_wrap && has_col_wrap) {
         Warn(
