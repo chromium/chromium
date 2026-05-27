@@ -272,6 +272,7 @@ public class LocationBarMediatorTest {
 
         mUrlBarData = UrlBarData.create(null, "text", 0, 0, "text");
         lenient().doReturn(true).when(mSearchEngineUtils).shouldShowSearchEngineLogo();
+        lenient().doReturn(true).when(mSearchEngineUtils).isDefaultSearchEngineGoogle();
         SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
         lenient().doReturn(mUrlBarData).when(mLocationBarDataProvider).getUrlBarData();
         lenient()

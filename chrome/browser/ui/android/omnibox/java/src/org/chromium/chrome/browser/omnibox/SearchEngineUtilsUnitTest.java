@@ -708,4 +708,15 @@ public class SearchEngineUtilsUnitTest {
         // Reset for testing
         OmniboxFeatures.sUseAskHintForNtp.setForTesting(false);
     }
+
+    @Test
+    public void testIsDefaultSearchEngineGoogle() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        assertTrue(searchEngineUtils.isDefaultSearchEngineGoogle());
+
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        assertFalse(searchEngineUtils.isDefaultSearchEngineGoogle());
+    }
 }

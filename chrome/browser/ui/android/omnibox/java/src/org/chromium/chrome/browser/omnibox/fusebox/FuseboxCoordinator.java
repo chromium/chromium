@@ -402,6 +402,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mDefaultSearchEngineIsGoogle = isDseGoogle;
 
         if (mInput != null && !mDefaultSearchEngineIsGoogle) {
+            resetToSearchMode();
             endInput();
         }
     }
@@ -454,6 +455,13 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mInput == null || mMetrics == null) return;
         mMetrics.notifyOmniboxSessionEnded(
                 userDidNavigate, mInput.getRequestType(), mInput.getModelMode());
+    }
+
+    /** Resets the current input session back to search mode. */
+    public void resetToSearchMode() {
+        if (mMediator != null) {
+            mMediator.activateSearchMode();
+        }
     }
 
     /** Toggles the attachments, tools, and models menu. */

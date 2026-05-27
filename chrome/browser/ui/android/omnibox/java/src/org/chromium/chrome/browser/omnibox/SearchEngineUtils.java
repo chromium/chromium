@@ -449,4 +449,9 @@ public class SearchEngineUtils implements Destroyable, TemplateUrlServiceObserve
     public boolean doesDefaultSearchEngineHaveLogo() {
         return mDoesDefaultSearchEngineHaveLogo;
     }
+
+    /** Returns whether the default search engine is Google. */
+    public boolean isDefaultSearchEngineGoogle() {
+        return mTemplateUrlService.isDefaultSearchEngineGoogle();
+    }
 }

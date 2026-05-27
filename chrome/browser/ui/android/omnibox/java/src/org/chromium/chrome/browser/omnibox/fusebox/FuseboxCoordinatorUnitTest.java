@@ -333,4 +333,33 @@ public class FuseboxCoordinatorUnitTest {
         mCoordinator.onContextPopupDismissed();
         assertTrue(mCoordinator.getViewHolderForTesting().addButton.isFocused());
     }
+
+    @Test
+    public void testResetToSearchMode() {
+        mCoordinator.setMediatorForTesting(mMediator);
+        mCoordinator.resetToSearchMode();
+        verify(mMediator).activateSearchMode();
+    }
+
+    @Test
+    public void testDseChangedToNonGoogleDuringSession() {
+        // Start with Google DSE.
+        doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mTemplateUrlServiceSupplier.set(mTemplateUrlService);
+        mCoordinator.beginInput(createSession());
+        mCoordinator.setMediatorForTesting(mMediator);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        // Verify session is active (beginInput was called on mediator).
+        verify(mMediator).beginInput(any());
+
+        // Now DSE changes to non-Google.
+        doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        mCoordinator.onTemplateURLServiceChanged();
+
+        // Verify that resetToSearchMode() / activateSearchMode() was called first.
+        verify(mMediator).activateSearchMode();
+        // Verify that endInput() was called.
+        verify(mMediator).endInput();
+    }
 }

@@ -408,7 +408,7 @@ import java.util.function.Supplier;
         }
     }
 
-    private void activateSearchMode() {
+    /* package */ void activateSearchMode() {
         if (trySetRequestType(AutocompleteRequestType.SEARCH)) {
             assert mModelList != null;
             mModelList.clear();
