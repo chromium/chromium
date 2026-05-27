@@ -1,41 +1,16 @@
 [
-    {
-      "can_be_recommended": false,
-      "os": [
-        "chromeos"
-      ],
-      "policy_pref_mapping_tests": [
-        {
-            "policies": {},
-            "prefs": {
-              "filebrowser.local_user_files_allowed": {
-                "location": "local_state",
-                "default_value": true
-              }
-            }
-        },
-        {
-            "policies": {
-                "LocalUserFilesAllowed": true
-            },
-            "prefs": {
-              "filebrowser.local_user_files_allowed": {
-                "location": "local_state",
-                "value": true
-              }
-            }
-        },
-        {
-            "policies": {
-                "LocalUserFilesAllowed": false
-            },
-            "prefs": {
-              "filebrowser.local_user_files_allowed": {
-                "location": "local_state",
-                "value": false
-              }
-            }
-        }
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "filebrowser.local_user_files_allowed",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
       ]
     }
-  ]
+  }
+]

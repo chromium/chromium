@@ -1,63 +1,17 @@
 [
   {
-    "can_be_recommended": false,
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-          "policies": {},
-          "prefs": {
-            "filebrowser.local_user_files_migration_destination": {
-              "location": "local_state",
-              "default_value": "read_only"
-            }
-          }
-      },
-      {
-          "policies": {
-              "LocalUserFilesMigrationDestination": "google_drive"
-          },
-          "prefs": {
-            "filebrowser.local_user_files_migration_destination": {
-              "location": "local_state",
-              "value": "google_drive"
-            }
-          }
-      },
-      {
-          "policies": {
-              "LocalUserFilesMigrationDestination": "microsoft_onedrive"
-          },
-          "prefs": {
-            "filebrowser.local_user_files_migration_destination": {
-              "location": "local_state",
-              "value": "microsoft_onedrive"
-            }
-          }
-      },
-      {
-          "policies": {
-              "LocalUserFilesMigrationDestination": "read_only"
-          },
-          "prefs": {
-            "filebrowser.local_user_files_migration_destination": {
-              "location": "local_state",
-              "value": "read_only"
-            }
-          }
-      },
-      {
-          "policies": {
-              "LocalUserFilesMigrationDestination": "delete"
-          },
-          "prefs": {
-            "filebrowser.local_user_files_migration_destination": {
-              "location": "local_state",
-              "value": "delete"
-            }
-          }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "filebrowser.local_user_files_migration_destination",
+      "pref_location": "local_state",
+      "default_value": "read_only",
+      "values_to_test": [
+        "google_drive",
+        "microsoft_onedrive",
+        "delete"
+      ]
+    }
   }
 ]

@@ -3,35 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "lock_screen_reauthentication_enabled": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "LockScreenReauthenticationEnabled": true
-        },
-        "prefs": {
-          "lock_screen_reauthentication_enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "LockScreenReauthenticationEnabled": false
-        },
-        "prefs": {
-          "lock_screen_reauthentication_enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "lock_screen_reauthentication_enabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

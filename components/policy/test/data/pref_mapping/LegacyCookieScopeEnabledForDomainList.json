@@ -8,21 +8,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "LegacyCookieScopeEnabledForDomainList": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_legacy_cookie_scope_for_domains": {
-            "value": [
-              "[*.]google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_legacy_cookie_scope_for_domains",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]
