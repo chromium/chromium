@@ -7,8 +7,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/core/browser/account_preview_data_service_impl.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 
 AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory()
@@ -35,12 +37,14 @@ AccountPreviewDataServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData)) {
+  Profile* profile = Profile::FromBrowserContext(context);
+  PrefService* prefs = profile->GetPrefs();
+  if (!base::FeatureList::IsEnabled(switches::kEnableAccountPreviewData) ||
+      !prefs->GetBoolean(prefs::kSigninAllowed)) {
     return nullptr;
   }
-  Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
-      IdentityManagerFactory::GetForProfile(profile), profile->GetPrefs());
+      IdentityManagerFactory::GetForProfile(profile), prefs);
 }
 
 void AccountPreviewDataServiceFactory::RegisterProfilePrefs(
