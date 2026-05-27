@@ -3043,8 +3043,6 @@ class WebViewChromium
                     ApiCall.SET_WEBCHROME_CLIENT,
                     ApiCallUserAction.WEBVIEW_INSTANCE_SET_WEBCHROME_CLIENT);
             mAwContents.cancelAllPrerendering();
-            mAwContents.setOnReceivedIconOverridden(
-                    ApiImplementationUtils.isOnReceivedIconOverridden(client));
             mWebSettings.getAwSettings().setFullscreenSupported(doesSupportFullscreen(client));
             mContentsClientAdapter.setWebChromeClient(mSharedWebViewChromium.getWebChromeClient());
             if (client != null) {

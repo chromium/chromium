@@ -492,15 +492,6 @@ base::android::ScopedJavaLocalRef<jobject> AwContents::GetJavaObject() {
   return java_ref_.get(env);
 }
 
-SkBitmap AwContents::GetFavicon(JNIEnv* env) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  gfx::Image favicon_image = web_contents_->GetController()
-                                 .GetLastCommittedEntry()
-                                 ->GetFavicon()
-                                 .image;
-  return favicon_image.AsBitmap();
-}
-
 void AwContents::Destroy(JNIEnv* env) {
   java_ref_.reset();
   delete this;
@@ -906,13 +897,7 @@ void AwContents::OnReceivedIcon(const GURL& icon_url, const SkBitmap& bitmap) {
   entry->GetFavicon().url = icon_url;
   entry->GetFavicon().image = gfx::Image::CreateFrom1xBitmap(bitmap);
 
-  // Experiment: will not store favicon bitmap in java or call onReceivedIcon
-  // unless onReceivedIcon is overridden crbug.com/41027010
-  if (is_on_received_icon_overridden_ ||
-      !base::FeatureList::IsEnabled(
-          features::kWebViewSkipFaviconJavaCopyUntilNeeded)) {
-    Java_AwContents_onReceivedIcon(env, obj, bitmap);
-  }
+  Java_AwContents_onReceivedIcon(env, obj, bitmap);
 }
 
 void AwContents::OnReceivedTouchIconUrl(const std::string& url,
@@ -1617,10 +1602,6 @@ void AwContents::SetJsOnlineProperty(JNIEnv* env, bool network_up) {
           web_contents_->GetPrimaryMainFrame()->GetProcess());
 
   aw_render_process->SetJsOnlineProperty(network_up);
-}
-
-void AwContents::SetOnReceivedIconOverridden(JNIEnv* env, bool is_overridden) {
-  is_on_received_icon_overridden_ = is_overridden;
 }
 
 void AwContents::TrimMemory(JNIEnv* env, int32_t level, bool visible) {

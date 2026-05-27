@@ -455,8 +455,7 @@ public class AwContentsTest extends AwParameterizedTest {
 
             // The getFavicon will return the right icon a certain time after
             // the page load completes which makes it slightly hard to test.
-            final Bitmap defaultFavicon =
-                    ThreadUtils.runOnUiThreadBlocking(() -> awContents.getFavicon());
+            final Bitmap defaultFavicon = awContents.getFavicon();
 
             mActivityTestRule.getAwSettingsOnUiThread(awContents).setImagesEnabled(true);
             mActivityTestRule.loadUrlSync(
@@ -472,9 +471,7 @@ public class AwContentsTest extends AwParameterizedTest {
                     BitmapFactory.decodeStream((InputStream) originalFaviconSource);
             Assert.assertNotNull(originalFavicon);
 
-            final Bitmap newFavicon =
-                    ThreadUtils.runOnUiThreadBlocking(() -> awContents.getFavicon());
-            Assert.assertTrue(newFavicon.sameAs(originalFavicon));
+            Assert.assertTrue(awContents.getFavicon().sameAs(originalFavicon));
 
         } finally {
             webServer.shutdown();
