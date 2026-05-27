@@ -39,9 +39,44 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     proto::ContextMemoryFeature feature) {
   switch (feature) {
     case proto::CONTEXT_MEMORY_FEATURE_AMBIENT_AUTOFILL:
-      // TODO(crbug.com/513249464): fill out autofill traffic annotation
-      // details.
-      return MISSING_TRAFFIC_ANNOTATION;
+      return net::DefineNetworkTrafficAnnotation("ambient_autofill_request", R"(
+          semantics {
+            sender: "Ambient Autofill"
+            description:
+              "Fetches ambient autofill suggestions from the Context Memory "
+              "Service. This is used to provide autofill suggestions (such as "
+              "passports, driver's licenses, flight reservations, etc.) based "
+              "on the user's personal context and the current webpage's domain."
+            trigger:
+              "User interacts with a form field that supports ambient autofill."
+            destination: GOOGLE_OWNED_SERVICE
+            data:
+              "The domain of the current webpage and the requested entity "
+              "types."
+            user_data {
+              type: ACCESS_TOKEN
+              type: SENSITIVE_URL
+            }
+            last_reviewed: "2026-05-26"
+            internal {
+              contacts {
+                email: "1p-integrations-autofill@google.com"
+              }
+            }
+          }
+          policy {
+            cookies_allowed: NO
+            setting:
+              "Users can enable or disable Autofill AI in Chrome settings "
+              "under 'Autofill Settings' -> 'Enhanced Autofill'."
+            chrome_policy {
+              AutofillAddressEnabled {
+                  policy_options {mode: MANDATORY}
+                  AutofillAddressEnabled: false
+              }
+            }
+          }
+        )");
     case proto::CONTEXT_MEMORY_FEATURE_AT_MEMORY:
       // TODO(crbug.com/515050857): fill out at-memory traffic annotation
       // details.

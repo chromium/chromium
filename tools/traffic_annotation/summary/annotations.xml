@@ -534,4 +534,5 @@ Refer to README.md for content description and update process.
  <item id="suggestions_powered_by_ai" added_in_milestone="150" content_hash_code="058a6c2b" os_list="linux,windows,chromeos,android" file_path="components/optimization_guide/core/model_execution/model_execution_fetcher_impl.cc" />
  <item id="preload_activation_beacon" added_in_milestone="150" content_hash_code="04f37095" os_list="linux,windows,chromeos,android" file_path="content/browser/preloading/preload_activation_report_manager.cc" />
  <item id="oauth2_upgrade_token_flow" added_in_milestone="150" type="partial" second_id="oauth2_api_call_flow" content_hash_code="04e4dfb2" os_list="linux,windows" semantics_fields="1,2,3,4,5,7,8,9" policy_fields="3,4" file_path="components/signin/internal/identity_manager/oauth2_upgrade_token_flow.cc" />
+ <item id="ambient_autofill_request" added_in_milestone="150" content_hash_code="032bfe60" os_list="windows,chromeos,android,linux" file_path="components/personal_context/core/network/personal_context_fetcher.cc" />
 </annotations>

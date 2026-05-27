@@ -405,6 +405,7 @@ after discussions on the right group.
       <annotation id="web_app_custom_icon_fetcher"/>
       <annotation id="suggestions_powered_by_ai"/>
       <annotation id="preload_activation_beacon"/>
+      <annotation id="ambient_autofill_request"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
