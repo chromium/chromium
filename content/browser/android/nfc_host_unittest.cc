@@ -14,6 +14,8 @@
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "services/device/public/mojom/nfc.mojom.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 
@@ -95,6 +97,26 @@ TEST_F(NFCHostTest, GetNFCTwice) {
               UnsubscribeFromPermissionResultChange(kSubscriptionId));
 
   DeleteContents();
+}
+
+TEST_F(NFCHostTest, GetNFCFromDifferentWebContentsMainFrame) {
+  NavigateAndCommit(GURL(kTestUrl));
+
+  // Create a second WebContents.
+  std::unique_ptr<TestWebContents> second_web_contents =
+      TestWebContents::Create(browser_context(), nullptr);
+
+  mojo::Remote<device::mojom::NFC> nfc;
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  // Request NFC from the first WebContents, but passing the main frame of the
+  // second WebContents.
+  contents()->GetNFC(second_web_contents->GetPrimaryMainFrame(),
+                     nfc.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ("WebNFC not on primary main frame.",
+            bad_message_observer.WaitForBadMessage());
 }
 
 }  // namespace content
