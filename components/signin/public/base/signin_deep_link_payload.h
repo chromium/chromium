@@ -11,6 +11,8 @@
 namespace signin {
 
 // The external device entry point for sign-in flow.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.base
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ExternalEntryPoint
 // LINT.IfChange(ExternalEntryPoint)
 enum class ExternalEntryPoint : int {
   kUnknown = 0,

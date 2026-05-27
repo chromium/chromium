@@ -118,12 +118,25 @@ if (is_android || is_ios) {
       "//net",
     ]
     public_deps = [ "//url" ]
+    if (is_android) {
+      sources += [
+        "signin_deep_link_payload_conversions.cc",
+        "signin_deep_link_payload_conversions.h",
+      ]
+      deps += [
+        "//components/signin/public/android:jni_headers",
+        "//third_party/jni_zero",
+      ]
+    }
   }
 }
 
 if (is_android) {
   java_cpp_enum("signin_metrics_enum_javagen") {
-    sources = [ "signin_metrics.h" ]
+    sources = [
+      "signin_deep_link_payload.h",
+      "signin_metrics.h",
+    ]
   }
 }
 

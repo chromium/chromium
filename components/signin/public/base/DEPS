@@ -4,6 +4,7 @@ include_rules = [
   "+components/account_manager_core/account.h",
   "+components/contextual_tasks/public/features.h",
   "+components/signin/public/android/jni_headers/SigninFeatureMap_jni.h",
+  "+components/signin/public/android/jni_headers/SigninDeepLinkPayload_jni.h",
   #TODO(b/309104936): Remove this unwanted include rule.
   "+components/signin/public/identity_manager/primary_account_change_event.h",
   # TODO(crbug.com/478783796): Remove once kWalletApiPrivatePassesEnabled launches.

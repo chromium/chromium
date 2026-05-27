@@ -11,6 +11,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/signin/public/base/signin_deep_link_payload.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
