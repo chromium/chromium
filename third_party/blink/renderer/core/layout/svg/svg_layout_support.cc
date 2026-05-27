@@ -169,10 +169,12 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
       object, root_border_box_transform, &filter_skipped);
 
   gfx::RectF adjusted_rect;
-  if (filter_skipped)
+  if (filter_skipped &&
+      !(visual_rect_flags & VisualRectFlags::kIgnoreFilters)) {
     adjusted_rect = MapToSVGRootIncludingFilter(object, local_visual_rect);
-  else
+  } else {
     adjusted_rect = root_border_box_transform.MapRect(local_visual_rect);
+  }
 
   if (adjusted_rect.IsEmpty()) {
     result_rect = PhysicalRect();
