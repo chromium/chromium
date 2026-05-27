@@ -3627,6 +3627,495 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
       contents->GetPrimaryMainFrame()->GetStoragePartition()));
 }
 
+// Returns a URL loader interceptor that responds to HTTPS URLs with a timeout
+// error.
+std::unique_ptr<content::URLLoaderInterceptor> MakeTimeoutInterceptor() {
+  return std::make_unique<content::URLLoaderInterceptor>(
+      base::BindLambdaForTesting(
+          [](content::URLLoaderInterceptor::RequestParams* params) {
+            if (params->url_request.url.host() == "timeout-https.com") {
+              if (params->url_request.url.SchemeIs("https")) {
+                network::URLLoaderCompletionStatus status;
+                status.error_code = net::ERR_TIMED_OUT;
+                params->client->OnComplete(status);
+                return true;
+              }
+              content::URLLoaderInterceptor::WriteResponse(
+                  "HTTP/1.1 200 OK\nContent-type: text/html\n\n",
+                  "<html>Done</html>", params->client.get());
+              return true;
+            }
+            return false;
+          }));
+}
+
+// Base test fixture for HttpsUpgrades typed schemeless navigation tests.
+class HttpsUpgradesTypedSchemelessNavigationTestBase
+    : public InProcessBrowserTest {
+ public:
+  HttpsUpgradesTypedSchemelessNavigationTestBase() = default;
+  ~HttpsUpgradesTypedSchemelessNavigationTestBase() override = default;
+
+  void SetUp() override {
+    ChromeSecurityBlockingPageFactory::SetEnterpriseManagedForTesting(false);
+    InProcessBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    host_resolver()->AddRule("*", "127.0.0.1");
+
+    scoped_refptr<net::X509Certificate> cert(https_server_.GetCertificate());
+    net::CertVerifyResult verify_result;
+    verify_result.is_issued_by_known_root = false;
+    verify_result.verified_cert = cert;
+    verify_result.cert_status = net::CERT_STATUS_COMMON_NAME_INVALID;
+    mock_cert_verifier_.mock_cert_verifier()->AddResultForCertAndHost(
+        cert, "bad-https.com", verify_result,
+        net::ERR_CERT_COMMON_NAME_INVALID);
+
+    http_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(http_server_.Start());
+    ASSERT_TRUE(https_server_.Start());
+
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server()->port());
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(http_server()->port());
+  }
+
+  void TearDownOnMainThread() override {
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(0);
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(0);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
+  }
+
+  net::EmbeddedTestServer* http_server() { return &http_server_; }
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+  base::HistogramTester* histograms() { return &histograms_; }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+
+ private:
+  net::EmbeddedTestServer http_server_{net::EmbeddedTestServer::TYPE_HTTP};
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  content::ContentMockCertVerifier mock_cert_verifier_;
+  base::HistogramTester histograms_;
+};
+
+class HttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackBrowserTest
+    : public HttpsUpgradesTypedSchemelessNavigationTestBase {
+ public:
+  HttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kHttpsUpgrades,
+         features::kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback},
+        /*disabled_features=*/{
+            features::kHttpsFirstModeV2ForEngagedSites,
+            features::kHttpsFirstModeV2ForTypicallySecureUsers,
+            features::kHttpsFirstBalancedModeAutoEnable});
+  }
+};
+
+// Tests that typed schemeless navigations are upgraded to HTTPS, but do NOT
+// fallback to HTTP if the upgrade fails due to timeout, when the feature flag
+// is enabled.
+IN_PROC_BROWSER_TEST_F(
+    HttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackBrowserTest,
+    TypedSchemelessNavigationNoTimeoutFallback) {
+  // Set up the interceptor to simulate timeout on HTTPS.
+  auto interceptor = MakeTimeoutInterceptor();
+
+  // Use a mock host name that will be intercepted.
+  GURL http_url = http_server()->GetURL("timeout-https.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("timeout-https.com", "/simple.html");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxClient* omnibox_client =
+      browser()->window()->GetLocationBar()->GetOmniboxController()->client();
+
+  // Simulate a typed schemeless navigation.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  omnibox_client->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      AutocompleteMatchType::URL_WHAT_YOU_TYPED, base::TimeTicks(), true, false,
+      std::u16string(), AutocompleteMatch(), AutocompleteMatch());
+  nav_observer.Wait();
+
+  // The navigation should have been upgraded to HTTPS, and failed there.
+  // Since fallback is disabled on timeout, it should NOT have navigated back to
+  // HTTP.
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // It should show a net error page (not HFM interstitial or SSL interstitial)
+  // because HFM is disabled and it's a timeout.
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify metrics.
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kTypedSchemelessUpgraded, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeTimedOut, 1);
+
+  // Standard upgrade metrics should also be recorded.
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeTimedOut, 1);
+}
+
+// Tests that typed schemeless navigations upgraded to HTTPS DO fallback to HTTP
+// if the upgrade fails due to a cert error, even when the feature flag is
+// enabled (timeout restriction).
+IN_PROC_BROWSER_TEST_F(
+    HttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackBrowserTest,
+    TypedSchemelessNavigationFallbackOnCertError) {
+  // Use bad-https.com so that HTTPS upgrade fails with a cert error.
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxClient* omnibox_client =
+      browser()->window()->GetLocationBar()->GetOmniboxController()->client();
+
+  // Simulate a typed schemeless navigation.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  omnibox_client->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      AutocompleteMatchType::URL_WHAT_YOU_TYPED, base::TimeTicks(), true, false,
+      std::u16string(), AutocompleteMatch(), AutocompleteMatch());
+  nav_observer.Wait();
+
+  // The navigation should have been upgraded to HTTPS, failed (cert error), and
+  // fell back to HTTP.
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify metrics.
+  // Should record kTypedSchemelessUpgraded (since it was eligible at start).
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kTypedSchemelessUpgraded, 1);
+
+  // Standard upgrade metrics should be recorded.
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
+
+  // Should NOT record kTypedSchemelessUpgradeTimedOut (since it did not fail
+  // due to timeout).
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeSucceeded, 0);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeTimedOut, 0);
+}
+
+// Tests that typed schemeless navigations upgraded to HTTPS successfully load
+// over HTTPS, and record success metrics, when the feature flag is enabled.
+IN_PROC_BROWSER_TEST_F(
+    HttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackBrowserTest,
+    TypedSchemelessNavigationSuccess) {
+  // Use a host that will succeed on HTTPS (default cert result is OK).
+  GURL http_url = http_server()->GetURL("example.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("example.com", "/simple.html");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxClient* omnibox_client =
+      browser()->window()->GetLocationBar()->GetOmniboxController()->client();
+
+  // Simulate a typed schemeless navigation.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  omnibox_client->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      AutocompleteMatchType::URL_WHAT_YOU_TYPED, base::TimeTicks(), true, false,
+      std::u16string(), AutocompleteMatch(), AutocompleteMatch());
+  nav_observer.Wait();
+
+  // The navigation should have been upgraded to HTTPS, and succeeded.
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify metrics.
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kTypedSchemelessUpgraded, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeSucceeded, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeTimedOut, 0);
+
+  // Standard upgrade metrics.
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeSucceeded, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 0);
+}
+
+class HttpsUpgradesTypedSchemelessNavigationWithFallbackBrowserTest
+    : public HttpsUpgradesTypedSchemelessNavigationTestBase {
+ public:
+  HttpsUpgradesTypedSchemelessNavigationWithFallbackBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kHttpsUpgrades},
+        /*disabled_features=*/{
+            features::kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback,
+            features::kHttpsFirstModeV2ForEngagedSites,
+            features::kHttpsFirstModeV2ForTypicallySecureUsers,
+            features::kHttpsFirstBalancedModeAutoEnable});
+  }
+};
+
+// Tests that typed schemeless navigations are upgraded to HTTPS, and DO
+// fallback to HTTP if the upgrade fails due to cert error, when the feature
+// flag is disabled.
+IN_PROC_BROWSER_TEST_F(
+    HttpsUpgradesTypedSchemelessNavigationWithFallbackBrowserTest,
+    TypedSchemelessNavigationFallbackOnCertError) {
+  // Use bad-https.com so that HTTPS upgrade fails with a cert error.
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxClient* omnibox_client =
+      browser()->window()->GetLocationBar()->GetOmniboxController()->client();
+
+  // Simulate a typed schemeless navigation.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  omnibox_client->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      AutocompleteMatchType::URL_WHAT_YOU_TYPED, base::TimeTicks(), true, false,
+      std::u16string(), AutocompleteMatch(), AutocompleteMatch());
+  nav_observer.Wait();
+
+  // The navigation should have been upgraded to HTTPS, failed, and fell back to
+  // HTTP.
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify metrics.
+  // Should record kUpgraded (standard upgrade).
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kUpgraded, 1);
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kTypedSchemelessUpgraded, 0);
+
+  // Standard upgrade metrics.
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
+
+  // Should NOT record kTypedSchemelessUpgrade metrics.
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeAttempted, 0);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeTimedOut, 0);
+}
+
+// Tests that typed schemeless navigations are upgraded to HTTPS, and DO
+// fallback to HTTP if the upgrade fails due to timeout, when the feature flag
+// is disabled.
+IN_PROC_BROWSER_TEST_F(
+    HttpsUpgradesTypedSchemelessNavigationWithFallbackBrowserTest,
+    TypedSchemelessNavigationFallbackOnTimeout) {
+  // Set up the interceptor to simulate timeout on HTTPS.
+  auto interceptor = MakeTimeoutInterceptor();
+
+  GURL http_url = http_server()->GetURL("timeout-https.com", "/simple.html");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxClient* omnibox_client =
+      browser()->window()->GetLocationBar()->GetOmniboxController()->client();
+
+  // Simulate a typed schemeless navigation.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  omnibox_client->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      AutocompleteMatchType::URL_WHAT_YOU_TYPED, base::TimeTicks(), true, false,
+      std::u16string(), AutocompleteMatch(), AutocompleteMatch());
+  nav_observer.Wait();
+
+  // The navigation should have been upgraded to HTTPS, failed (timeout), and
+  // fell back to HTTP.
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify metrics.
+  // Should record kUpgraded (standard upgrade).
+  histograms()->ExpectBucketCount(kNavigationRequestSecurityLevelHistogram,
+                                  NavigationRequestSecurityLevel::kUpgraded, 1);
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kTypedSchemelessUpgraded, 0);
+
+  // Standard upgrade metrics.
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeTimedOut, 1);
+
+  // Should NOT record kTypedSchemelessUpgrade metrics.
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeAttempted, 0);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeTimedOut, 0);
+}
+
+class HttpsUpgradesTypedSchemelessNavigationBalancedModeBrowserTest
+    : public HttpsUpgradesTypedSchemelessNavigationTestBase {
+ public:
+  HttpsUpgradesTypedSchemelessNavigationBalancedModeBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kHttpsUpgrades,
+         features::kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback},
+        /*disabled_features=*/{
+            features::kHttpsFirstModeV2ForEngagedSites,
+            features::kHttpsFirstModeV2ForTypicallySecureUsers,
+            features::kHttpsFirstBalancedModeAutoEnable});
+  }
+
+  void SetUpOnMainThread() override {
+    HttpsUpgradesTypedSchemelessNavigationTestBase::SetUpOnMainThread();
+    browser()->profile()->GetPrefs()->SetBoolean(prefs::kHttpsFirstBalancedMode,
+                                                 true);
+  }
+
+  void TearDownOnMainThread() override {
+    browser()->profile()->GetPrefs()->ClearPref(prefs::kHttpsFirstBalancedMode);
+    HttpsUpgradesTypedSchemelessNavigationTestBase::TearDownOnMainThread();
+  }
+};
+
+// Tests that typed schemeless navigations are upgraded to HTTPS, but do NOT
+// fallback to HTTP if the upgrade fails due to timeout, even when HFM Balanced
+// Mode is enabled.
+IN_PROC_BROWSER_TEST_F(
+    HttpsUpgradesTypedSchemelessNavigationBalancedModeBrowserTest,
+    TypedSchemelessNavigationNoTimeoutFallback_BalancedMode) {
+  // Set up the interceptor to simulate timeout on HTTPS.
+  auto interceptor = MakeTimeoutInterceptor();
+
+  GURL http_url = http_server()->GetURL("timeout-https.com", "/simple.html");
+  GURL https_url = https_server()->GetURL("timeout-https.com", "/simple.html");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxClient* omnibox_client =
+      browser()->window()->GetLocationBar()->GetOmniboxController()->client();
+
+  // Simulate a typed schemeless navigation.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  omnibox_client->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      AutocompleteMatchType::URL_WHAT_YOU_TYPED, base::TimeTicks(), true, false,
+      std::u16string(), AutocompleteMatch(), AutocompleteMatch());
+  nav_observer.Wait();
+
+  // The navigation should have been upgraded to HTTPS, and failed there.
+  // Since fallback is disabled on timeout, it should NOT have navigated back to
+  // HTTP (and should NOT show the Balanced Mode interstitial on fallback).
+  EXPECT_EQ(https_url, contents->GetLastCommittedURL());
+
+  // It should show a net error page (no HFM interstitial).
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(contents));
+
+  // Verify metrics.
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kTypedSchemelessUpgraded, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeTimedOut, 1);
+}
+
+// Tests that typed schemeless navigations upgraded to HTTPS DO fallback to HTTP
+// if the upgrade fails due to a cert error, when HFM Balanced Mode is enabled,
+// and then they show the HFM Balanced Mode interstitial on the fallback HTTP
+// page.
+IN_PROC_BROWSER_TEST_F(
+    HttpsUpgradesTypedSchemelessNavigationBalancedModeBrowserTest,
+    TypedSchemelessNavigationFallback_BalancedMode) {
+  // Use bad-https.com so that HTTPS upgrade fails with a cert error.
+  GURL http_url = http_server()->GetURL("bad-https.com", "/simple.html");
+
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  OmniboxClient* omnibox_client =
+      browser()->window()->GetLocationBar()->GetOmniboxController()->client();
+
+  // Simulate a typed schemeless navigation.
+  content::TestNavigationObserver nav_observer(contents, 1);
+  omnibox_client->OnAutocompleteAccept(
+      http_url, nullptr, WindowOpenDisposition::CURRENT_TAB,
+      ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      AutocompleteMatchType::URL_WHAT_YOU_TYPED, base::TimeTicks(), true, false,
+      std::u16string(), AutocompleteMatch(), AutocompleteMatch());
+  nav_observer.Wait();
+
+  // The navigation should have been upgraded to HTTPS, failed (cert error), and
+  // fell back to HTTP.
+  EXPECT_EQ(http_url, contents->GetLastCommittedURL());
+
+  // Since Balanced Mode is enabled, falling back to HTTP should show the
+  // Balanced Mode interstitial.
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingHttpsFirstModeInterstitial(
+      contents));
+
+  // Verify metrics.
+  // Should record kTypedSchemelessUpgraded (since it was eligible at start).
+  histograms()->ExpectBucketCount(
+      kNavigationRequestSecurityLevelHistogram,
+      NavigationRequestSecurityLevel::kTypedSchemelessUpgraded, 1);
+
+  // Standard upgrade metrics.
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeFailed, 1);
+  histograms()->ExpectBucketCount(kEventHistogram, Event::kUpgradeCertError, 1);
+
+  // Should NOT record kTypedSchemelessUpgradeTimedOut (since it did not time
+  // out).
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeAttempted, 1);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeSucceeded, 0);
+  histograms()->ExpectBucketCount(kEventHistogram,
+                                  Event::kTypedSchemelessUpgradeTimedOut, 0);
+}
+
 // Url used to detect the presence of a captive portal.
 constexpr char kCaptivePortalPingUrl[] = "http://captive-portal-ping-url.com/";
 // HTTPS version of the same URL.

@@ -277,6 +277,10 @@ HttpsUpgradesNavigationThrottle::WillRedirectRequest() {
     if (timer_started) {
       RecordHttpsFirstModeNavigation(Event::kUpgradeAttempted,
                                      interstitial_state_);
+      if (tab_helper->is_typed_schemeless_upgrade()) {
+        RecordHttpsFirstModeNavigation(Event::kTypedSchemelessUpgradeAttempted,
+                                       interstitial_state_);
+      }
     }
   }
 
@@ -291,6 +295,10 @@ HttpsUpgradesNavigationThrottle::WillProcessResponse() {
   if (tab_helper->is_navigation_upgraded()) {
     RecordHttpsFirstModeNavigation(Event::kUpgradeSucceeded,
                                    interstitial_state_);
+    if (tab_helper->is_typed_schemeless_upgrade()) {
+      RecordHttpsFirstModeNavigation(Event::kTypedSchemelessUpgradeSucceeded,
+                                     interstitial_state_);
+    }
     tab_helper->set_is_navigation_upgraded(false);
   }
 

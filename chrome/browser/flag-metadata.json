@@ -5600,6 +5600,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "https-upgrades-typed-schemeless-navigation-no-timeout-fallback",
+    "owners": [
+      "cthomp@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "hybrid-passkeys-in-context-menu",
     "owners": [
       "derinel@google.com",

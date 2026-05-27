@@ -51,6 +51,7 @@ void HttpsOnlyModeTabHelper::DidStartNavigation(
     set_fallback_url(GURL());
     set_is_navigation_fallback(false);
     set_is_navigation_upgraded(false);
+    set_is_typed_schemeless_upgrade(false);
     set_fallback_reason(
         security_interstitials::https_only_mode::FallbackReason::kNone);
   }

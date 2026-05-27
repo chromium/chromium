@@ -385,7 +385,8 @@ void HttpsUpgradesInterceptor::MaybeCreateLoader(
       &HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted,
       weak_factory_.GetWeakPtr(), tentative_resource_request.url,
       tentative_resource_request.is_outermost_main_frame,
-      tentative_resource_request.method, std::move(callback));
+      tentative_resource_request.method,
+      tentative_resource_request.transition_type, std::move(callback));
   network::mojom::NetworkContext* network_context =
       profile->GetDefaultStoragePartition()->GetNetworkContext();
 
@@ -403,6 +404,7 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
     GURL url,
     bool is_outermost_main_frame,
     std::string method,
+    int transition_type,
     content::URLLoaderRequestInterceptor::LoaderCallback callback,
     bool is_hsts_active_for_host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -655,11 +657,30 @@ void HttpsUpgradesInterceptor::MaybeCreateLoaderOnHstsQueryCompleted(
   // Not a redirect loop. Add the current request URL to the set of URLs seen.
   urls_seen_.insert(url);
 
-  RecordNavigationRequestSecurityLevel(
-      NavigationRequestSecurityLevel::kUpgraded);
+  ChromeNavigationUIData* chrome_navigation_ui_data =
+      static_cast<ChromeNavigationUIData*>(navigation_ui_data_);
+  bool is_explicit_http = chrome_navigation_ui_data &&
+                          chrome_navigation_ui_data->force_no_https_upgrade();
+  bool is_from_address_bar =
+      (transition_type & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) != 0;
+  bool is_typed_schemeless_upgrade =
+      is_from_address_bar && !is_explicit_http &&
+      base::FeatureList::IsEnabled(
+          features::kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback);
+
+  if (is_typed_schemeless_upgrade) {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kTypedSchemelessUpgraded);
+  } else {
+    RecordNavigationRequestSecurityLevel(
+        NavigationRequestSecurityLevel::kUpgraded);
+  }
 
   // Mark navigation as upgraded.
   tab_helper->set_is_navigation_upgraded(true);
+  if (is_typed_schemeless_upgrade) {
+    tab_helper->set_is_typed_schemeless_upgrade(true);
+  }
   tab_helper->set_fallback_url(url);
 
   GURL https_url = UpgradeUrlToHttps(url);
@@ -761,6 +782,15 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
                                    *interstitial_state_);
   }
 
+  if (tab_helper->is_typed_schemeless_upgrade() &&
+      status.error_code == net::ERR_TIMED_OUT) {
+    RecordHttpsFirstModeNavigation(Event::kTypedSchemelessUpgradeTimedOut,
+                                   *interstitial_state_);
+    tab_helper->set_is_navigation_upgraded(false);
+    tab_helper->set_is_typed_schemeless_upgrade(false);
+    return false;
+  }
+
   // If no interstitial will be shown, add the fallback hostname to the
   // allowlist now before triggering fallback. The interstitial handles this on
   // the user proceeding through the interstitial only.
@@ -783,6 +813,7 @@ bool HttpsUpgradesInterceptor::MaybeCreateLoaderForResponse(
   }
 
   tab_helper->set_is_navigation_upgraded(false);
+  tab_helper->set_is_typed_schemeless_upgrade(false);
   tab_helper->set_is_navigation_fallback(true);
   tab_helper->set_fallback_reason(fallback_reason);
   tab_helper->add_failed_upgrade(tab_helper->fallback_url(), fallback_reason);

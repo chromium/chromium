@@ -2714,6 +2714,15 @@ inline constexpr char kHttpsUpgradesDescription[] =
     "Enable automatically upgrading all top-level navigations to HTTPS with "
     "fast fallback to HTTP.";
 
+inline constexpr char
+    kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackName[] =
+        "HTTPS Upgrades Typed Schemeless Navigation No Timeout Fallback";
+inline constexpr char
+    kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackDescription[] =
+        "When enabled, typed schemeless navigations upgraded to HTTPS will not "
+        "fallback to HTTP if the upgraded HTTPS navigation fails due to a "
+        "timeout.";
+
 inline constexpr char kIgnoreGpuBlocklistName[] =
     "Override software rendering list";
 inline constexpr char kIgnoreGpuBlocklistDescription[] =

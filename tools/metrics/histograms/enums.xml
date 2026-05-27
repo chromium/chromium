@@ -15930,6 +15930,8 @@ from previous Chrome versions.
   <int value="588333474" label="OfflineIndicator:disabled"/>
   <int value="589394614" label="OmniboxSuggestionButtonRow:enabled"/>
   <int value="589924262" label="CryptAuthV2DeviceActivityStatus:enabled"/>
+  <int value="589938531"
+      label="HttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback:enabled"/>
   <int value="591007879" label="UseClientGmbInterface:enabled"/>
   <int value="591455655"
       label="NTPRealboxContextualAndTrendingSuggestions:disabled"/>
@@ -18989,6 +18991,8 @@ from previous Chrome versions.
   <int value="1583509900" label="ClearLoginDatabaseForUPMUsers:disabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>
   <int value="1584039096" label="highlight-all-webviews"/>
+  <int value="1584101155"
+      label="HttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback:disabled"/>
   <int value="1584111738" label="NtpChromeCartHistoryClusterCoexist:enabled"/>
   <int value="1584112058" label="TrustSafetySentimentSurveyV2:enabled"/>
   <int value="1584310493" label="NtpHistoryClustersModuleTextOnly:disabled"/>

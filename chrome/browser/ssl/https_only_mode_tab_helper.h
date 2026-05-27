@@ -79,6 +79,13 @@ class HttpsOnlyModeTabHelper
   }
   bool is_exempt_error() const { return is_exempt_error_; }
 
+  void set_is_typed_schemeless_upgrade(bool is_typed_schemeless_upgrade) {
+    is_typed_schemeless_upgrade_ = is_typed_schemeless_upgrade;
+  }
+  bool is_typed_schemeless_upgrade() const {
+    return is_typed_schemeless_upgrade_;
+  }
+
  private:
   explicit HttpsOnlyModeTabHelper(content::WebContents* web_contents);
   friend class content::WebContentsUserData<HttpsOnlyModeTabHelper>;
@@ -121,6 +128,8 @@ class HttpsOnlyModeTabHelper
   // the automatic net error reload) and continue the upgrade attempt
   // post-reload.
   bool is_exempt_error_ = false;
+
+  bool is_typed_schemeless_upgrade_ = false;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

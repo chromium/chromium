@@ -86,6 +86,7 @@ class HttpsUpgradesInterceptor : public content::URLLoaderRequestInterceptor,
       GURL url,
       bool is_outermost_main_frame,
       std::string method,
+      int transition_type,
       content::URLLoaderRequestInterceptor::LoaderCallback callback,
       bool is_hsts_active_for_host);
 

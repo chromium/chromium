@@ -77,7 +77,16 @@ enum class Event {
   // Upgrade failed due to encountering a redirect loop and failing early.
   kUpgradeRedirectLoop = 8,
 
-  kMaxValue = kUpgradeRedirectLoop,
+  // Typed schemeless upgrade metrics.
+  // kTypedSchemelessUpgradeAttempted, kTypedSchemelessUpgradeSucceeded, and
+  // kTypedSchemelessUpgradeTimedOut are subsets of kUpgradeAttempted,
+  // kUpgradeSucceeded, and kUpgradeTimedOut respectively. The base metrics
+  // should also be recorded whenever these events are recorded.
+  kTypedSchemelessUpgradeAttempted = 9,
+  kTypedSchemelessUpgradeSucceeded = 10,
+  kTypedSchemelessUpgradeTimedOut = 11,
+
+  kMaxValue = kTypedSchemelessUpgradeTimedOut,
 };
 
 // Recorded by HTTPS-Upgrade logic when each step in a navigation request is
@@ -140,7 +149,11 @@ enum class NavigationRequestSecurityLevel {
   // or an interstitial. Not recorded if the hostname is allowlisted.
   kHttpsEnforcedOnHostname = 13,
 
-  kMaxValue = kHttpsEnforcedOnHostname,
+  // Request was upgraded to HTTPS, and was a typed schemeless navigation
+  // (eligible for no-fallback on timeout).
+  kTypedSchemelessUpgraded = 14,
+
+  kMaxValue = kTypedSchemelessUpgraded,
 };
 
 // Recorded by the Site Engagement Heuristic logic, recording whether HFM should

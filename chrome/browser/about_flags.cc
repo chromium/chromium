@@ -8813,6 +8813,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHttpsUpgradesDescription, kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(features::kHttpsUpgrades)},
 
+    {"https-upgrades-typed-schemeless-navigation-no-timeout-fallback",
+     flag_descriptions::
+         kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackName,
+     flag_descriptions::
+         kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallbackDescription,
+     kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         features::kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback)},
+
     {"https-first-mode-incognito",
      flag_descriptions::kHttpsFirstModeIncognitoName,
      flag_descriptions::kHttpsFirstModeIncognitoDescription,

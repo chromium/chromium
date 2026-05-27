@@ -1170,6 +1170,11 @@ BASE_FEATURE(kHttpsFirstModeV2ForTypicallySecureUsers,
 
 // Enables automatically upgrading main frame navigations to HTTPS.
 BASE_FEATURE(kHttpsUpgrades, base::FEATURE_ENABLED_BY_DEFAULT);
+// When enabled, typed schemeless navigations (e.g., typed "example.com" in the
+// Omnibox) that are upgraded to HTTPS will not fallback to HTTP if the HTTPS
+// navigation fails due to a timeout.
+BASE_FEATURE(kHttpsUpgradesTypedSchemelessNavigationNoTimeoutFallback,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<base::TimeDelta> kHttpsUpgradesFallbackDelay{
     &kHttpsUpgrades, "fallback-delay", base::Seconds(3)};
