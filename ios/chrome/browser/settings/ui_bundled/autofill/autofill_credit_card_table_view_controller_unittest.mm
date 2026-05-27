@@ -17,6 +17,7 @@
 #import "components/autofill/core/browser/data_model/payments/credit_card.h"
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/cells/autofill_credit_card_edit_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_add_credit_card_view_controller.h"
@@ -29,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_edit_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -339,8 +341,7 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
 class AutofillAddCreditCardViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
-  AutofillAddCreditCardViewControllerTest() {
-  }
+  AutofillAddCreditCardViewControllerTest() {}
 
   LegacyChromeTableViewController* InstantiateController() override {
     mock_delegate_ =
@@ -429,6 +430,12 @@ class AutofillCreditCardEditTableViewControllerTest
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
                               ios::WebDataServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
   }

@@ -13,6 +13,7 @@
 #import "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/safe_browsing/model/tailored_security/chrome_tailored_security_service.h"
@@ -24,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/components/security_interstitials/safe_browsing/fake_safe_browsing_client.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_query_manager.h"
 #import "ios/components/security_interstitials/safe_browsing/safe_browsing_tab_helper.h"
@@ -74,6 +76,12 @@ class SafeBrowsingCoordinatorTest : public PlatformTest {
     test_profile_builder.AddTestingFactory(
         TailoredSecurityServiceFactory::GetInstance(),
         base::BindRepeating(&BuildMockTailoredSecurityService));
+    test_profile_builder.AddTestingFactory(
+        SyncServiceFactory::GetInstance(),
+        base::BindRepeating(
+            [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<syncer::TestSyncService>();
+            }));
     profile_ = std::move(test_profile_builder).Build();
 
     client_ = std::make_unique<FakeSafeBrowsingClient>(profile_->GetPrefs());

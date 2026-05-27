@@ -13,6 +13,7 @@
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
+#import "components/sync/test/test_sync_service.h"
 #import "ios/chrome/browser/autofill/model/manual_fill_virtual_card_cache.h"
 #import "ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/card_consumer.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_injection_handler.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/scoped_testing_web_client.h"
@@ -188,7 +190,6 @@ TEST_F(ManualFillCardMediatorTest, CreateManualFillCardItemsWithVirtualCard) {
   EXPECT_OCMOCK_VERIFY(consumer());
 }
 
-
 // Tests that the mediator notifies the delegate when a full card request
 // succeeds. This signal is used to re-show the manual fallback UI if it was
 // dismissed during the unmasking process.
@@ -199,7 +200,14 @@ TEST_F(ManualFillCardMediatorTest,
       std::make_unique<web::FakeWebClient>());
 
   // Create a REAL WebState via Profile.
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      SyncServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+            return std::make_unique<syncer::TestSyncService>();
+          }));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   web::WebState::CreateParams params(profile.get());
   auto web_state = web::WebState::Create(params);
 
@@ -241,7 +249,14 @@ TEST_F(ManualFillCardMediatorTest,
       std::make_unique<web::FakeWebClient>());
 
   // Create a REAL WebState.
-  std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
+      SyncServiceFactory::GetInstance(),
+      base::BindRepeating(
+          [](ProfileIOS* profile) -> std::unique_ptr<KeyedService> {
+            return std::make_unique<syncer::TestSyncService>();
+          }));
+  std::unique_ptr<TestProfileIOS> profile = std::move(builder).Build();
   web::WebState::CreateParams params(profile.get());
   auto web_state = web::WebState::Create(params);
 
