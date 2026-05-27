@@ -18,4 +18,8 @@ BASE_FEATURE(kBrowserLaunchMetadataReporting,
 BASE_FEATURE(kCbcmAndroidPackageNameIdentifier,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+BASE_FEATURE(kIOSSignalSharingEnabled, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace enterprise_reporting

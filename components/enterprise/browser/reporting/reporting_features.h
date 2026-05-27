@@ -6,6 +6,7 @@
 #define COMPONENTS_ENTERPRISE_BROWSER_REPORTING_REPORTING_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 namespace enterprise_reporting {
 
@@ -23,6 +24,11 @@ BASE_DECLARE_FEATURE(kBrowserLaunchMetadataReporting);
 // Controls whether the browser on Android should use its package name as the
 // executable path identifier in CBCM reports.
 BASE_DECLARE_FEATURE(kCbcmAndroidPackageNameIdentifier);
+
+#if BUILDFLAG(IS_IOS)
+// Controls whether enterprise signal sharing is enabled on iOS.
+BASE_DECLARE_FEATURE(kIOSSignalSharingEnabled);
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace enterprise_reporting
 
