@@ -365,6 +365,7 @@ public class AccessorySheetViewTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
+    @DisableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL})
     public void testFiltersTouchesWhenObscured() {
         Runnable runnable = mock(Runnable.class);
 

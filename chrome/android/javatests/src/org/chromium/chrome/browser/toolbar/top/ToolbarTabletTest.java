@@ -28,8 +28,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
@@ -72,7 +75,21 @@ public class ToolbarTabletTest {
     @Test
     @SmallTest
     @Feature("RenderTest")
+    @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
     public void testLastOmniboxButtonFocus_notClipped() throws IOException {
+        testLastOmniboxButtonFocus_notClippedImpl("last_button_focused");
+    }
+
+    @Test
+    @SmallTest
+    @Feature("RenderTest")
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    public void testLastOmniboxButtonFocus_notClipped_withHomeButtonRemovalKeepOnNtp()
+            throws IOException {
+        testLastOmniboxButtonFocus_notClippedImpl("last_button_focused_with_home_button_removal");
+    }
+
+    private void testLastOmniboxButtonFocus_notClippedImpl(String goldenId) throws IOException {
         // Transition to URL focused state, which expands the Omnibox on tablets.
         ThreadUtils.runOnUiThreadBlocking(() -> mToolbar.onUrlFocusChange(true));
 
@@ -105,7 +122,7 @@ public class ToolbarTabletTest {
                 });
         ViewUtils.waitForStableView(mToolbar);
 
-        mRenderTestRule.render(mToolbar, "last_button_focused");
+        mRenderTestRule.render(mToolbar, goldenId);
     }
 
     @Test

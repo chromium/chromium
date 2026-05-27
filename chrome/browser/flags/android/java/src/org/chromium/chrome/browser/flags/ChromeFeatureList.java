@@ -921,7 +921,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(
                     DISABLE_PARTNER_HOMEPAGE_ANDROID,
                     /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
+                    /* defaultValueInTests= */ false);
     public static final CachedFlag sDocumentPictureInPictureAPI =
             newCachedFlag(DOCUMENT_PICTURE_IN_PICTURE_API, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sDrawChromePagesEdgeToEdge =
@@ -1007,7 +1007,11 @@ public abstract class ChromeFeatureList {
                     HISTORY_PANE_ANDROID,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sHomeButtonRemoval = newCachedFlag(HOME_BUTTON_REMOVAL, false);
+    public static final CachedFlag sHomeButtonRemoval =
+            newCachedFlag(
+                    HOME_BUTTON_REMOVAL,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sIncognitoThemeOverlayTesting =
             newCachedFlag(INCOGNITO_THEME_OVERLAY_TESTING, false);
     public static final CachedFlag sKeyboardEscBackNavigation =

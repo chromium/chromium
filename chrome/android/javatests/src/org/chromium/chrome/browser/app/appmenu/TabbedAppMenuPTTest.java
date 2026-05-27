@@ -18,6 +18,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -204,8 +205,35 @@ public class TabbedAppMenuPTTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
     @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288398
     public void testWebPageIncognitoAppMenuItems() throws IOException {
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "incognito_webpage_app_menu_with_open_incognito_window"
+                        : "incognito_webpage_app_menu_with_open_incognito_tab";
+        testWebPageIncognitoAppMenuItemsImpl(appMenuGoldenId);
+    }
+
+    /**
+     * Tests that all expected items declared in WebPageIncognitoAppMenuFacility are present in the
+     * app menu opened from an incognito Tab displaying a web page under the keep_on_ntp experiment.
+     */
+    @Test
+    @LargeTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288398
+    public void testWebPageIncognitoAppMenuItems_withHomeButtonRemovalKeepOnNtp()
+            throws IOException {
+        String appMenuGoldenId =
+                IncognitoUtils.shouldOpenIncognitoAsWindow()
+                        ? "incognito_webpage_app_menu_with_open_incognito_window_with_home_button_removal"
+                        : "incognito_webpage_app_menu_with_open_incognito_tab_with_home_button_removal";
+        testWebPageIncognitoAppMenuItemsImpl(appMenuGoldenId);
+    }
+
+    private void testWebPageIncognitoAppMenuItemsImpl(String appMenuGoldenId) throws IOException {
         IncognitoNewTabPageStation incognitoNtp =
                 mCtaTestRule.startOnBlankPage().openRegularTabAppMenu().openNewIncognitoTab();
 
@@ -215,10 +243,6 @@ public class TabbedAppMenuPTTest {
                         NavigatePageStations.newNavigateOnePageBuilder());
         IncognitoWebPageAppMenuFacility menu = pageOne.openIncognitoTabAppMenu();
 
-        String appMenuGoldenId =
-                IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        ? "incognito_webpage_app_menu_with_open_incognito_window"
-                        : "incognito_webpage_app_menu_with_open_incognito_tab";
         mRenderTestRule.render(menu.menuListElement.value(), appMenuGoldenId);
         menu.verifyPresentItems();
 

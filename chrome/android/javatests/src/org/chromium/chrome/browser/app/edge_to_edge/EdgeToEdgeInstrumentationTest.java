@@ -33,6 +33,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -357,8 +358,23 @@ public class EdgeToEdgeInstrumentationTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisableFeatures(ChromeFeatureList.HOME_BUTTON_REMOVAL)
     @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
     public void testPadWithEdgeToEdgeLayout() throws IOException {
+        testPadWithEdgeToEdgeLayoutImpl("e2e-everywhere-no-bottom-padding");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    @CommandLineFlags.Add(UiSwitches.ENABLE_EDGE_TO_EDGE_DEBUG_LAYERS)
+    public void testPadWithEdgeToEdgeLayout_withHomeButtonRemovalKeepOnNtp() throws IOException {
+        testPadWithEdgeToEdgeLayoutImpl(
+                "e2e-everywhere-no-bottom-padding-with-home-button-removal");
+    }
+
+    private void testPadWithEdgeToEdgeLayoutImpl(String goldenId) throws IOException {
         goToEdge();
         assertDrawingToEdge();
 
@@ -371,8 +387,7 @@ public class EdgeToEdgeInstrumentationTest {
 
         // Padding is verified by the debug layer for e2e layout in render golden's result.
         // Expect to see a magenta color block on top of the toolbar.
-        renderTestRule.render(
-                mActivity.findViewById(android.R.id.content), "e2e-everywhere-no-bottom-padding");
+        renderTestRule.render(mActivity.findViewById(android.R.id.content), goldenId);
     }
 
     private void assertOptedIntoEdgeToEdge() {

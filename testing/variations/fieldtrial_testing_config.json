@@ -9028,21 +9028,6 @@
             ]
         }
     ],
-    "DisablePartnerHomepageAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "DisablePartnerHomepageAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableSplitHostCacheByNetworkAnonymizationKey": [
         {
             "platforms": [
@@ -13034,6 +13019,48 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UseAlternateHistorySyncIllustration"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HomeButtonRemoval": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "KeepOnNtp",
+                    "params": {
+                        "keep_home_button_on_ntp": "true"
+                    },
+                    "enable_features": [
+                        "HomeButtonRemoval"
+                    ],
+                    "disable_features": [
+                        "DisablePartnerHomepageAndroid"
+                    ]
+                },
+                {
+                    "name": "RemoveEverywhere",
+                    "params": {
+                        "remove_home_button_everywhere": "true"
+                    },
+                    "enable_features": [
+                        "HomeButtonRemoval"
+                    ],
+                    "disable_features": [
+                        "DisablePartnerHomepageAndroid"
+                    ]
+                },
+                {
+                    "name": "DisablePartnerHomepage",
+                    "enable_features": [
+                        "DisablePartnerHomepageAndroid"
+                    ],
+                    "disable_features": [
+                        "HomeButtonRemoval"
                     ]
                 }
             ]
