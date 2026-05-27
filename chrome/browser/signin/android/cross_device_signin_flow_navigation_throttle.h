@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_SIGNIN_ANDROID_CROSS_DEVICE_SIGNIN_FLOW_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_SIGNIN_ANDROID_CROSS_DEVICE_SIGNIN_FLOW_NAVIGATION_THROTTLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/signin/public/base/signin_deep_link_parser.h"
 #include "content/public/browser/navigation_throttle.h"
 
+class SigninBridge;
 namespace content {
 class NavigationThrottleRegistry;
 }
@@ -35,10 +37,14 @@ class CrossDeviceSigninFlowNavigationThrottle
   const char* GetNameForLogging() override;
 
  private:
+  friend class CrossDeviceSigninFlowNavigationThrottleUnitTest;
+
   CrossDeviceSigninFlowNavigationThrottle(
       content::NavigationThrottleRegistry& registry,
+      SigninBridge* signin_bridge,
       signin::SigninDeepLinkParser deep_link_parser);
 
+  raw_ptr<SigninBridge> signin_bridge_;
   signin::SigninDeepLinkParser deep_link_parser_;
 };
 

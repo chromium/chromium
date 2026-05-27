@@ -89,6 +89,7 @@ source_set("signin") {
       "//components/signin/public/base:signin_deep_link",
       "//components/signin/public/browser",
     ]
+    deps = [ "//chrome/android:jni_headers" ]
   }
 
   if (!is_android) {

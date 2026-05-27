@@ -9,7 +9,7 @@
 
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_header_helper.h"
-#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_deep_link_payload.h"
 #include "google_apis/gaia/core_account_id.h"
 
 class TabAndroid;
@@ -54,5 +54,9 @@ class SigninBridge : public KeyedService {
   virtual void WaitForCookiesAndRedirect(TabAndroid* tab,
                                          const GURL& continue_url,
                                          const CoreAccountId& account_id);
+
+  // Start the deep link sign-in flow based on the given payload.
+  virtual void StartSigninDeepLinkFlow(
+      const signin::SigninDeepLinkPayload& payload);
 };
 #endif  // CHROME_BROWSER_SIGNIN_ANDROID_SIGNIN_BRIDGE_H_

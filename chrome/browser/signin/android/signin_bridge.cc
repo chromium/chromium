@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/android/tab_android.h"
+#include "components/signin/public/base/signin_deep_link_payload_conversions.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "ui/android/window_android.h"
@@ -71,6 +72,12 @@ void SigninBridge::WaitForCookiesAndRedirect(TabAndroid* tab,
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_SigninBridge_waitForCookiesAndRedirect(env, tab->GetJavaObject(),
                                               continue_url, account_id);
+}
+
+void SigninBridge::StartSigninDeepLinkFlow(
+    const signin::SigninDeepLinkPayload& payload) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_SigninBridge_startSigninDeepLinkFlow(env, payload);
 }
 
 DEFINE_JNI(SigninBridge)

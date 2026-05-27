@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -54,6 +55,7 @@ import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.SigninFeatureMap;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.SigninDeepLinkPayload;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -66,6 +68,9 @@ import java.util.List;
 /** The bridge regroups methods invoked by native code to interact with Android Signin UI. */
 @NullMarked
 final class SigninBridge {
+
+    private static final String TAG = "SigninBridge";
+
     /** Used for dependency injection in unit tests. */
     @VisibleForTesting
     static class AccountPickerBottomSheetCoordinatorFactory {
@@ -392,6 +397,18 @@ final class SigninBridge {
                                 tab, selectedAccountId, continueUrl, initialTabURL);
                     }
                 });
+    }
+
+    /**
+     * Start the deep link sign-in flow based on the given payload.
+     *
+     * @param payload The deep link payload.
+     */
+    @CalledByNative
+    private static void startSigninDeepLinkFlow(
+            @JniType("signin::SigninDeepLinkPayload") SigninDeepLinkPayload payload) {
+        // TODO(crbug.com/506023209): Implement the full-screen sign-in flow.
+        Log.i(TAG, "Start full-screen sign-in flow for email: " + payload.getEmail());
     }
 
     private SigninBridge() {}
