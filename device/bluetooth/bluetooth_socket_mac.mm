@@ -802,6 +802,7 @@ void BluetoothSocketMac::Send(scoped_refptr<net::IOBuffer> buffer,
   // Create and enqueue request in preparation of async writes.
   auto request = std::make_unique<SendRequest>();
   SendRequest* request_ptr = request.get();
+  request->buffer = buffer;
   request->buffer_size = buffer_size;
   request->success_callback = std::move(success_callback);
   request->error_callback = std::move(error_callback);

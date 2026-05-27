@@ -126,6 +126,7 @@ class BluetoothSocketMac : public BluetoothSocket {
   struct SendRequest {
     SendRequest();
     ~SendRequest();
+    scoped_refptr<net::IOBuffer> buffer;
     int buffer_size;
     SendCompletionCallback success_callback;
     ErrorCompletionCallback error_callback;
