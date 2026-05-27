@@ -142,7 +142,10 @@ BaseRenderingContext2D::BaseRenderingContext2D(
           task_runner,
           this,
           &BaseRenderingContext2D::TryRestoreContextEvent),
-      color_params_(attrs.color_space, attrs.pixel_format, attrs.alpha) {}
+      color_params_(attrs.color_space,
+                    attrs.hdr_metadata,
+                    attrs.pixel_format,
+                    attrs.alpha) {}
 
 void BaseRenderingContext2D::ResetInternal() {
   Canvas2DRecorderContext::ResetInternal();

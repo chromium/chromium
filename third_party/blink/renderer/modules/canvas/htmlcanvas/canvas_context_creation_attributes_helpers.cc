@@ -25,6 +25,8 @@ bool ToCanvasContextCreationAttributes(
                                     exception_state)) {
     return false;
   }
+  // TODO(https://crbug.com/40206688): Parse attrs->toneMapping into
+  // result.hdr_metadata.
   result.depth = attrs->depth();
   result.fail_if_major_performance_caveat =
       attrs->failIfMajorPerformanceCaveat();

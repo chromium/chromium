@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -25,9 +26,11 @@ class PLATFORM_EXPORT Canvas2DColorParams {
   DISALLOW_NEW();
 
  public:
-  // The default constructor will create an output-blended 8-bit surface.
   Canvas2DColorParams();
-  Canvas2DColorParams(PredefinedColorSpace, CanvasPixelFormat, bool has_alpha);
+  Canvas2DColorParams(PredefinedColorSpace,
+                      const gfx::HDRMetadata&,
+                      CanvasPixelFormat,
+                      bool has_alpha);
 
   PredefinedColorSpace ColorSpace() const { return color_space_; }
   CanvasPixelFormat PixelFormat() const { return pixel_format_; }
@@ -37,9 +40,11 @@ class PLATFORM_EXPORT Canvas2DColorParams {
 
   viz::SharedImageFormat GetSharedImageFormat() const;
   gfx::ColorSpace GetGfxColorSpace() const;
+  const gfx::HDRMetadata& GetGfxHdrMetadata() const { return hdr_metadata_; }
 
  private:
   PredefinedColorSpace color_space_ = PredefinedColorSpace::kSRGB;
+  gfx::HDRMetadata hdr_metadata_;
   CanvasPixelFormat pixel_format_ = CanvasPixelFormat::kUint8;
   bool has_alpha_ = true;
 };

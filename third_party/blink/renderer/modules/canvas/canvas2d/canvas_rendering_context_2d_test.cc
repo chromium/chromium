@@ -737,7 +737,7 @@ TEST_P(CanvasRenderingContext2DTest,
   // Install a CanvasResourceProvider that does not support direct compositing.
   gfx::Size size = CanvasElement().Size();
   auto provider = Canvas2DResourceProviderBitmap::CreateForTesting(
-      size, Canvas2DColorParams(PredefinedColorSpace::kSRGB,
+      size, Canvas2DColorParams(PredefinedColorSpace::kSRGB, gfx::HDRMetadata(),
                                 CanvasPixelFormat::kUint8,
                                 /*has_alpha=*/true));
 

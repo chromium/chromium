@@ -12,9 +12,11 @@ namespace blink {
 Canvas2DColorParams::Canvas2DColorParams() = default;
 
 Canvas2DColorParams::Canvas2DColorParams(PredefinedColorSpace color_space,
+                                         const gfx::HDRMetadata& hdr_metadata,
                                          CanvasPixelFormat pixel_format,
                                          bool has_alpha)
     : color_space_(color_space),
+      hdr_metadata_(hdr_metadata),
       pixel_format_(pixel_format),
       has_alpha_(has_alpha) {}
 

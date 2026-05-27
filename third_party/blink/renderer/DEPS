@@ -118,6 +118,7 @@ include_rules = [
     "+ui/base/dragdrop/mojom",
     "+ui/base/mojom/menu_source_type.mojom-blink.h",
     "+ui/events/keycodes/dom",
+    "+ui/gfx/hdr_metadata.h",
     "+v8",
 ]
 

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/hdr_metadata.h"
 
 namespace blink {
 
@@ -27,6 +28,7 @@ class CORE_EXPORT CanvasContextCreationAttributesCore {
   bool alpha = true;
   bool antialias = true;
   PredefinedColorSpace color_space = PredefinedColorSpace::kSRGB;
+  gfx::HDRMetadata hdr_metadata;
   bool depth = true;
   bool fail_if_major_performance_caveat = false;
   // This value may be different from the one specified at context creation,
