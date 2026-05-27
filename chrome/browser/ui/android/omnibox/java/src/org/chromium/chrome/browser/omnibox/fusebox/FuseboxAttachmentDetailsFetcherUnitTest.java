@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.ContentResolver;
@@ -44,14 +45,17 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.device.DeviceConditions;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
+import org.chromium.ui.base.MimeTypeUtils;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 /** Unit tests for {@link FuseboxAttachmentDetailsFetcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class FuseboxAttachmentDetailsFetcherUnitTest {
+    private static final long FILE_SIZE_SMALL = 1L;
+    private static final byte[] SAMPLE_DATA = new byte[] {1, 2, 3};
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ContentResolver mContentResolver;
@@ -60,14 +64,15 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
     @Captor private ArgumentCaptor<FuseboxAttachment> mAttachmentCaptor;
 
     private Context mContext;
+    private FuseboxAttachmentDetailsFetcher mFetcher;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        setActiveNetworkMetered(false);
+        setIsNetworkMetered(false);
     }
 
-    private void setActiveNetworkMetered(boolean isMetered) {
+    private void setIsNetworkMetered(boolean isMetered) {
         DeviceConditions.setForTesting(
                 new DeviceConditions(
                         /* powerConnected= */ true,
@@ -78,271 +83,88 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                         /* screenOnAndUnlocked= */ true));
     }
 
-    @Test
-    public void testFetchAttachmentDetails_forImageWithThumbnail()
-            throws FileNotFoundException, IOException {
+    /**
+     * Mock the mContentResolver with the given attachment details, and initialize the mFetcher to
+     * load those arguments into an attachment.
+     */
+    private void setupFetcherWithAttachment(
+            String title,
+            String mimeType,
+            byte[] data,
+            @Nullable Bitmap thumbnail,
+            long sizeBytes,
+            @FuseboxAttachmentButtonType int buttonType) {
         Uri attachmentUri = Uri.parse("content://media/external/1");
-        byte[] expectedData = new byte[] {1, 2, 3};
-        String expectedTitle = "photo.png";
-        String expectedMimeType = "image/png";
-
-        when(mContentResolver.getType(attachmentUri)).thenReturn(expectedMimeType);
-        when(mContentResolver.openInputStream(attachmentUri))
-                .thenReturn(new ByteArrayInputStream(expectedData));
-
         MatrixCursor cursor =
                 new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
-        cursor.addRow(new Object[] {expectedTitle, 1L});
+        cursor.addRow(new Object[] {title, sizeBytes});
+
+        when(mContentResolver.getType(attachmentUri)).thenReturn(mimeType);
+        try {
+            when(mContentResolver.openInputStream(attachmentUri))
+                    .thenReturn(new ByteArrayInputStream(data));
+            if (thumbnail != null) {
+                when(mContentResolver.loadThumbnail(any(), any(), any())).thenReturn(thumbnail);
+            } else {
+                when(mContentResolver.loadThumbnail(any(), any(), any()))
+                        .thenThrow(new IOException("No thumbnail"));
+            }
+        } catch (IOException e) {
+            // The compiler requires us to catch the exceptions thrown by the mocked methods, but
+            // we know they aren't actually called here, and so no exception should be thrown.
+            throw new RuntimeException(e);
+        }
         when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
                 .thenReturn(cursor);
 
-        Bitmap thumbnail = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
-        when(mContentResolver.loadThumbnail(any(), any(), any())).thenReturn(thumbnail);
-
-        FuseboxAttachmentDetailsFetcher fetcher =
+        mFetcher =
                 new FuseboxAttachmentDetailsFetcher(
-                        mContext,
-                        mContentResolver,
-                        attachmentUri,
-                        mCallback,
-                        FuseboxAttachmentButtonType.GALLERY);
+                        mContext, mContentResolver, attachmentUri, mCallback, buttonType);
+    }
 
-        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        RobolectricUtil.runAllBackgroundAndUi();
+    private void setupFetcherWithAttachment(
+            String title,
+            String mimeType,
+            byte[] data,
+            @Nullable Bitmap thumbnail,
+            @FuseboxAttachmentButtonType int buttonType) {
+        setupFetcherWithAttachment(title, mimeType, data, thumbnail, FILE_SIZE_SMALL, buttonType);
+    }
 
+    private void setupFetcherWithTxtFileAttachment(long sizeBytes) {
+        setupFetcherWithAttachment(
+                /* title= */ "large_file.txt",
+                MimeTypeUtils.TEXT_PLAIN_MIME_TYPE,
+                SAMPLE_DATA,
+                /* thumbnail= */ null,
+                sizeBytes,
+                FuseboxAttachmentButtonType.FILES);
+    }
+
+    private static @Nullable Bitmap getThumbnailFromAttachment(FuseboxAttachment attachment) {
+        return attachment.thumbnail == null
+                ? null
+                : ((BitmapDrawable) attachment.thumbnail).getBitmap();
+    }
+
+    private void verifyAttachmentResult(
+            String expectedTitle,
+            String expectedMimeType,
+            byte[] expectedData,
+            @Nullable Bitmap expectedThumbnail,
+            @FuseboxAttachmentType int expectedType,
+            @FuseboxAttachmentButtonType int expectedButtonType) {
         verify(mCallback).onResult(mAttachmentCaptor.capture());
+        verifyNoMoreInteractions(mCallback);
         FuseboxAttachment attachment = mAttachmentCaptor.getValue();
 
         assertNotNull(attachment);
-        assertEquals(FuseboxAttachmentType.ATTACHMENT_IMAGE, attachment.type);
         assertEquals(expectedTitle, attachment.title);
         assertEquals(expectedMimeType, attachment.mimeType);
         assertArrayEquals(expectedData, attachment.data);
-        assertEquals(FuseboxAttachmentButtonType.GALLERY, attachment.buttonType);
-        assertNotNull(attachment.thumbnail);
-        assertEquals(thumbnail, ((BitmapDrawable) attachment.thumbnail).getBitmap());
-    }
-
-    @Test
-    public void testFetchAttachmentDetails_forTextFile() throws FileNotFoundException {
-        Uri attachmentUri = Uri.parse("content://media/external/1");
-        byte[] excpectedData = new byte[] {1, 2, 3};
-        String expectedTitle = "file.txt";
-        String expectedMimeType = "text/plain";
-
-        when(mContentResolver.getType(attachmentUri)).thenReturn(expectedMimeType);
-        when(mContentResolver.openInputStream(attachmentUri))
-                .thenReturn(new ByteArrayInputStream(excpectedData));
-
-        MatrixCursor cursor =
-                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
-        cursor.addRow(new Object[] {expectedTitle, 1L});
-        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
-                .thenReturn(cursor);
-
-        FuseboxAttachmentDetailsFetcher fetcher =
-                new FuseboxAttachmentDetailsFetcher(
-                        mContext,
-                        mContentResolver,
-                        attachmentUri,
-                        mCallback,
-                        FuseboxAttachmentButtonType.FILES);
-
-        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mCallback).onResult(mAttachmentCaptor.capture());
-        FuseboxAttachment attachment = mAttachmentCaptor.getValue();
-
-        assertNotNull(attachment);
-        assertEquals(FuseboxAttachmentType.ATTACHMENT_FILE, attachment.type);
-        assertEquals(expectedTitle, attachment.title);
-        assertEquals(expectedMimeType, attachment.mimeType);
-        assertArrayEquals(excpectedData, attachment.data);
-        assertEquals(FuseboxAttachmentButtonType.FILES, attachment.buttonType);
-    }
-
-    @Test
-    public void testFetchAttachmentDetails_forPdf() throws FileNotFoundException {
-        Uri attachmentUri = Uri.parse("content://media/external/1");
-        byte[] expectedData = new byte[] {1, 2, 3};
-        String expectedTitle = "document.pdf";
-        String expectedMimeType = "application/pdf";
-
-        when(mContentResolver.getType(attachmentUri)).thenReturn(expectedMimeType);
-        when(mContentResolver.openInputStream(attachmentUri))
-                .thenReturn(new ByteArrayInputStream(expectedData));
-
-        MatrixCursor cursor =
-                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
-        cursor.addRow(new Object[] {expectedTitle, 1L});
-        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
-                .thenReturn(cursor);
-
-        FuseboxAttachmentDetailsFetcher fetcher =
-                new FuseboxAttachmentDetailsFetcher(
-                        mContext,
-                        mContentResolver,
-                        attachmentUri,
-                        mCallback,
-                        FuseboxAttachmentButtonType.FILES);
-
-        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mCallback).onResult(mAttachmentCaptor.capture());
-        FuseboxAttachment attachment = mAttachmentCaptor.getValue();
-
-        assertNotNull(attachment);
-        assertEquals(FuseboxAttachmentType.ATTACHMENT_PDF, attachment.type);
-        assertEquals(expectedTitle, attachment.title);
-        assertEquals(expectedMimeType, attachment.mimeType);
-        assertArrayEquals(expectedData, attachment.data);
-        assertEquals(FuseboxAttachmentButtonType.FILES, attachment.buttonType);
-    }
-
-    @Test
-    public void testFetchAttachmentDetails_forImageNoThumbnail() throws Exception {
-        Uri attachmentUri = Uri.parse("content://media/external/1");
-        byte[] expectedData = new byte[] {1, 2, 3};
-        String expectedTitle = "photo.png";
-        String expectedMimeType = "image/png";
-
-        when(mContentResolver.getType(attachmentUri)).thenReturn(expectedMimeType);
-        when(mContentResolver.openInputStream(attachmentUri))
-                .thenReturn(new ByteArrayInputStream(expectedData));
-
-        MatrixCursor cursor =
-                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
-        cursor.addRow(new Object[] {expectedTitle, 1L});
-        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
-                .thenReturn(cursor);
-
-        when(mContentResolver.loadThumbnail(any(), any(), any())).thenThrow(new IOException());
-
-        FuseboxAttachmentDetailsFetcher fetcher =
-                new FuseboxAttachmentDetailsFetcher(
-                        mContext,
-                        mContentResolver,
-                        attachmentUri,
-                        mCallback,
-                        FuseboxAttachmentButtonType.GALLERY);
-
-        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mCallback).onResult(mAttachmentCaptor.capture());
-        FuseboxAttachment attachment = mAttachmentCaptor.getValue();
-
-        assertNotNull(attachment);
-        assertEquals(FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL, attachment.type);
-        assertEquals(expectedTitle, attachment.title);
-        assertEquals(expectedMimeType, attachment.mimeType);
-        assertArrayEquals(expectedData, attachment.data);
-        assertEquals(FuseboxAttachmentButtonType.GALLERY, attachment.buttonType);
-    }
-
-    @Test
-    public void testFetchAttachmentDetails_fileTooLarge() throws FileNotFoundException {
-        Uri attachmentUri = Uri.parse("content://media/external/1");
-        String expectedTitle = "large_file.txt";
-        String expectedMimeType = "text/plain";
-
-        when(mContentResolver.getType(attachmentUri)).thenReturn(expectedMimeType);
-
-        MatrixCursor cursor =
-                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
-        cursor.addRow(
-                new Object[] {
-                    expectedTitle, FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES + 1
-                });
-        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
-                .thenReturn(cursor);
-
-        FuseboxAttachmentDetailsFetcher fetcher =
-                new FuseboxAttachmentDetailsFetcher(
-                        mContext,
-                        mContentResolver,
-                        attachmentUri,
-                        mCallback,
-                        FuseboxAttachmentButtonType.FILES);
-
-        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mCallback).onResult(null);
-    }
-
-    @Test
-    public void testFetchAttachmentDetails_fileTooLargeOnMeteredNetwork()
-            throws FileNotFoundException {
-        setActiveNetworkMetered(true);
-
-        Uri attachmentUri = Uri.parse("content://media/external/1");
-        String attachmentTitle = "large_file.txt";
-        String attachmentMimeType = "text/plain";
-
-        when(mContentResolver.getType(attachmentUri)).thenReturn(attachmentMimeType);
-
-        MatrixCursor cursor =
-                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
-        cursor.addRow(
-                new Object[] {
-                    attachmentTitle,
-                    FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK + 1
-                });
-        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
-                .thenReturn(cursor);
-
-        FuseboxAttachmentDetailsFetcher fetcher =
-                new FuseboxAttachmentDetailsFetcher(
-                        mContext,
-                        mContentResolver,
-                        attachmentUri,
-                        mCallback,
-                        FuseboxAttachmentButtonType.FILES);
-
-        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mCallback).onResult(null);
-    }
-
-    @Test
-    public void testFetchAttachmentDetails_maxSizeAllowedOnUnmeteredNetwork()
-            throws FileNotFoundException {
-        setActiveNetworkMetered(false);
-
-        Uri attachmentUri = Uri.parse("content://media/external/1");
-        byte[] attachmentData = new byte[] {1, 2, 3};
-        String attachmentTitle = "large_file.txt";
-        String attachmentMimeType = "text/plain";
-
-        when(mContentResolver.getType(attachmentUri)).thenReturn(attachmentMimeType);
-        when(mContentResolver.openInputStream(attachmentUri))
-                .thenReturn(new ByteArrayInputStream(attachmentData));
-
-        MatrixCursor cursor =
-                new MatrixCursor(new String[] {OpenableColumns.DISPLAY_NAME, OpenableColumns.SIZE});
-        cursor.addRow(
-                new Object[] {
-                    attachmentTitle, FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES
-                });
-        when(mContentResolver.query(eq(attachmentUri), isNull(), isNull(), isNull(), isNull()))
-                .thenReturn(cursor);
-
-        FuseboxAttachmentDetailsFetcher fetcher =
-                new FuseboxAttachmentDetailsFetcher(
-                        mContext,
-                        mContentResolver,
-                        attachmentUri,
-                        mCallback,
-                        FuseboxAttachmentButtonType.FILES);
-
-        fetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        verify(mCallback).onResult(isNotNull());
+        assertEquals(expectedThumbnail, getThumbnailFromAttachment(attachment));
+        assertEquals(expectedType, attachment.type);
+        assertEquals(expectedButtonType, attachment.buttonType);
     }
 
     @Test
@@ -351,5 +173,135 @@ public class FuseboxAttachmentDetailsFetcherUnitTest {
                 .isAtLeast(
                         FuseboxAttachmentDetailsFetcher
                                 .MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_smallFileSizePasses() {
+        setupFetcherWithTxtFileAttachment(FILE_SIZE_SMALL);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(isNotNull());
+        verifyNoMoreInteractions(mCallback);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_fileTooLargeOnUnmeteredNetwork_fails() {
+        setIsNetworkMetered(false);
+        long fileSizeTooLarge = FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES + 1;
+        setupFetcherWithTxtFileAttachment(fileSizeTooLarge);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_fileTooLargeOnMeteredNetwork_fails() {
+        setIsNetworkMetered(true);
+        long fileSizeTooLarge =
+                FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES_ON_METERED_NETWORK + 1;
+        setupFetcherWithTxtFileAttachment(fileSizeTooLarge);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(null);
+        verifyNoMoreInteractions(mCallback);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_maxSizeAllowedOnUnmeteredNetwork() {
+        setIsNetworkMetered(false);
+        setupFetcherWithTxtFileAttachment(
+                FuseboxAttachmentDetailsFetcher.MAX_ATTACHMENT_SIZE_BYTES);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mCallback).onResult(isNotNull());
+        verifyNoMoreInteractions(mCallback);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_forImageWithThumbnail() {
+        String title = "photo.png";
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] data = SAMPLE_DATA;
+        Bitmap thumbnail = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, data, thumbnail, buttonType);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                data,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE,
+                buttonType);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_forTextFile() {
+        String title = "file.txt";
+        String mimeType = MimeTypeUtils.TEXT_PLAIN_MIME_TYPE;
+        byte[] data = SAMPLE_DATA;
+        Bitmap thumbnail = null;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, data, thumbnail, buttonType);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                data,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_FILE,
+                buttonType);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_forPdf() {
+        String title = "document.pdf";
+        String mimeType = MimeTypeUtils.PDF_MIME_TYPE;
+        byte[] data = SAMPLE_DATA;
+        Bitmap thumbnail = null;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.FILES;
+        setupFetcherWithAttachment(title, mimeType, data, thumbnail, buttonType);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title, mimeType, data, thumbnail, FuseboxAttachmentType.ATTACHMENT_PDF, buttonType);
+    }
+
+    @Test
+    public void testFetchAttachmentDetails_forImageNoThumbnail() {
+        String title = "photo.png";
+        String mimeType = MimeTypeUtils.IMAGE_PNG_MIME_TYPE;
+        byte[] data = SAMPLE_DATA;
+        Bitmap thumbnail = null;
+        @FuseboxAttachmentButtonType int buttonType = FuseboxAttachmentButtonType.GALLERY;
+        setupFetcherWithAttachment(title, mimeType, data, thumbnail, buttonType);
+
+        mFetcher.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verifyAttachmentResult(
+                title,
+                mimeType,
+                data,
+                thumbnail,
+                FuseboxAttachmentType.ATTACHMENT_IMAGE_NO_THUMBNAIL,
+                buttonType);
     }
 }
