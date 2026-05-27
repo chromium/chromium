@@ -1240,7 +1240,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2933624813161016821">Laminado em relevo</translation>
 <translation id="293796669683825859">Comentários</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
-<translation id="2938370569652058706"><ph name="ORIGIN" /> – Para mostrar o cursor, mude de app, recarregue a página ou volte</translation>
+<translation id="2938370569652058706"><ph name="ORIGIN" /> – Para mostrar o cursor, troque de app, recarregue a página ou volte</translation>
 <translation id="2940418897281183211">Imagem PNG</translation>
 <translation id="2941878205777356567">Envelope de 23 cm x 30 cm</translation>
 <translation id="2941952326391522266">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança é de <ph name="DOMAIN2" />. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
@@ -4300,7 +4300,7 @@ Mais detalhes:
 <translation id="7638605456503525968">Portas seriais</translation>
 <translation id="7646681339175747202">A senha que você usou foi encontrada em um vazamento de dados. O Gerenciador de senhas do Google recomenda que você mude essa senha imediatamente.</translation>
 <translation id="7647206758853451655">Qualidade de impressão</translation>
-<translation id="7648133459447652947">Para mostrar o cursor, mude de app, recarregue a página ou volte</translation>
+<translation id="7648133459447652947">Para mostrar o cursor, troque de app, recarregue a página ou volte</translation>
 <translation id="7648527891719919697">Este site vai continuar bloqueado porque a Proteção Avançada está ativada nas suas <ph name="BEGIN_ANDROID_SETTINGS_LINK" />configurações do Android<ph name="END_ANDROID_SETTINGS_LINK" />. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais sobre este aviso<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7648992873808071793">Armazenar arquivos neste dispositivo</translation>
 <translation id="7649070708921625228">Ajuda</translation>
