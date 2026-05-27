@@ -198,11 +198,11 @@ RTCEncodedVideoFrameMetadata* RTCEncodedVideoFrame::getMetadata(
     metadata->setFrameId(*webrtc_metadata->GetFrameId());
   }
 
-  Vector<int64_t> dependencies;
-  for (const auto& dependency : webrtc_metadata->GetFrameDependencies()) {
-    dependencies.push_back(dependency);
+  if (auto webrtc_deps = webrtc_metadata->GetDependencies()) {
+    Vector<int64_t> dependencies;
+    dependencies.append_range(*webrtc_deps);
+    metadata->setDependencies(std::move(dependencies));
   }
-  metadata->setDependencies(dependencies);
   metadata->setWidth(webrtc_metadata->GetWidth());
   metadata->setHeight(webrtc_metadata->GetHeight());
   metadata->setSpatialIndex(webrtc_metadata->GetSpatialIndex());

@@ -203,7 +203,9 @@ promise_test(async (test) => {
 }, 'video metadata: frameId');
 
 promise_test(async (test) => {
-    const data = await gatherMetadata(test, 'video');
+    const data = await gatherMetadata(test, 'video', [
+        'https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension',
+    ]);
 
     assert_array_equals(data.senderBeforeWrite.metadata.dependencies,
       data.senderAfterWrite.metadata.dependencies,
