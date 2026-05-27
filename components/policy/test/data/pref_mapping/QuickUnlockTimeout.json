@@ -3,17 +3,14 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "QuickUnlockTimeout": 0
-        },
-        "prefs": {
-          "quick_unlock_timeout": {
-            "value": 0
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "quick_unlock_timeout",
+      "default_value": 2,
+      "values_to_test": [
+        0,
+        1,
+        2
+      ]
+    }
   }
 ]

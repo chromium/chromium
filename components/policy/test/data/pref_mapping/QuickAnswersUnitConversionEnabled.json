@@ -3,35 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "settings.quick_answers.unit_conversion.enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "QuickAnswersUnitConversionEnabled": false
-        },
-        "prefs": {
-          "settings.quick_answers.unit_conversion.enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "QuickAnswersUnitConversionEnabled": true
-        },
-        "prefs": {
-          "settings.quick_answers.unit_conversion.enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.quick_answers.unit_conversion.enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -3,35 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "quickoffice.force_file_download_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "QuickOfficeForceFileDownloadEnabled": true
-        },
-        "prefs": {
-          "quickoffice.force_file_download_enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "QuickOfficeForceFileDownloadEnabled": false
-        },
-        "prefs": {
-          "quickoffice.force_file_download_enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "quickoffice.force_file_download_enabled",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]
