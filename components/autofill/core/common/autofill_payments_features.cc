@@ -6,6 +6,11 @@
 
 namespace autofill::features {
 
+// Enables the fix to allow reentry in PaymentsNetworkInterface::IssueRequest()
+// from PaymentsRequest::RespondToDelegate().
+BASE_FEATURE(kAllowReentryFromRespondToDelegate,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, the BNPL flow acts as if the user has not yet seen the AI
 // terms. This allows the AI terms to be shown as bold font repeatedly for
 // testing purposes, regardless of the actual stored user preference.
