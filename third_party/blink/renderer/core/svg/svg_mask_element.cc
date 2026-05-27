@@ -31,7 +31,6 @@ namespace blink {
 
 SVGMaskElement::SVGMaskElement(Document& document)
     : SVGElement(svg_names::kMaskTag, document),
-      SVGTests(this),
       // Spec: If the x/y attribute is not specified, the effect is as if a
       // value of "-10%" were specified.
       x_(MakeGarbageCollected<SVGAnimatedLength>(
@@ -78,8 +77,8 @@ void SVGMaskElement::Trace(Visitor* visitor) const {
   visitor->Trace(height_);
   visitor->Trace(mask_units_);
   visitor->Trace(mask_content_units_);
+  visitor->Trace(tests_);
   SVGElement::Trace(visitor);
-  SVGTests::Trace(visitor);
 }
 
 void SVGMaskElement::SvgAttributeChanged(
@@ -142,11 +141,9 @@ SVGAnimatedPropertyBase* SVGMaskElement::PropertyFromAttribute(
     return mask_units_.Get();
   } else if (attribute_name == svg_names::kMaskContentUnitsAttr) {
     return mask_content_units_.Get();
+  } else if (SVGTests::IsKnownAttribute(attribute_name)) {
+    return EnsureSvgTests().PropertyFromAttribute(this, attribute_name);
   } else {
-    SVGAnimatedPropertyBase* ret;
-    if (ret = SVGTests::PropertyFromAttribute(attribute_name); ret) {
-      return ret;
-    }
     return SVGElement::PropertyFromAttribute(attribute_name);
   }
 }
@@ -156,7 +153,9 @@ void SVGMaskElement::SynchronizeAllSVGAttributes() const {
       x_.Get(),      y_.Get(),          width_.Get(),
       height_.Get(), mask_units_.Get(), mask_content_units_.Get()};
   SynchronizeListOfSVGAttributes(attrs);
-  SVGTests::SynchronizeAllSVGAttributes();
+  if (tests_) {
+    tests_->SynchronizeAllSVGAttributes();
+  }
   SVGElement::SynchronizeAllSVGAttributes();
 }
 
@@ -166,6 +165,21 @@ void SVGMaskElement::CollectExtraStyleForPresentationAttribute(
       {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
   AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
+}
+
+SVGStringListTearOff* SVGMaskElement::requiredExtensions() {
+  return EnsureSvgTests().requiredExtensions(this);
+}
+
+SVGStringListTearOff* SVGMaskElement::systemLanguage() {
+  return EnsureSvgTests().systemLanguage(this);
+}
+
+SVGTests& SVGMaskElement::EnsureSvgTests() const {
+  if (!tests_) {
+    tests_ = MakeGarbageCollected<SVGTests>();
+  }
+  return *tests_;
 }
 
 }  // namespace blink

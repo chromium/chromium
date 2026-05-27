@@ -70,14 +70,13 @@ bool HasValidBoundingBoxForContainer(const LayoutObject* object) {
 SVGGraphicsElement::SVGGraphicsElement(const QualifiedName& tag_name,
                                        Document& document,
                                        ConstructionType construction_type)
-    : SVGTransformableElement(tag_name, document, construction_type),
-      SVGTests(this) {}
+    : SVGTransformableElement(tag_name, document, construction_type) {}
 
 SVGGraphicsElement::~SVGGraphicsElement() = default;
 
 void SVGGraphicsElement::Trace(Visitor* visitor) const {
+  visitor->Trace(tests_);
   SVGTransformableElement::Trace(visitor);
-  SVGTests::Trace(visitor);
 }
 
 // TODO : This function performs an upward traversal of the layout tree to check
@@ -232,17 +231,32 @@ SVGRectTearOff* SVGGraphicsElement::getBBoxFromJavascript() {
 
 SVGAnimatedPropertyBase* SVGGraphicsElement::PropertyFromAttribute(
     const QualifiedName& attribute_name) const {
-  SVGAnimatedPropertyBase* ret =
-      SVGTests::PropertyFromAttribute(attribute_name);
-  if (ret) {
-    return ret;
+  if (SVGTests::IsKnownAttribute(attribute_name)) {
+    return EnsureSvgTests().PropertyFromAttribute(this, attribute_name);
   }
   return SVGTransformableElement::PropertyFromAttribute(attribute_name);
 }
 
 void SVGGraphicsElement::SynchronizeAllSVGAttributes() const {
-  SVGTests::SynchronizeAllSVGAttributes();
+  if (tests_) {
+    tests_->SynchronizeAllSVGAttributes();
+  }
   SVGTransformableElement::SynchronizeAllSVGAttributes();
+}
+
+SVGStringListTearOff* SVGGraphicsElement::requiredExtensions() {
+  return EnsureSvgTests().requiredExtensions(this);
+}
+
+SVGStringListTearOff* SVGGraphicsElement::systemLanguage() {
+  return EnsureSvgTests().systemLanguage(this);
+}
+
+SVGTests& SVGGraphicsElement::EnsureSvgTests() const {
+  if (!tests_) {
+    tests_ = MakeGarbageCollected<SVGTests>();
+  }
+  return *tests_;
 }
 
 }  // namespace blink

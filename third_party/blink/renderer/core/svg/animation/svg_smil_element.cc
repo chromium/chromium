@@ -293,7 +293,6 @@ void SVGSMILElement::Condition::DisconnectEventBase(
 
 SVGSMILElement::SVGSMILElement(const QualifiedName& tag_name, Document& doc)
     : SVGElement(tag_name, doc),
-      SVGTests(this),
       target_element_(nullptr),
       conditions_connected_(false),
       has_end_event_conditions_(false),
@@ -767,11 +766,25 @@ void SVGSMILElement::CollectStyleForPresentationAttribute(
 
 SVGAnimatedPropertyBase* SVGSMILElement::PropertyFromAttribute(
     const QualifiedName& attribute_name) const {
-  if (SVGAnimatedPropertyBase* property =
-          SVGTests::PropertyFromAttribute(attribute_name)) {
-    return property;
+  if (SVGTests::IsKnownAttribute(attribute_name)) {
+    return EnsureSvgTests().PropertyFromAttribute(this, attribute_name);
   }
   return SVGElement::PropertyFromAttribute(attribute_name);
+}
+
+SVGStringListTearOff* SVGSMILElement::requiredExtensions() {
+  return EnsureSvgTests().requiredExtensions(this);
+}
+
+SVGStringListTearOff* SVGSMILElement::systemLanguage() {
+  return EnsureSvgTests().systemLanguage(this);
+}
+
+SVGTests& SVGSMILElement::EnsureSvgTests() const {
+  if (!tests_) {
+    tests_ = MakeGarbageCollected<SVGTests>();
+  }
+  return *tests_;
 }
 
 void SVGSMILElement::ConnectConditions() {
@@ -1592,8 +1605,8 @@ void SVGSMILElement::Trace(Visitor* visitor) const {
   visitor->Trace(time_container_);
   visitor->Trace(conditions_);
   visitor->Trace(sync_base_dependents_);
+  visitor->Trace(tests_);
   SVGElement::Trace(visitor);
-  SVGTests::Trace(visitor);
 }
 
 }  // namespace blink

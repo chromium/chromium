@@ -69,7 +69,7 @@ class CORE_EXPORT SMILInstanceTimeList {
 };
 
 // This class implements SMIL interval timing model as needed for SVG animation.
-class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
+class CORE_EXPORT SVGSMILElement : public SVGElement {
  public:
   SVGSMILElement(const QualifiedName&, Document&);
   ~SVGSMILElement() override;
@@ -140,6 +140,10 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
 
   void Trace(Visitor*) const override;
 
+  // SVGTests mixin forwarders.
+  SVGStringListTearOff* requiredExtensions();
+  SVGStringListTearOff* systemLanguage();
+
  protected:
   enum BeginOrEnd { kBegin, kEnd };
 
@@ -156,6 +160,8 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
     unsigned repeat;
   };
   const ProgressState& GetProgressState() const { return last_progress_; }
+
+  bool SvgTestsIsValid() const { return !tests_ || tests_->IsValid(); }
 
  private:
   bool IsPresentationAttribute(const QualifiedName&) const override;
@@ -255,6 +261,8 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   void NotifyDependentsOnNewInterval(const SMILInterval& interval);
   void NotifyDependentsOnRepeat(unsigned repeat_nr, SMILTime repeat_time);
 
+  SVGTests& EnsureSvgTests() const;
+
   struct NotifyDependentsInfo;
   void NotifyDependents(const NotifyDependentsInfo& info);
   void CreateInstanceTimesFromSyncBase(SVGSMILElement* timed_element,
@@ -317,6 +325,8 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
   bool instance_lists_have_changed_;
   bool interval_needs_revalidation_;
   bool is_notifying_dependents_;
+
+  mutable Member<SVGTests> tests_;
 
   friend class ConditionEventListener;
 };

@@ -30,7 +30,7 @@ namespace blink {
 
 class SVGAnimatedLength;
 
-class SVGMaskElement final : public SVGElement, public SVGTests {
+class SVGMaskElement final : public SVGElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -50,10 +50,14 @@ class SVGMaskElement final : public SVGElement, public SVGTests {
     return mask_content_units_.Get();
   }
 
+  // SVGTests mixin forwarders.
+  SVGStringListTearOff* requiredExtensions();
+  SVGStringListTearOff* systemLanguage();
+
   void Trace(Visitor*) const override;
 
  private:
-  bool IsValid() const override { return SVGTests::IsValid(); }
+  bool IsValid() const override { return !tests_ || tests_->IsValid(); }
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   void ChildrenChanged(const ChildrenChange&) override;
@@ -68,12 +72,15 @@ class SVGMaskElement final : public SVGElement, public SVGTests {
   void CollectExtraStyleForPresentationAttribute(
       HeapVector<CSSPropertyValue, 8>& style) override;
 
+  SVGTests& EnsureSvgTests() const;
+
   Member<SVGAnimatedLength> x_;
   Member<SVGAnimatedLength> y_;
   Member<SVGAnimatedLength> width_;
   Member<SVGAnimatedLength> height_;
   Member<SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>> mask_units_;
   Member<SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>> mask_content_units_;
+  mutable Member<SVGTests> tests_;
 };
 
 }  // namespace blink

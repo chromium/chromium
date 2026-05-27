@@ -589,7 +589,7 @@ float SVGAnimationElement::CurrentValuesForPathAnimation(
 }
 
 bool SVGAnimationElement::IsValid() const {
-  if (!SVGTests::IsValid()) {
+  if (!SvgTestsIsValid()) {
     return false;
   }
   // Also check ancestors. If any ancestor SVG element fails conditional

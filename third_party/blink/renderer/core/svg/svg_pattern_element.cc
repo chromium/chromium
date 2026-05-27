@@ -38,7 +38,6 @@ namespace blink {
 SVGPatternElement::SVGPatternElement(Document& document)
     : SVGElement(svg_names::kPatternTag, document),
       SVGURIReference(this),
-      SVGTests(this),
       SVGFitToViewBox(this),
       x_(MakeGarbageCollected<SVGAnimatedLength>(
           this,
@@ -84,9 +83,9 @@ void SVGPatternElement::Trace(Visitor* visitor) const {
   visitor->Trace(pattern_units_);
   visitor->Trace(pattern_content_units_);
   visitor->Trace(target_id_observer_);
+  visitor->Trace(tests_);
   SVGElement::Trace(visitor);
   SVGURIReference::Trace(visitor);
-  SVGTests::Trace(visitor);
   SVGFitToViewBox::Trace(visitor);
 }
 
@@ -295,15 +294,14 @@ SVGAnimatedPropertyBase* SVGPatternElement::PropertyFromAttribute(
     return pattern_units_.Get();
   } else if (attribute_name == svg_names::kPatternContentUnitsAttr) {
     return pattern_content_units_.Get();
+  } else if (SVGTests::IsKnownAttribute(attribute_name)) {
+    return EnsureSvgTests().PropertyFromAttribute(this, attribute_name);
   } else {
     SVGAnimatedPropertyBase* ret;
     if (ret = SVGURIReference::PropertyFromAttribute(attribute_name); ret) {
       return ret;
     }
     if (ret = SVGFitToViewBox::PropertyFromAttribute(attribute_name); ret) {
-      return ret;
-    }
-    if (ret = SVGTests::PropertyFromAttribute(attribute_name); ret) {
       return ret;
     }
     return SVGElement::PropertyFromAttribute(attribute_name);
@@ -320,7 +318,9 @@ void SVGPatternElement::SynchronizeAllSVGAttributes() const {
                                    pattern_content_units_.Get()};
   SynchronizeListOfSVGAttributes(attrs);
   SVGURIReference::SynchronizeAllSVGAttributes();
-  SVGTests::SynchronizeAllSVGAttributes();
+  if (tests_) {
+    tests_->SynchronizeAllSVGAttributes();
+  }
   SVGFitToViewBox::SynchronizeAllSVGAttributes();
   SVGElement::SynchronizeAllSVGAttributes();
 }
@@ -329,6 +329,21 @@ void SVGPatternElement::CollectExtraStyleForPresentationAttribute(
     HeapVector<CSSPropertyValue, 8>& style) {
   AddAnimatedPropertyToPresentationAttributeStyle(*pattern_transform_, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
+}
+
+SVGStringListTearOff* SVGPatternElement::requiredExtensions() {
+  return EnsureSvgTests().requiredExtensions(this);
+}
+
+SVGStringListTearOff* SVGPatternElement::systemLanguage() {
+  return EnsureSvgTests().systemLanguage(this);
+}
+
+SVGTests& SVGPatternElement::EnsureSvgTests() const {
+  if (!tests_) {
+    tests_ = MakeGarbageCollected<SVGTests>();
+  }
+  return *tests_;
 }
 
 }  // namespace blink

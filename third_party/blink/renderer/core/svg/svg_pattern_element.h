@@ -37,7 +37,6 @@ class SVGAnimatedTransformList;
 
 class SVGPatternElement final : public SVGElement,
                                 public SVGURIReference,
-                                public SVGTests,
                                 public SVGFitToViewBox {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -73,6 +72,11 @@ class SVGPatternElement final : public SVGElement,
       const {
     return pattern_content_units_.Get();
   }
+
+  // SVGTests mixin forwarders.
+  SVGStringListTearOff* requiredExtensions();
+  SVGStringListTearOff* systemLanguage();
+
   void InvalidatePattern();
   void InvalidateDependentPatterns();
 
@@ -82,7 +86,7 @@ class SVGPatternElement final : public SVGElement,
   void Trace(Visitor*) const override;
 
  private:
-  bool IsValid() const override { return SVGTests::IsValid(); }
+  bool IsValid() const override { return !tests_ || tests_->IsValid(); }
 
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;
@@ -102,6 +106,8 @@ class SVGPatternElement final : public SVGElement,
   void CollectExtraStyleForPresentationAttribute(
       HeapVector<CSSPropertyValue, 8>& style) override;
 
+  SVGTests& EnsureSvgTests() const;
+
   Member<SVGAnimatedLength> x_;
   Member<SVGAnimatedLength> y_;
   Member<SVGAnimatedLength> width_;
@@ -111,6 +117,7 @@ class SVGPatternElement final : public SVGElement,
   Member<SVGAnimatedEnumeration<SVGUnitTypes::SVGUnitType>>
       pattern_content_units_;
   Member<IdTargetObserver> target_id_observer_;
+  mutable Member<SVGTests> tests_;
 };
 
 }  // namespace blink

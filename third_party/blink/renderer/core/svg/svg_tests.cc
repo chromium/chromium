@@ -31,14 +31,23 @@
 
 namespace blink {
 
-SVGTests::SVGTests(SVGElement* context_element)
-    : required_extensions_(
-          SVGStaticStringList::Create<' '>(context_element,
-                                           svg_names::kRequiredExtensionsAttr)),
-      system_language_(
-          SVGStaticStringList::Create<','>(context_element,
-                                           svg_names::kSystemLanguageAttr)) {
-  DCHECK(context_element);
+SVGTests::SVGTests() = default;
+
+SVGStaticStringList& SVGTests::EnsureRequiredExtensions(
+    const SVGElement* owner) {
+  if (!required_extensions_) {
+    required_extensions_ = SVGStaticStringList::Create<' '>(
+        const_cast<SVGElement*>(owner), svg_names::kRequiredExtensionsAttr);
+  }
+  return *required_extensions_;
+}
+
+SVGStaticStringList& SVGTests::EnsureSystemLanguage(const SVGElement* owner) {
+  if (!system_language_) {
+    system_language_ = SVGStaticStringList::Create<','>(
+        const_cast<SVGElement*>(owner), svg_names::kSystemLanguageAttr);
+  }
+  return *system_language_;
 }
 
 void SVGTests::Trace(Visitor* visitor) const {
@@ -46,29 +55,35 @@ void SVGTests::Trace(Visitor* visitor) const {
   visitor->Trace(system_language_);
 }
 
-SVGStringListTearOff* SVGTests::requiredExtensions() {
-  return required_extensions_->TearOff();
+SVGStringListTearOff* SVGTests::requiredExtensions(const SVGElement* owner) {
+  return EnsureRequiredExtensions(owner).TearOff();
 }
 
-SVGStringListTearOff* SVGTests::systemLanguage() {
-  return system_language_->TearOff();
+SVGStringListTearOff* SVGTests::systemLanguage(const SVGElement* owner) {
+  return EnsureSystemLanguage(owner).TearOff();
 }
 
 SVGAnimatedPropertyBase* SVGTests::PropertyFromAttribute(
-    const QualifiedName& attribute_name) const {
+    const SVGElement* owner,
+    const QualifiedName& attribute_name) {
   if (attribute_name == svg_names::kRequiredExtensionsAttr) {
-    return required_extensions_.Get();
+    return &EnsureRequiredExtensions(owner);
   } else if (attribute_name == svg_names::kSystemLanguageAttr) {
-    return system_language_.Get();
+    return &EnsureSystemLanguage(owner);
   } else {
     return nullptr;
   }
 }
 
 void SVGTests::SynchronizeAllSVGAttributes() const {
-  SVGAnimatedPropertyBase* attrs[]{required_extensions_.Get(),
-                                   system_language_.Get()};
-  SVGElement::SynchronizeListOfSVGAttributes(attrs);
+  if (required_extensions_) {
+    SVGAnimatedPropertyBase* attrs[]{required_extensions_.Get()};
+    SVGElement::SynchronizeListOfSVGAttributes(attrs);
+  }
+  if (system_language_) {
+    SVGAnimatedPropertyBase* attrs[]{system_language_.Get()};
+    SVGElement::SynchronizeListOfSVGAttributes(attrs);
+  }
 }
 
 static bool IsLangTagPrefix(const String& lang_tag,
@@ -90,7 +105,7 @@ static bool MatchLanguageList(const String& lang_tag,
 }
 
 bool SVGTests::IsValid() const {
-  if (system_language_->IsSpecified()) {
+  if (system_language_ && system_language_->IsSpecified()) {
     bool match_found = false;
     String accept_languages = system_language_->ContextElement()
                                   ->GetDocument()
@@ -109,7 +124,7 @@ bool SVGTests::IsValid() const {
       return false;
   }
 
-  if (required_extensions_->IsSpecified()) {
+  if (required_extensions_ && required_extensions_->IsSpecified()) {
     const Vector<String>& extensions = required_extensions_->Value()->Values();
     // 'If a null string or empty string value is given to attribute
     // 'requiredExtensions', the attribute evaluates to "false".'
