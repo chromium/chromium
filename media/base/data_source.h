@@ -39,6 +39,7 @@ class MEDIA_EXPORT DataSource : public DataSourceInfo {
  public:
   using ReadCB = base::OnceCallback<void(int)>;
   using DataSourceCb = base::OnceCallback<void(std::unique_ptr<DataSource>)>;
+  using EventCb = base::RepeatingCallback<void(const DataSource*)>;
 
   enum { kReadError = -1, kAborted = -2 };
 

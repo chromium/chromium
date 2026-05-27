@@ -485,8 +485,8 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Called after synchronous or asynchronous MemoryDataSource initialization.
   void MemoryDataSourceInitialized(bool success, size_t data_size);
 
-  // Called if the |MultiBufferDataSource| is redirected.
-  void OnDataSourceRedirected();
+  // Called if the data source becomes CORS tainted.
+  void OnDataSourceTainted(const media::DataSource* data_source);
 
   // Called when the data source is downloading or paused.
   void NotifyDownloading(bool is_downloading);
@@ -831,6 +831,11 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // Cors and Caching flags set during `Load` and used while creating demuxers.
   CorsMode cors_mode_ = kCorsModeUnspecified;
   bool is_cache_disabled_ = false;
+
+  // Flag for shortcutting the WouldTaintOrigin check. When this is true, there
+  // is no reason to ask the data source vis-a-vis the demuxer manager. Once
+  // this flag is set, it may never be unset.
+  bool is_origin_tainted_ = false;
 
   raw_ptr<MediaPlayerClient> client_ = nullptr;
   raw_ptr<WebMediaPlayerEncryptedMediaClient> encrypted_client_ = nullptr;
