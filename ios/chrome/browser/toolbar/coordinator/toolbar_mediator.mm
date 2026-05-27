@@ -161,10 +161,7 @@
   if (!webState) {
     return;
   }
-  [self.consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
-  [self.consumer
-      setCanGoForward:self.navigationBrowserAgent->CanGoForward(webState)
-             animated:animated];
+  [self updateConsumerNavigationButtons:webState animated:animated];
 
   const GURL visibleURL = webState->GetVisibleURL();
   [self.consumer setShareEnabled:!visibleURL.is_empty()];
@@ -335,7 +332,7 @@
 }
 
 - (void)webStateDidStartLoading:(web::WebState*)webState {
-  [self updateConsumerWithWebState:webState animated:YES];
+  [self updateConsumerWithWebState:webState animated:NO];
 }
 
 - (void)webStateDidStopLoading:(web::WebState*)webState {
@@ -494,6 +491,35 @@
         .keyboardVisible;
   }
   return NO;
+}
+
+// Updates the consumer navigation arrows (forward, back) states for the given
+// `webState`.
+- (void)updateConsumerNavigationButtons:(web::WebState*)webState
+                               animated:(BOOL)animated {
+  if (!webState) {
+    return;
+  }
+  const GURL lastCommittedURL = webState->GetLastCommittedURL();
+  BOOL isLastCommittedUrlNtp =
+      IsUrlNtp(lastCommittedURL) || lastCommittedURL.is_empty();
+  BOOL isToolbarTransitioningToVisible =
+      isLastCommittedUrlNtp && !IsUrlNtp(webState->GetVisibleURL());
+
+  BOOL canGoForward = self.navigationBrowserAgent->CanGoForward(webState);
+  if (isToolbarTransitioningToVisible) {
+    // Navigation buttons will be preloaded before the toolbar appears.
+    animated = NO;
+    if (webState->GetNavigationManager()->GetPendingItemIndex() == -1) {
+      // The Web State is mid-navigation from the NTP to a webpage. Prevents the
+      // forward button from appearing during the navigation if it will not be
+      // present after the navigation.
+      canGoForward = NO;
+    }
+  }
+
+  [self.consumer setCanGoBack:self.navigationBrowserAgent->CanGoBack(webState)];
+  [self.consumer setCanGoForward:canGoForward animated:animated];
 }
 
 // Updates the consumer tab state.
