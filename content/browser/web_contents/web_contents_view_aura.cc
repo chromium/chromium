@@ -1267,6 +1267,23 @@ void WebContentsViewAura::StartDragging(
   DragOperation result_op;
   {
     gfx::NativeView content_native_view = GetContentNativeView();
+    // For a touch-initiated drag the renderer-supplied `event_info.location`
+    // is untrusted: on Windows it would reach `::SendInput` via
+    // DesktopWindowTreeHostWin::StartTouchDrag and could redirect the
+    // synthesized click to an overlapping HWND (e.g. a permission bubble).
+    // Require an in-flight touch and substitute the browser-observed last
+    // touch point known to aura::Env.
+    gfx::Point trusted_location = event_info.location;
+    if (event_info.source == ui::mojom::DragEventSource::kTouch) {
+      aura::Env* env = aura::Env::GetInstance();
+      if (!env->is_touch_down()) {
+        web_contents_->SystemDragEnded(source_rwh);
+        return;
+      }
+      trusted_location =
+          env->GetLastPointerPoint(event_info.source, content_native_view,
+                                   /*fallback=*/event_info.location);
+    }
     // Make sure event is within the web contents, and the web contents are
     // visible.
     if (
@@ -1274,8 +1291,7 @@ void WebContentsViewAura::StartDragging(
         // TODO(https://crbug.com/454552204): Remove #if when either ChromeOS
         // fixes split screen mode web ui tab strip drag, or web ui tab strip is
         // fully deprecated.
-        !content_native_view->GetBoundsInScreen().Contains(
-            event_info.location) ||
+        !content_native_view->GetBoundsInScreen().Contains(trusted_location) ||
 #endif  // !BUILDFLAG(IS_CHROMEOS)
         !content_native_view->IsVisible()) {
       web_contents_->SystemDragEnded(source_rwh);
@@ -1285,7 +1301,7 @@ void WebContentsViewAura::StartDragging(
     result_op =
         aura::client::GetDragDropClient(root_window)
             ->StartDragAndDrop(std::move(data), root_window,
-                               content_native_view, event_info.location,
+                               content_native_view, trusted_location,
                                ConvertFromDragOperationsMask(operations),
                                event_info.source);
   }

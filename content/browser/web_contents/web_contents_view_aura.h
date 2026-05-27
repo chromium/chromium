@@ -169,6 +169,8 @@ class CONTENT_EXPORT WebContentsViewAura
                            RejectDragFromHiddenWebContents);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, RejectDragFromOutsideView);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           ClampTouchLocationToBrowserObservedPoint);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            UrlInDropDataReturnsUrlInOSExchangeDataGetString);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
                            IgnoreInputs_OngoingDropGetsCleared);

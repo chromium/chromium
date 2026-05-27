@@ -23,6 +23,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/env.h"
 #include "ui/aura/test/test_windows.h"
 #include "ui/aura/test/window_test_api.h"
 #include "ui/aura/window.h"
@@ -96,6 +97,8 @@ class TestDragDropClient : public aura::client::DragDropClient {
                                  ui::mojom::DragEventSource source) override {
     drag_in_progress_ = true;
     drag_drop_data_ = std::move(data);
+    last_screen_location_ = screen_location;
+    last_source_ = source;
     return DragOperation::kCopy;
   }
 #if BUILDFLAG(IS_LINUX)
@@ -109,10 +112,18 @@ class TestDragDropClient : public aura::client::DragDropClient {
   }
 
   ui::OSExchangeData* GetDragDropData() { return drag_drop_data_.get(); }
+  const gfx::Point& last_screen_location() const {
+    return last_screen_location_;
+  }
+  std::optional<ui::mojom::DragEventSource> last_source() const {
+    return last_source_;
+  }
 
  private:
   bool drag_in_progress_ = false;
   std::unique_ptr<ui::OSExchangeData> drag_drop_data_;
+  gfx::Point last_screen_location_;
+  std::optional<ui::mojom::DragEventSource> last_source_;
 };
 
 }  // namespace
@@ -920,6 +931,46 @@ TEST_F(WebContentsViewAuraTest, RejectDragFromOutsideView) {
 #else
   EXPECT_FALSE(exchange_data);
 #endif  //  BUILDFLAG(IS_CHROMEOS)
+}
+
+// For a touch-initiated drag, the renderer-supplied screen location must
+// not flow through to DragDropClient::StartDragAndDrop. Instead the trusted
+// browser-observed last touch location (aura::Env) must be used.
+TEST_F(WebContentsViewAuraTest, ClampTouchLocationToBrowserObservedPoint) {
+  NavigateAndCommit(GURL("https://example.com/"));
+
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  WebContentsViewAura* view = GetView();
+  view->drag_in_progress_ = true;
+
+  aura::Window* const content = view->GetContentNativeView();
+  const gfx::Rect bounds = content->GetBoundsInScreen();
+  const gfx::Point trusted(bounds.x() + 3, bounds.y() + 4);
+  const gfx::Point spoofed(bounds.right() - 2, bounds.bottom() - 2);
+  ASSERT_NE(trusted, spoofed);
+  ASSERT_TRUE(bounds.Contains(trusted));
+  ASSERT_TRUE(bounds.Contains(spoofed));
+
+  aura::Env* const env = aura::Env::GetInstance();
+  env->SetTouchDown(true);
+  env->SetLastTouchLocation(content, trusted);
+
+  DropData drop_data;
+  view->StartDragging(*main_rfh(), drop_data,
+                      blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(), gfx::Rect(),
+                      blink::mojom::DragEventSourceInfo(
+                          spoofed, ui::mojom::DragEventSource::kTouch));
+
+  EXPECT_TRUE(drag_drop_client.GetDragDropData());
+  EXPECT_EQ(ui::mojom::DragEventSource::kTouch, drag_drop_client.last_source());
+  EXPECT_EQ(trusted, drag_drop_client.last_screen_location())
+      << "Renderer-supplied screen location must be clamped to the "
+         "browser-observed last touch point.";
+
+  env->SetTouchDown(false);
 }
 
 // Test that a drag from an event located outside the source view doesn't start.
