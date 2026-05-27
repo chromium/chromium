@@ -2458,6 +2458,13 @@ select optgroup optgroup {
     menuitem:disabled {
       color: color-mix(currentColor 50%, transparent);
     }
+
+    a:any-link, img[usemap] {
+      /* The menubar/menulist/menuitem elements are for application menus, not
+       * navigation menus.  Hide links to strongly discourage misuse as
+       * navigation menus. */
+      display: none;
+    }
   }
 }
 
