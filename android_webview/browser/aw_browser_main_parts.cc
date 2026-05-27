@@ -30,6 +30,7 @@
 #include "base/android/memory_pressure_listener_android.h"
 #include "base/android/path_utils.h"
 #include "base/base_paths_android.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -396,7 +397,7 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
   //    dominate, but we want to filter them out nonetheless because it's harder
   //    to set up experiment for them.)
   std::string version_code = base::android::apk_info::package_version_code();
-  size_t ram_mb = base::SysInfo::AmountOfPhysicalMemory().InMiB();
+  size_t ram_mb = base::SysInfo::AmountOfTotalPhysicalMemory().InMiB();
   auto cpu_abi_bitness_support =
       metrics::AndroidMetricsHelper::GetInstance()->cpu_abi_bitness_support();
   bool is_device_of_interest =
