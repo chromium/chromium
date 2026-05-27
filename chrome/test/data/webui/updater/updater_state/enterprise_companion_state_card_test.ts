@@ -4,9 +4,8 @@
 
 import 'chrome://updater/updater_state/enterprise_companion_state_card.js';
 
-import {BrowserProxyImpl} from 'chrome://updater/browser_proxy.js';
 import type {EnterpriseCompanionStateCardElement} from 'chrome://updater/updater_state/enterprise_companion_state_card.js';
-import {PageHandlerRemote, ShowDirectoryTarget} from 'chrome://updater/updater_ui.mojom-webui.js';
+import {browserProxyFactory, PageHandlerRemote, ShowDirectoryTarget} from 'chrome://updater/updater_ui.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -38,7 +37,8 @@ suite('EnterpriseCompanionStateCardElement', () => {
 
   test('opens installation directory when clicked', async () => {
     const handler = TestMock.fromClass(PageHandlerRemote);
-    BrowserProxyImpl.getInstance().handler = handler;
+    const {instance} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
 
     item.version = '1.0.0.0';
     item.installPath = '/home/user/companion';

@@ -20,7 +20,6 @@ build_webui("build") {
     "app.ts",
     "app_list/app_list.html.ts",
     "app_list/app_list.ts",
-    "browser_proxy.ts",
     "enterprise_policy_table/enterprise_policy_table.html.ts",
     "enterprise_policy_table/enterprise_policy_table.ts",
     "enterprise_policy_table/enterprise_policy_table_section.html.ts",

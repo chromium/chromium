@@ -5,11 +5,10 @@
 import 'chrome://updater/updater_state/updater_state_card.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {BrowserProxyImpl} from 'chrome://updater/browser_proxy.js';
 import {SCOPES} from 'chrome://updater/event_history.js';
 import {formatDateLong} from 'chrome://updater/tools.js';
 import type {UpdaterStateCardElement} from 'chrome://updater/updater_state/updater_state_card.js';
-import {PageHandlerRemote, ShowDirectoryTarget} from 'chrome://updater/updater_ui.mojom-webui.js';
+import {browserProxyFactory, PageHandlerRemote, ShowDirectoryTarget} from 'chrome://updater/updater_ui.mojom-webui.js';
 import {assertArrayEquals, assertEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -85,7 +84,8 @@ suite('UpdaterStateCardElement', () => {
 
     setup(() => {
       handler = TestMock.fromClass(PageHandlerRemote);
-      BrowserProxyImpl.getInstance().handler = handler;
+      const {instance} = browserProxyFactory.createForTest(handler);
+      browserProxyFactory.setInstance(instance);
     });
 
     SCOPES.forEach(scope => {

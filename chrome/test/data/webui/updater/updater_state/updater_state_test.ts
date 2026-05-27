@@ -6,8 +6,8 @@ import 'chrome://updater/updater_state/updater_state.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {BrowserProxyImpl} from 'chrome://updater/browser_proxy.js';
 import type {UpdaterStateElement} from 'chrome://updater/updater_state/updater_state.js';
+import {browserProxyFactory} from 'chrome://updater/updater_ui.mojom-webui.js';
 import type {EnterpriseCompanionState, UpdaterState} from 'chrome://updater/updater_ui.mojom-webui.js';
 import {PageHandlerRemote} from 'chrome://updater/updater_ui.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -37,7 +37,8 @@ suite('UpdaterStateElement', () => {
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = TestMock.fromClass(PageHandlerRemote);
-    BrowserProxyImpl.getInstance().handler = handler;
+    const {instance} = browserProxyFactory.createForTest(handler);
+    browserProxyFactory.setInstance(instance);
 
     element = document.createElement('updater-state');
     document.body.appendChild(element);

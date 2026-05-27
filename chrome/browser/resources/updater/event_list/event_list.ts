@@ -12,12 +12,11 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 
-import {BrowserProxyImpl} from '../browser_proxy.js';
 import {deduplicateEvents, mergeEvents, parseEvents, UpdaterProcessMap} from '../event_history.js';
 import type {HistoryEvent, MergedHistoryEvent, PolicySet} from '../event_history.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {formatDateShort, formatRelativeDate} from '../tools.js';
-import {HistoryFilter} from '../updater_ui.mojom-webui.js';
+import {browserProxyFactory, HistoryFilter} from '../updater_ui.mojom-webui.js';
 
 import {getCss} from './event_list.css.js';
 import {getHtml} from './event_list.html.js';
@@ -203,7 +202,7 @@ export class EventListElement extends CrLitElement {
       default:
         assertNotReachedCase(category);
     }
-    BrowserProxyImpl.getInstance().handler.recordFilterChange(mojoCategory);
+    browserProxyFactory.getInstance().handler.recordFilterChange(mojoCategory);
   }
 
   protected onExpandCollapseAllClick() {

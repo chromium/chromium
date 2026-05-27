@@ -15,10 +15,10 @@ import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.j
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import type {AppStateDisplay} from './app_list/app_list.js';
-import {BrowserProxyImpl} from './browser_proxy.js';
 import {deduplicateEvents, isMergedHistoryEvent, mergeEvents, parseEvents, parsePolicySet, SCOPES, UpdaterProcessMap} from './event_history.js';
 import type {MergedLoadPolicyEvent, PersistedDataEvent, PolicySet} from './event_history.js';
 import {getKnownAppNamesById} from './known_apps.js';
+import {browserProxyFactory} from './updater_ui.mojom-webui.js';
 import type {EnterpriseCompanionState, GetAppStatesResponse, GetEnterpriseCompanionStateResponse, GetUpdaterStatesResponse, UpdaterState} from './updater_ui.mojom-webui.js';
 
 export enum PageDataSource {
@@ -138,7 +138,7 @@ export class UpdaterAppElement extends CrLitElement {
             new Uint8Array(handle.mapBuffer(0, data.byteLength).buffer);
         buffer.set(data);
 
-        const response = await BrowserProxyImpl.getInstance()
+        const response = await browserProxyFactory.getInstance()
                              .handler.unzipUpdaterHistoryFiles({
                                sharedMemory: {
                                  bufferHandle: handle,
@@ -254,25 +254,25 @@ export class UpdaterAppElement extends CrLitElement {
 
   private async getAllUpdaterEvents(): Promise<Array<Record<string, unknown>>> {
     const response =
-        await BrowserProxyImpl.getInstance().handler.getAllUpdaterEvents();
+        await browserProxyFactory.getInstance().handler.getAllUpdaterEvents();
 
     return response.events.map(message => JSON.parse(message))
         .filter(message => typeof message === 'object');
   }
 
   private async getUpdaterStates(): Promise<GetUpdaterStatesResponse> {
-    return await BrowserProxyImpl.getInstance().handler.getUpdaterStates();
+    return await browserProxyFactory.getInstance().handler.getUpdaterStates();
   }
 
   private async getEnterpriseCompanionState():
       Promise<GetEnterpriseCompanionStateResponse> {
-    return await BrowserProxyImpl.getInstance()
+    return await browserProxyFactory.getInstance()
         .handler.getEnterpriseCompanionState();
   }
 
   private async getAppStates(): Promise<AppStateDisplay[]> {
     const response: GetAppStatesResponse =
-        await BrowserProxyImpl.getInstance().handler.getAppStates();
+        await browserProxyFactory.getInstance().handler.getAppStates();
     const knownApps = getKnownAppNamesById();
 
     const systemApps: AppStateDisplay[] = response.systemApps.map(

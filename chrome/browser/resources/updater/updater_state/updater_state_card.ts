@@ -12,11 +12,10 @@ import {assert} from '//resources/js/assert.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxyImpl} from '../browser_proxy.js';
 import {localizeScope} from '../event_history.js';
 import type {Scope} from '../event_history.js';
 import {formatDateLong, formatRelativeDate} from '../tools.js';
-import {ShowDirectoryTarget} from '../updater_ui.mojom-webui.js';
+import {browserProxyFactory, ShowDirectoryTarget} from '../updater_ui.mojom-webui.js';
 
 import {getCss} from './updater_state_card.css.js';
 import {getHtml} from './updater_state_card.html.js';
@@ -101,7 +100,7 @@ export class UpdaterStateCardElement extends CrLitElement {
   }
 
   protected onInstallPathClick() {
-    BrowserProxyImpl.getInstance().handler.showDirectory(
+    browserProxyFactory.getInstance().handler.showDirectory(
         this.scope === 'SYSTEM' ? ShowDirectoryTarget.kSystemUpdater :
                                   ShowDirectoryTarget.kUserUpdater);
   }
