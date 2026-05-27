@@ -802,6 +802,59 @@ TEST_F(AutofillAgentTestWithFeatures, AcceptDataListSuggestionUsesFieldId) {
   EXPECT_TRUE(other.Value().IsEmpty());
 }
 
+// Tests that select option changes are ignored before Autofill fills a field.
+TEST_F(AutofillAgentTestWithFeatures,
+       SelectFieldOptionsChangedIgnoredWithoutFill) {
+  LoadHTML("<form><select id=select_id><option>One</option></select></form>");
+
+  EXPECT_CALL(autofill_driver(), SelectFieldOptionsDidChange).Times(0);
+  test_api(autofill_agent())
+      .SelectFieldOptionsChanged(
+          GetWebElementById("select_id").DynamicTo<WebSelectElement>());
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+}
+
+// Tests that select option changes after filling use the changed select field.
+TEST_F(AutofillAgentTestWithFeatures,
+       SelectFieldOptionsChangedAfterFillUsesFieldId) {
+  LoadHTML(
+      "<form><select id=select_id><option value=one>One</option><option "
+      "value=two>Two</option></select></form>");
+
+  std::vector<WebFormElement> forms = GetDocument().GetTopLevelForms();
+  ASSERT_EQ(forms.size(), 1u);
+
+  std::optional<FormData> form = form_util::ExtractFormData(
+      forms[0].GetDocument(), forms[0],
+      *base::MakeRefCounted<FieldDataManager>(), kCallTimerStateDummy,
+      /*button_titles_cache=*/nullptr);
+  ASSERT_TRUE(form);
+  ASSERT_EQ(form->fields().size(), 1u);
+
+  test_api(*form).field(0).set_value(u"two");
+  test_api(*form).field(0).set_selected_option_text(u"Two");
+  test_api(*form).field(0).set_is_autofilled_according_to_renderer(true);
+  autofill_agent().ApplyFieldsAction(
+      mojom::FormActionType::kFill, mojom::ActionPersistence::kFill,
+      GetFillData(form->fields()), FillId::Create(),
+      /*supports_refill=*/false);
+
+  ExecuteJavaScriptForTests(R"(
+    const option = document.createElement('option');
+    option.value = 'three';
+    option.text = 'Three';
+    document.getElementById('select_id').appendChild(option);
+  )");
+
+  WebSelectElement select =
+      GetWebElementById("select_id").DynamicTo<WebSelectElement>();
+  ASSERT_TRUE(select);
+  FieldRendererId select_id = form_util::GetFieldRendererId(select);
+  EXPECT_CALL(autofill_driver(), SelectFieldOptionsDidChange(_, select_id));
+  test_api(autofill_agent()).SelectFieldOptionsChanged(select);
+  task_environment_.FastForwardBy(base::Milliseconds(100));
+}
+
 // Tests that `AutofillDriver::TriggerSuggestions()` works for contenteditables.
 TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestionsForContenteditable) {
   LoadHTML("<body><div id=ce contenteditable></div></body>");

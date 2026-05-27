@@ -50,6 +50,10 @@ class AutofillAgentTestApi {
     agent_->TextFieldValueChanged(element);
   }
 
+  void SelectFieldOptionsChanged(const blink::WebFormControlElement& element) {
+    agent_->SelectFieldOptionsChanged(element);
+  }
+
   const FormCache& form_cache() { return agent_->form_cache_; }
 
   PasswordAutofillAgent& password_autofill_agent() {
