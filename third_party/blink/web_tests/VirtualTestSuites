@@ -540,6 +540,17 @@
     "expires": "Jun 30, 2026"
   },
   {
+    "prefix": "declarative-performance-observer",
+    "owners": ["sisidovski@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win", "Android"],
+    "bases": [
+      "wpt_internal/declarative-performance-observer"
+    ],
+    "exclusive_tests": "ALL",
+    "args": ["--enable-features=DeclarativePerformanceObserver"],
+    "expires": "Nov 27, 2026"
+  },
+  {
     "prefix": "cross-partition-blob-url",
     "platforms": [
       "Linux"

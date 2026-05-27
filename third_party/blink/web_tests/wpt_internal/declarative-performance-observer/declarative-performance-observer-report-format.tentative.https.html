@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Declarative Performance Observer: Test Report Format</title>
+  <script src='/resources/testharness.js'></script>
+  <script src='/resources/testharnessreport.js'></script>
+  <script src='/reporting/resources/report-helper.js'></script>
+</head>
+<body>
+  <script>
+    const base_url = `${location.protocol}//${location.host}`;
+    const endpoint = `${base_url}/reporting/resources/report.py`;
+    const reportID = crypto.randomUUID();
+    const popupURL = `${base_url}/wpt_internal/declarative-performance-observer/resources/declarative-performance-observer-popup.https.sub.html?reportID=${reportID}`;
+
+    promise_test(async t => {
+      // Open the popup.
+      const popup = window.open(popupURL);
+      assert_not_equals(popup, null, "Popup should be opened");
+
+      // Wait 2 seconds for the popup to load.
+      await wait(2000);
+      // Navigate the popup away to ensure OnComplete is triggered while keeping WebContents alive.
+      popup.location.href = "about:blank";
+      // Wait another 2 seconds for the report to be sent.
+      await wait(2000);
+
+      // Poll reports from stash.
+      const reports = await pollReports(endpoint, reportID);
+
+      // Verify report exists and has correct type and URL.
+      assert_equals(reports.length, 1, "Should have exactly one report");
+      const report = reports[0];
+      assert_equals(report.type, "performance-observer");
+      assert_equals(report.url, popupURL);
+
+      // Verify report body has entries.
+      const body = report.body;
+      assert_true(body.hasOwnProperty("entries"), "Report body should have entries");
+      const entries = body.entries;
+
+      // We expect exactly 1 entry: visibility-state.
+      assert_equals(entries.length, 1, "Should have exactly 1 entry");
+
+      // 1. Verify Visibility State (initial)
+      const visEntry = entries.find(e => e.entryType === "visibility-state");
+      assert_not_equals(visEntry, undefined, "Should have visibility-state entry");
+      assert_equals(visEntry.name, "visible");
+      assert_equals(visEntry.startTime, 0);
+      assert_equals(visEntry.duration, 0);
+
+    }, "Declarative Performance Observer sends correct report format for visibility-state on session end");
+  </script>
+</body>
+</html>

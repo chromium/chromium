@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Declarative Performance Observer Test Popup</title>
+</head>
+<body>
+  <script>
+    window.onload = () => {
+      // Wait a short frame delay to ensure Mojo calls are processed, then close.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.close();
+        });
+      });
+    };
+  </script>
+</body>
+</html>

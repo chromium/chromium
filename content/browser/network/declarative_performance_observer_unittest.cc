@@ -1,0 +1,195 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "content/browser/network/declarative_performance_observer.h"
+
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "base/values.h"
+#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_storage_partition.h"
+#include "services/network/test/test_network_context.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace content {
+namespace {
+
+class TestNetworkContext : public network::TestNetworkContext {
+ public:
+  struct Report {
+    Report(const std::string& type,
+           const std::string& group,
+           const GURL& url,
+           base::DictValue body)
+        : type(type), group(group), url(url), body(std::move(body)) {}
+
+    std::string type;
+    std::string group;
+    GURL url;
+    base::DictValue body;
+  };
+
+  void QueueReport(
+      const std::string& type,
+      const std::string& group,
+      const GURL& url,
+      const std::optional<base::UnguessableToken>& reporting_source,
+      const net::NetworkAnonymizationKey& network_anonymization_key,
+      base::DictValue body) override {
+    reports_.emplace_back(type, group, url, std::move(body));
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
+
+  const std::vector<Report>& reports() const { return reports_; }
+
+  void SetQuitClosure(base::OnceClosure quit_closure) {
+    quit_closure_ = std::move(quit_closure);
+  }
+
+ private:
+  std::vector<Report> reports_;
+  base::OnceClosure quit_closure_;
+};
+
+class DeclarativePerformanceObserverTest : public RenderViewHostTestHarness {
+ public:
+  DeclarativePerformanceObserverTest() = default;
+  ~DeclarativePerformanceObserverTest() override = default;
+
+ protected:
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    DeclarativePerformanceObserver::CreateForWebContents(web_contents());
+    storage_partition_.set_network_context(&network_context_);
+
+    DeclarativePerformanceObserver::FromWebContents(web_contents())
+        ->SetStoragePartitionForTesting(&storage_partition_);
+  }
+
+  content::TestStoragePartition storage_partition_;
+  TestNetworkContext network_context_;
+};
+
+TEST_F(DeclarativePerformanceObserverTest, RecordsVisibilityStateOnCommit) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->DidFinishNavigation(&navigation_handle);
+
+  // Trigger unload to flush metrics
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->RenderFrameDeleted(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+  EXPECT_EQ(report.type, "performance-observer");
+  EXPECT_EQ(report.group, kEndpoint);
+  EXPECT_EQ(report.url, kPageURL);
+
+  const base::ListValue* entries = report.body.FindList("entries");
+  ASSERT_TRUE(entries);
+  ASSERT_EQ(entries->size(), 1u);
+
+  const base::Value& entry_val = (*entries)[0];
+  const base::DictValue* visEntry = entry_val.GetIfDict();
+  ASSERT_TRUE(visEntry);
+
+  const std::string* entryType = visEntry->FindString("entryType");
+  ASSERT_TRUE(entryType);
+  EXPECT_EQ(*entryType, "visibility-state");
+
+  const std::string* name = visEntry->FindString("name");
+  ASSERT_TRUE(name);
+  EXPECT_EQ(*name, "visible");
+
+  std::optional<double> startTime = visEntry->FindDouble("startTime");
+  ASSERT_TRUE(startTime);
+  EXPECT_EQ(*startTime, 0.0);
+
+  std::optional<double> duration = visEntry->FindDouble("duration");
+  ASSERT_TRUE(duration);
+  EXPECT_EQ(*duration, 0.0);
+}
+
+TEST_F(DeclarativePerformanceObserverTest, ObservesVisibilityFlips) {
+  const GURL kPageURL("https://example.com/index.html");
+  const std::string kEndpoint("telemetry");
+
+  auto policy = network::mojom::DeclarativePerformanceObserverPolicy::New();
+  policy->reporting_endpoint = kEndpoint;
+  policy->entry_types.push_back(
+      network::mojom::PerformanceEntryType::kVisibilityState);
+
+  MockNavigationHandle navigation_handle(kPageURL, main_rfh());
+  navigation_handle.set_has_committed(true);
+  navigation_handle.set_is_in_primary_main_frame(true);
+  navigation_handle.set_is_error_page(false);
+
+  ON_CALL(navigation_handle, GetDeclarativePerformanceObserverPolicy())
+      .WillByDefault(testing::Return(policy.get()));
+
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->DidFinishNavigation(&navigation_handle);
+
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->OnVisibilityChanged(Visibility::HIDDEN);
+
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->OnVisibilityChanged(Visibility::VISIBLE);
+
+  // Trigger unload to flush metrics
+  DeclarativePerformanceObserver::FromWebContents(web_contents())
+      ->RenderFrameDeleted(main_rfh());
+
+  ASSERT_EQ(network_context_.reports().size(), 1u);
+  const auto& report = network_context_.reports()[0];
+
+  const base::ListValue* entries = report.body.FindList("entries");
+  ASSERT_TRUE(entries);
+  // initial visible + 1st flip (hidden) + 2nd flip (visible)
+  ASSERT_EQ(entries->size(), 3u);
+
+  const base::Value& entry1_val = (*entries)[1];
+  const base::DictValue* entry1 = entry1_val.GetIfDict();
+  ASSERT_TRUE(entry1);
+  const std::string* entryType1 = entry1->FindString("entryType");
+  ASSERT_TRUE(entryType1);
+  EXPECT_EQ(*entryType1, "visibility-state");
+  const std::string* name1 = entry1->FindString("name");
+  ASSERT_TRUE(name1);
+  EXPECT_EQ(*name1, "hidden");
+
+  const base::Value& entry2_val = (*entries)[2];
+  const base::DictValue* entry2 = entry2_val.GetIfDict();
+  ASSERT_TRUE(entry2);
+  const std::string* entryType2 = entry2->FindString("entryType");
+  ASSERT_TRUE(entryType2);
+  EXPECT_EQ(*entryType2, "visibility-state");
+  const std::string* name2 = entry2->FindString("name");
+  ASSERT_TRUE(name2);
+  EXPECT_EQ(*name2, "visible");
+}
+
+}  // namespace
+}  // namespace content
