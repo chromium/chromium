@@ -1876,16 +1876,27 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Output.Win.{AudioOutputMethod}Error2"
-    enum="Hresult" expires_after="2027-05-15">
+    enum="Hresult" expires_after="2027-05-19">
   <owner>henrika@chromium.org</owner>
   <owner>dalecurtis@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
   <summary>
-    Errors from various methods on WASAPIAudioOutputStream. Recorded upon a
-    failure being returned from a call into WASAPI. This is version 2 of the
-    metric. Version 1 previously mixed raw Win32 errors with HRESULTs. This new
-    version strictly logs HRESULTs.
+    Logs the exact COM HRESULTs encountered during various phases of the Windows
+    WASAPI audio output stream lifecycle (Open, Start, Stop, Render, and Run).
+    This is version 2 of the metric, which strictly logs HRESULTs instead of
+    mixing them with raw Win32 errors.
+
+    Note on overlap between Run and Render: There is an intentional overlap for
+    fatal rendering errors. If a fatal error (like failing to get the endpoint
+    buffer) occurs during the rendering pass, it is logged to the Render
+    histogram. Because this fatal error also causes the background thread to
+    terminate, the exact same HRESULT is subsequently logged to the Run
+    histogram.
+
+    The Render histogram captures ALL rendering errors (including non-fatal ones
+    that do not kill the thread). The Run histogram acts as a catch-all for
+    whatever killed the background thread (including fatal Render errors as well
+    as thread synchronization failures).
   </summary>
   <token key="AudioOutputMethod">
     <variant name="Open"/>
