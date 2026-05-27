@@ -111,6 +111,8 @@ struct CONTENT_EXPORT Jwk {
   ~Jwk();
   Jwk(const Jwk& other);
 
+  bool operator==(const Jwk& other) const;
+
   static std::optional<Jwk> From(const base::DictValue& json);
 
   base::DictValue ToDict() const;
