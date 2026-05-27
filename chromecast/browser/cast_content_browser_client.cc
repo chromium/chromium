@@ -45,8 +45,6 @@
 #include "chromecast/browser/cast_web_preferences.h"
 #include "chromecast/browser/cast_web_service.h"
 #include "chromecast/browser/devtools/cast_devtools_manager_delegate.h"
-#include "chromecast/browser/general_audience_browsing_navigation_throttle.h"
-#include "chromecast/browser/general_audience_browsing_service.h"
 #include "chromecast/browser/media/media_caps_impl.h"
 #include "chromecast/browser/service/cast_service_simple.h"
 #include "chromecast/browser/service_connector.h"
@@ -791,16 +789,6 @@ CastContentBrowserClient::CreateCrashHandlerHost(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void CastContentBrowserClient::CreateThrottlesForNavigation(
-    content::NavigationThrottleRegistry& registry) {
-  if (chromecast::IsFeatureEnabled(kEnableGeneralAudienceBrowsing)) {
-    registry.AddThrottle(
-        std::make_unique<GeneralAudienceBrowsingNavigationThrottle>(
-            registry,
-            general_audience_browsing_service_.get()));
-  }
-}
-
 void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
@@ -861,14 +849,6 @@ CastContentBrowserClient::ShouldOverrideLocalNetworkAccessRequestPolicy(
 
 std::string CastContentBrowserClient::GetUserAgent() {
   return chromecast::GetUserAgent();
-}
-
-void CastContentBrowserClient::CreateGeneralAudienceBrowsingService() {
-  DCHECK(!general_audience_browsing_service_);
-  general_audience_browsing_service_ =
-      std::make_unique<GeneralAudienceBrowsingService>(
-          browser_main_parts()->connector(),
-          cast_network_contexts_->GetSystemSharedURLLoaderFactory());
 }
 
 }  // namespace shell

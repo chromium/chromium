@@ -658,9 +658,6 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   // initialized by cast service.
   cast_browser_process_->cast_browser_metrics()->Initialize();
   cast_content_browser_client_->InitializeURLLoaderThrottleDelegate();
-
-  cast_content_browser_client_->CreateGeneralAudienceBrowsingService();
-
   // Disable RenderFrameHost's Javascript injection restrictions so that the
   // Cast Web Service can implement its own JS injection policy at a higher
   // level.
