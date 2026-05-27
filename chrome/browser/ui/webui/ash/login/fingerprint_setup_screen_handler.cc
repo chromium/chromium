@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/login/fingerprint_setup_screen_handler.h"
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/fingerprint_setup_screen.h"
-#include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"

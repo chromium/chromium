@@ -233,6 +233,7 @@ static_library("screens") {
   deps = [
     "//ash/constants",
     "//ash/public/mojom:input_device_settings",
+    "//ash/strings",
     "//ash/webui/connectivity_diagnostics",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
