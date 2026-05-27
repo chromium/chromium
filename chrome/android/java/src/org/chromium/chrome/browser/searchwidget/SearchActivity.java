@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorRes;
+import androidx.annotation.IdRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -384,6 +385,11 @@ public class SearchActivity extends AsyncInitializationActivity
                             public @Nullable AsyncViewStub getSuggestionsContainerStub() {
                                 return contentView.findViewById(
                                         R.id.omnibox_results_container_stub);
+                            }
+
+                            @Override
+                            public @IdRes int getSuggestionsContainerInflatedViewId() {
+                                return R.id.omnibox_results_container;
                             }
                         },
                         mLocationBarUiOverrides,

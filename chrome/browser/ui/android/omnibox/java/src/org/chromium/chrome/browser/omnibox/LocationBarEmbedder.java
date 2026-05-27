@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.transition.Transition;
 import android.transition.TransitionManager;
+import android.view.View;
 import android.view.ViewGroup;
+
+import androidx.annotation.IdRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -30,6 +33,11 @@ public interface LocationBarEmbedder {
     /** Returns the {@link AsyncViewStub} for the suggestions container, if available. */
     default @Nullable AsyncViewStub getSuggestionsContainerStub() {
         return null;
+    }
+
+    /** Returns the ID to use for the inflated suggestions container view, if available. */
+    default @IdRes int getSuggestionsContainerInflatedViewId() {
+        return View.NO_ID;
     }
 
     /**

@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.IdRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 
@@ -242,8 +243,8 @@ public class AutocompleteCoordinator implements OmniboxSuggestionsVisualState {
 
             stub.setShouldInflateOnBackgroundThread(
                     !mForceSyncInflate && OmniboxFeatures.sAsyncViewInflation.isEnabled());
-            AsyncViewProvider<ViewGroup> asyncProvider =
-                    AsyncViewProvider.of(stub, R.id.omnibox_results_container);
+            @IdRes int inflatedId = mLocationBarEmbedder.getSuggestionsContainerInflatedViewId();
+            AsyncViewProvider<ViewGroup> asyncProvider = AsyncViewProvider.of(stub, inflatedId);
             asyncProvider.whenLoaded(this::onAsyncInflationComplete);
             asyncProvider.inflate();
         }
