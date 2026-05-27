@@ -2840,6 +2840,21 @@
             ]
         }
     ],
+    "AutofillEnableBottomSheetScanCardAndFill": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillEnableBottomSheetScanCardAndFill"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillEnableBuyNowPayLaterAndroid": [
         {
             "platforms": [
