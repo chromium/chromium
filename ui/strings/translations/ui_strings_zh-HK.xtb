@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">今天</translation>
 <translation id="2168039046890040389">上一頁</translation>
 <translation id="2190355936436201913">(空白)</translation>
-<translation id="2192232475740621500">使用低密度</translation>
 <translation id="2267918077332197517">封鎖此網站的所有通知</translation>
 <translation id="2283117145434822734">F6 鍵</translation>
 <translation id="2289052229480071835">輕按螢幕上的輕觸目標。</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">要從手機撥打此號碼嗎？</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="24452542372838207">展開通知</translation>
-<translation id="2445449901874883781">使用高密度</translation>
 <translation id="2448407890032181691">觸控目標移咗去右下方。㩒一下呢度。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2497284189126895209">所有檔案</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">確定</translation>
 <translation id="6974053822202609517">由右至左</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">應用程式的顯示設定將在下次重新啟動時生效。</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{還有 1 分鐘}other{還有 # 分鐘}}</translation>
 <translation id="7252604552361840748">找出上述擴充程式</translation>

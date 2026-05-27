@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">查看管理員政策</translation>
 <translation id="158849752021629804">需要家用網路</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">正在格式化...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">攝影機</translation>
 <translation id="162175252992296058">葡萄牙文搭配美式國際鍵盤</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">俄文搭配拼音 (YaZHert) 鍵盤</translation>
 <translation id="2143778271340628265">手動 Proxy 設定</translation>
 <translation id="2148716181193084225">今天</translation>
+<translation id="2148756636027685713">格式化完成</translation>
 <translation id="2161573825856688200">Google 專案</translation>
 <translation id="2163152940313951844">無效的字元：<ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">你還有 <ph name="RETRIES" /> 次重試機會。</translation>
 <translation id="2663066752008346276">緬甸文搭配 Myansan 鍵盤</translation>
 <translation id="2664412712123763093">檔案位置</translation>
+<translation id="2665919335226618153">糟糕！格式化過程中發生錯誤。</translation>
 <translation id="2672394942808662069">加拿大多語</translation>
 <translation id="2707357721402813583">愛爾蘭文</translation>
 <translation id="2708477391501452176">法文 BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">系統不支援 WEP 網路</translation>
 <translation id="3295006446256079333">這個磁碟區</translation>
 <translation id="3295357220137379386">裝置忙碌中</translation>
+<translation id="3305389145870741612">格式化程序可能需要幾秒鐘，請稍候。</translation>
 <translation id="3307875152560779385">烏克蘭文</translation>
 <translation id="3326821416087822643">正在壓縮 <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">錄音年份</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">虛擬機器</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">標點符號寬度為全形</translation>
+<translation id="5585912436068747822">無法格式化</translation>
 <translation id="5596627076506792578">更多選項</translation>
 <translation id="5602622065581044566">保加利亞文搭配拼音鍵盤</translation>
 <translation id="5604409170937514933">瑞典文</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">旁遮普文</translation>
 <translation id="6224240818060029162">丹麥文</translation>
 <translation id="6224253798271602650">將「<ph name="DRIVE_NAME" />」格式化</translation>
+<translation id="6224481128663248237">格式化成功完成！</translation>
 <translation id="6241349547798190358">荷蘭文 (比利時)</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量：<ph name="BATTERY_STATUS" />%，連線</translation>
 <translation id="6269630227984243955">馬來文</translation>

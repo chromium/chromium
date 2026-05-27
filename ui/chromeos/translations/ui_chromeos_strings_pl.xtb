@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Przejrzyj zasady administratora</translation>
 <translation id="158849752021629804">Wymagana sieć macierzysta</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Formatuję...</translation>
 <translation id="1601786938618212857">Utwórz archiwum ZIP</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugalski z klawiaturą amerykańską międzynarodową</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Rosyjski z fonetyczną klawiaturą YaZHert</translation>
 <translation id="2143778271340628265">Ręczna konfiguracja serwera proxy</translation>
 <translation id="2148716181193084225">Dzisiaj</translation>
+<translation id="2148756636027685713">Formatowanie zostało zakończone.</translation>
 <translation id="2161573825856688200">Projekt Google</translation>
 <translation id="2163152940313951844">Nieprawidłowy znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Pozostałe próby: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Birmański/myanmarski z klawiaturą Myansan</translation>
 <translation id="2664412712123763093">Lokalizacja pliku</translation>
+<translation id="2665919335226618153">Kurza twarz! Podczas formatowania wystąpił błąd.</translation>
 <translation id="2672394942808662069">kanadyjska klawiatura wielojęzyczna</translation>
 <translation id="2707357721402813583">irlandzki</translation>
 <translation id="2708477391501452176">francuski BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Sieci WEP nie są obsługiwane</translation>
 <translation id="3295006446256079333">Ten wolumin</translation>
 <translation id="3295357220137379386">Urządzenie jest zajęte</translation>
+<translation id="3305389145870741612">Proces formatowania może potrwać kilka sekund. Czekaj.</translation>
 <translation id="3307875152560779385">Ukraiński</translation>
 <translation id="3326821416087822643">Pakuję <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Rok nagrania</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">maszyna wirtualna</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Szerokość przestankowania: pełna</translation>
+<translation id="5585912436068747822">Formatowanie nie powiodło się</translation>
 <translation id="5596627076506792578">Więcej opcji</translation>
 <translation id="5602622065581044566">Bułgarski z klawiaturą fonetyczną</translation>
 <translation id="5604409170937514933">szwedzki</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Pendżabski</translation>
 <translation id="6224240818060029162">Duński</translation>
 <translation id="6224253798271602650">Formatowanie dysku <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formatowanie zostało zakończone pomyślnie.</translation>
 <translation id="6241349547798190358">Niderlandzki (Belgia)</translation>
 <translation id="6267547857941397424">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, połącz</translation>
 <translation id="6269630227984243955">Malajski</translation>

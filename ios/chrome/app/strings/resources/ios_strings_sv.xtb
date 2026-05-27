@@ -183,6 +183,7 @@
 <translation id="1605658421715042784">Kopiera bild</translation>
 <translation id="1606899876897213121">Stäng sammanfattningen av de senaste aktiviteterna</translation>
 <translation id="1612754831519568745">Säker webbsökning är för närvarande inaktiverat. Få skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
+<translation id="1617300545081951343">Våra <ph name="BEGIN_LINK" />villkor<ph name="END_LINK" />, <ph name="BEGIN_LINK" />villkor för platstjänster i Sydkorea<ph name="END_LINK" /> och vårt <ph name="BEGIN_LINK" />integritetsmeddelande<ph name="END_LINK" /> gäller. Gemini är AI och den kan göra misstag, inklusive om personer.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Välj Lägg till i Google Kalender eller Lägg till i Apple Calendar.</translation>
 <translation id="1629162218487290695">Verifiera din identitet …</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">Du kan scrolla åt höger för att surfa inkognito.</translation>
 <translation id="2079545284768500474">Ångra</translation>
 <translation id="2085876078937250610">Spara …</translation>
+<translation id="2089180529062519164">Slå på mikrofonen</translation>
 <translation id="2096239473850415494">Det gick inte att ladda ned</translation>
 <translation id="2096716221239095980">Radera all data</translation>
 <translation id="2104436223719117661">Populära sökningar</translation>
@@ -603,6 +605,7 @@
 <translation id="3119874402040566234">Du loggas ut och webbinformationen rensas</translation>
 <translation id="3124568093781685165">Dela dina lösenord med familjen</translation>
 <translation id="3130863904455712965">Historik med mera</translation>
+<translation id="3130973487775218359">Titta: <ph name="BEGIN_LINK" />Fem saker du bör känna till om generativ AI<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Spara ditt Redress Number</translation>
 <translation id="3132584647087998639">Importera din data</translation>
 <translation id="313283613037595347">Skapa en ny inkognitoflik.</translation>
@@ -931,6 +934,7 @@
 <translation id="4306349443295056740">OCSP-signering</translation>
 <translation id="4309403553630140242">Dubbeltryck för mer information</translation>
 <translation id="4310738531374808763">Anpassa din startsida</translation>
+<translation id="4316794575239200608">Varken dina konversationer med Gemini eller din <ph name="BEGIN_LINK" />Google Workspace-data<ph name="END_LINK" /> granskas av mänskliga granskare och används för att förbättra generativa AI-modeller.</translation>
 <translation id="4320848494125124980">Senaste</translation>
 <translation id="4322394346347055525">Stäng andra flikar</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1016,6 +1020,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> återanvända lösenord</translation>
 <translation id="4632655012900268062">Anpassa kort</translation>
 <translation id="4634124774493850572">Använd lösenordet</translation>
+<translation id="4634633632339959267">Chattar granskas och används för att förbättra Google AI. <ph name="BEGIN_LINK" />Läs mer om dina val.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Information om din plats<ph name="END_LINK" /> lagras tillsammans med din aktivitet.</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4641425577292284174">Ta reda på om du har de säkraste inställningarna eller om du behöver granska något</translation>
 <translation id="4642472735733036929">Prisbevakning har avslutats</translation>
@@ -1562,6 +1567,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6435236283694032571">Lägg till i läslistan</translation>
 <translation id="6435307030888827407">Förbli utloggad</translation>
 <translation id="6436318499800111867">Delades med mig <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Respektera andras integritet<ph name="END_LINK" /> och be om lov innan du spelar in eller inkluderar någon i en livechatt.</translation>
 <translation id="6442697326824312960">Lossa flik</translation>
 <translation id="6443118737398455446">Ogiltigt förfallodatum</translation>
 <translation id="6444435711855078002">Fler alternativ</translation>
@@ -1804,6 +1810,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7253951228444156601">Kontrollerar lösenord …</translation>
 <translation id="7261217796641151584">Dela grupp</translation>
 <translation id="7266578100016339897">Detta hjälper dig att hålla ordning. Du kan ändra detta i inställningarna när som helst.</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Googles villkor<ph name="END_LINK" /> och <ph name="BEGIN_LINK" />integritetsmeddelandet för Gemini-apparna<ph name="END_LINK" /> gäller. Gemini är AI och den kan göra misstag, inklusive om personer.</translation>
 <translation id="7272437679830969316">Det gick inte att verifiera din identitet. Lösenordet har inte kopierats.</translation>
 <translation id="728025568708172005">Visa mig</translation>
 <translation id="7280980607183752256">Det går inte att importera den här filen</translation>
@@ -1862,6 +1869,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="7468373585447318060">Håll koll på prissänkningar för alla produkter du bevakar.</translation>
 <translation id="746872191028309255">Köp det du ser med kameran eller fotogalleriet.</translation>
 <translation id="7471557245617580330">Skapa ny flik</translation>
+<translation id="7473555040328423550">Lägg till flik</translation>
 <translation id="7476548258282096076">På det här kortet visas dina mest besökta webbplatser.</translation>
 <translation id="7484645889979462775">Aldrig på den här webbplatsen</translation>
 <translation id="7486006552035434095">Håll dina enheter synkroniserade</translation>
@@ -2117,11 +2125,13 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8319282042900445670">Påminnelse har ställts in på kl. <ph name="TIME" /> den <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Senaste aktiviteter</translation>
 <translation id="8325455175867928593">Dölj Recensioner baserade på dina intressen</translation>
+<translation id="8333459276976141586">Mikrofonen används för Live. När du trycker på Live-knappen slås mikrofonen på. Tryck på stoppknappen eller stäng Gemini för att stänga av mikrofonen.</translation>
 <translation id="833647236762414178">Skapa, spara och hantera dina lösenord och nycklar för att enkelt logga in på webbplatser och i appar. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
 <translation id="8345328955902001853">{count,plural, =1{Slutför 1 uppgift till för att gå upp en nivå}other{Slutför {count} uppgifter till för att gå upp en nivå}}</translation>
 <translation id="8348530355586151720">Tryck på menyn med tre punkter</translation>
 <translation id="8349305172487531364">Bokmärkesfältet</translation>
+<translation id="8360164927489392419">Inspelningar av dina interaktioner med Live och innehåll du delar med funktionen sparas och behandlas enligt <ph name="BEGIN_LINK" />integritetsmeddelandet för Gemini-apparna<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} bokmärke har importerats}other{{count} bokmärken har importerats}}</translation>
 <translation id="8363484128299778310">Tillfällig återställning vid eventuella problem</translation>
 <translation id="8364563001733875155">Om du vill ändra pinkoden måste du först ställa in ett lösenord på enheten.</translation>
@@ -2193,6 +2203,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8571019948162152515">Vill du radera <ph name="FILENAME" />?</translation>
 <translation id="8571213806525832805">Senaste fyra veckorna</translation>
 <translation id="8577056989960190117">Autofyll utgångsåret <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Använd Gemini Live</translation>
 <translation id="8587001564479545614">Skapa en pinkod för återställning</translation>
 <translation id="8588404856427128947">Av</translation>
 <translation id="8590286732816598906">Flikgrupp <ph name="GROUP_TITLE" />, meny.</translation>
@@ -2267,6 +2278,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="8803526663383843427">När funktionen är aktiverad</translation>
 <translation id="8803639129939845298">Säkert</translation>
 <translation id="8813277370772331957">Påminn mig senare</translation>
+<translation id="8814308045751067027">Om du vill använda Live måste du ge Chrome åtkomst till mikrofonen i inställningarna</translation>
 <translation id="8814719628147284151">Fortsätt</translation>
 <translation id="881559332211266856">Uppdatera ditt Redress Number</translation>
 <translation id="8817524703470045896">Bevaka priser och få aviseringar när priset sänks på en webbplats</translation>

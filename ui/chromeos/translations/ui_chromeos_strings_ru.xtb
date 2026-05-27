@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Посмотреть правила администратора</translation>
 <translation id="158849752021629804">Необходима домашняя сеть</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
+<translation id="1593594475886691512">Форматирование...</translation>
 <translation id="1601786938618212857">Создать ZIP-архив</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">Португальский, американская международная раскладка</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Русский, фонетическая раскладка YaZHert</translation>
 <translation id="2143778271340628265">Настройка прокси-сервера вручную</translation>
 <translation id="2148716181193084225">Сегодня</translation>
+<translation id="2148756636027685713">Форматирование завершено</translation>
 <translation id="2161573825856688200">Проект Google</translation>
 <translation id="2163152940313951844">Недопустимый символ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Осталось попыток: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Бирманский, раскладка MyanSan</translation>
 <translation id="2664412712123763093">Местоположение файла</translation>
+<translation id="2665919335226618153">Произошла ошибка форматирования.</translation>
 <translation id="2672394942808662069">Канадская (многоязычная)</translation>
 <translation id="2707357721402813583">Ирландская</translation>
 <translation id="2708477391501452176">Французская (BÉPO)</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Сети WEP не поддерживаются</translation>
 <translation id="3295006446256079333">В этой области</translation>
 <translation id="3295357220137379386">Устройство занято.</translation>
+<translation id="3305389145870741612">Форматирование займет несколько секунд. Подождите.</translation>
 <translation id="3307875152560779385">Украинский</translation>
 <translation id="3326821416087822643">Файл "<ph name="FILE_NAME" />" архивируется…</translation>
 <translation id="3335337277364016868">Год записи</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">виртуальная машина</translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
 <translation id="5583664733673201137">Ширина знаков пунктуации – полная</translation>
+<translation id="5585912436068747822">Ошибка форматирования</translation>
 <translation id="5596627076506792578">Ещё</translation>
 <translation id="5602622065581044566">Болгарский, фонетическая раскладка</translation>
 <translation id="5604409170937514933">Шведская</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Панджаби</translation>
 <translation id="6224240818060029162">Датский</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />: форматирование</translation>
+<translation id="6224481128663248237">Форматирование завершено.</translation>
 <translation id="6241349547798190358">Нидерландский (Бельгия)</translation>
 <translation id="6267547857941397424">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – <ph name="PHONE_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подключение</translation>
 <translation id="6269630227984243955">Малайский</translation>

@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Adolygu polisi gweinyddol</translation>
 <translation id="158849752021629804">Mae angen rhwydwaith cartref</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Wrthi'n fformatio…</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="162175252992296058">Portiwgaleg gyda bysellfwrdd Rhyngwladol UDA</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Rwseg gyda bysellfwrdd Seinegol YaZHert</translation>
 <translation id="2143778271340628265">Ffurfweddu dirprwy weinydd yn bwrpasol</translation>
 <translation id="2148716181193084225">Heddiw</translation>
+<translation id="2148756636027685713">Wedi gorffen fformatio</translation>
 <translation id="2161573825856688200">Prosiect Google</translation>
 <translation id="2163152940313951844">Nod annilys: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Mae gennych <ph name="RETRIES" /> ymgais ar ôl.</translation>
 <translation id="2663066752008346276">Byrmaneg/Myanmar gyda bysellfwrdd Myansan</translation>
 <translation id="2664412712123763093">Lleoliad ffeil</translation>
+<translation id="2665919335226618153">Damo! Bu gwall wrth fformatio.</translation>
 <translation id="2672394942808662069">Amlieithog Canadaidd</translation>
 <translation id="2707357721402813583">Gwyddeleg</translation>
 <translation id="2708477391501452176">BÉPO Ffrangeg</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Ni chefnogir rhwydweithiau WEP</translation>
 <translation id="3295006446256079333">Y storfa hon</translation>
 <translation id="3295357220137379386">Mae'r ddyfais yn brysur</translation>
+<translation id="3305389145870741612">Gall y broses fformatio gymryd ychydig eiliadau. Arhoswch.</translation>
 <translation id="3307875152560779385">Wcreineg</translation>
 <translation id="3326821416087822643">Wrthi'n sipio <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Y flwyddyn y cafodd ei recordio</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">peiriant rhithwir</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Mae lled yr atalnod yn Llawn</translation>
+<translation id="5585912436068747822">Wedi methu â fformatio</translation>
 <translation id="5596627076506792578">Rhagor o ddewisiadau</translation>
 <translation id="5602622065581044566">Bwlgareg gyda bysellfwrdd Seinegol</translation>
 <translation id="5604409170937514933">Swedeg</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Pwnjabi</translation>
 <translation id="6224240818060029162">Daneg</translation>
 <translation id="6224253798271602650">Fformat <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Mae'r fformatio wedi'i gwblhau'n llwyddiannus!</translation>
 <translation id="6241349547798190358">Iseldireg (Gwlad Belg)</translation>
 <translation id="6267547857941397424">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" />%, Batri'r Ffôn <ph name="BATTERY_STATUS" />%, Cysylltu</translation>
 <translation id="6269630227984243955">Maleieg</translation>

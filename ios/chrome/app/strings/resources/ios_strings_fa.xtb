@@ -184,6 +184,7 @@
 <translation id="1605658421715042784">کپی تصویر</translation>
 <translation id="1606899876897213121">بستن خلاصه فعالیت اخیر</translation>
 <translation id="1612754831519568745">«مرور ایمن» درحال‌حاضر خاموش است. از خودتان دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک محافظت کنید.</translation>
+<translation id="1617300545081951343">‏<ph name="BEGIN_LINK" />شرایط<ph name="END_LINK" />، <ph name="BEGIN_LINK" />«شرایط خدمات مکان» کره<ph name="END_LINK" />، و <ph name="BEGIN_LINK" />اعلامیه حریم خصوصی<ph name="END_LINK" /> ما اعمال می‌شوند. Gemini هوشواره است و ممکن است اشتباه کند، ازجمله درباره افراد.</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="1622717322707146952">‏«افزودن به تقویم Google» یا «افزودن به تقویم Apple» را انتخاب کنید.</translation>
 <translation id="1629162218487290695">به‌تأیید رساندن هویت…</translation>
@@ -605,6 +606,7 @@
 <translation id="3119874402040566234">از سیستم خارج خواهید شد و داده‌های مرور حذف خواهد شد</translation>
 <translation id="3124568093781685165">گذرواژه‌هایتان را با خانواده‌تان هم‌رسانی کنید</translation>
 <translation id="3130863904455712965">سابقه و موارد بیشتر</translation>
+<translation id="3130973487775218359">تماشا کنید: <ph name="BEGIN_LINK" />۵ نکته ضروری درباره هوشواره زایا<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">ذخیره شماره جبران خسارت</translation>
 <translation id="3132584647087998639">وارد کردن داده‌ها</translation>
 <translation id="313283613037595347">ایجاد «زبانه ناشناس» جدید</translation>
@@ -934,6 +936,7 @@
 <translation id="4306349443295056740">‏امضای OCSP</translation>
 <translation id="4309403553630140242">برای اطلاعات بیشتر دو تک‌ضرب بزنید</translation>
 <translation id="4310738531374808763">سفارشی کردن صفحه اصلی شما.</translation>
+<translation id="4316794575239200608">‏نه مکالمه‌های شما با Gemini و نه <ph name="BEGIN_LINK" />داده‌های Google Workspace<ph name="END_LINK" /> توسط افراد بازبین بررسی نخواهند شد یا از آن‌ها برای بهبود دادن مدل‌های هوشواره‌ای زایا استفاده نخواهد شد.</translation>
 <translation id="4320848494125124980">اخیر</translation>
 <translation id="4322394346347055525">بستن برگه‌های دیگر</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1019,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> گذرواژه دوباره‌استفاده‌شده</translation>
 <translation id="4632655012900268062">سفارشی‌سازی کارت‌ها</translation>
 <translation id="4634124774493850572">استفاده از گذرواژه</translation>
+<translation id="4634633632339959267">‏گپ‌ها بازبینی می‌شوند و از آن‌ها برای بهبود هوشواره‌های Google استفاده می‌شود. <ph name="BEGIN_LINK" />درباره انتخاب‌هایتان بیشتر بدانید.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />اطلاعات مربوط به مکان شما<ph name="END_LINK" /> نیز همراه با فعالیتتان ذخیره می‌شود.</translation>
 <translation id="4636930964841734540">اطلاعات</translation>
 <translation id="4641425577292284174">ببینید آیا از ایمن‌ترین تنظیمات استفاده می‌کنید یا چیزی نیاز به بررسی دارد</translation>
 <translation id="4642472735733036929">ردیابی قیمت متوقف شد</translation>
@@ -1566,6 +1570,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="6435236283694032571">افزودن به فهرست خواندن</translation>
 <translation id="6435307030888827407">ماندن خارج از سیستم</translation>
 <translation id="6436318499800111867">در تاریخ <ph name="SHARED_WITH_ME_DATE" /> با من هم‌رسانی شده است</translation>
+<translation id="6442327260099531031">‏<ph name="BEGIN_LINK" />به حریم خصوصی دیگران احترام بگذارید<ph name="END_LINK" /> و قبل‌از ضبط کردن یا افزودن آن‌ها به گپ Live اجازه بگیرید.</translation>
 <translation id="6442697326824312960">باز کردن برگه</translation>
 <translation id="6443118737398455446">تاریخ انقضای نامعتبر</translation>
 <translation id="6444435711855078002">گزینه‌های بیشتر</translation>
@@ -1808,6 +1813,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7253951228444156601">درحال بررسی گذرواژه‌ها…</translation>
 <translation id="7261217796641151584">هم‌رسانی گروه</translation>
 <translation id="7266578100016339897">این کار به سازمان‌دهی آن‌ها کمک می‌کند. هروقت خواستید می‌توانید این را در تنظیمات تغییر دهید.</translation>
+<translation id="7270491814777319521">‏<ph name="BEGIN_LINK" />شرایط خدمات Google<ph name="END_LINK" /> و <ph name="BEGIN_LINK" />اعلامیه حریم خصوصی «برنامه‌های Gemini»<ph name="END_LINK" /> اعمال می‌شوند. Gemini هوشواره است و ممکن است اشتباه کند، ازجمله درباره افراد.</translation>
 <translation id="7272437679830969316">نمی‌توانیم هویتتان را به تأیید برسانیم. گذرواژه کپی نشد.</translation>
 <translation id="728025568708172005">اطراف را نشانم بده</translation>
 <translation id="7280980607183752256">امکان وارد کردن این فایل وجود ندارد</translation>
@@ -1866,6 +1872,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="7468373585447318060">از کاهش قیمت تمامی محصولاتی که پیگیری می‌کنید مطلع شوید.</translation>
 <translation id="746872191028309255">آنچه را می‌بینید با دوربین یا گالری عکستان خریداری کنید.</translation>
 <translation id="7471557245617580330">ایجاد برگه جدید</translation>
+<translation id="7473555040328423550">افزودن زبانه</translation>
 <translation id="7476548258282096076">این کارت «پربازدیدترین سایت‌های» شما نشان می‌دهد.</translation>
 <translation id="7484645889979462775">هرگز برای این سایت</translation>
 <translation id="7486006552035434095">دستگاه‌هایتان را همگام نگه دارید</translation>
@@ -2127,6 +2134,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8345328955902001853">{count,plural, =1{برای ارتقای سطح ۱ تکلیف دیگر را تکمیل کنید}one{برای ارتقای سطح {count} تکلیف دیگر را تکمیل کنید}other{برای ارتقای سطح {count} تکلیف دیگر را تکمیل کنید}}</translation>
 <translation id="8348530355586151720">روی منوِ سه‌نقطه‌ای تک‌ضرب بزنید</translation>
 <translation id="8349305172487531364">نوار نشانک‌ها</translation>
+<translation id="8360164927489392419">‏ضبط‌های مربوط به تعاملات شما با Live و محتوایی که با آن هم‌رسانی می‌کنید مطابق با <ph name="BEGIN_LINK" />اعلامیه حریم خصوصی «برنامه‌های Gemini»<ph name="END_LINK" /> ذخیره و پردازش می‌شوند. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{‫{count} نشانک وارد شد}one{‫{count} نشانک وارد شد}other{‫{count} نشانک وارد شد}}</translation>
 <translation id="8363484128299778310">بازیابی موقت درصورت بروز مشکل</translation>
 <translation id="8364563001733875155">برای تغییر دادن پین، ابتدا گذرنویسه‌ای دردستگاهتان راه‌اندازی کنید.</translation>

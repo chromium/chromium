@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Je kunt naar rechts scrollen om in de incognitomodus te browsen.</translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
 <translation id="2085876078937250610">Opslaan…</translation>
+<translation id="2089180529062519164">Microfoon aanzetten</translation>
 <translation id="2096239473850415494">Kan niet downloaden</translation>
 <translation id="2096716221239095980">Alle gegevens verwijderen</translation>
 <translation id="2104436223719117661">Trending zoekopdrachten</translation>
@@ -1862,6 +1863,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="7468373585447318060">Blijf op de hoogte van prijsdalingen voor alle producten die je volgt.</translation>
 <translation id="746872191028309255">Koop wat je ziet met je camera of fotogalerij.</translation>
 <translation id="7471557245617580330">Nieuw tabblad maken</translation>
+<translation id="7473555040328423550">Tabblad toevoegen</translation>
 <translation id="7476548258282096076">Deze kaart toont je meest bezochte sites.</translation>
 <translation id="7484645889979462775">Nooit voor deze site</translation>
 <translation id="7486006552035434095">Je apparaten synchroniseren</translation>
@@ -2117,6 +2119,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8319282042900445670">Herinnering ingesteld voor <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Recente activiteit</translation>
 <translation id="8325455175867928593">Reviews op basis van je interesses verbergen</translation>
+<translation id="8333459276976141586">Live gebruikt je microfoon. Als je op de Live-knop tikt, gaat de microfoon aan. Als je de microfoon wilt uitzetten, tik je op de knop Stoppen of sluit je Gemini.</translation>
 <translation id="833647236762414178">Maak, bewaar en beheer je wachtwoorden en toegangssleutels om makkelijk in te loggen bij sites en apps. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Maak een back-up van je gegevens en gebruik deze op elk apparaat.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Rond nog 1 taak af om een hoger niveau te bereiken}other{Rond nog {count} taken af om een hoger niveau te bereiken}}</translation>
@@ -2193,6 +2196,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8571019948162152515"><ph name="FILENAME" /> verwijderen?</translation>
 <translation id="8571213806525832805">Afgelopen 4 weken</translation>
 <translation id="8577056989960190117">Het vervaljaar <ph name="YEAR" /> automatisch invullen</translation>
+<translation id="8582026929965253036">Ga Live met Gemini</translation>
 <translation id="8587001564479545614">Een herstelpincode maken</translation>
 <translation id="8588404856427128947">Uit</translation>
 <translation id="8590286732816598906">Tabbladgroep, <ph name="GROUP_TITLE" />, menu.</translation>
@@ -2267,6 +2271,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="8803526663383843427">Als dit aanstaat</translation>
 <translation id="8803639129939845298">Beveiligd</translation>
 <translation id="8813277370772331957">Later herinneren</translation>
+<translation id="8814308045751067027">Als je Live wilt gebruiken, geef je Chrome toegang tot je microfoon via de instellingen</translation>
 <translation id="8814719628147284151">Doorgaan</translation>
 <translation id="881559332211266856">Redress number updaten</translation>
 <translation id="8817524703470045896">Volg prijzen en krijg meldingen als de prijs op een site daalt</translation>

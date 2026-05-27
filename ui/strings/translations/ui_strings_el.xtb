@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Σήμερα</translation>
 <translation id="2168039046890040389">Προηγούμενη σελίδα</translation>
 <translation id="2190355936436201913">(κενό)</translation>
-<translation id="2192232475740621500">Χρήση χαμηλής πυκνότητας</translation>
 <translation id="2267918077332197517">Αποκλεισμός όλων των ειδοποιήσεων από αυτόν τον ιστότοπο</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Πατήστε τους στόχους αφής στην οθόνη σας.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Θέλετε να καλέσετε αυτόν τον αριθμό στο τηλέφωνό σας;</translation>
 <translation id="2435457462613246316">Εμφάνιση κωδικού πρόσβασης</translation>
 <translation id="24452542372838207">Ανάπτυξη ειδοποίησης</translation>
-<translation id="2445449901874883781">Χρήση υψηλής πυκνότητας</translation>
 <translation id="2448407890032181691">Ο στόχος αφής μετακινήθηκε κάτω δεξιά. Πατήστε εδώ.</translation>
 <translation id="2482878487686419369">Ειδοποιήσεις</translation>
 <translation id="2497284189126895209">Όλα τα αρχεία</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Από δεξιά προς τα αριστερά</translation>
 <translation id="7052633198403197513">Πλήκτρο F1</translation>
-<translation id="7170202025028120564">Οι ρυθμίσεις προβολής της εφαρμογής σας θα τεθούν σε ισχύ κατά την επόμενη επανεκκίνηση.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Απομένει 1 λεπτό}other{Απομένουν # λεπτά}}</translation>
 <translation id="7252604552361840748">Βρείτε την επέκταση παραπάνω</translation>

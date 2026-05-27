@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Skoða stjórnandareglu</translation>
 <translation id="158849752021629804">Heimanet nauðsynlegt</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Sníður...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Myndavél</translation>
 <translation id="162175252992296058">Portúgalska með bandarísku alþjóðlegu lyklaborði</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Rússneska með YaZHert-hljóðritunarlyklaborði</translation>
 <translation id="2143778271340628265">Handvirkar proxy-stillingar</translation>
 <translation id="2148716181193084225">Í dag</translation>
+<translation id="2148756636027685713">Lokið við að sníða</translation>
 <translation id="2161573825856688200">Google-verkefni</translation>
 <translation id="2163152940313951844">Ógildur stafur: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Þú átt <ph name="RETRIES" /> tilraunir eftir.</translation>
 <translation id="2663066752008346276">Búrmanska/Myanmar með Myansan-lyklaborði</translation>
 <translation id="2664412712123763093">Staðsetning skráar</translation>
+<translation id="2665919335226618153">Obbosí! Villa kom upp við að sníða.</translation>
 <translation id="2672394942808662069">Kanadískt fjöltyngt</translation>
 <translation id="2707357721402813583">Írskt</translation>
 <translation id="2708477391501452176">Franskt BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP-netkerfi eru ekki studd</translation>
 <translation id="3295006446256079333">Þessi hljóðstyrkur</translation>
 <translation id="3295357220137379386">Tækið er í notkun</translation>
+<translation id="3305389145870741612">Nokkrar sekúndur getur tekið að sníða. Hinkraðu.</translation>
 <translation id="3307875152560779385">Úkraínska</translation>
 <translation id="3326821416087822643">Þjappar <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Upptökuár</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">sýndarvél</translation>
 <translation id="5583640892426849032">Bakklykill</translation>
 <translation id="5583664733673201137">Greinarmerki eru í fullri breidd</translation>
+<translation id="5585912436068747822">Mistókst að sníða</translation>
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5602622065581044566">Búlgarska með hljóðritunarlyklaborði</translation>
 <translation id="5604409170937514933">Sænskt</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Púnjabí</translation>
 <translation id="6224240818060029162">Danska</translation>
 <translation id="6224253798271602650">Forsníða <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Lokið við að sníða!</translation>
 <translation id="6241349547798190358">Hollenska (Belgía)</translation>
 <translation id="6267547857941397424">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, <ph name="BATTERY_STATUS" />% hleðsla á rafhlöðu símans, tengjast</translation>
 <translation id="6269630227984243955">Malajíska</translation>

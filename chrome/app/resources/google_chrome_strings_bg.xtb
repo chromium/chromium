@@ -185,7 +185,6 @@
 <translation id="2915996080311180594">Рестартиране по-късно</translation>
 <translation id="2916983411556218750">Нека подготвим Chrome за вас</translation>
 <translation id="2926952073016206995">За този сайт Chrome се нуждае от разрешение за достъп до камерата</translation>
-<translation id="2928420929544864228">Инсталирането завърши.</translation>
 <translation id="2945997411976714835">Грешка при инсталирането: Стартирането на инсталационния процес не бе успешно.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вход в мрежата – Chrome</translation>
 <translation id="2970681950995291301">За да премахнете профила си в Google от Chrome, излезте от браузъра на страницата „Настройки“</translation>
@@ -281,6 +280,7 @@
 <translation id="3892148308691398805">Копиране на текста</translation>
 <translation id="3941890832296813527">Грешка при инсталирането: Името на файла с инсталационната програма е невалидно или не се поддържа.</translation>
 <translation id="395904275706073188">Защитените страници не могат да бъдат прочетени. Опитайте с друга страница.</translation>
+<translation id="3967822245660637423">Изтеглянето завърши</translation>
 <translation id="3968962723676998462">Въведете пропуска си, за да използвате и запазвате данните от Chrome в профила си (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="3973161977468201858">Google Chrome иска да изтрие данните ви от Google Мениджър на пароли. За да разрешите това, въведете паролата си за Windows.</translation>
 <translation id="400161754580828648">За да споделите екрана си, разрешете записването на екрана за Chrome в System Settings.</translation>
@@ -315,7 +315,6 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">За да се възползвате от персонализиране и други функции, включете Chrome в „Активност в мрежата и приложенията“ и свързаните услуги на Google</translation>
 <translation id="4334241893986177674">Търсене на тази екранна снимка</translation>
-<translation id="4334294535648607276">Изтеглянето завърши.</translation>
 <translation id="4343195214584226067">Разширението <ph name="EXTENSION_NAME" /> бе добавено към Chrome</translation>
 <translation id="4344128547036991536">Когато отворите Google Обектив, заглавието, URL адресът и съдържанието на страницата, включително PDF файловете, автоматично ще бъдат изпратени до Google. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">За да се възползвате от персонализиране, включете Chrome в „Активност в мрежата и приложенията“</translation>
@@ -508,7 +507,6 @@
 <translation id="6319856120645568262">Chrome се нуждае от разрешение да картографира заобикалящата ви среда и да проследява ръцете ви</translation>
 <translation id="6321592572353357376">Разширението <ph name="EXTENSION_NAME" /> иска да влезете в профила си в Chrome</translation>
 <translation id="6326175484149238433">Премахване от Chrome</translation>
-<translation id="6327105987658262776">Не е налична актуализация.</translation>
 <translation id="6334815226785304306">Задаване на Google Chrome като браузър по подразбиране и фиксиране в лентата на задачите</translation>
 <translation id="63540178978900677">Chrome вече не е основният ви браузър. Да се зададе ли Chrome като основен браузър?</translation>
 <translation id="6360449101159168105">Докато този раздел бе неактивен, бе освободена памет, за да се запази бързината на Chrome. Този сайт може да бъде добавен към изключенията, така че разделите с него да не стават неактивни.</translation>
@@ -574,7 +572,6 @@
 <translation id="6999131147875565462">Chrome е по-бърз и функциите, които използват JavaScript, би трябвало да работят нормално</translation>
 <translation id="7011190694940573312">Инсталирането не бе успешно, защото тази версия на операционната система не се поддържа.</translation>
 <translation id="7024536598735240744">Грешка при разпакетирането: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Инсталирането спря.</translation>
 <translation id="7025800014283535195">Оттук можете да превключвате между потребителските профили в Chrome</translation>
 <translation id="7047386856539490735">Полезни ли са тези резултати?</translation>
 <translation id="7051685429025310665">Не сте посещавали този сайт наскоро. Chrome премахна разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“.</translation>
@@ -775,6 +772,7 @@
 <translation id="8999117580775242387">Когато HTTPS не е налице, Chrome ще използва незащитени връзки, без да ви предупреждава</translation>
 <translation id="8999208279178790196">{0,plural, =0{Налице е актуализация за Chrome}=1{Налице е актуализация за Chrome}other{Налице е актуализация за Chrome от # дни}}</translation>
 <translation id="9014771989710951291">Chrome се управлява от няколко организации</translation>
+<translation id="9018218886431812662">Инсталирането завърши</translation>
 <translation id="9066987883552592250">Затваряне на Gemini в Chrome Canary</translation>
 <translation id="9090566250983691233">Научете защо Chrome блокира някои файлове</translation>
 <translation id="9106236359747881194">Избиране на текст за търсене</translation>

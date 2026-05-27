@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">مراجعة سياسة المشرف</translation>
 <translation id="158849752021629804">يلزم توفر الشبكة الرئيسية</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> بيتابايت</translation>
+<translation id="1593594475886691512">تجري التهيئة...</translation>
 <translation id="1601786938618212857">‏إنشاء أرشيف ZIP</translation>
 <translation id="1620510694547887537">الكاميرا</translation>
 <translation id="162175252992296058">البرتغالية باستخدام لوحة المفاتيح الأمريكية الدولية</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">‏الروسية باستخدام لوحة مفاتيح YaZHert الصوتية</translation>
 <translation id="2143778271340628265">إعداد الخادم الوكيل يدويًّا</translation>
 <translation id="2148716181193084225">اليوم</translation>
+<translation id="2148756636027685713">انتهت عملية التنسيق</translation>
 <translation id="2161573825856688200">‏مشروع Google</translation>
 <translation id="2163152940313951844">حرف غير صالح: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">‫Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">يتبقى لديك <ph name="RETRIES" /> محاولة.</translation>
 <translation id="2663066752008346276">البورمية/ميانمار باستخدام لوحة مفاتيح ميانمار ميانسان</translation>
 <translation id="2664412712123763093">موقع الملف</translation>
+<translation id="2665919335226618153">عذرًا، حدث خطأ أثناء التنسيق.</translation>
 <translation id="2672394942808662069">الكندية متعددة اللغات</translation>
 <translation id="2707357721402813583">الأيرلندية</translation>
 <translation id="2708477391501452176">‏الفرنسية BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">‏شبكات WEP غير متوافقة.</translation>
 <translation id="3295006446256079333">هذا المجلد</translation>
 <translation id="3295357220137379386">الجهاز مشغول.</translation>
+<translation id="3305389145870741612">يمكن أن تستغرق عملية التنسيق ثانيتين. يُرجى الانتظار.</translation>
 <translation id="3307875152560779385">الأوكرانية</translation>
 <translation id="3326821416087822643">جارٍ ضغط <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">عام التسجيل</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">جهاز افتراضي</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">عرض علامات الترقيم هو عرض بالكامل</translation>
+<translation id="5585912436068747822">تعذّر إتمام عملية التنسيق</translation>
 <translation id="5596627076506792578">خيارات إضافية</translation>
 <translation id="5602622065581044566">البلغارية باستخدام لوحة المفاتيح الصوتية</translation>
 <translation id="5604409170937514933">السويدية</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">البنجابية</translation>
 <translation id="6224240818060029162">الدانمركية</translation>
 <translation id="6224253798271602650">تنسيق <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">انتهت عملية التنسيق بنجاح.</translation>
 <translation id="6241349547798190358">الهولندية (بلجيكا)</translation>
 <translation id="6267547857941397424">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الهاتف <ph name="PHONE_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، الاتصال</translation>
 <translation id="6269630227984243955">الملايوية</translation>

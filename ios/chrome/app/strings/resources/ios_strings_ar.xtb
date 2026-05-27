@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" /></translation>
 <translation id="1149401351239820326">شهر انتهاء الصلاحية</translation>
 <translation id="1150989369772528668">تقويم</translation>
+<translation id="1161444134753003495">تسجيل الدخول</translation>
 <translation id="1161663161838091892">مزامنة علامات التبويب والسجلّ لمواصلة التصفّح</translation>
 <translation id="1162834932051545794">{count,plural, =1{بطاقة ائتمان واحدة ({count})}zero{‫{count} بطاقة ائتمان}two{بطاقتا ائتمان ({count})}few{‫{count} بطاقات ائتمان}many{‫{count} بطاقة ائتمان}other{‫{count} بطاقة ائتمان}}</translation>
 <translation id="1164891049599601209">تم إدخالها على موقع إلكتروني مريب.</translation>
@@ -822,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{هناك كلمة مرور جديدة لهذا الموقع الإلكتروني}zero{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}two{هناك كلمتا مرور جديدتان لهذا الموقع الإلكتروني}few{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}many{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}other{هناك كلمات مرور جديدة لهذا الموقع الإلكتروني}}</translation>
 <translation id="3933372629914873850">سيتم تسجيل دخولك إلى <ph name="URL" />.</translation>
 <translation id="3934905113567851655">يمكنك تصغير أو تكبير الصورة بإصبعين لتغيير حجمها</translation>
+<translation id="393732545649378031">الحساب</translation>
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{إغلاق علامة تبويب واحدة ({COUNT})}zero{إغلاق {COUNT} علامة تبويب}two{إغلاق علامتَي تبويب ({COUNT})}few{إغلاق {COUNT} علامات تبويب}many{إغلاق {COUNT} علامة تبويب}other{إغلاق {COUNT} علامة تبويب}}</translation>
 <translation id="3946483119107054883">‏التنزيل كملف CSV</translation>
@@ -1468,6 +1470,7 @@
 <translation id="6140948187512243695">عرض التفاصيل</translation>
 <translation id="6144589619057374135">‏فتح {url}$ في وضع التصفُّح المتخفي</translation>
 <translation id="6146563240635539929">فيديوهات</translation>
+<translation id="6148392728478209113">‏هل ما زالت جلسة Live مستمرة؟ لمواصلة التحدّث إلى Gemini، يُرجى النقر على زر Live</translation>
 <translation id="6151006591088192882">فتح علامات التبويب في وضع التصفّح المتخفي باستخدام "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />"</translation>
 <translation id="6152340033632117531">غير نشطة</translation>
 <translation id="6152406514676263192">يمكنك تفعيل المزامنة للحصول على المحتوى الأكثر صلة باهتماماتك.</translation>
@@ -1861,6 +1864,7 @@
 <translation id="7468373585447318060">يمكنك متابعة أخبار الانخفاضات في أسعار جميع المنتجات التي تتبّعها.</translation>
 <translation id="746872191028309255">يمكنك تسوّق أي منتج تراه إمّا من خلال الكاميرا أو معرض الصور.</translation>
 <translation id="7471557245617580330">إنشاء علامة تبويب جديدة</translation>
+<translation id="7473555040328423550">إضافة علامة تبويب</translation>
 <translation id="7476548258282096076">تعرض هذه البطاقة المواقع الإلكترونية الأكثر زيارةً.</translation>
 <translation id="7484645889979462775">عدم حفظ كلمة المرور لهذا الموقع</translation>
 <translation id="7486006552035434095">الحفاظ على مزامنة أجهزتك</translation>

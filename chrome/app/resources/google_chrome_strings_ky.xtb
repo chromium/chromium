@@ -187,7 +187,6 @@
 <translation id="2915996080311180594">Кийинчерээк өчүрүп күйгүзүү</translation>
 <translation id="2916983411556218750">Chrome'ду даярдап алалы</translation>
 <translation id="2926952073016206995">Chrome'го бул сайтта камераны колдонууга уруксат бериңиз</translation>
-<translation id="2928420929544864228">Орнотулду.</translation>
 <translation id="2945997411976714835">Орнотуу катасы: Орнотуу процесси башталган жок.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Тармакка кирүү – Chrome</translation>
 <translation id="2970681950995291301">Google аккаунтуңузду Chrome'дон өчүрүү үчүн Параметрлер барагынан Chrome'дон чыгыңыз</translation>
@@ -283,6 +282,7 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="3892148308691398805">Текстти көчүрүү</translation>
 <translation id="3941890832296813527">Орнотуу катасы: Орнотуу файлынын аталышы жараксыз же колдоого алынбайт.</translation>
 <translation id="395904275706073188">Корголгон барактарды окууга болбойт. Башка баракты колдонуп көрүңүз.</translation>
+<translation id="3967822245660637423">Жүктөп алуу аяктады</translation>
 <translation id="3968962723676998462">Аккаунтуңузга (<ph name="ACCOUNT_EMAIL" />) Chrome маалыматын сактоо жана колдонуу үчүн сыр сүйлөмдү киргизиңиз</translation>
 <translation id="3973161977468201858">Google Chrome Сырсөздөрдү башкаргычтагы маалыматтарыңызды өчүргөнү жатат. Ага уруксат берүү үчүн Windows аккаунтуңуздун сырсөзүн териңиз.</translation>
 <translation id="400161754580828648">Экранды бөлүшүү үчүн Тутумдун параметрлеринен Chrome'го экрандан видео жаздырып алууга уруксат бериңиз.</translation>
@@ -317,7 +317,6 @@ Bluetooth түзмөктөрүн изилдөө үчүн Bluetooth'ду пайд
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Жекелештирүүнү жана башка функцияларды пайдалануу үчүн Chrome'ду Колдонмолор жана Интернеттеги аракеттер таржымалына жана байланышкан Google кызматтарына кошуңуз</translation>
 <translation id="4334241893986177674">Бул скриншотту издөө</translation>
-<translation id="4334294535648607276">Жүктөп алуу аяктады.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chrome'го кошулду</translation>
 <translation id="4344128547036991536">Google Lens'ти ачканыңызда беттин аталышы, URL жана андагы нерселер, ошондой эле PDF файлдары автоматтык түрдө Google'га жөнөтүлөт. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Жекелештирүүнү пайдалануу үчүн Chrome'ду Колдонмолор жана Интернеттеги аракеттер таржымалына кошуңуз</translation>
@@ -514,7 +513,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6319856120645568262">Chrome'го айланаңызды картага түшүрүп, колго көз салууга уруксат керек</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" кеңейтүүсүн колдонуу үчүн Chrome'го киришиңиз керек</translation>
 <translation id="6326175484149238433">Chrome'дон алып салуу</translation>
-<translation id="6327105987658262776">Жаңыртуулар жок.</translation>
 <translation id="6334815226785304306">Google Chrome'ду демейки серепчи кылып, тапшырмалар тактасына кадап коюңуз</translation>
 <translation id="63540178978900677">Chrome мындан ары демейки серепчиңиз эмес. Chrome демейки серепчиңиз болсунбу?</translation>
 <translation id="6360449101159168105">Бул өтмөк жигерсиз болуп турганда, Chrome'дун тез бойдон кармоо үчүн эстутум бошотулган. Бул сайтты жигерсиз абалда болуудан ар дайым чыгара аласыз.</translation>
@@ -580,7 +578,6 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="6999131147875565462">Chrome ылдамыраак иштейт жана JavaScript'ти колдонгон функциялар туура иштеши керек</translation>
 <translation id="7011190694940573312">Операциялык тутумдун бул версиясы колдоого алынбагандыктан, орнотулбай калды.</translation>
 <translation id="7024536598735240744">Топтомдон чыгаруу катасы: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Орнотуу токтотулду.</translation>
 <translation id="7025800014283535195">Chrome профилдерин бул жерден которо аласыз</translation>
 <translation id="7047386856539490735">Бул табылган нерселер пайдалуу болдубу?</translation>
 <translation id="7051685429025310665">Акыркы убакта кирген жоксуз. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> жана <ph name="PERMISSION_3" /> өчүрдү.</translation>
@@ -781,6 +778,7 @@ Google Chrome параметрлериңизди калыбына келтире
 <translation id="8999117580775242387">HTTPS жеткиликсиз болгондо, Chrome кооптуу туташууну сизге эскертпестен колдонот</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome'дун жаңы версиясы жеткиликтүү}=1{Chrome'дун жаңы версиясы жеткиликтүү}other{Chrome'дун жаңы версиясы # күндөн бери жеткиликтүү}}</translation>
 <translation id="9014771989710951291">Chrome'ду бир нече уюм тескейт</translation>
+<translation id="9018218886431812662">Орнотулду</translation>
 <translation id="9066987883552592250">Chrome Canary'деги Gemini'ды жабуу</translation>
 <translation id="9090566250983691233">Chrome эмне үчүн айрым файлдарды бөгөттөп жатканын билип алыңыз</translation>
 <translation id="9106236359747881194">Издөө үчүн текстти тандаңыз</translation>

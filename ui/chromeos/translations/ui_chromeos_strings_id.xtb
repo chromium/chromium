@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Tinjau kebijakan admin</translation>
 <translation id="158849752021629804">Memerlukan jaringan rumah</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Pemformatan...</translation>
 <translation id="1601786938618212857">ZIP</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugis dengan keyboard International AS</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Rusia dengan keyboard Fonetik YaZHert</translation>
 <translation id="2143778271340628265">Konfigurasi proxy manual</translation>
 <translation id="2148716181193084225">Hari ini</translation>
+<translation id="2148756636027685713">Pemformatan selesai</translation>
 <translation id="2161573825856688200">Project Google</translation>
 <translation id="2163152940313951844">Karakter tidak valid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Tersisa <ph name="RETRIES" /> upaya lagi.</translation>
 <translation id="2663066752008346276">Burma/Myanmar dengan keyboard Myansan</translation>
 <translation id="2664412712123763093">Lokasi file</translation>
+<translation id="2665919335226618153">Waduh! Terjadi error saat proses pemformatan.</translation>
 <translation id="2672394942808662069">Multibahasa Kanada</translation>
 <translation id="2707357721402813583">Irlandia</translation>
 <translation id="2708477391501452176">BÉPO Prancis</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Jaringan WEP tidak didukung</translation>
 <translation id="3295006446256079333">Volume ini</translation>
 <translation id="3295357220137379386">Perangkat sibuk</translation>
+<translation id="3305389145870741612">Proses pemformatan dapat memakan waktu beberapa detik. Harap tunggu.</translation>
 <translation id="3307875152560779385">Ukraina</translation>
 <translation id="3326821416087822643">Membuat file zip <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Tahun perekaman</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">mesin virtual</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Lebar tanda baca Penuh</translation>
+<translation id="5585912436068747822">Pemformatan gagal</translation>
 <translation id="5596627076506792578">Opsi lainnya</translation>
 <translation id="5602622065581044566">Bulgaria dengan keyboard Fonetik</translation>
 <translation id="5604409170937514933">Swedia</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Denmark</translation>
 <translation id="6224253798271602650">Format <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Berhasil menyelesaikan pemformatan!</translation>
 <translation id="6241349547798190358">Belanda (Belgia)</translation>
 <translation id="6267547857941397424">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Sambungkan</translation>
 <translation id="6269630227984243955">Malaysia</translation>

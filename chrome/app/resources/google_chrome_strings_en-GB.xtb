@@ -187,7 +187,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="2915996080311180594">Restart later</translation>
 <translation id="2916983411556218750">Let's get your Chrome ready</translation>
 <translation id="2926952073016206995">Chrome needs camera permission for this site</translation>
-<translation id="2928420929544864228">Installation complete.</translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Network sign-in – Chrome</translation>
 <translation id="2970681950995291301">To remove your Google Account from Chrome, sign out of Chrome in the Settings page</translation>
@@ -283,6 +282,7 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="3892148308691398805">Copy text</translation>
 <translation id="3941890832296813527">Install error: The installer filename is invalid or unsupported.</translation>
 <translation id="395904275706073188">Protected pages can't be read. Try a different page.</translation>
+<translation id="3967822245660637423">Download complete</translation>
 <translation id="3968962723676998462">Enter your passphrase to use and save Chrome data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome wants to delete your Google Password Manager data. Type in your Windows password to allow this.</translation>
 <translation id="400161754580828648">To share your screen, allow screen recording for Chrome in System Settings.</translation>
@@ -317,7 +317,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">To get personalisation and other features, include Chrome in Web &amp; App Activity and linked Google services</translation>
 <translation id="4334241893986177674">Search this screenshot</translation>
-<translation id="4334294535648607276">Download complete.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> has been added to Chrome</translation>
 <translation id="4344128547036991536">When you open Google Lens, the page title, URL and content, including PDFs, will be sent to Google automatically. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">To get personalisation, include Chrome in Web &amp; App Activity</translation>
@@ -514,7 +513,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6319856120645568262">Chrome needs permission to map your surroundings and track your hands</translation>
 <translation id="6321592572353357376">The extension '<ph name="EXTENSION_NAME" />' wants you to sign in to Chrome</translation>
 <translation id="6326175484149238433">Remove from Chrome</translation>
-<translation id="6327105987658262776">No update is available.</translation>
 <translation id="6334815226785304306">Make Google Chrome the default browser and pin to the taskbar</translation>
 <translation id="63540178978900677">Chrome is no longer your default browser. Make Chrome the default browser?</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
@@ -580,7 +578,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6999131147875565462">Chrome runs faster and features that use JavaScript should work as designed</translation>
 <translation id="7011190694940573312">Installation failed because this version of the operating system is not supported.</translation>
 <translation id="7024536598735240744">Unpack error: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Installation stopped.</translation>
 <translation id="7025800014283535195">You can switch between Chrome profiles here</translation>
 <translation id="7047386856539490735">Are these results useful?</translation>
 <translation id="7051685429025310665">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
@@ -781,6 +778,7 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="8999117580775242387">When HTTPS isn't available, Chrome will use an insecure connection without warning you</translation>
 <translation id="8999208279178790196">{0,plural, =0{A Chrome update is available}=1{A Chrome update is available}other{A Chrome update has been available for # days}}</translation>
 <translation id="9014771989710951291">Multiple organisations manage Chrome</translation>
+<translation id="9018218886431812662">Installation complete</translation>
 <translation id="9066987883552592250">Close Gemini in Chrome Canary</translation>
 <translation id="9090566250983691233">Learn why Chrome blocks some files</translation>
 <translation id="9106236359747881194">Select text to search</translation>

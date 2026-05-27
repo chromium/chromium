@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">စီမံခန့်ခွဲသူ မူဝါဒကို ပြန်ကြည့်ခြင်း</translation>
 <translation id="158849752021629804">ပင်မ ကွန်ရက် လိုအပ်</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">ဖိုင်စီနေ...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
 <translation id="162175252992296058">ယူအက်စ်နိုင်ငံတကာ ကီးဘုတ်ဖြင့် ပေါ်တူဂီ</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">အသံထွက် YaZHert ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="2143778271340628265">လက်ဖြင့် ပရောက်စီ စီစဉ်ပေးခြင်း</translation>
 <translation id="2148716181193084225">ယနေ့</translation>
+<translation id="2148756636027685713">ဖိုင်ပြန်လည်စီခြင်း ပြီးဆုံးပြီ။</translation>
 <translation id="2161573825856688200">Google Project</translation>
 <translation id="2163152940313951844">အက္ခရာ မမှန်ကန်ပါ- <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">သင့်တွင် ကြိုးစားခွင့် <ph name="RETRIES" /> ကြိမ် ကျန်သည်။</translation>
 <translation id="2663066752008346276">မြန်စံကီးဘုတ်ဖြင့် ဗမာ/မြန်မာ</translation>
 <translation id="2664412712123763093">ဖိုင်တည်နေရာ</translation>
+<translation id="2665919335226618153">ဪ၊ ဖျောက်! ဖိုင်စီနေစဉ်တွင် မှားယွင်းမှုတစ်ခု ကြုံတွေ့ခဲ့သည်။</translation>
 <translation id="2672394942808662069">ကနေဒါ ဘာသာစုံ</translation>
 <translation id="2707357721402813583">အိုင်းရစ်ရှ်</translation>
 <translation id="2708477391501452176">ပြင်သစ် BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP ကွက်ရက်များကို ပံ့ပိုးမထားပါ</translation>
 <translation id="3295006446256079333">ဤသိုလှောင်ခန်း</translation>
 <translation id="3295357220137379386">စက် အလုပ်များနေသည်</translation>
+<translation id="3305389145870741612">ဖိုင်ပြန်လည်စီရန် စက္ကန့်အနည်းငယ် ကြာမည်။ ခဏ စောင့်ပါ။</translation>
 <translation id="3307875152560779385">ယူကရိန်း</translation>
 <translation id="3326821416087822643">ဇီပ်လုပ်နေ <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">အသံသွင်းခဲ့သည့်နှစ်</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">ပကတိအသွင်စက်</translation>
 <translation id="5583640892426849032">နောက်ပြန်</translation>
 <translation id="5583664733673201137">ပုဒ်ဖြတ်ပုဒ်ရပ်အကျယ် ပြည့်သွားပြီ</translation>
+<translation id="5585912436068747822">ပုံစံချမှု မအောင်မြင်ခဲ့ပါ</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5602622065581044566">အသံထွက်ကီးဘုတ်ဖြင့် ဘူလ်ဂေးရီးယား</translation>
 <translation id="5604409170937514933">ဆွီဒင်</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">ပန်ချာပီ</translation>
 <translation id="6224240818060029162">ဒိန်းမတ်</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ဖော်မက်ချရန်</translation>
+<translation id="6224481128663248237">ပြန်လည်ဖိုင်စီခြင်း အောင်မြင်စွာ ပြီးဆုံးပါသည်!</translation>
 <translation id="6241349547798190358">ဒတ်ချ် (ဘယ်လ်ဂျီယံ)</translation>
 <translation id="6267547857941397424">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="6269630227984243955">မလေး</translation>

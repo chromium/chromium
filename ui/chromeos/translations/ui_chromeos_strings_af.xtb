@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Gaan administrateursbeleid na</translation>
 <translation id="158849752021629804">Benodig tuisnetwerk</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Formateer tans …</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugees met Internasionale VSA-sleutelbord</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Russies met fonetiese YaZHert-sleutelbord</translation>
 <translation id="2143778271340628265">Handmatige instaanbedieneropstelling</translation>
 <translation id="2148716181193084225">Vandag</translation>
+<translation id="2148756636027685713">Formatering afgehandel</translation>
 <translation id="2161573825856688200">Google-projek</translation>
 <translation id="2163152940313951844">Ongeldige karakter: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Jy het <ph name="RETRIES" /> pogings oor.</translation>
 <translation id="2663066752008346276">Birmaans/Mianmar met Miansan-sleutelbord</translation>
 <translation id="2664412712123763093">Lêerligging</translation>
+<translation id="2665919335226618153">Ai tog! Kon nie formateer nie.</translation>
 <translation id="2672394942808662069">Kanadees veeltalig</translation>
 <translation id="2707357721402813583">Iers</translation>
 <translation id="2708477391501452176">Franse BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP-netwerke word nie gesteun nie</translation>
 <translation id="3295006446256079333">Hierdie volume</translation>
 <translation id="3295357220137379386">Toestel is besig</translation>
+<translation id="3305389145870741612">Die formateringproses kan 'n paar sekondes neem. Wag asseblief.</translation>
 <translation id="3307875152560779385">Oekraïens</translation>
 <translation id="3326821416087822643">Kompakteer tans <ph name="FILE_NAME" /> …</translation>
 <translation id="3335337277364016868">Jaar opgeneem</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">virtuele masjien</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Leestekenbreedte is vol</translation>
+<translation id="5585912436068747822">Kon nie formateer nie</translation>
 <translation id="5596627076506792578">Meer opsies</translation>
 <translation id="5602622065581044566">Bulgaars met fonetiese sleutelbord</translation>
 <translation id="5604409170937514933">Sweeds</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Pandjabi</translation>
 <translation id="6224240818060029162">Deens</translation>
 <translation id="6224253798271602650">Formateer <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formatering is suksesvol afgehandel!</translation>
 <translation id="6241349547798190358">Nederlands (België)</translation>
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, seinsterkte <ph name="SIGNAL_STRENGTH" />%, foonbattery <ph name="BATTERY_STATUS" />%, koppel</translation>
 <translation id="6269630227984243955">Maleis</translation>

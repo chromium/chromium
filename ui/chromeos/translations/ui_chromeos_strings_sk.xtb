@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Skontrolovať pravidlá správcu</translation>
 <translation id="158849752021629804">Je potrebná domáca sieť</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Prebieha formátovanie...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugalská klávesnica s americkou klávesnicou s medzinárodným rozložením klávesov</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Ruská fonetická klávesnica (YaZHert)</translation>
 <translation id="2143778271340628265">Ručná konfigurácia servera proxy</translation>
 <translation id="2148716181193084225">Dnes</translation>
+<translation id="2148756636027685713">Formátovanie bolo dokončené</translation>
 <translation id="2161573825856688200">Projekt Google</translation>
 <translation id="2163152940313951844">Neplatný znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Zostáva vám tento počet pokusov: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Mjanmarská klávesnica s rozložením Myansan</translation>
 <translation id="2664412712123763093">Umiestnenie súboru</translation>
+<translation id="2665919335226618153">Ojoj! Pri formátovaní sa vyskytla chyba.</translation>
 <translation id="2672394942808662069">Kanadská viacjazyčná klávesnica</translation>
 <translation id="2707357721402813583">Írska klávesnica</translation>
 <translation id="2708477391501452176">Francúzska klávesnica – BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Siete WEP nie sú podporované</translation>
 <translation id="3295006446256079333">Tento objem</translation>
 <translation id="3295357220137379386">Zariadenie je zaneprázdnené</translation>
+<translation id="3305389145870741612">Proces formátovania môže trvať niekoľko sekúnd. Čakajte prosím.</translation>
 <translation id="3307875152560779385">Ukrajinská klávesnica</translation>
 <translation id="3326821416087822643">Prebieha komprimovanie súboru <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Rok nahrávky</translation>
@@ -586,6 +590,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5580591966435005537">virtuálne zariadenie</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Šírka interpunkcie je Plná</translation>
+<translation id="5585912436068747822">Formátovanie zlyhalo</translation>
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5602622065581044566">Bulharská fonetická klávesnica</translation>
 <translation id="5604409170937514933">Švédska klávesnica</translation>
@@ -672,6 +677,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6220423280121890987">Pandžábska klávesnica</translation>
 <translation id="6224240818060029162">Dánska klávesnica</translation>
 <translation id="6224253798271602650">Formátovať: <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formátovanie bolo úspešne dokončené.</translation>
 <translation id="6241349547798190358">Holandská (Belgicko) klávesnica</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, pripojenie</translation>
 <translation id="6269630227984243955">Malajská klávesnica</translation>

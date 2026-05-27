@@ -187,7 +187,6 @@
 <translation id="2915996080311180594">나중에 다시 시작</translation>
 <translation id="2916983411556218750">Chrome을 사용할 준비가 되셨나요?</translation>
 <translation id="2926952073016206995">Chrome에서 사이트에 대한 카메라 권한이 필요합니다.</translation>
-<translation id="2928420929544864228">설치가 완료되었습니다.</translation>
 <translation id="2945997411976714835">설치 오류: 설치 프로그램 프로세스를 시작할 수 없습니다.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 네트워크 로그인 - Chrome</translation>
 <translation id="2970681950995291301">Chrome에서 Google 계정을 삭제하려면 설정 페이지를 통해 Chrome에서 로그아웃하세요</translation>
@@ -282,6 +281,7 @@
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3941890832296813527">설치 오류: 설치 프로그램 파일 이름이 잘못되었거나 지원되지 않습니다.</translation>
 <translation id="395904275706073188">보호된 페이지는 읽을 수 없습니다. 다른 페이지를 사용해 보세요.</translation>
+<translation id="3967822245660637423">다운로드 완료</translation>
 <translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
 <translation id="3973161977468201858">Google Chrome에서 Google 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="400161754580828648">화면을 공유하려면 시스템 설정에서 Chrome의 화면 녹화를 허용하세요.</translation>
@@ -316,7 +316,6 @@
 <translation id="4328355335528187361">Chrome 개발자(mDNS-In)</translation>
 <translation id="4329315893554541805">맞춤설정 및 기타 기능을 사용하려면 웹 및 앱 활동 그리고 연결된 Google 서비스에 Chrome을 포함하세요</translation>
 <translation id="4334241893986177674">이 스크린샷을 검색합니다.</translation>
-<translation id="4334294535648607276">다운로드가 완료되었습니다.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />이(가) Chrome에 추가됨</translation>
 <translation id="4344128547036991536">Google 렌즈를 열면 페이지 제목, URL, PDF를 포함한 콘텐츠가 Google로 자동 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">맞춤설정을 사용하려면 웹 및 앱 활동에 Chrome을 포함하세요</translation>
@@ -513,7 +512,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6319856120645568262">Chrome에서 주변 환경을 매핑하고 손을 추적하려면 권한이 필요합니다</translation>
 <translation id="6321592572353357376">'<ph name="EXTENSION_NAME" />' 확장 프로그램에서 Chrome 로그인을 요청합니다</translation>
 <translation id="6326175484149238433">Chrome에서 삭제</translation>
-<translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6334815226785304306">Chrome을 기본 브라우저로 설정하고 태스크 바에 고정합니다.</translation>
 <translation id="63540178978900677">Chrome이 더 이상 기본 브라우저가 아닙니다. Chrome을 기본 브라우저로 설정하시겠습니까?</translation>
 <translation id="6360449101159168105">이 탭이 비활성 상태인 동안 Chrome의 속도를 빠르게 유지하기 위해 메모리를 확보했습니다. 이 사이트가 비활성 상태가 되지 않도록 항상 제외할 수 있습니다.</translation>
@@ -579,7 +577,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="6999131147875565462">Chrome이 더 빠르게 실행되며 JavaScript를 사용하는 기능이 의도한 대로 작동함</translation>
 <translation id="7011190694940573312">이 운영체제 버전은 지원되지 않으므로 설치에 실패했습니다.</translation>
 <translation id="7024536598735240744">압축해제 오류(<ph name="UNPACK_ERROR" />)가 발생했습니다.</translation>
-<translation id="7025789849649390912">설치가 중단되었습니다.</translation>
 <translation id="7025800014283535195">여기에서 Chrome 프로필 간에 전환할 수 있습니다.</translation>
 <translation id="7047386856539490735">결과가 유용한가요?</translation>
 <translation id="7051685429025310665">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
@@ -780,6 +777,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8999117580775242387">HTTPS를 사용할 수 없는 경우 Chrome에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome 업데이트 출시}=1{Chrome 업데이트 출시}other{Chrome 업데이트가 출시된 지 #일 지남}}</translation>
 <translation id="9014771989710951291">여러 조직에서 Chrome을 관리합니다.</translation>
+<translation id="9018218886431812662">설치 완료</translation>
 <translation id="9066987883552592250">Chrome Canary의 Gemini 닫기</translation>
 <translation id="9090566250983691233">Chrome에서 일부 파일을 차단하는 이유 알아보기</translation>
 <translation id="9106236359747881194">검색할 텍스트 선택</translation>

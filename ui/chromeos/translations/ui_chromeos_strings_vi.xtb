@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Xem kỹ chính sách của quản trị viên</translation>
 <translation id="158849752021629804">Cần mạng gia đình</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Đang định dạng...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Camera</translation>
 <translation id="162175252992296058">Tiếng Bồ Đào Nha bằng bàn phím quốc tế Hoa Kỳ</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Tiếng Nga bằng bàn phím phiên âm YaZHert</translation>
 <translation id="2143778271340628265">Cấu hình proxy thủ công</translation>
 <translation id="2148716181193084225">Hôm nay</translation>
+<translation id="2148756636027685713">Định dạng hoàn tất</translation>
 <translation id="2161573825856688200">Dự án trên Google</translation>
 <translation id="2163152940313951844">Ký tự không hợp lệ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Bạn còn <ph name="RETRIES" /> lần nhập.</translation>
 <translation id="2663066752008346276">Tiếng Miến Điện/Myanmar bằng bàn phím Myansan</translation>
 <translation id="2664412712123763093">Vị trí tệp</translation>
+<translation id="2665919335226618153">Ôi, hỏng! Đã xảy ra lỗi trong khi định dạng.</translation>
 <translation id="2672394942808662069">Bàn phím đa ngôn ngữ tiêu chuẩn Canada</translation>
 <translation id="2707357721402813583">Tiếng Ireland</translation>
 <translation id="2708477391501452176">Tiếng Pháp (BÉPO)</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Không hỗ trợ mạng WEP</translation>
 <translation id="3295006446256079333">Phương tiện này</translation>
 <translation id="3295357220137379386">Thiết bị đang bận</translation>
+<translation id="3305389145870741612">Quá trình định dạng có thể mất vài giây. Vui lòng đợi.</translation>
 <translation id="3307875152560779385">Tiếng Ukraina</translation>
 <translation id="3326821416087822643">Đang nén <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Năm ghi âm</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">máy ảo</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Độ rộng dấu câu là Đầy đủ</translation>
+<translation id="5585912436068747822">Định dạng không thành công</translation>
 <translation id="5596627076506792578">Tuỳ chọn khác</translation>
 <translation id="5602622065581044566">Tiếng Bulgaria bằng bàn phím phiên âm</translation>
 <translation id="5604409170937514933">Tiếng Thuỵ Điển</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Tiếng Punjab</translation>
 <translation id="6224240818060029162">Tiếng Đan Mạch</translation>
 <translation id="6224253798271602650">Định dạng <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Đã hoàn tất định dạng thành công!</translation>
 <translation id="6241349547798190358">Tiếng Hà Lan (Bỉ)</translation>
 <translation id="6267547857941397424">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
 <translation id="6269630227984243955">Tiếng Malay</translation>

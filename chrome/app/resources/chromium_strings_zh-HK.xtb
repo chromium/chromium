@@ -176,7 +176,6 @@
 <translation id="2885378588091291677">工作管理員</translation>
 <translation id="2910007522516064972">關於 Chromium(&amp;C)</translation>
 <translation id="2915996080311180594">稍後重新開機</translation>
-<translation id="2928420929544864228">安裝完成。</translation>
 <translation id="2933336679234709858">你已使用密碼短語加密資料。如要在 Google 帳戶中使用及儲存 Chromium 資料，請輸入密碼短語。</translation>
 <translation id="2945997411976714835">安裝錯誤：安裝程式程序無法開始。</translation>
 <translation id="2948852018303413228">在 iOS 版 Chromium 使用已儲存的密碼，加快登入網站的速度</translation>
@@ -273,6 +272,7 @@
 <translation id="3954172517175569325">你儲存在 Google 帳戶中的密碼、付款方法和地址將從此裝置中移除。如要再次在 Chromium 中使用這些資料，請重新登入。</translation>
 <translation id="395904275706073188">無法讀取受保護的頁面，請嘗試其他頁面。</translation>
 <translation id="3962647064319009959">瞭解 Chromium 如何使用者的網上安全</translation>
+<translation id="3967822245660637423">下載完成</translation>
 <translation id="3971865010372729242">你在網址列或搜尋框中輸入內容時，Chromium 會將輸入的內容傳送至你機構的搜尋、AI 和代理工具以取得建議。</translation>
 <translation id="3975724895399328945">關於 Google Chrome for Testing(&amp;G)</translation>
 <translation id="3997429360543082038">關於 Chromium 作業系統</translation>
@@ -308,7 +308,6 @@
 <translation id="4298125729853015961">從 Chromium 匯出密碼</translation>
 <translation id="4304713468139749426">密碼管理工具</translation>
 <translation id="4334241893986177674">搵呢張螢幕截圖</translation>
-<translation id="4334294535648607276">下載完成。</translation>
 <translation id="4384331407722351213">在 Windows 啟動時開啟 Chromium</translation>
 <translation id="4384993550046411228">將 Chromium 設定為預設瀏覽器，即可輕鬆存取你熟悉、喜愛和信任的功能。Chromium 會固定在工作列，方便你快速取用。</translation>
 <translation id="439358628917130594">在使用這部裝置前，<ph name="MANAGER" /> 要求您仔細閱讀並接受下列《服務條款》。這些條款不會擴展、修改或限制《Chromium 作業系統條款》。</translation>
@@ -362,7 +361,6 @@
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4992938037305302429">你在 Chromium 的帳戶</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
-<translation id="5083712646171654472">Chromium 版 Gemini 會使用自動瀏覽功能在分頁中運作，完成你指派的任務。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
 <translation id="5141988424377517949">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限。</translation>
 <translation id="5174969993834422967">系統已按照你的使用習慣封鎖通知。如要允許此網站傳送通知，請按一下網址列右上角的通知圖示。</translation>
@@ -471,7 +469,6 @@
 <translation id="6294831894865512704">擴充程式需要你登入 Chromium</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> 可能不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="6309712487085796862">Chromium 正在使用您的相機。</translation>
-<translation id="6327105987658262776">沒有可用的更新。</translation>
 <translation id="6333502561965082103">Chromium 正在執行另一項操作，請稍後再試。</translation>
 <translation id="6334986366598267305">無論是登入 Google 帳戶使用 Chromium，還是以 Google 帳戶使用共用電腦，現在都更輕而易舉。</translation>
 <translation id="6347002662287820329">將 Chromium 設定為預設瀏覽器，即可輕鬆存取你熟悉、喜愛和信任的功能。</translation>
@@ -547,7 +544,6 @@
 <translation id="7003299027384820442">輸入用於在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chromium 資料的密碼短語</translation>
 <translation id="7011190694940573312">由於系統不支援此版本的作業系統，因此安裝失敗。</translation>
 <translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
-<translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="7045244423563602563">自訂屬於您的 Chromium</translation>
 <translation id="7047386856539490735">這些結果有用嗎？</translation>
 <translation id="705851970750939768">更新 Chromium</translation>
@@ -603,7 +599,6 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7624307931717240213">我們會使用有關資料改善服務，詳情請參閱《私隱權政策》和《服務條款》。</translation>
 <translation id="7649070708921625228">說明</translation>
 <translation id="7650134251917003571">取得 Chromium 應用程式</translation>
-<translation id="7656340475565475526">讓 Chromium 為你瀏覽</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7686590090926151193">Chromium 不是您的預設瀏覽器</translation>
 <translation id="7689606757190482937">在不同裝置上同步和設定個人化的 Chromium</translation>
@@ -717,6 +712,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="897581876605952338">Chromium Enterprise 標誌</translation>
 <translation id="8981150672034878610">由於開啟設定檔時發生錯誤，因此無法啟動 Chromium。請嘗試重新啟動 Chromium。</translation>
 <translation id="8988036198400390003">管理 Chromium 設定檔</translation>
+<translation id="9018218886431812662">安裝完成</translation>
 <translation id="9019929317751753759">為鞏固 Chromium 的安全性，我們已將未列在 <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> 中的擴充功能停用，因為它們可能在您不知情的情況下加入瀏覽器。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
 <translation id="904366664621834601">此封存檔案包含可能隱藏惡意軟件的其他檔案，因此 Chromium 已禁止下載</translation>

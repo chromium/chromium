@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Pregledajte pravila administratora</translation>
 <translation id="158849752021629804">Potrebna je matična mreža</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Formatiranje...</translation>
 <translation id="1601786938618212857">Komprimiraj</translation>
 <translation id="1620510694547887537">Fotoaparat</translation>
 <translation id="162175252992296058">portugalski s američkom međunarodnom tipkovnicom</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">ruski s fonetskom tipkovnicom YaZHert</translation>
 <translation id="2143778271340628265">Ručna konfiguracija proxyja</translation>
 <translation id="2148716181193084225">Danas</translation>
+<translation id="2148756636027685713">Formatiranje je dovršeno</translation>
 <translation id="2161573825856688200">Googleov projekt</translation>
 <translation id="2163152940313951844">Nevažeći znak: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Imate još <ph name="RETRIES" /> pokušaj/pokušaja.</translation>
 <translation id="2663066752008346276">burmanski/mjanmarski s tipkovnicom Myansan</translation>
 <translation id="2664412712123763093">Lokacija datoteke</translation>
+<translation id="2665919335226618153">O, ne! Došlo je do pogreške prilikom formatiranja.</translation>
 <translation id="2672394942808662069">kanadska (višejezična)</translation>
 <translation id="2707357721402813583">irska</translation>
 <translation id="2708477391501452176">francuska BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP mreže nisu podržane</translation>
 <translation id="3295006446256079333">Ovaj opseg</translation>
 <translation id="3295357220137379386">Uređaj je zauzet</translation>
+<translation id="3305389145870741612">Postupak formatiranja može potrajati nekoliko sekundi. Pričekajte.</translation>
 <translation id="3307875152560779385">ukrajinski</translation>
 <translation id="3326821416087822643">Komprimiranje datoteke <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Godina snimanja</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">virtualni uređaj</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Interpunkcija je u punoj širini</translation>
+<translation id="5585912436068747822">Formatiranje nije uspjelo</translation>
 <translation id="5596627076506792578">Više opcija</translation>
 <translation id="5602622065581044566">bugarski s fonetskom tipkovnicom</translation>
 <translation id="5604409170937514933">švedska</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">pandžapski</translation>
 <translation id="6224240818060029162">danski</translation>
 <translation id="6224253798271602650">Formatiranje diska <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formatiranje je uspješno dovršeno!</translation>
 <translation id="6241349547798190358">nizozemski (Belgija)</translation>
 <translation id="6267547857941397424">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, telefonska baterija <ph name="BATTERY_STATUS" />%, povežite</translation>
 <translation id="6269630227984243955">malajski</translation>

@@ -14,6 +14,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> toegevoegd</translation>
 <translation id="1038106730571050514">Suggesties bekijken</translation>
 <translation id="1047017786576569492">gedeeltelijk</translation>
+<translation id="104710386808485638">Linux opnieuw starten?</translation>
 <translation id="1052916631016577720">Items scannen</translation>
 <translation id="1056775291175587022">Geen netwerken</translation>
 <translation id="1056898198331236512">Waarschuwing</translation>
@@ -29,6 +30,7 @@
 <translation id="1073899992769346247">Vervang de batterij of laad hem op</translation>
 <translation id="1081015718268701546">Linux-apps worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="108486256082349153">Mobiel: <ph name="ADDRESS" /></translation>
+<translation id="1085697365578766383">Fout bij starten van virtuele machine. Probeer het opnieuw.</translation>
 <translation id="1088231044944504242">Doorzoek onder andere je <ph name="CATEGORY" />, bestanden en apps… Gebruik de pijltoetsen om door je apps te navigeren.</translation>
 <translation id="1093645050124056515">ctrl + alt + pijl-omlaag</translation>
 <translation id="1094756674036064790">Bluetooth uitzetten?</translation>
@@ -55,6 +57,7 @@
 <translation id="1173268871892601910">ChromeOS Wachtwoordmanager wil bevestigen dat jij het bent</translation>
 <translation id="1175572348579024023">Scrollen</translation>
 <translation id="1175944128323889279">Huidig batterijniveau <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> resterend</translation>
+<translation id="1177863135347784049">Aangepast</translation>
 <translation id="1178581264944972037">Onderbreken</translation>
 <translation id="1179776263021875437">Focussen op taak stoppen</translation>
 <translation id="1180117276105724040">Vensters van je vorige sessie herstellen...</translation>
@@ -82,6 +85,7 @@
 <translation id="1240638468526743569">Een app</translation>
 <translation id="1242198791279543032">Meldingen worden gedempt</translation>
 <translation id="1242883863226959074">apparaat</translation>
+<translation id="1244265436519979884">Linux-herstel wordt momenteel uitgevoerd</translation>
 <translation id="1245476784081715330">Goed werk!</translation>
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246890715821376239">Niet-ondersteunde apps</translation>
@@ -108,8 +112,10 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Ontdekken openen</translation>
 <translation id="129469256578833241">Terug naar overzicht</translation>
+<translation id="1294807885394205587">Dit kan een paar minuten duren. Containerbeheer wordt gestart.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Druk op elk moment op <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
+<translation id="130491383855577612">Vervangen van Linux-apps en -bestanden is geslaagd</translation>
 <translation id="1306549533752902673">AANBEVOLEN APPS</translation>
 <translation id="1310396869741602366">Toon wijzigen</translation>
 <translation id="1312604459020188865">Signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
@@ -118,6 +124,7 @@
 <translation id="132346741904777634">Camera uitgelijnd op de linkerbovenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> en vensters sluiten</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> gekoppeld</translation>
+<translation id="1338950911836659113">Verwijderen...</translation>
 <translation id="1340378040547539434">Uitzoomen op pagina</translation>
 <translation id="1341651618736211726">Overloop</translation>
 <translation id="1341926407152459446"><ph name="DEVICE_NAME" /> gebruiken voor audio-invoer en -uitvoer</translation>
@@ -161,6 +168,7 @@
 <translation id="1469148162491666137">Hiermee geef je toegang aan <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met camera- en microfoonrechten. Je moet misschien de webpagina vernieuwen of de app opnieuw starten.</translation>
 <translation id="147310119694673958">Telefoonbatterij <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Hotspot aan-/uitzetten. Hotspot staat aan: 1 apparaat verbonden.</translation>
+<translation id="1476595624592550506">Je wachtwoord wijzigen</translation>
 <translation id="1479685784053141667">Een contact maken</translation>
 <translation id="1479909375538722835">Zwevend toegankelijkheidsmenu</translation>
 <translation id="1483493594462132177">Verzenden</translation>
@@ -176,6 +184,7 @@
 <translation id="1521655867290435174">Google Spreadsheets</translation>
 <translation id="1523032696246003">Batterij: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> tot vol</translation>
 <translation id="1525508553941733066">SLUITEN</translation>
+<translation id="152629053603783244">Linux opnieuw opstarten</translation>
 <translation id="1526448108126799339">Nieuw tabblad openen in een nieuw venster</translation>
 <translation id="1528259147807435347">In de afgelopen week bewerkt</translation>
 <translation id="1536604384701784949">Als je <ph name="USER_EMAIL_ADDRESS" /> wilt gebruiken, moet je eerst uitloggen van alle accounts. Wil je uitloggen, selecteer dan Annuleren om terug te gaan. Selecteer daarna de tijd om het statusgedeelte te openen en kies Uitloggen. Log dan weer in op <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
@@ -194,11 +203,15 @@
 <translation id="1571697193564730395">Niet storen aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Geselecteerde handgreep aan de linkerkant, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="1576623706766186887">Uitzoomen als vergrootglas aanstaat</translation>
+<translation id="1578558981922970608">Nu sluiten</translation>
 <translation id="1582946770779745370">Game Dashboard is beschikbaar. Druk op <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape en daarna op <ph name="LAUNCHER_KEY_NAME" /> + g om dit te openen.</translation>
 <translation id="1586324912145647027">Naar bureau 1 tot en met 8 gaan</translation>
 <translation id="158838227375272121">Google Classroom-website</translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
+<translation id="1592074621872221573"><ph name="MANAGER" /> heeft ADB-foutopsporing uitgezet. Hierdoor wordt je <ph name="DEVICE_TYPE" /> gereset. Maak een back-up van je bestanden voordat je opnieuw opstart.</translation>
+<translation id="1595492813686795610">Linux wordt geüpgraded</translation>
 <translation id="1597880963776148053">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Je vastgezette en geopende apps staan op de plank onderaan het scherm. Druk op Alt + Shift + L en daarna op Tab om de focus op items op de plank te plaatsen.</translation>
+<translation id="1602085790802918092">De virtuele machine wordt gestart</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + pijl-omlaag</translation>
 <translation id="1604857178818051494">Media pauzeren</translation>
 <translation id="1607312127821884567">Instellen van de weergave van apps van je telefoon sluiten</translation>
@@ -207,12 +220,12 @@
 <translation id="1612679292338846734">Als je deze functies aanzet, kunnen de ingevoerde tekst, de documentcontent en de URL van de webpagina naar de servers van AI van Google worden gestuurd. Deze informatie wordt gebruikt om schrijfsuggesties te genereren, samenvattingen te genereren, vragen te beantwoorden en het product te verbeteren, in overeenstemming met <ph name="LINK_TO_SERVICE_TERMS" />. Voeg geen persoonlijke, gevoelige of vertrouwelijke informatie toe.</translation>
 <translation id="1619879934359211038">Kan geen verbinding maken met Google Play. Check je netwerkverbinding en probeer het opnieuw. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Camera</translation>
+<translation id="1621831347985899379"><ph name="DEVICE_TYPE" />-gegevens worden verwijderd</translation>
 <translation id="1623768535032616219">Google Classroom samenvouwen</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> is niet beschikbaar.</translation>
 <translation id="1632985212731562677">Je kunt Toegang via schakelaar uitzetten via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> apparaten</translation>
 <translation id="1639239467298939599">Laden</translation>
-<translation id="1642895994345928121">Er is onvoldoende apparaatopslag om deze app te openen. Maak ruimte vrij en probeer het opnieuw.</translation>
 <translation id="1647986356840967552">Vorige pagina</translation>
 <translation id="1651914502370159744">Pagina Geschiedenis openen</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
@@ -254,6 +267,7 @@
 <translation id="1755408179247123630">Selecteer om voor te lezen aanzetten?</translation>
 <translation id="1755556344721611131">App Diagnostische gegevens</translation>
 <translation id="1756833229520115364">Kan de template niet opslaan. Te veel vensters of tabbladen.</translation>
+<translation id="1757132445735080748">Als je het instellen van Linux wilt afronden, update je Chrome OS Flex en probeer je het opnieuw.</translation>
 <translation id="1757857692711134412">Uit tot zonsondergang</translation>
 <translation id="1763084151787818322">Andere acties</translation>
 <translation id="1768138163688567246">Mijn scherm doorzoeken sluiten</translation>
@@ -288,6 +302,7 @@
 <translation id="1879018240766558464">Incognitovensters worden momenteel niet ondersteund. Andere apps worden opgeslagen.</translation>
 <translation id="1882814835921407042">Geen mobiel netwerk</translation>
 <translation id="1882897271359938046">Spiegelen naar <ph name="DISPLAY_NAME" /></translation>
+<translation id="1884705339276589024">Grootte van Linux-schijf aanpassen</translation>
 <translation id="1885785240814121742">Ontgrendelen met vingerafdruk</translation>
 <translation id="1891362123137972260">Er is zeer weinig schijfruimte beschikbaar. Maak ruimte vrij.</translation>
 <translation id="1894024878080591367">Instellen om met je toetsenbord te spelen</translation>
@@ -301,6 +316,7 @@
 <translation id="1925320505152357008">minder dan 1 min</translation>
 <translation id="1928739107511554905">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op via het touchscreen.</translation>
 <translation id="1929331825127010451">Terug naar vraag</translation>
+<translation id="1937774647013465102">Kan type containerarchitectuur <ph name="ARCHITECTURE_CONTAINER" /> niet importeren met dit apparaat. Dit apparaat is <ph name="ARCHITECTURE_DEVICE" />. Je kunt proberen deze container te herstellen op een ander apparaat of je kunt toegang krijgen tot bestanden in deze containerimage door ze te openen in de app Bestanden.</translation>
 <translation id="1946615340060705561">Druk op c om los te laten</translation>
 <translation id="1948405482892809935">Overschakelen naar volgende gebruiker</translation>
 <translation id="1954252331066828794">Schermopname voltooid</translation>
@@ -328,6 +344,8 @@
 <translation id="2034971124472263449">Toch opslaan</translation>
 <translation id="2041220428661959602">Batterijniveau: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">De sneltoets <ph name="SIX_PACK_KEY_NAME" /> staat op dit moment uit</translation>
+<translation id="204706822916043810">De virtuele machine wordt gecontroleerd</translation>
+<translation id="2048554637254265991">Fout bij starten van containerbeheer. Probeer het opnieuw.</translation>
 <translation id="2048653237708779538">Actie niet beschikbaar</translation>
 <translation id="2049240716062114887">Bureaunaam is veranderd in <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Het cameravoorbeeld staat aan</translation>
@@ -358,6 +376,7 @@
 <translation id="216955976692983107">Venster met tegels voor formaat aanpassen naar rechts verplaatsen</translation>
 <translation id="2185166372312820725">Naar het vorige tabblad gaan</translation>
 <translation id="2185444992308415167">Tabbladen 1 tot en met 8 doorlopen</translation>
+<translation id="2192232475740621500">Lage dichtheid gebruiken</translation>
 <translation id="2195732836444333448">We zitten op dit moment op de maximale capaciteit. Probeer het later nog eens.</translation>
 <translation id="2198625180564913276">Profiel toevoegen. Dit kan een paar minuten duren.</translation>
 <translation id="219905428774326614">Launcher, alle apps</translation>
@@ -382,6 +401,7 @@
 <translation id="2268813581635650749">Iedereen uitloggen</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Vooruit zoeken</translation>
+<translation id="2278668501808246459">Containerbeheer starten</translation>
 <translation id="2282073721614284166">Link openen in tabblad</translation>
 <translation id="2292698582925480719">Weergaveschaal</translation>
 <translation id="2293443480080733021">Waarop wil je je focussen? Druk op Enter om de taak toe te voegen.</translation>
@@ -408,6 +428,7 @@
 <translation id="2352467521400612932">Stylusinstellingen</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> activeren</translation>
 <translation id="2355314311311231464">Het instelproces is mislukt omdat je accountgegevens niet kunnen worden opgehaald. Probeer het opnieuw. Foutcode: <ph name="ERROR_CODE" />.</translation>
+<translation id="2359071692152028734">Linux-apps reageren misschien niet meer.</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2360398059912971776">batterij</translation>
 <translation id="2361210043495191221">Wifi aan-/uitzetten. <ph name="STATE" />.</translation>
@@ -421,7 +442,6 @@
 <translation id="2383521554963939360">App- en tabbladgroepen</translation>
 <translation id="2386292613071805067">Alles op pagina selecteren</translation>
 <translation id="2389423187722941333">Gemini aan-/uitzetten</translation>
-<translation id="2391805183137601570">Steam openen</translation>
 <translation id="2392659840443812875">Geen beschikbare hotspot. Zorg dat je telefoon in de buurt is en dat bluetooth aanstaat.</translation>
 <translation id="2397416548179033562">Chrome-menu bekijken</translation>
 <translation id="240006516586367791">Mediabediening</translation>
@@ -444,14 +464,13 @@
 <translation id="243878895369688216">Gisteren geopend</translation>
 <translation id="2440978926514840421">Gif-opname gemaakt</translation>
 <translation id="2441427462554639370">Opname beëindigd omdat er zeer weinig opslagruimte beschikbaar is</translation>
-<translation id="2447587550790814052">Je kunt Steam voor Chromebook (bèta) nu gebruiken</translation>
+<translation id="2445449901874883781">Hoge dichtheid gebruiken</translation>
 <translation id="2449089818483227734">De batterij is bijna leeg</translation>
 <translation id="2450205753526923158">Screenshotmodus</translation>
 <translation id="2453860139492968684">Voltooien</translation>
 <translation id="2455994958736234930">www. en .com toevoegen aan de adresbalk en daarna de website openen</translation>
 <translation id="2456008742792828469">Agenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Details</translation>
-<translation id="2462332841984057083">Steam wordt al ingesteld. Wacht tot het instellen is afgerond.</translation>
 <translation id="2465145153332031561">Batterijstatus <ph name="BATTERY_HEALTH_PERCENTAGE" />%, aantal cycli <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Resolutie bevestigen</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> invoegen</translation>
@@ -464,7 +483,6 @@
 <translation id="2486214324139475545">Voorbeeld van <ph name="DESK_NAME" />. Actief bureau.</translation>
 <translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> is gewijzigd in een resolutie van <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Zonder bevestiging worden de vorige instellingen hersteld over <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Deelnemen</translation>
-<translation id="2494555621641843783">Kan Steam niet installeren</translation>
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2499445554382787206">Menu voor bureauprofiel. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
@@ -484,6 +502,7 @@
 <translation id="2531025035050312891">apparaat langzaam</translation>
 <translation id="2531107890083353124">Druk op <ph name="KEY_ONE" /> terwijl je het tabblad sleept</translation>
 <translation id="2532199152994248594">Sleep of druk op de spatiebalk om een gebied te selecteren om vast te leggen</translation>
+<translation id="2537927931785713436">De image van de virtuele machine wordt gecontroleerd</translation>
 <translation id="2540651571961486573">Er is iets misgegaan. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Probeer je Home te gebruiken? Gebruik</translation>
 <translation id="254900897760075745">Geselecteerde content kopiëren naar klembord</translation>
@@ -543,7 +562,8 @@
 <translation id="2727175239389218057">Reageren</translation>
 <translation id="2727744317940422214">Er is iets misgegaan. Dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />. Opschonen is mislukt. Je moet dit misschien handmatig doen.</translation>
 <translation id="2727977024730340865">Aangesloten op een laag-vermogen-lader. Opladen van de batterij mogelijk niet betrouwbaar.</translation>
-<translation id="2737538893171115082">Steam voor Chromebook (bèta) is geblokkeerd door je beheerder. De beheerder moet het volgende beleid aanzetten:</translation>
+<translation id="2741713322780029189">Herstelterminal openen</translation>
+<translation id="274290345632688601">Linux-apps en -bestanden herstellen</translation>
 <translation id="2743301740238894839">Starten</translation>
 <translation id="2743387203779672305">Kopiëren naar klembord</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -571,6 +591,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2815594810045873507">Probeer een oplader met een hoger wattage (W) of gebruik je oorspronkelijke oplader.</translation>
 <translation id="2819276065543622893">Je wordt nu uitgelogd.</translation>
 <translation id="2822551631199737692">Camera in gebruik</translation>
+<translation id="2822910719211888134">Fout tijdens back-up maken van Linux</translation>
 <translation id="2825619548187458965">Plank</translation>
 <translation id="2831035692318564937">Aan tot zonsopgang</translation>
 <translation id="2834813915651407382">Recent geopend</translation>
@@ -578,6 +599,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2838589015763961627">Sluit het volledige scherm om het formaat te wijzigen</translation>
 <translation id="2840766858109427815">Ga verder naar de volgende pagina</translation>
 <translation id="2841907151129139818">Overgeschakeld naar tabletmodus</translation>
+<translation id="2843560154284403323">Als je de installatie van Linux wilt afronden, update je Chrome OS en probeer je het opnieuw.</translation>
 <translation id="2844169650293029770">USB-C-apparaat (poort links aan de voorkant)</translation>
 <translation id="2844350028562914727">details</translation>
 <translation id="2847759467426165163">Casten naar</translation>
@@ -586,6 +608,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2850207700020959936">Apps hebben toegang tot de camera</translation>
 <translation id="2852045827873867442">Internetverbinding vereist.</translation>
 <translation id="2860184359326882502">Beste resultaat</translation>
+<translation id="2862815659905780618">Linux-ontwikkelomgeving verwijderen</translation>
 <translation id="2865888419503095837">Netwerkinfo</translation>
 <translation id="2869095047958348710">Afgelopen <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">Primaire monitor omwisselen</translation>
@@ -617,6 +640,8 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="2949420361496057765">Druk op <ph name="MODIFIER" /> en klik op een link</translation>
 <translation id="2957159466053076448">Je kunt deze functies altijd uitzetten in Instellingen. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio van apparaat</translation>
+<translation id="2959842337402130152">Herstellen is niet mogelijk vanwege onvoldoende opslagruimte. Maak <ph name="SPACE_REQUIRED" /> vrij op het apparaat en probeer het opnieuw.</translation>
+<translation id="2960208947600937804">Er is een fout opgetreden bij het configureren van Linux. Neem contact op met je beheerder.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Microfoontoegang aanzetten?</translation>
 <translation id="296762781903199866">Kan spraakbestanden in het <ph name="LANGUAGE" /> niet downloaden</translation>
@@ -645,9 +670,11 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3040982432432547149">Help ons Steam voor Chromebook te verbeteren</translation>
 <translation id="304417730895741346">Je vastgezette en geopende apps staan op de plank. Als je een app wilt vastzetten op de plank, klik je met de rechtermuisknop op een app of tik je met 2 vingers op de touchpad.</translation>
 <translation id="3045670165536837541">Geselecteerde handgreep rechtsboven, gebruik de pijltoetsen om te verplaatsen</translation>
+<translation id="3046178388369461825">Er is zeer weinig Linux-schijfruimte beschikbaar</translation>
 <translation id="3047761520276763270">Zeg eens:</translation>
 <translation id="3053407068093039599">Cameratoegang aan-/uitzetten</translation>
 <translation id="3055162170959710888">Je hebt dit apparaat vandaag <ph name="USED_TIME" /> gebruikt</translation>
+<translation id="3058002721610176427">Je pincode en wachtwoord wijzigen</translation>
 <translation id="3062298103034426069">Niet ondersteund</translation>
 <translation id="3068622547379332530">Versie <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Plank aan linkerkant</translation>
@@ -709,6 +736,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3249513730522716925">Het venster <ph name="WINDOW_TITLE" /> is verplaatst van bureaublad <ph name="ACTIVE_DESK" /> naar bureaublad <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Type schoolwerk: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">De markering voor een item op je plank verwijderen</translation>
+<translation id="3256274561709196882">Je pincode wijzigen</translation>
 <translation id="3260969790895726815">Spraak wordt lokaal verwerkt en dicteren werkt offline, maar sommige spraakopdrachten werken niet.</translation>
 <translation id="3264031581203585083">Alle Google Drive-suggesties verbergen</translation>
 <translation id="3265032511221679826">Toegang tot exacte locatie aanzetten?</translation>
@@ -716,17 +744,18 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3271554781793662131">Zoeken om in te voegen</translation>
 <translation id="3274634049061007184">Apps van je telefoon bekijken</translation>
 <translation id="3279230909244266691">Dit proces kan enkele minuten duren. De virtuele machine wordt gestart.</translation>
-<translation id="3285465040399788513">Er is onvoldoende apparaatopslag om het instellen af te ronden. Maak ruimte vrij en probeer het opnieuw.</translation>
 <translation id="3289364673986435196">Aan/uit-menu</translation>
 <translation id="3289544412142055976">Linux-apps worden momenteel niet ondersteund</translation>
 <translation id="3289674678944039601">Opladen via adapter</translation>
 <translation id="3290356915286466215">Niet beveiligd</translation>
 <translation id="3291862315280588024">Naar begin van het vorige woord</translation>
+<translation id="32939749466444286">De Linux-container is niet gestart. Probeer het opnieuw.</translation>
 <translation id="3294437725009624529">Gast</translation>
 <translation id="3300193645498960160">Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> apparaten verbonden met <ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3307642347673023554">Overgeschakeld naar laptopmodus</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan later nog inloggen.</translation>
+<translation id="3312470654018965389">De Linux-container instellen</translation>
 <translation id="3313950410573257029">Verbinding checken</translation>
 <translation id="3321628682574733415">Onjuiste oudercode</translation>
 <translation id="332827762492701193">Meldingen zijn verborgen</translation>
@@ -743,7 +772,6 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369111525500416043">Binnenkort inleveren</translation>
 <translation id="3371140690572404006">USB-C-apparaat (poort rechts aan de voorkant)</translation>
-<translation id="3373196968211632036">Steam voor Chromebook (bèta) is niet beschikbaar voor Google-accounts voor kinderen</translation>
 <translation id="3375634426936648815">Verbonden</translation>
 <translation id="3386978599540877378">het vergrootglas op volledige schermgrootte</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -785,7 +813,6 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Meer informatie over Locatienauwkeurigheid<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Plank automatisch verborgen</translation>
-<translation id="3496797737329654668">Game erop los</translation>
 <translation id="3505066820268455558">Batterij wordt opgeladen</translation>
 <translation id="3509391053705095206">Kan je telefoon niet vinden. Zorg dat bluetooth aanstaat op je telefoon.</translation>
 <translation id="3510164367642747937">Muisaanwijzer markeren</translation>
@@ -798,6 +825,8 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="353086728817903341">Verbonden met <ph name="NUM_DEVICES" /> apparaten</translation>
 <translation id="3532247131850366052">Kan Google-spreadsheet niet maken</translation>
 <translation id="3533126039236445965">Apps op plank</translation>
+<translation id="3537881477201137177">Dit kan later in Instellingen worden aangepast</translation>
+<translation id="3538066758857505094">Fout bij verwijderen van Linux. Probeer het opnieuw.</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" />-hotspot</translation>
 <translation id="3540893133818942399">Instellen van de weergave van recente foto's en media van je telefoon sluiten</translation>
 <translation id="3542066395059568317">Je ziet aanbevelingen zodat je verder kunt gaan waar je gebleven was. Klik met de rechtermuisknop om aanbevelingen te verwijderen.</translation>
@@ -808,6 +837,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3554928024630051016">Als je extra USB-apparaten wilt toevoegen, verwijder je er een en sluit je een nieuw apparaat aan</translation>
 <translation id="3558768885091059911">Camera- en microfoontoegang aanzetten?</translation>
 <translation id="3560174576767922131">Video opnemen</translation>
+<translation id="3562423906127931518">Dit proces kan enkele minuten duren. De Linux-container wordt ingesteld.</translation>
 <translation id="3563432852173030730">Kiosk-app kan niet worden gedownload.</translation>
 <translation id="3563558822383875692">DLC instellen.</translation>
 <translation id="3563775809269155755">Hotspot aanzetten</translation>
@@ -820,6 +850,7 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3583350334315908861">{MINUTES,plural, =1{minuut}other{minuten}}</translation>
 <translation id="3585296979871889131">Recente foto's, media, meldingen en apps van je telefoon bekijken</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
+<translation id="3590295622232282437">Beheerde sessie wordt geopend.</translation>
 <translation id="3590441166907930941">Zijknop</translation>
 <translation id="3593039967545720377">Je opent je klembordgeschiedenis door op <ph name="SHORTCUT_KEY_NAME" /> + V te drukken. Daarna kun je kopiëren wat je nodig hebt.</translation>
 <translation id="3593646411856133110">Swipe omhoog en houd vast om apps te openen</translation>
@@ -847,9 +878,9 @@ Anders wordt de ingebouwde touchpad over <ph name="TIMEOUT_SECONDS" /> weer aang
 <translation id="3633851487917460983">Klembord openen</translation>
 <translation id="363473492175527493">Taak ingesteld om te focussen op: <ph name="TASK_NAME" />. Druk op Enter om de taak te bewerken.</translation>
 <translation id="3638400994746983214">Privacyscherm aan/uit. <ph name="STATE_TEXT" />.</translation>
-<translation id="3641070112313110357">Steam voor Chromebook (bèta) moet worden geüpdatet. Start je Chromebook opnieuw op en probeer het nog een keer.</translation>
 <translation id="3649256019230929621">Venster minimaliseren</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" toegang verlenen:</translation>
+<translation id="3652817283076144888">Initialiseren</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
 <ph name="EVENT_SUMMARY" />,
 <ph name="START_TIME" /> tot
@@ -882,6 +913,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> staan niet op dit apparaat.</translation>
 <translation id="3727231512028252576">Kan items niet laden. Probeer het opnieuw als je online bent.</translation>
 <translation id="3735740477244556633">Sorteren op</translation>
+<translation id="3738632186060045350"><ph name="DEVICE_TYPE" />-gegevens worden over 24 uur verwijderd</translation>
 <translation id="3738664582935948253">Je kunt nu klikken en sneltoetsen tonen in schermopnamen</translation>
 <translation id="3741482431277446954">Rechtermuistoets</translation>
 <translation id="3742055079367172538">Screenshot gemaakt</translation>
@@ -915,13 +947,14 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="3831226344927851293">Tutorialweergave sluiten</translation>
 <translation id="383629559565718788">Toetsenbordinstellingen bekijken</translation>
 <translation id="384082539148746321">Template verwijderen?</translation>
-<translation id="3841282988425489367">Kan Steam voor Chromebook (bèta) niet instellen</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> en dan <ph name="KEY_ONE" /> of <ph name="KEY_TWO" /> of <ph name="KEY_THREE" /> of <ph name="KEY_FOUR" /></translation>
+<translation id="3846116211488856547">Ontvang tools voor het ontwikkelen van websites, Android-apps en meer. Als je Linux installeert, wordt <ph name="DOWNLOAD_SIZE" /> aan data gedownload.</translation>
 <translation id="3846575436967432996">Geen netwerkinformatie beschikbaar</translation>
 <translation id="3848526302597027234">Krijg toegang tot de volgende rechten:</translation>
 <translation id="385051799172605136">Terug</translation>
 <translation id="385300504083504382">Begin</translation>
 <translation id="3859364108019690">Kan geen apps streamen</translation>
+<translation id="3861638017150647085">De gebruikersnaam '<ph name="USERNAME" />' is niet beschikbaar</translation>
 <translation id="3861651314799684201">Druk op Enter om het volledige scherm op te nemen</translation>
 <translation id="3870197372373144624">Probeer je apparaat uit te zetten.</translation>
 <translation id="3879748587602334249">Downloadbeheer</translation>
@@ -992,6 +1025,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4077623680826964850">Time-out bij opstarten of opnieuw verbinden met VM.</translation>
 <translation id="4086921558679520050">Zet de fysieke microfoonschakelaar aan op je apparaat</translation>
 <translation id="4101772068965291327">Homepage openen</translation>
+<translation id="4102906002417106771">Opnieuw opstarten om Powerwash uit te voeren</translation>
 <translation id="4112140312785995938">Achteruit zoeken</translation>
 <translation id="4113030288477039509">Beheerd door je beheerder</translation>
 <translation id="4114315158543974537">Phone Hub aanzetten</translation>
@@ -1026,7 +1060,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4192112279662688596">Of</translation>
 <translation id="4193857202545160520">Klikken en toetsen tonen</translation>
 <translation id="4193969623755915875">Open Hulp in de app Ontdekken met <ph name="NEW_SHORTCUT" />.</translation>
-<translation id="4195001808989442226">Kan Steam voor Chromebook (bèta) niet openen</translation>
 <translation id="4195579532193195633">Huidige versie <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Doorgaan waar je gebleven was</translation>
 <translation id="4195877955194704651">Knop 'Automatische klikken'</translation>
@@ -1042,7 +1075,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, geïnstalleerde app, onderbroken</translation>
 <translation id="4228078597006700451">Bedieningselementen niet ingesteld</translation>
 <translation id="4230560241506423345">Nieuw</translation>
-<translation id="4231231258999726714">Steam voor Chromebook instellen</translation>
 <translation id="4236726631849783264">Een herinnering over aanbevolen acties</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overzichtsmodus</translation>
@@ -1104,6 +1136,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4389184120735010762">Je hebt op de sneltoets voor het vastgezette vergrootglas gedrukt. Wil je deze functie aanzetten?</translation>
 <translation id="4394466652057229831">Klikken met de rechtermuisknop om samen te vatten</translation>
 <translation id="439598569299422042">Onderbroken, <ph name="SIZE_INFO" /></translation>
+<translation id="439817266247065935">Je apparaat is niet goed afgesloten. Start Linux opnieuw op om Linux-apps te gebruiken.</translation>
 <translation id="440113666232554208">Kan screencast niet opslaan</translation>
 <translation id="4405151984121254935">Het aangesloten randapparaattype wordt niet ondersteund</translation>
 <translation id="4406883609789734330">Live ondertiteling</translation>
@@ -1130,7 +1163,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Apparaat nu updaten}=1{Apparaat binnen 1 seconde updaten}other{Apparaat binnen # seconden updaten}}</translation>
 <translation id="4472575034687746823">Aan de slag</translation>
 <translation id="4473489370276014885">Google Contacten</translation>
-<translation id="4473996011558324141">tijd wordt geschat</translation>
 <translation id="4477350412780666475">Volgend nummer</translation>
 <translation id="4477751544736611934">Dit kan leiden tot datakosten.
 1 apparaat verbonden.</translation>
@@ -1139,6 +1171,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4481530544597605423">Ontkoppelde apparaten</translation>
 <translation id="4485506555414638855">Instellen van de weergave van recente foto's, media, meldingen en apps van je telefoon sluiten</translation>
 <translation id="4491109536499578614">Afbeelding</translation>
+<translation id="4493468155686877504">Aanbevolen (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="450584155212756404">Dev-kanaal</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Feedback</translation>
@@ -1169,23 +1202,24 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4573176682887762361">'Typ [woord/woordgroep]'</translation>
 <translation id="4577990005084629481">Voorbeelden bekijken</translation>
 <translation id="4578906031062871102">Menu Instellingen geopend</translation>
+<translation id="4581774856936278355">Fout bij het herstellen van Linux</translation>
 <translation id="458210817642223147">Gif opnemen</translation>
 <translation id="4582666543382004902">De hotspot is uitgezet om wifi te gebruiken. Zet wifi uit om de hotspot te gebruiken.</translation>
 <translation id="4585337515783392668">Casten naar een onbekende ontvanger stopzetten</translation>
 <translation id="4596144739579517758">Donker thema staat uit</translation>
 <translation id="4596442969149038771">Gedeeld door <ph name="USER" /></translation>
-<translation id="4598556348158889687">Opslagbeheer</translation>
 <translation id="4610493115106525653">Goede uitvoer</translation>
 <translation id="4611292653554630842">Inloggen</translation>
+<translation id="4613144866899789710">Linux-installatie annuleren…</translation>
 <translation id="462160925400706389"><ph name="NAME" /> gekoppeld</translation>
 <translation id="4623167406982293031">Account verifiëren</translation>
 <translation id="4628757576491864469">Apparaten</translation>
+<translation id="4628762811416793313">De installatie van de Linux-container is niet voltooid. Probeer het opnieuw.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, sterbeoordeling <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Druk op Ctrl + W om te verwijderen</translation>
 <translation id="4633757335284074492">Maak een back-up op Google Drive. Zet gegevens eenvoudig terug of schakel wanneer je wilt tussen apparaten. Deze back-up omvat app-gegevens. Back-ups worden geüpload naar Google en versleuteld met het wachtwoord van het Google-account van je kind.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Update het apparaat nu naar een eerdere versie}=1{Update het apparaat binnen 1 seconde naar een eerdere versie}other{Update het apparaat binnen # seconden naar een eerdere versie}}</translation>
 <translation id="4642092649622328492">Gedeeltelijk screenshot maken</translation>
-<translation id="4642587497923912728">Steam voor Chromebook (bèta) is alleen beschikbaar voor het account dat als eerste is ingelogd op deze Chromebook.</translation>
 <translation id="4644727592819780893">Gebied is te klein voor het cameravoorbeeld</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, app-aanbeveling</translation>
 <translation id="4649019912155580914">Bewerkt door jou</translation>
@@ -1327,6 +1361,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="504465286040788597">Vorige alinea</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="5056587122125565772">Afbeelding maken</translation>
+<translation id="5056950756634735043">Verbinding maken met de container</translation>
 <translation id="5058794129231928255">Kan Google-document niet maken</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
@@ -1407,9 +1442,11 @@ Je kunt ook de sneltoets gebruiken. Markeer eerst de tekst en druk dan op <ph na
 <translation id="528468243742722775">Beëindigen</translation>
 <translation id="5286194356314741248">Scannen</translation>
 <translation id="528641622273682395">Microfoontest aan-/uitzetten</translation>
+<translation id="5294097441441645251">Moet beginnen met een kleine letter of underscore</translation>
 <translation id="5297423144044956168">Geen mobiele apparaten gevonden</translation>
 <translation id="5297704307811127955">Uit</translation>
 <translation id="5300589172476337783">Tonen</translation>
+<translation id="5301751748813680278">Aangemeld als gast.</translation>
 <translation id="5302048478445481009">Taal</translation>
 <translation id="5302531370473608800">Update je <ph name="DEVICE_TYPE" /> om YouTube Music te gebruiken</translation>
 <translation id="5303319262469238330">Nog <ph name="PERCENTAGE" />% batterijlading.
@@ -1431,18 +1468,17 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5352250171825660495">Donker thema staat aan</translation>
 <translation id="5354804064646502504">Dit kan leiden tot datakosten.
 Geen apparaten verbonden.</translation>
-<translation id="5355498626146154079">Je moet de flag Borealis Enabled aanzetten</translation>
 <translation id="5356963482258194581">Schakelen tussen het donkere en lichte thema. Klik met de rechtermuisknop op het bureaublad en selecteer Achtergrond en stijl.</translation>
 <translation id="536019650977002321">Je beheerder staat geen audio-opnamen toe. Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="5361524080961918551">Spraakbestanden voor <ph name="LANGUAGE" /> gedeeltelijk gedownload</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Naar dit tabblad gaan</translation>
 <translation id="5364693579536176785">opslagruimte</translation>
 <translation id="5369573834963677938">Gezichtsbediening is beschikbaar voor andere gebruikers op het apparaat</translation>
+<translation id="5369694795837229225">Linux-ontwikkelomgeving instellen</translation>
 <translation id="5369717264580061086">Voorbeeld van bestand bekijken in de app Bestanden</translation>
 <translation id="5377367976106153749">Cameratoegang aanzetten?</translation>
 <translation id="5378450298115733949">Meer</translation>
 <translation id="5379115545237091094">Te veel pogingen</translation>
-<translation id="5380526436444479273">Wacht een paar minuten en probeer het opnieuw</translation>
 <translation id="5383434787520761436">Geen Google Drive-bestanden</translation>
 <translation id="5391307769715781764">Opgeslagen bureau vervangen?</translation>
 <translation id="5392327145184648521">Batterijpercentage berekenen...</translation>
@@ -1454,13 +1490,13 @@ Geen apparaten verbonden.</translation>
 <translation id="5409208741270395213">Taak als voltooid markeren</translation>
 <translation id="5413656666631274079">Pagina Instellingen</translation>
 <translation id="5414198321558177633">Lijst met profielen vernieuwen. Dit kan een paar minuten duren.</translation>
-<translation id="5415328625985164836">Dit is een bètaprogramma. Je kunt Steam nu gebruiken om bepaalde games op je Chromebook te spelen.</translation>
 <translation id="5426063383988017631">Menu Instellingen gesloten</translation>
 <translation id="5428899915242071344">Selecteren starten</translation>
 <translation id="5429993543155113935">Incognitovensters worden momenteel niet ondersteund</translation>
 <translation id="5431318178759467895">Kleur</translation>
 <translation id="5433020815079095860">Audio-invoer</translation>
 <translation id="543584294741034249">Je kunt maximaal <ph name="DISPLAY_LIMIT" /> externe schermen aansluiten.</translation>
+<translation id="5442228125690314719">Fout bij maken van schijfimage. Probeer het opnieuw.</translation>
 <translation id="544691375626129091">Alle beschikbare gebruikers zijn al aan deze sessie toegevoegd.</translation>
 <translation id="54609108002486618">Beheerd</translation>
 <translation id="5460938382730614333">Stift staat aan.</translation>
@@ -1511,6 +1547,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">Chrome-browser</translation>
 <translation id="5596627076506792578">Meer opties</translation>
+<translation id="5596808802173376270">Probleem met het verstrekte herstelbestand. Waarschijnlijk het verkeerde type voor de bestaande Linux-gast. Check /var/log/messages voor meer informatie.</translation>
 <translation id="5599242528220103262">Sneltoets staat uit</translation>
 <translation id="5600415762228455511">Focus staat aan, nog <ph name="REMAINING_TIME" />, focussen op: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Druk op Ctrl+Alt+Z om gesproken feedback uit te zetten.</translation>
@@ -1526,6 +1563,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> vraagt om je aandacht.</translation>
 <translation id="5657667036353380798">Voor de externe extensie moet Chrome-versie <ph name="MINIMUM_CHROME_VERSION" /> of hoger zijn geïnstalleerd.</translation>
 <translation id="5662075790140998213">Bureau 10</translation>
+<translation id="5662513737565158057">Wijzigen hoe Linux-apps werken.</translation>
 <translation id="5662709761327382534">Microfoon opnemen <ph name="CURRENT_STATE" />. Druk op Enter om microfoonopnamen <ph name="NEW_STATE" /> te zetten.</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5667546120811588575">Google Play instellen...</translation>
@@ -1554,7 +1592,6 @@ Geen apparaten verbonden.</translation>
 <translation id="5712132663381964774">Gebruik apps waarmee je van alles kunt doen op je <ph name="PRODUCT_NAME" />. Je vindt je apps in de Launcher.</translation>
 <translation id="571295407079589142">Mobiele data staan uit</translation>
 <translation id="5727460725221669831">Als je je wachtwoord bent vergeten of onlangs het wachtwoord van je Google-account hebt gewijzigd, probeer je deze gebruiker te herstellen.</translation>
-<translation id="572914206753951782">Zorg dat je Chromebook de nieuwste versie heeft. Start daarna je Chromebook opnieuw op en probeer het nog een keer.</translation>
 <translation id="5733630091161562207">Welkomstmelding</translation>
 <translation id="573413375004481890">Dit apparaat kan niet al je schermen ondersteunen, dus één scherm is ontkoppeld</translation>
 <translation id="574392208103952083">Gemiddeld</translation>
@@ -1600,6 +1637,7 @@ Geen apparaten verbonden.</translation>
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" />-hotspot staat aan, geen apparaten verbonden</translation>
 <translation id="584525477304726060">Vasthouden om te maximaliseren</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> is niet geactiveerd.</translation>
+<translation id="5858490737742085133">Terminal</translation>
 <translation id="5860033963881614850">Uit</translation>
 <translation id="5860491529813859533">Aanzetten</translation>
 <translation id="5864691701242730005">Instellingen voor Quick Share tonen. Zichtbaarheid <ph name="VISIBILITY" /> geselecteerd.</translation>
@@ -1721,6 +1759,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6185696379715117369">Page Up</translation>
 <translation id="619335566042889110">Nu volledig opladen</translation>
 <translation id="6193431488227440296">Dev</translation>
+<translation id="6198252989419008588">Pincode wijzigen</translation>
 <translation id="6199775032047436064">De huidige pagina opnieuw laden</translation>
 <translation id="6200515304866777730">Niet ondersteund door app</translation>
 <translation id="6210042900243040400">Verbinding maken met <ph name="NAME" /> (eerder opgeslagen in <ph name="EMAIL" />)</translation>
@@ -1728,6 +1767,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6213808132343683860">Gedeeltelijk screenshot of schermopname maken</translation>
 <translation id="621606890568890214">Google Classroom uitvouwen</translation>
 <translation id="6216759484154215561">Link Meer informatie geopend in de browser</translation>
+<translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> is offline. Maak verbinding met internet en probeer het opnieuw.</translation>
 <translation id="6220928844947387476">Je kunt jezelf en je scherm nu tegelijkertijd opnemen</translation>
 <translation id="622484624075952240">Omlaag</translation>
 <translation id="6228457605945141550">Helderheid verlagen</translation>
@@ -1751,6 +1791,7 @@ Geen apparaten verbonden.</translation>
 <translation id="628699625505156622">Gebruik de locatie. Sta toe dat ChromeOS- en Android-apps, websites en services met locatierechten de locatie van dit apparaat gebruiken. Locatienauwkeurigheid biedt een nauwkeurigere locatie voor Android-apps en -services. Hiervoor verwerkt Google periodiek gegevens over apparaatsensoren en draadloze signalen van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing. Deze worden zonder een bepaalde persoon te identificeren gebruikt om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren. Ze worden ook gebruikt om de services van Google te verbeteren, aan te bieden en te onderhouden op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. <ph name="BEGIN_LINK1" />Meer informatie over het gebruik van locatie<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> kan later opnieuw worden toegevoegd met toestemming van een ouder.</translation>
 <translation id="6291221004442998378">Wordt niet opgeladen</translation>
+<translation id="6291580570300353047">Herstellen is niet mogelijk vanwege onvoldoende opslagruimte.</translation>
 <translation id="6297986260307280218">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt afgedwongen door de eigenaar. De eigenaar kan ervoor kiezen diagnostische en gebruiksgegevens voor dit apparaat naar Google te sturen. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Dit apparaat aanpassen in de app</translation>
 <translation id="6298962879096096191">Gebruik Google Play om Android-apps te installeren</translation>
@@ -1764,6 +1805,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
 <translation id="6325525973963619867">Mislukt</translation>
 <translation id="6330012934079202188">Er worden vensters van alle bureaus getoond, druk op de pijl-omhoog om vensters van het huidige bureau te bekijken</translation>
+<translation id="6336038146639916978"><ph name="MANAGER" /> heeft ADB-foutopsporing uitgezet. Hierdoor wordt je <ph name="DEVICE_TYPE" /> over 24 uur gereset. Maak een back-up van de bestanden die je wilt houden.</translation>
 <translation id="6337159624125741244">Vergrootglas voor volledig scherm staat aan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is een beheerde sessie die wordt beheerd door <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Als je je pincode bent vergeten, probeer je deze gebruiker te herstellen.</translation>
@@ -1809,6 +1851,7 @@ Geen apparaten verbonden.</translation>
 <translation id="6467290994038932560">Aan voor <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Update het apparaat binnen 1 minuut naar een eerdere versie}other{Update het apparaat binnen # minuten naar een eerdere versie}}</translation>
 <translation id="6469104339369989396">Hotspot aan-/uitzetten</translation>
+<translation id="6475294023568239942">Maak schijfruimte vrij of pas de grootte van de Linux-schijf aan via Instellingen</translation>
 <translation id="6477681113376365978">Kan bestand niet downloaden</translation>
 <translation id="648135757200234041">Kan contact niet maken</translation>
 <translation id="6482559668224714696">Volledig scherm vergroten</translation>
@@ -1823,7 +1866,6 @@ Geen apparaten verbonden.</translation>
 <translation id="6507042703812908515">Open de Sneltoetsen-app met <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Overschakelen naar volgende beschikbare invoermethode</translation>
 <translation id="6508923215158854599">Zorg dat je Chromebook is verbonden met hetzelfde wifi-netwerk als je Chromecast-apparaat.</translation>
-<translation id="6511607461419653612">Start je Chromebook opnieuw op en probeer het nog een keer</translation>
 <translation id="6515727200518652613">Verbinding met camera verbroken. Er wordt geprobeerd opnieuw verbinding te maken.</translation>
 <translation id="651753338596587143">Er is iets misgegaan bij het installeren van DLC-afhankelijkheden. Start opnieuw op. Als het probleem aanhoudt, dien je feedback in met #bruschetta in de beschrijving. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selecteer een venster om op te nemen</translation>
@@ -1849,7 +1891,6 @@ Nieuwe installatie</translation>
 <translation id="6574587113394758819">Een melding van <ph name="APP_TITLE" /> is verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="6574622320167699133">Ontgrendeld met je telefoon. Tik of klik voor toegang.</translation>
 <translation id="6578407462441924264">Naamloos</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% gelezen</translation>
 <translation id="6582012689384648647">Geef toegang tot YouTube Music voor gepersonaliseerde focusplaylists</translation>
 <translation id="6582034443359256692">Het oplaadniveau van de batterij wordt berekend.</translation>
 <translation id="6585808820553845416">Sessie loopt af over <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1902,7 +1943,6 @@ Nieuwe installatie</translation>
 <translation id="6723839937902243910">Voeding</translation>
 <translation id="672609503628871915">Wat is er nieuw?</translation>
 <translation id="6727969043791803658">Verbonden, batterij <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="6731320427842222405">Dit kan enkele minuten duren</translation>
 <translation id="6732087373923685049">camera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Camera en microfoon in gebruik</translation>
@@ -1961,6 +2001,7 @@ Nieuwe installatie</translation>
 <translation id="6912841030378044227">Focus op adresbalk</translation>
 <translation id="6912901278692845878">Korte rondleiding</translation>
 <translation id="6917259695595127329">Taken laatst geüpdatet: <ph name="TIME" />.</translation>
+<translation id="6918677045355889289">Chrome OS-update vereist</translation>
 <translation id="6919251195245069855">Je smartkaart wordt niet herkend. Probeer het opnieuw.</translation>
 <translation id="692135145298539227">verwijderen</translation>
 <translation id="6921427376813842559">Apparaat updaten</translation>
@@ -1978,12 +2019,15 @@ Nieuwe installatie</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967112302799758487">Apps en games die zijn geïnstalleerd met Steam voor Chromebook (bèta) worden verwijderd van dit apparaat. Gegevens die aan deze apps en games zijn gekoppeld, worden ook verwijderd. Maak een back-up van opgeslagen apps en games voordat je de app verwijdert.</translation>
 <translation id="6972629891077993081">HID-apparaten</translation>
+<translation id="697508444536771064">Linux afsluiten</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">Toegang aanzetten</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="698231206551913481">Alle bestanden en lokale gegevens die zijn gekoppeld aan deze gebruiker, worden definitief verwijderd zodra deze gebruiker is verwijderd.</translation>
+<translation id="6988094684494323731">De Linux-container wordt gestart</translation>
 <translation id="7000027735917578303">Instellingen voor vensters en bureaus</translation>
+<translation id="7001036685275644873">Back-up maken van Linux-apps en -bestanden</translation>
 <translation id="7004910047186208204">Verbinding maken via mobiele data</translation>
 <translation id="7005239792648594238">Open een app om aan de slag te gaan</translation>
 <translation id="7014684956566476813">Verbonden met een apparaat met de naam <ph name="DEVICE_NAME" /></translation>
@@ -1992,11 +2036,13 @@ Nieuwe installatie</translation>
 <translation id="702252130983202758">Je apps</translation>
 <translation id="7025533177575372252">Koppel je <ph name="DEVICE_NAME" /> aan je telefoon</translation>
 <translation id="7026338066939101231">Verlaging</translation>
+<translation id="7029307918966275733">Crostini is niet geïnstalleerd. Installeer Crostini om credits te bekijken.</translation>
 <translation id="7029814467594812963">Sessie sluiten</translation>
 <translation id="7031303610220416229">Alle taken in Google Tasks bekijken</translation>
 <translation id="7032161822340700104">Er zijn maar 6 templates toegestaan. Verwijder een template om een nieuwe op te slaan.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> wil de <ph name="DEVICE_NAME" /> gebruiken. Zet de fysieke schakelaar van de <ph name="DEVICE_NAME" /> van je apparaat aan.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistent</translation>
+<translation id="7036706669646341689">Er wordt <ph name="DISK_SIZE" /> vrije opslagruimte aanbevolen voor Linux. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="7042322267639375032">Statusgedeelte samenvouwen</translation>
 <translation id="7042593542151411225">Apps hebben geen toegang tot de camera</translation>
 <translation id="7045033600005038336">Template vervangen?</translation>
@@ -2004,11 +2050,11 @@ Nieuwe installatie</translation>
 <translation id="7055910611768509537">De stylus is langer dan een week niet gebruikt</translation>
 <translation id="7061457967428964661">Cameravoorbeeld, druk op Ctrl + pijltoetsen om het voorbeeld naar een andere hoek te verplaatsen</translation>
 <translation id="7064351585062927183">Komende <ph name="DAY_OF_WEEK" /></translation>
+<translation id="7064734931812204395">De Linux-container wordt geconfigureerd. Dit kan tot dertig minuten duren.</translation>
 <translation id="7066646422045619941">Dit netwerk is uitgezet door je beheerder.</translation>
 <translation id="7067196344162293536">Automatisch draaien</translation>
 <translation id="7076293881109082629">Inloggen</translation>
 <translation id="7076878155205969899">Geluid uitzetten</translation>
-<translation id="7083774521940805477">Steam voor Chromebook (bèta) is niet beschikbaar op je Chromebook.</translation>
 <translation id="7083848064787091821">Focus</translation>
 <translation id="7084678090004350185">Hotspot aan-/uitzetten. Hotspot staat aan: <ph name="DEVICECOUNT" /> apparaten verbonden.</translation>
 <translation id="7086931198345821656">Deze update vereist dat je Powerwash uitvoert op je <ph name="DEVICE_TYPE" />. Alle gegevens worden dan verwijderd. Bekijk meer informatie over de laatste update van <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -2026,18 +2072,17 @@ Nieuwe installatie</translation>
 <translation id="7130207228079676353">MEEST WAARSCHIJNLIJK</translation>
 <translation id="7131634465328662194">Je wordt automatisch uitgelogd.</translation>
 <translation id="7143207342074048698">Verbinden</translation>
-<translation id="7143409552554575716">ChromeOS-flags</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="7144942256906679589">Batterijstatus</translation>
 <translation id="7145639536026937076">Batterij op <ph name="PERCENTAGE" />% en wordt opgeladen. Batterijbesparing staat aan.</translation>
 <translation id="7147587499155271409">Geen browsegeschiedenis</translation>
 <translation id="7147657298465433425">Druk op de fn-toets + toetsen op de bovenste rij om toegang te krijgen tot F-toetsen</translation>
 <translation id="7149149900052329230">Beheer je lokale bestanden en je Google Drive-bestanden, allemaal in de Bestanden-app.</translation>
-<translation id="7154020516215182599">Deel je feedback of beschrijf je probleem. Voeg waar mogelijk stappen toe om het probleem te reproduceren.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
 <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7170202025028120564">De weergave-instellingen van je app worden van kracht als de app opnieuw wordt opgestart.</translation>
 <translation id="7173114856073700355">Instellingen openen</translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
 <translation id="7181691792034457084">Hallo. Een <ph name="PRODUCT_NAME" /> is een beetje anders.</translation>
@@ -2046,6 +2091,7 @@ Nieuwe installatie</translation>
 <translation id="7219573373513695352">Geen apparaten gekoppeld</translation>
 <translation id="7228968829656641943">Selecteer om mijn scherm te doorzoeken. Druk op Tab en daarna op de spatiebalk voor toetsenbordnavigatie.</translation>
 <translation id="7229029500464092426">Geheugen <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> (totaal)</translation>
+<translation id="7234010996000898150">Linux herstellen annuleren</translation>
 <translation id="7239814253344511868">Beide muistoetsen</translation>
 <translation id="7240636904654154599">Google-spreadsheet gemaakt</translation>
 <translation id="7244725679040769470">Nog <ph name="PERCENTAGE" />% batterijlading. Sluit je apparaat aan op een voeding.</translation>
@@ -2053,6 +2099,7 @@ Nieuwe installatie</translation>
 <translation id="7248100343060254997">Mijn scherm doorzoeken</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Microfoon aan achterzijde</translation>
+<translation id="7258225044283673131">De app reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
 <translation id="7258828758145722155">Gisteren bewerkt</translation>
 <translation id="726276584504105859">Sleep hier naartoe om het scherm te splitsen</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> inkorten</translation>
@@ -2065,6 +2112,7 @@ Nieuwe installatie</translation>
 <translation id="7312210124139670355">Je beheerder reset je e-simkaart. Dit kan een paar minuten duren.</translation>
 <translation id="7312761820869643657">Apparaat updaten naar eerdere versie</translation>
 <translation id="7313193732017069507">Camera uitvouwen</translation>
+<translation id="7327989755579928735"><ph name="MANAGER" /> heeft ADB-foutopsporing uitgezet. Nadat je je <ph name="DEVICE_TYPE" /> opnieuw hebt opgestart, kun je apps niet meer sideloaden.</translation>
 <translation id="73289266812733869">Niet geselecteerd</translation>
 <translation id="7330397557116570022">Ga naar een tekstveld om dicteren te gebruiken</translation>
 <translation id="7331646370422660166">alt + pijl-omlaag</translation>
@@ -2075,6 +2123,7 @@ Nieuwe installatie</translation>
 <translation id="7346909386216857016">OK, begrepen</translation>
 <translation id="7348093485538360975">Schermtoetsenbord</translation>
 <translation id="7352651011704765696">Er is iets misgegaan</translation>
+<translation id="735361434055555355">Linux installeren...</translation>
 <translation id="735745346212279324">Verbinding met VPN verbroken</translation>
 <translation id="7360036564632145207">Als je de instelling 'Beveiliging voor gegevenstoegang voor randapparaten' wijzigt, kun je de prestaties optimaliseren</translation>
 <translation id="736045644501761622">Achtergrond en stijl instellen</translation>
@@ -2112,6 +2161,7 @@ Nieuwe installatie</translation>
 <translation id="7466449121337984263">Raak de sensor aan</translation>
 <translation id="7477793887173910789">Je muziek, video's en meer bedienen</translation>
 <translation id="7478485216301680444">Kiosk-app kan niet worden geïnstalleerd.</translation>
+<translation id="7481358317100446445">Klaar</translation>
 <translation id="7488762544858401571">Bewerkt</translation>
 <translation id="7489261257412536105">Volledig scherm openen of sluiten</translation>
 <translation id="7490157877815329797">Probeer YouTube Music Premium om muziek te luisteren zonder advertenties en gepersonaliseerde focusmuziek te gebruiken</translation>
@@ -2136,6 +2186,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Maken</translation>
 <translation id="7526573455193969409">Netwerk kan worden bijgehouden</translation>
+<translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> reageert niet. Selecteer 'Nu sluiten' om de app te sluiten.</translation>
 <translation id="7534543072325030705">Met Leuk stuur je feedback dat je deze voorgestelde groep leuk vindt</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Het linkervenster updaten</translation>
@@ -2145,6 +2196,8 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7545466883021407599">Kan geen verbinding maken met de server. Check je netwerkverbinding en probeer het opnieuw. Als je nog steeds problemen ondervindt, start je de Chromebook opnieuw op. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Bedtijd</translation>
 <translation id="7551643184018910560">Vastzetten op plank</translation>
+<translation id="7553012839257224005">De Linux-container wordt gecontroleerd</translation>
+<translation id="7557411183415085169">Er is weinig Linux-schijfruimte beschikbaar</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> gebruikt momenteel je microfoon</translation>
 <translation id="7559719679815339381">Een ogenblik geduld. De Kiosk-app wordt geüpdatet. Verwijder de USB-stick niet.</translation>
 <translation id="7561982940498449837">Menu sluiten</translation>
@@ -2174,12 +2227,15 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Stel een vraag</translation>
 <translation id="7629858978065675960">Onbekend resultaat.</translation>
+<translation id="7631014249255418691">Back-up maken van Linux-apps en -bestanden is geslaagd</translation>
 <translation id="7632948528260659758">Bijwerken van de volgende kiosk-apps is mislukt:</translation>
+<translation id="7634566076839829401">Er is iets misgegaan. Probeer het opnieuw.</translation>
 <translation id="7634648064048557203">Camera uitgelijnd op de rechterbenedenhoek</translation>
 <translation id="7638572816805275740">Screenshot of schermopname van venster maken</translation>
 <translation id="7642106959537987271">modus voor kleurinversie</translation>
 <translation id="7642647758716480637">Instellingen openen voor <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (eigenaar)</translation>
+<translation id="7645681574855902035">Back-up voor Linux annuleren</translation>
 <translation id="7647488630410863958">Ontgrendel het apparaat om je meldingen te bekijken</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7654687942625752712">Houd beide volumetoetsen 5 seconden ingedrukt om gesproken feedback uit te zetten.</translation>
@@ -2212,13 +2268,13 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7726391492136714301">Meldingen en apps van je telefoon bekijken</translation>
 <translation id="7727952505535211425">De website in de adresbalk openen in een nieuw tabblad</translation>
 <translation id="7728657226117099693">Caps Lock uitzetten</translation>
-<translation id="7732702411411810416">Zorg dat je verbinding hebt met internet en probeer het opnieuw</translation>
 <translation id="7742327441377685481">Geen meldingen</translation>
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7750228210027921155">Scherm-in-scherm</translation>
 <translation id="7751260505918304024">Alles bekijken</translation>
+<translation id="7753735457098489144">De installatie is mislukt als gevolg van onvoldoende opslagruimte. Verwijder bestanden uit de opslag van je apparaat om ruimte vrij te maken.</translation>
 <translation id="7762664108390426952">de Servicevoorwaarden en het Privacybeleid van Google</translation>
 <translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769299611924763557">Je gif is bijna klaar</translation>
@@ -2234,7 +2290,10 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7807067443225230855">Google Zoeken en Google Assistent</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> en <ph name="MINUTE" /></translation>
+<translation id="7817361223956157679">Het schermtoetsenbord werkt nog niet in Linux-apps</translation>
+<translation id="7824864914877854148">Back-up kan niet worden voltooid vanwege een fout</translation>
 <translation id="7825412704590278437">Vanuit aankomende agenda-afspraak</translation>
+<translation id="7826249772873145665">ADB-foutopsporing staat uit</translation>
 <translation id="7829386189513694949">Sterk signaal</translation>
 <translation id="7830453190047749513">Je kunt onder meer knopacties en cursorsnelheid personaliseren voor je <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7842569679327885685">Waarschuwing: Experimentele functie</translation>
@@ -2248,7 +2307,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7866482334467279021">aan</translation>
 <translation id="7870790288828963061">Er zijn geen Kiosk-apps met een nieuwere versie gevonden. Er is niets om te updaten. Verwijder de USB-stick.</translation>
 <translation id="7872786842639831132">Uit</translation>
-<translation id="7873386145597434863">Steam voor Chromebook</translation>
 <translation id="7875575368831396199">Zo te zien staat bluetooth uit op je <ph name="DEVICE_TYPE" />. Zet bluetooth aan om Telefoonhub te gebruiken.</translation>
 <translation id="7884446017008693258">Hotspot-instellingen</translation>
 <translation id="7884902759927478774">Tabblad slepen annuleren</translation>
@@ -2279,6 +2337,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7932451802722951285">Openen in Google Agenda</translation>
 <translation id="7933084174919150729">De Google Assistent is alleen beschikbaar voor het primaire profiel.</translation>
 <translation id="79341161159229895">Account wordt beheerd door <ph name="FIRST_PARENT_EMAIL" /> en <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793531125873261495">Fout bij downloaden van virtuele machine. Probeer het opnieuw.</translation>
 <translation id="793716872548410480">Druk op <ph name="SHORTCUT_KEY_NAME" /> + V om het klembord te bekijken. De laatste 5 items die je hebt gekopieerd, worden opgeslagen op het klembord.</translation>
 <translation id="7942330802915522974">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Je vindt de Bestanden-app in de Launcher. Beheer je lokale bestanden en je Google Drive-bestanden, allemaal in de Bestanden-app.</translation>
 <translation id="7942349550061667556">Rood</translation>
@@ -2289,6 +2348,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wil je <ph name="DEVICE_NAME" /> gebruiken</translation>
 <translation id="7948239795436419268">Vensters niet herstellen</translation>
 <translation id="7951630946012935453">Toetsenbord dimmen</translation>
+<translation id="795282463722894016">Herstellen voltooid</translation>
 <translation id="7953176344218790168">HOOFDLETTERS</translation>
 <translation id="7953994493035617347">Nieuwe resolutie bevestigen?</translation>
 <translation id="795958884516058160">Vergrootglas voor volledig scherm staat aan. Druk nogmaals op <ph name="ACCELERATOR" /> om dit uit te zetten.</translation>
@@ -2322,6 +2382,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8030169304546394654">Verbinding verbroken</translation>
 <translation id="8036504271468642248">Vorige zin</translation>
 <translation id="8042893070933512245">Menu met toegankelijkheidsinstellingen openen</translation>
+<translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> reageert niet.</translation>
 <translation id="8044457332620420407">Achtergrondverlichting van toetsenbord staat uit</translation>
 <translation id="8048123526339889627">Bluetooth-instellingen</translation>
 <translation id="8049189770492311300">Timer</translation>
@@ -2334,6 +2395,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8083540854303889870">Opgeslagen voor later</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Gebruik Tab voor meer opties. Gebruik de pijl-links en pijl-rechts voor toegang tot alle bureaus.</translation>
+<translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8091153018031979607">Begint om <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Bedieningselementen voor scrollen</translation>
 <translation id="8098591350844501178">Schermcast naar <ph name="RECEIVER_NAME" /> stopzetten</translation>
@@ -2366,6 +2428,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8169177848833352618">Dit apparaat voldoet niet aan de vereisten voor de installatie van Bruschetta. De foutcode is <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Geselecteerde handgreep linksboven, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="81817143961839203">Invoegen van afbeelding is mislukt</translation>
+<translation id="8182105986296479640">App reageert niet</translation>
 <translation id="8185090165691050712">Menu aan-/uitzetten om het formaat van de vergrendelde modus aan te passen</translation>
 <translation id="8192727139462702395">Als je bluetooth uitzet, wordt de verbinding van deze externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken:</translation>
 <translation id="8198456017687137612">Tabblad wordt gecast</translation>
@@ -2395,6 +2458,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8282784978194352587">Gelukt!</translation>
 <translation id="8287009018010202411">Productiviteit</translation>
 <translation id="828708037801473432">Uit</translation>
+<translation id="8289128870594824098">Schijfgrootte</translation>
 <translation id="8297006494302853456">Zwak</translation>
 <translation id="8300451473979404345">Geselecteerde handgreep, gebruik de pijltoetsen om te verplaatsen</translation>
 <translation id="8308637677604853869">Vorig menu</translation>
@@ -2409,6 +2473,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8349964124165471584">Link openen in een nieuw venster</translation>
 <translation id="8351131234907093545">Notitie maken</translation>
+<translation id="8357388086258943206">Fout bij installeren van Linux</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> in gebruik.</translation>
 <translation id="8369166482916924789">Opgeslagen bureau, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Vooruit per letter</translation>
@@ -2456,6 +2521,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8491237443345908933">Link openen in een nieuw tabblad</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" />. Klik op 'Bevestigen' om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="8502536196501630039">Als je apps van Google Play wilt gebruiken, moet je eerst je apps herstellen. Sommige gegevens zijn mogelijk verloren gegaan.</translation>
+<translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8507563469658346379">Iedereen, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Nieuw bureau maken</translation>
 <translation id="85123341071060231">Bluetooth staat uit op je Chromebook. Geef het wachtwoord op om je Chromebook te ontgrendelen.</translation>
@@ -2465,6 +2531,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8517041960877371778">Je <ph name="DEVICE_TYPE" /> wordt mogelijk niet opgeladen als deze aanstaat.</translation>
 <translation id="8519329096920173967">Zoeken op mijn scherm met Google Lens</translation>
 <translation id="8527869672961320915"><ph name="VM_NAME" />-apps</translation>
+<translation id="8528962588711550376">Inloggen.</translation>
 <translation id="8535393432370007982">Sorteren op kleur ongedaan maken</translation>
 <translation id="8536886494750559755">Instellingen voor Quick Share tonen. Zichtbaar voor iedereen gedurende <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Tekst gekopieerd naar klembord</translation>
@@ -2484,6 +2551,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="861045123704058818">Apps worden tijdelijk ingedeeld op categorie</translation>
 <translation id="8612216344243590325">Bewaar belangrijke bestanden in <ph name="HOLDING_SPACE_TITLE" /> in plaats van op het bureaublad. Sleep bestanden naar <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8612338981637220013">Goed bezig!</translation>
+<translation id="8613164732773110792">Alleen kleine letters, cijfers, underscores of koppeltekens</translation>
 <translation id="8614517853887502247">Meldingen van <ph name="APP_1_TITLE" /> en <ph name="APP_2_TITLE" /> zijn verborgen omdat weergavebeveiliging aanstaat</translation>
 <translation id="8615778328722901791">Werkbalk openen</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2506,6 +2574,8 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8662921061190671299">Kan niet toevoegen aan Agenda</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Druk op Enter om een gedeeltelijk screenshot te maken</translation>
+<translation id="8665180165765946056">Back-up voltooid</translation>
+<translation id="8673530374848624865">Je beheerder heeft de beveiligingsvereisten voor je apparaat aangepast</translation>
 <translation id="8676770494376880701">Laag-vermogen-lader aangesloten</translation>
 <translation id="8679158879996532670">Focusinstellingen tonen. Focus staat aan, nog <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Bijhouden van prestaties is actief</translation>
@@ -2517,6 +2587,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8711169534266271368">Game Dashboard-instellingen</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8714138378966541668">Vergrendeld door provider</translation>
+<translation id="8716931980467311658">Alle Linux-apps en -gegevens in je map met Linux-bestanden verwijderen van deze <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717459106217102612">Het vorige woord of de vorige letter selecteren</translation>
 <translation id="8721053961083920564">Volume aan/uit. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Volledig scherm opnemen</translation>
@@ -2527,6 +2598,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8731487213223706745">Eindigt om <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Mogelijk wordt geprobeerd om je toetsaanslagen te stelen</translation>
 <translation id="8735678380411481005">Achtergrondverlichtingskleur van het toetsenbord</translation>
+<translation id="8740672167979365981">Chrome OS Flex-update vereist</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: activeren...</translation>
 <translation id="8742395827132970586">Installatie mislukt, bezig met opschonen</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
@@ -2537,6 +2609,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="875593634123171288">VPN-instellingen bekijken</translation>
 <translation id="8756799553341497810">Nadat je deze weergave hebt gesloten, kun je de indeling van je app aanpassen.</translation>
 <translation id="8759408218731716181">Kan toegang tot meerdere accounts niet instellen</translation>
+<translation id="8759753423332885148">Meer informatie.</translation>
 <translation id="8763883995157866248">Slaapmodus aanzetten</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, geïnstalleerde app, geblokkeerd</translation>
 <translation id="8782565991310229362">Starten van kiosk-app geannuleerd.</translation>
@@ -2576,6 +2649,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8876661425082386199">Je verbinding checken</translation>
 <translation id="8883478023074930307">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt op dit moment automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Ook zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt afgedwongen door de eigenaar. Als de instelling voor aanvullende Web- en app-activiteit aanstaat, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie over statistieken<ph name="BEGIN_LINK2_END" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Kan geen verbinding maken met YouTube Music</translation>
+<translation id="8888253246822647887">Je app wordt geopend wanneer de upgrade is voltooid. Upgrades kunnen enkele minuten duren.</translation>
 <translation id="888982883502837004">Firmware-updates zijn beschikbaar voor je apparaat. Klik om te bekijken en te updaten.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> wordt definitief verwijderd</translation>
 <translation id="889790758758811533">Nog <ph name="PERCENTAGE" />% batterijlading (ongeveer <ph name="TIME_LEFT" />). Sluit je apparaat aan op een voeding.</translation>
@@ -2599,7 +2673,9 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8945508919180478719">Studiomicrofoon</translation>
 <translation id="894774083269346314">Selectievakje <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> niet aangevinkt.</translation>
 <translation id="8949925099261528566">Verbonden, geen internet</translation>
+<translation id="8951256747718668828">De herstelactie kan niet worden voltooid door een fout</translation>
 <translation id="8951539504029375108">Alleen goedgekeurde Thunderbolt-apparaten werken met je Chromebook</translation>
+<translation id="895347679606913382">Starten...</translation>
 <translation id="8956420987536947088">Je vorige vensters en apps openen</translation>
 <translation id="8959380109429710384">Je hebt op de sneltoets voor het vergrootglas voor volledig scherm gedrukt. Gebruik Ctrl + Alt + pijltoetsen om te bewegen op de ingezoomde weergave.</translation>
 <translation id="8964525410783593407">1 u</translation>
@@ -2609,7 +2685,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8980862970816311842">Een app-icoon verplaatsen naar/uit een map in het app-raster</translation>
 <translation id="8982906748181120328">Dichtbij aan</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8985191021574400965">Welkom bij Steam voor Chromebook</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> gebruiken</translation>
 <translation id="8991648557324317894">Druk op fn + Snel invoegen of Shift om te annuleren.</translation>
 <translation id="899350903320462459">Ontgrendel het apparaat als <ph name="LOGIN_ID" /> om de meldingsactie uit te voeren</translation>
@@ -2617,9 +2692,11 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9000771174482730261">OPSLAG BEHEREN</translation>
 <translation id="9003374957546315126">Emoji's en meer</translation>
 <translation id="9005984960510803406">Crosh-venster openen</translation>
+<translation id="9013037634206938463">Er is <ph name="INSTALL_SIZE" /> vrije opslagruimte vereist om Linux te installeren. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
 <translation id="901668144954885282">Back-up maken in Google Drive</translation>
 <translation id="9017320285115481645">Geef de Family Link-toegangscode voor ouders op.</translation>
 <translation id="9024331582947483881">volledig scherm</translation>
+<translation id="9026852570893462412">Dit proces kan enkele minuten duren. De virtuele machine wordt gedownload.</translation>
 <translation id="9029736946581028033">Apparaat gaat straks uit</translation>
 <translation id="9030319654231318877">Uit tot zonsondergang</translation>
 <translation id="9030515284705930323">Je organisatie heeft de Google Play Store niet aangezet voor jouw account. Neem contact op met je beheerder voor meer informatie.</translation>
@@ -2628,7 +2705,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9047624247355796468">Instellingen openen voor <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth is niet beschikbaar</translation>
 <translation id="9050999376345823055">Druk op '.' om los te laten</translation>
-<translation id="9061694916020926968">Je moet zijn ingelogd op een Google-account om Steam voor Chromebook (bèta) te gebruiken. Log in en probeer het opnieuw.</translation>
 <translation id="906458777597946297">Venster maximaliseren</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9068849894565669697">Kleur selecteren</translation>
@@ -2664,6 +2740,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9168436347345867845">Later doen</translation>
 <translation id="9178475906033259337">1 resultaat bekijken voor <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met deze functie kun je snel zonder wachtwoord toegang krijgen tot iedere ingelogde gebruiker. Gebruik deze functie alleen met accounts die je vertrouwt.</translation>
+<translation id="9180281769944411366">Dit proces kan enkele minuten duren. De Linux-container wordt gestart.</translation>
 <translation id="9183302530794969518">Google Documenten</translation>
 <translation id="9183456764293710005">Vergrootglas voor volledig scherm</translation>
 <translation id="9192133205265227850"><ph name="DEVICE_NAME" /> gebruiken</translation>
@@ -2677,6 +2754,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, beheerd door je beheerder</translation>
 <translation id="9201842707396338580">Er is iets misgegaan. Neem contact op met de eigenaar of beheerder van het apparaat. Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Hiermee kunnen <ph name="APP_NAME" />, <ph name="APP2_NAME" /> en alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
+<translation id="9209563766569767417">De installatie van de Linux-container wordt gecontroleerd</translation>
 <translation id="9210037371811586452">Samengestelde desktopmodus wordt gesloten</translation>
 <translation id="9211490828691860325">Alle bureaus</translation>
 <translation id="9211681782751733685">Nog <ph name="TIME_REMAINING" /> totdat de batterij volledig is opgeladen.</translation>
@@ -2700,12 +2778,14 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="956452277966142925">Game Dashboard-instellingen</translation>
 <translation id="961856697154696964">Browsegegevens verwijderen</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> resultaten bekijken voor <ph name="QUERY" /></translation>
+<translation id="97905529126098460">Dit venster wordt gesloten nadat het annuleren is voltooid.</translation>
 <translation id="981011780479609956">Geen inleverdatum</translation>
 <translation id="98120814841227350">Naar het einde van het document gaan</translation>
 <translation id="987589956647469042">Mobiele data staan aan</translation>
 <translation id="989374776391122812">Camera- en audiobediening</translation>
 <translation id="990263227494928142">Druk 5 keer op Shift om de touchpad aan te zetten</translation>
 <translation id="990277280839877440">Venster <ph name="WINDOW_TITILE" /> gesloten.</translation>
+<translation id="992778845837390402">Linux-back-up wordt momenteel uitgevoerd</translation>
 <translation id="993398562350683614">Rondleiding stap <ph name="STEP" /> van <ph name="TOTAL_STEPS" />. Gebruik apps waarmee je van alles kunt doen op je <ph name="PRODUCT_NAME" />. Je vindt je apps in de Launcher. Druk op Alt + Shift + L om de focus op de Launcher-knop te plaatsen.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Krijg de nieuwste functies en beveiligingsverbeteringen. Updates worden op de achtergrond uitgevoerd.</translation>

@@ -183,6 +183,7 @@
 <translation id="1605658421715042784">Сүрөттү көчүрүү</translation>
 <translation id="1606899876897213121">Акыркы аракеттердин корутундусун жабуу</translation>
 <translation id="1612754831519568745">Коопсуз серептөөңүз учурда өчүк. Кооптуу сайттардан, жүктөлүп алынгандардан жана кеңейтүүлөрдөн коргонуңуз.</translation>
+<translation id="1617300545081951343"><ph name="BEGIN_LINK" />Шарттарыбыз<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Жайгашкан жерге байланыштуу маалыматты колдонуу шарттары (Кореядагылар үчүн)<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />Купуялык билдирүүбүз<ph name="END_LINK" /> колдонулат. Gemini жасалма интеллект болгондуктан, адамдар жана башка нерселер тууралуу так эмес маалыматты көрсөтүшү мүмкүн.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">"Google Жылнаамага кошуу" же "Apple Жылнаамага кошуу" дегенди тандаңыз.</translation>
 <translation id="1629162218487290695">Сиз экениңизди ырастаңыз…</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">Жашыруун режимде карап чыгуу үчүн оңго сыдырыңыз.</translation>
 <translation id="2079545284768500474">Кайтаруу</translation>
 <translation id="2085876078937250610">Сактоо…</translation>
+<translation id="2089180529062519164">Микрофонду күйгүзүңүз</translation>
 <translation id="2096239473850415494">Жүктөлүп алынган жок</translation>
 <translation id="2096716221239095980">Бардык нерселерди өчүрүү</translation>
 <translation id="2104436223719117661">Көп изделген нерселер</translation>
@@ -603,6 +605,7 @@
 <translation id="3119874402040566234">Чыгасыз жана серептөө дайындары өчүрүлөт</translation>
 <translation id="3124568093781685165">Сырсөздөрүңүздү үй-бүлөңүз менен бөлүшүңүз</translation>
 <translation id="3130863904455712965">Таржымал жана башкалар</translation>
+<translation id="3130973487775218359">Көрүү: <ph name="BEGIN_LINK" />Генеративдик жасалма интеллект тууралуу 5 нерсе<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Redress номерин сактаңыз</translation>
 <translation id="3132584647087998639">Нерселериңизди өткөрүп алыңыз</translation>
 <translation id="313283613037595347">Жаңы жашыруун өтмөк түзүү.</translation>
@@ -931,6 +934,7 @@
 <translation id="4306349443295056740">OCSP'ге кол коюу</translation>
 <translation id="4309403553630140242">Толук маалымат алуу үчүн эки жолу басыңыз</translation>
 <translation id="4310738531374808763">Башкы бетти ыңгайлаштыруу</translation>
+<translation id="4316794575239200608">Gemini менен болгон сүйлөшүүлөрүңүздү жана <ph name="BEGIN_LINK" />Google Workspace'теги нерселериңизди<ph name="END_LINK" /> адистерибиз текшербейт жана генеративдик ЖИ үлгүлөрүн жакшыртуу үчүн колдонушпайт.</translation>
 <translation id="4320848494125124980">Акыркы</translation>
 <translation id="4322394346347055525">Башка өтмөктөрдү жабуу</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1016,6 +1020,7 @@
 <translation id="4631335160486397366">Кайра колдонулган <ph name="COUNT" /> сырсөз бар</translation>
 <translation id="4632655012900268062">Кыйытмаларды ыңгайлаштыруу</translation>
 <translation id="4634124774493850572">Сырсөздү колдонуу</translation>
+<translation id="4634633632339959267">Сүйлөшүүлөр текшерилип, Google ЖИни жакшыртуу үчүн колдонулат. <ph name="BEGIN_LINK" />Cизге кайсы параметрлер жеткиликтүү экенин билип алыңыз.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Жүргөн жериңиз тууралуу маалымат<ph name="END_LINK" /> да аракеттериңиз менен бирге сакталат.</translation>
 <translation id="4636930964841734540">Маалымат</translation>
 <translation id="4641425577292284174">Эң коопсуз параметрлерди колдонуп жатканыңызды же кошумча бир нерсе керек экенин текшериңиз</translation>
 <translation id="4642472735733036929">Бааларга көз салуу токтотулду</translation>
@@ -1562,6 +1567,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6435236283694032571">Окуу тизмесине кошуу</translation>
 <translation id="6435307030888827407">Аккаунтума кирбейм</translation>
 <translation id="6436318499800111867">Мени менен <ph name="SHARED_WITH_ME_DATE" /> бөлүшүлгөн</translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Башкалардын купуялыгын сыйлаңыз<ph name="END_LINK" /> жана сүйлөшүүнү жаздырардан же Live режиминдеги сүйлөшүүгө кошуудан мурун алардан уруксат сураңыз.</translation>
 <translation id="6442697326824312960">Өтмөктү бошотуу</translation>
 <translation id="6443118737398455446">Мөөнөтү аяктай турган күн туура эмес</translation>
 <translation id="6444435711855078002">Дагы параметрлер</translation>
@@ -1804,6 +1810,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7253951228444156601">Сырсөздөр текшерилүүдө…</translation>
 <translation id="7261217796641151584">Топту бөлүшүү</translation>
 <translation id="7266578100016339897">Бул иреттүү болууга жардам берет. Муну параметрлерден каалаган убакта өзгөртсөңүз болот.</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Google Тейлөө шарттары<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />Gemini колдонмолорунун купуялык билдирүүсү<ph name="END_LINK" /> колдонулат. Gemini жасалма интеллект болгондуктан, адамдар жана башка нерселер тууралуу так эмес маалыматты көрсөтүшү мүмкүн.</translation>
 <translation id="7272437679830969316">Аныктыгыңыз тастыкталган жок. Сырсөз көчүрүлгөн жок.</translation>
 <translation id="728025568708172005">Коштомону баштоо</translation>
 <translation id="7280980607183752256">Бул файлды импорттоого болбойт</translation>
@@ -1862,6 +1869,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7468373585447318060">Көз салган бардык товарларыңыздын арзандаганын билип туруңуз.</translation>
 <translation id="746872191028309255">Сүрөт галереяңыз же камераңыз аркылуу товарларды сатып алыңыз.</translation>
 <translation id="7471557245617580330">Жаңы өтмөк түзүү</translation>
+<translation id="7473555040328423550">Өтмөк кошуу</translation>
 <translation id="7476548258282096076">Бул картада көп кирген сайттарыңыз көрсөтүлдү.</translation>
 <translation id="7484645889979462775">Бул сайт үчүн эч качан</translation>
 <translation id="7486006552035434095">Түзмөктөрүңүздү шайкештириңиз</translation>
@@ -2117,11 +2125,13 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8319282042900445670">Эстеткич коюлган убакыт: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Соңку аракеттер</translation>
 <translation id="8325455175867928593">"Кызыкчылыктарыңызга негизделген сын-пикирлер" модулун жашыруу</translation>
+<translation id="8333459276976141586">Live микрофонуңузду колдонот. Live баскычы басылганда, микрофон күйгүзүлөт. Микрофонду өчүрүү үчүн токтотуу баскычын басып же Gemini'ды жабыңыз.</translation>
 <translation id="833647236762414178">Сайттарга жана колдонмолорго оңой кирүү үчүн сырсөздөрдү жана киргизүүчү ачкычтарды түзүп, сактап жана тескеңиз. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Маалыматтын камдык көчүрмөсүн сактап, башка түзмөктө колдоно аласыз.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Кийинки деңгээлге өтүү үчүн дагы 1 тапшырманы аткарыңыз}other{Кийинки деңгээлге өтүү үчүн дагы {count} тапшырманы аткарыңыз}}</translation>
 <translation id="8348530355586151720">Үч чекиттүү менюну таптаңыз</translation>
 <translation id="8349305172487531364">Кыстармалар тилкеси</translation>
+<translation id="8360164927489392419">Live режиминдеги аракеттериңиз жана ошол режимде бөлүшкөн нерселериңиз <ph name="BEGIN_LINK" />Gemini колдонмолорунун купуялык билдирүүсүнө<ph name="END_LINK" /> ылайык сакталат жана иштелет. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} кыстарма өткөрүлүп алынды}other{{count} кыстарма өткөрүлүп алынды.}}</translation>
 <translation id="8363484128299778310">Маселе келип чыкса, убактылуу калыбына келтирүү</translation>
 <translation id="8364563001733875155">PIN-кодуңузду өзгөртүү үчүн алгач түзмөгүңүздө өткөрүүчү кодду тууралап алыңыз.</translation>
@@ -2193,6 +2203,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8571019948162152515">"<ph name="FILENAME" />" өчүрүлсүнбү?</translation>
 <translation id="8571213806525832805">Акыркы 4 апта</translation>
 <translation id="8577056989960190117">Мөөнөтү аяктоочу жылды <ph name="YEAR" /> автотолтуруу</translation>
+<translation id="8582026929965253036">Gemini менен Live режиминде сүйлөшүү</translation>
 <translation id="8587001564479545614">Калыбына келтирүүчү PIN түзүңүз</translation>
 <translation id="8588404856427128947">Өчүк</translation>
 <translation id="8590286732816598906">Өтмөктөр тобу, <ph name="GROUP_TITLE" />, Меню.</translation>
@@ -2267,6 +2278,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8803526663383843427">Күйүп турганда</translation>
 <translation id="8803639129939845298">Корголгон</translation>
 <translation id="8813277370772331957">Кийинчерээк эскертүү</translation>
+<translation id="8814308045751067027">Live функциясын колдонуу үчүн параметрлерден Chrome'го микрофонду колдонууга уруксат бериңиз</translation>
 <translation id="8814719628147284151">Улантуу</translation>
 <translation id="881559332211266856">Redress номерин жаңыртыңыз</translation>
 <translation id="8817524703470045896">Бааларга көз салып, каалаган сайтта баалар төмөндөгөндө эскертүүлөрдү алыңыз</translation>

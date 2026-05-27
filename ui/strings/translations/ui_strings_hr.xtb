@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2168039046890040389">Stranica prema gore</translation>
 <translation id="2190355936436201913">(prazno)</translation>
-<translation id="2192232475740621500">Koristi nisku gustoću</translation>
 <translation id="2267918077332197517">Blokiraj sve obavijesti te web-lokacije</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Dodirnite ciljeve dodira na zaslonu.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Želite li nazvati ovaj broj s telefona?</translation>
 <translation id="2435457462613246316">Pokaži zaporku</translation>
 <translation id="24452542372838207">Proširi obavijest</translation>
-<translation id="2445449901874883781">Koristi visoku gustoću</translation>
 <translation id="2448407890032181691">Cilj dodira premješten je dolje desno. Dodirnite ovdje.</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2497284189126895209">Sve datoteke</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">U redu</translation>
 <translation id="6974053822202609517">Zdesna ulijevo</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Postavke za prikaz aplikacije aktivirat će se nakon njezinog ponovnog pokretanja.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Još 1 min}one{Još # min}few{Još # min}other{Još # min}}</translation>
 <translation id="7252604552361840748">Pronađite navedeno proširenje</translation>

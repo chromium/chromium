@@ -14,6 +14,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> adicionado</translation>
 <translation id="1038106730571050514">Mostre as sugestões</translation>
 <translation id="1047017786576569492">parcial</translation>
+<translation id="104710386808485638">Quer reiniciar o Linux?</translation>
 <translation id="1052916631016577720">Análise de itens</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1056898198331236512">Aviso</translation>
@@ -29,6 +30,7 @@
 <translation id="1073899992769346247">Substitua ou recarregue a bateria</translation>
 <translation id="1081015718268701546">De momento, as apps para Linux não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="108486256082349153">Telemóvel: <ph name="ADDRESS" /></translation>
+<translation id="1085697365578766383">Não foi possível iniciar a máquina virtual. Tente novamente.</translation>
 <translation id="1088231044944504242">Pesquise na categoria <ph name="CATEGORY" />, ficheiros, apps e muito mais. Use as teclas de seta para navegar nas suas apps.</translation>
 <translation id="1093645050124056515">ctrl + alt + seta para baixo</translation>
 <translation id="1094756674036064790">Desativar o Bluetooth?</translation>
@@ -55,6 +57,7 @@
 <translation id="1173268871892601910">O Gestor de Palavras-passe do ChromeOS quer confirmar a sua identidade</translation>
 <translation id="1175572348579024023">Deslocar</translation>
 <translation id="1175944128323889279">Nível da bateria atual: <ph name="BATTERY_PERCENTAGE" />%, <ph name="TIME" /> restante</translation>
+<translation id="1177863135347784049">Personalizado</translation>
 <translation id="1178581264944972037">Pausa</translation>
 <translation id="1179776263021875437">Parar de focar na tarefa</translation>
 <translation id="1180117276105724040">A restaurar as janelas da sua sessão anterior…</translation>
@@ -82,6 +85,7 @@
 <translation id="1240638468526743569">Uma app</translation>
 <translation id="1242198791279543032">O som das notificações está desativado</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1244265436519979884">Neste momento, está a decorrer o restauro do Linux.</translation>
 <translation id="1245476784081715330">Excelente!</translation>
 <translation id="124678866338384709">Fechar o separador atual</translation>
 <translation id="1246890715821376239">Apps não suportadas</translation>
@@ -108,8 +112,10 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Abrir Explore</translation>
 <translation id="129469256578833241">Regressar ao resumo</translation>
+<translation id="1294807885394205587">Este processo poderá demorar alguns minutos. A iniciar o gestor de contentores…</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Prima <ph name="LAUNCHER_KEY_NAME" /> + g em qualquer altura</translation>
+<translation id="130491383855577612">As aplicações e os ficheiros do Linux foram substituídos com êxito.</translation>
 <translation id="1306549533752902673">APLICAÇÕES RECOMENDADAS</translation>
 <translation id="1310396869741602366">Alterar tom</translation>
 <translation id="1312604459020188865">Intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
@@ -118,6 +124,7 @@
 <translation id="132346741904777634">Câmara ajustada ao canto superior esquerdo. Há um conflito com a superfície do sistema.</translation>
 <translation id="132415371743256095">Fechar <ph name="DESK_NAME" /> e janelas</translation>
 <translation id="1333308631814936910">Ecrã <ph name="DISPLAY_NAME" /> ligado.</translation>
+<translation id="1338950911836659113">A eliminar...</translation>
 <translation id="1340378040547539434">Diminuir o zoom na página</translation>
 <translation id="1341651618736211726">Menu adicional</translation>
 <translation id="1341926407152459446">Use "<ph name="DEVICE_NAME" />" para a entrada e saída de áudio</translation>
@@ -161,6 +168,7 @@
 <translation id="1469148162491666137">Isto permite o acesso para a app <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> e para todas as apps e Websites com as autorizações da câmara e do microfone. Pode ter de atualizar a página Web ou reiniciar a app.</translation>
 <translation id="147310119694673958">Bateria do telemóvel a <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Ative/desative a zona Wi-Fi. A zona Wi-Fi está ativada, 1 dispositivo ligado.</translation>
+<translation id="1476595624592550506">Altere a palavra-passe</translation>
 <translation id="1479685784053141667">Criar contacto</translation>
 <translation id="1479909375538722835">Menu de acessibilidade flutuante</translation>
 <translation id="1483493594462132177">Enviar</translation>
@@ -176,6 +184,7 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Bateria: <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> até ficar completa</translation>
 <translation id="1525508553941733066">IGNORAR</translation>
+<translation id="152629053603783244">Reiniciar Linux</translation>
 <translation id="1526448108126799339">Abrir um novo separador numa nova janela</translation>
 <translation id="1528259147807435347">Editado na semana passada</translation>
 <translation id="1536604384701784949">Para utilizar <ph name="USER_EMAIL_ADDRESS" />, primeiro, tem de terminar a sessão de todas as contas. Para terminar sessão, selecione Cancelar para retroceder. Em seguida, selecione a hora para abrir a área de estado e selecione Terminar sessão. Em seguida, volte a iniciar sessão com <ph name="USER_EMAIL_ADDRESS_2" />.</translation>
@@ -194,11 +203,15 @@
 <translation id="1571697193564730395">Ative/desative o modo Não incomodar. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Indicador da extremidade esquerda selecionado, use as teclas de seta para o mover</translation>
 <translation id="1576623706766186887">Diminuir o zoom quando a lupa estiver ativada</translation>
+<translation id="1578558981922970608">Forçar fecho</translation>
 <translation id="1582946770779745370">Painel de jogo disponível. Prima <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape e, em seguida, <ph name="LAUNCHER_KEY_NAME" /> + g em qualquer altura para abrir</translation>
 <translation id="1586324912145647027">Aceda ao espaço de trabalho de 1 a 8</translation>
 <translation id="158838227375272121">Website do Google Classroom</translation>
 <translation id="1589090746204042747">Aceda a toda a sua atividade nesta sessão.</translation>
+<translation id="1592074621872221573"><ph name="MANAGER" /> desativou a depuração do ADB, o que irá repor o seu dispositivo <ph name="DEVICE_TYPE" />. Faça uma cópia de segurança dos ficheiros antes de reiniciar.</translation>
+<translation id="1595492813686795610">O Linux está a ser atualizado</translation>
 <translation id="1597880963776148053">Passo <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> da visita guiada. As suas apps fixadas e abertas estão na prateleira localizada na parte inferior do ecrã. Prima Alt + Shift + L e, de seguida, Tab para focar os itens da prateleira.</translation>
+<translation id="1602085790802918092">A iniciar a máquina virtual…</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + seta para baixo</translation>
 <translation id="1604857178818051494">Pausar o conteúdo multimédia</translation>
 <translation id="1607312127821884567">Ignorar configuração da visualização das apps do telemóvel</translation>
@@ -207,12 +220,12 @@
 <translation id="1612679292338846734">Quando ativa estas funcionalidades, o texto introduzido, o conteúdo do documento e o URL da página Web podem ser enviados para os servidores de IA da Google. Estas informações são usadas para gerar sugestões de escrita, gerar resumos, responder a perguntas e melhorar o produto, sujeito aos <ph name="LINK_TO_SERVICE_TERMS" />. Não inclua informações pessoais nem confidenciais.</translation>
 <translation id="1619879934359211038">Não foi possível estabelecer ligação ao Google Play. Verifique a ligação de rede e tente novamente. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Câmara</translation>
+<translation id="1621831347985899379">Os dados do <ph name="DEVICE_TYPE" /> serão eliminados</translation>
 <translation id="1623768535032616219">Reduzir Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> não está disponível.</translation>
 <translation id="1632985212731562677">O acesso por switch pode ser desativado em Definições &gt; Acessibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1639239467298939599">A carregar…</translation>
-<translation id="1642895994345928121">O dispositivo não tem armazenamento suficiente para abrir esta app. Liberte espaço e tente novamente.</translation>
 <translation id="1647986356840967552">Página anterior</translation>
 <translation id="1651914502370159744">Abrir a página Histórico</translation>
 <translation id="1668469839109562275">VPN incorporada</translation>
@@ -254,6 +267,7 @@
 <translation id="1755408179247123630">Ativar a funcionalidade Selecionar para falar?</translation>
 <translation id="1755556344721611131">App Diagnósticos</translation>
 <translation id="1756833229520115364">Não foi possível guardar o modelo. Existem demasiadas janelas ou separadores.</translation>
+<translation id="1757132445735080748">Para concluir a configuração do Linux, atualize o ChromeOS Flex e tente novamente.</translation>
 <translation id="1757857692711134412">Desativada até ao nascer do sol</translation>
 <translation id="1763084151787818322">Outras ações</translation>
 <translation id="1768138163688567246">Fechar Pesquisar no meu ecrã</translation>
@@ -288,6 +302,7 @@
 <translation id="1879018240766558464">De momento, as janelas de navegação anónima não são suportadas. As outras apps serão guardadas.</translation>
 <translation id="1882814835921407042">Sem rede móvel</translation>
 <translation id="1882897271359938046">A espelhar para <ph name="DISPLAY_NAME" /></translation>
+<translation id="1884705339276589024">Redimensione o disco do Linux</translation>
 <translation id="1885785240814121742">Desbloquear com impressão digital</translation>
 <translation id="1891362123137972260">O espaço em disco é criticamente baixo. Liberte espaço em disco.</translation>
 <translation id="1894024878080591367">Configure para jogar com o teclado</translation>
@@ -301,6 +316,7 @@
 <translation id="1925320505152357008">menos de 1 min</translation>
 <translation id="1928739107511554905">Para obter a atualização, utilize o ecrã tátil para reiniciar o Chromebook com o teclado ligado.</translation>
 <translation id="1929331825127010451">Voltar à pergunta</translation>
+<translation id="1937774647013465102">Não é possível importar o tipo de arquitetura de contentor <ph name="ARCHITECTURE_CONTAINER" /> com este dispositivo cuja arquitetura é <ph name="ARCHITECTURE_DEVICE" />. Pode tentar restaurar este contentor para um dispositivo diferente ou pode aceder aos ficheiros contidos na imagem deste contentor através da aplicação Ficheiros.</translation>
 <translation id="1946615340060705561">Prima "c" para soltar</translation>
 <translation id="1948405482892809935">Mudar para o utilizador seguinte</translation>
 <translation id="1954252331066828794">Gravação de ecrã concluída</translation>
@@ -328,6 +344,8 @@
 <translation id="2034971124472263449">Guardar mesmo assim</translation>
 <translation id="2041220428661959602">Nível da bateria: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">O atalho para <ph name="SIX_PACK_KEY_NAME" /> está atualmente desativado</translation>
+<translation id="204706822916043810">A verificar a máquina virtual…</translation>
+<translation id="2048554637254265991">Erro ao iniciar o gestor de contentores. Tente novamente.</translation>
 <translation id="2048653237708779538">Ação não disponível</translation>
 <translation id="2049240716062114887">O nome do espaço de trabalho foi alterado para <ph name="DESK_NAME" />.</translation>
 <translation id="2064048859448024834">Pré-visualização da câmara ativada</translation>
@@ -354,10 +372,12 @@
 <translation id="2152796271648108398">Tempo atual</translation>
 <translation id="2152895518047545149">Parece que não há nada em falta. Bom trabalho!</translation>
 <translation id="2159568970844941445">Sem imagens na app Files</translation>
+<translation id="2160985496866145279">Encerrar Bruschetta</translation>
 <translation id="2161132820593978283">Experimente o enquadramento da câmara para ficar no centro do ecrã nas videochamadas. Ative-o nas Definições rápidas.</translation>
 <translation id="216955976692983107">Janela de redimensionamento em mosaico para a direita</translation>
 <translation id="2185166372312820725">Aceder ao separador anterior</translation>
 <translation id="2185444992308415167">Passar pelos separadores de 1 a 8</translation>
+<translation id="2192232475740621500">Usar densidade baixa</translation>
 <translation id="2195732836444333448">Está no limite da sua capacidade neste momento. Volte em breve.</translation>
 <translation id="2198625180564913276">A adicionar o perfil. Esta ação pode demorar alguns minutos.</translation>
 <translation id="219905428774326614">Launcher, todas as aplicações</translation>
@@ -382,6 +402,7 @@
 <translation id="2268813581635650749">Term. sess. de todos</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Procurar para a frente</translation>
+<translation id="2278668501808246459">A iniciar o gestor de contentores…</translation>
 <translation id="2282073721614284166">Abrir o link no separador</translation>
 <translation id="2292698582925480719">Escala de apresentação</translation>
 <translation id="2293443480080733021">Em que é que gostaria de se focar? Prima Enter para adicionar a tarefa.</translation>
@@ -408,6 +429,7 @@
 <translation id="2352467521400612932">Definições da caneta stylus</translation>
 <translation id="2354174487190027830">A ativar <ph name="NAME" /></translation>
 <translation id="2355314311311231464">A Administração de contas falhou porque não foi possível obter os detalhes da sua conta. Tente novamente. Código de erro: <ph name="ERROR_CODE" />.</translation>
+<translation id="2359071692152028734">As apps Linux podem deixar de responder.</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Ative/desative o Wi-Fi. <ph name="STATE" />.</translation>
@@ -421,7 +443,6 @@
 <translation id="2383521554963939360">Grupos de apps e separadores</translation>
 <translation id="2386292613071805067">Selecionar tudo na página</translation>
 <translation id="2389423187722941333">Ativar/desativar Gemini</translation>
-<translation id="2391805183137601570">Abrir Steam</translation>
 <translation id="2392659840443812875">Nenhuma zona Wi-Fi disponível. Confirme que o dispositivo está próximo e o Bluetooth está ativado.</translation>
 <translation id="2397416548179033562">Mostrar menu do Chrome</translation>
 <translation id="240006516586367791">Controlos de multimédia</translation>
@@ -444,14 +465,13 @@
 <translation id="243878895369688216">Aberto ontem</translation>
 <translation id="2440978926514840421">Gravação de GIF feita</translation>
 <translation id="2441427462554639370">A gravação terminou porque o espaço de armazenamento está criticamente baixo</translation>
-<translation id="2447587550790814052">Já pode usar o Steam para o Chromebook (beta)</translation>
+<translation id="2445449901874883781">Usar densidade elevada</translation>
 <translation id="2449089818483227734">Bateria fraca</translation>
 <translation id="2450205753526923158">Modo de captura de ecrã</translation>
 <translation id="2453860139492968684">Concluir</translation>
 <translation id="2455994958736234930">Adicionar www. e .com à barra de endereço e, de seguida, abrir o Website</translation>
 <translation id="2456008742792828469">Calendário, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Ver detalhes</translation>
-<translation id="2462332841984057083">O Steam já está a ser configurado. Aguarde pela conclusão da configuração.</translation>
 <translation id="2465145153332031561">Estado da bateria: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, número de ciclos: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Confirme a resolução</translation>
 <translation id="2475783092753560388">Inserir <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -464,7 +484,6 @@
 <translation id="2486214324139475545">Pré-visualização de <ph name="DESK_NAME" />. Espaço de trabalho ativo.</translation>
 <translation id="2486405091093637109">O ecrã "<ph name="DISPLAY_NAME" />" foi alterado para a resolução <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Se não confirmar, as definições anteriores vão ser restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Aderir</translation>
-<translation id="2494555621641843783">Não é possível instalar o Steam</translation>
 <translation id="2496180316473517155">Histórico de navegação</translation>
 <translation id="2499445554382787206">Menu do perfil do espaço de trabalho. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Teclas aderentes</translation>
@@ -484,6 +503,7 @@
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Prima <ph name="KEY_ONE" /> enquanto arrasta o separador</translation>
 <translation id="2532199152994248594">Arrastar ou premir a barra de espaço para selecionar uma área a capturar</translation>
+<translation id="2537927931785713436">A verificar a imagem da máquina virtual…</translation>
 <translation id="2540651571961486573">Ocorreu um erro. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Está a tentar usar a tecla Home? Use</translation>
 <translation id="254900897760075745">Copiar o conteúdo selecionado para a área de transferência</translation>
@@ -543,7 +563,8 @@
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727744317940422214">Desculpe, mas algo correu mal. Envie feedback com #bruschetta na descrição. O código de erro é <ph name="ERROR" />. A limpeza falhou. Pode ter de a fazer manualmente.</translation>
 <translation id="2727977024730340865">Ligado a um carregador de baixo consumo. O carregamento da bateria pode não ser fiável.</translation>
-<translation id="2737538893171115082">O Steam para o Chromebook (beta) foi bloqueado pelo seu administrador. O seu administrador tem de ativar estas políticas:</translation>
+<translation id="2741713322780029189">Abrir terminal de recuperação</translation>
+<translation id="274290345632688601">A restaurar aplicações e ficheiros do Linux…</translation>
 <translation id="2743301740238894839">Iniciar</translation>
 <translation id="2743387203779672305">Copiar para a área de transferência</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -571,6 +592,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2815594810045873507">Experimente um carregador com mais watts (W) ou use o carregador original.</translation>
 <translation id="2819276065543622893">A sessão será terminada agora.</translation>
 <translation id="2822551631199737692">A câmara está a ser usada</translation>
+<translation id="2822910719211888134">Erro ao fazer a cópia de segurança do Linux</translation>
 <translation id="2825619548187458965">Prateleira</translation>
 <translation id="2831035692318564937">Ativado até ao nascer do sol</translation>
 <translation id="2834813915651407382">Aberto recentemente</translation>
@@ -578,6 +600,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2838589015763961627">Saia do ecrã inteiro para redimensionar</translation>
 <translation id="2840766858109427815">Avançar para a página seguinte</translation>
 <translation id="2841907151129139818">Mudou para o modo de tablet</translation>
+<translation id="2843560154284403323">Para concluir a configuração do Linux, atualize o ChromeOS e tente novamente.</translation>
 <translation id="2844169650293029770">Dispositivo USB-C (porta frontal do lado esquerdo)</translation>
 <translation id="2844350028562914727">detalhes</translation>
 <translation id="2847759467426165163">Transmitir para</translation>
@@ -586,6 +609,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2850207700020959936">As apps podem aceder à câmara</translation>
 <translation id="2852045827873867442">É necessária ligação à Internet.</translation>
 <translation id="2860184359326882502">Melhor correspondência</translation>
+<translation id="2862815659905780618">Remover ambiente de programação do Linux</translation>
 <translation id="2865888419503095837">Informações da rede</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> que passou</translation>
 <translation id="2872353916818027657">Trocar monitor principal</translation>
@@ -617,6 +641,8 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="2949420361496057765">Prima <ph name="MODIFIER" /> e clique num link</translation>
 <translation id="2957159466053076448">Pode desativar estas funcionalidades em qualquer altura nas Definições. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Áudio do dispositivo</translation>
+<translation id="2959842337402130152">Não é possível restaurar devido à falta de espaço de armazenamento. Liberte <ph name="SPACE_REQUIRED" /> no dispositivo e tente novamente.</translation>
+<translation id="2960208947600937804">Ocorreu um erro ao configurar o Linux. Contacte o seu administrador.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Ativar acesso ao microfone?</translation>
 <translation id="296762781903199866">Não foi possível transferir os ficheiros de voz em <ph name="LANGUAGE" /></translation>
@@ -645,9 +671,11 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3040982432432547149">Ajude-nos a melhorar o Steam para o Chromebook</translation>
 <translation id="304417730895741346">As suas apps fixadas e abertas estão na prateleira. Para fixar uma app à prateleira, clique com o botão direito do rato numa app ou toque no touchpad com dois dedos.</translation>
 <translation id="3045670165536837541">Indicador superior direito selecionado, use as teclas de seta para o mover</translation>
+<translation id="3046178388369461825">Espaço em disco do Linux criticamente baixo</translation>
 <translation id="3047761520276763270">Experimente dizer:</translation>
 <translation id="3053407068093039599">Ativar/desativar o acesso à câmara</translation>
 <translation id="3055162170959710888">Utilizou este dispositivo durante <ph name="USED_TIME" /> hoje.</translation>
+<translation id="3058002721610176427">Altere o PIN e a palavra-passe</translation>
 <translation id="3062298103034426069">Não compatível</translation>
 <translation id="3068622547379332530">Versão <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Prateleira à esquerda</translation>
@@ -709,6 +737,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o espaço de trabalho <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Tipo de trabalho da turma: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">Remover o realce de um item na prateleira</translation>
+<translation id="3256274561709196882">Altere o PIN</translation>
 <translation id="3260969790895726815">A voz é processada localmente e o ditado funciona offline, mas alguns comandos de voz não funcionam.</translation>
 <translation id="3264031581203585083">Ocultar todas as sugestões do Google Drive</translation>
 <translation id="3265032511221679826">Ativar o acesso à localização exata?</translation>
@@ -716,17 +745,18 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3271554781793662131">Pesquise para inserir</translation>
 <translation id="3274634049061007184">Veja as apps do seu telemóvel</translation>
 <translation id="3279230909244266691">Este processo pode demorar alguns minutos. A iniciar a máquina virtual…</translation>
-<translation id="3285465040399788513">O dispositivo não tem armazenamento suficiente para concluir a configuração. Liberte espaço e tente novamente.</translation>
 <translation id="3289364673986435196">Menu ligar/desligar</translation>
 <translation id="3289544412142055976">De momento, as apps para Linux não são suportadas</translation>
 <translation id="3289674678944039601">A carregar através de adaptador…</translation>
 <translation id="3290356915286466215">Não protegida</translation>
 <translation id="3291862315280588024">Mover para o início da palavra anterior</translation>
+<translation id="32939749466444286">Não é possível iniciar o contentor do Linux. Tente novamente.</translation>
 <translation id="3294437725009624529">Convidado</translation>
 <translation id="3300193645498960160">Vai receber uma notificação se falar enquanto estiver com o som desativado. O áudio nunca sai do seu dispositivo.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> dispositivos ligados à zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Mudou para o modo de portátil</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pode iniciar sessão mais tarde.</translation>
+<translation id="3312470654018965389">A configurar o contentor do Linux</translation>
 <translation id="3313950410573257029">Rever ligação</translation>
 <translation id="3321628682574733415">Código parental incorreto</translation>
 <translation id="332827762492701193">As notificações estão ocultas</translation>
@@ -743,7 +773,6 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3368922792935385530">Ligado</translation>
 <translation id="3369111525500416043">A concluir em breve</translation>
 <translation id="3371140690572404006">Dispositivo USB-C (porta frontal do lado direito)</translation>
-<translation id="3373196968211632036">O Steam para o Chromebook (beta) não está disponível para Contas Google de crianças</translation>
 <translation id="3375634426936648815">Ligado</translation>
 <translation id="3386978599540877378">a lupa em ecrã inteiro</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -785,7 +814,6 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Saiba mais sobre a Precisão da localização<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Ocultação automática da prateleira</translation>
-<translation id="3496797737329654668">Vamos jogar</translation>
 <translation id="3505066820268455558">A carregar a bateria</translation>
 <translation id="3509391053705095206">Não é possível encontrar o telemóvel. Certifique-se de que o Bluetooth do telemóvel está ativado.</translation>
 <translation id="3510164367642747937">Realçar cursor do rato</translation>
@@ -798,6 +826,8 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="353086728817903341">Ligado a <ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="3532247131850366052">Não foi possível criar uma folha de cálculo do Google Sheets</translation>
 <translation id="3533126039236445965">Apps na prateleira</translation>
+<translation id="3537881477201137177">Pode ser modificado mais tarde em Definições.</translation>
+<translation id="3538066758857505094">Ocorreu um erro ao desinstalar o Linux. Tente novamente.</translation>
 <translation id="3539957339480430241">Zona Wi-Fi do <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Ignore a configuração da visualização das fotos e dos conteúdos multimédia recentes do telemóvel</translation>
 <translation id="3542066395059568317">Verá recomendações para poder continuar onde parou. Pode clicar com o botão direito do rato para remover recomendações.</translation>
@@ -808,6 +838,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3554928024630051016">Para adicionar mais dispositivos USB, experimente remover um e, em seguida, ligar um novo</translation>
 <translation id="3558768885091059911">Ativar o acesso à câmara e ao microfone?</translation>
 <translation id="3560174576767922131">Gravar vídeo</translation>
+<translation id="3562423906127931518">Este processo pode demorar alguns minutos. A configurar o contentor do Linux…</translation>
 <translation id="3563432852173030730">Não foi possível transferir a app de quiosque.</translation>
 <translation id="3563558822383875692">A configurar o DLC (conteúdo transferível).</translation>
 <translation id="3563775809269155755">Ativar zona Wi-Fi</translation>
@@ -820,6 +851,7 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3583350334315908861">{MINUTES,plural, =1{minuto}other{minutos}}</translation>
 <translation id="3585296979871889131">Veja as fotos, os conteúdos multimédia, as notificações e as apps recentes do telemóvel</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
+<translation id="3590295622232282437">A entrar na sessão gerida…</translation>
 <translation id="3590441166907930941">Botão lateral</translation>
 <translation id="3593039967545720377">Aceda ao seu histórico da área de transferência ao premir <ph name="SHORTCUT_KEY_NAME" /> + V para ver a área de transferência. Para começar, copie um item.</translation>
 <translation id="3593646411856133110">Deslize rapidamente para cima sem soltar para ver as apps abertas.</translation>
@@ -847,9 +879,9 @@ Caso contrário, o touchpad incorporado é reativado dentro de <ph name="TIMEOUT
 <translation id="3633851487917460983">Abrir área de transferência</translation>
 <translation id="363473492175527493">Tarefa definida para se focar em: <ph name="TASK_NAME" />. Prima Enter para editar a tarefa.</translation>
 <translation id="3638400994746983214">Ative/desative o ecrã de privacidade. <ph name="STATE_TEXT" />.</translation>
-<translation id="3641070112313110357">É preciso atualizar o Steam para Chromebook (beta). Reinicie o Chromebook e tente novamente.</translation>
 <translation id="3649256019230929621">Minimizar janela</translation>
 <translation id="3650952250015018111">Permitir que o "<ph name="APP_NAME" />" tenha acesso:</translation>
+<translation id="3652817283076144888">A inicializar</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         de <ph name="START_TIME" /> a
@@ -882,6 +914,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3726171378575546917">A app <ph name="UNAVAILABLE_APPS_ONE" />, a app <ph name="UNAVAILABLE_APPS_TWO" /> e mais <ph name="UNAVAILABLE_APPS_COUNT" /> apps não se encontram neste dispositivo.</translation>
 <translation id="3727231512028252576">Não foi possível carregar os itens. Tente novamente quando estiver online.</translation>
 <translation id="3735740477244556633">Ordenar por</translation>
+<translation id="3738632186060045350">Os dados do dispositivo <ph name="DEVICE_TYPE" /> serão eliminados dentro de 24 horas</translation>
 <translation id="3738664582935948253">Já pode apresentar cliques e atalhos de teclado nas gravações de ecrã</translation>
 <translation id="3741482431277446954">Botão direito do rato</translation>
 <translation id="3742055079367172538">Captura de ecrã efetuada</translation>
@@ -915,13 +948,14 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3831226344927851293">Sair da vista do tutorial</translation>
 <translation id="383629559565718788">Mostrar definições do teclado</translation>
 <translation id="384082539148746321">Eliminar o modelo?</translation>
-<translation id="3841282988425489367">Não é possível configurar o Steam para o Chromebook (beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> e, em seguida, <ph name="KEY_ONE" /> ou <ph name="KEY_TWO" /> ou <ph name="KEY_THREE" /> ou <ph name="KEY_FOUR" /></translation>
+<translation id="3846116211488856547">Obtenha ferramentas para programar Websites, aplicações para Android e muito mais. A instalação do Linux vai transferir <ph name="DOWNLOAD_SIZE" /> de dados.</translation>
 <translation id="3846575436967432996">Não existem informações de rede disponíveis</translation>
 <translation id="3848526302597027234">Acesso às seguintes autorizações:</translation>
 <translation id="385051799172605136">Anterior</translation>
 <translation id="385300504083504382">Início</translation>
 <translation id="3859364108019690">Não é possível fazer stream de apps</translation>
+<translation id="3861638017150647085">O nome de utilizador "<ph name="USERNAME" />" não está disponível.</translation>
 <translation id="3861651314799684201">Prima Enter para gravar o ecrã inteiro</translation>
 <translation id="3870197372373144624">Experimente encerrar o seu dispositivo.</translation>
 <translation id="3879748587602334249">Gestor de transferências</translation>
@@ -992,6 +1026,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4077623680826964850">Limite de tempo atingido ao iniciar ou voltar a ligar à VM.</translation>
 <translation id="4086921558679520050">Ative o botão físico do microfone no dispositivo</translation>
 <translation id="4101772068965291327">Abrir página inicial</translation>
+<translation id="4102906002417106771">Reiniciar para Powerwash</translation>
 <translation id="4112140312785995938">Procurar para trás</translation>
 <translation id="4113030288477039509">Gerido pelo gestor</translation>
 <translation id="4114315158543974537">Ative o Centro do telemóvel</translation>
@@ -1026,7 +1061,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4192112279662688596">Ou</translation>
 <translation id="4193857202545160520">Mostrar cliques e teclas</translation>
 <translation id="4193969623755915875">Abra a "Ajuda" na app Explore com "<ph name="NEW_SHORTCUT" />".</translation>
-<translation id="4195001808989442226">Não é possível abrir o Steam para Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Versão atual: <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Continuar onde deixou</translation>
 <translation id="4195877955194704651">Botão de cliques automáticos</translation>
@@ -1042,7 +1076,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalada, em pausa</translation>
 <translation id="4228078597006700451">Controlos não configurados</translation>
 <translation id="4230560241506423345">Novo</translation>
-<translation id="4231231258999726714">A configurar o Steam para o Chromebook</translation>
 <translation id="4236726631849783264">Um lembrete sobre ações sugeridas</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de vista geral</translation>
@@ -1104,6 +1137,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Quer ativá-la?</translation>
 <translation id="4394466652057229831">Clique com o botão direito do rato para resumir</translation>
 <translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
+<translation id="439817266247065935">O seu dispositivo não foi encerrado corretamente. Reinicie o Linux para utilizar apps do Linux.</translation>
 <translation id="440113666232554208">Não é possível guardar a gravação de ecrã</translation>
 <translation id="4405151984121254935">Este tipo de periférico ligado não é suportado</translation>
 <translation id="4406883609789734330">Legendas instantâneas</translation>
@@ -1130,7 +1164,6 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4471432286288241507">{0,plural, =0{Atualize o dispositivo agora}=1{Atualize o dispositivo dentro de 1 segundo}other{Atualize o dispositivo dentro de # segundos}}</translation>
 <translation id="4472575034687746823">Começar</translation>
 <translation id="4473489370276014885">Contactos do Google</translation>
-<translation id="4473996011558324141">tempo estimado</translation>
 <translation id="4477350412780666475">Faixa seguinte</translation>
 <translation id="4477751544736611934">Isto pode significar custos de dados.
 1 dispositivo ligado.</translation>
@@ -1139,6 +1172,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4481530544597605423">Dispositivos não sincronizados</translation>
 <translation id="4485506555414638855">Ignorar configuração da visualização das fotos, dos conteúdos multimédia, das notificações e das apps recentes do telemóvel</translation>
 <translation id="4491109536499578614">Imagem</translation>
+<translation id="4493468155686877504">Recomendado (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="450584155212756404">Canal para programadores</translation>
 <translation id="4513044611477939680">Partilha rápida</translation>
 <translation id="4513946894732546136">Comentários</translation>
@@ -1169,23 +1203,24 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4573176682887762361">"Introduzir [palavra/expressão]"</translation>
 <translation id="4577990005084629481">Mostrar pré-visualizações</translation>
 <translation id="4578906031062871102">Menu de definições aberto</translation>
+<translation id="4581774856936278355">Erro ao restaurar o Linux</translation>
 <translation id="458210817642223147">Gravar GIF</translation>
 <translation id="4582666543382004902">A zona Wi-Fi foi desativada para usar o Wi-Fi. Para usar a zona Wi-Fi, desative o Wi-Fi.</translation>
 <translation id="4585337515783392668">Parar a transmissão para um recetor desconhecido</translation>
 <translation id="4596144739579517758">O tema escuro está desativado.</translation>
 <translation id="4596442969149038771"><ph name="USER" /> partilhou</translation>
-<translation id="4598556348158889687">Gestão de armazenamento</translation>
 <translation id="4610493115106525653">Bom resultado</translation>
 <translation id="4611292653554630842">Iniciar sessão</translation>
+<translation id="4613144866899789710">A cancelar a instalação do Linux…</translation>
 <translation id="462160925400706389">Dispositivo <ph name="NAME" /> ligado</translation>
 <translation id="4623167406982293031">Validar conta</translation>
 <translation id="4628757576491864469">Dispositivos</translation>
+<translation id="4628762811416793313">A configuração do contentor do Linux não foi concluída. Tente novamente.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, número de estrelas: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Prima Ctrl + W para eliminar</translation>
 <translation id="4633757335284074492">Faça uma cópia no Google Drive. Restaure facilmente os dados ou troque de dispositivo em qualquer altura. Esta cópia de segurança inclui dados de apps. As cópias de segurança são carregadas para a Google e encriptadas com a palavra-passe da Conta Google da criança.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Atualize o dispositivo para a versão anterior agora}=1{Atualize o dispositivo para a versão anterior dentro de 1 segundo}other{Atualize o dispositivo para a versão anterior dentro de # segundos}}</translation>
 <translation id="4642092649622328492">Criar uma captura de ecrã parcial</translation>
-<translation id="4642587497923912728">O Steam para o Chromebook (beta) só está disponível para a conta que iniciou sessão primeiro neste Chromebook.</translation>
 <translation id="4644727592819780893">A região é demasiado pequena para se ajustar à câmara</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomendação de aplicação</translation>
 <translation id="4649019912155580914">Editado por si</translation>
@@ -1327,6 +1362,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="504465286040788597">Parágrafo anterior</translation>
 <translation id="5045550434625856497">Palavra-passe incorrecta</translation>
 <translation id="5056587122125565772">Criar imagem</translation>
+<translation id="5056950756634735043">A ligar ao contentor</translation>
 <translation id="5058794129231928255">Não foi possível criar um documento do Google Docs</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Vai receber uma notificação se falar enquanto estiver com o som desativado. O áudio nunca sai do seu dispositivo.</translation>
@@ -1407,9 +1443,11 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="528468243742722775">Sair</translation>
 <translation id="5286194356314741248">A procurar</translation>
 <translation id="528641622273682395">Ative/desative o teste do microfone</translation>
+<translation id="5294097441441645251">Tem de começar com um caráter minúsculo ou um sublinhado.</translation>
 <translation id="5297423144044956168">Não foram encontrados dispositivos móveis</translation>
 <translation id="5297704307811127955">Desativada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
+<translation id="5301751748813680278">Entrar como Convidado.</translation>
 <translation id="5302048478445481009">Idioma</translation>
 <translation id="5302531370473608800">Atualize o <ph name="DEVICE_TYPE" /> para usar o YouTube Music</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% de bateria restante.
@@ -1431,18 +1469,17 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="5352250171825660495">O tema escuro está ativado.</translation>
 <translation id="5354804064646502504">Isto pode significar custos de dados.
 Nenhum dispositivo ligado.</translation>
-<translation id="5355498626146154079">Tem de ativar a sinalização "Borealis Enabled"</translation>
 <translation id="5356963482258194581">Alterne entre o tema claro e escuro. Clique com o botão direito do rato no ambiente de trabalho e selecione Estilo e fundo de ecrã.</translation>
 <translation id="536019650977002321">O seu administrador não permite a captura de áudio. Contacte o administrador para obter mais informações.</translation>
 <translation id="5361524080961918551">Ficheiros de voz em <ph name="LANGUAGE" /> parcialmente transferidos</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Aceder a este separador</translation>
 <translation id="5364693579536176785">espaço de armazenamento</translation>
 <translation id="5369573834963677938">O controlo facial vai estar disponível para outros utilizadores no dispositivo</translation>
+<translation id="5369694795837229225">Configure o ambiente de programação do Linux</translation>
 <translation id="5369717264580061086">Pré-visualizar o ficheiro na app Files</translation>
 <translation id="5377367976106153749">Ativar o acesso à câmara?</translation>
 <translation id="5378450298115733949">Mais</translation>
 <translation id="5379115545237091094">Demasiadas tentativas</translation>
-<translation id="5380526436444479273">Aguarde alguns minutos e tente novamente</translation>
 <translation id="5383434787520761436">Sem ficheiros do Google Drive</translation>
 <translation id="5391307769715781764">Substituir o espaço de trabalho guardado?</translation>
 <translation id="5392327145184648521">A calcular a percentagem da bateria…</translation>
@@ -1454,13 +1491,13 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5409208741270395213">Marcar tarefa como concluída</translation>
 <translation id="5413656666631274079">Página de definições</translation>
 <translation id="5414198321558177633">A atualizar a lista de perfis. Esta ação pode demorar alguns minutos.</translation>
-<translation id="5415328625985164836">Este é um programa beta. Agora, pode usar o Steam para jogar alguns jogos no Chromebook.</translation>
 <translation id="5426063383988017631">Menu de definições fechado</translation>
 <translation id="5428899915242071344">Iniciar seleção</translation>
 <translation id="5429993543155113935">De momento, as janelas de navegação anónima não são suportadas</translation>
 <translation id="5431318178759467895">Cor</translation>
 <translation id="5433020815079095860">Entrada de áudio</translation>
 <translation id="543584294741034249">Pode fazer ligação a, no máximo, <ph name="DISPLAY_LIMIT" /> ecrãs externos.</translation>
+<translation id="5442228125690314719">Ocorreu um erro ao criar a imagem do disco. Tente novamente.</translation>
 <translation id="544691375626129091">Já foram adicionados a esta sessão todos os utilizadores disponíveis.</translation>
 <translation id="54609108002486618">Geridos</translation>
 <translation id="5460938382730614333">O marcador está ativado.</translation>
@@ -1511,6 +1548,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">Navegador Chrome</translation>
 <translation id="5596627076506792578">Mais opções</translation>
+<translation id="5596808802173376270">Problema com o ficheiro de restauro fornecido. Provavelmente, o tipo está incorreto para o guest Linux existente. Consulte /var/log/messages para ver mais informações.</translation>
 <translation id="5599242528220103262">O atalho de teclado está desativado</translation>
 <translation id="5600415762228455511">O Modo sem distrações está ativado, falta(m) <ph name="REMAINING_TIME" />, com foco em: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Prima Ctrl + Alt + Z para desativar os feedback de voz.</translation>
@@ -1526,6 +1564,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5652575806481723716">A app <ph name="FOCUSED_APP_NAME" /> solicita a sua atenção.</translation>
 <translation id="5657667036353380798">A extensão externa requer que esteja instalada a versão <ph name="MINIMUM_CHROME_VERSION" /> ou superior do Chrome.</translation>
 <translation id="5662075790140998213">Espaço de trabalho 10</translation>
+<translation id="5662513737565158057">Altere a forma como as apps para Linux irão funcionar.</translation>
 <translation id="5662709761327382534">Gravar microfone <ph name="CURRENT_STATE" />; prima Enter para ativar a gravação do microfone <ph name="NEW_STATE" /></translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5667546120811588575">A configurar o Google Play...</translation>
@@ -1554,7 +1593,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5712132663381964774">Use apps para fazer tudo o que precisa no <ph name="PRODUCT_NAME" />. Pode encontrar as suas apps no Launcher.</translation>
 <translation id="571295407079589142">Os dados móveis estão desativados</translation>
 <translation id="5727460725221669831">Se se esqueceu da palavra-passe ou alterou a palavra-passe da sua Conta Google recentemente, experimente recuperar este utilizador.</translation>
-<translation id="572914206753951782">Certifique-se de que o Chromebook tem a versão mais recente. Em seguida, reinicie o Chromebook e tente novamente.</translation>
 <translation id="5733630091161562207">Notificação de boas-vindas</translation>
 <translation id="573413375004481890">Este dispositivo não conseguiu suportar todos os seus ecrãs, pelo que um foi desligado.</translation>
 <translation id="574392208103952083">Médio</translation>
@@ -1600,6 +1638,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5842553299352339114">A zona Wi-Fi do dispositivo <ph name="DEVICE_NAME" /> está ativada, sem dispositivos ligados</translation>
 <translation id="584525477304726060">Toque sem soltar para maximizar</translation>
 <translation id="5856638668464565213">A rede <ph name="NETWORK_NAME" /> não está ativada.</translation>
+<translation id="5858490737742085133">Terminal</translation>
 <translation id="5860033963881614850">Desativado</translation>
 <translation id="5860491529813859533">Ativar</translation>
 <translation id="5864691701242730005">Mostre as definições da Partilha rápida. Visibilidade de <ph name="VISIBILITY" /> selecionada</translation>
@@ -1721,6 +1760,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6185696379715117369">Página para cima</translation>
 <translation id="619335566042889110">Carregar totalmente agora</translation>
 <translation id="6193431488227440296">Programação</translation>
+<translation id="6198252989419008588">Alterar PIN</translation>
 <translation id="6199775032047436064">Recarregar a página actual</translation>
 <translation id="6200515304866777730">Não compatível com a app</translation>
 <translation id="6210042900243040400">Ligue o dispositivo <ph name="NAME" /> guardado anteriormente em <ph name="EMAIL" /></translation>
@@ -1728,6 +1768,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6213808132343683860">Fazer uma gravação de ecrã ou uma captura de ecrã parcial</translation>
 <translation id="621606890568890214">Expandir Google Classroom</translation>
 <translation id="6216759484154215561">Link para saber mais aberto no navegador</translation>
+<translation id="6218058416316985984">O <ph name="DEVICE_TYPE" /> está offline. Ligue-se à Internet e tente novamente.</translation>
 <translation id="6220928844947387476">Agora, pode gravar-se a si e ao ecrã em simultâneo</translation>
 <translation id="622484624075952240">Para baixo</translation>
 <translation id="6228457605945141550">Diminuir o brilho</translation>
@@ -1751,6 +1792,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="628699625505156622">Use a localização. Permita que os serviços, os Websites e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização deste dispositivo. A Precisão da localização oferece uma localização mais precisa para serviços e apps Android. Para isso, a Google trata periodicamente informações sobre os sensores e os sinais sem fios deste dispositivo para recolher localizações de sinais sem fios. Estas são usadas sem identificar nenhum indivíduo para melhorar a Precisão da localização e os serviços baseados na localização, bem como para melhorar, oferecer e manter os serviços Google com base nos interesses legítimos da Google e de terceiros, atendendo às necessidades dos utilizadores. <ph name="BEGIN_LINK1" />Saiba mais acerca da utilização da localização<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">É possível adicionar <ph name="USER_EMAIL_ADDRESS" /> novamente mais tarde com a autorização dos pais.</translation>
 <translation id="6291221004442998378">Não está a carregar.</translation>
+<translation id="6291580570300353047">Não é possível restaurar devido à falta de espaço de armazenamento.</translation>
 <translation id="6297986260307280218">Envie dados de utilização e diagnósticos. Ajude a melhorar a experiência Android enviando automaticamente dados de diagnósticos, de utilização do dispositivo e das apps para a Google. Deste modo, vai ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. O proprietário pode optar por enviar dados de diagnósticos e de utilização deste dispositivo para a Google. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Personalize este dispositivo na app</translation>
 <translation id="6298962879096096191">Usar o Google Play para instalar aplicações para Android</translation>
@@ -1764,6 +1806,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6324916366299863871">Editar atalho</translation>
 <translation id="6325525973963619867">Falhou</translation>
 <translation id="6330012934079202188">Ao mostrar as janelas de todos os espaços de trabalho, prima a tecla da seta para cima para mostrar janelas do espaço de trabalho atual</translation>
+<translation id="6336038146639916978"><ph name="MANAGER" /> desativou a depuração do ADB. Esta ação vai repor o seu dispositivo <ph name="DEVICE_TYPE" /> dentro de 24 horas. Faça uma cópia de segurança dos ficheiros que quer manter.</translation>
 <translation id="6337159624125741244">A lupa de ecrã inteiro está ativada</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> é uma sessão gerida por <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Caso se tenha esquecido do PIN, experimente recuperar este utilizador.</translation>
@@ -1809,6 +1852,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6467290994038932560">Ativado para <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Atualize o dispositivo para a versão anterior dentro de 1 minuto}other{Atualize o dispositivo para a versão anterior dentro de # minutos}}</translation>
 <translation id="6469104339369989396">Ativar/desativar zona Wi-Fi</translation>
+<translation id="6475294023568239942">Liberte espaço em disco ou redimensione o disco do Linux nas Definições</translation>
 <translation id="6477681113376365978">Não é possível transferir o ficheiro</translation>
 <translation id="648135757200234041">Não foi possível criar o contacto</translation>
 <translation id="6482559668224714696">Lupa de ecrã inteiro</translation>
@@ -1823,7 +1867,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6507042703812908515">Abra a app Atalhos de teclas com "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Mudar para o método de introdução disponível seguinte</translation>
 <translation id="6508923215158854599">Certifique-se de que o Chromebook está ligado à mesma rede Wi-Fi que o dispositivo Chromecast.</translation>
-<translation id="6511607461419653612">Reinicie o Chromebook e tente novamente</translation>
 <translation id="6515727200518652613">Ligação da câmara perdida. A tentar restabelecer a ligação.</translation>
 <translation id="651753338596587143">Desculpe, mas algo correu mal ao instalar as dependências do DLC. Experimente reiniciar e, se o problema persistir, envie feedback com #bruschetta na descrição. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Selecione uma janela para capturar.</translation>
@@ -1849,7 +1892,6 @@ Nova instalação</translation>
 <translation id="6574587113394758819">A notificação da app <ph name="APP_TITLE" /> está oculta porque a proteção da visualização está ativada</translation>
 <translation id="6574622320167699133">Desbloqueado pelo telemóvel. Toque ou clique para entrar.</translation>
 <translation id="6578407462441924264">Sem nome</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% concluída</translation>
 <translation id="6582012689384648647">Para playlists de concentração personalizadas, permita o acesso ao YouTube Music</translation>
 <translation id="6582034443359256692">A calcular o nível de carga da bateria.</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1902,7 +1944,6 @@ Nova instalação</translation>
 <translation id="6723839937902243910">Alimentação</translation>
 <translation id="672609503628871915">Descobrir as novidades mais recentes</translation>
 <translation id="6727969043791803658">Ligado, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
-<translation id="6731320427842222405">Esta operação pode demorar alguns minutos</translation>
 <translation id="6732087373923685049">câmara</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">A câmara e o microfone estão a ser usados</translation>
@@ -1961,6 +2002,7 @@ Nova instalação</translation>
 <translation id="6912841030378044227">Focar na barra de endereço</translation>
 <translation id="6912901278692845878">Apresentação rápida</translation>
 <translation id="6917259695595127329">Última atualização das tarefas: <ph name="TIME" />.</translation>
+<translation id="6918677045355889289">Atualização do ChromeOS necessária</translation>
 <translation id="6919251195245069855">Não foi possível reconhecer o seu cartão inteligente. Tente novamente.</translation>
 <translation id="692135145298539227">eliminar, delete</translation>
 <translation id="6921427376813842559">Atualize o dispositivo</translation>
@@ -1978,12 +2020,15 @@ Nova instalação</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967112302799758487">Todos os jogos e apps instalados através do Steam para o Chromebook (beta) vão ser removidos deste dispositivo. Os dados associados a estes jogos e apps também vão ser removidos. Certifique-se de que faz uma cópia de segurança das apps e dos jogos guardados antes da desinstalação.</translation>
 <translation id="6972629891077993081">Dispositivos HID</translation>
+<translation id="697508444536771064">Encerrar o Linux</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">inserir</translation>
 <translation id="6981291220124935078">Ativar acesso</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
 <translation id="698231206551913481">Todos os ficheiros e dados locais associados a este utilizador são permanentemente eliminados assim que este utilizador é removido.</translation>
+<translation id="6988094684494323731">A iniciar o contentor do Linux…</translation>
 <translation id="7000027735917578303">Definições de janelas e espaços de trabalho</translation>
+<translation id="7001036685275644873">A fazer uma cópia de segurança de ficheiros e aplicações do Linux…</translation>
 <translation id="7004910047186208204">Ligue-se aos dados móveis</translation>
 <translation id="7005239792648594238">Abra uma app para começar</translation>
 <translation id="7014684956566476813">Ligado a um dispositivo denominado <ph name="DEVICE_NAME" /></translation>
@@ -1992,11 +2037,13 @@ Nova instalação</translation>
 <translation id="702252130983202758">As suas aplicações</translation>
 <translation id="7025533177575372252">Ligue o dispositivo <ph name="DEVICE_NAME" /> ao telemóvel.</translation>
 <translation id="7026338066939101231">Diminuir</translation>
+<translation id="7029307918966275733">O Crostini não está instalado. Instale o Crostini para ver os créditos.</translation>
 <translation id="7029814467594812963">Sair da sessão</translation>
 <translation id="7031303610220416229">Ver todas as tarefas no Google Tasks</translation>
 <translation id="7032161822340700104">Apenas são permitidos 6 modelos. Remova um modelo para guardar um novo.</translation>
 <translation id="7034025838182392395">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" />. Ative o interruptor físico do(a) <ph name="DEVICE_NAME" /> do seu dispositivo.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistente Google</translation>
+<translation id="7036706669646341689">Recomenda-se <ph name="DISK_SIZE" /> de espaço para o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="7042322267639375032">Reduzir área de estado</translation>
 <translation id="7042593542151411225">As apps não podem aceder à câmara</translation>
 <translation id="7045033600005038336">Quer substituir o modelo?</translation>
@@ -2004,11 +2051,11 @@ Nova instalação</translation>
 <translation id="7055910611768509537">A caneta stylus não é utilizada há mais de uma semana</translation>
 <translation id="7061457967428964661">Para pré-visualizar a câmara, prima Control + as teclas de seta para mover a pré-visualização para um canto diferente</translation>
 <translation id="7064351585062927183"><ph name="DAY_OF_WEEK" /> que vem</translation>
+<translation id="7064734931812204395">A configurar o contentor do Linux… Esta ação pode demorar até 30 minutos.</translation>
 <translation id="7066646422045619941">Esta rede foi desativada pelo gestor.</translation>
 <translation id="7067196344162293536">Rotação automática</translation>
 <translation id="7076293881109082629">Iniciar sessão</translation>
 <translation id="7076878155205969899">Desativar som.</translation>
-<translation id="7083774521940805477">O Steam para o Chromebook (beta) não está disponível no seu Chromebook.</translation>
 <translation id="7083848064787091821">Modo sem distrações</translation>
 <translation id="7084678090004350185">Ative/desative a zona Wi-Fi. A zona Wi-Fi está ativada, <ph name="DEVICECOUNT" /> dispositivos ligados.</translation>
 <translation id="7086931198345821656">Para fazer esta atualização, é necessário efetuar o Powerwash do dispositivo <ph name="DEVICE_TYPE" />. Todos os dados serão eliminados. Saiba mais sobre a mais recente atualização do <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -2026,18 +2073,17 @@ Nova instalação</translation>
 <translation id="7130207228079676353">MUITO PROVAVELMENTE</translation>
 <translation id="7131634465328662194">A sessão será terminada automaticamente.</translation>
 <translation id="7143207342074048698">A ligar</translation>
-<translation id="7143409552554575716">Sinalizações do ChromeOS</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7144942256906679589">Estado da bateria</translation>
 <translation id="7145639536026937076">A bateria está <ph name="PERCENTAGE" />% cheia e a carregar. A Poupança de bateria está ativada.</translation>
 <translation id="7147587499155271409">Sem histórico de navegação</translation>
 <translation id="7147657298465433425">Para aceder às teclas F, prima a tecla fn + as teclas da linha superior</translation>
 <translation id="7149149900052329230">Faça a gestão dos seus ficheiros locais e do Google Drive, tudo na app Files.</translation>
-<translation id="7154020516215182599">Partilhe o seu feedback ou descreva o problema. Se possível, inclua passos para reproduzir o problema.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">A reverter para a resolução antiga dentro de <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7170202025028120564">As definições de visualização da sua app serão aplicadas quando a mesma for reiniciada.</translation>
 <translation id="7173114856073700355">Abrir Definições</translation>
 <translation id="7180611975245234373">Atualizar</translation>
 <translation id="7181691792034457084">Olá. O <ph name="PRODUCT_NAME" /> está um pouco diferente.</translation>
@@ -2046,6 +2092,7 @@ Nova instalação</translation>
 <translation id="7219573373513695352">Nenhum dispositivo ligado</translation>
 <translation id="7228968829656641943">Selecione para pesquisar no meu ecrã. Prima Tab e, em seguida, a tecla de espaço para abrir a navegação no teclado.</translation>
 <translation id="7229029500464092426">Memória: <ph name="AVAILABLE_MEMORY" /> | <ph name="TOTAL_MEMORY" /> no total</translation>
+<translation id="7234010996000898150">A cancelar o restauro do Linux…</translation>
 <translation id="7239814253344511868">Ambos os botões do rato</translation>
 <translation id="7240636904654154599">Folha de cálculo do Google Sheets criada</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% de bateria restante. Ligue o dispositivo à alimentação.</translation>
@@ -2053,6 +2100,7 @@ Nova instalação</translation>
 <translation id="7248100343060254997">Pesquisar o meu ecrã</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Microfone posterior</translation>
+<translation id="7258225044283673131">A aplicação não está a responder. Selecione "Forçar fecho" para fechar a aplicação.</translation>
 <translation id="7258828758145722155">Editado ontem</translation>
 <translation id="726276584504105859">Arraste para aqui para utilizar o ecrã dividido</translation>
 <translation id="7264788308526527464">Reduzir <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2065,6 +2113,7 @@ Nova instalação</translation>
 <translation id="7312210124139670355">O seu administrador está a repor o eSIM. Esta ação pode demorar alguns minutos.</translation>
 <translation id="7312761820869643657">Atualize o dispositivo para a versão anterior</translation>
 <translation id="7313193732017069507">Expanda a câmara</translation>
+<translation id="7327989755579928735"><ph name="MANAGER" /> desativou a depuração do ADB. Quando reiniciar o seu dispositivo <ph name="DEVICE_TYPE" />, não poderá fazer sideload de apps.</translation>
 <translation id="73289266812733869">Desmarcado</translation>
 <translation id="7330397557116570022">Aceda a um campo de texto para usar o ditado</translation>
 <translation id="7331646370422660166">alt + seta para baixo</translation>
@@ -2075,6 +2124,7 @@ Nova instalação</translation>
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Teclado no ecrã</translation>
 <translation id="7352651011704765696">Algo correu mal</translation>
+<translation id="735361434055555355">A instalar o Linux…</translation>
 <translation id="735745346212279324">VPN desligado</translation>
 <translation id="7360036564632145207">A alteração da proteção do acesso aos dados para a definição dos periféricos pode otimizar o desempenho.</translation>
 <translation id="736045644501761622">Definir imagem de fundo e estilo</translation>
@@ -2112,6 +2162,7 @@ Nova instalação</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
 <translation id="7478485216301680444">Não foi possível instalar a app de quiosque.</translation>
+<translation id="7481358317100446445">Pronta</translation>
 <translation id="7488762544858401571">Editado</translation>
 <translation id="7489261257412536105">Entrar ou sair do ecrã inteiro</translation>
 <translation id="7490157877815329797">Para ouvir música sem anúncios e desfrutar de música de concentração personalizada, experimente o YouTube Music Premium</translation>
@@ -2136,6 +2187,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Criar</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
+<translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> não está a responder. Selecione "Forçar fecho" para fechar a aplicação.</translation>
 <translation id="7534543072325030705">A opção Gosto envia feedback a indicar que gosta deste grupo sugerido</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Atualizar a janela do lado esquerdo</translation>
@@ -2145,6 +2197,8 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7545466883021407599">Não foi possível estabelecer ligação ao servidor. Verifique a ligação de rede e tente novamente. Se continuar a ter problemas, experimente reiniciar o Chromebook. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
 <translation id="7551643184018910560">Fixar na prateleira</translation>
+<translation id="7553012839257224005">A verificar o contentor do Linux…</translation>
+<translation id="7557411183415085169">O Linux está a ficar com pouco espaço em disco</translation>
 <translation id="7557816257942363084">A app <ph name="APP_NAME" /> está a usar o microfone neste momento</translation>
 <translation id="7559719679815339381">Aguarde... A aplicação Quiosque está em processo de atualização. Não remova a pen USB.</translation>
 <translation id="7561982940498449837">Fechar menu</translation>
@@ -2174,12 +2228,15 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Faça uma pergunta</translation>
 <translation id="7629858978065675960">Resultado desconhecido.</translation>
+<translation id="7631014249255418691">Cópia de segurança das aplicações e dos ficheiros do Linux efetuada com êxito</translation>
 <translation id="7632948528260659758">A atualização das seguintes aplicações quiosque falhou:</translation>
+<translation id="7634566076839829401">Algo correu mal. Tente mais tarde.</translation>
 <translation id="7634648064048557203">Câmara ajustada ao canto inferior direito</translation>
 <translation id="7638572816805275740">Fazer uma gravação de ecrã ou uma captura de ecrã da janela</translation>
 <translation id="7642106959537987271">modo de inversão de cores</translation>
 <translation id="7642647758716480637">Abrir as definições da rede <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (proprietário)</translation>
+<translation id="7645681574855902035">A cancelar a cópia de segurança do Linux…</translation>
 <translation id="7647488630410863958">Desbloquear o dispositivo para ver as notificações</translation>
 <translation id="7649070708921625228">Ajuda</translation>
 <translation id="7654687942625752712">Prima sem soltar ambas as teclas de volume durante cinco segundos para desativar os feedback de voz.</translation>
@@ -2212,13 +2269,13 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7726391492136714301">Veja as notificações e as apps do seu telemóvel</translation>
 <translation id="7727952505535211425">Abrir o Website na barra de endereço num novo separador</translation>
 <translation id="7728657226117099693">Desativar a tecla Caps Lock</translation>
-<translation id="7732702411411810416">Certifique-se de que tem ligação à Internet e tente novamente</translation>
 <translation id="7742327441377685481">Sem notificações</translation>
 <translation id="7748275671948949022">Realçar o botão do Launcher na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7750228210027921155">Ecrã no ecrã</translation>
 <translation id="7751260505918304024">Mostrar tudo</translation>
+<translation id="7753735457098489144">A instalação falhou devido à falta de espaço de armazenamento. Para libertar espaço, elimine ficheiros do armazenamento do dispositivo.</translation>
 <translation id="7762664108390426952">Termos de Utilização e à Política de Privacidade da Google</translation>
 <translation id="7768784765476638775">Selecionar para ativar voz</translation>
 <translation id="7769299611924763557">O seu GIF vai estar pronto em breve</translation>
@@ -2234,7 +2291,10 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="780301667611848630">Não, obrigado</translation>
 <translation id="7807067443225230855">Pesquisa e Assistente</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> e <ph name="MINUTE" /></translation>
+<translation id="7817361223956157679">O teclado no ecrã ainda não funciona em aplicações Linux.</translation>
+<translation id="7824864914877854148">Não foi possível concluir a cópia de segurança devido a um erro.</translation>
 <translation id="7825412704590278437">De um evento de calendário futuro</translation>
+<translation id="7826249772873145665">Depuração do ADB desativada</translation>
 <translation id="7829386189513694949">Sinal forte</translation>
 <translation id="7830453190047749513">Pode personalizar as ações dos botões, a velocidade do cursor e muito mais para o seu <ph name="PERIPHERAL_NAME" /></translation>
 <translation id="7842569679327885685">Aviso: funcionalidade experimental</translation>
@@ -2248,7 +2308,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7866482334467279021">ativado</translation>
 <translation id="7870790288828963061">Nenhuma aplicação do Quiosque encontrada com uma versão mais recente. Nada a atualizar. Remova a pen USB.</translation>
 <translation id="7872786842639831132">Desativado</translation>
-<translation id="7873386145597434863">Steam para o Chromebook</translation>
 <translation id="7875575368831396199">O Bluetooth está desativado no seu <ph name="DEVICE_TYPE" />. Ative o Bluetooth para utilizar o Phone Hub.</translation>
 <translation id="7884446017008693258">Definições da zona Wi-Fi</translation>
 <translation id="7884902759927478774">Cancelar a ação de arrastar o separador</translation>
@@ -2279,6 +2338,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7932451802722951285">Abrir no Calendário Google</translation>
 <translation id="7933084174919150729">O Assistente Google está disponível apenas no perfil principal.</translation>
 <translation id="79341161159229895">Conta gerida por <ph name="FIRST_PARENT_EMAIL" /> e <ph name="SECOND_PARENT_EMAIL" />.</translation>
+<translation id="793531125873261495">Ocorreu um erro ao transferir a máquina virtual. Tente novamente.</translation>
 <translation id="793716872548410480">Prima <ph name="SHORTCUT_KEY_NAME" /> + V para ver a sua área de transferência. Os últimos 5 itens que copiou são guardados na sua área de transferência.</translation>
 <translation id="7942330802915522974">Passo <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> da visita guiada. Pode encontrar a app Files no Launcher. Faça a gestão dos seus ficheiros locais e do Google Drive, tudo na app Files.</translation>
 <translation id="7942349550061667556">Vermelho</translation>
@@ -2289,6 +2349,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7947798320695032612">A app <ph name="APP_NAME" /> quer usar o(a) <ph name="DEVICE_NAME" /></translation>
 <translation id="7948239795436419268">Não restaurar janelas</translation>
 <translation id="7951630946012935453">Escurecer o teclado</translation>
+<translation id="795282463722894016">Restauro concluído</translation>
 <translation id="7953176344218790168">MAIÚSCULAS</translation>
 <translation id="7953994493035617347">Confirmar a nova resolução?</translation>
 <translation id="795958884516058160">Lupa de ecrã inteiro ativada. Prima <ph name="ACCELERATOR" /> novamente para desativar a opção.</translation>
@@ -2322,6 +2383,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8030169304546394654">Desligado</translation>
 <translation id="8036504271468642248">Frase anterior</translation>
 <translation id="8042893070933512245">Abrir menu de definições de acessibilidade</translation>
+<translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> não responde.</translation>
 <translation id="8044457332620420407">A retroiluminação do teclado está desativada</translation>
 <translation id="8048123526339889627">Definições de Bluetooth</translation>
 <translation id="8049189770492311300">Temporizador</translation>
@@ -2334,6 +2396,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8083540854303889870">Guardados para mais tarde</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Use a tecla Tab para aceder a mais opções. Use as setas para a esquerda e direita para aceder a todos os espaços de trabalho.</translation>
+<translation id="808894953321890993">Alterar palavra-passe</translation>
 <translation id="8091153018031979607">Começa à(s) <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Controlos de deslocamento</translation>
 <translation id="8098591350844501178">Parar a transmissão do ecrã para <ph name="RECEIVER_NAME" /></translation>
@@ -2366,6 +2429,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8169177848833352618">Infelizmente, este computador não cumpre os requisitos para instalar o Bruschetta. O código de erro é <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Indicador superior esquerdo selecionado, use as teclas de seta para o mover</translation>
 <translation id="81817143961839203">Falha ao inserir a imagem</translation>
+<translation id="8182105986296479640">A aplicação não está a responder</translation>
 <translation id="8185090165691050712">Ativar/desativar o menu para redimensionar o modo bloqueio</translation>
 <translation id="8192727139462702395">Quando desativar o Bluetooth, vai desassociar estes dispositivos externos do dispositivo <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">A transmitir o separador</translation>
@@ -2395,6 +2459,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8282784978194352587">Conseguiu!</translation>
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
+<translation id="8289128870594824098">Tamanho do disco</translation>
 <translation id="8297006494302853456">Fraca</translation>
 <translation id="8300451473979404345">Indicador selecionado, use as teclas de seta para o mover</translation>
 <translation id="8308637677604853869">Menu anterior</translation>
@@ -2409,6 +2474,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8349826889576450703">iniciador</translation>
 <translation id="8349964124165471584">Abrir o link numa nova janela</translation>
 <translation id="8351131234907093545">Criar nota</translation>
+<translation id="8357388086258943206">Erro ao instalar o Linux</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> em utilização.</translation>
 <translation id="8369166482916924789">Espaço de trabalho guardado, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avançar por letra</translation>
@@ -2456,6 +2522,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8491237443345908933">Abrir o link num novo separador</translation>
 <translation id="8492573885090281069">O <ph name="DISPLAY_NAME" /> não suporta a resolução <ph name="SPECIFIED_RESOLUTION" />. A resolução foi alterada para <ph name="FALLBACK_RESOLUTION" />. Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8502536196501630039">Para utilizar aplicações do Google Play, é necessário restaurar primeiro as suas aplicações. Pode ter perdido alguns dados.</translation>
+<translation id="8503813439785031346">Nome de utilizador</translation>
 <translation id="8507563469658346379">Todos, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Criar novo espaço de trabalho</translation>
 <translation id="85123341071060231">O Bluetooth do Chromebook está desativado. Para desbloquear, introduza a palavra-passe.</translation>
@@ -2465,6 +2532,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>
 <translation id="8519329096920173967">Pesquisar o meu ecrã com o Google Lens</translation>
 <translation id="8527869672961320915">Apps <ph name="VM_NAME" /></translation>
+<translation id="8528962588711550376">A iniciar sessão.</translation>
 <translation id="8535393432370007982">Anular ordenação por cor</translation>
 <translation id="8536886494750559755">Mostre as definições da Partilha rápida. Visível para todos durante <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Texto copiado para a área de transferência</translation>
@@ -2484,6 +2552,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="861045123704058818">As apps são organizadas temporariamente por categoria</translation>
 <translation id="8612216344243590325">Mantenha os ficheiros importantes em <ph name="HOLDING_SPACE_TITLE" /> em vez de os guardar no ambiente de trabalho. Basta arrastar os ficheiros para <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8612338981637220013">Está imparável!</translation>
+<translation id="8613164732773110792">Apenas carateres minúsculos, dígitos, sublinhados ou traços.</translation>
 <translation id="8614517853887502247">As notificações das apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção da visualização está ativada</translation>
 <translation id="8615778328722901791">Abrir barra de ferramentas</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2506,6 +2575,8 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8662921061190671299">Não foi possível adicionar ao Calendário</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Prima Enter para fazer uma captura de ecrã parcial</translation>
+<translation id="8665180165765946056">Cópia de segurança concluída</translation>
+<translation id="8673530374848624865">O administrador atualizou os requisitos de segurança do seu dispositivo</translation>
 <translation id="8676770494376880701">Carregador de baixo consumo ligado</translation>
 <translation id="8679158879996532670">Mostre as definições do Modo sem distrações. O Modo sem distrações está ativado, falta(m) <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">O rastreio do desempenho está ativo.</translation>
@@ -2517,6 +2588,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8711169534266271368">Opções do Painel de jogo</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8714138378966541668">Bloqueada pelo fornecedor</translation>
+<translation id="8716931980467311658">Eliminar todas as aplicações e os dados do Linux da pasta Ficheiros Linux deste <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717459106217102612">Selecionar a palavra ou letra anterior</translation>
 <translation id="8721053961083920564">Ative/desative o volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captura de ecrã total</translation>
@@ -2527,6 +2599,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8731487213223706745">Termina à(s) <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">É possível que esteja a tentar roubar os seus toques de teclas.</translation>
 <translation id="8735678380411481005">Cor da retroiluminação do teclado</translation>
+<translation id="8740672167979365981">Atualização do ChromeOS Flex necessária</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: a ativar…</translation>
 <translation id="8742395827132970586">Falha ao instalar, a limpar</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
@@ -2537,6 +2610,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="875593634123171288">Mostrar definições da VPN</translation>
 <translation id="8756799553341497810">Pode começar a personalizar o esquema da app após sair desta vista.</translation>
 <translation id="8759408218731716181">Não é possível configurar o início de sessão integrado</translation>
+<translation id="8759753423332885148">Saiba mais.</translation>
 <translation id="8763883995157866248">Ativar o modo de suspensão do dispositivo</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, app instalada, bloqueada</translation>
 <translation id="8782565991310229362">A iniciação da app de quiosque foi cancelada.</translation>
@@ -2576,6 +2650,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8876661425082386199">Verifique a sua ligação</translation>
 <translation id="8883478023074930307">Envie dados de utilização e diagnósticos. Agora, este dispositivo está a enviar automaticamente dados de diagnósticos, de utilização de apps e do dispositivo para a Google. Deste modo, vai ajudar a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudam as apps e os parceiros Google, como os programadores Android. Esta <ph name="BEGIN_LINK1" />definição<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google. <ph name="BEGIN_LINK2" />Saiba mais sobre as métricas<ph name="BEGIN_LINK2_END" />Saiba mais<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Não foi possível ligar ao YouTube Music</translation>
+<translation id="8888253246822647887">A aplicação será aberta quando a atualização estiver concluída. As atualizações podem demorar alguns minutos.</translation>
 <translation id="888982883502837004">Estão disponíveis atualizações de firmware para o seu dispositivo. Clique para rever e atualizar.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> será eliminado permanentemente</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% de bateria restante (cerca de <ph name="TIME_LEFT" />). Ligue o dispositivo à alimentação.</translation>
@@ -2599,7 +2674,9 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8945508919180478719">Microfone de estúdio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Caixa de verificação não selecionada.</translation>
 <translation id="8949925099261528566">Ligação estabelecida, sem Internet</translation>
+<translation id="8951256747718668828">Não foi possível concluir o restauro devido a um erro.</translation>
 <translation id="8951539504029375108">Apenas os dispositivos Thunderbolt aprovados são compatíveis com o seu Chromebook</translation>
+<translation id="895347679606913382">A iniciar...</translation>
 <translation id="8956420987536947088">Abra as janelas e as apps anteriores</translation>
 <translation id="8959380109429710384">Premiu o atalho de teclado da lupa de ecrã inteiro. Use Ctrl + Alt + setas para deslocar o ecrã na vista ampliada.</translation>
 <translation id="8964525410783593407">1 h</translation>
@@ -2609,7 +2686,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8980862970816311842">Mover o ícone de uma app para dentro/fora de uma pasta na grelha de apps</translation>
 <translation id="8982906748181120328">Vis. na prox.</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8985191021574400965">Damos-lhe as boas-vindas ao Steam para Chromebook</translation>
 <translation id="8990809378771970590">A utilizar <ph name="IME_NAME" />…</translation>
 <translation id="8991648557324317894">Prima fn + Inserção rápida ou shift para cancelar.</translation>
 <translation id="899350903320462459">Desbloqueie o dispositivo como <ph name="LOGIN_ID" /> para realizar a ação de notificação.</translation>
@@ -2617,9 +2693,11 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9000771174482730261">GERIR ARMAZENAMENTO</translation>
 <translation id="9003374957546315126">Emojis e muito mais</translation>
 <translation id="9005984960510803406">Abrir a janela do Crosh</translation>
+<translation id="9013037634206938463">É necessário <ph name="INSTALL_SIZE" /> de espaço livre para instalar o Linux. Para aumentar o espaço livre, elimine ficheiros do dispositivo.</translation>
 <translation id="901668144954885282">Faça uma cópia no Google Drive</translation>
 <translation id="9017320285115481645">Introduza o código de acesso parental do Family Link.</translation>
 <translation id="9024331582947483881">ecrã inteiro</translation>
+<translation id="9026852570893462412">Este processo pode demorar alguns minutos. A transferir a máquina virtual…</translation>
 <translation id="9029736946581028033">O dispositivo vai desligar-se em breve</translation>
 <translation id="9030319654231318877">Desativado até ao nascer do sol</translation>
 <translation id="9030515284705930323">A sua entidade não ativou a Google Play Store para a sua conta. Contacte o gestor para obter mais informações.</translation>
@@ -2628,7 +2706,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9047624247355796468">Abrir as definições de <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">O Bluetooth não está disponível</translation>
 <translation id="9050999376345823055">Premir "." para soltar</translation>
-<translation id="9061694916020926968">Tem de ter sessão iniciada numa Conta Google para usar o Steam para Chromebook (beta). Inicie sessão e tente novamente.</translation>
 <translation id="906458777597946297">Maximizar janela</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9068849894565669697">Selecionar cor</translation>
@@ -2664,6 +2741,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9168436347345867845">Fazer isto mais tarde</translation>
 <translation id="9178475906033259337">A apresentar 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta funcionalidade permite-lhe aceder rapidamente a qualquer utilizador com a sessão iniciada sem ser necessária uma palavra-passe. Utilize esta funcionalidade apenas com contas fidedignas.</translation>
+<translation id="9180281769944411366">Este processo pode demorar alguns minutos. A iniciar o contentor do Linux…</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Lupa de ecrã inteiro</translation>
 <translation id="9192133205265227850">Use "<ph name="DEVICE_NAME" />"</translation>
@@ -2677,6 +2755,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, gerida pelo administrador</translation>
 <translation id="9201842707396338580">Ocorreu um erro. Contacte o proprietário ou o gestor do dispositivo. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Isto permite que a app <ph name="APP_NAME" />, <ph name="APP2_NAME" /> e todas as apps e Websites com a autorização de acesso à localização e o ChromeOS usem a localização de redes móveis e Wi-Fi.</translation>
+<translation id="9209563766569767417">A verificar a configuração do contentor do Linux…</translation>
 <translation id="9210037371811586452">A sair do Modo de ambiente de trabalho unificado</translation>
 <translation id="9211490828691860325">Todos os espaços de trabalho</translation>
 <translation id="9211681782751733685"><ph name="TIME_REMAINING" /> restante(s) até a bateria estar totalmente carregada.</translation>
@@ -2700,12 +2779,14 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="956452277966142925">Definições do Painel de jogo</translation>
 <translation id="961856697154696964">Eliminar dados de navegação</translation>
 <translation id="974545358917229949">A apresentar <ph name="RESULT_COUNT" /> resultados para <ph name="QUERY" /></translation>
+<translation id="97905529126098460">Esta janela fecha-se depois de concluído o cancelamento.</translation>
 <translation id="981011780479609956">Sem data de conclusão</translation>
 <translation id="98120814841227350">Ir para o fim do documento</translation>
 <translation id="987589956647469042">Os dados móveis estão ativados</translation>
 <translation id="989374776391122812">Controlos da câmara e de áudio</translation>
 <translation id="990263227494928142">Prima shift 5 vezes para ativar o touchpad</translation>
 <translation id="990277280839877440">A janela <ph name="WINDOW_TITILE" /> está fechada.</translation>
+<translation id="992778845837390402">Neste momento, está a decorrer a cópia de segurança do Linux.</translation>
 <translation id="993398562350683614">Passo <ph name="STEP" /> de <ph name="TOTAL_STEPS" /> da visita guiada. Use apps para fazer tudo o que precisa no <ph name="PRODUCT_NAME" />. Pode encontrar as suas apps no Launcher. Prima Alt + Shift + L para focar o botão do Launcher.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Obtenha as funcionalidades e as melhorias de segurança mais recentes. As atualizações ocorrem em segundo plano.</translation>

@@ -187,7 +187,6 @@
 <translation id="2915996080311180594">နောက်မှ ပြန်စရန်</translation>
 <translation id="2916983411556218750">သင့် Chrome ကို အသင့်ပြင်ကြစို့</translation>
 <translation id="2926952073016206995">Chrome သည် ဤဝဘ်ဆိုက်အတွက် ကင်မရာခွင့်ပြုချက် လိုအပ်သည်</translation>
-<translation id="2928420929544864228">ထည့်သွင်းပြီးပါပြီ။</translation>
 <translation id="2945997411976714835">ထည့်သွင်းမှုအမှား- ထည့်သွင်းစနစ်လုပ်ဆောင်မှုကို စ၍မရပါ။</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ကွန်ရက် လက်မှတ်ထိုးဝင်ခြင်း - Chrome</translation>
 <translation id="2970681950995291301">သင့် Google Account ကို Chrome မှ ဖယ်ရှားရန် ဆက်တင်များ စာမျက်နှာတွင် Chrome မှထွက်ပါ</translation>
@@ -283,6 +282,7 @@
 <translation id="3892148308691398805">စာသား မိတ္တူကူးရန်</translation>
 <translation id="3941890832296813527">ထည့်သွင်းမှုအမှား- ထည့်သွင်းစနစ်ဖိုင်အမည် မမှန်ပါ (သို့) ပံ့ပိုးမထားပါ။</translation>
 <translation id="395904275706073188">ကာကွယ်ထားသော စာမျက်နှာများကို ဖတ်၍မရပါ။ အခြားစာမျက်နှာကို စမ်းကြည့်ပါ။</translation>
+<translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3968962723676998462">သင်၏အကောင့် <ph name="ACCOUNT_EMAIL" /> တွင် Chrome ဒေတာ သုံးရန်နှင့် သိမ်းရန်အတွက် စကားဝှက်စာ ထည့်ပါ</translation>
 <translation id="3973161977468201858">Google Chrome က သင်၏ Google Password Manager ဒေတာကို ဖျက်လိုသည်။ ၎င်းကိုခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ရိုက်ပါ။</translation>
 <translation id="400161754580828648">သင့်ဖန်သားပြင်ကို မျှဝေရန် ‘စနစ် ဆက်တင်များ’ တွင် Chrome အတွက် ဖန်သားပြင်ရိုက်ကူးခြင်းကို ခွင့်ပြုပါ။</translation>
@@ -317,7 +317,6 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်းနှင့် အခြားတူးလ်များ ရယူရန် ‘ဝဘ်နှင့်အက်ပ်လုပ်ဆောင်ချက်’၊ လင့်ခ်ချိတ်ထားသော Google ဝန်ဆောင်မှုများတွင် Chrome ထည့်သွင်းပါ</translation>
 <translation id="4334241893986177674">ဤဖန်သားပြင်ဓာတ်ပုံကို ရှာရန်</translation>
-<translation id="4334294535648607276">ဒေါင်းလုဒ်လုပ်ခြင်း ပြီးပါပြီ။</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> ကို Chrome သို့ပေါင်းထည့်ပြီးပါပြီ</translation>
 <translation id="4344128547036991536">Google Lens ဖွင့်သောအခါ PDF များအပါအဝင် စာမျက်နှာခေါင်းစဉ်၊ URL နှင့် ဒစ်ဂျစ်တယ်မီဒီယာတို့ကို Google သို့ အလိုအလျောက် ပို့ပါမည်။ <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ခြင်း ရယူရန် ‘ဝဘ်နှင့်အက်ပ်လုပ်ဆောင်ချက်’ တွင် Chrome ထည့်သွင်းပါ</translation>
@@ -514,7 +513,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6319856120645568262">Chrome သည် သင့်ပတ်ဝန်းကျင်ကို ပုံထုတ်ရန်နှင့် လက်များကို မှတ်သားရန် ခွင့်ပြုချက်လိုအပ်သည်</translation>
 <translation id="6321592572353357376">နောက်ဆက်တွဲ “<ph name="EXTENSION_NAME" />” က သင့်အား Chrome သို့ လက်မှတ်ထိုးဝင်စေလိုသည်</translation>
 <translation id="6326175484149238433">Chrome ထဲမှ ဖယ်ရှားပစ်ရန်</translation>
-<translation id="6327105987658262776">အပ်ဒိတ် မရှိပါ။</translation>
 <translation id="6334815226785304306">Google Chrome ကို မူရင်းဘရောင်ဇာအဖြစ် ပြုလုပ်ပြီး Taskbar တွင် ပင်ထိုးရန်</translation>
 <translation id="63540178978900677">Chrome သည် သင်၏ မူရင်းဘရောင်ဇာ မဟုတ်တော့ပါ။ Chrome ကို မူရင်းဘရောင်ဇာ သတ်မှတ်မလား</translation>
 <translation id="6360449101159168105">Chrome မြန်ဆန်စေရန်အတွက် ဤတဘ် အသုံးမပြုစဉ် မှတ်ဉာဏ်ကို နေရာလွတ်ပြုလုပ်ထားသည်။ ဤဝဘ်ဆိုက်ကို အသုံးမပြုသည့်စာရင်းမှ အမြဲဖယ်ထုတ်ထားရန် ရွေးနိုင်သည်။</translation>
@@ -580,7 +578,6 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="6999131147875565462">Chrome က ပိုမိုမြန်ဆန်စွာ လုပ်ဆောင်ပြီး JavaScript သုံးသော တူးလ်များက ရေးဆွဲထားသည့်အတိုင်း အလုပ်လုပ်မည်</translation>
 <translation id="7011190694940573312">ဤလည်ပတ်သည့်စနစ်၏ ဗားရှင်းကို မပံ့ပိုးသောကြောင့် ထည့်သွင်း၍မရပါ။</translation>
 <translation id="7024536598735240744">ဖိုင်တွဲဖြေခြင်းဆိုင်ရာ အမှား- <ph name="UNPACK_ERROR" />။</translation>
-<translation id="7025789849649390912">ထည့်သွင်းမှု ရပ်လိုက်သည်။</translation>
 <translation id="7025800014283535195">ဤနေရာတွင် Chrome ပရိုဖိုင်များအကြား ပြောင်းနိုင်သည်</translation>
 <translation id="7047386856539490735">ဤရလဒ်များက အသုံးဝင်ပါသလား။</translation>
 <translation id="7051685429025310665">လတ်တလော ဝင်ကြည့်ထားခြင်း မရှိပါ။ Chrome သည် <ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" />၊ <ph name="PERMISSION_3" /> တို့ကို ဖယ်ရှားလိုက်သည်။</translation>
@@ -780,6 +777,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8999117580775242387">HTTPS မရနိုင်သောအခါ Chrome က လုံခြုံမှုမရှိသည့် ချိတ်ဆက်မှုကို သင့်အားသတိမပေးဘဲ အသုံးပြုပါမည်</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome အပ်ဒိတ်တစ်ခု ရနိုင်ပါသည်}=1{Chrome အပ်ဒိတ်တစ်ခု ရနိုင်ပါသည်}other{Chrome အပ်ဒိတ်တစ်ခု ရနိုင်သည်မှာ # ရက်ရှိပါပြီ}}</translation>
 <translation id="9014771989710951291">အဖွဲ့အစည်းမျိုးစုံက Chrome ကို စီမံသည်</translation>
+<translation id="9018218886431812662">ထည့်ပြီးပါပြီ</translation>
 <translation id="9066987883552592250">Chrome Canary တွင် Gemini ပိတ်ပါ</translation>
 <translation id="9090566250983691233">ဖိုင်အချို့ကို Chrome က ဘာကြောင့်ပိတ်ထားကြောင်း လေ့လာရန်</translation>
 <translation id="9106236359747881194">ရှာဖွေရန် စာသားရွေးပါ</translation>

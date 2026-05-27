@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">查看管理员政策</translation>
 <translation id="158849752021629804">需要家庭网络</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">正在格式化…</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="162175252992296058">葡萄牙语美式国际键盘</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">俄语注音 YaZHert 键盘</translation>
 <translation id="2143778271340628265">手动配置代理</translation>
 <translation id="2148716181193084225">今天</translation>
+<translation id="2148756636027685713">格式化已完成</translation>
 <translation id="2161573825856688200">Google 项目</translation>
 <translation id="2163152940313951844">字符无效：<ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">您还有 <ph name="RETRIES" /> 次尝试机会。</translation>
 <translation id="2663066752008346276">缅甸语 Myansan 键盘</translation>
 <translation id="2664412712123763093">文件位置</translation>
+<translation id="2665919335226618153">糟糕！格式化过程中出现错误。</translation>
 <translation id="2672394942808662069">加拿大多语言</translation>
 <translation id="2707357721402813583">爱尔兰语</translation>
 <translation id="2708477391501452176">法语 BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP 网络不受支持</translation>
 <translation id="3295006446256079333">此卷</translation>
 <translation id="3295357220137379386">设备正忙</translation>
+<translation id="3305389145870741612">格式化过程可能需要几秒钟的时间，请稍候。</translation>
 <translation id="3307875152560779385">乌克兰语</translation>
 <translation id="3326821416087822643">正在压缩<ph name="FILE_NAME" />…</translation>
 <translation id="3335337277364016868">录制年份</translation>
@@ -581,6 +585,7 @@
 <translation id="5580591966435005537">虚拟机</translation>
 <translation id="5583640892426849032">退格</translation>
 <translation id="5583664733673201137">标点符号宽度为全角</translation>
+<translation id="5585912436068747822">格式化失败</translation>
 <translation id="5596627076506792578">更多选项</translation>
 <translation id="5602622065581044566">保加利亚语注音键盘</translation>
 <translation id="5604409170937514933">瑞典语</translation>
@@ -667,6 +672,7 @@
 <translation id="6220423280121890987">旁遮普语</translation>
 <translation id="6224240818060029162">丹麦语</translation>
 <translation id="6224253798271602650">将“<ph name="DRIVE_NAME" />”格式化</translation>
+<translation id="6224481128663248237">格式化成功完成！</translation>
 <translation id="6241349547798190358">荷兰语（比利时）</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
 <translation id="6269630227984243955">马来语</translation>

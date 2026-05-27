@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2168039046890040389">Page précédente</translation>
 <translation id="2190355936436201913">(vide)</translation>
-<translation id="2192232475740621500">Utiliser une densité faible</translation>
 <translation id="2267918077332197517">Bloquer toutes les notifications de ce site</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Appuyez sur les cibles tactiles affichées à l'écran.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Appeler ce numéro depuis votre téléphone ?</translation>
 <translation id="2435457462613246316">Afficher le mot de passe</translation>
 <translation id="24452542372838207">Développer la notification</translation>
-<translation id="2445449901874883781">Utiliser une densité élevée</translation>
 <translation id="2448407890032181691">Cible tactile déplacée en bas à droite. Appuyez ici.</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2497284189126895209">Tous les fichiers</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">De droite à gauche</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Les paramètres d'affichage de votre application s'appliqueront à son prochain redémarrage.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min restante}one{# min restante}other{# min restantes}}</translation>
 <translation id="7252604552361840748">Repérez l'extension ci-dessus</translation>

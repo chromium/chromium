@@ -176,7 +176,6 @@
 <translation id="2885378588091291677">Тапсырмалар реттегіші</translation>
 <translation id="2910007522516064972">&amp;Chromium туралы</translation>
 <translation id="2915996080311180594">Кейін қайта қосу</translation>
-<translation id="2928420929544864228">Орнату аяқталды.</translation>
 <translation id="2933336679234709858">Деректер құпия фразаңызбен шифрланды. Google аккаунтыңызда Chromium деректерін пайдалану және сақтау үшін оны енгізіңіз.</translation>
 <translation id="2945997411976714835">Орнату қатесі: орнату процесі басталмады.</translation>
 <translation id="2948852018303413228">iOS жүйесіне арналған Chromium-де сақталған құпия сөздер арқылы сайттарға жылдам кіріңіз.</translation>
@@ -273,6 +272,7 @@
 <translation id="3954172517175569325">Google аккаунтыңызға сақтаған құпия сөздер, төлеу әдістері және мекенжайлар осы құрылғыдан өшіріледі. Оларды Chromium-де қайта пайдалану үшін аккаунтқа қайтадан кіріңіз.</translation>
 <translation id="395904275706073188">Қорғалған беттерді оқу мүмкін емес. Басқа бетті байқап көріңіз.</translation>
 <translation id="3962647064319009959">Chromium сізді қалай қорғайтыны туралы ақпарат алыңыз</translation>
+<translation id="3967822245660637423">Жүктеп алынды</translation>
 <translation id="3971865010372729242">Мекенжай жолағына немесе іздеу өрісіне терген кезіңізде, Chromium ұсыныстар алу үшін терген нәрсеңізді ұйымның іздеу жүйесіне, жасанды интеллектіге және агент құралдарына жібереді.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing туралы</translation>
 <translation id="3997429360543082038">ChromiumOS туралы</translation>
@@ -308,7 +308,6 @@
 <translation id="4298125729853015961">Құпия сөздерді Chromium-нен экспорттау</translation>
 <translation id="4304713468139749426">Құпия сөздер реттегіші</translation>
 <translation id="4334241893986177674">Осы скриншотты іздеу</translation>
-<translation id="4334294535648607276">Жүктеп алынды.</translation>
 <translation id="4384331407722351213">Windows жұмысын бастағанда, Chromium-ді іске қосады</translation>
 <translation id="4384993550046411228">Chromium-ді әдепкі браузер етіп орнату арқылы өзіңіз танитын, ұнататын және сенетін функцияларды оңай пайдаланыңыз. Жылдам кіру үшін, Chromium тапсырмалар жолағына бекітіледі.</translation>
 <translation id="439358628917130594">Бұл құрылғыны пайдаланбас бұрын, <ph name="MANAGER" /> домені келесі Қызмет көрсету шарттарын оқып, қабылдауыңызды талап етеді. Бұл шарттар ChromiumOS Шарттарын толықтырмайды, өзгертпейді және шектемейді.</translation>
@@ -362,7 +361,6 @@
 <translation id="4987820182225656817">Қонақтар Chromium қолданбасын ешқандай дерек қалдырмай пайдалана алады.</translation>
 <translation id="4992938037305302429">Chromium-дегі аккаунтыңыз</translation>
 <translation id="4994636714258228724">Chromium жүйесіне өзіңізді қосу</translation>
-<translation id="5083712646171654472">Chromium-дегі Gemini қойындыларыңызда істеп, сіз берген тапсырмаларды орындау үшін автоматты түрде шолу функциясын пайдаланады. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium қолыңызды бақылауға рұқсат сұрайды.</translation>
 <translation id="5141988424377517949">Жақында кірмедіңіз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> рұқсаттарын өшірді.</translation>
 <translation id="5174969993834422967">Әдетте хабарландыруларға тыйым саласыз. Бұл сайт сізге хабарландыру жіберсін десеңіз, локация жолағының оң жақ бұрышындағы хабарландыру белгішесін басыңыз.</translation>
@@ -473,7 +471,6 @@
 <translation id="6294831894865512704">Кеңейтімді қолдану үшін Chromium-ге кіруіңіз керек</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> қауіпті болуы мүмкін болғандықтан, Chromium оны бөгеді.</translation>
 <translation id="6309712487085796862">Chromium камераңызды пайдалануда.</translation>
-<translation id="6327105987658262776">Ешқандай жаңарту жоқ.</translation>
 <translation id="6333502561965082103">Chromium браузерінде басқа операция орындалуда. Әрекетті кейінірек қайталаңыз.</translation>
 <translation id="6334986366598267305">Енді Chromium қолданбасын Google аккаунтымен және ортақ компьютерлерде пайдалану жеңілірек.</translation>
 <translation id="6347002662287820329">Chromium-ді әдепкі браузер етіп орнату арқылы өзіңіз білетін, ұнататын және сенетін функцияларды оңай пайдаланыңыз.</translation>
@@ -549,7 +546,6 @@
 <translation id="7003299027384820442">Chromium деректерін <ph name="ACCOUNT_EMAIL" /> аккаунтында қолдану және сақтау үшін құпия фразаны енгізіңіз.</translation>
 <translation id="7011190694940573312">Орнатылмады, себебі операциялық жүйенің бұл нұсқасына қолдау көрсетілмейді.</translation>
 <translation id="7024536598735240744">Пакеттен шығару қатесі: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Орнату тоқтап қалды.</translation>
 <translation id="7045244423563602563">Chromium браузерін өз талғамыңызға сай реттеңіз</translation>
 <translation id="7047386856539490735">Бұл нәтижелер пайдалы ма?</translation>
 <translation id="705851970750939768">Chromium жаңарту</translation>
@@ -605,7 +601,6 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7624307931717240213">Біз бұл қызметті жақсарту үшін ақпаратты пайдаланамыз. Құпиялық саясаты мен Қызмет көрсету шарттарын қараңыз.</translation>
 <translation id="7649070708921625228">Анықтама</translation>
 <translation id="7650134251917003571">Chromium қолданбасын жүктеп алу</translation>
-<translation id="7656340475565475526">Chromium сіздің орныңызға браузерді шола алады</translation>
 <translation id="7658239707568436148">Бас тарту</translation>
 <translation id="7686590090926151193">Chromium әдепкі браузеріңіз емес</translation>
 <translation id="7689606757190482937">Chromium браузерін барлық құрылғыларда синхрондап, параметрлерін жекелендіріңіз</translation>
@@ -719,6 +714,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="897581876605952338">Chromium Enterprise логотипі</translation>
 <translation id="8981150672034878610">Профиліңізді ашу кезінде бірдеңе дұрыс болмағандықтан, Chromium-ді іске қосу мүмкін емес. Chromium-ді қайта іске қосып көріңіз.</translation>
 <translation id="8988036198400390003">Chromium профильдерін басқару</translation>
+<translation id="9018218886431812662">Орнату аяқталды</translation>
 <translation id="9019929317751753759">Chromium браузерін қауіпсіз ету үшін, <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> тізімінде жоқ келесі кеңейтім өшірілді, ол сізге ескертілмей қосылған болуы мүмкін.</translation>
 <translation id="9022552996538154597">Chromium жүйесіне кіру</translation>
 <translation id="904366664621834601">Chromium бұл мұрағаттау файлын жүктеп алуға тыйым салды, себебі онда зиянды бағдарламаны жасыруы мүмкін басқа файлдар бар</translation>

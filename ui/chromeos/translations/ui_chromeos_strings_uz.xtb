@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Administrator siyosatini tekshirish</translation>
 <translation id="158849752021629804">Uy tarmog‘i bo‘lishi lozim</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Formatlanmoqda...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugal va AQSH klaviaturasi (xalqaro)</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Rus (YaZHert fonetik klaviaturasi)</translation>
 <translation id="2143778271340628265">Proksini qo‘lda sozlash</translation>
 <translation id="2148716181193084225">Bugun</translation>
+<translation id="2148756636027685713">Formatlash yakunlandi</translation>
 <translation id="2161573825856688200">Google loyihasi</translation>
 <translation id="2163152940313951844">Yaroqsiz belgi: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Sizda <ph name="RETRIES" /> ta urinish qoldi.</translation>
 <translation id="2663066752008346276">Birma/Myanma (Myansan klaviaturasi)</translation>
 <translation id="2664412712123763093">Fayl joylashuvi</translation>
+<translation id="2665919335226618153">Ana xolos! Formatlash paytida xatolik ro‘y berdi.</translation>
 <translation id="2672394942808662069">Kanada (koʻp tilli)</translation>
 <translation id="2707357721402813583">Irland</translation>
 <translation id="2708477391501452176">Fransuz BEPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP tarmoqlari ishlamaydi</translation>
 <translation id="3295006446256079333">Bu joy</translation>
 <translation id="3295357220137379386">Qurilma band</translation>
+<translation id="3305389145870741612">Formatlashga bir necha soniya ketishi mumkin. Kutib turing.</translation>
 <translation id="3307875152560779385">Ukrain</translation>
 <translation id="3326821416087822643">“<ph name="FILE_NAME" />” fayli arxivlanmoqda...</translation>
 <translation id="3335337277364016868">Yozilgan yili</translation>
@@ -586,6 +590,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5580591966435005537">virtual mashina</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Toʻliq enli imlo tekshiruvi</translation>
+<translation id="5585912436068747822">Formatlash amalga oshmadi</translation>
 <translation id="5596627076506792578">Boshqa sozlamalar</translation>
 <translation id="5602622065581044566">Bolgar (fonetik klaviatura)</translation>
 <translation id="5604409170937514933">Shved</translation>
@@ -672,6 +677,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6220423280121890987">Panjob</translation>
 <translation id="6224240818060029162">Dan</translation>
 <translation id="6224253798271602650">Formatlash: <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formatlash yakunlandi!</translation>
 <translation id="6241349547798190358">Golland (Belgiya)</translation>
 <translation id="6267547857941397424">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Telefon nomi: <ph name="PHONE_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Telefon quvvati: <ph name="BATTERY_STATUS" />%, Ulanish</translation>
 <translation id="6269630227984243955">Malay</translation>

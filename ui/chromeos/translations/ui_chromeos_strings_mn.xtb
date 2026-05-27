@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Админы бодлогыг хянах</translation>
 <translation id="158849752021629804">Гэрийн сүлжээ хэрэгтэй</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ПБ</translation>
+<translation id="1593594475886691512">Хэлбэршүүлж байна...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Камер</translation>
 <translation id="162175252992296058">АНУ-ын олон улсын гартай португал</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">YaZHert авиа зүйн гартай орос</translation>
 <translation id="2143778271340628265">Прокси-гийн гар тохиргоо</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
+<translation id="2148756636027685713">Форматлаж дууссан</translation>
 <translation id="2161573825856688200">Google Project</translation>
 <translation id="2163152940313951844">Хүчингүй тэмдэгт: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Танд <ph name="RETRIES" /> оролдлого үлдсэн байна.</translation>
 <translation id="2663066752008346276">Мьянсан гартай бирм/мьянмар</translation>
 <translation id="2664412712123763093">Файлын байршил</translation>
+<translation id="2665919335226618153">Гэнэтийн асуудал! Форматлах үед алдаа гарлаа.</translation>
 <translation id="2672394942808662069">Канадын олон хэлний</translation>
 <translation id="2707357721402813583">Ирланд</translation>
 <translation id="2708477391501452176">Францын BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP сүлжээг дэмждэггүй</translation>
 <translation id="3295006446256079333">Энэ түвшин</translation>
 <translation id="3295357220137379386">Төхөөрөмж завгүй байна</translation>
+<translation id="3305389145870741612">Форматлах үйл ажиллагаанд тодорхой хугацаа шаардлагатай тул түр хүлээнэ үү.</translation>
 <translation id="3307875152560779385">Украин</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />-ийг нэгтгэж байна...</translation>
 <translation id="3335337277364016868">Бүртгэсэн жил</translation>
@@ -584,6 +588,7 @@
 <translation id="5580591966435005537">виртуал машин</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Цэг таслалын өргөн бүтэн байна</translation>
+<translation id="5585912436068747822">Форматлах явц амжилтгүй боллоо</translation>
 <translation id="5596627076506792578">Бусад сонголт</translation>
 <translation id="5602622065581044566">Авиа зүйн гартай болгар</translation>
 <translation id="5604409170937514933">Швед</translation>
@@ -670,6 +675,7 @@
 <translation id="6220423280121890987">Пaнжаб</translation>
 <translation id="6224240818060029162">Дани</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />-г форматлах</translation>
+<translation id="6224481128663248237">Хэлбэршүүлэх ажиллагаа амжилттай дууслаа!</translation>
 <translation id="6241349547798190358">Голланд (Бельги)</translation>
 <translation id="6267547857941397424">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, холбогдох</translation>
 <translation id="6269630227984243955">Малай</translation>

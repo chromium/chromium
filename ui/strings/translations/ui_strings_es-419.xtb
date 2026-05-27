@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2168039046890040389">Retroceder página</translation>
 <translation id="2190355936436201913">(vacío)</translation>
-<translation id="2192232475740621500">Usar la densidad baja</translation>
 <translation id="2267918077332197517">No permitir las notificaciones de este sitio</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Presiona los objetivos táctiles en tu pantalla.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">¿Quieres llamar a este número desde tu teléfono?</translation>
 <translation id="2435457462613246316">Mostrar contraseña</translation>
 <translation id="24452542372838207">Expandir notificación</translation>
-<translation id="2445449901874883781">Usar la densidad alta</translation>
 <translation id="2448407890032181691">El objetivo táctil se movió a la parte inferior derecha. Presiona aquí.</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2497284189126895209">Todos los archivos</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6974053822202609517">De derecha a izquierda</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">La próxima vez que reinicies la aplicación, se implementará la configuración de pantalla.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Falta 1 min.}other{Faltan # min.}}</translation>
 <translation id="7252604552361840748">Busca la extensión anterior.</translation>

@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2168039046890040389">Хуудас дээшлүүлэх</translation>
 <translation id="2190355936436201913">(Хоосон)</translation>
-<translation id="2192232475740621500">Бага нягтралыг ашиглах</translation>
 <translation id="2267918077332197517">Энэ сайтын бүх мэдэгдлийг блоклох</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Дэлгэцийнхээ хүрэх хэсгийг товшино уу.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Таны утаснаас энэ дугаар луу залгах уу?</translation>
 <translation id="2435457462613246316">Нууц үг харуулах</translation>
 <translation id="24452542372838207">Мэдэгдлийг дэлгэх</translation>
-<translation id="2445449901874883781">Өндөр нягтралыг ашиглах</translation>
 <translation id="2448407890032181691">Хүрэх талбайг баруун доош зөөсөн. Энд товшино уу.</translation>
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="2497284189126895209">Бүх файлууд</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Баруунаас зүүн тал руу</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Таны аппликэйшнийг дараагийн удаа дахин эхлүүлэхэд түүний дэлгэцийн тохиргоог хэрэгжүүлнэ.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 мин үлдсэн}other{# мин үлдсэн }}</translation>
 <translation id="7252604552361840748">Дээрх өргөтгөлийг олно уу</translation>

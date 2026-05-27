@@ -326,6 +326,7 @@
 <translation id="2078437078822043850">Pots desplaçar-te cap a la dreta per navegar d'incògnit.</translation>
 <translation id="2079545284768500474">Desfés</translation>
 <translation id="2085876078937250610">Desa…</translation>
+<translation id="2089180529062519164">Activa el micròfon</translation>
 <translation id="2096239473850415494">No s'ha pogut baixar</translation>
 <translation id="2096716221239095980">Suprimeix totes les dades</translation>
 <translation id="2104436223719117661">Cerques del moment</translation>
@@ -1858,6 +1859,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="7468373585447318060">Estigues al corrent de les baixades de preu en tots els productes que segueixes.</translation>
 <translation id="746872191028309255">Compra el que veus amb la càmera o la galeria de fotos.</translation>
 <translation id="7471557245617580330">Crea una pestanya nova</translation>
+<translation id="7473555040328423550">Afegeix una pestanya</translation>
 <translation id="7476548258282096076">Aquesta targeta mostra els llocs web que visites més sovint.</translation>
 <translation id="7484645889979462775">Mai per a aquest lloc</translation>
 <translation id="7486006552035434095">Mantén els dispositius sincronitzats</translation>
@@ -2113,6 +2115,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8319282042900445670">S'ha configurat un recordatori per a les <ph name="TIME" /> del dia <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Activitat recent</translation>
 <translation id="8325455175867928593">Amaga Ressenyes basades en els teus interessos</translation>
+<translation id="8333459276976141586">Live farà servir el micròfon. En tocar el botó Live, s'activarà el micròfon. Per desactivar-lo, toca el botó Atura o tanca Gemini.</translation>
 <translation id="833647236762414178">Crea, desa i gestiona les teves contrasenyes i claus d'accés per iniciar la sessió fàcilment en llocs web i aplicacions. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fes una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Completa 1 tasca més per pujar de nivell}other{Completa {count} tasques més per pujar de nivell}}</translation>
@@ -2189,6 +2192,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8571019948162152515">Vols suprimir <ph name="FILENAME" />?</translation>
 <translation id="8571213806525832805">4 darreres setmanes</translation>
 <translation id="8577056989960190117">Emplena automàticament l'any de caducitat (<ph name="YEAR" />)</translation>
+<translation id="8582026929965253036">Utilitza Live amb Gemini</translation>
 <translation id="8587001564479545614">Crea un PIN de recuperació</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8590286732816598906">Grup de pestanyes, <ph name="GROUP_TITLE" />, menú.</translation>
@@ -2263,6 +2267,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8803526663383843427">Quan està activada</translation>
 <translation id="8803639129939845298">Segur</translation>
 <translation id="8813277370772331957">Recorda-m'ho més tard</translation>
+<translation id="8814308045751067027">Per utilitzar Live, dona accés a Chrome al micròfon a la configuració</translation>
 <translation id="8814719628147284151">Continua</translation>
 <translation id="881559332211266856">Actualitza el número Redress</translation>
 <translation id="8817524703470045896">Fes un seguiment dels preus i rep alertes quan el preu baixi en qualsevol lloc web</translation>

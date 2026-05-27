@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Vaadake administraatori reegel üle</translation>
 <translation id="158849752021629804">Vajalik koduvõrk</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Vormindamine ...</translation>
 <translation id="1601786938618212857">ZIP</translation>
 <translation id="1620510694547887537">Kaamera</translation>
 <translation id="162175252992296058">portugali USA, rahvusvahelise klaviatuuriga</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">vene, foneetilise (YaZHert) klaviatuuriga</translation>
 <translation id="2143778271340628265">Puhverserveri käsitsi konfigureerimine</translation>
 <translation id="2148716181193084225">Täna</translation>
+<translation id="2148756636027685713">Vormindamine on lõpetatud</translation>
 <translation id="2161573825856688200">Google'i projekt</translation>
 <translation id="2163152940313951844">Sobimatu tähemärk: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Teil on veel <ph name="RETRIES" /> katset.</translation>
 <translation id="2663066752008346276">birma (Myanmar), Myansani klaviatuuriga</translation>
 <translation id="2664412712123763093">Faili asukoht</translation>
+<translation id="2665919335226618153">Ups, ebaõnn! Vormindamisel ilmnes viga.</translation>
 <translation id="2672394942808662069">Kanada mitmekeelne</translation>
 <translation id="2707357721402813583">iiri</translation>
 <translation id="2708477391501452176">prantsuse BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP-võrke ei toetata</translation>
 <translation id="3295006446256079333">See kogum</translation>
 <translation id="3295357220137379386">Seade on hõivatud</translation>
+<translation id="3305389145870741612">Vormindusprotsessile võib kuluda paar sekundit. Oodake.</translation>
 <translation id="3307875152560779385">ukraina</translation>
 <translation id="3326821416087822643">Faili <ph name="FILE_NAME" /> pakkimine ...</translation>
 <translation id="3335337277364016868">Salvestamisaasta</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">Virtuaalmasin</translation>
 <translation id="5583640892426849032">Tagasilükkeklahv</translation>
 <translation id="5583664733673201137">Kirjavahemärkide laius on täislaius</translation>
+<translation id="5585912436068747822">Vormindamine ebaõnnestus</translation>
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5602622065581044566">bulgaaria, foneetilise klaviatuuriga</translation>
 <translation id="5604409170937514933">rootsi</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">pandžabi</translation>
 <translation id="6224240818060029162">taani</translation>
 <translation id="6224253798271602650">Ketta <ph name="DRIVE_NAME" /> vormindamine</translation>
+<translation id="6224481128663248237">Vormindamine õnnestus.</translation>
 <translation id="6241349547798190358">hollandi (Belgia)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />, signaalitugevus: <ph name="BATTERY_STATUS" />%, telefoni aku: %, ühenda</translation>
 <translation id="6269630227984243955">malai</translation>

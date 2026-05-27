@@ -177,7 +177,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">About &amp;Chromium</translation>
 <translation id="2915996080311180594">Restart later</translation>
-<translation id="2928420929544864228">Installation complete.</translation>
 <translation id="2933336679234709858">Your data is encrypted with your passphrase. Enter it to use and save Chromium data in your Google Account.</translation>
 <translation id="2945997411976714835">Install error: The installer process failed to start.</translation>
 <translation id="2948852018303413228">Sign in faster to sites using saved passwords for Chromium on iOS</translation>
@@ -274,6 +273,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3954172517175569325">Your passwords, payment methods and addresses that you saved in your Google Account will be removed from this device. To use them again in Chromium, sign back in.</translation>
 <translation id="395904275706073188">Protected pages can't be read. Try a different page.</translation>
 <translation id="3962647064319009959">Learn how Chromium keeps you safe</translation>
+<translation id="3967822245660637423">Download complete</translation>
 <translation id="3971865010372729242">When you type in the address bar or search box, Chromium sends what you type to your organisation's search, AI and agent tools to get suggestions.</translation>
 <translation id="3975724895399328945">About Google Chrome for testing</translation>
 <translation id="3997429360543082038">About Chromium OS</translation>
@@ -309,7 +309,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4298125729853015961">Export passwords from Chromium</translation>
 <translation id="4304713468139749426">Password Manager</translation>
 <translation id="4334241893986177674">Search this screenshot</translation>
-<translation id="4334294535648607276">Download complete.</translation>
 <translation id="4384331407722351213">Launch Chromium when Windows starts</translation>
 <translation id="4384993550046411228">Get easy access to the features that you know, love and trust by setting Chromium as your default browser. Chromium will be pinned to your taskbar for quick access.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> requires that you read and accept the following Terms of Service before using this device. These terms do not expand, modify or limit the Chromium OS terms.</translation>
@@ -363,7 +362,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4987820182225656817">Guests can use Chromium without leaving anything behind.</translation>
 <translation id="4992938037305302429">Your account in Chromium</translation>
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
-<translation id="5083712646171654472">Gemini in Chromium uses auto-browse to work in your tabs and complete tasks that you give it. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium needs permission to track your hands</translation>
 <translation id="5141988424377517949">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">You usually block notifications. To let this site notify you, click the notification icon on the right corner of your location bar.</translation>
@@ -474,7 +472,6 @@ If this page isn't working as expected, try allowing optimisation.</translation>
 <translation id="6294831894865512704">An extension wants you to sign in to Chromium</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> may be dangerous, so Chromium has blocked it.</translation>
 <translation id="6309712487085796862">Chromium is using your camera.</translation>
-<translation id="6327105987658262776">No update is available.</translation>
 <translation id="6333502561965082103">Another operation on Chromium is in progress. Please try again later.</translation>
 <translation id="6334986366598267305">Now it's easier to use Chromium with your Google Account and on shared computers.</translation>
 <translation id="6347002662287820329">Get easy access to the features that you know, love and trust by setting Chromium as your default browser.</translation>
@@ -550,7 +547,6 @@ New bookmarks can't be saved in your account until you delete some. If you sign 
 <translation id="7003299027384820442">Enter your passphrase to use and save Chromium data in your account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="7011190694940573312">Installation failed because this version of the operating system is not supported.</translation>
 <translation id="7024536598735240744">Unpack error: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Installation stopped.</translation>
 <translation id="7045244423563602563">Make Chromium your own</translation>
 <translation id="7047386856539490735">Are these results useful?</translation>
 <translation id="705851970750939768">Update Chromium</translation>
@@ -606,7 +602,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7624307931717240213">We use info to improve this service. See Privacy Policy and Terms of Service.</translation>
 <translation id="7649070708921625228">Help</translation>
 <translation id="7650134251917003571">Get the Chromium app</translation>
-<translation id="7656340475565475526">Let Chromium browse for you</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7686590090926151193">Chromium isn't your default browser</translation>
 <translation id="7689606757190482937">Sync and personalise Chromium across your devices</translation>
@@ -720,6 +715,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="897581876605952338">Chromium Enterprise logo</translation>
 <translation id="8981150672034878610">Cannot start Chromium because something went wrong when opening your profile. Try to restart Chromium.</translation>
 <translation id="8988036198400390003">Manage Chromium profiles</translation>
+<translation id="9018218886431812662">Installation complete</translation>
 <translation id="9019929317751753759">To make Chromium safer, we disabled the following extension that isn't listed in the <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> and may have been added without your knowledge.</translation>
 <translation id="9022552996538154597">Sign in to Chromium</translation>
 <translation id="904366664621834601">Chromium blocked this download because the archive file includes other files that may hide malware</translation>

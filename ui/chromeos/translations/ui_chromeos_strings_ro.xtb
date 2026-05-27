@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Consultă politica implementată de administratori</translation>
 <translation id="158849752021629804">Este necesară rețeaua de domiciliu</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Se formatează...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Cameră</translation>
 <translation id="162175252992296058">Portugheză cu tastatură S.U.A. internațională</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Tastatură rusă fonetică YaZHert</translation>
 <translation id="2143778271340628265">Configurare proxy manuală</translation>
 <translation id="2148716181193084225">Astăzi</translation>
+<translation id="2148756636027685713">Formatarea a fost finalizată</translation>
 <translation id="2161573825856688200">Proiect Google</translation>
 <translation id="2163152940313951844">Caracter nevalid: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Mai ai <ph name="RETRIES" /> încercări.</translation>
 <translation id="2663066752008346276">Birmană/Myanmar cu tastatură Myansan</translation>
 <translation id="2664412712123763093">Locația fișierului</translation>
+<translation id="2665919335226618153">Of, nu mai merge! A apărut o eroare în timpul formatării.</translation>
 <translation id="2672394942808662069">Canadiană multilingvă</translation>
 <translation id="2707357721402813583">Irlandeză</translation>
 <translation id="2708477391501452176">Franceză BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Rețelele WEP nu sunt acceptate</translation>
 <translation id="3295006446256079333">Acest volum</translation>
 <translation id="3295357220137379386">Dispozitivul este ocupat</translation>
+<translation id="3305389145870741612">Procesul de formatare poate dura câteva secunde. Așteptați.</translation>
 <translation id="3307875152560779385">Ucraineană</translation>
 <translation id="3326821416087822643">Se arhivează <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Anul înregistrării</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">mașina virtuală</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Lățimea pentru punctuație este completă</translation>
+<translation id="5585912436068747822">Formatarea nu a reușit</translation>
 <translation id="5596627076506792578">Mai multe opțiuni</translation>
 <translation id="5602622065581044566">Tastatură bulgară fonetică</translation>
 <translation id="5604409170937514933">Suedeză</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Daneză</translation>
 <translation id="6224253798271602650">Formatează <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formatarea a fost finalizată!</translation>
 <translation id="6241349547798190358">Neerlandeză (Belgia)</translation>
 <translation id="6267547857941397424">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, conectează-te</translation>
 <translation id="6269630227984243955">Malaieză</translation>

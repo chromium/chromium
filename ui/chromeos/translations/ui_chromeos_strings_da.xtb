@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Gennemgå administratorpolitikken</translation>
 <translation id="158849752021629804">Hjemmenetværk mangler</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Formaterer...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugisisk med amerikansk internationalt tastatur</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Russisk med fonetisk YaZHert-tastatur</translation>
 <translation id="2143778271340628265">Manuel proxykonfiguration</translation>
 <translation id="2148716181193084225">I dag</translation>
+<translation id="2148756636027685713">Formatering er fuldført</translation>
 <translation id="2161573825856688200">Google-projekt</translation>
 <translation id="2163152940313951844">Ugyldigt tegn: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="2663066752008346276">Burmesisk/myanmarsk Myansan-tastatur</translation>
 <translation id="2664412712123763093">Filplacering</translation>
+<translation id="2665919335226618153">Øv, surt! Der opstod en fejl under formateringen.</translation>
 <translation id="2672394942808662069">Canadisk (flere sprog)</translation>
 <translation id="2707357721402813583">Irsk</translation>
 <translation id="2708477391501452176">Fransk BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP-netværk understøttes ikke</translation>
 <translation id="3295006446256079333">Denne mængde</translation>
 <translation id="3295357220137379386">Enheden er optaget</translation>
+<translation id="3305389145870741612">Formateringen kan tage et par sekunder. Vent et øjeblik.</translation>
 <translation id="3307875152560779385">Ukrainsk</translation>
 <translation id="3326821416087822643">Komprimerer <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">År, det blev optaget</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">virtuel maskine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Tegnsætningsbredden er Fuld</translation>
+<translation id="5585912436068747822">Formatering mislykkedes</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5602622065581044566">Bulgarsk med fonetisk tastatur</translation>
 <translation id="5604409170937514933">Svensk</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dansk</translation>
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formateringen er nu fuldført.</translation>
 <translation id="6241349547798190358">Nederlandsk (Belgien)</translation>
 <translation id="6267547857941397424">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
 <translation id="6269630227984243955">Malajisk</translation>

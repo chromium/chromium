@@ -187,7 +187,6 @@
 <translation id="2915996080311180594">ପରେ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ</translation>
 <translation id="2916983411556218750">ଚାଲନ୍ତୁ ଆପଣଙ୍କ Chromeକୁ ପ୍ରସ୍ତୁତ କରିବା</translation>
 <translation id="2926952073016206995">ଏହି ସାଇଟ୍ ପାଇଁ Chrome କ୍ୟାମେରା ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
-<translation id="2928420929544864228">ଇନଷ୍ଟଲେସନ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="2945997411976714835">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ପ୍ରକ୍ରିୟା ଆରମ୍ଭ ହେବାରେ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ନେଟୱାର୍କ ସାଇନ୍-ଇନ୍ - Chrome</translation>
 <translation id="2970681950995291301">Chromeରୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟକୁ କାଢ଼ି ଦେବା ପାଇଁ ସେଟିଂସ ପୃଷ୍ଠାରେ Chromeରୁ ସାଇନ ଆଉଟ କରନ୍ତୁ</translation>
@@ -282,6 +281,7 @@
 <translation id="3892148308691398805">ଟେକ୍ସଟ୍ କପି କରନ୍ତୁ</translation>
 <translation id="3941890832296813527">ଇନଷ୍ଟଲ କରିବାରେ ତ୍ରୁଟି: ଇନଷ୍ଟଲର ଫାଇଲନାମ ଅବୈଧ କିମ୍ବା ଅସମର୍ଥିତ ଅଟେ।</translation>
 <translation id="395904275706073188">ସୁରକ୍ଷିତ ପୃଷ୍ଠାଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ। ଏକ ଭିନ୍ନ ପୃଷ୍ଠା ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ।</translation>
+<translation id="3967822245660637423">ଡାଉନ୍‍‍‍ଲୋଡ୍ ଶେଷ ହୋଇଛି</translation>
 <translation id="3968962723676998462">ଆପଣଙ୍କ <ph name="ACCOUNT_EMAIL" /> ଆକାଉଣ୍ଟରେ Chrome ଡାଟାକୁ ବ୍ୟବହାର ଏବଂ ସେଭ କରିବା ପାଇଁ ଆପଣଙ୍କ ପାସଫ୍ରେଜ ଲେଖନ୍ତୁ</translation>
 <translation id="3973161977468201858">Google Chrome ଆପଣଙ୍କ Google Password Manager ଡାଟା ଡିଲିଟ କରିବାକୁ ଚାହେଁ। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଆପଣଙ୍କ Windows ପାସୱାର୍ଡ ଟାଇପ କରନ୍ତୁ।</translation>
 <translation id="400161754580828648">ଆପଣଙ୍କ ସ୍କ୍ରିନ ସେୟାର କରିବାକୁ ସିଷ୍ଟମ ସେଟିଂସରେ Chrome ପାଇଁ ସ୍କ୍ରିନ ରେକର୍ଡିଂର ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
@@ -316,7 +316,6 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ପର୍ସନାଲାଇଜେସନ ଏବଂ ଅନ୍ୟ ଫିଚରଗୁଡ଼ିକ ପାଇବାକୁ ୱେବ ଏବଂ ଆପ କାର୍ଯ୍ୟକଳାପରେ Chrome ଏବଂ ଲିଙ୍କ ହୋଇଥିବା Google ସେବାଗୁଡ଼ିକୁ ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
 <translation id="4334241893986177674">ଏହି ସ୍କ୍ରିନସଟକୁ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
-<translation id="4334294535648607276">ଡାଉନଲୋଡ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି।</translation>
 <translation id="4343195214584226067">Chromeରେ <ph name="EXTENSION_NAME" /> ଯୋଗକରାଯାଇଛି</translation>
 <translation id="4344128547036991536">ଆପଣ Google Lens ଖୋଲିଲେ, PDFଗୁଡ଼ିକ ସମେତ ପୃଷ୍ଠାର ଟାଇଟେଲ, URL ଏବଂ ବିଷୟବସ୍ତୁ ସ୍ୱତଃ Googleକୁ ପଠାଯିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">ପର୍ସନାଲାଇଜେସନ ପାଇବାକୁ ୱେବ ଓ ଆପ କାର୍ଯ୍ୟକଳାପରେ Chrome ଅନ୍ତର୍ଭୁକ୍ତ କରନ୍ତୁ</translation>
@@ -513,7 +512,6 @@
 <translation id="6319856120645568262">ଆପଣଙ୍କ ପରିପାର୍ଶ୍ୱକୁ ମେପ କରି ଆପଣଙ୍କ ହାତକୁ ଟ୍ରାକ କରିବା ପାଇଁ Chrome ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
 <translation id="6321592572353357376">ଆପଣ Chromeରେ ସାଇନ ଇନ କରନ୍ତୁ ବୋଲି "<ph name="EXTENSION_NAME" />" ଏକ୍ସଟେନସନ ଚାହୁଁଛି</translation>
 <translation id="6326175484149238433">Chromeରୁ କାଢ଼ିଦିଅନ୍ତୁ</translation>
-<translation id="6327105987658262776">କୌଣସି ଅପଡେଟ ଉପଲବ୍ଧ ନାହିଁ।</translation>
 <translation id="6334815226785304306">Google Chromeକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରନ୍ତୁ ଏବଂ ଟାସ୍କବାରରେ ପିନ କରନ୍ତୁ</translation>
 <translation id="63540178978900677">Chrome ଆଉ ଆପଣଙ୍କ ଡିଫଲ୍ଟ ବ୍ରାଉଜର ନୁହେଁ। Chromeକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର କରିବେ?</translation>
 <translation id="6360449101159168105">ଏହି ଟାବ ନିଷ୍କ୍ରିୟ ଥିବା ସମୟରେ Chromeକୁ ଦ୍ରୁତ ରଖିବା ପାଇଁ ମେମୋରୀକୁ ଖାଲି କରାଯାଇଛି। ଆପଣ ଏହି ସାଇଟକୁ ନିଷ୍କ୍ରିୟ ହେବାରୁ ସର୍ବଦା ବାଦ ଦେବା ପାଇଁ ବାଛିପାରିବେ।</translation>
@@ -579,7 +577,6 @@
 <translation id="6999131147875565462">ଚାଲୁ ଥିଲେ, Chrome ଆହୁରି ଦ୍ରୁତ ଭାବରେ ଚାଲେ ଏବଂ JavaScript ବ୍ୟବହାର କରୁଥିବା ଫିଚରଗୁଡ଼ିକ ଡିଜାଇନ କରାଯାଇଥିବା ଅନୁଯାୟୀ କାମ କରିବା ଉଚିତ</translation>
 <translation id="7011190694940573312">ଅପରେଟିଂ ସିଷ୍ଟମର ଏହି ଭର୍ସନ ସମର୍ଥିତ ନଥିବା ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="7024536598735240744">ଅନପେକ ତ୍ରୁଟି: <ph name="UNPACK_ERROR" />।</translation>
-<translation id="7025789849649390912">ଇନଷ୍ଟଲେସନ ବନ୍ଦ ହୋଇଯାଇଛି।</translation>
 <translation id="7025800014283535195">ଏଠାରେ ଆପଣ Chrome ପ୍ରୋଫାଇଲଗୁଡ଼ିକ ମଧ୍ୟରେ ସ୍ୱିଚ୍ କରିପାରିବେ</translation>
 <translation id="7047386856539490735">ଏହି ଫଳାଫଳ ଉପଯୋଗୀ ଅଟେ?</translation>
 <translation id="7051685429025310665">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />କୁ କାଢ଼ି ଦେଇଛି।</translation>
@@ -780,6 +777,7 @@
 <translation id="8999117580775242387">ଯେତେବେଳେ HTTPS ଉପଲବ୍ଧ ନଥାଏ, Chrome ଆପଣଙ୍କୁ ଚେତାବନୀ ନଦେଇ ଏକ ଅସୁରକ୍ଷିତ କନେକ୍ସନ ବ୍ୟବହାର କରିବ</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}=1{Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}other{# ଦିନ ପାଇଁ Chrome‍ର ଏକ ଅପ୍‍‍ଡେଟ୍ ଉପଲବ୍ଧ ଅଛି}}</translation>
 <translation id="9014771989710951291">ଏକାଧିକ ସଂସ୍ଥା Chromeକୁ ପରିଚାଳନା କରେ</translation>
+<translation id="9018218886431812662">ଇନ୍‌ଷ୍ଟଲ୍ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="9066987883552592250">Chrome Canaryରେ Gemini ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="9090566250983691233">Chrome କାହିଁକି କିଛି ଫାଇଲକୁ ବ୍ଲକ କରେ ତାହା ଜାଣନ୍ତୁ</translation>
 <translation id="9106236359747881194">ସର୍ଚ୍ଚ କରିବା ପାଇଁ ଟେକ୍ସଟ ଚୟନ କରନ୍ତୁ</translation>

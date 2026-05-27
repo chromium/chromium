@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> olaraq giriş edilib</translation>
 <translation id="1149401351239820326">Bitmə ayı</translation>
 <translation id="1150989369772528668">Təqvim</translation>
+<translation id="1161444134753003495">Daxil olun</translation>
 <translation id="1161663161838091892">Davam etmək üçün tabları və tarixçəni sinxronlaşdırın</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kredit kartı}other{{count} kredit kartı}}</translation>
 <translation id="1164891049599601209">Aldadıcı saytda daxil edilib</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">Sağa sürüşdürərək Anonim rejimdə baxa bilərsiniz.</translation>
 <translation id="2079545284768500474">Geri qaytarın</translation>
 <translation id="2085876078937250610">Yadda saxlanılır…</translation>
+<translation id="2089180529062519164">Mikrofonu aktiv edin</translation>
 <translation id="2096239473850415494">Endirilmədi</translation>
 <translation id="2096716221239095980">Bütün datanı silin</translation>
 <translation id="2104436223719117661">Populyar axtarışlar</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Bu sayt üçün yeni parol}other{Bu sayt üçün yeni parollar}}</translation>
 <translation id="3933372629914873850"><ph name="URL" /> saytına daxil olacaqsınız</translation>
 <translation id="3934905113567851655">Ölçüsünü dəyişdirmək üçün barmaqlarınızı birləşdirin</translation>
+<translation id="393732545649378031">Hesab</translation>
 <translation id="3940195383040445971">Tablarda qiymətləri izləyin</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} tabı bağlayın}other{{COUNT} tabı bağlayın}}</translation>
 <translation id="3946483119107054883">CSV faylı kimi endirin</translation>
@@ -1469,6 +1472,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6140948187512243695">Detalları göstərin</translation>
 <translation id="6144589619057374135">${url} keçidini Anonim rejimdə açın</translation>
 <translation id="6146563240635539929">Videolar</translation>
+<translation id="6148392728478209113">Hələ də Live istifadə edirsiniz? Gemini ilə danışmağa davam etmək üçün Live düyməsinə toxunun</translation>
 <translation id="6151006591088192882">Anonim tabları <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ilə kiliddən çıxarın</translation>
 <translation id="6152340033632117531">Aktiv deyil</translation>
 <translation id="6152406514676263192">Maraqlarınıza əsaslanan ən uyğun məzmun üçün sinxronizasiya edin.</translation>
@@ -1862,6 +1866,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="7468373585447318060">İzlədiyiniz bütün məhsullarda qiymət endirimlərindən xəbərdar olun.</translation>
 <translation id="746872191028309255">Kamera və ya fotoqalereya ilə gördüklərinizi satın alın.</translation>
 <translation id="7471557245617580330">Yeni panel yaradın</translation>
+<translation id="7473555040328423550">Tab əlavə edin</translation>
 <translation id="7476548258282096076">Bu kart sizə ən çox daxil olunan saytları göstərir.</translation>
 <translation id="7484645889979462775">Bu sayt üçün heç vaxt</translation>
 <translation id="7486006552035434095">Cihazları sinxronlaşdırın</translation>
@@ -2117,6 +2122,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8319282042900445670">Xatırladıcı ayarlandı: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Son fəaliyyət</translation>
 <translation id="8325455175867928593">"Maraqlarınıza əsasən rəylər" seçimini gizlədin</translation>
+<translation id="8333459276976141586">Live mikrofonunuzdan istifadə edəcək. Live düyməsinə toxunduqda mikrofon aktiv edilir. Mikrofonu söndürmək üçün dayandırın düyməsinə toxunun və ya Gemini-ı bağlayın.</translation>
 <translation id="833647236762414178">Sayt və tətbiqlərə asanlıqla daxil olmaq üçün parol və giriş açarları yaradın, yadda saxlayın və idarə edin. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Elementləri yedəkləyin və istənilən cihazda istifadə edin.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Növbəti səviyyəyə keçmək üçün daha 1 tapşırığı tamamlayın}other{Növbəti səviyyəyə keçmək üçün daha {count} tapşırığı tamamlayın}}</translation>
@@ -2193,6 +2199,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8571019948162152515">"<ph name="FILENAME" />" silinsin?</translation>
 <translation id="8571213806525832805">Son 4 həftə</translation>
 <translation id="8577056989960190117">Son istifadə ilini (<ph name="YEAR" />) avtomatik doldurun</translation>
+<translation id="8582026929965253036">Gemini Live ilə canlı söhbət</translation>
 <translation id="8587001564479545614">Bərpa PIN-i yaradın</translation>
 <translation id="8588404856427128947">Deaktiv</translation>
 <translation id="8590286732816598906">Tab qrupu, <ph name="GROUP_TITLE" />, Menyu.</translation>
@@ -2267,6 +2274,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8803526663383843427">Aktiv olduqda</translation>
 <translation id="8803639129939845298">Güvənli</translation>
 <translation id="8813277370772331957">Sonra xatırladın</translation>
+<translation id="8814308045751067027">Live-dan istifadə etmək üçün ayarlarda Chrome-un mikrofona daxil olmasına icazə verin</translation>
 <translation id="8814719628147284151">Davam edin</translation>
 <translation id="881559332211266856">Kompensasiya nömrəsini güncəlləyin</translation>
 <translation id="8817524703470045896">Qiymətləri izləyin və istənilən saytda qiymət endikdə xəbərdarlıq alın</translation>

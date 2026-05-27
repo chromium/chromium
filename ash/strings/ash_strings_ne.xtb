@@ -14,6 +14,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> थपियो</translation>
 <translation id="1038106730571050514">सुझावहरू देखाउनुहोस्</translation>
 <translation id="1047017786576569492">स्क्रिनको केही भाग</translation>
+<translation id="104710386808485638">Linux पुनः सुरु गर्ने हो?</translation>
 <translation id="1052916631016577720">वस्तु स्क्यान गर्ने कार्य</translation>
 <translation id="1056775291175587022">कुनै पनि नेटवर्क छैन</translation>
 <translation id="1056898198331236512">चेतावनी</translation>
@@ -29,6 +30,7 @@
 <translation id="1073899992769346247">ब्याट्री बदल्नुहोस् वा उक्त ब्याट्री रिचार्ज गर्नुहोस्</translation>
 <translation id="1081015718268701546">Linux एपहरू हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
 <translation id="108486256082349153">सेल्युलर: <ph name="ADDRESS" /></translation>
+<translation id="1085697365578766383">भर्चुअल मेसिन सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1088231044944504242">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्। आफ्ना एपहरूमा नेभिगेट गर्न एरो कीहरू प्रयोग गर्नुहोस्।</translation>
 <translation id="1093645050124056515">ctrl + alt + डाउन एरो</translation>
 <translation id="1094756674036064790">ब्लुटुथ अफ गर्ने हो?</translation>
@@ -55,6 +57,7 @@
 <translation id="1173268871892601910">ChromeOS पासवर्ड म्यानेजरले तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="1175572348579024023">स्क्रोल गर्नुहोस्</translation>
 <translation id="1175944128323889279">अहिलेको ब्याट्रीको स्तर <ph name="BATTERY_PERCENTAGE" />% छ भने ब्याट्री फुल चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
+<translation id="1177863135347784049">अनुकूल</translation>
 <translation id="1178581264944972037">पज गर्नुहोस्</translation>
 <translation id="1179776263021875437">कार्यमा फोकस गर्न छाड्नुहोस्</translation>
 <translation id="1180117276105724040">तपाईंको पछिल्लो सत्रबाट विन्डोहरू रिस्टोर गरिँदै छ...</translation>
@@ -82,6 +85,7 @@
 <translation id="1240638468526743569">कुनै एप</translation>
 <translation id="1242198791279543032">नोटिफिकेसनहरू म्युट गरिएका छन्</translation>
 <translation id="1242883863226959074">डिभाइस</translation>
+<translation id="1244265436519979884">हाल Linux को पुनर्स्थापना हुँदै छ</translation>
 <translation id="1245476784081715330">अद्भुत!</translation>
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
 <translation id="1246890715821376239">प्रयोग गर्न नमिल्ने एपहरू</translation>
@@ -108,8 +112,10 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">एक्स्प्लोर खोल्नुहोस्</translation>
 <translation id="129469256578833241">सारांश देखाइने पेजमा फर्कनुहोस्</translation>
+<translation id="1294807885394205587">यो प्रक्रिया पूरा हुन केही बेर लाग्न सक्छ। कन्टेनर म्यानेजर सुरु गरिँदै छ।</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">जुनसुकै बेला <ph name="LAUNCHER_KEY_NAME" /> + g बटन थिच्नुहोस्</translation>
+<translation id="130491383855577612">Linux एप र फाइलहरू सफलतापूर्वक प्रतिस्थापन गरिएका छन्</translation>
 <translation id="1306549533752902673">सिफारिस गरिएका एपहरू</translation>
 <translation id="1310396869741602366">टोन बदल्नुहोस्</translation>
 <translation id="1312604459020188865">सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
@@ -118,6 +124,7 @@
 <translation id="132346741904777634">क्यामेरा सिरानको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> र विन्डो बन्द गर्नुहोस्</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्ट गरियो</translation>
+<translation id="1338950911836659113">मेट्दै...</translation>
 <translation id="1340378040547539434">पेजमा जुम आउट गर्नुहोस्</translation>
 <translation id="1341651618736211726">ओभरफ्लो</translation>
 <translation id="1341926407152459446">अडियो इनपुट र आउटपुटका लागि "<ph name="DEVICE_NAME" />" प्रयोग गर्नुहोस्</translation>
@@ -161,6 +168,7 @@
 <translation id="1469148162491666137">तपाईंले यसो गर्नुभयो भने <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> र क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति भएका सबै एप तथा वेबसाइटहरूलाई क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति दिइन्छ। तपाईंले वेबपेज रिफ्रेस गर्नु पर्ने वा एप रिस्टार्ट गर्नु पर्ने हुन सक्छ।</translation>
 <translation id="147310119694673958">फोनको ब्याट्री <ph name="BATTERY_PERCENTAGE" />% बाँकी छ</translation>
 <translation id="1475340220124222168">हटस्पट टगल गर्नुहोस्। हटस्पट अन छ, एउटा डिभाइस कनेक्ट गरिएको छ।</translation>
+<translation id="1476595624592550506">आफ्नो पासवर्ड बदल्नुहोस्</translation>
 <translation id="1479685784053141667">कन्ट्याक्ट बनाउनुहोस्</translation>
 <translation id="1479909375538722835">पहुँचसम्बन्धी फ्लोटिङ मेनु</translation>
 <translation id="1483493594462132177">पठाउनुहोस्</translation>
@@ -176,6 +184,7 @@
 <translation id="1521655867290435174">Google पाना</translation>
 <translation id="1523032696246003"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ | पूरा चार्ज हुन <ph name="TIME" /> लाग्छ</translation>
 <translation id="1525508553941733066">खारेज गर्नुहोस्</translation>
+<translation id="152629053603783244">Linux पुनः सुरु गर्नुहोस्</translation>
 <translation id="1526448108126799339">नयाँ ट्याब नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="1528259147807435347">गत हप्ता सम्पादन गरिएको</translation>
 <translation id="1536604384701784949">तपाईं सबै खाताबाट साइन आउट भइसकेपछि मात्र <ph name="USER_EMAIL_ADDRESS" /> चलाउन सक्नुहुन्छ। तपाईं साइन आउट गर्न चाहनुहुन्छ भने 'रद्द गर्नुहोस्' चयन गरेर पछाडि जानुहोस्। त्यसपछि 'वस्तुस्थिति क्षेत्र' खोल्न 'समय' चयन गर्नुहोस् र 'साइन आउट गर्नुहोस्' चयन गर्नुहोस्। त्यसपछि फेरि <ph name="USER_EMAIL_ADDRESS_2" /> मा साइन इन गर्नुहोस्।</translation>
@@ -194,11 +203,15 @@
 <translation id="1571697193564730395">Do Not Disturb अन वा अफ गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">बायाँ किनारामा भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="1576623706766186887">म्याग्निफायर अन भएका बेला जुम आउट गर्नुहोस्</translation>
+<translation id="1578558981922970608">बलपूर्वक बन्द गर्नुहोस्</translation>
 <translation id="1582946770779745370">गेम ड्यासबोर्ड उपलब्ध छ। खोल्नका लागि जुनसुकै बेला <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape थिच्नुहोस्, त्यसपछि <ph name="LAUNCHER_KEY_NAME" /> + g थिच्नुहोस्</translation>
 <translation id="1586324912145647027">डेस्क १ देखि ८ मा जानुहोस्</translation>
 <translation id="158838227375272121">Google Classroom को वेबसाइट</translation>
 <translation id="1589090746204042747">यो सत्रअन्तर्गतका आफ्ना सबै क्रियाकलापमाथि पहुँच राख्नुहोस्</translation>
+<translation id="1592074621872221573"><ph name="MANAGER" /> ले ADB डिबग प्रक्रिया अफ गरेको छ। यसले गर्दा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। डिभाइस रिस्टार्ट गर्नुअघि आफ्ना फाइलहरू ब्याकअप गर्नुहोस्।</translation>
+<translation id="1595492813686795610">Linux को स्तरवृद्धि हुँदै छ</translation>
 <translation id="1597880963776148053"><ph name="TOTAL_STEPS" /> मध्ये <ph name="STEP" /> औँ चरण। तपाईंका पिन गरिएका तथा खुला रहेका एपहरू तपाईंको डिभाइसको स्क्रिनको पुछारमा रहेको सेल्फमा देखिन्छन्। Press Alt + Shift + L then tab to focus on shelf items.</translation>
+<translation id="1602085790802918092">भर्चुअल मेसिन सुरु हुँदै छ</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + डाउन एरो</translation>
 <translation id="1604857178818051494">मिडिया पज गर्नुहोस्</translation>
 <translation id="1607312127821884567">आफ्नो फोनमा भएका एपहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
@@ -207,12 +220,12 @@
 <translation id="1612679292338846734">तपाईंले यी सुविधाहरू अन गर्दा इन्पुट टेक्स्ट, डकुमेन्टमा भएको सामग्री र वेबपेजको URL Google AI का सर्भरहरूमा पठाइन सक्छ। यो जानकारी <ph name="LINK_TO_SERVICE_TERMS" />बमोजिम लेखनसम्बन्धी सुझाव दिन, सारांश बनाउन, प्रश्नहरूको जवाफ दिन र उत्पादनको गुणस्तर सुधार गर्न प्रयोग गरिन्छ। कुनै पनि व्यक्तिगत, संवेदनशील वा गोप्य जानकारी समावेश नगर्नुहोस्।</translation>
 <translation id="1619879934359211038">Google Play मा कनेक्ट गर्न सकिएन। इन्टरनेट जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="1620510694547887537">क्यामेरा</translation>
+<translation id="1621831347985899379"><ph name="DEVICE_TYPE" /> मा भएको डेटा मेटाइने छ</translation>
 <translation id="1623768535032616219">Google Classroom कोल्याप्स गर्नुहोस्</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> उपलब्ध छैन।</translation>
 <translation id="1632985212731562677">सेटिङ &gt; पहुँचमा गएर स्विचमार्फत पहुँच राख्ने सुविधा असक्षम पार्न सकिन्छ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> वटा डिभाइस</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
-<translation id="1642895994345928121">यो एप खोल्नका निम्ति डिभाइसमा पर्याप्त खाली ठाउँ छैन ठाउँ खाली गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1647986356840967552">अघिल्लो पेज</translation>
 <translation id="1651914502370159744">हिस्ट्री पेज खोल्नुहोस्</translation>
 <translation id="1668469839109562275">अन्तर्निर्मित VPN</translation>
@@ -254,6 +267,7 @@
 <translation id="1755408179247123630">सेलेक्ट टु स्पिक अन गर्ने हो?</translation>
 <translation id="1755556344721611131">डाइग्नोस्टिक्स एप</translation>
 <translation id="1756833229520115364">टेम्प्लेट सेभ गर्न सकिएन। अत्यन्त धेरै विन्डो वा ट्याबहरू सेभ गरिएका छन्।</translation>
+<translation id="1757132445735080748">तपाईं Linux सेटअप गर्ने कार्य पूरा गर्न चाहनुहुन्छ भने ChromeOS Flex अपडेट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="1757857692711134412">सूर्यास्त नहुँदासम्म अफ रहने छ</translation>
 <translation id="1763084151787818322">अन्य कारबाहीहरू</translation>
 <translation id="1768138163688567246">"मेरो स्क्रिनमा खोज्नुहोस्" मोड बन्द गर्नुहोस्</translation>
@@ -288,6 +302,7 @@
 <translation id="1879018240766558464">इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन। अन्य एपहरू सेभ गरिने छन्।</translation>
 <translation id="1882814835921407042">मोबाइल नेटवर्कमा कनेक्ट भएको छैन</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> मा प्रतिबिम्बित गर्दै</translation>
+<translation id="1884705339276589024">Linux को डिस्कको आकार बदल्नुहोस्</translation>
 <translation id="1885785240814121742">फिंगरप्रिन्टमार्फत अनलक गर्नुहोस्</translation>
 <translation id="1891362123137972260">डिस्कमा खाली ठाउँ अत्यन्त कम छ। कृपया डिस्कमा ठाउँ खाली गर्नुहोस्।</translation>
 <translation id="1894024878080591367">किबोर्ड प्रयोग गरेर गेम खेल्न सेटअप गर्नुहोस्</translation>
@@ -301,6 +316,7 @@
 <translation id="1925320505152357008">१ मिनेटभन्दा कम</translation>
 <translation id="1928739107511554905">उक्त अद्यावधिक प्राप्त गर्न, किबोर्ड जोडिएकै अवस्थामा आफ्नो Chromebook लाई पुनः सुचारु गर्न टचस्क्रिनको प्रयोग गर्नुहोस्।</translation>
 <translation id="1929331825127010451">प्रश्न सोध्ने पेजमा फर्कनुहोस्</translation>
+<translation id="1937774647013465102">यस यन्त्रमार्फत <ph name="ARCHITECTURE_DEVICE" />प्रकारको कन्टेनरसम्बन्धी वास्तुकला <ph name="ARCHITECTURE_CONTAINER" /> इम्पोर्ट गर्न सकिएन। तपाईं यो कन्टेनरलाई फरक यन्त्रमा पुनर्स्थापना गरी हेर्न सक्नुहुन्छ अथवा तपाईं Files एपमार्फत खोलेर यस कन्टेनरसम्बन्धी छविभित्रका फाइलहरूमाथि पहुँच राख्न सक्नुहुन्छ।</translation>
 <translation id="1946615340060705561">माउसको बटन छाड्न “c” की थिच्नुहोस्</translation>
 <translation id="1948405482892809935">अर्को प्रयोगकर्ताका रूपमा साइन इन गर्नुहोस्</translation>
 <translation id="1954252331066828794">स्क्रिन रेकर्डिङ गरियो</translation>
@@ -328,6 +344,8 @@
 <translation id="2034971124472263449">जे भए पनि सेभ गर्नुहोस्</translation>
 <translation id="2041220428661959602">बाँकी ब्याट्री: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> सर्टकट अहिले अफ छ</translation>
+<translation id="204706822916043810">भर्चुअल मेसिन छ, छैन जाँच गरिँदै छ</translation>
+<translation id="2048554637254265991">कन्टेनर म्यानेजर सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2048653237708779538">कारबाही उपलब्ध छैन</translation>
 <translation id="2049240716062114887">डेस्कको नाम बदलेर <ph name="DESK_NAME" /> बनाइयो</translation>
 <translation id="2064048859448024834">क्यामेरामा फोटोको प्रिभ्यू हेर्ने सुविधा अन छ</translation>
@@ -358,6 +376,7 @@
 <translation id="216955976692983107">विन्डोको टाइलको आकार दायाँतिरबाट बदल्नुहोस्</translation>
 <translation id="2185166372312820725">अघिल्लो ट्याबमा जानुहोस्</translation>
 <translation id="2185444992308415167">ट्याब १ बाट ट्याब ८ मा जानुहोस्</translation>
+<translation id="2192232475740621500">न्यून घनत्व प्रयोग गर्नुहोस्</translation>
 <translation id="2195732836444333448">अहिले तपाईंलाई मद्दत गर्न सक्दैनौँ। चाँडै फर्केर आउनुहोस्।</translation>
 <translation id="2198625180564913276">प्रोफाइल थपिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="219905428774326614">लन्चर, सबै एपहरू</translation>
@@ -382,6 +401,7 @@
 <translation id="2268813581635650749">सबै साइन आउट गर्नु…</translation>
 <translation id="2276987123919776440">१५ मिनेट</translation>
 <translation id="2277103315734023688">अगाडि जानुहोस्</translation>
+<translation id="2278668501808246459">कन्टेनर म्यानेजर सुरु गरिँदै छ</translation>
 <translation id="2282073721614284166">यो लिंक नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="2292698582925480719">प्रदर्शनको अनुपात</translation>
 <translation id="2293443480080733021">तपाईं कुन कार्यमा फोकस गर्न चाहनुहुन्छ? कार्य हाल्न इन्टर की थिच्नुहोस्।</translation>
@@ -408,6 +428,7 @@
 <translation id="2352467521400612932">स्टाइलस सम्बन्धी सेटिङहरू</translation>
 <translation id="2354174487190027830"><ph name="NAME" /> लाई सक्रिय बनाउँदै</translation>
 <translation id="2355314311311231464">तपाईंको खातासम्बन्धी विवरणहरू भेट्टाउन नसकिएकाले सेटअप गर्न सकिएन। कृपया फेरि प्रयास गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
+<translation id="2359071692152028734">Linux एपहरूले काम नगर्न सक्छन्।</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2360398059912971776">ब्याट्री</translation>
 <translation id="2361210043495191221">Wi-Fi टगल गर्नुहोस्। <ph name="STATE" />।</translation>
@@ -421,7 +442,6 @@
 <translation id="2383521554963939360">एप तथा ट्याब समूहहरू</translation>
 <translation id="2386292613071805067">पेजमा भएका सबै सामग्री चयन गर्नुहोस्</translation>
 <translation id="2389423187722941333">Gemini टगल गर्नुहोस्</translation>
-<translation id="2391805183137601570">Steam खोल्नुहोस्</translation>
 <translation id="2392659840443812875">कुनै पनि हटस्पट उपलब्ध छैन। तपाईंको डिभाइस नजिकै छ र त्यसमा ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="2397416548179033562">Chrome मेनु देखाउनुहोस्</translation>
 <translation id="240006516586367791">मिडियासम्बन्धी नियन्त्रणहरू</translation>
@@ -444,14 +464,13 @@
 <translation id="243878895369688216">हिजो खोलिएको</translation>
 <translation id="2440978926514840421">GIF रेकर्ड गरिएको छ</translation>
 <translation id="2441427462554639370">भण्डारणमा अत्यन्तै कम खाली ठाउँ भएकाले रेकर्डिङ बन्द भयो</translation>
-<translation id="2447587550790814052">तपाईं अब Steam for Chromebook (बिटा) प्रयोग गर्न सक्नुहुन्छ</translation>
+<translation id="2445449901874883781">उच्च घनत्व भएको डिस्प्ले प्रयोग गर्नुहोस्</translation>
 <translation id="2449089818483227734">ब्याट्री कम छ</translation>
 <translation id="2450205753526923158">स्क्रिनसट मोड</translation>
 <translation id="2453860139492968684">समाप्त</translation>
 <translation id="2455994958736234930">एड्रेस बारमा www. र .com हाल्नुहोस् अनि वेबसाइट खोल्नुहोस्</translation>
 <translation id="2456008742792828469">पात्रो, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">तलतिर ड्रिल गर्नुहोस्</translation>
-<translation id="2462332841984057083">Steam पहिल्यै देखि सेटअप गरिँदै छ। सेटअप गर्ने कार्य पूरा हुन्जेल पर्खनुहोस्।</translation>
 <translation id="2465145153332031561">ब्याट्रीको अवस्था <ph name="BATTERY_HEALTH_PERCENTAGE" />%, साइकल काउन्ट <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">रिजोल्युसन पुष्टि गर्नुहोस्</translation>
 <translation id="2475783092753560388"><ph name="SEARCH_RESULT_TEXT" /> हाल्नुहोस्</translation>
@@ -464,7 +483,6 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> को प्रिभ्यू। सक्रिय डेस्क।</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" को रिजोल्युसन बदलेर <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) बनाइएको छ। पुष्टि गरिएन भने अबको <ph name="TIMEOUT_SECONDS" /> मा यसअघिका सेटिङ रिस्टोर गरिने छन्।</translation>
 <translation id="2487915095798731898">सामेल हुनुहोस्</translation>
-<translation id="2494555621641843783">Steam इन्स्टल सकिँदैन</translation>
 <translation id="2496180316473517155">ब्राउजिङ इतिहास</translation>
 <translation id="2499445554382787206">डेस्कको प्रोफाइल मेनु। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">स्टिकी कुञ्जीहरू</translation>
@@ -484,6 +502,7 @@
 <translation id="2531025035050312891">डिभाइस सुस्त चलिरहेको छ</translation>
 <translation id="2531107890083353124">ट्याब ड्र्याग गर्दै गर्दा <ph name="KEY_ONE" /> थिच्नुहोस्</translation>
 <translation id="2532199152994248594">आफूले क्याप्चर गर्न चाहेको कुनै क्षेत्र चयन गर्न ड्र्याग गर्नुहोस् वा स्पेस थिच्नुहोस्</translation>
+<translation id="2537927931785713436">भर्चुअल मेसिनको फोटो छ छैन जाँच गरिँदै छ</translation>
 <translation id="2540651571961486573">कुनै समस्या आयो। त्रुटिसम्बन्धी कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="2545334090614121435">होम की प्रयोग गर्न खोज्दै हुनुहुन्छ? निम्न कीहरू थिच्नुहोस्:</translation>
 <translation id="254900897760075745">चयन गरिएको सामग्री क्लिपबोर्डमा कपी गर्नुहोस्</translation>
@@ -543,7 +562,8 @@
 <translation id="2727175239389218057">जवाफ दिनुहोस्</translation>
 <translation id="2727744317940422214">माफ गर्नुहोला, कुनै समस्या आयो। कृपया वर्णनमा #bruschetta समावेश गरी प्रतिक्रिया पठाउनुहोस्। त्रुटिको कोड <ph name="ERROR" /> हो। अधुरो इन्स्टल हटाउन सकिएन। तपाईंले म्यानुअल तरिकाले हटाउनु पर्ने हुन्छ।</translation>
 <translation id="2727977024730340865">कम शक्ति भएको चार्जरमा प्लग इन गरिएको छ। ब्याट्री चार्जिङ भरपर्दो नहुन सक्छ।</translation>
-<translation id="2737538893171115082">तपाईंका एड्मिनले Steam for Chromebook (बिटा) ब्लक गर्नुभएको छ। तपाईंका एड्मिनले यी नीतिहरू अन गर्नु पर्छ:</translation>
+<translation id="2741713322780029189">रिकभरी टर्मिनल खोल्नुहोस्</translation>
+<translation id="274290345632688601">Linux का एप तथा फाइलहरू पुनर्स्थापना गरिँदै</translation>
 <translation id="2743301740238894839">सुरु गर्नुहोस्</translation>
 <translation id="2743387203779672305">क्लिपबोर्डमा प्रतिलिपि बनाउँनुहोस्</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -571,6 +591,7 @@
 <translation id="2815594810045873507">योभन्दा बढी वाट (W) को चार्जर प्रयोग गरी हेर्नुहोस् वा आफ्नो मूल चार्जर प्रयोग गर्नुहोस्।</translation>
 <translation id="2819276065543622893">तपाइँलाई अब साइन आउट गराइनेछ।</translation>
 <translation id="2822551631199737692">क्यामेरा प्रयोग भइरहेको छ</translation>
+<translation id="2822910719211888134">Linux ब्याकअप गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2825619548187458965">तख</translation>
 <translation id="2831035692318564937">सूर्योदय नहुँदासम्म अन</translation>
 <translation id="2834813915651407382">हालसालै खोलिएको</translation>
@@ -578,6 +599,7 @@
 <translation id="2838589015763961627">आकार बदल्न फुल स्क्रिनबाट बाहिरिनुहोस्</translation>
 <translation id="2840766858109427815">अर्को पृष्ठमा जानुहोस्</translation>
 <translation id="2841907151129139818">ट्याब्लेट मोड प्रयोग गर्न थालियो</translation>
+<translation id="2843560154284403323">तपाईं Linux सेटअप गर्ने कार्य पूरा गर्न चाहनुहुन्छ भने ChromeOS अपडेट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2844169650293029770">USB-C यन्त्र (अगाडिको बायाँ पोर्ट)</translation>
 <translation id="2844350028562914727">विवरणहरू</translation>
 <translation id="2847759467426165163">यसमा cast गर्नुहोस्</translation>
@@ -586,6 +608,7 @@
 <translation id="2850207700020959936">एपहरूले क्यामेरा एक्सेस गर्न सक्छन्</translation>
 <translation id="2852045827873867442">इन्टरनेट कनेक्सन चाहिन्छ।</translation>
 <translation id="2860184359326882502">सबैभन्दा मिल्दोजुल्दो</translation>
+<translation id="2862815659905780618">Linux डेभलपमेन्ट इनभारमेन्ट हटाउनुहोस्</translation>
 <translation id="2865888419503095837">नेटवर्क सम्बन्धी जानकारी</translation>
 <translation id="2869095047958348710">गएको <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">प्राथमिक मनिटर बदल्नुहोस्</translation>
@@ -617,6 +640,8 @@
 <translation id="2949420361496057765"><ph name="MODIFIER" /> थिच्नुहोस् र कुनै लिंकमा क्लिक गर्नुहोस्</translation>
 <translation id="2957159466053076448">तपाईं सेटिङमा गई जुनसुकै बेला यी सुविधाहरू अफ गर्न सक्नुहुन्छ। <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">डिभाइसको अडियो</translation>
+<translation id="2959842337402130152">पर्याप्त भण्डारण स्थान नभएका कारण पुनर्स्थापना गर्न सकिएन। यन्त्रबाट <ph name="SPACE_REQUIRED" /> ठाउँ खाली गरी फेरि प्रयास गर्नुहोस्।</translation>
+<translation id="2960208947600937804">Linux कन्फिगर गर्ने क्रममा कुनै त्रुटि भयो। आफ्ना प्रशासकसँग सम्पर्क गर्नुहोस्।</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">माइक्रोफोन प्रयोग गर्ने अनुमति अन गर्ने हो?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू डाउनलोड गर्न सकिएन</translation>
@@ -645,9 +670,11 @@
 <translation id="3040982432432547149">हामीलाई Chromebook मा चल्ने Steam को गुणस्तर सुधार्न सघाउनुहोस्</translation>
 <translation id="304417730895741346">तपाईंका पिन गरिएका तथा खुला रहेका एपहरू सेल्फमा देखिन्छन्। सेल्फमा कुनै एप पिन गर्न सो एपमा राइट क्लिक गर्नुहोस् वा दुई वटा औँलाले टचप्याडमा ट्याप गर्नुहोस्।</translation>
 <translation id="3045670165536837541">सिरानको दायाँतिर भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
+<translation id="3046178388369461825">Linux डिस्कमा खाली ठाउँ अत्यन्त कम छ</translation>
 <translation id="3047761520276763270">यसो भनी हेर्नुहोस्:</translation>
 <translation id="3053407068093039599">क्यामेराको एक्सेस अन/अफ गर्नुहोस्</translation>
 <translation id="3055162170959710888">तपाईंले आज यो डिभाइस <ph name="USED_TIME" /> प्रयोग गर्नुभयो</translation>
+<translation id="3058002721610176427">आफ्नो PIN र पासवर्ड परिवर्तन गर्नुहोस्</translation>
 <translation id="3062298103034426069">यसमा काम गर्दैन</translation>
 <translation id="3068622547379332530">संस्करण <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">सेल्फ बायाँतिर छ</translation>
@@ -709,6 +736,7 @@
 <translation id="3249513730522716925">विन्डो सारेर <ph name="WINDOW_TITLE" /> डेस्क <ph name="ACTIVE_DESK" /> बाट <ph name="TARGET_DESK" /> डेस्कमा पुर्‍याइयो</translation>
 <translation id="3253743281242075461">कक्षाकार्यको प्रकार: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">आफ्नो सेल्फमा भएको कुनै वस्तुबाट हाइलाइट हटाउनुहोस्‌</translation>
+<translation id="3256274561709196882">आफ्नो PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="3260969790895726815">बोलेको कुरा डिभाइसभित्रै प्रोसेस गरिन्छ र स्पिच-टु-टेक्स्टले अफलाइनमा काम गर्छ तर डिभाइसलाई बोलेर दिइने केही निर्देशनहरू दिँदा भने त्यसले काम गर्दैन।</translation>
 <translation id="3264031581203585083">Google Drive का सबै सुझावहरू लुकाउनुहोस्</translation>
 <translation id="3265032511221679826">सटीक लोकेसन प्रयोग गर्ने अनुमति दिने हो?</translation>
@@ -716,17 +744,18 @@
 <translation id="3271554781793662131">हाल्न चाहेको कुरा खोज्नुहोस्</translation>
 <translation id="3274634049061007184">आफ्नो फोनमा भएका एपहरू हेर्नुहोस्</translation>
 <translation id="3279230909244266691">यो प्रक्रिया पूरा हुन केही बेर लाग्न सक्छ। भर्चुअल मेसिन सुरु गर्दै।</translation>
-<translation id="3285465040399788513">सेटअप गर्ने कार्य पूरा गर्नका निम्ति डिभाइसमा पर्याप्त खाली ठाउँ छैन। ठाउँ खाली गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3289364673986435196">पावर मेनु</translation>
 <translation id="3289544412142055976">Linux एपहरू हाल प्रयोग गर्न मिल्दैन</translation>
 <translation id="3289674678944039601">एड्याप्टरमार्फत चार्ज गरिँदै छ</translation>
 <translation id="3290356915286466215">असुरक्षित</translation>
 <translation id="3291862315280588024">अघिल्लो शब्दको सुरुवातमा जानुहोस्</translation>
+<translation id="32939749466444286">Linux को कन्टेनर सुरु भएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3294437725009624529">पाहुना</translation>
 <translation id="3300193645498960160">तपाईं म्युट गरिएका बेला बोल्नुभयो भने तपाईंलाई सूचित गरिने छ। अडियो तपाईंको डिभाइसमै रहन्छ।</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> वटा डिभाइस <ph name="DEVICE_NAME" /> को हटस्पटमा कनेक्ट गरिएका छन्</translation>
 <translation id="3307642347673023554">ल्यापटप मोड प्रयोग गर्न थालियो</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> अझै पनि पछि साइन इन गर्न सक्नुहुन्छ।</translation>
+<translation id="3312470654018965389">Linux कन्टेनर कन्फिगर गरिँदै छ</translation>
 <translation id="3313950410573257029">इन्टरनेट जाँच्नुहोस्</translation>
 <translation id="3321628682574733415">अभिभावकको कोड गलत छ</translation>
 <translation id="332827762492701193">सूचनाहरू लुकाइएका छन्</translation>
@@ -743,7 +772,6 @@
 <translation id="3368922792935385530">जडित</translation>
 <translation id="3369111525500416043">पूरा गर्नु पर्ने मिति निकट रहेका</translation>
 <translation id="3371140690572404006">USB-C यन्त्र (दायाँ भागको अगाडिको पोर्ट)</translation>
-<translation id="3373196968211632036">Steam for Chromebook (बिटा) बच्चाका Google खाताहरूमा उपलब्ध छैन</translation>
 <translation id="3375634426936648815">कनेक्ट गरिएको छ</translation>
 <translation id="3386978599540877378">पूर्ण स्क्रिनको म्याग्निफायर</translation>
 <translation id="3387527074123400161">ChromiumOS</translation>
@@ -785,7 +813,6 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />लोकेसनको सटीकताका बारेमा थप जान्नुहोस्<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">सेल्फ स्वतः लुक्ने छ</translation>
-<translation id="3496797737329654668">गेम खेलौँ</translation>
 <translation id="3505066820268455558">ब्याट्री चार्ज हुँदै छ</translation>
 <translation id="3509391053705095206">तपाईंको फोन भेट्टाउन सकिएन। आफ्नो फोनको ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3510164367642747937">माउसको कर्सरलाई हाइलाइट</translation>
@@ -798,6 +825,8 @@
 <translation id="353086728817903341"><ph name="NUM_DEVICES" /> वटा डिभाइसमा कनेक्ट गरिएको छ</translation>
 <translation id="3532247131850366052">Google पाना बनाउन सकिएन</translation>
 <translation id="3533126039236445965">सेल्फ बारमा भएका एपहरू</translation>
+<translation id="3537881477201137177">यसलाई पछि सेटिङमा गई परिमार्जन गर्न सकिने छ</translation>
+<translation id="3538066758857505094">Linux को स्थापना गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3539957339480430241"><ph name="DEVICE_NAME" /> हटस्पट</translation>
 <translation id="3540893133818942399">आफ्नो फोनमा भएका हालसालैका फोटो तथा मिडिया हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
 <translation id="3542066395059568317">तपाईं आफूले छाडेकै ठाउँबाट जारी राख्न सक्नुहोस् भन्नाका लागि तपाईंलाई सिफारिसहरू देखाइने छन्। तपाईं दायाँ क्लिक गरेर ती सिफारिसहरू हटाउन सक्नुहुन्छ।</translation>
@@ -808,6 +837,7 @@
 <translation id="3554928024630051016">कुनै अतिरिक्त USB डिभाइस कनेक्ट गर्न एउटा USB डिभाइस हटाउनुहोस् र नयाँ USB डिभाइस प्लग इन गरी हेर्नुहोस्</translation>
 <translation id="3558768885091059911">क्यामेरा र माइक्रोफोन प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="3560174576767922131">भिडियो रेकर्ड गर्नुहोस्</translation>
+<translation id="3562423906127931518">यो प्रक्रिया पूरा हुन केही बेर लाग्न सक्छ। Linux कन्टेनर सेटअप गर्दै।</translation>
 <translation id="3563432852173030730">Kiosk एप्लिकेसनलाई डाउनलोड गर्न सकिएन।</translation>
 <translation id="3563558822383875692">DLC कन्फिगर गरिँदै छ।</translation>
 <translation id="3563775809269155755">हटस्पट अन गर्नुहोस्</translation>
@@ -820,6 +850,7 @@
 <translation id="3583350334315908861">{MINUTES,plural, =1{मिनेट}other{मिनेट}}</translation>
 <translation id="3585296979871889131">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया, सूचना तथा एपहरू हेर्नुहोस्</translation>
 <translation id="358832729276157756">ExpressKey १</translation>
+<translation id="3590295622232282437">व्यवस्थित सत्रमा प्रवेश गर्दै।</translation>
 <translation id="3590441166907930941">साइड बटन</translation>
 <translation id="3593039967545720377">आफूले विगतमा क्लिपबोर्डमा कपी गरेका वस्तुहरू हेर्न <ph name="SHORTCUT_KEY_NAME" /> + V थिच्नुहोस्। सुरु गर्न कुनै वस्तु कपी गर्नुहोस्।</translation>
 <translation id="3593646411856133110">खुला रहेका एपहरू हेर्न माथितिर स्वाइप गरी थिचिरहनुहोस्</translation>
@@ -847,9 +878,9 @@
 <translation id="3633851487917460983">क्लिपबोर्ड खोल्नुहोस्</translation>
 <translation id="363473492175527493">फोकस गर्न सेट गरिएको कार्य: <ph name="TASK_NAME" />। यो कार्य परिवर्तन गर्न इन्टर की थिच्नुहोस्।</translation>
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
-<translation id="3641070112313110357">Steam for Chromebook (Beta) अपडेट गर्नु पर्ने हुन्छ। आफ्नो Chromebook रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3649256019230929621">सन्झ्याल सानो बनाउनुहोस्</translation>
 <translation id="3650952250015018111">"<ph name="APP_NAME" />" लाई निम्नमाथि पहुँँच राख्न दिनुहोस्‌:</translation>
+<translation id="3652817283076144888">सुरुवात गर्दै</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> देखि
@@ -882,6 +913,7 @@
 <translation id="3726171378575546917">यो डिभाइसमा <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> र <ph name="UNAVAILABLE_APPS_COUNT" /> उपलब्ध छैनन्।</translation>
 <translation id="3727231512028252576">वस्तुहरू लोड गर्न सकिएन। अनलाइन भएपछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3735740477244556633">यसअनुसार क्रमबद्ध गर्नुहोस्</translation>
+<translation id="3738632186060045350"><ph name="DEVICE_TYPE" /> मा भएको डेटा २४ घन्टापछि मेटाइने छ</translation>
 <translation id="3738664582935948253">तपाईं अब स्क्रिन रेकर्डिङमा क्लिक तथा किबोर्डका सर्टकटहरू देखाउन सक्नुहुन्छ</translation>
 <translation id="3741482431277446954">माउसको दायाँ बटन</translation>
 <translation id="3742055079367172538">स्क्रिनसट लिइयो</translation>
@@ -915,13 +947,14 @@
 <translation id="3831226344927851293">ट्युटोरियल भ्यूबाट बाहिरिनुहोस्</translation>
 <translation id="383629559565718788">किबोर्डका सेटिङहरू देखाउनुहोस्</translation>
 <translation id="384082539148746321">टेम्प्लेट मेटाउने हो?</translation>
-<translation id="3841282988425489367">Steam for Chromebook (बिटा) सेटअप गर्न मिल्दैन</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> थिच्नुहोस् अनि <ph name="KEY_ONE" /> वा <ph name="KEY_TWO" /> वा <ph name="KEY_THREE" /> वा <ph name="KEY_FOUR" /> थिच्नुहोस्</translation>
+<translation id="3846116211488856547">वेबसाइट, Android एप र थप कुराहरू विकास गर्ने उपकरणहरू प्राप्त गर्नुहोस्। Linux स्थापना गर्नुले <ph name="DOWNLOAD_SIZE" /> डेटा डाउनलोड हुने छ।</translation>
 <translation id="3846575436967432996">सञ्जाल जानकारी उपलब्ध छैन</translation>
 <translation id="3848526302597027234">एपलाई निम्न कुराहरू प्रयोग गर्ने अनुमति दिनुहोस्:</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="385300504083504382">पाठको सुरुवातमा जानुहोस्</translation>
 <translation id="3859364108019690">एपहरू स्ट्रिम गर्न सकिएन</translation>
+<translation id="3861638017150647085">युजरनेम "<ph name="USERNAME" />" उपलब्ध छैन</translation>
 <translation id="3861651314799684201">पूरा स्क्रिन रेकर्ड गर्न इन्टर थिच्नुहोस्</translation>
 <translation id="3870197372373144624">आफ्नो डिभाइस सट डाउन गरी हेर्नुहोस्।</translation>
 <translation id="3879748587602334249">डाउनलोड म्यानेजर</translation>
@@ -992,6 +1025,7 @@
 <translation id="4077623680826964850">VM बुट गर्दा वा त्यसमा फेरि कनेक्ट गर्दा टाइम आउट भयो।</translation>
 <translation id="4086921558679520050">आफ्नो डिभाइसमा माइकको स्विच अन गर्नुहोस्</translation>
 <translation id="4101772068965291327">गृहपृष्ठ खोल्नुहोस्</translation>
+<translation id="4102906002417106771">पावरवासको लागि रिस्टार्ट गर्नुहोस्</translation>
 <translation id="4112140312785995938">पछाडि जानुहोस्</translation>
 <translation id="4113030288477039509">तपाईंको व्यवस्थापकबाट व्यवस्थित गरिएको</translation>
 <translation id="4114315158543974537">फोन हब अन गर्नुहोस्</translation>
@@ -1026,7 +1060,6 @@
 <translation id="4192112279662688596">वा</translation>
 <translation id="4193857202545160520">क्लिक र किबोर्डका सर्टकटहरू देखाउनुहोस्</translation>
 <translation id="4193969623755915875">"<ph name="NEW_SHORTCUT" />" प्रयोग गरेर एक्स्प्लोर एपमा "मद्दत" पेज खोल्नुहोस्।</translation>
-<translation id="4195001808989442226">Steam for Chromebook (बिटा) खोल्न सकिएन</translation>
 <translation id="4195579532193195633">हालको संस्करण <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">तपाइँले छोड्नुभएको स्थान देखि जारी राख्नुहोस्</translation>
 <translation id="4195877955194704651">स्वतः क्लिक गर्ने बटन</translation>
@@ -1042,7 +1075,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इन्स्टल गरिएको एप, अस्थायी रूपमा रोकिएको</translation>
 <translation id="4228078597006700451">सेटिङ सेटअप गरिएको छैन</translation>
 <translation id="4230560241506423345">नयाँ</translation>
-<translation id="4231231258999726714">Steam for Chromebook सेटअप गरिँदै छ</translation>
 <translation id="4236726631849783264">सिफारिस गरिएका कारबाहीहरूका बारेमा रिमाइन्डर</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">परिदृश्य मोड</translation>
@@ -1104,6 +1136,7 @@
 <translation id="4389184120735010762">तपाईंले डक गरिएको म्याग्निफायरको किबोर्ड सर्टकट थिच्नुभयो। तपाईं यसलाई सक्रिय गर्न चाहनुहुन्छ?</translation>
 <translation id="4394466652057229831">सारांश बनाउन राइट क्लिक गर्नुहोस्</translation>
 <translation id="439598569299422042">पज गरिएको छ, <ph name="SIZE_INFO" /></translation>
+<translation id="439817266247065935">तपाईंको यन्त्र राम्ररी बन्द भएन। Linux मा चल्ने एपहरू प्रयोग गर्न Linux पुनः सुरु गर्नुहोस्।</translation>
 <translation id="440113666232554208">स्क्रिनकास्ट सेभ गर्न सकिएन</translation>
 <translation id="4405151984121254935">कनेक्ट गरिएको यो सहायक डिभाइस प्रयोग गर्न मिल्दैन</translation>
 <translation id="4406883609789734330">लाइभ क्याप्सन</translation>
@@ -1130,7 +1163,6 @@
 <translation id="4471432286288241507">{0,plural, =0{अहिले नै डिभाइस रिस्टार्ट गर्नुहोस्}=1{१ सेकेन्डभित्र डिभाइस रिस्टार्ट गर्नुहोस्}other{# सेकेन्डभित्र डिभाइस रिस्टार्ट गर्नुहोस्}}</translation>
 <translation id="4472575034687746823">सुरु गर्नुहोस्</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
-<translation id="4473996011558324141">समय अनुमान गरिँदै छ</translation>
 <translation id="4477350412780666475">अर्को ट्र्याक</translation>
 <translation id="4477751544736611934">यसो गर्दा प्रयोग हुने डेटाबापत शुल्क तिर्नु पर्ने हुन सक्छ।
 एउटा डिभाइस कनेक्ट गरिएको छ।</translation>
@@ -1139,6 +1171,7 @@
 <translation id="4481530544597605423">जोडा हटाइएका यन्त्रहरू</translation>
 <translation id="4485506555414638855">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया, एप तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
 <translation id="4491109536499578614">फोटो</translation>
+<translation id="4493468155686877504">सिफारिस गरिएको (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="450584155212756404">डेभ च्यानल</translation>
 <translation id="4513044611477939680">क्विक सेयर</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
@@ -1169,23 +1202,24 @@
 <translation id="4573176682887762361">"[word / phrase] टाइप गर"</translation>
 <translation id="4577990005084629481">प्रिभ्यूहरू देखाउनुहोस्</translation>
 <translation id="4578906031062871102">'सेटिङ' मेनु खोलियो</translation>
+<translation id="4581774856936278355">Linux रिस्टोर गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="458210817642223147">GIF रेकर्ड गर्नुहोस्</translation>
 <translation id="4582666543382004902">Wi-Fi प्रयोग गर्नका निम्ति हटस्पट अफ गरिएको छ। हटस्पट प्रयोग गर्न Wi-Fi अफ गर्नुहोस्।</translation>
 <translation id="4585337515783392668">कुनै अज्ञात प्रापकमा casting गर्न छाड्नुहोस्</translation>
 <translation id="4596144739579517758">अँध्यारो थिम अफ छ</translation>
 <translation id="4596442969149038771"><ph name="USER" /> ले सेयर गर्नुभएकाले</translation>
-<translation id="4598556348158889687">भण्डारणको व्यवस्थापन</translation>
 <translation id="4610493115106525653">आउटपुट राम्रो छ</translation>
 <translation id="4611292653554630842">लग इन गर्नुहोस्</translation>
+<translation id="4613144866899789710">Linux को स्थापना रद्द गर्दै...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> कनेक्ट गरियो</translation>
 <translation id="4623167406982293031">खाता पुष्टि गर्नुहोस्</translation>
 <translation id="4628757576491864469">यन्त्रहरू</translation>
+<translation id="4628762811416793313">Linux कन्टेनर सेटअप गर्ने कार्य पूरा भएन। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, तारा चिन्ह प्रयोग गरी गरिने मूल्याङ्कन <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">मेटाउन Ctrl+W थिच्नुहोस्</translation>
 <translation id="4633757335284074492">Google ड्राइभमा ब्याकअप गर्नुहोस् जुनसुकै बेला सजिलैसँग डेटा पुनर्स्थापना गर्नुहोस् वा यन्त्र बदल्नुहोस्। यो ब्याकअपमा एपको डेटा समावेश हुन्छ। ब्याकअपहरू Google मा अपलोड गरी तपाईंका बच्चाको Google खाताको पासवर्ड प्रयोग गरेर इन्क्रिप्ट गरिएका हुन्छन्।</translation>
 <translation id="4635501805800894201">{0,plural, =0{अहिले नै यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}=1{अबको १ सेकेन्डभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{अबको # सेकेन्डभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
-<translation id="4642587497923912728">यो Chromebook मा सर्वप्रथम साइन इन गर्ने खातामा मात्र Steam for Chromebook (बिटा) उपलब्ध हुन्छ।</translation>
 <translation id="4644727592819780893">यो क्षेत्र धेरै सानो भएकाले यसमा क्यामेराको प्रिभ्यू देखाउन मिल्दैन</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, एपको सिफारिस</translation>
 <translation id="4649019912155580914">तपाईंले सम्पादन गर्नुभएको</translation>
@@ -1327,6 +1361,7 @@
 <translation id="504465286040788597">अघिल्लो अनुच्छेद</translation>
 <translation id="5045550434625856497">गलत पासवर्ड</translation>
 <translation id="5056587122125565772">फोटो बनाउनुहोस्</translation>
+<translation id="5056950756634735043">कन्टेनरमा कनेक्ट गरिँदै छ</translation>
 <translation id="5058794129231928255">Google डकुमेन्ट बनाउन सकिएन</translation>
 <translation id="5062496344832867502">RAM</translation>
 <translation id="5068762093486106012">तपाईं म्युट गरिएका बेला बोल्नुभयो भने तपाईंलाई सूचित गरिने छ। अडियो तपाईंको डिभाइसमै रहन्छ।</translation>
@@ -1407,9 +1442,11 @@
 <translation id="528468243742722775">समाप्त</translation>
 <translation id="5286194356314741248">स्क्यान गर्दै</translation>
 <translation id="528641622273682395">माइक जाँच्ने प्रक्रिया टगल गर्नुहोस्</translation>
+<translation id="5294097441441645251">अनिवार्य रूपमा लोअरकेस वर्ण वा underscore बाट सुरु हुनु पर्छ</translation>
 <translation id="5297423144044956168">कुनै पनि मोबाइल फोन वा ट्याब्लेट भेटिएन</translation>
 <translation id="5297704307811127955">अफ</translation>
 <translation id="5300589172476337783">देखाउनुहोस्</translation>
+<translation id="5301751748813680278">अतिथि रूपमा प्रवेश गर्दै ।</translation>
 <translation id="5302048478445481009">भाषा</translation>
 <translation id="5302531370473608800">YouTube Music प्रयोग गर्न आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नुहोस्</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।
@@ -1431,18 +1468,17 @@
 <translation id="5352250171825660495">अँध्यारो थिम अन छ</translation>
 <translation id="5354804064646502504">यसो गर्दा प्रयोग हुने डेटाबापत शुल्क तिर्नु पर्ने हुन सक्छ।
 कुनै पनि डिभाइस कनेक्ट गरिएको छैन।</translation>
-<translation id="5355498626146154079">तपाईंले “Borealis Enabled” फ्ल्याग अन गर्नु पर्ने हुन्छ</translation>
 <translation id="5356963482258194581">अँध्यारो तथा उज्यालो थिम अदलबदल गर्नुहोस्। डेस्कटपमा दायाँ क्लिक गर्नुहोस् र "वालपेपर तथा शैली" चयन गर्नुहोस्।</translation>
 <translation id="536019650977002321">तपाईंका एड्मिनले अडियो क्याप्चर गर्ने अनुमति दिनुभएको छैन। तपाईं यस सम्बन्धमा थप जानकारी प्राप्त गर्न चाहनुहुन्छ भने आफ्ना एड्मिनलाई सम्पर्क गर्नुहोस्।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> भाषाका वाक् पहिचानसम्बन्धी फाइलहरू आंशिक रूपमा डाउनलोड गरिएका छन्</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> यो ट्याबमा जानुहोस्</translation>
 <translation id="5364693579536176785">भण्डारणमा रहेको खाली ठाउँ</translation>
 <translation id="5369573834963677938">यो डिभाइसका अन्य प्रयोगकर्ताहरू फेस कन्ट्रोल प्रयोग गर्न सक्ने छन्</translation>
+<translation id="5369694795837229225">Linux डेभलपमेन्ट इनभारमेन्ट सेटअप गर्नुहोस्</translation>
 <translation id="5369717264580061086">Files एपमा प्रिभ्यू गर्नुहोस्</translation>
 <translation id="5377367976106153749">क्यामेरा प्रयोग गर्ने अनुमति दिने हो?</translation>
 <translation id="5378450298115733949">थप</translation>
 <translation id="5379115545237091094">अत्यधिक प्रयासहरू भए</translation>
-<translation id="5380526436444479273">केही बेर पर्खनुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="5383434787520761436">Google Drive को कुनै पनि फाइल छैन</translation>
 <translation id="5391307769715781764">सेभ गरिएको डेस्क बदल्ने हो?</translation>
 <translation id="5392327145184648521">ब्याट्रीको प्रतिशत निकालिँदै छ…</translation>
@@ -1454,13 +1490,13 @@
 <translation id="5409208741270395213">यो कार्यलाई सम्पन्न गरिएको कार्यका रूपमा चिन्ह लगाउनुहोस्</translation>
 <translation id="5413656666631274079">सेटिङको पेज</translation>
 <translation id="5414198321558177633">प्रोफाइलको सूची रिफ्रेस गरिँदै छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
-<translation id="5415328625985164836">यो बिटा कार्यक्रम हो। तपाईं अब आफ्नो Chromebook मा केही गेम खेल्न Steam प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="5426063383988017631">सेटिङ मेनु बन्द गरियो</translation>
 <translation id="5428899915242071344">पाठ चयन गर्न थाल्नुहोस्</translation>
 <translation id="5429993543155113935">इन्कोग्निटो विन्डो हाल प्रयोग गर्न मिल्दैन</translation>
 <translation id="5431318178759467895">रङ्ग</translation>
 <translation id="5433020815079095860">अडियो इनपुट</translation>
 <translation id="543584294741034249">तपाईं बढीमा <ph name="DISPLAY_LIMIT" /> वटा बाह्य डिस्प्लेमा कनेक्ट गर्न सक्नुहुन्छ।</translation>
+<translation id="5442228125690314719">डिस्कको फोटो सिर्जना गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="544691375626129091">सबै उपलब्ध प्रयोगकर्ताहरू यस सत्रमा पहिले नै थपिएका छन्।</translation>
 <translation id="54609108002486618">व्यवस्थापन गरिएको</translation>
 <translation id="5460938382730614333">मार्कर अन छ।</translation>
@@ -1511,6 +1547,7 @@
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">Chrome ब्राउजर</translation>
 <translation id="5596627076506792578">अन्य विकल्पहरू</translation>
+<translation id="5596808802173376270">रिस्टोर गर्नका लागि उपलब्ध गराइएको फाइलमा समस्या छ - सम्भवतः विद्यमान Linux अतिथिको प्रकार गलत छ। थप जानकारी प्राप्त गर्न /var/log/messages हेर्नुहोस्।</translation>
 <translation id="5599242528220103262">किबोर्डका सर्टकट अफ छन्</translation>
 <translation id="5600415762228455511">फोकस मोड अन छ, <ph name="REMAINING_TIME" /> बाँकी छ, यो कार्यमा फोकस गरिँदै छ: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">बोली प्रतिक्रिया असक्षम पार्न Ctrl + Alt + Z थिच्नुहोस्।</translation>
@@ -1526,6 +1563,7 @@
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> तपाईंको ध्यानाकर्षण गराउन चाहन्छ।</translation>
 <translation id="5657667036353380798">बाह्य विस्तारलाई chrome संस्करण <ph name="MINIMUM_CHROME_VERSION" /> वा ठुलो स्थापित भएको हुन आवश्यक छ।</translation>
 <translation id="5662075790140998213">डेस्क १०</translation>
+<translation id="5662513737565158057">Linux एपहरूले काम गर्ने तरिका परिवर्तन गर्नुहोस्।</translation>
 <translation id="5662709761327382534">माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="CURRENT_STATE" /> छ, माइक्रोफोन प्रयोग गरी रेकर्ड गर्ने सुविधा <ph name="NEW_STATE" /> गर्न 'इन्टर' थिच्नुहोस्</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5667546120811588575">Google Play सेटअप गरिँदै छ…</translation>
@@ -1554,7 +1592,6 @@
 <translation id="5712132663381964774">तपाईंले <ph name="PRODUCT_NAME" /> मा गर्नु पर्ने सबै कार्य गर्न एपहरू प्रयोग गर्नुहोस्। तपाईं लन्चरमा आफ्ना एपहरू भेट्टाउन सक्नुहुन्छ।</translation>
 <translation id="571295407079589142">मोबाइल डेटा अफ गरियो</translation>
 <translation id="5727460725221669831">तपाईंले आफ्नो पासवर्ड बिर्सनुभयो वा आफ्नो Google खाताको पासवर्ड बदल्नुभयो भने यो प्रयोगकर्ता खाता रिकभर गरी हेर्नुहोस्।</translation>
-<translation id="572914206753951782">तपाईंको Chromebook नवीनतम संस्करणमा चलिरहेको छ भन्ने कुरा सुनिश्चित गर्नुहोस्। त्यसपछि आफ्नो Chromebook रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="5733630091161562207">"स्वागत छ" डायलग भएको नोटिफिकेसन</translation>
 <translation id="573413375004481890">यो डिभाइसले तपाईंको कुनै पनि डिस्प्ले समर्थन गर्न सकेन, त्यसैले एउटाको जडान डिस्कनेक्ट गरियो</translation>
 <translation id="574392208103952083">मध्यम</translation>
@@ -1600,6 +1637,7 @@
 <translation id="5842553299352339114"><ph name="DEVICE_NAME" /> को हटस्पट अन छ, कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="584525477304726060">अधिकतम बनाउन होल्ड गर्नुहोस्</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> एक्टिभेट गरिएको छैन।</translation>
+<translation id="5858490737742085133">टर्मिनल</translation>
 <translation id="5860033963881614850">बन्द</translation>
 <translation id="5860491529813859533">अन गर्नुहोस्</translation>
 <translation id="5864691701242730005">क्विक सेयरसम्बन्धी सेटिङ देखाउनुहोस्। <ph name="VISIBILITY" /> को भिजिबिलिटी चयन गरिएको छ</translation>
@@ -1721,6 +1759,7 @@
 <translation id="6185696379715117369">पृष्ठ माथि</translation>
 <translation id="619335566042889110">अहिले नै फुल चार्ज गर्नुहोस्</translation>
 <translation id="6193431488227440296">डेभ</translation>
+<translation id="6198252989419008588">PIN परिवर्तन गर्नुहोस्</translation>
 <translation id="6199775032047436064">हालको पृष्ठ फेरि लोड गर्नुहोस्</translation>
 <translation id="6200515304866777730">यो एपमा काम गर्दैन</translation>
 <translation id="6210042900243040400">यसअघि <ph name="EMAIL" /> मा सेभ गरिएको <ph name="NAME" /> कनेक्ट गर्नुहोस्</translation>
@@ -1728,6 +1767,7 @@
 <translation id="6213808132343683860">आंशिक स्क्रिनसट लिनुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="621606890568890214">Google Classroom एक्स्पान्ड गर्नुहोस्</translation>
 <translation id="6216759484154215561">ब्राउजरमा "थप जान्नुहोस्" लिंक खोलियो</translation>
+<translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> अफलाइन छ। इन्टरनेटमा जडान गरी फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6220928844947387476">तपाईं अब एकै पटक आफूसँगै आफ्नो स्क्रिन रेकर्ड गर्न सक्नुहुन्छ</translation>
 <translation id="622484624075952240">तल</translation>
 <translation id="6228457605945141550">उज्यालो कम गर्नुहोस्‌</translation>
@@ -1751,6 +1791,7 @@
 <translation id="628699625505156622">लोकेसन प्रयोग गर्नुहोस्। लोकेसन प्रयोग गर्ने अनुमति पाएका ChromeOS र Android एप, वेबसाइट तथा सेवाहरूलाई यो डिभाइसको लोकेसन प्रयोग गर्न दिनुहोस्। "लोकेसनको सटीकता" ले Android एप तथा सेवाहरूलाई अझ सटीक लोकेसन प्रदान गर्छ। यो कार्य गर्न Google ले समय समयमा यो डिभाइसका सेन्सर तथा वायरलेस सिग्नलका बारेमा जानकारी प्रोसेस गरी वायरलेस सिग्नलका लोकेसनहरू क्राउडसोर्स गर्छ। लोकेसनको सटीकता तथा लोकेसनमा आधारित सेवाहरूको गुणस्तर सुधार गर्न र प्रयोगकर्ताका आवश्यकता पूरा गर्ने Google तथा तेस्रो पक्षहरूका वैध चासोका आधारमा Google का सेवाहरू प्रदान गर्न, कायम राख्न तथा सुधार गर्न यो जानकारी कुनै पनि व्यक्तिको पहिचान नखुलाइकन प्रयोग गरिन्छ। <ph name="BEGIN_LINK1" />लोकेसन प्रयोग गरिने तरिकाका बारेमा थप जान्नुहोस्<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">अभिभावकको अनुमति लिएर <ph name="USER_EMAIL_ADDRESS" /> पछि पुनः थप्न सकिन्छ।</translation>
 <translation id="6291221004442998378">चार्ज भइरहेको छैन</translation>
+<translation id="6291580570300353047">पर्याप्त खाली ठाउँ नभएकाले रिस्टोर गर्न सकिएन।</translation>
 <translation id="6297986260307280218">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, डिभाइस र एपको प्रयोगसम्बन्धी डेटा स्वतः Google मा पठाएर Android को सुविधाको गुणस्तर सुधार गर्न मद्दत गर्नुहोस्। यसले सिस्टम तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। मालिकले <ph name="BEGIN_LINK1" />यो सेटिङ<ph name="END_LINK1" /> लागू गर्नुभएको हो। मालिक यस डिभाइसको निदान तथा प्रयोगसम्बन्धी डेटा Google मा पठाउने विकल्प छनौट गर्न सक्नुहुन्छ। तपाईंको खातामा "वेब तथा एपसम्बन्धी अतिरिक्त गतिविधि" सेटिङ अन गरिएको छ भने यो डेटा तपाईंको Google खातामा सेभ गरिन सक्छ। <ph name="BEGIN_LINK2" />मेट्रिकका बारेमा थप जान्नुहोस्<ph name="BEGIN_LINK2_END" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">यो डिभाइसलाई एपमार्फत कस्टमाइज गर्नुहोस्</translation>
 <translation id="6298962879096096191">Android का एपहरूको स्थापना गर्न Google Play को प्रयोग गर्नुहोस्</translation>
@@ -1764,6 +1805,7 @@
 <translation id="6324916366299863871">सर्टकट सम्पादन गर्नुहोस्</translation>
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
 <translation id="6330012934079202188">सबै डेस्कमा रहेका विन्डोहरू देखाइँदै छन्, हालको डेस्कमा रहेका विन्डोहरू देखाउन अप एरो की थिच्नुहोस्</translation>
+<translation id="6336038146639916978"><ph name="MANAGER" /> ले ADB डिबग प्रक्रिया अफ गर्नुभएको छ। परिणामस्वरूप, अबको २४ घन्टामा तपाईंको <ph name="DEVICE_TYPE" /> रिसेट हुने छ। आफूले सुरक्षित राख्न चाहेका सबै फाइलहरू ब्याकअप गर्नुहोस्।</translation>
 <translation id="6337159624125741244">फुल स्क्रिन म्याग्निफायर अन छ</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> ले व्यवस्थापन गर्ने सत्र हो</translation>
 <translation id="6340148837564298498">तपाईंले आफ्नो PIN बिर्सनुभयो भने यो प्रयोगकर्ताको खाता रिकभर गरी हेर्नुहोस्।</translation>
@@ -1809,6 +1851,7 @@
 <translation id="6467290994038932560"><ph name="GAME_APP_NAME" /> का लागि अन गर्नुहोस्</translation>
 <translation id="6468406072297048412">{0,plural, =1{अबको १ मिनेटभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}other{अबको # मिनेटभित्र यो डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्}}</translation>
 <translation id="6469104339369989396">हटस्पट टगल गर्नुहोस्</translation>
+<translation id="6475294023568239942">डिस्कमा ठाउँ खाली गर्नुहोस् वा सेटिङमा गई Linux डिस्कको आकार बदल्नुहोस्</translation>
 <translation id="6477681113376365978">यो फाइल डाउनलोड गर्न सकिएन</translation>
 <translation id="648135757200234041">कन्ट्याक्ट बनाउन सकिएन</translation>
 <translation id="6482559668224714696">फुल स्क्रिन म्याग्निफायर</translation>
@@ -1823,7 +1866,6 @@
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" प्रयोग गरी की सर्टकट एप खोल्नुहोस्।</translation>
 <translation id="6507618042428827377">अर्को उपलब्ध इनपुट विधि प्रयोग गर्नुहोस्</translation>
 <translation id="6508923215158854599">Chromebook तपाईंको Chromecast डिभाइस कनेक्ट गरिएकै Wi-Fi नेटवर्कमा कनेक्ट गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
-<translation id="6511607461419653612">आफ्नो Chromebook रिस्टार्ट गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="6515727200518652613">क्यामेरा डिस्कनेक्ट भयो। पुनः कनेक्ट गर्ने प्रयास गरिँदै छ।</translation>
 <translation id="651753338596587143">माफ गर्नुहोस्, DLC डिपेन्डेन्सी इन्स्टल गर्ने क्रममा कुनै समस्या आयो। कृपया कम्प्युटर रिस्टार्ट गरी हेर्नुहोस् र अझै पनि समस्या देखिएका खण्डमा विवरणमा #bruschetta समावेश गरी प्रतिक्रिया पठाउनुहोस्। त्रुटिको कोड <ph name="ERROR" /> हो।</translation>
 <translation id="6520517963145875092">फोटो खिच्न कुनै विन्डो चयन गर्नुहोस्</translation>
@@ -1849,7 +1891,6 @@
 <translation id="6574587113394758819">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_TITLE" /> सम्बन्धी सूचना लुकाइएको छ</translation>
 <translation id="6574622320167699133">तपाईंको फोनमार्फत अनलक गरिएको। तपाईं Chromebook खोल्न चाहनुहुन्छ भने ट्याप गर्नुहोस् वा क्लिक गर्नुहोस्।</translation>
 <translation id="6578407462441924264">नामविहीन</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% पूरा भयो</translation>
 <translation id="6582012689384648647">पर्सनलाइज गरिएका फोकस प्लेलिस्टहरूको आनन्द लिन YouTube Music को एक्सेस दिनुहोस्</translation>
 <translation id="6582034443359256692">ब्याट्रीको चार्जको स्तर निकालिँदै छ।</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> मा समाप्त हुन्छ।</translation>
@@ -1902,7 +1943,6 @@
 <translation id="6723839937902243910">पावर</translation>
 <translation id="672609503628871915">नयाँ के छ हेर्नुहोस्</translation>
 <translation id="6727969043791803658">जोडियो, ब्याट्री <ph name="BATTERY_PERCENTAGE" />% छ</translation>
-<translation id="6731320427842222405">यसको लागि केही मिनेट लाग्न सक्छ।</translation>
 <translation id="6732087373923685049">क्यामेरा</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">क्यामेरा र माइक्रोफोन प्रयोग भइरहेका छन्</translation>
@@ -1961,6 +2001,7 @@
 <translation id="6912841030378044227">एड्रेस बारमा फोकस गर्नुहोस्</translation>
 <translation id="6912901278692845878">एप चलाउने तरिकाका बारेमा संक्षिप्त जानकारी</translation>
 <translation id="6917259695595127329">कार्यहरू अपडेट गरिएको पछिल्लो समय: <ph name="TIME" />।</translation>
+<translation id="6918677045355889289">ChromeOS अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="692135145298539227">मेटाउनुहोस्</translation>
 <translation id="6921427376813842559">डिभाइस अपडेट गर्नुहोस्</translation>
@@ -1978,12 +2019,15 @@
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6967112302799758487">यो डिभाइसमा Steam for Chromebook (बिटा) प्रयोग गरी डाउनलोड गरिएका सबै एप र गेमहरू मेटाइने छन्। यी एप र गेमहरूसँग सम्बन्धित डेटा पनि मेटाइने छ। सेभ गरिएका एप र गेमहरू अनइन्स्टल गर्नुअघि ती एप र गेमहरू ब्याकअप गर्न नभुल्नुहोला।</translation>
 <translation id="6972629891077993081">HID यन्त्रहरू</translation>
+<translation id="697508444536771064">Linux बन्द गर्नुहोस्</translation>
 <translation id="6979158407327259162">Google ड्राइभ</translation>
 <translation id="6980402667292348590">इन्सर्ट की</translation>
 <translation id="6981291220124935078">प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="6981982820502123353">पहुँच</translation>
 <translation id="698231206551913481">एक पटक यस प्रयोगकर्तालाई मेटाइएपछि यस प्रयोगकर्तासँग सम्बन्धित सबै फाइलहरू र  स्थानीय डेटा सदाका लागि मेटिनेछन्।</translation>
+<translation id="6988094684494323731">Linux कन्टेनर सुरु गर्दै</translation>
 <translation id="7000027735917578303">विन्डो तथा डेस्कसम्बन्धी सेटिङ</translation>
+<translation id="7001036685275644873">Linux एप र फाइलहरू ब्याकअप गरिँदै</translation>
 <translation id="7004910047186208204">मोबाइल डेटामा कनेक्ट गर्नुहोस्</translation>
 <translation id="7005239792648594238">सुरु गर्न कुनै एप खोल्नुहोस्</translation>
 <translation id="7014684956566476813"><ph name="DEVICE_NAME" /> नामक डिभाइसमा कनेक्ट गरिएको छ</translation>
@@ -1992,11 +2036,13 @@
 <translation id="702252130983202758">तपाईंका एपहरू</translation>
 <translation id="7025533177575372252">तपाईंको <ph name="DEVICE_NAME" /> लाई आफ्नो फोनसँग जोड्नुहोस्</translation>
 <translation id="7026338066939101231">घटाई</translation>
+<translation id="7029307918966275733">Crostini इन्स्टल गरिएको छैन। कृपया क्रेडिटहरू हेर्न Crostini इन्स्टल गर्नुहोस्।</translation>
 <translation id="7029814467594812963">सत्रबाट निस्कनु…</translation>
 <translation id="7031303610220416229">Google Tasks मा गई सबै कार्यहरू हेर्नुहोस्</translation>
 <translation id="7032161822340700104">६ वटाभन्दा बढी टेम्प्लेट सेभ गर्न मिल्दैन। तपाईं नयाँ टेम्प्लेट सेभ गर्न चाहनुहुन्छ भने सेभ गरिएको कुनै टेम्प्लेट हटाउनुहोस्।</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> ले <ph name="DEVICE_NAME" /> प्रयोग गर्ने अनुमति माग्दै छ। आफ्नो डिभाइसमा रहेको <ph name="DEVICE_NAME" /> को स्विच अन गर्नुहोस्।</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google सहायक</translation>
+<translation id="7036706669646341689">Linux प्रयोग गर्न <ph name="DISK_SIZE" /> ठाउँ खाली राख्न सिफारिस गरिन्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="7042322267639375032">वस्तुस्थिति देखाउने क्षेत्र संक्षिप्त गर्नुहोस्</translation>
 <translation id="7042593542151411225">एपहरूले क्यामेरा एक्सेस गर्न सक्दैनन्</translation>
 <translation id="7045033600005038336">यो टेम्प्लेट प्रतिस्थापन गर्ने हो?</translation>
@@ -2004,11 +2050,11 @@
 <translation id="7055910611768509537">स्टाइलस प्रयोग नगरेको एक हप्ताभन्दा बढी भइसकेको छ</translation>
 <translation id="7061457967428964661">क्यामेराको प्रिभ्यू, यो प्रिभ्यू सारेर कुनै अर्को कुनामा लैजान कन्ट्रोल + एरो कीहरू थिच्नुहोस्</translation>
 <translation id="7064351585062927183">आउँदो <ph name="DAY_OF_WEEK" /></translation>
+<translation id="7064734931812204395">Linux कन्टेनर कन्फिगर गरिँदै। यो प्रक्रिया पूरा हुन ३० मिनेटसम्म लाग्न सक्छ।</translation>
 <translation id="7066646422045619941">यस नेटवर्कलाई तपाईंको एडमिनद्वारा असक्षम गरिएको छ।</translation>
 <translation id="7067196344162293536">स्वतः घुमाउनुहोस्</translation>
 <translation id="7076293881109082629">साइनइन गर्दै</translation>
 <translation id="7076878155205969899">आवाज म्युट गर्नुहोस्</translation>
-<translation id="7083774521940805477">तपाईंको Chromebook मा Steam for Chromebook (बिटा) उपलब्ध छैन।</translation>
 <translation id="7083848064787091821">फोकस मोड</translation>
 <translation id="7084678090004350185">हटस्पट टगल गर्नुहोस्। हटस्पट अन छ, <ph name="DEVICECOUNT" /> वटा डिभाइस कनेक्ट गरिएका छन्।</translation>
 <translation id="7086931198345821656">यो अपडेट इन्स्टल गर्न तपाईंले आफ्नो <ph name="DEVICE_TYPE" /> पावरवास गर्नु पर्ने हुन्छ। यो डिभाइसमा भएको सबै डेटा मेटाइने छ। <ph name="SYSTEM_APP_NAME" /> को नवीनतम अपडेटका बारेमा थप जान्नुहोस्।</translation>
@@ -2026,18 +2072,17 @@
 <translation id="7130207228079676353">सबैभन्दा बढी क्लिक हुने सम्भावना भएका एपहरू</translation>
 <translation id="7131634465328662194">तपाईं स्वतः साइन आउट हुनु हुने छ।</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
-<translation id="7143409552554575716">ChromeOS का फ्ल्यागहरू</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="7144942256906679589">ब्याट्रीको स्थिति</translation>
 <translation id="7145639536026937076">ब्याट्री <ph name="PERCENTAGE" />% छ र चार्ज हुँदै छ। ब्याट्री सेभर अन छ।</translation>
 <translation id="7147587499155271409">ब्राउजिङ हिस्ट्री छैन</translation>
 <translation id="7147657298465433425">F कीहरू एक्सेस गर्न fn की + सिरानको रोमा भएका कीहरू थिच्नुहोस्</translation>
 <translation id="7149149900052329230">आफ्ना लोकल फाइल र Google Drive का फाइलहरू Files एपबाटै व्यवस्थापन गर्नुहोस्।</translation>
-<translation id="7154020516215182599">आफ्नो प्रतिक्रिया दिनुहोस् वा आफ्ना समस्याका बारेमा वर्णन गर्नुहोस्। सम्भव भएमा, आफ्ना समस्याका बारेमा क्रमिक रूपमा वर्णन गर्नुहोस्।</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> सेकेन्डमा पुरानो रिजोल्युसनमा फिर्ता जाँदै</translation>
+<translation id="7170202025028120564">अर्को पटक तपाईंको एप पुनः सुरु भएपछि तपाईंको एपको डिस्प्लेसम्बन्धी सेटिङहरू लागू हुने छन्।</translation>
 <translation id="7173114856073700355">सेटिङहरू खोल्नुहोस्</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
 <translation id="7181691792034457084">नमस्ते। <ph name="PRODUCT_NAME" /> अरू उत्पादनभन्दा थोरै फरक छ।</translation>
@@ -2046,6 +2091,7 @@
 <translation id="7219573373513695352">कुनै पनि डिभाइस कनेक्ट गरिएको छैन</translation>
 <translation id="7228968829656641943">आफ्नो स्क्रिनमा भएको आफूले खोज्न चाहेको क्षेत्र चयन गर्नुहोस्। किबोर्डमार्फत नेभिगेट गर्न ट्याब अनि स्पेस की थिच्नुहोस्।</translation>
 <translation id="7229029500464092426">कुल <ph name="TOTAL_MEMORY" /> मध्ये <ph name="AVAILABLE_MEMORY" /> मेमोरी प्रयोग गरिएको छ</translation>
+<translation id="7234010996000898150">Linux को पुनर्स्थापना रद्द गरिँदै</translation>
 <translation id="7239814253344511868">माउसका दुवै बटन</translation>
 <translation id="7240636904654154599">Google पाना बनाइएको छ</translation>
 <translation id="7244725679040769470"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ। आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
@@ -2053,6 +2099,7 @@
 <translation id="7248100343060254997">मेरो स्क्रिनमा भएका कुरा खोज्नुहोस्</translation>
 <translation id="7256057185598509352">ExpressKey २</translation>
 <translation id="7256634071279256947">पछाडिको माइक्रोफोन</translation>
+<translation id="7258225044283673131">यो एपले प्रतिक्रिया जनाइरहेको छैन। एप बन्द गर्न "बलपूर्वक बन्द गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="7258828758145722155">हिजो सम्पादन गरिएको</translation>
 <translation id="726276584504105859">विभाजित स्क्रिनको प्रयोग गर्न यहाँ ड्र्याग गर्नुहोस्</translation>
 <translation id="7264788308526527464"><ph name="FOCUS_DURATION_DELTA" /> घटाउनुहोस्</translation>
@@ -2065,6 +2112,7 @@
 <translation id="7312210124139670355">तपाईंका एड्मिन तपाईंको eSIM रिसेट गर्दै हुनुहुन्छ। यो कार्य पूरा हुन केही बेर लाग्न सक्छ।</translation>
 <translation id="7312761820869643657">डिभाइस अपडेट गरी अघिल्लो संस्करण रिस्टोर गर्नुहोस्</translation>
 <translation id="7313193732017069507">क्यामेरा एक्स्पान्ड गर्नुहोस्</translation>
+<translation id="7327989755579928735"><ph name="MANAGER" /> ले ADB डिबग प्रक्रिया अफ गर्नुभएको छ। तपाईंले आफ्नो <ph name="DEVICE_TYPE" /> रिस्टार्ट गरेपछि तपाईं एपहरू प्ले स्टोर बाहेकका श्रोतबाट इन्स्टल सक्नु हुने छैन।</translation>
 <translation id="73289266812733869">चयन नगरिएको</translation>
 <translation id="7330397557116570022">स्पिच-टु-टेक्स्ट प्रयोग गर्न टेक्स्ट फिल्डमा जानुहोस्</translation>
 <translation id="7331646370422660166">alt + डाउन एरो</translation>
@@ -2075,6 +2123,7 @@
 <translation id="7346909386216857016">ठिक छ, बुझेँ</translation>
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
 <translation id="7352651011704765696">कुनै त्रुटि भयो</translation>
+<translation id="735361434055555355">Linux स्थापना गर्दै...</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
 <translation id="7360036564632145207">तपाईंले 'सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा' का सेटिङ बदल्नुभयो भने ती यन्त्रहरूले अझ राम्रोसँग काम गर्न सक्छन्</translation>
 <translation id="736045644501761622">वालपेपर र शैली तय गर्नुहोस्</translation>
@@ -2112,6 +2161,7 @@
 <translation id="7466449121337984263">कृपया फिंगरप्रिन्ट सेन्सरमा छुनुहोस्</translation>
 <translation id="7477793887173910789">आफ्नो सङ्गीत, भिडियो र थप कुराहरू नियन्त्रण गर्नुहोस्</translation>
 <translation id="7478485216301680444">Kiosk एप्लिकेसनलाई स्थापना गर्न सकिएन।</translation>
+<translation id="7481358317100446445">तयार छ</translation>
 <translation id="7488762544858401571">सम्पादन गरिएको</translation>
 <translation id="7489261257412536105">फुल स्क्रिन मोड अन वा अफ गर्नुहोस्</translation>
 <translation id="7490157877815329797">विज्ञापनरहित सङ्गीत सुन्न र पर्सनलाइज गरिएको फोकस म्युजिकको आनन्द लिन YouTube Music Premium चलाई हेर्नुहोस्</translation>
@@ -2136,6 +2186,7 @@
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
 <translation id="7526573455193969409">नेटवर्कको अनुगमन गरिने सम्भावना छ</translation>
+<translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन। एप बन्द गर्न "बलपूर्वक बन्द गर्नुहोस्" चयन गर्नुहोस्।</translation>
 <translation id="7534543072325030705">तपाईंले थम्ज अप बटनमा क्लिक गर्नुभयो भने तपाईंलाई सुझाइएको यो समूह मन पर्‍यो भन्ने अर्थ लाग्छ</translation>
 <translation id="7536035074519304529">IP एड्रेस: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">बायाँ विन्डो मिलाउनुहोस्</translation>
@@ -2145,6 +2196,8 @@
 <translation id="7545466883021407599">सर्भरमा कनेक्ट गर्न सकिएन। आफ्नो इन्टरनेट कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्। तपाईंलाई अझै पनि साइन इन गर्न समस्या भइरहेको छ भने आफ्नो Chromebook रिस्टार्ट गरी हेर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="7548434653388805669">सुत्ने बेला भयो</translation>
 <translation id="7551643184018910560">शेल्फमा पिन गर्नुहोस्</translation>
+<translation id="7553012839257224005">Linux कन्टेनर जाँच गरिँदै छ</translation>
+<translation id="7557411183415085169">Linux डिस्कमा खाली ठाउँ कम छ</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> ले हाल तपाईंको माइक्रोफोन प्रयोग गरिरहेको छ</translation>
 <translation id="7559719679815339381">कृपया प्रतीक्षा गर्नुहोस्....Kiosk एप अद्यावधिक हुने प्रक्रियामा छ। USB स्टिक नहटाउनुहोस्।</translation>
 <translation id="7561982940498449837">मेनु बन्द गर्नुहोस्</translation>
@@ -2174,12 +2227,15 @@
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">प्रश्न सोध्नुहोस्</translation>
 <translation id="7629858978065675960">अज्ञात परिणाम।</translation>
+<translation id="7631014249255418691">Linux एप र फाइलहरू सफलतापूर्वक ब्याकअप गरिएका छन्</translation>
 <translation id="7632948528260659758">निम्न किअस्क एपहरू अद्यावधिकको लागि असफल भएको छ:</translation>
+<translation id="7634566076839829401">केहि गलत भयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7634648064048557203">क्यामेरा पुछारको दायाँ कुनामा स्न्याप गरियो</translation>
 <translation id="7638572816805275740">विन्डोको स्क्रिनसट लिनुहोस् वा स्क्रिन रेकर्डिङ गर्नुहोस्</translation>
 <translation id="7642106959537987271">कलर इन्भर्सन मोड</translation>
 <translation id="7642647758716480637"><ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> को सेटिङ खोल्नुहोस्</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (मालिक)</translation>
+<translation id="7645681574855902035">Linux को ब्याकअप रद्द गर्दै</translation>
 <translation id="7647488630410863958">आफ्ना सूचनाहरू हेर्न यन्त्रलाई अनलक गर्नुहोस्</translation>
 <translation id="7649070708921625228">मद्दत</translation>
 <translation id="7654687942625752712">बोलीसम्बन्धी प्रतिक्रियाहरू असक्षम पार्न दुवै भोल्युम कुञ्जीहरूलाई पाँच सेकेन्डसम्म थिचिराख्नुहोस्।</translation>
@@ -2212,13 +2268,13 @@
 <translation id="7726391492136714301">आफ्नो फोनका सूचना तथा एपहरू हेर्नुहोस्</translation>
 <translation id="7727952505535211425">एड्रेस बारमा हालिएको वेबसाइट नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="7728657226117099693">क्याप्स लक अफ गर्नुहोस्</translation>
-<translation id="7732702411411810416">तपाईंको डिभाइस इन्टरनेटमा कनेक्ट गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस् र फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7742327441377685481">कुनै पनि सूचना छैन</translation>
 <translation id="7748275671948949022">सेल्फमा भएको लन्चर बटन हाइलाइट गर्नुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="7749958366403230681">ExpressKey ४</translation>
 <translation id="7750228210027921155">Picture in picture</translation>
 <translation id="7751260505918304024">सबै देखाउनुहोस्</translation>
+<translation id="7753735457098489144">पर्याप्त भण्डारण स्थान नभएका कारण स्थापना गर्न सकिएन। ठाउँ खाली गर्न यन्त्रको भण्डारणबाट फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="7762664108390426952">Google का सेवाका सर्तहरू र गोपनीयता नीति</translation>
 <translation id="7768784765476638775">सेलेक्ट टु स्पिक</translation>
 <translation id="7769299611924763557">तपाईंको GIF चाँडै नै तयार हुने छ</translation>
@@ -2234,7 +2290,10 @@
 <translation id="780301667611848630">पर्दैन, धन्यवाद</translation>
 <translation id="7807067443225230855">खोज र सहायक</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> र <ph name="MINUTE" /></translation>
+<translation id="7817361223956157679">अनस्क्रिन किबोर्डले Linux का एपहरूमा अझै काम गर्दैन</translation>
+<translation id="7824864914877854148">कुनै त्रुटि भएकाले ब्याकअप पूरा गर्न सकिएन</translation>
 <translation id="7825412704590278437">पात्रोमा सेट गरिएको आगामी कार्यक्रमबाट लिइएको</translation>
+<translation id="7826249772873145665">ADB डिबग प्रक्रिया असक्षम पारियो</translation>
 <translation id="7829386189513694949">बलियो सिग्नल</translation>
 <translation id="7830453190047749513">तपाईं <ph name="PERIPHERAL_NAME" /> का लागि बटनमार्फत गरिने कारबाही, कर्सरको गतिलगायतका कुराहरू पर्सनलाइज गर्न सक्नुहुन्छ</translation>
 <translation id="7842569679327885685">चेतावनी: परीक्षणको क्रममा रहेको सुविधा</translation>
@@ -2248,7 +2307,6 @@
 <translation id="7866482334467279021">अन छ</translation>
 <translation id="7870790288828963061">नयाँ संस्करणका कुनै पनि Kiosk एपहरू भेटिएन। अद्यावधिक गर्न कुनै चिज वाँकि छैन। कृपया USB स्टिक हटाउनुहोस्।</translation>
 <translation id="7872786842639831132">अफ छ</translation>
-<translation id="7873386145597434863">Chromebook मा चल्ने Steam</translation>
 <translation id="7875575368831396199">तपाईंको <ph name="DEVICE_TYPE" /> मा ब्लुटुथ अफ गरिएको छ जस्तो देखिन्छ। फोन हब नामक सुविधा प्रयोग गर्न कृपया ब्लुटुथ अन गर्नुहोस्।</translation>
 <translation id="7884446017008693258">हटस्पटसम्बन्धी सेटिङ</translation>
 <translation id="7884902759927478774">ट्याब ड्र्याग गर्ने कार्य रद्द गर्नुहोस्</translation>
@@ -2279,6 +2337,7 @@
 <translation id="7932451802722951285">Google पात्रोमा खोल्नुहोस्</translation>
 <translation id="7933084174919150729">Google सहायक प्राथमिक प्रोफाइलहरूका लागि मात्र उपलब्ध छ।</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> र <ph name="SECOND_PARENT_EMAIL" /> ले व्यवस्थापन गरेको खाता</translation>
+<translation id="793531125873261495">भर्चुअल मेसिन डाउनलोड गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="793716872548410480">आफ्नो क्लिपबोर्ड हेर्न <ph name="SHORTCUT_KEY_NAME" /> + V थिच्नुहोस्। तपाईंले कपी गर्नुभएका पछिल्ला ५ वस्तुहरू तपाईंको क्लिपबोर्डमा सुरक्षित गरिन्छन्।</translation>
 <translation id="7942330802915522974"><ph name="TOTAL_STEPS" /> मध्ये <ph name="STEP" /> औँ चरण। तपाईं लन्चरमा गई Files एप भेट्टाउन सक्नुहुन्छ। आफ्ना लोकल फाइल र Google Drive का फाइलहरू Files एपबाटै व्यवस्थापन गर्नुहोस्।</translation>
 <translation id="7942349550061667556">रातो</translation>
@@ -2289,6 +2348,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" /> ले <ph name="DEVICE_NAME" /> प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="7948239795436419268">विन्डोहरू रिस्टोर नगर्नुहोस्</translation>
 <translation id="7951630946012935453">किबोर्डको चमक घटाउनुहोस्</translation>
+<translation id="795282463722894016">पुनर्स्थापना सम्पन्न भयो</translation>
 <translation id="7953176344218790168">अपरकेस</translation>
 <translation id="7953994493035617347">नयाँ रिजोल्युसन पुष्टि गर्ने हो?</translation>
 <translation id="795958884516058160">फुल स्क्रिन म्याग्निफायर अन गरिएको छ। यसलाई अफ गर्न फेरि <ph name="ACCELERATOR" /> थिच्नुहोस्।</translation>
@@ -2322,6 +2382,7 @@
 <translation id="8030169304546394654">जडान विच्छेद भयो</translation>
 <translation id="8036504271468642248">अघिल्लो वाक्य</translation>
 <translation id="8042893070933512245">पहुँचसम्बन्धी सेटिङको मेनु खोल्नुहोस्</translation>
+<translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन।</translation>
 <translation id="8044457332620420407">किबोर्डको ब्याकलाइट अफ छ</translation>
 <translation id="8048123526339889627">ब्लुटुथका सेटिङहरू</translation>
 <translation id="8049189770492311300">घडी</translation>
@@ -2334,6 +2395,7 @@
 <translation id="8083540854303889870">पछि खरिद गर्नका लागि सेभ गरिएका वस्तु</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">थप विकल्प हेर्न ट्याब की प्रयोग गर्नुहोस्। सबै डेस्क एक्सेस गर्न लेफ्ट र राइट एरो प्रयोग गर्नुहोस्।</translation>
+<translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8091153018031979607"><ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /> मा सुरु हुन्छ</translation>
 <translation id="8092380135549145188">स्क्रोल कन्ट्रोलहरू</translation>
 <translation id="8098591350844501178"><ph name="RECEIVER_NAME" /> मा स्क्रिन casting गर्ने काम रोक्नुहोस्</translation>
@@ -2366,6 +2428,7 @@
 <translation id="8169177848833352618">दुर्भाग्यवश, यो मेसिनले Bruschetta इन्स्टल गर्ने मापदण्डहरू पूरा गरेको छैन। यो त्रुटिको कोड <ph name="ERROR" /> हो।</translation>
 <translation id="8172370561760918656">सिरानको बायाँतिर भएको ह्यान्डल चयन गरिएको छ, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="81817143961839203">फोटो हाल्न सकिएन</translation>
+<translation id="8182105986296479640">एपले प्रतिक्रिया जनाइरहेको छैन।</translation>
 <translation id="8185090165691050712">लक मोडको आकार बदल्न मेनु टगल गरी अन/अफ गर्नुहोस्</translation>
 <translation id="8192727139462702395">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको <ph name="DEVICE_TYPE" /> बाट यी बाह्य डिभाइसहरू डिस्कनेक्ट हुने छन्:</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
@@ -2395,6 +2458,7 @@
 <translation id="8282784978194352587">तपाईंहरूले गरेर देखाउनुभयो!</translation>
 <translation id="8287009018010202411">उत्पादकत्व</translation>
 <translation id="828708037801473432">अफ</translation>
+<translation id="8289128870594824098">डिस्कको आकार</translation>
 <translation id="8297006494302853456">कमजोर</translation>
 <translation id="8300451473979404345">चयन गरिएको ह्यान्डल, सार्न एरो कीहरू प्रयोग गर्नुहोस्</translation>
 <translation id="8308637677604853869">अघिल्लो मेनु</translation>
@@ -2409,6 +2473,7 @@
 <translation id="8349826889576450703">लन्चर</translation>
 <translation id="8349964124165471584">यो लिंक नयाँ विन्डोमा खोल्नुहोस्</translation>
 <translation id="8351131234907093545">टिपोट सिर्जना गर्नुहोस्</translation>
+<translation id="8357388086258943206">Linux स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> प्रयोग भइरहेको छ।</translation>
 <translation id="8369166482916924789">सेभ गरिएको डेस्क, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">कर्सरलाई एक अक्षर अगाडि लैजानुहोस्</translation>
@@ -2456,6 +2521,7 @@
 <translation id="8491237443345908933">यो लिंक नयाँ ट्याबमा खोल्नुहोस्</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> ले <ph name="SPECIFIED_RESOLUTION" /> समर्थन गर्दैन। रिजोल्युसन परिवर्तन गरी<ph name="FALLBACK_RESOLUTION" /> पारियो। परिवर्तनहरू सुरक्षित गर्न पुष्टि गर्नुहोस् नामक बटनमा क्लिक गर्नुहोस्। अघिल्ला सेटिङहरूलाई <ph name="TIMEOUT_SECONDS" /> भित्र पुनर्स्थापना गरिने छ।</translation>
 <translation id="8502536196501630039">Google Play का एपहरू प्रयोग गर्न तपाईंले अनिवार्य रूपमा सर्वप्रथम आफ्ना एपहरू रिसेट गर्नु पर्छ । केही डेटा हराएको हुन सक्छ।</translation>
+<translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8507563469658346379">सबैका लागि, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">नयाँ डेस्क बनाउनुहोस्</translation>
 <translation id="85123341071060231">तपाईंको Chromebook को ब्लुटुथ अफ छ। Chromebook अनलक गर्न पासवर्ड हाल्नुहोस्।</translation>
@@ -2465,6 +2531,7 @@
 <translation id="8517041960877371778">खुला हुँदा तपाईँको <ph name="DEVICE_TYPE" /> चार्ज नहुन सक्छ।</translation>
 <translation id="8519329096920173967">Google लेन्स प्रयोग गरी मेरो डिभाइसको स्क्रिनमा भएका सामग्री खोज्नुहोस्</translation>
 <translation id="8527869672961320915"><ph name="VM_NAME" /> एपहरू</translation>
+<translation id="8528962588711550376">साइन इन गर्दै।</translation>
 <translation id="8535393432370007982">रङअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
 <translation id="8536886494750559755">क्विक सेयरसम्बन्धी सेटिङ देखाउनुहोस्। सबै जना <ph name="TIME_REMAINING" /> सम्म देख्न सक्छन्</translation>
 <translation id="8539803091108018926">टेक्स्ट क्लिपबोर्डमा कपी गरिएको छ</translation>
@@ -2484,6 +2551,7 @@
 <translation id="861045123704058818">एपहरू अस्थायी रूपमा कोटीअनुसार व्यवस्थापन गरिएका छन्</translation>
 <translation id="8612216344243590325">महत्त्वपूर्ण फाइलहरूलाई डेस्कटपको साटो <ph name="HOLDING_SPACE_TITLE" /> मा राख्नुहोस्। यसका लागि तपाईंले फाइलहरू ड्रयाग गरेर <ph name="HOLDING_SPACE_TITLE" /> मा लगे पुग्छ।</translation>
 <translation id="8612338981637220013">तपाईं लगातार सफल भइरहनुभएको छ!</translation>
+<translation id="8613164732773110792">लोअरकेसका वर्ण, अङ्क, underscore वा ड्यासहरू मात्र</translation>
 <translation id="8614517853887502247">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" /> र <ph name="APP_2_TITLE" /> सम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
 <translation id="8615778328722901791">टुलबार खोल्नुहोस्</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2506,6 +2574,8 @@
 <translation id="8662921061190671299">पात्रोमा हाल्न सकिएन</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">आंशिक स्क्रिनसट खिच्न इन्टर थिच्नुहोस्</translation>
+<translation id="8665180165765946056">ब्याकअप सम्पन्न भयो</translation>
+<translation id="8673530374848624865">तपाईंका एड्मिनले तपाईंको डिभाइसका सुरक्षासम्बन्धी मापदण्डहरू अपडेट गर्नुभएको छ</translation>
 <translation id="8676770494376880701">अल्प-पावर चार्जर जडित</translation>
 <translation id="8679158879996532670">फोकस मोडका सेटिङ देखाइयोस्। फोकस मोड अन छ, <ph name="REMAINING_TIME" /> बाँकी छ।</translation>
 <translation id="8683506306463609433">प्रदर्शन ट्रेस सक्रिय छ</translation>
@@ -2517,6 +2587,7 @@
 <translation id="8711169534266271368">गेम ड्यासबोर्डसम्बन्धी विकल्पहरू</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="8714138378966541668">प्रदायकले लक गरेको छ</translation>
+<translation id="8716931980467311658"><ph name="DEVICE_TYPE" /> बाट आफ्नो Linux फाइलका फोल्डरहरूमा रहेका सबै Linux एप र डेटा मेट्ने हो?</translation>
 <translation id="8717459106217102612">अघिल्लो शब्द वा अक्षर चयन गर्नुहोस्</translation>
 <translation id="8721053961083920564">भोल्युम टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्क्रिन क्याप्चर</translation>
@@ -2527,6 +2598,7 @@
 <translation id="8731487213223706745"><ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /> मा समाप्त हुन्छ</translation>
 <translation id="8734991477317290293">यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ</translation>
 <translation id="8735678380411481005">किबोर्डको ब्याकलाइटको रङ</translation>
+<translation id="8740672167979365981">ChromeOS Flex अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: एक्टिभेट गरिँदै छ...</translation>
 <translation id="8742395827132970586">इन्स्टल गर्न सकिएन, हटाइँदै छ</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
@@ -2537,6 +2609,7 @@
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>
 <translation id="8756799553341497810">तपाईं यो भ्यूबाट बाहिरिएपछि एपको लेआउट कस्टमाइज गर्न सुरु गर्न सक्नुहुन्छ।</translation>
 <translation id="8759408218731716181">बहुविध साइन-इन सेटअप गर्न सक्दैन</translation>
+<translation id="8759753423332885148">बढी जान्नुहोस्।</translation>
 <translation id="8763883995157866248">डिभाइस स्लिप मोडमा राख्नुहोस्</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, इन्स्टल गरिएको एप, रोक लगाइएको</translation>
 <translation id="8782565991310229362">कियस्क एप्लिकेसन लन्च रद्द गरियो।</translation>
@@ -2576,6 +2649,7 @@
 <translation id="8876661425082386199">आफ्नो यन्त्रको ब्लुटुथ वा Wi-Fi कनेक्सन जाँच्नुहोस्</translation>
 <translation id="8883478023074930307">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो डिभाइसले हाल निदान, डिभाइस र एपको प्रयोगसम्बन्धी डेटा स्वतः Google मा पठाइरहेको छ। यसले सिस्टम तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। मालिकले यो <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" /> लागू गर्नुभएको हो। तपाईंको खातामा "वेब तथा एपसम्बन्धी अतिरिक्त गतिविधि" सेटिङ अन गरिएको छ भने यो डेटा तपाईंको Google खातामा सेभ गरिन सक्छ। <ph name="BEGIN_LINK2" />मेट्रिकका बारेमा थप जान्नुहोस्<ph name="BEGIN_LINK2_END" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">YouTube Music मा कनेक्ट गर्न सकिएन</translation>
+<translation id="8888253246822647887">स्तरवृद्धि सम्पन्न भएपछि तपाईंको एप खुल्ने छ। स्तरवृद्धि गर्न केही बेर लाग्न सक्छ।</translation>
 <translation id="888982883502837004">तपाईंको डिभाइसका हकमा फर्मवेयरसम्बन्धी अपडेटहरू उपलब्ध छन्। तपाईं समीक्षा हेर्न र अपडेट प्राप्त गर्न चाहनुहुन्छ भने क्लिक गर्नुहोस्।</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> सदाका लागि मेटाइने छ</translation>
 <translation id="889790758758811533"><ph name="PERCENTAGE" />% ब्याट्री बाँकी छ (लगभग <ph name="TIME_LEFT" />)। आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
@@ -2599,7 +2673,9 @@
 <translation id="8945508919180478719">स्टुडियो शैलीको माइक</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> जाँच बाकसमा चिन्ह लगाइएको छैन।</translation>
 <translation id="8949925099261528566">कनेक्ट भयो, इन्टरनेट छैन</translation>
+<translation id="8951256747718668828">कुनै त्रुटि भएका कारण पुनर्स्थापना पूरा गर्न सकिएन</translation>
 <translation id="8951539504029375108">तपाईंको Chromebook मा स्वीकृत Thunderbolt यन्त्रहरू मात्र चल्छन्</translation>
+<translation id="895347679606913382">सुरु हुँदैछ...</translation>
 <translation id="8956420987536947088">आफूले यसअघि खोलेका विन्डो तथा एपहरू खोल्नुहोस्</translation>
 <translation id="8959380109429710384">तपाईंले फुल स्क्रिन म्याग्निफायर अन/अफ गर्ने किबोर्ड सर्टकट थिच्नुभयो। जुम इन गरिएका बेला यताउता सार्न Ctrl + Alt + एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="8964525410783593407">१ घण्टा</translation>
@@ -2609,7 +2685,6 @@
 <translation id="8980862970816311842">एप ग्रिडमा कुनै एपको आइकन फोल्डर भित्र/बाहिर सार्नुहोस्</translation>
 <translation id="8982906748181120328">नजिकैका यन्त्रमा फेला पर्ने</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8985191021574400965">Chromebook को Steam मा स्वागत छ</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> प्रयोग गरिँदै</translation>
 <translation id="8991648557324317894">रद्द गर्न fn + क्विक इन्सर्ट वा सिफ्ट थिच्नुहोस्।</translation>
 <translation id="899350903320462459">नोटिफिकेसनसम्बन्धी कारबाही गर्न डिभाइसलाई <ph name="LOGIN_ID" /> का रूपमा अनलक गर्नुहोस्</translation>
@@ -2617,9 +2692,11 @@
 <translation id="9000771174482730261">भण्डारण व्यवस्थापन गर्नुहोस्</translation>
 <translation id="9003374957546315126">इमोजी तथा थप सामग्री</translation>
 <translation id="9005984960510803406">Crosh विन्डो खोल्नुहोस्‌</translation>
+<translation id="9013037634206938463">Linux प्रयोग गर्न कम्तीमा पनि <ph name="INSTALL_SIZE" /> खाली ठाउँ आवश्यक पर्छ। थप ठाउँ खाली गर्न आफ्नो यन्त्रमा भएका फाइलहरू मेटाउनुहोस्।</translation>
 <translation id="901668144954885282">Google ड्राइभमा ब्याकअप गर्नुहोस्</translation>
 <translation id="9017320285115481645">Family Link बाट प्राप्त अभिभावकको एक्सेस कोड हाल्नुहोस्।</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
+<translation id="9026852570893462412">यो प्रक्रियामा केही मिनेट लाग्न सक्छ। भर्चुअल मेसिन डाउनलोड गर्दै।</translation>
 <translation id="9029736946581028033">डिभाइस चाँडै नै पावर डाउन हुने छ</translation>
 <translation id="9030319654231318877">सूर्यास्त नहुँदासम्म अफ</translation>
 <translation id="9030515284705930323">तपाईँको संगठनले तपाईँको खाताको लागि Google Play स्टोरलाई सक्रिय गरेको छैन। थप जानकारीका लागि आफ्नो प्रशासकलाई सम्पर्क गर्नुहोस्।</translation>
@@ -2628,7 +2705,6 @@
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> को सेटिङ खोल्नुहोस्</translation>
 <translation id="9050012935252397793">ब्लुटुथ उपलब्ध छैन</translation>
 <translation id="9050999376345823055">रिलिज गर्न "." थिच्नुहोस्</translation>
-<translation id="9061694916020926968">Steam for Chromebook (बिटा) प्रयोग गर्न तपाईं Google खातामा साइन इन हुनु पर्छ। साइन इन गर्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="906458777597946297">सन्झ्याल</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9068849894565669697">रङ्ग चयन गर्नुहोस्</translation>
@@ -2664,6 +2740,7 @@
 <translation id="9168436347345867845">यो कार्य पछि गर्नुहोस्‌</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> सम्बन्धी १ परिणाम देखाउँदै</translation>
 <translation id="9179259655489829027">यस सुविधाले तपाईंलाई पासवर्ड प्रविष्ट नगरिकनै साइन इन भएका जुनसुकै प्रयोगकर्तामाथि द्रुत रूपमा पहुँच राख्न दिन्छ।आफूले विश्वास गर्ने खाताहरूमा मात्र यो सुविधाको प्रयोग गर्नुहोस्।</translation>
+<translation id="9180281769944411366">यो प्रक्रियामा केही मिनेट लाग्न सक्छ। Linux कन्टेनर सुरु गर्दै।</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">फुल स्क्रिन म्याग्निफायर</translation>
 <translation id="9192133205265227850">"<ph name="DEVICE_NAME" />" प्रयोग गर्नुहोस्</translation>
@@ -2677,6 +2754,7 @@
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="9201842707396338580">कुनै समस्या आयो। कृपया आफ्नो डिभाइसका मालिक वा एड्मिनसँग सम्पर्क गर्नुहोस्। त्रुटिको कोड: <ph name="ERROR_CODE" />।</translation>
 <translation id="9207682216934703221">तपाईंले यसो गर्नुभयो भने <ph name="APP_NAME" />, <ph name="APP2_NAME" /> र लोकेसन प्रयोग गर्ने अनुमति दिइएका सबै एप तथा वेबसाइटहरू अनि ChromeOS ले Wi-Fi र मोबाइल नेटवर्कको लोकेसन प्रयोग गर्न पाउँछन्।</translation>
+<translation id="9209563766569767417">Linux कन्टेनरको सेटअप जाँच गरिँदै छ</translation>
 <translation id="9210037371811586452">एकीकृत डेस्कटप मोडबाट बाहिर निस्कँदै</translation>
 <translation id="9211490828691860325">सबै डेस्कहरू</translation>
 <translation id="9211681782751733685">ब्याट्री पूर्ण रूपमा चार्ज हुन <ph name="TIME_REMAINING" /> बाँकी छ।</translation>
@@ -2700,12 +2778,14 @@
 <translation id="956452277966142925">गेम ड्यासबोर्डसम्बन्धी सेटिङ</translation>
 <translation id="961856697154696964">ब्राउजिङ डेटा मेटाउनुहोस्</translation>
 <translation id="974545358917229949"><ph name="RESULT_COUNT" /> सम्बन्धी <ph name="QUERY" /> परिणामहरू देखाउँदै</translation>
+<translation id="97905529126098460">रद्द गर्ने कार्य पूरा भएपछि यो विन्डो बन्द हुने छ।</translation>
 <translation id="981011780479609956">पूरा गर्नु पर्ने मिति नतोकिएका</translation>
 <translation id="98120814841227350">कागजातको फेदमा जानुहोस्</translation>
 <translation id="987589956647469042">मोबाइल डेटा अन गरिएको छ</translation>
 <translation id="989374776391122812">क्यामेरा तथा अडियो कन्ट्रोलहरू</translation>
 <translation id="990263227494928142">टचप्याड अन गर्न सिफ्ट की ५ पटक थिच्नुहोस्</translation>
 <translation id="990277280839877440">विन्डो <ph name="WINDOW_TITILE" /> बन्द गरियो।</translation>
+<translation id="992778845837390402">हाल Linux को ब्याकअप हुँदै छ</translation>
 <translation id="993398562350683614"><ph name="TOTAL_STEPS" /> मध्ये <ph name="STEP" /> औँ चरण। तपाईंले <ph name="PRODUCT_NAME" /> मा गर्नु पर्ने सबै कार्य गर्न एपहरू प्रयोग गर्नुहोस्। तपाईं लन्चरमा गई आफ्ना एपहरू भेट्टाउन सक्नुहुन्छ। लन्चर बटनमा फोकस गर्न Alt + सिफ्ट + L थिच्नुहोस्।</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">नयाँ सुविधा तथा सुरक्षासम्बन्धी सुधारहरू प्राप्त गर्नुहोस्। अपडेट गर्ने प्रक्रिया ब्याकग्राउन्डमा चल्छ।</translation>

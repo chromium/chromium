@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Kirjautunut käyttäjänä <ph name="USER" /></translation>
 <translation id="1149401351239820326">Viimeinen voimassaolokuukausi</translation>
 <translation id="1150989369772528668">Kalenteri</translation>
+<translation id="1161444134753003495">Kirjaudu</translation>
 <translation id="1161663161838091892">Jatka synkronoimalla välilehdet ja historia</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} credit-kortti}other{{count} credit-korttia}}</translation>
 <translation id="1164891049599601209">Käytetty petollisella sivustolla</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Kopioi kuva</translation>
 <translation id="1606899876897213121">Sulje viimeaikaisen toiminnan yhteenveto</translation>
 <translation id="1612754831519568745">Selaussuoja ei ole päällä. Suojaudu vaarallisilta sivustoilta, latauksilta ja laajennuksilta.</translation>
+<translation id="1617300545081951343"><ph name="BEGIN_LINK" />Ehtojamme<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Koreaa koskevia sijaintiehtoja<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />tietosuojailmoitustamme<ph name="END_LINK" /> sovelletaan. Gemini on tekoäly ja voi tehdä virheitä, myös ihmisiin liittyen.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Valitse "Lisää Google Kalenteriin" tai "Lisää Apple-kalenteriin".</translation>
 <translation id="1629162218487290695">Vahvista henkilöllisyytesi…</translation>
@@ -328,6 +330,7 @@
 <translation id="2078437078822043850">Voit selata incognito-tilassa vierittämällä oikealle.</translation>
 <translation id="2079545284768500474">Kumoa</translation>
 <translation id="2085876078937250610">Tallenna…</translation>
+<translation id="2089180529062519164">Käynnistä mikrofoni</translation>
 <translation id="2096239473850415494">Lataus epäonnistui</translation>
 <translation id="2096716221239095980">Poista kaikki data</translation>
 <translation id="2104436223719117661">Trendaavat haut</translation>
@@ -603,6 +606,7 @@
 <translation id="3119874402040566234">Sinut kirjataan ulos ja selausdata poistetaan</translation>
 <translation id="3124568093781685165">Jaa salasanasi perheellesi</translation>
 <translation id="3130863904455712965">Historia ja muita</translation>
+<translation id="3130973487775218359">Katso: <ph name="BEGIN_LINK" />Viisi tärkeää asiaa generatiivisesta tekoälystä<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Tallenna oikaisunumero</translation>
 <translation id="3132584647087998639">Tuo dataa</translation>
 <translation id="313283613037595347">Luo uusi incognito-välilehti.</translation>
@@ -821,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Uusi salasana tälle sivustolle}other{Uusia salasanoja tälle sivustolle}}</translation>
 <translation id="3933372629914873850">Kirjaudut tänne: <ph name="URL" /></translation>
 <translation id="3934905113567851655">Muuta kokoa nipistämällä</translation>
+<translation id="393732545649378031">Tili</translation>
 <translation id="3940195383040445971">Seuraa hintoja välilehdillä</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Sulje {COUNT} välilehti}other{Sulje {COUNT} välilehteä}}</translation>
 <translation id="3946483119107054883">Lataa CSV-tiedostoon</translation>
@@ -931,6 +936,7 @@
 <translation id="4306349443295056740">OCSP-allekirjoitus</translation>
 <translation id="4309403553630140242">Katso lisätietoja kaksoisnapauttamalla</translation>
 <translation id="4310738531374808763">Etusivun räätälöinti</translation>
+<translation id="4316794575239200608">Tarkastajat eivät käy läpi Geminin kanssa käymiäsi keskusteluita tai <ph name="BEGIN_LINK" />Google Workspace ‑dataasi<ph name="END_LINK" />. Niitä ei myöskään käytetä generatiivisten tekoälymallien parantamiseen.</translation>
 <translation id="4320848494125124980">Viimeaikaiset</translation>
 <translation id="4322394346347055525">Sulje muut välilehdet</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1016,6 +1022,7 @@
 <translation id="4631335160486397366"><ph name="COUNT" /> uudelleenkäytettyä salasanaa</translation>
 <translation id="4632655012900268062">Yksilöi kortteja</translation>
 <translation id="4634124774493850572">Käytä salasanaa</translation>
+<translation id="4634633632339959267">Keskustelut tarkastetaan ja niitä käytetään Googlen tekoälyn kehittämiseen. <ph name="BEGIN_LINK" />Lue lisää valinnoistasi.<ph name="END_LINK" /> Myös <ph name="BEGIN_LINK" />sijaintiisi liittyviä tietoja<ph name="END_LINK" /> tallennetaan toimintaan.</translation>
 <translation id="4636930964841734540">Tietoja</translation>
 <translation id="4641425577292284174">Näet, onko käytössäsi turvallisimmat asetukset tai onko jotain tarkistettavaa</translation>
 <translation id="4642472735733036929">Hinnan seuranta lopetettu</translation>
@@ -1469,6 +1476,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6140948187512243695">Näytä lisätiedot</translation>
 <translation id="6144589619057374135">Avaa ${url} incognito-tilassa</translation>
 <translation id="6146563240635539929">Videot</translation>
+<translation id="6148392728478209113">Käytätkö edelleen Liveä? Jatka keskustelua Geminin kanssa napauttamalla Live-painiketta</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> avaa incognito-välilehtien lukituksen</translation>
 <translation id="6152340033632117531">Ei-aktiivinen</translation>
 <translation id="6152406514676263192">Synkronoi osuvin sisältö kiinnostuksen kohteidesi mukaan.</translation>
@@ -1562,6 +1570,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6435236283694032571">Lisää lukulistalle</translation>
 <translation id="6435307030888827407">Pysy uloskirjautuneena</translation>
 <translation id="6436318499800111867">Jaettu minulle <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Kunnioita muiden yksityisyyttä<ph name="END_LINK" /> ja pyydä lupaa ennen tallentamista tai lisäämistä livekeskusteluun.</translation>
 <translation id="6442697326824312960">Irrota välilehti</translation>
 <translation id="6443118737398455446">Virheellinen viimeinen voimassaolopäivä</translation>
 <translation id="6444435711855078002">Lisäasetukset</translation>
@@ -1804,6 +1813,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7253951228444156601">Tarkistetaan salasanoja…</translation>
 <translation id="7261217796641151584">Jaa ryhmä</translation>
 <translation id="7266578100016339897">Näin pysyt järjestyksessä. Voit muuttaa tätä asetuksista koska tahansa.</translation>
+<translation id="7270491814777319521"><ph name="BEGIN_LINK" />Googlen ehtoja<ph name="END_LINK" /> ja <ph name="BEGIN_LINK" />Gemini-sovellusten tietosuojailmoitusta<ph name="END_LINK" /> sovelletaan. Gemini on tekoäly ja voi tehdä virheitä, myös ihmisiin liittyen.</translation>
 <translation id="7272437679830969316">Henkilöllisyytesi vahvistaminen ei onnistunut. Salasanaa ei kopioitu.</translation>
 <translation id="728025568708172005">Esittele paikkaa</translation>
 <translation id="7280980607183752256">Tiedostoa ei voi tuoda</translation>
@@ -1862,6 +1872,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7468373585447318060">Seuraa kaikkien seuraamiesi tuotteiden hinnanalennuksia.</translation>
 <translation id="746872191028309255">Tee ostoksia kameran tai kuvagallerian kautta.</translation>
 <translation id="7471557245617580330">Luo uusi välilehti</translation>
+<translation id="7473555040328423550">Lisää välilehti</translation>
 <translation id="7476548258282096076">Tällä kortilla näkyvät käydyimmät sivustosi.</translation>
 <translation id="7484645889979462775">Ei koskaan tälle sivustolle</translation>
 <translation id="7486006552035434095">Pidä laitteesi synkronoituina</translation>
@@ -2117,11 +2128,13 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8319282042900445670">Muistutus asetettu: <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Uusimmat tapahtumat</translation>
 <translation id="8325455175867928593">Piilota "Kiinnostuksen kohteisiisi perustuvat arvostelut"</translation>
+<translation id="8333459276976141586">Live käyttää mikrofonia. Jos napautat Live-painiketta, mikrofoni menee päälle. Jos haluat laittaa mikrofonin pois päältä, napauta pysäytyspainiketta tai sulje Gemini.</translation>
 <translation id="833647236762414178">Luo, tallenna ja muokkaa salasanoja ja avainkoodeja, jotta voit kirjautua helposti sivustoille ja sovelluksiin. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Varmuuskopioi sisältösi ja käytä sitä millä tahansa laitteella.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Suorita vielä yksi tehtävä, niin pääset seuraavalle tasolle}other{Suorita vielä {count} tehtävää, niin pääset seuraavalle tasolle}}</translation>
 <translation id="8348530355586151720">Napauta kolmen pisteen valikkoa</translation>
 <translation id="8349305172487531364">Kirjanmerkkipalkki</translation>
+<translation id="8360164927489392419">Tallenteet Live-toiminnastasi ja Livelle jakamasi sisältö tallennetaan ja niitä käsitellään <ph name="BEGIN_LINK" />Gemini-sovellusten tietosuojailmoituksen<ph name="END_LINK" /> mukaisesti. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{{count} kirjanmerkki tuotu}other{{count} kirjanmerkkiä tuotu}}</translation>
 <translation id="8363484128299778310">Tilannekohtaiset palautusasetukset</translation>
 <translation id="8364563001733875155">Jos haluat muuttaa PIN-koodia, lisää laitteelle ensin tunnuskoodi.</translation>
@@ -2193,6 +2206,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8571019948162152515">Poistetaanko <ph name="FILENAME" />?</translation>
 <translation id="8571213806525832805">Viimeiset neljä viikkoa</translation>
 <translation id="8577056989960190117">Täytä vanhenemisvuosi <ph name="YEAR" /> automaattisesti</translation>
+<translation id="8582026929965253036">Aloita keskustelu Gemini Liven kanssa</translation>
 <translation id="8587001564479545614">Luo palautuksen PIN-koodi</translation>
 <translation id="8588404856427128947">Pois päältä</translation>
 <translation id="8590286732816598906">Välilehtiryhmä, <ph name="GROUP_TITLE" />, valikko.</translation>
@@ -2267,6 +2281,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8803526663383843427">Toiminnon ollessa päällä</translation>
 <translation id="8803639129939845298">Turvallinen</translation>
 <translation id="8813277370772331957">Muistuta myöhemmin</translation>
+<translation id="8814308045751067027">Jos haluat käyttää Liveä, salli Chromelle pääsy mikrofoniin asetuksista</translation>
 <translation id="8814719628147284151">Jatka</translation>
 <translation id="881559332211266856">Päivitä oikaisunumero</translation>
 <translation id="8817524703470045896">Seuraa hintoja ja saat ilmoituksia, kun hinta laskee millä tahansa sivustolla</translation>

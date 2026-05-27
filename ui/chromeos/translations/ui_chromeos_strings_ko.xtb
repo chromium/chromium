@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">관리자 정책 검토</translation>
 <translation id="158849752021629804">홈 네크워크가 필요합니다.</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" />PB</translation>
+<translation id="1593594475886691512">포맷 중...</translation>
 <translation id="1601786938618212857">압축</translation>
 <translation id="1620510694547887537">카메라</translation>
 <translation id="162175252992296058">포르투갈어(미국 국제 키보드)</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">러시아어(표음 YaZHert 키보드)</translation>
 <translation id="2143778271340628265">수동 프록시 설정</translation>
 <translation id="2148716181193084225">오늘</translation>
+<translation id="2148756636027685713">포맷을 마쳤습니다.</translation>
 <translation id="2161573825856688200">Google 프로젝트</translation>
 <translation id="2163152940313951844">잘못된 문자: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">기회가 <ph name="RETRIES" />번 남았습니다.</translation>
 <translation id="2663066752008346276">버마어(미얀마, 미얀산 키보드)</translation>
 <translation id="2664412712123763093">파일 위치</translation>
+<translation id="2665919335226618153">포맷 중에 오류가 발생했습니다.</translation>
 <translation id="2672394942808662069">캐나다 다국어</translation>
 <translation id="2707357721402813583">아일랜드어</translation>
 <translation id="2708477391501452176">프랑스어 베포</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP 네트워크는 지원되지 않습니다.</translation>
 <translation id="3295006446256079333">이 볼륨</translation>
 <translation id="3295357220137379386">기기 사용량이 많습니다.</translation>
+<translation id="3305389145870741612">포맷하는 데 몇 초 정도 걸립니다. 잠시 기다려 주세요.</translation>
 <translation id="3307875152560779385">우크라이나어</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> 압축 중...</translation>
 <translation id="3335337277364016868">녹음된 연도</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">가상 머신</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">구두점 폭을 최대로 설정</translation>
+<translation id="5585912436068747822">포맷 실패</translation>
 <translation id="5596627076506792578">옵션 더보기</translation>
 <translation id="5602622065581044566">불가리아어(표음 키보드)</translation>
 <translation id="5604409170937514933">스웨덴어</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">펀자브어</translation>
 <translation id="6224240818060029162">덴마크어</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> 포맷</translation>
+<translation id="6224481128663248237">포맷을 마쳤습니다.</translation>
 <translation id="6241349547798190358">네덜란드어(벨기에)</translation>
 <translation id="6267547857941397424">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 연결</translation>
 <translation id="6269630227984243955">말레이어</translation>

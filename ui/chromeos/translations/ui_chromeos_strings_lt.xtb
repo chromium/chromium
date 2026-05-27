@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Peržiūrėti administratoriaus politiką</translation>
 <translation id="158849752021629804">Reikalingas namų tinklas</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Formatuojama...</translation>
 <translation id="1601786938618212857">ZIP archyvas</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugalų k. su JAV tarptautine klaviatūra</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Rusų k. su fonetine „YaZHert“ klaviatūra</translation>
 <translation id="2143778271340628265">Rankinė tarpinio serverio konfigūracija</translation>
 <translation id="2148716181193084225">Šiandien</translation>
+<translation id="2148756636027685713">Formatavimas baigtas</translation>
 <translation id="2161573825856688200">„Google“ projektas</translation>
 <translation id="2163152940313951844">Netinkamas simbolis: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Liko bandymų: <ph name="RETRIES" />.</translation>
 <translation id="2663066752008346276">Birmiečių k. (Mianmaro) su „Myansan“ klaviatūra</translation>
 <translation id="2664412712123763093">Failo vieta</translation>
+<translation id="2665919335226618153">Oi! Formatuojant įvyko klaida.</translation>
 <translation id="2672394942808662069">Kanadai skirta kelių kalbų</translation>
 <translation id="2707357721402813583">Airių</translation>
 <translation id="2708477391501452176">Prancūziška BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP tinklai nepalaikomi</translation>
 <translation id="3295006446256079333">Šis tomas</translation>
 <translation id="3295357220137379386">Įrenginys užimtas</translation>
+<translation id="3305389145870741612">Formatavimas gali užtrukti kelias sekundes. Palaukite.</translation>
 <translation id="3307875152560779385">Ukrainiečių k.</translation>
 <translation id="3326821416087822643">Glaudinamas failas „<ph name="FILE_NAME" />“...</translation>
 <translation id="3335337277364016868">Įrašymo metai</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">virtualusis įrenginys</translation>
 <translation id="5583640892426849032">Grįžties klavišas</translation>
 <translation id="5583664733673201137">Skyrybos ženklo plotis yra viso dydžio</translation>
+<translation id="5585912436068747822">Formatuojant įvyko klaida</translation>
 <translation id="5596627076506792578">Daugiau parinkčių</translation>
 <translation id="5602622065581044566">Bulgarų k. su fonetine klaviatūra</translation>
 <translation id="5604409170937514933">Švedų</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Pendžabų k.</translation>
 <translation id="6224240818060029162">Danų k.</translation>
 <translation id="6224253798271602650">Formatuoti: <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formatavimas sėkmingai baigtas!</translation>
 <translation id="6241349547798190358">Nyderlandų k. (Belgija)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, telefono akumuliatorius <ph name="BATTERY_STATUS" /> %, prisijungti</translation>
 <translation id="6269630227984243955">Malajų k.</translation>

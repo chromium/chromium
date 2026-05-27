@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">అడ్మిన్ పాలసీని రివ్యూ చేయండి</translation>
 <translation id="158849752021629804">హోమ్ నెట్‌వర్క్ అవసరం</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">ఆకృతీకరిస్తోంది...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">కెమెరా</translation>
 <translation id="162175252992296058">US అంతర్జాతీయ కీబోర్డ్‌తో పోర్చుగీస్</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">YaZHert కీబోర్డ్‌తో రష్యన్</translation>
 <translation id="2143778271340628265">మాన్యువల్ ప్రాక్సీ కాన్ఫిగరేషన్</translation>
 <translation id="2148716181193084225">ఈ రోజు</translation>
+<translation id="2148756636027685713">ఫార్మాటింగ్ పూర్తి అయ్యింది</translation>
 <translation id="2161573825856688200">Google ప్రాజెక్ట్</translation>
 <translation id="2163152940313951844">చెల్లని అక్షరం: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">మీకు <ph name="RETRIES" /> ప్రయత్నాలు మిగిలి ఉన్నాయి.</translation>
 <translation id="2663066752008346276">మయన్‌సన్ కీబోర్డ్‌తో బర్మీస్/మయన్మార్</translation>
 <translation id="2664412712123763093">ఫైల్ లొకేషన్</translation>
+<translation id="2665919335226618153">అయ్యో! ఫార్మాటింగ్ సమయంలో ఎర్రర్ ఏర్పడింది.</translation>
 <translation id="2672394942808662069">కెనడియన్ బహుభాష</translation>
 <translation id="2707357721402813583">ఐరిష్</translation>
 <translation id="2708477391501452176">ఫ్రెంచ్ BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP నెట్‌వర్క్‌లకు సపోర్ట్ లేదు</translation>
 <translation id="3295006446256079333">ఈ వాల్యూమ్</translation>
 <translation id="3295357220137379386">పరికరం బిజీగా ఉంది</translation>
+<translation id="3305389145870741612">ఫార్మాటింగ్ విధానాన్ని కొన్ని సెకెన్ల సమయం పడుతుంది. దయచేసి వేచి ఉండండి.</translation>
 <translation id="3307875152560779385">ఉక్రెయినియన్</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />ను జిప్ చేస్తోంది...</translation>
 <translation id="3335337277364016868">రికార్డ్ చేసిన సంవత్సరం</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">వర్చువల్ మెషిన్</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">విరామచిహ్నం వెడల్పు నిండింది</translation>
+<translation id="5585912436068747822">ఫార్మాటింగ్ విఫలమైంది</translation>
 <translation id="5596627076506792578">మరిన్ని ఆప్షన్‌లు</translation>
 <translation id="5602622065581044566">ఫోనెటిక్ కీబోర్డ్‌తో బల్గేరియన్</translation>
 <translation id="5604409170937514933">స్వీడిష్</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">పంజాబీ</translation>
 <translation id="6224240818060029162">డేనిష్</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ను ఫార్మాట్ చేయండి</translation>
+<translation id="6224481128663248237">ఫార్మాటింగ్ విజయవంతంగా పూర్తి అయ్యింది! </translation>
 <translation id="6241349547798190358">డచ్ (బెల్జియం)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
 <translation id="6269630227984243955">మలయ్</translation>

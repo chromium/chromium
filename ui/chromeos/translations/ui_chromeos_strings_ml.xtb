@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">അഡ്‌മിൻ നയം അവലോകനം ചെയ്യുക</translation>
 <translation id="158849752021629804">ഹോം നെറ്റ്‍വര്‍ക്ക് ആവശ്യമുണ്ട്</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">ഫോർമാറ്റുചെയ്യുന്നു...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">ക്യാമറ</translation>
 <translation id="162175252992296058">യുഎസ് അന്താരാഷ്ട്ര കീബോർഡ് ഉള്ള പോർച്ചുഗീസ്</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">ഫൊണറ്റിക് YaZHert കീബോർഡ് ഉള്ള റഷ്യൻ</translation>
 <translation id="2143778271340628265">നേരിട്ടുള്ള പ്രോക്സി ക്രമീകരണം</translation>
 <translation id="2148716181193084225">ഇന്ന്</translation>
+<translation id="2148756636027685713">ഫോർമാറ്റിംഗ് പൂർത്തിയായി</translation>
 <translation id="2161573825856688200">Google പ്രോജക്റ്റ്</translation>
 <translation id="2163152940313951844">അസാധുവായ പ്രതീകം: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">നിങ്ങൾക്ക് <ph name="RETRIES" /> ശ്രമങ്ങൾ കൂടി ബാക്കിയുണ്ട്.</translation>
 <translation id="2663066752008346276">Myansan കീബോർഡ് ഉള്ള ബർമീസ്/മ്യാൻമർ</translation>
 <translation id="2664412712123763093">ഫയൽ ലൊക്കേഷൻ</translation>
+<translation id="2665919335226618153">ക്ഷമിക്കണം! ഫോർമാറ്റ് ചെയ്യുന്നതിനിടെ ഒരു പിശക് സംഭവിച്ചു.</translation>
 <translation id="2672394942808662069">കനേഡിയൻ മൾട്ടിലിംഗ്വൽ</translation>
 <translation id="2707357721402813583">ഐറിഷ്</translation>
 <translation id="2708477391501452176">ഫ്രഞ്ച് BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP നെറ്റ്‌വർക്കുകൾ പിന്തുണയ്ക്കുന്നില്ല</translation>
 <translation id="3295006446256079333">ഈ വോളിയം</translation>
 <translation id="3295357220137379386">ഉപകരണം തിരക്കിലാണ്</translation>
+<translation id="3305389145870741612">ഫോർമാറ്റിംഗ് പ്രക്രിയയ്ക്ക് കുറച്ച് നിമിഷങ്ങളെടുക്കും. ദയവായി കാത്തിരിക്കുക.</translation>
 <translation id="3307875152560779385">ഉക്രേനിയൻ</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> zip ചെയ്യുന്നു...</translation>
 <translation id="3335337277364016868">റെക്കോർഡ് ചെയ്‌ത വർഷം</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">വെർച്വൽ മെഷീൻ</translation>
 <translation id="5583640892426849032">ബാക്ക്‌സ്പെയ്‌സ്</translation>
 <translation id="5583664733673201137">ചിഹ്നം പൂർണ്ണ വീതിയിലാണ്</translation>
+<translation id="5585912436068747822">ഫോർമാറ്റുചെയ്യൽ പരാജയപ്പെട്ടു</translation>
 <translation id="5596627076506792578">കൂടുതൽ‍ ഓപ്‌ഷനുകൾ</translation>
 <translation id="5602622065581044566">ഫൊണറ്റിക് കീബോർഡ് ഉള്ള ബൾഗേറിയൻ</translation>
 <translation id="5604409170937514933">സ്വീഡിഷ്</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">പഞ്ചാബി</translation>
 <translation id="6224240818060029162">ഡാനിഷ്</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്യുക</translation>
+<translation id="6224481128663248237">ഫോർമാറ്റിംഗ് വിജയകരമായി പൂർത്തിയാക്കി!</translation>
 <translation id="6241349547798190358">ഡച്ച് (ബെൽജിയം)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="6269630227984243955">മലെയ്</translation>

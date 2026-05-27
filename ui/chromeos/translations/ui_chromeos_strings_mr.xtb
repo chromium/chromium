@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">ॲडमिन धोरणाचे पुनरावलोकन करा</translation>
 <translation id="158849752021629804">होम नेटवर्क आवश्यक</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">स्वरूपन करत आहे...</translation>
 <translation id="1601786938618212857">पिन</translation>
 <translation id="1620510694547887537">कॅमेरा</translation>
 <translation id="162175252992296058">यूएस आंतरराष्ट्रीय कीबोर्डसह पोर्तुगीज</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">फोनेटिक YaZHert कीबोर्डसह रशियन</translation>
 <translation id="2143778271340628265">मॅन्युअल प्रॉक्सी कॉन्फिगरेशन</translation>
 <translation id="2148716181193084225">आज</translation>
+<translation id="2148756636027685713">स्वरुपण समाप्त</translation>
 <translation id="2161573825856688200">Google प्रोजेक्ट</translation>
 <translation id="2163152940313951844">चुकीचा वर्ण: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">तुमच्याकडे <ph name="RETRIES" /> प्रयत्न शिल्लक आहेत.</translation>
 <translation id="2663066752008346276">म्यानसान कीबोर्डसह बर्मीज/म्यानमार</translation>
 <translation id="2664412712123763093">फाइलचे स्थान</translation>
+<translation id="2665919335226618153">ओहो! फॉरमॅटिंग करताना एरर आली.</translation>
 <translation id="2672394942808662069">कॅनडियन Multilingual</translation>
 <translation id="2707357721402813583">आयरिश</translation>
 <translation id="2708477391501452176">फ्रेंच BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP नेटवर्कना सपोर्ट नाही</translation>
 <translation id="3295006446256079333">कमी प्रमाण</translation>
 <translation id="3295357220137379386">डिव्हाइस व्यग्र आहे</translation>
+<translation id="3305389145870741612">स्वरूपन प्रक्रियेस दोन सेकंद लागू शकतात. कृपया प्रतीक्षा करा.</translation>
 <translation id="3307875152560779385">युक्रेनियन</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> झिप करत आहे...</translation>
 <translation id="3335337277364016868">रेकॉर्ड केलेले वर्ष</translation>
@@ -586,6 +590,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5580591966435005537">व्हर्च्युअल मशीन</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">विरामचिन्हाची रुंदी पूर्ण आहे</translation>
+<translation id="5585912436068747822">स्वरुपन अयशस्वी</translation>
 <translation id="5596627076506792578">अधिक पर्याय</translation>
 <translation id="5602622065581044566">फोनेटिक कीबोर्डसह बल्गेरियन</translation>
 <translation id="5604409170937514933">स्वीडिश</translation>
@@ -672,6 +677,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6220423280121890987">पंजाबी</translation>
 <translation id="6224240818060029162">डॅनिश</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> फॉरमॅट करा</translation>
+<translation id="6224481128663248237">स्वरुपन यशस्वीरित्या समाप्त!</translation>
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करा</translation>
 <translation id="6269630227984243955">मलय</translation>

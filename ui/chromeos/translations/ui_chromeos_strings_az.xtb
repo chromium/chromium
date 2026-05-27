@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Admin siyasətini nəzərdən keçirin</translation>
 <translation id="158849752021629804">Ev şəbəkəsi lazımdır</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Format olunur...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">ABŞ Beynəlxalq klaviaturası ilə Portuqal dili</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Fonetik YaZHert klaviaturası ilə Rus dili</translation>
 <translation id="2143778271340628265">Manual proksi sazlaması</translation>
 <translation id="2148716181193084225">Bu gün</translation>
+<translation id="2148756636027685713">Formatlama tamamlandı</translation>
 <translation id="2161573825856688200">Google layihəsi</translation>
 <translation id="2163152940313951844">Yanlış simvol: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> cəhdiniz qalıb.</translation>
 <translation id="2663066752008346276">Myansan klaviaturası ilə Birma/Myanma dili</translation>
 <translation id="2664412712123763093">Faylın yeri</translation>
+<translation id="2665919335226618153">Başımıza daş! Formatlama zamanı xəta oldu!</translation>
 <translation id="2672394942808662069">Çoxdilli Kanada</translation>
 <translation id="2707357721402813583">İrland dili</translation>
 <translation id="2708477391501452176">Fransız BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP şəbəkələri dəstəklənmir</translation>
 <translation id="3295006446256079333">Bu disk</translation>
 <translation id="3295357220137379386">Cihaz məşğuldur</translation>
+<translation id="3305389145870741612">Formatlama prosesi bir neçə saniyə çəkə bilər. Lütfən, gözləyin.</translation>
 <translation id="3307875152560779385">Ukrayna</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> sıxılır...</translation>
 <translation id="3335337277364016868">Qeydə alındığı il</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">virtual cihaz</translation>
 <translation id="5583640892426849032">Geri silmə</translation>
 <translation id="5583664733673201137">Durğu işarələrinin eni Tamdır</translation>
+<translation id="5585912436068747822">Formatlama alınmadı</translation>
 <translation id="5596627076506792578">Əlavə seçimlər</translation>
 <translation id="5602622065581044566">Fonetik klaviatura ilə Bolqar dili</translation>
 <translation id="5604409170937514933">İsveç dili</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Pəncab</translation>
 <translation id="6224240818060029162">Danimarka</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> cihazını format edin</translation>
+<translation id="6224481128663248237">Formatlama uğurla tamamlandı!</translation>
 <translation id="6241349547798190358">Holland dili (Belçika)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Qoşulun</translation>
 <translation id="6269630227984243955">Malay</translation>

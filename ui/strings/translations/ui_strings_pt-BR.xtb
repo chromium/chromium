@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2168039046890040389">Página para cima</translation>
 <translation id="2190355936436201913">(vazio)</translation>
-<translation id="2192232475740621500">Usar baixa densidade</translation>
 <translation id="2267918077332197517">Bloquear todas as notificações emitidas por este site</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Toque nas áreas de toque da tela.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Ligar para este número do seu smartphone?</translation>
 <translation id="2435457462613246316">Mostrar senha</translation>
 <translation id="24452542372838207">Expandir notificação</translation>
-<translation id="2445449901874883781">Usar alta densidade</translation>
 <translation id="2448407890032181691">A área de toque foi movida para o canto inferior direito. Toque aqui.</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2497284189126895209">Todos os arquivos</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Da direita para a esquerda</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">As configurações de exibição do aplicativo entrarão em vigor quando ele for reiniciado.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Um minuto restante}one{# minutos restantes}other{# minutos restantes}}</translation>
 <translation id="7252604552361840748">Encontre a extensão acima.</translation>

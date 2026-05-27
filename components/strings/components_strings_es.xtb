@@ -83,7 +83,6 @@
 <translation id="1131264053432022307">Imagen copiada</translation>
 <translation id="1132735979845538847"><ph name="ORIGIN" />: para salir de la pantalla completa, arrastra desde la parte superior y toca el botón para volver</translation>
 <translation id="1133418583142946603">Añadir pestaña actual</translation>
-<translation id="1137064693271855979">¿Compartir las pestañas abiertas pertinentes para obtener mejores respuestas en todas las conversaciones?</translation>
 <translation id="1138458427267715730">Recibe alertas cuando el precio baje en cualquier sitio de la Web</translation>
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1142965388643537393">Información sobre viajes</translation>
@@ -139,6 +138,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="121201262018556460">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado que contiene una clave no segura. Es posible que alguien haya descifrado la clave privada y que hayas accedido a la página de esa persona en lugar de establecer conexión con el servidor.</translation>
 <translation id="1212527389003717329">Descarga iniciada. Para verla, mantén pulsado |<ph name="ACCELERATOR" />|.</translation>
 <translation id="1215738931000958575">Usa la información guardada en tu cuenta de Google para autocompletar contraseñas, llaves de acceso, direcciones, métodos de pago y otra información</translation>
+<translation id="1216257595811043403">Compartir pestañas automáticamente</translation>
 <translation id="1219129156119358924">Seguridad del sistema</translation>
 <translation id="1219134100826635117">Tu administrador ha bloqueado esta acción</translation>
 <translation id="1221024147024329929">PKCS #1 MD2 con cifrado RSA</translation>
@@ -240,7 +240,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1363015776076529485">Los métodos de pago que puedes seleccionar para completar el pago están abiertos a altura completa.</translation>
 <translation id="1363028406613469049">Seguir</translation>
 <translation id="1364822246244961190">Esta política está bloqueada, su valor será ignorado.</translation>
-<translation id="1367909869526928761">Elige cómo puede usar el Modo IA las pestañas abiertas relevantes</translation>
 <translation id="1368318639262510626">Juego del dinosaurio. Un dinosaurio pixelado esquiva cactus y pterodáctilos mientras corre por un paisaje desértico. Cuando escuches una señal sonora, pulsa la barra espaciadora para saltar los obstáculos.</translation>
 <translation id="1374468813861204354">sugerencias</translation>
 <translation id="1375198122581997741">Información de la versión</translation>
@@ -499,7 +498,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1756026472674246267">Abrir enlace en una pestaña nueva</translation>
 <translation id="1756555787993603971">Ahora puedes usar una tarjeta virtual para pagar de forma más segura con la función Autocompletar.</translation>
 <translation id="175656076281618225">Magia</translation>
-<translation id="1757269861068472918">¿Compartir pestañas en cada hilo?</translation>
 <translation id="1757773103848038814">Fuente monoespaciada</translation>
 <translation id="1757935267918149452">Botón Cambiar contraseña de Google: actívalo para cambiar la contraseña de tu cuenta de Google</translation>
 <translation id="1763864636252898013">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, el sistema operativo de tu dispositivo no confía en su certificado de seguridad. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
@@ -527,7 +525,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1812975699435941848">Educación sanitaria y formación médica</translation>
 <translation id="1816436748874040213">Puede solicitar permiso para desplazarse por las pestañas compartidas y ampliarlas</translation>
 <translation id="1816707915923025275">Escribe @historial para buscar en tu historial de navegación</translation>
-<translation id="1816849970130491878">Puedes ahorrar tiempo activando el uso compartido de pestañas automáticamente en todos los hilos.</translation>
 <translation id="1817364650920811003">Función: consejo de Chrome. Etiqueta de accesibilidad: <ph name="CHROME_TIP" />.</translation>
 <translation id="1818522458013171885">Desbloquear</translation>
 <translation id="1818585559878922121">Películas documentales</translation>
@@ -559,7 +556,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1855370856221982654">Boxeo</translation>
 <translation id="1862788842908766795">Trabajos ejecutivos y de administración</translation>
 <translation id="1863257867908022953">Bandeja 12</translation>
-<translation id="1864927262126810325">De <ph name="SOURCE_NAME" /></translation>
 <translation id="186539747722034544">Proveedores de cable y satélite</translation>
 <translation id="1870473978371099486">Servicios de tutoría particulares</translation>
 <translation id="1871208020102129563">Se ha configurado el proxy de forma que use servidores proxy fijos, en lugar de una URL de script .pac.</translation>
@@ -603,7 +599,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="1945968466830820669">Podrías perder el acceso a la cuenta de tu organización o tener problemas de suplantación de identidad. Chromium te recomienda que cambies tu contraseña ahora.</translation>
 <translation id="1946849748901605102">12x15 pulgadas</translation>
 <translation id="1947454675006758438">Grapado en la parte superior derecha</translation>
-<translation id="1950524225823308149">Compartir pestañas abiertas en cada conversación</translation>
 <translation id="1953729392594614704">Si bloqueas <ph name="TOPIC" />, también se bloquearán los temas relacionados, aunque estén activos</translation>
 <translation id="1954847915560574887">A3x3</translation>
 <translation id="1955773397805078763">Añadir método de pago</translation>
@@ -657,7 +652,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2040894699575719559">Ubicación bloqueada</translation>
 <translation id="2041788246978549610">Usar micrófonos disponibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
-<translation id="2043091580538548438">Los sitios que se añadan aquí no se usarán como referencia para las respuestas, aunque las pestañas estén abiertas.</translation>
 <translation id="2045871135676061132">Sobre personal</translation>
 <translation id="2046951263634619614">Librerías</translation>
 <translation id="2048261947532620704">Traduciendo página</translation>
@@ -950,7 +944,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2462932596748424101">Redes sociales</translation>
 <translation id="2465688316154986572">Grapar</translation>
 <translation id="2465914000209955735">Gestiona archivos que has descargado en Chrome</translation>
-<translation id="2466004615675155314">Muestra información del sitio web</translation>
 <translation id="2466682894498377850">Pestaña enviada desde tu <ph name="DEVICE_NAME" /></translation>
 <translation id="2467272921457885625">Especificaciones de hardware y estadísticas del dispositivo, como el historial de uso de la CPU/RAM</translation>
 <translation id="2467421459221956357">¿Usar sensores?</translation>
@@ -1068,7 +1061,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2647086987482648627">Tela (semibrillante)</translation>
 <translation id="264810637653812429">No se han podido encontrar dispositivos compatibles.</translation>
-<translation id="2649204054376361687"><ph name="CITY" />, <ph name="COUNTRY" /></translation>
 <translation id="2650446666397867134">Acceso al archivo denegado</translation>
 <translation id="2651465929321991146">Historial y pestañas</translation>
 <translation id="2653659639078652383">Enviar</translation>
@@ -1144,7 +1136,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2768397283109119044">Has intentado acceder a <ph name="DOMAIN" />, pero el servidor ha presentado un certificado no válido emitido a ese nombre. El nombre es una dirección IP reservada o un nombre de host interno.</translation>
 <translation id="2770159525358613612">Prueba a subir tus archivos de nuevo</translation>
 <translation id="277133753123645258">Método de envío</translation>
-<translation id="2772464848856512911">¿Compartir pestañas abiertas en cada conversación?</translation>
 <translation id="277499241957683684">Falta un registro de dispositivo.</translation>
 <translation id="2775884851269838147">Primera página de impresión</translation>
 <translation id="277828055419948999">Chromium puede autocompletar campos difíciles que la función Autocompletar estándar podría pasar por alto</translation>
@@ -1215,7 +1206,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2915496182262110498">Pintura</translation>
 <translation id="2916038427272391327">Cierra otros programas</translation>
 <translation id="2917630513638801879">Cian 1</translation>
-<translation id="2918484639460781603">Ir a Configuración</translation>
 <translation id="2919185931486062599">Caza y tiro</translation>
 <translation id="2922350208395188000">No es posible comprobar el certificado del servidor.</translation>
 <translation id="2922792708490674">{0,plural, =1{No se ha podido descargar el archivo}other{No se han podido descargar <ph name="FILE_COUNT" /> archivos}}</translation>
@@ -1281,7 +1271,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3005723025932146533">Mostrar copia guardada</translation>
 <translation id="300580149047131921">Se ha usado recientemente</translation>
 <translation id="3006864083554020786">dirección de casa</translation>
-<translation id="3007110814003834680">Exclusiones de sitios</translation>
 <translation id="3009036448238594149"><ph name="ACTION_IN_SUGGEST_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador para consultar las acciones disponibles y, después, Intro para ejecutar la acción seleccionada.</translation>
 <translation id="3010991137650052245">Para usar tu <ph name="PERMISSION" /> en este sitio, da acceso a <ph name="SHORT_PRODUCT_NAME" /></translation>
 <translation id="3013711734159931232">Productos del hogar</translation>
@@ -1409,7 +1398,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3202497928925179914"><ph name="MANAGE_SYNC_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y luego Intro para gestionar qué información quieres sincronizar en la configuración de Chrome</translation>
 <translation id="3203025201812691413">La URL no puede estar vacía</translation>
 <translation id="320323717674993345">Cancelar pago</translation>
-<translation id="3203366800380907218">Información del sitio web</translation>
 <translation id="3207830513221832868">Puede que <ph name="BLOCKED_URL" /> incluya contenido no apto para menores</translation>
 <translation id="3207960819495026254">Añadido a marcadores</translation>
 <translation id="3208701679386778924">Envía un informe para que podamos mejorar las próximas actualizaciones de ChromeOS.</translation>
@@ -1610,7 +1598,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3532624859962632484">Acceder a otros dispositivos de tu red local</translation>
 <translation id="3532844647053365774"><ph name="HOST" /> quiere usar el micrófono</translation>
 <translation id="3533328374079021623">Buzón de correo 5</translation>
-<translation id="3535233022130619049">Obtén respuestas más rápidas y personalizadas en cada conversación compartiendo tus pestañas abiertas de forma predeterminada. Puedes cambiar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="3536227077203206203">Permitida esta vez</translation>
 <translation id="3537165859691846083">Carta plus</translation>
 <translation id="353816159217417898">Pantalla (paginada)</translation>
@@ -1621,7 +1608,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3543935938072367282">Paga más rápido con Autocompletar</translation>
 <translation id="3547442767634383572">La vista general del perfil de trabajo</translation>
 <translation id="3547746132308051926">20x24 pulgadas</translation>
-<translation id="3547854697327105403">Compartir pestañas relevantes en cada hilo</translation>
 <translation id="3549904448933807997">Información de navegadores y perfiles (incluidos los perfiles personales y de trabajo)</translation>
 <translation id="3552155506104542239">Advertencia: Esta política está en conflicto con la política <ph name="POLICY_NAME" /> y no tendrá ningún efecto en las aplicaciones Android. Por lo demás, esta política funciona según lo previsto.</translation>
 <translation id="3552297013052089404">Fuente Sans Serif</translation>
@@ -1636,7 +1622,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3567778190852720481">No te puedes registrar con la cuenta de empresa (la cuenta de empresa no reúne los requisitos).</translation>
 <translation id="3567901620846335314">100x150 mm</translation>
 <translation id="3570079787344939099">Desplazamiento y zoom</translation>
-<translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
 <translation id="3574520980813687946">Añadir información nueva a la dirección</translation>
 <translation id="3575121482199441727">Permitir en este sitio</translation>
 <translation id="3575168918110434329">A4x7</translation>
@@ -1790,7 +1775,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3789841737615482174">Instalar</translation>
 <translation id="3791118028061680614">Paga sin cambiar de aplicación</translation>
 <translation id="3792100426446126328"><ph name="NAME" /> (<ph name="WIDTH" /> x <ph name="HEIGHT" /> in)</translation>
-<translation id="3792251736135878332">Las pestañas abiertas relevantes se usan para personalizar las respuestas en todas las conversaciones</translation>
 <translation id="3792826587784915501">Películas de culto e independientes</translation>
 <translation id="3793574014653384240">La cantidad y las causas de los bloqueos que han ocurrido recientemente</translation>
 <translation id="3795624560191557077">Hace poco has cambiado una contraseña que se ha encontrado en una brecha pública de seguridad de datos. Si tienes problemas, el Gestor de contraseñas de Google puede ayudarte a iniciar sesión.</translation>
@@ -1878,7 +1862,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3942048175062210325">Prueba a abrir tus archivos de nuevo</translation>
 <translation id="3943857333388298514">Pegar</translation>
 <translation id="3945937463338223066">Controlar los dispositivos de autenticación de tipo <ph name="READERNAME" /> y las tarjetas inteligentes a las que puede acceder</translation>
-<translation id="3946209740501886391">Preguntar siempre en este sitio web</translation>
 <translation id="3948588869002647271">Falta esta aplicación o está dañada</translation>
 <translation id="3949297482798028668">Tu administrador ha bloqueado la opción de pegar este contenido aquí.</translation>
 <translation id="3949571496842715403">Este servidor no ha podido demostrar que es <ph name="DOMAIN" />; su certificado de seguridad no especifica nombres alternativos del sujeto. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión.</translation>
@@ -1956,7 +1939,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="406358100705415968">Equipo de protección individual</translation>
 <translation id="4065429683324339709">Google Chrome quiere verificar que eres tú antes de que cambies la configuración</translation>
 <translation id="4065659219963895623">Restaurantes</translation>
-<translation id="4065914898561361692">No compartir automáticamente las pestañas abiertas relevantes (opción predeterminada)</translation>
 <translation id="4067774859633143413">Para salir de la pantalla completa y ver la descarga, mantén pulsado |<ph name="ACCELERATOR" />|</translation>
 <translation id="4067947977115446013">Añade una dirección válida</translation>
 <translation id="4072486802667267160">Se ha producido un error al procesar el pedido. Vuelve a intentarlo.</translation>
@@ -1998,7 +1980,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4114007503059268298">¿Quieres guardar esta tarjeta en tu cuenta de Google y en este dispositivo?</translation>
 <translation id="4114146879518089587">Ir al sitio</translation>
 <translation id="4115378294792113321">Magenta</translation>
-<translation id="4116663294526079822">Permitir siempre en este sitio</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4116798170070772848">RA2</translation>
 <translation id="4117700440116928470">No se admite el ámbito de la política.</translation>
@@ -2083,7 +2064,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="422722221769396062">Servicios de entrega a domicilio de restaurantes</translation>
 <translation id="4230204356098880324">Puede pedir permiso para usar y mover tu cámara</translation>
 <translation id="4231448684371260244">8x13 pulgadas</translation>
-<translation id="4235360514405112390">Válido</translation>
 <translation id="4239799716689808527">Etiquetas</translation>
 <translation id="424063167283213501">Guardar número de viajero conocido</translation>
 <translation id="4241830393007970744">Es posible que los atacantes del sitio que has intentado visitar te engañen para que instales software o proporciones información como tus contraseñas, tu teléfono o tus números de tarjeta de crédito.</translation>
@@ -2218,6 +2198,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4434045419905280838">Ventanas emergentes y redirecciones</translation>
 <translation id="443673843213245140">Se ha inhabilitado el uso de un servidor proxy, pero se han especificado ajustes de proxy explícitos.</translation>
 <translation id="4438821706955556403">Precio habitual</translation>
+<translation id="4439687924334332880">Obtén respuestas más personalizadas compartiendo automáticamente las pestañas abiertas en esta ventana si están relacionadas con esta conversación. Puedes activar esta opción en todas las conversaciones desde la configuración.</translation>
 <translation id="4441832193888514600">Se ignora porque la política solo se puede establecer como una política de usuarios basada en la nube.</translation>
 <translation id="4444062564459679679">Ya se ha enviado a Chrome en tu <ph name="DEVICE_NAME" /></translation>
 <translation id="4445694043187340808"><ph name="STARTER_PACK_TABS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Intro para buscar pestañas</translation>
@@ -2445,7 +2426,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4832388034239846146">Para compartir grupos de pestañas, actualiza Chrome</translation>
 <translation id="483241715238664915">Activar advertencias</translation>
 <translation id="4832961164064927107">Barbacoas y parrilladas</translation>
-<translation id="4835568975547260025">Chrome compartirá las pestañas abiertas relevantes de forma predeterminada para ayudarte a obtener respuestas más personalizadas a tus preguntas.</translation>
 <translation id="4840250757394056958">Ver tu historial de Chrome</translation>
 <translation id="4842365697443353018">Borra el formulario para usar la opción de pago aplazado</translation>
 <translation id="484462545196658690">Automático</translation>
@@ -2528,7 +2508,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4957080528849277028">Botón Ver tu historial de Chrome: actívalo para ver y gestionar tu historial de navegación desde la configuración de Chrome</translation>
 <translation id="4957781475307065660">{DOMAIN_COUNT,plural, =1{+ 1 sitio}other{+ # sitios}}</translation>
 <translation id="4958444002117714549">Expandir lista</translation>
-<translation id="4960061221656117224">Excluir sitios</translation>
 <translation id="4960203958361543136">Elige tu buscador</translation>
 <translation id="4961708452830821006">Para usar el micrófono, concede acceso a Chrome en la <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Paisajismo</translation>
@@ -2537,7 +2516,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="4968665849807487749">Puede solicitar permiso para gestionar las ventanas en todas tus pantallas</translation>
 <translation id="4969341057194253438">Eliminar grabación</translation>
 <translation id="4973922308112707173">Perforado doble en la parte superior</translation>
-<translation id="4975266898030581282">Se usan las pestañas abiertas relevantes</translation>
 <translation id="4976702386844183910">Última visita: <ph name="DATE" /></translation>
 <translation id="4983145717627482381">Visitas guiadas y vacaciones en grupo</translation>
 <translation id="498323057460789381">Error de validación del esquema: <ph name="ERROR" /></translation>
@@ -2726,7 +2704,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5271381225185906340">La condición "<ph name="DATA_CONTROLS_ATTRIBUTE" />" no se admite en "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="527191520368130807">Pulir</translation>
 <translation id="5273658854610202413">Advertencia: Esta política no se ha combinado tal como se especifica en la política PolicyDictionaryMultipleSourceMergeList porque no forma parte de las políticas de diccionario que se pueden combinar.</translation>
-<translation id="5274074150785993864">Chrome envía tus pestañas abiertas, el contenido de las páginas y las URLs a Google para personalizar tus respuestas</translation>
 <translation id="5278778426231952189">Subir ahora</translation>
 <translation id="5279286380302340275">Gestionar descargas</translation>
 <translation id="5282008206326321696">{count,plural, =0{# marcadores}=1{# marcador}other{# marcadores}}</translation>
@@ -2735,7 +2712,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="528468243742722775">Finalizar</translation>
 <translation id="5285468538058987167">Mediante la autenticación reforzada de clientes (SCA)</translation>
 <translation id="5286195392366054103">Esta política tiene más de <ph name="MAX_URL_PATTERNS_LIMIT" /> patrones de URL. Solo se usarán los primeros <ph name="MAX_URL_PATTERNS_LIMIT" /> patrones de URL.</translation>
-<translation id="5287456746628258573">Este sitio web usa una configuración de seguridad obsoleta y puede que exponga tu información (por ejemplo, las contraseñas o los números de las tarjetas de crédito) cuando se envíe a este sitio web.</translation>
 <translation id="5288108484102287882">La validación de los valores de las políticas ha generado advertencias</translation>
 <translation id="5289384342738547352">Gestión de varios documentos</translation>
 <translation id="5291770543968339335">{DAYS_UNTIL_DEADLINE,plural, =1{Es necesario actualizar hoy}=2{Tienes hasta mañana para iniciar la actualización}other{Es necesario actualizar en el plazo de # días}}</translation>
@@ -2779,7 +2755,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5352033265844765294">Impresión de fecha</translation>
 <translation id="5354143049423063163">Fondos de cobertura</translation>
 <translation id="5355557959165512791">No puedes acceder a <ph name="SITE" /> en este momento porque su certificado se ha revocado. Los ataques y los errores de red suelen ser temporales, por lo que es probable que esta página funcione más tarde.</translation>
-<translation id="5359752295193133096">Comparte las pestañas abiertas relevantes de forma predeterminada para obtener respuestas más rápidas y personalizadas.</translation>
 <translation id="5360706051680403227">Lámparas e iluminación</translation>
 <translation id="536296301121032821">Error al almacenar la configuración de la política</translation>
 <translation id="5363148545938487338">Salesforce</translation>
@@ -2848,7 +2823,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5452923259299906094">Pagar con cartera electrónica y Pix</translation>
 <translation id="5455374756549232013">Marca de tiempo de política incorrecta</translation>
 <translation id="5456428544444655325">No mostrar nunca</translation>
-<translation id="5457113250005438886">No válido</translation>
 <translation id="5458150163479425638">{CONTACT,plural, =0{<ph name="CONTACT_PREVIEW" />}=1{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}other{<ph name="CONTACT_PREVIEW" /> y <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" /> más}}</translation>
 <translation id="5463625433003343978">Buscando dispositivos...</translation>
 <translation id="5464236009658034488">Material de oficina</translation>
@@ -2924,7 +2898,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5551890439174915351">100x200 mm</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te avisa si se ha publicado online. Al hacerlo, tus contraseñas y nombres de usuario se cifran para que nadie pueda leerlos, ni siquiera Google.</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
-<translation id="5556843284826862956">Puede que revisores humanos vean las conversaciones para mejorar la IA de Google</translation>
 <translation id="5558083606899411167">Sistemas de aire acondicionado</translation>
 <translation id="5559311991468302423">Eliminar dirección</translation>
 <translation id="5561747310506483298">Documentos de identificación</translation>
@@ -2954,7 +2927,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5596627076506792578">Más opciones</translation>
 <translation id="5596939519753369075">2 x 3,5 pulgadas</translation>
 <translation id="5597254438174353289">Azul 3</translation>
-<translation id="5600044805561809264">Puedes hacer preguntas fácilmente sobre las pestañas que compartes mientras navegas.</translation>
 <translation id="5603469469737324249"><ph name="ISSUER_1_NAME" /> o <ph name="ISSUER_2_NAME" /></translation>
 <translation id="560412284261940334">Administración no admitida</translation>
 <translation id="5604254791550001355">Editar prompt</translation>
@@ -3171,7 +3143,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5968022600320704045">No hay resultados de búsqueda</translation>
 <translation id="5968400720580217226">Modo IA</translation>
 <translation id="5969199813874624822">Guardar y seguir precio</translation>
-<translation id="5969933937005244170">Las pestañas abiertas relevantes solo se usarán si las compartes en una conversación</translation>
 <translation id="5972020793760134803">Cambia a la pestaña</translation>
 <translation id="5973514677932942122"><ph name="EXPIRATION_DATE" /> | <ph name="SECURITY_CODE" /></translation>
 <translation id="5974052231147553524">Sexto rollo</translation>
@@ -3187,6 +3158,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5995727681868049093">Gestiona tu información, privacidad y seguridad en tu cuenta de Google</translation>
 <translation id="5996255674476750320">Salones del automóvil</translation>
 <translation id="5997247540087773573">La contraseña que acabas de usar se ha encontrado en una brecha de seguridad de datos. Para proteger tus cuentas, el Gestor de contraseñas de Google te recomienda que cambies esa contraseña ahora y que compruebes las contraseñas que tengas guardadas.</translation>
+<translation id="5997915162652837008">Puedes ahorrar tiempo activando el uso compartido de pestañas automáticamente en todas las conversaciones. Consulta más información sobre</translation>
 <translation id="6000528814684428358">Rock duro y progresivo</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> resultados para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
@@ -3331,6 +3303,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6203231073485539293">Comprueba tu conexión a Internet</translation>
 <translation id="6205314730813004066">Privacidad en la publicidad</translation>
 <translation id="6212314149070368045">Continuo de EE. UU.</translation>
+<translation id="6213685130162740188">Números de viajero conocido</translation>
 <translation id="6215936431492593050">Metal (satinado)</translation>
 <translation id="6217950634729714357">Muebles para la cocina y el comedor</translation>
 <translation id="6218305986815100395">No se puede activar la tarjeta virtual</translation>
@@ -3405,7 +3378,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6328639280570009161">Prueba a inhabilitar la predicción de red</translation>
 <translation id="6329742260390895689">Para autocompletar tu información, en los ajustes de Wallet, activa Usar mis documentos en todo Google.</translation>
 <translation id="6329815962353376655">&lt;Escribe una pregunta&gt;</translation>
-<translation id="6331597954316706229">Para recibir las respuestas más personalizadas, permite que todas las conversaciones puedan consultar tus pestañas abiertas relevantes.</translation>
 <translation id="633348045801643466">Muestra las opciones de <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pago aplazado<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> al tramitar la compra</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6336948221660696475">Realidad virtual no permitida</translation>
@@ -3455,7 +3427,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6390200185239044127">Plegado al medio en Z</translation>
 <translation id="6390533465682072118">Recuperación</translation>
 <translation id="639068771471208680">Formato de varias partes</translation>
-<translation id="6391911601916058725">¿Compartir siempre las pestañas abiertas relevantes?</translation>
 <translation id="6392799395081100092">Papel (vitela)</translation>
 <translation id="6393156038355142111">Sugerir contraseña segura</translation>
 <translation id="6393310910507376797">No admitido por el comercio</translation>
@@ -3751,11 +3722,13 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6874604403660855544">&amp;Rehacer acción de añadir</translation>
 <translation id="6875873347995743859">Enviar al Asistente</translation>
 <translation id="6875894866901426843">Tu administrador eliminará tus archivos locales, incluidos los de la papelera, el <ph name="DATE_TIME" />.</translation>
+<translation id="6880812263216766325">¿Compartir siempre las pestañas abiertas para obtener mejores respuestas?</translation>
 <translation id="6880941331070119097">Opción de precio alto</translation>
 <translation id="6881240511396774766">Crea un documento de Google rápidamente</translation>
 <translation id="6883221904761970440">La hoja de autenticación de credenciales de pago seguras está cerrada</translation>
 <translation id="6883745783646124431">dirección de trabajo</translation>
 <translation id="6886283082988906333">Archivo ZIP</translation>
+<translation id="6886431827310382613">Compartir pestañas pertinentes</translation>
 <translation id="6886577214605505410"><ph name="LOCATION_TITLE" /> <ph name="SHORT_URL" /></translation>
 <translation id="688706781007114099">Usar ubicación</translation>
 <translation id="6888584790432772780">Chrome ha simplificado esta página para facilitar su lectura y ha recuperado la página original mediante una conexión no segura.</translation>
@@ -3907,7 +3880,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="7109510814665441393">Juegos de carreras y coches</translation>
 <translation id="7110116949943042888">Trabajos temporales y estacionales</translation>
 <translation id="7110368079836707726">Facultades y universidades</translation>
-<translation id="7111012039238467737">(válido)</translation>
 <translation id="7111507312244504964">Inspecciones y tasaciones de la propiedad</translation>
 <translation id="7118618213916969306">Buscar la URL <ph name="SHORT_URL" /> del portapapeles</translation>
 <translation id="7118852830504022370">Si ves esta advertencia, significa que este sitio no es compatible con HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Más información sobre esta advertencia<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -3968,7 +3940,6 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="7196153352301578792">Chrome enviará automáticamente el contenido de las páginas y las URLs de las pestañas abiertas que podrían ser relevantes para tu pregunta a Google con el fin de obtener respuestas más personalizadas. Chrome solo compartirá las pestañas de la ventana en la que estés trabajando.</translation>
 <translation id="7196370964328811506">Autocompletar esta tarjeta en las compras que hagas en Chrome cuando se guarde en este dispositivo</translation>
 <translation id="7199278868241956094">Oficio</translation>
-<translation id="7200963436813710587">Hemos tenido en cuenta las siguientes pestañas abiertas:</translation>
 <translation id="7202217080450895452"><ph name="LAUNCH_INCOGNITO_FOCUSED_FRIENDLY_MATCH_TEXT" />, pulsa Tabulador y, a continuación, Intro para abrir una pestaña de Incógnito nueva y navegar de forma privada</translation>
 <translation id="7203375778433816396">Establecer Chrome como navegador predeterminado del sistema</translation>
 <translation id="7210863904660874423">La página <ph name="HOST_NAME" /> no cumple los estándares de seguridad.</translation>
@@ -4044,6 +4015,7 @@ Más información:
 <translation id="7337706099755338005">No está disponible en esta plataforma.</translation>
 <translation id="733923710415886693">El certificado del servidor no se ha revelado a través de la Transparencia en los Certificados.</translation>
 <translation id="73398226265793546">Botón de Modo IA, actívalo para preguntar al Modo IA en la Búsqueda de Google</translation>
+<translation id="7343620778718789463">Documentos de identidad</translation>
 <translation id="7346048084945669753">Se ha afiliado:</translation>
 <translation id="7346062987309535530">Set de platos, vasos y otros utensilios</translation>
 <translation id="7346081071264046066">"responde sí a esta invitación de boda con emoción"</translation>
@@ -4134,7 +4106,6 @@ Más información:
 <translation id="7453032093368223821">Gestionar otros datos</translation>
 <translation id="7453849010505253492">Este servidor no ha podido demostrar que es <ph name="DOMAIN" /> porque está usando un certificado de seguridad en el que Chrome o la configuración de tu sistema no confían para el cifrado del tráfico web. Este problema puede deberse a una configuración incorrecta o a que un atacante ha interceptado la conexión. <ph name="BEGIN_VIEW_CERTIFICATE_LINK" />Ver certificado<ph name="END_VIEW_CERTIFICATE_LINK" /></translation>
 <translation id="7454377933424667109">Cuenta de Cloud</translation>
-<translation id="7455133967321480974">Utilizar valor predeterminado global (Bloquear)</translation>
 <translation id="7455452752247248289">Tecnología empresarial</translation>
 <translation id="745640750744109667">A0x3</translation>
 <translation id="7457071735008326060">Camiones de carga y remolques</translation>
@@ -4198,7 +4169,6 @@ Más información:
 <translation id="753714465667062283">Inicia sesión para guardar tu foto</translation>
 <translation id="7537536606612762813">Obligatoria</translation>
 <translation id="7543525346216957623">Pide permiso a tu padre o madre</translation>
-<translation id="7544639168115776013">Obtén respuestas más rápidas y personalizadas en cada conversación compartiendo tus pestañas abiertas relevantes de forma predeterminada.</translation>
 <translation id="7546409722674205727">Iniciando <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Solucionar errores de conexión</translation>
 <translation id="7549584377607005141">Esta página web necesita los datos introducidos anteriormente para mostrarse correctamente. Puedes volver a enviar los datos, pero se repetirán las acciones que haya realizado la página.</translation>
@@ -4220,6 +4190,7 @@ Más información:
 <translation id="7569490014721427265">Golf</translation>
 <translation id="7569952961197462199">¿Eliminar tarjeta de crédito de Chrome?</translation>
 <translation id="7569983096843329377">Negro</translation>
+<translation id="7570862164055912832">Números Redress</translation>
 <translation id="7571813784389228510">Modo IA de Google</translation>
 <translation id="7574998639136359461">Equipamiento de deportes de invierno</translation>
 <translation id="7575207903026901870">Botón Eliminar sugerencia, pulsa Intro para eliminar esta sugerencia</translation>
@@ -4283,7 +4254,6 @@ Más información:
 <translation id="7660456820368115565">Juegos multijugador masivos</translation>
 <translation id="7662298039739062396">Opción controlada por una extensión</translation>
 <translation id="7662911501613893058"><ph name="USER_DISPLAY_NAME" /> ha abandonado el grupo</translation>
-<translation id="7663736086183791259">Certificado <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">No permitido en incógnito</translation>
 <translation id="7667346355482952095">El token de política devuelto está vacío o no coincide con el token actual</translation>
 <translation id="7668654391829183341">Dispositivo desconocido</translation>
@@ -4365,7 +4335,6 @@ Más información:
 <translation id="7779418012194492374">Revocar acceso a <ph name="DEVICE_NAME" /></translation>
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7782465647372057580">La información de la cuenta se cifra y se mantiene en privado</translation>
-<translation id="7785431476897438309">Puedes cambiar esta opción en cualquier momento en la configuración de Chrome.</translation>
 <translation id="7785471469930192436">Consulta las instrucciones del buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="7785790577395078482">esta tablet</translation>
 <translation id="7786368602962652765">Un campo obligatorio está vacío. Rellénalo antes de guardar.</translation>
@@ -4403,7 +4372,6 @@ Más información:
 <translation id="7846161022626028328">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="784623644169604270">No hay actividad reciente</translation>
 <translation id="7848926355794727168">Navegación automática</translation>
-<translation id="7849695969708971789">Las pestañas abiertas relevantes se usarán para personalizar las respuestas en todas las conversaciones</translation>
 <translation id="7853222852810008596">Pagar más tarde no está disponible en esta moneda</translation>
 <translation id="785476343534277563">Deportes universitarios</translation>
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="FORMATTED_TOTAL_AMOUNT" /> <ph name="CURRENCY_CODE" /></translation>
@@ -4522,7 +4490,6 @@ Más información:
 <translation id="803771048473350947">Archivo</translation>
 <translation id="8038182528865038593">Rojo 2</translation>
 <translation id="8041089156583427627">Enviar</translation>
-<translation id="8041940743680923270">Utilizar valor predeterminado global (Preguntar)</translation>
 <translation id="8043255123207491407">Consulta los términos y condiciones del vendedor</translation>
 <translation id="8044986521421349135">Tu pestaña más reciente</translation>
 <translation id="8046360364391076336">Materiales y equipamiento industriales</translation>
@@ -4601,7 +4568,6 @@ Más información:
 <translation id="817820454357658398">Productos para la higiene femenina</translation>
 <translation id="818254048113802060">{0,plural, =1{<ph name="FILE_NAME" /> se ha bloqueado debido al contenido}other{<ph name="FILE_COUNT" /> archivos se han bloqueado debido al contenido}}</translation>
 <translation id="8183800802493617952">Juegos y actividades para toda la familia</translation>
-<translation id="8184538546369750125">Utilizar valor predeterminado global (Permitir)</translation>
 <translation id="8186706823560132848">Software</translation>
 <translation id="8188830160449823068">IBAN guardado solo en el dispositivo</translation>
 <translation id="8189557652711717875">El buscador que elijas se usará para funciones como buscar desde la barra de direcciones y desde imágenes en páginas web.</translation>
@@ -4636,7 +4602,6 @@ Más información:
 <translation id="8238188918340945316">28x40 pulgadas</translation>
 <translation id="8238581221633243064">Abre una página en una nueva pestaña de Incógnito</translation>
 <translation id="8241707690549784388">La página que buscas ha utilizado la información que has especificado. Volver a la página podría provocar la repetición de alguna acción. ¿Quieres continuar?</translation>
-<translation id="8241712895048303527">Bloquear en este sitio web</translation>
 <translation id="8242426110754782860">Continuar</translation>
 <translation id="824620968958405573">Tarea de Navegación automática</translation>
 <translation id="8246482227229072868">Anillos</translation>
@@ -4734,6 +4699,7 @@ Más información:
 <translation id="8381674639488873545">Estos cargos pueden ser únicos o periódicos, y es posible que no se indiquen de una forma evidente. <ph name="BEGIN_LINK" />Mostrar de todos modos<ph name="END_LINK" /></translation>
 <translation id="8382097126743287270">Pantalla completa automática</translation>
 <translation id="838307841291975086">Rancheras</translation>
+<translation id="838953173259347825">Obtén respuestas más personalizadas compartiendo automáticamente las pestañas abiertas en esta ventana si están relacionadas con esta conversación. Puedes activar esta opción en todas las conversaciones desde la</translation>
 <translation id="8389532092404711541">Normalmente <ph name="LOW_PRICE" /></translation>
 <translation id="8389940864052787379">Vehículos personalizados y de alto rendimiento</translation>
 <translation id="8390725133630534698">La política del administrador no permite compartir entre <ph name="ORIGIN_NAME" /> y <ph name="VM_NAME" />.</translation>
@@ -4946,7 +4912,6 @@ Más información:
 <translation id="8751426954251315517">Vuelve a intentarlo más adelante</translation>
 <translation id="8753913772043329557">Registros de políticas</translation>
 <translation id="8754546574216727970">Botas</translation>
-<translation id="8755119102172890580">Compartir automáticamente pestañas abiertas relevantes</translation>
 <translation id="8755125092386286553">A4x9</translation>
 <translation id="875657606603537618">Contenido insertado</translation>
 <translation id="8757526089434340176">Oferta de Google Play disponible</translation>
@@ -5018,6 +4983,7 @@ Más información:
 <translation id="8861482055962701239">No se ha podido guardar esta información en tu Google Wallet, pero se ha guardado en Chrome en este dispositivo. Chrome te ofrecerá guardarla en Wallet la próxima vez que la uses.</translation>
 <translation id="8863218129525348270">Para pagar más rápido la próxima vez, guarda la tarjeta en tu dispositivo</translation>
 <translation id="8864939224504814334">Trajes y ropa formal</translation>
+<translation id="8865650218866129025">¿Compartir automáticamente las pestañas abiertas para obtener mejores respuestas en esta conversación?</translation>
 <translation id="8866132857352163524">Bandas sonoras</translation>
 <translation id="8866481888320382733">Error al analizar la configuración de la política</translation>
 <translation id="8866928039507595380">Plegar</translation>
@@ -5104,7 +5070,6 @@ Más información:
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />: pulsa Tabulador y, después, Intro para compartir esta pestaña mediante el enlace, creando un código QR, enviando contenido y más.</translation>
 <translation id="9023536760430404133">Neumáticos y ruedas de vehículos</translation>
-<translation id="9025348182339809926">(no válido)</translation>
 <translation id="902590795160480390">Cargando PDF</translation>
 <translation id="9026253329950610248">Google Sites</translation>
 <translation id="9027020981272345766">Probar Chrome Enterprise Core</translation>
@@ -5201,7 +5166,6 @@ Más información:
 <translation id="9167054383925257837">Información sobre el navegador y el SO del dispositivo (como las versiones del navegador y del SO)</translation>
 <translation id="9167594211215946097">Tener acceso directo a tus impresoras</translation>
 <translation id="9168814207360376865">Permite a los sitios comprobar si tienes métodos de pago guardados</translation>
-<translation id="9169664750068251925">Bloquear siempre en este sitio</translation>
 <translation id="9169931577761441333">Añadir <ph name="APP_NAME" /> a la pantalla de inicio</translation>
 <translation id="9170848237812810038">&amp;Deshacer</translation>
 <translation id="9170906125144697215">Paga con Pix sin cambiar de aplicación</translation>

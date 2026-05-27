@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Jy kan ook na regs rollees om in Incognito te blaai.</translation>
 <translation id="2079545284768500474">Ontdoen</translation>
 <translation id="2085876078937250610">Stoor …</translation>
+<translation id="2089180529062519164">Skakel mikrofoon aan</translation>
 <translation id="2096239473850415494">Kon nie aflaai nie</translation>
 <translation id="2096716221239095980">Vee alle data uit</translation>
 <translation id="2104436223719117661">Soekneigings</translation>
@@ -1862,6 +1863,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="7468373585447318060">Bly op hoogte van prysdalings op al die produkte wat jy naspoor.</translation>
 <translation id="746872191028309255">Koop dit wat jy sien met jou kamera of fotogalery.</translation>
 <translation id="7471557245617580330">Skep nuwe oortjie</translation>
+<translation id="7473555040328423550">Voeg oortjie by</translation>
 <translation id="7476548258282096076">Hierdie kaart wys jou mees besoekte werwe</translation>
 <translation id="7484645889979462775">Nooit vir hierdie werf nie</translation>
 <translation id="7486006552035434095">Hou jou toestelle gesinkroniseer</translation>
@@ -2117,6 +2119,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8319282042900445670">Onthounota is gestel vir <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Onlangse aktiwiteit</translation>
 <translation id="8325455175867928593">Versteek “Resensies gegrond op jou belangstellings”</translation>
+<translation id="8333459276976141586">Live sal jou mikrofoon gebruik. Die mikrofoon skakel aan as jy op die Live-knoppie tik. Tik op die stopknoppie of maak Gemini toe om die mikrofoon af te skakel.</translation>
 <translation id="833647236762414178">Skep, stoor en bestuur jou wagwoorde en toegangsleutels om maklik by werwe en apps aan te meld. <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Rugsteun jou goed en gebruik dit op enige toestel.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Voltooi nog 1 taak om na die volgende vlak te vorder}other{Voltooi nog {count} take om na die volgende vlak te vorder}}</translation>
@@ -2193,6 +2196,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8571019948162152515">Vee “<ph name="FILENAME" />” uit?</translation>
 <translation id="8571213806525832805">Afgelope vier weke</translation>
 <translation id="8577056989960190117">Vul die vervaljaar <ph name="YEAR" /> outomaties in</translation>
+<translation id="8582026929965253036">Gaan Live met Gemini</translation>
 <translation id="8587001564479545614">Skep ’n terugstel-PIN</translation>
 <translation id="8588404856427128947">Af</translation>
 <translation id="8590286732816598906">Oortjiegroep, <ph name="GROUP_TITLE" />, Kieslys.</translation>
@@ -2267,6 +2271,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="8803526663383843427">As dit aan is</translation>
 <translation id="8803639129939845298">Veilig</translation>
 <translation id="8813277370772331957">Herinner my later</translation>
+<translation id="8814308045751067027">Gee Chrome toegang tot jou mikrofoon in instellings om Live te gebruik</translation>
 <translation id="8814719628147284151">Gaan voort</translation>
 <translation id="881559332211266856">Dateer regstelnommer op</translation>
 <translation id="8817524703470045896">Spoor pryse na en kry opletberigte wanneer die prys op enige werf daal</translation>

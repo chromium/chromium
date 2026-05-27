@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Revisar política do administrador</translation>
 <translation id="158849752021629804">É necesaria unha rede doméstica</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Formatando...</translation>
 <translation id="1601786938618212857">ZIP</translation>
 <translation id="1620510694547887537">Cámara</translation>
 <translation id="162175252992296058">Portugués con teclado internacional estadounidense</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Ruso con teclado YaZHert fonético</translation>
 <translation id="2143778271340628265">Configuración manual do proxy</translation>
 <translation id="2148716181193084225">Hoxe</translation>
+<translation id="2148756636027685713">Formatado finalizado</translation>
 <translation id="2161573825856688200">Proxecto de Google</translation>
 <translation id="2163152940313951844">Carácter non válido: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Quédanche <ph name="RETRIES" /> intentos.</translation>
 <translation id="2663066752008346276">Birmano (Myanmar) con teclado myansan</translation>
 <translation id="2664412712123763093">Localización do ficheiro</translation>
+<translation id="2665919335226618153">Produciuse un erro durante o formatado.</translation>
 <translation id="2672394942808662069">Multilingüe canadense</translation>
 <translation id="2707357721402813583">Irlandés</translation>
 <translation id="2708477391501452176">BÉPO francés</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">As redes WEP non son compatibles</translation>
 <translation id="3295006446256079333">Este volume</translation>
 <translation id="3295357220137379386">O dispositivo está ocupado</translation>
+<translation id="3305389145870741612">O proceso de formatado pode tardar varios segundos. Agarda.</translation>
 <translation id="3307875152560779385">Ucraíno</translation>
 <translation id="3326821416087822643">Comprimindo <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Ano de gravación</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">máquina virtual</translation>
 <translation id="5583640892426849032">Retroceso</translation>
 <translation id="5583664733673201137">A largura da puntuación é completa</translation>
+<translation id="5585912436068747822">Erro de formato</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5602622065581044566">Búlgaro con teclado fonético</translation>
 <translation id="5604409170937514933">Sueco</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Panxabí</translation>
 <translation id="6224240818060029162">Dinamarqués</translation>
 <translation id="6224253798271602650">Formatar o <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formatado finalizado correctamente.</translation>
 <translation id="6241349547798190358">Neerlandés (Bélxica)</translation>
 <translation id="6267547857941397424">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, conectar</translation>
 <translation id="6269630227984243955">Malaio</translation>

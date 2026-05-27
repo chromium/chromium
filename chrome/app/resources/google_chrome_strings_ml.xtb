@@ -187,7 +187,6 @@
 <translation id="2915996080311180594">പിന്നീട് റീസ്‌റ്റാർട്ട് ചെയ്യുക</translation>
 <translation id="2916983411556218750">നിങ്ങളുടെ Chrome തയ്യാറാക്കാം</translation>
 <translation id="2926952073016206995">Chrome-ന് ഈ സൈറ്റിനായി ക്യാമറാ അനുമതി ആവശ്യമാണ്</translation>
-<translation id="2928420929544864228">ഇൻസ്റ്റാൾ ചെയ്യൽ പൂർത്തിയായി.</translation>
 <translation id="2945997411976714835">ഇൻസ്റ്റാൾ ചെയ്യുന്നതിൽ പിശക്: ഇൻസ്റ്റാൾ ചെയ്യൽ പ്രക്രിയ ആരംഭിക്കാനായില്ല.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - നെറ്റ്‌വർക്ക് സൈൻ ഇൻ - Chrome</translation>
 <translation id="2970681950995291301">Chrome-ൽ നിന്ന് നിങ്ങളുടെ Google Account നീക്കം ചെയ്യാൻ, ക്രമീകരണം പേജിൽ Chrome-ൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യുക</translation>
@@ -283,6 +282,7 @@
 <translation id="3892148308691398805">ടെക്‌സ്‌റ്റ് പകർത്തുക</translation>
 <translation id="3941890832296813527">ഇൻസ്റ്റാൾ ചെയ്യുന്നതിൽ പിശക്: ഇൻസ്റ്റാളർ ഫയൽ നാമം അസാധുവാണ് അല്ലെങ്കിൽ പിന്തുണയില്ല.</translation>
 <translation id="395904275706073188">പരിരക്ഷിത പേജുകൾ വായിക്കാനാകില്ല. മറ്റൊരു പേജ് പരീക്ഷിക്കുക.</translation>
+<translation id="3967822245660637423">ഡൗൺലോഡ് പൂർത്തിയായി</translation>
 <translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> അക്കൗണ്ടിൽ Chrome ഡാറ്റ ഉപയോഗിക്കാനും സംരക്ഷിക്കാനും നിങ്ങളുടെ പാസ്‌ഫ്രെയ്‌സ് നൽകുക</translation>
 <translation id="3973161977468201858">നിങ്ങളുടെ Google Password Manager ഡാറ്റ ഇല്ലാതാക്കാൻ Google Chrome താൽപ്പര്യപ്പെടുന്നു. ഇത് അനുവദിക്കാൻ നിങ്ങളുടെ Windows പാസ്‌വേഡ് ടൈപ്പ് ചെയ്യുക.</translation>
 <translation id="400161754580828648">നിങ്ങളുടെ സ്‌ക്രീൻ പങ്കിടാൻ, സിസ്റ്റം ക്രമീകരണത്തിൽ Chrome-നായി സ്‌ക്രീൻ റെക്കോർഡിംഗ് അനുവദിക്കുക.</translation>
@@ -317,7 +317,6 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">വ്യക്തിപരമാക്കലും മറ്റ് ഫീച്ചറുകളും ലഭിക്കാൻ, വെബ്, ആപ്പ് ആക്റ്റിവിറ്റിയിലും ലിങ്ക് ചെയ്‌ത Google സേവനങ്ങളിലും Chrome ഉൾപ്പെടുത്തുക</translation>
 <translation id="4334241893986177674">ഈ സ്ക്രീൻഷോട്ട് തിരയുക</translation>
-<translation id="4334294535648607276">ഡൗൺലോഡ് പൂർത്തിയായി.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> Chrome-ലേക്ക് ചേർത്തു</translation>
 <translation id="4344128547036991536">നിങ്ങൾ Google Lens തുറക്കുമ്പോൾ, പേജിന്റെ പേരും URL-ഉം PDF-കൾ ഉൾപ്പെടെയുള്ള ഉള്ളടക്കവും Google-ലേക്ക് സ്വയമേവ അയയ്ക്കും. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">വ്യക്തിപരമാക്കൽ ലഭിക്കാൻ, വെബ്, ആപ്പ് ആക്റ്റിവിറ്റിയിൽ Chrome ഉൾപ്പെടുത്തുക</translation>
@@ -514,7 +513,6 @@
 <translation id="6319856120645568262">നിങ്ങളുടെ ചുറ്റുപാടുകൾ മാപ്പ് ചെയ്യാനും കൈകൾ ട്രാക്ക് ചെയ്യാനും Chrome-ന് അനുമതി ആവശ്യമാണ്</translation>
 <translation id="6321592572353357376">Chrome-ലേക്ക് സൈൻ ഇൻ ചെയ്യാൻ "<ph name="EXTENSION_NAME" />" എന്ന വിപുലീകരണം നിങ്ങളോട് ആവശ്യപ്പെടുന്നു</translation>
 <translation id="6326175484149238433">Chrome-ൽ നിന്ന് നീക്കം ചെയ്യുക</translation>
-<translation id="6327105987658262776">അപ്ഡേറ്റ് ലഭ്യമല്ല.</translation>
 <translation id="6334815226785304306">Google Chrome-നെ ഡിഫോൾട്ട് ബ്രൗസർ ആക്കുക, തുടർന്ന് ടാസ്‌ക്ബാറിൽ പിൻ ചെയ്യുക</translation>
 <translation id="63540178978900677">Chrome ഇനി നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ അല്ല. Chrome ഡിഫോൾട്ട് ബ്രൗസർ ആക്കണോ?</translation>
 <translation id="6360449101159168105">ഈ ടാബ് നിഷ്ക്രിയമായിരുന്നപ്പോൾ, Chrome വേഗത്തിൽ നിലനിർത്താൻ മെമ്മറിയിൽ ഇടമുണ്ടാക്കി. ഈ സൈറ്റ് എല്ലായ്‌പ്പോഴും നിഷ്‌ക്രിയമായിരിക്കുന്നതിൽ നിന്ന് ഒഴിവാക്കാൻ നിങ്ങൾക്ക് തിരഞ്ഞെടുക്കാം.</translation>
@@ -580,7 +578,6 @@
 <translation id="6999131147875565462">Chrome വേഗത്തിൽ റൺ ചെയ്യുകയും JavaScript ഉപയോഗിക്കുന്ന ഫീച്ചറുകൾ ഡിസൈൻ ചെയ്തിരിക്കുന്നത് പോലെ പ്രവർത്തിക്കുകയും വേണം</translation>
 <translation id="7011190694940573312">ഓപ്പറേറ്റിംഗ് സിസ്റ്റത്തിന്റെ ഈ പതിപ്പ് പിന്തുണയ്ക്കാത്തതിനാൽ ഇൻസ്റ്റാൾ ചെയ്യാനായില്ല.</translation>
 <translation id="7024536598735240744">അൺപാക്ക് ചെയ്യുന്നതിൽ പിശക്: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">ഇൻസ്റ്റാൾ ചെയ്യൽ നിർത്തി.</translation>
 <translation id="7025800014283535195">നിങ്ങൾക്ക് ഇവിടെ Chrome പ്രൊഫൈലുകൾ തമ്മിൽ പരസ്‌പരം മാറ്റാനാകും</translation>
 <translation id="7047386856539490735">ഈ ഫലങ്ങൾ ഉപയോഗപ്രദമാണോ?</translation>
 <translation id="7051685429025310665">നിങ്ങൾ അടുത്തിടെ സന്ദർശിച്ചിട്ടില്ല. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> എന്നീ അനുമതികൾ Chrome നീക്കം ചെയ്തു.</translation>
@@ -780,6 +777,7 @@
 <translation id="8999117580775242387">HTTPS ലഭ്യമല്ലാത്തപ്പോൾ, നിങ്ങൾക്ക് മുന്നറിയിപ്പ് നൽകാതെ Chrome ഒരു സുരക്ഷിതമല്ലാത്ത കണക്ഷൻ ഉപയോഗിക്കും</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}=1{Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}other{# ദിവസമായി Chrome-നൊരു അപ്‌ഡേറ്റ് ലഭ്യമാണ്}}</translation>
 <translation id="9014771989710951291">ഒന്നിലധികം സ്ഥാപനങ്ങൾ Chrome മാനേജ് ചെയ്യുന്നു</translation>
+<translation id="9018218886431812662">ഇൻസ്‌റ്റലേഷൻ പൂർത്തിയായി</translation>
 <translation id="9066987883552592250">Chrome Canary-യിലെ Gemini അടയ്ക്കുക</translation>
 <translation id="9090566250983691233">ചില ഫയലുകൾ Chrome ബ്ലോക്ക് ചെയ്യുന്നത് എന്തുകൊണ്ടാണെന്ന് അറിയുക</translation>
 <translation id="9106236359747881194">തിരയാൻ ടെക്സ്റ്റ് തിരഞ്ഞെടുക്കുക</translation>

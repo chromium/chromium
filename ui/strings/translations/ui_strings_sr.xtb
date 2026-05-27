@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Данас</translation>
 <translation id="2168039046890040389">Страница нагоре</translation>
 <translation id="2190355936436201913">(празно)</translation>
-<translation id="2192232475740621500">Користи ниску густину</translation>
 <translation id="2267918077332197517">Блокирај сва обавештења са овог сајта</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Додирните циљна поља за додир на екрану.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Желите ли да позовете овај број са телефона?</translation>
 <translation id="2435457462613246316">Прикажи лозинку</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
-<translation id="2445449901874883781">Користи високу густину</translation>
 <translation id="2448407890032181691">Мета за додир је премештена у доњи десни угао. Додирните овде.</translation>
 <translation id="2482878487686419369">Обавештења</translation>
 <translation id="2497284189126895209">Све датотеке</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6974053822202609517">Здесна налево</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Подешавања приказа апликације ће ступити на снагу када се она следећи пут рестартује.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Још 1 мин}one{Још # мин}few{Још # мин}other{Још # мин}}</translation>
 <translation id="7252604552361840748">Пронађите додатак изнад</translation>

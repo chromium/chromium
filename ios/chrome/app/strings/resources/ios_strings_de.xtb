@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Du kannst nach rechts scrollen, um im Inkognitomodus zu surfen.</translation>
 <translation id="2079545284768500474">Rückgängig</translation>
 <translation id="2085876078937250610">Speichern…</translation>
+<translation id="2089180529062519164">Mikrofon einschalten</translation>
 <translation id="2096239473850415494">Fehler beim Download</translation>
 <translation id="2096716221239095980">Alle Daten löschen</translation>
 <translation id="2104436223719117661">Trends bei Suchanfragen</translation>
@@ -1862,6 +1863,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="7468373585447318060">Du wirst über Preissenkungen für alle Produkte informiert, die du beobachtest.</translation>
 <translation id="746872191028309255">Du kannst ganz einfach kaufen, was du mit deiner Kamera oder in der Fotogalerie siehst.</translation>
 <translation id="7471557245617580330">Neuen Tab erstellen</translation>
+<translation id="7473555040328423550">Tab hinzufügen</translation>
 <translation id="7476548258282096076">Auf dieser Karte werden deine am häufigsten besuchten Websites angezeigt.</translation>
 <translation id="7484645889979462775">Für diese Website niemals</translation>
 <translation id="7486006552035434095">Alle Geräte immer synchronisiert</translation>
@@ -2117,6 +2119,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8319282042900445670">Erinnerung für den <ph name="DATE" /> um <ph name="TIME" /> eingerichtet</translation>
 <translation id="8320212361750431956">Letzte Aktivität</translation>
 <translation id="8325455175867928593">„Rezensionen, die auf deinen Interessen basieren“ ausblenden</translation>
+<translation id="8333459276976141586">Für Gemini Live wird dein Mikrofon verwendet. Wenn du auf den Button „Live“ tippst, wird das Mikrofon aktiviert. Um es wieder zu deaktivieren, tippe auf „Stopp“ oder schließe Gemini.</translation>
 <translation id="833647236762414178">Hier kannst du Passwörter und Passkeys erstellen, speichern und verwalten, damit du dich einfacher auf Websites und in Apps anmelden kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Du kannst deine Inhalte sichern und auf jedem Gerät verwenden.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Erledige noch 1 Aufgabe, um das nächste Level zu erreichen}other{Erledige noch {count} weitere Aufgaben, um aufzusteigen}}</translation>
@@ -2193,6 +2196,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8571019948162152515">„<ph name="FILENAME" />“ löschen?</translation>
 <translation id="8571213806525832805">Letzte 4 Wochen</translation>
 <translation id="8577056989960190117"><ph name="YEAR" /> als Ablaufjahr automatisch ausfüllen</translation>
+<translation id="8582026929965253036">Mit Gemini live gehen</translation>
 <translation id="8587001564479545614">Wiederherstellungs‑PIN erstellen</translation>
 <translation id="8588404856427128947">Aus</translation>
 <translation id="8590286732816598906">Tabgruppe, <ph name="GROUP_TITLE" />, Menü.</translation>
@@ -2267,6 +2271,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8803526663383843427">Wenn aktiviert</translation>
 <translation id="8803639129939845298">Sicher</translation>
 <translation id="8813277370772331957">Später erinnern</translation>
+<translation id="8814308045751067027">Wenn du Gemini Live verwenden möchtest, musst du Chrome in den Einstellungen Zugriff auf dein Mikrofon gewähren</translation>
 <translation id="8814719628147284151">Weiter</translation>
 <translation id="881559332211266856">Redress-Nummer aktualisieren</translation>
 <translation id="8817524703470045896">Du kannst Preise beobachten und dich benachrichtigen lassen, wenn der Preis auf einer Website sinkt</translation>

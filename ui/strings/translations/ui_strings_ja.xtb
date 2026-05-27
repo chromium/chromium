@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">今日</translation>
 <translation id="2168039046890040389">前のページへ</translation>
 <translation id="2190355936436201913">(なし)</translation>
-<translation id="2192232475740621500">表示間隔を広くする</translation>
 <translation id="2267918077332197517">このサイトからのすべての通知をブロックする</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">画面に表示されるタップ ターゲットをタップします。</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">スマートフォンからこの番号に電話しますか？</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="24452542372838207">通知を展開</translation>
-<translation id="2445449901874883781">表示間隔を狭くする</translation>
 <translation id="2448407890032181691">タップ ターゲットが右下に移動しました。ここをタップしてください。</translation>
 <translation id="2482878487686419369">通知</translation>
 <translation id="2497284189126895209">すべてのファイル</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">右から左</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">アプリケーションの表示設定は、再起動すると有効になります。</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{残り 1 分}other{残り # 分}}</translation>
 <translation id="7252604552361840748">上記の拡張機能を見つける</translation>

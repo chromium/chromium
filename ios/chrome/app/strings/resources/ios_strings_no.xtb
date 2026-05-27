@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Du kan rulle til høyre for å surfe i inkognitomodus.</translation>
 <translation id="2079545284768500474">Angre</translation>
 <translation id="2085876078937250610">Lagre …</translation>
+<translation id="2089180529062519164">Slå på mikrofonen</translation>
 <translation id="2096239473850415494">Kunne ikke laste ned</translation>
 <translation id="2096716221239095980">Slett alle data</translation>
 <translation id="2104436223719117661">Populære søk</translation>
@@ -1862,6 +1863,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="7468373585447318060">Følg med på avslag på alle produktene du sporer.</translation>
 <translation id="746872191028309255">Kjøp det du ser, med kameraet eller i bildegalleriet.</translation>
 <translation id="7471557245617580330">Åpne ny fane</translation>
+<translation id="7473555040328423550">Legg til fane</translation>
 <translation id="7476548258282096076">På dette kortet vises nettstedene du besøker mest.</translation>
 <translation id="7484645889979462775">Aldri for dette nettstedet</translation>
 <translation id="7486006552035434095">Hold enhetene dine synkronisert</translation>
@@ -2117,6 +2119,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8319282042900445670">Påminnelsen er stilt inn til <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Nylig aktivitet</translation>
 <translation id="8325455175867928593">Skjul «Anmeldelser basert på interessene dine»</translation>
+<translation id="8333459276976141586">Live kommer til å bruke mikrofonen. Trykk på Live-knappen for å slå på mikrofonen. For å slå av mikrofonen, trykk på stoppknappen eller lukk Gemini.</translation>
 <translation id="833647236762414178">Opprett, lagre og administrer passordene og passnøklene dine for å logge på nettsteder og apper enkelt. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Sikkerhetskopier tingene dine, og bruk dem på alle enheter.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Fullfør 1 oppgave til for å gå opp til nytt nivå}other{Fullfør {count} oppgaver til for å gå opp til nytt nivå}}</translation>
@@ -2193,6 +2196,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8571019948162152515">Vil du slette «<ph name="FILENAME" />»?</translation>
 <translation id="8571213806525832805">Siste 4 uker</translation>
 <translation id="8577056989960190117">Autofyll utløpsåret <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Ha en samtale Live med Gemini</translation>
 <translation id="8587001564479545614">Opprett en PIN-kode for gjenoppretting</translation>
 <translation id="8588404856427128947">Av</translation>
 <translation id="8590286732816598906">Fanegruppe, <ph name="GROUP_TITLE" />, meny.</translation>
@@ -2267,6 +2271,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="8803526663383843427">Når funksjonen er på</translation>
 <translation id="8803639129939845298">Sikker</translation>
 <translation id="8813277370772331957">Påminn meg senere</translation>
+<translation id="8814308045751067027">For å bruke Live må du gi Chrome tilgang til mikrofonen i innstillingene</translation>
 <translation id="8814719628147284151">Fortsett</translation>
 <translation id="881559332211266856">Oppdater redress-nummer</translation>
 <translation id="8817524703470045896">Spor priser, og få varsler når prisen faller på et nettsted</translation>

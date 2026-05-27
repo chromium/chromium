@@ -177,7 +177,6 @@
 <translation id="2885378588091291677">Асуудлын менежер</translation>
 <translation id="2910007522516064972">Chromium-ын тухай</translation>
 <translation id="2915996080311180594">Дараа дахин эхлүүлэх</translation>
-<translation id="2928420929544864228">Суулгаж дууслаа.</translation>
 <translation id="2933336679234709858">Таны өгөгдлийг нэвтрэх үгээр тань шифрлэдэг. Google Бүртгэлдээ Chromium-н өгөгдлөө ашиглах, хадгалахын тулд нэвтрэх үгээ оруулна уу.</translation>
 <translation id="2945997411976714835">Суулгах үед алдаа гарлаа: Суулгагч явцыг эхлүүлж чадсангүй.</translation>
 <translation id="2948852018303413228">iOS-т зориулсан Chromium-д хадгалсан нууц үгээ ашиглан сайтад илүү хурдан нэвтрээрэй</translation>
@@ -272,6 +271,7 @@
 <translation id="3954172517175569325">Таны Google Бүртгэлдээ хадгалсан нууц үг, төлбөрийн хэрэгсэл, хаягуудыг энэ төхөөрөмжөөс хасна. Тэдгээрийг Chromium-д дахин ашиглахын тулд буцаж нэвтэрнэ үү.</translation>
 <translation id="395904275706073188">Хамгаалагдсан хуудсыг унших боломжгүй. Өөр хуудас туршиж үзнэ үү.</translation>
 <translation id="3962647064319009959">Chromium таныг хэрхэн аюулгүй байлгадаг болохыг мэдэж авна уу</translation>
+<translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3971865010372729242">Таныг хаяг оруулах хэсэг, хайх хэсэгт шивэх үед Chromium зөвлөмж авахын тулд таны шивсэн зүйлийг танай байгууллагын хайлт, ХОУ, агентын хэрэгслүүд рүү илгээдэг.</translation>
 <translation id="3975724895399328945">&amp;Google Chrome for Testing-н тухай</translation>
 <translation id="3997429360543082038">ChromiumOS-н тухай</translation>
@@ -307,7 +307,6 @@
 <translation id="4298125729853015961">Chromium-с нууц үг экспортлох</translation>
 <translation id="4304713468139749426">Нууц үгний менежер</translation>
 <translation id="4334241893986177674">Энэ дэлгэцийн агшнаас хайх</translation>
-<translation id="4334294535648607276">Татаж дууслаа.</translation>
 <translation id="4384331407722351213">Windows-г эхлэх үед Chromium-г эхлүүлэх</translation>
 <translation id="4384993550046411228">Та Chromium-г өгөгдмөл хөтчөөрөө тохируулж мэддэг, дуртай, итгэдэг онцлогууддаа хялбархан хандаарай. Chromium-г шуурхай хандахад зориулж таны ажлын хэсэгт бэхэлнэ.</translation>
 <translation id="439358628917130594"><ph name="MANAGER" /> танаас энэ төхөөрөмжийг ашиглахаасаа өмнө дараах үйлчилгээний нөхцөлийг уншиж, зөвшөөрөхийг шаардаж байна. Эдгээр нөхцөл нь ChromiumOS-н нөхцөлийг өргөтгөх, өөрчлөх эсвэл хязгаарлахгүй.</translation>
@@ -361,7 +360,6 @@
 <translation id="4987820182225656817">Зочид Chromium-ийг ашигласнаар хамгийн сүүлийн үеийн мэдээллийг авна.</translation>
 <translation id="4992938037305302429">Таны Chromium дахь бүртгэл</translation>
 <translation id="4994636714258228724">Өөрийгөө Chromium руу нэмэх</translation>
-<translation id="5083712646171654472">Chromium дахь Gemini таны табд ажиллаж, таны өгсөн даалгаврыг гүйцэтгэхийн тулд автоматаар үзэх онцлогийг ашигладаг. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium-д таны гарыг хянах зөвшөөрөл шаардлагатай</translation>
 <translation id="5141988424377517949">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан.</translation>
 <translation id="5174969993834422967">Та ихэвчлэн мэдэгдлийг блоклодог. Энэ сайтад танд мэдэгдэхийг зөвшөөрөхийн тулд байршлын хэсгийн тань баруун дээд буланд байх мэдэгдлийн дүрс тэмдгийг товшино уу.</translation>
@@ -472,7 +470,6 @@
 <translation id="6294831894865512704">Өргөтгөл таныг Chromium-д нэвтрэхийг хүсэж байна</translation>
 <translation id="6295779123002464101"><ph name="FILE_NAME" /> аюултай байж болзошгүй тул үүнийг Chromium блок хийсэн.</translation>
 <translation id="6309712487085796862">Chromium таны камерыг ашиглаж байна.</translation>
-<translation id="6327105987658262776">Шинэчлэлт боломжгүй байна.</translation>
 <translation id="6333502561965082103">Chromium-д өөр үйл ажиллагаа явагдаж байна. Дараа дахин оролдоно уу.</translation>
 <translation id="6334986366598267305">Одоо та Google хаягаа ашиглан мөн өөр бусад компьютер дээр Chromium-г ашиглахад хялбар боллоо.</translation>
 <translation id="6347002662287820329">Chromium-г өгөгдмөл хөтчөөрөө тохируулж мэддэг, дуртай, итгэдэг онцлогууддаа хялбархан хандаарай.</translation>
@@ -548,7 +545,6 @@
 <translation id="7003299027384820442"><ph name="ACCOUNT_EMAIL" /> бүртгэлдээ Chromium-н өгөгдлийг ашиглах, хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="7011190694940573312">Үйлдлийн системийн энэ хувилбарыг дэмждэггүй тул суулгалт амжилтгүй боллоо.</translation>
 <translation id="7024536598735240744">Задлахад алдаа гарлаа: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Суулгахыг зогсоосон.</translation>
 <translation id="7045244423563602563">Chromium-г өөрийн болгоoрой</translation>
 <translation id="7047386856539490735">Эдгээр илэрц хэрэг болж байна уу?</translation>
 <translation id="705851970750939768">Chromium-г шинэчлэх</translation>
@@ -600,7 +596,6 @@
 <translation id="7624307931717240213">Бид энэ үйлчилгээг сайжруулахад мэдээллийг ашигладаг. Нууцлалын бодлого, Үйлчилгээний нөхцөлийг харна уу.</translation>
 <translation id="7649070708921625228">Тусламж</translation>
 <translation id="7650134251917003571">Chromium аппыг авах</translation>
-<translation id="7656340475565475526">Chromium-д танд зориулж үзэхийг зөвшөөрөх</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7686590090926151193">Chromium таны өгөгдмөл хөтөч биш юм</translation>
 <translation id="7689606757190482937">Төхөөрөмжүүддээ Chromium-г синк хийж, хувийн болгох</translation>
@@ -714,6 +709,7 @@
 <translation id="897581876605952338">Chromium Enterprise-н лого</translation>
 <translation id="8981150672034878610">Таны профайлыг нээхэд ямар нэг алдаа гарсан тул Chromium-г эхлүүлэх боломжгүй. Chromium-г дахин эхлүүлж үзнэ үү.</translation>
 <translation id="8988036198400390003">Chromium-н профайлуудыг удирдах</translation>
+<translation id="9018218886431812662">Суулгаж дууссан</translation>
 <translation id="9019929317751753759">Chromium-г илүү аюулгүй болгохын тулд <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> жагсаалтанд байхгүй, танд мэдэгдэлгүйгээр нэмэгдсэн байж болох дараах өргөтгөлийг идэвхгүй болголоо.</translation>
 <translation id="9022552996538154597">Chromium дансандаа нэвтрэх</translation>
 <translation id="904366664621834601">Архивын файлд хортой программыг нууж байж магадгүй бусад файл багтдаг тул Chromium энэ таталтыг блоклосон</translation>

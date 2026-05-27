@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Έλεγχος πολιτικής διαχειριστή</translation>
 <translation id="158849752021629804">Απαιτείται εγχώριο δίκτυο</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Μορφοποίηση…</translation>
 <translation id="1601786938618212857">Ταχυδρομικός κώδικας</translation>
 <translation id="1620510694547887537">Κάμερα</translation>
 <translation id="162175252992296058">Πορτογαλικά με πληκτρολόγιο Διεθνές ΗΠΑ</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Ρωσικά με φωνητικό πληκτρολόγιο YaZHert</translation>
 <translation id="2143778271340628265">Μη αυτόματη διαμόρφωση διακομιστή μεσολάβησης</translation>
 <translation id="2148716181193084225">Σήμερα</translation>
+<translation id="2148756636027685713">Η μορφοποίηση ολοκληρώθηκε</translation>
 <translation id="2161573825856688200">Έργο Google</translation>
 <translation id="2163152940313951844">Μη έγκυρος χαρακτήρας: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Απομένουν <ph name="RETRIES" /> προσπάθειες.</translation>
 <translation id="2663066752008346276">Βιρμανικά/Μιανμάρ με πληκτρολόγιο Myansan</translation>
 <translation id="2664412712123763093">Τοποθεσία αρχείου</translation>
+<translation id="2665919335226618153">Ώχ! Κάτι πήγε στραβά! Παρουσιάστηκε ένα σφάλμα κατά τη μορφοποίηση.</translation>
 <translation id="2672394942808662069">Πολύγλωσσο Καναδά</translation>
 <translation id="2707357721402813583">Ιρλανδικά</translation>
 <translation id="2708477391501452176">BÉPO Γαλλικών</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Δεν υποστηρίζονται δίκτυα WEP</translation>
 <translation id="3295006446256079333">Αυτός ο τόμος</translation>
 <translation id="3295357220137379386">Η συσκευή εργάζεται</translation>
+<translation id="3305389145870741612">Η διαδικασία διαμόρφωσης ενδέχεται να διαρκέσει μερικά δευτερόλεπτα. Περιμένετε.</translation>
 <translation id="3307875152560779385">Ουκρανικά</translation>
 <translation id="3326821416087822643">Συμπίεση αρχείου <ph name="FILE_NAME" />…</translation>
 <translation id="3335337277364016868">Έτος ηχογράφησης</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">εικονική μηχανή</translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
 <translation id="5583664733673201137">Το εύρος στίξης είναι Πλήρες</translation>
+<translation id="5585912436068747822">Αποτυχία μορφοποίησης</translation>
 <translation id="5596627076506792578">Περισσότερες επιλογές</translation>
 <translation id="5602622065581044566">Βουλγαρικά με φωνητικό πληκτρολόγιο</translation>
 <translation id="5604409170937514933">Σουηδικά</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Παντζάμπι</translation>
 <translation id="6224240818060029162">Δανικά</translation>
 <translation id="6224253798271602650">Διαμόρφωση <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Η μορφοποίηση ολοκληρώθηκε με επιτυχία!</translation>
 <translation id="6241349547798190358">Ολλανδικά (Βέλγιο)</translation>
 <translation id="6267547857941397424">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Σύνδεση</translation>
 <translation id="6269630227984243955">Μαλαισιανά</translation>

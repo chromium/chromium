@@ -181,7 +181,6 @@
 <translation id="2915996080311180594">後で再起動</translation>
 <translation id="2916983411556218750">Chrome の設定を始めましょう</translation>
 <translation id="2926952073016206995">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
-<translation id="2928420929544864228">インストールが完了しました。</translation>
 <translation id="2945997411976714835">インストール エラー: インストーラのプロセスを開始できませんでした。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ネットワークにログイン - Chrome</translation>
 <translation id="2970681950995291301">Chrome から Google アカウントを削除するには、[設定] ページで Chrome からログアウトしてください</translation>
@@ -276,6 +275,7 @@
 <translation id="3892148308691398805">テキストをコピー</translation>
 <translation id="3941890832296813527">インストール エラー: インストーラのファイル名が無効またはサポートされていません。</translation>
 <translation id="395904275706073188">保護されたページは読み込めません。別のページをお試しください。</translation>
+<translation id="3967822245660637423">ダウンロード完了</translation>
 <translation id="3968962723676998462">アカウント「<ph name="ACCOUNT_EMAIL" />」で Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
 <translation id="3973161977468201858">Google Chrome が Google パスワード マネージャーのデータの削除をリクエストしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="400161754580828648">画面を共有するには、[システム設定] で Chrome に画面の録画を許可してください。</translation>
@@ -310,7 +310,6 @@
 <translation id="4328355335528187361">Google Chrome Dev（mDNS-In）</translation>
 <translation id="4329315893554541805">パーソナライズなどの機能を利用するには、Chrome をウェブとアプリのアクティビティと、リンクされた Google サービスに追加します</translation>
 <translation id="4334241893986177674">このスクリーンショットを検索</translation>
-<translation id="4334294535648607276">ダウンロードが完了しました。</translation>
 <translation id="4343195214584226067">「<ph name="EXTENSION_NAME" />」が Chrome に追加されました</translation>
 <translation id="4344128547036991536">Google レンズを開くと、ページのタイトル、URL、コンテンツ（PDF を含む）が自動的に Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">パーソナライズするには、Chrome をウェブとアプリのアクティビティに追加します</translation>
@@ -503,7 +502,6 @@
 <translation id="6319856120645568262">Chrome にシーン認識とハンド トラッキングを許可する必要があります</translation>
 <translation id="6321592572353357376">拡張機能「<ph name="EXTENSION_NAME" />」が Chrome へのログインを求めています</translation>
 <translation id="6326175484149238433">Chrome から削除</translation>
-<translation id="6327105987658262776">利用できるアップデートはありません。</translation>
 <translation id="6334815226785304306">Google Chrome を既定のブラウザに設定してタスクバーに固定する</translation>
 <translation id="63540178978900677">Chrome は既定のブラウザではなくなりました。Chrome を既定のブラウザにしますか？</translation>
 <translation id="6360449101159168105">Chrome を高速に保つため、このタブがアクティブでないときにメモリを解放しました。このサイトを常にアクティブにするよう選択できます。</translation>
@@ -569,7 +567,6 @@
 <translation id="6999131147875565462">Chrome の動作が速くなり、JavaScript を使用する機能が設計どおりに動作します</translation>
 <translation id="7011190694940573312">このバージョンのオペレーティング システムはサポートされていないため、インストールできませんでした。</translation>
 <translation id="7024536598735240744">解凍エラー: <ph name="UNPACK_ERROR" />。</translation>
-<translation id="7025789849649390912">インストールが停止しました。</translation>
 <translation id="7025800014283535195">こちらで Chrome プロファイルを切り替えることができます</translation>
 <translation id="7047386856539490735">この結果は役に立ちましたか？</translation>
 <translation id="7051685429025310665">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました。</translation>
@@ -770,6 +767,7 @@
 <translation id="8999117580775242387">HTTPS を使用できない場合、Chrome では警告を表示せずに安全でない接続を使用します</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome のアップデートが利用可能です}=1{Chrome のアップデートが利用可能です}other{Chrome のアップデートが利用可能になってから # 日経過しています}}</translation>
 <translation id="9014771989710951291">Chrome は複数の組織によって管理されています</translation>
+<translation id="9018218886431812662">インストールが完了しました</translation>
 <translation id="9066987883552592250">Gemini in Chrome Canary を閉じる</translation>
 <translation id="9090566250983691233">Chrome で一部のファイルがブロックされる理由</translation>
 <translation id="9106236359747881194">検索するテキストを選択</translation>

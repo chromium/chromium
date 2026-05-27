@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">நிர்வாகக் கொள்கையைக் காட்டு</translation>
 <translation id="158849752021629804">உள்ளூர் நெட்வொர்க் தேவை</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> பெ.பை.</translation>
+<translation id="1593594475886691512">வடிவமைக்கிறது...</translation>
 <translation id="1601786938618212857">ஜிப்</translation>
 <translation id="1620510694547887537">கேமரா</translation>
 <translation id="162175252992296058">போர்ச்சுகீஸ் - யூஎஸ் சர்வதேசக் கீபோர்டு</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">ரஷ்யன் - ஒலிப்புமுறை YaZHert கீபோர்டு</translation>
 <translation id="2143778271340628265">கைமுறை ப்ராக்ஸி உள்ளமைவு</translation>
 <translation id="2148716181193084225">இன்று</translation>
+<translation id="2148756636027685713">வடிவமைத்தல் முடிந்தது</translation>
 <translation id="2161573825856688200">Google புராஜெக்ட்</translation>
 <translation id="2163152940313951844">செல்லாத எழுத்து: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> வாய்ப்புகள் மீதமுள்ளன.</translation>
 <translation id="2663066752008346276">பர்மீஸ்/மியான்மர் - மியான்சன் கீபோர்டு</translation>
 <translation id="2664412712123763093">ஃபைலின் இடம்</translation>
+<translation id="2665919335226618153">அச்சச்சோ! வடிவமைக்கும்போது பிழை ஏற்பட்டது.</translation>
 <translation id="2672394942808662069">கனடியன் பன்மொழி</translation>
 <translation id="2707357721402813583">ஐரிஷ்</translation>
 <translation id="2708477391501452176">ஃபிரஞ்ச் BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP நெட்வொர்க்குகள் ஆதரிக்கப்படுவதில்லை</translation>
 <translation id="3295006446256079333">இந்த ஒலியளவு</translation>
 <translation id="3295357220137379386">சாதனம் பிஸியாக உள்ளது</translation>
+<translation id="3305389145870741612">வடிவமைப்பு செயலாக்கத்திற்கு சில வினாடிகள் ஆகும். காத்திருக்கவும்.</translation>
 <translation id="3307875152560779385">உக்ரைனியன்</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ஐ ஜிப் செய்கிறது...</translation>
 <translation id="3335337277364016868">பதிவுசெய்த ஆண்டு</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">விர்ச்சுவல் மெஷின்</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">முழுமையான நிறுத்தற்குறி அகலம்</translation>
+<translation id="5585912436068747822">வடிவமைத்தல் தோல்வியடைந்தது</translation>
 <translation id="5596627076506792578">கூடுதல் விருப்பங்கள்</translation>
 <translation id="5602622065581044566">பல்கேரியன் - ஒலிப்புமுறை கீபோர்டு</translation>
 <translation id="5604409170937514933">ஸ்வீடிஷ்</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">பஞ்சாபி</translation>
 <translation id="6224240818060029162">டேனிஷ்</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> சாதனத்தை ஃபார்மேட் செய்</translation>
+<translation id="6224481128663248237">வடிவமைத்தல் சிறப்பாக முடிந்தது!</translation>
 <translation id="6241349547798190358">டச்சு (பெல்ஜியம்)</translation>
 <translation id="6267547857941397424">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" />%, இணை</translation>
 <translation id="6269630227984243955">மலாய்</translation>

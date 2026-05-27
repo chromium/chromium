@@ -183,7 +183,6 @@
 <translation id="2915996080311180594">Перезапустить позже</translation>
 <translation id="2916983411556218750">Давайте настроим Chrome</translation>
 <translation id="2926952073016206995">Браузер Chrome запрашивает доступ к камере для этого сайта.</translation>
-<translation id="2928420929544864228">Установка завершена.</translation>
 <translation id="2945997411976714835">Произошла ошибка. Не удалось начать установку.</translation>
 <translation id="2969728957078202736">"<ph name="PAGE_TITLE" />" – вход в сеть – Chrome</translation>
 <translation id="2970681950995291301">Чтобы удалить из браузера аккаунт Google, выйдите из Chrome на странице настроек</translation>
@@ -278,6 +277,7 @@
 <translation id="3892148308691398805">Скопировать текст</translation>
 <translation id="3941890832296813527">Произошла ошибка. Название файла установщика недействительно или не поддерживается.</translation>
 <translation id="395904275706073188">Невозможно получить доступ к защищенным страницам. Попробуйте использовать функцию на другой странице.</translation>
+<translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3968962723676998462">Введите кодовую фразу, чтобы использовать и сохранять данные Chrome в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="3973161977468201858">Google Chrome пытается удалить ваши данные из Google Менеджера паролей. Чтобы разрешить это, введите свой пароль Windows.</translation>
 <translation id="400161754580828648">Чтобы запустить демонстрацию экрана, в системных настройках разрешите Chrome записывать с него видео.</translation>
@@ -312,7 +312,6 @@
 <translation id="4328355335528187361">Google Chrome для разработчиков (mDNS-In)</translation>
 <translation id="4329315893554541805">Чтобы настроить персонализацию и другие функции, добавьте Chrome в историю приложений и веб-поиска и связанные сервисы Google</translation>
 <translation id="4334241893986177674">Поиск по скриншоту</translation>
-<translation id="4334294535648607276">Скачивание завершено.</translation>
 <translation id="4343195214584226067">Расширение "<ph name="EXTENSION_NAME" />" установлено</translation>
 <translation id="4344128547036991536">При использовании Google Объектива заголовок, URL и контент страницы, в том числе PDF-файлы, автоматически отправляются в Google. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Чтобы сервисы персонализировались для вас, добавьте Chrome в историю приложений и веб-поиска</translation>
@@ -505,7 +504,6 @@
 <translation id="6319856120645568262">Браузеру Chrome требуется разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание движений рук.</translation>
 <translation id="6321592572353357376">Расширение "<ph name="EXTENSION_NAME" />" запрашивает вход в Chrome</translation>
 <translation id="6326175484149238433">Удалить</translation>
-<translation id="6327105987658262776">Нет обновлений.</translation>
 <translation id="6334815226785304306">Сделать Google Chrome браузером по умолчанию и закрепить на панели задач</translation>
 <translation id="63540178978900677">Chrome больше не браузер по умолчанию. Вернуть его?</translation>
 <translation id="6360449101159168105">Пока эта вкладка была неактивна, выделенная для нее память была освобождена, чтобы браузер Chrome работал быстрее. Вы можете сделать так, чтобы вкладки с этим сайтом всегда были активны.</translation>
@@ -571,7 +569,6 @@
 <translation id="6999131147875565462">Скорость Chrome повысится, а функции, использующие JavaScript, будут работать корректно</translation>
 <translation id="7011190694940573312">Установка не удалась, так как эта версия ОС не поддерживается.</translation>
 <translation id="7024536598735240744">Ошибка при распаковке: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Установка отменена.</translation>
 <translation id="7025800014283535195">Здесь можно переключиться на другой профиль Chrome</translation>
 <translation id="7047386856539490735">Эти результаты для вас полезны?</translation>
 <translation id="7051685429025310665">Вы давно не посещали этот сайт. Браузер Chrome отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
@@ -772,6 +769,7 @@
 <translation id="8999117580775242387">Если протокол HTTPS недоступен, Chrome будет использовать незащищенное соединение, не предупреждая вас</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступно обновление Chrome}=1{Доступно обновление Chrome}one{Обновление Chrome доступно # день}few{Обновление Chrome доступно # дня}many{Обновление Chrome доступно # дней}other{Обновление Chrome доступно # дня}}</translation>
 <translation id="9014771989710951291">Несколько организаций управляют Chrome</translation>
+<translation id="9018218886431812662">Установка завершена</translation>
 <translation id="9066987883552592250">Закрыть Gemini в Chrome Canary</translation>
 <translation id="9090566250983691233">Узнайте, почему Chrome блокирует скачивание некоторых файлов</translation>
 <translation id="9106236359747881194">Выберите текст для поиска</translation>

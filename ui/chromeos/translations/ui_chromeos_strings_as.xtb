@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">প্ৰশাসকৰ নীতি পৰ্যালোচনা কৰক</translation>
 <translation id="158849752021629804">গৃহ নেটৱৰ্কৰ আৱশ্যক</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> পি.বি.</translation>
+<translation id="1593594475886691512">ফৰ্মেট কৰি থকা হৈছে...</translation>
 <translation id="1601786938618212857">জিপ কৰক</translation>
 <translation id="1620510694547887537">কেমেৰা</translation>
 <translation id="162175252992296058">আমেৰিকা যুক্তৰাষ্ট্ৰৰ আন্তঃৰাষ্ট্ৰীয় কীব’ৰ্ডৰ সৈতে পৰ্টুগীজ</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">ফ’নেটিক YaZHert কীব’ৰ্ডৰ সৈতে ৰাছিয়ান</translation>
 <translation id="2143778271340628265">মেনুৱেল প্ৰ’ক্সি কনফিগাৰেশ্বন</translation>
 <translation id="2148716181193084225">আজি</translation>
+<translation id="2148756636027685713">ফৰ্মেট কৰা সম্পূৰ্ণ হ’ল</translation>
 <translation id="2161573825856688200">Googleৰ প্ৰ’জেক্ট</translation>
 <translation id="2163152940313951844">অমান্য বৰ্ণ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">আপোনাৰ <ph name="RETRIES" /> টা প্ৰয়াস বাকী আছে।</translation>
 <translation id="2663066752008346276">Myansan কীব’ৰ্ডৰ সৈতে বাৰ্মীজ/ম্যানমাৰ</translation>
 <translation id="2664412712123763093">ফাইলৰ অৱস্থান</translation>
+<translation id="2665919335226618153">আমি দুঃখিত! ফৰ্মেট কৰি থাকোঁতে কিবা আসোঁৱাহ হ'ল।</translation>
 <translation id="2672394942808662069">কানাডিয়ান বহুভাষিক</translation>
 <translation id="2707357721402813583">আইৰিশ্ব</translation>
 <translation id="2708477391501452176">ফৰাছী বেপ’</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP নেটৱৰ্ক সমৰ্থিত নহয়</translation>
 <translation id="3295006446256079333">এই ভলিউমটো</translation>
 <translation id="3295357220137379386">ডিভাইচটো ব্যস্ত আছে</translation>
+<translation id="3305389145870741612">ফর্মেট প্ৰক্ৰিয়া সম্পূর্ণ হ'বলৈ কিছু সময়ৰ প্ৰয়োজন হ'ব। অনুগ্ৰহ কৰি অপেক্ষা কৰক।</translation>
 <translation id="3307875152560779385">ইউক্ৰেনিয়ান</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> জিপ কৰি থকা হৈছে...</translation>
 <translation id="3335337277364016868">বছৰ ৰেকর্ড কৰা হৈছে</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">ভাৰ্চুৱেল মেচিন</translation>
 <translation id="5583640892426849032">বেকস্পেচ</translation>
 <translation id="5583664733673201137">যতিচিহ্নৰ প্ৰস্থ পূৰ্ণ</translation>
+<translation id="5585912436068747822">ফৰ্মেট কৰিব পৰা নগ’ল</translation>
 <translation id="5596627076506792578">অধিক বিকল্প</translation>
 <translation id="5602622065581044566">ফ’নেটিক কীব’ৰ্ডৰ সৈতে বুলগেৰিয়ান</translation>
 <translation id="5604409170937514933">ছুইডিশ্ব</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">পাঞ্জাবী</translation>
 <translation id="6224240818060029162">ডেনিশ্ব</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ফর্মেট কৰক</translation>
+<translation id="6224481128663248237">ফৰ্মেট কৰাটো সফলভাৱে সম্পূৰ্ণ হ’ল!</translation>
 <translation id="6241349547798190358">ডাট্‌চ (বেলজিয়াম)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" />%, সংযোগ কৰক</translation>
 <translation id="6269630227984243955">মালয়</translation>

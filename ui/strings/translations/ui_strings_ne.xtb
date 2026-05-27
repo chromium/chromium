@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2168039046890040389">पृष्ठ माथि</translation>
 <translation id="2190355936436201913">(खालि)</translation>
-<translation id="2192232475740621500">न्यून घनत्व प्रयोग गर्नुहोस्</translation>
 <translation id="2267918077332197517">यो साइटका सबै सूचनाहरूमाथि रोक लगाउनुहोस्</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">आफ्नो स्क्रिनमा स्पर्शका लक्ष्यहरूमा छुनुहोस्।</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">आफ्नो फोनबाट यो नम्बरमा कल गर्ने हो?</translation>
 <translation id="2435457462613246316">पासवर्ड देखाउनुहोस्</translation>
 <translation id="24452542372838207">सूचना विस्तृत गर्नुहोस्‌</translation>
-<translation id="2445449901874883781">उच्च घनत्व भएको डिस्प्ले प्रयोग गर्नुहोस्</translation>
 <translation id="2448407890032181691">टच गरिने स्थान सारेर पुछारको दायाँतिर लगिएको छ। यहाँ ट्याप गर्नुहोस्।</translation>
 <translation id="2482878487686419369">नोटिफिकेसनहरू</translation>
 <translation id="2497284189126895209">सबै फाइलहरू</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6974053822202609517">दायाँदेखि बायाँसम्म</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">अर्को पटक तपाईंको एप पुनः सुरु भएपछि तपाईंको एपको डिस्प्लेसम्बन्धी सेटिङहरू लागू हुने छन्।</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{ १ मिनेट बाँकी}other{ # मिनेट बाँकी}}</translation>
 <translation id="7252604552361840748">माथि उल्लिखित एक्स्टेन्सन खोज्नुहोस्</translation>

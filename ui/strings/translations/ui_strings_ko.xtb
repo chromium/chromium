@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2168039046890040389">페이지 위로</translation>
 <translation id="2190355936436201913">(비어있음)</translation>
-<translation id="2192232475740621500">저밀도 사용</translation>
 <translation id="2267918077332197517">이 사이트의 모든 알림 차단</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">화면에서 터치 대상을 탭하세요.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">휴대전화에서 이 번호로 전화를 거시겠습니까?</translation>
 <translation id="2435457462613246316">비밀번호 표시</translation>
 <translation id="24452542372838207">알림 펼치기</translation>
-<translation id="2445449901874883781">고밀도 사용</translation>
 <translation id="2448407890032181691">터치 영역이 오른쪽 아래로 이동했습니다. 여기를 탭하세요.</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2497284189126895209">모든 파일</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">확인</translation>
 <translation id="6974053822202609517">오른쪽에서 왼쪽으로</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">다음번에 애플리케이션이 다시 시작되면 디스플레이 설정이 적용됩니다.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1분 남음}other{#분 남음}}</translation>
 <translation id="7252604552361840748">위에 나열된 확장 프로그램을 찾습니다.</translation>

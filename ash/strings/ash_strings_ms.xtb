@@ -14,6 +14,7 @@
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ditambahkan</translation>
 <translation id="1038106730571050514">Tunjukkan cadangan</translation>
 <translation id="1047017786576569492">separa</translation>
+<translation id="104710386808485638">Mulakan semula Linux?</translation>
 <translation id="1052916631016577720">Pengimbasan Item</translation>
 <translation id="1056775291175587022">0 rangkaian</translation>
 <translation id="1056898198331236512">Amaran</translation>
@@ -29,6 +30,7 @@
 <translation id="1073899992769346247">Gantikan atau cas semula bateri</translation>
 <translation id="1081015718268701546">Apl Linux tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
 <translation id="108486256082349153">Selular: <ph name="ADDRESS" /></translation>
+<translation id="1085697365578766383">Ralat semasa memulakan mesin maya. Sila cuba lagi.</translation>
 <translation id="1088231044944504242">Cari <ph name="CATEGORY" />, fail, apl anda dan pelbagai lagi. Gunakan kekunci anak panah untuk menavigasi apl anda.</translation>
 <translation id="1093645050124056515">ctrl + alt + anak panah ke bawah</translation>
 <translation id="1094756674036064790">Matikan Bluetooth?</translation>
@@ -55,6 +57,7 @@
 <translation id="1173268871892601910">Password Manager ChromeOS mahu mengesahkan identiti anda</translation>
 <translation id="1175572348579024023">Tatal</translation>
 <translation id="1175944128323889279">Paras kuasa bateri semasa <ph name="BATTERY_PERCENTAGE" />%, tinggal <ph name="TIME" /></translation>
+<translation id="1177863135347784049">Tersuai</translation>
 <translation id="1178581264944972037">Jeda</translation>
 <translation id="1179776263021875437">Berhenti memfokuskan pada tugasan</translation>
 <translation id="1180117276105724040">Memulihkan tetingkap daripada sesi anda sebelum ini...</translation>
@@ -82,6 +85,7 @@
 <translation id="1240638468526743569">Apl</translation>
 <translation id="1242198791279543032">Pemberitahuan diredamkan</translation>
 <translation id="1242883863226959074">peranti</translation>
+<translation id="1244265436519979884">Pemulihan Linux sedang dijalankan</translation>
 <translation id="1245476784081715330">Syabas!</translation>
 <translation id="124678866338384709">Tutup tab semasa</translation>
 <translation id="1246890715821376239">Apl tidak disokong</translation>
@@ -108,8 +112,10 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Buka Teroka</translation>
 <translation id="129469256578833241">Kembali kepada ringkasan</translation>
+<translation id="1294807885394205587">Proses ini mungkin mengambil masa beberapa minit. Memulakan pengurus bekas.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Tekan <ph name="LAUNCHER_KEY_NAME" /> + g pada bila-bila masa</translation>
+<translation id="130491383855577612">Apl &amp; fail Linux telah berjaya diganti</translation>
 <translation id="1306549533752902673">APL YANG DISYORKAN</translation>
 <translation id="1310396869741602366">Ubah nada teks</translation>
 <translation id="1312604459020188865">Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
@@ -118,6 +124,7 @@
 <translation id="132346741904777634">Kamera diautojajar ke penjuru kiri sebelah atas. Bercanggah dengan permukaan sistem.</translation>
 <translation id="132415371743256095">Tutup <ph name="DESK_NAME" /> dan tetingkap</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> disambungkan</translation>
+<translation id="1338950911836659113">Memadamkan...</translation>
 <translation id="1340378040547539434">Zum keluar pada halaman</translation>
 <translation id="1341651618736211726">Limpahan</translation>
 <translation id="1341926407152459446">Gunakan "<ph name="DEVICE_NAME" />" untuk input dan output audio</translation>
@@ -161,6 +168,7 @@
 <translation id="1469148162491666137">Tindakan ini akan membenarkan akses kepada <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dan semua apl serta laman web dengan kebenaran kamera dan mikrofon. Anda mungkin perlu menyegarkan semula halaman web atau memulakan semula apl.</translation>
 <translation id="147310119694673958">Bateri telefon <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Togol tempat liputan. Tempat liputan dihidupkan, 1 peranti disambungkan.</translation>
+<translation id="1476595624592550506">Tukar kata laluan anda</translation>
 <translation id="1479685784053141667">Buat kenalan</translation>
 <translation id="1479909375538722835">Menu kebolehaksesan terapung</translation>
 <translation id="1483493594462132177">Hantar</translation>
@@ -176,6 +184,7 @@
 <translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1523032696246003">Bateri <ph name="BATTERY_PERCENTAGE" />% | <ph name="TIME" /> sehingga penuh</translation>
 <translation id="1525508553941733066">KETEPIKAN</translation>
+<translation id="152629053603783244">Mulakan semula Linux</translation>
 <translation id="1526448108126799339">Buka tab baharu dalam tetingkap baharu</translation>
 <translation id="1528259147807435347">Diedit dalam minggu lepas</translation>
 <translation id="1536604384701784949">Untuk menggunakan <ph name="USER_EMAIL_ADDRESS" />, anda perlu log keluar daripada semua akaun dahulu. Untuk log keluar, pilih Batal untuk kembali. Kemudian pilih masa untuk membuka ruang status dan pilih Log keluar. Kemudian log masuk ke <ph name="USER_EMAIL_ADDRESS_2" /> sekali lagi.</translation>
@@ -194,11 +203,15 @@
 <translation id="1571697193564730395">Togol Jangan Ganggu. <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Pemegang bahagian sisi sebelah kiri dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="1576623706766186887">Zum keluar apabila penggadang dihidupkan</translation>
+<translation id="1578558981922970608">Tutup paksa</translation>
 <translation id="1582946770779745370">Papan Pemuka Permainan tersedia. Tekan <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, kemudian <ph name="LAUNCHER_KEY_NAME" /> + g pada bila-bila masa untuk membuka</translation>
 <translation id="1586324912145647027">Pergi ke meja 1 hingga 8</translation>
 <translation id="158838227375272121">Laman web Google Classroom</translation>
 <translation id="1589090746204042747">Akses semua aktiviti anda dalam sesi ini</translation>
+<translation id="1592074621872221573"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB, yang akan menetapkan semula <ph name="DEVICE_TYPE" /> anda. Sandarkan fail anda sebelum memulakan semula peranti.</translation>
+<translation id="1595492813686795610">Linux sedang ditingkatkan</translation>
 <translation id="1597880963776148053">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Apl anda yang disematkan dan dibuka berada pada rak yang terletak pada bahagian bawah skrin anda. Tekan Alt + Shift + L kemudian tab untuk memfokus pada item rak.</translation>
+<translation id="1602085790802918092">Memulakan mesin maya</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + anak panah ke bawah</translation>
 <translation id="1604857178818051494">Jeda media</translation>
 <translation id="1607312127821884567">Menolak penyediaan pemaparan apl telefon anda</translation>
@@ -207,12 +220,12 @@
 <translation id="1612679292338846734">Apabila anda menghidupkan ciri ini, teks input, kandungan dokumen dan URL halaman web mungkin dihantar kepada pelayan Google AI. Maklumat ini digunakan untuk menjana cadangan penulisan, menjana ringkasan, menjawab pertanyaan dan meningkatkan produk, tertakluk pada <ph name="LINK_TO_SERVICE_TERMS" />. Jangan sertakan sebarang maklumat yang bersifat peribadi, sensitif atau sulit.</translation>
 <translation id="1619879934359211038">Tidak dapat menyambung kepada Google Play. Periksa sambungan rangkaian anda, kemudian cuba lagi. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Kamera</translation>
+<translation id="1621831347985899379">Data <ph name="DEVICE_TYPE" /> akan dipadamkan</translation>
 <translation id="1623768535032616219">Kuncupkan Google Classroom</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" /> tidak tersedia.</translation>
 <translation id="1632985212731562677">Akses Suis boleh dilumpuhkan dalam Tetapan &gt; Kebolehaksesan.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> peranti</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
-<translation id="1642895994345928121">Storan peranti tidak mencukupi untuk membuka apl ini. Kosongkan ruang dan cuba lagi.</translation>
 <translation id="1647986356840967552">Halaman sebelumnya</translation>
 <translation id="1651914502370159744">Buka halaman Sejarah</translation>
 <translation id="1668469839109562275">VPN terbina dalam</translation>
@@ -254,6 +267,7 @@
 <translation id="1755408179247123630">Hidupkan Pilih untuk bercakap?</translation>
 <translation id="1755556344721611131">Apl diagnostik</translation>
 <translation id="1756833229520115364">Tidak dapat menyimpan templat. Terlalu banyak tetingkap atau tab.</translation>
+<translation id="1757132445735080748">Untuk menyelesaikan persediaan Linux, kemas kini Chrome OS Flex dan cuba lagi.</translation>
 <translation id="1757857692711134412">Dimatikan sehingga matahari terbenam</translation>
 <translation id="1763084151787818322">Tindakan lain</translation>
 <translation id="1768138163688567246">Tutup carian skrin saya</translation>
@@ -288,6 +302,7 @@
 <translation id="1879018240766558464">Tetingkap inkognito tidak disokong pada masa ini. Apl lain akan disimpan.</translation>
 <translation id="1882814835921407042">Tiada rangkaian mudah alih</translation>
 <translation id="1882897271359938046">Mencerminkan <ph name="DISPLAY_NAME" /></translation>
+<translation id="1884705339276589024">Ubah saiz cakera Linux</translation>
 <translation id="1885785240814121742">Buka kunci dengan cap jari</translation>
 <translation id="1891362123137972260">Ruang cakera terlalu sedikit. Sila kosongkan ruang cakera.</translation>
 <translation id="1894024878080591367">Persediaan untuk bermain dengan papan kekunci anda</translation>
@@ -301,6 +316,7 @@
 <translation id="1925320505152357008">kurang 1 min</translation>
 <translation id="1928739107511554905">Untuk mendapatkan kemas kini, gunakan skrin sentuh untuk memulakan semula Chromebook anda dengan papan kekunci yang dipasang.</translation>
 <translation id="1929331825127010451">Kembali kepada soalan</translation>
+<translation id="1937774647013465102">Tidak dapat mengimport seni bina bekas jenis <ph name="ARCHITECTURE_CONTAINER" /> dengan peranti ini, iaitu peranti <ph name="ARCHITECTURE_DEVICE" />. Anda boleh cuba memulihkan bekas ini dalam peranti lain atau anda boleh cuba mengakses fail dalam imej bekas ini dengan membuka fail dalam apl Files.</translation>
 <translation id="1946615340060705561">Tekan "c" untuk melepaskan butang tetikus</translation>
 <translation id="1948405482892809935">Beralih kepada pengguna seterusnya</translation>
 <translation id="1954252331066828794">Rakaman skrin selesai</translation>
@@ -328,6 +344,8 @@
 <translation id="2034971124472263449">Simpan juga</translation>
 <translation id="2041220428661959602">Tahap bateri: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Pintasan <ph name="SIX_PACK_KEY_NAME" /> dimatikan pada masa ini</translation>
+<translation id="204706822916043810">Menyemak mesin maya</translation>
+<translation id="2048554637254265991">Ralat semasa memulakan pengurus bekas. Sila cuba lagi.</translation>
 <translation id="2048653237708779538">Tindakan tidak tersedia</translation>
 <translation id="2049240716062114887">Nama meja telah ditukar kepada <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Pratonton kamera dihidupkan</translation>
@@ -358,6 +376,7 @@
 <translation id="216955976692983107">Tetingkap ubah saiz berjubin ke kanan</translation>
 <translation id="2185166372312820725">Pergi ke tab sebelumnya</translation>
 <translation id="2185444992308415167">Lihat tab 1 hingga 8</translation>
+<translation id="2192232475740621500">Gunakan ketumpatan rendah</translation>
 <translation id="2195732836444333448">Kapasiti terhad pada masa ini. Sila kembali sebentar lagi.</translation>
 <translation id="2198625180564913276">Menambah profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="219905428774326614">Pelancar, semua apl</translation>
@@ -382,6 +401,7 @@
 <translation id="2268813581635650749">Log keluar semua</translation>
 <translation id="2276987123919776440">15 min</translation>
 <translation id="2277103315734023688">Cari Ke Hadapan</translation>
+<translation id="2278668501808246459">Memulakan pengurus bekas</translation>
 <translation id="2282073721614284166">Buka pautan dalam tab</translation>
 <translation id="2292698582925480719">Skala paparan</translation>
 <translation id="2293443480080733021">Apakah yang mahu anda fokuskan? Tekan kekunci Enter untuk menambahkan tugasan.</translation>
@@ -408,6 +428,7 @@
 <translation id="2352467521400612932">Tetapan stilus</translation>
 <translation id="2354174487190027830">Mengaktifkan <ph name="NAME" /></translation>
 <translation id="2355314311311231464">Peruntukan gagal kerana butiran akaun anda tidak dapat didapatkan kembali. Sila cuba lagi. Kod ralat: <ph name="ERROR_CODE" />.</translation>
+<translation id="2359071692152028734">Apl Linux mungkin menjadi tidak responsif.</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2360398059912971776">bateri</translation>
 <translation id="2361210043495191221">Togol Wi-Fi. <ph name="STATE" />.</translation>
@@ -421,7 +442,6 @@
 <translation id="2383521554963939360">Apl &amp; kumpulan tab</translation>
 <translation id="2386292613071805067">Pilih segala-galanya pada halaman</translation>
 <translation id="2389423187722941333">Togol Gemini</translation>
-<translation id="2391805183137601570">Buka Steam</translation>
 <translation id="2392659840443812875">Tiada tempat liputan tersedia. Pastikan peranti anda berada berdekatan dan Bluetooth dihidupkan.</translation>
 <translation id="2397416548179033562">Paparkan menu Chrome</translation>
 <translation id="240006516586367791">Kawalan media</translation>
@@ -444,14 +464,13 @@
 <translation id="243878895369688216">Dibuka semalam</translation>
 <translation id="2440978926514840421">Rakaman GIF diambil</translation>
 <translation id="2441427462554639370">Rakaman ditamatkan kerana ruang storan hampir habis</translation>
-<translation id="2447587550790814052">Kini anda boleh menggunakan Steam untuk Chromebook (Beta)</translation>
+<translation id="2445449901874883781">Gunakan ketumpatan tinggi</translation>
 <translation id="2449089818483227734">Bateri Lemah</translation>
 <translation id="2450205753526923158">Mod tangkapan skrin</translation>
 <translation id="2453860139492968684">Selesai</translation>
 <translation id="2455994958736234930">Tambahkan www. dan .com kepada bar alamat dan buka laman web</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Penelusuran</translation>
-<translation id="2462332841984057083">Steam telah disediakan. Tunggu persediaan selesai.</translation>
 <translation id="2465145153332031561">Kesihatan bateri <ph name="BATTERY_HEALTH_PERCENTAGE" />%, kiraan kitaran <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Sahkan Peleraian</translation>
 <translation id="2475783092753560388">Sisipkan <ph name="SEARCH_RESULT_TEXT" /></translation>
@@ -464,7 +483,6 @@
 <translation id="2486214324139475545"><ph name="DESK_NAME" /> pratonton. Meja aktif.</translation>
 <translation id="2486405091093637109">"<ph name="DISPLAY_NAME" />" diubah kepada peleraian <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" /> tanpa pengesahan.</translation>
 <translation id="2487915095798731898">Sertai</translation>
-<translation id="2494555621641843783">Tidak dapat menyahpasang Steam</translation>
 <translation id="2496180316473517155">Sejarah penyemakan imbas</translation>
 <translation id="2499445554382787206">Menu profil meja. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Kekunci lekit</translation>
@@ -484,6 +502,7 @@
 <translation id="2531025035050312891">peranti perlahan</translation>
 <translation id="2531107890083353124">Tekan <ph name="KEY_ONE" /> sambil menyeret tab</translation>
 <translation id="2532199152994248594">Seret atau tekan Ruang untuk memilih kawasan untuk membuat tangkapan</translation>
+<translation id="2537927931785713436">Menyemak imej mesin maya</translation>
 <translation id="2540651571961486573">Kesilapan telah berlaku. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Cuba menggunakan Laman Utama? Gunakan</translation>
 <translation id="254900897760075745">Salin kandungan yang dipilih kepada papan keratan</translation>
@@ -543,7 +562,8 @@
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727744317940422214">Maaf, kesilapan telah berlaku. Sila failkan maklum balas dengan #bruschetta dalam perihalan. Kod ralat ialah <ph name="ERROR" />. Pembersihan gagal dilaksanakan, anda mungkin perlu membuat pembersihan secara manual.</translation>
 <translation id="2727977024730340865">Dipalamkan pada pengecas berkuasa rendah. Pengecasan bateri mungkin tidak boleh diharapkan.</translation>
-<translation id="2737538893171115082">Steam untuk Chromebook (Beta) disekat oleh pentadbir anda. Pentadbir anda perlu menghidupkan dasar ini:</translation>
+<translation id="2741713322780029189">Buka terminal pemulihan</translation>
+<translation id="274290345632688601">Memulihkan apl &amp; fail Linux</translation>
 <translation id="2743301740238894839">Mula</translation>
 <translation id="2743387203779672305">Salin ke papan keratan</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -571,6 +591,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2815594810045873507">Cuba pengecas dengan watt (W) yang lebih tinggi atau gunakan pengecas asal anda.</translation>
 <translation id="2819276065543622893">Anda akan dilog keluar sekarang.</translation>
 <translation id="2822551631199737692">Kamera sedang digunakan</translation>
+<translation id="2822910719211888134">Ralat semasa menyandarkan Linux</translation>
 <translation id="2825619548187458965">Rak</translation>
 <translation id="2831035692318564937">Dihidupkan sehingga matahari terbit</translation>
 <translation id="2834813915651407382">Dibuka baru-baru ini</translation>
@@ -578,6 +599,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2838589015763961627">Keluar daripada skrin penuh untuk mengubah saiz</translation>
 <translation id="2840766858109427815">Teruskan ke halaman seterusnya</translation>
 <translation id="2841907151129139818">Bertukar kepada mod tablet</translation>
+<translation id="2843560154284403323">Untuk menyelesaikan persediaan Linux, kemas kini Chrome OS dan cuba lagi.</translation>
 <translation id="2844169650293029770">Peranti USB-C (port depan sebelah kiri)</translation>
 <translation id="2844350028562914727">butiran</translation>
 <translation id="2847759467426165163">Hantar ke</translation>
@@ -586,6 +608,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2850207700020959936">Apl dapat mengakses kamera</translation>
 <translation id="2852045827873867442">Sambungan Internet diperlukan.</translation>
 <translation id="2860184359326882502">Padanan Terbaik</translation>
+<translation id="2862815659905780618">Alih keluar persekitaran pembangunan Linux</translation>
 <translation id="2865888419503095837">Maklumat rangkaian</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> yang lalu</translation>
 <translation id="2872353916818027657">Tukar monitor utama</translation>
@@ -617,6 +640,8 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="2949420361496057765">Tekan <ph name="MODIFIER" /> dan klik pautan</translation>
 <translation id="2957159466053076448">Anda boleh mematikan ciri tersebut pada bila-bila masa dalam Tetapan.<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Audio peranti</translation>
+<translation id="2959842337402130152">Tidak dapat dipulihkan kerana ruang storan tidak mencukupi. Kosongkan <ph name="SPACE_REQUIRED" /> daripada peranti dan cuba lagi.</translation>
+<translation id="2960208947600937804">Ralat telah berlaku semasa mengkonfigurasikan Linux. Hubungi pentadbir anda.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Hidupkan akses mikrofon?</translation>
 <translation id="296762781903199866">Tidak dapat memuat turun fail pertuturan <ph name="LANGUAGE" /></translation>
@@ -645,9 +670,11 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3040982432432547149">Bantu kami meningkatkan Steam pada Chromebook</translation>
 <translation id="304417730895741346">Apl anda yang disematkan dan dibuka berada pada rak. Untuk menyematkan apl pada rak, klik kanan apl atau ketik pad sentuh menggunakan dua jari.</translation>
 <translation id="3045670165536837541">Pemegang bahagian atas sebelah kanan dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
+<translation id="3046178388369461825">Ruang cakera Linux terlalu sedikit</translation>
 <translation id="3047761520276763270">Cuba sebut:</translation>
 <translation id="3053407068093039599">Hidupkan/matikan akses kamera</translation>
 <translation id="3055162170959710888">Anda menggunakan peranti ini selama <ph name="USED_TIME" /> hari ini</translation>
+<translation id="3058002721610176427">Tukar PIN dan kata laluan anda</translation>
 <translation id="3062298103034426069">Tidak disokong</translation>
 <translation id="3068622547379332530">Versi <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Rak di sebelah kiri</translation>
@@ -709,6 +736,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3249513730522716925">Tetingkap <ph name="WINDOW_TITLE" /> dialihkan daripada Meja <ph name="ACTIVE_DESK" /> ke Meja <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Jenis kerja kelas: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">Buang serlahan daripada item pada rak anda</translation>
+<translation id="3256274561709196882">Tukar PIN anda</translation>
 <translation id="3260969790895726815">Pertuturan diproses secara setempat dan pengimlakan berfungsi di luar talian, tetapi beberapa perintah suara tidak akan berfungsi.</translation>
 <translation id="3264031581203585083">Sembunyikan semua cadangan Google Drive</translation>
 <translation id="3265032511221679826">Hidupkan akses lokasi tepat?</translation>
@@ -716,17 +744,18 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3271554781793662131">Cari untuk disisipkan</translation>
 <translation id="3274634049061007184">Lihat apl telefon anda</translation>
 <translation id="3279230909244266691">Proses ini mungkin mengambil masa beberapa minit. Memulakan mesin maya.</translation>
-<translation id="3285465040399788513">Storan peranti tidak mencukupi untuk menyelesaikan persediaan. Kosongkan ruang, kemudian cuba lagi.</translation>
 <translation id="3289364673986435196">Menu kuasa</translation>
 <translation id="3289544412142055976">Apl Linux tidak disokong pada masa ini</translation>
 <translation id="3289674678944039601">Mengecas melalui penyesuai</translation>
 <translation id="3290356915286466215">Tidak selamat</translation>
 <translation id="3291862315280588024">Beralih kepada bahagian permulaan perkataan sebelumnya</translation>
+<translation id="32939749466444286">Bekas Linux tidak dimulakan. Sila cuba lagi.</translation>
 <translation id="3294437725009624529">Tetamu</translation>
 <translation id="3300193645498960160">Anda akan diberitahu jika anda bercakap semasa diredam. Peranti anda tidak menghasilkan audio.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> peranti disambungkan kepada tempat liputan <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Bertukar kepada mod komputer riba</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> masih dapat log masuk nanti.</translation>
+<translation id="3312470654018965389">Mengkonfigurasi bekas Linux</translation>
 <translation id="3313950410573257029">Semak sambungan</translation>
 <translation id="3321628682574733415">Kod ibu bapa salah</translation>
 <translation id="332827762492701193">Pemberitahuan disembunyikan</translation>
@@ -743,7 +772,6 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3368922792935385530">Disambungkan</translation>
 <translation id="3369111525500416043">Perlu disiapkan tidak lama lagi</translation>
 <translation id="3371140690572404006">Peranti USB-C (port depan sebelah kanan)</translation>
-<translation id="3373196968211632036">Steam untuk Chromebook (Beta) tidak tersedia untuk Google Account kanak-kanak</translation>
 <translation id="3375634426936648815">Disambungkan</translation>
 <translation id="3386978599540877378">penggadang skrin penuh</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -785,7 +813,6 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Ketahui perihal Ketepatan Lokasi dengan lebih lanjut<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rak disembunyikan secara automatik</translation>
-<translation id="3496797737329654668">Mari bermain permainan</translation>
 <translation id="3505066820268455558">Pengecasan Bateri</translation>
 <translation id="3509391053705095206">Tidak dapat menemukan telefon anda. Pastikan Bluetooth telefon anda dihidupkan.</translation>
 <translation id="3510164367642747937">Serlahkan kursor tetikus</translation>
@@ -798,6 +825,8 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="353086728817903341">Disambungkan kepada <ph name="NUM_DEVICES" /> peranti</translation>
 <translation id="3532247131850366052">Tidak dapat membuat Helaian Google</translation>
 <translation id="3533126039236445965">Apl dalam rak</translation>
+<translation id="3537881477201137177">Saiz boleh diubah suai kemudian dalam Tetapan</translation>
+<translation id="3538066758857505094">Ralat menyahpasang Linux. Sila cuba lagi.</translation>
 <translation id="3539957339480430241">tempat liputan <ph name="DEVICE_NAME" /></translation>
 <translation id="3540893133818942399">Tolak penyediaan pemaparan foto dan media terbaharu telefon anda</translation>
 <translation id="3542066395059568317">Anda akan melihat pengesyoran supaya anda boleh meneruskan dari tempat anda berhenti. Anda boleh klik kanan untuk mengalih keluar pengesyoran.</translation>
@@ -808,6 +837,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3554928024630051016">Untuk menambahkan sebarang peranti USB tambahan, cuba alih keluar satu peranti USB, kemudian palamkan peranti baharu</translation>
 <translation id="3558768885091059911">Hidupkan akses kamera dan mikrofon?</translation>
 <translation id="3560174576767922131">Rakam video</translation>
+<translation id="3562423906127931518">Proses ini mungkin mengambil masa beberapa minit. Menyediakan bekas Linux.</translation>
 <translation id="3563432852173030730">Aplikasi kios tidak dapat dimuat turun.</translation>
 <translation id="3563558822383875692">Mengkonfigurasikan DLC.</translation>
 <translation id="3563775809269155755">Dayakan tempat liputan</translation>
@@ -820,6 +850,7 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3583350334315908861">{MINUTES,plural, =1{minit}other{minit}}</translation>
 <translation id="3585296979871889131">Lihat foto, media, pemberitahuan dan apl terbaharu telefon anda</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
+<translation id="3590295622232282437">Memasuki sesi terurus.</translation>
 <translation id="3590441166907930941">Butang Sisi</translation>
 <translation id="3593039967545720377">Akses sejarah papan keratan anda dengan menekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk melihat papan keratan anda. Salin item untuk bermula.</translation>
 <translation id="3593646411856133110">Leret ke atas dan tahan untuk melihat apl yang terbuka</translation>
@@ -847,9 +878,9 @@ Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas <ph name="TIM
 <translation id="3633851487917460983">Buka Papan Keratan</translation>
 <translation id="363473492175527493">Tugasan ditetapkan untuk difokuskan: <ph name="TASK_NAME" />. Tekan kekunci Enter untuk mengedit tugasan.</translation>
 <translation id="3638400994746983214">Togol skrin privasi. <ph name="STATE_TEXT" />.</translation>
-<translation id="3641070112313110357">Steam untuk Chromebook (Beta) perlu dikemaskinikan. Mulakan semula Chromebook anda dan cuba lagi.</translation>
 <translation id="3649256019230929621">Minimumkan tetingkap</translation>
 <translation id="3650952250015018111">Benarkan "<ph name="APP_NAME" />" untuk mengakses:</translation>
+<translation id="3652817283076144888">Memulakan</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> hingga
@@ -882,6 +913,7 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> dan <ph name="UNAVAILABLE_APPS_COUNT" /> lagi tidak tersedia pada peranti ini.</translation>
 <translation id="3727231512028252576">Tidak dapat memuatkan item. Cuba lagi apabila anda kembali dalam talian.</translation>
 <translation id="3735740477244556633">Isih mengikut</translation>
+<translation id="3738632186060045350">Data <ph name="DEVICE_TYPE" /> akan dipadamkan dalam masa 24 jam</translation>
 <translation id="3738664582935948253">Kini anda boleh menunjukkan klik dan pintasan papan kekunci dalam rakaman skrin</translation>
 <translation id="3741482431277446954">Butang tetikus kanan</translation>
 <translation id="3742055079367172538">Tangkapan skrin diambil</translation>
@@ -916,13 +948,14 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3831226344927851293">Keluar daripada paparan tutorial</translation>
 <translation id="383629559565718788">Tunjukkan tetapan papan kekunci</translation>
 <translation id="384082539148746321">Padamkan templat?</translation>
-<translation id="3841282988425489367">Tidak dapat menyediakan Steam untuk Chromebook (Beta)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /> kemudian <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> atau <ph name="KEY_FOUR" /></translation>
+<translation id="3846116211488856547">Dapatkan alatan untuk membangunkan laman web, apl Android dan pelbagai lagi. Pemasangan Linux akan memuat turun <ph name="DOWNLOAD_SIZE" /> data.</translation>
 <translation id="3846575436967432996">Tiada maklumat rangkaian tersedia</translation>
 <translation id="3848526302597027234">Akses kebenaran yang berikut:</translation>
 <translation id="385051799172605136">Kembali</translation>
 <translation id="385300504083504382">Permulaan</translation>
 <translation id="3859364108019690">Tidak dapat menstrim apl</translation>
+<translation id="3861638017150647085">Nama pengguna "<ph name="USERNAME" />" tidak tersedia</translation>
 <translation id="3861651314799684201">Tekan kekunci enter untuk merakam skrin penuh</translation>
 <translation id="3870197372373144624">Cuba matikan peranti anda.</translation>
 <translation id="3879748587602334249">Pengurus muat turun</translation>
@@ -993,6 +1026,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4077623680826964850">Tamat masa apabila but atau menyambung semula kepada VM.</translation>
 <translation id="4086921558679520050">Hidupkan suis mikrofon fizikal pada peranti anda</translation>
 <translation id="4101772068965291327">Buka halaman utama</translation>
+<translation id="4102906002417106771">Mulakan semula untuk menjalankan powerwash</translation>
 <translation id="4112140312785995938">Cari Ke Belakang</translation>
 <translation id="4113030288477039509">Diurus oleh pentadbir anda</translation>
 <translation id="4114315158543974537">Hidupkan Hab Telefon</translation>
@@ -1026,7 +1060,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4192112279662688596">Atau</translation>
 <translation id="4193857202545160520">Tunjukkan klik dan kekunci</translation>
 <translation id="4193969623755915875">Buka "Bantuan" pada apl Teroka dengan "<ph name="NEW_SHORTCUT" />".</translation>
-<translation id="4195001808989442226">Tidak boleh membuka Steam untuk Chromebook (Beta)</translation>
 <translation id="4195579532193195633">Versi semasa <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Sambung semula dari tempat anda berhenti</translation>
 <translation id="4195877955194704651">Mengklik butang secara automatik</translation>
@@ -1042,7 +1075,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Apl yang Dipasang, Dijeda</translation>
 <translation id="4228078597006700451">Kawalan tidak disediakan</translation>
 <translation id="4230560241506423345">Baharu</translation>
-<translation id="4231231258999726714">Menyediakan Steam untuk Chromebook</translation>
 <translation id="4236726631849783264">Peringatan tentang tindakan cadangan</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Mod ikhtisar</translation>
@@ -1104,6 +1136,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4389184120735010762">Anda menekan pintasan papan kekunci untuk penggadang yang didok. Adakah anda ingin menghidupkannya?</translation>
 <translation id="4394466652057229831">Klik kanan untuk membuat ringkasan</translation>
 <translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
+<translation id="439817266247065935">Peranti anda tidak ditutup dengan betul. Mulakan semula Linux untuk menggunakan apl Linux.</translation>
 <translation id="440113666232554208">Tidak dapat menyimpan rakaman skrin</translation>
 <translation id="4405151984121254935">Jenis peranti persisian yang disambungkan tidak disokong</translation>
 <translation id="4406883609789734330">Sari Kata Langsung</translation>
@@ -1130,7 +1163,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4471432286288241507">{0,plural, =0{Kemas kini peranti sekarang}=1{Kemas kini peranti dalam masa 1 saat}other{Kemas kini peranti dalam masa # saat}}</translation>
 <translation id="4472575034687746823">Bermula</translation>
 <translation id="4473489370276014885">Google Contacts</translation>
-<translation id="4473996011558324141">anggaran masa</translation>
 <translation id="4477350412780666475">Lagu Seterusnya</translation>
 <translation id="4477751544736611934">Tetapan ini mungkin memerlukan kos data.
 1 peranti disambungkan.</translation>
@@ -1139,6 +1171,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4481530544597605423">Peranti dinyahganding</translation>
 <translation id="4485506555414638855">Menolak penyediaan pemaparan foto, media, pemberitahuan dan apl terbaharu telefon anda</translation>
 <translation id="4491109536499578614">Imej</translation>
+<translation id="4493468155686877504">Disyorkan (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="450584155212756404">Saluran Pembangunan</translation>
 <translation id="4513044611477939680">Quick Share</translation>
 <translation id="4513946894732546136">Maklum balas</translation>
@@ -1169,23 +1202,24 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4573176682887762361">"Jenis [perkataan / frasa]"</translation>
 <translation id="4577990005084629481">Tunjukkan pratonton</translation>
 <translation id="4578906031062871102">Menu tetapan dibuka</translation>
+<translation id="4581774856936278355">Ralat semasa memulihkan Linux</translation>
 <translation id="458210817642223147">Rakam GIF</translation>
 <translation id="4582666543382004902">Tempat Liputan telah dimatikan untuk menggunakan Wi-Fi. Untuk menggunakan tempat liputan, matikan Wi-Fi.</translation>
 <translation id="4585337515783392668">Berhenti menghantar pada penerima yang tidak diketahui</translation>
 <translation id="4596144739579517758">Tema gelap dimatikan</translation>
 <translation id="4596442969149038771"><ph name="USER" /> telah berkongsi</translation>
-<translation id="4598556348158889687">Pengurusan storan</translation>
 <translation id="4610493115106525653">Output yang baik</translation>
 <translation id="4611292653554630842">Log masuk</translation>
+<translation id="4613144866899789710">Membatalkan pemasangan Linux...</translation>
 <translation id="462160925400706389"><ph name="NAME" /> disambungkan</translation>
 <translation id="4623167406982293031">Sahkan akaun</translation>
 <translation id="4628757576491864469">Peranti</translation>
+<translation id="4628762811416793313">Penyediaan bekas Linux tidak lengkap. Sila cuba lagi.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, Rating bintang <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Tekan Ctrl+W untuk memadam</translation>
 <translation id="4633757335284074492">Sandarkan pada Google Drive. Pulihkan data atau tukar peranti dengan mudah pada bila-bila masa. Sandaran ini merangkumi data apl. Sandaran dimuat naik pada Google dan disulitkan dengan menggunakan kata laluan Google Account anak anda.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Kemas kinikan peranti kepada versi terdahulu sekarang}=1{Kemas kinikan peranti kepada versi terdahulu dalam masa 1 saat}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # saat}}</translation>
 <translation id="4642092649622328492">Ambil tangkapan skrin separa</translation>
-<translation id="4642587497923912728">Steam untuk Chromebook (Beta) hanya tersedia untuk akaun yang telah log masuk pada Chromebook ini.</translation>
 <translation id="4644727592819780893">Rantau terlalu kecil untuk dimuatkan dengan kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Pengesyoran apl</translation>
 <translation id="4649019912155580914">Anda edit</translation>
@@ -1327,6 +1361,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="504465286040788597">Perenggan sebelumnya</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
 <translation id="5056587122125565772">Buat imej</translation>
+<translation id="5056950756634735043">Menyambung kepada bekas</translation>
 <translation id="5058794129231928255">Tidak dapat membuat Dokumen Google</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Anda akan diberitahu jika anda bercakap semasa diredam. Peranti anda tidak menghasilkan audio.</translation>
@@ -1407,9 +1442,11 @@ Anda juga boleh menggunakan pintasan papan kekunci. Mula-mula, serlahkan teks, k
 <translation id="528468243742722775">End</translation>
 <translation id="5286194356314741248">Mengimbas</translation>
 <translation id="528641622273682395">Togol ujian mikrofon</translation>
+<translation id="5294097441441645251">Mesti bermula dengan aksara huruf kecil atau garis bawah</translation>
 <translation id="5297423144044956168">Tiada peranti mudah alih ditemukan</translation>
 <translation id="5297704307811127955">Dimatikan</translation>
 <translation id="5300589172476337783">Paparkan</translation>
+<translation id="5301751748813680278">Masuk sebagai Tetamu</translation>
 <translation id="5302048478445481009">Bahasa</translation>
 <translation id="5302531370473608800">Kemas kinikan <ph name="DEVICE_TYPE" /> anda untuk menggunakan YouTube Music</translation>
 <translation id="5303319262469238330">Baki kuasa bateri <ph name="PERCENTAGE" />%.
@@ -1431,18 +1468,17 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5352250171825660495">Tema gelap dihidupkan</translation>
 <translation id="5354804064646502504">Tetapan ini mungkin memerlukan kos data.
 Tiada peranti disambungkan.</translation>
-<translation id="5355498626146154079">Anda perlu menghidupkan bendera “Borealis Didayakan”</translation>
 <translation id="5356963482258194581">Beralih antara tema gelap dengan cerah. Klik kanan pada desktop dan pilih Kertas dinding &amp; gaya.</translation>
 <translation id="536019650977002321">Pentadbir anda tidak membenarkan rakaman audio. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5361524080961918551">Fail pertuturan <ph name="LANGUAGE" /> dimuat turun sebahagiannya</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pergi ke tab ini</translation>
 <translation id="5364693579536176785">ruang storan</translation>
 <translation id="5369573834963677938">Kawalan wajah akan tersedia kepada semua pengguna pada peranti</translation>
+<translation id="5369694795837229225">Sediakan persekitaran pembangunan Linux</translation>
 <translation id="5369717264580061086">Pratonton fail pada apl Files</translation>
 <translation id="5377367976106153749">Hidupkan akses kamera?</translation>
 <translation id="5378450298115733949">Lagi</translation>
 <translation id="5379115545237091094">Terlalu banyak percubaan</translation>
-<translation id="5380526436444479273">Tunggu beberapa minit, kemudian cuba lagi</translation>
 <translation id="5383434787520761436">Tiada fail Google Drive</translation>
 <translation id="5391307769715781764">Gantikan meja yang disimpan?</translation>
 <translation id="5392327145184648521">Mengira % bateri...</translation>
@@ -1454,13 +1490,13 @@ Tiada peranti disambungkan.</translation>
 <translation id="5409208741270395213">Tandai tugasan sebagai selesai</translation>
 <translation id="5413656666631274079">Halaman tetapan</translation>
 <translation id="5414198321558177633">Memuat semula senarai profil. Proses ini mungkin mengambil masa beberapa minit.</translation>
-<translation id="5415328625985164836">Program ini ialah program beta. Kini anda boleh menggunakan Steam untuk bermain permainan pada Chromebook anda.</translation>
 <translation id="5426063383988017631">Menu tetapan ditutup</translation>
 <translation id="5428899915242071344">Mula memilih</translation>
 <translation id="5429993543155113935">Tetingkap inkognito tidak disokong pada masa ini</translation>
 <translation id="5431318178759467895">Warna</translation>
 <translation id="5433020815079095860">Input audio</translation>
 <translation id="543584294741034249">Anda boleh menyambung hingga <ph name="DISPLAY_LIMIT" /> paparan luaran.</translation>
+<translation id="5442228125690314719">Ralat semasa membuat imej cakera. Sila cuba lagi.</translation>
 <translation id="544691375626129091">Semua pengguna yang ada telah ditambahkan pada sesi ini.</translation>
 <translation id="54609108002486618">Diuruskan</translation>
 <translation id="5460938382730614333">Penanda dihidupkan.</translation>
@@ -1511,6 +1547,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">Penyemak imbas Chrome</translation>
 <translation id="5596627076506792578">Lagi pilihan</translation>
+<translation id="5596808802173376270">Masalah tentang fail pemulihan yang disediakan - kemungkinan jenis fail yang salah untuk tetamu Linux yang sedia ada. Semak /var/log/mesej untuk mendapatkan maklumat lanjut.</translation>
 <translation id="5599242528220103262">Pintasan papan kekunci dimatikan</translation>
 <translation id="5600415762228455511">Fokus dihidupkan, masa berbaki <ph name="REMAINING_TIME" /> lagi, memfokuskan pada: <ph name="TASK_NAME" /></translation>
 <translation id="5600837773213129531">Tekan Ctrl + Alt + Z untuk melumpuhkan maklum balas yang dituturkan.</translation>
@@ -1526,6 +1563,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> meminta perhatian anda.</translation>
 <translation id="5657667036353380798">Sambungan luaran memerlukan chrome versi <ph name="MINIMUM_CHROME_VERSION" /> atau lebih baharu untuk dipasang.</translation>
 <translation id="5662075790140998213">Meja 10</translation>
+<translation id="5662513737565158057">Tukar cara apl Linux berfungsi.</translation>
 <translation id="5662709761327382534">Rakam mikrofon <ph name="CURRENT_STATE" />, Tekan Enter untuk menghidupkan rakaman mikrofon <ph name="NEW_STATE" /></translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5667546120811588575">Menyediakan Google Play...</translation>
@@ -1554,7 +1592,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="5712132663381964774">Gunakan apl untuk melakukan semua yang diperlukan pada <ph name="PRODUCT_NAME" /> anda. Anda boleh menemukan apl anda dalam Pelancar.</translation>
 <translation id="571295407079589142">Data mudah alih dimatikan</translation>
 <translation id="5727460725221669831">Jika anda terlupa kata laluan anda atau menukar kata laluan Google Account anda baru-baru ini, cuba pulihkan pengguna ini.</translation>
-<translation id="572914206753951782">Pastikan Chromebook anda menggunakan versi terkini. Kemudian, mulakan semula Chromebook anda dan cuba lagi.</translation>
 <translation id="5733630091161562207">Pemberitahuan alu-aluan</translation>
 <translation id="573413375004481890">Peranti ini tidak dapat menyokong semua paparan anda, oleh itu, satu paparan telah diputuskan sambungan</translation>
 <translation id="574392208103952083">Sederhana</translation>
@@ -1600,6 +1637,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="5842553299352339114">Tempat liputan <ph name="DEVICE_NAME" /> dihidupkan, tiada peranti disambungkan</translation>
 <translation id="584525477304726060">Tahan untuk maksimumkan</translation>
 <translation id="5856638668464565213"><ph name="NETWORK_NAME" /> tidak diaktifkan.</translation>
+<translation id="5858490737742085133">Terminal</translation>
 <translation id="5860033963881614850">Dimatikan</translation>
 <translation id="5860491529813859533">Hidupkan</translation>
 <translation id="5864691701242730005">Paparkan tetapan Quick Share. Keterlihatan <ph name="VISIBILITY" /> dipilih</translation>
@@ -1721,6 +1759,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6185696379715117369">Halaman atas</translation>
 <translation id="619335566042889110">Caskan penuh sekarang</translation>
 <translation id="6193431488227440296">Pembangun</translation>
+<translation id="6198252989419008588">Tukar PIN</translation>
 <translation id="6199775032047436064">Muatkan semula halaman semasa</translation>
 <translation id="6200515304866777730">Tidak disokong oleh apl</translation>
 <translation id="6210042900243040400">Sambungkan <ph name="NAME" /> yang disimpan sebelum ini di <ph name="EMAIL" /></translation>
@@ -1728,6 +1767,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6213808132343683860">Ambil tangkapan skrin separa atau rakaman skrin</translation>
 <translation id="621606890568890214">Kembangkan Google Classroom</translation>
 <translation id="6216759484154215561">Pautan ketahui lebih lanjut yang dibuka dalam penyemak imbas</translation>
+<translation id="6218058416316985984"><ph name="DEVICE_TYPE" /> di luar talian. Sambung ke Internet dan cuba lagi.</translation>
 <translation id="6220928844947387476">Kini anda boleh merakam diri anda dan skrin anda secara serentak</translation>
 <translation id="622484624075952240">Bawah</translation>
 <translation id="6228457605945141550">Kurangkan kecerahan</translation>
@@ -1751,6 +1791,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="628699625505156622">Gunakan lokasi. Benarkan apl, laman web dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti ini. Ketepatan Lokasi menyediakan lokasi yang lebih tepat untuk apl dan perkhidmatan Android. Untuk berbuat demikian, Google memproses maklumat tentang penderia peranti dan isyarat wayarles secara berkala daripada peranti ini untuk mengumpulkan lokasi isyarat wayarles. Maklumat ini digunakan tanpa mengenal pasti mana-mana individu untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi serta untuk meningkatkan, menyediakan dan mengekalkan perkhidmatan Google berdasarkan kepentingan sah Google dan pihak ketiga untuk memenuhi keperluan pengguna. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang menggunakan lokasi<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> boleh ditambahkan semula kemudian dengan kebenaran ibu bapa.</translation>
 <translation id="6291221004442998378">Tidak mengecas</translation>
+<translation id="6291580570300353047">Tidak dapat dipulihkan kerana ruang storan tidak mencukupi.</translation>
 <translation id="6297986260307280218">Hantar data penggunaan dan diagnostik. Bantu kami meningkatkan pengalaman Android anda dengan menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Pemilik mungkin memilih untuk menghantar data diagnostik dan penggunaan bagi peranti ini kepada Google. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Sesuaikan peranti ini pada apl</translation>
 <translation id="6298962879096096191">Gunakan Google Play untuk memasang apl Android</translation>
@@ -1764,6 +1805,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6324916366299863871">Edit pintasan</translation>
 <translation id="6325525973963619867">Gagal</translation>
 <translation id="6330012934079202188">Memaparkan tetingkap daripada semua meja, tekan kekunci Anak panah ke atas untuk memaparkan tetingkap daripada meja semasa</translation>
+<translation id="6336038146639916978"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB. Tindakan ini akan menetapkan semula <ph name="DEVICE_TYPE" /> anda dalam masa 24 jam. Sandarkan mana-mana fail yang ingin anda simpan.</translation>
 <translation id="6337159624125741244">Penggadang skrin penuh dihidupkan</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> ialah sesi terurus yang diurus oleh <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Jika anda terlupa PIN anda, cuba pulihkan semula pengguna ini.</translation>
@@ -1809,6 +1851,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6467290994038932560">Dihidupkan untuk <ph name="GAME_APP_NAME" /></translation>
 <translation id="6468406072297048412">{0,plural, =1{Kemas kinikan peranti kepada versi terdahulu dalam masa 1 minit}other{Kemas kinikan peranti kepada versi terdahulu dalam masa # minit}}</translation>
 <translation id="6469104339369989396">Togol tempat liputan</translation>
+<translation id="6475294023568239942">Kosongkan ruang cakera atau ubah saiz cakera Linux dalam Tetapan</translation>
 <translation id="6477681113376365978">Tidak dapat memuat turun fail</translation>
 <translation id="648135757200234041">Tidak dapat membuat kenalan</translation>
 <translation id="6482559668224714696">Penggadang skrin penuh</translation>
@@ -1823,7 +1866,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="6507042703812908515">Buka apl Pintasan Kekunci dengan "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Beralih kepada kaedah input seterusnya yang tersedia</translation>
 <translation id="6508923215158854599">Pastikan Chromebook anda bersambung kepada rangkaian Wi-Fi yang sama dengan rangkaian pada peranti Chromecast anda.</translation>
-<translation id="6511607461419653612">Mulakan semula Chromebook anda dan cuba lagi</translation>
 <translation id="6515727200518652613">Kamera terputus, cuba menyambung semula.</translation>
 <translation id="651753338596587143">Maaf, ada kesilapan semasa memasang kebergantungan DLC. Sila cuba but semula dan jika isu berterusan, failkan maklum balas dengan #bruschetta dalam perihalan. Kod ralat ialah <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Pilih tetingkap untuk menangkap imej</translation>
@@ -1849,7 +1891,6 @@ Pemasangan baharu</translation>
 <translation id="6574587113394758819">Pemberitahuan <ph name="APP_TITLE" /> disembunyikan kerana perlindungan paparan dihidupkan</translation>
 <translation id="6574622320167699133">Dibuka kunci oleh telefon anda. Ketik atau klik untuk masuk.</translation>
 <translation id="6578407462441924264">Tidak bernama</translation>
-<translation id="6580060371127789208"><ph name="PERCENTAGE_COMPLETE" />% selesai</translation>
 <translation id="6582012689384648647">Untuk mendapatkan senarai main untuk fokus yang diperibadikan, benarkan akses kepada YouTube Music</translation>
 <translation id="6582034443359256692">Mengira paras pengecasan bateri.</translation>
 <translation id="6585808820553845416">Sesi berakhir dalam <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1902,7 +1943,6 @@ Pemasangan baharu</translation>
 <translation id="6723839937902243910">Kuasa</translation>
 <translation id="672609503628871915">Lihat apa yang baharu</translation>
 <translation id="6727969043791803658">Disambungkan, bateri <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="6731320427842222405">Ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="6732087373923685049">kamera</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Kamera dan mikrofon sedang digunakan</translation>
@@ -1961,6 +2001,7 @@ Pemasangan baharu</translation>
 <translation id="6912841030378044227">Fokus pada bar alamat</translation>
 <translation id="6912901278692845878">Lawatan pantas</translation>
 <translation id="6917259695595127329">Kemaskinian terakhir tugasan: <ph name="TIME" />.</translation>
+<translation id="6918677045355889289">Kemaskinian Chrome OS diperlukan</translation>
 <translation id="6919251195245069855">Tidak dapat mengecam kad pintar anda. Cuba lagi.</translation>
 <translation id="692135145298539227">padam</translation>
 <translation id="6921427376813842559">Kemas kinikan peranti</translation>
@@ -1978,12 +2019,15 @@ Pemasangan baharu</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6967112302799758487">Sebarang apl dan permainan yang dipasang menggunakan Steam untuk Chromebook (Beta) akan dialih keluar daripada peranti ini. Data yang berkaitan dengan apl dan permainan ini akan dialih keluar juga. Pastikan anda membuat sandaran apl dan permainan yang disimpan sebelum dinyahpasang.</translation>
 <translation id="6972629891077993081">Peranti HID</translation>
+<translation id="697508444536771064">Matikan Linux</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6980402667292348590">insert</translation>
 <translation id="6981291220124935078">Hidupkan akses</translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
 <translation id="698231206551913481">Semua fail dan data yang berkaitan dengan pengguna ini akan dipadamkan secara kekal selepas pengguna ini dialih keluar.</translation>
+<translation id="6988094684494323731">Memulakan bekas Linux</translation>
 <translation id="7000027735917578303">Tetapan tetingkap dan meja</translation>
+<translation id="7001036685275644873">Menyandarkan apl &amp; fail Linux</translation>
 <translation id="7004910047186208204">Sambungkan kepada data mudah alih</translation>
 <translation id="7005239792648594238">Buka apl untuk bermula</translation>
 <translation id="7014684956566476813">Disambungkan kepada peranti yang bernama <ph name="DEVICE_NAME" /></translation>
@@ -1992,11 +2036,13 @@ Pemasangan baharu</translation>
 <translation id="702252130983202758">Apl anda</translation>
 <translation id="7025533177575372252">Sambungkan <ph name="DEVICE_NAME" /> anda dengan telefon anda</translation>
 <translation id="7026338066939101231">Penyusutan</translation>
+<translation id="7029307918966275733">Crostini tidak dipasang. Sila pasang Crostini untuk melihat kredit.</translation>
 <translation id="7029814467594812963">Keluar dari sesi</translation>
 <translation id="7031303610220416229">Lihat semua tugasan dalam Google Tasks</translation>
 <translation id="7032161822340700104">6 templat sahaja dibenarkan. Alih keluar templat untuk menyimpan yang baharu.</translation>
 <translation id="7034025838182392395"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" />. Hidupkan suis <ph name="DEVICE_NAME" /> fizikal peranti anda.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Google Assistant</translation>
+<translation id="7036706669646341689"><ph name="DISK_SIZE" /> ruang disyorkan untuk Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="7042322267639375032">Runtuhkan area status</translation>
 <translation id="7042593542151411225">Apl tidak dapat mengakses kamera</translation>
 <translation id="7045033600005038336">Gantikan templat?</translation>
@@ -2004,11 +2050,11 @@ Pemasangan baharu</translation>
 <translation id="7055910611768509537">Stilus sudah tidak digunakan lebih daripada seminggu</translation>
 <translation id="7061457967428964661">Pratonton kamera, tekan control + kekunci anak panah untuk mengalihkan pratonton ke penjuru yang berbeza</translation>
 <translation id="7064351585062927183"><ph name="DAY_OF_WEEK" /> akan datang</translation>
+<translation id="7064734931812204395">Mengkonfigurasi bekas Linux. Proses ini mungkin mengambil masa sehingga 30 minit.</translation>
 <translation id="7066646422045619941">Rangkaian ini dilumpuhkan oleh pentadbir anda.</translation>
 <translation id="7067196344162293536">Auto putar</translation>
 <translation id="7076293881109082629">Melog masuk</translation>
 <translation id="7076878155205969899">Redamkan bunyi</translation>
-<translation id="7083774521940805477">Steam untuk Chromebook (beta) tidak tersedia pada Chromebook anda.</translation>
 <translation id="7083848064787091821">Fokus</translation>
 <translation id="7084678090004350185">Togol tempat liputan. Tempat liputan dihidupkan, <ph name="DEVICECOUNT" /> peranti disambungkan.</translation>
 <translation id="7086931198345821656">Kemaskinian ini memerlukan fungsi powerwash <ph name="DEVICE_TYPE" /> anda. Semua data akan dipadamkan. Ketahui lebih lanjut tentang kemas kini <ph name="SYSTEM_APP_NAME" /> yang terbaharu.</translation>
@@ -2026,18 +2072,17 @@ Pemasangan baharu</translation>
 <translation id="7130207228079676353">KEMUNGKINAN BESAR</translation>
 <translation id="7131634465328662194">Anda akan dilog keluar secara automatik.</translation>
 <translation id="7143207342074048698">Menyambung</translation>
-<translation id="7143409552554575716">Bendera ChromeOS</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
 <translation id="7144942256906679589">Status bateri</translation>
 <translation id="7145639536026937076">Kuasa bateri pada tahap <ph name="PERCENTAGE" />% dan sedang dicas. Penjimat Bateri dihidupkan.</translation>
 <translation id="7147587499155271409">Tiada sejarah penyemakan imbas</translation>
 <translation id="7147657298465433425">Untuk mengakses kekunci F, tekan kekunci fn + kekunci baris atas</translation>
 <translation id="7149149900052329230">Urus fail setempat anda dan fail Google Drive anda, semua dalam apl Fail.</translation>
-<translation id="7154020516215182599">Kongsi maklum balas anda atau huraikan isu anda. Jika boleh, sertakan langkah untuk menghasilkan semula isu anda.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Kembali kepada peleraian lama dalam <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7170202025028120564">Tetapan paparan aplikasi anda akan berkuat kuasa apabila aplikasi ini dimulakan semula selepas ini.</translation>
 <translation id="7173114856073700355">Buka Tetapan</translation>
 <translation id="7180611975245234373">Muat semula</translation>
 <translation id="7181691792034457084">Hai. <ph name="PRODUCT_NAME" /> agak berbeza.</translation>
@@ -2046,6 +2091,7 @@ Pemasangan baharu</translation>
 <translation id="7219573373513695352">Tiada peranti disambungkan</translation>
 <translation id="7228968829656641943">Pilih untuk membuat carian pada skrin saya. Tekan tab, kemudian tekan kekunci ruang untuk menavigasi papan kekunci.</translation>
 <translation id="7229029500464092426"><ph name="AVAILABLE_MEMORY" /> memori | Jumlah <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7234010996000898150">Membatakan pemulihan Linux</translation>
 <translation id="7239814253344511868">Kedua-dua butang tetikus</translation>
 <translation id="7240636904654154599">Helaian Google Dibuat</translation>
 <translation id="7244725679040769470">Baki kuasa bateri <ph name="PERCENTAGE" />(%). Sambungkan peranti anda kepada sumber kuasa.</translation>
@@ -2053,6 +2099,7 @@ Pemasangan baharu</translation>
 <translation id="7248100343060254997">Buat carian pada skrin saya</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Mikrofon belakang</translation>
+<translation id="7258225044283673131">Aplikasi tidak memberikan respons. Pilih "Paksa tutup" untuk menutup apl.</translation>
 <translation id="7258828758145722155">Diedit semalam</translation>
 <translation id="726276584504105859">Seret ke sini untuk menggunakan skrin pisah</translation>
 <translation id="7264788308526527464">Kurangkan <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2065,6 +2112,7 @@ Pemasangan baharu</translation>
 <translation id="7312210124139670355">Pentadbir sedang menetapkan semula eSIM anda. Proses ini mungkin mengambil masa beberapa minit.</translation>
 <translation id="7312761820869643657">Kemas kinikan peranti kepada versi terdahulu</translation>
 <translation id="7313193732017069507">Kembangkan kamera</translation>
+<translation id="7327989755579928735"><ph name="MANAGER" /> telah melumpuhkan penyahpepijatan ADB. Sebaik sahaja anda memulakan semula <ph name="DEVICE_TYPE" />, anda tidak akan dapat memuat sisi apl.</translation>
 <translation id="73289266812733869">Nyahpilih</translation>
 <translation id="7330397557116570022">Navigasi kepada medan teks untuk menggunakan Pengimlakan</translation>
 <translation id="7331646370422660166">alt + anak panah ke bawah</translation>
@@ -2075,6 +2123,7 @@ Pemasangan baharu</translation>
 <translation id="7346909386216857016">Ok, faham</translation>
 <translation id="7348093485538360975">Papan kekunci pada skrin</translation>
 <translation id="7352651011704765696">Kesilapan telah berlaku</translation>
+<translation id="735361434055555355">Memasang Linux...</translation>
 <translation id="735745346212279324">VPN diputuskan sambungan</translation>
 <translation id="7360036564632145207">Tindakan menukar perlindungan akses data anda untuk tetapan peranti persisian dapat mengoptimumkan prestasi</translation>
 <translation id="736045644501761622">Tetapkan hiasan latar &amp; gaya</translation>
@@ -2112,6 +2161,7 @@ Pemasangan baharu</translation>
 <translation id="7466449121337984263">Sila sentuh penderia</translation>
 <translation id="7477793887173910789">Kawal muzik, video anda dan banyak lagi</translation>
 <translation id="7478485216301680444">Aplikasi kios tidak dapat dipasang.</translation>
+<translation id="7481358317100446445">Sedia</translation>
 <translation id="7488762544858401571">Diedit</translation>
 <translation id="7489261257412536105">Masuk atau keluar daripada skrin penuh</translation>
 <translation id="7490157877815329797">Untuk mendengar muzik tanpa iklan dan menikmati muzik untuk fokus yang diperibadikan, cubalah YouTube Music Premium</translation>
@@ -2136,6 +2186,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7524043547948122239">Google Tasks</translation>
 <translation id="7525067979554623046">Cipta</translation>
 <translation id="7526573455193969409">Rangkaian mungkin dipantau</translation>
+<translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> tiada respons. Pilih "Paksa tutup" untuk menutup apl.</translation>
 <translation id="7534543072325030705">Isyarat menyukai akan menyerahkan maklum balas yang menunjukkan bahawa anda menyukai kumpulan yang dicadangkan ini</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Kemaskinikan tetingkap kiri</translation>
@@ -2145,6 +2196,8 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7545466883021407599">Tidak dapat menyambung kepada pelayan. Semak sambungan rangkaian anda, kemudian cuba lagi. Jika anda masih menghadapi masalah, cuba mulakan semula Chromebook anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Masa untuk tidur</translation>
 <translation id="7551643184018910560">Sematkan pada rak</translation>
+<translation id="7553012839257224005">Menyemak bekas Linux</translation>
+<translation id="7557411183415085169">Linux kekurangan ruang cakera</translation>
 <translation id="7557816257942363084"><ph name="APP_NAME" /> sedang menggunakan Mikrofon anda pada masa ini</translation>
 <translation id="7559719679815339381">Sila tunggu....apl Kiosk sedang dalam proses untuk dikemas kini. Jangan alih keluar batang USB.</translation>
 <translation id="7561982940498449837">Tutup menu</translation>
@@ -2174,12 +2227,15 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7627303771480696593">Tanya soalan</translation>
 <translation id="7629858978065675960">Hasil tidak diketahui.</translation>
+<translation id="7631014249255418691">Apl &amp; fail Linux telah berjaya disandarkan</translation>
 <translation id="7632948528260659758">Apl kiosk berikut telah gagal untuk mengemas kini:</translation>
+<translation id="7634566076839829401">Sesuatu yang tidak kena telah berlaku. Sila cuba lagi.</translation>
 <translation id="7634648064048557203">Kamera diautojajar ke penjuru kanan sebelah bawah</translation>
 <translation id="7638572816805275740">Ambil tangkapan skrin tetingkap atau rakaman skrin</translation>
 <translation id="7642106959537987271">mod penyongsangan warna</translation>
 <translation id="7642647758716480637">Buka tetapan untuk <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (pemilik)</translation>
+<translation id="7645681574855902035">Membatalkan sandaran Linux</translation>
 <translation id="7647488630410863958">Buka kunci peranti untuk melihat pemberitahuan anda</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7654687942625752712">Tekan dan tahan kedua-dua kekunci kelantangan selama lima saat untuk melumpuhkan maklum balas yang dituturkan.</translation>
@@ -2212,13 +2268,13 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7726391492136714301">Lihat pemberitahuan dan apl telefon anda</translation>
 <translation id="7727952505535211425">Buka laman web dalam bar alamat pada tab baharu</translation>
 <translation id="7728657226117099693">Matikan Caps Lock</translation>
-<translation id="7732702411411810416">Pastikan anda disambungkan kepada Internet dan cuba lagi</translation>
 <translation id="7742327441377685481">Tiada pemberitahuan</translation>
 <translation id="7748275671948949022">Serlahkan butang Pelancar pada rak</translation>
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7750228210027921155">Gambar dalam gambar</translation>
 <translation id="7751260505918304024">Paparkan semua</translation>
+<translation id="7753735457098489144">Pemasangan gagal kerana ruang storan tidak mencukupi. Untuk mengosongkan ruang, padamkan fail daripada storan peranti.</translation>
 <translation id="7762664108390426952">Syarat Perkhidmatan dan Dasar Privasi Google</translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
 <translation id="7769299611924763557">GIF anda akan tersedia tidak lama lagi</translation>
@@ -2234,7 +2290,10 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="780301667611848630">Tidak, terima kasih</translation>
 <translation id="7807067443225230855">Carian dan Pembantu</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> dan <ph name="MINUTE" /></translation>
+<translation id="7817361223956157679">Papan kekunci pada skrin belum dapat berfungsi dalam apl Linux</translation>
+<translation id="7824864914877854148">Penyandaran tidak dapat diselesaikan kerana berlaku ralat</translation>
 <translation id="7825412704590278437">Daripada acara kalendar yang akan datang</translation>
+<translation id="7826249772873145665">Penyahpepijatan ADB dilumpuhkan</translation>
 <translation id="7829386189513694949">Isyarat kuat</translation>
 <translation id="7830453190047749513">Anda boleh memeribadikan tindakan, kelajuan kursor dan pelbagai lagi untuk <ph name="PERIPHERAL_NAME" /> anda</translation>
 <translation id="7842569679327885685">Amaran: Ciri percubaan</translation>
@@ -2248,7 +2307,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7866482334467279021">dihidupkan</translation>
 <translation id="7870790288828963061">Tiada apl Kiosk dengan versi lebih baharu dijumpai. Tiada apa-apa untuk dikemas kini. Sila alih keluar batang USB.</translation>
 <translation id="7872786842639831132">Mati</translation>
-<translation id="7873386145597434863">Steam untuk Chromebook</translation>
 <translation id="7875575368831396199">Nampaknya Bluetooth dimatikan pada <ph name="DEVICE_TYPE" /> anda. Sila hidupkan Bluetooth untuk menggunakan Hab Telefon.</translation>
 <translation id="7884446017008693258">Tetapan Tempat Liputan</translation>
 <translation id="7884902759927478774">Batalkan penyeretan tab</translation>
@@ -2279,6 +2337,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7932451802722951285">Buka dalam Google Calendar</translation>
 <translation id="7933084174919150729">Google Assistant hanya tersedia untuk profil utama.</translation>
 <translation id="79341161159229895">Akaun diurus oleh <ph name="FIRST_PARENT_EMAIL" /> dan <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793531125873261495">Ralat memuat turun mesin maya. Sila cuba lagi.</translation>
 <translation id="793716872548410480">Tekan <ph name="SHORTCUT_KEY_NAME" /> + V untuk melihat papan keratan anda. 5 item terakhir yang telah anda salin disimpan pada papan keratan anda.</translation>
 <translation id="7942330802915522974">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Anda boleh menemukan apl Fail dalam Pelancar. Urus fail setempat anda dan fail Google Drive anda, semua dalam apl Fail.</translation>
 <translation id="7942349550061667556">Merah</translation>
@@ -2289,6 +2348,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7947798320695032612"><ph name="APP_NAME" /> mahu menggunakan <ph name="DEVICE_NAME" /> anda</translation>
 <translation id="7948239795436419268">Jangan pulihkan tetingkap</translation>
 <translation id="7951630946012935453">Malapkan papan kekunci</translation>
+<translation id="795282463722894016">Pemulihan selesai</translation>
 <translation id="7953176344218790168">HURUF BESAR</translation>
 <translation id="7953994493035617347">Sahkan peleraian baharu?</translation>
 <translation id="795958884516058160">Penggadang Skrin Penuh didayakan. Tekan <ph name="ACCELERATOR" /> sekali lagi untuk mematikan togol.</translation>
@@ -2322,6 +2382,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8030169304546394654">Diputuskan sambungan</translation>
 <translation id="8036504271468642248">Ayat sebelumnya</translation>
 <translation id="8042893070933512245">Buka menu tetapan kebolehaksesan</translation>
+<translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> tiada respons.</translation>
 <translation id="8044457332620420407">Cahaya belakang papan kekunci dimatikan</translation>
 <translation id="8048123526339889627">Tetapan Bluetooth</translation>
 <translation id="8049189770492311300">Pemasa</translation>
@@ -2334,6 +2395,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8083540854303889870">Disimpan untuk kemudian</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Gunakan tab untuk mendapatkan lebih banyak pilihan. Gunakan anak panah ke kiri dan ke kanan untuk mengakses semua meja.</translation>
+<translation id="808894953321890993">Tukar kata laluan</translation>
 <translation id="8091153018031979607">Bermula jam <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Kawalan penatalan</translation>
 <translation id="8098591350844501178">Berhenti menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
@@ -2366,6 +2428,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8169177848833352618">Dukacita dimaklumkan bahawa mesin ini tidak memenuhi keperluan untuk pemasangan Bruschetta. Kod ralat ialah <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Pemegang bahagian atas sebelah kiri dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="81817143961839203">Penyisipan imej gagal</translation>
+<translation id="8182105986296479640">Aplikasi tiada respons.</translation>
 <translation id="8185090165691050712">Hidupkan/Matikan menu untuk mengubah saiz mod kunci</translation>
 <translation id="8192727139462702395">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>
 <translation id="8198456017687137612">Menghantar tab</translation>
@@ -2395,6 +2458,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8282784978194352587">Anda berjaya!</translation>
 <translation id="8287009018010202411">Produktiviti</translation>
 <translation id="828708037801473432">Dimatikan</translation>
+<translation id="8289128870594824098">Saiz cakera</translation>
 <translation id="8297006494302853456">Lemah</translation>
 <translation id="8300451473979404345">Pemegang yang dipilih, gunakan kekunci anak panah untuk digerakkan</translation>
 <translation id="8308637677604853869">Menu sebelumnya</translation>
@@ -2409,6 +2473,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8349826889576450703">launcher</translation>
 <translation id="8349964124165471584">Buka pautan dalam tetingkap baharu</translation>
 <translation id="8351131234907093545">Buat nota</translation>
+<translation id="8357388086258943206">Ralat semasa memasang Linux</translation>
 <translation id="8367948981300340152"><ph name="CAPTURE_MEDIUM" /> sedang digunakan.</translation>
 <translation id="8369166482916924789">Meja yang disimpan, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Maju satu huruf</translation>
@@ -2456,6 +2521,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8491237443345908933">Buka pautan dalam tab baharu</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> tidak menyokong <ph name="SPECIFIED_RESOLUTION" />. Peleraian telah ditukar kepada <ph name="FALLBACK_RESOLUTION" />. Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8502536196501630039">Untuk menggunakan apl daripada Google Play, anda mesti memulihkan apl anda dahulu. Sesetengah data mungkin hilang.</translation>
+<translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8507563469658346379">Semua orang, <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Buat meja baharu</translation>
 <translation id="85123341071060231">Bluetooth Chromebook anda dimatikan. Untuk membuka kunci Chromebook anda, masukkan kata laluan.</translation>
@@ -2465,6 +2531,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> anda mungkin tidak akan dicas semasa dihidupkan.</translation>
 <translation id="8519329096920173967">Buat carian pada skrin saya dengan Google Lens</translation>
 <translation id="8527869672961320915"><ph name="VM_NAME" /> apl</translation>
+<translation id="8528962588711550376">Melog masuk.</translation>
 <translation id="8535393432370007982">Buat asal tertib isihan mengikut warna</translation>
 <translation id="8536886494750559755">Paparkan tetapan Quick Share. Boleh dilihat oleh semua orang selama <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Teks disalin kepada Papan Klip</translation>
@@ -2484,6 +2551,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="861045123704058818">Apl disusun mengikut kategori buat sementara waktu</translation>
 <translation id="8612216344243590325">Simpan fail penting dalam <ph name="HOLDING_SPACE_TITLE" />, bukannya pada desktop. Seret fail kepada <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8612338981637220013">Teruskan pencapaian anda yang hebat!</translation>
+<translation id="8613164732773110792">Aksara huruf kecil, angka, garis bawah atau sempang sahaja</translation>
 <translation id="8614517853887502247">Pemberitahuan <ph name="APP_1_TITLE" /> dan <ph name="APP_2_TITLE" /> disembunyikan kerana perlindungan paparan dihidupkan</translation>
 <translation id="8615778328722901791">Buka bar alat</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2506,6 +2574,8 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8662921061190671299">Tidak dapat ditambahkan pada Calendar</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Tekan kekunci enter untuk menangkap tangkapan skrin separa</translation>
+<translation id="8665180165765946056">Sandaran selesai</translation>
+<translation id="8673530374848624865">Pentadbir anda telah mengemaskinikan keperluan keselamatan untuk peranti anda</translation>
 <translation id="8676770494376880701">Pengecas berkuasa rendah disambungkan</translation>
 <translation id="8679158879996532670">Tunjukkan tetapan Fokus. Fokus dihidupkan, masa berbaki <ph name="REMAINING_TIME" /> lagi.</translation>
 <translation id="8683506306463609433">Pengesanan prestasi aktif</translation>
@@ -2517,6 +2587,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8711169534266271368">Pilihan papan pemuka permainan</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="8714138378966541668">Dikunci oleh penyedia</translation>
+<translation id="8716931980467311658">Padamkan semua apl dan data Linux dalam folder fail Linux anda daripada <ph name="DEVICE_TYPE" /> ini?</translation>
 <translation id="8717459106217102612">Pilih perkataan atau huruf sebelumnya</translation>
 <translation id="8721053961083920564">Togol Kelantangan. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tangkapan skrin penuh</translation>
@@ -2527,6 +2598,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8731487213223706745">Tamat jam <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Papan kekunci mungkin sedang cuba mencuri ketukan kekunci anda</translation>
 <translation id="8735678380411481005">Warna cahaya belakang papan kekunci</translation>
+<translation id="8740672167979365981">Kemaskinian Chrome OS Flex diperlukan</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Mengaktifkan...</translation>
 <translation id="8742395827132970586">Pemasangan gagal dilaksanakan, membuat pembersihan</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
@@ -2537,6 +2609,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="875593634123171288">Tunjukkan tetapan VPN</translation>
 <translation id="8756799553341497810">Anda boleh mula menyesuaikan reka letak apl anda setelah anda keluar daripada paparan ini.</translation>
 <translation id="8759408218731716181">Tidak dapat menyediakan berbilang log masuk</translation>
+<translation id="8759753423332885148">Ketahui lebih lanjut.</translation>
 <translation id="8763883995157866248">Tetapkan peranti kepada mod tidur</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, Apl yang Dipasang, Disekat</translation>
 <translation id="8782565991310229362">Pelancaran aplikasi kios dibatalkan.</translation>
@@ -2576,6 +2649,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8876661425082386199">Semak sambungan anda</translation>
 <translation id="8883478023074930307">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Google Account anda. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Tidak dapat disambungkan kepada YouTube Music</translation>
+<translation id="8888253246822647887">Apl anda akan dibuka apabila peningkatan selesai. Peningkatan boleh mengambil masa beberapa minit.</translation>
 <translation id="888982883502837004">Kemaskinian Perisian tegar tersedia untuk peranti anda. Klik untuk menyemak dan mengemas kini.</translation>
 <translation id="8896630965521842259"><ph name="DESK_TEMPLATE_NAME" /> akan dipadamkan secara kekal</translation>
 <translation id="889790758758811533">Baki bateri <ph name="PERCENTAGE" />% (kira-kira <ph name="TIME_LEFT" />). Sambungkan peranti anda kepada sumber kuasa.</translation>
@@ -2599,7 +2673,9 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8945508919180478719">Mikrofon gaya studio</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Kotak pilihan tidak ditandai.</translation>
 <translation id="8949925099261528566">Disambungkan, tiada Internet</translation>
+<translation id="8951256747718668828">Pemulihan tidak dapat diselesaikan kerana berlaku ralat</translation>
 <translation id="8951539504029375108">Hanya peranti Thunderbolt yang diluluskan serasi dengan Chromebook anda</translation>
+<translation id="895347679606913382">Memulakan...</translation>
 <translation id="8956420987536947088">Buka tetingkap dan apl anda sebelum ini</translation>
 <translation id="8959380109429710384">Anda menekan pintasan papan kekunci untuk mendapatkan penggadang skrin penuh. Gunakan ctrl + alt + anak panah untuk bergerak pada sekeliling paparan yang dizum masuk.</translation>
 <translation id="8964525410783593407">1 j</translation>
@@ -2609,7 +2685,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8980862970816311842">Alihkan ikon apl masuk/keluar daripada folder dalam grid apl</translation>
 <translation id="8982906748181120328">Keterlihatan berdekatan</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8985191021574400965">Selamat datang ke Stim untuk Chromebook</translation>
 <translation id="8990809378771970590">Menggunakan <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Tekan fn + Sisipan Pantas atau Shift untuk membatalkan tindakan.</translation>
 <translation id="899350903320462459">Buka kunci peranti sebagai <ph name="LOGIN_ID" /> untuk melaksanakan tindakan pemberitahuan</translation>
@@ -2617,9 +2692,11 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9000771174482730261">URUS STORAN</translation>
 <translation id="9003374957546315126">Emoji dan pelbagai lagi</translation>
 <translation id="9005984960510803406">Buka tetingkap Crosh</translation>
+<translation id="9013037634206938463"><ph name="INSTALL_SIZE" /> ruang kosong diperlukan untuk memasang Linux. Untuk meningkatkan ruang kosong, padamkan fail daripada peranti anda.</translation>
 <translation id="901668144954885282">Sandarkan pada Google Drive</translation>
 <translation id="9017320285115481645">Masukkan kod akses ibu bapa Family Link.</translation>
 <translation id="9024331582947483881">skrin penuh</translation>
+<translation id="9026852570893462412">Proses ini mungkin mengambil masa beberapa minit. Memuat turun mesin maya.</translation>
 <translation id="9029736946581028033">Peranti akan dimatikan tidak lama lagi</translation>
 <translation id="9030319654231318877">Dimatikan sehingga matahari terbenam</translation>
 <translation id="9030515284705930323">Organisasi anda belum mendayakan Gedung Google Play untuk akaun anda. Hubungi pentadbir anda untuk mendapatkan maklumat lanjut.</translation>
@@ -2628,7 +2705,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9047624247355796468">Buka tetapan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth tidak tersedia</translation>
 <translation id="9050999376345823055">Tekan "." untuk dikeluarkan</translation>
-<translation id="9061694916020926968">Anda perlu log masuk ke Google Account untuk menggunakan Steam untuk Chromebook (Beta). Log masuk dan cuba lagi.</translation>
 <translation id="906458777597946297">Maksimumkan tetingkap</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9068849894565669697">Pilih warna</translation>
@@ -2664,6 +2740,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9168436347345867845">Lakukan kemudian</translation>
 <translation id="9178475906033259337">Memaparkan 1 hasil carian untuk <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ciri ini membolehkan anda mengakses dengan cepat mana-mana pengguna yang telah log masuk tanpa memerlukan kata laluan. Gunakan ciri ini dengan akaun yang dipercayai sahaja.</translation>
+<translation id="9180281769944411366">Proses ini mungkin mengambil masa beberapa minit. Memulakan bekas Linux.</translation>
 <translation id="9183302530794969518">Google Docs</translation>
 <translation id="9183456764293710005">Penggadang skrin penuh</translation>
 <translation id="9192133205265227850">Gunakan "<ph name="DEVICE_NAME" />"</translation>
@@ -2677,6 +2754,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, Diurus oleh Pentadbir anda</translation>
 <translation id="9201842707396338580">Kesilapan telah berlaku. Sila hubungi pemilik atau pentadbir peranti anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Tindakan ini membenarkan <ph name="APP_NAME" />, <ph name="APP2_NAME" /> dan semua apl dan laman web dengan kebenaran lokasi dan ChromeOS untuk menggunakan Wi-Fi dan lokasi rangkaian mudah alih.</translation>
+<translation id="9209563766569767417">Menyemak persediaan bekas Linux</translation>
 <translation id="9210037371811586452">Keluar daripada mod desktop bersatu</translation>
 <translation id="9211490828691860325">Semua meja</translation>
 <translation id="9211681782751733685">Tinggal <ph name="TIME_REMAINING" /> sehingga bateri dicas sepenuhnya.</translation>
@@ -2700,12 +2778,14 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="956452277966142925">Tetapan papan pemuka permainan</translation>
 <translation id="961856697154696964">Padamkan data semakan imbas</translation>
 <translation id="974545358917229949">Memaparkan <ph name="RESULT_COUNT" /> hasil carian untuk <ph name="QUERY" /></translation>
+<translation id="97905529126098460">Tetingkap ini akan ditutup selepas pembatalan selesai.</translation>
 <translation id="981011780479609956">Tiada tarikh tamat</translation>
 <translation id="98120814841227350">Pergi ke bahagian hujung dokumen</translation>
 <translation id="987589956647469042">Data mudah alih dihidupkan</translation>
 <translation id="989374776391122812">Kawalan kamera dan audio</translation>
 <translation id="990263227494928142">Tekan Shift 5 kali untuk mendayakan pad sentuh</translation>
 <translation id="990277280839877440">Tetingkap <ph name="WINDOW_TITILE" /> ditutup.</translation>
+<translation id="992778845837390402">Penyandaran Linux sedang dijalankan</translation>
 <translation id="993398562350683614">Langkah jelajah <ph name="STEP" /> daripada <ph name="TOTAL_STEPS" />. Gunakan apl untuk melakukan semua perkara yang diperlukan pada <ph name="PRODUCT_NAME" /> anda. Anda boleh menemukan apl anda dalam Pelancar. Tekan Alt + Shift + L untuk fokus pada butang Pelancar.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Dapatkan ciri terkini dan peningkatan keselamatan. Kemaskinian berlaku di latar belakang.</translation>

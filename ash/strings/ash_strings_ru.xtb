@@ -14,6 +14,7 @@
 <translation id="1037492556044956303">Добавлено устройство <ph name="DEVICE_NAME" /></translation>
 <translation id="1038106730571050514">Показать подсказки</translation>
 <translation id="1047017786576569492">часть экрана</translation>
+<translation id="104710386808485638">Перезапустить Linux?</translation>
 <translation id="1052916631016577720">Сканирование</translation>
 <translation id="1056775291175587022">Нет сетей</translation>
 <translation id="1056898198331236512">Внимание</translation>
@@ -29,6 +30,7 @@
 <translation id="1073899992769346247">Зарядите или замените ее.</translation>
 <translation id="1081015718268701546">В настоящий момент приложения Linux не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="108486256082349153">MAC-адрес мобильного устройства: <ph name="ADDRESS" /></translation>
+<translation id="1085697365578766383">Не удалось запустить виртуальную машину. Повторите попытку.</translation>
 <translation id="1088231044944504242">Ищите <ph name="CATEGORY" />, файлы, приложения и не только. Используйте клавиши со стрелками, чтобы переходить от одного приложения к другому.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + Стрелка вниз</translation>
 <translation id="1094756674036064790">Отключить Bluetooth?</translation>
@@ -55,6 +57,7 @@
 <translation id="1173268871892601910">Менеджер паролей ChromeOS запрашивает подтверждение вашей личности</translation>
 <translation id="1175572348579024023">Прокрутка</translation>
 <translation id="1175944128323889279">Текущий уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %. Оставшееся время работы: <ph name="TIME" />.</translation>
+<translation id="1177863135347784049">Свой вариант</translation>
 <translation id="1178581264944972037">Пауза</translation>
 <translation id="1179776263021875437">Перестать фокусироваться на задаче</translation>
 <translation id="1180117276105724040">Восстановление окон из предыдущего сеанса…</translation>
@@ -82,6 +85,7 @@
 <translation id="1240638468526743569">приложение</translation>
 <translation id="1242198791279543032">Звук уведомлений отключен</translation>
 <translation id="1242883863226959074">устройстве</translation>
+<translation id="1244265436519979884">Выполняется восстановление Linux.</translation>
 <translation id="1245476784081715330">Вы молодец!</translation>
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1246890715821376239">Неподдерживаемые приложения</translation>
@@ -108,8 +112,10 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Открыть приложение "Возможности"</translation>
 <translation id="129469256578833241">Назад к краткому пересказу</translation>
+<translation id="1294807885394205587">Это может занять несколько минут. Запуск менеджера контейнеров…</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Нажмите <ph name="LAUNCHER_KEY_NAME" /> + G в любой момент.</translation>
+<translation id="130491383855577612">Приложения и файлы Linux заменены.</translation>
 <translation id="1306549533752902673">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
 <translation id="1310396869741602366">Изменить тон</translation>
 <translation id="1312604459020188865">Уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
@@ -118,6 +124,7 @@
 <translation id="132346741904777634">Окно предварительного просмотра камеры привязано к левому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
 <translation id="132415371743256095">Закрыть стол "<ph name="DESK_NAME" />" и окна в нем</translation>
 <translation id="1333308631814936910">Подключено устройство "<ph name="DISPLAY_NAME" />".</translation>
+<translation id="1338950911836659113">Удаление…</translation>
 <translation id="1340378040547539434">Уменьшить масштаб страницы</translation>
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
 <translation id="1341926407152459446">Используйте устройство "<ph name="DEVICE_NAME" />" для ввода и вывода аудио.</translation>
@@ -161,6 +168,7 @@
 <translation id="1469148162491666137">Доступ будет предоставлен приложениям "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также всем приложениям и сайтам с разрешениями "Камера" и "Микрофон". Возможно, потребуется обновить веб-страницу или перезапустить приложение.</translation>
 <translation id="147310119694673958">Батарея телефона: <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="1475340220124222168">Включить или отключить точку доступа. Сейчас она работает. К ней подключено одно устройство.</translation>
+<translation id="1476595624592550506">Смените пароль</translation>
 <translation id="1479685784053141667">Новый контакт</translation>
 <translation id="1479909375538722835">Плавающее меню специальных возможностей</translation>
 <translation id="1483493594462132177">Отправить</translation>
@@ -176,6 +184,7 @@
 <translation id="1521655867290435174">Google Таблицы</translation>
 <translation id="1523032696246003">Батарея: <ph name="BATTERY_PERCENTAGE" /> % | <ph name="TIME" /> до полного заряда</translation>
 <translation id="1525508553941733066">ЗАКРЫТЬ</translation>
+<translation id="152629053603783244">Перезагрузить Linux</translation>
 <translation id="1526448108126799339">Открыть вкладку в новом окне</translation>
 <translation id="1528259147807435347">Изменено за последнюю неделю</translation>
 <translation id="1536604384701784949">Чтобы использовать адрес электронной почты <ph name="USER_EMAIL_ADDRESS" />, вам сначала нужно выйти из всех аккаунтов. Для этого нажмите "Отмена" и вернитесь на шаг назад. Затем нажмите на часы и на открывшейся панели состояния выберите "Выйти". Войдите в аккаунт <ph name="USER_EMAIL_ADDRESS_2" /> ещё раз.</translation>
@@ -194,11 +203,15 @@
 <translation id="1571697193564730395">Включить или отключить режим "Не беспокоить". <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Выбран маркер левого края. Чтобы двигать его, используйте клавиши со стрелками.</translation>
 <translation id="1576623706766186887">Уменьшить, когда включена лупа</translation>
+<translation id="1578558981922970608">Закрыть принудительно</translation>
 <translation id="1582946770779745370">Доступна игровая панель. Чтобы открыть ее, в любой момент нажмите <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, а потом <ph name="LAUNCHER_KEY_NAME" /> + G</translation>
 <translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="158838227375272121">Сайт "Google Класс"</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
+<translation id="1592074621872221573">Администратор (<ph name="MANAGER" />) отключил отладку с помощью ADB, поэтому настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены. Прежде чем перезапускать его, выполните резервное копирование файлов.</translation>
+<translation id="1595492813686795610">Обновление Linux…</translation>
 <translation id="1597880963776148053">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. На панели запуска в нижней части экрана находятся закрепленные и открытые приложения. Чтобы перейти к ним, нажмите Alt + Shift + L, а затем Tab.</translation>
+<translation id="1602085790802918092">Запуск виртуальной машины</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + Стрелка вниз</translation>
 <translation id="1604857178818051494">Приостановить воспроизведение</translation>
 <translation id="1607312127821884567">Не настраивать просмотр приложений с телефона</translation>
@@ -207,12 +220,12 @@
 <translation id="1612679292338846734">Если эти функции включены, текст, который вы вводите, URL веб-страниц и содержимое документов могут передаваться на серверы, где работают системы искусственного интеллекта от Google. Эти данные используются для генерации ответов на вопросы, кратких пересказов и подсказок по написанию текстов, а также для улучшения продукта в соответствии с <ph name="LINK_TO_SERVICE_TERMS" />. Не указывайте персональные и конфиденциальные данные.</translation>
 <translation id="1619879934359211038">Не удалось подключиться к Google Play. Проверьте подключение к сети и повторите попытку. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1621831347985899379">Данные на <ph name="DEVICE_TYPE" /> будут удалены</translation>
 <translation id="1623768535032616219">Скрыть информацию из Google Класса</translation>
 <translation id="163032029566320584">Функция "<ph name="UNAVAILABLE_DLC" />" недоступна.</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Загрузка…</translation>
-<translation id="1642895994345928121">Недостаточно места в хранилище устройства. Освободите пространство и повторите попытку.</translation>
 <translation id="1647986356840967552">Предыдущая страница</translation>
 <translation id="1651914502370159744">Показать историю</translation>
 <translation id="1668469839109562275">Встроенная VPN</translation>
@@ -254,6 +267,7 @@
 <translation id="1755408179247123630">Включить озвучивание при нажатии?</translation>
 <translation id="1755556344721611131">Приложение "Диагностика"</translation>
 <translation id="1756833229520115364">Не удалось сохранить шаблон. Слишком много окон или вкладок.</translation>
+<translation id="1757132445735080748">Чтобы завершить настройку Linux, обновите Chrome OS Flex и повторите попытку.</translation>
 <translation id="1757857692711134412">Выкл. до заката</translation>
 <translation id="1763084151787818322">Другие действия</translation>
 <translation id="1768138163688567246">Выйти из режима поиска по экрану</translation>
@@ -288,6 +302,7 @@
 <translation id="1879018240766558464">Окна в режиме инкогнито пока не поддерживаются. Остальные приложения будут сохранены.</translation>
 <translation id="1882814835921407042">Не подключено к мобильной сети</translation>
 <translation id="1882897271359938046">Дублирование экрана в <ph name="DISPLAY_NAME" /></translation>
+<translation id="1884705339276589024">Изменение размера диска Linux</translation>
 <translation id="1885785240814121742">Используйте разблокировку по отпечатку пальца</translation>
 <translation id="1891362123137972260">На диске почти нет места. Удалите лишние файлы.</translation>
 <translation id="1894024878080591367">Измените настройки, чтобы играть с помощью клавиатуры.</translation>
@@ -301,6 +316,7 @@
 <translation id="1925320505152357008">Меньше 1 мин.</translation>
 <translation id="1928739107511554905">Чтобы выполнить обновление, перезагрузите устройство Chromebook с помощью сенсорной панели, не отключая от него клавиатуру.</translation>
 <translation id="1929331825127010451">Назад к вопросу</translation>
+<translation id="1937774647013465102">Не удалось импортировать тип архитектуры контейнера <ph name="ARCHITECTURE_CONTAINER" /> на это устройство (<ph name="ARCHITECTURE_DEVICE" />). Вы можете попробовать восстановить этот контейнер на другом устройстве или получить доступ к файлам, открыв образ контейнера в приложении "Файлы".</translation>
 <translation id="1946615340060705561">Чтобы отпустить, нажмите C</translation>
 <translation id="1948405482892809935">Переключиться на следующего пользователя</translation>
 <translation id="1954252331066828794">Запись видео с экрана завершена</translation>
@@ -328,6 +344,8 @@
 <translation id="2034971124472263449">Все равно сохранить</translation>
 <translation id="2041220428661959602">Уровень заряда батареи: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="204259843076055848">Сочетание клавиш для действия "<ph name="SIX_PACK_KEY_NAME" />" отключено</translation>
+<translation id="204706822916043810">Проверка виртуальной машины</translation>
+<translation id="2048554637254265991">Не удалось запустить менеджер контейнеров. Повторите попытку.</translation>
 <translation id="2048653237708779538">Действие недоступно</translation>
 <translation id="2049240716062114887">Название рабочего стола изменилось на "<ph name="DESK_NAME" />"</translation>
 <translation id="2064048859448024834">Предварительный просмотр для камеры включен</translation>
@@ -358,6 +376,7 @@
 <translation id="216955976692983107">Растянуть окно в многооконном режиме вправо</translation>
 <translation id="2185166372312820725">Перейти на предыдущую вкладку</translation>
 <translation id="2185444992308415167">Перейти по вкладкам 1–8</translation>
+<translation id="2192232475740621500">Показывать меньше окон</translation>
 <translation id="2195732836444333448">На сервере недостаточно ресурсов. Попробуйте ещё раз немного позже.</translation>
 <translation id="2198625180564913276">Профиль добавляется. Это может занять несколько минут.</translation>
 <translation id="219905428774326614">Панель запуска, все приложения</translation>
@@ -382,6 +401,7 @@
 <translation id="2268813581635650749">Выйти для всех</translation>
 <translation id="2276987123919776440">15 минут</translation>
 <translation id="2277103315734023688">Перемотать вперед</translation>
+<translation id="2278668501808246459">Запуск менеджера контейнеров</translation>
 <translation id="2282073721614284166">Открыть ссылку в этой вкладке</translation>
 <translation id="2292698582925480719">Масштаб экрана</translation>
 <translation id="2293443480080733021">На чем вы хотите сфокусироваться? Нажмите Ввод, чтобы добавить задачу.</translation>
@@ -408,6 +428,7 @@
 <translation id="2352467521400612932">Настройки стилуса</translation>
 <translation id="2354174487190027830">Активация <ph name="NAME" /></translation>
 <translation id="2355314311311231464">Подготовка к использованию не выполнена, поскольку не удалось загрузить данные вашего аккаунта. Повторите попытку. Код ошибки: <ph name="ERROR_CODE" />.</translation>
+<translation id="2359071692152028734">Приложения Linux могут перестать отвечать.</translation>
 <translation id="2359808026110333948">Продолжить</translation>
 <translation id="2360398059912971776">батарея</translation>
 <translation id="2361210043495191221">Включить или отключить Wi-Fi. <ph name="STATE" />.</translation>
@@ -421,7 +442,6 @@
 <translation id="2383521554963939360">Группы приложений и вкладок</translation>
 <translation id="2386292613071805067">Выделить все содержимое страницы</translation>
 <translation id="2389423187722941333">Включить или отключить Gemini</translation>
-<translation id="2391805183137601570">Открыть Steam</translation>
 <translation id="2392659840443812875">Точки доступа не найдены. Убедитесь, что устройство находится рядом и Bluetooth включен.</translation>
 <translation id="2397416548179033562">Отображение меню Chrome</translation>
 <translation id="240006516586367791">Управление медиаконтентом</translation>
@@ -444,14 +464,13 @@
 <translation id="243878895369688216">Открыто вчера</translation>
 <translation id="2440978926514840421">Выполнена запись в формате GIF</translation>
 <translation id="2441427462554639370">Запись приостановлена, потому что в хранилище почти нет свободного места.</translation>
-<translation id="2447587550790814052">Теперь вы можете использовать Steam для Chromebook (бета).</translation>
+<translation id="2445449901874883781">Показывать больше окон</translation>
 <translation id="2449089818483227734">Низкий заряд батареи</translation>
 <translation id="2450205753526923158">Режим создания скриншота</translation>
 <translation id="2453860139492968684">Завершить</translation>
 <translation id="2455994958736234930">Добавить "www." и ".com" к тексту в адресной строке и открыть сайт</translation>
 <translation id="2456008742792828469">Календарь, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Подробности</translation>
-<translation id="2462332841984057083">Приложение Steam уже устанавливается. Дождитесь завершения процесса.</translation>
 <translation id="2465145153332031561">Состояние батареи: <ph name="BATTERY_HEALTH_PERCENTAGE" /> %. Количество циклов: <ph name="CYCLE_COUNT" />.</translation>
 <translation id="2473177541599297363">Разрешение экрана было изменено</translation>
 <translation id="2475783092753560388">Вставить результат "<ph name="SEARCH_RESULT_TEXT" />"</translation>
@@ -464,7 +483,6 @@
 <translation id="2486214324139475545">Предпросмотр активного рабочего стола "<ph name="DESK_NAME" />".</translation>
 <translation id="2486405091093637109">Вы изменили разрешение экрана "<ph name="DISPLAY_NAME" />" на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Если вы не подтвердите изменение, будут восстановлены предыдущие настройки. Оставшееся время: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Присоединиться</translation>
-<translation id="2494555621641843783">Не удается установить Steam</translation>
 <translation id="2496180316473517155">История браузера</translation>
 <translation id="2499445554382787206">Меню профиля рабочего стола. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
@@ -484,6 +502,7 @@
 <translation id="2531025035050312891">устройство работает медленно</translation>
 <translation id="2531107890083353124">Нажмите <ph name="KEY_ONE" /> при перетаскивании вкладки</translation>
 <translation id="2532199152994248594">Чтобы выбрать область для снимка, перетащите курсор или нажмите Пробел</translation>
+<translation id="2537927931785713436">Проверка образа виртуальной машины</translation>
 <translation id="2540651571961486573">Что-то пошло не так. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Хотите нажать клавишу Home? Используйте</translation>
 <translation id="254900897760075745">Скопировать данные в буфер обмена</translation>
@@ -543,7 +562,8 @@
 <translation id="2727175239389218057">Ответить</translation>
 <translation id="2727744317940422214">Произошла ошибка. Сообщите нам о ней, отправив отзыв с хештегом #bruschetta в описании. Код ошибки: <ph name="ERROR" />. Удалить данные не получилось, попробуйте сделать это вручную.</translation>
 <translation id="2727977024730340865">Подключено маломощное зарядное устройство. Возможны проблемы при зарядке.</translation>
-<translation id="2737538893171115082">Сервис Steam для Chromebook (бета) заблокирован администратором. Администратор должен включить следующие правила:</translation>
+<translation id="2741713322780029189">Открыть терминал для восстановления</translation>
+<translation id="274290345632688601">Восстановление приложений и файлов Linux…</translation>
 <translation id="2743301740238894839">Начать</translation>
 <translation id="2743387203779672305">Скопировать в буфер</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -571,6 +591,7 @@
 <translation id="2815594810045873507">Попробуйте использовать более мощное или оригинальное зарядное устройство.</translation>
 <translation id="2819276065543622893">Сеанс завершен.</translation>
 <translation id="2822551631199737692">Используется камера</translation>
+<translation id="2822910719211888134">Не удалось сохранить резервную копию Linux</translation>
 <translation id="2825619548187458965">Полка</translation>
 <translation id="2831035692318564937">Вкл. до рассвета</translation>
 <translation id="2834813915651407382">Недавно открыто</translation>
@@ -578,6 +599,7 @@
 <translation id="2838589015763961627">Чтобы изменить размер, выйдите из полноэкранного режима</translation>
 <translation id="2840766858109427815">Перейти на следующую страницу</translation>
 <translation id="2841907151129139818">Вы перешли в режим планшета.</translation>
+<translation id="2843560154284403323">Чтобы завершить настройку Linux, обновите Chrome OS и повторите попытку.</translation>
 <translation id="2844169650293029770">Устройство USB-C (ближний порт слева)</translation>
 <translation id="2844350028562914727">подробные сведения</translation>
 <translation id="2847759467426165163">Выберите устройство</translation>
@@ -586,6 +608,7 @@
 <translation id="2850207700020959936">У приложений есть доступ к камере.</translation>
 <translation id="2852045827873867442">Требуется подключение к интернету.</translation>
 <translation id="2860184359326882502">Лучшие результаты</translation>
+<translation id="2862815659905780618">Удалить среду разработки Linux</translation>
 <translation id="2865888419503095837">Информация о сети</translation>
 <translation id="2869095047958348710">Прошедший день недели: <ph name="DAY_OF_WEEK" /></translation>
 <translation id="2872353916818027657">Переключить основной монитор</translation>
@@ -617,6 +640,8 @@
 <translation id="2949420361496057765">Нажмите на ссылку, удерживая <ph name="MODIFIER" /></translation>
 <translation id="2957159466053076448">Эти функции можно в любой момент отключить в настройках.<ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Звук с устройства</translation>
+<translation id="2959842337402130152">Не удалось выполнить импорт: на устройстве недостаточно места. Освободите <ph name="SPACE_REQUIRED" /> и повторите попытку.</translation>
+<translation id="2960208947600937804">При настройке Linux произошла ошибка. Обратитесь к администратору.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Предоставить доступ к микрофону?</translation>
 <translation id="296762781903199866">Не удалось скачать файлы распознавания речи для языка: <ph name="LANGUAGE" /></translation>
@@ -645,9 +670,11 @@
 <translation id="3040982432432547149">Помогите нам улучшить Steam для Chromebook</translation>
 <translation id="304417730895741346">Открытые приложения находятся на панели запуска. Там их можно закрепить. Для этого нажмите на приложение правой кнопкой мыши или коснитесь двумя пальцами сенсорной панели.</translation>
 <translation id="3045670165536837541">Выбран маркер правого верхнего угла. Чтобы двигать его, используйте клавиши со стрелками.</translation>
+<translation id="3046178388369461825">На диске Linux почти нет места</translation>
 <translation id="3047761520276763270">Скажите:</translation>
 <translation id="3053407068093039599">Разрешить/запретить доступ к камере</translation>
 <translation id="3055162170959710888">Сегодня вы уже использовали это устройство <ph name="USED_TIME" />.</translation>
+<translation id="3058002721610176427">Измените PIN-код и пароль</translation>
 <translation id="3062298103034426069">Не поддерживается</translation>
 <translation id="3068622547379332530">Версия <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />), <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Временное хранилище расположено слева</translation>
@@ -709,6 +736,7 @@
 <translation id="3249513730522716925">Окно "<ph name="WINDOW_TITLE" />" перемещено с рабочего стола "<ph name="ACTIVE_DESK" />" на рабочий стол "<ph name="TARGET_DESK" />".</translation>
 <translation id="3253743281242075461">Тип задания: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">Снять выделение с объекта на панели запуска.</translation>
+<translation id="3256274561709196882">Измените PIN-код</translation>
 <translation id="3260969790895726815">Вы можете использовать голосовой ввод в офлайн-режиме, так как речь обрабатывается локально, но некоторые голосовые команды будут недоступны.</translation>
 <translation id="3264031581203585083">Скрыть все подсказки Google Диска</translation>
 <translation id="3265032511221679826">Открыть доступ к данным о точном местоположении?</translation>
@@ -716,17 +744,18 @@
 <translation id="3271554781793662131">Найдите то, что хотите вставить</translation>
 <translation id="3274634049061007184">Просматривайте приложения с телефона.</translation>
 <translation id="3279230909244266691">Подождите несколько минут. Запуск виртуальной машины…</translation>
-<translation id="3285465040399788513">На устройстве не хватает свободного места для завершения установки. Освободите место и повторите попытку.</translation>
 <translation id="3289364673986435196">Меню кнопки питания</translation>
 <translation id="3289544412142055976">Приложения для Linux пока не поддерживаются</translation>
 <translation id="3289674678944039601">Зарядка с помощью адаптера питания</translation>
 <translation id="3290356915286466215">Не защищена</translation>
 <translation id="3291862315280588024">Перейти к началу предыдущего слова</translation>
+<translation id="32939749466444286">Не удалось запустить контейнер Linux. Повторите попытку.</translation>
 <translation id="3294437725009624529">Гость</translation>
 <translation id="3300193645498960160">Если вы будете говорить при выключенном микрофоне, появится уведомление. Аудио с устройства никуда не передается.</translation>
 <translation id="3306386552969601301">К точке доступа <ph name="DEVICE_NAME" /> подключено несколько устройств (<ph name="DEVICECOUNT" />)</translation>
 <translation id="3307642347673023554">Вы перешли в режим ноутбука.</translation>
 <translation id="3308453408813785101">Пользователь <ph name="USER_EMAIL_ADDRESS" /> сможет войти в аккаунт позже.</translation>
+<translation id="3312470654018965389">Идет настройка контейнера Linux…</translation>
 <translation id="3313950410573257029">Проверить подключение</translation>
 <translation id="3321628682574733415">Неверный родительский код доступа</translation>
 <translation id="332827762492701193">Уведомления скрыты</translation>
@@ -743,7 +772,6 @@
 <translation id="3368922792935385530">Подключено</translation>
 <translation id="3369111525500416043">К сдаче</translation>
 <translation id="3371140690572404006">Устройство USB-C (ближний порт справа)</translation>
-<translation id="3373196968211632036">Сервис Steam для Chromebook (бета) недоступен для детских аккаунтов Google.</translation>
 <translation id="3375634426936648815">Подключено</translation>
 <translation id="3386978599540877378">Полноэкранная лупа</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -785,7 +813,6 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Подробнее о точной геолокации…<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354">Статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Временное хранилище автоматически скрыто</translation>
-<translation id="3496797737329654668">Начните играть</translation>
 <translation id="3505066820268455558">Батарея заряжается</translation>
 <translation id="3509391053705095206">Не удается найти ваш телефон. Убедитесь, что на нем включен Bluetooth.</translation>
 <translation id="3510164367642747937">Выделять указатель мыши</translation>
@@ -798,6 +825,8 @@
 <translation id="353086728817903341">Подключенных устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="3532247131850366052">Не удалось создать таблицу Google.</translation>
 <translation id="3533126039236445965">Приложения на панели запуска</translation>
+<translation id="3537881477201137177">Этот параметр можно изменить позже в настройках.</translation>
+<translation id="3538066758857505094">Не удалось удалить Linux. Повторите попытку.</translation>
 <translation id="3539957339480430241">Точка доступа устройства "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3540893133818942399">Не настраивать просмотр недавних фотографий и медиафайлов с телефона</translation>
 <translation id="3542066395059568317">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них правой кнопкой мыши, чтобы удалить.</translation>
@@ -808,6 +837,7 @@
 <translation id="3554928024630051016">Чтобы подключить другое USB-устройство, сначала отключите какое-нибудь одно.</translation>
 <translation id="3558768885091059911">Разрешить доступ к камере и микрофону?</translation>
 <translation id="3560174576767922131">Записать видео</translation>
+<translation id="3562423906127931518">Выполняется настройка контейнера Linux. Это может занять несколько минут.</translation>
 <translation id="3563432852173030730">Не удалось скачать киоск-приложение</translation>
 <translation id="3563558822383875692">Настройка DLC…</translation>
 <translation id="3563775809269155755">Включить точку доступа</translation>
@@ -820,6 +850,7 @@
 <translation id="3583350334315908861">{MINUTES,plural, =1{минута}one{минута}few{минуты}many{минут}other{минуты}}</translation>
 <translation id="3585296979871889131">Просматривайте недавние фотографии, медиафайлы, уведомления и приложения с телефона.</translation>
 <translation id="358832729276157756">Клавиша ExpressKey 1</translation>
+<translation id="3590295622232282437">Переход в управляемый сеанс.</translation>
 <translation id="3590441166907930941">Боковая кнопка</translation>
 <translation id="3593039967545720377">Чтобы посмотреть историю буфера обмена, нажмите клавиши <ph name="SHORTCUT_KEY_NAME" /> + V. Чтобы начать, скопируйте объект.</translation>
 <translation id="3593646411856133110">Чтобы увидеть открытые приложения, проведите по экрану вверх и удерживайте палец.</translation>
@@ -847,9 +878,9 @@
 <translation id="3633851487917460983">Открыть буфер обмена</translation>
 <translation id="363473492175527493">Задача для режима концентрации внимания: <ph name="TASK_NAME" />. Чтобы изменить задачу, нажмите Ввод.</translation>
 <translation id="3638400994746983214">Включить или отключить экран конфиденциальности. <ph name="STATE_TEXT" />.</translation>
-<translation id="3641070112313110357">Нужно обновить Steam для Chromebook (бета). Перезапустите устройство и повторите попытку.</translation>
 <translation id="3649256019230929621">Свернуть окно</translation>
 <translation id="3650952250015018111">Разрешить приложению "<ph name="APP_NAME" />" доступ к этому устройству:</translation>
+<translation id="3652817283076144888">Инициализация…</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />
         с <ph name="START_TIME" />
@@ -882,6 +913,7 @@
 <translation id="3726171378575546917">Приложения "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" и ещё несколько сервисов (<ph name="UNAVAILABLE_APPS_COUNT" />) не установлены на этом устройстве.</translation>
 <translation id="3727231512028252576">Не удалось загрузить данные. Восстановите связь и повторите попытку.</translation>
 <translation id="3735740477244556633">Сортировать по:</translation>
+<translation id="3738632186060045350">Данные на <ph name="DEVICE_TYPE" /> будут удалены через 24 ч.</translation>
 <translation id="3738664582935948253">Теперь в записи видео с экрана можно показывать сочетания клавиш и нажатия.</translation>
 <translation id="3741482431277446954">Правая кнопка мыши</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
@@ -915,13 +947,14 @@
 <translation id="3831226344927851293">Выйти из руководства</translation>
 <translation id="383629559565718788">Показать настройки клавиатуры</translation>
 <translation id="384082539148746321">Удалить шаблон?</translation>
-<translation id="3841282988425489367">Не удалось установить Steam для Chromebook (бета)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затем <ph name="KEY_ONE" />, <ph name="KEY_TWO" />, <ph name="KEY_THREE" /> или <ph name="KEY_FOUR" /></translation>
+<translation id="3846116211488856547">Разрабатывайте сайты, приложения для Android и другие программы с помощью удобных инструментов. При установке Linux будут скачаны данные объемом <ph name="DOWNLOAD_SIZE" />.</translation>
 <translation id="3846575436967432996">Информация о сетях недоступна</translation>
 <translation id="3848526302597027234">Получение доступа к разрешениям ниже</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">В начало</translation>
 <translation id="3859364108019690">Ошибка трансляции приложений</translation>
+<translation id="3861638017150647085">Имя пользователя "<ph name="USERNAME" />" недоступно.</translation>
 <translation id="3861651314799684201">Нажмите Ввод, чтобы записать видео со всего экрана</translation>
 <translation id="3870197372373144624">Попробуйте выключить устройство.</translation>
 <translation id="3879748587602334249">Менеджер скачивания</translation>
@@ -992,6 +1025,7 @@
 <translation id="4077623680826964850">Превышено время ожидания при загрузке виртуальной машины или повторном подключении к ней.</translation>
 <translation id="4086921558679520050">Переключите физический выключатель микрофона на устройстве</translation>
 <translation id="4101772068965291327">Открытие главной страницы</translation>
+<translation id="4102906002417106771">Перезапустить и использовать Powerwash</translation>
 <translation id="4112140312785995938">Перемотать назад</translation>
 <translation id="4113030288477039509">Управляется администратором</translation>
 <translation id="4114315158543974537">Включите Phone Hub</translation>
@@ -1026,7 +1060,6 @@
 <translation id="4192112279662688596">или</translation>
 <translation id="4193857202545160520">Показывать щелчки мышью и нажатия клавиш</translation>
 <translation id="4193969623755915875">Чтобы открыть Справку в приложении "Возможности", нажмите <ph name="NEW_SHORTCUT" />.</translation>
-<translation id="4195001808989442226">Не удается открыть Steam для Chromebook (бета-версия)</translation>
 <translation id="4195579532193195633">Текущая версия <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
 <translation id="4195877955194704651">Меню "Автоматическое нажатие"</translation>
@@ -1042,7 +1075,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установленное приложение, приостановлено</translation>
 <translation id="4228078597006700451">Элементы управления не настроены</translation>
 <translation id="4230560241506423345">Создать</translation>
-<translation id="4231231258999726714">Установка Steam для Chromebook</translation>
 <translation id="4236726631849783264">Напоминание о рекомендуемых действиях</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим обзора</translation>
@@ -1104,6 +1136,7 @@
 <translation id="4389184120735010762">Вы нажали сочетание клавиш для включения закрепленной лупы. Выполнить это действие?</translation>
 <translation id="4394466652057229831">Краткий пересказ по правой кнопке мыши</translation>
 <translation id="439598569299422042">Приостановлено, <ph name="SIZE_INFO" /></translation>
+<translation id="439817266247065935">Работа устройства была завершена неправильно. Чтобы использовать приложения для Linux, перезагрузите эту операционную систему.</translation>
 <translation id="440113666232554208">Не удалось сохранить скринкаст</translation>
 <translation id="4405151984121254935">Подключенное периферийное устройство этого типа не поддерживается.</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
@@ -1130,7 +1163,6 @@
 <translation id="4471432286288241507">{0,plural, =0{Перезагрузите устройство прямо сейчас}=1{Перезагрузите устройство в течение 1 секунды}one{Перезагрузите устройство в течение # секунды}few{Перезагрузите устройство в течение # секунд}many{Перезагрузите устройство в течение # секунд}other{Перезагрузите устройство в течение # секунды}}</translation>
 <translation id="4472575034687746823">Начать</translation>
 <translation id="4473489370276014885">Google Контакты</translation>
-<translation id="4473996011558324141">Оценка времени…</translation>
 <translation id="4477350412780666475">Следующий трек</translation>
 <translation id="4477751544736611934">Может взиматься плата за передачу данных.
 Подключено 1 устройство.</translation>
@@ -1139,6 +1171,7 @@
 <translation id="4481530544597605423">Отключенные устройства</translation>
 <translation id="4485506555414638855">Не настраивать просмотр недавних фотографий, медиафайлов, уведомлений и приложений с телефона</translation>
 <translation id="4491109536499578614">Изображение</translation>
+<translation id="4493468155686877504">Рекомендуемый размер (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="450584155212756404">Версия для разработчиков</translation>
 <translation id="4513044611477939680">Быстрая отправка</translation>
 <translation id="4513946894732546136">Отзыв</translation>
@@ -1169,23 +1202,24 @@
 <translation id="4573176682887762361">"Напечатать [слово или фраза]"</translation>
 <translation id="4577990005084629481">Включить предпросмотр</translation>
 <translation id="4578906031062871102">Меню настроек открыто</translation>
+<translation id="4581774856936278355">Не удалось восстановить данные Linux</translation>
 <translation id="458210817642223147">Записать GIF</translation>
 <translation id="4582666543382004902">Сейчас используется Wi-Fi. Чтобы снова запустить точку доступа, отключите Wi-Fi.</translation>
 <translation id="4585337515783392668">Остановить трансляцию на неизвестное устройство</translation>
 <translation id="4596144739579517758">Тёмная тема отключена</translation>
 <translation id="4596442969149038771">Пользователь <ph name="USER" /> поделился файлом</translation>
-<translation id="4598556348158889687">Управление хранилищем</translation>
 <translation id="4610493115106525653">Хороший результат</translation>
 <translation id="4611292653554630842">Войти</translation>
+<translation id="4613144866899789710">Отмена установки Linux…</translation>
 <translation id="462160925400706389">Подключено устройство "<ph name="NAME" />"</translation>
 <translation id="4623167406982293031">Подтвердите, что это ваш аккаунт.</translation>
 <translation id="4628757576491864469">Устройства</translation>
+<translation id="4628762811416793313">Не удалось завершить настройку контейнера Linux. Повторите попытку.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, рейтинг – <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Чтобы удалить, нажмите Ctrl + W</translation>
 <translation id="4633757335284074492">Сохранение резервных копий на Google Диске. Позволяет в любой момент восстанавливать данные (в том числе из приложений) или переносить их с одного устройства на другое. Резервные копии загружаются в Google и шифруются с помощью пароля аккаунта Google вашего ребенка.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Вернитесь к предыдущей версии ОС прямо сейчас}=1{Вернитесь к предыдущей версии ОС в течение 1 секунды}one{Вернитесь к предыдущей версии ОС в течение # секунды}few{Вернитесь к предыдущей версии ОС в течение # секунд}many{Вернитесь к предыдущей версии ОС в течение # секунд}other{Вернитесь к предыдущей версии ОС в течение # секунды}}</translation>
 <translation id="4642092649622328492">Сделать скриншот части экрана</translation>
-<translation id="4642587497923912728">Сервис Steam для Chromebook (бета) доступен только для первого аккаунта, в который был выполнен вход на этом Chromebook.</translation>
 <translation id="4644727592819780893">Область для изображения с камеры слишком маленькая.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендуемое приложение</translation>
 <translation id="4649019912155580914">Вы изменили файл</translation>
@@ -1327,6 +1361,7 @@
 <translation id="504465286040788597">Предыдущий абзац</translation>
 <translation id="5045550434625856497">Неправильный пароль</translation>
 <translation id="5056587122125565772">Создать изображение</translation>
+<translation id="5056950756634735043">Подключение к контейнеру…</translation>
 <translation id="5058794129231928255">Не удалось создать документ Google.</translation>
 <translation id="5062496344832867502">озу</translation>
 <translation id="5068762093486106012">Если вы будете говорить при выключенном микрофоне, появится уведомление. Аудио с вашего устройства никуда не передается.</translation>
@@ -1407,9 +1442,11 @@
 <translation id="528468243742722775">Завершить</translation>
 <translation id="5286194356314741248">Сканирование...</translation>
 <translation id="528641622273682395">Включить/отключить проверку микрофона</translation>
+<translation id="5294097441441645251">Имя должно начинаться со строчной буквы или символа подчеркивания.</translation>
 <translation id="5297423144044956168">Мобильные устройства не найдены.</translation>
 <translation id="5297704307811127955">Отключено</translation>
 <translation id="5300589172476337783">Показать</translation>
+<translation id="5301751748813680278">Вы входите как гость.</translation>
 <translation id="5302048478445481009">Язык</translation>
 <translation id="5302531370473608800">Для использования YouTube Music обновите <ph name="DEVICE_TYPE" />.</translation>
 <translation id="5303319262469238330">Уровень заряда батареи: <ph name="PERCENTAGE" /> %.
@@ -1431,18 +1468,17 @@
 <translation id="5352250171825660495">Тёмная тема включена</translation>
 <translation id="5354804064646502504">Может взиматься плата за передачу данных.
 Нет подключенных устройств.</translation>
-<translation id="5355498626146154079">Необходимо включить экспериментальный параметр Borealis Enabled.</translation>
 <translation id="5356963482258194581">Вы можете переключаться с тёмной темы на светлую и обратно. Для этого нажмите правой кнопкой мыши на рабочий стол и выберите "Обои и стиль".</translation>
 <translation id="536019650977002321">Администратор запретил запись аудио. Обратитесь к нему за подробной информацией.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" />: файлы для распознавания речи частично скачаны</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> перейти на эту вкладку</translation>
 <translation id="5364693579536176785">хранилище</translation>
 <translation id="5369573834963677938">Функция отслеживания лица будет доступна другим пользователям устройства</translation>
+<translation id="5369694795837229225">Настроить среду разработки Linux</translation>
 <translation id="5369717264580061086">Посмотреть файл в приложении "Файлы"</translation>
 <translation id="5377367976106153749">Разрешить доступ к камере?</translation>
 <translation id="5378450298115733949">Ещё</translation>
 <translation id="5379115545237091094">Слишком много попыток</translation>
-<translation id="5380526436444479273">Подождите несколько минут и повторите попытку.</translation>
 <translation id="5383434787520761436">Нет результатов из Google Диска.</translation>
 <translation id="5391307769715781764">Заменить сохраненный рабочий стол?</translation>
 <translation id="5392327145184648521">Расчет заряда батареи…</translation>
@@ -1454,13 +1490,13 @@
 <translation id="5409208741270395213">Отметить задачу как выполненную</translation>
 <translation id="5413656666631274079">Страница настроек</translation>
 <translation id="5414198321558177633">Список профилей обновляется. Это может занять несколько минут.</translation>
-<translation id="5415328625985164836">Это программа бета-тестирования. Теперь вы можете использовать Steam, чтобы играть в игры на Chromebook.</translation>
 <translation id="5426063383988017631">Меню настроек закрыто</translation>
 <translation id="5428899915242071344">Начать выбор текста</translation>
 <translation id="5429993543155113935">Окна в режиме инкогнито пока не поддерживаются</translation>
 <translation id="5431318178759467895">Цветная печать</translation>
 <translation id="5433020815079095860">Ввод аудио</translation>
 <translation id="543584294741034249">Достигнуто максимальное количество внешних дисплеев (<ph name="DISPLAY_LIMIT" />).</translation>
+<translation id="5442228125690314719">Не удалось создать образ диска. Повторите попытку.</translation>
 <translation id="544691375626129091">В этот сеанс уже добавлены все доступные пользователи.</translation>
 <translation id="54609108002486618">Автоматическое управление</translation>
 <translation id="5460938382730614333">включен.</translation>
@@ -1511,6 +1547,7 @@
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">Браузер Chrome</translation>
 <translation id="5596627076506792578">Ещё</translation>
+<translation id="5596808802173376270">Проблема с файлом для восстановления. Возможно, его тип не подходит для существующей гостевой системы Linux. Дополнительную информацию можно найти в файле /var/log/messages.</translation>
 <translation id="5599242528220103262">Сочетание клавиш отключено</translation>
 <translation id="5600415762228455511">Режим концентрации внимания включен. Вы сфокусировались на задаче "<ph name="TASK_NAME" />". Оставшееся время: <ph name="REMAINING_TIME" />.</translation>
 <translation id="5600837773213129531">Чтобы отключить озвучивание текста на экране, нажмите CTRL + ALT + Z.</translation>
@@ -1526,6 +1563,7 @@
 <translation id="5652575806481723716">Приложение "<ph name="FOCUSED_APP_NAME" />" требует вашего внимания.</translation>
 <translation id="5657667036353380798">Для установки внешнего расширения требуется версия Chrome <ph name="MINIMUM_CHROME_VERSION" /> или выше.</translation>
 <translation id="5662075790140998213">Рабочий стол 10</translation>
+<translation id="5662513737565158057">Измените параметры работы приложений для Linux.</translation>
 <translation id="5662709761327382534">Запись аудио с микрофона <ph name="CURRENT_STATE" />. Нажмите Ввод, чтобы она стала <ph name="NEW_STATE" />.</translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5667546120811588575">Настройка Google Play…</translation>
@@ -1554,7 +1592,6 @@
 <translation id="5712132663381964774">Выполняйте разные задачи на устройстве (<ph name="PRODUCT_NAME" />) с помощью приложений. Чтобы их найти, откройте панель запуска.</translation>
 <translation id="571295407079589142">Передача данных отключена</translation>
 <translation id="5727460725221669831">Если вы забыли или недавно сменили пароль от аккаунта Google, попробуйте восстановить пользователя.</translation>
-<translation id="572914206753951782">Убедитесь, что на Chromebook установлена последняя версия ОС. Затем перезапустите Chromebook и повторите попытку.</translation>
 <translation id="5733630091161562207">Приветственное уведомление</translation>
 <translation id="573413375004481890">Вы подключили к устройству больше дисплеев, чем оно может поддерживать, поэтому один из них пришлось отключить</translation>
 <translation id="574392208103952083">Средний</translation>
@@ -1600,6 +1637,7 @@
 <translation id="5842553299352339114">Точка доступа <ph name="DEVICE_NAME" /> сейчас работает. К ней не подключено ни одно устройство.</translation>
 <translation id="584525477304726060">Чтобы развернуть окно, удерживайте его</translation>
 <translation id="5856638668464565213">Сеть "<ph name="NETWORK_NAME" />" не активирована.</translation>
+<translation id="5858490737742085133">Терминал</translation>
 <translation id="5860033963881614850">ВЫКЛ</translation>
 <translation id="5860491529813859533">Включить</translation>
 <translation id="5864691701242730005">Показать настройки Быстрой отправки. Выбран тип доступа "<ph name="VISIBILITY" />".</translation>
@@ -1721,6 +1759,7 @@
 <translation id="6185696379715117369">На страницу вверх</translation>
 <translation id="619335566042889110">Зарядить до конца сейчас</translation>
 <translation id="6193431488227440296">Версия для разработчиков</translation>
+<translation id="6198252989419008588">Изменить PIN-код</translation>
 <translation id="6199775032047436064">Обновление страницы</translation>
 <translation id="6200515304866777730">Не поддерживается приложением</translation>
 <translation id="6210042900243040400">Можно подключиться к устройству <ph name="NAME" />, которое уже сохранено в аккаунте <ph name="EMAIL" />.</translation>
@@ -1728,6 +1767,7 @@
 <translation id="6213808132343683860">Сделать скриншот или запись видео с части экрана</translation>
 <translation id="621606890568890214">Показать информацию из Google Класса</translation>
 <translation id="6216759484154215561">Страница по ссылке "Подробнее" открыта в браузере</translation>
+<translation id="6218058416316985984">Устройство <ph name="DEVICE_TYPE" /> не подключено к Интернету. Установите соединение и повторите попытку.</translation>
 <translation id="6220928844947387476">Теперь можно вести запись экрана и изображения с веб-камеры одновременно.</translation>
 <translation id="622484624075952240">Вниз</translation>
 <translation id="6228457605945141550">Уменьшить яркость</translation>
@@ -1751,6 +1791,7 @@
 <translation id="628699625505156622">Использование геолокации. Разрешите использовать геолокацию этого устройства сайтам, приложениям и сервисам (в ChromeOS и Android), у которых есть доступ к данным о местоположении. Функция "Точность геолокации" позволяет приложениям и сервисам получать более корректную информацию о местоположении. Для этого Google собирает общую базу местоположений беспроводных сигналов, используя периодически получаемые с устройств данные о датчиках и беспроводной связи. Эти анонимные сведения позволяют повышать точность геолокации и улучшать работу сервисов, использующих информацию о местоположении, а также совершенствовать, предоставлять и поддерживать наши сервисы в соответствии с законными интересами Google и третьих лиц для удовлетворения потребностей пользователей. <ph name="BEGIN_LINK1" />Подробнее об использовании данных о местоположении…<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912">Аккаунт <ph name="USER_EMAIL_ADDRESS" /> можно будет добавить снова с разрешения одного из родителей.</translation>
 <translation id="6291221004442998378">Не заряжается</translation>
+<translation id="6291580570300353047">Не удалось выполнить восстановление. В хранилище недостаточно места.</translation>
 <translation id="6297986260307280218">Передача данных об использовании и диагностике. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Эти сведения позволяют нам повышать стабильность приложений и системы, а также внедрять другие улучшения. Некоторые агрегированные данные используются для улучшения приложений Google или передаются нашим партнерам, например разработчикам Android. Этот <ph name="BEGIN_LINK1" />параметр<ph name="END_LINK1" /> принудительно применяется владельцем. Он вправе разрешить автоматически отправлять в Google данные об использовании и диагностике устройства. Если у вас включена дополнительная история приложений и веб-поиска, эта информация может сохраняться в вашем аккаунте Google. <ph name="BEGIN_LINK2" />Узнать больше о сборе данных<ph name="BEGIN_LINK2_END" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Настройте его в приложении.</translation>
 <translation id="6298962879096096191">Использование Google Play для установки приложений Android</translation>
@@ -1764,6 +1805,7 @@
 <translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6325525973963619867">Ошибка</translation>
 <translation id="6330012934079202188">Показаны окна со всех рабочих столов. Чтобы показать окна текущего рабочего стола, нажмите на стрелку вверх.</translation>
+<translation id="6336038146639916978">Отладка с помощью ADB отключена администратором (<ph name="MANAGER" />). Настройки устройства <ph name="DEVICE_TYPE" /> будут сброшены через 24 часа. Чтобы сохранить нужные файлы, создайте их резервную копию.</translation>
 <translation id="6337159624125741244">Полноэкранная лупа включена</translation>
 <translation id="6338485349199627913">Сеансом "<ph name="DISPLAY_NAME" />" управляет <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Если вы забыли PIN-код, попробуйте восстановить аккаунт этого пользователя.</translation>
@@ -1809,6 +1851,7 @@
 <translation id="6467290994038932560">Включено для игры "<ph name="GAME_APP_NAME" />"</translation>
 <translation id="6468406072297048412">{0,plural, =1{Вернитесь к предыдущей версии ОС в течение 1 минуты}one{Вернитесь к предыдущей версии ОС в течение # минуты}few{Вернитесь к предыдущей версии ОС в течение # минут}many{Вернитесь к предыдущей версии ОС в течение # минут}other{Вернитесь к предыдущей версии ОС в течение # минуты}}</translation>
 <translation id="6469104339369989396">Включить или отключить точку доступа</translation>
+<translation id="6475294023568239942">Освободите пространство на диске Linux или увеличьте его размер в настройках.</translation>
 <translation id="6477681113376365978">Не удалось скачать файл</translation>
 <translation id="648135757200234041">Не удалось создать контакт.</translation>
 <translation id="6482559668224714696">Полноэкранная лупа</translation>
@@ -1823,7 +1866,6 @@
 <translation id="6507042703812908515">Чтобы открыть приложение "Сочетания клавиш", нажмите <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Переключиться на следующий доступный способ ввода</translation>
 <translation id="6508923215158854599">Убедитесь, что устройства Chromebook и Chromecast подключены к одной сети Wi-Fi.</translation>
-<translation id="6511607461419653612">Перезапустите Chromebook и повторите попытку.</translation>
 <translation id="6515727200518652613">Попытка переподключения после потери связи с камерой.</translation>
 <translation id="651753338596587143">Не удалось установить зависимости DLC. Перезагрузите устройство. Если это не решит проблему, сообщите нам о ней, отправив отзыв с хештегом #bruschetta в описании. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Выберите окно для снимка</translation>
@@ -1849,7 +1891,6 @@
 <translation id="6574587113394758819">Уведомление "<ph name="APP_TITLE" />" скрыто, потому что включен режим безопасного просмотра.</translation>
 <translation id="6574622320167699133">Устройство разблокировано через ваш телефон. Нажмите, чтобы войти в аккаунт.</translation>
 <translation id="6578407462441924264">Без имени</translation>
-<translation id="6580060371127789208">Выполнено: <ph name="PERCENTAGE_COMPLETE" /> %</translation>
 <translation id="6582012689384648647">Чтобы использовать персональные плейлисты с музыкой для концентрации внимания, разрешите доступ к YouTube Music.</translation>
 <translation id="6582034443359256692">Рассчитывается уровень заряда батареи.</translation>
 <translation id="6585808820553845416">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1902,7 +1943,6 @@
 <translation id="6723839937902243910">Питание</translation>
 <translation id="672609503628871915">Узнать, что нового</translation>
 <translation id="6727969043791803658">Подключено, батарея заряжена на <ph name="BATTERY_PERCENTAGE" /> %</translation>
-<translation id="6731320427842222405">Это может занять несколько минут</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732800389263199929">ещё <ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Используются камера и микрофон</translation>
@@ -1961,6 +2001,7 @@
 <translation id="6912841030378044227">Перейти к адресной строке</translation>
 <translation id="6912901278692845878">Краткий обзор</translation>
 <translation id="6917259695595127329">Последнее изменение задач: <ph name="TIME" />.</translation>
+<translation id="6918677045355889289">Обновите Chrome OS</translation>
 <translation id="6919251195245069855">Не удалось распознать смарт-карту. Повторите попытку.</translation>
 <translation id="692135145298539227">удалить</translation>
 <translation id="6921427376813842559">Установите обновления</translation>
@@ -1978,12 +2019,15 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6967112302799758487">Все приложения и игры, установленные с помощью Steam для Chromebook (бета), будут удалены с этого устройства. Это относится и к данным, связанным с ними. Перед удалением обязательно создайте резервную копию сохраненных приложений и игр.</translation>
 <translation id="6972629891077993081">Устройства HID</translation>
+<translation id="697508444536771064">Завершить работу Linux</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6980402667292348590">Insert</translation>
 <translation id="6981291220124935078">Разрешить доступ</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="698231206551913481">После удаления пользователя все связанные с ним файлы и локальные данные также будут удалены.</translation>
+<translation id="6988094684494323731">Запуск контейнера Linux</translation>
 <translation id="7000027735917578303">Настройки окон и рабочих столов</translation>
+<translation id="7001036685275644873">Резервное копирование приложений и файлов Linux…</translation>
 <translation id="7004910047186208204">Подключиться к мобильному интернету</translation>
 <translation id="7005239792648594238">Чтобы начать, откройте приложение</translation>
 <translation id="7014684956566476813">Установлено подключение к устройству "<ph name="DEVICE_NAME" />"</translation>
@@ -1992,11 +2036,13 @@
 <translation id="702252130983202758">Мои приложения</translation>
 <translation id="7025533177575372252">Подключите <ph name="DEVICE_NAME" /> к своему телефону</translation>
 <translation id="7026338066939101231">Уменьшить</translation>
+<translation id="7029307918966275733">Установка Crostini не была выполнена. Чтобы посмотреть список участников, установите Crostini.</translation>
 <translation id="7029814467594812963">Завершить сеанс</translation>
 <translation id="7031303610220416229">Посмотреть все задачи в Google Задачах</translation>
 <translation id="7032161822340700104">Максимальное количество шаблонов – 6. Удалите один из шаблонов, чтобы сохранить новый.</translation>
 <translation id="7034025838182392395">Приложению "<ph name="APP_NAME" />" нужно разрешение (<ph name="DEVICE_NAME" />). Чтобы дать разрешение (<ph name="DEVICE_NAME" />), используйте физический переключатель.</translation>
 <translation id="703425375924687388">Запрос "<ph name="QUERY_NAME" />" для Google Ассистента</translation>
+<translation id="7036706669646341689">Для Linux рекомендуется <ph name="DISK_SIZE" /> свободного пространства. Удалите с устройства файлы, которые больше не нужны.</translation>
 <translation id="7042322267639375032">Свернуть панель состояния</translation>
 <translation id="7042593542151411225">У приложений нет доступа к камере.</translation>
 <translation id="7045033600005038336">Заменить шаблон?</translation>
@@ -2004,11 +2050,11 @@
 <translation id="7055910611768509537">Стилус не использовался больше недели</translation>
 <translation id="7061457967428964661">Окно предварительного просмотра камеры. Чтобы переместить его в другой угол, нажмите Ctrl + клавиша со стрелкой.</translation>
 <translation id="7064351585062927183">Предстоящий день недели: <ph name="DAY_OF_WEEK" /></translation>
+<translation id="7064734931812204395">Идет настройка контейнера Linux. Это может занять до 30 минут.</translation>
 <translation id="7066646422045619941">Эта сеть отключена администратором.</translation>
 <translation id="7067196344162293536">Автоповорот</translation>
 <translation id="7076293881109082629">Вход</translation>
 <translation id="7076878155205969899">Выключить звук</translation>
-<translation id="7083774521940805477">Сервис Steam для Chromebook (бета) недоступен на этом Chromebook.</translation>
 <translation id="7083848064787091821">Режим концентрации внимания</translation>
 <translation id="7084678090004350185">Включить или отключить точку доступа. Сейчас она работает. К ней подключено несколько устройств (<ph name="DEVICECOUNT" />).</translation>
 <translation id="7086931198345821656">Чтобы установить это обновление, на устройстве <ph name="DEVICE_TYPE" /> необходимо воспользоваться функцией Powerwash. Все данные будут удалены. Узнайте больше о последнем обновлении <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -2026,18 +2072,17 @@
 <translation id="7130207228079676353">САМЫЕ ПОДХОДЯЩИЕ</translation>
 <translation id="7131634465328662194">После этого вы выйдете из системы.</translation>
 <translation id="7143207342074048698">Подключение</translation>
-<translation id="7143409552554575716">Экспериментальные параметры ChromeOS</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="7144942256906679589">Состояние батареи</translation>
 <translation id="7145639536026937076">Батарея заряжена на <ph name="PERCENTAGE" /> % и подключена к источнику питания. Режим энергосбережения включен.</translation>
 <translation id="7147587499155271409">Нет результатов из истории браузера.</translation>
 <translation id="7147657298465433425">Для использования функциональных клавиш нажимайте клавиши верхнего ряда, удерживая Fn.</translation>
 <translation id="7149149900052329230">Управляйте файлами на устройстве и Google Диске через приложение "Файлы".</translation>
-<translation id="7154020516215182599">Оставьте отзыв или опишите проблему. Если возможно, укажите действия для воспроизведения проблемы.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Возврат к предыдущему разрешению через <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7170202025028120564">Настройки экрана, заданные в приложении, изменятся после его перезапуска.</translation>
 <translation id="7173114856073700355">Открыть настройки</translation>
 <translation id="7180611975245234373">Обновить</translation>
 <translation id="7181691792034457084">Здравствуйте! Непривычно работать на новом устройстве (<ph name="PRODUCT_NAME" />)?</translation>
@@ -2046,6 +2091,7 @@
 <translation id="7219573373513695352">Нет подключенных устройств.</translation>
 <translation id="7228968829656641943">Выберите область на экране для поиска. Чтобы включить навигацию с помощью клавиатуры, нажмите Tab, а затем Пробел.</translation>
 <translation id="7229029500464092426">Доступно памяти: <ph name="AVAILABLE_MEMORY" /> | Всего памяти: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7234010996000898150">Отмена восстановления контейнера Linux…</translation>
 <translation id="7239814253344511868">Обе кнопки мыши</translation>
 <translation id="7240636904654154599">Таблица Google создана.</translation>
 <translation id="7244725679040769470">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Подключите устройство к источнику питания.</translation>
@@ -2053,6 +2099,7 @@
 <translation id="7248100343060254997">Поиск по экрану</translation>
 <translation id="7256057185598509352">Клавиша ExpressKey 2</translation>
 <translation id="7256634071279256947">Основной микрофон</translation>
+<translation id="7258225044283673131">Приложение не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
 <translation id="7258828758145722155">Изменено вчера</translation>
 <translation id="726276584504105859">Перетащите сюда, чтобы разделить экран</translation>
 <translation id="7264788308526527464">Минус <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2065,6 +2112,7 @@
 <translation id="7312210124139670355">Администратор выполняет сброс eSIM. Это может занять несколько минут.</translation>
 <translation id="7312761820869643657">Вернитесь к предыдущей версии ОС</translation>
 <translation id="7313193732017069507">Показать кнопку изменения размера</translation>
+<translation id="7327989755579928735">Отладка с помощью ADB отключена администратором (<ph name="MANAGER" />). После перезагрузки устройства <ph name="DEVICE_TYPE" /> вы не сможете устанавливать приложения из неизвестных источников.</translation>
 <translation id="73289266812733869">Не выбрано</translation>
 <translation id="7330397557116570022">Чтобы использовать голосовой ввод, перейдите к текстовому полю</translation>
 <translation id="7331646370422660166">Alt + Стрелка вниз</translation>
@@ -2075,6 +2123,7 @@
 <translation id="7346909386216857016">ОК</translation>
 <translation id="7348093485538360975">Экранная клавиатура</translation>
 <translation id="7352651011704765696">Ошибка</translation>
+<translation id="735361434055555355">Установка Linux...</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>
 <translation id="7360036564632145207">Чтобы оптимизировать производительность, измените настройки доступа к данным для периферийных устройств.</translation>
 <translation id="736045644501761622">Выбрать обои и стиль</translation>
@@ -2112,6 +2161,7 @@
 <translation id="7466449121337984263">Приложите палец к сканеру.</translation>
 <translation id="7477793887173910789">Управляйте воспроизведением музыки, видео и других медиафайлов</translation>
 <translation id="7478485216301680444">Не удалось установить киоск-приложение.</translation>
+<translation id="7481358317100446445">Готово</translation>
 <translation id="7488762544858401571">С изменениями</translation>
 <translation id="7489261257412536105">Войти в полноэкранный режим или выйти из него</translation>
 <translation id="7490157877815329797">Попробуйте YouTube Music Premium. Вы сможете слушать музыку бесплатно и включать персонализированные треки для концентрации внимания.</translation>
@@ -2136,6 +2186,7 @@
 <translation id="7524043547948122239">Google Задачи</translation>
 <translation id="7525067979554623046">Создать</translation>
 <translation id="7526573455193969409">Сеть может отслеживаться</translation>
+<translation id="7532009420053991888">Приложение "<ph name="LINUX_APP_NAME" />" не отвечает. Чтобы выйти из него, нажмите "Закрыть принудительно".</translation>
 <translation id="7534543072325030705">Поставить предлагаемой группе отметку "Нравится"</translation>
 <translation id="7536035074519304529">IP-адрес: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Обновить окно слева</translation>
@@ -2145,6 +2196,8 @@
 <translation id="7545466883021407599">Не удалось установить связь с сервером. Проверьте подключение к сети и повторите попытку. Если решить проблему не удалось, перезапустите Chromebook. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Пора ложиться спать</translation>
 <translation id="7551643184018910560">Закрепить на панели запуска</translation>
+<translation id="7553012839257224005">Проверка контейнера Linux</translation>
+<translation id="7557411183415085169">На диске Linux осталось мало места</translation>
 <translation id="7557816257942363084">Сейчас использует микрофон: <ph name="APP_NAME" />.</translation>
 <translation id="7559719679815339381">Идет обновление киоск-приложения... Не извлекайте USB-накопитель.</translation>
 <translation id="7561982940498449837">Закрыть меню</translation>
@@ -2174,12 +2227,15 @@
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Задать вопрос</translation>
 <translation id="7629858978065675960">Неизвестный результат.</translation>
+<translation id="7631014249255418691">Резервная копия приложений и файлов Linux сохранена.</translation>
 <translation id="7632948528260659758">Не удалось обновить следующие киоск-приложения:</translation>
+<translation id="7634566076839829401">Произошла ошибка. Повторите попытку.</translation>
 <translation id="7634648064048557203">Окно предварительного просмотра камеры привязано к правому нижнему углу</translation>
 <translation id="7638572816805275740">Сделать скриншот окна или запись видео с экрана</translation>
 <translation id="7642106959537987271">режим инверсии цветов</translation>
 <translation id="7642647758716480637">Открыть настройки сети "<ph name="NETWORK_NAME" />", статус: <ph name="CONNECTION_STATUS" /></translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (владелец)</translation>
+<translation id="7645681574855902035">Отмена резервного копирования контейнера Linux…</translation>
 <translation id="7647488630410863958">Чтобы просмотреть уведомления, разблокируйте устройство</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7654687942625752712">Чтобы отключить озвучивание текста на экране, удерживайте обе кнопки громкости в течение пяти секунд.</translation>
@@ -2212,13 +2268,13 @@
 <translation id="7726391492136714301">Просмотр уведомлений и приложений с телефона</translation>
 <translation id="7727952505535211425">Открыть сайт из адресной строки в новой вкладке</translation>
 <translation id="7728657226117099693">Отключить Caps Lock</translation>
-<translation id="7732702411411810416">Проверьте подключение к интернету и повторите попытку.</translation>
 <translation id="7742327441377685481">Уведомлений нет.</translation>
 <translation id="7748275671948949022">Выделить кнопку запуска на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
 <translation id="7749958366403230681">Клавиша ExpressKey 4</translation>
 <translation id="7750228210027921155">Картинка в картинке</translation>
 <translation id="7751260505918304024">Показать все</translation>
+<translation id="7753735457098489144">Не удалось выполнить установку, так как на устройстве недостаточно места. Удалите файлы, которые больше не нужны.</translation>
 <translation id="7762664108390426952">Условиями использования и Политикой конфиденциальности Google.</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7769299611924763557">Файл GIF скоро будет готов</translation>
@@ -2234,7 +2290,10 @@
 <translation id="780301667611848630">Нет, спасибо</translation>
 <translation id="7807067443225230855">Поиск и Ассистент</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> <ph name="MINUTE" /></translation>
+<translation id="7817361223956157679">Экранная клавиатура пока не работает в приложениях для Linux.</translation>
+<translation id="7824864914877854148">При сохранении резервной копии произошла ошибка.</translation>
 <translation id="7825412704590278437">Из предстоящего мероприятия в календаре</translation>
+<translation id="7826249772873145665">Отладка с ADB отключена</translation>
 <translation id="7829386189513694949">хороший сигнал</translation>
 <translation id="7830453190047749513">Вы можете задать действия для кнопок, скорость передвижения указателя и настроить другие параметры устройства "<ph name="PERIPHERAL_NAME" />".</translation>
 <translation id="7842569679327885685">Внимание! Экспериментальная функция</translation>
@@ -2248,7 +2307,6 @@
 <translation id="7866482334467279021">включена</translation>
 <translation id="7870790288828963061">Новых версий киоск-приложений нет. Обновление не требуется. Извлеките USB-накопитель.</translation>
 <translation id="7872786842639831132">Отключено</translation>
-<translation id="7873386145597434863">Steam для Chromebook</translation>
 <translation id="7875575368831396199">Включите Bluetooth на устройстве <ph name="DEVICE_TYPE" />, чтобы использовать функцию "Управление телефоном".</translation>
 <translation id="7884446017008693258">Настройки точки доступа</translation>
 <translation id="7884902759927478774">Отменить перетаскивание вкладки</translation>
@@ -2279,6 +2337,7 @@
 <translation id="7932451802722951285">Открыть в Google Календаре</translation>
 <translation id="7933084174919150729">Google Ассистент доступен только в основном профиле</translation>
 <translation id="79341161159229895">Администраторы аккаунта: <ph name="FIRST_PARENT_EMAIL" /> и <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793531125873261495">Не удалось скачать виртуальную машину. Повторите попытку.</translation>
 <translation id="793716872548410480">Чтобы посмотреть содержимое буфера обмена, нажмите клавиши <ph name="SHORTCUT_KEY_NAME" /> + V. В буфере сохраняются пять последних скопированных объектов.</translation>
 <translation id="7942330802915522974">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. На панели запуска вы можете найти приложение "Файлы". Используйте его, чтобы управлять файлами на устройстве и Google Диске.</translation>
 <translation id="7942349550061667556">Красный</translation>
@@ -2289,6 +2348,7 @@
 <translation id="7947798320695032612">Приложению "<ph name="APP_NAME" />" требуется разрешение (<ph name="DEVICE_NAME" />)</translation>
 <translation id="7948239795436419268">Не восстанавливать окна</translation>
 <translation id="7951630946012935453">Уменьшить яркость подсветки клавиатуры</translation>
+<translation id="795282463722894016">Восстановление завершено</translation>
 <translation id="7953176344218790168">ВЕРХНИЙ РЕГИСТР</translation>
 <translation id="7953994493035617347">Подтвердите изменение</translation>
 <translation id="795958884516058160">Полноэкранная лупа включена. Чтобы отключить ее, нажмите <ph name="ACCELERATOR" /> ещё раз.</translation>
@@ -2322,6 +2382,7 @@
 <translation id="8030169304546394654">Отключено</translation>
 <translation id="8036504271468642248">К предыдущему предложению</translation>
 <translation id="8042893070933512245">Открыть меню настроек специальных возможностей</translation>
+<translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не отвечает</translation>
 <translation id="8044457332620420407">Подсветка клавиатуры отключена.</translation>
 <translation id="8048123526339889627">Настройки Bluetooth</translation>
 <translation id="8049189770492311300">Таймер</translation>
@@ -2334,6 +2395,7 @@
 <translation id="8083540854303889870">Сохранено</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Чтобы посмотреть другие параметры, нажмите клавишу Tab. Для перемещения между рабочими столами используйте стрелки влево и вправо.</translation>
+<translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8091153018031979607">Начало: <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Элементы управления прокруткой</translation>
 <translation id="8098591350844501178">Остановить трансляцию содержимого экрана на устройство "<ph name="RECEIVER_NAME" />"</translation>
@@ -2366,6 +2428,7 @@
 <translation id="8169177848833352618">Этот компьютер не соответствует требованиям для установки Bruschetta. Код ошибки: <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Выбран маркер левого верхнего угла. Чтобы двигать его, используйте клавиши со стрелками.</translation>
 <translation id="81817143961839203">Не удалось вставить изображение</translation>
+<translation id="8182105986296479640">Приложение не отвечает</translation>
 <translation id="8185090165691050712">Показать или скрыть меню для режима блокировки изменения размеров</translation>
 <translation id="8192727139462702395">После этого от вашего устройства (<ph name="DEVICE_TYPE" />) будут отключены следующие внешние устройства:</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
@@ -2395,6 +2458,7 @@
 <translation id="8282784978194352587">Получилось!</translation>
 <translation id="8287009018010202411">Работа</translation>
 <translation id="828708037801473432">Отключено</translation>
+<translation id="8289128870594824098">Размер диска</translation>
 <translation id="8297006494302853456">Слабый</translation>
 <translation id="8300451473979404345">Маркер выбран. Чтобы двигать его, используйте клавиши со стрелками.</translation>
 <translation id="8308637677604853869">Предыдущее меню</translation>
@@ -2409,6 +2473,7 @@
 <translation id="8349826889576450703">Launcher</translation>
 <translation id="8349964124165471584">Открыть ссылку в новом окне</translation>
 <translation id="8351131234907093545">Создать заметку</translation>
+<translation id="8357388086258943206">Ошибка при установке Linux</translation>
 <translation id="8367948981300340152">Используется <ph name="CAPTURE_MEDIUM" /></translation>
 <translation id="8369166482916924789">Сохраненный рабочий стол "<ph name="SAVE_AND_RECALL_DESK_NAME" />"</translation>
 <translation id="8371779926711439835">Вперед на одну букву</translation>
@@ -2456,6 +2521,7 @@
 <translation id="8491237443345908933">Открыть ссылку в новой вкладке</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" />. Установлено разрешение <ph name="FALLBACK_RESOLUTION" />. Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8502536196501630039">Чтобы использовать приложения из Google Play, сначала восстановите свои приложения. Некоторые данные могли быть потеряны.</translation>
+<translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8507563469658346379">Доступно всем: <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Создать рабочий стол</translation>
 <translation id="85123341071060231">На устройстве Chromebook отключен модуль Bluetooth. Чтобы разблокировать, введите пароль.</translation>
@@ -2465,6 +2531,7 @@
 <translation id="8517041960877371778">Не удается зарядить устройство <ph name="DEVICE_TYPE" />, пока оно включено.</translation>
 <translation id="8519329096920173967">Поиск по экрану с помощью Google Объектива</translation>
 <translation id="8527869672961320915">Приложения (<ph name="VM_NAME" />)</translation>
+<translation id="8528962588711550376">Выполняется вход.</translation>
 <translation id="8535393432370007982">Отменить упорядочивание по цвету</translation>
 <translation id="8536886494750559755">Показать настройки Быстрой отправки. Устройство видно всем в течение <ph name="TIME_REMAINING" /></translation>
 <translation id="8539803091108018926">Текст скопирован в буфер обмена.</translation>
@@ -2484,6 +2551,7 @@
 <translation id="861045123704058818">Приложения отсортированы по категориям временно.</translation>
 <translation id="8612216344243590325">Храните важные файлы в разделе "<ph name="HOLDING_SPACE_TITLE" />". Для этого просто перетащите их в раздел "<ph name="HOLDING_SPACE_TITLE" />".</translation>
 <translation id="8612338981637220013">Вам всё по плечу!</translation>
+<translation id="8613164732773110792">Можно использовать только строчные буквы, цифры, символы подчеркивания и тире.</translation>
 <translation id="8614517853887502247">Уведомления "<ph name="APP_1_TITLE" />" и "<ph name="APP_2_TITLE" />" скрыты, потому что включен режим безопасного просмотра.</translation>
 <translation id="8615778328722901791">Открыть панель инструментов</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2506,6 +2574,8 @@
 <translation id="8662921061190671299">Не удалось добавить мероприятие в Календарь.</translation>
 <translation id="8663756353922886599">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Нажмите Ввод, чтобы сделать скриншот части экрана</translation>
+<translation id="8665180165765946056">Готово</translation>
+<translation id="8673530374848624865">Администратор обновил требования безопасности для вашего устройства.</translation>
 <translation id="8676770494376880701">Подключено маломощное зарядное устройство</translation>
 <translation id="8679158879996532670">Настроить режим концентрации внимания. Режим включен. Оставшееся время: <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Отслеживание эффективности</translation>
@@ -2517,6 +2587,7 @@
 <translation id="8711169534266271368">Настройки игровой панели</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8714138378966541668">Есть ограничение оператора</translation>
+<translation id="8716931980467311658">Удалить с устройства <ph name="DEVICE_TYPE" /> все приложения для Linux, а также данные из папки "Файлы Linux"?</translation>
 <translation id="8717459106217102612">Выбрать предыдущее слово или букву</translation>
 <translation id="8721053961083920564">Включить или выключить звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Запись всего экрана</translation>
@@ -2527,6 +2598,7 @@
 <translation id="8731487213223706745">Окончание: <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Это может быть попыткой узнать, какие клавиши вы нажимаете.</translation>
 <translation id="8735678380411481005">Цвет подсветки клавиатуры</translation>
+<translation id="8740672167979365981">Обновите Chrome OS Flex</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: активация…</translation>
 <translation id="8742395827132970586">Ошибка установки. Удаляем данные…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
@@ -2537,6 +2609,7 @@
 <translation id="875593634123171288">Показать настройки VPN</translation>
 <translation id="8756799553341497810">Вы сможете упорядочить приложения, после того как выйдете из режима обучения.</translation>
 <translation id="8759408218731716181">Не удалось настроить множественный вход</translation>
+<translation id="8759753423332885148">Подробнее…</translation>
 <translation id="8763883995157866248">Перевести устройство в спящий режим</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, установленное приложение, заблокировано</translation>
 <translation id="8782565991310229362">Запуск киоск-приложения был отменен.</translation>
@@ -2576,6 +2649,7 @@
 <translation id="8876661425082386199">Проверьте подключение</translation>
 <translation id="8883478023074930307">Передача данных об использовании и диагностике. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Эти сведения позволяют нам повышать стабильность приложений и системы, а также внедрять другие улучшения. Некоторые агрегированные данные используются для улучшения приложений Google или передаются нашим партнерам, например разработчикам Android. Этот <ph name="BEGIN_LINK1" />параметр<ph name="END_LINK1" /> принудительно применяется владельцем. Если у вас включена дополнительная история приложений и веб-поиска, эта информация может сохраняться в вашем аккаунте Google. <ph name="BEGIN_LINK2" />Узнать больше о сборе данных<ph name="BEGIN_LINK2_END" />Подробнее…<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Не удалось подключиться к YouTube Music.</translation>
+<translation id="8888253246822647887">Приложение откроется, когда завершится обновление. Это может занять несколько минут.</translation>
 <translation id="888982883502837004">Для вашего устройства доступны обновления встроенного ПО. Нажмите, чтобы посмотреть и установить их.</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будет удален без возможности восстановления.</translation>
 <translation id="889790758758811533">Уровень заряда батареи: <ph name="PERCENTAGE" /> %. Приблизительное оставшееся время работы: <ph name="TIME_LEFT" />. Подключите устройство к источнику питания.</translation>
@@ -2599,7 +2673,9 @@
 <translation id="8945508919180478719">Студийный микрофон</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), флажок не установлен.</translation>
 <translation id="8949925099261528566">Подключено, без доступа к интернету</translation>
+<translation id="8951256747718668828">При восстановлении данных произошла ошибка.</translation>
 <translation id="8951539504029375108">Chromebook совместим только с одобренными устройствами Thunderbolt.</translation>
+<translation id="895347679606913382">Запуск...</translation>
 <translation id="8956420987536947088">Откройте предыдущие окна и приложения.</translation>
 <translation id="8959380109429710384">Вы нажали сочетание клавиш для полноэкранной лупы. Для перемещения по экрану, когда масштаб увеличен, нажимайте клавиши со стрелками, удерживая Ctrl и Alt.</translation>
 <translation id="8964525410783593407">1 час</translation>
@@ -2609,7 +2685,6 @@
 <translation id="8980862970816311842">Переместить значок приложения в папку или из папки в сетке приложений</translation>
 <translation id="8982906748181120328">Широкий доступ</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8985191021574400965">Вас приветствует Steam для Chromebook</translation>
 <translation id="8990809378771970590">Используется <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Для отмены нажмите Fn + Быстрая вставка или Shift.</translation>
 <translation id="899350903320462459">Чтобы выполнить действие, предложенное в уведомлении, разблокируйте устройство с помощью аккаунта <ph name="LOGIN_ID" />.</translation>
@@ -2617,9 +2692,11 @@
 <translation id="9000771174482730261">ОЧИСТИТЬ ХРАНИЛИЩЕ</translation>
 <translation id="9003374957546315126">Эмодзи и другое</translation>
 <translation id="9005984960510803406">Открыть окно Crosh</translation>
+<translation id="9013037634206938463">Для установки Linux требуется <ph name="INSTALL_SIZE" /> свободного пространства. Удалите с устройства файлы, которые больше не нужны.</translation>
 <translation id="901668144954885282">Резервное копирование на Google Диск</translation>
 <translation id="9017320285115481645">Введите родительский код доступа Family Link.</translation>
 <translation id="9024331582947483881">полноэкранный режим</translation>
+<translation id="9026852570893462412">Подождите несколько минут. Скачивание виртуальной машины…</translation>
 <translation id="9029736946581028033">Устройство скоро выключится</translation>
 <translation id="9030319654231318877">Выкл. до заката</translation>
 <translation id="9030515284705930323">Приложение Google Play отключено для вашего аккаунта. За дополнительными сведениями обратитесь к администратору.</translation>
@@ -2628,7 +2705,6 @@
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="9050012935252397793">Подключение по Bluetooth недоступно</translation>
 <translation id="9050999376345823055">Чтобы отпустить кнопку, нажмите "."</translation>
-<translation id="9061694916020926968">Чтобы использовать Steam для Chromebook (бета), нужно войти в аккаунт Google. Сделайте это и повторите попытку.</translation>
 <translation id="906458777597946297">Развернуть окно</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9068849894565669697">Выберите цвет</translation>
@@ -2664,6 +2740,7 @@
 <translation id="9168436347345867845">Позже</translation>
 <translation id="9178475906033259337">Показан 1 результат поиска по запросу "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Эта функция позволяет быстро и без пароля получить доступ к любому аккаунту, в который выполнен вход. Используйте ее только для надежных аккаунтов.</translation>
+<translation id="9180281769944411366">Подождите несколько минут. Запуск контейнера Linux…</translation>
 <translation id="9183302530794969518">Google Документы</translation>
 <translation id="9183456764293710005">Полноэкранная лупа</translation>
 <translation id="9192133205265227850">Используйте устройство "<ph name="DEVICE_NAME" />".</translation>
@@ -2677,6 +2754,7 @@
 <translation id="9201374708878217446">Статус подключения – "<ph name="CONNECTION_STATUS" />", под управлением администратора</translation>
 <translation id="9201842707396338580">Произошла ошибка. Обратитесь к владельцу или администратору устройства. Код ошибки: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Приложения "<ph name="APP_NAME" />" и "<ph name="APP2_NAME" />", операционная система ChromeOS, а также все приложения и сайты с доступом к данным о местоположении смогут использовать Wi-Fi и мобильную сеть для геолокации.</translation>
+<translation id="9209563766569767417">Проверка настроек контейнера Linux</translation>
 <translation id="9210037371811586452">Выход из режима единого рабочего стола…</translation>
 <translation id="9211490828691860325">Все рабочие столы</translation>
 <translation id="9211681782751733685">Оставшееся время до полной зарядки батареи: <ph name="TIME_REMAINING" />.</translation>
@@ -2700,12 +2778,14 @@
 <translation id="956452277966142925">Настройки игровой панели</translation>
 <translation id="961856697154696964">Удалить данные о работе в браузере</translation>
 <translation id="974545358917229949">Показано результатов поиска по запросу "<ph name="QUERY" />": <ph name="RESULT_COUNT" /></translation>
+<translation id="97905529126098460">Это окно закроется, когда отмена установки будет завершена.</translation>
 <translation id="981011780479609956">Срок сдачи не указан</translation>
 <translation id="98120814841227350">Перейти к концу документа</translation>
 <translation id="987589956647469042">Мобильный интернет включен.</translation>
 <translation id="989374776391122812">Настройки камеры и аудио</translation>
 <translation id="990263227494928142">Чтобы включить сенсорную панель, нажмите Shift 5 раз.</translation>
 <translation id="990277280839877440">Окно "<ph name="WINDOW_TITILE" />" закрыто.</translation>
+<translation id="992778845837390402">Выполняется резервное копирование Linux.</translation>
 <translation id="993398562350683614">Шаг <ph name="STEP" /> из <ph name="TOTAL_STEPS" />. Для чего бы вы ни использовали <ph name="PRODUCT_NAME" />, выполнять все задачи вам помогут приложения. Вы найдете их на панели запуска. Чтобы перейти к ее кнопке, нажмите Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Получите доступ к новым функциям и улучшениям безопасности. Обновление выполняется в фоновом режиме.</translation>

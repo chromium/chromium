@@ -185,7 +185,6 @@
 <translation id="2915996080311180594">ನಂತರ ಮರುಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="2916983411556218750">ನಿಮ್ಮ Chrome ಅನ್ನು ಸಿದ್ಧಗೊಳಿಸೋಣ</translation>
 <translation id="2926952073016206995">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದಂತೆ Chrome ಗೆ ಕ್ಯಾಮರಾ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
-<translation id="2928420929544864228">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="2945997411976714835">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಾಗ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಪ್ರಕ್ರಿಯೆಯು ಪ್ರಾರಂಭಿಸಲು ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - ನೆಟ್‌ವರ್ಕ್ ಸೈನ್ ಇನ್ - Chrome</translation>
 <translation id="2970681950995291301">Chrome ನಿಂದ ನಿಮ್ಮ Google ಖಾತೆಯನ್ನು ತೆಗೆದುಹಾಕಲು, ಸೆಟ್ಟಿಂಗ್‌ಗಳ ಪುಟದಲ್ಲಿ Chrome ನಿಂದ ಸೈನ್ ಔಟ್ ಮಾಡಿ</translation>
@@ -281,6 +280,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="3892148308691398805">ಪಠ್ಯ ಕಾಪಿ ಮಾಡಿ</translation>
 <translation id="3941890832296813527">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಾಗ ದೋಷ: ಇನ್‌ಸ್ಟಾಲರ್‌‌ ಫೈಲ್ ಹೆಸರು ಅಮಾನ್ಯವಾಗಿದೆ ಅಥವಾ ಬೆಂಬಲಿತವಾಗಿಲ್ಲ.</translation>
 <translation id="395904275706073188">ಸಂರಕ್ಷಿತ ಪುಟಗಳನ್ನು ಓದಲಾಗುವುದಿಲ್ಲ. ಬೇರೆ ಪುಟವನ್ನು ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="3967822245660637423">ಡೌನ್‌ಲೋಡ್‌‌ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="3968962723676998462">ನಿಮ್ಮ ಖಾತೆ <ph name="ACCOUNT_EMAIL" /> ನಲ್ಲಿ Chrome ಡೇಟಾವನ್ನು ಸೇವ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ನಿಮ್ಮ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ನಮೂದಿಸಿ</translation>
 <translation id="3973161977468201858">ನಿಮ್ಮ Google Password Manager ಡೇಟಾವನ್ನು ಅಳಿಸಲು Google Chrome ಬಯಸುತ್ತದೆ. ಇದನ್ನು ಅನುಮತಿಸಲು ನಿಮ್ಮ Windows ಪಾಸ್‌ವರ್ಡ್‌ ಅನ್ನು ಟೈಪ್ ಮಾಡಿ.</translation>
 <translation id="400161754580828648">ನಿಮ್ಮ ಸ್ಕ್ರೀನ್‌ ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು, ಸಿಸ್ಟಂ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ Chrome ಗೆ ಸ್ಕ್ರೀನ್ ರೆಕಾರ್ಡಿಂಗ್ ಮಾಡಲು ಅನುಮತಿಸಿ.</translation>
@@ -315,7 +315,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">ವೈಯಕ್ತೀಕರಣ ಮತ್ತು ಇತರ ಫೀಚರ್‌ಗಳನ್ನು ಪಡೆಯಲು, ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆ ಹಾಗೂ ಲಿಂಕ್ ಮಾಡಲಾದ Google ಸೇವೆಗಳಲ್ಲಿ Chrome ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="4334241893986177674">ಈ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ಹುಡುಕಿ</translation>
-<translation id="4334294535648607276">ಡೌನ್‌ಲೋಡ್ ಪೂರ್ಣಗೊಂಡಿದೆ.</translation>
 <translation id="4343195214584226067">Chrome ಗೆ <ph name="EXTENSION_NAME" /> ಅನ್ನು ಸೇರಿಸಲಾಗಿದೆ</translation>
 <translation id="4344128547036991536">ನೀವು Google Lens ಅನ್ನು ತೆರೆದಾಗ, PDF ಗಳನ್ನು ಒಳಗೊಂಡಂತೆ ಪುಟದ ಶೀರ್ಷಿಕೆ, URL ಮತ್ತು ಕಂಟೆಂಟ್‌ ಅನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">ವೈಯಕ್ತೀಕರಣವನ್ನು ಪಡೆಯಲು, ವೆಬ್ ಮತ್ತು ಆ್ಯಪ್ ಚಟುವಟಿಕೆಯಲ್ಲಿ Chrome ಅನ್ನು ಸೇರಿಸಿ</translation>
@@ -508,7 +507,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="6319856120645568262">ನಿಮ್ಮ ಸುತ್ತಲಿನ ಪರಿಸರವನ್ನು ನಕ್ಷೆ ಮಾಡಲು ಮತ್ತು ನಿಮ್ಮ ಕೈಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು Chrome ಗೆ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" ಎಕ್ಸ್‌ಟೆನ್ಶನ್ ಅನ್ನು ನಿಮ್ಮ Google ಖಾತೆಯ ಮೂಲಕ ಬಳಸುವುದಕ್ಕಾಗಿ ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಬೇಕಿದೆ</translation>
 <translation id="6326175484149238433">Chrome ನಿಂದ ತೆಗೆದುಹಾಕು</translation>
-<translation id="6327105987658262776">ಯಾವುದೇ ಅಪ್‌ಡೇಟ್‌‌ ಲಭ್ಯವಿಲ್ಲ.</translation>
 <translation id="6334815226785304306">Google Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿ ಮಾಡಿ ಮತ್ತು ಟಾಸ್ಕ್‌ಬಾರ್‌ಗೆ ಪಿನ್ ಮಾಡಿ</translation>
 <translation id="63540178978900677">Chrome ಇನ್ನು ಮುಂದೆ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಆಗಿರುವುದಿಲ್ಲ. Chrome ಅನ್ನು ಡೀಫಾಲ್ಟ್ ಬ್ರೌಸರ್ ಮಾಡಬೇಕೇ?</translation>
 <translation id="6360449101159168105">ಈ ಟ್ಯಾಬ್ ನಿಷ್ಕ್ರಿಯವಾಗಿದ್ದಾಗ, Chrome ವೇಗವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸಲು ಮೆಮೊರಿಯನ್ನು ಮುಕ್ತಗೊಳಿಸಿದೆ. ಈ ಸೈಟ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯವಾಗಿರದಂತೆ ಎಲ್ಲಾ ಸಮಯದಲ್ಲೂ ಹೊರಗಿಡಲು ನೀವು ಆಯ್ಕೆ ಮಾಡಬಹುದು.</translation>
@@ -574,7 +572,6 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="6999131147875565462">Chrome ವೇಗವಾಗಿ ರನ್ ಆಗುತ್ತದೆ ಮತ್ತು JavaScript ಅನ್ನು ಬಳಸುವ ಫೀಚರ್‌ಗಳು, ವಿನ್ಯಾಸಗೊಳಿಸಿದಂತೆ ಕಾರ್ಯನಿರ್ವಹಿಸಬೇಕು</translation>
 <translation id="7011190694940573312">ಆಪರೇಟಿಂಗ್ ಸಿಸ್ಟಂನ ಈ ಆವೃತ್ತಿಯನ್ನು ಬೆಂಬಲಿಸದ ಕಾರಣ ಇನ್‌ಸ್ಟಾಲೇಶನ್ ವಿಫಲವಾಗಿದೆ.</translation>
 <translation id="7024536598735240744">ಅನ್‌ಪ್ಯಾಕ್ ದೋಷ: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಅನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="7025800014283535195">ನೀವು ಇಲ್ಲಿ Chrome ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="7047386856539490735">ಈ ಫಲಿತಾಂಶಗಳು ಉಪಯುಕ್ತವಾಗಿವೆಯೇ?</translation>
 <translation id="7051685429025310665">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ಅನ್ನು Chrome ತೆಗೆದುಹಾಕಿದೆ.</translation>
@@ -776,6 +773,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="8999117580775242387">HTTPS ಲಭ್ಯವಿಲ್ಲದಿದ್ದಾಗ, Chrome ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡದೆ ಅಸುರಕ್ಷಿತ ಕನೆಕ್ಷನ್ ಅನ್ನು ಬಳಸುತ್ತದೆ</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}=1{Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}one{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}other{# ದಿನಗಳ ಮಟ್ಟಿಗೆ Chrome ಅಪ್‌ಡೇಟ್ ಲಭ್ಯವಿದೆ}}</translation>
 <translation id="9014771989710951291">ಬಹು ಸಂಸ್ಥೆಗಳು Chrome ಅನ್ನು ನಿರ್ವಹಿಸುತ್ತವೆ</translation>
+<translation id="9018218886431812662">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡುವಿಕೆಯು ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="9066987883552592250">Chrome Canary ನಲ್ಲಿ Gemini ಅನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="9090566250983691233">Chrome ಕೆಲವು ಫೈಲ್‌ಗಳನ್ನು ಏಕೆ ನಿರ್ಬಂಧಿಸುತ್ತದೆ ಎಂಬುದನ್ನು ತಿಳಿಯಿರಿ</translation>
 <translation id="9106236359747881194">ಹುಡುಕಲು ಪಠ್ಯವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>

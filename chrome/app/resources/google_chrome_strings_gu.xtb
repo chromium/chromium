@@ -186,7 +186,6 @@
 <translation id="2915996080311180594">પછીથી ફરી શરૂ કરો</translation>
 <translation id="2916983411556218750">ચાલો, તમારું Chrome તૈયાર કરીએ</translation>
 <translation id="2926952073016206995">આ સાઇટ માટે Chromeને કૅમેરાની પરવાનગીની જરૂર છે</translation>
-<translation id="2928420929544864228">ઇન્સ્ટૉલેશનની પ્રક્રિયા પૂર્ણ થઈ.</translation>
 <translation id="2945997411976714835">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલરની પ્રક્રિયા શરૂ થવામાં નિષ્ફળ રહી.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - નેટવર્ક સાઇન ઇન - Chrome</translation>
 <translation id="2970681950995291301">Chromeમાંથી તમારા Google એકાઉન્ટને કાઢી નાખવા માટે, સેટિંગ પેજમાં જઈને Chromeમાંથી સાઇન આઉટ કરો</translation>
@@ -282,6 +281,7 @@
 <translation id="3892148308691398805">ટેક્સ્ટ કૉપિ કરો</translation>
 <translation id="3941890832296813527">ઇન્સ્ટૉલ કરવામાં ભૂલ: ઇન્સ્ટૉલરની ફાઇલનું નામ અમાન્ય અથવા અનસપોર્ટેડ છે.</translation>
 <translation id="395904275706073188">સંરક્ષિત પેજ વાંચી શકાતા નથી. કોઈ અલગ પેજ અજમાવી જુઓ.</translation>
+<translation id="3967822245660637423">ડાઉનલોડ પૂર્ણ</translation>
 <translation id="3968962723676998462">તમારા <ph name="ACCOUNT_EMAIL" /> એકાઉન્ટમાં Chrome ડેટાનો ઉપયોગ કરવા અને તેને સાચવવા માટે તમારો પાસફ્રેઝ દાખલ કરો</translation>
 <translation id="3973161977468201858">Google Chrome તમારો Password Manager ડેટા ડિલીટ કરવા માગે છે. આને મંજૂરી આપવા માટે Windowsનો પાસવર્ડ ટાઇપ કરો.</translation>
 <translation id="400161754580828648">તમારી સ્ક્રીન શેર કરવા માટે, સિસ્ટમના સેટિંગમાં Chrome માટે સ્ક્રીન રેકોર્ડિંગની મંજૂરી આપો.</translation>
@@ -316,7 +316,6 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">મનગમતું બનાવવાની અને અન્ય સુવિધાઓ મેળવવા માટે, Chromeનો વેબ અને ઍપ ઍક્ટિવિટી અને લિંક કરેલી Google સેવાઓમાં સમાવેશ કરો</translation>
 <translation id="4334241893986177674">આ સ્ક્રીનશૉટ શોધો</translation>
-<translation id="4334294535648607276">ડાઉનલોડ પૂર્ણ.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />ને Chromeમાં ઉમેરવામાં આવ્યું છે</translation>
 <translation id="4344128547036991536">જ્યારે તમે Google Lens ખોલો છો, ત્યારે PDFs સહિત પેજનું શીર્ષક, URL અને કન્ટેન્ટ Googleને ઑટોમૅટિક રીતે મોકલવામાં આવશે. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">મનગમતું બનાવવાની સુવિધા મેળવવા માટે, Chromeમાં વેબ અને ઍપ ઍક્ટિવિટી ઉમેરો</translation>
@@ -513,7 +512,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6319856120645568262">તમારી આસપાસના વિસ્તારો અને તમારા હાથને ટ્રૅક કરવા માટે, Chromeને પરવાનગીની જરૂર છે</translation>
 <translation id="6321592572353357376">\"<ph name="EXTENSION_NAME" />\" એક્સ્ટેન્શન ઇચ્છે છે કે તમે Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="6326175484149238433">Chrome માંથી દૂર કરો</translation>
-<translation id="6327105987658262776">કોઈ અપડેટ ઉપલબ્ધ નથી.</translation>
 <translation id="6334815226785304306">Google Chromeને ડિફૉલ્ટ બ્રાઉઝર બનાવો અને ટાસ્કબાર પર પિન કરો</translation>
 <translation id="63540178978900677">Chrome હવેથી તમારું ડિફૉલ્ટ બ્રાઉઝર નથી. Chromeને ડિફૉલ્ટ બ્રાઉઝર બનાવીએ?</translation>
 <translation id="6360449101159168105">જ્યારે આ ટૅબ નિષ્ક્રિય હતું, ત્યારે Chromeને ઝડપી રાખવા માટે મેમરી ખાલી કરવામાં આવી હતી. તમે આ સાઇટને નિષ્ક્રિય રહેવામાંથી બાકાત રાખવાનું હંમેશા પસંદ કરી શકો છો.</translation>
@@ -579,7 +577,6 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="6999131147875565462">Chrome વધુ ઝડપથી કામ કરે છે અને JavaScriptનો ઉપયોગ કરતી સુવિધાઓ ડિઝાઇન પ્રમાણે કામ કરવી જોઈએ</translation>
 <translation id="7011190694940573312">ઑપરેટિંગ સિસ્ટમનું આ વર્ઝન સપોર્ટેડ ન હોવાને કારણે ઇન્સ્ટૉલેશન નિષ્ફળ રહ્યું.</translation>
 <translation id="7024536598735240744">અનપૅક કરવામાં ભૂલ: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">ઇન્સ્ટૉલેશનની પ્રક્રિયા રોકી.</translation>
 <translation id="7025800014283535195">તમે અહીં એક Chrome પ્રોફાઇલથી બીજી Chrome પ્રોફાઇલ પર સ્વિચ કરી શકો છો</translation>
 <translation id="7047386856539490735">શું આ પરિણામો ઉપયોગી છે?</translation>
 <translation id="7051685429025310665">તમે તાજેતરમાં આ સાઇટની મુલાકાત લીધી નથી. Chrome દ્વારા <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />ની પરવાનગીઓ કાઢી નાખવામાં આવી.</translation>
@@ -780,6 +777,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8999117580775242387">જ્યારે HTTPS ઉપલબ્ધ ન હોય, ત્યારે Chrome તમને ચેતવણી આપ્યા વિના અસુરક્ષિત કનેક્શનનો ઉપયોગ કરશે</translation>
 <translation id="8999208279178790196">{0,plural, =0{એક Chrome અપડેટ ઉપલબ્ધ છે}=1{એક Chrome અપડેટ ઉપલબ્ધ છે}one{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chrome અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
 <translation id="9014771989710951291">એકથી વધુ સંસ્થાઓ Chromeને મેનેજ કરે છે</translation>
+<translation id="9018218886431812662">ઇન્સ્ટૉલેશન પૂર્ણ</translation>
 <translation id="9066987883552592250">Chrome Canaryમાં Gemini બંધ કરો</translation>
 <translation id="9090566250983691233">Chrome શા માટે અમુક ફાઇલો બ્લૉક કરે છે, તે જાણો</translation>
 <translation id="9106236359747881194">શોધવા માટે ટેક્સ્ટ પસંદ કરો</translation>

@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">עיון במדיניות האדמין</translation>
 <translation id="158849752021629804">יש צורך ברשת ביתית</translation>
 <translation id="1589128298353575783">‎<ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">הפרמוט מתבצע...</translation>
 <translation id="1601786938618212857">מיקוד</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="162175252992296058">פורטוגזית עם מקלדת בינלאומית של ארה"ב</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">‏רוסית עם מקלדת פונטית YaZHert</translation>
 <translation id="2143778271340628265">‏תצורת שרת proxy ידנית</translation>
 <translation id="2148716181193084225">היום</translation>
+<translation id="2148756636027685713">הפרמוט הסתיים</translation>
 <translation id="2161573825856688200">‏פרויקט של Google</translation>
 <translation id="2163152940313951844">תו לא חוקי: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">נותרו לך עוד <ph name="RETRIES" /> ניסיונות.</translation>
 <translation id="2663066752008346276">‏בורמזית/מיאנמר עם מקלדת Myansan</translation>
 <translation id="2664412712123763093">מיקום הקובץ</translation>
+<translation id="2665919335226618153">אוי, לא! היתה שגיאה במהלך הפרמוט.</translation>
 <translation id="2672394942808662069">קנדית – מרובת-שפות</translation>
 <translation id="2707357721402813583">אירית</translation>
 <translation id="2708477391501452176">‏צרפתית BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">‏אין תמיכה ברשתות WEP</translation>
 <translation id="3295006446256079333">נפח האחסון הזה</translation>
 <translation id="3295357220137379386">המכשיר תפוס</translation>
+<translation id="3305389145870741612">תהליך הפרמוט עשוי להימשך מספר שניות. יש להמתין.</translation>
 <translation id="3307875152560779385">אוקראינית</translation>
 <translation id="3326821416087822643">מתבצע כיווץ של <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">שנת הקלטה</translation>
@@ -587,6 +591,7 @@
 <translation id="5580591966435005537">מכונה וירטואלית</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">רוחב הפיסוק הוא מלא</translation>
+<translation id="5585912436068747822">הפרמוט נכשל</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5602622065581044566">בולגרית עם מקלדת פונטית</translation>
 <translation id="5604409170937514933">שוודית</translation>
@@ -673,6 +678,7 @@
 <translation id="6220423280121890987">פונג'בית</translation>
 <translation id="6224240818060029162">דנית</translation>
 <translation id="6224253798271602650">פירמוט של <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">הפרמוט הסתיים בהצלחה!</translation>
 <translation id="6241349547798190358">הולנדית (בלגיה)</translation>
 <translation id="6267547857941397424">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, התחברות</translation>
 <translation id="6269630227984243955">מלאית</translation>

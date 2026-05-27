@@ -30,6 +30,7 @@
 <translation id="1108938384783527433">历史记录同步</translation>
 <translation id="1111673857033749125">您在其他设备上保存的书签将列在此处。</translation>
 <translation id="1123537484474186311"><ph name="TAB_TITLE" />，画中画标签页</translation>
+<translation id="1124357650933674597">{NUM_WINDOWS,plural, =1{恢复 1 个窗口}other{恢复 # 个窗口}}</translation>
 <translation id="1126696498560056882">管理此设备上的账号</translation>
 <translation id="1135018701024399762">无痕模式可实现私密浏览，与您共用设备的其他人无法知晓您浏览了什么内容</translation>
 <translation id="113752097246673894">如需在您的所有设备上获取书签等信息，请以 <ph name="EMAIL" /> 的身份登录 Chrome</translation>
@@ -510,6 +511,7 @@
 <translation id="3166827708714933426">标签页和窗口快捷键</translation>
 <translation id="3167258285411721858">您可以请求访问 <ph name="HOST_NAME" /> 的移动网站</translation>
 <translation id="3181145110929454111"><ph name="TAB_TITLE" />，已选择的多个固定无痕式标签页之一，已设为静音</translation>
+<translation id="3183941812169784232">要恢复所有窗口吗？</translation>
 <translation id="3187472288455401631">广告效果衡量</translation>
 <translation id="3189635831478931757">“<ph name="GROUP_TITLE" />”标签页分组</translation>
 <translation id="3200536777393523575">关闭当前窗口？</translation>
@@ -635,7 +637,6 @@
 <translation id="3771033907050503522">无痕模式标签页</translation>
 <translation id="3771290962915251154">此设置已被停用，因为开启了“家长控制”功能</translation>
 <translation id="3771694256347217732">Google 服务条款</translation>
-<translation id="3775705724665058594">发送到您的设备</translation>
 <translation id="3777796259512476958">若删除此类数据，您会从大多数网站退出账号</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 个标签页}other{# 个标签页}}</translation>
 <translation id="3792938779249970121">选择账号</translation>
@@ -723,6 +724,7 @@
 <translation id="4164642020717536140">快速且安全的网页浏览体验</translation>
 <translation id="4165077084524712774">更多工具</translation>
 <translation id="4170577491341606575">正在获取您的数据\u2026</translation>
+<translation id="4176838562184310003">Chrome 未正确关闭，可以尝试恢复您丢失的窗口和标签页。恢复后，部分窗口可能会最小化。</translation>
 <translation id="4177222230309051052">获取您的所有书签</translation>
 <translation id="4177501066905053472">广告主题</translation>
 <translation id="417865198503699526">搜索某项设置</translation>
@@ -997,6 +999,7 @@
 <translation id="5264813352784073502">过去 24 小时</translation>
 <translation id="5267572070504076962">开启“安全浏览”功能，防范危险网站</translation>
 <translation id="5273031377282080577">此设置由您的管理员管理。</translation>
+<translation id="5284295735376057059">文档属性</translation>
 <translation id="5290322819358431297">可自动填充密码</translation>
 <translation id="5292796745632149097">发送到</translation>
 <translation id="5301876394151419436">您目前登录的账号是 <ph name="EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据您的历史记录，在 Google 搜索及其他服务中提供个性化的体验。</translation>

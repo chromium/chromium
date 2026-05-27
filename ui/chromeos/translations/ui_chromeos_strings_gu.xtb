@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">ઍડમિન પૉલિસી રિવ્યૂ કરો</translation>
 <translation id="158849752021629804">ઘરના નેટવર્કની આવશ્યકતા છે</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">ફોર્મેટિંગ...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="162175252992296058">પોર્ટુગીઝ, યુએસ આંતરરાષ્ટ્રીય કીબોર્ડ સાથે</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">રશિયન, ફોનેટિક YaZHert કીબોર્ડ સાથે</translation>
 <translation id="2143778271340628265">મેન્યુઅલ પ્રૉક્સી ગોઠવણી</translation>
 <translation id="2148716181193084225">આજે</translation>
+<translation id="2148756636027685713">ફોર્મેટ કરવું સમાપ્ત</translation>
 <translation id="2161573825856688200">Google પ્રોજેક્ટ</translation>
 <translation id="2163152940313951844">અમાન્ય અક્ષર: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">તમારા <ph name="RETRIES" /> પ્રયાસ બાકી છે.</translation>
 <translation id="2663066752008346276">બર્મીઝ/મ્યાનમાર, Myansan કીબોર્ડ સાથે</translation>
 <translation id="2664412712123763093">ફાઇલનું સ્થાન</translation>
+<translation id="2665919335226618153">અરર, કંઈક ભૂલ થઈ! ત્યાં ફોર્મેટિંગ દરમિયાન ભૂલ આવી હતી.</translation>
 <translation id="2672394942808662069">કેનેડિયન બહુભાષીય</translation>
 <translation id="2707357721402813583">આઇરિશ</translation>
 <translation id="2708477391501452176">ફ્રેન્ચ BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP નેટવર્કને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="3295006446256079333">આ વૉલ્યૂમ</translation>
 <translation id="3295357220137379386">ડિવાઇસ વ્યસ્ત છે</translation>
+<translation id="3305389145870741612">ફોર્મેટ કરવાની પ્રક્રિયામાં થોડો સમય લાગી શકે છે. કૃપા કરીને રાહ જુઓ.</translation>
 <translation id="3307875152560779385">યુક્રેનિયન</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> ને ઝિપ કરી રહ્યું છે...</translation>
 <translation id="3335337277364016868">રેકોર્ડ કર્યાનું વર્ષ</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">વર્ચ્યુઅલ મશીન</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">વિરામચિહ્નની પહોળાઈ પૂર્ણ છે</translation>
+<translation id="5585912436068747822">ફોર્મેટિંગ નિષ્ફળ થયું</translation>
 <translation id="5596627076506792578">વધુ વિકલ્પો</translation>
 <translation id="5602622065581044566">બલ્ગેરિયન, ફોનેટિક કીબોર્ડ સાથે</translation>
 <translation id="5604409170937514933">સ્વીડિશ</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">પંજાબી</translation>
 <translation id="6224240818060029162">ડેનિશ</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરો</translation>
+<translation id="6224481128663248237">ફોર્મેટ કરવું સફળતાપૂર્વક સમાપ્ત થયું!</translation>
 <translation id="6241349547798190358">ડચ (બેલ્જિયમ)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="PHONE_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, કનેક્ટ કરો</translation>
 <translation id="6269630227984243955">મલય</translation>

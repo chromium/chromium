@@ -46,6 +46,7 @@
 <translation id="1147031633655575115"><ph name="USER" /> としてログイン</translation>
 <translation id="1149401351239820326">有効期限（月）</translation>
 <translation id="1150989369772528668">カレンダー</translation>
+<translation id="1161444134753003495">ログイン</translation>
 <translation id="1161663161838091892">続行するにはタブと履歴を同期してください</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} 件のクレジット カード}other{{count} 件のクレジット カード}}</translation>
 <translation id="1164891049599601209">不正なサイトで入力</translation>
@@ -328,6 +329,7 @@
 <translation id="2078437078822043850">右にスクロールすると、シークレット モードでブラウジングできます。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2085876078937250610">保存…</translation>
+<translation id="2089180529062519164">マイクをオンにする</translation>
 <translation id="2096239473850415494">ダウンロードできませんでした</translation>
 <translation id="2096716221239095980">すべてのデータを削除</translation>
 <translation id="2104436223719117661">急上昇ワード</translation>
@@ -821,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{このサイトの新しいパスワード}other{このサイトの新しいパスワード}}</translation>
 <translation id="3933372629914873850"><ph name="URL" /> にログインします</translation>
 <translation id="3934905113567851655">ピンチでサイズを変更</translation>
+<translation id="393732545649378031">アカウント</translation>
 <translation id="3940195383040445971">タブで価格をトラッキング</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{{COUNT} 個のタブを閉じる}other{{COUNT} 個のタブを閉じる}}</translation>
 <translation id="3946483119107054883">CSV 形式でダウンロード</translation>
@@ -1469,6 +1472,7 @@
 <translation id="6140948187512243695">詳細を表示</translation>
 <translation id="6144589619057374135">${url} をシークレット モードで開く</translation>
 <translation id="6146563240635539929">動画</translation>
+<translation id="6148392728478209113">このまま Live を続けますか？Gemini と会話を続けるには [Live] ボタンをタップしてください。</translation>
 <translation id="6151006591088192882"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> でシークレット タブのロックを解除</translation>
 <translation id="6152340033632117531">非アクティブ</translation>
 <translation id="6152406514676263192">同期すると、興味や関心と最も関連性の高いコンテンツが表示されます。</translation>
@@ -1862,6 +1866,7 @@
 <translation id="7468373585447318060">追跡しているすべての商品の値下げ状況を把握できます。</translation>
 <translation id="746872191028309255">カメラで撮影したアイテムやフォト ギャラリーのアイテムを購入できます。</translation>
 <translation id="7471557245617580330">新しいタブを作成</translation>
+<translation id="7473555040328423550">タブを追加</translation>
 <translation id="7476548258282096076">このカードには、よく使用するサイトが表示されます。</translation>
 <translation id="7484645889979462775">このサイトでは保存しない</translation>
 <translation id="7486006552035434095">デバイスを同期する</translation>
@@ -2117,6 +2122,7 @@
 <translation id="8319282042900445670"><ph name="DATE" /> <ph name="TIME" /> にリマインダーを設定しました</translation>
 <translation id="8320212361750431956">最近のアクティビティ</translation>
 <translation id="8325455175867928593">[興味 / 関心に基づくレビュー] を非表示にする</translation>
+<translation id="8333459276976141586">Live ではマイクを使用します。[Live] ボタンをタップするとマイクがオンになります。マイクをオフにするには、[停止] ボタンをタップするか Gemini を閉じてください。</translation>
 <translation id="833647236762414178">パスワードとパスキーを作成、保存、管理して、サイトやアプリに簡単にログインできるようにします。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">データをバックアップして、他のデバイスで使用できるようにします。</translation>
 <translation id="8345328955902001853">{count,plural, =1{レベルアップするには、あと 1 件のタスクを完了してください}other{レベルアップするには、あと {count} 件のタスクを完了してください}}</translation>
@@ -2193,6 +2199,7 @@
 <translation id="8571019948162152515">「<ph name="FILENAME" />」を削除しますか？</translation>
 <translation id="8571213806525832805">過去 4 週間</translation>
 <translation id="8577056989960190117">有効期限（年）「<ph name="YEAR" />」を自動入力する</translation>
+<translation id="8582026929965253036">Gemini と Live で会話</translation>
 <translation id="8587001564479545614">リカバリ PIN の作成</translation>
 <translation id="8588404856427128947">オフ</translation>
 <translation id="8590286732816598906">タブグループ、<ph name="GROUP_TITLE" />、メニュー。</translation>
@@ -2267,6 +2274,7 @@
 <translation id="8803526663383843427">有効にした場合</translation>
 <translation id="8803639129939845298">この通信は保護されています</translation>
 <translation id="8813277370772331957">後で通知</translation>
+<translation id="8814308045751067027">Live を使用するには、設定で Chrome にマイクへのアクセスを許可してください</translation>
 <translation id="8814719628147284151">続行</translation>
 <translation id="881559332211266856">Redress 番号を更新</translation>
 <translation id="8817524703470045896">価格をトラッキングしたり、サイトで値下げがあった場合に通知を受け取ったりできます</translation>

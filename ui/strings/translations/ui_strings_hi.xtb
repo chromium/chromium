@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2168039046890040389">पेज ऊपर</translation>
 <translation id="2190355936436201913">(खाली)</translation>
-<translation id="2192232475740621500">कम सघनता का इस्तेमाल करें</translation>
 <translation id="2267918077332197517">इस साइट से सभी सूचनाएं रोकें</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">अपनी स्क्रीन पर स्पर्श लक्ष्य पर टैप करें.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">अपने फ़ोन से इस नंबर पर कॉल करना चाहते हैं?</translation>
 <translation id="2435457462613246316">पासवर्ड दिखाएं</translation>
 <translation id="24452542372838207">पूरी सूचना दिखाएं</translation>
-<translation id="2445449901874883781">ज़्यादा सघनता का इस्तेमाल करें</translation>
 <translation id="2448407890032181691">टच टारगेट (स्क्रीन के वे हिस्से जहां छूने पर कोई कार्रवाई होती है) को सबसे नीचे दाईं ओर ले जाया गया. यहां टैप करें.</translation>
 <translation id="2482878487686419369">सूचनाएं</translation>
 <translation id="2497284189126895209">सभी फ़ाइलें</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">ठीक है</translation>
 <translation id="6974053822202609517">दाएं से बाएं</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">आपके ऐप्लिकेशन की डिसप्ले सेटिंग, रीस्टार्ट होने पर लागू होंगी.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 मिनट शेष}one{# मिनट शेष}other{# मिनट शेष}}</translation>
 <translation id="7252604552361840748">ऊपर दिया गया एक्सटेंशन ढूंढें</translation>

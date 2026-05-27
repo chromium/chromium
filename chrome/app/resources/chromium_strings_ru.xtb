@@ -174,7 +174,6 @@
 <translation id="2885378588091291677">Диспетчер задач</translation>
 <translation id="2910007522516064972">О &amp;Chromium</translation>
 <translation id="2915996080311180594">Перезапустить позже</translation>
-<translation id="2928420929544864228">Установка завершена.</translation>
 <translation id="2933336679234709858">Ваши данные зашифрованы кодовой фразой. Введите ее, чтобы использовать и сохранять данные Chromium в аккаунте Google.</translation>
 <translation id="2945997411976714835">Произошла ошибка. Не удалось начать установку.</translation>
 <translation id="2948852018303413228">Входите на сайты быстрее, используя сохраненные пароли в Chromium для iOS.</translation>
@@ -269,6 +268,7 @@
 <translation id="3954172517175569325">Пароли, способы оплаты и адреса, которые вы сохранили в аккаунте Google, будут удалены с этого устройства. Чтобы снова использовать их в Chromium, потребуется войти в аккаунт.</translation>
 <translation id="395904275706073188">Невозможно получить доступ к защищенным страницам. Попробуйте использовать функцию на другой странице.</translation>
 <translation id="3962647064319009959">Как Chromium обеспечивает безопасность</translation>
+<translation id="3967822245660637423">Скачивание завершено.</translation>
 <translation id="3971865010372729242">Когда вы вводите текст в адресную строку или окно поиска, Chromium передает этот запрос вашей организации, а именно ее поисковой системе, инструментам агентов и искусственному интеллекту. Это нужно, чтобы получить подсказки.</translation>
 <translation id="3975724895399328945">О &amp;Google Chrome для тестирования</translation>
 <translation id="3997429360543082038">О Chromium OS</translation>
@@ -304,7 +304,6 @@
 <translation id="4298125729853015961">Экспорт паролей из Chromium</translation>
 <translation id="4304713468139749426">Менеджер паролей</translation>
 <translation id="4334241893986177674">Поиск по скриншоту</translation>
-<translation id="4334294535648607276">Скачивание завершено.</translation>
 <translation id="4384331407722351213">Запускать Chromium при включении Windows</translation>
 <translation id="4384993550046411228">Чтобы пользоваться привычными и проверенными функциями, сделайте Chromium браузером по умолчанию. Для быстрого доступа Chromium будет закреплен на панели задач.</translation>
 <translation id="439358628917130594">Согласно действующим правилам <ph name="MANAGER" />, до начала работы с устройством необходимо ознакомиться с приведенными ниже Условиями использования и принять их. Они не дополняют, не заменяют и не ограничивают Условия использования Chromium OS.</translation>
@@ -358,7 +357,6 @@
 <translation id="4987820182225656817">Используйте Chromium в гостевом режиме, если не хотите сохранять данные о посещенных сайтах.</translation>
 <translation id="4992938037305302429">Ваш аккаунт в Chromium</translation>
 <translation id="4994636714258228724">Добавить пользователя Chromium</translation>
-<translation id="5083712646171654472">Gemini в Chromium будет автоматически искать информацию, чтобы выполнять задачи на вкладках браузера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium необходимо разрешение на отслеживание рук</translation>
 <translation id="5141988424377517949">Вы давно не посещали этот сайт. Браузер Chromium отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
 <translation id="5174969993834422967">Обычно вы блокируете уведомления. Чтобы получать их с этого сайта, нажмите на значок оповещений в правом верхнем углу адресной строки.</translation>
@@ -469,7 +467,6 @@
 <translation id="6294831894865512704">Расширение запрашивает вход в Chromium</translation>
 <translation id="6295779123002464101">Chromium заблокировал файл <ph name="FILE_NAME" /> как потенциально опасный.</translation>
 <translation id="6309712487085796862">Chromium использует камеру.</translation>
-<translation id="6327105987658262776">Нет обновлений.</translation>
 <translation id="6333502561965082103">Chromium выполняет другую операцию. Повторите попытку позже.</translation>
 <translation id="6334986366598267305">Теперь с Chromium ещё удобнее работать в аккаунте Google, в том числе на общих компьютерах.</translation>
 <translation id="6347002662287820329">Чтобы пользоваться привычными и проверенными функциями, сделайте Chromium браузером по умолчанию.</translation>
@@ -545,7 +542,6 @@
 <translation id="7003299027384820442">Введите кодовую фразу, чтобы использовать и сохранять данные Chromium в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="7011190694940573312">Установка не удалась, так как эта версия ОС не поддерживается.</translation>
 <translation id="7024536598735240744">Ошибка при распаковке: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Установка отменена.</translation>
 <translation id="7045244423563602563">Настройте Chromium для себя</translation>
 <translation id="7047386856539490735">Эти результаты для вас полезны?</translation>
 <translation id="705851970750939768">Обновить Chromium</translation>
@@ -599,7 +595,6 @@
 <translation id="7624307931717240213">Мы используем данные, чтобы улучшать сервис. Прочитайте Политику конфиденциальности и Условия использования.</translation>
 <translation id="7649070708921625228">Справка</translation>
 <translation id="7650134251917003571">Скачать приложение Chromium</translation>
-<translation id="7656340475565475526">Разрешить Chromium искать информацию в интернете</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7686590090926151193">Chromium не является браузером по умолчанию.</translation>
 <translation id="7689606757190482937">Синхронизируйте данные Chromium на всех устройствах</translation>
@@ -713,6 +708,7 @@
 <translation id="897581876605952338">Логотип Chromium Enterprise</translation>
 <translation id="8981150672034878610">Не удалось запустить Chromium. При открытии вашего профиля произошла ошибка. Попробуйте перезапустить Chromium.</translation>
 <translation id="8988036198400390003">Настроить профили Chromium</translation>
+<translation id="9018218886431812662">Установка завершена</translation>
 <translation id="9019929317751753759">Чтобы обеспечить безопасность ваших данных, некоторые расширения были отключены, так как <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> не содержит сведений о них (то есть они могли быть установлены без вашего ведома).</translation>
 <translation id="9022552996538154597">Войти в Chromium</translation>
 <translation id="904366664621834601">Chromium заблокировал скачивание, поскольку этот архив содержит файлы, в которых может быть скрыто вредоносное ПО.</translation>

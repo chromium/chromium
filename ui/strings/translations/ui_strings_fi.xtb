@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Tänään</translation>
 <translation id="2168039046890040389">Sivu ylös</translation>
 <translation id="2190355936436201913">(tyhjä)</translation>
-<translation id="2192232475740621500">Matala tiheys</translation>
 <translation id="2267918077332197517">Estä kaikki tämän sivuston ilmoitukset</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Napauta näytölläsi olevia kosketettavia kohteita.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Soitetaanko tähän numeroon puhelimellasi?</translation>
 <translation id="2435457462613246316">Näytä salasana</translation>
 <translation id="24452542372838207">Laajenna ilmoitus</translation>
-<translation id="2445449901874883781">Korkea tiheys</translation>
 <translation id="2448407890032181691">Kosketusalue siirretty oikeaan alakulmaan. Napauta tästä.</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2497284189126895209">Kaikki tiedostot</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Oikealta vasemmalle</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Sovelluksen näyttöasetukset tulevat voimaan, kun käynnistät sen seuraavan kerran uudelleen.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min jäljellä}other{# min jäljellä}}</translation>
 <translation id="7252604552361840748">Etsi yllä oleva laajennus</translation>

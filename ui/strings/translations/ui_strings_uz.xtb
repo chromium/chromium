@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Bugun</translation>
 <translation id="2168039046890040389">Tepaga o‘tkazish</translation>
 <translation id="2190355936436201913">(bo‘sh)</translation>
-<translation id="2192232475740621500">Kamroq oynalar</translation>
 <translation id="2267918077332197517">Bu saytdagi barcha bildirishnomalar bloklansin</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Ekrandagi interaktiv elementlarga tegining.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Bu raqamga telefoningizdan chaqiruv bajarilsinmi?</translation>
 <translation id="2435457462613246316">Parolni ko‘rsatish</translation>
 <translation id="24452542372838207">Bildirishnomani yoyish</translation>
-<translation id="2445449901874883781">Koʻproq oynalar</translation>
 <translation id="2448407890032181691">Teginish nuqtasi quyi oʻng burchakka olindi. Bu yerga bosing.</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2497284189126895209">Barcha fayllar</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">O‘ngdan chapga</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Ilovangizdagi ekran sozlamalari keyingi safar ishga tushganda kuchga kiradi.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 daqiqa qoldi}other{# daqiqa qoldi}}</translation>
 <translation id="7252604552361840748">Yuqoridagi kengaytmani toping</translation>

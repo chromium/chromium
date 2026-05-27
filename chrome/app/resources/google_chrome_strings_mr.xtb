@@ -185,7 +185,6 @@
 <translation id="2915996080311180594">नंतर रीस्टार्ट करा</translation>
 <translation id="2916983411556218750">चला, तुमचे Chrome तयार करू या</translation>
 <translation id="2926952073016206995">Chrome ला या साइटसाठी कॅमेराची परवानगी आवश्यक आहे</translation>
-<translation id="2928420929544864228">इंस्टॉलेशन पूर्ण झाले.</translation>
 <translation id="2945997411976714835">इंस्टॉलसंबंधित एरर: इंस्टॉलर प्रक्रिया सुरू झाली नाही.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - नेटवर्क साइन इन - Chrome</translation>
 <translation id="2970681950995291301">Chrome मधून तुमचे Google खाते काढून टाकण्यासाठी, सेटिंग्ज पेजमध्ये Chrome मधून साइन आउट करा</translation>
@@ -281,6 +280,7 @@
 <translation id="3892148308691398805">मजकूर कॉपी करा</translation>
 <translation id="3941890832296813527">इंस्टॉलसंबंधित एरर: इंस्टॉलर फाइल नाव चुकीचे आहे किंवा त्यास सपोर्ट नाही.</translation>
 <translation id="395904275706073188">सुरक्षित पेज वाचू शकत नाही. वेगळे पेज वापरून पहा.</translation>
+<translation id="3967822245660637423">पूर्ण डाउनलोड करा</translation>
 <translation id="3968962723676998462">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
 <translation id="3973161977468201858">Google Chrome ला तुमचा Google Password Manager डेटा हटवायचा आहे. याला अनुमती देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="400161754580828648">तुमची स्क्रीन शेअर करण्यासाठी, सिस्टीम सेटिंग्ज मध्ये Chrome साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
@@ -315,7 +315,6 @@
 <translation id="4328355335528187361">Google Chrome डेव्हलपर (mDNS-In)</translation>
 <translation id="4329315893554541805">पर्सनलायझेशन व इतर वैशिष्ट्ये मिळवण्यासाठी, वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी व लिंक केलेल्या Google सेवांमध्ये Chrome चा समावेश करा</translation>
 <translation id="4334241893986177674">हा स्क्रीनशॉट शोधा</translation>
-<translation id="4334294535648607276">डाउनलोड पूर्ण.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> हे Chrome मध्‍ये जोडले गेले आहे</translation>
 <translation id="4344128547036991536">तुम्ही Google Lens उघडता, तेव्हा PDFs सह पेजचे शीर्षक, URL आणि आशय आपोआप Google ला पाठवला जाईल. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">पर्सनलायझेशन मिळवण्यासाठी, वेब आणि ॲप ॲक्टिव्हिटीमध्ये Chrome चा समावेश करा</translation>
@@ -511,7 +510,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6319856120645568262">Chrome ला तुमच्या आसपासच्या परिसराचा नकाशा तयार करण्यासाठी आणि तुमच्या हातांचा माग ठेवण्यासाठी परवानगी हवी आहे</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" या एक्स्टेंशनसाठी तुम्हाला Chrome मध्ये साइन इन करावे लागेल</translation>
 <translation id="6326175484149238433">Chrome मधून काढून टाका</translation>
-<translation id="6327105987658262776">कोणतेही अपडेट उपलब्ध नाही.</translation>
 <translation id="6334815226785304306">Google Chrome ला डीफॉल्ट ब्राउझर बनवा आणि टास्कबारवर पिन करा</translation>
 <translation id="63540178978900677">Chrome आता तुमचा डीफॉल्ट ब्राउझर नाही. Chrome ला डीफॉल्ट ब्राउझर बनवायचे आहे का?</translation>
 <translation id="6360449101159168105">हा टॅब इनॅक्टिव्ह असताना, Chrome ला जलद ठेवण्यासाठी मेमरी मोकळी करण्यात आली होती. ही साइट इनॅक्टिव्ह राहण्यापासून नेहमी वगळली जावी असे तुम्ही निवडू शकता.</translation>
@@ -577,7 +575,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6999131147875565462">Chrome अधिक जलद रन होते आणि JavaScript वापरणारी वैशिष्ट्ये डिझाइन केल्यानुसार कार्य करतात</translation>
 <translation id="7011190694940573312">इंस्टॉलेशन यशस्वी झाले नाही, कारण ऑपरेटिंग सिस्टीमच्या या आवृत्तीला सपोर्ट नाही.</translation>
 <translation id="7024536598735240744">उघडण्याशी संबंधित एरर: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">इंस्टॉलेशन थांबवले</translation>
 <translation id="7025800014283535195">तुम्ही Chrome प्रोफाइलदरम्यान येथे स्विच करू शकता</translation>
 <translation id="7047386856539490735">हे परिणाम उपयुक्त आहेत का?</translation>
 <translation id="7051685429025310665">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> या परवानग्या काढून टाकल्या आहेत.</translation>
@@ -778,6 +775,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8999117580775242387">HTTPS उपलब्ध नसल्यास, Chrome तुम्हाला चेतावणी न देता असुरक्षित कनेक्शन वापरेल</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome अपडेट उपलब्ध आहे}=1{Chrome अपडेट उपलब्ध आहे}other{Chrome अपडेट # दिवसांसाठी उपलब्ध आहे}}</translation>
 <translation id="9014771989710951291">एकाहून अधिक संस्था Chrome व्यवस्थापित करतात</translation>
+<translation id="9018218886431812662">इंस्टॉलेशन पूर्ण झाले</translation>
 <translation id="9066987883552592250">Chrome कॅनरी मधील Gemini बंद करा</translation>
 <translation id="9090566250983691233">Chrome काही फाइल का ब्लॉक करते हे जाणून घ्या</translation>
 <translation id="9106236359747881194">शोधण्यासाठी मजकूर निवडा</translation>

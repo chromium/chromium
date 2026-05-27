@@ -183,7 +183,6 @@
 <translation id="2915996080311180594">Перезапустити пізніше</translation>
 <translation id="2916983411556218750">Налаштуйте Chrome</translation>
 <translation id="2926952073016206995">Веб-переглядачу Chrome потрібен доступ до камери для цього сайту</translation>
-<translation id="2928420929544864228">Встановлення завершено.</translation>
 <translation id="2945997411976714835">Сталася помилка. Не вдалося розпочати встановлення.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Вхід у мережу – Chrome</translation>
 <translation id="2970681950995291301">Щоб вилучити обліковий запис Google, вийдіть із Chrome на сторінці налаштувань</translation>
@@ -279,6 +278,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="3941890832296813527">Сталася помилка. Назва файлу програми встановлення недійсна або не підтримується.</translation>
 <translation id="395904275706073188">Захищені сторінки не можна зчитувати. Спробуйте на іншій сторінці.</translation>
+<translation id="3967822245660637423">Завантажено</translation>
 <translation id="3968962723676998462">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="ACCOUNT_EMAIL" />, введіть парольну фразу</translation>
 <translation id="3973161977468201858">Google Chrome хоче видалити ваші дані в Google Менеджері паролів. Щоб дозволити це, введіть пароль Windows.</translation>
 <translation id="400161754580828648">Щоб показувати свій екран, у системних параметрах дозвольте Chrome записувати відео з екрана.</translation>
@@ -313,7 +313,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4328355335528187361">Версія Google Chrome для розробників (mDNS-In)</translation>
 <translation id="4329315893554541805">Щоб користуватися персоналізацією і іншими можливостями, включіть Chrome в історію додатків і вебпошуку й зв’язані сервіси Google</translation>
 <translation id="4334241893986177674">Шукати за цим знімком екрана</translation>
-<translation id="4334294535648607276">Завантажено.</translation>
 <translation id="4343195214584226067">Розширення <ph name="EXTENSION_NAME" /> додано в Chrome</translation>
 <translation id="4344128547036991536">Коли ви відкриваєте Google Об’єктив, у Google автоматично надсилається назва сторінки, її URL-адреса й контент, зокрема файли PDF. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Щоб користуватися персоналізацією, включіть Chrome в історію додатків і вебпошуку</translation>
@@ -506,7 +505,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6319856120645568262">Вебпереглядачу Chrome потрібен дозвіл, щоб створити карту оточення й відстежувати ваші руки</translation>
 <translation id="6321592572353357376">Щоб використовувати розширення <ph name="EXTENSION_NAME" />, потрібно ввійти в Chrome</translation>
 <translation id="6326175484149238433">Видалити з Chrome</translation>
-<translation id="6327105987658262776">Немає оновлень.</translation>
 <translation id="6334815226785304306">Зробити Google Chrome вебпереглядачем за умовчанням і закріпити його на панелі завдань</translation>
 <translation id="63540178978900677">Chrome більше не є вебпереглядачем за умовчанням. Зробити Chrome вебпереглядачем за умовчанням?</translation>
 <translation id="6360449101159168105">Коли ця вкладка була неактивною, система звільнила оперативну пам’ять, щоб прискорити роботу Chrome. Ви можете назавжди вимкнути перехід у неактивний режим для цього сайту.</translation>
@@ -572,7 +570,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6999131147875565462">Продуктивність Chrome підвищується, а функції, які використовують JavaScript, мають працювати належним чином</translation>
 <translation id="7011190694940573312">Не вдалося встановити, оскільки ця версія операційної системи не підтримується.</translation>
 <translation id="7024536598735240744">Помилка розпакування: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Встановлення зупинено.</translation>
 <translation id="7025800014283535195">Тут можна перемикати профілі Chrome</translation>
 <translation id="7047386856539490735">Ці результати корисні?</translation>
 <translation id="7051685429025310665">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і "<ph name="PERMISSION_3" />".</translation>
@@ -773,6 +770,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8999117580775242387">Якщо протокол HTTPS недоступний, Chrome використовуватиме незахищене з’єднання без попередження</translation>
 <translation id="8999208279178790196">{0,plural, =0{Доступне оновлення Chrome}=1{Доступне оновлення Chrome}one{Оновлення Chrome доступне вже # день}few{Оновлення Chrome доступне вже # дні}many{Оновлення Chrome доступне вже # днів}other{Оновлення Chrome доступне вже # дня}}</translation>
 <translation id="9014771989710951291">Вебпереглядачем Chrome керують кілька організацій</translation>
+<translation id="9018218886431812662">Встановлення завершено</translation>
 <translation id="9066987883552592250">Закрити Gemini у Chrome Canary</translation>
 <translation id="9090566250983691233">Чому Chrome блокує деякі файли</translation>
 <translation id="9106236359747881194">Виберіть текст, щоб шукати</translation>

@@ -187,7 +187,6 @@
 <translation id="2915996080311180594">稍後重新開機</translation>
 <translation id="2916983411556218750">開始設定 Chrome</translation>
 <translation id="2926952073016206995">Chrome 需要相機權限，才能執行此網站要求的功能</translation>
-<translation id="2928420929544864228">安裝完成。</translation>
 <translation id="2945997411976714835">安裝錯誤：安裝程式程序無法開始。</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - 網絡登入 - Chrome</translation>
 <translation id="2970681950995291301">如要從 Chrome 中移除 Google 帳戶，請前往「設定」頁面登出 Chrome</translation>
@@ -282,6 +281,7 @@
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不支援。</translation>
 <translation id="395904275706073188">無法讀取受保護的頁面，請嘗試其他頁面。</translation>
+<translation id="3967822245660637423">下載完成</translation>
 <translation id="3968962723676998462">輸入用於在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chrome 資料的密碼短語</translation>
 <translation id="3973161977468201858">Google Chrome 想刪除你的「密碼管理工具」資料。如果允許，請輸入 Windows 密碼。</translation>
 <translation id="400161754580828648">如要分享螢幕內容，請前往「系統設定」允許 Chrome 螢幕錄影。</translation>
@@ -316,7 +316,6 @@
 <translation id="4328355335528187361">Google Chrome 開發人員版 (mDNS-In)</translation>
 <translation id="4329315893554541805">如要取得個人化和其他功能，請將 Chrome 加入「網絡和應用程式活動記錄」以及連結的 Google 服務</translation>
 <translation id="4334241893986177674">搵呢張螢幕截圖</translation>
-<translation id="4334294535648607276">下載完成。</translation>
 <translation id="4343195214584226067">已將 <ph name="EXTENSION_NAME" /> 加到 Chrome</translation>
 <translation id="4344128547036991536">開啟「Google 智能鏡頭」時，網頁標題、網址和內容 (包括 PDF) 會自動傳送至 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">如要取得個人化功能，請將 Chrome 加入「網絡和應用程式活動記錄」</translation>
@@ -513,7 +512,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6319856120645568262">Chrome 需要適當權限，才能繪製周遭環境並進行手部追蹤</translation>
 <translation id="6321592572353357376">擴充程式「<ph name="EXTENSION_NAME" />」需要你登入 Chrome</translation>
 <translation id="6326175484149238433">從 Chrome 中移除</translation>
-<translation id="6327105987658262776">沒有可用的更新。</translation>
 <translation id="6334815226785304306">將 Google Chrome 設定為預設瀏覽器並固定到工作列</translation>
 <translation id="63540178978900677">Chrome 不再是你的預設瀏覽器。要將 Chrome 設定為預設瀏覽器嗎？</translation>
 <translation id="6360449101159168105">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chrome 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
@@ -579,7 +577,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6999131147875565462">提高 Chrome 執行速度，並讓使用 JavaScript 的功能正常運作</translation>
 <translation id="7011190694940573312">由於系統不支援此版本的作業系統，因此安裝失敗。</translation>
 <translation id="7024536598735240744">未封裝錯誤：<ph name="UNPACK_ERROR" />。</translation>
-<translation id="7025789849649390912">已停止安裝。</translation>
 <translation id="7025800014283535195">您可在此處切換不同的 Chrome 設定檔</translation>
 <translation id="7047386856539490735">這些結果有用嗎？</translation>
 <translation id="7051685429025310665">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和、<ph name="PERMISSION_3" />權限。</translation>
@@ -780,6 +777,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8999117580775242387">無法使用 HTTPS 時，Chrome 會在不顯示警告的情況下使用不安全的連線</translation>
 <translation id="8999208279178790196">{0,plural, =0{有可用的 Chrome 更新}=1{有可用的 Chrome 更新}other{Chrome 更新已發佈 # 天}}</translation>
 <translation id="9014771989710951291">Chrome 由多個機構管理</translation>
+<translation id="9018218886431812662">安裝完成</translation>
 <translation id="9066987883552592250">關閉 Chrome Canary 版 Gemini</translation>
 <translation id="9090566250983691233">瞭解 Chrome 封鎖部分檔案的原因</translation>
 <translation id="9106236359747881194">選取文字即可搜尋</translation>

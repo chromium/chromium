@@ -187,7 +187,6 @@
 <translation id="2915996080311180594">Перазапусціць пазней</translation>
 <translation id="2916983411556218750">Падрыхтуем Chrome</translation>
 <translation id="2926952073016206995">Chrome запытвае дазвол на доступ да камеры для гэтага сайта</translation>
-<translation id="2928420929544864228">Усталяванне завершана.</translation>
 <translation id="2945997411976714835">Адбылася памылка. Не ўдалося пачаць усталяванне.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – Уваход у сетку – Chrome</translation>
 <translation id="2970681950995291301">Каб выдаліць свой Уліковы Google з Chrome, выйдзіце з Chrome на старонцы налад</translation>
@@ -282,6 +281,7 @@
 <translation id="3892148308691398805">Скапіраваць тэкст</translation>
 <translation id="3941890832296813527">Адбылася памылка. Назва файла ўсталёўшчыка несапраўдная ці не падтрымліваецца.</translation>
 <translation id="395904275706073188">Немагчыма прачытаць абароненыя старонкі. Паспрабуйце іншую старонку.</translation>
+<translation id="3967822245660637423">Спампоўка завершана</translation>
 <translation id="3968962723676998462">Каб выкарыстоўваць і захоўваць даныя Chrome ва ўліковым запісе <ph name="ACCOUNT_EMAIL" />, увядзіце фразу-пароль</translation>
 <translation id="3973161977468201858">Google Chrome збіраецца выдаліць вашы даныя з Менеджара пароляў Google. Каб дазволіць гэта, увядзіце пароль Windows.</translation>
 <translation id="400161754580828648">Каб абагуліць экран, у сістэмных наладах дазвольце браўзеру Chrome запіс экрана.</translation>
@@ -316,7 +316,6 @@
 <translation id="4328355335528187361">Google Chrome для распрацоўшчыкаў (mDNS-In)</translation>
 <translation id="4329315893554541805">Каб наладзіць персаналізацыю і іншыя функцыі, уключыце Chrome у гісторыю дзеянняў у інтэрнэце і праграмах і звязаныя сэрвісы Google</translation>
 <translation id="4334241893986177674">Пошук па гэтым здымку экрана</translation>
-<translation id="4334294535648607276">Спампоўванне завершана.</translation>
 <translation id="4343195214584226067">Пашырэнне <ph name="EXTENSION_NAME" /> дададзена ў Chrome</translation>
 <translation id="4344128547036991536">Пры адкрыцці Google Аб’ектыва загаловак, URL-адрас і змесціва старонкі, у тым ліку файлы PDF, аўтаматычна адпраўляюцца ў Google. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Каб наладзіць персаналізацыю, уключыце Chrome у гісторыю дзеянняў у інтэрнэце і праграмах</translation>
@@ -513,7 +512,6 @@
 <translation id="6319856120645568262">Браўзеру Chrome патрабуецца дазвол на стварэнне карты вашага асяроддзя і адсочванне рук.</translation>
 <translation id="6321592572353357376">Пашырэнне "<ph name="EXTENSION_NAME" />" прапануе вам увайсці ў Chrome</translation>
 <translation id="6326175484149238433">Выдаліць з Chrome</translation>
-<translation id="6327105987658262776">Няма даступных абнаўленняў.</translation>
 <translation id="6334815226785304306">Зрабіць Google Chrome стандартным браўзерам і замацаваць яго на панэлі задач</translation>
 <translation id="63540178978900677">Chrome больш не з’яўляецца стандартным браўзерам. Зрабіць Chrome стандартным браўзерам?</translation>
 <translation id="6360449101159168105">Гэта ўкладка была неактыўнай, і памяць была вызвалена, каб забяспечыць хуткую работу Chrome. Вы можаце дадаць гэты сайт да выключэнняў, каб ён ніколі не адзначаўся як неактыўны.</translation>
@@ -579,7 +577,6 @@
 <translation id="6999131147875565462">Павышаецца хуткасць Chrome і правільна працуюць функцыі, якія выкарыстоўваюць JavaScript</translation>
 <translation id="7011190694940573312">Усталяваць праграму не ўдалося, бо гэта версія аперацыйнай сістэмы не падтрымліваецца.</translation>
 <translation id="7024536598735240744">Памылка распакоўкі: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Усталяванне спынена.</translation>
 <translation id="7025800014283535195">Пераключацца паміж профілямі Chrome можна тут</translation>
 <translation id="7047386856539490735">Ці карысныя гэтыя вынікі?</translation>
 <translation id="7051685429025310665">Вы даўно не наведвалі сайт. Браўзер Chrome адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і <ph name="PERMISSION_3" />.</translation>
@@ -780,6 +777,7 @@
 <translation id="8999117580775242387">Калі пратакол HTTPS недаступны, Chrome без папярэджання будзе выкарыстоўваць неабароненае падключэнне</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ёсць абнаўленне Chrome}=1{Ёсць абнаўленне Chrome}one{Абнаўленне Chrome выйшла ўжо # дзень таму}few{Абнаўленне Chrome выйшла # дні таму}many{Абнаўленне Chrome выйшла # дзён таму}other{Абнаўленне Chrome выйшла # дня таму}}</translation>
 <translation id="9014771989710951291">Некалькі арганізацый кіруюць браўзерам Chrome</translation>
+<translation id="9018218886431812662">Усталяванне завершана</translation>
 <translation id="9066987883552592250">Закрыць Gemini ў Chrome Canary</translation>
 <translation id="9090566250983691233">Даведацца, чаму Chrome блакіруе некаторыя файлы</translation>
 <translation id="9106236359747881194">Выберыце тэкст для пошуку</translation>

@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">مرور خط‌مشی سرپرست</translation>
 <translation id="158849752021629804">شبکه خانگی مورد نیاز است</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> پتابایت</translation>
+<translation id="1593594475886691512">در حال قالب‌بندی...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">دوربین</translation>
 <translation id="162175252992296058">پرتغالی با صفحه‌کلید بین‌المللی آمریکایی</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">‏روسی با صفحه‌کلید آوایی YaZHert</translation>
 <translation id="2143778271340628265">پیکربندی پراکسی دستی</translation>
 <translation id="2148716181193084225">امروز</translation>
+<translation id="2148756636027685713">قالب‌بندی تمام شد</translation>
 <translation id="2161573825856688200">‏پروژه Google</translation>
 <translation id="2163152940313951844">نویسه نامعتبر: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> تلاش دیگر دارید.</translation>
 <translation id="2663066752008346276">میانماری/برمه‌ای با صفحه‌کلید میانسان</translation>
 <translation id="2664412712123763093">محل فایل</translation>
+<translation id="2665919335226618153">اوه، نه! هنگام قالب‌بندی خطایی رخ داد.</translation>
 <translation id="2672394942808662069">چند زبانه کانادایی</translation>
 <translation id="2707357721402813583">ایرلندی</translation>
 <translation id="2708477391501452176">‏BÉPO فرانسوی</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">‏از شبکه‌های WEP پشتیبانی نمی‌شود</translation>
 <translation id="3295006446256079333">این حجم</translation>
 <translation id="3295357220137379386">دستگاه مشغول است</translation>
+<translation id="3305389145870741612">مراحل قالب‌بندی چند ثانیه طول می‌کشد. لطفاً منتظر بمانید.</translation>
 <translation id="3307875152560779385">اوکراینی</translation>
 <translation id="3326821416087822643">در حال فشرده‌سازی <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">سال ضبط</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">ماشین مجازی</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">عرض نشانه‌های سجاوندی روی «کامل» تنظیم شده است</translation>
+<translation id="5585912436068747822">قالب‌بندی ناموفق بود</translation>
 <translation id="5596627076506792578">گزینه‌های بیشتر</translation>
 <translation id="5602622065581044566">بلغاری با صفحه‌کلید آوایی</translation>
 <translation id="5604409170937514933">سوئدی</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">پنجابی</translation>
 <translation id="6224240818060029162">دانمارکی</translation>
 <translation id="6224253798271602650">قالب‌بندی <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">قالب‌بندی با موفقیت به پایان رسید!</translation>
 <translation id="6241349547798190358">هلندی (بلژیک)</translation>
 <translation id="6267547857941397424">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، اتصال</translation>
 <translation id="6269630227984243955">مالایی</translation>

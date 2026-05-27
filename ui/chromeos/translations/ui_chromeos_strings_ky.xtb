@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Администратордун саясатын карап чыгуу</translation>
 <translation id="158849752021629804">Үй тармагы талап кылынат</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> Пб</translation>
+<translation id="1593594475886691512">Форматталууда…</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">Португалча жана эл аралык АКШ баскычтобу</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Орусча (YaZHert фонетикалык баскычтобу)</translation>
 <translation id="2143778271340628265">Проксини кол менен конфигурациялоо</translation>
 <translation id="2148716181193084225">Бүгүн</translation>
+<translation id="2148756636027685713">Форматталып</translation>
 <translation id="2161573825856688200">Google долбоору</translation>
 <translation id="2163152940313951844">Жараксыз символ: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Сизде <ph name="RETRIES" /> аракет калды.</translation>
 <translation id="2663066752008346276">Бирмача (Мьянма) жана Myansan баскычтобу</translation>
 <translation id="2664412712123763093">Файлдын жайгашкан жери</translation>
+<translation id="2665919335226618153">Т-у-уй ата! Форматталып жатканда ката кетти.</translation>
 <translation id="2672394942808662069">Канадалыкча көп тилдүү</translation>
 <translation id="2707357721402813583">Ирландча</translation>
 <translation id="2708477391501452176">Французча BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP тармактары колдоого алынбайт</translation>
 <translation id="3295006446256079333">Ушул көлөм</translation>
 <translation id="3295357220137379386">Түзмөк бош эмес</translation>
+<translation id="3305389145870741612">Форматто процессине бир нече секунд талап кылынышы мүмкүн. Күтө туруңуз.</translation>
 <translation id="3307875152560779385">Украинче</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> кысылууда…</translation>
 <translation id="3335337277364016868">Жаздырылган жылы</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">виртуалдык машина</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Тыныш белгинин эни Толук</translation>
+<translation id="5585912436068747822">Форматталбай койду</translation>
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="5602622065581044566">Болгарча (фонетикалык баскычтоп)</translation>
 <translation id="5604409170937514933">Шведче</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Пунжабиче</translation>
 <translation id="6224240818060029162">Датча</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> форматталсын</translation>
+<translation id="6224481128663248237">Ийгиликтүү форматталды!</translation>
 <translation id="6241349547798190358">Голландча (Бельгия)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Телефондун батареясы <ph name="BATTERY_STATUS" />%, Туташуу</translation>
 <translation id="6269630227984243955">Малайча</translation>

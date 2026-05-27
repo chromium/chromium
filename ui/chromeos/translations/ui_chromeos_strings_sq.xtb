@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Rishiko politikën e administratorit</translation>
 <translation id="158849752021629804">Nevojitet rrjeti i shtëpisë</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Po formaton...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugalisht me tastierë ndërkombëtare amerikane</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Rusisht me tastierë fonetike YaZHert</translation>
 <translation id="2143778271340628265">Konfigurimi manual i përfaqësuesit</translation>
 <translation id="2148716181193084225">Sot</translation>
+<translation id="2148756636027685713">Formatimi përfundoi</translation>
 <translation id="2161573825856688200">Projekti i Google</translation>
 <translation id="2163152940313951844">Karakter i pavlefshëm: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Ke <ph name="RETRIES" /> përpjekje të mbetura.</translation>
 <translation id="2663066752008346276">Birmanisht/Mianmar me tastierë Myansan</translation>
 <translation id="2664412712123763093">Vendndodhja e skedarit</translation>
+<translation id="2665919335226618153">Mos! Kishte një gabim gjatë formatimit.</translation>
 <translation id="2672394942808662069">Shumëgjuhëshe kanadeze</translation>
 <translation id="2707357721402813583">Irlandeze</translation>
 <translation id="2708477391501452176">Franceze BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">Rrjetet WEP nuk mbështeten</translation>
 <translation id="3295006446256079333">Këtë volum</translation>
 <translation id="3295357220137379386">Pajisja është e zënë</translation>
+<translation id="3305389145870741612">Procesi i formatimit mund të zgjasë disa sekonda. Qëndro në pritje.</translation>
 <translation id="3307875152560779385">Ukrainisht</translation>
 <translation id="3326821416087822643">Po ngjesh <ph name="FILE_NAME" />...</translation>
 <translation id="3335337277364016868">Viti i regjistrimit</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">pajisja virtuale</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5583664733673201137">Gjerësia e shenjave të pikësimit është e plotë</translation>
+<translation id="5585912436068747822">Formatimi dështoi</translation>
 <translation id="5596627076506792578">Më shumë opsione</translation>
 <translation id="5602622065581044566">Bullgarisht me tastierë fonetike</translation>
 <translation id="5604409170937514933">Suedeze</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Panxhabi</translation>
 <translation id="6224240818060029162">Danisht</translation>
 <translation id="6224253798271602650">Formato <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Formatimi përfundoi me sukses!</translation>
 <translation id="6241349547798190358">Holandisht (Belgjikë)</translation>
 <translation id="6267547857941397424">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, lidhu</translation>
 <translation id="6269630227984243955">Malajzisht</translation>

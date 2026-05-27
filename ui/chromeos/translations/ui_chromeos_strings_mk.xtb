@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Прегледајте го администраторското правило</translation>
 <translation id="158849752021629804">Потребна е домашна мрежа</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Се форматира...</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="162175252992296058">португалски со американска меѓународна тастатура</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">руски со фонетска тастатура YaZHert</translation>
 <translation id="2143778271340628265">Рачна конфигурација на прокси</translation>
 <translation id="2148716181193084225">Денес</translation>
+<translation id="2148756636027685713">Форматирањето заврши</translation>
 <translation id="2161573825856688200">Проект на Google</translation>
 <translation id="2163152940313951844">Неважечки знак: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941">Имате уште <ph name="RETRIES" /> обиди.</translation>
 <translation id="2663066752008346276">бурмански (Мјанмар) со тастатура Myansan</translation>
 <translation id="2664412712123763093">Локација на датотеката</translation>
+<translation id="2665919335226618153">Аман! Имаше грешка за време на форматирањето.</translation>
 <translation id="2672394942808662069">канадска повеќејазична</translation>
 <translation id="2707357721402813583">ирска</translation>
 <translation id="2708477391501452176">француска BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP-мрежите не се поддржани</translation>
 <translation id="3295006446256079333">Овој диск</translation>
 <translation id="3295357220137379386">Уредот е зафатен</translation>
+<translation id="3305389145870741612">Процесот на форматирање може да потрае неколку секунди. Почекајте.</translation>
 <translation id="3307875152560779385">украински</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> се пакува...</translation>
 <translation id="3335337277364016868">Година на снимање</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">виртуелна машина</translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
 <translation id="5583664733673201137">Ширината на интерпункцијата е полна</translation>
+<translation id="5585912436068747822">Форматирањето не успеа</translation>
 <translation id="5596627076506792578">Повеќе опции</translation>
 <translation id="5602622065581044566">бугарски со фонетска тастатура</translation>
 <translation id="5604409170937514933">шведска</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">пенџапски</translation>
 <translation id="6224240818060029162">дански</translation>
 <translation id="6224253798271602650">Форматирање на <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Форматирањето успешно заврши!</translation>
 <translation id="6241349547798190358">холандски (Белгија)</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
 <translation id="6269630227984243955">малајски</translation>

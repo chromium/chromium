@@ -186,7 +186,6 @@
 <translation id="2915996080311180594">Дараа дахин эхлүүлэх</translation>
 <translation id="2916983411556218750">Таны Chrome-г бэлэн болгоцгооё</translation>
 <translation id="2926952073016206995">Chrome-д энэ сайтын камерын зөвшөөрөл шаардлагатай</translation>
-<translation id="2928420929544864228">Суулгаж дууслаа.</translation>
 <translation id="2945997411976714835">Суулгах үед алдаа гарлаа: Суулгагч явцыг эхлүүлж чадсангүй.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Сүлжээнд нэвтрэх - Chrome</translation>
 <translation id="2970681950995291301">Google Бүртгэлээ Chrome-с хасахын тулд Тохиргооны хуудсанд Chrome-с гарна уу</translation>
@@ -282,6 +281,7 @@
 <translation id="3892148308691398805">Текстийг хуулах</translation>
 <translation id="3941890832296813527">Суулгах үед алдаа гарлаа: Суулгагчийн файлын нэр буруу эсвэл дэмжигдээгүй.</translation>
 <translation id="395904275706073188">Хамгаалагдсан хуудсыг унших боломжгүй. Өөр хуудас туршиж үзнэ үү.</translation>
+<translation id="3967822245660637423">Татаж авч дууслаа</translation>
 <translation id="3968962723676998462"><ph name="ACCOUNT_EMAIL" /> бүртгэлдээ Chrome-н өгөгдлийг ашиглах, хадгалахын тулд нэвтрэх үгээ оруулна уу</translation>
 <translation id="3973161977468201858">Google Chrome таны Google Нууц үгний менежерийн өгөгдлийг устгахыг хүсэж байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="400161754580828648">Дэлгэцээ хуваалцахын тулд Системийн тохиргоонд Chrome-д дэлгэцийн үйлдэл бичихийг зөвшөөрнө үү.</translation>
@@ -316,7 +316,6 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Хувийн болгох болон бусад онцлогийг авахын тулд Chrome-г Веб, аппын үйл ажиллагаа болон Google-н холбосон үйлчилгээнүүдэд оруулна уу</translation>
 <translation id="4334241893986177674">Энэ дэлгэцийн агшнаас хайх</translation>
-<translation id="4334294535648607276">Татаж дууслаа.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" />-г Chrome-д нэмсэн</translation>
 <translation id="4344128547036991536">Таныг Google Lens-г нээхэд хуудасны гарчиг, URL болон PDF зэрэг контентыг Google рүү автоматаар илгээнэ. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Хувийн болгох онцлогийг авахын тулд Chrome-г Веб, аппын үйл ажиллагаанд оруулна уу</translation>
@@ -513,7 +512,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6319856120645568262">Таны орчин тойрныг зураглаж, гарыг тань тандахад Chrome-д зөвшөөрөл шаардлагатай</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" өргөтгөл таныг Chrome-д нэвтрэхийг хүсэж байна</translation>
 <translation id="6326175484149238433">Chrome-оос устга</translation>
-<translation id="6327105987658262776">Шинэчлэлт боломжгүй байна.</translation>
 <translation id="6334815226785304306">Google Chrome-г өгөгдмөл хөтчөө болгож ажлын хэсэг дээрээ бэхэлнэ үү</translation>
 <translation id="63540178978900677">Chrome таны өгөгдмөл хөтөч биш болсон байна. Chrome-г өгөгдмөл хөтөч болгох уу?</translation>
 <translation id="6360449101159168105">Энэ табыг идэвхгүй үед Chrome-г хурдан байлгахын тулд санах ойг чөлөөлсөн. Та энэ сайтыг идэвхгүй болохоос үргэлж хасахаар сонгох боломжтой.</translation>
@@ -579,7 +577,6 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="6999131147875565462">Chrome илүү хурдан ажилладаг бөгөөд JavaScript-г ашигладаг онцлогууд зориулалтын дагуу ажиллах ёстой</translation>
 <translation id="7011190694940573312">Үйлдлийн системийн энэ хувилбарыг дэмждэггүй тул суулгалт амжилтгүй боллоо.</translation>
 <translation id="7024536598735240744">Задлахад алдаа гарлаа: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Суулгахыг зогсоосон.</translation>
 <translation id="7025800014283535195">Та энд Chrome-н профайлууд хооронд сэлгэх боломжтой</translation>
 <translation id="7047386856539490735">Эдгээр илэрц хэрэг болж байна уу?</translation>
 <translation id="7051685429025310665">Та ойрын үед зочлоогүй байна. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан.</translation>
@@ -778,6 +775,7 @@ Google Chrome таны тохируулгыг дахин сэргээх боло
 <translation id="8999117580775242387">HTTPS боломжгүй үед Chrome танд сануулалгүйгээр аюултай холболт ашиглана</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chrome-н шинэчлэлт боломжтой байна}=1{Chrome-н шинэчлэлт боломжтой байна}other{Chromium-н шинэчлэлт # хоногийн турш боломжтой байсаар байна}}</translation>
 <translation id="9014771989710951291">Олон байгууллага Chrome-г удирддаг</translation>
+<translation id="9018218886431812662">Суулгаж дууссан</translation>
 <translation id="9066987883552592250">Chrome Канар дахь Gemini-г хаах</translation>
 <translation id="9090566250983691233">Chrome зарим файлыг яагаад блоклодог болохыг мэдэж авах</translation>
 <translation id="9106236359747881194">Хайх текстийг сонгоно уу</translation>

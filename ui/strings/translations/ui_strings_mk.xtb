@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Денес</translation>
 <translation id="2168039046890040389">Нагоре</translation>
 <translation id="2190355936436201913">(празно)</translation>
-<translation id="2192232475740621500">Користи ниска густина</translation>
 <translation id="2267918077332197517">Блокирај ги сите известувања од сајтов</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Допрете ги целите за допир на екранот.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Сакате ли да го повикате бројов од вашиот телефон?</translation>
 <translation id="2435457462613246316">Прикажи ја лозинката</translation>
 <translation id="24452542372838207">Прошири го известувањето</translation>
-<translation id="2445449901874883781">Користи висока густина</translation>
 <translation id="2448407890032181691">Областа на допир е преместена долу десно. Допрете тука.</translation>
 <translation id="2482878487686419369">Известувања</translation>
 <translation id="2497284189126895209">Сите датотеки</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">Во ред</translation>
 <translation id="6974053822202609517">Десно на лево</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Поставките за екран на апликацијата ќе се применат при следното рестартирање.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{Преостана 1 мин.}one{Преостана # мин.}other{Преостанаа # мин.}}</translation>
 <translation id="7252604552361840748">Најдете ја екстензијата погоре</translation>

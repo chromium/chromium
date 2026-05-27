@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">Berrikusi administratzailearen gidalerroak</translation>
 <translation id="158849752021629804">Sare lokala behar da</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> PB</translation>
+<translation id="1593594475886691512">Formateatzen…</translation>
 <translation id="1601786938618212857">Zip</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="162175252992296058">Portugaldarra, nazioarteko teklatu estatubatuarrarekin</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">Errusiarra, YaZHert teklatu fonetikoarekin</translation>
 <translation id="2143778271340628265">Eskuzko proxy-konfigurazioa</translation>
 <translation id="2148716181193084225">Gaur</translation>
+<translation id="2148756636027685713">Formateatzen amaitu da</translation>
 <translation id="2161573825856688200">Google-ko proiektua</translation>
 <translation id="2163152940313951844">Karaktere honek ez du balio: <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> saiakera gelditzen zaizkizu.</translation>
 <translation id="2663066752008346276">Birmaniarra, MyanSan teklatuarekin</translation>
 <translation id="2664412712123763093">Fitxategiaren kokapena</translation>
+<translation id="2665919335226618153">Errore bat gertatu da formateatzean.</translation>
 <translation id="2672394942808662069">Kanadar eleaniztuna</translation>
 <translation id="2707357721402813583">Irlandarra</translation>
 <translation id="2708477391501452176">BÉPO frantsesa</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">WEP darabilten sareak ez dira bateragarriak</translation>
 <translation id="3295006446256079333">Bolumen hau</translation>
 <translation id="3295357220137379386">Gailua okupatuta dago</translation>
+<translation id="3305389145870741612">Formateatzeko prozesuak pare bat segundo har ditzake. Mesedez, itxaron.</translation>
 <translation id="3307875152560779385">Ukrainarra</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" /> konprimatzen…</translation>
 <translation id="3335337277364016868">Grabaketaren urtea</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">makina birtuala</translation>
 <translation id="5583640892426849032">Atzera tekla</translation>
 <translation id="5583664733673201137">Puntuazio-zabalera osoa da</translation>
+<translation id="5585912436068747822">Ezin izan da formateatu</translation>
 <translation id="5596627076506792578">Aukera gehiago</translation>
 <translation id="5602622065581044566">Bulgariarra, teklatu fonetikoarekin</translation>
 <translation id="5604409170937514933">Suediarra</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">Punjabtarra</translation>
 <translation id="6224240818060029162">Daniarra</translation>
 <translation id="6224253798271602650">Formateatu <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">Behar bezala amaitu da</translation>
 <translation id="6241349547798190358">Nederlandarra (Belgika)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
 <translation id="6269630227984243955">Malaysiarra</translation>

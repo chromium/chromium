@@ -183,7 +183,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="2915996080311180594">Riavvia in seguito</translation>
 <translation id="2916983411556218750">Preparati a usare Chrome</translation>
 <translation id="2926952073016206995">Chrome deve avere l'autorizzazione di accesso alla fotocamera per questo sito</translation>
-<translation id="2928420929544864228">Installazione completata.</translation>
 <translation id="2945997411976714835">Errore di installazione: impossibile avviare il processo di installazione.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Accesso rete - Chrome</translation>
 <translation id="2970681950995291301">Per rimuovere il tuo Account Google da Chrome, esci da Chrome nella pagina Impostazioni</translation>
@@ -278,6 +277,7 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3941890832296813527">Errore di installazione: il nome file del programma di installazione non è valido o non è supportato.</translation>
 <translation id="395904275706073188">Le pagine protette non possono essere lette. Prova con un'altra pagina.</translation>
+<translation id="3967822245660637423">Download completato</translation>
 <translation id="3968962723676998462">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="3973161977468201858">Google Chrome vuole eliminare i tuoi dati del Gestore delle password di Google. Digita la tua password di Windows per consentire l'operazione.</translation>
 <translation id="400161754580828648">Per condividere lo schermo, consenti la Registrazione dello schermo per Chrome nelle Impostazioni di sistema.</translation>
@@ -312,7 +312,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Per accedere alla personalizzazione e ad altre funzionalità, includi Chrome in Attività web e app e nei servizi Google collegati</translation>
 <translation id="4334241893986177674">Cerca questo screenshot</translation>
-<translation id="4334294535648607276">Download completato.</translation>
 <translation id="4343195214584226067">L'estensione <ph name="EXTENSION_NAME" /> è stata aggiunta a Chrome</translation>
 <translation id="4344128547036991536">Quando apri Google Lens, il titolo della pagina, l'URL e i contenuti, inclusi i PDF, verranno inviati automaticamente a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">Per accedere alla personalizzazione, includi Chrome in Attività web e app</translation>
@@ -505,7 +504,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6319856120645568262">Chrome deve avere l'autorizzazione per mappare l'ambiente circostante e monitorare le tue mani</translation>
 <translation id="6321592572353357376">L'estensione "<ph name="EXTENSION_NAME" />" richiede l'accesso a Chrome</translation>
 <translation id="6326175484149238433">Rimuovi da Chrome</translation>
-<translation id="6327105987658262776">Nessun aggiornamento disponibile.</translation>
 <translation id="6334815226785304306">Imposta Google Chrome come browser predefinito e aggiungilo alla barra delle applicazioni</translation>
 <translation id="63540178978900677">Chrome non è più il browser predefinito. Impostare Chrome come browser predefinito?</translation>
 <translation id="6360449101159168105">Mentre questa scheda non era attiva, la memoria è stata liberata per mantenere Chrome veloce. Puoi scegliere di escludere sempre il sito dall'inattività.</translation>
@@ -571,7 +569,6 @@ Se questa pagina non funziona come previsto, prova a consentire l'ottimizzazione
 <translation id="6999131147875565462">Chrome funziona più velocemente e le funzionalità che utilizzano JavaScript dovrebbero avere il comportamento previsto</translation>
 <translation id="7011190694940573312">Installazione non riuscita perché questa versione del sistema operativo non è supportata.</translation>
 <translation id="7024536598735240744">Errore decompressione: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">Installazione interrotta.</translation>
 <translation id="7025800014283535195">Puoi passare da un profilo Chrome all'altro qui</translation>
 <translation id="7047386856539490735">Questi risultati sono utili?</translation>
 <translation id="7051685429025310665">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" />.</translation>
@@ -771,6 +768,7 @@ Non è possibile salvare nuovi preferiti nel tuo account finché non ne elimini 
 <translation id="8999117580775242387">Quando HTTPS non è disponibile, Chrome utilizza una connessione non sicura senza avvisarti</translation>
 <translation id="8999208279178790196">{0,plural, =0{È disponibile un aggiornamento di Chrome}=1{È disponibile un aggiornamento di Chrome}other{È disponibile un aggiornamento di Chrome da # giorni}}</translation>
 <translation id="9014771989710951291">Più organizzazioni gestiscono Chrome</translation>
+<translation id="9018218886431812662">Installazione completata</translation>
 <translation id="9066987883552592250">Chiudi Gemini in Chrome Canary</translation>
 <translation id="9090566250983691233">Scopri perché Chrome blocca alcuni file</translation>
 <translation id="9106236359747881194">Seleziona il testo da cercare</translation>

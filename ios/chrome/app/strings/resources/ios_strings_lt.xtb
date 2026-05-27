@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Prisijungta kaip <ph name="USER" /></translation>
 <translation id="1149401351239820326">Galiojimo laiko pabaigos mėnuo</translation>
 <translation id="1150989369772528668">Kalendorius</translation>
+<translation id="1161444134753003495">Prisijungti</translation>
 <translation id="1161663161838091892">Jei norite tęsti, sinchronizuokite skirtukus ir istoriją</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} kredito kortelė}one{{count} kredito kortelė}few{{count} kredito kortelės}many{{count} kredito kortelės}other{{count} kredito kortelių}}</translation>
 <translation id="1164891049599601209">Įvesta apgaulingoje svetainėje</translation>
@@ -183,6 +184,7 @@
 <translation id="1605658421715042784">Kopijuoti vaizdą</translation>
 <translation id="1606899876897213121">Uždaryti naujausios veiklos suvestinę</translation>
 <translation id="1612754831519568745">Saugus naršymas šiuo metu išjungtas. Gaukite apsaugą nuo pavojingų svetainių, atsisiuntimų ir plėtinių.</translation>
+<translation id="1617300545081951343">Taikomos mūsų <ph name="BEGIN_LINK" />sąlygos<ph name="END_LINK" />, <ph name="BEGIN_LINK" />Korėjos vietovės informacijos sąlygos<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />privatumo pranešimas<ph name="END_LINK" />. „Gemini“ yra DI ir gali klysti, įskaitant su žmonėmis susijusias klaidas.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Pasirinkite „Pridėti prie „Google“ kalendoriaus“ arba „Pridėti prie „Apple Calendar“.</translation>
 <translation id="1629162218487290695">Patvirtinkite savo tapatybę…</translation>
@@ -604,6 +606,7 @@
 <translation id="3119874402040566234">Būsite atjungti, o naršymo duomenys bus ištrinti</translation>
 <translation id="3124568093781685165">Bendrinkite slaptažodžius su šeimos nariais</translation>
 <translation id="3130863904455712965">Istorija ir daugiau</translation>
+<translation id="3130973487775218359">Žiūrėkite: <ph name="BEGIN_LINK" />„5 dalykai, kuriuos būtina žinoti apie generatyvinį DI“<ph name="END_LINK" /></translation>
 <translation id="3132345256151444894">Išsaugokite kompensavimo numerį</translation>
 <translation id="3132584647087998639">Duomenų importavimas</translation>
 <translation id="313283613037595347">Kurti naują inkognito skirtuką</translation>
@@ -822,6 +825,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Naujas šios svetainės slaptažodis}one{Nauji šios svetainės slaptažodžiai}few{Nauji šios svetainės slaptažodžiai}many{Nauji šios svetainės slaptažodžiai}other{Nauji šios svetainės slaptažodžiai}}</translation>
 <translation id="3933372629914873850">Prisijungsite prie svetainės <ph name="URL" /></translation>
 <translation id="3934905113567851655">Dydį pakeisite suimdami</translation>
+<translation id="393732545649378031">Paskyra</translation>
 <translation id="3940195383040445971">Stebėti kainas skirtukuose</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Uždaryti {COUNT} skirtuką}one{Uždaryti {COUNT} skirtuką}few{Uždaryti {COUNT} skirtukus}many{Uždaryti {COUNT} skirtuko}other{Uždaryti {COUNT} skirtukų}}</translation>
 <translation id="3946483119107054883">Atsisiųsti kaip CSV failą</translation>
@@ -932,6 +936,7 @@
 <translation id="4306349443295056740">OCSP pasirašymas</translation>
 <translation id="4309403553630140242">Norėdami gauti daugiau informacijos, dukart palieskite.</translation>
 <translation id="4310738531374808763">Tinkinkite pagrindinį puslapį</translation>
+<translation id="4316794575239200608">Nei jūsų pokalbių su „Gemini“, nei <ph name="BEGIN_LINK" />„Google Workspace“ duomenų<ph name="END_LINK" /> neperžiūrės tikrinantys žmonės, ir šis turinys nebus naudojamas generatyviniams DI modeliams tobulinti.</translation>
 <translation id="4320848494125124980">Naujausi</translation>
 <translation id="4322394346347055525">Uždaryti kitus skirtukus</translation>
 <translation id="4323122584592971322">OID.</translation>
@@ -1017,6 +1022,7 @@
 <translation id="4631335160486397366">Pakartotinai naudojamų slaptažodžių: <ph name="COUNT" /></translation>
 <translation id="4632655012900268062">Tinkinti korteles</translation>
 <translation id="4634124774493850572">Naudoti slaptažodį</translation>
+<translation id="4634633632339959267">Pokalbiai yra peržiūrimi ir naudojami siekiant tobulinti „Google“ DI. <ph name="BEGIN_LINK" />Sužinokite apie pasirinkimus.<ph name="END_LINK" /> <ph name="BEGIN_LINK" />Informacija apie jūsų vietovę<ph name="END_LINK" /> taip pat saugoma su jūsų veikla.</translation>
 <translation id="4636930964841734540">Informacija</translation>
 <translation id="4641425577292284174">Sužinokite, ar turite saugiausius nustatymus, ar reikia ką nors peržiūrėti</translation>
 <translation id="4642472735733036929">Kainų stebėjimas sustabdytas</translation>
@@ -1470,6 +1476,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6140948187512243695">Rodyti išsamią informaciją</translation>
 <translation id="6144589619057374135">Atidaryti ${url} inkognito režimu</translation>
 <translation id="6146563240635539929">Vaizdo įrašai</translation>
+<translation id="6148392728478209113">Ar vis dar naudojate funkciją „Live“? Palieskite mygtuką „Live“, kad galėtumėte toliau kalbėti su „Gemini“</translation>
 <translation id="6151006591088192882">Atrakinti inkognito skirtukus naudojant <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Neaktyvu</translation>
 <translation id="6152406514676263192">Sinchronizuokite, kad būtų pateikiamas labiausiai su jūsų pomėgiais susijęs turinys.</translation>
@@ -1563,6 +1570,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="6435236283694032571">Pridėti prie skaitymo sąrašo</translation>
 <translation id="6435307030888827407">Likti atsijungus</translation>
 <translation id="6436318499800111867">Bendrinama su manimi <ph name="SHARED_WITH_ME_DATE" /></translation>
+<translation id="6442327260099531031"><ph name="BEGIN_LINK" />Gerbkite kitų privatumą<ph name="END_LINK" /> ir paprašykite leidimo prieš įrašydami ar įtraukdami į pokalbį „Live“ režimu.</translation>
 <translation id="6442697326824312960">Atsegti skirtuką</translation>
 <translation id="6443118737398455446">Netinkama galiojimo pabaigos data</translation>
 <translation id="6444435711855078002">Daugiau parinkčių</translation>
@@ -1805,6 +1813,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7253951228444156601">Tikrinami slaptažodžiai…</translation>
 <translation id="7261217796641151584">Grupės bendrinimas</translation>
 <translation id="7266578100016339897">Tai padės išlaikyti tvarką. Galite bet kada pakeisti nustatymuose.</translation>
+<translation id="7270491814777319521">Taikomos <ph name="BEGIN_LINK" />„Google“ sąlygos<ph name="END_LINK" /> ir <ph name="BEGIN_LINK" />„Gemini Apps“ privatumo pranešimas<ph name="END_LINK" />. „Gemini“ yra DI ir gali klysti, įskaitant su žmonėmis susijusias klaidas.</translation>
 <translation id="7272437679830969316">Nepavyko patvirtinti tapatybės. Slaptažodis nenukopijuotas.</translation>
 <translation id="728025568708172005">Pradėti turą</translation>
 <translation id="7280980607183752256">Nepavyko importuoti šio failo</translation>
@@ -1863,6 +1872,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="7468373585447318060">Sužinokite apie sumažintą stebimų produktų kainą.</translation>
 <translation id="746872191028309255">Pirkite tai, ką matote, naudodami fotoaparatą arba nuotraukų galeriją.</translation>
 <translation id="7471557245617580330">Kurti naują skirtuką</translation>
+<translation id="7473555040328423550">Pridėti skirtuką</translation>
 <translation id="7476548258282096076">Šioje kortelėje rodomi dažniausiai lankomos svetainės.</translation>
 <translation id="7484645889979462775">Niekada šiam puslapiui</translation>
 <translation id="7486006552035434095">Įrenginių sinchronizavimas</translation>
@@ -2124,6 +2134,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="8345328955902001853">{count,plural, =1{Atlikite dar 1 užduotį, kad pasiektumėte aukštesnį lygį}one{Atlikite dar {count} užduotį, kad pasiektumėte aukštesnį lygį}few{Atlikite dar {count} užduotis, kad pasiektumėte aukštesnį lygį}many{Atlikite dar {count} užduoties, kad pasiektumėte aukštesnį lygį}other{Atlikite dar {count} užduočių, kad pasiektumėte aukštesnį lygį}}</translation>
 <translation id="8348530355586151720">Palieskite trijų taškų meniu</translation>
 <translation id="8349305172487531364">Žymių juosta</translation>
+<translation id="8360164927489392419">Jūsų sąveikų su funkcija „Live“ įrašai ir turinys, kurį bendrinate su šia funkcija, išsaugomi ir apdorojami pagal <ph name="BEGIN_LINK" />„Gemini Apps“ privatumo pranešimą<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8361189290032177785">{count,plural, =1{Importuota {count} žymė}one{Importuota {count} žymė}few{Importuotos {count} žymės}many{Importuota {count} žymės}other{Importuota {count} žymių}}</translation>
 <translation id="8363484128299778310">Laikinas atkūrimas kilus problemų</translation>
 <translation id="8364563001733875155">Jei norite pakeisti PIN kodą, pirmiausia nustatykite slaptažodį įrenginyje.</translation>

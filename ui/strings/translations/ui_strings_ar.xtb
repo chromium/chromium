@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">اليوم</translation>
 <translation id="2168039046890040389">صفحة  إلى أعلى</translation>
 <translation id="2190355936436201913">(فارغ)</translation>
-<translation id="2192232475740621500">استخدام كثافة منخفضة</translation>
 <translation id="2267918077332197517">حظر جميع الإشعارات الواردة من هذا الموقع</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">انقر على أهداف اللمس على شاشتك.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">هل تريد الاتصال بهذا الرقم من هاتفك؟</translation>
 <translation id="2435457462613246316">عرض كلمة المرور</translation>
 <translation id="24452542372838207">توسيع الإشعار</translation>
-<translation id="2445449901874883781">استخدام كثافة عالية</translation>
 <translation id="2448407890032181691">تم نقل مساحة اللمس إلى أسفل يمين الشاشة. يُرجى النقر هنا.</translation>
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="2497284189126895209">الملفّات كلّها</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6974053822202609517">من اليمين لليسار</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">ستدخل إعدادات عرض التطبيق حيز التنفيذ عند إعادة تشغيله.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{يتبقى دقيقة واحدة}zero{يتبقى # من الدقائق}two{يتبقى دقيقتان (#)}few{يتبقى # دقائق}many{يتبقى # دقيقة}other{يتبقى # من الدقائق}}</translation>
 <translation id="7252604552361840748">البحث عن الإضافات الموضَّحة أعلاه</translation>

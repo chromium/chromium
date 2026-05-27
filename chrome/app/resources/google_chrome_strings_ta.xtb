@@ -183,7 +183,6 @@
 <translation id="2915996080311180594">பின்னர் மீண்டும் தொடங்கு</translation>
 <translation id="2916983411556218750">உங்கள் Chromeமைத் தயார்செய்வோம்</translation>
 <translation id="2926952073016206995">இந்தத் தளத்தை அணுக, Chromeமிற்கு கேமரா அணுகல் தேவை</translation>
-<translation id="2928420929544864228">நிறுவப்பட்டது.</translation>
 <translation id="2945997411976714835">நிறுவல் பிழை: நிறுவியின் செயல்பாடு தொடங்கவில்லை.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - நெட்வொர்க் உள்நுழைவு - Chrome</translation>
 <translation id="2970681950995291301">Chromeமில் இருந்து உங்கள் Google கணக்கை அகற்ற, அமைப்புகள் பக்கத்தில் Chromeமில் இருந்து வெளியேறவும்</translation>
@@ -279,6 +278,7 @@
 <translation id="3892148308691398805">உரையை நகலெடு</translation>
 <translation id="3941890832296813527">நிறுவல் பிழை: நிறுவியின் ஃபைல் பெயர் தவறானது அல்லது ஆதரிக்கப்படவில்லை.</translation>
 <translation id="395904275706073188">பாதுகாக்கப்பட்ட பக்கங்களை ரீட் செய்ய முடியாது. வேறு பக்கத்தை முயலவும்.</translation>
+<translation id="3967822245660637423">பதிவிறக்கம் முடிந்தது</translation>
 <translation id="3968962723676998462">உங்கள் கணக்கில் (<ph name="ACCOUNT_EMAIL" />) உள்ள Chrome தரவைப் பயன்படுத்தவும் சேமிக்கவும் உங்கள் கடவுச்சொற்றொடரை வழங்கவும்</translation>
 <translation id="3973161977468201858">உங்கள் Google Password Managerரில் உள்ள தரவை Google Chrome நீக்க விரும்புகிறது. இதை அனுமதிக்க உங்கள் Windows கடவுச்சொல்லை டைப் செய்யவும்.</translation>
 <translation id="400161754580828648">ஸ்கிரீனைப் பகிர, சிஸ்டம் அமைப்புகளில் Chromeமிற்கு ஸ்கிரீன் ரெக்கார்டிங்கை அனுமதிக்கவும்.</translation>
@@ -313,7 +313,6 @@
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">பிரத்தியேகமாக்குதலையும் பிற அம்சங்களையும் பெற, இணையம் மற்றும் ஆப்ஸ் செயல்பாடு மற்றும் இணைக்கப்பட்ட Google சேவைகளில் Chromeமைச் சேர்க்கவும்</translation>
 <translation id="4334241893986177674">இந்த ஸ்கிரீன்ஷாட்டைத் தேடும்</translation>
-<translation id="4334294535648607276">பதிவிறக்கம் முடிந்தது.</translation>
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> நீட்டிப்பு Chrome இல் சேர்க்கப்பட்டது</translation>
 <translation id="4344128547036991536">Google Lensஸைத் திறக்கும்போது பக்கத் தலைப்பு, URL, PDFகள் உள்ளிட்ட உள்ளடக்கம் ஆகியவை தானாகவே Googleளுக்கு அனுப்பப்படும். <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">பிரத்தியேகமாக்குதலைப் பெற, இணையம் மற்றும் ஆப்ஸ் செயல்பாட்டில் Chromeமைச் சேர்க்கவும்</translation>
@@ -506,7 +505,6 @@
 <translation id="6319856120645568262">உங்களைச் சுற்றி இருப்பவற்றை மேப் செய்வதற்கும் உங்கள் கைகளை டிராக் செய்வதற்கும் Chromeமிற்கு அனுமதி தேவை</translation>
 <translation id="6321592572353357376">"<ph name="EXTENSION_NAME" />" நீட்டிப்பைப் பயன்படுத்த Chromeமில் நீங்கள் உள்நுழைய வேண்டும்</translation>
 <translation id="6326175484149238433">Chromeமிலிருந்து அகற்று</translation>
-<translation id="6327105987658262776">புதுப்பிப்புகள் எதுவும் இல்லை.</translation>
 <translation id="6334815226785304306">Google Chromeமை இயல்பு பிரவுசராக்கி செயல் பட்டியில் பின் செய்யும்</translation>
 <translation id="63540178978900677">Chrome இப்போது உங்கள் இயல்பு பிரவுசராக இல்லை. Chromeமை இயல்பு பிரவுசராக அமைக்கவா?</translation>
 <translation id="6360449101159168105">Chrome தொடர்ந்து வேகமாக இயங்குவதற்கு, இந்தப் பக்கம் செயலில் இல்லாதபோது நினைவகம் காலியாக்கப்பட்டது. இந்தத் தளத்தை எப்போதும் செயலற்ற நிலையில் இருந்து விலக்க நீங்கள் தேர்வுசெய்யலாம்.</translation>
@@ -572,7 +570,6 @@
 <translation id="6999131147875565462">Chrome வேகமாக இயங்கும், அத்துடன் JavaScriptடைப் பயன்படுத்தும் அம்சங்கள் வடிவமைக்கப்பட்டுள்ளபடி செயல்படும்.</translation>
 <translation id="7011190694940573312">ஆப்ரேட்டிங் சிஸ்டத்தின் இந்தப் பதிப்பு ஆதரிக்கப்படாததால் நிறுவ முடியவில்லை.</translation>
 <translation id="7024536598735240744">தொகுக்கப்படாத பிழை: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">நிறுவல் நிறுத்தப்பட்டது.</translation>
 <translation id="7025800014283535195">இங்கே Chrome சுயவிவரங்களுக்கு இடையே மாறலாம்</translation>
 <translation id="7047386856539490735">இந்த முடிவுகள் பயனுள்ளவையாக உள்ளனவா?</translation>
 <translation id="7051685429025310665">இந்தத் தளத்தை நீங்கள் சமீபத்தில் பார்க்கவில்லை. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ஆகிய அனுமதிகளை Chrome அகற்றிவிட்டது.</translation>
@@ -773,6 +770,7 @@
 <translation id="8999117580775242387">HTTPS கிடைக்காதபோது, Chrome உங்களை எச்சரிக்காமலேயே பாதுகாப்பற்ற இணைப்பைப் பயன்படுத்தும்</translation>
 <translation id="8999208279178790196">{0,plural, =0{Chromeமிற்கான புதுப்பிப்பு உள்ளது}=1{Chromeமிற்கான புதுப்பிப்பு உள்ளது}other{Chromeமிற்கான புதுப்பிப்பு வந்து # நாட்களாகிறது}}</translation>
 <translation id="9014771989710951291">Chromeமைப் பல நிறுவனங்கள் நிர்வகிக்கின்றன</translation>
+<translation id="9018218886431812662">நிறுவப்பட்டது</translation>
 <translation id="9066987883552592250">Chrome Canaryயில் Geminiயை மூடும்</translation>
 <translation id="9090566250983691233">சில ஃபைல்களை Chrome ஏன் தடுக்கிறது என்பதைத் தெரிந்துகொள்ளுங்கள்</translation>
 <translation id="9106236359747881194">தேட வார்த்தையைத் தேர்ந்தெடுக்கவும்</translation>

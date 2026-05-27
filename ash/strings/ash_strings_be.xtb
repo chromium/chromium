@@ -14,6 +14,7 @@
 <translation id="1037492556044956303">Прылада "<ph name="DEVICE_NAME" />" дададзена</translation>
 <translation id="1038106730571050514">Паказаць прапановы</translation>
 <translation id="1047017786576569492">частка экрана</translation>
+<translation id="104710386808485638">Перазапусціць Linux?</translation>
 <translation id="1052916631016577720">Праверка элементаў</translation>
 <translation id="1056775291175587022">Няма сетак</translation>
 <translation id="1056898198331236512">Папярэджанне</translation>
@@ -29,6 +30,7 @@
 <translation id="1073899992769346247">Замяніце або зарадзіце акумулятар</translation>
 <translation id="1081015718268701546">Праграмы Linux цяпер не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="108486256082349153">Сотавая прылада: <ph name="ADDRESS" /></translation>
+<translation id="1085697365578766383">Памылка падчас запуску віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="1088231044944504242">Пошук: <ph name="CATEGORY" />, файлы, праграмы і не толькі. Для пераходу паміж праграмамі выкарыстоўвайце клавішы са стрэлкамі.</translation>
 <translation id="1093645050124056515">Ctrl + Alt + стрэлка ўніз</translation>
 <translation id="1094756674036064790">Выключыць Bluetooth?</translation>
@@ -55,6 +57,7 @@
 <translation id="1173268871892601910">Для доступу ў Менеджар пароляў ChromeOS вам трэба пацвердзіць сваю асобу</translation>
 <translation id="1175572348579024023">Прагартаць</translation>
 <translation id="1175944128323889279">Бягучы ўзровень зараду акумулятара <ph name="BATTERY_PERCENTAGE" />%, застаецца <ph name="TIME" /></translation>
+<translation id="1177863135347784049">Карыстальніцкая</translation>
 <translation id="1178581264944972037">Прыпыніць</translation>
 <translation id="1179776263021875437">Спыніць канцэнтрацыю ўвагі на задачы</translation>
 <translation id="1180117276105724040">Ідзе аднаўленне акон з папярэдняга сеанса…</translation>
@@ -82,6 +85,7 @@
 <translation id="1240638468526743569">адна з праграм</translation>
 <translation id="1242198791279543032">Апавяшчэнні адключаны</translation>
 <translation id="1242883863226959074">прыладзе</translation>
+<translation id="1244265436519979884">Ідзе аднаўленне кантэйнера Linux</translation>
 <translation id="1245476784081715330">Выдатная работа!</translation>
 <translation id="124678866338384709">Закрыць бягучую ўкладку</translation>
 <translation id="1246890715821376239">Праграмы, якія не падтрымліваюцца</translation>
@@ -108,8 +112,10 @@
 <translation id="1293699935367580298">Esc</translation>
 <translation id="1294046132466831888">Адкрыць Агляд</translation>
 <translation id="129469256578833241">Вярнуцца да зводкі</translation>
+<translation id="1294807885394205587">Гэты працэс можа заняць некалькі хвілін. Запускаецца менеджар кантэйнераў.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Вы ў любы момант можаце націснуць <ph name="LAUNCHER_KEY_NAME" /> + G</translation>
+<translation id="130491383855577612">Файлы і праграмы Linux заменены</translation>
 <translation id="1306549533752902673">РЭКАМЕНДАВАНЫЯ ПРАГРАМЫ</translation>
 <translation id="1310396869741602366">Змяніць тон</translation>
 <translation id="1312604459020188865">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
@@ -118,6 +124,7 @@
 <translation id="132346741904777634">Акно перадпрагляду камеры прывязана да левага верхняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
 <translation id="132415371743256095">Закрыць працоўны стол "<ph name="DESK_NAME" />" і вокны</translation>
 <translation id="1333308631814936910">Падключаны дысплэй "<ph name="DISPLAY_NAME" />"</translation>
+<translation id="1338950911836659113">Ідзе выдаленне...</translation>
 <translation id="1340378040547539434">Паменшыць маштаб старонкі</translation>
 <translation id="1341651618736211726">Меню з пашырэннем</translation>
 <translation id="1341926407152459446">Выкарыстоўваць прыладу "<ph name="DEVICE_NAME" />" у якасці аўдыяўвахода і аўдыявыхаду</translation>
@@ -161,6 +168,7 @@
 <translation id="1469148162491666137">Доступ атрымаюць праграмы "<ph name="APP1_NAME" />", "<ph name="APP2_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазволы выкарыстоўваць мікрафон і камеру. Магчыма, трэба будзе абнавіць вэб-старонку або перазапусціць праграму.</translation>
 <translation id="147310119694673958">Акумулятар тэлефона: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="1475340220124222168">Уключыць/выключыць хот-спот. Хот-спот уключаны, падключана 1 прылада.</translation>
+<translation id="1476595624592550506">Змяніце пароль</translation>
 <translation id="1479685784053141667">Стварыць кантакт</translation>
 <translation id="1479909375538722835">Рухомае меню спецыяльных магчымасцей</translation>
 <translation id="1483493594462132177">Адправіць</translation>
@@ -176,6 +184,7 @@
 <translation id="1521655867290435174">Табліцы Google</translation>
 <translation id="1523032696246003">Акумулятар зараджаны на <ph name="BATTERY_PERCENTAGE" />% | Да поўнай зарадкі застаецца <ph name="TIME" /></translation>
 <translation id="1525508553941733066">АДХІЛІЦЬ</translation>
+<translation id="152629053603783244">Перазапусціць Linux</translation>
 <translation id="1526448108126799339">Адкрыць новую ўкладку ў новым акне</translation>
 <translation id="1528259147807435347">Зменена на мінулым тыдні</translation>
 <translation id="1536604384701784949">Каб мець магчымасць выкарыстоўваць уліковы запіс <ph name="USER_EMAIL_ADDRESS" />, вам трэба спачатку выйсці з усіх уліковых запісаў. Для гэтага вярніцеся назад, націснуўшы "Скасаваць". Потым адкрыйце панэль стану, націснуўшы на гадзіннік, а на ёй выберыце "Выйсці". Затым увайдзіце ва ўліковы запіс <ph name="USER_EMAIL_ADDRESS_2" /> зноў.</translation>
@@ -194,11 +203,15 @@
 <translation id="1571697193564730395">Уключыць/выключыць рэжым "Не турбаваць". <ph name="STATE_TEXT" /></translation>
 <translation id="1574691582236909946">Выбраны маркер з левага краю, для перамяшчэння выкарыстоўвайце клавішы са стрэлкамі</translation>
 <translation id="1576623706766186887">Паменшыць маштаб пры ўключанай лупе</translation>
+<translation id="1578558981922970608">Прымусова завяршыць</translation>
 <translation id="1582946770779745370">Гульнявая панэль даступная. Вы можаце адкрыць яе ў любы час, націснуўшы <ph name="LAUNCHER_KEY_NAME" /> + Shift + Escape, а потым <ph name="LAUNCHER_KEY_NAME" /> + G.</translation>
 <translation id="1586324912145647027">Перайсці да аднаго з працоўных сталоў (1-8)</translation>
 <translation id="158838227375272121">Вэб-сайт Google Класа</translation>
 <translation id="1589090746204042747">Атрымліваць доступ да ўсіх вашых дзеянняў у гэтым сеансе</translation>
+<translation id="1592074621872221573">Сайт <ph name="MANAGER" /> выключыў адладку ADB, што прывядзе да скіду налад прылады <ph name="DEVICE_TYPE" />. Зрабіце рэзервовыя копіі файлаў перад яе перазапускам.</translation>
+<translation id="1595492813686795610">Ідзе абнаўленне сістэмы Linux</translation>
 <translation id="1597880963776148053">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. Замацаваныя і адкрытыя праграмы знаходзяцца на панэлі доступу ўнізе экрана. Каб перайсці да элементаў на панэлі, націсніце Alt + Shift + L, а потым Tab.</translation>
+<translation id="1602085790802918092">Ідзе запуск віртуальнай машыны</translation>
 <translation id="1602874809115667351"><ph name="LAUNCHER_KEY_NAME" /> + стрэлка ўніз</translation>
 <translation id="1604857178818051494">Прыпыніць медыязмесціва</translation>
 <translation id="1607312127821884567">Не наладжваць прагляд праграм з тэлефона</translation>
@@ -207,12 +220,12 @@
 <translation id="1612679292338846734">Калі гэтыя функцыі ўключаны, тэкст, які вы ўводзіце, змесціва дакументаў, а таксама URL-адрас вэб-старонкі могуць адпраўляцца на серверы AI ад Google. <ph name="LINK_TO_SERVICE_TERMS" /> рэгулююць, як на аснове гэтых даных ствараюцца прапановы, падсумаванні тэкстаў і адказы на пытанні, а таксама выконваецца паляпшэнне прадукту. Пры выкарыстанні гэтых функцый не ўключайце ў тэксты асабістую і канфідэнцыяльную інфармацыю.</translation>
 <translation id="1619879934359211038">Не ўдалося падключыцца да Google Play. Праверце падключэнне да сеткі і паўтарыце спробу. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="1620510694547887537">Камера</translation>
+<translation id="1621831347985899379">Даныя на прыладзе "<ph name="DEVICE_TYPE" />" будуць выдалены</translation>
 <translation id="1623768535032616219">Згарнуць Google Клас</translation>
 <translation id="163032029566320584"><ph name="UNAVAILABLE_DLC" />: недаступна.</translation>
 <translation id="1632985212731562677">Доступ праз пераключальнікі можна выключыць у раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="1637505162081889933">Прылад: <ph name="NUM_DEVICES" /></translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
-<translation id="1642895994345928121">На прыладзе не хапае месца, каб адкрыць гэту праграму. Вызваліце месца і паўтарыце спробу.</translation>
 <translation id="1647986356840967552">Папярэдняя старонка</translation>
 <translation id="1651914502370159744">Адкрыць старонку гісторыі</translation>
 <translation id="1668469839109562275">Убудаваная сетка VPN</translation>
@@ -254,6 +267,7 @@
 <translation id="1755408179247123630">Уключыць функцыю "Чытаць уголас"?</translation>
 <translation id="1755556344721611131">Праграма для дыягностыкі</translation>
 <translation id="1756833229520115364">Не ўдалося захаваць шаблон: акон або ўкладак занадта шмат.</translation>
+<translation id="1757132445735080748">Каб завяршыць наладжванне Linux, абнавіце Chrome OS Flex і паўтарыце спробу.</translation>
 <translation id="1757857692711134412">Выключана да захаду сонца</translation>
 <translation id="1763084151787818322">Іншыя дзеянні</translation>
 <translation id="1768138163688567246">Закрыць пошук змесціва на экране</translation>
@@ -288,6 +302,7 @@
 <translation id="1879018240766558464">Вокны ў рэжыме інкогніта зараз не падтрымліваюцца. Іншыя праграмы будуць захаваны.</translation>
 <translation id="1882814835921407042">Мабільная сетка адсутнічае</translation>
 <translation id="1882897271359938046">Выконваецца адлюстраванне на дысплэй <ph name="DISPLAY_NAME" /></translation>
+<translation id="1884705339276589024">Змяненне памеру дыска Linux</translation>
 <translation id="1885785240814121742">Разблакіроўка па адбітку пальца</translation>
 <translation id="1891362123137972260">Вельмі мала месца на дыску. Вызваліце месца.</translation>
 <translation id="1894024878080591367">Змяніце налады, каб выкарыстоўваць для гульні клавіятуру</translation>
@@ -301,6 +316,7 @@
 <translation id="1925320505152357008">менш за 1 хв</translation>
 <translation id="1928739107511554905">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook, выкарыстоўваючы сэнсарны экран.</translation>
 <translation id="1929331825127010451">Вярнуцца да пытання</translation>
+<translation id="1937774647013465102">Не ўдалося імпартаваць кантэйнер з тыпам архітэктуры "<ph name="ARCHITECTURE_CONTAINER" />" на прыладу з тыпам "<ph name="ARCHITECTURE_DEVICE" />". Можна паспрабаваць аднавіць гэты кантэйнер на іншай прыладзе або атрымаць доступ да файлаў у кантэйнеры, адкрыўшы яго вобраз у праграме "Файлы".</translation>
 <translation id="1946615340060705561">Каб адпусціць, націсніце "c"</translation>
 <translation id="1948405482892809935">Пераключыцца на наступнага карыстальніка</translation>
 <translation id="1954252331066828794">Запіс экрана завершаны</translation>
@@ -328,6 +344,8 @@
 <translation id="2034971124472263449">Усё роўна захаваць</translation>
 <translation id="2041220428661959602">Узровень зараду: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">Зараз спалучэнне клавіш для дзеяння "<ph name="SIX_PACK_KEY_NAME" />" выключана</translation>
+<translation id="204706822916043810">Ідзе праверка наяўнасці віртуальнай машыны</translation>
+<translation id="2048554637254265991">Памылка запуску менеджара кантэйнераў. Паўтарыце спробу.</translation>
 <translation id="2048653237708779538">Дзеянне недаступнае</translation>
 <translation id="2049240716062114887">Назва працоўнага стала зменена на наступную: <ph name="DESK_NAME" /></translation>
 <translation id="2064048859448024834">Паказваецца папярэдні прагляд для камеры</translation>
@@ -358,6 +376,7 @@
 <translation id="216955976692983107">Размясціць акно ў правай частцы экрана</translation>
 <translation id="2185166372312820725">Вярнуцца на папярэднюю ўкладку</translation>
 <translation id="2185444992308415167">Перайсці па ўкладках 1-8</translation>
+<translation id="2192232475740621500">Выкарыстоўваць нізкую шчыльнасць</translation>
 <translation id="2195732836444333448">Не хапае рэсурсаў. Вярніцеся крыху пазней.</translation>
 <translation id="2198625180564913276">Ідзе дадаванне профілю. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="219905428774326614">Панэль запуску, усе праграмы</translation>
@@ -382,6 +401,7 @@
 <translation id="2268813581635650749">Выйсці адусюль</translation>
 <translation id="2276987123919776440">15 хв</translation>
 <translation id="2277103315734023688">Перайсці ўперад</translation>
+<translation id="2278668501808246459">Запускаецца менеджар кантэйнераў</translation>
 <translation id="2282073721614284166">Адкрыць спасылку ва ўкладцы</translation>
 <translation id="2292698582925480719">Маштаб паказу</translation>
 <translation id="2293443480080733021">На чым бы вы хацелі сканцэнтраваць увагу? Каб дадаць задачу, націсніце Увод.</translation>
@@ -408,6 +428,7 @@
 <translation id="2352467521400612932">Налады стыла</translation>
 <translation id="2354174487190027830">Ідзе актывацыя сеткі <ph name="NAME" /></translation>
 <translation id="2355314311311231464">Збой патоку падрыхтоўкі: не ўдалося атрымаць даныя ўліковага запісу. Паўтарыце спробу. Код памылкі: <ph name="ERROR_CODE" />.</translation>
+<translation id="2359071692152028734">Праграмы Linux могуць перастаць адказваць на запыты.</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2360398059912971776">акумулятар</translation>
 <translation id="2361210043495191221">Уключыць або выключыць Wi-Fi. <ph name="STATE" />.</translation>
@@ -421,7 +442,6 @@
 <translation id="2383521554963939360">Групы праграм і ўкладак</translation>
 <translation id="2386292613071805067">Вылучыць усё на старонцы</translation>
 <translation id="2389423187722941333">Уключыць/выключыць Gemini</translation>
-<translation id="2391805183137601570">Адкрыць Steam</translation>
 <translation id="2392659840443812875">Няма даступнага хот-спота. Упэўніцеся, што прылада знаходзіцца паблізу, а Bluetooth уключаны.</translation>
 <translation id="2397416548179033562">Паказаць меню Chrome</translation>
 <translation id="240006516586367791">Элементы кіравання мультымедыя</translation>
@@ -444,14 +464,13 @@
 <translation id="243878895369688216">Адкрывалася ўчора</translation>
 <translation id="2440978926514840421">Файл GIF запісаны</translation>
 <translation id="2441427462554639370">Запіс закончыўся з-за крытычна малога аб’ёму вольнага месца ў сховішчы</translation>
-<translation id="2447587550790814052">Цяпер вы можаце выкарыстоўваць Steam для Chromebook (бэта)</translation>
+<translation id="2445449901874883781">Выкарыстоўваць высокую шчыльнасць</translation>
 <translation id="2449089818483227734">Нізкі зарад акумулятара</translation>
 <translation id="2450205753526923158">Рэжым здымка экрана</translation>
 <translation id="2453860139492968684">Завяршыць</translation>
 <translation id="2455994958736234930">Дадаць www. і .com у адрасны радок і адкрыць вэб-сайт</translation>
 <translation id="2456008742792828469">Каляндар, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="246052086404491029">Падрабязней</translation>
-<translation id="2462332841984057083">Steam ужо наладжваецца. Пачакайце, пакуль наладжванне завершыцца.</translation>
 <translation id="2465145153332031561">Стан акумулятара: <ph name="BATTERY_HEALTH_PERCENTAGE" />%, колькасць цыклаў: <ph name="CYCLE_COUNT" /></translation>
 <translation id="2473177541599297363">Пацвердзіце раздзяляльнасць</translation>
 <translation id="2475783092753560388">Уставіць тэкст "<ph name="SEARCH_RESULT_TEXT" />"</translation>
@@ -464,7 +483,6 @@
 <translation id="2486214324139475545">Перадпрагляд працоўнага стала "<ph name="DESK_NAME" />". Актыўны працоўны стол.</translation>
 <translation id="2486405091093637109">Вы змянілі раздзяляльнасць дысплэя "<ph name="DISPLAY_NAME" />" на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Калі вы не пацвердзіце змяненне, будуць адноўлены папярэднія налады. Засталося часу: <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Далучыцца</translation>
-<translation id="2494555621641843783">Не ўдалося ўсталяваць Steam</translation>
 <translation id="2496180316473517155">Гісторыя прагляду сайтаў</translation>
 <translation id="2499445554382787206">Меню профілю працоўнага стала. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Заліпанне клавіш</translation>
@@ -484,6 +502,7 @@
 <translation id="2531025035050312891">прылада працуе павольна</translation>
 <translation id="2531107890083353124">Перацягваючы ўкладку, націсніце <ph name="KEY_ONE" /></translation>
 <translation id="2532199152994248594">Каб выбраць вобласць здымкі, перацягніце курсор або націсніце клавішу прабелу</translation>
+<translation id="2537927931785713436">Ідзе праверка наяўнасці вобраза віртуальнай машыны</translation>
 <translation id="2540651571961486573">Нешта пайшло не так. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="2545334090614121435">Хочаце выканаць дзеянне клавішы Home? Скарыстайце</translation>
 <translation id="254900897760075745">Капіраваць вылучанае змесціва ў буфер абмену</translation>
@@ -543,7 +562,8 @@
 <translation id="2727175239389218057">Адказаць</translation>
 <translation id="2727744317940422214">Нешта пайшло не так. Адпраўце нам водгук, дадаўшы слова #bruschetta у яго апісанне. Код памылкі: <ph name="ERROR" />. Не ўдалося выдаліць даныя. Магчыма, вам трэба будзе зрабіць гэта ўручную.</translation>
 <translation id="2727977024730340865">Падключана зарадная прылада нізкай магутнасці. Зарадка акумулятара можа быць нестабільнай.</translation>
-<translation id="2737538893171115082">Адміністратар заблакіраваў Steam для Chromebook (бэта) і павінен уключыць наступныя палітыкі:</translation>
+<translation id="2741713322780029189">Адкрыць тэрмінал аднаўлення</translation>
+<translation id="274290345632688601">Аднаўленне файлаў і праграм Linux</translation>
 <translation id="2743301740238894839">Пачаць</translation>
 <translation id="2743387203779672305">Скапіраваць у буфер абмену</translation>
 <translation id="2749082172777216925"><ph name="APP_NAME_INFO" />, <ph name="PRICE" /></translation>
@@ -571,6 +591,7 @@
 <translation id="2815594810045873507">Скарыстайце зарадную прыладу большай магутнасці або арыгінальную зарадную прыладу.</translation>
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
 <translation id="2822551631199737692">Выкарыстоўваецца камера</translation>
+<translation id="2822910719211888134">Памылка падчас рэзервовага капіравання кантэйнера Linux</translation>
 <translation id="2825619548187458965">Паліца</translation>
 <translation id="2831035692318564937">Уключана да захаду сонца</translation>
 <translation id="2834813915651407382">Адкрывалася нядаўна</translation>
@@ -578,6 +599,7 @@
 <translation id="2838589015763961627">Каб змяніць памер, выйдзіце з поўнаэкраннага рэжыму</translation>
 <translation id="2840766858109427815">Перайсці да наступнай старонкі</translation>
 <translation id="2841907151129139818">Уключаны рэжым планшэта</translation>
+<translation id="2843560154284403323">Каб завяршыць наладку Linux, абнавіце Chrome OS і паўтарыце спробу.</translation>
 <translation id="2844169650293029770">Прылада USB-C (пярэдні порт злева)</translation>
 <translation id="2844350028562914727">падрабязныя звесткі</translation>
 <translation id="2847759467426165163">Трансліраваць на прыладу</translation>
@@ -586,6 +608,7 @@
 <translation id="2850207700020959936">Праграмы маюць доступ да камеры</translation>
 <translation id="2852045827873867442">Патрабуецца падключэнне да інтэрнэту.</translation>
 <translation id="2860184359326882502">Найлепшае супадзенне</translation>
+<translation id="2862815659905780618">Выдаліць асяроддзе распрацоўкі Linux</translation>
 <translation id="2865888419503095837">Інфармацыя аб сетцы</translation>
 <translation id="2869095047958348710"><ph name="DAY_OF_WEEK" /> (мінулы дзень)</translation>
 <translation id="2872353916818027657">Змяніць асноўны манітор</translation>
@@ -617,6 +640,8 @@
 <translation id="2949420361496057765">Трымайце <ph name="MODIFIER" /> і націсніце на спасылку</translation>
 <translation id="2957159466053076448">Гэтыя функцыі можна выключыць у любы час у наладах. <ph name="LINK_TO_LEARN_MORE" /></translation>
 <translation id="295852781144570696">Аўдыя з прылады</translation>
+<translation id="2959842337402130152">Не ўдалося аднавіць з-за недахопу месца ў сховішчы. Вызваліце <ph name="SPACE_REQUIRED" /> месца на прыладзе і паўтарыце спробу.</translation>
+<translation id="2960208947600937804">Пры наладжванні Linux адбылася памылка. Звярніцеся да адміністратара.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Уключыць доступ да мікрафона?</translation>
 <translation id="296762781903199866">Не ўдалося спампаваць файлы для распазнавання маўлення на наступнай мове: <ph name="LANGUAGE" /></translation>
@@ -645,9 +670,11 @@
 <translation id="3040982432432547149">Дапамажыце палепшыць Steam для Chromebook</translation>
 <translation id="304417730895741346">Замацаваныя і адкрытыя праграмы знаходзяцца на панэлі доступу. Каб замацаваць праграму, націсніце на яе правай кнопкі мышы або дакраніцеся двума пальцамі да сэнсарнай панэлі.</translation>
 <translation id="3045670165536837541">Выбраны верхні правы маркер, для перамяшчэння выкарыстоўвайце клавішы са стрэлкамі</translation>
+<translation id="3046178388369461825">Вельмі мала месца на дыску Linux</translation>
 <translation id="3047761520276763270">Паспрабуйце сказаць:</translation>
 <translation id="3053407068093039599">Дазволіць або не дазваляць доступ да камеры</translation>
 <translation id="3055162170959710888">Сёння гэтай прыладай карысталіся <ph name="USED_TIME" /></translation>
+<translation id="3058002721610176427">Змяніце PIN-код і пароль</translation>
 <translation id="3062298103034426069">Не падтрымліваецца</translation>
 <translation id="3068622547379332530">Версія <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="3068711042108640621">Паліца злева</translation>
@@ -709,6 +736,7 @@
 <translation id="3249513730522716925">Акно "<ph name="WINDOW_TITLE" />" было перанесена са Стала <ph name="ACTIVE_DESK" /> на Стол <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Тып задання: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
 <translation id="3256109297135787951">Скасаваць вылучэнне элемента на паліцы</translation>
+<translation id="3256274561709196882">Змяніце PIN-код</translation>
 <translation id="3260969790895726815">Запісы голасу апрацоўваюцца на прыладзе і нікуды не перадаюцца. Галасавы ўвод працуе па-за сеткай. Некаторыя галасавыя каманды могуць не працаваць.</translation>
 <translation id="3264031581203585083">Не паказваць прапановы па Google Дыску</translation>
 <translation id="3265032511221679826">Уключыць доступ да даных дакладнага месцазнаходжання?</translation>
@@ -716,17 +744,18 @@
 <translation id="3271554781793662131">Шукайце, каб уставіць</translation>
 <translation id="3274634049061007184">Прагляд праграм з тэлефона</translation>
 <translation id="3279230909244266691">Гэты працэс можа заняць некалькі хвілін. Запуск віртуальнай машыны.</translation>
-<translation id="3285465040399788513">На прыладзе не хапае месца, каб завяршыць наладжванне. Вызваліце месца і паўтарыце спробу.</translation>
 <translation id="3289364673986435196">Меню кнопкі сілкавання</translation>
 <translation id="3289544412142055976">Праграмы Linux цяпер не падтрымліваюцца</translation>
 <translation id="3289674678944039601">Ідзе зарадка праз адаптар</translation>
 <translation id="3290356915286466215">Не абаронена</translation>
 <translation id="3291862315280588024">Перайсці ў пачатак папярэдняга слова</translation>
+<translation id="32939749466444286">Кантэйнер Linux не запусціўся. Паўтарыце спробу.</translation>
 <translation id="3294437725009624529">Госць</translation>
 <translation id="3300193645498960160">Вы атрымаеце апавяшчэнне, калі будзеце размаўляць з выключаным гукам. Аўдыязапісы вашу прыладу не пакінуць.</translation>
 <translation id="3306386552969601301">Некалькі (<ph name="DEVICECOUNT" />) прылад падключана да хот-спота прылады <ph name="DEVICE_NAME" /></translation>
 <translation id="3307642347673023554">Уключаны рэжым ноўтбука</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> зможа ўвайсці пазней.</translation>
+<translation id="3312470654018965389">Ідзе наладжванне кантэйнера Linux</translation>
 <translation id="3313950410573257029">Праверыць падключэнне</translation>
 <translation id="3321628682574733415">Няправільны бацькоўскі код</translation>
 <translation id="332827762492701193">Апавяшчэнні схаваны</translation>
@@ -743,7 +772,6 @@
 <translation id="3368922792935385530">Падключана</translation>
 <translation id="3369111525500416043">Хутка тэрмін выканання</translation>
 <translation id="3371140690572404006">Прылада USB-C (пярэдні порт справа)</translation>
-<translation id="3373196968211632036">Праграма Steam для Chromebook (бэта) недаступная для дзіцячых Уліковых запісаў Google</translation>
 <translation id="3375634426936648815">Падключана</translation>
 <translation id="3386978599540877378">экранная лупа ў поўнаэкранным рэжыме</translation>
 <translation id="3387527074123400161">Chromium OS</translation>
@@ -785,7 +813,6 @@
         <ph name="BEGIN_PARAGRAPH4" /><ph name="LINK_BEGIN" />Даведацца больш пра дакладнасць вызначэння месцазнаходжання<ph name="LINK_END" /><ph name="END_PARAGRAPH4" /></translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Паліца аўтаматычна схавана</translation>
-<translation id="3496797737329654668">Давайце гуляць</translation>
 <translation id="3505066820268455558">Ідзе зарадка акумулятара</translation>
 <translation id="3509391053705095206">Не ўдалося знайсці тэлефон. Пераканайцеся, што на тэлефоне ўключаны Bluetooth.</translation>
 <translation id="3510164367642747937">Вылучаць курсор мышы</translation>
@@ -798,6 +825,8 @@
 <translation id="353086728817903341">Устаноўлена падключэнне да некалькіх (<ph name="NUM_DEVICES" />) прылад</translation>
 <translation id="3532247131850366052">Не ўдалося стварыць табліцу Google</translation>
 <translation id="3533126039236445965">Праграмы на панэлі доступу</translation>
+<translation id="3537881477201137177">Яго можна будзе змяніць пазней у Наладах</translation>
+<translation id="3538066758857505094">Памылка выдалення Linux. Паўтарыце спробу.</translation>
 <translation id="3539957339480430241">Хот-спот "<ph name="DEVICE_NAME" />"</translation>
 <translation id="3540893133818942399">Не наладжваць прагляд нядаўніх фота і медыяфайлаў з тэлефона</translation>
 <translation id="3542066395059568317">Выкарыстоўвайце рэкамендацыі, каб працягваць работу з таго месца, на якім вы спыніліся. Каб выдаліць рэкамендацыю, націсніце на яе правай кнопкай мышы.</translation>
@@ -808,6 +837,7 @@
 <translation id="3554928024630051016">Каб дадаць дадатковыя USB-прылады, паспрабуйце выняць адну з падключаных прылад і падключыць новую</translation>
 <translation id="3558768885091059911">Даць доступ да мікрафона і камеры?</translation>
 <translation id="3560174576767922131">Запісаць відэа</translation>
+<translation id="3562423906127931518">Гэты працэс можа заняць некалькі хвілін. Ідзе наладжванне кантэйнера Linux.</translation>
 <translation id="3563432852173030730">Не ўдалося спампаваць праграму-кіёск.</translation>
 <translation id="3563558822383875692">Наладжваецца змесціва для спампоўвання.</translation>
 <translation id="3563775809269155755">Уключыць хот-спот</translation>
@@ -820,6 +850,7 @@
 <translation id="3583350334315908861">{MINUTES,plural, =1{хвіліна}one{хвіліна}few{хвіліны}many{хвілін}other{хвіліны}}</translation>
 <translation id="3585296979871889131">Прагляд нядаўніх фота, медыяфайлаў, апавяшчэнняў і праграм з тэлефона</translation>
 <translation id="358832729276157756">ExpressKey 1</translation>
+<translation id="3590295622232282437">Выконваецца ўваход у сеанс пад кіраваннем.</translation>
 <translation id="3590441166907930941">Бакавая кнопка</translation>
 <translation id="3593039967545720377">Каб праглядзець гісторыю буфера абмену, націсніце <ph name="SHORTCUT_KEY_NAME" /> + V Каб пачаць, скапіруйце элемент.</translation>
 <translation id="3593646411856133110">Каб убачыць адкрытыя праграмы, правядзіце пальцам уверх і ўтрымлівайце</translation>
@@ -847,9 +878,9 @@
 <translation id="3633851487917460983">Адкрыць буфер абмену</translation>
 <translation id="363473492175527493">Канцэнтрацыя ўвагі на задачы: <ph name="TASK_NAME" />. Каб адрэдагаваць задачу, націсніце Увод.</translation>
 <translation id="3638400994746983214">Уключыць або выключыць экран прыватнасці. <ph name="STATE_TEXT" />.</translation>
-<translation id="3641070112313110357">Неабходна абнавіць Steam для Chromebook (бэта). Перазапусціце Chromebook і паўтарыце спробу.</translation>
 <translation id="3649256019230929621">Згарнуць акно</translation>
 <translation id="3650952250015018111">Дазволіць праграме "<ph name="APP_NAME" />" доступ да наступнага:</translation>
+<translation id="3652817283076144888">Ініцыялізацыя</translation>
 <translation id="3653999174677652346"><ph name="EVENT_POSITION" />
         <ph name="EVENT_SUMMARY" />,
         <ph name="START_TIME" /> да
@@ -882,6 +913,7 @@
 <translation id="3726171378575546917">На гэтай прыладзе няма праграм "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" і яшчэ <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
 <translation id="3727231512028252576">Не ўдалося загрузіць элементы. Паўтарыце спробу, калі падключэнне да інтэрнэту будзе адноўлена.</translation>
 <translation id="3735740477244556633">Парадак сартавання</translation>
+<translation id="3738632186060045350">Даныя на прыладзе <ph name="DEVICE_TYPE" /> будуць выдалены праз 24 гадзіны</translation>
 <translation id="3738664582935948253">Цяпер у відэа, створаным пры запісе экрана, можна дэманстраваць выкарыстаныя спалучэнні клавіш і націсканні мышшу</translation>
 <translation id="3741482431277446954">Правая кнопка мышы</translation>
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
@@ -915,13 +947,14 @@
 <translation id="3831226344927851293">Выйсці з рэжыму навучання</translation>
 <translation id="383629559565718788">Паказаць налады клавіятуры</translation>
 <translation id="384082539148746321">Выдаліць шаблон?</translation>
-<translation id="3841282988425489367">Не ўдалося наладзіць Steam для Chromebook (бэта)</translation>
 <translation id="3844627820291068572"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" />, затым <ph name="KEY_ONE" />, або <ph name="KEY_TWO" />, або <ph name="KEY_THREE" />, або <ph name="KEY_FOUR" /></translation>
+<translation id="3846116211488856547">Вы атрымаеце інструменты для распрацоўкі вэб-сайтаў, праграм Android і іншага. Каб усталяваць Linux, трэба будзе спампаваць <ph name="DOWNLOAD_SIZE" /> даных.</translation>
 <translation id="3846575436967432996">Няма даступнай інфармацыі пра сетку</translation>
 <translation id="3848526302597027234">Мець доступ да наступных дазволаў:</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="385300504083504382">У пачатак</translation>
 <translation id="3859364108019690">Не ўдаецца перадаць праграмы плынню</translation>
+<translation id="3861638017150647085">Імя карыстальніка "<ph name="USERNAME" />" недаступнае</translation>
 <translation id="3861651314799684201">Каб запісаць увесь экран, націсніце Увод</translation>
 <translation id="3870197372373144624">Паспрабуйце завяршыць працу прылады.</translation>
 <translation id="3879748587602334249">Менеджар спамповак</translation>
@@ -992,6 +1025,7 @@
 <translation id="4077623680826964850">Перавышаны час чакання загрузкі віртуальнай машыны ці паўторнага падключэння да яе.</translation>
 <translation id="4086921558679520050">Пераключыце фізічны выключальнік мікрафона на прыладзе</translation>
 <translation id="4101772068965291327">Адкрыць галоўную старонку</translation>
+<translation id="4102906002417106771">Перазапусціце, каб скінуць налады функцыяй Powerwash</translation>
 <translation id="4112140312785995938">Перайсці назад</translation>
 <translation id="4113030288477039509">Кіруецца адміністратарам</translation>
 <translation id="4114315158543974537">Уключэнне Phone Hub</translation>
@@ -1026,7 +1060,6 @@
 <translation id="4192112279662688596">або</translation>
 <translation id="4193857202545160520">Паказваць націсканні кнопак мышы і спалучэнняў клавіш</translation>
 <translation id="4193969623755915875">Каб адкрыць даведку ў праграме "Агляд", націсніце <ph name="NEW_SHORTCUT" />.</translation>
-<translation id="4195001808989442226">Не ўдалося запусціць Steam для Chromebook (бэта-версія)</translation>
 <translation id="4195579532193195633">Бягучая версія <ph name="VERSION_NAME" /> (<ph name="OFFICIAL_STATUS" />) <ph name="CHANNEL_NAME" /> <ph name="PROCESSOR_VARIATION" /></translation>
 <translation id="4195814663415092787">Працягнуць з месца, дзе вы спыніліся</translation>
 <translation id="4195877955194704651">Кнопка "Аўтаматычныя націсканні мышшу"</translation>
@@ -1042,7 +1075,6 @@
 <translation id="4221957499226645091"><ph name="APP_NAME" />, усталяваная праграма, прыпынена</translation>
 <translation id="4228078597006700451">Налады не зададзены</translation>
 <translation id="4230560241506423345">Стварыць</translation>
-<translation id="4231231258999726714">Наладжваецца Steam для Chromebook</translation>
 <translation id="4236726631849783264">Напамін пра прапанаваныя дзеянні</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Рэжым агляду</translation>
@@ -1104,6 +1136,7 @@
 <translation id="4389184120735010762">Вы націснулі спалучэнне клавіш для прыстыкаванай лупы. Уключыць яе?</translation>
 <translation id="4394466652057229831">Падсумоўванне змесціва правай кнопкай мышы</translation>
 <translation id="439598569299422042">Прыпынена, <ph name="SIZE_INFO" /></translation>
+<translation id="439817266247065935">Работа прылады была завершана няправільна. Каб карыстацца праграмамі Linux, перазапусціце Linux.</translation>
 <translation id="440113666232554208">Не ўдалося захаваць скрынкаст</translation>
 <translation id="4405151984121254935">Падключаная перыферыйная прылада гэтага тыпу не падтрымліваецца</translation>
 <translation id="4406883609789734330">Аўтаматычныя субцітры</translation>
@@ -1130,7 +1163,6 @@
 <translation id="4471432286288241507">{0,plural, =0{Абнавіце прыладу зараз}=1{Абнавіце прыладу на працягу 1 секунды}one{Абнавіце прыладу на працягу # секунды}few{Абнавіце прыладу на працягу # секунд}many{Абнавіце прыладу на працягу # секунд}other{Абнавіце прыладу на працягу # секунды}}</translation>
 <translation id="4472575034687746823">Пачаць</translation>
 <translation id="4473489370276014885">Google Кантакты</translation>
-<translation id="4473996011558324141">разлічваецца час</translation>
 <translation id="4477350412780666475">Наступны трэк</translation>
 <translation id="4477751544736611934">Можа спаганяцца плата за перадачу даных.
 Падключана 1 прылада.</translation>
@@ -1139,6 +1171,7 @@
 <translation id="4481530544597605423">Разлучаныя прылады</translation>
 <translation id="4485506555414638855">Не наладжваць прагляд нядаўніх фота, медыяфайлаў, апавяшчэнняў і праграм з тэлефона</translation>
 <translation id="4491109536499578614">Відарыс</translation>
+<translation id="4493468155686877504">Рэкамендуецца (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="450584155212756404">Версія для распрацоўшчыкаў</translation>
 <translation id="4513044611477939680">Хуткае абагульванне</translation>
 <translation id="4513946894732546136">Водгук</translation>
@@ -1169,23 +1202,24 @@
 <translation id="4573176682887762361">"Увесці [слова або фразу]"</translation>
 <translation id="4577990005084629481">Уключыць перадпрагляд</translation>
 <translation id="4578906031062871102">Меню налад адкрыта</translation>
+<translation id="4581774856936278355">Памылка падчас аднаўлення кантэйнера Linux</translation>
 <translation id="458210817642223147">Запісаць GIF</translation>
 <translation id="4582666543382004902">Хот-спот выключаны, бо выкарыстоўваецца Wi-Fi. Каб выкарыстоўваць хот-спот, выключыце Wi-Fi.</translation>
 <translation id="4585337515783392668">Спыніць трансляцыю невядомаму атрымальніку</translation>
 <translation id="4596144739579517758">Цёмная тэма выключана</translation>
 <translation id="4596442969149038771">Карыстальнік <ph name="USER" /> абагуліў файл</translation>
-<translation id="4598556348158889687">Кіраванне сховішчам</translation>
 <translation id="4610493115106525653">Добры вынік</translation>
 <translation id="4611292653554630842">Увайсці</translation>
+<translation id="4613144866899789710">Ідзе скасаванне ўсталявання Linux...</translation>
 <translation id="462160925400706389"><ph name="NAME" />: падключана</translation>
 <translation id="4623167406982293031">Пацвердзіць уліковы запіс</translation>
 <translation id="4628757576491864469">Прылады</translation>
+<translation id="4628762811416793313">Наладжванне кантэйнера Linux не завершана. Паўтарыце спробу.</translation>
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, ацэнка: <ph name="RATING_SCORE" /></translation>
 <translation id="4633636853437260449">Каб выдаліць, націсніце Ctrl + W</translation>
 <translation id="4633757335284074492">Рэзервовае капіраванне на Google Дыск. Лёгка аднаўляйце даныя і пераносьце іх на іншыя прылады. У рэзервовую копію ўваходзяць даныя праграм. Рэзервовыя копіі запампоўваюцца ў Google і шыфруюцца пад паролем ад Уліковага запісу Google дзіцяці.</translation>
 <translation id="4635501805800894201">{0,plural, =0{Неадкладна вярніцеся да папярэдняй версіі АС прылады}=1{Вярніцеся да папярэдняй версіі АС на працягу 1 секунды}one{Вярніцеся да папярэдняй версіі АС на працягу # секунды}few{Вярніцеся да папярэдняй версіі АС на працягу # секунд}many{Вярніцеся да папярэдняй версіі АС на працягу # секунд}other{Вярніцеся да папярэдняй версіі АС на працягу # секунды}}</translation>
 <translation id="4642092649622328492">Зрабіць здымак часткі экрана</translation>
-<translation id="4642587497923912728">Праграма Steam для Chromebook (бэта) даступная толькі ва ўліковым запісе, дзе быў першым выкананы ўваход на гэтай прыладзе Chromebook.</translation>
 <translation id="4644727592819780893">Вобласць занадта малая, перадпрагляд з камеры ў ёй не змесціцца</translation>
 <translation id="4648249871170053485">Рэкамендаваная праграма (<ph name="APP_NAME" />)</translation>
 <translation id="4649019912155580914">Вы змянілі</translation>
@@ -1327,6 +1361,7 @@
 <translation id="504465286040788597">Папярэдні абзац</translation>
 <translation id="5045550434625856497">Няправільны пароль</translation>
 <translation id="5056587122125565772">Стварыць відарыс</translation>
+<translation id="5056950756634735043">Ідзе падключэнне да кантэйнера</translation>
 <translation id="5058794129231928255">Не ўдалося стварыць дакумент Google</translation>
 <translation id="5062496344832867502">аператыўная памяць</translation>
 <translation id="5068762093486106012">Вы атрымаеце апавяшчэнне, калі будзеце размаўляць з выключаным гукам. Аўдыязапісы захоўваюцца толькі на вашай прыладзе і нікуды не адпраўляюцца.</translation>
@@ -1407,9 +1442,11 @@
 <translation id="528468243742722775">Канец</translation>
 <translation id="5286194356314741248">Праверка</translation>
 <translation id="528641622273682395">Уключыць (выключыць) праверку мікрафона</translation>
+<translation id="5294097441441645251">У пачатку павінны быць малая літара або сімвал падкрэслівання</translation>
 <translation id="5297423144044956168">Мабільныя прылады не знойдзены</translation>
 <translation id="5297704307811127955">Выключана</translation>
 <translation id="5300589172476337783">Паказаць</translation>
+<translation id="5301751748813680278">Выконваецца ўваход у гасцявым рэжыме.</translation>
 <translation id="5302048478445481009">Мова</translation>
 <translation id="5302531370473608800">Каб выкарыстоўваць YouTube Music, абнавіце прыладу "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="5303319262469238330">Засталося <ph name="PERCENTAGE" />% зараду акумулятара.
@@ -1431,18 +1468,17 @@
 <translation id="5352250171825660495">Цёмная тэма ўключана</translation>
 <translation id="5354804064646502504">Можа спаганяцца плата за перадачу даных.
 Няма падключаных прылад.</translation>
-<translation id="5355498626146154079">Уключыце эксперыментальны параметр Borealis Enabled</translation>
 <translation id="5356963482258194581">Вы можаце пераключацца паміж цёмнай і светлай тэмамі. Націсніце правай кнопкай мышы на працоўны стол і выберыце "Шпалеры і стыль".</translation>
 <translation id="536019650977002321">Адміністратар не дазваляе запісваць аўдыя. Па дадатковую інфармацыю звяртайцеся да яго.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" />: файлы для распазнавання маўлення часткова спампаваны</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Перайсці на гэту ўкладку</translation>
 <translation id="5364693579536176785">месца ў сховішчы</translation>
 <translation id="5369573834963677938">Кіраванне данымі твару будзе даступна іншым карыстальнікам прылады</translation>
+<translation id="5369694795837229225">Наладзіць асяроддзе распрацоўкі Linux</translation>
 <translation id="5369717264580061086">Перадпрагляд файла ў праграме "Файлы"</translation>
 <translation id="5377367976106153749">Дазволіць доступ да камеры?</translation>
 <translation id="5378450298115733949">Яшчэ</translation>
 <translation id="5379115545237091094">Занадта шмат спроб</translation>
-<translation id="5380526436444479273">Пачакайце некалькі хвілін і паўтарыце спробу</translation>
 <translation id="5383434787520761436">Няма файлаў Google Дыска</translation>
 <translation id="5391307769715781764">Замяніць захаваны працоўны стол?</translation>
 <translation id="5392327145184648521">Разлічваецца % зараду акумулятара...</translation>
@@ -1454,13 +1490,13 @@
 <translation id="5409208741270395213">Пазначыць задачу як выкананую</translation>
 <translation id="5413656666631274079">старонку налад</translation>
 <translation id="5414198321558177633">Ідзе абнаўленне спіса профіляў. Гэта можа заняць некалькі хвілін.</translation>
-<translation id="5415328625985164836">Гэта бэта-версія праграмы. Цяпер вы можаце выкарыстоўваць Steam для гульняў на сваёй прыладзе Chromebook.</translation>
 <translation id="5426063383988017631">Меню налад закрыта</translation>
 <translation id="5428899915242071344">Пачаць выбар</translation>
 <translation id="5429993543155113935">Вокны ў рэжыме інкогніта зараз не падтрымліваюцца</translation>
 <translation id="5431318178759467895">Колер</translation>
 <translation id="5433020815079095860">Аўдыяўваход</translation>
 <translation id="543584294741034249">Максімум падключаных знешніх дысплэяў: <ph name="DISPLAY_LIMIT" />.</translation>
+<translation id="5442228125690314719">Пры стварэнні вобраза дыска адбылася памылка. Паўтарыце спробу.</translation>
 <translation id="544691375626129091">Усе даступныя карыстальнікі ўжо дададзены да гэтага сеанса.</translation>
 <translation id="54609108002486618">Пад кіраваннем</translation>
 <translation id="5460938382730614333">Маркер уключаны.</translation>
@@ -1511,6 +1547,7 @@
 <translation id="5592745162308462420">fn</translation>
 <translation id="5593564924968945303">Браўзер Chrome</translation>
 <translation id="5596627076506792578">Дадатковыя параметры</translation>
+<translation id="5596808802173376270">Праблема з файлам для аднаўлення. Магчыма, яго тып няправільны для існуючай гасцявой сістэмы Linux. Дадатковую інфармацыю можна знайсці ў файле /var/log/messages.</translation>
 <translation id="5599242528220103262">Спалучэнне клавіш выключана</translation>
 <translation id="5600415762228455511">Канцэнтрацыя ўвагі ўключана, засталося часу: <ph name="REMAINING_TIME" />. Канцэнтрацыя на задачы: <ph name="TASK_NAME" />.</translation>
 <translation id="5600837773213129531">Каб выключыць галасавую зваротную сувязь, націсніце Ctrl + Alt + Z.</translation>
@@ -1526,6 +1563,7 @@
 <translation id="5652575806481723716"><ph name="FOCUSED_APP_NAME" /> патрабуе вашай увагі.</translation>
 <translation id="5657667036353380798">Для знешняга пашырэння неабходна ўсталяваць Chrome версіі як мінімум <ph name="MINIMUM_CHROME_VERSION" />.</translation>
 <translation id="5662075790140998213">Працоўны стол 10</translation>
+<translation id="5662513737565158057">Змяненне параметраў для праграм Linux.</translation>
 <translation id="5662709761327382534">Запіс з мікрафона <ph name="CURRENT_STATE" />. Калі вы націснеце Enter, ён будзе <ph name="NEW_STATE" /></translation>
 <translation id="5662919923378083468"><ph name="ACTION_DESCRIPTION" />, <ph name="SHORTCUT_HINT" /></translation>
 <translation id="5667546120811588575">Наладжваецца Google Play...</translation>
@@ -1554,7 +1592,6 @@
 <translation id="5712132663381964774">З дапамогай праграм вы можаце выконваць на сваёй прыладзе (<ph name="PRODUCT_NAME" />) самыя розныя задачы. Знайсці праграмы можна на Панэлі запуску.</translation>
 <translation id="571295407079589142">Мабільная перадача даных выключана</translation>
 <translation id="5727460725221669831">Калі вы забылі пароль або нядаўна мянялі пароль Уліковага запісу Google, паспрабуйце аднавіць доступ для гэтага карыстальніка.</translation>
-<translation id="572914206753951782">Абнавіце аперацыйную сістэму на Chromebook да апошняй версіі, а потым перазапусціце прыладу і паўтарыце спробу.</translation>
 <translation id="5733630091161562207">Вітальнае апавяшчэнне</translation>
 <translation id="573413375004481890">Гэта прылада не можа падтрымліваць усе вашы дысплэі, таму адзін з іх быў адключаны</translation>
 <translation id="574392208103952083">Сярэдні</translation>
@@ -1600,6 +1637,7 @@
 <translation id="5842553299352339114">Хот-спот прылады <ph name="DEVICE_NAME" /> уключаны, няма падключаных прылад</translation>
 <translation id="584525477304726060">Утрымлівайце, каб разгарнуць</translation>
 <translation id="5856638668464565213">Сетка "<ph name="NETWORK_NAME" />" не актывавана.</translation>
+<translation id="5858490737742085133">Terminal</translation>
 <translation id="5860033963881614850">Выключана</translation>
 <translation id="5860491529813859533">Уключыць</translation>
 <translation id="5864691701242730005">Паказаць налады функцыі "Хуткае абагульванне". Выбраны наступны рэжым бачнасці: <ph name="VISIBILITY" />.</translation>
@@ -1721,6 +1759,7 @@
 <translation id="6185696379715117369">На старонку ўверх</translation>
 <translation id="619335566042889110">Зарадзіць акумулятар поўнасцю</translation>
 <translation id="6193431488227440296">Для распрацоўшчыкаў</translation>
+<translation id="6198252989419008588">Змяніць PIN-код</translation>
 <translation id="6199775032047436064">Абнавіць бягучую старонку</translation>
 <translation id="6200515304866777730">Не падтрымліваецца праграмай</translation>
 <translation id="6210042900243040400">Можна падключыцца да прылады "<ph name="NAME" />", якая была захавана раней ва ўліковым запісе <ph name="EMAIL" /></translation>
@@ -1728,6 +1767,7 @@
 <translation id="6213808132343683860">Зрабіць здымак або запіс часткі экрана</translation>
 <translation id="621606890568890214">Разгарнуць Google Клас</translation>
 <translation id="6216759484154215561">У браўзеры адкрыта спасылка "Даведацца больш"</translation>
+<translation id="6218058416316985984">Прылада <ph name="DEVICE_TYPE" /> не падключана да інтэрнэту. Падключыцеся да інтэрнэту і паўтарыце спробу.</translation>
 <translation id="6220928844947387476">Цяпер можна адначасова весці запіс экрана і відарыса з камеры</translation>
 <translation id="622484624075952240">Уніз</translation>
 <translation id="6228457605945141550">Паменшыць яркасць</translation>
@@ -1751,6 +1791,7 @@
 <translation id="628699625505156622">Выкарыстанне геаданых. Дайце праграмам, вэб-сайтам і сэрвісам для Android і ChromeOS дазвол на доступ да геаданых прылады. Дзякуючы наладзе "Дакладнасць вызначэння месцазнаходжання" праграмы і сэрвісы для Android атрымліваюць больш дакладныя геаданыя. Для работы гэтай функцыі Google перыядычна апрацоўвае звесткі пра датчыкі прылады і бесправадныя сігналы з гэтай прылады і збірае агульную базу месцазнаходжанняў бесправадных сігналаў. Гэта ананімныя даныя, якія выкарыстоўваюцца для павышэння дакладнасці вызначэння месцазнаходжання і паляпшэння сэрвісаў на аснове геалакацыі, а таксама для забеспячэння работы, падтрымкі і паляпшэння нашых сэрвісаў у адпаведнасці з законнымі інтарэсамі Google і старонніх суб’ектаў з мэтай задавальнення патрэб карыстальнікаў. <ph name="BEGIN_LINK1" />Даведацца больш пра выкарыстанне геалакацыі<ph name="END_LINK1" /></translation>
 <translation id="6288235558961782912"><ph name="USER_EMAIL_ADDRESS" /> можна дадаць пазней з дазволу бацькоў.</translation>
 <translation id="6291221004442998378">Не зараджаецца</translation>
+<translation id="6291580570300353047">Не ўдалося аднавіць з-за недахопу месца ў сховішчы.</translation>
 <translation id="6297986260307280218">Адпраўка даных пра выкарыстанне і дыягностыку. Дапамажыце палепшыць функцыянальнасць прылады Android шляхам аўтаматычнай адпраўкі ў Google даных дыягностыкі і звестак аб выкарыстанні прылады і праграм. Яны будуць карыснымі для паляпшэння стабільнасці сістэмы і праграм, а таксама для іншых удасканаленняў. Некаторыя сукупныя даныя будуць карыснымі для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Гэта <ph name="BEGIN_LINK1" />налада<ph name="END_LINK1" /> ўключана ўладальнікам. Уладальнік можа ўключыць адпраўку ў Google даных пра выкарыстанне і дыягностыку гэтай прылады. Калі ўключана налада "Дадатковая гісторыя дзеянняў у інтэрнэце і праграмах", адпаведныя даныя могуць захоўвацца ва Уліковым запісе Google. <ph name="BEGIN_LINK2" />Даведацца больш пра паказчыкі<ph name="BEGIN_LINK2_END" />Даведацца больш<ph name="END_LINK2" /></translation>
 <translation id="6298183524022479114">Наладзьце гэту прыладу ў праграме</translation>
 <translation id="6298962879096096191">Для ўсталявання праграм Android выкарыстоўвайце Google Play</translation>
@@ -1764,6 +1805,7 @@
 <translation id="6324916366299863871">Рэдагаваць ярлык</translation>
 <translation id="6325525973963619867">Збой</translation>
 <translation id="6330012934079202188">Паказаны вокны ўсіх працоўных сталоў. Каб пераключыцца на рэжым паказу вокнаў бягучага працоўнага стала, націсніце стрэлку ўверх</translation>
+<translation id="6336038146639916978">Сайт <ph name="MANAGER" /> выключыў адладку ADB. Гэта прывядзе да скіду прылады <ph name="DEVICE_TYPE" /> праз 24 гадзіны. Зрабіце рэзервовыя копіі ўсіх файлаў, якія трэба захаваць.</translation>
 <translation id="6337159624125741244">Поўнаэкранная лупа ўключана</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, якім кіруе <ph name="MANAGER" /></translation>
 <translation id="6340148837564298498">Калі вы забылі PIN-код, паспрабуйце аднавіць доступ для гэтага карыстальніка.</translation>
@@ -1809,6 +1851,7 @@
 <translation id="6467290994038932560">Уключана для гульні "<ph name="GAME_APP_NAME" />"</translation>
 <translation id="6468406072297048412">{0,plural, =1{Вярніцеся да папярэдняй версіі АС на працягу 1 хвіліны}one{Вярніцеся да папярэдняй версіі АС на працягу # хвіліны}few{Вярніцеся да папярэдняй версіі АС на працягу # хвілін}many{Вярніцеся да папярэдняй версіі АС на працягу # хвілін}other{Вярніцеся да папярэдняй версіі АС на працягу # хвіліны}}</translation>
 <translation id="6469104339369989396">Уключыць або выключыць хот-спот</translation>
+<translation id="6475294023568239942">Вызваліце месца на дыску Linux або змяніце памер дыска ў наладах</translation>
 <translation id="6477681113376365978">Не ўдаецца спампаваць файл</translation>
 <translation id="648135757200234041">Не ўдалося стварыць кантакт</translation>
 <translation id="6482559668224714696">Лупа для поўнаэкраннага рэжыму</translation>
@@ -1823,7 +1866,6 @@
 <translation id="6507042703812908515">Адкрыць праграму "Спалучэнні клавіш" можна, націснуўшы <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Пераключыць на наступны спосаб уводу з даступных</translation>
 <translation id="6508923215158854599">Chromebook і прыладу Chromecast трэба падключыць да адной сеткі Wi-Fi.</translation>
-<translation id="6511607461419653612">Перазапусціце Chromebook і паўтарыце спробу</translation>
 <translation id="6515727200518652613">Сувязь з камерай страчана. Ажыццяўляецца спроба паўторнага падключэння.</translation>
 <translation id="651753338596587143">Пры спробе ўсталяваць залежнасці DLC адбылася памылка. Паспрабуйце перазагрузіць прыладу. Калі праблема не знікне, адпраўце водгук, дадаўшы ў апісанне хэштэг #bruschetta. Код памылкі: <ph name="ERROR" />.</translation>
 <translation id="6520517963145875092">Выберыце акно для здымкі</translation>
@@ -1849,7 +1891,6 @@
 <translation id="6574587113394758819">Апавяшчэнне ад праграмы "<ph name="APP_TITLE" />" схавана, бо ўключаны рэжым абароненага прагляду</translation>
 <translation id="6574622320167699133">Разблакіравана з дапамогай тэлефона. Дакраніцеся або націсніце, каб увайсці.</translation>
 <translation id="6578407462441924264">Без назвы</translation>
-<translation id="6580060371127789208">Завершана <ph name="PERCENTAGE_COMPLETE" />%</translation>
 <translation id="6582012689384648647">Каб карыстацца персаналізаванымі плэй-лістамі для канцэнтрацыі ўвагі, дазвольце доступ да YouTube Music</translation>
 <translation id="6582034443359256692">Разлічваецца ўзровень зараду акумулятара.</translation>
 <translation id="6585808820553845416">Сеанс скончыцца праз <ph name="SESSION_TIME_REMAINING" />.</translation>
@@ -1902,7 +1943,6 @@
 <translation id="6723839937902243910">Кнопка сілкавання</translation>
 <translation id="672609503628871915">Пазнаёмцеся з навінкамі</translation>
 <translation id="6727969043791803658">Прылада падключана. Зарад акумулятара: <ph name="BATTERY_PERCENTAGE" />%</translation>
-<translation id="6731320427842222405">Гэта можа заняць некалькі хвілін</translation>
 <translation id="6732087373923685049">камера</translation>
 <translation id="6732800389263199929">+<ph name="COUNT" /></translation>
 <translation id="6737983188036277605">Выкарыстоўваюцца камера і мікрафон</translation>
@@ -1961,6 +2001,7 @@
 <translation id="6912841030378044227">Перайсці ў адрасны радок</translation>
 <translation id="6912901278692845878">Кароткі агляд</translation>
 <translation id="6917259695595127329">Апошняе абнаўленне задач: <ph name="TIME" />.</translation>
+<translation id="6918677045355889289">Неабходна абнавіць Chrome OS</translation>
 <translation id="6919251195245069855">Не ўдалося распазнаць вашу разумную картку. Паўтарыце спробу.</translation>
 <translation id="692135145298539227">выдаліць</translation>
 <translation id="6921427376813842559">Абнавіце АС прылады</translation>
@@ -1978,12 +2019,15 @@
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6967112302799758487">Усе праграмы і гульні, усталяваныя з дапамогай Steam для Chromebook (бэта), і звязаныя з імі даныя будуць выдалены з гэтай прылады. Перш чым выдаляць захаваныя праграмы і гульні, стварыце іх рэзервовыя копіі.</translation>
 <translation id="6972629891077993081">Прылады HID</translation>
+<translation id="697508444536771064">Завяршыць працу Linux</translation>
 <translation id="6979158407327259162">Google Дыск</translation>
 <translation id="6980402667292348590">Insert</translation>
 <translation id="6981291220124935078">Даць доступ</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="698231206551913481">Пры выдаленні карыстальніка будуць выдалены ўсе звязаныя з ім файлы і лакальныя даныя.</translation>
+<translation id="6988094684494323731">Ідзе запуск кантэйнера Linux</translation>
 <translation id="7000027735917578303">Налады акон і працоўных сталоў</translation>
+<translation id="7001036685275644873">Рэзервовае капіраванне файлаў і праграм Linux</translation>
 <translation id="7004910047186208204">Падключыцца да мабільнага інтэрнэту</translation>
 <translation id="7005239792648594238">Каб пачаць, адкрыйце праграму</translation>
 <translation id="7014684956566476813">Устаноўлена падключэнне да прылады "<ph name="DEVICE_NAME" />"</translation>
@@ -1992,11 +2036,13 @@
 <translation id="702252130983202758">Вашы праграмы</translation>
 <translation id="7025533177575372252">Падключыце прыладу "<ph name="DEVICE_NAME" />" да тэлефона</translation>
 <translation id="7026338066939101231">Паменшыць</translation>
+<translation id="7029307918966275733">Crostini не ўсталяваны. Каб праглядаць баланс, усталюйце Crostini.</translation>
 <translation id="7029814467594812963">Завяршыць сеанс</translation>
 <translation id="7031303610220416229">Паказаць усе задачы ў Google Задачах</translation>
 <translation id="7032161822340700104">Можна ствараць не больш за 6 шаблонаў. Каб стварыць новы шаблон, выдаліце адзін са старых.</translation>
 <translation id="7034025838182392395">Праграма "<ph name="APP_NAME" />" спрабуе выкарыстаць наступную прыладу: <ph name="DEVICE_NAME" />. Каб зрабіць гэта магчымым, уключыце прыладу (<ph name="DEVICE_NAME" />), выкарыстаўшы фізічны пераключальнік.</translation>
 <translation id="703425375924687388">Запыт Памочніка Google "<ph name="QUERY_NAME" />"</translation>
+<translation id="7036706669646341689">Для выкарыстання Linux рэкамендуецца мець <ph name="DISK_SIZE" />. Каб вызваліць месца, выдаліце файлы з прылады.</translation>
 <translation id="7042322267639375032">Згарнуць панэль стану</translation>
 <translation id="7042593542151411225">У праграм няма доступу да камеры</translation>
 <translation id="7045033600005038336">Замяніць шаблон?</translation>
@@ -2004,11 +2050,11 @@
 <translation id="7055910611768509537">Пяро не выкарыстоўвалася больш за тыдзень</translation>
 <translation id="7061457967428964661">Перадпрагляд відэа з камеры. Каб перамясціць акно перадпрагляду ў іншы вугал, выкарыстайце клавішу Ctrl + клавішы са стрэлкамі</translation>
 <translation id="7064351585062927183"><ph name="DAY_OF_WEEK" /> (будучы дзень)</translation>
+<translation id="7064734931812204395">Ідзе наладжванне кантэйнера Linux. Гэта можа заняць да 30 хвілін.</translation>
 <translation id="7066646422045619941">Гэта сетка выключана адміністратарам.</translation>
 <translation id="7067196344162293536">Аўтапаварот</translation>
 <translation id="7076293881109082629">Уваход</translation>
 <translation id="7076878155205969899">Выключыць гук</translation>
-<translation id="7083774521940805477">Праграма Steam для Chromebook (бэта) недаступная на вашай прыладзе Chromebook.</translation>
 <translation id="7083848064787091821">Канцэнтрацыя ўвагі</translation>
 <translation id="7084678090004350185">Уключыць/выключыць хот-спот. Хот-спот уключаны, падключана некалькі прылад (<ph name="DEVICECOUNT" />).</translation>
 <translation id="7086931198345821656">Для ўсталявання абнаўлення на прыладу <ph name="DEVICE_TYPE" /> патрабуецца скід налад з выкарыстаннем Powerwash. Усе даныя будуць выдалены. Даведайцеся больш пра апошняе абнаўленне <ph name="SYSTEM_APP_NAME" />.</translation>
@@ -2026,18 +2072,17 @@
 <translation id="7130207228079676353">НАЙБОЛЬШ ІМАВЕРНЫЯ</translation>
 <translation id="7131634465328662194">Будзе выкананы аўтаматычны выхад.</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
-<translation id="7143409552554575716">Эксперыментальныя параметры ChromeOS</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="7144942256906679589">Стан акумулятара</translation>
 <translation id="7145639536026937076">Акумулятар зараджаецца, узровень зараду: <ph name="PERCENTAGE" />%. Уключаны рэжым энергазберажэння.</translation>
 <translation id="7147587499155271409">Няма гісторыі прагляду сайтаў</translation>
 <translation id="7147657298465433425">Каб скарыстаць функцыянальныя клавішы, націскайце клавішу Fn і клавішы верхняга рада</translation>
 <translation id="7149149900052329230">Кіраваць лакальнымі файламі і файламі на Google Дыску можна праз праграму "Файлы".</translation>
-<translation id="7154020516215182599">Напішыце водгук або апішыце праблему. Па магчымасці ўкажыце, якія дзеянні да яе прыводзяць.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
         <ph name="NETWORK" /></translation>
 <translation id="7168224885072002358">Вяртанне да старой раздзяляльнасці праз <ph name="TIMEOUT_SECONDS" /></translation>
+<translation id="7170202025028120564">Налады паказу праграмы пачнуць дзейнічаць пасля яе перазапуску.</translation>
 <translation id="7173114856073700355">Адкрыць Налады</translation>
 <translation id="7180611975245234373">Абнавіць</translation>
 <translation id="7181691792034457084">Вітаем! <ph name="PRODUCT_NAME" /> працуе крыху іначай.</translation>
@@ -2046,6 +2091,7 @@
 <translation id="7219573373513695352">Няма падключаных прылад</translation>
 <translation id="7228968829656641943">Выберыце для пошуку змесціва на экране. Для навігацыі з дапамогай клавіятуры, націсніце клавішу Tab, потым – прабел.</translation>
 <translation id="7229029500464092426">Даступны аб’ём памяці: <ph name="AVAILABLE_MEMORY" /> | Усяго: <ph name="TOTAL_MEMORY" /></translation>
+<translation id="7234010996000898150">Ідзе скасаванне аднаўлення кантэйнера Linux</translation>
 <translation id="7239814253344511868">Абедзве кнопкі мышы</translation>
 <translation id="7240636904654154599">Створана табліца Google</translation>
 <translation id="7244725679040769470">Засталося <ph name="PERCENTAGE" />% зараду акумулятара. Падключыце прыладу да крыніцы сілкавання.</translation>
@@ -2053,6 +2099,7 @@
 <translation id="7248100343060254997">Шукаць на экране</translation>
 <translation id="7256057185598509352">ExpressKey 2</translation>
 <translation id="7256634071279256947">Задні мікрафон</translation>
+<translation id="7258225044283673131">Праграма не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
 <translation id="7258828758145722155">Зменена ўчора</translation>
 <translation id="726276584504105859">Каб перайсці ў рэжым падзеленага экрана, перацягніце акно сюды</translation>
 <translation id="7264788308526527464">Паменшыць на <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2065,6 +2112,7 @@
 <translation id="7312210124139670355">Адміністратар выконвае скід вашай eSIM-карты. Гэта можа заняць некалькі хвілін.</translation>
 <translation id="7312761820869643657">Вярніцеся да папярэдняй версіі АС прылады</translation>
 <translation id="7313193732017069507">Разгарнуць кнопку камеры</translation>
+<translation id="7327989755579928735">Сайт <ph name="MANAGER" /> выключыў адладку ADB. Пасля перазапуску прылады <ph name="DEVICE_TYPE" /> вы не зможаце загружаць праграмы са старонняй крыніцы.</translation>
 <translation id="73289266812733869">Выбар скасаваны</translation>
 <translation id="7330397557116570022">Каб выкарыстоўваць галасавы ўвод, перайдзіце ў тэкставае поле</translation>
 <translation id="7331646370422660166">Alt + стрэлка ўніз</translation>
@@ -2075,6 +2123,7 @@
 <translation id="7346909386216857016">OK</translation>
 <translation id="7348093485538360975">Экранная клавіятура</translation>
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
+<translation id="735361434055555355">Ідзе ўсталяванне Linux...</translation>
 <translation id="735745346212279324">Сетка VPN адключана</translation>
 <translation id="7360036564632145207">Вы можаце аптымізаваць прадукцыйнасць, змяняючы налады абмежавання доступу да даных для перыферыйных прылад</translation>
 <translation id="736045644501761622">Задаць шпалеры і стыль</translation>
@@ -2112,6 +2161,7 @@
 <translation id="7466449121337984263">Дакраніцеся да сканера</translation>
 <translation id="7477793887173910789">Кіруйце музыкай, відэа і шмат чым іншым</translation>
 <translation id="7478485216301680444">Не ўдалося ўсталяваць праграму-кіёск.</translation>
+<translation id="7481358317100446445">Гатова</translation>
 <translation id="7488762544858401571">Зменены дакумент</translation>
 <translation id="7489261257412536105">Увайсці ў поўнаэкранны рэжым або выйсці з яго</translation>
 <translation id="7490157877815329797">Паспрабуйце падпіску на YouTube Music Premium, якая дазволіць бясплатна слухаць музыку і карыстацца персаналізаванай падборкай кампазіцый для канцэнтрацыі ўвагі</translation>
@@ -2136,6 +2186,7 @@
 <translation id="7524043547948122239">Google Задачы</translation>
 <translation id="7525067979554623046">Стварыць</translation>
 <translation id="7526573455193969409">За сеткай могуць сачыць</translation>
+<translation id="7532009420053991888">Праграма <ph name="LINUX_APP_NAME" /> не адказвае. Каб закрыць яе, націсніце "Прымусова закрыць".</translation>
 <translation id="7534543072325030705">Націскаючы "Падабаецца", вы адпраўляеце водгук пра тое, што вам спадабалася гэта прапанаваная група</translation>
 <translation id="7536035074519304529">IP-адрас: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Абнавіць левае акно</translation>
@@ -2145,6 +2196,8 @@
 <translation id="7545466883021407599">Не ўдалося падключыцца да сервера. Праверце падключэнне да сеткі і паўтарыце спробу. Калі праблема не знікла, паспрабуйце перазапусціць Chromebook. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="7548434653388805669">Час класціся спаць</translation>
 <translation id="7551643184018910560">Замацаваць на паліцы</translation>
+<translation id="7553012839257224005">Ідзе праверка наяўнасці кантэйнера Linux</translation>
+<translation id="7557411183415085169">На дыску Linux мала месца</translation>
 <translation id="7557816257942363084">Зараз <ph name="APP_NAME" /> выкарыстоўвае мікрафон</translation>
 <translation id="7559719679815339381">Пачакайце: праграма-кіёск абнаўляецца. Не вымайце USB-сховішча.</translation>
 <translation id="7561982940498449837">Закрыць меню</translation>
@@ -2174,12 +2227,15 @@
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7627303771480696593">Задаць пытанне</translation>
 <translation id="7629858978065675960">Невядомы вынік.</translation>
+<translation id="7631014249255418691">Рэзервовая копія файлаў і праграм Linux створана</translation>
 <translation id="7632948528260659758">Наступныя праграмы-кіёскі абнавіць не ўдалося:</translation>
+<translation id="7634566076839829401">Нешта пайшло не так. Паўтарыце спробу.</translation>
 <translation id="7634648064048557203">Акно перадпрагляду камеры прывязана да правага ніжняга вугла</translation>
 <translation id="7638572816805275740">Зрабіць здымак або запіс экрана</translation>
 <translation id="7642106959537987271">рэжым інверсіі колераў</translation>
 <translation id="7642647758716480637">Адкрыць налады для сеткі "<ph name="NETWORK_NAME" />" (<ph name="CONNECTION_STATUS" />)</translation>
 <translation id="7645176681409127223"><ph name="USER_NAME" /> (уладальнік)</translation>
+<translation id="7645681574855902035">Скасоўваецца стварэнне рэзервовай копіі кантэйнера Linux</translation>
 <translation id="7647488630410863958">Каб прагледзець апавяшчэнні, разблакіруйце прыладу</translation>
 <translation id="7649070708921625228">Даведка</translation>
 <translation id="7654687942625752712">Каб выключыць галасавую зваротную сувязь, націсніце і ўтрымлівайце на працягу пяці секунд абедзве клавішы гучнасці.</translation>
@@ -2212,13 +2268,13 @@
 <translation id="7726391492136714301">Прагляд апавяшчэнняў і праграм з тэлефона на прыладзе</translation>
 <translation id="7727952505535211425">Адкрыць вэб-сайт з адраснага радка ў новай укладцы</translation>
 <translation id="7728657226117099693">Выключыць Caps Lock</translation>
-<translation id="7732702411411810416">Пераканайцеся, што вы падключаны да інтэрнэту, і паўтарыце спробу</translation>
 <translation id="7742327441377685481">Апавяшчэнняў няма</translation>
 <translation id="7748275671948949022">Вылучыць кнопку Панэлі запуску на панэлі доступу</translation>
 <translation id="7749443890790263709">Дасягнута максімальная колькасць сталоў.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
 <translation id="7750228210027921155">Відарыс у відарысе</translation>
 <translation id="7751260505918304024">Паказаць усе</translation>
+<translation id="7753735457098489144">Збой усталявання з-за недахопу месца ў сховішчы. Каб вызваліць месца, выдаліце файлы са сховішча прылады.</translation>
 <translation id="7762664108390426952">Умовы выкарыстання і палітыка прыватнасці Google</translation>
 <translation id="7768784765476638775">Чытаць уголас</translation>
 <translation id="7769299611924763557">Файл GIF будзе неўзабаве гатовы</translation>
@@ -2234,7 +2290,10 @@
 <translation id="780301667611848630">Не, дзякуй</translation>
 <translation id="7807067443225230855">Пошук і Памочнік</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> і <ph name="MINUTE" /></translation>
+<translation id="7817361223956157679">Экранная клавіятура ў праграмах Linux пакуль што не працуе</translation>
+<translation id="7824864914877854148">Рэзервовае капіраванне не ўдалося завяршыць з-за памылкі</translation>
 <translation id="7825412704590278437">З падзеі ў календары, якая павінна адбыцца</translation>
+<translation id="7826249772873145665">Адладка ADB выключана</translation>
 <translation id="7829386189513694949">Моцны сігнал</translation>
 <translation id="7830453190047749513">Вы можаце персаналізаваць дзеянні, якія выконваюцца пры націсканні кнопак на прыладзе "<ph name="PERIPHERAL_NAME" />", а таксама хуткасць курсора</translation>
 <translation id="7842569679327885685">Увага! Эксперыментальная функцыя</translation>
@@ -2248,7 +2307,6 @@
 <translation id="7866482334467279021">ўключаны</translation>
 <translation id="7870790288828963061">Праграм-кіёскаў навейшай версіі не знойдзена. Няма чаго абнаўляць. Выміце USB-сховішча.</translation>
 <translation id="7872786842639831132">Выключана</translation>
-<translation id="7873386145597434863">Steam для Chromebook</translation>
 <translation id="7875575368831396199">Здаецца, на прыладзе <ph name="DEVICE_TYPE" /> выключана падключэнне па Bluetooth. Уключыце яго, каб выкарыстоваць функцыю "Тэлефонны цэнтр".</translation>
 <translation id="7884446017008693258">Налады хот-спота</translation>
 <translation id="7884902759927478774">Скасаваць перацягванне ўкладкі</translation>
@@ -2279,6 +2337,7 @@
 <translation id="7932451802722951285">Адкрыць у Google Календары</translation>
 <translation id="7933084174919150729">Памочнік Google даступны толькі ў асноўным профілі.</translation>
 <translation id="79341161159229895">Уліковым запісам кіруюць <ph name="FIRST_PARENT_EMAIL" /> і <ph name="SECOND_PARENT_EMAIL" /></translation>
+<translation id="793531125873261495">Памылка спампоўвання віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="793716872548410480">Каб прагледзець буфер абмену, націсніце <ph name="SHORTCUT_KEY_NAME" /> + V. Апошнія 5 скапіраваных вамі элементаў захоўваюцца ў буферы абмену.</translation>
 <translation id="7942330802915522974">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. На Панэлі запуску можна знайсці праграму "Файлы". Праз яе вы можаце кіраваць лакальнымі файламі і файламі на Google Дыску.</translation>
 <translation id="7942349550061667556">Чырвоны</translation>
@@ -2289,6 +2348,7 @@
 <translation id="7947798320695032612">Праграма "<ph name="APP_NAME" />" спрабуе выкарыстаць наступную прыладу: <ph name="DEVICE_NAME" /></translation>
 <translation id="7948239795436419268">Не аднаўляць вокны</translation>
 <translation id="7951630946012935453">Паменшыць яркасць клавіятуры</translation>
+<translation id="795282463722894016">Аднаўленне выканана</translation>
 <translation id="7953176344218790168">ВЕРХНІ РЭГІСТР</translation>
 <translation id="7953994493035617347">Пацвердзіць новую раздзяляльнасць?</translation>
 <translation id="795958884516058160">Вы ўключылі поўнаэкранную лупу. Каб выключыць яе, зноў націсніце <ph name="ACCELERATOR" />.</translation>
@@ -2322,6 +2382,7 @@
 <translation id="8030169304546394654">Адключана</translation>
 <translation id="8036504271468642248">Папярэдні сказ</translation>
 <translation id="8042893070933512245">Адкрыць меню налад спецыяльных магчымасцей</translation>
+<translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> не адказвае.</translation>
 <translation id="8044457332620420407">Падсветка клавіятуры выключана</translation>
 <translation id="8048123526339889627">Налады Bluetooth</translation>
 <translation id="8049189770492311300">Таймер</translation>
@@ -2334,6 +2395,7 @@
 <translation id="8083540854303889870">Захавана на будучыню</translation>
 <translation id="8085765914647468715">YouTube Music</translation>
 <translation id="8088141034189573826">Каб праглядзець іншыя параметры, націсніце клавішу Tab. Для пераходу паміж працоўнымі сталамі выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа.</translation>
+<translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8091153018031979607">Пачынаецца ў <ph name="START_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8092380135549145188">Налады пракруткі</translation>
 <translation id="8098591350844501178">Спыніць трансляцыю экрана на прыёмнік "<ph name="RECEIVER_NAME" />"</translation>
@@ -2366,6 +2428,7 @@
 <translation id="8169177848833352618">На жаль, прылада не адпавядае патрабаванням для ўсталявання Bruschetta. Код памылкі: <ph name="ERROR" />.</translation>
 <translation id="8172370561760918656">Выбраны верхні левы маркер, для перамяшчэння выкарыстоўвайце клавішы са стрэлкамі</translation>
 <translation id="81817143961839203">Не ўдалося ўставіць відарыс</translation>
+<translation id="8182105986296479640">Праграма не адказвае.</translation>
 <translation id="8185090165691050712">Уключыць або выключыць меню рэжыму блакіроўкі змянення памеру</translation>
 <translation id="8192727139462702395">Пасля гэтага ад вашай прылады <ph name="DEVICE_TYPE" /> будуць адключаны наступныя знешнія прылады:</translation>
 <translation id="8198456017687137612">Ідзе трансляцыя ўкладкі</translation>
@@ -2395,6 +2458,7 @@
 <translation id="8282784978194352587">У вас атрымалася!</translation>
 <translation id="8287009018010202411">Прадукцыйнасць</translation>
 <translation id="828708037801473432">Выключана</translation>
+<translation id="8289128870594824098">Памер дыска</translation>
 <translation id="8297006494302853456">Слабы</translation>
 <translation id="8300451473979404345">Выбраны маркер, для перамяшчэння выкарыстоўвайце клавішы са стрэлкамі</translation>
 <translation id="8308637677604853869">Папярэдняе меню</translation>
@@ -2409,6 +2473,7 @@
 <translation id="8349826889576450703">праграма запуску</translation>
 <translation id="8349964124165471584">Адкрыць спасылку ў новым акне</translation>
 <translation id="8351131234907093545">Стварыць нататку</translation>
+<translation id="8357388086258943206">Памылка ўсталявання Linux</translation>
 <translation id="8367948981300340152">Выкарыстоўваецца <ph name="CAPTURE_MEDIUM" />.</translation>
 <translation id="8369166482916924789">Захаваны працоўны стол, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Уперад на адну літару</translation>
@@ -2456,6 +2521,7 @@
 <translation id="8491237443345908933">Адкрыць спасылку ў новай укладцы</translation>
 <translation id="8492573885090281069"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" />. Прыменена раздзяляльнасць <ph name="FALLBACK_RESOLUTION" />. Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="8502536196501630039">Каб выкарыстоўваць праграмы з Google Play, вам трэба спачатку аднавіць свае праграмы. Некаторыя даныя могуць быць страчаны.</translation>
+<translation id="8503813439785031346">Імя карыстальніка</translation>
 <translation id="8507563469658346379">Для ўсіх: <ph name="REMAINING_TIME" /></translation>
 <translation id="8511123073331775246">Стварыць працоўны стол</translation>
 <translation id="85123341071060231">Bluetooth на прыладзе Chromebook выключаны. Каб разблакіраваць Chromebook, увядзіце пароль.</translation>
@@ -2465,6 +2531,7 @@
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> можа не зараджацца ва ўключаным стане.</translation>
 <translation id="8519329096920173967">Пошук па змесціве на экране з дапамогай Google Аб’ектыва</translation>
 <translation id="8527869672961320915">Праграмы <ph name="VM_NAME" /></translation>
+<translation id="8528962588711550376">Выконваецца ўваход.</translation>
 <translation id="8535393432370007982">Адрабіць сартаванне па колеры</translation>
 <translation id="8536886494750559755">Паказаць налады функцыі "Хуткае абагульванне". Яны будуць бачныя ўсім <ph name="TIME_REMAINING" />.</translation>
 <translation id="8539803091108018926">Тэкст скапіраваны ў буфер абмену</translation>
@@ -2484,6 +2551,7 @@
 <translation id="861045123704058818">Яны ўпарадкаваны па катэгорыях часова</translation>
 <translation id="8612216344243590325">Захоўвайце важныя файлы ў вобласці "<ph name="HOLDING_SPACE_TITLE" />" замест працоўнага стала. Проста перацягніце іх сюды: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8612338981637220013">Вы справіліся!</translation>
+<translation id="8613164732773110792">Толькі малыя літары, лічбы, сімвалы падкрэслівання і злучкі</translation>
 <translation id="8614517853887502247">Апавяшчэнні ад праграм "<ph name="APP_1_TITLE" />" і "<ph name="APP_2_TITLE" />" схаваны, бо ўключаны рэжым абароненага прагляду</translation>
 <translation id="8615778328722901791">Адкрыць панэль інструментаў</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2506,6 +2574,8 @@
 <translation id="8662921061190671299">Не ўдалося дадаць у Каляндар</translation>
 <translation id="8663756353922886599"><ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="8664282223139913403">Каб зрабіць здымак часткі экрана, націсніце Увод</translation>
+<translation id="8665180165765946056">Рэзервовая копія створана</translation>
+<translation id="8673530374848624865">Адміністратар абнавіў патрабаванні да бяспекі вашай прылады</translation>
 <translation id="8676770494376880701">Падключана зарадная прылада малой магутнасці</translation>
 <translation id="8679158879996532670">Паказаць налады Канцэнтрацыі ўвагі. Канцэнтрацыя ўвагі ўключана, засталося часу: <ph name="REMAINING_TIME" />.</translation>
 <translation id="8683506306463609433">Ажыццяўляецца трасіроўка прадукцыйнасці</translation>
@@ -2517,6 +2587,7 @@
 <translation id="8711169534266271368">Параметры гульнявой панэлі</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="8714138378966541668">Заблакіравана аператарам</translation>
+<translation id="8716931980467311658">Выдаліць усе праграмы Linux і даныя ў папцы файлаў Linux з гэтай прылады <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717459106217102612">Вылучыць папярэдняе слова або літару</translation>
 <translation id="8721053961083920564">Уключыць або выключыць гук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Здыманне ўсяго экрана</translation>
@@ -2527,6 +2598,7 @@
 <translation id="8731487213223706745">Заканчваецца ў <ph name="END_TIME" /> <ph name="DAYS_ELAPSED" /></translation>
 <translation id="8734991477317290293">Клавіятура можа спрабаваць адсочваць і перадаваць націсканні клавіш</translation>
 <translation id="8735678380411481005">Колер падсветкі клавіятуры</translation>
+<translation id="8740672167979365981">Chrome OS Flex неабходна абнавіць</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: ідзе актывацыя...</translation>
 <translation id="8742395827132970586">Збой усталявання. Ідзе выдаленне даных.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
@@ -2537,6 +2609,7 @@
 <translation id="875593634123171288">Паказаць налады VPN</translation>
 <translation id="8756799553341497810">Вы зможаце ўпарадкаваць праграмы, пасля таго, як выйдзеце з рэжыму навучання.</translation>
 <translation id="8759408218731716181">Не ўдалося наладзіць уваход у некалькі ўліковых запісаў</translation>
+<translation id="8759753423332885148">Даведацца больш.</translation>
 <translation id="8763883995157866248">Перавесці прыладу ў рэжым сну</translation>
 <translation id="878215960996152260"><ph name="APP_NAME" />, усталяваная праграма, заблакіравана</translation>
 <translation id="8782565991310229362">Запуск праграмы-кіёска скасаваны.</translation>
@@ -2576,6 +2649,7 @@
 <translation id="8876661425082386199">Праверце падключэнне</translation>
 <translation id="8883478023074930307">Адпраўка даных пра выкарыстанне і дыягностыку. Зараз прылада аўтаматычна адпраўляе ў Google даныя дыягностыкі і звесткі аб выкарыстанні прылады і праграм. Яны будуць карыснымі для паляпшэння стабільнасці сістэмы і праграм, а таксама для іншых удасканаленняў. Некаторыя сукупныя даныя будуць карыснымі для праграм і партнёраў Google, напрыклад распрацоўшчыкаў Android. Гэта <ph name="BEGIN_LINK1" />налада<ph name="END_LINK1" /> ўключана ўладальнікам. Калі ўключана налада "Дадатковая гісторыя дзеянняў у інтэрнэце і праграмах", адпаведныя даныя могуць захоўвацца ва Уліковым запісе Google. <ph name="BEGIN_LINK2" />Даведацца больш пра паказчыкі<ph name="BEGIN_LINK2_END" />Даведацца больш<ph name="END_LINK2" /></translation>
 <translation id="8885424115080869847">Не ўдалося падключыцца да YouTube Music</translation>
+<translation id="8888253246822647887">Праграма будзе адкрыта пасля завяршэння абнаўлення. Абнаўленні могуць заняць некалькі хвілін.</translation>
 <translation id="888982883502837004">Для вашай прылады даступныя абнаўленні ўбудаванага праграмнага забеспячэння. Націсніце, каб паглядзець і ўсталяваць іх.</translation>
 <translation id="8896630965521842259">Шаблон "<ph name="DESK_TEMPLATE_NAME" />" будзе выдалены назаўсёды</translation>
 <translation id="889790758758811533">Засталося <ph name="PERCENTAGE" />% зараду акумулятара (прыкладна на <ph name="TIME_LEFT" />). Падключыце прыладу да крыніцы сілкавання.</translation>
@@ -2599,7 +2673,9 @@
 <translation id="8945508919180478719">Мікрафон студыйнага класа</translation>
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, птушка не пастаўлена.</translation>
 <translation id="8949925099261528566">Падключана, доступу да інтэрнэту няма</translation>
+<translation id="8951256747718668828">Аднаўленне не ўдалося завяршыць з-за памылкі</translation>
 <translation id="8951539504029375108">З вашым ноўтбукам Chromebook сумяшчальныя толькі ўхваленыя прылады Thunderbolt</translation>
+<translation id="895347679606913382">Пачынаецца...</translation>
 <translation id="8956420987536947088">Адкрыйце вокны і праграмы з апошняга сеанса</translation>
 <translation id="8959380109429710384">Вы націснулі спалучэнне клавіш для поўнаэкраннай лупы. Каб перамяшчацца ў рэжыме павелічэння, выкарыстоўвайце спалучэнне Ctrl + Alt + клавішы са стрэлкамі.</translation>
 <translation id="8964525410783593407">1 гадз</translation>
@@ -2609,7 +2685,6 @@
 <translation id="8980862970816311842">Перамясціць значок праграмы ў папку або з папкі ў сетцы праграм</translation>
 <translation id="8982906748181120328">Бачн. паблізу</translation>
 <translation id="8983038754672563810">HSPA</translation>
-<translation id="8985191021574400965">Вітаем у Steam для Chromebook</translation>
 <translation id="8990809378771970590">Выкарыстоўваецца <ph name="IME_NAME" /></translation>
 <translation id="8991648557324317894">Каб скасаваць, націсніце разам клавішу Fn і клавішу хуткай устаўкі ці Shift.</translation>
 <translation id="899350903320462459">Разблакіруйце прыладу як <ph name="LOGIN_ID" />, каб выканаць дзеянне па апавяшчэнні</translation>
@@ -2617,9 +2692,11 @@
 <translation id="9000771174482730261">КІРАВАЦЬ СХОВІШЧАМ</translation>
 <translation id="9003374957546315126">Эмодзі і іншае</translation>
 <translation id="9005984960510803406">Адкрыць старонку-кансоль</translation>
+<translation id="9013037634206938463">Для ўсталявання Linux неабходна мець як мінімум <ph name="INSTALL_SIZE" />. Каб вызваліць месца, выдаліце файлы з прылады.</translation>
 <translation id="901668144954885282">Рэзервовае капіраванне на Google Дыск</translation>
 <translation id="9017320285115481645">Увядзіце бацькоўскі код доступу Family Link.</translation>
 <translation id="9024331582947483881">увесь экран</translation>
+<translation id="9026852570893462412">Гэты працэс можа заняць некалькі хвілін. Ідзе спампоўка віртуальнай машыны.</translation>
 <translation id="9029736946581028033">Прылада ў хуткім часе выключыцца</translation>
 <translation id="9030319654231318877">Выключана да захаду сонца</translation>
 <translation id="9030515284705930323">Ваша арганізацыя не ўключыла доступ да Крамы Google Play для вашага ўліковага запісу. Звярніцеся да адміністратара для атрымання дадатковай інфармацыі.</translation>
@@ -2628,7 +2705,6 @@
 <translation id="9047624247355796468">Адкрыць налады для сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="9050012935252397793">Bluetooth недаступны</translation>
 <translation id="9050999376345823055">Каб адпусціць, націсніце "."</translation>
-<translation id="9061694916020926968">Каб выкарыстоўваць Steam для Chromebook (бэта), увайдзіце ва Уліковы запіс Google і паўтарыце спробу.</translation>
 <translation id="906458777597946297">Разгарнуць акно</translation>
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9068849894565669697">Выбар колеру</translation>
@@ -2664,6 +2740,7 @@
 <translation id="9168436347345867845">Пазней</translation>
 <translation id="9178475906033259337">Паказваецца 1 вынік па запыце "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Гэта функцыя дазваляе хутка атрымліваць доступ да карыстальнікаў, якія выканалі ўваход, – без уводу пароля. Выкарыстоўвайце гэту функцыю толькі на ўліковых запісах, якім давяраеце.</translation>
+<translation id="9180281769944411366">Гэты працэс можа заняць некалькі хвілін. Ідзе запуск кантэйнера Linux.</translation>
 <translation id="9183302530794969518">Дакументы Google</translation>
 <translation id="9183456764293710005">Поўнаэкранная лупа</translation>
 <translation id="9192133205265227850">Выкарыстоўваць прыладу "<ph name="DEVICE_NAME" />"</translation>
@@ -2677,6 +2754,7 @@
 <translation id="9201374708878217446"><ph name="CONNECTION_STATUS" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="9201842707396338580">Нешта пайшло не так. Звярніцеся да адміністратара або ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="9207682216934703221">Праграмы "<ph name="APP_NAME" />", "<ph name="APP2_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол на доступ да геаданых, а таксама ChromeOS змогуць выкарыстоўваць даныя пра месцазнаходжанне, атрыманыя праз Wi-Fi і мабільныя сеткі.</translation>
+<translation id="9209563766569767417">Ідзе праверка налад кантэйнера Linux</translation>
 <translation id="9210037371811586452">Выконваецца выхад з рэжыму адзінага працоўнага стала</translation>
 <translation id="9211490828691860325">Усе працоўныя сталы</translation>
 <translation id="9211681782751733685">Засталося часу да поўнай зарадкі акумулятара: <ph name="TIME_REMAINING" /></translation>
@@ -2700,12 +2778,14 @@
 <translation id="956452277966142925">Налады гульнявой панэлі</translation>
 <translation id="961856697154696964">Выдаліць даныя пра работу ў браўзеры</translation>
 <translation id="974545358917229949">Паказваюцца вынікі (<ph name="RESULT_COUNT" />) па запыце "<ph name="QUERY" />"</translation>
+<translation id="97905529126098460">Гэта акно закрыецца пасля завяршэння скасавання.</translation>
 <translation id="981011780479609956">Тэрмін выканання адсутнічае</translation>
 <translation id="98120814841227350">Перайсці ў канец дакумента</translation>
 <translation id="987589956647469042">Мабільны інтэрнэт уключаны</translation>
 <translation id="989374776391122812">Элементы кіравання камерай і аўдыя</translation>
 <translation id="990263227494928142">Каб уключыць сэнсарную панэль, націсніце Shift пяць разоў</translation>
 <translation id="990277280839877440">Акно <ph name="WINDOW_TITILE" /> закрыта.</translation>
+<translation id="992778845837390402">Ідзе рэзервовае капіраванне кантэйнера Linux</translation>
 <translation id="993398562350683614">Крок <ph name="STEP" /> з <ph name="TOTAL_STEPS" />. З дапамогай праграм вы можаце выконваць на сваёй прыладзе (<ph name="PRODUCT_NAME" />) самыя розныя задачы. Знайсці праграмы можна на Панэлі запуску. Каб перайсці да кнопкі Панэлі запуску, націсніце Alt + Shift + L.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="996204416024568215">Усталюйце апошнія функцыі і паляпшэнні сістэмы бяспекі. Абнаўленні ўсталёўваюцца ў фонавым рэжыме.</translation>

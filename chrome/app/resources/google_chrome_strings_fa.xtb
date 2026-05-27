@@ -183,7 +183,6 @@
 <translation id="2915996080311180594">بازراه‌اندازی در فرصتی دیگر</translation>
 <translation id="2916983411556218750">‏بیایید Chrome را آماده کنیم</translation>
 <translation id="2926952073016206995">‏Chrome برای این سایت به اجازه دوربین نیاز دارد</translation>
-<translation id="2928420929544864228">نصب کامل شد.</translation>
 <translation id="2945997411976714835">خطای نصب: فرایند نصب‌کننده شروع نشد.</translation>
 <translation id="2969728957078202736">‏<ph name="PAGE_TITLE" /> - ورود به سیستم شبکه - Chrome</translation>
 <translation id="2970681950995291301">‏برای برداشتن «حساب Google» خود از Chrome، در صفحه «تنظیمات» از سیستم Chrome خارج شوید</translation>
@@ -279,6 +278,7 @@
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="3941890832296813527">خطای نصب: نام فایل نصب‌کننده نامعتبر است یا از آن پشتیبانی نمی‌شود.</translation>
 <translation id="395904275706073188">صفحه‌های محافظت‌شده خوانده نمی‌شوند. صفحه دیگری را امتحان کنید.</translation>
+<translation id="3967822245660637423">بارگیری کامل شد</translation>
 <translation id="3968962723676998462">‏برای استفاده از داده‌های Chrome و ذخیره کردن آن‌ها در حسابتان (<ph name="ACCOUNT_EMAIL" />)، گذرعبارت خود را وارد کنید</translation>
 <translation id="3973161977468201858">‏‫Google Chrome می‌خواهد داده‌های «مدیر گذرواژه» شما را حذف کند. برای مجاز کردن این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="400161754580828648">‏برای هم‌رسانی صفحه‌نمایش، ضبط صفحه‌نمایش را در «تنظیمات سیستم» برای Chrome مجاز کنید.</translation>
@@ -313,7 +313,6 @@
 <translation id="4328355335528187361">‏Google Chrome نسخه Dev‏، (mDNS-In)</translation>
 <translation id="4329315893554541805">‏برای گرفتن شخصی‌سازی‌ها و ویژگی‌های دیگر، Chrome را به «فعالیت‌ها در وب و برنامه» و سرویس‌های پیوندشده Google اضافه کنید</translation>
 <translation id="4334241893986177674">جستجو کردن این نماگرفت</translation>
-<translation id="4334294535648607276">بارگیری کامل شد.</translation>
 <translation id="4343195214584226067">‏<ph name="EXTENSION_NAME" /> به Chrome اضافه شده است</translation>
 <translation id="4344128547036991536">‏وقتی‌که «لنز Google» را باز می‌کنید، عنوان، نشانی وب، و محتوای صفحه (ازجمله فایل‌های PDF) به‌طور خودکار به Google ارسال می‌شوند. <ph name="LEARN_MORE" /></translation>
 <translation id="4348548358339558429">‏برای گرفتن شخصی‌سازی‌ها، Chrome را به «فعالیت‌ها در وب و برنامه» اضافه کنید</translation>
@@ -506,7 +505,6 @@
 <translation id="6319856120645568262">‏‫Chrome برای نقشه‌برداری از محیط اطراف و ردیابی دستان شما به اجازه نیاز دارد</translation>
 <translation id="6321592572353357376">‏افزونه «<ph name="EXTENSION_NAME" />» از شما می‌خواهد به سیستم Chrome وارد شوید</translation>
 <translation id="6326175484149238433">‏حذف از Chrome</translation>
-<translation id="6327105987658262776">به‌روزرسانی دردسترس نیست.</translation>
 <translation id="6334815226785304306">‏تنظیم کردن Google Chrome به‌عنوان مرورگر پیش‌فرض و سنجاق کردن آن به نوار وظیفه</translation>
 <translation id="63540178978900677">‏‫Chrome دیگر مرورگر پیش‌فرض شما نیست. آیا Chrome مرورگر پیش‌فرض شود؟</translation>
 <translation id="6360449101159168105">‏وقتی این زبانه غیرفعال بود، مقداری از حافظه آزاد شد تا سرعت Chrome حفظ شود. می‌توانید انتخاب کنید این سایت همیشه از غیرفعال شدن مستثنی شود.</translation>
@@ -572,7 +570,6 @@
 <translation id="6999131147875565462">‏‫Chrome سریع‌تر اجرا می‌شود و ویژگی‌هایی که از جاوا اسکریپت استفاده می‌کنند باید طبق طراحی کار کنند</translation>
 <translation id="7011190694940573312">نصب انجام نشد زیرا این نسخه از سیستم‌عامل پشتیبانی نمی‌شود.</translation>
 <translation id="7024536598735240744">خطای لغو فشرده‌سازی: <ph name="UNPACK_ERROR" />.</translation>
-<translation id="7025789849649390912">نصب متوقف شد.</translation>
 <translation id="7025800014283535195">‏می‌توانید در اینجا بین نمایه‌های Chrome جابه‌جا شوید</translation>
 <translation id="7047386856539490735">این نتایج مفیدند؟</translation>
 <translation id="7051685429025310665">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" />،‏ <ph name="PERMISSION_2" />،‏ و <ph name="PERMISSION_3" /> را برداشت.</translation>
@@ -772,6 +769,7 @@
 <translation id="8999117580775242387">‏وقتی HTTPS دردسترس نباشد، Chrome بدون دادن هشدار به شما از اتصال ناامن استفاده می‌کند</translation>
 <translation id="8999208279178790196">{0,plural, =0{‏به‌روزرسانی Chrome دردسترس است}=1{‏به‌روزرسانی Chrome دردسترس است}one{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}other{‏به‌روزرسانی Chrome از # روز پیش دردسترس است}}</translation>
 <translation id="9014771989710951291">‏چندین سازمان Chrome را مدیریت می‌کنند</translation>
+<translation id="9018218886431812662">نصب کامل شد</translation>
 <translation id="9066987883552592250">‏بستن «Gemini در Chrome Canary»</translation>
 <translation id="9090566250983691233">‏ببینید چرا Chrome برخی‌از فایل‌ها را مسدود می‌کند</translation>
 <translation id="9106236359747881194">نوشتاری را برای جستجو انتخاب کنید</translation>

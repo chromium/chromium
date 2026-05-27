@@ -72,6 +72,7 @@
 <translation id="1577977504532381335">የአስተዳዳሪ መመሪያን ይገምግሙ</translation>
 <translation id="158849752021629804">የቤት አውታረ መረብ ያስፈልጋል</translation>
 <translation id="1589128298353575783"><ph name="NUMBER_OF_PB" /> ፔባ</translation>
+<translation id="1593594475886691512">ቅርጸት በመስራት ላይ...</translation>
 <translation id="1601786938618212857">ዚፕ</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
 <translation id="162175252992296058">ፖርቱጋልኛ በአሜሪካ ዓለም አቀፍ ቁልፍ ሰሌዳ</translation>
@@ -149,6 +150,7 @@
 <translation id="2142680004883808240">ሩሲያኛ በፎነቲክ YaZHert ቁልፍ ሰሌዳ</translation>
 <translation id="2143778271340628265">የእራስ ተኪ ውቅር</translation>
 <translation id="2148716181193084225">ዛሬ</translation>
+<translation id="2148756636027685713">ቅርጸት መስራት ተጠናቅቋል</translation>
 <translation id="2161573825856688200">የGoogle ፕሮጀክት</translation>
 <translation id="2163152940313951844">ልክ ያልሆነ ቁምፊ፦ <ph name="CHARACTER_NAME" /></translation>
 <translation id="2178056538281447670">Microsoft 365</translation>
@@ -216,6 +218,7 @@
 <translation id="2653059201992392941"><ph name="RETRIES" /> ቀሪ ሙከራዎች አሉዎት።</translation>
 <translation id="2663066752008346276">በርማኛ/ሚያንማር በሚያንሳን ቁልፍ ሰሌዳ</translation>
 <translation id="2664412712123763093">የፋይል ቦታ</translation>
+<translation id="2665919335226618153">ኧረ ቴች! ቅርጸት በሚሰራለት ጊዜ የሆነ ስህተት ነበር።</translation>
 <translation id="2672394942808662069">የካናዳ ባለብዙ ቋንቋ</translation>
 <translation id="2707357721402813583">አየርላንድኛ</translation>
 <translation id="2708477391501452176">የፈረንሳይኛ BÉPO</translation>
@@ -290,6 +293,7 @@
 <translation id="3293023191599135697">የደብሊውኢፒ አውታረመረቦች አይደገፉም</translation>
 <translation id="3295006446256079333">ይህ መጠን</translation>
 <translation id="3295357220137379386">መሣሪያው ሥራ ላይ ነው</translation>
+<translation id="3305389145870741612">ቅርጸት የመስራት ሂደቱ አንድ ሁለት ሰከንዶች ሊወስድ ይችላል። እባክዎ ይጠብቁ።</translation>
 <translation id="3307875152560779385">ዩክሬንኛ</translation>
 <translation id="3326821416087822643"><ph name="FILE_NAME" />ን በማጨቅ ላይ...</translation>
 <translation id="3335337277364016868">የተቀረጸበት ዓመት</translation>
@@ -586,6 +590,7 @@
 <translation id="5580591966435005537">ምናባዊ ማሽን</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">የሥርዓተ ነጥብ ስፋት ሙሉ ነው</translation>
+<translation id="5585912436068747822">ቅርጸት መስራት አልተሳካም</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="5602622065581044566">ቡልጋሪያኛ በፎነቲክ ቁልፍ ሰሌዳ</translation>
 <translation id="5604409170937514933">ስዊድንኛ</translation>
@@ -672,6 +677,7 @@
 <translation id="6220423280121890987">ፑንጃቢ</translation>
 <translation id="6224240818060029162">ዴንማርክኛ</translation>
 <translation id="6224253798271602650">ቅርጸት <ph name="DRIVE_NAME" /></translation>
+<translation id="6224481128663248237">ቅርጸት መስራት በተሳካ ሁኔታ ተጠናቅቋል!</translation>
 <translation id="6241349547798190358">ደች (ቤልጂየም)</translation>
 <translation id="6267547857941397424">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="PHONE_NAME" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" />%፣ አገናኝ</translation>
 <translation id="6269630227984243955">ማላይኛ</translation>

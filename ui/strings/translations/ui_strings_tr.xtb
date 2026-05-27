@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Bugün</translation>
 <translation id="2168039046890040389">Page Up</translation>
 <translation id="2190355936436201913">(boş)</translation>
-<translation id="2192232475740621500">Düşük yoğunluk kullan</translation>
 <translation id="2267918077332197517">Bu siteden gelen tüm bildirimleri engelle</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Ekranınızda dokunma hedeflerine dokunun.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Bu numara telefonunuzdan aransın mı?</translation>
 <translation id="2435457462613246316">Şifreyi göster</translation>
 <translation id="24452542372838207">Bildirimi genişlet</translation>
-<translation id="2445449901874883781">Yüksek yoğunluk kullan</translation>
 <translation id="2448407890032181691">Dokunma hedefi sağ alt köşeye taşındı. Buraya dokunun.</translation>
 <translation id="2482878487686419369">Bildirimler</translation>
 <translation id="2497284189126895209">Tüm Dosyalar</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6974053822202609517">Sağdan Sola</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Uygulamanız yeniden başlatıldığında ekran ayarları devreye girecek.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 dk. kaldı}other{# dk. kaldı}}</translation>
 <translation id="7252604552361840748">Yukarıdaki uzantıyı bulun</translation>

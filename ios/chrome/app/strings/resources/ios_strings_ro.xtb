@@ -328,6 +328,7 @@
 <translation id="2078437078822043850">Poți derula spre dreapta pentru a naviga în modul incognito.</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2085876078937250610">Salvează…</translation>
+<translation id="2089180529062519164">Activează microfonul</translation>
 <translation id="2096239473850415494">Nu s-a putut descărca</translation>
 <translation id="2096716221239095980">Șterge toate datele</translation>
 <translation id="2104436223719117661">Căutări populare</translation>
@@ -1862,6 +1863,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="7468373585447318060">Află despre scăderile de prețuri pentru toate produsele pe care le urmărești.</translation>
 <translation id="746872191028309255">Cumpără ceea ce vezi folosind camera foto sau galeria foto.</translation>
 <translation id="7471557245617580330">Creează o nouă filă</translation>
+<translation id="7473555040328423550">Adaugă o filă</translation>
 <translation id="7476548258282096076">Acest card afișează cele mai accesate site-uri.</translation>
 <translation id="7484645889979462775">Niciodată pentru acest site</translation>
 <translation id="7486006552035434095">Menține dispozitivele sincronizate</translation>
@@ -2117,6 +2119,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8319282042900445670">Memento setat pentru <ph name="TIME" />, <ph name="DATE" /></translation>
 <translation id="8320212361750431956">Activitate recentă</translation>
 <translation id="8325455175867928593">Ascunde cardul Recenzii bazate pe interesele tale</translation>
+<translation id="8333459276976141586">Live îți va folosi microfonul. Dacă atingi butonul Live, microfonul se va activa. Ca să dezactivezi microfonul, atinge butonul de oprire sau închide Gemini.</translation>
 <translation id="833647236762414178">Creează, salvează și gestionează parolele și cheile de acces pentru a te conecta cu ușurință la site-uri și aplicații. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="8343993175958086504">Fă backup datelor și folosește-le pe orice dispozitiv.</translation>
 <translation id="8345328955902001853">{count,plural, =1{Finalizează încă o activitate pentru a trece la nivelul următor}few{Finalizează încă {count} activități pentru a trece la nivelul următor}other{Finalizează încă {count} de activități pentru a trece la nivelul următor}}</translation>
@@ -2193,6 +2196,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8571019948162152515">Ștergi „<ph name="FILENAME" />”?</translation>
 <translation id="8571213806525832805">Ultimele 4 săptămâni</translation>
 <translation id="8577056989960190117">Completează automat anul de expirare <ph name="YEAR" /></translation>
+<translation id="8582026929965253036">Vorbește Live cu Gemini</translation>
 <translation id="8587001564479545614">Creează un PIN de recuperare</translation>
 <translation id="8588404856427128947">Stinsă</translation>
 <translation id="8590286732816598906">Grup de file, <ph name="GROUP_TITLE" />, Meniu.</translation>
@@ -2267,6 +2271,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8803526663383843427">Când opțiunea este activată</translation>
 <translation id="8803639129939845298">Securizat</translation>
 <translation id="8813277370772331957">Amintește-mi mai târziu</translation>
+<translation id="8814308045751067027">Pentru a folosi Live, permite accesul browserului Chrome la microfon în setări</translation>
 <translation id="8814719628147284151">Continuă</translation>
 <translation id="881559332211266856">Actualizează numărul de remediere</translation>
 <translation id="8817524703470045896">Urmărește prețurile și primește alerte când scade prețul pe orice site</translation>

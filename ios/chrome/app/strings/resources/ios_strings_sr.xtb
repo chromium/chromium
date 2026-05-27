@@ -46,6 +46,7 @@
 <translation id="1147031633655575115">Пријављени сте као <ph name="USER" /></translation>
 <translation id="1149401351239820326">Месец истека</translation>
 <translation id="1150989369772528668">Календар</translation>
+<translation id="1161444134753003495">Пријави ме</translation>
 <translation id="1161663161838091892">Синхронизујте картице и историју да бисте наставили</translation>
 <translation id="1162834932051545794">{count,plural, =1{{count} кредитна картица}one{{count} кредитна картица}few{{count} кредитне картице}other{{count} кредитних картица}}</translation>
 <translation id="1164891049599601209">Унето је на обмањујућем сајту</translation>
@@ -822,6 +823,7 @@
 <translation id="3931215329146376310">{count,plural, =1{Нова лозинка за овај сајт}one{Нове лозинке за овај сајт}few{Нове лозинке за овај сајт}other{Нове лозинке за овај сајт}}</translation>
 <translation id="3933372629914873850">Пријавићете се на <ph name="URL" /></translation>
 <translation id="3934905113567851655">Уштините да бисте променили величину</translation>
+<translation id="393732545649378031">Налог</translation>
 <translation id="3940195383040445971">Прати цене на картицама</translation>
 <translation id="3941941395924123592">{COUNT,plural, =1{Затвори {COUNT} картицу}one{Затвори {COUNT}картицу}few{Затвори {COUNT} картице}other{Затвори {COUNT} картица}}</translation>
 <translation id="3946483119107054883">Преузми као CSV</translation>
@@ -1470,6 +1472,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6140948187512243695">Прикажи детаље</translation>
 <translation id="6144589619057374135">Отвори ${url} у режиму без архивирања</translation>
 <translation id="6146563240635539929">Видеи</translation>
+<translation id="6148392728478209113">Да ли и даље користите Live? Додирните дугме Live да бисте наставили да разговарате са Gemini-јем</translation>
 <translation id="6151006591088192882">Откључај картице без архивирања помоћу опције <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="6152340033632117531">Неактивно</translation>
 <translation id="6152406514676263192">Синхронизујте са најрелевантнијим садржајем на основу интересовања.</translation>
@@ -1863,6 +1866,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7468373585447318060">Будите у току са снижењима за све производе које пратите.</translation>
 <translation id="746872191028309255">Купујте оно што видите помоћу камере или фото-галерије.</translation>
 <translation id="7471557245617580330">Направи нову картицу</translation>
+<translation id="7473555040328423550">Додајте картицу</translation>
 <translation id="7476548258282096076">Ова картица приказује најпосећеније сајтове.</translation>
 <translation id="7484645889979462775">Никад за овај сајт</translation>
 <translation id="7486006552035434095">Синхронизујте уређаје</translation>

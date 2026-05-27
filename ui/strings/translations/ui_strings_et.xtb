@@ -44,7 +44,6 @@
 <translation id="2148716181193084225">Täna</translation>
 <translation id="2168039046890040389">Lehekülje üles</translation>
 <translation id="2190355936436201913">(tühi)</translation>
-<translation id="2192232475740621500">Kasuta madalat tihedust</translation>
 <translation id="2267918077332197517">Blokeeri kõik märguanded sellelt saidilt</translation>
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Puudutage ekraanil puutesihtmärke.</translation>
@@ -56,7 +55,6 @@
 <translation id="2388990488038464401">Kas soovite telefonist sellele numbrile helistada?</translation>
 <translation id="2435457462613246316">Kuva parool</translation>
 <translation id="24452542372838207">Laienda märguannet</translation>
-<translation id="2445449901874883781">Kasuta kõrget tihedust</translation>
 <translation id="2448407890032181691">Puute sihtmärk liikus paremasse alanurka. Puudutage siin.</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2497284189126895209">Kõik failid</translation>
@@ -190,7 +188,6 @@
 <translation id="6965382102122355670">OK</translation>
 <translation id="6974053822202609517">Right to Left (Paremalt vasakule)</translation>
 <translation id="7052633198403197513">F1</translation>
-<translation id="7170202025028120564">Teie rakenduse kuvaseaded jõustuvad pärast rakenduse taaskäivitamist.</translation>
 <translation id="7222373446505536781">F11</translation>
 <translation id="7238427729722629793">{MINUTES,plural, =1{1 min on jäänud}other{# min on jäänud}}</translation>
 <translation id="7252604552361840748">Leidke ülalt laiendus</translation>
