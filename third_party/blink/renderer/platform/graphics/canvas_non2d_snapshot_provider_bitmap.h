@@ -7,12 +7,7 @@
 
 #include <memory>
 
-#include "cc/paint/skia_paint_canvas.h"
-#include "cc/raster/playback_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
-#include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
 namespace blink {
 
@@ -24,12 +19,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
       const CanvasSnapshotProvider::Info& info);
 
   ~CanvasNon2DSnapshotProviderBitmap() override;
-
-  static scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
-      const CanvasSnapshotProvider::Info& info,
-      base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
-      ImageOrientation orientation,
-      sk_sp<SkSurface> client_provided_surface = nullptr);
 
   // CanvasSnapshotProvider:
   bool IsGpuContextLost() const override;
@@ -46,26 +35,6 @@ class PLATFORM_EXPORT CanvasNon2DSnapshotProviderBitmap
  private:
   explicit CanvasNon2DSnapshotProviderBitmap(
       const CanvasSnapshotProvider::Info& info);
-
-  static sk_sp<SkSurface> CreateSurface(
-      const CanvasSnapshotProvider::Info& info);
-
-  // Used for any images that clients pass to cc::PaintCanvas::DrawImage() in
-  // the invocation of the `draw_callback` that clients provide to
-  // `DoExternalDrawAndSnapshot()`.
-  class ImageProviderImpl : public cc::ImageProvider {
-   public:
-    ImageProviderImpl(bool is_f16, const gfx::ColorSpace& color_space);
-    ~ImageProviderImpl() override = default;
-
-    // cc::ImageProvider:
-    cc::ImageProvider::ScopedResult GetRasterContent(
-        const cc::DrawImage& draw_image) override;
-
-   private:
-    bool is_f16_;
-    gfx::ColorSpace color_space_;
-  };
 
   const CanvasSnapshotProvider::Info info_;
 };

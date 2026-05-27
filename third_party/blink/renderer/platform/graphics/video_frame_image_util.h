@@ -102,6 +102,12 @@ PLATFORM_EXPORT void DrawVideoFrameIntoCanvas(
     const cc::PaintFlags& flags,
     bool ignore_video_transformation = false);
 
+// Renders to a RAM-backed bitmap via an external (client-supplied) draw.
+PLATFORM_EXPORT scoped_refptr<StaticBitmapImage> DrawAndSnapshotToImage(
+    const CanvasSnapshotProvider::Info& info,
+    base::FunctionRef<void(cc::PaintCanvas&)> draw_callback,
+    ImageOrientation orientation);
+
 // Extract a RasterContextProvider from the current SharedGpuContext.
 PLATFORM_EXPORT scoped_refptr<viz::RasterContextProvider>
 GetRasterContextProvider();
