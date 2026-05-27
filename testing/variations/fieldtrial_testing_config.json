@@ -3512,6 +3512,21 @@
             ]
         }
     ],
+    "AutofillYourSavedInfoAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillYourSavedInfoAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillYourSavedInfoHatsSurveysContactInfo": [
         {
             "platforms": [
