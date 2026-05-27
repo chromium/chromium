@@ -46,6 +46,8 @@ PersonalDataManagerFactory::PersonalDataManagerFactory()
   DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(ios::HistoryServiceFactory::GetInstance());
   DependsOn(ios::WebDataServiceFactory::GetInstance());
+  DependsOn(StrikeDatabaseFactory::GetInstance());
+  DependsOn(AutofillImageFetcherFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
 }
 
