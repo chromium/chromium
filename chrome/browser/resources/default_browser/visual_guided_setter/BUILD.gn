@@ -1,0 +1,26 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "visual_guided_setter"
+
+  static_files = [
+    "visual_guided_setter.html",
+    "visual_guided_setter.css",
+  ]
+
+  ts_files = [
+    "app.ts",
+    "app.html.ts",
+  ]
+
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/js:build_ts",
+  ]
+
+  webui_context_type = "trusted"
+}

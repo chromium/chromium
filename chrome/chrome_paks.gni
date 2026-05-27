@@ -619,6 +619,11 @@ template("chrome_extra_paks") {
           [ "//chrome/browser/resources/unexportable_keys_internals:resources" ]
     }
 
+    if (is_win) {
+      sources += [ "$root_gen_dir/chrome/visual_guided_setter_resources.pak" ]
+      deps += [ "//chrome/browser/resources/default_browser/visual_guided_setter:resources" ]
+    }
+
     if (safe_browsing_mode == 1) {
       sources += [ "$root_gen_dir/chrome/reset_password_resources.pak" ]
       deps += [ "//chrome/browser/resources/reset_password:resources" ]

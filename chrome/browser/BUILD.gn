@@ -3253,6 +3253,11 @@ static_library("browser") {
         "//chrome/browser/ui/webui/signin:profile_impl",
       ]
 
+      if (is_win) {
+        deps +=
+            [ "//chrome/browser/ui/webui/default_browser:visual_guided_setter" ]
+      }
+
       if (is_linux) {
         # Any circular includes must depend on the target
         # "browser_public_dependencies".

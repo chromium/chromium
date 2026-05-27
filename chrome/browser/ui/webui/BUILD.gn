@@ -170,6 +170,10 @@ source_set("configs") {
     deps += [ "//chrome/browser/ui/webui/unexportable_keys_internals" ]
   }
 
+  if (is_win) {
+    deps += [ "//chrome/browser/ui/webui/default_browser:visual_guided_setter" ]
+  }
+
   if (enable_extensions_core) {
     deps += [ "//chrome/browser/ui/webui/page_not_available_for_guest" ]
   }

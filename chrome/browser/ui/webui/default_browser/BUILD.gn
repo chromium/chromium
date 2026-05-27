@@ -45,6 +45,32 @@ mojom("modal_mojo_bindings") {
   webui_module_path = "/"
 }
 
+if (is_win) {
+  source_set("visual_guided_setter") {
+    sources = [
+      "visual_guided_setter_ui.cc",
+      "visual_guided_setter_ui.h",
+    ]
+
+    public_deps = [ "//base" ]
+
+    deps = [
+      "//chrome/app/theme:chrome_unscaled_resources",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/resources/default_browser/visual_guided_setter:resources",
+      "//chrome/browser/ui/dialogs",
+      "//chrome/browser/ui/webui/top_chrome",
+      "//chrome/common",
+      "//content/public/browser",
+      "//ui/base/interaction",
+      "//ui/gfx",
+      "//ui/web_dialogs",
+      "//ui/webui",
+      "//url",
+    ]
+  }
+}
+
 source_set("pixel_tests") {
   testonly = true
 

@@ -167,6 +167,7 @@ group("resources") {
   if (is_win) {
     public_deps += [
       "conflicts:resources",
+      "default_browser/visual_guided_setter:resources",
       "inline_login:resources",
     ]
   }

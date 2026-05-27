@@ -166,6 +166,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/webui/conflicts/conflicts_ui.h"
+#include "chrome/browser/ui/webui/default_browser/visual_guided_setter_ui.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -421,6 +422,7 @@ void RegisterChromeWebUIConfigs() {
 
 #if BUILDFLAG(IS_WIN)
   map.AddWebUIConfig(std::make_unique<ConflictsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<VisualGuidedSetterUIConfig>());
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

@@ -69,6 +69,10 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://default-browser-modal",
 #endif
 
+#if BUILDFLAG(IS_WIN)
+      "chrome://default-browser",
+#endif
+
       "chrome://debug-webuis-disabled",
       "chrome://device-log",
       "chrome://download-internals",
