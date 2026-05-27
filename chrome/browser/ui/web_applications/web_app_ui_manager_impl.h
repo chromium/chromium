@@ -195,9 +195,6 @@ class WebAppUiManagerImpl : public BrowserCollectionObserver,
   void MaybeRemoveWebAppBlockedMigrationInfoBar(
       content::WebContents* web_contents) override;
 
-  void NotifyDidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-
   void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
       Browser* browser,
       Profile* profile,

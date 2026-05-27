@@ -89,6 +89,7 @@ void LaunchQueue::Enqueue(LaunchParams launch_params) {
 
   DCHECK(delegate_->IsValidLaunchParams(launch_params));
 
+  // Drop the existing queue state if a new launch navigation was started.
   if (launch_params.started_new_navigation) {
     Reset();
     queue_.push_back(std::move(launch_params));
@@ -96,22 +97,13 @@ void LaunchQueue::Enqueue(LaunchParams launch_params) {
     return;
   }
 
-  if (pending_navigation_) {
-    if (!queue_.empty()) {
-      DCHECK_EQ(launch_params.app_id, queue_.front().app_id);
-    }
-    queue_.push_back(std::move(launch_params));
-    return;
+  if (!queue_.empty()) {
+    DCHECK_EQ(launch_params.app_id, queue_.front().app_id);
   }
-
-  last_sent_queued_launch_params_ = launch_params;
-  SendLaunchParams(std::move(launch_params),
-                   web_contents()->GetLastCommittedURL());
-}
-
-bool LaunchQueue::IsInScope(const LaunchParams& launch_params,
-                            const GURL& url) const {
-  return delegate_->IsInScope(launch_params, url);
+  queue_.push_back(std::move(launch_params));
+  if (!pending_navigation_) {
+    SendQueuedLaunchParams(web_contents()->GetLastCommittedURL());
+  }
 }
 
 void LaunchQueue::FlushForTesting() const {
@@ -124,6 +116,19 @@ void LaunchQueue::FlushForTesting() const {
   launch_service.FlushForTesting();  // IN-TEST
 }
 
+void LaunchQueue::Reset() {
+  queue_.clear();
+  pending_navigation_ = false;
+  last_sent_queued_launch_params_.reset();
+}
+
+const webapps::AppId* LaunchQueue::GetPendingLaunchAppId() const {
+  if (queue_.empty()) {
+    return nullptr;
+  }
+  return &(queue_.front().app_id);
+}
+
 void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   // Currently, launch data is only sent the primary main frame.
   if (!handle->IsInPrimaryMainFrame()) {
@@ -131,19 +136,13 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 
   if (pending_navigation_) {
-    pending_navigation_ = false;
     if (!handle->HasCommitted() || handle->IsErrorPage() ||
         !delegate_->IsInScope(queue_.front(), handle->GetURL())) {
       Reset();
-    } else {
-      for (LaunchParams& launch_params : queue_) {
-        if (&launch_params == &queue_.back()) {
-          last_sent_queued_launch_params_ = launch_params;
-        }
-        SendLaunchParams(std::move(launch_params), handle->GetURL());
-      }
-      queue_.clear();
+      return;
     }
+    pending_navigation_ = false;
+    SendQueuedLaunchParams(handle->GetURL());
     return;
   }
 
@@ -175,17 +174,14 @@ void LaunchQueue::DidFinishNavigation(content::NavigationHandle* handle) {
   }
 }
 
-void LaunchQueue::Reset() {
-  queue_.clear();
-  pending_navigation_ = false;
-  last_sent_queued_launch_params_.reset();
-}
-
-const webapps::AppId* LaunchQueue::GetPendingLaunchAppId() const {
-  if (!pending_navigation_ || queue_.empty()) {
-    return nullptr;
+void LaunchQueue::SendQueuedLaunchParams(const GURL& current_url) {
+  for (LaunchParams& launch_params : queue_) {
+    if (&launch_params == &queue_.back()) {
+      last_sent_queued_launch_params_ = launch_params;
+    }
+    SendLaunchParams(std::move(launch_params), current_url);
   }
-  return &(queue_.front().app_id);
+  queue_.clear();
 }
 
 void LaunchQueue::SendLaunchParams(LaunchParams launch_params,

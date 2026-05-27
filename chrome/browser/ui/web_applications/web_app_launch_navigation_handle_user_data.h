@@ -9,13 +9,11 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 
 namespace content {
 class NavigationHandle;
-class WebContents;
 }  // namespace content
 
 namespace web_app {
@@ -30,31 +28,7 @@ class WebAppLaunchNavigationHandleUserData
  public:
   ~WebAppLaunchNavigationHandleUserData() override;
 
-  // Static helper for non-navigating launches (e.g., focus existing) to enqueue
-  // launch params directly without waiting for navigation to commit.
-  static void DispatchLaunchParams(content::WebContents* web_contents,
-                                   webapps::LaunchParams launch_params);
-
-  // Note: SetLaunchParams must be called first if both setters are used,
-  // because SetLaunchParams overwrites the entire launch_params_ struct,
-  // which will clear metadata set by SetLaunchParamsMetadata.
-  void SetLaunchParams(webapps::LaunchParams launch_params);
-  void SetLaunchParamsMetadata(webapps::AppId app_id,
-                               GURL target_url,
-                               base::TimeTicks time_navigation_started);
-
-  // Returns the stored launch parameters.
-  // CHECKs that the parameters have not already been consumed/moved,
-  // which happens if `MaybePerformAppHandlingTasksInWebContents()` has
-  // already been called.
-  const webapps::LaunchParams& launch_params() const;
-
-  void set_is_navigation_capturing(bool is_navigation_capturing) {
-    is_navigation_capturing_ = is_navigation_capturing;
-  }
-  bool is_navigation_capturing() const { return is_navigation_capturing_; }
-
-  void set_force_iph_off(bool force_iph_off) { force_iph_off_ = force_iph_off; }
+  const webapps::AppId& launched_app() const { return launched_app_; }
 
   // This method will queue launch params, record launch and navigation timing
   // metrics and maybe show a navigation capturing IPH. Should be called when it
@@ -62,15 +36,18 @@ class WebAppLaunchNavigationHandleUserData
   void MaybePerformAppHandlingTasksInWebContents();
 
  private:
-  explicit WebAppLaunchNavigationHandleUserData(
-      content::NavigationHandle& navigation_handle);
+  WebAppLaunchNavigationHandleUserData(
+      content::NavigationHandle& navigation_handle,
+      webapps::AppId launched_app,
+      bool force_iph_off,
+      base::TimeTicks time_navigation_started);
 
   friend NavigationHandleUserData;
 
   raw_ref<content::NavigationHandle> navigation_handle_;
-  std::optional<webapps::LaunchParams> launch_params_;
+  webapps::AppId launched_app_;
   bool force_iph_off_;
-  bool is_navigation_capturing_ = false;
+  base::TimeTicks time_navigation_started_;
 
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
