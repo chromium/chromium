@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "components/language/core/browser/incognito_language_list_map.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_util.h"
 #include "components/language/core/common/locale_util.h"
@@ -25,8 +26,6 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace language {
-
-const char kFallbackInputMethodLocale[] = "en-US";
 
 void LanguagePrefs::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
@@ -185,6 +184,43 @@ void ResetLanguagePrefs(PrefService* prefs) {
 std::string GetFirstLanguage(std::string_view language_list) {
   auto end = language_list.find(",");
   return std::string(language_list.substr(0, end));
+}
+
+namespace {
+
+// Ensure at compile time that our fallback key exists in the generated map.
+constexpr bool IncognitoMapContainsFallback() {
+  return std::ranges::any_of(kIncognitoLanguageListMap, [](const auto& e) {
+    return e.first == kFallbackInputMethodLocale;
+  });
+}
+static_assert(
+    IncognitoMapContainsFallback(),
+    "kFallbackInputMethodLocale must exist in kIncognitoLanguageListMap");
+
+}  // namespace
+
+std::string GetIncognitoLanguageList(std::string_view language_list) {
+  auto comma_pos = language_list.find(',');
+  // <2 values suggests a user actively deleted other languages from their
+  // settings, so prioritize keeping that user preference over the normal logic.
+  if (comma_pos == std::string_view::npos) {
+    return std::string(language_list);
+  }
+
+  std::string_view first_language = language_list.substr(0, comma_pos);
+
+  // Look up in the generated map.
+  auto it = kIncognitoLanguageListMap.find(first_language);
+  if (it != kIncognitoLanguageListMap.end()) {
+    return std::string(it->second);
+  }
+
+  // Fallback for simple (no regional subtags) or unrecognized languages, just
+  // prepend the first language to global default (i.e., "en-US,en").
+  return base::StrCat(
+      {first_language, ",",
+       kIncognitoLanguageListMap.at(kFallbackInputMethodLocale)});
 }
 
 }  // namespace language

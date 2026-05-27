@@ -1372,7 +1372,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   EXPECT_EQ(embedder_support::GetUserAgent(), user_agent3);
 
   // Third, a list with multiple languages. Incognito mode should return only
-  // the first.
+  // the first language's default set of languages.
   browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
                                               "ar,am,en-GB,ru,zu");
   FlushNetworkInterface();
@@ -1380,7 +1380,8 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   std::string user_agent4;
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language4));
   if (GetProfile()->IsOffTheRecord()) {
-    EXPECT_EQ(system ? kNoAcceptLanguage : "ar", accept_language4);
+    EXPECT_EQ(system ? kNoAcceptLanguage : "ar,en-US;q=0.9,en;q=0.8",
+              accept_language4);
   } else {
     EXPECT_EQ(system ? kNoAcceptLanguage
                      : "ar,am;q=0.9,en-GB;q=0.8,en;q=0.7,ru;q=0.6,zu;q=0.5",

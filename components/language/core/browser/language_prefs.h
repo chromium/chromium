@@ -27,7 +27,7 @@ class PrefService;
 
 namespace language {
 
-extern const char kFallbackInputMethodLocale[];
+inline constexpr char kFallbackInputMethodLocale[] = "en-US";
 
 class LanguagePrefs {
  public:
@@ -88,6 +88,12 @@ void ResetLanguagePrefs(PrefService* prefs);
 
 // Given a comma separated list of locales, return the first.
 std::string GetFirstLanguage(std::string_view language_list);
+
+// Given a comma separated list of language tags, return a new list which keeps
+// the same first language tag but otherwise matches one of Chrome's standard
+// default configurations. This is to reduce the identifiability when incognito
+// of users who've configured unusual language preferences.
+std::string GetIncognitoLanguageList(std::string_view language_list);
 
 }  // namespace language
 

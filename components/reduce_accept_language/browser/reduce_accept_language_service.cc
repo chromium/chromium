@@ -145,10 +145,10 @@ void ReduceAcceptLanguageService::ClearReducedLanguage(
 }
 
 void ReduceAcceptLanguageService::UpdateAcceptLanguage() {
-  // In incognito mode return only the first language.
+  // In incognito mode return a genericized language list.
   std::string accept_languages_str = net::HttpUtil::ExpandLanguageList(
       is_incognito_
-          ? language::GetFirstLanguage(pref_accept_language_.GetValue())
+          ? language::GetIncognitoLanguageList(pref_accept_language_.GetValue())
           : pref_accept_language_.GetValue());
   user_accept_languages_ = base::SplitString(
       accept_languages_str, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);

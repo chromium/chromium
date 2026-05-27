@@ -95,12 +95,10 @@ std::vector<std::string> GetLocalIpsAllowedUrls(
 
 std::string GetLanguageListForProfile(Profile* profile,
                                       const std::string& language_list) {
-  if (profile->IsOffTheRecord()) {
-    // In incognito mode return only the first language.
-    return language::GetFirstLanguage(language_list);
-  }
   return content::ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
-      language_list);
+      profile->IsOffTheRecord()
+          ? language::GetIncognitoLanguageList(language_list)
+          : language_list);
 }
 
 }  // namespace

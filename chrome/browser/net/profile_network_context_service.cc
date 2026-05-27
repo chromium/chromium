@@ -706,14 +706,11 @@ std::string ProfileNetworkContextService::ComputeAcceptLanguage() const {
   // expanding the language list if the DisableReduceAcceptLanguage deprecation
   // trial ends.
 
-  if (profile_->IsOffTheRecord()) {
-    // In incognito mode return only the first language.
-    return ComputeAcceptLanguageFromPref(
-        language::GetFirstLanguage(pref_accept_language_.GetValue()));
-  }
   return ComputeAcceptLanguageFromPref(
       content::ReduceAcceptLanguageUtils::GetLanguagesWithMaxCount(
-          pref_accept_language_.GetValue()));
+          profile_->IsOffTheRecord() ? language::GetIncognitoLanguageList(
+                                           pref_accept_language_.GetValue())
+                                     : pref_accept_language_.GetValue()));
 }
 
 void ProfileNetworkContextService::UpdateReferrersEnabled() {

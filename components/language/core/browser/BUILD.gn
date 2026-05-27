@@ -24,6 +24,7 @@ static_library("browser") {
   ]
 
   deps = [
+    ":generate_incognito_language_list_map",
     "//base",
     "//base:i18n",
     "//components/keyed_service/core",
@@ -73,5 +74,18 @@ source_set("test_support") {
     "//components/prefs",
     "//testing/gmock",
     "//testing/gtest",
+  ]
+}
+
+action("generate_incognito_language_list_map") {
+  script = "generate_incognito_language_list_map.py"
+  inputs = [ "//components/components_locale_settings.grd" ]
+  outputs = [ "$target_gen_dir/incognito_language_list_map.h" ]
+  depfile = "$target_gen_dir/$target_name.d"
+  args = [
+    rebase_path("//components/components_locale_settings.grd", root_build_dir),
+    rebase_path(outputs[0], root_build_dir),
+    "--depfile",
+    rebase_path(depfile, root_build_dir),
   ]
 }

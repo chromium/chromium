@@ -66,8 +66,8 @@ class ReduceAcceptLanguageServiceTest : public testing::Test {
 TEST_F(ReduceAcceptLanguageServiceTest, GetAcceptLanguageList) {
   tester()->VerifyFetchAcceptLanguageList({"en", "ja", "it"});
   ReduceAcceptLanguageService incognito_service(settings_map(), prefs(), true);
-  // Verify incognito mode only has first accept language.
-  EXPECT_EQ(std::vector<std::string>{"en"},
+  // Verify incognito mode only relies on first language.
+  EXPECT_EQ((std::vector<std::string>{"en-US", "en"}),
             incognito_service.GetUserAcceptLanguages());
 }
 

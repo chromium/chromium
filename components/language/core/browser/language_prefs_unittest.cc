@@ -196,4 +196,26 @@ TEST_F(LanguagePrefsTest, ULPLanguagesPref) {
   EXPECT_THAT(language_prefs_->GetULPLanguages(), testing::IsEmpty());
 #endif
 }
+TEST_F(LanguagePrefsTest, GetIncognitoLanguageListTest) {
+  // Test mapping from generated map.
+  // For example "fr" should map to "fr-FR,fr,en-US,en" based on
+  // components_locale_settings_fr.xtb.
+  EXPECT_EQ("en-US,en", language::GetIncognitoLanguageList("en,fr"));
+  EXPECT_EQ("en-US,en", language::GetIncognitoLanguageList("en-US,fr"));
+  EXPECT_EQ("fr-FR,fr,en-US,en",
+            language::GetIncognitoLanguageList("fr,en-US"));
+  EXPECT_EQ("zh-CN,zh", language::GetIncognitoLanguageList("zh-CN,zh"));
+
+  // Test fallback heuristic for language not in map.
+  EXPECT_EQ("as,en-US,en", language::GetIncognitoLanguageList("as,en-US"));
+  EXPECT_EQ("zz,en-US,en", language::GetIncognitoLanguageList("zz,en-US"));
+
+  // Test empty or single language cases (should return unchanged).
+  EXPECT_EQ("", language::GetIncognitoLanguageList(""));
+  EXPECT_EQ("fr", language::GetIncognitoLanguageList("fr"));
+  EXPECT_EQ("zh-CN", language::GetIncognitoLanguageList("zh-CN"));
+  EXPECT_EQ("en", language::GetIncognitoLanguageList("en"));
+  EXPECT_EQ("en-US", language::GetIncognitoLanguageList("en-US"));
+}
+
 }  // namespace language
