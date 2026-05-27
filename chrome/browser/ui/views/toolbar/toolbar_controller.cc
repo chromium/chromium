@@ -323,16 +323,34 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
                                      : kUserAccountAvatarRefreshOldIcon)),
                kToolbarAvatarButtonElementId, kToolbarAvatarBubbleElementId),
            /*is_section_end=*/false)});
+
+  if (base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
+    elements.emplace_back(
+        ToolbarController::ElementIdInfo(
+            kGlicButtonElementId, IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL,
+            nullptr, kGlicButtonElementId),
+        /*is_section_end=*/false);
+  }
+
   return elements;
 }
 
 std::vector<ui::ElementIdentifier>
 ToolbarController::GetDefaultOverflowOrder() {
-  return std::vector<ui::ElementIdentifier>(
-      {kToolbarMediaButtonElementId, kToolbarBatterySaverButtonElementId,
-       kToolbarHomeButtonElementId, kToolbarForwardButtonElementId,
-       kToolbarAvatarButtonElementId, kToolbarSplitTabsToolbarButtonElementId,
-       ContextualTasksButton::kContextualTasksToolbarButton});
+  std::vector<ui::ElementIdentifier> order = {
+      kToolbarMediaButtonElementId,
+      kToolbarBatterySaverButtonElementId,
+      kToolbarHomeButtonElementId,
+      kToolbarForwardButtonElementId,
+      kToolbarAvatarButtonElementId,
+      kToolbarSplitTabsToolbarButtonElementId,
+      ContextualTasksButton::kContextualTasksToolbarButton};
+  if (base::FeatureList::IsEnabled(features::kToolbarGlicButtonResizing)) {
+    const auto it =
+        std::find(order.begin(), order.end(), kToolbarAvatarButtonElementId);
+    order.insert(it, kGlicButtonElementId);
+  }
+  return order;
 }
 
 // Every activate identifier should have an action name in order to emit
