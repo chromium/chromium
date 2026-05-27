@@ -3,35 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "phone_hub.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "PhoneHubAllowed": false
-        },
-        "prefs": {
-          "phone_hub.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "PhoneHubAllowed": true
-        },
-        "prefs": {
-          "phone_hub.allowed": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "phone_hub.allowed",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -3,27 +3,13 @@
     "os": [
       "ios"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PrintingEnabled": true
-        },
-        "prefs": {
-          "printing.enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "PrintingEnabled": false
-        },
-        "prefs": {
-          "printing.enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

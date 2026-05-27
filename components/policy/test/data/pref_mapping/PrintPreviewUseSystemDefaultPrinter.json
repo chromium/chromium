@@ -6,17 +6,13 @@
       "linux",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PrintPreviewUseSystemDefaultPrinter": false
-        },
-        "prefs": {
-          "printing.use_system_default_printer": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.use_system_default_printer",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

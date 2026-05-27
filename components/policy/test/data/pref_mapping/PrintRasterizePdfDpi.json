@@ -7,17 +7,12 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PrintRasterizePdfDpi": 300
-        },
-        "prefs": {
-          "printing.rasterize_pdf_dpi": {
-            "value": 300
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.rasterize_pdf_dpi",
+      "default_value": 0,
+      "values_to_test": [
+        300
+      ]
+    }
   }
 ]

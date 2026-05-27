@@ -7,21 +7,14 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PrinterTypeDenyList": [
-            "value1"
-          ]
-        },
-        "prefs": {
-          "printing.printer_type_deny_list": {
-            "value": [
-              "value1"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.printer_type_deny_list",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "value1"
+        ]
+      ]
+    }
   }
 ]

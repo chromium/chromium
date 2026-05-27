@@ -3,27 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PhysicalKeyboardPredictiveWriting": true
-        },
-        "prefs": {
-          "settings.ime.managed.physical_keyboard.predictive_writing_enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "PhysicalKeyboardPredictiveWriting": false
-        },
-        "prefs": {
-          "settings.ime.managed.physical_keyboard.predictive_writing_enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "settings.ime.managed.physical_keyboard.predictive_writing_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

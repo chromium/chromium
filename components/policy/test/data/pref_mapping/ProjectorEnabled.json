@@ -3,35 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "ash.projector.allow_by_policy": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "ProjectorEnabled": false
-        },
-        "prefs": {
-          "ash.projector.allow_by_policy": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ProjectorEnabled": true
-        },
-        "prefs": {
-          "ash.projector.allow_by_policy": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.projector.allow_by_policy",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

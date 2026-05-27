@@ -3,17 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PinUnlockMinimumLength": 4
-        },
-        "prefs": {
-          "pin_unlock_minimum_length": {
-            "value": 4
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "pin_unlock_minimum_length",
+      "default_value": 6,
+      "values_to_test": [
+        4,
+        6
+      ]
+    }
   }
 ]

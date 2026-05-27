@@ -6,17 +6,13 @@
       "mac",
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PdfAnnotationsEnabled": true
-        },
-        "prefs": {
-          "pdf.enable_annotations": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "pdf.enable_annotations",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

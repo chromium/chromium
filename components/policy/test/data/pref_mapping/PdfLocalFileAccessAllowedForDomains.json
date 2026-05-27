@@ -7,29 +7,14 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "pdf_local_file_access_allowed_for_domains": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "policies": {
-          "PdfLocalFileAccessAllowedForDomains": [
-            "google.com"
-          ]
-        },
-        "prefs": {
-          "pdf_local_file_access_allowed_for_domains": {
-            "value": [
-              "google.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "pdf_local_file_access_allowed_for_domains",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "google.com"
+        ]
+      ]
+    }
   }
 ]

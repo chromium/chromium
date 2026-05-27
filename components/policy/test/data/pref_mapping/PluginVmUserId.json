@@ -3,17 +3,12 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PluginVmUserId": "USER_ID"
-        },
-        "prefs": {
-          "plugin_vm.user_id": {
-            "value": "USER_ID"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "plugin_vm.user_id",
+      "default_value": "",
+      "values_to_test": [
+        "USER_ID"
+      ]
+    }
   }
 ]

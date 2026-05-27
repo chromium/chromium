@@ -3,27 +3,12 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "ash.settings.page_up_and_page_down_keys_modifier": {
-            "default_value": 0,
-            "location": "user_profile"
-          }
-        }
-      },
-      {
-        "policies": {
-          "PageUpAndPageDownKeysModifier": 1
-        },
-        "prefs": {
-          "ash.settings.page_up_and_page_down_keys_modifier": {
-            "location": "user_profile",
-            "value": 1
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.settings.page_up_and_page_down_keys_modifier",
+      "default_value": 0,
+      "values_to_test": [
+        1
+      ]
+    }
   }
 ]

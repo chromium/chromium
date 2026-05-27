@@ -3,17 +3,12 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PluginVmRequiredFreeDiskSpace": 25
-        },
-        "prefs": {
-          "plugin_vm.required_free_disk_space": {
-            "value": 25
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "plugin_vm.required_free_disk_space",
+      "default_value": 20,
+      "values_to_test": [
+        25
+      ]
+    }
   }
 ]

@@ -6,38 +6,12 @@
       "linux",
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ProvisionManagedClientCertificateForUser": 0
-        },
-        "prefs": {
-          "client_certificates.provision_for_user.value": {
-            "location": "user_profile",
-            "value": 0
-          }
-        }
-      },
-      {
-        "policies": {
-          "ProvisionManagedClientCertificateForUser": 1
-        },
-        "prefs": {
-          "client_certificates.provision_for_user.value": {
-            "location": "user_profile",
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "client_certificates.provision_for_user.value": {
-            "location": "user_profile",
-            "default_value": 0
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "client_certificates.provision_for_user.value",
+      "default_value": 0,
+      "values_to_test": [
+        1
+      ]
+    }
   }
 ]

@@ -3,23 +3,15 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PluginVmImage": {
-            "hash": "842841a4c75a55ad050d686f4ea5f77e83ae059877fe9b6946aa63d3d057ed32",
-            "url": "http://localhost/"
-          }
-        },
-        "prefs": {
-          "plugin_vm.image": {
-            "value": {
-              "hash": "842841a4c75a55ad050d686f4ea5f77e83ae059877fe9b6946aa63d3d057ed32",
-              "url": "http://localhost/"
-            }
-          }
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "plugin_vm.image",
+      "default_value": {},
+      "values_to_test": [
+        {
+          "hash": "842841a4c75a55ad050d686f4ea5f77e83ae059877fe9b6946aa63d3d057ed32",
+          "url": "http://localhost/"
         }
-      }
-    ]
+      ]
+    }
   }
 ]

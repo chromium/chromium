@@ -4,17 +4,13 @@
       "win",
       "mac"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "PrintPdfAsImageAvailability": true
-        },
-        "prefs": {
-          "printing.print_pdf_as_image_availability": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.print_pdf_as_image_availability",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]
