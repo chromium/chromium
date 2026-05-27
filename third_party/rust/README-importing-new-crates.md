@@ -75,7 +75,7 @@ To import a third-party crate follow the steps below:
    * `git add third_party/rust`
 1. Upload the CL and get a review from `//third_party/rust/OWNERS`
    (check
-   [`third_party/rust/OWNERS-review-checklist.md`](../third_party/rust/OWNERS-review-checklist.md)
+   [`third_party/rust/OWNERS-review-checklist.md`](OWNERS-review-checklist.md)
    to see what to expect).
 
 Note that at this point the new crate is still not seen by `gn` nor `ninja`,
