@@ -31,6 +31,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
+#include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -135,7 +136,22 @@ int GetSubtitleID(bool is_signin_promo,
           case SignedInState::kSyncPaused:
             break;
         }
-      }
+      } break;
+      case signin::SignInPromoType::kSendTabToSelf: {
+        switch (signed_in_state) {
+          case SignedInState::kSignedOut:
+          case SignedInState::kWebOnlySignedIn:
+          case SignedInState::kSignInPending:
+            return base::FeatureList::IsEnabled(
+                       send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)
+                       ? IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BODY
+                       : IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL;
+          case SignedInState::kSignedIn:
+          case SignedInState::kSyncing:
+          case SignedInState::kSyncPaused:
+            break;
+        }
+      } break;
     }
   }
 
@@ -248,6 +264,7 @@ void IncrementContextualPromoDismissCountPerSignedOutProfile(
                   kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment) +
               1);
     case signin::SignInPromoType::kExtension:
+    case signin::SignInPromoType::kSendTabToSelf:
       NOTREACHED();
   }
 }
@@ -283,6 +300,7 @@ void IncrementContextualPromoDismissCountPerAccount(
           .IncrementSearchAIModeSigninPromoDismissCount(account.gaia);
       break;
     case signin::SignInPromoType::kExtension:
+    case signin::SignInPromoType::kSendTabToSelf:
       NOTREACHED();
   }
 }
@@ -306,8 +324,18 @@ BubbleSignInPromoView::BubbleSignInPromoView(
     signin_metrics::AccessPoint access_point,
     std::optional<syncer::LocalDataItemModel::DataId> data_id,
     ui::ButtonStyle button_style)
-    : access_point_(access_point),
-      delegate_(CreateDelegate(web_contents, access_point, data_id)) {
+    : BubbleSignInPromoView(web_contents,
+                            access_point,
+                            CreateDelegate(web_contents, access_point, data_id),
+                            button_style) {}
+
+BubbleSignInPromoView::BubbleSignInPromoView(
+    content::WebContents* web_contents,
+    signin_metrics::AccessPoint access_point,
+    std::unique_ptr<BubbleSignInPromoDelegate> delegate,
+    ui::ButtonStyle button_style)
+    : access_point_(access_point), delegate_(std::move(delegate)) {
+  CHECK(delegate_);
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetOriginalProfile();

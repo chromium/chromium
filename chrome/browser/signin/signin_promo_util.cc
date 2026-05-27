@@ -293,6 +293,7 @@ bool IsAllowedByPromoFrequency(Profile& profile,
     case SignInPromoType::kAddress:
     case SignInPromoType::kBookmark:
     case SignInPromoType::kExtension:
+    case SignInPromoType::kSendTabToSelf:
       // No specific frequency exists for this promo type.
       return true;
     case SignInPromoType::kSearchAIMode:
@@ -402,9 +403,10 @@ syncer::DataType GetDataTypeFromSignInPromoType(SignInPromoType type) {
     case SignInPromoType::kExtension:
       return syncer::EXTENSIONS;
     case SignInPromoType::kSearchAIMode:
-      // Search AI Mode sign-in promo is not related to any
-      // synced data type.
+      // Search AI Mode sign-in promo is not related to any synced data type.
       NOTREACHED();
+    case SignInPromoType::kSendTabToSelf:
+      return syncer::SEND_TAB_TO_SELF;
   }
 }
 
@@ -414,10 +416,10 @@ bool PromoTypeHasSyncableData(SignInPromoType type) {
     case SignInPromoType::kAddress:
     case SignInPromoType::kBookmark:
     case SignInPromoType::kExtension:
+    case SignInPromoType::kSendTabToSelf:
       return true;
     case SignInPromoType::kSearchAIMode:
-      // Search AI Mode sign-in promo is not related to any
-      // synced data type.
+      // Search AI Mode sign-in promo is not related to any synced data type.
       return false;
   }
   NOTREACHED();
@@ -487,6 +489,7 @@ int GetContextualPromoDismissCountPerSignedOutProfile(Profile& profile,
       return profile.GetPrefs()->GetInteger(
           prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment);
     case SignInPromoType::kExtension:
+    case SignInPromoType::kSendTabToSelf:
       NOTREACHED();
     case SignInPromoType::kSearchAIMode:
       return profile.GetPrefs()->GetInteger(
@@ -517,6 +520,7 @@ int GetContextualPromoDismissCountPerAccount(Profile& profile,
       return SigninPrefs(*profile.GetPrefs())
           .GetBookmarkSigninPromoDismissCount(gaia_id);
     case SignInPromoType::kExtension:
+    case SignInPromoType::kSendTabToSelf:
       NOTREACHED();
   }
 }
@@ -525,6 +529,7 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
                                                       SignInPromoType type) {
   // Footer sign in promos are always shown.
   if (type == signin::SignInPromoType::kExtension ||
+      type == signin::SignInPromoType::kSendTabToSelf ||
       (type == signin::SignInPromoType::kBookmark &&
        !base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp))) {
     return true;
@@ -551,6 +556,7 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
       show_count = GetBookmarkPromoShownCount(profile, account.gaia);
       break;
     case SignInPromoType::kExtension:
+    case SignInPromoType::kSendTabToSelf:
       NOTREACHED();
   }
 
@@ -579,6 +585,18 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
          IsAllowedByPromoFrequency(profile, type, account.gaia);
 }
 
+bool IsDataTypeManagedByPolicy(const syncer::SyncService* sync_service,
+                               syncer::DataType data_type) {
+  if (!sync_service) {
+    return false;
+  }
+  std::optional<syncer::UserSelectableType> selectable_type =
+      syncer::GetUserSelectableTypeFromDataType(data_type);
+  return selectable_type.has_value() &&
+         sync_service->GetUserSettings()->IsTypeManagedByPolicy(
+             *selectable_type);
+}
+
 // Common eligibility checks for signin promos relating to the syncing of an
 // underlying syncable data type.
 bool CanShowPromoForSyncableDataType(SignInPromoType type, Profile& profile) {
@@ -601,8 +619,7 @@ bool CanShowPromoForSyncableDataType(SignInPromoType type, Profile& profile) {
   syncer::DataType data_type = GetDataTypeFromSignInPromoType(type);
 
   // Don't show the promo if policies disallow account storage.
-  if (sync_service->GetUserSettings()->IsTypeManagedByPolicy(
-          GetUserSelectableTypeFromDataType(data_type).value()) ||
+  if (IsDataTypeManagedByPolicy(sync_service, data_type) ||
       !sync_service->GetDataTypesForTransportOnlyMode().Has(data_type)) {
     return false;
   }
@@ -800,6 +817,12 @@ bool IsSignInPromo(signin_metrics::AccessPoint access_point) {
 #endif
   }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  if (access_point == signin_metrics::AccessPoint::kSendTabToSelfPromo) {
+    return true;
+  }
+#endif
+
   return false;
 }
 
@@ -816,6 +839,8 @@ SignInPromoType GetSignInPromoTypeFromAccessPoint(
       return SignInPromoType::kSearchAIMode;
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
       return SignInPromoType::kExtension;
+    case signin_metrics::AccessPoint::kSendTabToSelfPromo:
+      return SignInPromoType::kSendTabToSelf;
     default:
       NOTREACHED();
   }
@@ -866,6 +891,7 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
                 : prefs::kBookmarkSignInPromoShownCountPerProfile;
         break;
       case SignInPromoType::kExtension:
+      case SignInPromoType::kSendTabToSelf:
         return;
     }
 
@@ -899,6 +925,7 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
       }
       return;
     case SignInPromoType::kExtension:
+    case SignInPromoType::kSendTabToSelf:
       return;
   }
 }

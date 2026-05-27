@@ -116,6 +116,7 @@ source_set("impl") {
       "//chrome/browser/ui/toasts",
       "//chrome/browser/ui/web_applications",
       "//components/pref_registry",
+      "//components/send_tab_to_self:features",
       "//components/user_education/common",
     ]
   }

@@ -176,6 +176,10 @@ TEST(SigninPromoTest, IsSignInPromo_AutofillTypes) {
   EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
   EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
 }
+
+TEST(SigninPromoTest, IsSignInPromo_SendTabToSelf) {
+  EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kSendTabToSelfPromo));
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // ChromeOS currently does not show any sign in promos.
@@ -186,6 +190,7 @@ TEST(SigninPromoTest, IsSignInPromo) {
   EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
   EXPECT_FALSE(
       IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kSendTabToSelfPromo));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
@@ -196,6 +201,27 @@ TEST(SigninPromoTest, IsSignInPromo_ExtensionsWithExplicitSignin) {
       IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST(SigninPromoTest, GetSignInPromoTypeFromAccessPoint) {
+  EXPECT_EQ(SignInPromoType::kPassword,
+            GetSignInPromoTypeFromAccessPoint(
+                signin_metrics::AccessPoint::kPasswordBubble));
+  EXPECT_EQ(SignInPromoType::kAddress,
+            GetSignInPromoTypeFromAccessPoint(
+                signin_metrics::AccessPoint::kAddressBubble));
+  EXPECT_EQ(SignInPromoType::kBookmark,
+            GetSignInPromoTypeFromAccessPoint(
+                signin_metrics::AccessPoint::kBookmarkBubble));
+  EXPECT_EQ(SignInPromoType::kSearchAIMode,
+            GetSignInPromoTypeFromAccessPoint(
+                signin_metrics::AccessPoint::kSearchAIModeBubble));
+  EXPECT_EQ(SignInPromoType::kExtension,
+            GetSignInPromoTypeFromAccessPoint(
+                signin_metrics::AccessPoint::kExtensionInstallBubble));
+  EXPECT_EQ(SignInPromoType::kSendTabToSelf,
+            GetSignInPromoTypeFromAccessPoint(
+                signin_metrics::AccessPoint::kSendTabToSelfPromo));
+}
 
 class ShowPromoTest : public testing::Test {
  public:
