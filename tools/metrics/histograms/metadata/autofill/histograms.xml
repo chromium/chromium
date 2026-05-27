@@ -5726,6 +5726,16 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.OneTimeTokens.Backend.Gmail.ErrorCode"
+    enum="GmailOneTimeTokensBackendErrorCode" expires_after="2027-05-01">
+  <owner>koerber@google.com</owner>
+  <owner>src/components/one_time_tokens/OWNERS</owner>
+  <summary>
+    Records the error encountered while attempting to retrieve Gmail one time
+    tokens. Recorded when a retrieval attempt fails.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.OneTimeTokens.Backend.Gmail.ErrorLatency" units="ms"
     expires_after="2027-05-01">
   <owner>koerber@google.com</owner>

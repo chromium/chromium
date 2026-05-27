@@ -357,4 +357,31 @@ TEST_F(GmailOtpBackendImplTest, SubscriptionWaitLatencyRecordsWaitTime) {
       base::Seconds(2), 1);
 }
 
+// Tests that if the backend is created with null URLLoaderFactory, Subscribe
+// immediately fails with kGmailOtpBackendInitializationFailed.
+TEST_F(GmailOtpBackendImplTest, Subscribe_InitializationFailed) {
+  base::HistogramTester histogram_tester;
+  GmailOtpBackendImpl bad_backend(/*url_loader_factory=*/nullptr,
+                                  *identity_test_env_.identity_manager());
+  base::test::TestFuture<
+      base::expected<OneTimeToken, OneTimeTokenRetrievalError>>
+      future;
+  ExpiringSubscription subscription = bad_backend.Subscribe(
+      base::Time::Now() + base::Minutes(1), future.GetRepeatingCallback());
+
+  const base::expected<OneTimeToken, OneTimeTokenRetrievalError>& result =
+      future.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(),
+            OneTimeTokenRetrievalError::kGmailOtpBackendInitializationFailed);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.Success", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.OneTimeTokens.Backend.Gmail.ErrorCode",
+      static_cast<int>(
+          OneTimeTokenRetrievalError::kGmailOtpBackendInitializationFailed),
+      1);
+}
+
 }  // namespace one_time_tokens

@@ -5103,6 +5103,29 @@ Called by update_autofill_enums.py.-->
 
 <!-- LINT.ThenChange(//components/autofill/ios/form_util/form_activity_tab_helper.mm:FormSubmissionOutcomeIOS) -->
 
+<!-- LINT.IfChange(GmailOneTimeTokensBackendErrorCode) -->
+
+<enum name="GmailOneTimeTokensBackendErrorCode">
+  <int value="8" label="Auth error"/>
+  <int value="9" label="Network error"/>
+  <int value="10" label="Invalid response"/>
+  <int value="12" label="Unknown error"/>
+  <int value="13" label="API not available"/>
+  <int value="14" label="Initialization failed"/>
+  <int value="15" label="Smart features in Gmail consent required"/>
+  <int value="16"
+      label="Smart features in other Google products consent required"/>
+  <int value="17" label="DMA cross product sharing consent required"/>
+  <int value="18" label="Bad message reference"/>
+  <int value="19" label="Message ID not found"/>
+  <int value="20" label="Wrong token type requested"/>
+  <int value="21" label="One time token expired"/>
+  <int value="22" label="OTP attribute not found"/>
+  <int value="23" label="Server error"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/one_time_tokens/core/browser/one_time_token_retrieval_error.h) -->
+
 <enum name="IbanCountry">
   <int value="0" label="Unsupport"/>
   <int value="1" label="AD (Andorra)"/>
