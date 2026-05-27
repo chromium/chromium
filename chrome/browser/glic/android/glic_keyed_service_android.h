@@ -54,6 +54,7 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   void OnGlobalShowHide();
   void OnUserEnabledActuationOnWebChanged();
+  void OnAllowedStateChanged();
 
   // Returns the GlicKeyedServiceImpl java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
@@ -68,6 +69,7 @@ class GlicKeyedServiceAndroid : public base::SupportsUserData::Data {
 
   base::CallbackListSubscription global_show_hide_subscription_;
   base::CallbackListSubscription web_actuation_pref_subscription_;
+  base::CallbackListSubscription allowed_changed_subscription_;
 };
 
 }  // namespace glic

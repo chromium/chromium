@@ -68,6 +68,9 @@ GlicKeyedServiceAndroid::GlicKeyedServiceAndroid(GlicKeyedService* service)
           base::BindRepeating(
               &GlicKeyedServiceAndroid::OnUserEnabledActuationOnWebChanged,
               base::Unretained(this)));
+  allowed_changed_subscription_ = service_->enabling().RegisterAllowedChanged(
+      base::BindRepeating(&GlicKeyedServiceAndroid::OnAllowedStateChanged,
+                          base::Unretained(this)));
 }
 
 GlicKeyedServiceAndroid::~GlicKeyedServiceAndroid() {
@@ -144,6 +147,11 @@ void GlicKeyedServiceAndroid::OnUserEnabledActuationOnWebChanged() {
   bool enabled = service_->enabling().GetUserEnabledActuationOnWeb();
   Java_GlicKeyedServiceImpl_onUserEnabledActuationOnWebChanged(env, java_obj_,
                                                                enabled);
+}
+
+void GlicKeyedServiceAndroid::OnAllowedStateChanged() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_GlicKeyedServiceImpl_onAllowedStateChanged(env, java_obj_);
 }
 
 }  // namespace glic

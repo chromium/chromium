@@ -82,6 +82,17 @@ public interface GlicKeyedService {
     /** Removes an observer for user enabled actuation on web changes. */
     void removeUserEnabledActuationOnWebObserver(UserEnabledActuationOnWebObserver observer);
 
+    /** Observer for allowed changes. */
+    interface AllowedChangedObserver {
+        void onAllowedStateChanged();
+    }
+
+    /** Adds an observer for allowed changes. */
+    void addAllowedChangedObserver(AllowedChangedObserver observer);
+
+    /** Removes an observer for allowed changes. */
+    void removeAllowedChangedObserver(AllowedChangedObserver observer);
+
     /**
      * Checks if the panel is showing for a specific browser window.
      *

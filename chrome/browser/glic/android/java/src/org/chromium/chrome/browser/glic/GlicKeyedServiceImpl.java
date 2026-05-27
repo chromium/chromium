@@ -28,6 +28,8 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
     private final ObserverList<GlobalShowHideObserver> mObservers = new ObserverList<>();
     private final ObserverList<UserEnabledActuationOnWebObserver>
             mUserEnabledActuationOnWebObservers = new ObserverList<>();
+    private final ObserverList<AllowedChangedObserver> mAllowedChangedObservers =
+            new ObserverList<>();
 
     @CalledByNative
     private static GlicKeyedServiceImpl create(long nativePtr) {
@@ -113,10 +115,27 @@ public class GlicKeyedServiceImpl implements GlicKeyedService {
         mUserEnabledActuationOnWebObservers.removeObserver(observer);
     }
 
+    @Override
+    public void addAllowedChangedObserver(AllowedChangedObserver observer) {
+        mAllowedChangedObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeAllowedChangedObserver(AllowedChangedObserver observer) {
+        mAllowedChangedObservers.removeObserver(observer);
+    }
+
     @CalledByNative
     private void onUserEnabledActuationOnWebChanged(boolean enabled) {
         for (UserEnabledActuationOnWebObserver observer : mUserEnabledActuationOnWebObservers) {
             observer.onUserEnabledActuationOnWebChanged(enabled);
+        }
+    }
+
+    @CalledByNative
+    private void onAllowedStateChanged() {
+        for (AllowedChangedObserver observer : mAllowedChangedObservers) {
+            observer.onAllowedStateChanged();
         }
     }
 
