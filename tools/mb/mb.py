@@ -1748,7 +1748,6 @@ class MetaBuildWrapper:
     is_mac = ((self.platform == 'darwin' and not is_ios)
               or 'target_os="mac"' in vals['gn_args'])
     is_win = self.platform == 'win32' or 'target_os="win"' in vals['gn_args']
-    is_lacros = 'chromeos_is_browser_only=true' in vals['gn_args']
 
     # This should be true if tests with type='windowed_test_launcher' are
     # expected to run using xvfb. For example, Linux Desktop, X11 CrOS and
@@ -1785,7 +1784,7 @@ class MetaBuildWrapper:
     else:
       bot_mode = ()
 
-    if test_type == 'generated_script' or is_ios or is_lacros:
+    if test_type == 'generated_script' or is_ios:
       assert 'script' not in isolate_map[target], (
           'generated_scripts can no longer customize the script path')
       if is_win:

@@ -84,7 +84,6 @@ EOF
         cat <<EOF
 target_os = "chromeos"
 clang_use_chrome_plugins = false
-chromeos_is_browser_only = false
 dcheck_always_on = true
 is_chrome_branded = true
 is_debug = false
