@@ -550,6 +550,8 @@ public class SettingsSearchCoordinator
     }
 
     private void observeFragmentForVisibilityChange() {
+        View searchBox = mActivity.findViewById(R.id.search_box);
+        searchBox.setVisibility(View.VISIBLE);
         getSettingsFragmentManager()
                 .registerFragmentLifecycleCallbacks(
                         new FragmentManager.FragmentLifecycleCallbacks() {
@@ -557,6 +559,7 @@ public class SettingsSearchCoordinator
                             public void onFragmentResumed(FragmentManager fm, Fragment f) {
                                 View searchBox = mActivity.findViewById(R.id.search_box);
                                 if (f instanceof MainSettings) {
+                                    if (searchBox.getVisibility() == View.VISIBLE) return;
                                     showUiInSingleColumn(searchBox, true);
                                 } else if (f instanceof PreferenceFragmentCompat) {
                                     showUiInSingleColumn(searchBox, false);
