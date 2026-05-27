@@ -1473,6 +1473,7 @@
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'pixel',
+        'ci_only': True,
       },
       'screenshot_sync_metal_passthrough_graphite_tests': {
         'test_common': {
@@ -2041,6 +2042,7 @@
           'module_scheme': 'flat',
         },
         'telemetry_test_name': 'webgl1_conformance',
+        'ci_only': True,
       },
     },
 
