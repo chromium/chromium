@@ -81,7 +81,7 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
   media::mojom::SpeechRecognitionOptionsPtr options =
       media::mojom::SpeechRecognitionOptions::New();
   options->recognition_mode = media::mojom::SpeechRecognitionMode::kCaption;
-  options->enable_formatting = false;
+  options->enable_formatting = config_.unspoken_punctuation;
   options->recognizer_client_type =
       media::mojom::RecognizerClientType::kLiveCaption;
   options->skip_continuously_empty_audio = true;

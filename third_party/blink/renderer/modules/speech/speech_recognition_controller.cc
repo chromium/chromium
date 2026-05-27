@@ -75,6 +75,7 @@ SpeechRecognitionController::BuildStartSpeechRecognitionRequestParams(
     bool continuous,
     bool interim_results,
     uint32_t max_alternatives,
+    bool unspoken_punctuation,
     bool on_device,
     bool allow_cloud_fallback,
     media::mojom::blink::SpeechRecognitionQuality quality,
@@ -103,6 +104,7 @@ SpeechRecognitionController::BuildStartSpeechRecognitionRequestParams(
   params->max_hypotheses = max_alternatives;
   params->continuous = continuous;
   params->interim_results = interim_results;
+  params->unspoken_punctuation = unspoken_punctuation;
   params->on_device = on_device;
   params->allow_cloud_fallback = allow_cloud_fallback;
   params->client = std::move(session_client);

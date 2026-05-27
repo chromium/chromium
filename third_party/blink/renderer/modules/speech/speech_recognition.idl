@@ -64,6 +64,7 @@ dictionary SpeechRecognitionOptions {
     attribute DOMString lang;
     attribute boolean continuous;
     attribute boolean interimResults;
+    [RuntimeEnabled=WebSpeechUnspokenPunctuation] attribute boolean unspokenPunctuation;
     attribute unsigned long maxAlternatives;
     [RuntimeEnabled=OnDeviceWebSpeechQuality] attribute SpeechRecognitionQuality quality;
     [RuntimeEnabled=OnDeviceWebSpeechAvailable] attribute boolean processLocally;

@@ -72,6 +72,7 @@ class MODULES_EXPORT SpeechRecognitionController final
       bool continuous,
       bool interim_results,
       uint32_t max_alternatives,
+      bool unspoken_punctuation,
       bool on_device,
       bool allow_cloud_fallback,
       media::mojom::blink::SpeechRecognitionQuality quality,

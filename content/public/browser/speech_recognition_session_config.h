@@ -36,6 +36,7 @@ struct CONTENT_EXPORT SpeechRecognitionSessionConfig {
   bool filter_profanities = false;
   bool continuous = false;
   bool interim_results = false;
+  bool unspoken_punctuation = false;
   uint32_t max_hypotheses = 1;
   bool on_device = false;  // Whether on-device speech recognition must be used.
   bool on_device_available = false;  // Whether on-device speech recognition is

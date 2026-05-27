@@ -231,6 +231,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
   config.filter_profanities = false;
   config.continuous = params->continuous;
   config.interim_results = params->interim_results;
+  config.unspoken_punctuation = params->unspoken_punctuation;
   config.on_device = params->on_device;
   config.on_device_available = on_device_available;
   config.allow_cloud_fallback = params->allow_cloud_fallback;

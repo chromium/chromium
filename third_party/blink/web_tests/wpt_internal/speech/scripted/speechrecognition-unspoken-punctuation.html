@@ -1,0 +1,35 @@
+<!doctype html>
+<title>Test unspokenPunctuation parameter with the Speech JavaScript API</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockSpeechRecognizer} from '../resources/mock-speechrecognizer.js';
+
+const mock = new MockSpeechRecognizer();
+
+test(() => {
+  const r = new webkitSpeechRecognition();
+  assert_false(r.unspokenPunctuation, 'unspokenPunctuation should default to false');
+  r.unspokenPunctuation = true;
+  assert_true(r.unspokenPunctuation, 'unspokenPunctuation should be settable to true');
+}, "webkitSpeechRecognition.unspokenPunctuation attribute");
+
+test(() => {
+  if ('SpeechRecognition' in self) {
+    const r = new SpeechRecognition();
+    assert_false(r.unspokenPunctuation, 'unspokenPunctuation should default to false');
+    r.unspokenPunctuation = true;
+    assert_true(r.unspokenPunctuation, 'unspokenPunctuation should be settable to true');
+  }
+}, "SpeechRecognition.unspokenPunctuation attribute");
+
+async_test(t => {
+  const r = new webkitSpeechRecognition();
+  r.unspokenPunctuation = true;
+  r.onstart = t.step_func_done(() => {
+    assert_true(mock.startParams().unspokenPunctuation, 'mock should receive unspokenPunctuation: true');
+  });
+  r.start();
+}, "webkitSpeechRecognition.unspokenPunctuation passes to mock");
+
+</script>

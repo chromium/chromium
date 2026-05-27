@@ -644,7 +644,7 @@ void SpeechRecognition::StartController(
   auto params = controller_->BuildStartSpeechRecognitionRequestParams(
       std::move(session_receiver), std::move(session_client), *grammars_,
       phrases_.Get(), lang_, continuous_, interim_results_, max_alternatives_,
-      can_use_on_device_recognition,
+      unspoken_punctuation_, can_use_on_device_recognition,
       /*allow_cloud_fallback=*/!process_locally_,
       SpeechRecognitionQualityToMojom(quality_),
       std::move(audio_forwarder_receiver), std::move(audio_parameters));
