@@ -37,12 +37,12 @@
 </div>
 <span id="plain-span">Not clickable</span>
 
-<!-- ARIA-button with a click listener attached via JS: kept (the
-     listener satisfies the click-handler requirement). -->
+<!-- ARIA-button with a click listener AND keyboard focusability via
+     tabindex: kept (both Author MUSTs satisfied). -->
 <div role="group" id="listener-host" aria-actions="aria-button-with-listener">
   Listener host
 </div>
-<div id="aria-button-with-listener" role="button">Run</div>
+<div id="aria-button-with-listener" role="button" tabindex="0">Run</div>
 
 <!-- All targets fail the click-handler check — kHasActions must not
      appear on this host. -->

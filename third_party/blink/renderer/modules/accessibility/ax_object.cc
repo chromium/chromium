@@ -232,8 +232,8 @@ void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
 // Returns true if |target| satisfies the Author MUST requirements for
 // aria-actions targets per the spec PR
 // (https://github.com/w3c/aria/pull/1805) #aria-actions. The UA drops targets
-// that fail these checks. Validates accessible name and click-handler
-// availability; a follow-up CL adds the keyboard-accessibility check.
+// that fail these checks. Validates accessible name, click-handler
+// availability, and keyboard accessibility.
 bool IsValidAriaActionsTarget(const AXObject& target) {
   String name = target.ComputedName();
   if (name.StripWhiteSpace().empty()) {
@@ -242,7 +242,15 @@ bool IsValidAriaActionsTarget(const AXObject& target) {
   // IsClickable() is virtually dispatched to AXNodeObject::IsClickable(),
   // which considers mouse-button event listeners, contenteditable, native
   // clickable roles, and correctly returns false for disabled elements.
-  return target.IsClickable();
+  if (!target.IsClickable()) {
+    return false;
+  }
+  // CanSetFocusAttribute() accepts elements that are either mouse-focusable
+  // (native focusable roles, tabindex>=0, or tabindex=-1 inside a
+  // managed-focus widget) or keyboard-focusable. It rejects disabled,
+  // hidden, and inert elements. The const overload returns the cached
+  // value, which has been updated by the surrounding serialization path.
+  return target.CanSetFocusAttribute();
 }
 
 // Max length for attributes such as aria-label.

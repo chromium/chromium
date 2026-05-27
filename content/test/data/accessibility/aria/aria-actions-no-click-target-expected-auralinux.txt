@@ -12,7 +12,7 @@
 ++++[static] name='Not clickable' actions=(doDefault, showContextMenu)
 ++[panel] actions=(doDefault, showContextMenu, custom_aria-button-with-listener)
 ++++[static] name='Listener host' actions=(doDefault, showContextMenu)
-++[push button] name='Run' actions=(click, showContextMenu)
+++[push button] name='Run' actions=(press, showContextMenu)
 ++[panel] actions=(doDefault, showContextMenu)
 ++++[static] name='All invalid host' actions=(doDefault, showContextMenu)
 ++[push button] name='No listener' actions=(doDefault, showContextMenu)

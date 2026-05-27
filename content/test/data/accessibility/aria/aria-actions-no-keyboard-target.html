@@ -1,0 +1,53 @@
+<!--
+@AURALINUX-ALLOW:actions*
+@BLINK-ALLOW:actions*
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:hasActions*
+@WIN-ALLOW:has-actions*
+@UIA-WIN-ALLOW:*hasactions=true*
+-->
+
+<!-- Spec PR 1805 #aria-actions requires aria-actions targets to be keyboard
+     accessible. AXObject::CanSetFocusAttribute() returns true for any
+     element a user can focus — natively focusable elements, tabindex>=0,
+     and tabindex=-1 inside a managed-focus widget — and false for
+     disabled, hidden, and inert elements. Every target in this file
+     carries an accessible name and a click handler so it passes the
+     prior two filters; these scenarios isolate the keyboard check. -->
+
+<!-- Mixed: a native button (kept) and a span with a click listener
+     but no focusable role and no tabindex (dropped). -->
+<div role="group" id="mixed-host" aria-actions="native-button clickable-span">
+  Mixed host
+</div>
+<button id="native-button">Save</button>
+<span id="clickable-span" onclick="">Edit</span>
+
+<!-- ARIA-button with a click listener but no tabindex: clickable
+     via mouse but not reachable by keyboard. Dropped. -->
+<div role="group" id="not-focusable-host" aria-actions="aria-button-no-tabindex">
+  Not focusable host
+</div>
+<div id="aria-button-no-tabindex" role="button" onclick="">Run</div>
+
+<!-- ARIA-button with a click listener AND tabindex=0: passes all
+     three checks. Kept. -->
+<div role="group" id="tab-focusable-host" aria-actions="aria-button-tabindex-0">
+  Tab-focusable host
+</div>
+<div id="aria-button-tabindex-0" role="button" tabindex="0" onclick="">Open</div>
+
+<!-- Native button with tabindex=-1: mouse-focusable, valid for
+     programmatic focus inside a managed-focus widget. Kept. -->
+<div role="group" id="negative-tabindex-host" aria-actions="negative-tabindex-button">
+  Negative tabindex host
+</div>
+<button id="negative-tabindex-button" tabindex="-1">Close</button>
+
+<!-- All targets fail the keyboard check — kHasActions must not
+     appear on this host. -->
+<div role="group" id="all-invalid-host" aria-actions="clickable-span2 aria-button-no-tabindex2">
+  All invalid host
+</div>
+<span id="clickable-span2" onclick="">Another span</span>
+<div id="aria-button-no-tabindex2" role="button" onclick="">Another button</div>

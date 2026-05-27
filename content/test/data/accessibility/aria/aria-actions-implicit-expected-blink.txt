@@ -9,15 +9,15 @@ rootWebArea
 ++++++++++++++++staticText ignored invisible
 ++++++++dialog invisible ispopup=auto
 ++++++++++genericContainer invisible
-++++++++++++menuListOption hasActions name='hello world' selected=true actionsIds=button
+++++++++++++menuListOption name='hello world' selected=true
 ++++++++++++++genericContainer
 ++++++++++++++++button name='hello world'
 ++++++++++++++++++staticText name='hello world'
-++++++++++++menuListOption invisible hasActions name='search engine' selected=false actionsIds=link
+++++++++++++menuListOption invisible name='search engine' selected=false
 ++++++++++++++genericContainer invisible
 ++++++++++++++++link invisible name='search engine'
 ++++++++++++++++++staticText invisible name='search engine'
-++++++++++++menuListOption invisible hasActions name='my-first-button my-second-button my-link' selected=false actionsIds=button,button,link
+++++++++++++menuListOption invisible name='my-first-button my-second-button my-link' selected=false
 ++++++++++++++genericContainer invisible
 ++++++++++++++++button invisible name='my-first-button'
 ++++++++++++++++++staticText invisible name='my-first-button'

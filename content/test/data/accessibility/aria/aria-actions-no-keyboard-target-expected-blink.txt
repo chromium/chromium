@@ -1,0 +1,39 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group hasActions actionsIds=button
+++++++++staticText name='Mixed host' nameFrom=contents
+++++++++++inlineTextBox name='Mixed host' nameFrom=contents
+++++++button name='Save' nameFrom=contents
+++++++++staticText name='Save' nameFrom=contents
+++++++++++inlineTextBox name='Save' nameFrom=contents
+++++++genericContainer
+++++++++staticText name='Edit' nameFrom=contents
+++++++++++inlineTextBox name='Edit' nameFrom=contents
+++++++group
+++++++++staticText name='Not focusable host' nameFrom=contents
+++++++++++inlineTextBox name='Not focusable host' nameFrom=contents
+++++++button name='Run' nameFrom=contents
+++++++++staticText name='Run' nameFrom=contents
+++++++++++inlineTextBox name='Run' nameFrom=contents
+++++++group hasActions actionsIds=button
+++++++++staticText name='Tab-focusable host' nameFrom=contents
+++++++++++inlineTextBox name='Tab-focusable host' nameFrom=contents
+++++++button name='Open' nameFrom=contents
+++++++++staticText name='Open' nameFrom=contents
+++++++++++inlineTextBox name='Open' nameFrom=contents
+++++++group hasActions actionsIds=button
+++++++++staticText name='Negative tabindex host' nameFrom=contents
+++++++++++inlineTextBox name='Negative tabindex host' nameFrom=contents
+++++++button name='Close' nameFrom=contents
+++++++++staticText name='Close' nameFrom=contents
+++++++++++inlineTextBox name='Close' nameFrom=contents
+++++++group
+++++++++staticText name='All invalid host' nameFrom=contents
+++++++++++inlineTextBox name='All invalid host' nameFrom=contents
+++++++genericContainer
+++++++++staticText name='Another span' nameFrom=contents
+++++++++++inlineTextBox name='Another span' nameFrom=contents
+++++++button name='Another button' nameFrom=contents
+++++++++staticText name='Another button' nameFrom=contents
+++++++++++inlineTextBox name='Another button' nameFrom=contents
