@@ -52,32 +52,6 @@ std::unique_ptr<AudioBuffer::ExternalMemory> AllocateMemory(size_t size) {
   return std::make_unique<SelfOwnedMemory>(size);
 }
 
-template <typename T>
-base::span<T> CastSpan(base::span<uint8_t> span) {
-  CHECK_EQ(span.size() % sizeof(T), 0u);
-  CHECK(base::IsAligned(span.data(), alignof(T)));
-  // SAFETY: Spanification documentation strongly discourages
-  // `reinterpret_cast`, but it is a necessary evil throughout this file, as we
-  // store multiple format types as bytes. Checking that the data is aligned
-  // and that the size divisible is the best we can do here.
-  return UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<T*>(span.data()), span.size() / sizeof(T)));
-}
-
-template <typename T>
-base::span<const T> CastConstSpan(base::span<const uint8_t> span) {
-  CHECK_EQ(span.size() % sizeof(T), 0u);
-  CHECK(base::IsAligned(span.data(), alignof(T)));
-  // SAFETY: See `CastSpan()` comment.
-  return UNSAFE_BUFFERS(base::span(reinterpret_cast<const T*>(span.data()),
-                                   span.size() / sizeof(T)));
-}
-
-template <>
-base::span<const uint8_t> CastConstSpan(base::span<const uint8_t> span) {
-  return span;
-}
-
 
 template <typename SampleTypeTraits>
 void PlanarRead(AudioBus* dest,
@@ -90,8 +64,11 @@ void PlanarRead(AudioBus* dest,
   CHECK_EQ(static_cast<size_t>(dest->channels()), source.size());
   for (auto [dest_ch, source_ch] : base::zip(dest->AllChannels(), source)) {
     auto dest_data = dest_ch.subspan(dest_offset, frames);
-    auto source_data = CastConstSpan<SourceValueType>(source_ch).subspan(
-        source_offset, frames);
+    // This code in `//media` is hot, so it's worth using
+    // `reinterpret_span` to keep performance up.
+    auto source_data =
+        base::subtle::reinterpret_span<SourceValueType>(source_ch).subspan(
+            source_offset, frames);
 
     std::ranges::transform(source_data, dest_data.begin(),
                            SampleTypeTraits::ToFloat);
@@ -531,8 +508,11 @@ std::unique_ptr<AudioBus> AudioBuffer::WrapOrCopyToAudioBus(
     audio_bus->set_frames(frames);
 
     for (int ch = 0; ch < channels; ++ch) {
+      // This code in `//media` is hot, so it's worth using
+      // `reinterpret_span` to keep performance up.
       audio_bus->SetChannelData(
-          ch, CastSpan<float>(buffer->channel_spans_[ch]).first(frames));
+          ch, base::subtle::reinterpret_span<float>(buffer->channel_spans_[ch])
+                  .first(frames));
     }
 
     // Keep `buffer` alive as long as `audio_bus`.
@@ -631,19 +611,23 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
   base::span<const uint8_t> source_data =
       data_->span().subspan(source_offset * frame_size, frames * frame_size);
 
+  // This code in `//media` is hot, so it's worth using
+  // `reinterpret_span` to keep performance up.
   if (sample_format_ == kSampleFormatF32) {
     dest->FromInterleavedPartial<Float32SampleTypeTraits>(
-        CastConstSpan<float>(source_data), dest_offset);
+        base::subtle::reinterpret_span<const float>(source_data), dest_offset);
   } else if (sample_format_ == kSampleFormatU8) {
     dest->FromInterleavedPartial<UnsignedInt8SampleTypeTraits>(source_data,
                                                                dest_offset);
   } else if (sample_format_ == kSampleFormatS16) {
     dest->FromInterleavedPartial<SignedInt16SampleTypeTraits>(
-        CastConstSpan<int16_t>(source_data), dest_offset);
+        base::subtle::reinterpret_span<const int16_t>(source_data),
+        dest_offset);
   } else if (sample_format_ == kSampleFormatS24 ||
              sample_format_ == kSampleFormatS32) {
     dest->FromInterleavedPartial<SignedInt32SampleTypeTraits>(
-        CastConstSpan<int32_t>(source_data), dest_offset);
+        base::subtle::reinterpret_span<const int32_t>(source_data),
+        dest_offset);
   } else {
     NOTREACHED() << "Unsupported audio sample type: " << sample_format_;
   }
