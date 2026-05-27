@@ -124,7 +124,8 @@ enum class OAuthConsumerId {
   kDrivePickerHost = 99,
   kSkillsService = 100,
   kContextMemoryService = 101,
-  kMaxValue = kContextMemoryService,
+  kSyncPreview = 102,
+  kMaxValue = kSyncPreview,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

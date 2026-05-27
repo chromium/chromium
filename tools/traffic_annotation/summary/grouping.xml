@@ -406,6 +406,7 @@ after discussions on the right group.
       <annotation id="suggestions_powered_by_ai"/>
       <annotation id="preload_activation_beacon"/>
       <annotation id="ambient_autofill_request"/>
+      <annotation id="chrome_sync_preview_fetcher"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

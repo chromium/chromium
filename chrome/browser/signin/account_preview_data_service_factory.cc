@@ -12,6 +12,7 @@
 #include "components/signin/core/browser/account_preview_data_service_impl.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "content/public/browser/storage_partition.h"
 
 AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory()
     : ProfileKeyedServiceFactory("AccountPreviewDataService") {
@@ -44,7 +45,9 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
-      IdentityManagerFactory::GetForProfile(profile), prefs);
+      IdentityManagerFactory::GetForProfile(profile), prefs,
+      profile->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }
 
 void AccountPreviewDataServiceFactory::RegisterProfilePrefs(

@@ -4,7 +4,9 @@
 
 #include "components/signin/public/identity_manager/access_token_restriction.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -82,4 +84,23 @@ TEST(AccessTokenRestrictionTest, ConsumerAllowlistedForScope) {
       GaiaConstants::kChromeSyncOAuth2Scope));
 }
 
+// Move this test `AccessTokenRestrictionParamTest.VerifyScope` when
+// `switches::kEnableAccountPreviewData` is launched.
+TEST(AccessTokenRestrictionTest,
+     ChromeSyncPreviewUnrestrictedWhenFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list(
+      switches::kEnableAccountPreviewData);
+  EXPECT_EQ(signin::GetOAuth2ScopeRestriction(
+                GaiaConstants::kChromeSyncPreviewOAuth2Scope),
+            signin::OAuth2ScopeRestriction::kNoRestriction);
+}
+
+TEST(AccessTokenRestrictionTest,
+     ChromeSyncPreviewRestrictedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(switches::kEnableAccountPreviewData);
+  EXPECT_EQ(signin::GetOAuth2ScopeRestriction(
+                GaiaConstants::kChromeSyncPreviewOAuth2Scope),
+            signin::OAuth2ScopeRestriction::kSignedIn);
+}
 }  // namespace

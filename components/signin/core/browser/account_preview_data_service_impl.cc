@@ -16,14 +16,17 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_utils.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace signin {
 
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     IdentityManager* identity_manager,
-    PrefService* pref_service)
+    PrefService* pref_service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : identity_manager_(identity_manager),
-      pref_service_(CHECK_DEREF(pref_service)) {
+      pref_service_(CHECK_DEREF(pref_service)),
+      url_loader_factory_(std::move(url_loader_factory)) {
   identity_manager_observation_.Observe(identity_manager_);
 
   // Load cached data from prefs at startup.
@@ -84,11 +87,13 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
 void AccountPreviewDataServiceImpl::OnFetchCompleted(
     const GaiaId& gaia_id,
     std::optional<AccountPreviewData> data) {
-  active_fetchers_.erase(gaia_id);
   if (data.has_value()) {
     cached_data_[gaia_id] = std::move(data).value();
     SaveToPrefs(gaia_id, cached_data_[gaia_id]);
   }
+
+  // `gaia_id` is owned by the fetcher and should not be used beyond this point.
+  active_fetchers_.erase(gaia_id);
 }
 
 void AccountPreviewDataServiceImpl::SaveToPrefs(
@@ -188,7 +193,7 @@ void AccountPreviewDataServiceImpl::FetchAccountPreviewData(
   }
 
   active_fetchers_[gaia_id] = std::make_unique<AccountPreviewDataFetcher>(
-      gaia_id, identity_manager_,
+      gaia_id, identity_manager_, url_loader_factory_,
       base::BindOnce(&AccountPreviewDataServiceImpl::OnFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
@@ -17,6 +18,9 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class PrefService;
+namespace network {
+class SharedURLLoaderFactory;
+}
 
 namespace signin {
 
@@ -28,8 +32,10 @@ class AccountPreviewDataFetcher;
 class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
                                       public IdentityManager::Observer {
  public:
-  AccountPreviewDataServiceImpl(IdentityManager* identity_manager,
-                                PrefService* pref_service);
+  AccountPreviewDataServiceImpl(
+      IdentityManager* identity_manager,
+      PrefService* pref_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   AccountPreviewDataServiceImpl(const AccountPreviewDataServiceImpl&) = delete;
   AccountPreviewDataServiceImpl& operator=(
@@ -65,6 +71,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
 
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
   const raw_ref<PrefService> pref_service_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
   std::unique_ptr<PersistentRepeatingTimer> repeating_timer_;
   bool deferred_refresh_pending_ = false;

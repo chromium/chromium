@@ -34,6 +34,9 @@ inline constexpr char kAnyApiOAuth2Scope[] =
 // OAuth2 scope for access to Chrome sync APIs
 inline constexpr char kChromeSyncOAuth2Scope[] =
     "https://www.googleapis.com/auth/chromesync";
+// OAuth2 scope for access to Chrome sync preview APIs.
+inline constexpr char kChromeSyncPreviewOAuth2Scope[] =
+    "https://www.googleapis.com/auth/chromesync.preview";
 // OAuth2 scope for access to clear cut logs.
 inline constexpr char kClearCutOAuth2Scope[] =
     "https://www.googleapis.com/auth/cclog";

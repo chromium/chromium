@@ -841,6 +841,7 @@ chromium-metrics-reviews@google.com.
   <int value="99" label="Drive Picker Host"/>
   <int value="100" label="Skills Service"/>
   <int value="101" label="Context Memory Service"/>
+  <int value="102" label="Sync Preview"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/signin/public/base/oauth_consumer_id.h:OAuthConsumerId) -->
