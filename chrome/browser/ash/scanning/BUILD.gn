@@ -52,6 +52,7 @@ static_library("scanning") {
 
   deps = [
     "//ash/constants",
+    "//ash/strings",
     "//base:i18n",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
