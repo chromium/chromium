@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
@@ -615,9 +616,17 @@ Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
   // TODO(crbug.com/453705243): Call OptionInserted on the ancestor datalist if
   // it changed.
 
-  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled() && Selected()) {
-    return InsertionNotificationRequest::
-        kInsertionShouldCallDidNotifySubtreeInsertions;
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled() && Selected() &&
+      nearest_ancestor_select_) {
+    if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+      return InsertionNotificationRequest::
+          kInsertionShouldCallDidNotifySubtreeInsertions;
+    } else if (nearest_ancestor_select_
+                   ->HasDescendantSelectedcontentElements()) {
+      GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
+          BindOnce(&HTMLSelectElement::UpdateAllSelectedcontents,
+                   WrapWeakPersistent(nearest_ancestor_select_.Get())));
+    }
   }
   return return_value;
 }

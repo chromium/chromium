@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_selected_content_element.h"
 
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
@@ -123,10 +124,7 @@ void HTMLSelectedContentElement::DidNotifySubtreeInsertionsToDocument() {
   // TODO(crbug.com/40236878): Use a flat tree traversal here.
   if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
     DCHECK_EQ(nearest_ancestor_select_, Traversal<HTMLSelectElement>::FirstAncestor(*this));
-
-    if (!disabled_ && nearest_ancestor_select_) {
-      nearest_ancestor_select_->UpdateIndividualSelectedcontent(*this);
-    }
+    UpdateFromAncestorSelect();
   } else {
     disabled_ = false;
     HTMLSelectElement* first_ancestor_select = nullptr;
@@ -172,6 +170,20 @@ void HTMLSelectedContentElement::RemovedFrom(ContainerNode& removed_from) {
       }
     }
     disabled_ = false;
+  }
+}
+
+void HTMLSelectedContentElement::MovedFrom(ContainerNode& old_parent) {
+  if (RuntimeEnabledFeatures::SelectedcontentSpecEnabled()) {
+    GetDocument().GetAgent().event_loop()->EnqueueMicrotask(
+        BindOnce(&HTMLSelectedContentElement::UpdateFromAncestorSelect,
+                 WrapWeakPersistent(this)));
+  }
+}
+
+void HTMLSelectedContentElement::UpdateFromAncestorSelect() {
+  if (!disabled_ && nearest_ancestor_select_) {
+    nearest_ancestor_select_->UpdateIndividualSelectedcontent(*this);
   }
 }
 

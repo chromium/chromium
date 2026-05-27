@@ -35,10 +35,13 @@ class HTMLSelectedContentElement : public HTMLElement {
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void DidNotifySubtreeInsertionsToDocument() override;
   void RemovedFrom(ContainerNode&) override;
+  void MovedFrom(ContainerNode&) override;
 
   void Trace(Visitor*) const override;
 
  private:
+  void UpdateFromAncestorSelect();
+
   // When this is true, cloning is disabled.
   bool disabled_ = false;
 

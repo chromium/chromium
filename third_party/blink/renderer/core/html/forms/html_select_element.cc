@@ -1956,6 +1956,10 @@ void HTMLSelectElement::SelectedContentElementRemoved(
   }
 }
 
+bool HTMLSelectElement::HasDescendantSelectedcontentElements() const {
+  return !descendant_selectedcontents_.IsEmpty();
+}
+
 HTMLSelectElement::SelectAutofillPreviewElement*
 HTMLSelectElement::GetAutofillPreviewElement() const {
   return select_type_->GetAutofillPreviewElement();
