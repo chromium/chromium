@@ -229,6 +229,7 @@ void MediaRouterDesktop::JoinRoute(const MediaSource::Id& source_id,
                                    MediaRouteResponseCallback callback,
                                    base::TimeDelta timeout) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
   std::optional<mojom::MediaRouteProviderId> provider_id =
       GetProviderIdForPresentation(presentation_id);
   if (!provider_id || !HasJoinableRoute()) {
@@ -237,6 +238,16 @@ void MediaRouterDesktop::JoinRoute(const MediaSource::Id& source_id,
     MediaRouterMetrics::RecordJoinRouteResultCode(result->result_code());
     // TODO(btolsch): This should really move `result` now that there's only a
     // single callback.
+    std::move(callback).Run(nullptr, *result);
+    return;
+  }
+
+  if (IsDesktopCaptureEscalation(MediaSource(source_id), presentation_id)) {
+    std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
+        "Cannot switch to desktop capture without user consent",
+        mojom::RouteRequestResultCode::USER_NOT_ALLOWED);
+    MediaRouterMetrics::RecordJoinRouteResultCode(result->result_code(),
+                                                  provider_id);
     std::move(callback).Run(nullptr, *result);
     return;
   }
@@ -999,6 +1010,35 @@ void MediaRouterDesktop::RecordPresentationRequestUrlBySink(
 
 bool MediaRouterDesktop::HasJoinableRoute() const {
   return !(current_routes_.empty());
+}
+
+bool MediaRouterDesktop::IsDesktopCaptureEscalation(
+    const MediaSource& new_source,
+    const std::string& presentation_id) const {
+  if (!new_source.IsDesktopMirroringSource()) {
+    return false;
+  }
+
+  if (presentation_id == kAutoJoinPresentationId) {
+    // Auto-join is not supported for desktop mirroring to prevent silent
+    // escalation from non-desktop to desktop capture without user consent.
+    return true;
+  }
+
+  auto current_routes = GetCurrentRoutes();
+  auto it = std::ranges::find_if(current_routes, [&](const MediaRoute& route) {
+    return route.presentation_id() == presentation_id;
+  });
+  if (it != current_routes.end()) {
+    // Block joining if the target route is not also desktop mirroring.
+    // This prevents upgrading to desktop capture without explicit user consent.
+    return !it->media_source().IsDesktopMirroringSource();
+  }
+
+  // Execution falls through here if a non-existent Cast route ID bypasses
+  // prior checks. Returning true treats this as an escalation to block the
+  // request.
+  return true;
 }
 
 bool MediaRouterDesktop::ShouldInitializeMediaRouteProviders() const {

@@ -177,6 +177,16 @@ class MediaRouterDesktopTest : public MediaRouterMojoTest {
                       result_code, expected_count);
   }
 
+  void JoinRoute(const MediaSource::Id& source_id,
+                 const std::string& presentation_id,
+                 const url::Origin& origin,
+                 content::WebContents* web_contents,
+                 MediaRouteResponseCallback callback,
+                 base::TimeDelta timeout) {
+    router()->JoinRoute(source_id, presentation_id, origin, web_contents,
+                        std::move(callback), timeout);
+  }
+
   std::unique_ptr<MediaRouterDesktop> CreateMediaRouter() override {
     auto router = std::unique_ptr<MediaRouterDesktop>(
         new StubMediaRouterDesktop(profile()));
@@ -297,11 +307,11 @@ TEST_F(MediaRouterDesktopTest, JoinRouteNotFoundFails) {
               DoInvoke(nullptr, "", "Route not found",
                        mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, _))
       .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-  router()->JoinRoute(kSource, kPresentationId,
-                      url::Origin::Create(GURL(kOrigin)), nullptr,
-                      base::BindOnce(&RouteResponseCallbackHandler::Invoke,
-                                     base::Unretained(&handler)),
-                      base::Milliseconds(kTimeoutMillis));
+  JoinRoute(kSource, kPresentationId, url::Origin::Create(GURL(kOrigin)),
+            nullptr,
+            base::BindOnce(&RouteResponseCallbackHandler::Invoke,
+                           base::Unretained(&handler)),
+            base::Milliseconds(kTimeoutMillis));
   run_loop.Run();
   ExpectResultBucketCount("JoinRoute",
                           mojom::RouteRequestResultCode::ROUTE_NOT_FOUND, 1);
@@ -312,7 +322,6 @@ TEST_F(MediaRouterDesktopTest, JoinRouteTimedOutFails) {
   // is a route to join.
   const std::vector<MediaRoute> routes{CreateMediaRoute()};
   UpdateRoutes(mojom::MediaRouteProviderId::CAST, routes);
-  EXPECT_TRUE(router()->HasJoinableRoute());
 
   EXPECT_CALL(mock_cast_provider_,
               JoinRouteInternal(
@@ -329,14 +338,70 @@ TEST_F(MediaRouterDesktopTest, JoinRouteTimedOutFails) {
   EXPECT_CALL(handler, DoInvoke(nullptr, "", kError,
                                 mojom::RouteRequestResultCode::TIMED_OUT, _))
       .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
-  router()->JoinRoute(kSource, kPresentationId,
-                      url::Origin::Create(GURL(kOrigin)), nullptr,
-                      base::BindOnce(&RouteResponseCallbackHandler::Invoke,
-                                     base::Unretained(&handler)),
-                      base::Milliseconds(kTimeoutMillis));
+  JoinRoute(kSource, kPresentationId, url::Origin::Create(GURL(kOrigin)),
+            nullptr,
+            base::BindOnce(&RouteResponseCallbackHandler::Invoke,
+                           base::Unretained(&handler)),
+            base::Milliseconds(kTimeoutMillis));
   run_loop.Run();
   ExpectCastResultBucketCount("JoinRoute",
                               mojom::RouteRequestResultCode::TIMED_OUT, 1);
+}
+
+TEST_F(MediaRouterDesktopTest, JoinRoute_EscalationFromTabToDesktopFails) {
+  MediaRoute route(kRouteId, MediaSource(kTabSourceOne), kSinkId, kDescription,
+                   true);
+  route.set_presentation_id(kPresentationId);
+  route.set_controller_type(RouteControllerType::kGeneric);
+
+  const std::vector<MediaRoute> routes{route};
+  UpdateRoutes(mojom::MediaRouteProviderId::CAST, routes);
+
+  const std::string desktop_source =
+      "urn:x-org.chromium.media:source:desktop:screen:0:0";
+  RouteResponseCallbackHandler handler;
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(handler,
+              DoInvoke(nullptr, "",
+                       "Cannot switch to desktop capture without user consent",
+                       mojom::RouteRequestResultCode::USER_NOT_ALLOWED, _))
+      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  JoinRoute(desktop_source, kPresentationId, url::Origin::Create(GURL(kOrigin)),
+            nullptr,
+            base::BindOnce(&RouteResponseCallbackHandler::Invoke,
+                           base::Unretained(&handler)),
+            base::Milliseconds(kTimeoutMillis));
+  run_loop.Run();
+}
+
+TEST_F(MediaRouterDesktopTest, JoinRoute_AutoJoinEscalationFails) {
+  MediaRoute route(kRouteId, MediaSource(kTabSourceOne), kSinkId, kDescription,
+                   true);
+  route.set_presentation_id(kPresentationId);
+  route.set_controller_type(RouteControllerType::kGeneric);
+
+  const std::vector<MediaRoute> routes{route};
+  UpdateRoutes(mojom::MediaRouteProviderId::CAST, routes);
+
+  const std::string desktop_source =
+      "urn:x-org.chromium.media:source:desktop:screen:0:0";
+  RouteResponseCallbackHandler handler;
+  base::RunLoop run_loop;
+
+  EXPECT_CALL(handler,
+              DoInvoke(nullptr, "",
+                       "Cannot switch to desktop capture without user consent",
+                       mojom::RouteRequestResultCode::USER_NOT_ALLOWED, _))
+      .WillOnce(InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  JoinRoute(desktop_source, kAutoJoinPresentationId,
+            url::Origin::Create(GURL(kOrigin)), nullptr,
+            base::BindOnce(&RouteResponseCallbackHandler::Invoke,
+                           base::Unretained(&handler)),
+            base::Milliseconds(kTimeoutMillis));
+  run_loop.Run();
 }
 
 TEST_F(MediaRouterDesktopTest, DetachRoute) {

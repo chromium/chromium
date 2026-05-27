@@ -279,6 +279,11 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
   // JoinRoute().
   bool HasJoinableRoute() const;
 
+  // Returns true if the join request should be blocked because it attempts to
+  // upgrade a non-desktop session to a desktop session.
+  bool IsDesktopCaptureEscalation(const MediaSource& new_source,
+                                  const std::string& presentation_id) const;
+
   // Returns true if the default MRPs should be initialized.
   bool ShouldInitializeMediaRouteProviders() const;
 
@@ -293,7 +298,6 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
   friend class MediaRouterMojoTest;
   friend class MediaRouterIntegrationBrowserTest;
   friend class MediaRouterNativeIntegrationBrowserTest;
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, JoinRouteTimedOutFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, HandleIssue);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, HandlePermissionIssue);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
@@ -306,7 +310,6 @@ class MediaRouterDesktop : public MediaRouterBase, public mojom::MediaRouter {
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, CreateRouteFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
                            CreateRouteIncognitoMismatchFails);
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, JoinRouteNotFoundFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, TerminateRouteFails);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest, GetMediaController);
   FRIEND_TEST_ALL_PREFIXES(MediaRouterDesktopTest,
