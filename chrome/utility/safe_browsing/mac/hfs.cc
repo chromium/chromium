@@ -699,14 +699,20 @@ bool HFSBTreeIterator::Next() {
 }
 
 bool HFSBTreeIterator::SeekToNode(uint32_t node_id) {
-  if (node_id >= header_.totalNodes)
+  if (node_id >= header_.totalNodes) {
     return false;
-  size_t offset = node_id * header_.nodeSize;
-  if (stream_->Seek(offset, SEEK_SET) != -1) {
-    current_leaf_number_ = node_id;
-    return true;
   }
-  return false;
+
+  base::CheckedNumeric<off_t> safe_offset = node_id;
+  safe_offset *= header_.nodeSize;
+
+  if (off_t offset; !safe_offset.AssignIfValid(&offset) ||
+                    stream_->Seek(offset, SEEK_SET) == -1) {
+    return false;
+  }
+
+  current_leaf_number_ = node_id;
+  return true;
 }
 
 bool HFSBTreeIterator::ReadCurrentLeaf() {
