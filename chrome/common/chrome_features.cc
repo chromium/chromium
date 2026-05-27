@@ -658,6 +658,11 @@ BASE_FEATURE_PARAM(std::string,
                    &kGlicLearnMoreURLConfig,
                    "glic-actuation-on-web-toggle-learn-more-url",
                    "https://support.google.com/gemini?p=gic_agent");
+BASE_FEATURE_PARAM(std::string,
+                   kGlicExperimentalTriggeringLearnMoreURL,
+                   &kGlicLearnMoreURLConfig,
+                   "glic-experimental-triggering-toggle-learn-more-url",
+                   "https://gemini.google/overview/agent/spark/");
 BASE_FEATURE_PARAM(
     std::string,
     kGlicWebActuationToggleConsiderSafelyURL,

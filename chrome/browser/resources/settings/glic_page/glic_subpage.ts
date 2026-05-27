@@ -153,6 +153,16 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         value: () => loadTimeData.getBoolean('showGlicExperimentalTriggering'),
       },
 
+      experimentalTriggeringExpanded_: {
+        type: Boolean,
+        value: false,
+      },
+
+      experimentalTriggeringSubLabel_: {
+        type: String,
+        computed: `computeExperimentalTriggeringSubLabel_()`,
+      },
+
       showGlicPersonalContextLink_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showGeminiPersonalContextLink'),
@@ -314,6 +324,8 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
               SettingsGlicPageFeaturePrefName
                   .DEFAULT_TAB_CONTEXT_ENABLED}.value)`,
       'onWebActuationEnabledChanged_(webActuationEnabledPref_.value)',
+      'onExperimentalTriggeringEnabledChanged_(' +
+          'experimentalTriggeringEnabledPref_.value)',
     ];
   }
 
@@ -357,6 +369,8 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
       chrome.settingsPrivate.PrefObject<boolean>;
   declare private experimentalTriggeringEnabledPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
+  declare private experimentalTriggeringSubLabel_: string;
+  declare private experimentalTriggeringExpanded_: boolean;
   declare private isWebActuationDisabledForEnterprise_: boolean;
   declare private webActuationDisabledForEnterprisePref_:
       chrome.settingsPrivate.PrefObject<boolean>;
@@ -722,6 +736,26 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     this.metricsBrowserProxy_.recordAction(
         'Glic.Settings.ExperimentalTriggering' +
         (enabled ? '.Enabled' : '.Disabled'));
+  }
+
+  private onExperimentalTriggeringEnabledChanged_(enabled: boolean) {
+    this.experimentalTriggeringExpanded_ = enabled;
+  }
+
+  private onExperimentalTriggeringExpand_() {
+    this.experimentalTriggeringExpanded_ =
+        !this.experimentalTriggeringExpanded_;
+  }
+
+  private onExperimentalTriggeringToggleLearnMoreClick_() {
+    this.metricsBrowserProxy_.recordAction(
+        AiPageActions.GLIC_SHORTCUTS_WEB_ACTUATION_TOGGLE_LEARN_MORE_CLICKED);
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('glicExperimentalTriggeringLearnMoreUrl'));
+  }
+
+  private computeExperimentalTriggeringSubLabel_(): string {
+    return this.i18nAdvanced('glicExperimentalTriggeringSublabel').toString();
   }
 
   private onWebActuationExpand_() {

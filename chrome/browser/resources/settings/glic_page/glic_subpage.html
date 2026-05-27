@@ -522,13 +522,85 @@
         </div>
       </cr-collapse>
       <template is="dom-if" if="[[showGlicExperimentalTriggering_]]">
-        <settings-toggle-button id="glicExperimentalTriggeringToggle" class="hr"
+        <settings-toggle-button
+            id="glicExperimentalTriggeringToggle"
+            class="hr"
             pref="{{experimentalTriggeringEnabledPref_}}"
             no-set-pref
             label="$i18n{glicExperimentalTriggering}"
+            sub-label-with-link="[[experimentalTriggeringSubLabel_]]"
+            on-sub-label-link-clicked=
+                "onExperimentalTriggeringToggleLearnMoreClick_"
             on-settings-boolean-control-change=
-                "onExperimentalTriggeringToggleChange_">
+                "onExperimentalTriggeringToggleChange_"
+            no-toggle-on-host-click on-click="onExperimentalTriggeringExpand_">
+            <div id="experimentalTriggeringToggleActions"
+              class="toggle-actions-container"
+              slot="more-actions">
+            <cr-expand-button id="experimentalTriggeringExpandButton" no-hover
+                expanded="{{experimentalTriggeringExpanded_}}"
+                aria-label="$i18n{glicExperimentalTriggering}">
+            </cr-expand-button>
+            <div class="separator"></div>
+          </div>
         </settings-toggle-button>
+        <cr-collapse id="experimentalTriggeringInfoCollapse"
+            opened="[[experimentalTriggeringExpanded_]]">
+          <div class="settings-columned-section">
+            <div class="column">
+              <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+              <ul class="icon-bulleted-list">
+                <li>
+                  <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                      icon="settings20:arrow-selector-tool">
+</if>
+<if expr="_google_chrome">
+                      icon="settings-internal:arrow-selector-spark">
+</if>
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{glicExperimentalTriggeringWhenOn1}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon aria-hidden="true"
+                      icon="cr:check-circle">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{glicExperimentalTriggeringWhenOn2}
+                  </div>
+                </li>
+              </ul>
+            </div>
+            <div class="column">
+              <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+              <ul class="icon-bulleted-list">
+                <li>
+                  <cr-icon aria-hidden="true"
+<if expr="not _google_chrome">
+                      icon="settings20:web">
+</if>
+<if expr="_google_chrome">
+                      icon="settings-internal:screensaver-auto">
+</if>
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18n{glicExperimentalTriggeringConsider1}
+                  </div>
+                </li>
+                <li>
+                  <cr-icon aria-hidden="true"
+                      icon="settings20:shield">
+                  </cr-icon>
+                  <div class="secondary">
+                    $i18nRaw{glicExperimentalTriggeringConsider2}
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </cr-collapse>
       </template>
     </template>
   </div>
