@@ -637,8 +637,15 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
   for (const auto& entry : toc) {
     if (entry.type != kImageType || entry.subtype != best_size)
       continue;
+    base::span<const uint8_t> file_bytes{*file};
+    // Constructing a subspan from the file's contents will CHECK if the
+    // starting position is beyond the file's extent, but we want to tolerate
+    // malformed cursor files without crashing the browser.
+    if (entry.position > file_bytes.size()) {
+      return {};
+    }
     base::SpanReader<const uint8_t> chunk_reader{
-        base::span<const uint8_t>(*file).subspan(entry.position)};
+        file_bytes.subspan(entry.position)};
     struct ChunkHeader {
       uint32_t header;
       uint32_t type;
