@@ -109,8 +109,8 @@ which _are_ valid. As a rule:
   etc) or you need the reporter to minimize the PoC, close the issue as
   WontFix and note what is missing.
 * If the report points to a commit or bisect within the last seven days, remind
-  the reporter that we do accept security bugs found on HEAD and close the issue
-  as WontFix.
+  the reporter that we do not accept security bugs found on HEAD and close the
+  issue as WontFix.
 
 ### Handling special-case bugs
 
