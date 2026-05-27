@@ -8732,6 +8732,7 @@ test("unit_tests") {
       "//chrome/browser/webauthn:local_credential_management",
       "//chrome/browser/webauthn:unexportable_key_utils",
       "//chrome/utility:unit_tests",
+      "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser",
       "//components/contextual_search:public",
       "//components/contextual_search:test_support",

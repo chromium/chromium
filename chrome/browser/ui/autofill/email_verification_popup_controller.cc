@@ -74,7 +74,7 @@ EmailVerificationPopupController::~EmailVerificationPopupController() {
 
 void EmailVerificationPopupController::Show(
     const gfx::RectF& element_bounds,
-    const net::SchemefulSite& issuer_site,
+    const net::SchemefulSite& issuer,
     const std::u16string& email,
     base::OnceCallback<void(bool)> callback) {
   if (!web_contents()) {
@@ -105,13 +105,13 @@ void EmailVerificationPopupController::Show(
   views::Widget* parent_widget =
       views::Widget::GetTopLevelWidgetForNativeView(container_view());
 
-  view_ = view_factory_for_testing_
-              ? view_factory_for_testing_.Run(GetWeakPtr(), parent_widget,
-                                              issuer_site, email,
-                                              std::move(on_view_decision))
-              : EmailVerificationPopupView::Show(GetWeakPtr(), parent_widget,
-                                                 issuer_site, email,
-                                                 std::move(on_view_decision));
+  view_ =
+      view_factory_for_testing_
+          ? view_factory_for_testing_.Run(GetWeakPtr(), parent_widget, issuer,
+                                          email, std::move(on_view_decision))
+          : EmailVerificationPopupView::Show(GetWeakPtr(), parent_widget,
+                                             issuer, email,
+                                             std::move(on_view_decision));
 
   if (!view_) {
     std::move(callback_).Run(false);

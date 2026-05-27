@@ -90,6 +90,18 @@ inline constexpr char kAutofillCreditCardFidoAuthEnabled[] =
 inline constexpr char kAutofillCreditCardFidoAuthOfferCheckboxState[] =
     "autofill.credit_card_fido_auth_offer_checkbox_state";
 #endif  // BUILDFLAG(IS_ANDROID)
+// Boolean that is true if email verification is enabled.
+inline constexpr char kAutofillEmailVerificationEnabled[] =
+    "autofill.email_verification_enabled";
+
+// Dictionary that contains email addresses and their verification status.
+// The value is a dictionary mapping email addresses to a dictionary containing:
+// - `allowed`: boolean indicating if the user allowed it.
+// - `issuer_site`: string indicating the site that issued the token.
+// - `timestamp`: timestamp when the decision was made.
+inline constexpr char kAutofillEmailVerificationState[] =
+    "autofill.email_verification_state";
+
 // Boolean that is true if a form with an IBAN field has ever been submitted, or
 // an IBAN has ever been saved via Chrome payments settings page. This helps to
 // enable IBAN functionality for those users who are not in a country where IBAN

@@ -48,7 +48,7 @@ class EmailVerificationPopupController
   // `callback` is invoked with the user's decision (true for confirmed, false
   // otherwise).
   void Show(const gfx::RectF& element_bounds,
-            const net::SchemefulSite& issuer_site,
+            const net::SchemefulSite& issuer,
             const std::u16string& email,
             base::OnceCallback<void(bool)> callback);
 
@@ -72,7 +72,7 @@ class EmailVerificationPopupController
       base::RepeatingCallback<base::WeakPtr<EmailVerificationPopupView>(
           base::WeakPtr<EmailVerificationPopupController> delegate,
           views::Widget* parent_widget,
-          const net::SchemefulSite& issuer_site,
+          const net::SchemefulSite& issuer,
           const std::u16string& email,
           base::OnceCallback<void(bool)> callback)>;
 
@@ -103,10 +103,19 @@ class EmailVerificationPopupController
   void HideImpl(bool confirmed, EvpPermissionUiStatus status);
   bool OverlapsWithPictureInPictureWindow() const;
 
+  // The bounds of the element that triggered the popup.
   gfx::RectF element_bounds_;
+
+  // The callback to invoke with the user's decision.
   base::OnceCallback<void(bool)> callback_;
+
+  // The view representing the popup.
   base::WeakPtr<EmailVerificationPopupView> view_;
+
+  // Helper to handle hiding the popup on various events.
   std::optional<autofill::AutofillPopupHideHelper> popup_hide_helper_;
+
+  // Factory function used to create the view in tests.
   ViewFactoryForTesting view_factory_for_testing_;
 
   base::WeakPtrFactory<EmailVerificationPopupController> weak_ptr_factory_{
