@@ -8,7 +8,6 @@
 #include <cmath>
 #include <optional>
 
-#include "base/check_op.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/cstring_view.h"
@@ -28,7 +27,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_f.h"
-#include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/rrect_f.h"
@@ -37,6 +36,8 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/native_theme/features/native_theme_features.h"
+#include "ui/native_theme/native_theme.h"
+#include "ui/native_theme/native_theme_base.h"
 
 namespace ui {
 

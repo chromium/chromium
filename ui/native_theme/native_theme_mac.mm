@@ -13,6 +13,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/check.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"

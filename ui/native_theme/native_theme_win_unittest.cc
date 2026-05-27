@@ -4,7 +4,10 @@
 
 #include "ui/native_theme/native_theme_win.h"
 
+#include <windows.h>
+
 #include <Windows.Media.ClosedCaptioning.h>
+#include <windows.foundation.h>
 #include <wrl/client.h>
 #include <wrl/event.h>
 #include <wrl/implements.h>

@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_base.h"
 
 class SkTypeface;

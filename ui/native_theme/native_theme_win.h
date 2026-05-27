@@ -12,13 +12,25 @@
 
 #include "base/component_export.h"
 #include "base/no_destructor.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/native_theme.h"
+
+namespace cc {
+class PaintCanvas;
+}
+
+namespace gfx {
+class Rect;
+class Size;
+}  // namespace gfx
 
 namespace ABI::Windows::Media::ClosedCaptioning {
 struct IClosedCaptionPropertiesStatics2;
 }
 
 namespace ui {
+
+class ColorProvider;
 
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeWin : public NativeTheme {
  public:

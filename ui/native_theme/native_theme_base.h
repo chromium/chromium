@@ -11,17 +11,21 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "third_party/skia/include/core/SkPath.h"
-#include "third_party/skia/include/core/SkRect.h"
 #include "ui/color/color_id.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/native_theme/native_theme.h"
+
+class SkPath;
+struct SkRect;
 
 namespace cc {
 class PaintCanvas;
 }
+
+namespace gfx {
+class Rect;
+class RectF;
+class Size;
+}  // namespace gfx
 
 namespace ui {
 

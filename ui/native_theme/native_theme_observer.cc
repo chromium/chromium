@@ -5,6 +5,7 @@
 #include "ui/native_theme/native_theme_observer.h"
 
 #include "base/check.h"
+#include "base/observer_list_types.h"
 
 namespace ui {
 

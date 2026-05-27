@@ -5,12 +5,25 @@
 #ifndef UI_NATIVE_THEME_NATIVE_THEME_MAC_H_
 #define UI_NATIVE_THEME_NATIVE_THEME_MAC_H_
 
+#include <optional>
+
 #include "base/component_export.h"
 #include "base/no_destructor.h"
-#include "ui/gfx/geometry/size.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/native_theme/native_theme_base.h"
 
+namespace cc {
+class PaintCanvas;
+}
+
+namespace gfx {
+class Rect;
+class Size;
+}  // namespace gfx
+
 namespace ui {
+
+class ColorProvider;
 
 class COMPONENT_EXPORT(NATIVE_THEME) NativeThemeMac : public NativeThemeBase {
  public:
