@@ -6,7 +6,8 @@ import("gn_configs.gni")
 import("gn_sdk_configs.gni")
 
 declare_args() {
-  # TODO(fxbug.dev/93346): After soft-migration: required offers = [ "fuchsia.logger.LogSink" ]
+  # TODO(fxbug.dev/93346): After soft-migration: required offers = [
+  # "fuchsia.logger.LogSink" ]
   fuchsia_cmc_compile_must_offer_protocol = []
   fuchsia_cmc_compile_must_use_protocol = []
 }
@@ -161,7 +162,7 @@ template("cmc_compile") {
       "--includepath",
       rebase_path("$fuchsia_sdk/pkg/", root_build_dir),
       "--includepath",
-      get_path_info(invoker.manifest, "dir"),
+      rebase_path(get_path_info(invoker.manifest, "dir"), root_build_dir),
       "--depfile",
       rebase_path(depfile, root_build_dir),
     ]

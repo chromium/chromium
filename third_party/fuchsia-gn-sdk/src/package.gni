@@ -199,7 +199,7 @@ template("fuchsia_package") {
       "--build-ids-file",
       rebase_path(_build_ids_file, root_build_dir),
       "--json-file",
-      rebase_path(_packaged_components_metadata_file),
+      rebase_path(_packaged_components_metadata_file, root_build_dir),
     ]
     if (fuchsia_sdk_readelf_exec != "") {
       args += [
@@ -249,8 +249,8 @@ template("fuchsia_package") {
     ]
   }
 
-  # Create a .symbol-index.json that indexes the ids.txt above. This file will be registered
-  # automatically during the publishing of the package.
+  # Create a .symbol-index.json that indexes the ids.txt above. This file will
+  # be registered automatically during the publishing of the package.
   generated_file(_symbol_index_target) {
     outputs = [ _symbol_index_file ]
     output_conversion = "json"
