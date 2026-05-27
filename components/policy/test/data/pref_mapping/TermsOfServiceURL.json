@@ -3,17 +3,12 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "TermsOfServiceURL": "http://www.example.com/terms_of_service.txt"
-        },
-        "prefs": {
-          "terms_of_service.url": {
-            "value": "http://www.example.com/terms_of_service.txt"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "terms_of_service.url",
+      "default_value": "",
+      "values_to_test": [
+        "http://www.example.com/terms_of_service.txt"
+      ]
+    }
   }
 ]

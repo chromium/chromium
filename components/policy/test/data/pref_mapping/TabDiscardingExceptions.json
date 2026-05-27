@@ -6,21 +6,14 @@
       "mac",
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "TabDiscardingExceptions": [
-            "example.com"
-          ]
-        },
-        "prefs": {
-          "performance_tuning.tab_discarding.exceptions_managed": {
-            "value": [
-              "example.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "performance_tuning.tab_discarding.exceptions_managed",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "example.com"
+        ]
+      ]
+    }
   }
 ]

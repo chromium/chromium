@@ -3,18 +3,13 @@
     "os": [
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "TosDialogBehavior": 2
-        },
-        "prefs": {
-          "policy.cct_tos_dialog_behavior": {
-            "location": "local_state",
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.cct_tos_dialog_behavior",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        2
+      ]
+    }
   }
 ]

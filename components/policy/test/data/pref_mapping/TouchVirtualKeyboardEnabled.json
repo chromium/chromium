@@ -3,17 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "TouchVirtualKeyboardEnabled": false
-        },
-        "prefs": {
-          "ui.touch_virtual_keyboard_enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ui.touch_virtual_keyboard_enabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

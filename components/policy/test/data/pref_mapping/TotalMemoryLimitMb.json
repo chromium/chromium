@@ -4,18 +4,14 @@
       "win",
       "mac"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "TotalMemoryLimitMb": 2048
-        },
-        "prefs": {
-          "total_memory_limit_mb": {
-            "location": "local_state",
-            "value": 2048
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "total_memory_limit_mb",
+      "pref_location": "local_state",
+      "default_value": 1024,
+      "values_to_test": [
+        1024,
+        2048
+      ]
+    }
   }
 ]

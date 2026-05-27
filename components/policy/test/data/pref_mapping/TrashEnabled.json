@@ -3,35 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "ash.filesapp.trash_enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "TrashEnabled": false
-        },
-        "prefs": {
-          "ash.filesapp.trash_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "TrashEnabled": true
-        },
-        "prefs": {
-          "ash.filesapp.trash_enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.filesapp.trash_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

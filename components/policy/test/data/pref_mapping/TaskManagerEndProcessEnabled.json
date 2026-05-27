@@ -7,18 +7,14 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "TaskManagerEndProcessEnabled": false
-        },
-        "prefs": {
-          "task_manager.end_process_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "task_manager.end_process_enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]
