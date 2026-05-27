@@ -54,9 +54,6 @@ class CORE_EXPORT LayoutGridLanes : public LayoutBlock {
     return true;
   }
 
-  // TODO(almaher): Do we need special overrides of AddChild(),
-  // RemoveChild(), StyleDidChange(), MarkGridDirty() etc?
-
   // Caches grid-lanes placement data for DevTools inspector highlighting.
   // This avoids recomputing during inspector queries.
   std::optional<GridPlacementData> cached_placement_data_;

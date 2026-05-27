@@ -39,8 +39,6 @@ LayoutUnit LayoutGridLanes::GridLanesItemOffset(
 }
 
 bool LayoutGridLanes::HasCachedPlacementData() const {
-  // TODO(almaher): Check for !IsGridPlacementDirty() similar to
-  // LayoutGrid.
   return !!cached_placement_data_;
 }
 
