@@ -324,6 +324,10 @@ BASE_FEATURE(kWebViewPersistHttpServerProperties,
 BASE_FEATURE(kWebViewVizDirectCompositorThreadIpcFrameSinkManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, WebView support for Instant Apps is removed.
+BASE_FEATURE(kWebViewRemoveInstantAppSupport,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Kill switch for the WebView Navigate method.
 BASE_FEATURE(kWebViewNavigate, base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace android_webview::features

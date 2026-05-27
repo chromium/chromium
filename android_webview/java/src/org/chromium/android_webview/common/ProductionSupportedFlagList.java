@@ -1150,6 +1150,9 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_BACKGROUND_CLASS_PRELOADING,
                 "Enables preloading WebView classes on a background thread during early startup."),
         Flag.baseFeature(
+                AwFeatures.WEBVIEW_REMOVE_INSTANT_APP_SUPPORT,
+                "When enabled, WebView support for Instant Apps is removed."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_BYPASS_PROVISIONAL_COOKIE_MANAGER,
                 "When enabled, the temporary cookie manager used before WebView startup is"
                         + " bypassed. If WebView isn't already started up, calling"

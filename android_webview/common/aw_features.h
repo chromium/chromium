@@ -80,6 +80,7 @@ BASE_DECLARE_FEATURE(kWebViewStaticMethodsNotTriggerStartup);
 BASE_DECLARE_FEATURE(kStartupNonBlockingWebViewConstructor);
 BASE_DECLARE_FEATURE(kPostChromiumStartupInWebViewConstructor);
 BASE_DECLARE_FEATURE(kWebViewPersistHttpServerProperties);
+BASE_DECLARE_FEATURE(kWebViewRemoveInstantAppSupport);
 BASE_DECLARE_FEATURE(kWebViewNavigate);
 }  // namespace android_webview::features
 
