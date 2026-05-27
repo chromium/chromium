@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.glic;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -31,6 +33,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -159,6 +162,24 @@ public class GlicTaskMenuCoordinatorUnitTest {
                 taskItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
         clickListener.onClick(null);
 
+        verify(mToggleGlicCallback).onClick(/* preventClose= */ true);
+    }
+
+    @Test
+    public void testClickActorTask_EmptyTabs_OpensNewTab() {
+        ActorTask task = mock(ActorTask.class);
+        doReturn("Task Title").when(task).getTitle();
+        doReturn(Collections.emptySet()).when(task).getLastActedTabs();
+
+        ModelList modelList = mCoordinator.buildModelList(Arrays.asList(task));
+        ListItem taskItem = modelList.get(0);
+
+        View.OnClickListener clickListener =
+                taskItem.model.get(ListMenuItemProperties.CLICK_LISTENER);
+        clickListener.onClick(null);
+
+        verify(mTabModelSelector)
+                .openNewTab(any(), eq(TabLaunchType.FROM_CHROME_UI), eq(null), eq(false));
         verify(mToggleGlicCallback).onClick(/* preventClose= */ true);
     }
 }

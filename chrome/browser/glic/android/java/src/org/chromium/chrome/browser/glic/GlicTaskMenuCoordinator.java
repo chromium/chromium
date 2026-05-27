@@ -18,12 +18,15 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorTask;
 import org.chromium.chrome.browser.actor.ActorTaskState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.side_panel.AndroidSidePanelEnabledFn;
+import org.chromium.chrome.browser.url_constants.UrlConstantResolver;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.components.browser_ui.widget.ListItemBuilder;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
@@ -268,13 +271,21 @@ public class GlicTaskMenuCoordinator {
 
     private void switchToActuatingTab(Set<Integer> tabs) {
         TabModelSelector selector = mTabModelSelectorSupplier.get();
-        if (selector != null) {
+        if (selector == null) return;
+
+        if (!tabs.isEmpty()) {
             for (int tabId : tabs) {
                 if (selector.getTabById(tabId) != null) {
                     TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
                     break;
                 }
             }
+        } else {
+            selector.openNewTab(
+                    new LoadUrlParams(UrlConstantResolver.getOriginalNativeNtpUrl()),
+                    TabLaunchType.FROM_CHROME_UI,
+                    /* parent= */ null,
+                    /* incognito= */ false);
         }
     }
 
