@@ -46,7 +46,9 @@ source_set("impl") {
     "//components/search_engines",
     "//services/network/public/mojom:mojom_permissions_policy",
   ]
-  if (!is_android) {
+  if (is_android) {
+    deps += [ "//chrome/browser/android:shortcut_helper" ]
+  } else {
     deps += [ "//chrome/browser/web_applications/proto" ]
   }
 

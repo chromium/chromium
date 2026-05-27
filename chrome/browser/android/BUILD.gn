@@ -101,6 +101,25 @@ proto_library("usage_stats_proto") {
 }
 
 if (is_android) {
+  source_set("shortcut_helper") {
+    sources = [ "shortcut_helper.cc" ]
+    public = [ "shortcut_helper.h" ]
+    public_deps = [
+      "//base",
+      "//chrome/android:jni_headers",
+      "//chrome/browser/android/webapk:webapk_sources",
+      "//components/webapps/browser",
+      "//skia",
+    ]
+    deps = [
+      "//content/public/browser",
+      "//services/metrics/public/cpp:ukm_builders",
+      "//ui/android",
+      "//ui/gfx",
+      "//url",
+    ]
+  }
+
   source_set("android") {
     sources = [
       "background_sync_launcher_android.cc",
@@ -349,8 +368,6 @@ if (is_android) {
       "selection/chrome_selection_dropdown_menu_delegate.h",
       "service_tab_launcher.cc",
       "service_tab_launcher.h",
-      "shortcut_helper.cc",
-      "shortcut_helper.h",
       "site_settings/chrome_site_settings_delegate.cc",
       "startup_bridge.cc",
       "startup_bridge.h",
@@ -401,11 +418,9 @@ if (is_android) {
       "webapk/webapk_database.cc",
       "webapk/webapk_database.h",
       "webapk/webapk_install_service.cc",
-      "webapk/webapk_install_service.h",
       "webapk/webapk_install_service_factory.cc",
       "webapk/webapk_install_service_factory.h",
       "webapk/webapk_installer.cc",
-      "webapk/webapk_installer.h",
       "webapk/webapk_restore_manager.cc",
       "webapk/webapk_restore_manager.h",
       "webapk/webapk_restore_task.cc",
@@ -434,6 +449,7 @@ if (is_android) {
     public_deps = [
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/accessibility/accessibility_prefs",
+      "//chrome/browser/android/webapk:webapk_sources",
     ]
 
     deps = [
@@ -441,6 +457,7 @@ if (is_android) {
       ":language_data_proto",
       ":profile_token",
       ":sensitivity_data_proto",
+      ":shortcut_helper",
       ":tabs_impl",
       ":tabs_public",
       ":usage_stats_proto",
@@ -458,7 +475,6 @@ if (is_android) {
       "//chrome/browser/android/metrics:jni_headers",
       "//chrome/browser/android/omnibox",
       "//chrome/browser/android/omnibox:impl",
-      "//chrome/browser/android/webapk:webapk_sources",
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/auxiliary_search",
       "//chrome/browser/auxiliary_search:impl",
@@ -862,9 +878,7 @@ if (is_android) {
 
       # TODO(crbug.com/353332589): Remove this circular dependency when the
       # following Android browser headers get modularized.
-      # - c/b/android/shortcut_helper.h
       # - c/b/android/tab_web_contents_delegate_android.h
-      # - c/b/android/webapk/webapk_install_service.h
       # - c/b/android/webapk/webapk_install_service_factory.h
       "//chrome/browser/webapps:android_impl",
       "//chrome/browser/webapps/installable:impl",

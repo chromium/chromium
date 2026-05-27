@@ -237,6 +237,7 @@ source_set("impl") {
     deps += [
       ":jni_headers",
       "//chrome/android:chrome_jni_headers",
+      "//chrome/browser/android:shortcut_helper",
       "//chrome/browser/flags:flags_android",
       "//chrome/browser/notifications/chime/android",
       "//chrome/browser/notifications/scheduler/public",
