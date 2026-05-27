@@ -605,6 +605,13 @@ public class MultiWindowUtils implements ActivityStateListener {
         return IntentUtils.safeGetBooleanExtra(intent, IntentHandler.EXTRA_PREFER_NEW, preferNew);
     }
 
+    public static int getInstanceCount(@PersistedInstanceType int type) {
+        if (sInstanceCountForTesting != null) {
+            return sInstanceCountForTesting;
+        }
+        return getInstance().getInstanceCountInternal(type);
+    }
+
     /**
      * Returns the number of restorable Chrome instances of a given type that are not marked for
      * deletion.
@@ -614,7 +621,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      *     considered restorable if it has tabs or is associated with a live task. An instance
      *     marked for deletion is restorable, but not usable unless restored.
      */
-    public static int getInstanceCount(@PersistedInstanceType int type) {
+    public int getInstanceCountInternal(@PersistedInstanceType int type) {
         if (sInstanceCountForTesting != null) {
             return sInstanceCountForTesting;
         }
