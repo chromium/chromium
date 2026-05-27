@@ -220,12 +220,8 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     }
     bool is_internal_page = url.SchemeIs(content::kChromeUIScheme) ||
                             url.SchemeIs(content::kChromeUIUntrustedScheme);
-    bool is_different_contextual_task_thread =
-        url.spec().starts_with(chrome::kChromeUIContextualTasksURL) &&
-        (!active_web_contents ||
-         url != active_web_contents->GetLastCommittedURL());
 
-    if (!is_internal_page || is_different_contextual_task_thread) {
+    if (!is_internal_page) {
       tab_times.push_back({
           .tab = tab,
           .time = std::max(web_contents->GetLastActiveTimeTicks(),

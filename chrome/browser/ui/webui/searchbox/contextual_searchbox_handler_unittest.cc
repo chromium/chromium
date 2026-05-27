@@ -2829,12 +2829,28 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, GetRecentTabs) {
 
   auto* contextual_tasks_tab =
       AddTab(GURL(chrome::kChromeUIContextualTasksURL));
+
+  // Case A: Test when the contextual tasks tab is the ACTIVE tab.
   ON_CALL(*tab_list(), GetActiveTab())
       .WillByDefault(testing::Return(contextual_tasks_tab));
 
   {
-    // Add a contextual tasks tab and ensure it is not returned when it is the
-    // active tab.
+    // Verify that the active contextual tasks tab is successfully filtered out,
+    // and only the regular blank tab is returned.
+    base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
+    handler().GetRecentTabs(future.GetCallback());
+    auto tabs = future.Take();
+    ASSERT_EQ(tabs.size(), 1u);
+    EXPECT_EQ(tabs[0]->tab_id, about_blank_tab->GetHandle().raw_value());
+  }
+
+  // Case B: Test when the contextual tasks tab is an INACTIVE tab.
+  ON_CALL(*tab_list(), GetActiveTab())
+      .WillByDefault(testing::Return(about_blank_tab));
+
+  {
+    // Verify that even when the contextual tasks tab is inactive,
+    // it is still correctly filtered out.
     base::test::TestFuture<std::vector<searchbox::mojom::TabInfoPtr>> future;
     handler().GetRecentTabs(future.GetCallback());
     auto tabs = future.Take();
