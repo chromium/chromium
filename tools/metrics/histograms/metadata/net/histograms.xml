@@ -1944,7 +1944,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.CertVerifier.Qwac.1Qwac" enum="NetCertVerifier1QwacResult"
     expires_after="2026-11-16">
   <owner>mattm@chromium.org</owner>
-  <owner>nharper@chromium.org</owner>
+  <owner>src/net/cert/OWNERS</owner>
   <summary>
     Result of attempting to verify if a certificate is a valid 1-QWAC (EU
     qualified website authentication certificate).
@@ -1958,7 +1958,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.CertVerifier.Qwac.2QwacBinding"
     enum="NetCertVerifier2QwacBindingResult" expires_after="2026-11-16">
   <owner>mattm@chromium.org</owner>
-  <owner>nharper@chromium.org</owner>
+  <owner>src/net/cert/OWNERS</owner>
   <summary>
     Result of attempting to verify if a 2-QWAC (EU qualified website
     authentication certificate) binding is valid and binds the specified TLS
@@ -1974,7 +1974,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Net.CertVerifier.Qwac.2QwacLinkProcessing"
     enum="NetCertVerifier2QwacLinkProcessingResult" expires_after="2026-11-16">
   <owner>mattm@chromium.org</owner>
-  <owner>nharper@chromium.org</owner>
   <owner>src/net/cert/OWNERS</owner>
   <summary>
     Result of processing 2-QWAC link headers.
@@ -5277,7 +5276,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.CertVerificationResult.{Condition}"
     enum="NetErrorCodes" expires_after="2026-10-25">
-  <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -5826,7 +5824,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.HandshakeConfirmedTime.MTC{IsResumption}"
     units="Milliseconds" expires_after="2026-10-25">
-  <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -5915,7 +5912,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.HasMTCMetadata2" enum="Boolean"
     expires_after="2026-08-23">
-  <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -6141,7 +6137,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.MTCLandmarkDelta2.CurrentClient"
     units="MTC landmarks" expires_after="2026-10-25">
-  <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -6155,7 +6150,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.MTCLandmarkDelta2.OldClient"
     units="MTC landmarks" expires_after="2026-10-25">
-  <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -6169,7 +6163,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.MTCMetadataAge2" units="Milliseconds"
     expires_after="2026-08-23">
-  <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -6182,7 +6175,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.MTCResult2" enum="MTCResult"
     expires_after="2026-10-25">
-  <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
@@ -7084,7 +7076,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Net.QuicSession.TLSHandshakeBytes.MTC2{IsResumption}"
     units="bytes" expires_after="2026-08-23">
-  <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>

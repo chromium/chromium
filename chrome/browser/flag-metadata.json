@@ -9519,7 +9519,6 @@
     "name": "verify-mtcs",
     "owners": [
       "mattm@chromium.org",
-      "nharper@chromium.org",
       "jdeblasio@chromium.org"
     ],
     "expiry_milestone": 155
@@ -9527,7 +9526,6 @@
   {
     "name": "verify-qwacs",
     "owners": [
-      "nharper@chromium.org",
       "mattm@chromium.org"
     ],
     "expiry_milestone": 157
