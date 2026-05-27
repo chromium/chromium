@@ -5631,7 +5631,7 @@ grit("resources") {
   }
 }
 
-action("expired_flags_list_gen") {
+action_with_pydeps("expired_flags_list_gen") {
   script = "//tools/flags/generate_expired_list.py"
   sources = [ "flag-metadata.json" ]
   inputs = [ "//chrome/VERSION" ]

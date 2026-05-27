@@ -87,7 +87,6 @@ def __step_config(ctx, step_config):
         "third_party/webgpu-cts/scripts/compile_src.py",
         "third_party/webgpu-cts/scripts/gen_ts_dep_lists.py",
         "third_party/webgpu-cts/scripts/run_regenerate_internal_cts_html.py",
-        "tools/flags/generate_expired_list.py",
         "tools/grit/grit_info.py",
         "tools/grit/grit.py",
         "tools/grit/pak_util.py",
