@@ -49,6 +49,13 @@ public class IncognitoColors {
                 : SemanticColorUtils.getColorSurfaceContainerLow(context);
     }
 
+    /** {@see SemanticColorUtils#getInteractableChipBgColor} */
+    public static @ColorInt int getInteractableChipBgColor(Context context, boolean isIncognito) {
+        return isIncognito
+                ? context.getColor(R.color.gm3_baseline_surface_container_high_dark)
+                : SemanticColorUtils.getInteractableChipBgColor(context);
+    }
+
     /** Returns a color state list for the surface container color. */
     public static ColorStateList getColorSurfaceContainerTintList(
             Context context, boolean isIncognito) {

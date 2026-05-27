@@ -208,6 +208,11 @@ public class SemanticColorUtils {
 
     // LINT.ThenChange(//components/browser_ui/styles/android/java/res/values/semantic_colors_dynamic.xml)
 
+    /** Returns the semantic color value that corresponds to interactable_chip_bg_color. */
+    public static @ColorInt int getInteractableChipBgColor(Context context) {
+        return ContextCompat.getColor(context, R.color.interactable_chip_bg_color);
+    }
+
     /** Returns the semantic color values that corresponds to colorPrimaryContainer. */
     public static @ColorInt int getColorPrimaryContainer(Context context) {
         return resolve(R.attr.colorPrimaryContainer, context);

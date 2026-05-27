@@ -161,12 +161,14 @@ class FuseboxAttachmentViewBinder {
         View backgroundView = view.findViewById(R.id.attachment_background);
         backgroundView
                 .getBackground()
-                .setTint(OmniboxResourceProvider.getAiModeButtonColor(context, brandedColorScheme));
+                .setTint(
+                        OmniboxResourceProvider.getRequestTypeButtonColor(
+                                context, brandedColorScheme));
 
         TextView titleView = view.findViewById(R.id.attachment_title);
         if (titleView != null) {
             titleView.setTextAppearance(
-                    OmniboxResourceProvider.getImageGenButtonTextRes(brandedColorScheme));
+                    OmniboxResourceProvider.getRequestTypeButtonTextRes(brandedColorScheme));
         }
         ImageButton closeButton = view.findViewById(R.id.attachment_remove_button);
         closeButton.setColorFilter(

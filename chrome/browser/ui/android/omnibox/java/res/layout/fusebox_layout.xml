@@ -43,7 +43,7 @@ found in the LICENSE file.
         app:tint="@color/default_icon_color_tint_list"/>
 
     <org.chromium.ui.widget.ButtonCompat
-        style="@style/OutlinedButton"
+        style="@style/TextButton"
         android:id="@+id/fusebox_request_type"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/min_touch_target_size"
@@ -58,10 +58,9 @@ found in the LICENSE file.
         app:layout_constraintStart_toEndOf="@id/location_bar_attachments_add"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@id/url_bar"
-        app:buttonColor="@color/gm3_baseline_surface_container"
-        app:buttonBorderStyle="solid"
-        app:verticalInset="8dp"
-        app:rippleCornerRadius="@dimen/fusebox_button_corner_radius"/>
+        app:buttonColor="@color/interactable_chip_bg_color"
+        app:verticalInset="6dp"
+        app:rippleCornerRadius="36dp"/>
 
     <org.chromium.ui.widget.ChromeImageView
         android:id="@+id/navigate_button"
