@@ -473,18 +473,42 @@ struct V8ConsumeCacheResult {
   bool full;
 };
 
+template <typename T>
+int ScriptId(v8::MaybeLocal<T> maybeScriptOrModule) {
+  v8::Local<T> scriptOrModule;
+  if (maybeScriptOrModule.ToLocal(&scriptOrModule)) {
+    return scriptOrModule->ScriptId();
+  }
+  return v8::UnboundScript::kNoScriptId;
+}
+
 void Data(perfetto::TracedValue context,
           const String& url,
+          int script_id,
           const TextPosition&,
           std::optional<V8ConsumeCacheResult>,
           bool eager,
           bool streamed,
           ScriptStreamer::NotStreamingReason);
+
+template <typename T>
+void Data(perfetto::TracedValue context,
+          const String& url,
+          v8::MaybeLocal<T> script_or_module,
+          const TextPosition& text_position,
+          std::optional<V8ConsumeCacheResult> consume_cache_result,
+          bool eager,
+          bool streamed,
+          ScriptStreamer::NotStreamingReason not_streaming_reason) {
+  Data(std::move(context), url, ScriptId(script_or_module), text_position,
+       consume_cache_result, eager, streamed, not_streaming_reason);
+}
 }  // namespace inspector_compile_script_event
 
 namespace inspector_produce_script_cache_event {
 void Data(perfetto::TracedValue context,
           const String& url,
+          int script_id,
           const TextPosition&,
           int cache_size);
 }

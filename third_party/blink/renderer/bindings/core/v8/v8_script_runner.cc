@@ -345,12 +345,13 @@ v8::MaybeLocal<v8::Script> V8ScriptRunner::CompileScript(
   v8::MaybeLocal<v8::Script> script = CompileScriptInternal(
       isolate, script_state, classic_script, origin, compile_options,
       no_cache_reason, can_use_crowdsourced_compile_hints, &cache_result);
+
   TRACE_EVENT_END1(
       kTraceEventCategoryGroup, "v8.compile", "data",
       [&](perfetto::TracedValue context) {
         inspector_compile_script_event::Data(
-            std::move(context), file_name, script_start_position, cache_result,
-            compile_options == v8::ScriptCompiler::kEagerCompile,
+            std::move(context), file_name, script, script_start_position,
+            cache_result, compile_options == v8::ScriptCompiler::kEagerCompile,
             classic_script.Streamer(), classic_script.NotStreamingReason());
       });
   return script;
@@ -459,7 +460,7 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
   TRACE_EVENT_END1(kTraceEventCategoryGroup, "v8.compileModule", "data",
                    [&](perfetto::TracedValue context) {
                      inspector_compile_script_event::Data(
-                         std::move(context), file_name, start_position,
+                         std::move(context), file_name, script, start_position,
                          cache_result,
                          compile_options == v8::ScriptCompiler::kEagerCompile,
                          streamer, params.NotStreamingReason());
@@ -628,8 +629,7 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
       DEVTOOLS_TIMELINE_TRACE_EVENT_WITH_CATEGORIES(
           TRACE_DISABLED_BY_DEFAULT("devtools.target-rundown"),
           "ScriptCompiled", inspector_target_rundown_event::Data,
-          execution_context, isolate, script_state,
-          script->GetUnboundScript()->GetId());
+          execution_context, isolate, script_state, script->ScriptId());
       maybe_result = V8ScriptRunner::RunCompiledScript(
           isolate, script, origin.GetHostDefinedOptions(), execution_context);
       probe::DidProduceCompilationCache(

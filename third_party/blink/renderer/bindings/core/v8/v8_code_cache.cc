@@ -587,7 +587,7 @@ static void ProduceCacheInternal(
                        [&](perfetto::TracedValue context) {
                          inspector_produce_script_cache_event::Data(
                              std::move(context), source_url.GetString(),
-                             source_start_position,
+                             unbound_script->ScriptId(), source_start_position,
                              cached_data ? cached_data->length : 0);
                        });
       break;
@@ -706,8 +706,8 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
       kTraceEventCategoryGroup, "v8.compile", "data",
       [&](perfetto::TracedValue context) {
         inspector_compile_script_event::Data(
-            std::move(context), file_name, TextPosition::MinimumPosition(),
-            std::nullopt, true, false,
+            std::move(context), file_name, maybe_unbound_script,
+            TextPosition::MinimumPosition(), std::nullopt, true, false,
             ScriptStreamer::NotStreamingReason::kStreamingDisabled);
       });
 
@@ -730,6 +730,7 @@ scoped_refptr<CachedMetadata> V8CodeCache::GenerateFullCodeCache(
                      [&](perfetto::TracedValue context) {
                        inspector_produce_script_cache_event::Data(
                            std::move(context), file_name,
+                           unbound_script->ScriptId(),
                            TextPosition::MinimumPosition(),
                            cached_data ? cached_data->length : 0);
                      });

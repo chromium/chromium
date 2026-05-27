@@ -1175,8 +1175,10 @@ void inspector_scroll_layer_event::Data(perfetto::TracedValue context,
 namespace {
 void FillLocation(perfetto::TracedDictionary& dict,
                   const String& url,
+                  int script_id,
                   const TextPosition& text_position) {
   dict.Add("url", url);
+  dict.Add("scriptId", script_id);
   dict.Add("lineNumber", text_position.line_.OneBasedInt());
   dict.Add("columnNumber", text_position.column_.OneBasedInt());
 }
@@ -1188,7 +1190,7 @@ void inspector_evaluate_script_event::Data(perfetto::TracedValue context,
                                            const String& url,
                                            const TextPosition& text_position) {
   auto dict = std::move(context).WriteDictionary();
-  FillLocation(dict, url, text_position);
+  FillLocation(dict, url, v8::UnboundScript::kNoScriptId, text_position);
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
   SetCallStack(isolate, dict);
 }
@@ -1270,13 +1272,14 @@ inspector_compile_script_event::V8ConsumeCacheResult::V8ConsumeCacheResult(
 void inspector_compile_script_event::Data(
     perfetto::TracedValue context,
     const String& url,
+    int script_id,
     const TextPosition& text_position,
     std::optional<V8ConsumeCacheResult> consume_cache_result,
     bool eager,
     bool streamed,
     ScriptStreamer::NotStreamingReason not_streaming_reason) {
   auto dict = std::move(context).WriteDictionary();
-  FillLocation(dict, url, text_position);
+  FillLocation(dict, url, script_id, text_position);
 
   if (consume_cache_result) {
     dict.Add("consumedCacheSize", consume_cache_result->cache_size);
@@ -1297,10 +1300,11 @@ void inspector_compile_script_event::Data(
 void inspector_produce_script_cache_event::Data(
     perfetto::TracedValue context,
     const String& url,
+    int script_id,
     const TextPosition& text_position,
     int cache_size) {
   auto dict = std::move(context).WriteDictionary();
-  FillLocation(dict, url, text_position);
+  FillLocation(dict, url, script_id, text_position);
   dict.Add("producedCacheSize", cache_size);
 }
 
