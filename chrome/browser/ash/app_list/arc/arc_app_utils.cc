@@ -44,6 +44,7 @@
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_package.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_constants.h"
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
@@ -83,13 +84,20 @@ namespace arc {
 
 namespace {
 
-// TODO(djacobo): Evaluate to build these strings by using
-// ArcIntentHelperBridge::AppendStringToIntentHelperPackageName.
 // Intent helper strings.
-constexpr char kIntentHelperClassName[] =
-    "org.chromium.arc.intent_helper.SettingsReceiver";
-constexpr char kSetInTouchModeIntent[] =
-    "org.chromium.arc.intent_helper.SET_IN_TOUCH_MODE";
+const std::string& GetIntentHelperClassName() {
+  static const base::NoDestructor<std::string> class_name(
+      ArcIntentHelperBridge::AppendStringToIntentHelperPackageName(
+          "SettingsReceiver"));
+  return *class_name;
+}
+
+const std::string& GetSetInTouchModeIntent() {
+  static const base::NoDestructor<std::string> intent(
+      ArcIntentHelperBridge::AppendStringToIntentHelperPackageName(
+          "SET_IN_TOUCH_MODE"));
+  return *intent;
+}
 
 constexpr char kAndroidClockAppId[] = "ddmmnabaeomoacfpfjgghfpocfolhjlg";
 constexpr char kAndroidFilesAppId[] = "gmiohhmfhgfclpeacmdfancbipocempm";
@@ -494,9 +502,9 @@ bool SetTouchMode(bool enable) {
   base::DictValue extras;
   extras.Set("inTouchMode", enable);
   std::string extras_string = base::WriteJson(extras).value_or("");
-  intent_helper_instance->SendBroadcast(kSetInTouchModeIntent,
-                                        kArcIntentHelperPackageName,
-                                        kIntentHelperClassName, extras_string);
+  intent_helper_instance->SendBroadcast(
+      GetSetInTouchModeIntent(), kArcIntentHelperPackageName,
+      GetIntentHelperClassName(), extras_string);
 
   return true;
 }
