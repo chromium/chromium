@@ -1522,3 +1522,53 @@ TEST_F(TabRestoreServiceImplWithMockClientTest,
   service_->RestoreEntryById(&mock_live_tab_context, entry->id,
                              WindowOpenDisposition::NEW_FOREGROUND_TAB);
 }
+
+TEST_F(TabRestoreServiceImplWithMockClientTest,
+       SplitVisualDataPersistenceAfterRestart) {
+  ON_CALL(*mock_tab_restore_service_client_, ShouldTrackURLForRestore(_))
+      .WillByDefault(testing::Return(true));
+
+  testing::NiceMock<MockLiveTabContext> mock_live_tab_context;
+  testing::NiceMock<MockLiveTab> mock_tab1, mock_tab2;
+  split_tabs::SplitTabId split_id = split_tabs::SplitTabId::GenerateNew();
+
+  SetupMockSplit(&mock_live_tab_context, &mock_tab1, &mock_tab2,
+                 GURL("http://split1"), GURL("http://split2"), split_id);
+
+  ON_CALL(mock_live_tab_context, AddRestoredTab(_, _, _, _, _))
+      .WillByDefault(testing::Return(&mock_tab1));
+
+  split_tabs::SplitTabVisualData visual_data(
+      split_tabs::SplitTabLayout::kStacked, 0.3);
+
+  ON_CALL(mock_live_tab_context, GetVisualDataForSplit(split_id))
+      .WillByDefault(testing::Return(&visual_data));
+
+  // Create the Historical Split
+  service_->CreateHistoricalSplit(&mock_live_tab_context, split_id);
+  ASSERT_EQ(1U, service_->entries().size());
+
+  // Recreate the service to trigger persistence write and load.
+  RecreateService();
+
+  // Set expectation on the new mock client created inside RecreateService.
+  ON_CALL(*mock_tab_restore_service_client_, ShouldTrackURLForRestore(_))
+      .WillByDefault(testing::Return(true));
+
+  // Verify the split visual data survived the restart.
+  ASSERT_EQ(1U, service_->entries().size());
+  auto& entry = service_->entries().front();
+  ASSERT_EQ(sessions::tab_restore::Type::SPLIT, entry->type);
+
+  auto* split_entry = static_cast<sessions::tab_restore::Split*>(entry.get());
+  EXPECT_EQ(visual_data, split_entry->visual_data);
+
+  // Now verify that restoring the split after restart passes the correct visual
+  // data.
+  EXPECT_CALL(mock_live_tab_context,
+              ReconstructSplit(_, _, split_id, testing::Eq(visual_data)))
+      .Times(1);
+
+  service_->RestoreEntryById(&mock_live_tab_context, entry->id,
+                             WindowOpenDisposition::NEW_FOREGROUND_TAB);
+}

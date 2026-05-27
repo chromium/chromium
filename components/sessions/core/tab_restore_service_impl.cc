@@ -263,6 +263,41 @@ bool DeserializeWindowType(int type_int,
   return false;
 }
 
+// Converts an int to a split tab layout type. Returns true on success, false
+// otherwise.
+bool DeserializeSplitTabLayout(int layout_int,
+                               split_tabs::SplitTabLayout* layout) {
+  if (layout_int == static_cast<int>(split_tabs::SplitTabLayout::kSideBySide)) {
+    *layout = split_tabs::SplitTabLayout::kSideBySide;
+    return true;
+  }
+  if (layout_int == static_cast<int>(split_tabs::SplitTabLayout::kStacked)) {
+    *layout = split_tabs::SplitTabLayout::kStacked;
+    return true;
+  }
+  return false;
+}
+
+// Reads split tab visual data from a pickle iterator. Returns true on success
+// and if the values are valid, false otherwise.
+bool ReadSplitTabVisualData(base::PickleIterator* iter,
+                            split_tabs::SplitTabVisualData* visual_data) {
+  double split_ratio = 0.5;
+  int split_layout_type =
+      static_cast<int>(split_tabs::SplitTabLayout::kSideBySide);
+  if (!iter->ReadDouble(&split_ratio) || !iter->ReadInt(&split_layout_type)) {
+    return false;
+  }
+
+  split_tabs::SplitTabLayout layout;
+  if (split_ratio >= 0.0 && split_ratio <= 1.0 &&
+      DeserializeSplitTabLayout(split_layout_type, &layout)) {
+    *visual_data = split_tabs::SplitTabVisualData(layout, split_ratio);
+    return true;
+  }
+  return false;
+}
+
 // Superset of WindowPayloadObsolete/WindowPayloadObsolete2 and the other fields
 // that can appear in the Pickle version of a Window command. This is used as a
 // convenient destination for parsing the various fields in a WindowCommand.
@@ -495,6 +530,8 @@ std::unique_ptr<sessions::tab_restore::Split> CreateSplitEntryFromCommand(
       base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(timestamp));
   *session_id = SessionID::FromSerializedValue(session_id_val);
 
+  ReadSplitTabVisualData(&it, &split->visual_data);
+
   return split;
 }
 
@@ -593,6 +630,7 @@ class TabRestoreServiceImpl::PersistenceDelegate
   static std::unique_ptr<SessionCommand> CreateSplitCommand(
       SessionID session_id,
       split_tabs::SplitTabId split_id,
+      const split_tabs::SplitTabVisualData& visual_data,
       base::Time timestamp);
 
   // Creates a tab close command.
@@ -910,7 +948,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForSplit(
     command_storage_manager_->ScheduleCommand(CreateSplitCommand(
         split.id,
         split.split_id.value_or(split_tabs::SplitTabId::CreateEmpty()),
-        split.timestamp));
+        split.visual_data, split.timestamp));
     for (const auto& [tab, index] : valid_tabs) {
       ScheduleCommandsForTab(*tab, index);
     }
@@ -983,6 +1021,10 @@ void TabRestoreServiceImpl::PersistenceDelegate::ScheduleCommandsForTab(
   if (tab.split_id.has_value()) {
     base::Pickle pickle;
     WriteTokenToPickle(&pickle, tab.split_id.value().token());
+    const split_tabs::SplitTabVisualData visual_data =
+        tab.split_visual_data.value_or(split_tabs::SplitTabVisualData());
+    pickle.WriteDouble(visual_data.split_ratio());
+    pickle.WriteInt(static_cast<int>(visual_data.split_layout()));
     std::unique_ptr<SessionCommand> command(
         new SessionCommand(kCommandSetTabSplitData, pickle));
     command_storage_manager_->ScheduleCommand(std::move(command));
@@ -1093,11 +1135,14 @@ std::unique_ptr<SessionCommand>
 TabRestoreServiceImpl::PersistenceDelegate::CreateSplitCommand(
     SessionID session_id,
     split_tabs::SplitTabId split_id,
+    const split_tabs::SplitTabVisualData& visual_data,
     base::Time timestamp) {
   base::Pickle pickle;
   WriteTokenToPickle(&pickle, split_id.token());
   pickle.WriteInt(static_cast<int>(session_id.id()));
   pickle.WriteInt64(timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  pickle.WriteDouble(visual_data.split_ratio());
+  pickle.WriteInt(static_cast<int>(visual_data.split_layout()));
 
   std::unique_ptr<SessionCommand> command =
       std::make_unique<SessionCommand>(kCommandCreateSplit, pickle);
@@ -1520,6 +1565,10 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         if (split_token.has_value()) {
           current_tab->split_id =
               split_tabs::SplitTabId::FromRawToken(split_token.value());
+          split_tabs::SplitTabVisualData visual_data;
+          if (ReadSplitTabVisualData(&iter, &visual_data)) {
+            current_tab->split_visual_data = visual_data;
+          }
         }
         break;
       }
