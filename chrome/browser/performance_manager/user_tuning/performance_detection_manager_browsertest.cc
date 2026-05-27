@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -77,8 +78,14 @@ class PerformanceDetectionManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
+#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/500854310): Flaky on Mac 13.
+#define MAYBE_DiscardMultiplePages DISABLED_DiscardMultiplePages
+#else
+#define MAYBE_DiscardMultiplePages DiscardMultiplePages
+#endif
 IN_PROC_BROWSER_TEST_F(PerformanceDetectionManagerBrowserTest,
-                       DiscardMultiplePages) {
+                       MAYBE_DiscardMultiplePages) {
   ASSERT_TRUE(AddTabAtIndex(1, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
   ASSERT_TRUE(AddTabAtIndex(2, GetTestingURL(), ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->ActivateTabAt(0);
