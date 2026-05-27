@@ -6952,6 +6952,7 @@ test("unit_tests") {
       "../browser/enterprise/reporting/saas_usage/saas_usage_navigation_observer_unittest.cc",
       "../browser/enterprise/reporting/saas_usage/saas_usage_report_scheduler_delegate_desktop_unittest.cc",
       "../browser/enterprise/reporting/saas_usage/saas_usage_report_uploader_desktop_unittest.cc",
+      "../browser/ui/webui/intro/policy_store_observer_unittest.cc",
       "../browser/ui/webui/intro/sign_in_celebration_handler_unittest.cc",
     ]
   }

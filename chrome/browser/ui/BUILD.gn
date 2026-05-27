@@ -3169,6 +3169,8 @@ static_library("ui") {
       "webui/intro/intro_handler.h",
       "webui/intro/intro_ui.cc",
       "webui/intro/intro_ui.h",
+      "webui/intro/policy_store_observer.cc",
+      "webui/intro/policy_store_observer.h",
       "webui/intro/sign_in_celebration_handler.cc",
       "webui/intro/sign_in_celebration_handler.h",
       "webui/on_device_translation_internals/on_device_translation_internals_page_handler_impl.cc",
