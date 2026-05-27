@@ -16,6 +16,7 @@ const char kDataMigrationUuid[] = "60c68e7e-5acc-3ac1-a505-5d3beb02fec4";
 const char kNearbySharingUuid[] = "a82efa21-ae5c-3dde-9bbc-f16da7b16c5a";
 const char kSecureChannelUuid[] = "a384bd4f-41ea-3b02-8901-8c2ed9a79970";
 const char kQuickStartUuid[] = "5e164731-1999-3405-9061-08a610fd3787";
+const char kCopresenceServiceUuid[] = "0000fef3-0000-1000-8000-00805f9b34fb";
 }  // namespace
 
 const std::vector<device::BluetoothUUID>& GetNearbyClientUuids() {
@@ -27,7 +28,8 @@ const std::vector<device::BluetoothUUID>& GetNearbyClientUuids() {
             device::BluetoothUUID(kDataMigrationUuid),
             device::BluetoothUUID(kNearbySharingUuid),
             device::BluetoothUUID(kSecureChannelUuid),
-            device::BluetoothUUID(kQuickStartUuid)};
+            device::BluetoothUUID(kQuickStartUuid),
+            device::BluetoothUUID(kCopresenceServiceUuid)};
         return allowed_uuids;
       }());
 
