@@ -106,7 +106,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
 
   // Download History WebUI colors.
   mixer[kColorDownloadManagerItemError] = {ui::kColorSysError};
-  mixer[kColorDownloadManagerItemBackground] = {ui::kColorSysSurface};
+  mixer[kColorDownloadManagerItemBackground] = {ui::kColorSysSurface1};
   mixer[kColorDownloadManagerItemBackgroundInactive] = {
       ui::kColorSysStateDisabledContainer};
   mixer[kColorDownloadManagerProgress] = {ui::kColorSysPrimary};
