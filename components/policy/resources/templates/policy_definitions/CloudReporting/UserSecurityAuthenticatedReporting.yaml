@@ -18,6 +18,8 @@ features:
 supported_on:
 - android:144-
 - chrome.*:137-
+future_on:
+- ios
 owners:
 - seblalancette@chromium.org
 - cbe-device-trust-eng@google.com

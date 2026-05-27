@@ -705,6 +705,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       enterprise_reporting::kPoliciesEverFetchedWithProfileId, false);
   registry->RegisterBooleanPref(
+      enterprise_reporting::kUserSecurityAuthenticatedReporting, false);
+  registry->RegisterBooleanPref(
       enterprise_reporting::kUserSecuritySignalsReporting, false);
 
   // Register prefs related to Enterprise Isolated Mode.
