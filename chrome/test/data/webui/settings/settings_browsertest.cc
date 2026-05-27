@@ -2021,6 +2021,11 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest,
           "runMochaSuite('ContentSettingsVisibility')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SiteSettingsList) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('SiteSettingsList')");
+}
+
 // Tests that the content settings page for Web Printing is not shown by
 // default.
 class SettingsSiteSettingsPageTestWithoutWebPrinting

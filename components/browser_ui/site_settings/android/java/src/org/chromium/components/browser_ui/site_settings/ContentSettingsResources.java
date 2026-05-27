@@ -1074,13 +1074,34 @@ public class ContentSettingsResources {
         } else if (contentType == ContentSettingsType.SENSORS) {
             return new int[] {
                 R.drawable.settings_sensors,
-                R.drawable.settings_sensors,
+                R.drawable.sensors_ask_24px,
                 R.drawable.sensors_off_24px
             };
         }
 
         assert false;
         return null;
+    }
+
+    /**
+     * Returns the resource ID of the icon for a given content settings type and value.
+     *
+     * @param contentType The ContentSettingsType.
+     * @param setting The ContentSetting value.
+     * @return The resource ID of the icon.
+     */
+    public static int getTriStateSettingIcon(int contentType, @ContentSetting int setting) {
+        int[] iconIds = getTriStateSettingIconIDs(contentType);
+        if (iconIds != null) {
+            if (setting == ContentSetting.ALLOW) {
+                return iconIds[0];
+            } else if (setting == ContentSetting.ASK) {
+                return iconIds[1];
+            } else if (setting == ContentSetting.BLOCK) {
+                return iconIds[2];
+            }
+        }
+        return getIcon(contentType);
     }
 
     /**

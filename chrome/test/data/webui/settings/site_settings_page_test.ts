@@ -6,7 +6,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrExpandButtonElement, SettingsSiteSettingsPageElement} from 'chrome://settings/lazy_load.js';
-import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent} from 'chrome://settings/lazy_load.js';
+import {ContentSetting, CookieControlsMode, ContentSettingsTypes, defaultSettingLabel, SettingsState, SafetyHubBrowserProxyImpl, SafetyHubEvent, SiteSettingsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrLinkRowElement, Route, SettingsPrefsElement, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -14,6 +14,8 @@ import {isChildVisible} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestSafetyHubBrowserProxy} from './test_safety_hub_browser_proxy.js';
+import {TestSiteSettingsBrowserProxy} from './test_site_settings_browser_proxy.js';
+import {createContentSettingTypeToValuePair, createDefaultContentSetting, createSiteSettingsPrefs} from './test_util.js';
 
 const redesignedPages: Route[] = [
   routes.SITE_SETTINGS_HANDLERS,
@@ -377,5 +379,69 @@ suite('ContentSettingsVisibility', function() {
             .querySelectorAll('settings-category-default-radio-group')
             .length,
         expectedPagesCount);
+  });
+});
+
+suite('SiteSettingsList', function() {
+  let browserProxy: TestSiteSettingsBrowserProxy;
+
+  setup(function() {
+    browserProxy = new TestSiteSettingsBrowserProxy();
+    SiteSettingsBrowserProxyImpl.setInstance(browserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
+  test('SensorsIconChangesWithSetting', async function() {
+    const categoryList = [{
+      route: routes.SITE_SETTINGS_SENSORS,
+      id: ContentSettingsTypes.SENSORS,
+      label: 'siteSettingsSensors',
+      icon: 'privacy:sensors',
+      enabledLabel: 'siteSettingsSensorsAllowed',
+      disabledLabel: 'siteSettingsSensorsBlocked',
+      askLabel: 'siteSettingsSensorsAsk',
+    }];
+
+    const listElement = document.createElement('settings-site-settings-list');
+    listElement.categoryList = categoryList;
+    document.body.appendChild(listElement);
+    await flushTasks();
+
+    const sensorsRow =
+        listElement.shadowRoot!.querySelector<CrLinkRowElement>('#sensors');
+    assertTrue(!!sensorsRow);
+
+    // Test ALLOW setting -> should show privacy:sensors
+    const allowPrefs = createSiteSettingsPrefs(
+        [createContentSettingTypeToValuePair(
+            ContentSettingsTypes.SENSORS, createDefaultContentSetting({
+              setting: ContentSetting.ALLOW,
+            }))],
+        [], []);
+    browserProxy.setPrefs(allowPrefs);
+    await flushTasks();
+    assertEquals('privacy:sensors', sensorsRow.startIcon);
+
+    // Test ASK setting -> should show privacy:sensors-ask
+    const askPrefs = createSiteSettingsPrefs(
+        [createContentSettingTypeToValuePair(
+            ContentSettingsTypes.SENSORS, createDefaultContentSetting({
+              setting: ContentSetting.ASK,
+            }))],
+        [], []);
+    browserProxy.setPrefs(askPrefs);
+    await flushTasks();
+    assertEquals('privacy:sensors-ask', sensorsRow.startIcon);
+
+    // Test BLOCK setting -> should show privacy:sensors-off
+    const blockPrefs = createSiteSettingsPrefs(
+        [createContentSettingTypeToValuePair(
+            ContentSettingsTypes.SENSORS, createDefaultContentSetting({
+              setting: ContentSetting.BLOCK,
+            }))],
+        [], []);
+    browserProxy.setPrefs(blockPrefs);
+    await flushTasks();
+    assertEquals('privacy:sensors-off', sensorsRow.startIcon);
   });
 });

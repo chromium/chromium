@@ -198,9 +198,12 @@ public class SiteSettings extends BaseSiteSettingsFragment
             }
 
             if (prefCategory != Type.THIRD_PARTY_COOKIES) {
-                p.setIcon(
-                        SettingsUtils.getTintedIcon(
-                                getContext(), ContentSettingsResources.getIcon(contentType)));
+                int iconId =
+                        requiresTriStateSetting
+                                ? ContentSettingsResources.getTriStateSettingIcon(
+                                        contentType, setting)
+                                : ContentSettingsResources.getIcon(contentType);
+                p.setIcon(SettingsUtils.getTintedIcon(getContext(), iconId));
             }
         }
 

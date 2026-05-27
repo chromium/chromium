@@ -90,6 +90,7 @@ android_resources("java_resources") {
     "res/drawable/picture_in_picture_off_24px.xml",
     "res/drawable/router_24.xml",
     "res/drawable/router_off_24.xml",
+    "res/drawable/sensors_ask_24px.xml",
     "res/drawable/sensors_off_24px.xml",
     "res/drawable/smartphone_24px.xml",
     "res/drawable/sync_24px.xml",

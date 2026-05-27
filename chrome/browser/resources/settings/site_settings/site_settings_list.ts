@@ -184,6 +184,7 @@ class SettingsSiteSettingsListElement extends
     return this.browserProxy_.getDefaultValueForContentType(category).then(
         defaultValue => {
           this.updateDefaultValueLabel_(category, defaultValue.setting);
+          this.updateDefaultValueIcon_(category, defaultValue.setting);
         });
   }
 
@@ -210,6 +211,30 @@ class SettingsSiteSettingsListElement extends
             dataItem.disabledLabel ? this.i18n(dataItem.disabledLabel) : '',
             dataItem.askLabel ? this.i18n(dataItem.askLabel) : undefined,
             dataItem.otherLabel ? this.i18n(dataItem.otherLabel) : undefined));
+  }
+
+  /**
+   * Updates the icon for the given |category| that corresponds to the given
+   * |setting|.
+   */
+  private updateDefaultValueIcon_(
+      category: ContentSettingsTypes, setting: ContentSetting) {
+    if (category !== ContentSettingsTypes.SENSORS) {
+      return;
+    }
+
+    const index = this.categoryList.findIndex(item => item.id === category);
+    if (index === -1) {
+      return;
+    }
+
+    let icon = 'privacy:sensors';
+    if (setting === ContentSetting.ASK) {
+      icon = 'privacy:sensors-ask';
+    } else if (setting === ContentSetting.BLOCK) {
+      icon = 'privacy:sensors-off';
+    }
+    this.set(`categoryList.${index}.icon`, icon);
   }
 
   /**
