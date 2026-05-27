@@ -144,14 +144,6 @@ void LaunchWebApp(apps::AppLaunchParams params,
                   WithAppResources& app_resources,
                   LaunchWebAppDebugValueCallback callback);
 
-// Will enqueue the given url in the launch params for this web contents. Does
-// not check if the url is within scope of the app.
-void EnqueueLaunchParams(content::WebContents* contents,
-                         const webapps::AppId& app_id,
-                         const GURL& url,
-                         bool wait_for_navigation_to_complete,
-                         base::TimeTicks time_navigation_started);
-
 // Focus the app container depending on whether the `browser` is an app window
 // or if it is a normal tabbed browser. `browser` shouldn't be a nullptr, and
 // the `tab_index` should be a valid index for a tab inside `browser`.

@@ -57,6 +57,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -481,20 +482,27 @@ bool MaybeHandleIntentPickerFocusExistingOrNavigateExisting(
 
   FocusAppContainer(existing_app_host->browser, existing_app_host->tab_index);
 
+  webapps::LaunchParams launch_params;
+  launch_params.app_id = app_id;
+  launch_params.target_url = launch_url;
+  if (!time_reparent_started.is_null()) {
+    launch_params.time_navigation_started_for_enqueue = time_reparent_started;
+  }
+
   if (client_mode == LaunchHandler::ClientMode::kNavigateExisting) {
     NavigateParams nav_params(
         existing_app_host->browser->GetBrowserForMigrationOnly(), launch_url,
         ui::PageTransition::PAGE_TRANSITION_LINK);
+    nav_params.launch_params = std::move(launch_params);
     Navigate(&nav_params);
+  } else {
+    WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
+        preexisting_web_contents, std::move(launch_params));
   }
 
   RecordLaunchMetrics(app_id, apps::LaunchContainer::kLaunchContainerWindow,
                       apps::LaunchSource::kFromOmnibox, launch_url,
                       preexisting_web_contents);
-  EnqueueLaunchParams(preexisting_web_contents, app_id, launch_url,
-                      /*wait_for_navigation_to_complete=*/client_mode ==
-                          LaunchHandler::ClientMode::kNavigateExisting,
-                      time_reparent_started);
   return true;
 }
 
@@ -980,23 +988,6 @@ void LaunchWebApp(apps::AppLaunchParams params,
                      browser ? browser->GetWeakPtr() : nullptr,
                      web_contents ? web_contents->GetWeakPtr() : nullptr,
                      container, base::Value(std::move(debug_value))));
-}
-
-void EnqueueLaunchParams(content::WebContents* contents,
-                         const webapps::AppId& app_id,
-                         const GURL& url,
-                         bool wait_for_navigation_to_complete,
-                         base::TimeTicks time_navigation_started) {
-  CHECK(contents);
-  webapps::LaunchParams launch_params;
-  launch_params.started_new_navigation = wait_for_navigation_to_complete;
-  launch_params.app_id = app_id;
-  launch_params.target_url = url;
-  if (!time_navigation_started.is_null()) {
-    launch_params.time_navigation_started_for_enqueue = time_navigation_started;
-  }
-  WebAppTabHelper::FromWebContents(contents)->EnsureLaunchQueue().Enqueue(
-      std::move(launch_params));
 }
 
 void FocusAppContainer(BrowserWindowInterface* browser, int tab_index) {

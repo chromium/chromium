@@ -161,6 +161,8 @@ class WebAppUiManager {
   void NotifyReadyToCommitNavigation(
       const webapps::AppId& app_id,
       content::NavigationHandle* navigation_handle);
+  virtual void NotifyDidFinishNavigation(
+      content::NavigationHandle* navigation_handle) {}
 
   virtual bool CanAddAppToQuickLaunchBar() const = 0;
   virtual void AddAppToQuickLaunchBar(const webapps::AppId& app_id) = 0;

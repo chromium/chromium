@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/share_target_utils.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -448,6 +449,12 @@ WebAppLaunchProcess::NavigateResult WebAppLaunchProcess::MaybeNavigateBrowser(
                           network::mojom::ReferrerPolicy::kDefault));
   }
 
+  webapps::LaunchParams launch_params;
+  launch_params.app_id = web_app_->app_id();
+  launch_params.target_url = launch_url;
+  launch_params.paths = params_->launch_files;
+  nav_params.launch_params = std::move(launch_params);
+
   return {.web_contents = NavigateWebAppUsingParams(nav_params),
           .did_navigate = true};
 }
@@ -457,15 +464,22 @@ void WebAppLaunchProcess::MaybeEnqueueWebLaunchParams(
     bool is_file_handling,
     content::WebContents* web_contents,
     bool started_new_navigation) {
+  if (started_new_navigation) {
+    // If we started a new navigation, the launch parameters have already been
+    // attached to the NavigateParams and will be committed once
+    // DidFinishNavigation() is called.
+    return;
+  }
+
   webapps::LaunchParams launch_params;
-  launch_params.started_new_navigation = started_new_navigation;
+  launch_params.started_new_navigation = false;
   launch_params.app_id = web_app_->app_id();
   launch_params.target_url = launch_url;
   launch_params.paths =
       is_file_handling ? params_->launch_files : std::vector<base::FilePath>();
-  WebAppTabHelper::FromWebContents(web_contents)
-      ->EnsureLaunchQueue()
-      .Enqueue(std::move(launch_params));
+
+  WebAppLaunchNavigationHandleUserData::DispatchLaunchParams(
+      web_contents, std::move(launch_params));
 }
 
 }  // namespace web_app

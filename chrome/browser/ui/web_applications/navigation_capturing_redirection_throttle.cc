@@ -44,20 +44,6 @@ NavigationCapturingRedirectionThrottle::WillProcessResponse() {
     result = process->HandleRedirect();
   }
 
-  // If the navigation is not cancelled, this is the time to enqueue launch
-  // params, record launch metrics and maybe show a navigation capturing IPH.
-  // Note that there is still a small chance that some other navigation throttle
-  // will cancel this navigation, so ideally we would wait until the navigation
-  // actually commits, but this is an easier place to hook into.
-  if (result.action() != content::NavigationThrottle::CANCEL) {
-    WebAppLaunchNavigationHandleUserData* handle_user_data =
-        WebAppLaunchNavigationHandleUserData::GetForNavigationHandle(
-            *navigation_handle());
-    if (handle_user_data) {
-      handle_user_data->MaybePerformAppHandlingTasksInWebContents();
-    }
-  }
-
   return result;
 }
 

@@ -28,6 +28,7 @@ class WebContents;
 
 namespace webapps {
 class LaunchQueue;
+struct LaunchParams;
 }
 
 namespace web_app {
@@ -158,10 +159,13 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   bool is_in_app_window() const { return window_app_id_.has_value(); }
 
   webapps::LaunchQueue& EnsureLaunchQueue();
+  void EnqueueLaunchParams(webapps::LaunchParams launch_params);
 
   // content::WebContentsObserver:
 
   void ReadyToCommitNavigation(
+      content::NavigationHandle* navigation_handle) override;
+  void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void PrimaryPageChanged(content::Page& page) override;
   void DidFinishLoad(content::RenderFrameHost* render_frame_host,
