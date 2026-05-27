@@ -3173,6 +3173,23 @@ class BannedTypeCheckTest(unittest.TestCase):
             all('base/memory/memory_pressure_listener.cc' not in r.message
                 for r in results))
 
+    def testBannedWebContentsDestroyedDoesNotMatchWatcher(self):
+        input_api = MockInputApi()
+        input_api.files = [
+            MockFile('some/cpp/problematic/web_contents_observer.cc',
+                     ['void WebContentsDestroyed() override;']),
+            MockFile('some/cpp/ok/web_contents_destroyed_watcher.cc',
+                     ['content::WebContentsDestroyedWatcher watcher;']),
+        ]
+
+        results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
+
+        self.assertEqual(1, len(results))
+        self.assertIn('some/cpp/problematic/web_contents_observer.cc',
+                      results[0].message)
+        self.assertNotIn('some/cpp/ok/web_contents_destroyed_watcher.cc',
+                         results[0].message)
+
     def testBannedCppRandomFunctions(self):
         banned_rngs = [
             'absl::BitGen',
