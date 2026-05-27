@@ -13441,9 +13441,9 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
     }
   }
   if (reset_source_texture_base_level_max_level) {
-    api()->glTexParameteriFn(target, GL_TEXTURE_BASE_LEVEL,
+    api()->glTexParameteriFn(texture->target(), GL_TEXTURE_BASE_LEVEL,
                              attached_texture_level);
-    api()->glTexParameteriFn(target, GL_TEXTURE_MAX_LEVEL,
+    api()->glTexParameteriFn(texture->target(), GL_TEXTURE_MAX_LEVEL,
                              attached_texture_level);
   }
 
@@ -13522,9 +13522,9 @@ void GLES2DecoderImpl::DoCopyTexImage2D(
     }
   }
   if (reset_source_texture_base_level_max_level) {
-    api()->glTexParameteriFn(target, GL_TEXTURE_BASE_LEVEL,
+    api()->glTexParameteriFn(texture->target(), GL_TEXTURE_BASE_LEVEL,
                              texture->base_level());
-    api()->glTexParameteriFn(target, GL_TEXTURE_MAX_LEVEL,
+    api()->glTexParameteriFn(texture->target(), GL_TEXTURE_MAX_LEVEL,
                              texture->max_level());
   }
   GLenum error = LOCAL_PEEK_GL_ERROR(func_name);

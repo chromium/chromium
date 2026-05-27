@@ -4,14 +4,18 @@
 
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#include <GLES3/gl3.h>
 #include <stdint.h>
 
 #include "base/containers/heap_array.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
+#include "gpu/command_buffer/tests/gl_test_service_helper.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gl/buildflags.h"
 
 namespace gpu {
 
@@ -128,5 +132,78 @@ TEST_F(GLTest, GetString) {
       "OpenGL ES GLSL ES 1.0 Chromium",
       reinterpret_cast<const char*>(glGetString(GL_SHADING_LANGUAGE_VERSION)));
 }
+
+// TODO(crbug.com/513543143): Goldfish GLES emulator driver on 32-bit x86
+// Android bots has a known driver bug where it incorrectly rejects
+// glCopyTexImage2D on cubemaps with GL_INVALID_ENUM.
+#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER) && \
+    !(BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86))
+class GL3Test : public GLTest {
+ protected:
+  void SetUp() override {
+    if (gl_.gpu_preferences().use_passthrough_cmd_decoder) {
+      GTEST_SKIP() << "Test only applies to validating decoder";
+    }
+    GLManager::Options options;
+    options.context_type = CONTEXT_TYPE_OPENGLES3;
+    gl_.Initialize(options);
+  }
+};
+
+// Tests that glCopyTexImage2D correctly updates the internal service-side
+// texture level size when using the workaround path that temporarily clamps
+// base/max levels to prevent FBO incompleteness. Specifically, it verifies
+// that the workaround uses the correct base target (GL_TEXTURE_CUBE_MAP)
+// instead of the specific face target (e.g., GL_TEXTURE_CUBE_MAP_POSITIVE_X)
+// which would cause driver-side GL_INVALID_ENUM errors and result in a state
+// desynchronization between the decoder and the GPU driver.
+TEST_F(GL3Test, CopyTexImage2DWorkaroundStateDesync) {
+  GLuint tex = 0;
+  glGenTextures(1, &tex);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, tex);
+
+  // We manually specify all mip levels instead of calling glGenerateMipmap
+  // because various GPU drivers (e.g., the Android x64 emulator) have bugs
+  // when generating cubemap texture mipmaps, which can cause FBO
+  // incompleteness.
+  auto pixels = base::HeapArray<uint8_t>::WithSize(32 * 32 * 4);
+  for (int level = 0; level < 6; ++level) {
+    int size = 32 >> level;
+    for (int i = 0; i < 6; ++i) {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, level, GL_RGBA8, size,
+                   size, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels.data());
+    }
+  }
+
+  GLuint fbo = 0;
+  glGenFramebuffers(1, &fbo);
+  glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+  glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                         GL_TEXTURE_CUBE_MAP_POSITIVE_Y, tex, 3);
+  EXPECT_EQ(static_cast<GLenum>(GL_FRAMEBUFFER_COMPLETE),
+            glCheckFramebufferStatus(GL_FRAMEBUFFER));
+
+  glCopyTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 5, GL_RGBA8, 0, 0, 2, 2, 0);
+
+  EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), glGetError());
+
+  // Verify that the decoder's internal LevelInfo tracking has been correctly
+  // updated to match the new 2x2 size. If the workaround had triggered a driver
+  // error, the decoder would have skipped updating this state while the driver-
+  // side allocation would still be updated, leading to a security
+  // vulnerability.
+  int tracked_width = 0;
+  int tracked_height = 0;
+  bool defined =
+      InspectTextureLevelSize(&gl_, tex, GL_TEXTURE_CUBE_MAP_POSITIVE_X, 5,
+                              &tracked_width, &tracked_height);
+  EXPECT_TRUE(defined);
+  EXPECT_EQ(2, tracked_width);
+  EXPECT_EQ(2, tracked_height);
+
+  glDeleteFramebuffers(1, &fbo);
+  glDeleteTextures(1, &tex);
+}
+#endif
 
 }  // namespace gpu
