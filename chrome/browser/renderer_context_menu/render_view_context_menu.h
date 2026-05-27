@@ -358,7 +358,8 @@ class RenderViewContextMenu
   void AppendSendTabToSelfItem(bool add_separator);
   bool AppendQRCodeGeneratorItem(bool for_image,
                                  bool draw_icon,
-                                 bool add_separator);
+                                 bool add_separator,
+                                 bool ignore_simplification = false);
   void AddItemWithOptionalIcon(int command,
                                int string,
                                const gfx::VectorIcon& icon);

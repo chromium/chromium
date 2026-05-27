@@ -2244,12 +2244,10 @@ void RenderViewContextMenu::AppendGlicShareImageItem() {
       menu_model_.AddItemWithIcon(
           IDC_CONTENT_CONTEXT_GLICSHAREIMAGE,
           l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_GLICSHAREIMAGE),
-          ui::ImageModel::FromImageSkia(
-              gfx::ImageSkiaOperations::CreateResizedImage(
-                  *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                      IDR_GLIC_SHARE_IMAGE_ICON),
-                  skia::ImageOperations::RESIZE_BEST,
-                  gfx::Size(gfx::kFaviconSize, gfx::kFaviconSize))));
+          ui::ImageModel::FromVectorIcon(
+              glic::GlicVectorIconManager::GetVectorIcon(
+                  IDR_GLIC_BUTTON_VECTOR_ICON),
+              ui::kColorMenuIcon, kTabMenuIconSize));
       menu_model_.SetElementIdentifierAt(
           menu_model_.GetIndexOfCommandId(IDC_CONTENT_CONTEXT_GLICSHAREIMAGE)
               .value(),
@@ -2426,6 +2424,62 @@ void RenderViewContextMenu::AppendPluginItems() {
 }
 
 void RenderViewContextMenu::AppendPageItems() {
+  if (features::IsMenuSimplificationEnabled() &&
+      params_.selection_text.empty() && !params_.is_editable) {
+    // Navigation
+    menu_model_.AddItemWithStringId(IDC_BACK, IDS_CONTENT_CONTEXT_BACK);
+    menu_model_.AddItemWithStringId(IDC_FORWARD, IDS_CONTENT_CONTEXT_FORWARD);
+    menu_model_.AddItemWithStringId(IDC_RELOAD, IDS_CONTENT_CONTEXT_RELOAD);
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+
+    // Save as & Print
+    menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
+                                    IDS_CONTENT_CONTEXT_SAVEPAGEAS);
+    menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
+
+    AppendLiveCaptionItem();
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+
+    // Ask gemini
+    MaybeAppendOpenGlicItem();
+    // Remove separator to group with Lens
+    size_t count = menu_model_.GetItemCount();
+    if (count > 0 &&
+        menu_model_.GetTypeAt(count - 1) == ui::MenuModel::TYPE_SEPARATOR) {
+      menu_model_.RemoveItemAt(count - 1);
+    }
+
+    // Search with google lens
+    if (IsRegionSearchEnabled()) {
+      AppendRegionSearchItem();
+    }
+
+    // Open in reading mode & Listen to this page
+    AppendReadAnythingItem();
+
+    // Cast
+    AppendMediaRouterItem();
+
+    // Send to your devices
+    if (GetBrowser() &&
+        send_tab_to_self::ShouldDisplayEntryPoint(embedder_web_contents_)) {
+      AppendSendTabToSelfItem(/*add_separator=*/false);
+    }
+
+    // Create QR code for this page
+    AppendQRCodeGeneratorItem(/*for_image=*/false, /*draw_icon=*/true,
+                              /*add_separator=*/false,
+                              /*ignore_simplification=*/true);
+
+    // Translate to english
+    if (CanTranslate(/*menu_logging=*/true)) {
+      AppendTranslateItem();
+    }
+
+    menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
+    return;
+  }
+
   AppendExitFullscreenItem();
 
   const bool use_simplified_text_selection = ShouldUseSimplifiedTextSelection();
@@ -4420,10 +4474,12 @@ bool RenderViewContextMenu::IsVideoFrameItemEnabled(int id) const {
 }
 
 // Returns true if the item was appended.
-bool RenderViewContextMenu::AppendQRCodeGeneratorItem(bool for_image,
-                                                      bool draw_icon,
-                                                      bool add_separator) {
-  if (features::IsMenuSimplificationEnabled()) {
+bool RenderViewContextMenu::AppendQRCodeGeneratorItem(
+    bool for_image,
+    bool draw_icon,
+    bool add_separator,
+    bool ignore_simplification) {
+  if (features::IsMenuSimplificationEnabled() && !ignore_simplification) {
     return false;
   }
 
@@ -5226,12 +5282,10 @@ void RenderViewContextMenu::MaybeAppendOpenGlicItem() {
         IDC_CONTENT_CONTEXT_GLIC,
         show_summarize_page ? IDS_GLIC_CONTEXT_MENU_SUMMARIZE_PAGE_WITH_GEMINI
                             : IDS_GLIC_BUTTON_ENTRYPOINT_ASK_GEMINI_LABEL,
-        ui::ImageModel::FromImageSkia(
-            gfx::ImageSkiaOperations::CreateResizedImage(
-                *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                    IDR_GLIC_BUTTON_ALT_ICON),
-                skia::ImageOperations::RESIZE_BEST,
-                gfx::Size(kTabMenuIconSize, kTabMenuIconSize))));
+        ui::ImageModel::FromVectorIcon(
+            glic::GlicVectorIconManager::GetVectorIcon(
+                IDR_GLIC_BUTTON_VECTOR_ICON),
+            ui::kColorMenuIcon, kTabMenuIconSize));
     menu_model_.SetIsNewFeatureAt(
         menu_model_.GetItemCount() - 1,
         UserEducationService::MaybeShowNewBadge(GetBrowserContext(),
