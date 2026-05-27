@@ -186,7 +186,8 @@ public class AutoPictureInPictureTabHelperTest {
         enterAutoPipAndHide(webContents, originalTab);
 
         // After auto-pip and hide, we should be on a new tab.
-        CriteriaHelper.pollUiThread(
+        CriteriaHelper.pollUiThreadLongTimeout(
+                "Waiting for activity to be recreated and TabModels initialized",
                 () -> {
                     ChromeTabbedActivity activity = getActivity();
                     Criteria.checkThat("Activity is null.", activity, Matchers.notNullValue());
@@ -569,12 +570,14 @@ public class AutoPictureInPictureTabHelperTest {
      * Gets the current ChromeTabbedActivity, handling cases where it was destroyed and recreated.
      */
     private ChromeTabbedActivity getActivity() {
-        if (mActivity == null || mActivity.isDestroyed()) {
+        if (mActivity == null || mActivity.isDestroyed() || mActivity.isFinishing()) {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
+                        mActivity = null;
                         for (Activity activity : ApplicationStatus.getRunningActivities()) {
                             if (activity instanceof ChromeTabbedActivity
-                                    && !activity.isDestroyed()) {
+                                    && !activity.isDestroyed()
+                                    && !activity.isFinishing()) {
                                 mActivity = (ChromeTabbedActivity) activity;
                                 break;
                             }
