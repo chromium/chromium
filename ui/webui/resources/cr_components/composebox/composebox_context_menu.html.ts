@@ -43,6 +43,7 @@ export function getHtml(this: ComposeboxElement) {
         .restoredTabIds="${this.restoredTabIds}"
         .fileNum="${this.files.size}"
         .sharedTabs="${this.getSharedTabs()}"
+        .isSidePanel="${this.isSidePanel}"
         ?upload-button-disabled="${this.uploadButtonDisabled}"
         ?show-context-menu-description="${this.showContextMenuDescription}"
         .energyEffectAnimationEnabled="${this.energyEffectAnimationEnabled}">

@@ -138,6 +138,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         reflect: true,
       },
       enableFileHint: {type: Boolean},
+      // TODO(crbug.com/486707842): Move to the Contextual Tasks embedder.
+      isSidePanel: {type: Boolean},
       inputPlaceholderOverride: {type: String},
       contextManagementInComposeboxEnabled_: {type: Boolean},
       // Must be property so can pass it down to children.
@@ -150,6 +152,7 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   }
 
   accessor energyEffectEnabled: boolean = false;
+  accessor isSidePanel: boolean = false;
   accessor energyEffectAnimationEnabled: boolean = false;
   accessor isZeroState: boolean = false;
   accessor isFollowupQuery: boolean = false;

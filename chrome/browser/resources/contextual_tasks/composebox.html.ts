@@ -49,6 +49,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
         >
       <cr-composebox
           id="composebox"
+          .isSidePanel="${this.isSidePanel}"
           .autofocus="${false}"
           carousel-on-top_
           entrypoint-name="ContextualTasks"

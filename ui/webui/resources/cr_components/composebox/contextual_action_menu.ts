@@ -84,6 +84,7 @@ export class ContextualActionMenuElement extends
       shareTabsFlyoutPosition_: {type: String},
       sharingTabsText_: {type: String},
       uploadButtonDisabled: {type: Boolean},
+      isSidePanel: {type: Boolean},
       recentTabId: {type: Number},
     };
   }
@@ -97,6 +98,7 @@ export class ContextualActionMenuElement extends
   accessor smartTabSharingActive: boolean = false;
   accessor disableAutoReposition: boolean = false;
   accessor uploadButtonDisabled: boolean = false;
+  accessor isSidePanel: boolean = false;
 
   protected accessor enableMultiTabSelection_: boolean =
       loadTimeData.getBoolean('composeboxContextMenuEnableMultiTabSelection');
