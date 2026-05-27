@@ -60,7 +60,7 @@ class ChangePasswordFormFillingSubmissionHelper {
                      SubmissionError>;
 
   static constexpr base::TimeDelta kSubmissionWaitingTimeout =
-      base::Seconds(10);
+      base::Seconds(30);
 
   ChangePasswordFormFillingSubmissionHelper(
       content::WebContents* web_contents,
