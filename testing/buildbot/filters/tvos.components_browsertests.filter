@@ -12,3 +12,7 @@
 # single-process mode, which leads to a NOTREACHED() assertion.
 # (Refer https://crrev.com/c/6801248)
 -BadMessageBrowserTest.CheckFrameNotPrerendering_Prerendering
+
+# TODO(crbug.com/516839852): The test has been failing on tvOS since
+# https://crrev.com/c/7253416.
+-PageContentProtoProviderBrowserTestNoTimeouts.MainFrameRendererCrashWithPendingRequest
