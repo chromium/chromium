@@ -54,6 +54,10 @@ protocol::Response TargetHandlerAndroid::CreateTarget(
     std::optional<bool> hidden,
     std::optional<bool> focus,
     std::string* out_target_id) {
+  if (hidden.value_or(false)) {
+    return protocol::Response::FallThrough();
+  }
+
   const TabModelList::TabModelVector& models = TabModelList::models();
   if (models.empty()) {
     return protocol::Response::ServerError("Could not find TabModelList");
