@@ -21,6 +21,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/scoped_thread_priority.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/post_async_results.h"
 #include "services/device/public/cpp/device_features.h"
@@ -99,6 +100,9 @@ ComPtr<IAppCapability> CreateAppCapability(std::string_view name) {
   if (GetFactoryStorage()) {
     return GetFactoryStorage().Run(name);
   }
+
+  // COM calls can load DLLs, use background priority to avoid I/O inversion.
+  SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
 
   using ::ABI::Windows::Security::Authorization::AppCapabilityAccess::
       IAppCapabilityStatics;
