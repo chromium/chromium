@@ -1152,8 +1152,14 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
 // Either button, if clicked, triggers a navigation, but neither button should
 // treat this as a click. Since this test moves the pointer horizontally and
 // does so instantly, it should not trigger the long press logic.
+// TODO(crbug.com/514610392): Flaky on Mac 13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_PointerDownOnOneUpOnAnother DISABLED_PointerDownOnOneUpOnAnother
+#else
+#define MAYBE_PointerDownOnOneUpOnAnother PointerDownOnOneUpOnAnother
+#endif
 IN_PROC_BROWSER_TEST_F(WebUIToolbarWebViewPixelBrowserTest,
-                       PointerDownOnOneUpOnAnother) {
+                       MAYBE_PointerDownOnOneUpOnAnother) {
   WebUIToolbarWebView* webui_toolbar_view = SetUpAndPinHomeButton(browser());
   views::WebView* web_view = webui_toolbar_view->GetWebViewForTesting();
 
