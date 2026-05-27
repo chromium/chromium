@@ -10,9 +10,9 @@
 
 #errorScrim {
   align-items: center;
-  background-color: var(--color-composebox-error-scrim-background);
+  background-color: var(--color-composebox-error-scrim-background, rgba(255, 255, 255, 0.9));
   border-radius: inherit;
-  color: var(--color-composebox-error-scrim-foreground);
+  color: var(--color-composebox-error-scrim-foreground, rgba(31, 31, 31, 1));
   display: flex;
   flex-direction: column;
   font-size: 13px;
@@ -41,13 +41,13 @@
 
 #dismissErrorButton {
   --cr-button-background-color:
-      var(--color-composebox-error-scrim-button-background);
+      var(--color-composebox-error-scrim-button-background, rgba(11, 87, 208, 1));
   --cr-button-border-color:
-      var(--color-composebox-error-scrim-foreground);
+      var(--color-composebox-error-scrim-foreground, rgba(31, 31, 31, 1));
   --cr-button-text-color:
-      var(--color-composebox-error-scrim-button-text);
+      var(--color-composebox-error-scrim-button-text, rgba(255, 255, 255, 1));
   --cr-icon-button-hover-background-color:
-      var(--color-composebox-error-scrim-button-background-hover);
+      var(--color-composebox-error-scrim-button-background-hover, rgba(11, 87, 208, 0.08));
   border: none;
   font-size: 13px;
   gap: 4px;
@@ -57,4 +57,23 @@
 
 :host([compact-mode]) #dismissErrorButton {
   margin-right: 10px;
+}
+
+/* TODO(crbug.com/511064262) Remove these hard-coded colors. */
+@media (prefers-color-scheme: dark) {
+  #errorScrim {
+    background-color: var(--color-composebox-error-scrim-background, rgba(0, 0, 0, 0.9));
+    color: var(--color-composebox-error-scrim-foreground, rgba(227, 227, 227, 1));
+  }
+
+  #dismissErrorButton {
+    --cr-button-background-color:
+        var(--color-composebox-error-scrim-button-background, rgba(168, 199, 250, 1));
+    --cr-button-border-color:
+        var(--color-composebox-error-scrim-foreground, rgba(227, 227, 227, 1));
+    --cr-button-text-color:
+        var(--color-composebox-error-scrim-button-text, rgba(0, 74, 173, 1));
+    --cr-icon-button-hover-background-color:
+        var(--color-composebox-error-scrim-button-background-hover, rgba(168, 199, 250, 0.08));
+  }
 }
