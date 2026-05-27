@@ -1051,7 +1051,7 @@ public class SettingsSearchCoordinator
                     int minWidePadding = getPixelSize(R.dimen.settings_wide_display_min_padding);
                     int margin =
                             ViewResizerUtil.computePaddingForWideDisplay(
-                                    mActivity, searchBox, minWidePadding);
+                                    mActivity, /* view= */ null, minWidePadding);
                     boolean isOnWideScreen =
                             margin > minWidePadding
                                     || DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
