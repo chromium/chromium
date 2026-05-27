@@ -46,7 +46,7 @@ if (!is_win && !is_mac && !is_ios) {
     # TODO(40208899): Enable more broadly.
     use_mold =
         !is_official_build && !using_sanitizer && target_os == "android" &&
-        current_cpu == "x64"
+        (current_cpu == "x64" || current_cpu == "arm64")
   }
 }
 
