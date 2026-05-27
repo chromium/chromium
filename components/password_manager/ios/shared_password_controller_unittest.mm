@@ -132,6 +132,7 @@ using ::testing::Return;
 
 const std::string kTestURL = "https://www.chromium.org/";
 NSString* const kTestFrameID = @"11111111111111111111111111111111";
+NSString* const kTestRemoteFrameID = @"22222222222222222222222222222222";
 constexpr uint64_t kMaxPasswordLength = 10;
 constexpr char16_t kGeneratedPassword[] = u"testpassword";
 
@@ -314,6 +315,16 @@ class SharedPasswordControllerTest : public PlatformTest {
     webauthn::PasskeyTabHelper::CreateForWebState(
         &web_state_, passkey_model_.get(), /*password_store=*/nullptr,
         std::make_unique<webauthn::FakeIOSPasskeyClient>());
+
+    autofill::ChildFrameRegistrar* registrar =
+        autofill::ChildFrameRegistrar::GetOrCreateForWebState(&web_state_);
+    autofill::LocalFrameToken local_token(
+        *autofill::DeserializeJavaScriptFrameId(
+            SysNSStringToUTF8(kTestFrameID)));
+    autofill::RemoteFrameToken remote_token(
+        *autofill::DeserializeJavaScriptFrameId(
+            SysNSStringToUTF8(kTestRemoteFrameID)));
+    registrar->RegisterMapping(remote_token, local_token);
 
     webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =
         webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(

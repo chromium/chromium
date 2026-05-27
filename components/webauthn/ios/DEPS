@@ -3,6 +3,7 @@ include_rules = [
   "+net/test/embedded_test_server",
   "+components/autofill/core/common",
   "+components/autofill/ios/browser",
+  "+components/autofill/ios/form_util",
   "+components/password_manager/core/browser",
   "+components/password_manager/ios",
   "+components/strings/grit",

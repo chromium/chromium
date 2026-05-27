@@ -236,15 +236,36 @@ void PasskeyTabHelper::HandleGetRequestedEvent(web::WebFrame* web_frame,
 }
 
 void PasskeyTabHelper::HandleAssertion(AssertionRequestParams params) {
+  std::optional<autofill::RemoteFrameToken> remote_frame_token =
+      params.RemoteFrameToken();
+
+  if (!remote_frame_token.has_value()) {
+    DeferToRenderer(params.RequestInfo(), params.Type());
+    return;
+  }
+
+  auto get_delegate_callback =
+      base::BindOnce(&PasskeyTabHelper::OnWebAuthnCredentialsDelegateResolved,
+                     weak_factory_.GetWeakPtr(), std::move(params));
+
+  IOSWebAuthnCredentialsDelegateFactory::GetFactory(web_state_.get())
+      ->GetDelegateForRemoteFrameToken(*remote_frame_token,
+                                       std::move(get_delegate_callback));
+}
+
+void PasskeyTabHelper::OnWebAuthnCredentialsDelegateResolved(
+    AssertionRequestParams params,
+    IOSWebAuthnCredentialsDelegate* delegate) {
+  if (!delegate) {
+    // On a malformed or empty remote frame ID, defer to renderer.
+    DeferToRenderer(params.RequestInfo(), params.Type());
+    return;
+  }
+
   // Get available passkeys for the request.
   std::vector<password_manager::PasskeyCredential> filtered_passkeys =
       password_manager::PasskeyCredential::FromCredentialSpecifics(
           GetFilteredPasskeys(params));
-
-  IOSWebAuthnCredentialsDelegate* delegate =
-      IOSWebAuthnCredentialsDelegateFactory::GetFactory(web_state_.get())
-          ->GetDelegateForFrameId(params.FrameId());
-  CHECK(delegate);
 
   const std::string& passkey_request_id = params.RequestId();
   // Send available passkeys to the WebAuthnCredentialsDelegate.

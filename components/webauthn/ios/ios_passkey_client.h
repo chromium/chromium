@@ -24,7 +24,7 @@ class IOSPasskeyClient {
   struct RequestInfo {
     RequestInfo(std::string frame_id,
                 std::string request_id,
-                std::optional<autofill::RemoteFrameToken> remote_frame_id =
+                std::optional<autofill::RemoteFrameToken> remote_frame_token =
                     std::nullopt);
     RequestInfo(const RequestInfo& other);
     RequestInfo& operator=(const RequestInfo& other);
@@ -39,7 +39,7 @@ class IOSPasskeyClient {
     // The request id associated with a PublicKeyCredential promise.
     std::string request_id;
     // The remote frame token used by ChildFrameRegistrar.
-    std::optional<autofill::RemoteFrameToken> remote_frame_id;
+    std::optional<autofill::RemoteFrameToken> remote_frame_token;
   };
 
   using InterstitialCallback = base::OnceCallback<void(bool)>;

@@ -6,8 +6,11 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
+#import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/password_manager/core/browser/passkey_credential.h"
 #import "components/webauthn/ios/ios_passkey_client.h"
 #import "components/webauthn/ios/ios_webauthn_credentials_delegate.h"
@@ -30,7 +33,8 @@ using password_manager::PasskeyCredential;
 
 namespace {
 
-constexpr char kFrameId[] = "frame_id";
+constexpr char kFrameId[] = "11111111111111111111111111111111";
+constexpr char kRemoteFrameId[] = "22222222222222222222222222222222";
 constexpr char kRequestId[] = "request_id";
 constexpr char kDisplayName[] = "display_name";
 
@@ -56,15 +60,27 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    auto web_frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
-    web_state_->SetWebFramesManager(ContentWorldForAutofillJavascriptFeatures(),
-                                    std::move(web_frames_manager));
+
+    web_state_->SetWebFramesManager(
+        web::ContentWorld::kPageContentWorld,
+        std::make_unique<web::FakeWebFramesManager>());
+    web_state_->SetWebFramesManager(
+        web::ContentWorld::kIsolatedWorld,
+        std::make_unique<web::FakeWebFramesManager>());
 
     web_state_list_->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::AtIndex(0).Activate());
+
+    autofill::ChildFrameRegistrar* registrar =
+        autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state_);
+    autofill::LocalFrameToken local_token(
+        *autofill::DeserializeJavaScriptFrameId(kFrameId));
+    autofill::RemoteFrameToken remote_token(
+        *autofill::DeserializeJavaScriptFrameId(kRemoteFrameId));
+    registrar->RegisterMapping(remote_token, local_token);
 
     webauthn::IOSWebAuthnCredentialsDelegateFactory* factory =
         webauthn::IOSWebAuthnCredentialsDelegateFactory::GetFactory(web_state_);
@@ -80,7 +96,10 @@ class PasskeySuggestionBottomSheetMediatorTest : public PlatformTest {
   void CreateMediator() {
     mediator_ = [[PasskeySuggestionBottomSheetMediator alloc]
         initWithWebStateList:web_state_list_.get()
-                 requestInfo:{kFrameId, kRequestId}
+                 requestInfo:{kFrameId, kRequestId,
+                              autofill::RemoteFrameToken(
+                                  *autofill::DeserializeJavaScriptFrameId(
+                                      kRemoteFrameId))}
                 reauthModule:reauth_module_];
   }
 

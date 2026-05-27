@@ -9,6 +9,8 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/run_until.h"
 #import "components/autofill/ios/browser/autofill_java_script_feature.h"
+#import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/password_manager/core/browser/mock_password_manager.h"
 #import "components/password_manager/core/browser/password_store/password_form_converters.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
@@ -60,6 +62,37 @@ constexpr char16_t kDeferToRendererJsCall[] = u"deferToRenderer";
 
 constexpr char kWebAuthenticationIOSContentAreaEventHistogram[] =
     "WebAuthentication.IOS.ContentAreaEvent";
+
+constexpr char kMainRemoteFrameId[] = "1effd8f52a067c8d3a01762d3c41dfda";
+
+AssertionRequestParams BuildTestAssertionRequestParams(
+    const std::vector<device::PublicKeyCredentialDescriptor>& allow_credentials,
+    device::UserVerificationRequirement user_verification =
+        device::UserVerificationRequirement::kPreferred,
+    std::string request_id = kFakeRequestId,
+    std::string frame_id = web::kMainFakeFrameId,
+    std::optional<std::string> remote_frame_token = std::nullopt) {
+  std::optional<autofill::RemoteFrameToken> remote_token;
+  if (remote_frame_token && !remote_frame_token->empty()) {
+    std::optional<base::UnguessableToken> deserialized =
+        autofill::DeserializeJavaScriptFrameId(*remote_frame_token);
+    if (deserialized) {
+      remote_token = autofill::RemoteFrameToken(*deserialized);
+    }
+  }
+
+  IOSPasskeyClient::RequestInfo request_info(frame_id, request_id,
+                                             remote_token);
+  device::PublicKeyCredentialRpEntity rp_entity(kRpId);
+  std::vector<uint8_t> challenge;
+  PasskeyRequestParams::RequestType request_type =
+      PasskeyRequestParams::RequestType::kModal;
+  PasskeyExtensionData extension_data;
+  PasskeyRequestParams request_params(
+      std::move(request_info), std::move(rp_entity), std::move(challenge),
+      user_verification, request_type, std::move(extension_data));
+  return AssertionRequestParams(std::move(request_params), allow_credentials);
+}
 }  // namespace
 
 class PasskeyTabHelperTest : public PlatformTest {
@@ -97,6 +130,23 @@ class PasskeyTabHelperTest : public PlatformTest {
   }
 
  protected:
+  void SetUpChildFrameRegistrarAndRegisterFrame(
+      const std::string& local_frame_id,
+      const std::string& remote_frame_id) {
+    autofill::ChildFrameRegistrar::GetOrCreateForWebState(&fake_web_state_);
+    RegisterFrame(local_frame_id, remote_frame_id);
+  }
+
+  void RegisterFrame(const std::string& local_frame_id,
+                     const std::string& remote_frame_id) {
+    autofill::LocalFrameToken local_token(
+        *autofill::DeserializeJavaScriptFrameId(local_frame_id));
+    autofill::RemoteFrameToken remote_token(
+        *autofill::DeserializeJavaScriptFrameId(remote_frame_id));
+    autofill::ChildFrameRegistrar::FromWebState(&fake_web_state_)
+        ->RegisterMapping(remote_token, local_token);
+  }
+
   PasskeyTabHelper* passkey_tab_helper() {
     return PasskeyTabHelper::FromWebState(&fake_web_state_);
   }
@@ -355,6 +405,8 @@ TEST_F(PasskeyTabHelperTest, FilterPasskeys) {
 TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
   SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
   SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
 
   // Add passkey with `kCredentialId`.
   sync_pb::WebauthnCredentialSpecifics passkey = GetTestPasskey(kCredentialId);
@@ -371,7 +423,9 @@ TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
             password_manager::WebAuthnCredentialsDelegate::
                 PasskeysUnavailableReason::kNotReceived);
 
-  AssertionRequestParams params = BuildAssertionRequestParams({});
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId);
   passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
 
   // Verify that the delegate has received the passkey.
@@ -386,12 +440,15 @@ TEST_F(PasskeyTabHelperTest, SendPasskeysToWebAuthnCredentialsDelegate) {
 // example.com when remote validation passes.
 TEST_F(PasskeyTabHelperTest, RequestPasskeyFromRelatedOriginSuccess) {
   SetUpRelatedOrigin();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
 
   SetUpMockWellKnownResponse(R"({ "origins": ["https://example.ca"] })",
                              "application/json", "application/json", net::OK);
 
-  passkey_tab_helper()->HandleGetRequestedEvent(
-      BuildAssertionRequestParams({}));
+  passkey_tab_helper()->HandleGetRequestedEvent(BuildTestAssertionRequestParams(
+      {}, device::UserVerificationRequirement::kPreferred, kFakeRequestId,
+      web::kMainFakeFrameId, kMainRemoteFrameId));
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return client_->DidShowSuggestionBottomSheet(); }));
@@ -401,12 +458,15 @@ TEST_F(PasskeyTabHelperTest, RequestPasskeyFromRelatedOriginSuccess) {
 // example.com when remote validation fails.
 TEST_F(PasskeyTabHelperTest, RequestPasskeyFromRelatedOriginFailure) {
   SetUpRelatedOrigin();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
 
   SetUpMockWellKnownResponse(R"({ "origins": ["https://example.uk"] })",
                              "application/json", "application/json", net::OK);
 
-  passkey_tab_helper()->HandleGetRequestedEvent(
-      BuildAssertionRequestParams({}));
+  passkey_tab_helper()->HandleGetRequestedEvent(BuildTestAssertionRequestParams(
+      {}, device::UserVerificationRequirement::kPreferred, kFakeRequestId,
+      web::kMainFakeFrameId, kMainRemoteFrameId));
 
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return !passkey_tab_helper()->HasPendingValidationForTesting();
@@ -456,6 +516,8 @@ TEST_F(PasskeyTabHelperTest, CreatePasskeyFromRelatedOriginFailure) {
 TEST_F(PasskeyTabHelperTest, ShouldPerformUserVerification) {
   SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
   SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
 
   // Test with non-existent request ID.
   EXPECT_EQ(
@@ -484,7 +546,9 @@ TEST_F(PasskeyTabHelperTest, ShouldPerformUserVerification) {
   for (const auto& test : user_verification_requirements) {
     std::string request_id = GetUniqueRequestId();
     passkey_tab_helper()->HandleGetRequestedEvent(
-        BuildAssertionRequestParams({}, test.requirement, request_id));
+        BuildTestAssertionRequestParams({}, test.requirement, request_id,
+                                        web::kMainFakeFrameId,
+                                        kMainRemoteFrameId));
     VerifyShouldPerformUserVerification(request_id,
                                         test.expected_with_biometrics,
                                         test.expected_without_biometrics);
@@ -738,12 +802,16 @@ TEST_F(PasskeyTabHelperTest, StartPasskeyCreationFromCrossOriginIframe) {
 TEST_F(PasskeyTabHelperTest, GetRequestedDeferredUntilModelReady) {
   SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
   SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
 
   // Make model not ready.
   static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(false);
 
   // Send get request.
-  AssertionRequestParams params = BuildAssertionRequestParams({});
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId);
   passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
 
   // Suggestion sheet should NOT be shown.
@@ -786,12 +854,16 @@ TEST_F(PasskeyTabHelperTest, SequentiallyAvailable_ModelThenFrame) {
       SetUpWebFramesManagerWithoutFrame();
 
   SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
 
   // Make passkey model not ready.
   static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(false);
 
   // Send get request.
-  AssertionRequestParams params = BuildAssertionRequestParams({});
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId);
   passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
 
   // Neither ready -> shouldn't show suggestion sheet.
@@ -821,12 +893,16 @@ TEST_F(PasskeyTabHelperTest, SequentiallyAvailable_FrameThenModel) {
       SetUpWebFramesManagerWithoutFrame();
 
   SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
 
   // Make passkey model not ready.
   static_cast<TestPasskeyModel*>(passkey_model_.get())->SetReady(false);
 
   // Send get request.
-  AssertionRequestParams params = BuildAssertionRequestParams({});
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, kMainRemoteFrameId);
   passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
 
   // Neither ready -> shouldn't show suggestion sheet.
@@ -846,6 +922,69 @@ TEST_F(PasskeyTabHelperTest, SequentiallyAvailable_FrameThenModel) {
 
   // Now both are ready -> suggestion sheet should be shown!
   EXPECT_TRUE(client_->DidShowSuggestionBottomSheet());
+}
+
+// Tests that a passkey assertion request defers back to the renderer and
+// returns early gracefully when the remote frame ID is empty.
+TEST_F(PasskeyTabHelperTest, HandleAssertionEmptyRemoteFrameIdGraceful) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+
+  // Send a get request with an empty remote frame ID.
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId, /*remote_frame_id=*/"");
+
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  // The assertion request should defer back to the renderer.
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_.GetWebFramesManager(
+              PasskeyJavaScriptFeature::GetInstance()
+                  ->GetSupportedContentWorld()));
+  web::FakeWebFrame* frame = static_cast<web::FakeWebFrame*>(
+      frames_manager->GetFrameWithId(web::kMainFakeFrameId));
+
+  EXPECT_NE(frame->GetLastJavaScriptCall().find(kDeferToRendererJsCall),
+            std::u16string::npos);
+
+  // Verify that the suggestion bottom sheet was NOT shown.
+  EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
+}
+
+// Tests that a passkey assertion request defers back to the renderer and
+// returns early gracefully when the remote frame ID is malformed.
+TEST_F(PasskeyTabHelperTest, HandleAssertionMalformedRemoteFrameIdGraceful) {
+  SetUpWebFramesManagerAndWebFrame(GURL(kOriginURL));
+  SetUpIOSPasswordManagerDriver();
+  SetUpChildFrameRegistrarAndRegisterFrame(web::kMainFakeFrameId,
+                                           kMainRemoteFrameId);
+
+  // Send a get request with a malformed remote frame ID.
+  AssertionRequestParams params = BuildTestAssertionRequestParams(
+      /*allow_credentials=*/{}, device::UserVerificationRequirement::kPreferred,
+      kFakeRequestId, web::kMainFakeFrameId,
+      /*remote_frame_id=*/"malformed_frame_id");
+
+  passkey_tab_helper()->HandleGetRequestedEvent(std::move(params));
+
+  // The assertion request should defer back to the renderer.
+  web::FakeWebFramesManager* frames_manager =
+      static_cast<web::FakeWebFramesManager*>(
+          fake_web_state_.GetWebFramesManager(
+              PasskeyJavaScriptFeature::GetInstance()
+                  ->GetSupportedContentWorld()));
+  web::FakeWebFrame* frame = static_cast<web::FakeWebFrame*>(
+      frames_manager->GetFrameWithId(web::kMainFakeFrameId));
+
+  EXPECT_NE(frame->GetLastJavaScriptCall().find(kDeferToRendererJsCall),
+            std::u16string::npos);
+
+  // Verify that the suggestion bottom sheet was NOT shown.
+  EXPECT_FALSE(client_->DidShowSuggestionBottomSheet());
 }
 
 }  // namespace webauthn

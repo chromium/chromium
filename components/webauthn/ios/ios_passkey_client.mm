@@ -9,10 +9,10 @@ namespace webauthn {
 IOSPasskeyClient::RequestInfo::RequestInfo(
     std::string frame_id,
     std::string request_id,
-    std::optional<autofill::RemoteFrameToken> remote_frame_id)
+    std::optional<autofill::RemoteFrameToken> remote_frame_token)
     : frame_id(std::move(frame_id)),
       request_id(std::move(request_id)),
-      remote_frame_id(std::move(remote_frame_id)) {}
+      remote_frame_token(std::move(remote_frame_token)) {}
 
 IOSPasskeyClient::RequestInfo::RequestInfo(const RequestInfo& other) = default;
 IOSPasskeyClient::RequestInfo& IOSPasskeyClient::RequestInfo::operator=(

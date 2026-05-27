@@ -85,8 +85,10 @@ source_set("unit_tests") {
   deps = [
     ":coordinator",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/ios",

@@ -68,8 +68,8 @@ const std::string& PasskeyRequestParams::FrameId() const {
 }
 
 const std::optional<autofill::RemoteFrameToken>&
-PasskeyRequestParams::RemoteFrameId() const {
-  return request_info_.remote_frame_id;
+PasskeyRequestParams::RemoteFrameToken() const {
+  return request_info_.remote_frame_token;
 }
 
 const std::string& PasskeyRequestParams::RequestId() const {

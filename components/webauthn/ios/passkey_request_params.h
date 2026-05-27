@@ -67,7 +67,7 @@ class PasskeyRequestParams {
   const std::string& FrameId() const;
 
   // Returns the remote frame token used by ChildFrameRegistrar.
-  const std::optional<autofill::RemoteFrameToken>& RemoteFrameId() const;
+  const std::optional<autofill::RemoteFrameToken>& RemoteFrameToken() const;
 
   // Returns the request id associated with a PublicKeyCredential promise.
   const std::string& RequestId() const;
