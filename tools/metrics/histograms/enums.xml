@@ -4838,6 +4838,14 @@ Called by update_net_error_codes.py.-->
       label="elevation_service::Elevator::kErrorCouldQueryPrimaryToken"/>
   <int value="-2147180521"
       label="elevation_service::Elevator::kErrorCouldCreateAccessControlList"/>
+  <int value="-2147180520"
+      label="elevation_service::Elevator::kIsolationStateInvalid"/>
+  <int value="-2147180519"
+      label="elevation_service::Elevator::kErrorCouldQueryProcessToken"/>
+  <int value="-2147180518"
+      label="elevation_service::Elevator::kErrorCouldObtainTokenSecurityDescriptor"/>
+  <int value="-2147180517"
+      label="elevation_service::Elevator::kErrorCouldWriteTokenDacl"/>
   <int value="-2147180287" label="os_crypt::kErrorWrongData"/>
   <int value="-2147174395"
       label="MSPR_E_PRO_HEADER_BYTES_NOT_SET (0x8004B805)"/>
