@@ -6,15 +6,21 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/contextual_tasks/public/features.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/url_loader_interceptor.h"
 #include "extensions/buildflags/buildflags.h"
 #include "net/dns/mock_host_resolver.h"
 #include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
@@ -158,6 +164,97 @@ IN_PROC_BROWSER_TEST_F(PermissionDelegationBrowserTest, DelegatedToTwoFrames) {
                       "    resolve(true); });"
                       "});"));
   EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+}
+
+class ContextualTasksPermissionDelegationBrowserTest
+    : public PermissionDelegationBrowserTest {
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      contextual_tasks::kContextualTasks};
+};
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPermissionDelegationBrowserTest,
+                       GetEmbeddingOriginOverride) {
+  GURL contextual_tasks_url(chrome::kChromeUIContextualTasksURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), contextual_tasks_url));
+  content::WebContents* outer_web_contents = GetWebContents();
+
+  // Wait for the WebUI to initialize and spawn the inner <webview> guest
+  // WebContents.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !outer_web_contents->GetInnerWebContents().empty(); }));
+
+  content::WebContents* inner_web_contents =
+      outer_web_contents->GetInnerWebContents()[0];
+  ASSERT_TRUE(inner_web_contents);
+  EXPECT_EQ(outer_web_contents, inner_web_contents->GetOuterWebContents());
+
+  // Verify that GetEmbeddingOriginOverride correctly traverses from the inner
+  // <webview> guest WebContents up to the outer WebUI WebContents.
+  GURL requesting_origin("https://example.com");
+  std::optional<GURL> override_origin =
+      ChromePermissionsClient::GetInstance()->GetEmbeddingOriginOverride(
+          requesting_origin, inner_web_contents);
+
+  ASSERT_TRUE(override_origin.has_value());
+  EXPECT_EQ(contextual_tasks_url, *override_origin);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksPermissionDelegationBrowserTest,
+                       RequestPermissionInWebView) {
+  GURL default_ai_url =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile())
+          ->GetDefaultAiPageUrl();
+  std::string expected_host(default_ai_url.host());
+
+  // Intercept the default AI page load to prevent ERR_CONNECTION_REFUSED and
+  // allow JavaScript to execute.
+  content::URLLoaderInterceptor interceptor(base::BindRepeating(
+      [](std::string expected_host,
+         content::URLLoaderInterceptor::RequestParams* params) {
+        if (params->url_request.url.host() == expected_host) {
+          content::URLLoaderInterceptor::WriteResponse(
+              "HTTP/1.1 200 OK\nContent-Type: text/html\n\n",
+              "<html><body>Test Guest Page</body></html>",
+              params->client.get());
+          return true;
+        }
+        return false;
+      },
+      expected_host));
+
+  GURL contextual_tasks_url(chrome::kChromeUIContextualTasksURL);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), contextual_tasks_url));
+  content::WebContents* outer_web_contents = GetWebContents();
+
+  // Wait for the WebUI to initialize and spawn the inner <webview> guest
+  // WebContents.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return !outer_web_contents->GetInnerWebContents().empty(); }));
+
+  // The guest (inner) web contents should load a zero state page.
+  content::WebContents* inner_web_contents =
+      outer_web_contents->GetInnerWebContents()[0];
+  ASSERT_TRUE(inner_web_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(inner_web_contents));
+
+  // Trigger a geolocation permission request from the guest WebContents.
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  EXPECT_EQ(true, content::EvalJs(
+                      inner_web_contents->GetPrimaryMainFrame(),
+                      "new Promise(resolve => {"
+                      "  navigator.geolocation.getCurrentPosition(function(){ "
+                      "    resolve(true); });"
+                      "});"));
+
+  // Verify that the permission request is shown with the canonicalized DSE
+  // origin.
+  EXPECT_EQ(1, prompt_factory()->TotalRequestCount());
+  EXPECT_TRUE(prompt_factory()->RequestOriginSeen(
+      default_ai_url.DeprecatedGetOriginAsURL()));
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

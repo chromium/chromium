@@ -1332,6 +1332,8 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
            PermissionRequestEvent) => {
             if (e.permission === 'download') {
               e.request.allow();
+            } else if (e.permission === 'geolocation') {
+              e.request.allow();
             }
           });
 
