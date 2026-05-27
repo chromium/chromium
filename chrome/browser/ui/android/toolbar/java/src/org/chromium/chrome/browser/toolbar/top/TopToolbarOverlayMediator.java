@@ -202,6 +202,7 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
                     updateThemeColor(tab);
                     updateProgress();
                     updateAnonymize(tab);
+                    updateOffsetTag(mBrowserControlsOffsetTagsInfo);
                 };
         mTabObserver =
                 new CurrentTabObserver(
@@ -230,6 +231,7 @@ public class TopToolbarOverlayMediator implements ThemeColorObserver {
                                 updateVisibility();
                                 updateThemeColor(tab);
                                 updateAnonymize(tab);
+                                updateOffsetTag(mBrowserControlsOffsetTagsInfo);
                             }
 
                             @Override

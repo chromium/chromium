@@ -13,8 +13,12 @@ import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 
 @NullMarked
 class BottomControlsProperties {
-    /** The height of the Android View in px. */
-    static final WritableIntPropertyKey ANDROID_VIEW_HEIGHT = new WritableIntPropertyKey();
+    /** The height of the Android View in px, not including padding. */
+    static final WritableIntPropertyKey ANDROID_VIEW_HEIGHT_NO_PADDING =
+            new WritableIntPropertyKey();
+
+    /** The bottom padding of the Android View in px, used for EdgeToEdge. */
+    static final WritableIntPropertyKey BOTTOM_PADDING = new WritableIntPropertyKey();
 
     /** The Y offset of the view in px. */
     static final WritableIntPropertyKey Y_OFFSET = new WritableIntPropertyKey();
@@ -45,7 +49,8 @@ class BottomControlsProperties {
 
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
-                ANDROID_VIEW_HEIGHT,
+                ANDROID_VIEW_HEIGHT_NO_PADDING,
+                BOTTOM_PADDING,
                 Y_OFFSET,
                 ANDROID_VIEW_TRANSLATE_Y,
                 ANDROID_VIEW_VISIBLE,
@@ -55,4 +60,3 @@ class BottomControlsProperties {
                 SHOW_SHADOW
             };
 }
-

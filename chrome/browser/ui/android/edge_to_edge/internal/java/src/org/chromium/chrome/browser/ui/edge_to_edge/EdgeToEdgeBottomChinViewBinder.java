@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinPr
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.DIVIDER_COLOR;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HAS_CONSTRAINT;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.HEIGHT;
+import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.OFFSET_TAG;
 import static org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeBottomChinProperties.Y_OFFSET;
 
@@ -66,6 +67,8 @@ class EdgeToEdgeBottomChinViewBinder {
             viewHolder.mSceneLayer.setOffsetTag(model.get(OFFSET_TAG));
         } else if (HAS_CONSTRAINT == propertyKey) {
             viewHolder.mSceneLayer.setHasConstraint(model.get(HAS_CONSTRAINT));
+        } else if (IS_VISIBLE == propertyKey) {
+            viewHolder.mSceneLayer.setIsVisible(model.get(IS_VISIBLE));
         } else {
             assert false : "Unhandled property detected in EdgeToEdgeBottomChinViewBinder!";
         }
@@ -77,9 +80,6 @@ class EdgeToEdgeBottomChinViewBinder {
         // transparency / cut-off bugs that happen when scrolling browser controls under bottom
         // inset when drawing edge-to-edge.
         viewHolder.mAndroidView.setVisibility(model.get(CAN_SHOW) ? View.VISIBLE : View.GONE);
-
-        boolean visible = model.get(CAN_SHOW) && model.get(Y_OFFSET) < model.get(HEIGHT);
-        viewHolder.mSceneLayer.setIsVisible(visible);
     }
 
     // TODO(crbug.com/345383907) Move #bind logic to the compositor MCP method

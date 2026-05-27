@@ -304,7 +304,7 @@ public class ChromeActionModeHandler {
         @Override
         public void onGetContentRect(ActionMode mode, View view, Rect outRect) {
             mHelper.onGetContentRect(mode, view, outRect);
-            boolean controlsVisible = mControlsState.getBrowserControlHiddenRatio() < 1.f;
+            boolean controlsVisible = mControlsState.getTopControlHiddenRatio() < 1.f;
             int controlsHeight = mControlsState.getTopControlsHeight();
             if (controlsVisible && outRect.top < 2 * controlsHeight) {
                 // Make |outRect| taller to so the framework thinks there is not enough space

@@ -428,7 +428,7 @@ abstract class OverlayPanelBase implements OverlayPanelStateProvider, AppHeaderO
         float totalHeight =
                 mBottomControlsStacker.getTotalHeight()
                         - mBottomControlsStacker.getHeightFromLayerToBottom(LayerType.BOTTOM_CHIN);
-        float hiddenRatio = mBrowserControlsStateProvider.getBrowserControlHiddenRatio();
+        float hiddenRatio = mBrowserControlsStateProvider.getBottomControlHiddenRatio();
         float fullBottomControlsHeight = totalHeight * (1 - hiddenRatio);
 
         if (mHeight <= peekedHeight) {

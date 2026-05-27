@@ -25,6 +25,8 @@ android_library("config_java") {
   deps = [
     "//build/android:build_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/native_page:java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 }
@@ -97,6 +99,7 @@ robolectric_library("junit") {
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/actions:java",
+    "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/embedder_support/android:util_java",

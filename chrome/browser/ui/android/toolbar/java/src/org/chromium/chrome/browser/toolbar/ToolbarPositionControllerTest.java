@@ -168,6 +168,9 @@ public class ToolbarPositionControllerTest {
                 public void showAndroidControls(boolean animate) {}
 
                 @Override
+                public void hideAndroidControls(boolean animate) {}
+
+                @Override
                 public void restoreControlsPositions() {}
 
                 @Override

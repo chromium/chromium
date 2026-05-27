@@ -186,10 +186,31 @@ public interface BrowserControlsStateProvider {
     int getBottomControlOffset();
 
     /**
-     * @return The ratio that the browser controls are off screen; this will be a number [0,1] where
-     *     1 is completely hidden and 0 is completely shown.
+     * @return The ratio that the active browser controls container (based on the current {@link
+     *     #getControlsPosition()}) is off screen; this will be a number [0,1] where 1 is completely
+     *     hidden and 0 is completely shown.
      */
     float getBrowserControlHiddenRatio();
+
+    /**
+     * @return The ratio that the top browser controls are off screen; this will be a number [0,1]
+     *     where 1 is completely hidden and 0 is completely shown.
+     */
+    default float getTopControlHiddenRatio() {
+        if (getTopControlsHeight() == 0) return 1.0f;
+        float ratio = Math.abs((float) getTopControlOffset() / getTopControlsHeight());
+        return Math.max(0.0f, Math.min(1.0f, ratio));
+    }
+
+    /**
+     * @return The ratio that the bottom browser controls are off screen; this will be a number
+     *     [0,1] where 1 is completely hidden and 0 is completely shown.
+     */
+    default float getBottomControlHiddenRatio() {
+        if (getBottomControlsHeight() == 0) return 1.0f;
+        float ratio = Math.abs((float) getBottomControlOffset() / getBottomControlsHeight());
+        return Math.max(0.0f, Math.min(1.0f, ratio));
+    }
 
     /**
      * @return The offset of the content from the top of the screen in px.

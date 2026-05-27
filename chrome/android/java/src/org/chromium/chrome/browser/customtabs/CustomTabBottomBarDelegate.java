@@ -307,6 +307,7 @@ public class CustomTabBottomBarDelegate
 
     /**
      * Updates the {@link PendingIntent} to be sent when the user swipes up from the toolbar.
+     *
      * @param pendingIntent The {@link PendingIntent}.
      * @return Whether the update is successful.
      */
@@ -411,8 +412,8 @@ public class CustomTabBottomBarDelegate
     }
 
     /**
-     * This method remove bottomBarView completely.
-     * If you need to hide it temporarily use {@link #hideBottomBar(boolean)}.
+     * This method remove bottomBarView completely. If you need to hide it temporarily use {@link
+     * #hideBottomBar(boolean)}.
      */
     private void hideBottomBar() {
         if (mBottomBarView == null) return;
@@ -525,6 +526,7 @@ public class CustomTabBottomBarDelegate
 
     /**
      * Returns whether the view was or can be inflated.
+     *
      * @return True if the ViewStub is present or was inflated. False otherwise.
      */
     private boolean isViewReady() {
@@ -566,10 +568,10 @@ public class CustomTabBottomBarDelegate
             int bottomControlsHeight, int bottomControlsMinHeight) {
         if (!isViewReady()) return;
         // Bottom offset might not have been received by BrowserControlsManager at this point, so
-        // using getBrowserControlHiddenRatio(), http://crbug.com/40612650.
+        // using getBottomControlHiddenRatio(), http://crbug.com/40612650.
         getBottomBarView()
                 .setTranslationY(
-                        mBrowserControlsSizer.getBrowserControlHiddenRatio() * bottomControlsHeight
+                        mBrowserControlsSizer.getBottomControlHiddenRatio() * bottomControlsHeight
                                 - mBrowserControlsSizer.getBottomControlsMinHeightOffset());
     }
 
@@ -603,6 +605,7 @@ public class CustomTabBottomBarDelegate
 
     /**
      * Starts listening for swipe up gesture to send the {@link PendingIntent}.
+     *
      * @param pendingIntent The {@link PendingIntent} to be sent.
      */
     private void startListeningForSwipeUpGestures(PendingIntent pendingIntent) {

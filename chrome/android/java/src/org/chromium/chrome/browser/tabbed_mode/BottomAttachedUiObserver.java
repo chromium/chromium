@@ -360,7 +360,7 @@ public class BottomAttachedUiObserver
                     (BottomBarConfigUtils.isBottomBarEnabled(mContext)
                                     || mBrowserControlsStateProvider.getControlsPosition()
                                             == ControlsPosition.BOTTOM)
-                            && !BrowserControlsUtils.areBrowserControlsOffScreen(
+                            && !BrowserControlsUtils.areBottomControlsOffScreen(
                                     mBrowserControlsStateProvider);
 
             if (isBottomBarVisible) {

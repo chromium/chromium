@@ -531,7 +531,7 @@ public class ToolbarControlContainerTest {
     @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_whileHidden_producesCapture() {
         makeAndInitAdapter();
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);
+        when(mBrowserControlsStateProvider.getTopControlHiddenRatio()).thenReturn(1f);
 
         mAdapter.invalidate(null);
         pumpFrame();
@@ -543,7 +543,7 @@ public class ToolbarControlContainerTest {
     @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_whileHidden_coalescesMultipleInvalidationsPerFrame() {
         makeAndInitAdapter();
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);
+        when(mBrowserControlsStateProvider.getTopControlHiddenRatio()).thenReturn(1f);
 
         mAdapter.invalidate(null);
         mAdapter.invalidate(null);
@@ -557,7 +557,7 @@ public class ToolbarControlContainerTest {
     @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_whileVisible_doesNotCapture() {
         makeAndInitAdapter();
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
+        when(mBrowserControlsStateProvider.getTopControlHiddenRatio()).thenReturn(0.5f);
 
         mAdapter.invalidate(null);
 
@@ -568,13 +568,13 @@ public class ToolbarControlContainerTest {
     @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_stopsCapturingAfterReveal() {
         makeAndInitAdapter();
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);
+        when(mBrowserControlsStateProvider.getTopControlHiddenRatio()).thenReturn(1f);
         mAdapter.invalidate(null);
         pumpFrame();
         assertEquals(1, mTriggerBitmapCaptureCount.get());
 
         // Toolbar starts revealing; subsequent frames must not produce captures.
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(0.5f);
+        when(mBrowserControlsStateProvider.getTopControlHiddenRatio()).thenReturn(0.5f);
         mOnPreDrawCaptor.getValue().onPreDraw();
         mOnPreDrawCaptor.getValue().onPreDraw();
 
@@ -585,7 +585,7 @@ public class ToolbarControlContainerTest {
     @EnableFeatures(ChromeFeatureList.TOOLBAR_CAPTURE_FIX_FOR_SPAS)
     public void testInvalidate_afterDestroy_doesNotCapture() {
         makeAndInitAdapter();
-        when(mBrowserControlsStateProvider.getBrowserControlHiddenRatio()).thenReturn(1f);
+        when(mBrowserControlsStateProvider.getTopControlHiddenRatio()).thenReturn(1f);
         mAdapter.destroy();
 
         mAdapter.invalidate(null);

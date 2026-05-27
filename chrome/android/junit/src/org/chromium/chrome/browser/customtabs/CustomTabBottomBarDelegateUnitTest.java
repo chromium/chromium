@@ -215,7 +215,7 @@ public class CustomTabBottomBarDelegateUnitTest {
     @Test
     public void testOnBottomControlsHeightChanged() {
         when(mBrowserControlsSizer.getBottomControlsMinHeightOffset()).thenReturn(100);
-        when(mBrowserControlsSizer.getBrowserControlHiddenRatio()).thenReturn(1f);
+        when(mBrowserControlsSizer.getBottomControlHiddenRatio()).thenReturn(1f);
         mBottomBarDelegate.onBottomControlsHeightChanged(
                 /* bottomControlsHeight= */ 50, /* bottomControlsMinHeight= */ 0);
 

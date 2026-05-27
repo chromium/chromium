@@ -297,6 +297,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
 
     /**
      * Suspend queue so that the queue will not show a new message until it is resumed.
+     *
      * @return A token of {@link TokenHolder} required when resuming the queue.
      */
     int suspendQueue() {
@@ -318,7 +319,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
         if (tab == null || tab.isDestroyed()) return false;
         return TabBrowserControlsConstraintsHelper.getConstraints(tab)
                         == BrowserControlsState.HIDDEN
-                || BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager);
+                || BrowserControlsUtils.areTopControlsFullyVisible(mBrowserControlsManager);
     }
 
     /**
@@ -379,8 +380,7 @@ public class ChromeMessageQueueMediator implements MessageQueueDelegate, UrlFocu
                 boolean requestNewFrame,
                 boolean isVisibilityForced) {
             if (mRunOnControlsFullyVisible != null
-                    && BrowserControlsUtils.areBrowserControlsFullyVisible(
-                            mBrowserControlsManager)) {
+                    && BrowserControlsUtils.areTopControlsFullyVisible(mBrowserControlsManager)) {
                 mRunOnControlsFullyVisible.run();
                 mRunOnControlsFullyVisible = null;
             }

@@ -283,7 +283,8 @@ public class ChromeActionModeHandlerUnitTest {
         Mockito.when(mControlsState.getTopControlsHeight()).thenReturn(topControlsHeight);
 
         // Set up for the case where top controls are hidden.
-        Mockito.when(mControlsState.getBrowserControlHiddenRatio()).thenReturn(1.f);
+        Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(1.f);
+        Mockito.when(mControlsState.getTopControlOffset()).thenReturn(topControlsHeight);
 
         // If there's enough space between the selected text and the top of the content view for
         // action mode, the content rect is left untouched.
@@ -301,7 +302,7 @@ public class ChromeActionModeHandlerUnitTest {
         Assert.assertEquals(height, outRect.height());
 
         // Set up for the case where top controls are visible.
-        Mockito.when(mControlsState.getBrowserControlHiddenRatio()).thenReturn(0.f);
+        Mockito.when(mControlsState.getTopControlHiddenRatio()).thenReturn(0.f);
 
         // We have enough space for action mode to fit in. The content rect is left untouched.
         top = topControlsHeight * 3;

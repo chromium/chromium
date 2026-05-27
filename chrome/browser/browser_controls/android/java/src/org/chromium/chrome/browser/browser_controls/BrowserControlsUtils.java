@@ -71,6 +71,35 @@ public class BrowserControlsUtils {
     }
 
     /**
+     * @return True if the top browser controls are completely off screen.
+     */
+    public static boolean areTopControlsOffScreen(BrowserControlsStateProvider stateProvider) {
+        return stateProvider.getTopControlHiddenRatio() == 1.0f;
+    }
+
+    /**
+     * @return True if the top browser controls are currently completely visible.
+     */
+    public static boolean areTopControlsFullyVisible(BrowserControlsStateProvider stateProvider) {
+        return stateProvider.getTopControlHiddenRatio() == 0.f;
+    }
+
+    /**
+     * @return True if the bottom browser controls are completely off screen.
+     */
+    public static boolean areBottomControlsOffScreen(BrowserControlsStateProvider stateProvider) {
+        return stateProvider.getBottomControlHiddenRatio() == 1.0f;
+    }
+
+    /**
+     * @return True if the bottom browser controls are currently completely visible.
+     */
+    public static boolean areBottomControlsFullyVisible(
+            BrowserControlsStateProvider stateProvider) {
+        return stateProvider.getBottomControlHiddenRatio() == 0.f;
+    }
+
+    /**
      * @return Whether the browser controls should be drawn as a texture.
      */
     public static boolean drawControlsAsTexture(BrowserControlsStateProvider stateProvider) {
@@ -79,9 +108,9 @@ public class BrowserControlsUtils {
 
     /**
      * TODO(jinsukkim): Move this to CompositorViewHolder.
-     * @return {@code true} if browser controls shrink Blink view's size. Note that this
-     *         is valid only when the browser controls are in idle state i.e. not scrolling
-     *         or animating.
+     *
+     * @return {@code true} if browser controls shrink Blink view's size. Note that this is valid
+     *     only when the browser controls are in idle state i.e. not scrolling or animating.
      */
     public static boolean controlsResizeView(BrowserControlsStateProvider stateProvider) {
         return stateProvider.getContentOffset() > stateProvider.getTopControlsMinHeight()
@@ -91,7 +120,7 @@ public class BrowserControlsUtils {
 
     /**
      * @return The content offset from the bottom of the screen, or the visible height of the bottom
-     *         controls, in px.
+     *     controls, in px.
      */
     public static int getBottomContentOffset(BrowserControlsStateProvider stateProvider) {
         return stateProvider.getBottomControlsHeight() - stateProvider.getBottomControlOffset();

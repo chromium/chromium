@@ -813,7 +813,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             return ChromeFeatureList.sToolbarCaptureFixForSPAs.isEnabled()
                     && !mIsDestroyed
                     && mBrowserControlsStateProvider != null
-                    && mBrowserControlsStateProvider.getBrowserControlHiddenRatio() >= 1f;
+                    && mBrowserControlsStateProvider.getTopControlHiddenRatio() >= 1f;
         }
 
         @Override
@@ -1012,8 +1012,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 boolean controlsPartiallyVisible =
                         ChromeFeatureList.sToolbarCaptureFixForSPAs.isEnabled()
                                 && mBrowserControlsStateProvider != null
-                                && mBrowserControlsStateProvider.getBrowserControlHiddenRatio()
-                                        < 1f;
+                                && mBrowserControlsStateProvider.getTopControlHiddenRatio() < 1f;
                 if (controlsPartiallyVisible || mControlContainerIsVisibleSupplier.getAsBoolean()) {
                     CaptureReadinessResult captureReadinessResult =
                             mToolbar.isReadyForTextureCapture();

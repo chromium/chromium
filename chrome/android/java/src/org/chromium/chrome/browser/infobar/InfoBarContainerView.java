@@ -41,8 +41,9 @@ public class InfoBarContainerView extends SwipableOverlayView
     public interface ContainerViewObserver extends InfoBarAnimationListener {
         /**
          * Called when the height of shown content changed.
+         *
          * @param shownFraction The ratio of height of shown content to the height of the container
-         *                      view.
+         *     view.
          */
         void onShownRatioChanged(float shownFraction);
     }
@@ -193,7 +194,7 @@ public class InfoBarContainerView extends SwipableOverlayView
         boolean areControlsCompletelyShown =
                 mBrowserControlsStateProvider.getBottomControlOffset() > 0;
         boolean areControlsCompletelyHidden =
-                BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsStateProvider);
+                BrowserControlsUtils.areBottomControlsOffScreen(mBrowserControlsStateProvider);
 
         if ((!mIsScrollingDownward && areControlsCompletelyShown)
                 || (mIsScrollingDownward && !areControlsCompletelyHidden)) {
@@ -246,6 +247,7 @@ public class InfoBarContainerView extends SwipableOverlayView
     /**
      * Sets whether the InfoBarContainer is allowed to auto-hide when the user scrolls the page.
      * Expected to be called when Touch Exploration is enabled.
+     *
      * @param isAllowed Whether auto-hiding is allowed.
      */
     public static void setIsAllowedToAutoHide(boolean isAllowed) {
@@ -274,6 +276,7 @@ public class InfoBarContainerView extends SwipableOverlayView
 
     /**
      * Adds an {@link InfoBar} to the layout.
+     *
      * @param infoBar The {@link InfoBar} to be added.
      */
     void addInfoBar(InfoBar infoBar) {
@@ -302,6 +305,7 @@ public class InfoBarContainerView extends SwipableOverlayView
 
     /**
      * Hides or stops hiding this View.
+     *
      * @param isHidden Whether this View is should be hidden.
      */
     void setHidden(boolean isHidden) {
@@ -311,6 +315,7 @@ public class InfoBarContainerView extends SwipableOverlayView
     /**
      * Run an animation when the scrolling direction of a gesture has changed (this does not mean
      * the gesture has ended).
+     *
      * @param visible Whether or not the view should be visible.
      */
     private void runDirectionChangeAnimation(boolean visible) {

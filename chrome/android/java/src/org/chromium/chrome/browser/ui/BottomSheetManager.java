@@ -187,7 +187,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                             boolean requestNewFrame,
                             boolean isVisibilityForced) {
                         controller.setBrowserControlsHiddenRatio(
-                                mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio());
+                                mBrowserControlsVisibilityManager.getBottomControlHiddenRatio());
                     }
 
                     @Override
@@ -397,7 +397,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             mSheetController.setBottomControlsOffset(offset);
 
             mSheetController.setBrowserControlsHiddenRatio(
-                    mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio());
+                    mBrowserControlsVisibilityManager.getBottomControlHiddenRatio());
         }
 
         private void maybeUpdateLayerHeight() {

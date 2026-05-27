@@ -7,7 +7,9 @@ package org.chromium.chrome.browser.ui.bottombar;
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Utility class for determining the configuration of the bottom bar. */
@@ -39,5 +41,17 @@ public class BottomBarConfigUtils {
     /** Whether to disable the bottom bar on the regular NTP. */
     public static boolean shouldDisableOnNtp() {
         return ChromeFeatureList.sAndroidBottomBarDisableOnNtp.getValue();
+    }
+
+    /**
+     * Whether bottom controls scroll-off is enabled for the given tab. Scroll-off is enabled for
+     * regular (non-incognito) NTP when the bottom bar is enabled.
+     */
+    public static boolean isNtpScrollOffEnabled(@Nullable Tab tab, @Nullable Context context) {
+        if (tab == null || context == null) return false;
+        return !tab.isIncognito()
+                && tab.getNativePage() != null
+                && "newtab".equals(tab.getNativePage().getHost())
+                && isBottomBarEnabled(context);
     }
 }
