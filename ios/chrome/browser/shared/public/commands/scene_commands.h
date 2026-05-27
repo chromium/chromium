@@ -181,6 +181,9 @@ enum class TabGridOpeningMode {
 // Hides the assistant sheet if it is currently presented.
 - (void)hideAssistant;
 
+// Closes the assistant and destroys its resources.
+- (void)closeAssistant;
+
 // Shows the fullscreen sign-in promo with a completion block that is called
 // when the promo is dismissed.
 - (void)showFullscreenSigninPromoWithCompletion:

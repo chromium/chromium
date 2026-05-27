@@ -31,6 +31,9 @@ class CobrowseTabHelper : public web::WebStateObserver,
 
     // Sets whether a cobrowse session is currently active.
     virtual void SetSessionActive(bool active) = 0;
+
+    // Returns whether the tab grid is currently visible.
+    virtual bool IsTabGridVisible() = 0;
   };
 
   CobrowseTabHelper(const CobrowseTabHelper&) = delete;
@@ -56,8 +59,11 @@ class CobrowseTabHelper : public web::WebStateObserver,
   explicit CobrowseTabHelper(web::WebState* web_state,
                              TemplateURLService* template_url_service);
 
+  // Returns whether the assistant should be closed for `url`.
+  bool ShouldCloseAssistant(const GURL& url);
+
   // Returns whether the assistant should be hidden for `url`.
-  bool ShouldHideAssistantForURL(const GURL& url);
+  bool ShouldHideAssistant(const GURL& url);
 
   // Triggers the showing of the assistant.
   void ShowAssistant();

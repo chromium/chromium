@@ -8,8 +8,10 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
+#import "ios/chrome/browser/composebox/public/features.h"
 #import "ios/chrome/browser/composebox/shared/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -99,6 +101,7 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
   config.features_disabled.push_back(kComposeboxAIMDisabled);
   config.features_disabled.push_back(omnibox::kAimServerEligibilityEnabled);
   config.features_disabled.push_back(kAssistantAimMinimizedState);
+  config.features_disabled.push_back(kComposeboxServerSideState);
   return config;
 }
 
@@ -151,6 +154,11 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
                           kAssistantAIMCloseButtonAccessibilityIdentifier)];
   // Enter Tab Grid.
   [ChromeEarlGreyUI openTabGrid];
+
+  // Wait for Tab Grid to appear.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
+                                              kTabGridScrollViewIdentifier)];
 
   // Verify the assistant is NOT visible in Tab Grid.
   [[EarlGrey
@@ -237,6 +245,158 @@ void OpenCoBrowse(net::EmbeddedTestServer* testServer) {
 
   // Verify the assistant expanded.
   WaitForDetent(AssistantContainerDetent::kLarge);
+}
+
+- (void)testAssistantPersistsOnBackground {
+  OpenCoBrowse(self.testServer);
+
+  // Wait for the assistant to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+
+  // Background and foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Verify the assistant is still visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+}
+
+- (void)testAssistantDoesNotReappearAfterExplicitClose {
+  OpenCoBrowse(self.testServer);
+
+  // Wait for the assistant to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+
+  // Tap the close button.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+      performAction:grey_tap()];
+
+  // Verify the assistant is dismissed.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Reload the page.
+  [ChromeEarlGrey reload];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Verify the assistant does NOT reappear.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  // Background and foreground the app.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
+  // Verify the assistant does NOT reappear.
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+}
+
+- (void)testAssistantPersistsOnColdStart {
+  OpenCoBrowse(self.testServer);
+
+  // Wait for the assistant to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+
+  // Ensure session is saved before clean shutdown so it can be restored.
+  [ChromeEarlGrey saveSessionImmediately];
+
+  // Relaunch the app.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByKilling;
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // If the tab grid is showing, tap the active tab to display it.
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          @"GridCellIdentifierPrefix0")]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (!error) {
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            @"GridCellIdentifierPrefix0")]
+        performAction:grey_tap()];
+  }
+
+  // Wait for the app to be ready and the page to be restored.
+  [ChromeEarlGrey waitForWebStateContainingText:"Echo"];
+
+  // Verify the assistant is still visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+}
+
+// Tests that the CoBrowse assistant is only shown in the window where it was
+// triggered and not in other windows on iPad.
+- (void)testAssistantOnlyInTriggeringWindowOniPad {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+  }
+
+  OpenCoBrowse(self.testServer);
+
+  // Wait for the assistant to appear in the first window.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
+
+  // Open a second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Scope interactions to the second window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(1)];
+
+  // Load a non-NTP URL in the second window. Use a different URL to make it
+  // easier to distinguish windows in screenshots if the test fails.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/pony.html")
+       inWindowWithNumber:1];
+
+  // Verify the assistant is NOT visible in the new window. Disable
+  // synchronization to prevent EarlGrey from timing out if continuous web or
+  // layout animations are running.
+  [[GREYConfiguration sharedConfiguration]
+          setValue:@NO
+      forConfigKey:kGREYConfigKeySynchronizationEnabled];
+
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(kAssistantAIMCloseButtonAccessibilityIdentifier)]
+      assertWithMatcher:grey_nil()];
+
+  [[GREYConfiguration sharedConfiguration]
+          setValue:@YES
+      forConfigKey:kGREYConfigKeySynchronizationEnabled];
+
+  // Reset scope to the first window.
+  [EarlGrey setRootMatcherForSubsequentInteractions:chrome_test_util::
+                                                        WindowWithNumber(0)];
+
+  // Close the second window.
+  [ChromeEarlGrey closeWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+
+  // Verify the assistant is still visible in the first window.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(
+                          kAssistantAIMCloseButtonAccessibilityIdentifier)];
 }
 
 @end

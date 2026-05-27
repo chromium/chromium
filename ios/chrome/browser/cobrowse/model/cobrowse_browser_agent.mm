@@ -5,11 +5,18 @@
 #import "ios/chrome/browser/cobrowse/model/cobrowse_browser_agent.h"
 
 #import "base/functional/bind.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/values.h"
 #import "components/omnibox/browser/aim_eligibility_service.h"
+#import "components/prefs/pref_service.h"
+#import "components/prefs/scoped_user_pref_update.h"
 #import "components/search_engines/util.h"
 #import "ios/chrome/browser/aim/model/ios_chrome_aim_eligibility_service_factory.h"
 #import "ios/chrome/browser/cobrowse/model/cobrowse_context.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -29,6 +36,14 @@ CobrowseBrowserAgent::CobrowseBrowserAgent(Browser* browser)
         aim_eligibility_service->RegisterEligibilityChangedCallback(
             base::BindRepeating(&CobrowseBrowserAgent::OnEligibilityChanged,
                                 base::Unretained(this)));
+  }
+
+  SceneState* scene_state = browser_->GetSceneState();
+  if (scene_state && !scene_state.sceneSessionID.empty()) {
+    const auto& map = browser_->GetProfile()->GetPrefs()->GetDict(
+        prefs::kCobrowseSessionActiveMap);
+    is_session_active_ =
+        map.FindBool(scene_state.sceneSessionID).value_or(false);
   }
 }
 
@@ -68,6 +83,10 @@ bool CobrowseBrowserAgent::CanShowAssistantForWebState(
     return false;
   }
 
+  if (IsSessionActive()) {
+    return true;
+  }
+
   WebStateList* web_state_list = browser_->GetWebStateList();
   const int index = web_state_list->GetIndexOfWebState(web_state);
   CHECK_NE(index, WebStateList::kInvalidIndex);
@@ -94,6 +113,13 @@ bool CobrowseBrowserAgent::IsSessionActive() {
 
 void CobrowseBrowserAgent::SetSessionActive(bool active) {
   is_session_active_ = active;
+  SceneState* scene_state = browser_->GetSceneState();
+  if (scene_state && !scene_state.sceneSessionID.empty()) {
+    ScopedDictPrefUpdate update(browser_->GetProfile()->GetPrefs(),
+                                prefs::kCobrowseSessionActiveMap);
+    update->Set(scene_state.sceneSessionID, active);
+    browser_->GetProfile()->GetPrefs()->CommitPendingWrite();
+  }
 }
 
 void CobrowseBrowserAgent::OnEligibilityChanged() {
@@ -110,6 +136,10 @@ void CobrowseBrowserAgent::OnEligibilityChanged() {
       SetSessionActive(false);
     }
   }
+}
+
+bool CobrowseBrowserAgent::IsTabGridVisible() {
+  return ui_state_provider_ && ui_state_provider_->IsTabGridVisible();
 }
 
 #pragma mark - TabsDependencyInstaller

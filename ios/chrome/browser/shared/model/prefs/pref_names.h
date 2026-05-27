@@ -38,6 +38,11 @@ inline constexpr char kBrowserLockdownModeEnabled[] =
 // (serverID) and creation timestamp.
 inline constexpr char kBwgSessionMap[] = "ios.bwg.session_map";
 
+// Map of scene session IDs to booleans which indicates if a cobrowse session is
+// active.
+inline constexpr char kCobrowseSessionActiveMap[] =
+    "ios.cobrowse.session_active_map";
+
 // Number of times the "BWG" settings "new" IPH badge has been shown.
 // This is set to INT_MAX when the user visites the "BWG" settings page.
 inline constexpr char kBWGSettingsNewBadgeShownCount[] =

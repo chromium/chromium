@@ -4,6 +4,7 @@ include_rules = [
   "+ios/chrome/browser/aim/model",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/history/model",
+  "+ios/chrome/browser/shared/coordinator/scene",
   "+ios/chrome/browser/shared/model/browser",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",

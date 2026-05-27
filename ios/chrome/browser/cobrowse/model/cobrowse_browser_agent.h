@@ -41,6 +41,7 @@ class CobrowseBrowserAgent : public BrowserUserData<CobrowseBrowserAgent>,
   void ConfigureAssistantContextForWebState(web::WebState* web_state) override;
   bool IsSessionActive() override;
   void SetSessionActive(bool active) override;
+  bool IsTabGridVisible() override;
 
   // TabsDependencyInstaller:
   void OnWebStateInserted(web::WebState* web_state) override;

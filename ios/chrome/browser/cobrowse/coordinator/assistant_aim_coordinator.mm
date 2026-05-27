@@ -67,6 +67,7 @@ class AssistantAIMUIStateProvider
   ComposeboxModeHolder* _modeHolder;
   std::unique_ptr<AssistantAIMUIStateProvider> _uiStateProvider;
   AssistantContainerDetent _currentDetent;
+  BOOL _isHiding;
 
   // Handler for container related interactions.
   __weak id<AssistantContainerCommands> _containerHandler;
@@ -102,6 +103,9 @@ class AssistantAIMUIStateProvider
   CobrowseContext* context = agent ? agent->GetCobrowseContext() : nil;
   if (!context) {
     context = [CobrowseContext defaultContext];
+    if (agent) {
+      agent->SetCobrowseContext(context);
+    }
   }
   contextual_tasks::ContextualTasksService* contextualTasksService = nullptr;
   if (IsCobrowseAimHistoryEnabled()) {
@@ -181,6 +185,22 @@ class AssistantAIMUIStateProvider
   }
 }
 
+- (void)setVisible:(BOOL)visible {
+  if (visible) {
+    if (_viewController) {
+      [_containerHandler showAssistantContainerWithContent:_viewController
+                                                  delegate:self];
+      [_containerHandler
+          animateAssistantContainerToDetent:_currentDetent
+                                   duration:kSheetDetentAnimationDuration
+                                      curve:UIViewAnimationCurveEaseInOut];
+    }
+  } else {
+    _isHiding = YES;
+    [self dismissAssistantContainerAnimated:YES];
+  }
+}
+
 #pragma mark - CobrowseBrowserAgent::UIStateProvider
 
 - (BOOL)isTabGridVisible {
@@ -190,7 +210,11 @@ class AssistantAIMUIStateProvider
 #pragma mark - TabGridStateObserver
 
 - (void)willEnterTabGrid {
-  [self dismissAssistantContainerAnimated:YES];
+  [self setVisible:NO];
+}
+
+- (void)willExitTabGrid {
+  [self setVisible:YES];
 }
 
 #pragma mark - AssistantAIMViewControllerDelegate
@@ -264,6 +288,10 @@ class AssistantAIMUIStateProvider
 
 - (void)assistantContainer:(AssistantContainerViewController*)container
       didDisappearAnimated:(BOOL)animated {
+  if (_isHiding) {
+    _isHiding = NO;
+    return;
+  }
   [self stop];
 }
 

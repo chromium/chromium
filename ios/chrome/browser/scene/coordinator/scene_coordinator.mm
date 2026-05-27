@@ -661,7 +661,10 @@ void OnListFamilyMembersResponse(
   if (!IsAssistantContainerEnabled()) {
     return;
   }
-  [self stopAssistantAIMCoordinator];
+  if (_assistantAIMCoordinator) {
+    [_assistantAIMCoordinator setVisible:YES];
+    return;
+  }
   _assistantAIMCoordinator = [[AssistantAIMCoordinator alloc]
       initWithBaseViewController:self.activeViewController
                          browser:self.currentBrowser];
@@ -669,7 +672,12 @@ void OnListFamilyMembersResponse(
 }
 
 - (void)hideAssistant {
-  [self stopAssistantAIMCoordinator];
+  [_assistantAIMCoordinator setVisible:NO];
+}
+
+- (void)closeAssistant {
+  [_assistantAIMCoordinator stop];
+  _assistantAIMCoordinator = nil;
 }
 
 - (void)closePresentedViewsAndOpenURL:(OpenNewTabCommand*)command {

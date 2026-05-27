@@ -494,6 +494,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   commerce::RegisterProfilePrefs(registry);
   contextual_search::ContextualSearchService::RegisterProfilePrefs(registry);
   AimEligibilityService::RegisterProfilePrefs(registry);
+  registry->RegisterDictionaryPref(prefs::kCobrowseSessionActiveMap);
   cross_device::RegisterProfilePrefs(registry);
   CrossPlatformPromosService::RegisterProfilePrefs(registry);
   data_controls::RegisterProfilePrefs(registry);

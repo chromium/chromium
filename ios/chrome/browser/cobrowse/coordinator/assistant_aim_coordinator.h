@@ -12,6 +12,9 @@
 // Coordinator for the "AI Mode" flow.
 @interface AssistantAIMCoordinator : ChromeCoordinator
 
+// Sets the visibility of the assistant without stopping the coordinator.
+- (void)setVisible:(BOOL)visible;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COBROWSE_COORDINATOR_ASSISTANT_AIM_COORDINATOR_H_
