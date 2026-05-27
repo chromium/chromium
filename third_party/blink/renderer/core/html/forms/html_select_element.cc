@@ -1500,6 +1500,10 @@ unsigned HTMLSelectElement::length() const {
 
 void HTMLSelectElement::FinishParsingChildren() {
   HTMLFormControlElementWithState::FinishParsingChildren();
+  if (RuntimeEnabledFeatures::SelectedcontentMultipleEnabled() &&
+      IsMultiple()) {
+    UpdateAllSelectedcontentsMultiple();
+  }
   if (UsesMenuList())
     return;
   select_type_->ScrollToOption(SelectedOption());

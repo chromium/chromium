@@ -960,9 +960,7 @@ void HTMLOptionElement::FinishParsingChildren() {
   HTMLElement::FinishParsingChildren();
   if (Selected()) {
     if (auto* select = OwnerSelectElement()) {
-      if (select->IsMultiple()) {
-        select->UpdateAllSelectedcontentsMultiple();
-      } else {
+      if (!select->IsMultiple()) {
         select->UpdateAllSelectedcontentsSingle(this);
       }
     }
