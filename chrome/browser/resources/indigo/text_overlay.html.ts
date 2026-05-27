@@ -17,6 +17,10 @@ export function getHtml(this: IndigoTextOverlayElement) {
       ${this.currentStep_ === 2 ? html`<div>$i18n{textLayerStep2}</div>` : ''}
       ${this.currentStep_ === 3 ? html`<div>$i18n{textLayerStep3}</div>` : ''}
     </div>
+    <div id="disclaimer">
+      $i18n{disclaimerLine1}<br>
+      $i18n{disclaimerLine2}
+    </div>
   ` : ''}
 </div>
 <!--_html_template_end_-->`;
