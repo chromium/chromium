@@ -8,22 +8,24 @@
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
+#include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
 #include "components/tabs/public/tab_interface.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // static:
-BrowserWindowInterface* SidePanelAndroidBrowserTestBase::GetBrowserWindow() {
-  std::vector<BrowserWindowInterface*> windows =
-      GetAllBrowserWindowInterfaces();
-  CHECK_EQ(1u, windows.size()) << "We don't expect more than one window in "
-                                  "Android side panel browser tests.";
-  return windows[0];
+BrowserWindowInterface*
+SidePanelAndroidBrowserTestBase::GetLastActiveBrowser() {
+  BrowserWindowInterface* browser =
+      GlobalBrowserCollection::GetInstance()->GetLastActiveBrowser();
+  CHECK(browser);
+  return browser;
 }
 
 // static:
-tabs::TabInterface* SidePanelAndroidBrowserTestBase::GetActiveTab() {
-  auto* browser = GetBrowserWindow();
+tabs::TabInterface*
+SidePanelAndroidBrowserTestBase::GetActiveTabInLastActiveBrowser() {
+  auto* browser = GetLastActiveBrowser();
   auto* tab_list = TabListInterface::From(browser);
   CHECK(tab_list) << "The browser window has no TabListInterface.";
 
@@ -71,5 +73,5 @@ void SidePanelAndroidBrowserTestBase::SetUp() {
     GTEST_SKIP() << "Android Side Panel is disabled";
   }
 
-  AndroidBrowserTest::SetUp();
+  BrowserWindowAndroidBrowserTestBase::SetUp();
 }

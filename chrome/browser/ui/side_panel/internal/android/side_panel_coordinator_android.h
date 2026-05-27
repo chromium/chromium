@@ -69,6 +69,9 @@ class SidePanelCoordinatorAndroid : public SidePanelUIBase {
 
   // Other public functions:
   void ClearDeferredEntryForTab(const tabs::TabHandle& tab_handle);
+  // Called when a tab is detached from this window's tab strip for reparenting
+  // into another window.
+  void OnTabReparented(tabs::TabInterface* tab);
   bool IsClosing() const { return state_ == SidePanelState::kClosing; }
   bool ShouldClose() const {
     return state_ == SidePanelState::kShown ||

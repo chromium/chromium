@@ -204,6 +204,42 @@ void SidePanelCoordinatorAndroid::Close(SidePanelEntryHideReason hide_reason,
       AttachCurrentThread(), java_coordinator(), suppress_animations);
 }
 
+void SidePanelCoordinatorAndroid::OnTabReparented(tabs::TabInterface* tab) {
+  SPLOG("OnTabReparented - tab: " << tab);
+  // In multi-tab windows, when the active tab is reparented out, the source
+  // window activates another tab first. This triggers
+  // `SidePanelTabListObserverAndroid::OnActiveTabChanged()`, which already
+  // closes or replaces the side panel before this method runs, making any
+  // additional cleanup here unnecessary.
+  auto* tab_list = TabListInterface::From(browser());
+  if (tab_list && tab_list->GetTabCount() > 0) {
+    return;
+  }
+
+  // Specifically target the "Single-Tab Window Scenario" (e.g., tearing off
+  // the sole tab in a window to create a new window or move it to another
+  // window).
+  //
+  // In this case, because the source window is left with 0 tabs, Android's
+  // `TabListInterface` cannot select a new active tab and never fires
+  // `SidePanelTabListObserverAndroid::OnActiveTabChanged()`. Thus, the source
+  // window's side panel remains open and `current_key()` still matches the
+  // reparented tab here.
+  //
+  // Calling `Close()` here is critical: it synchronously detaches the
+  // underlying cached Java view from the source window's view hierarchy. This
+  // ensures that when the tab is inserted and activated in the destination
+  // window, the Java view has no parent and can be attached safely without
+  // throwing an `IllegalStateException: The specified child already has a
+  // parent`.
+  std::optional<UniqueKey> key = current_key();
+  if (key && key->tab_handle && key->tab_handle.value() == tab->GetHandle()) {
+    SPLOG("OnTabReparented - closing side panel for reparented tab.");
+    Close(SidePanelEntryHideReason::kBackgrounded,
+          /*suppress_animations=*/true);
+  }
+}
+
 void SidePanelCoordinatorAndroid::OnWindowResized(JNIEnv* env,
                                                   bool can_show_side_panel) {
   SPLOG("OnWindowResized - can_show_side_panel: " << can_show_side_panel);

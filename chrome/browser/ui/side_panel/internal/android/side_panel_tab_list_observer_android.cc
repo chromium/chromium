@@ -38,12 +38,25 @@ void SidePanelTabListObserverAndroid::OnActiveTabChanged(
     return;
   }
 
-  // TODO(crbug.com/498278573): Refine the logic here.
-  // In particular, check if `tab_removed_for_deletion` is correctly set to
-  // cover all tab removal cases.
   content::WebContents* old_contents =
       old_tab ? old_tab->GetContents() : nullptr;
   content::WebContents* new_contents = tab->GetContents();
+  // `old_tab` is evaluated from `active_tab_handle_.Get()`.
+  //
+  // 1. Tab Closure Case:
+  // If the underlying tab was destroyed (e.g., normal tab closure), `Get()`
+  // returns `nullptr` and `tab_removed_for_deletion` evaluates to `true`.
+  //
+  // 2. Tab Reparenting Case:
+  // When a tab is reparented out, the outgoing tab object still exists in
+  // memory (moving to another window), so `old_tab` remains valid and
+  // `tab_removed_for_deletion` evaluates to `false`.
+  //
+  // In multi-tab windows, when the active tab is reparented out, the source
+  // window activates another tab first. Since `tab_removed_for_deletion` is
+  // `false`, the coordinator's `OnActiveTabChanged()` will receive the valid
+  // outgoing contextual registry, allowing it to cleanly close or replace the
+  // side panel in the source window if needed.
   bool tab_removed_for_deletion = (old_tab == nullptr);
 
   coordinator_->OnActiveTabChanged(old_contents, new_contents,
@@ -58,6 +71,9 @@ void SidePanelTabListObserverAndroid::OnTabRemoved(
     TabRemovedReason removed_reason) {
   if (tab) {
     coordinator_->ClearDeferredEntryForTab(tab->GetHandle());
+    if (removed_reason == TabRemovedReason::kInsertedIntoOtherTabStrip) {
+      coordinator_->OnTabReparented(tab);
+    }
   }
 }
 

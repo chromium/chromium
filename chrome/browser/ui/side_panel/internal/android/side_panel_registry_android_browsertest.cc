@@ -11,16 +11,16 @@
 class SidePanelRegistryAndroidBrowserTest
     : public SidePanelAndroidBrowserTestBase {
  protected:
-  using SidePanelAndroidBrowserTestBase::GetActiveTab;
-  using SidePanelAndroidBrowserTestBase::GetBrowserWindow;
+  using SidePanelAndroidBrowserTestBase::GetActiveTabInLastActiveBrowser;
+  using SidePanelAndroidBrowserTestBase::GetLastActiveBrowser;
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelRegistryAndroidBrowserTest,
                        From_DifferentRegistriesForWindowAndTab) {
   SidePanelRegistry* window_scoped_registry =
-      SidePanelRegistry::From(GetBrowserWindow());
+      SidePanelRegistry::From(GetLastActiveBrowser());
   SidePanelRegistry* tab_scoped_registry =
-      SidePanelRegistry::From(GetActiveTab());
+      SidePanelRegistry::From(GetActiveTabInLastActiveBrowser());
 
   EXPECT_NE(nullptr, window_scoped_registry);
   EXPECT_NE(nullptr, tab_scoped_registry);
