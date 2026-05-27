@@ -39,4 +39,11 @@ WebViewProfileMetricsServiceFactory::BuildServiceInstanceFor(
       metrics::ProfileMetricsContext());
 }
 
+web::BrowserState* WebViewProfileMetricsServiceFactory::GetBrowserStateToUse(
+    web::BrowserState* context) const {
+  WebViewBrowserState* browser_state =
+      WebViewBrowserState::FromBrowserState(context);
+  return browser_state->GetRecordingBrowserState();
+}
+
 }  // namespace ios_web_view
