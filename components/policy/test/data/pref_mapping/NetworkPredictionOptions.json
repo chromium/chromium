@@ -1,6 +1,5 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "win",
       "linux",
@@ -9,17 +8,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "NetworkPredictionOptions": 2
-        },
-        "prefs": {
-          "net.network_prediction_options": {
-            "value": 2
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "net.network_prediction_options",
+      "default_value": 1,
+      "values_to_test": [
+        2
+      ]
+    }
   }
 ]

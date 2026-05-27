@@ -7,17 +7,13 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "NTPOutlookCardVisible": false
-        },
-        "prefs": {
-          "NewTabPage.OutlookModuleVisible": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "NewTabPage.OutlookModuleVisible",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

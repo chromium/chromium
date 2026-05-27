@@ -1,6 +1,5 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "win",
       "linux",
@@ -9,17 +8,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "NewTabPageLocation": "http://.org"
-        },
-        "prefs": {
-          "newtab_page_location_override": {
-            "value": "http://.org"
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "newtab_page_location_override",
+      "default_value": "",
+      "values_to_test": [
+        "http://.org"
+      ]
+    }
   }
 ]
