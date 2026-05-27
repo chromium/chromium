@@ -145,6 +145,7 @@ class GlicBrowserTestMixin : public T {
         {chrome::android::kTabBottomSheet, {}},
 #endif
     };
+
     glic_test_environment_.SetGlicPagePath(
         "/glic/browser_tests/minimal_client.html");
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});

@@ -48,6 +48,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -203,6 +204,7 @@ public class TabBottomSheetCoordinatorTest {
                                     .thenReturn(content);
                             return true;
                         });
+        mActivityScenarioRule.getScenario().onActivity(activity -> activity.setContentView(mView));
         mCoordinator.tryToShowBottomSheet(/* animate= */ true, /* startsExpanded= */ true);
         when(mMockBottomSheetController.getCurrentSheetContent())
                 .thenReturn(mCoordinator.getSheetContentForTesting());
@@ -330,6 +332,29 @@ public class TabBottomSheetCoordinatorTest {
         simulateShowSuccessAndGetObserver();
 
         verify(mMockBottomSheetController, never()).expandSheet();
+    }
+
+    @Test
+    public void testDoNotExpandWhenInsufficientViewportSpace() {
+        // Setup a very small viewport height
+        when(mMockDecorView.getHeight()).thenReturn(50);
+        doAnswer(
+                        invocation -> {
+                            Rect rect = invocation.getArgument(0);
+                            rect.set(0, 0, CONTAINER_WIDTH, 50);
+                            return null;
+                        })
+                .when(mMockDecorView)
+                .getWindowVisibleDisplayFrame(any(Rect.class));
+
+        simulateShowSuccessAndGetObserver();
+
+        // Flush the looper to run the runnable posted in tryToShowBottomSheet()
+        ShadowLooper.idleMainLooper();
+
+        // expandSheet(true) should NOT have been called because viewport height is insufficient
+        verify(mMockBottomSheetController, never()).expandSheet(anyBoolean());
+        verify(mMockSheetEventsCallback).onBottomSheetOpened(false);
     }
 
     @Test

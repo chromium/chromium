@@ -570,6 +570,9 @@ export class GlicApiHost implements PostMessageRequestHandler {
     let response;
     if (this.shouldGateRequests() &&
         Object.hasOwn(BACKGROUND_RESPONSES, type)) {
+      if (this.loggingEnabled) {
+        console.warn(`GlicApiHost: Using background behavior for ${type}`);
+      }
       const backgroundResponse =
           BACKGROUND_RESPONSES[type as keyof typeof BACKGROUND_RESPONSES] as
           HostBackgroundResponse<unknown>;
