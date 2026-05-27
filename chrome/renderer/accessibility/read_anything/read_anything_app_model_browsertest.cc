@@ -2604,9 +2604,9 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_UniquenessConstraints) {
   ui::AXTreeUpdate update;
   test::SetUpdateTreeID(&update, tree_id_);
   ui::AXNodeData root = test::GenericContainerNode(1);
-  ui::AXNodeData node2 = test::TextNode(2, u"Duplicate");
+  ui::AXNodeData node2 = test::TextNode(2, u"Twinword");
   ui::AXNodeData node3 = test::TextNode(3, u"Unique");
-  ui::AXNodeData node4 = test::TextNode(4, u"Duplicate");
+  ui::AXNodeData node4 = test::TextNode(4, u"Twinword");
   root.child_ids = {node2.id, node3.id, node4.id};
   update.root_id = root.id;
   update.nodes = {root, node2, node3, node4};
@@ -2616,8 +2616,8 @@ TEST_F(ReadAnythingAppModelTest, MapRenderedTextToTree_UniquenessConstraints) {
   // "Duplicate" is unique in blocks, but not AXTree (appears twice).
   // "Unique" is unique in both.
   // "Repeated" is unique in AXTree (it's not there), but not in blocks.
-  std::vector<std::u16string> blocks = {u"Duplicate", u"Unique", u"Repeated",
-                                        u"Repeated"};
+  std::vector<std::u16string> blocks = {u"Twinword", u"Unique", u"Repeat",
+                                        u"Repeat"};
 
   // Run mapping algorithm.
   model().set_should_map_rendered_text_to_tree_for_readability(true);

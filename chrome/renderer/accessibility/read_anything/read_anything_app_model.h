@@ -992,7 +992,7 @@ class ReadAnythingAppModel {
 
   // The minimum number of characters required for a substring to be considered
   // an anchor during GapSubstringAlignment mapping.
-  static constexpr size_t kMinAnchorLength = 15;
+  static constexpr size_t kMinAnchorLength = 3;
 
   // The minimum number of characters required for a substring to be considered
   // valid during RelativeOrderAlignment mapping.
