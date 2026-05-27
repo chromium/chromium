@@ -446,6 +446,14 @@ class ProxyResolverV8::Context {
   ~Context() {
     v8::Locker locked(isolate_);
     v8::Isolate::Scope isolate_scope(isolate_);
+    if (!v8_context_.IsEmpty()) {
+      v8::HandleScope scope(isolate_);
+      v8::Local<v8::Context> context =
+          v8::Local<v8::Context>::New(isolate_, v8_context_);
+      v8::Context::Scope context_scope(context);
+      isolate_->ContextDisposedNotification(
+          v8::ContextDependants::kNoDependants);
+    }
 
     v8_this_.Reset();
     v8_context_.Reset();
