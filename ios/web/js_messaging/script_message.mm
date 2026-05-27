@@ -27,6 +27,7 @@ ScriptMessage::ScriptMessage(ScriptMessage&& message)
     : body_(std::move(message.body_)),
       is_user_interacting_((message.is_user_interacting_)),
       is_main_frame_(message.is_main_frame_),
-      request_url_(std::move(message.request_url_)) {}
+      request_url_(std::move(message.request_url_)),
+      security_origin_(std::move(message.security_origin_)) {}
 
 }  // namespace web
