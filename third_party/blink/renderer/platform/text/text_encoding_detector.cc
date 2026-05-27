@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/platform/text/text_encoding_detector.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
@@ -63,8 +64,9 @@ bool DetectTextEncoding(base::span<const uint8_t> bytes,
   bool is_reliable;
   auto chars = base::as_chars(bytes);
   Encoding encoding = CompactEncDet::DetectEncoding(
-      chars.data(), chars.size(), hint_url.GetString().Ascii().c_str(), nullptr,
-      nullptr, EncodingNameAliasToEncoding(hint_encoding_name), language,
+      chars.data(), base::checked_cast<int>(chars.size()),
+      hint_url.GetString().Ascii().c_str(), nullptr, nullptr,
+      EncodingNameAliasToEncoding(hint_encoding_name), language,
       CompactEncDet::WEB_CORPUS,
       false,  // Include 7-bit encodings to detect ISO-2022-JP
       &consumed_bytes, &is_reliable);

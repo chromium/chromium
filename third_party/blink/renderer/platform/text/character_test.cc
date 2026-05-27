@@ -790,7 +790,8 @@ TEST(CharacterTest, TestEastAsianSpacingPropertyRule) {
     ASSERT_TRUE(U_SUCCESS(error_code));
     std::vector<UScriptCode> script_list(32);
     int32_t required_capacity = uscript_getScriptExtensions(
-        test_char, script_list.data(), script_list.size(), &error_code);
+        test_char, script_list.data(), static_cast<int32_t>(script_list.size()),
+        &error_code);
     ASSERT_TRUE(U_SUCCESS(error_code))
         << error_code << "\t" << required_capacity;
     UEastAsianWidth east_asian_width = Character::EastAsianWidth(test_char);

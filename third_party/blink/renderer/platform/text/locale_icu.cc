@@ -40,6 +40,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -76,7 +77,7 @@ String LocaleIcu::DecimalSymbol(UNumberFormatSymbol symbol) {
   StringBuffer<UChar> buffer(buffer_length);
   auto span = buffer.Span();
   status = U_ZERO_ERROR;
-  unum_getSymbol(number_format_, symbol, span.data(), span.size(), &status);
+  unum_getSymbol(number_format_, symbol, span.data(), buffer_length, &status);
   if (U_FAILURE(status))
     return String();
   return String::Adopt(buffer);
@@ -92,7 +93,8 @@ String LocaleIcu::DecimalTextAttribute(UNumberFormatTextAttribute tag) {
   StringBuffer<UChar> buffer(buffer_length);
   auto span = buffer.Span();
   status = U_ZERO_ERROR;
-  unum_getTextAttribute(number_format_, tag, span.data(), span.size(), &status);
+  unum_getTextAttribute(number_format_, tag, span.data(), buffer_length,
+                        &status);
   DCHECK(U_SUCCESS(status));
   if (U_FAILURE(status))
     return String();
@@ -173,7 +175,7 @@ static String GetDateFormatPattern(const UDateFormat* date_format) {
   StringBuffer<UChar> buffer(length);
   auto span = buffer.Span();
   status = U_ZERO_ERROR;
-  udat_toPattern(date_format, true, span.data(), span.size(), &status);
+  udat_toPattern(date_format, true, span.data(), length, &status);
   if (U_FAILURE(status))
     return g_empty_string;
   return String::Adopt(buffer);
@@ -213,11 +215,11 @@ Vector<String> LocaleIcu::CreateLabelVector(const UDateFormat* date_format,
     auto span = buffer.Span();
     status = U_ZERO_ERROR;
     if (is_stand_alone_month) {
-      udat_format(date_format, kEpoch + i * kMonth, span.data(), span.size(),
+      udat_format(date_format, kEpoch + i * kMonth, span.data(), length,
                   nullptr, &status);
     } else {
-      udat_getSymbols(date_format, type, start_index + i, span.data(),
-                      span.size(), &status);
+      udat_getSymbols(date_format, type, start_index + i, span.data(), length,
+                      &status);
     }
     if (U_FAILURE(status)) {
       return {};
@@ -326,16 +328,17 @@ static String GetFormatForSkeleton(const char* locale, const String& skeleton) {
   status = U_ZERO_ERROR;
   Vector<UChar> skeleton_characters;
   skeleton.AppendTo(skeleton_characters);
+  int32_t skeleton_length =
+      base::checked_cast<int32_t>(skeleton_characters.size());
   int32_t length =
       udatpg_getBestPattern(pattern_generator, skeleton_characters.data(),
-                            skeleton_characters.size(), nullptr, 0, &status);
+                            skeleton_length, nullptr, 0, &status);
   if (status == U_BUFFER_OVERFLOW_ERROR && length) {
     StringBuffer<UChar> buffer(length);
     auto span = buffer.Span();
     status = U_ZERO_ERROR;
     udatpg_getBestPattern(pattern_generator, skeleton_characters.data(),
-                          skeleton_characters.size(), span.data(), span.size(),
-                          &status);
+                          skeleton_length, span.data(), length, &status);
     if (U_SUCCESS(status))
       format = String::Adopt(buffer);
   }

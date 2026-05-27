@@ -28,6 +28,7 @@
 
 #include <array>
 
+#include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/text/break_iterator_data_inline_header.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
@@ -270,7 +271,7 @@ inline unsigned LazyLineBreakIterator::NextBreakablePosition(
     unsigned pos,
     base::span<const CharacterType> span) const {
   const CharacterType* str = span.data();
-  unsigned len = span.size();
+  unsigned len = base::checked_cast<unsigned>(span.size());
   Context<CharacterType> context(str, len, start_offset_, pos);
   unsigned next_break = 0;
   ULineBreak last_line_break;
