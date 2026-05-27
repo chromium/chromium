@@ -39,12 +39,15 @@ NSString* MakeScriptInjectableOnce(NSString* script_identifier,
 }
 
 NSString* MakeScriptPrivate(NSArray<NSString*>* filter, NSString* script) {
-  CHECK(filter);
-  NSString* kPrivateTemplate =
-      @"if (['%@'].includes(window.location.origin)) { %@ }";
-  return [NSString stringWithFormat:kPrivateTemplate,
-                                    [filter componentsJoinedByString:@"','"],
-                                    script];
+  CHECK(filter.count);
+  NSMutableArray<NSString*>* conditions = [NSMutableArray array];
+  for (NSString* origin in filter) {
+    [conditions
+        addObject:[NSString stringWithFormat:@"window.location.origin === '%@'",
+                                             origin]];
+  }
+  NSString* conditionString = [conditions componentsJoinedByString:@" || "];
+  return [NSString stringWithFormat:@"if (%@) { %@ }", conditionString, script];
 }
 
 }  // namespace web

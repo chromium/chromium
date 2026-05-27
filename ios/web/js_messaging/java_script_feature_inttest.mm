@@ -490,6 +490,32 @@ TEST_F(JavaScriptFeaturePrivateTest, JavaScriptFeatureDoNotInjectJavaScript) {
       web_state(), kFakeJavaScriptFeatureLoadedText, base::Seconds(1)));
 }
 
+// Tests that a malicious page cannot bypass the private origin check of a
+// JavaScriptFeature by poisoning Array.prototype.includes and calling
+// document.open().
+TEST_F(JavaScriptFeaturePrivateTest,
+       OriginGateBypassViaPrototypePoisoningAndDocumentOpen) {
+  LoadHtml(kPageHTML, GURL("http://invalid.test"));
+  ASSERT_TRUE(test::WaitForWebViewContainingText(web_state(), "contents1"));
+
+  // Confirm the private script did not run initially.
+  EXPECT_FALSE(test::WaitForWebViewContainingText(
+      web_state(), kFakeJavaScriptFeatureLoadedText, base::Seconds(1)));
+
+  // Poison Array.prototype.includes and force script re-injection via
+  // document.open()
+  ExecuteJavaScript(@"Array.prototype.includes = function() { return true; };"
+                     "document.open();"
+                     "document.write('<html><body><div "
+                     "id=\"div\">contents1</div></body></html>');"
+                     "document.close();");
+
+  // Verify that the private script still was NOT injected/executed after
+  // re-injection on the unauthorized origin.
+  EXPECT_FALSE(test::WaitForWebViewContainingText(
+      web_state(), kFakeJavaScriptFeatureLoadedText, base::Seconds(1)));
+}
+
 // Tests that a private JavaScriptFeature can call JavaScript when on an
 // authorized page.
 TEST_F(JavaScriptFeaturePrivateTest, CallFunctionOnAllowedPage) {
