@@ -44,7 +44,12 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   IdentityLaunchWebAuthFlowFunction();
 
   // Tests may override extension_id.
-  void InitFinalRedirectURLDomainsForTest(const std::string& extension_id);
+  void InitFinalRedirectUrlsForTest(const std::string& extension_id);
+
+  static bool ShouldInterceptRedirect(
+      const GURL& redirect_url,
+      const GURL& default_origin,
+      const std::vector<GURL>& final_redirect_urls);
 
   WebAuthFlow* GetWebAuthFlowForTesting();
 
@@ -70,12 +75,13 @@ class IdentityLaunchWebAuthFlowFunction : public ExtensionFunction,
   void OnAuthFlowURLChange(const GURL& redirect_url) override;
   void OnAuthFlowTitleChange(const std::string& title) override {}
 
-  // Helper to initialize final URL prefix.
-  void InitFinalRedirectURLDomains(const std::string& extension_id,
-                                   const base::ListValue* redirect_urls);
+  // Helper to initialize allowed redirect URLs.
+  void InitFinalRedirectUrls(const std::string& extension_id,
+                             const base::ListValue* redirect_urls);
 
   std::unique_ptr<WebAuthFlow> auth_flow_;
-  std::vector<GURL> final_url_domains_;
+  GURL default_origin_;
+  std::vector<GURL> final_redirect_urls_;
   std::unique_ptr<LaunchWebAuthFlowDelegate> delegate_;
 };
 

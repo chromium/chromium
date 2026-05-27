@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -292,4 +293,48 @@ TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogConcurrent) {
   EXPECT_TRUE(on_complete_2.IsReady());
 }
 #endif
+
+TEST(IdentityLaunchWebAuthFlowFunctionTest, ShouldInterceptRedirect) {
+  GURL default_origin("https://abcdefghij.chromiumapp.org/");
+  std::vector<GURL> allowed_urls;
+  allowed_urls.emplace_back("https://example.com/a");
+  allowed_urls.emplace_back("https://example.com/b/");
+
+  // Default origin matching
+  EXPECT_TRUE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://abcdefghij.chromiumapp.org/callback"), default_origin,
+      allowed_urls));
+  EXPECT_TRUE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://abcdefghij.chromiumapp.org"), default_origin,
+      allowed_urls));
+  EXPECT_FALSE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://other.chromiumapp.org/callback"), default_origin,
+      allowed_urls));
+
+  // Allowed URLs matching (without trailing slash)
+  EXPECT_TRUE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://example.com/a"), default_origin, allowed_urls));
+  EXPECT_TRUE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://example.com/a/b"), default_origin, allowed_urls));
+  EXPECT_FALSE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://example.com/ab"), default_origin, allowed_urls));
+
+  // Allowed URLs matching (with trailing slash)
+  EXPECT_TRUE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://example.com/b/"), default_origin, allowed_urls));
+  EXPECT_TRUE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://example.com/b/c"), default_origin, allowed_urls));
+  EXPECT_FALSE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://example.com/b"), default_origin, allowed_urls));
+
+  // Query parameters ignored
+  EXPECT_TRUE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://example.com/a?code=secret"), default_origin, allowed_urls));
+
+  std::vector<GURL> allowed_urls_with_query;
+  allowed_urls_with_query.emplace_back("https://example.com/a?foo=bar");
+  EXPECT_TRUE(IdentityLaunchWebAuthFlowFunction::ShouldInterceptRedirect(
+      GURL("https://example.com/a"), default_origin, allowed_urls_with_query));
+}
+
 }  // namespace extensions
