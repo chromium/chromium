@@ -241,6 +241,18 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
   }
   color_spaces.SetOutputFormats(image_format_no_alpha_.value(),
                                 image_format_alpha_.value());
+  if (color_spaces.SupportsHDR() && image_format_hdr_) {
+    color_spaces.SetOutputColorSpaceAndFormat(
+        gfx::ContentColorUsage::kHDR, /*needs_alpha=*/false,
+        color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kHDR,
+                                         /*needs_alpha=*/false),
+        image_format_hdr_.value());
+    color_spaces.SetOutputColorSpaceAndFormat(
+        gfx::ContentColorUsage::kHDR, /*needs_alpha=*/true,
+        color_spaces.GetOutputColorSpace(gfx::ContentColorUsage::kHDR,
+                                         /*needs_alpha=*/true),
+        image_format_hdr_.value());
+  }
   changed_display.SetColorSpaces(std::move(color_spaces));
 
   // There are 2 cases where |changed_display| must be set as primary:
