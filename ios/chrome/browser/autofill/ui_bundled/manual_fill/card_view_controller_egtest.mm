@@ -6,6 +6,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
@@ -26,6 +27,7 @@
 #import "ui/base/l10n/l10n_util.h"
 #import "url/gurl.h"
 
+using base::test::ios::kWaitForUIElementTimeout;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::NavigationBarCancelButton;
@@ -88,15 +90,6 @@ void OpenPaymentMethodManualFillView() {
   // Verify the card table view controller is visible.
   [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Matcher for the expanded credit card manual fill view button.
-id<GREYMatcher> CreditCardManualFillViewButton() {
-  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_AUTOFILL_CREDIT_CARD_AUTOFILL_DATA)),
-                    grey_ancestor(grey_accessibilityID(
-                        kFormInputAccessoryViewAccessibilityID)),
-                    nil);
 }
 
 // Matcher for the credit card tab in the manual fill view.
@@ -253,7 +246,8 @@ void CheckChipButtonsOfLocalCard() {
 // methods and verifies that the card view controller is visible afterwards.
 void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   // Tap the button to open the expanded manual fill view.
-  [[EarlGrey selectElementWithMatcher:CreditCardManualFillViewButton()]
+  [[EarlGrey
+      selectElementWithMatcher:manual_fill::KeyboardAccessoryManualFillButton()]
       performAction:grey_tap()];
 
   // Tap the payment method tab from the segmented control.
@@ -265,13 +259,28 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Dismisses the payment bottom sheet by tapping the "Use Keyboard" button.
+// Matcher for the dismiss button of both the credit card list and scan card
+// bottom sheets.
+id<GREYMatcher> BottomSheetDismissButtonMatcher() {
+  return grey_anyOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD),
+                    chrome_test_util::ButtonStackSecondaryButton(), nil);
+}
+
+// Dismisses the payment bottom sheet by tapping the "Use Keyboard" or "No
+// thanks" button if visible.
 void DismissPaymentBottomSheet() {
-  id<GREYMatcher> useKeyboardButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_IOS_PAYMENT_BOTTOM_SHEET_USE_KEYBOARD);
-  [[EarlGrey selectElementWithMatcher:useKeyboardButton]
-      performAction:grey_tap()];
+  id<GREYMatcher> dismissButton = grey_allOf(BottomSheetDismissButtonMatcher(),
+                                             grey_sufficientlyVisible(), nil);
+
+  // Wait for the bottom sheet button to appear to avoid race conditions.
+  if ([ChromeEarlGrey
+          testUIElementAppearanceWithMatcher:dismissButton
+                                     timeout:kWaitForUIElementTimeout]) {
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:dismissButton] performAction:grey_tap()
+                                                               error:&error];
+  }
 }
 
 }  // namespace
@@ -281,6 +290,13 @@ void DismissPaymentBottomSheet() {
 @end
 
 @implementation CreditCardViewControllerTestCase
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  config.features_enabled.push_back(
+      autofill::features::kAutofillEnableBottomSheetScanCardAndFill);
+  return config;
+}
 
 - (void)setUp {
   [super setUp];
@@ -317,8 +333,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view and verify that the card table
   // view controller is visible.
@@ -341,8 +356,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -355,9 +369,14 @@ void DismissPaymentBottomSheet() {
 - (void)testNoPaymentMethodsFoundMessageIsVisibleWhenNoSuggestions {
   [AutofillAppInterface clearCreditCardStore];
 
-  // Bring up the keyboard.
+  // Focus the credit card name field to trigger the bottom sheet.
+  [self focusCCNameField];
+  DismissPaymentBottomSheet();
+
+  // Refocus the credit card field to bring up the keyboard accessory.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementName)];
+  [ChromeEarlGrey waitForKeyboardToAppear];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods();
@@ -373,9 +392,9 @@ void DismissPaymentBottomSheet() {
   GREYAssertNil(
       [MetricsAppInterface
           expectUniqueSampleWithCount:1
-                            forBucket:0
+                            forBucket:1
                          forHistogram:@"ManualFallback.VisibleSuggestions."
-                                      @"OpenCreditCards"],
+                                      @"ExpandIcon.OpenPaymentMethods"],
       @"Unexpected histogram error for number of visible suggestions.");
 }
 
@@ -385,8 +404,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -409,8 +427,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -449,8 +466,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveMaskedCreditCardEnrolledInCardInfoRetrieval];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -480,8 +496,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -580,8 +595,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -605,8 +619,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -673,8 +686,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -732,10 +744,7 @@ void DismissPaymentBottomSheet() {
   [self loadURL];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-  DismissPaymentBottomSheet();
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -759,8 +768,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -854,9 +862,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -871,9 +877,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveMaskedCreditCardEnrolledInVirtualCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -905,9 +909,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -947,10 +949,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-  DismissPaymentBottomSheet();
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -981,9 +980,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1017,9 +1014,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1050,10 +1045,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-  DismissPaymentBottomSheet();
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();
@@ -1077,6 +1069,13 @@ void DismissPaymentBottomSheet() {
 
 #pragma mark - Private
 
+- (void)focusCCNameField {
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+  DismissPaymentBottomSheet();
+  [ChromeEarlGrey waitForKeyboardToAppear];
+}
+
 - (void)loadURL {
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   [ChromeEarlGrey loadURL:URL];
@@ -1088,11 +1087,7 @@ void DismissPaymentBottomSheet() {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-
-  // Wait for the accessory icon to appear.
-  [ChromeEarlGrey waitForKeyboardToAppear];
+  [self focusCCNameField];
 
   // Open the payment method manual fill view.
   OpenPaymentMethodManualFillView();

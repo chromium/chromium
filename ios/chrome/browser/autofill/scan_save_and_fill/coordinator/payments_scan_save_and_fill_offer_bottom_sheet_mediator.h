@@ -54,6 +54,10 @@ class WebState;
 // Replaces the object in charge of providing suggestions.
 - (void)setProvider:(id<FormInputSuggestionsProvider>)provider;
 
+// Refocuses the field that was blurred to show the bottom sheet, if deemed
+// needed.
+- (void)refocus;
+
 // Called when the view appeared.
 - (void)scanCardBottomSheetViewDidAppear;
 

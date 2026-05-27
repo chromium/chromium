@@ -14,6 +14,7 @@
 #import "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
+#import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/scan_save_and_fill/ui/payments_scan_save_and_fill_offer_bottom_sheet_consumer.h"
 #import "ios/web/public/web_state.h"
 
@@ -88,6 +89,18 @@
   // If the user explicitly cancel the scan card bottom sheet offer, we should
   // not offer save card promo after the user submit the same form.
   [self setCardSubmittedThroughScanSaveAndFill];
+  [self refocus];
+}
+
+- (void)refocus {
+  if (!_webState) {
+    return;
+  }
+  AutofillBottomSheetTabHelper* tabHelper =
+      AutofillBottomSheetTabHelper::FromWebState(_webState);
+  if (tabHelper) {
+    tabHelper->RefocusElementIfNeeded(_params.frame_id);
+  }
 }
 
 - (void)disconnect {
