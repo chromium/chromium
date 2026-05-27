@@ -265,6 +265,12 @@ class PLATFORM_EXPORT TransformPaintPropertyNode final
     return GetTransformCache().root_of_2d_translation();
   }
 
+  // Returns true if this node and |other| share the same plane root.
+  bool IsCoplanarWith(const TransformPaintPropertyNode& other) const {
+    return GetTransformCache().plane_root() ==
+           other.GetTransformCache().plane_root();
+  }
+
   // This is different from NearestScrollTranslationNode in that for a
   // fixed-position paint offset translation, this returns
   // ScrollTranslationForFixed() instead of the ancestor scroll translation
