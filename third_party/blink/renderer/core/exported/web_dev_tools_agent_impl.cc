@@ -258,7 +258,11 @@ class ClientMessageLoopAdapter : public MainThreadDebugger::ClientMessageLoop {
     CHECK(!input_events_disabler_);
     input_events_disabler_ =
         std::make_unique<ScopedInputEventsDisabler>(*frame);
-    for (auto* const view : WebViewImpl::AllInstances())
+    // NotifyPopupOpeningObservers() can run author scripts which can
+    // synchronously create a new WebViewImpl (e.g. via window.open()),
+    // mutating AllInstances() and invalidating the iterator. Snapshot first.
+    const HashSet<WebViewImpl*> instances = WebViewImpl::AllInstances();
+    for (auto* const view : instances)
       view->GetChromeClient().NotifyPopupOpeningObservers();
 
     // 2. Disable active objects
