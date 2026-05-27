@@ -237,6 +237,13 @@ ci.builder(
                     ),
                 ),
             ],
+            "content_browsertests": [
+                targets.mixin(
+                    swarming = targets.swarming(
+                        shards = 24,
+                    ),
+                ),
+            ],
             "chrome_wpt_tests": targets.remove(
                 reason = "Wptrunner does not work on Fuchsia",
             ),
