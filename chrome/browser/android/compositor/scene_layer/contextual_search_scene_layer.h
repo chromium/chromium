@@ -46,6 +46,8 @@ class ContextualSearchSceneLayer : public SceneLayer,
 
   ~ContextualSearchSceneLayer() override;
 
+  void Destroy(JNIEnv* env) override;
+
   void CreateContextualSearchLayer(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& jresource_manager);

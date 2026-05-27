@@ -270,6 +270,10 @@ void ContextualSearchSceneLayer::HideTree(JNIEnv* env) {
   content_container_->SetPosition(gfx::PointF(0.0f, 0.0f));
 }
 
+void ContextualSearchSceneLayer::Destroy(JNIEnv* env) {
+  delete this;
+}
+
 static int64_t JNI_ContextualSearchSceneLayer_Init(
     JNIEnv* env,
     const JavaRef<jobject>& jobj) {

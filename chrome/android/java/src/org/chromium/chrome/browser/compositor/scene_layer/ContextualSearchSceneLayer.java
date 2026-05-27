@@ -267,14 +267,21 @@ public class ContextualSearchSceneLayer extends SceneOverlayLayer {
     /** Destroys this object and the corresponding native component. */
     @Override
     public void destroy() {
-        super.destroy();
+        // Do NOT call super.destroy() to avoid double free of the native object.
+        // SceneLayer.destroy() also tries to destroy the native object using its own JNI binding,
+        // but since both Java objects point to the same C++ object, it causes a double free.
         mIsInitialized = false;
-        mNativePtr = 0;
+        if (mNativePtr != 0) {
+            ContextualSearchSceneLayerJni.get().destroy(mNativePtr);
+            mNativePtr = 0;
+        }
     }
 
     @NativeMethods
     interface Natives {
         long init(ContextualSearchSceneLayer self);
+
+        void destroy(long nativeContextualSearchSceneLayer);
 
         void createContextualSearchLayer(
                 long nativeContextualSearchSceneLayer, ResourceManager resourceManager);
