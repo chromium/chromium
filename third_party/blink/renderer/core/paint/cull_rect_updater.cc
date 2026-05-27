@@ -20,7 +20,6 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -211,8 +210,6 @@ CullRectUpdater::CullRectUpdater(PaintLayer& starting_layer,
 void CullRectUpdater::Update() {
   DCHECK(starting_layer_.IsRootLayer());
   TRACE_EVENT0("blink,benchmark", "CullRectUpdate");
-  SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Blink.CullRect.UpdateTime");
-
   UpdateInternal(CullRect::Infinite());
 }
 

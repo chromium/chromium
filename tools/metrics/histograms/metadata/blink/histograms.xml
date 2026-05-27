@@ -1093,19 +1093,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.CullRect.UpdateTime" units="microseconds"
-    expires_after="2026-05-31">
-  <owner>pdr@chromium.org</owner>
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <improvement direction="LOWER_IS_BETTER"/>
-  <summary>
-    Time spent updating the cull rect in the Blink document lifecycle.
-
-    Note: Not recorded on ~5% of Windows machines with low-resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Blink.DecodedImage.AvifDensity.Count.{ImageArea}"
     units="0.01 bits per pixel" expires_after="2026-08-23">
   <owner>wtc@google.com</owner>
