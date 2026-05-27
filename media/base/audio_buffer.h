@@ -63,18 +63,6 @@ class MEDIA_EXPORT AudioBuffer
     base::raw_span<uint8_t, DanglingUntriaged> span_;
   };
 
-  // TODO(crbug.com/373960632): Keep this raw-pointer overload while call sites
-  // migrate to the span overload below. For interleaved data only `data[0]` is
-  // read; for planar data, `data` must contain `channel_count` pointers.
-  static scoped_refptr<AudioBuffer> CopyFrom(
-      SampleFormat sample_format,
-      ChannelLayout channel_layout,
-      int channel_count,
-      int sample_rate,
-      int frame_count,
-      const uint8_t* const* data,
-      const base::TimeDelta timestamp,
-      scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
   // Create an AudioBuffer whose channel data is copied from `data`. For
   // interleaved data, `data` must contain exactly one span, which must contain
@@ -114,18 +102,6 @@ class MEDIA_EXPORT AudioBuffer
       const AudioBus* audio_bus,
       scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
-  // TODO(crbug.com/373960632): Keep this raw-pointer overload while call sites
-  // migrate to the span overload below.
-  static scoped_refptr<AudioBuffer> CopyBitstreamFrom(
-      SampleFormat sample_format,
-      ChannelLayout channel_layout,
-      int channel_count,
-      int sample_rate,
-      int frame_count,
-      const uint8_t* const* data,
-      const size_t data_size,
-      const base::TimeDelta timestamp,
-      scoped_refptr<AudioBufferMemoryPool> pool = nullptr);
 
   // Create an AudioBuffer for compressed bitstream. Its channel data is copied
   // from `data`. For the span overload, the size is `data.size()`. For the

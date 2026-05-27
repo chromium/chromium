@@ -78,46 +78,6 @@ base::span<const uint8_t> CastConstSpan(base::span<const uint8_t> span) {
   return span;
 }
 
-// TODO(crbug.com/373960632): Remove this helper once the raw-pointer overloads
-// have been removed.
-std::vector<base::span<const uint8_t>> UnsafeWrap(SampleFormat sample_format,
-                                                  int channel_count,
-                                                  int frame_count,
-                                                  const uint8_t* const* data,
-                                                  size_t bitstream_data_size) {
-  if (!data) {
-    return {};
-  }
-
-  CHECK_GE(channel_count, 0);
-  CHECK_LE(channel_count, limits::kMaxChannels);
-  CHECK_GE(frame_count, 0);
-
-  if (IsBitstream(sample_format)) {
-    // SAFETY: The raw-pointer bitstream overload requires `data[0]` to point
-    // to at least `bitstream_data_size` bytes.
-    return {UNSAFE_TODO(base::span(data[0], bitstream_data_size))};
-  }
-
-  const size_t bytes_per_channel = SampleFormatToBytesPerChannel(sample_format);
-  const size_t data_size_per_channel = frame_count * bytes_per_channel;
-  if (IsPlanar(sample_format)) {
-    std::vector<base::span<const uint8_t>> channel_spans(channel_count);
-    for (int i = 0; i < channel_count; ++i) {
-      // SAFETY: The raw-pointer planar overload requires `data` to contain
-      // `channel_count` pointers, each with `frame_count` samples.
-      channel_spans[i] =
-          UNSAFE_TODO(base::span(data[i], data_size_per_channel));
-    }
-    return channel_spans;
-  }
-
-  CHECK(IsInterleaved(sample_format)) << sample_format;
-  // SAFETY: The raw-pointer interleaved overload reads `data[0]` as a single
-  // buffer containing `frame_count` frames for all channels.
-  return {
-      UNSAFE_TODO(base::span(data[0], data_size_per_channel * channel_count))};
-}
 
 template <typename SampleTypeTraits>
 void PlanarRead(AudioBus* dest,
@@ -398,26 +358,6 @@ AudioBuffer::AudioBuffer(base::PassKey<AudioBuffer>,
 
 AudioBuffer::~AudioBuffer() = default;
 
-// static
-scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
-    SampleFormat sample_format,
-    ChannelLayout channel_layout,
-    int channel_count,
-    int sample_rate,
-    int frame_count,
-    const uint8_t* const* data,
-    const base::TimeDelta timestamp,
-    scoped_refptr<AudioBufferMemoryPool> pool) {
-  // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
-  CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
-  CHECK(data[0]);
-  auto data_spans =
-      UnsafeWrap(sample_format, channel_count, frame_count, data, 0);
-  return base::MakeRefCounted<AudioBuffer>(
-      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
-      channel_count, sample_rate, frame_count, true, data_spans, 0, timestamp,
-      std::move(pool));
-}
 
 // static
 scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
@@ -451,13 +391,14 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
   const int channel_count = audio_bus->channels();
   DCHECK(channel_count);
 
-  std::vector<const uint8_t*> data(channel_count);
+  std::vector<base::span<const uint8_t>> channel_spans(channel_count);
   for (int ch = 0; ch < channel_count; ch++) {
-    data[ch] = reinterpret_cast<const uint8_t*>(audio_bus->channel(ch).data());
+    channel_spans[ch] =
+        base::as_byte_span(base::allow_nonunique_obj, audio_bus->channel(ch));
   }
 
   return CopyFrom(kSampleFormatPlanarF32, channel_layout, channel_count,
-                  sample_rate, audio_bus->frames(), data.data(), timestamp,
+                  sample_rate, audio_bus->frames(), channel_spans, timestamp,
                   std::move(pool));
 }
 
@@ -474,27 +415,6 @@ scoped_refptr<AudioBuffer> AudioBuffer::CopyFrom(
                   audio_bus, std::move(pool));
 }
 
-// static
-scoped_refptr<AudioBuffer> AudioBuffer::CopyBitstreamFrom(
-    SampleFormat sample_format,
-    ChannelLayout channel_layout,
-    int channel_count,
-    int sample_rate,
-    int frame_count,
-    const uint8_t* const* data,
-    const size_t data_size,
-    const base::TimeDelta timestamp,
-    scoped_refptr<AudioBufferMemoryPool> pool) {
-  // If you hit this CHECK you likely have a bug in a demuxer. Go fix it.
-  CHECK_GT(frame_count, 0);  // Otherwise looks like an EOF buffer.
-  CHECK(data[0]);
-  auto data_spans =
-      UnsafeWrap(sample_format, channel_count, frame_count, data, data_size);
-  return base::MakeRefCounted<AudioBuffer>(
-      base::PassKey<AudioBuffer>(), sample_format, channel_layout,
-      channel_count, sample_rate, frame_count, true, data_spans, data_size,
-      timestamp, std::move(pool));
-}
 
 // static
 scoped_refptr<AudioBuffer> AudioBuffer::CopyBitstreamFrom(
