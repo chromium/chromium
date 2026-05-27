@@ -6,18 +6,13 @@
       "mac",
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "RelaunchFastIfOutdated": 7
-        },
-        "prefs": {
-          "browser.relaunch_fast_if_outdated": {
-            "location": "local_state",
-            "value": 7
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser.relaunch_fast_if_outdated",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        7
+      ]
+    }
   }
 ]

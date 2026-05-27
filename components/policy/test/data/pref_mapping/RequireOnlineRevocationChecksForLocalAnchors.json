@@ -7,38 +7,14 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "ssl.rev_checking.required_for_local_anchors": {
-            "default_value": false,
-            "location": "local_state"
-          }
-        }
-      },
-      {
-        "policies": {
-          "RequireOnlineRevocationChecksForLocalAnchors": true
-        },
-        "prefs": {
-          "ssl.rev_checking.required_for_local_anchors": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "RequireOnlineRevocationChecksForLocalAnchors": false
-        },
-        "prefs": {
-          "ssl.rev_checking.required_for_local_anchors": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ssl.rev_checking.required_for_local_anchors",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

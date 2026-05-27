@@ -3,29 +3,14 @@
     "os": [
       "win"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "RestrictCoreSharingOnRenderer": false
-        },
-        "prefs": {
-          "restrict_core_sharing_on_renderer": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "RestrictCoreSharingOnRenderer": true
-        },
-        "prefs": {
-          "restrict_core_sharing_on_renderer": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "restrict_core_sharing_on_renderer",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

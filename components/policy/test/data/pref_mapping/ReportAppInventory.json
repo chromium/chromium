@@ -3,31 +3,14 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "policies": {},
-        "prefs": {
-          "reporting.report_app_inventory": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple list value.",
-        "policies": {
-          "ReportAppInventory": [
-            "chrome_apps_and_extensions"
-          ]
-        },
-        "prefs": {
-          "reporting.report_app_inventory": {
-            "value": [
-              "chrome_apps_and_extensions"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "reporting.report_app_inventory",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "chrome_apps_and_extensions"
+        ]
+      ]
+    }
   }
 ]

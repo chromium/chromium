@@ -1,6 +1,5 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "win",
       "linux",
@@ -8,21 +7,15 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "RestoreOnStartupURLs": [
-            "chromium.org"
-          ]
-        },
-        "prefs": {
-          "session.startup_urls": {
-            "value": [
-              "chromium.org"
-            ]
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "session.startup_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "chromium.org"
+        ]
+      ]
+    }
   }
 ]

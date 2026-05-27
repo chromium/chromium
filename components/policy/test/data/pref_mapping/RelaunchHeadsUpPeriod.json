@@ -3,18 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "RelaunchHeadsUpPeriod": 86400000
-        },
-        "prefs": {
-          "browser.relaunch_heads_up_period": {
-            "location": "local_state",
-            "value": 86400000
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser.relaunch_heads_up_period",
+      "pref_location": "local_state",
+      "default_value": 259200000,
+      "values_to_test": [
+        86400000
+      ]
+    }
   }
 ]
