@@ -26,6 +26,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/record_replay/core/browser",
     "//components/record_replay/core/browser:proto",
+    "//components/record_replay/core/common:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

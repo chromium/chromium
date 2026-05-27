@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//components/record_replay/core/browser",
     "//components/record_replay/core/common",
     "//components/record_replay/core/common:mojom",
+    "//components/record_replay/core/common:test_support",
     "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gmock",

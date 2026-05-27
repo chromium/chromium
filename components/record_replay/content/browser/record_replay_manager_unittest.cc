@@ -10,8 +10,8 @@
 #include "base/types/optional_ref.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_driver_factory.h"
-#include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/common/record_replay_features.h"
+#include "components/record_replay/core/common/test_support/mock_recording_data_manager.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -26,52 +26,6 @@ using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
-
-class MockRecordingDataManager : public RecordingDataManager {
- public:
-  MOCK_METHOD(void,
-              AddRecording,
-              (Recording recording, base::OnceCallback<void(int64_t)> callback),
-              (override));
-  MOCK_METHOD(void,
-              GetRecordingsByUrl,
-              (std::string url,
-               base::OnceCallback<void(std::vector<Recording>)> callback),
-              (override));
-  MOCK_METHOD(void,
-              SaveTaskDefinition,
-              (std::optional<int64_t> task_definition_id,
-               TaskDefinition task_definition,
-               base::OnceCallback<void(int64_t)> callback),
-              (override));
-  MOCK_METHOD(
-      void,
-      GetTaskDefinition,
-      (int64_t task_definition_id,
-       base::OnceCallback<void(std::optional<TaskDefinition>)> callback),
-      (override));
-  MOCK_METHOD(void,
-              GetTaskDefinitionsByUrl,
-              (std::string url,
-               base::OnceCallback<void(std::vector<TaskDefinition>)> callback),
-              (override));
-  MOCK_METHOD(void,
-              SaveTaskData,
-              (int64_t task_definition_id,
-               TaskData data,
-               base::OnceCallback<void(bool)> callback),
-              (override));
-  MOCK_METHOD(void,
-              GetTaskData,
-              (int64_t task_definition_id,
-               base::OnceCallback<void(std::optional<TaskData>)> callback),
-              (override));
-  MOCK_METHOD(void,
-              DeleteTaskData,
-              (int64_t task_definition_id,
-               base::OnceCallback<void(bool)> callback),
-              (override));
-};
 
 class MockRecordReplayDriverFactory : public RecordReplayDriverFactory {
  public:

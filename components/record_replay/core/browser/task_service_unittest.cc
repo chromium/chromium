@@ -13,10 +13,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/record_replay/core/browser/recording.pb.h"
-#include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
 #include "components/record_replay/core/browser/task_observer.h"
 #include "components/record_replay/core/browser/task_parameters_extractor.h"
+#include "components/record_replay/core/common/test_support/mock_recording_data_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -24,55 +24,6 @@
 namespace record_replay {
 
 using ::testing::NiceMock;
-
-class MockRecordingDataManager : public RecordingDataManager {
- public:
-  MockRecordingDataManager() = default;
-  ~MockRecordingDataManager() override = default;
-
-  MOCK_METHOD(void,
-              AddRecording,
-              (Recording recording, base::OnceCallback<void(int64_t)> callback),
-              (override));
-  MOCK_METHOD(void,
-              GetRecordingsByUrl,
-              (std::string url,
-               base::OnceCallback<void(std::vector<Recording>)> callback),
-              (override));
-  MOCK_METHOD(void,
-              SaveTaskDefinition,
-              (std::optional<int64_t> task_definition_id,
-               TaskDefinition task_definition,
-               base::OnceCallback<void(int64_t)> callback),
-              (override));
-  MOCK_METHOD(
-      void,
-      GetTaskDefinition,
-      (int64_t task_definition_id,
-       base::OnceCallback<void(std::optional<TaskDefinition>)> callback),
-      (override));
-  MOCK_METHOD(void,
-              GetTaskDefinitionsByUrl,
-              (std::string url,
-               base::OnceCallback<void(std::vector<TaskDefinition>)> callback),
-              (override));
-  MOCK_METHOD(void,
-              SaveTaskData,
-              (int64_t task_definition_id,
-               TaskData data,
-               base::OnceCallback<void(bool)> callback),
-              (override));
-  MOCK_METHOD(void,
-              GetTaskData,
-              (int64_t task_definition_id,
-               base::OnceCallback<void(std::optional<TaskData>)> callback),
-              (override));
-  MOCK_METHOD(void,
-              DeleteTaskData,
-              (int64_t task_definition_id,
-               base::OnceCallback<void(bool)> callback),
-              (override));
-};
 
 class TaskServiceTest : public testing::Test {
  protected:
