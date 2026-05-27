@@ -2074,7 +2074,9 @@ public class ToolbarManager
 
         mHomepageStateListener =
                 () -> {
-                    mHomepageEnabledSupplier.set(HomepageManager.getInstance().isHomepageEnabled());
+                    mHomepageEnabledSupplier.set(
+                            HomepageManager.getInstance()
+                                    .shouldShowHomeButtonOnToolbar(isNewTabPage()));
                 };
 
         HomepageManager.getInstance().addListener(mHomepageStateListener);

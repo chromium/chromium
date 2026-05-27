@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
+import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -708,6 +709,29 @@ public class ToolbarTest {
         RegularNewTabPageStation ntp = mPage.openNewTabFast();
 
         // Verify that the home button IS visible on NTP.
+        onView(withId(R.id.home_button)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @EnableFeatures({ChromeFeatureList.HOME_BUTTON_REMOVAL + ":keep_home_button_on_ntp/true"})
+    public void testHomeButtonVisibility_KeepOnNtp_Toggle() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    HomepageManager.getInstance().setPrefHomepageEnabled(false);
+                });
+
+        onView(withId(R.id.home_button)).check(matches(Matchers.not(isDisplayed())));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    HomepageManager.getInstance().setPrefHomepageEnabled(true);
+                });
+
+        onView(withId(R.id.home_button)).check(matches(Matchers.not(isDisplayed())));
+
+        RegularNewTabPageStation ntp = mPage.openNewTabFast();
+
         onView(withId(R.id.home_button)).check(matches(isDisplayed()));
     }
 
