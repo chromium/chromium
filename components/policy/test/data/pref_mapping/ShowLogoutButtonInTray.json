@@ -3,17 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ShowLogoutButtonInTray": true
-        },
-        "prefs": {
-          "show_logout_button_in_tray": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "show_logout_button_in_tray",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -3,36 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "The default is changed by default_for_enterprise_users",
-        "policies": {},
-        "prefs": {
-          "ash.display_size_screen_oobe_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ShowDisplaySizeScreenEnabled": false
-        },
-        "prefs": {
-          "ash.display_size_screen_oobe_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ShowDisplaySizeScreenEnabled": true
-        },
-        "prefs": {
-          "ash.display_size_screen_oobe_enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.display_size_screen_oobe_enabled",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -1,30 +1,16 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "ios"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SavingBrowserHistoryDisabled": false
-        },
-        "prefs": {
-          "history.saving_disabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "SavingBrowserHistoryDisabled": true
-        },
-        "prefs": {
-          "history.saving_disabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "history.saving_disabled",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

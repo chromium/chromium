@@ -7,17 +7,13 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ShowCastIconInToolbar": false
-        },
-        "prefs": {
-          "media_router.show_cast_icon_in_toolbar": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "media_router.show_cast_icon_in_toolbar",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -3,18 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SessionLengthLimit": 3600000
-        },
-        "prefs": {
-          "session.length_limit": {
-            "location": "local_state",
-            "value": 3600000
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "session.length_limit",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        3600000
+      ]
+    }
   }
 ]

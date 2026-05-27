@@ -3,18 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SystemFeaturesDisableMode": "hidden"
-        },
-        "prefs": {
-          "policy.system_features_disable_mode": {
-            "location": "local_state",
-            "value": "hidden"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "policy.system_features_disable_mode",
+      "pref_location": "local_state",
+      "default_value": "blocked",
+      "values_to_test": [
+        "hidden"
+      ]
+    }
   }
 ]

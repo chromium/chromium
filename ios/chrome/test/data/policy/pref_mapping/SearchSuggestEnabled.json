@@ -1,20 +1,16 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "ios"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SearchSuggestEnabled": false
-        },
-        "prefs": {
-          "search.suggest_enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "search.suggest_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

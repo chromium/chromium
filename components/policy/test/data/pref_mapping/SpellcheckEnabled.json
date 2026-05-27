@@ -7,26 +7,13 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set)",
-        "prefs": {
-          "browser.enable_spellchecking": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "note": "Simple value",
-        "policies": {
-          "SpellcheckEnabled": false
-        },
-        "prefs": {
-          "browser.enable_spellchecking": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser.enable_spellchecking",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

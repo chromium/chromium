@@ -3,35 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Default value (no policies set).",
-        "prefs": {
-          "ash.shortcut_customization_allowed": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "ShortcutCustomizationAllowed": true
-        },
-        "prefs": {
-          "ash.shortcut_customization_allowed": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "ShortcutCustomizationAllowed": false
-        },
-        "prefs": {
-          "ash.shortcut_customization_allowed": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.shortcut_customization_allowed",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

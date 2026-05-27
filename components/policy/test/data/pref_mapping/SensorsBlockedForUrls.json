@@ -8,29 +8,14 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SensorsBlockedForUrls": [
-            "[*.]google.com"
-          ]
-        },
-        "prefs": {
-          "profile.managed_sensors_blocked_for_urls": {
-            "value": [
-              "[*.]google.com"
-            ]
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "profile.managed_sensors_blocked_for_urls": {
-            "default_value": []
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_sensors_blocked_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com"
+        ]
+      ]
+    }
   }
 ]

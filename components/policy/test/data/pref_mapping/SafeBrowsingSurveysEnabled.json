@@ -6,35 +6,13 @@
       "mac",
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "safebrowsing.surveys_enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "SafeBrowsingSurveysEnabled": true
-        },
-        "prefs": {
-          "safebrowsing.surveys_enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "SafeBrowsingSurveysEnabled": false
-        },
-        "prefs": {
-          "safebrowsing.surveys_enabled": {
-            "value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "safebrowsing.surveys_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

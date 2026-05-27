@@ -1,6 +1,5 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "win",
       "linux",
@@ -8,26 +7,14 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set)",
-        "prefs": {
-          "spellcheck.use_spelling_service": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "note": "Simple value",
-        "policies": {
-          "SpellCheckServiceEnabled": true
-        },
-        "prefs": {
-          "spellcheck.use_spelling_service": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "spellcheck.use_spelling_service",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

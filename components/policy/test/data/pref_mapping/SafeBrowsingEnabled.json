@@ -1,6 +1,5 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "win",
       "linux",
@@ -8,35 +7,14 @@
       "chromeos",
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SafeBrowsingEnabled": true
-        },
-        "prefs": {
-          "safebrowsing.enabled": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "SafeBrowsingEnabled": false
-        },
-        "prefs": {
-          "safebrowsing.enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "safebrowsing.enabled": {
-            "default_value": true
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "safebrowsing.enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

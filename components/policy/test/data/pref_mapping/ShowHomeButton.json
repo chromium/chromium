@@ -1,6 +1,5 @@
 [
   {
-    "can_be_recommended": true,
     "os": [
       "android",
       "win",
@@ -9,35 +8,14 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "browser.show_home_button": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ShowHomeButton": false
-        },
-        "prefs": {
-          "browser.show_home_button": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ShowHomeButton": true
-        },
-        "prefs": {
-          "browser.show_home_button": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "can_be_recommended": true,
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "browser.show_home_button",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

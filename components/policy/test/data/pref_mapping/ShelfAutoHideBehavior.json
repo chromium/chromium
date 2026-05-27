@@ -3,17 +3,12 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ShelfAutoHideBehavior": "Always"
-        },
-        "prefs": {
-          "auto_hide_behavior_local": {
-            "value": "Always"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "auto_hide_behavior_local",
+      "default_value": "",
+      "values_to_test": [
+        "Always"
+      ]
+    }
   }
 ]

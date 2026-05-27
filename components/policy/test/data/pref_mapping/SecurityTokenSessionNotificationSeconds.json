@@ -3,27 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SecurityTokenSessionNotificationSeconds": 10
-        },
-        "prefs": {
-          "security_token_session_notification_seconds": {
-            "location": "local_state",
-            "value": 10
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "security_token_session_notification_seconds": {
-            "default_value": 0,
-            "location": "local_state"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "security_token_session_notification_seconds",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        10
+      ]
+    }
   }
 ]

@@ -7,31 +7,15 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SecurityKeyPermitAttestation": [
-            "https://example.com",
-            "example.net"
-          ]
-        },
-        "prefs": {
-          "securitykey.permit_attestation": {
-            "value": [
-              "https://example.com",
-              "example.net"
-            ]
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "securitykey.permit_attestation": {
-            "default_value": []
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "securitykey.permit_attestation",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://example.com",
+          "example.net"
+        ]
+      ]
+    }
   }
 ]

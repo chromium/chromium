@@ -8,29 +8,14 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SafeBrowsingAllowlistDomains": [
-            "google.com"
-          ]
-        },
-        "prefs": {
-          "safebrowsing.safe_browsing_whitelist_domains": {
-            "value": [
-              "google.com"
-            ]
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "safebrowsing.safe_browsing_whitelist_domains": {
-            "default_value": []
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "safebrowsing.safe_browsing_whitelist_domains",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "google.com"
+        ]
+      ]
+    }
   }
 ]

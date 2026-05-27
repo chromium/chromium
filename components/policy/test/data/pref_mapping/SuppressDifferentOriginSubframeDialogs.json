@@ -8,17 +8,13 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "SuppressDifferentOriginSubframeDialogs": true
-        },
-        "prefs": {
-          "suppress_different_origin_subframe_js_dialogs": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "suppress_different_origin_subframe_js_dialogs",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

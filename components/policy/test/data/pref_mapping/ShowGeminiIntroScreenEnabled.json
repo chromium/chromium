@@ -3,36 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "The default value is changed by default_for_enterprise_users",
-        "policies": {},
-        "prefs": {
-          "ash.gemini_intro_screen_oobe_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ShowGeminiIntroScreenEnabled": false
-        },
-        "prefs": {
-          "ash.gemini_intro_screen_oobe_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "ShowGeminiIntroScreenEnabled": true
-        },
-        "prefs": {
-          "ash.gemini_intro_screen_oobe_enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "ash.gemini_intro_screen_oobe_enabled",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

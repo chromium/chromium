@@ -7,32 +7,15 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "prefs": {
-          "media.screen_capture_without_gesture_allowed_for_origins": {
-            "default_value": []
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "ScreenCaptureWithoutGestureAllowedForOrigins": [
-            "https://mydomain.com",
-            "https://test.mydomain.com"
-          ]
-        },
-        "prefs": {
-          "media.screen_capture_without_gesture_allowed_for_origins": {
-            "value": [
-              "https://mydomain.com",
-              "https://test.mydomain.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "media.screen_capture_without_gesture_allowed_for_origins",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://mydomain.com",
+          "https://test.mydomain.com"
+        ]
+      ]
+    }
   }
 ]
