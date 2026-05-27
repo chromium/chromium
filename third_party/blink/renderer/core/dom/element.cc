@@ -2643,7 +2643,8 @@ int Element::clientWidth() {
             .Round();
       }
       return AdjustForAbsoluteZoom::AdjustInt(
-          layout_view->GetLayoutSize().width(), layout_view->StyleRef());
+          layout_view->GetLayoutSize(kExcludeScrollbars).width(),
+          layout_view->StyleRef());
     }
   }
 
@@ -2684,7 +2685,8 @@ int Element::clientHeight() {
             .Round();
       }
       return AdjustForAbsoluteZoom::AdjustInt(
-          layout_view->GetLayoutSize().height(), layout_view->StyleRef());
+          layout_view->GetLayoutSize(kExcludeScrollbars).height(),
+          layout_view->StyleRef());
     }
   }
 

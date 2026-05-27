@@ -121,7 +121,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // - Checks for null `LocalFrameView`.
   // - Accounts for printing layout.
   // - Scrollbar exclusion is compatible with root layer scrolling.
-  gfx::Size GetLayoutSize(IncludeScrollbarsInRect = kExcludeScrollbars) const;
+  gfx::Size GetLayoutSize(IncludeScrollbarsInRect) const;
 
   // Same as above, but ignore print settings.
   gfx::Size GetNonPrintingLayoutSize(IncludeScrollbarsInRect) const;

@@ -61,7 +61,8 @@ bool FillsViewport(const Element& element) {
 
   gfx::Rect bounding_box = gfx::ToEnclosingRect(quad.BoundingBox());
 
-  gfx::Size icb_size = top_document.GetLayoutView()->GetLayoutSize();
+  gfx::Size icb_size =
+      top_document.GetLayoutView()->GetLayoutSize(kExcludeScrollbars);
 
   float zoom = top_document.GetFrame()->LayoutZoomFactor();
   gfx::Size controls_hidden_size = gfx::ToCeiledSize(gfx::ScaleSize(
