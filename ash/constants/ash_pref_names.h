@@ -3054,6 +3054,16 @@ inline constexpr char kVirtualKeyboardSmartVisibilityEnabled[] =
     "ui.virtual_keyboard_smart_visibility_enabled";
 
 //-----------------------------------------------------------------------------
+// Mobile data related Prefs
+//-----------------------------------------------------------------------------
+
+// A boolean pref of whether to show mobile data first-use warning notification.
+// Note: 3g in the name is for legacy reasons. The pref was added while only 3G
+// mobile data was supported.
+inline constexpr char kShowMobileDataNotification[] =
+    "settings.internet.mobile.show_3g_promo_notification";
+
+//-----------------------------------------------------------------------------
 // Clock/Timezone related Prefs
 //-----------------------------------------------------------------------------
 

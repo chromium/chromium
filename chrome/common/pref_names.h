@@ -461,12 +461,6 @@ inline constexpr char kLabsAdvancedFilesystemEnabled[] =
 // A boolean pref which turns on the mediaplayer.
 inline constexpr char kLabsMediaplayerEnabled[] = "settings.labs.mediaplayer";
 
-// A boolean pref of whether to show mobile data first-use warning notification.
-// Note: 3g in the name is for legacy reasons. The pref was added while only 3G
-// mobile data was supported.
-inline constexpr char kShowMobileDataNotification[] =
-    "settings.internet.mobile.show_3g_promo_notification";
-
 // A string pref that contains version where "What's new" promo was shown.
 inline constexpr char kChromeOSReleaseNotesVersion[] =
     "settings.release_notes.version";

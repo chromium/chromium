@@ -66,8 +66,9 @@ TEST_F(InputMethodOptionsObserverTest,
   pref_service->Set(::prefs::kLabsAdvancedFilesystemEnabled, base::Value(true));
   pref_service->Set(::prefs::kLabsAdvancedFilesystemEnabled,
                     base::Value(false));
-  pref_service->Set(::prefs::kShowMobileDataNotification, base::Value(true));
-  pref_service->Set(::prefs::kShowMobileDataNotification, base::Value(false));
+  pref_service->Set(ash::prefs::kShowMobileDataNotification, base::Value(true));
+  pref_service->Set(ash::prefs::kShowMobileDataNotification,
+                    base::Value(false));
 
   EXPECT_EQ(num_calls_received, 0);
 }
