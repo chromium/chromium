@@ -760,10 +760,7 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kOneTimeTokenServiceName,
           /*scopes=*/{kOneTimeTokenOAuth2Scope, kGmailMetadataOAuth2Scope,
-                      kGmailOtpReadonlyOAuth2Scope,
-                      // TODO(b/506950478): Remove kGoogleUserInfoEmail scope
-                      // once the service accepts kOneTimeTokenOAuth2Scope.
-                      GaiaConstants::kGoogleUserInfoEmail});
+                      kGmailOtpReadonlyOAuth2Scope});
     case OAuthConsumerId::kMultistepFilter:
       return OAuthConsumer(
           /*name=*/kMultistepFilterName,
