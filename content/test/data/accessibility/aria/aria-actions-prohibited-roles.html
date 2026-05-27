@@ -1,0 +1,41 @@
+<!--
+@AURALINUX-ALLOW:actions*
+@BLINK-ALLOW:actions*
+@BLINK-ALLOW:hasActions*
+@WIN-ALLOW:has-actions*
+@UIA-WIN-ALLOW:*hasactions=true*
+-->
+
+<!-- aria-actions is prohibited on the 15 roles below per the spec PR
+     (https://github.com/w3c/aria/pull/1805) #aria-actions Characteristics
+     table. Hosts with these roles must NOT expose
+     kActionsIds or kHasActions, regardless of whether the IDREF
+     targets are valid. Each host has a "ok" target (a button with a
+     name) to prove the suppression is role-based, not target-based.
+
+     The 15 prohibited roles are exercised via tabindex/role pairs so
+     they become focusable and the AX tree includes them in the dump.
+     The two control rows at the end (button and link) are NOT
+     prohibited; they should expose the actions normally. -->
+
+<button id="ok">OK</button>
+
+<div role="caption" tabindex="0" aria-actions="ok">caption host</div>
+<div role="code" tabindex="0" aria-actions="ok">code host</div>
+<div role="definition" tabindex="0" aria-actions="ok">definition host</div>
+<div role="deletion" tabindex="0" aria-actions="ok">deletion host</div>
+<div role="emphasis" tabindex="0" aria-actions="ok">emphasis host</div>
+<div role="generic" tabindex="0" aria-actions="ok">generic host</div>
+<div role="insertion" tabindex="0" aria-actions="ok">insertion host</div>
+<div role="mark" tabindex="0" aria-actions="ok">mark host</div>
+<div role="paragraph" tabindex="0" aria-actions="ok">paragraph host</div>
+<div role="strong" tabindex="0" aria-actions="ok">strong host</div>
+<div role="subscript" tabindex="0" aria-actions="ok">subscript host</div>
+<div role="suggestion" tabindex="0" aria-actions="ok">suggestion host</div>
+<div role="superscript" tabindex="0" aria-actions="ok">superscript host</div>
+<div role="term" tabindex="0" aria-actions="ok">term host</div>
+<div role="time" tabindex="0" aria-actions="ok">time host</div>
+
+<!-- Control rows: aria-actions is supported on these roles. -->
+<button id="allowed-button" aria-actions="ok">allowed button host</button>
+<a href="#" id="allowed-link" aria-actions="ok">allowed link host</a>

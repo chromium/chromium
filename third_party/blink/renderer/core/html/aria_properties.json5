@@ -11,6 +11,23 @@
       name: "aria-actions",
       type: "IDREF_list",
       isGlobal: true,
+      preventedOnRoles: [
+        "caption",
+        "code",
+        "definition",
+        "deletion",
+        "emphasis",
+        "generic",
+        "insertion",
+        "mark",
+        "paragraph",
+        "strong",
+        "subscript",
+        "suggestion",
+        "superscript",
+        "term",
+        "time"
+      ]
     },
     {
       name: "aria-activedescendant",

@@ -1,0 +1,57 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='OK'
+++++++++staticText name='OK'
+++++++++++inlineTextBox name='OK'
+++++++caption
+++++++++staticText name='caption host'
+++++++++++inlineTextBox name='caption host'
+++++++code
+++++++++staticText name='code host'
+++++++++++inlineTextBox name='code host'
+++++++definition
+++++++++staticText name='definition host'
+++++++++++inlineTextBox name='definition host'
+++++++contentDeletion
+++++++++staticText name='deletion host'
+++++++++++inlineTextBox name='deletion host'
+++++++emphasis
+++++++++staticText name='emphasis host'
+++++++++++inlineTextBox name='emphasis host'
+++++++genericContainer
+++++++++staticText name='generic host'
+++++++++++inlineTextBox name='generic host'
+++++++contentInsertion
+++++++++staticText name='insertion host'
+++++++++++inlineTextBox name='insertion host'
+++++++mark
+++++++++staticText name='mark host'
+++++++++++inlineTextBox name='mark host'
+++++++paragraph
+++++++++staticText name='paragraph host'
+++++++++++inlineTextBox name='paragraph host'
+++++++strong
+++++++++staticText name='strong host'
+++++++++++inlineTextBox name='strong host'
+++++++subscript
+++++++++staticText name='subscript host'
+++++++++++inlineTextBox name='subscript host'
+++++++suggestion
+++++++++staticText name='suggestion host'
+++++++++++inlineTextBox name='suggestion host'
+++++++superscript
+++++++++staticText name='superscript host'
+++++++++++inlineTextBox name='superscript host'
+++++++term name='term host'
+++++++++staticText name='term host'
+++++++++++inlineTextBox name='term host'
+++++++time
+++++++++staticText name='time host'
+++++++++++inlineTextBox name='time host'
+++++++button hasActions name='allowed button host' actionsIds=button
+++++++++staticText name='allowed button host'
+++++++++++inlineTextBox name='allowed button host'
+++++++link hasActions name='allowed link host' actionsIds=button
+++++++++staticText name='allowed link host'
+++++++++++inlineTextBox name='allowed link host'

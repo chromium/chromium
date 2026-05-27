@@ -485,6 +485,11 @@ data/accessibility/aria/aria-actions-no-name-target-expected-blink.txt
 data/accessibility/aria/aria-actions-no-name-target-expected-uia-win.txt
 data/accessibility/aria/aria-actions-no-name-target-expected-win.txt
 data/accessibility/aria/aria-actions-no-name-target.html
+data/accessibility/aria/aria-actions-prohibited-roles-expected-auralinux.txt
+data/accessibility/aria/aria-actions-prohibited-roles-expected-blink.txt
+data/accessibility/aria/aria-actions-prohibited-roles-expected-uia-win.txt
+data/accessibility/aria/aria-actions-prohibited-roles-expected-win.txt
+data/accessibility/aria/aria-actions-prohibited-roles.html
 data/accessibility/aria/aria-actions-reference-target-expected-blink.txt
 data/accessibility/aria/aria-actions-reference-target.html
 data/accessibility/aria/aria-actions-target-id-change-expected-blink.txt

@@ -1,0 +1,35 @@
+Document
+++Button Name='OK'
+++Text
+++++Text Name='caption host'
+++Text
+++++Text Name='code host'
+++Group
+++++Text Name='definition host'
+++Group
+++++Text Name='deletion host'
+++Text
+++++Text Name='emphasis host'
+++Group
+++++Text Name='generic host'
+++Group
+++++Text Name='insertion host'
+++Text
+++++Text Name='mark host'
+++Group
+++++Text Name='paragraph host'
+++Text
+++++Text Name='strong host'
+++Text
+++++Text Name='subscript host'
+++Group
+++++Text Name='suggestion host'
+++Text
+++++Text Name='superscript host'
+++ListItem Name='term host'
+++++Text Name='term host'
+++Text
+++++Text Name='time host'
+++Button Name='allowed button host' AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
+++Hyperlink Name='allowed link host' AriaProperties='readonly=true;expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true'
+++++Text Name='allowed link host' IsControlElement=false

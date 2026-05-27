@@ -2041,7 +2041,8 @@ void AXObject::SerializeRelationAttributes(ui::AXNodeData* node_data) const {
         active_descendant->AXObjectID());
   }
 
-  if (RuntimeEnabledFeatures::AriaActionsEnabled()) {
+  if (RuntimeEnabledFeatures::AriaActionsEnabled() &&
+      RoleSupportsAriaAttribute(RoleValue(), html_names::kAriaActionsAttr)) {
     AXObjectVector action_targets =
         RelationVectorFromAria(html_names::kAriaActionsAttr);
     AXObjectVector valid_targets;
