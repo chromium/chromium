@@ -10330,6 +10330,35 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_SYSTEM_PROXY_AUTH_REQUIRED_NOTIFICATION_ERROR_TITLE" desc="Title of notification displayed when System-proxy requires new user credentials because the previous ones were incorrect.">
         Can’t connect to proxy, please sign in again
       </message>
+
+      <!-- Strings shown within Tether notifications -->
+      <message name="IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_TITLE" desc="Title of the notification shown to the user when an attempt to tether to another device has failed.">
+        Instant hotspot connection failed
+      </message>
+      <message name="IDS_TETHER_NOTIFICATION_CONNECTION_FAILED_MESSAGE" desc="Message shown as part of the notification shown to the user when an attempt to tether to another device has failed which gives the user instructions about how to configure tethering.">
+        Tap to configure
+      </message>
+      <message name="IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_ONE_DEVICE_TITLE" desc="Title of the notification shown to the user when a tether hotspot is available via one nearby device.">
+        Wi-Fi available via phone
+      </message>
+      <message name="IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_ONE_DEVICE_MESSAGE" desc="Message shown as part of the notification shown to the user when a tether hotspot is available via one nearby device.">
+        Data connection available from your <ph name="PHONE_NAME">$1<ex>Google Pixel XL</ex></ph>
+      </message>
+      <message name="IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_ONE_DEVICE_CONNECT" desc="Text of the button shown to the user when a tether hotspot is available via one nearby device. When the button is clicked, a connection starts.">
+        Connect
+      </message>
+      <message name="IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_MULTIPLE_DEVICES_TITLE" desc="Title of the notification shown to the user when multiple tether hotspots are available via multiple nearby devices.">
+        Wi-Fi available via multiple devices
+      </message>
+      <message name="IDS_TETHER_NOTIFICATION_WIFI_AVAILABLE_MULTIPLE_DEVICES_MESSAGE" desc="Message shown as part of the notification shown to the user when multiple tether hotspots are available via multiple nearby devices.">
+        Data connection available
+      </message>
+      <message name="IDS_TETHER_NOTIFICATION_SETUP_REQUIRED_TITLE" desc="Title of the notification shown to the user when set up is needed on another device to start tethering.">
+        Set up connection on your <ph name="PHONE_NAME">$1<ex>Google Pixel XL</ex></ph>
+      </message>
+      <message name="IDS_TETHER_NOTIFICATION_SETUP_REQUIRED_MESSAGE" desc="Message shown as part of the notification shown to the user when set up is needed on another device to start tethering.">
+        Tap the notification on your <ph name="PHONE_NAME">$1<ex>Google Pixel XL</ex></ph> to set up the mobile hotspot that can be used by this device.
+      </message>
     </messages>
   </release>
 </grit>

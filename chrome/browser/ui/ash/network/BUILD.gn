@@ -26,6 +26,7 @@ static_library("network") {
 
   deps = [
     "//ash",
+    "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
     "//base",
     "//chrome/app:generated_resources",
