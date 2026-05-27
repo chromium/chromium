@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -22,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_ref.h"
@@ -128,8 +128,7 @@ bool HasValidHostPrefixAttributes(base::optional_ref<const GURL> url,
     // With URL: domain is raw attribute value. Empty means no Domain attribute
     // (valid for __Host-). Non-empty is only valid for IP addresses where
     // domain matches host.
-    return domain.empty() ||
-           (url->HostIsIPAddress() && url->GetHost() == domain);
+    return domain.empty() || (url->HostIsIPAddress() && url->host() == domain);
   }
   // Without URL (from storage): domain is normalized. Must be non-empty
   // (host-only cookie has the host as domain) and not start with '.'
@@ -392,7 +391,7 @@ std::optional<std::string> GetCookieDomainWithString(
         CookieInclusionStatus::WarningReason::WARN_DOMAIN_NON_ASCII);
   }
 
-  const std::string url_host(url.GetHost());
+  std::string_view url_host = url.host();
 
   // Disallow invalid hostnames containing multiple `.` at the end.
   // Httpbis-rfc6265bis draft-11, §5.1.2 says to convert the request host "into
@@ -406,7 +405,8 @@ std::optional<std::string> GetCookieDomainWithString(
   const bool is_host_ip = url.HostIsIPAddress();
   const bool domain_matches_host =
       base::EqualsCaseInsensitiveASCII(url_host, domain_string) ||
-      base::EqualsCaseInsensitiveASCII("." + url_host, domain_string);
+      (domain_string.starts_with(".") &&
+       base::EqualsCaseInsensitiveASCII(url_host, domain_string.substr(1)));
 
   // If no domain was specified in the domain string, default to a host cookie.
   // We match IE/Firefox in allowing a domain=IPADDR if it matches (case
@@ -415,7 +415,7 @@ std::optional<std::string> GetCookieDomainWithString(
   if (domain_string.empty() || (is_host_ip && domain_matches_host)) {
     std::string result;
     if (url.IsStandard()) {
-      result = url_host;
+      result = std::string(url_host);
     } else {
       // TODO(crbug.com/403967933): Investigate how GetCookieDomainWithString
       // is called for non-special URLs. There is no standard for canonicalizing
@@ -465,7 +465,7 @@ std::optional<std::string> GetCookieDomainWithString(
   }
 
   // Ensure |url| and |cookie_domain| have the same domain+registry.
-  const std::string url_scheme(url.GetScheme());
+  std::string_view url_scheme = url.scheme();
   const std::string url_domain_and_registry(
       GetEffectiveDomain(url_scheme, url_host));
   if (url_domain_and_registry.empty()) {
@@ -495,10 +495,12 @@ std::optional<std::string> GetCookieDomainWithString(
   // Ensure |url_host| is |cookie_domain| or one of its subdomains.  Given that
   // we know the domain+registry are the same from the above checks, this is
   // basically a simple string suffix check.
-  const bool is_suffix = (url_host.length() < cookie_domain.length()) ?
-      (cookie_domain != ("." + url_host)) :
-      (url_host.compare(url_host.length() - cookie_domain.length(),
-                        cookie_domain.length(), cookie_domain) != 0);
+  const bool is_suffix =
+      (url_host.length() < cookie_domain.length())
+          ? !cookie_domain.starts_with('.') ||
+                std::string_view(cookie_domain).substr(1) != url_host
+          : url_host.compare(url_host.length() - cookie_domain.length(),
+                             cookie_domain.length(), cookie_domain) != 0;
   if (is_suffix) {
     return std::nullopt;
   }
@@ -575,15 +577,20 @@ base::Time ParseCookieExpirationTime(std::string_view time_string) {
       }
     // Numeric field w/ a colon
     } else if (token.find(':') != std::string::npos) {
-      std::string token_str(token);
-      if (!found_time &&
-#ifdef COMPILER_MSVC
-          UNSAFE_TODO(sscanf_s(
-#else
-          UNSAFE_TODO(sscanf(
-#endif
-              token_str.c_str(), "%2u:%2u:%2u", &exploded.hour,
-              &exploded.minute, &exploded.second)) == 3) {
+      base::StringViewTokenizer time_tokenizer(token, ":");
+      time_tokenizer.set_options(base::StringTokenizer::RETURN_EMPTY_TOKENS);
+
+      unsigned int hour, minute, second;
+      if (!found_time && time_tokenizer.GetNext() &&
+          base::StringToUint(time_tokenizer.token_piece(), &hour) &&
+          time_tokenizer.GetNext() &&
+          base::StringToUint(time_tokenizer.token_piece(), &minute) &&
+          time_tokenizer.GetNext() &&
+          base::StringToUint(time_tokenizer.token_piece(), &second) &&
+          !time_tokenizer.GetNext()) {
+        exploded.hour = hour;
+        exploded.minute = minute;
+        exploded.second = second;
         found_time = true;
       } else {
         // We should only ever encounter one time-like thing.  If we're here,
@@ -593,15 +600,20 @@ base::Time ParseCookieExpirationTime(std::string_view time_string) {
       }
     // Numeric field
     } else {
-      // Overflow with atoi() is unspecified, so we enforce a max length.
+      // We enforce a max length on the token to avoid parsing invalid
+      // values.
       if (!found_day_of_month && token.length() <= 2) {
-        std::string token_str(token);
-        exploded.day_of_month = atoi(token_str.c_str());
-        found_day_of_month = true;
+        int day_of_month = 0;
+        if (base::StringToInt(token, &day_of_month)) {
+          exploded.day_of_month = day_of_month;
+          found_day_of_month = true;
+        }
       } else if (!found_year && token.length() <= 5) {
-        std::string token_str(token);
-        exploded.year = atoi(token_str.c_str());
-        found_year = true;
+        int year = 0;
+        if (base::StringToInt(token, &year)) {
+          exploded.year = year;
+          found_year = true;
+        }
       } else {
         // If we're here, it means we've either found an extra numeric field,
         // or a numeric field which was too long.  For well-formed input, the
@@ -645,7 +657,7 @@ std::string CanonPathWithString(const GURL& url, std::string_view path_string) {
   //    Set-Cookie response, up to, but not including, the
   //    right-most /."""
   // How would this work for a cookie on /?  We will include it then.
-  const std::string& url_path = url.GetPath();
+  const std::string_view url_path = url.path();
 
   size_t idx = url_path.find_last_of('/');
 
@@ -655,7 +667,7 @@ std::string CanonPathWithString(const GURL& url, std::string_view path_string) {
   }
 
   // Return up to the rightmost '/'.
-  return url_path.substr(0, idx);
+  return std::string(url_path.substr(0, idx));
 }
 
 GURL CookieDomainAndPathToURL(std::string_view domain,
@@ -734,7 +746,8 @@ bool IsDomainMatch(const std::string_view domain, const std::string_view host) {
                        domain) == 0);
 }
 
-bool IsOnPath(const std::string_view cookie_path, const std::string_view url_path) {
+bool IsOnPath(const std::string_view cookie_path,
+              const std::string_view url_path) {
   // A zero length would be unsafe for our trailing '/' checks, and
   // would also make no sense for our prefix match.  The code that
   // creates a CanonicalCookie should make sure the path is never zero length,
