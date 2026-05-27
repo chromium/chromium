@@ -78,6 +78,8 @@ constexpr char kChromeResourcesUrl[] = "chrome://resources";
 constexpr const char* const kExtensionsAllowedToUseChromeResources[] = {
     extension_misc::kChromeVoxExtensionId,
     extension_misc::kIndigoExtensionId,
+    // Used for ComponentExtensionWorkerChromeResourcesBrowserTest.
+    extension_misc::kChromeResourcesTestExtensionId,
 };
 
 using Directive = CSPParser::Directive;

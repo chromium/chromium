@@ -302,6 +302,11 @@ inline constexpr char kQuickOfficeExtensionId[] =
 inline constexpr char kMimeHandlerPrivateTestExtensionId[] =
     "oickdpebdnfbgkcaoklfcdhjniefkcji";
 
+// The extension id used for testing component extensions access to
+// chrome://resources.
+inline constexpr char kChromeResourcesTestExtensionId[] =
+    "gappgneknoemdkoefaaiaefeamkamdpf";
+
 // The extension id of the component extension used to render Indigo's image
 // replacement.
 inline constexpr char kIndigoExtensionId[] = "gcgachbpjjonjloecffgdajegokngglh";

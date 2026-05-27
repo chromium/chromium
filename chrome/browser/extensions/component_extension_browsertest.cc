@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/constants.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -42,6 +45,14 @@ constexpr char kExtensionKey[] =
     "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
     "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
     "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
+
+constexpr char kChromeResourcesTestExtensionKey[] =
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0w8POHuAG0xYalDMJbfxIxAQE+to"
+    "cLYpRynAqvu8Ff+5nswm007lKNRPbA8tGuMGWVRIUlNvpBMCDrP7E6khObWfq0GN/NtkKPS7"
+    "jQZXZxYEYvhX0vdqNEFdqnaRTAlZoV/LZiEK29lv8s6s0Fr/MZrEPyDC7vQOnqdRrKbJI21g"
+    "XNIhYmaCkVyKvypBPMFL5z+G46rLfZFfF7Rw/MfM/LblVacwDFBSmre6rgei5e48jVQ3rzLu"
+    "g3LxA81fzEObsCO0KER/qwWSQ8yK2bNRF/En6jwxbp39En8SliK+wbu0SCEJ9/aMqCw5Tpoc"
+    "EbxQGW7o+FBup9twXD8oX+csXQIDAQAB";
 
 // Tests updating a Service Worker-based component extension across a restart.
 // This simulates a browser update where a component extension might change.
@@ -124,6 +135,62 @@ IN_PROC_BROWSER_TEST_F(ComponentExtensionServiceWorkerUpdateBrowserTest,
   // Check service worker version.
   EXPECT_EQ("2", extension_v2->version().GetString());
   EXPECT_EQ(2, GetWorkerVersion(id));
+}
+
+class ComponentExtensionWorkerChromeResourcesBrowserTest
+    : public ComponentExtensionBrowserTest {
+ public:
+  ComponentExtensionWorkerChromeResourcesBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kComponentExtensionAllowWorkerChromeResources);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(ComponentExtensionWorkerChromeResourcesBrowserTest,
+                       FetchChromeResources) {
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(R"({
+    "name": "Component Extension Worker Resources Test",
+    "manifest_version": 3,
+    "version": "1.0",
+    "host_permissions": ["chrome://resources/*"],
+    "content_security_policy": {
+      "extension_pages": "script-src 'self' chrome://resources;"
+    },
+    "key": "%s"
+  })",
+                                            kChromeResourcesTestExtensionKey));
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.html"), R"(
+    <!DOCTYPE html>
+    <script src="page.js"></script>
+  )");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("page.js"), R"(
+    const worker = new Worker('worker.js', {type: 'module'});
+    worker.onmessage = (e) => {
+      chrome.test.sendMessage(e.data);
+    };
+  )");
+
+  test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), R"(
+    import {isMac} from 'chrome://resources/js/platform.js';
+    postMessage(typeof isMac === 'boolean' ?
+                  'worker: success' :
+                  'worker: failed');
+  )");
+
+  const Extension* extension =
+      LoadExtension(test_dir.UnpackedPath(), {.load_as_component = true});
+  ASSERT_TRUE(extension);
+
+  ExtensionTestMessageListener worker_listener("worker: success");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(),
+                            extension->GetResourceURL("page.html")));
+  ASSERT_TRUE(worker_listener.WaitUntilSatisfied());
 }
 
 }  // namespace extensions
