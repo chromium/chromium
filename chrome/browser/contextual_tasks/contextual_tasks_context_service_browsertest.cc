@@ -638,6 +638,79 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
+                       ActiveTabAndQueryRaceCondition) {
+  NavigateToValidURL();
+
+  GURL url_b = embedded_test_server()->GetURL(
+      kValidUrlDomain, "/optimization_guide/hello.html?b");
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), url_b, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  browser()->tab_strip_model()->ActivateTabAt(0);
+
+  NotifyEmbedderMetadata();
+
+  std::vector<page_content_annotations::PassageEmbedding>
+      fake_page_embeddings_a = {
+          {std::make_pair(
+               "page title a",
+               page_content_annotations::EmbeddingPassageType::kTitle),
+           passage_embeddings::Embedding({1.0f, 0.0f, 0.0f})}};
+  std::vector<page_content_annotations::PassageEmbedding>
+      fake_page_embeddings_b = {
+          {std::make_pair(
+               "page title b",
+               page_content_annotations::EmbeddingPassageType::kTitle),
+           passage_embeddings::Embedding({0.0f, 1.0f, 0.0f})}};
+
+  EXPECT_CALL(*page_embeddings_service(), GetEmbeddings(_))
+      .WillRepeatedly([&](const content::Page& page) {
+        if (const_cast<content::Page&>(page)
+                .GetMainDocument()
+                .GetLastCommittedURL() == valid_url()) {
+          return fake_page_embeddings_a;
+        }
+        return fake_page_embeddings_b;
+      });
+
+  UpdateEmbedderTimeout(base::Milliseconds(500));
+
+  base::test::TestFuture<void> logging_future;
+  logs_uploader()->WaitForLogUpload(logging_future.GetCallback());
+
+  base::test::TestFuture<std::vector<base::WeakPtr<content::WebContents>>>
+      future;
+  TabSelectionOptions options;
+  options.tab_selection_mode = mojom::TabSelectionMode::kEmbeddingsMatch;
+
+  service()->GetRelevantTabsForQuery(options, "some text",
+                                     /*explicit_urls=*/{},
+                                     future.GetCallback());
+
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](Browser* browser) {
+            browser->tab_strip_model()->ActivateTabAt(1);
+          },
+          browser()),
+      base::Milliseconds(100));
+
+  ASSERT_TRUE(future.Wait());
+  ASSERT_TRUE(logging_future.Wait());
+
+  EXPECT_EQ(logs_uploader()->uploaded_logs().size(), 1u);
+  optimization_guide::proto::ContextualTasksContextQuality
+      uploaded_quality_log = logs_uploader()
+                                 ->uploaded_logs()[0]
+                                 ->contextual_tasks_context()
+                                 .quality();
+
+  EXPECT_EQ(uploaded_quality_log.query_active_tab_title_similarity(), 1.0f);
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksContextServiceTest,
                        SuccessForConversationWithSingleTurnFlow) {
   base::HistogramTester histogram_tester;
 
