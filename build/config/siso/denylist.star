@@ -99,7 +99,6 @@ def __step_config(ctx, step_config):
         "tools/grit/pak_util.py",
         "tools/grit/preprocess_if_expr.py",
         "tools/json_schema_compiler/compiler.py",
-        "tools/json_schema_compiler/feature_compiler.py",
         "tools/licenses/licenses.py",
 
         # merge_xml.py relies on expand_owners.py, which
