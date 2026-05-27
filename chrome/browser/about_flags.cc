@@ -6893,6 +6893,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabGroupsFocusingVariations,
                                     "TabGroupsFocusing")},
 
+    {"split-view-tab-restore", flag_descriptions::kSplitViewTabRestoreName,
+     flag_descriptions::kSplitViewTabRestoreDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(tabs::kSplitViewTabRestore)},
+
     {"vertical-tabs", flag_descriptions::kVerticalTabsName,
      flag_descriptions::kVerticalTabsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(tabs::kVerticalTabs)},
@@ -7003,14 +7007,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(omnibox::kTabFaviconChipsToCoins)},
 
     {"ntp-composebox", flag_descriptions::kNtpComposeboxName,
-    flag_descriptions::kNtpComposeboxDescription, kOsDesktop,
-    FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_composebox::kNtpComposebox,
-                                kNtpComposeboxVariations,
-                                "NtpComposebox")},
+     flag_descriptions::kNtpComposeboxDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_composebox::kNtpComposebox,
+                                    kNtpComposeboxVariations,
+                                    "NtpComposebox")},
 
     {"ntp-realbox-next", flag_descriptions::kNtpRealboxNextName,
-    flag_descriptions::kNtpRealboxNextDescription, kOsDesktop,
-    FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxNext)},
+     flag_descriptions::kNtpRealboxNextDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(ntp_realbox::kNtpRealboxNext)},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"ntp-alpha-background-collections",

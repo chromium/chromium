@@ -8677,6 +8677,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "split-view-tab-restore",
+    "owners": [ "kunaldaftari@google.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "startup-launch",
     "owners": [
       "top-chrome-desktop-ui@google.com",
