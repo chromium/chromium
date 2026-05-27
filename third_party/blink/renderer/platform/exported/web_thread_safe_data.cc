@@ -37,7 +37,7 @@
 namespace blink {
 
 WebThreadSafeData::WebThreadSafeData(base::span<const char> data) {
-  private_ = RawData::Create();
+  private_ = RawDataBytes::Create();
   private_->MutableData()->append_range(data);
 }
 
@@ -54,7 +54,8 @@ size_t WebThreadSafeData::size() const {
 }
 
 const char* WebThreadSafeData::data() const {
-  return private_.IsNull() ? nullptr : private_->data();
+  return private_.IsNull() ? nullptr
+                           : reinterpret_cast<const char*>(private_->data());
 }
 
 WebThreadSafeData::iterator WebThreadSafeData::begin() const {
@@ -68,10 +69,7 @@ WebThreadSafeData::iterator WebThreadSafeData::end() const {
   return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
 }
 
-WebThreadSafeData::WebThreadSafeData(scoped_refptr<RawData> data)
-    : private_(std::move(data)) {}
-
-WebThreadSafeData::WebThreadSafeData(scoped_refptr<RawData>&& data)
+WebThreadSafeData::WebThreadSafeData(scoped_refptr<RawDataBytes> data)
     : private_(std::move(data)) {}
 
 WebThreadSafeData::WebThreadSafeData(const WebThreadSafeData& other) {
@@ -81,7 +79,8 @@ WebThreadSafeData::WebThreadSafeData(const WebThreadSafeData& other) {
 WebThreadSafeData& WebThreadSafeData::operator=(
     const WebThreadSafeData& other) = default;
 
-WebThreadSafeData& WebThreadSafeData::operator=(scoped_refptr<RawData> data) {
+WebThreadSafeData& WebThreadSafeData::operator=(
+    scoped_refptr<RawDataBytes> data) {
   private_ = std::move(data);
   return *this;
 }

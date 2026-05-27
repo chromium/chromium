@@ -287,7 +287,7 @@ void MHTMLArchive::GenerateMHTMLHeader(const String& boundary,
                                        const String& title,
                                        const String& mime_type,
                                        base::Time date,
-                                       Vector<char>& output_buffer) {
+                                       Vector<uint8_t>& output_buffer) {
   DCHECK(!boundary.empty());
   DCHECK(!mime_type.empty());
 
@@ -327,7 +327,7 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
                                      const String& content_id,
                                      EncodingPolicy encoding_policy,
                                      const SerializedResource& resource,
-                                     Vector<char>& output_buffer) {
+                                     Vector<uint8_t>& output_buffer) {
   DCHECK(!boundary.empty());
   DCHECK(content_id.empty() || content_id[0] == '<');
 
@@ -403,8 +403,9 @@ void MHTMLArchive::GenerateMHTMLPart(const String& boundary,
   }
 }
 
-void MHTMLArchive::GenerateMHTMLFooterForTesting(const String& boundary,
-                                                 Vector<char>& output_buffer) {
+void MHTMLArchive::GenerateMHTMLFooterForTesting(
+    const String& boundary,
+    Vector<uint8_t>& output_buffer) {
   DCHECK(!boundary.empty());
   std::string utf8_string = StrCat({"\r\n--", boundary, "--\r\n"}).Utf8();
   output_buffer.append_range(utf8_string);

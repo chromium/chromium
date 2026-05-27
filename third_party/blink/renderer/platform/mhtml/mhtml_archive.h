@@ -72,7 +72,7 @@ class PLATFORM_EXPORT MHTMLArchive final
                                   const String& title,
                                   const String& mime_type,
                                   base::Time date,
-                                  Vector<char>& output_buffer);
+                                  Vector<uint8_t>& output_buffer);
 
   // Serializes SerializedResource as an MHTML part and appends it in
   // |outputBuffer|.
@@ -87,7 +87,7 @@ class PLATFORM_EXPORT MHTMLArchive final
                                 const String& content_id,
                                 EncodingPolicy,
                                 const SerializedResource&,
-                                Vector<char>& output_buffer);
+                                Vector<uint8_t>& output_buffer);
 
   // Generates an MHTML footer and appends it to |outputBuffer| for testing
   // purposes.
@@ -96,7 +96,7 @@ class PLATFORM_EXPORT MHTMLArchive final
   // generateMHTMLPart and generateMHTMLFooter calls that belong to the same
   // MHTML document (see also rfc1341, section 7.2.1, "boundary" description).
   static void GenerateMHTMLFooterForTesting(const String& boundary,
-                                            Vector<char>& output_buffer);
+                                            Vector<uint8_t>& output_buffer);
 
   typedef HeapHashMap<String, Member<ArchiveResource>> SubArchiveResources;
 

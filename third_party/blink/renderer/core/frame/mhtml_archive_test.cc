@@ -180,7 +180,7 @@ class MHTMLArchiveTest : public testing::Test {
                              true);
   }
 
-  Vector<char>& mhtml_data() { return mhtml_data_; }
+  Vector<uint8_t>& mhtml_data() { return mhtml_data_; }
 
   base::Time mhtml_date() const { return mhtml_date_; }
 
@@ -207,7 +207,7 @@ class MHTMLArchiveTest : public testing::Test {
 
   String file_path_;
   Vector<SerializedResource> resources_;
-  Vector<char> mhtml_data_;
+  Vector<uint8_t> mhtml_data_;
   base::Time mhtml_date_;
 };
 
