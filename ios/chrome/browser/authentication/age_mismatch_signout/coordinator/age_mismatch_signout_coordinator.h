@@ -15,12 +15,12 @@
 @protocol AgeMismatchSignoutCoordinatorDelegate <NSObject>
 
 // Called when the coordinator has completed its flow and should be dismissed.
-- (void)ageMismatchSignoutCoordinatorWantsToBeStopped:
+- (void)ageMismatchSignoutCoordinatorUserWantsToStaySignedOut:
     (AgeMismatchSignoutCoordinator*)coordinator;
 
 // Called when the user wants to sign in. The view controller is not dismissed
 // when this method is called.
-- (void)ageMismatchSignoutCoordinatorWantsToSignIn:
+- (void)ageMismatchSignoutCoordinatorUserWantsToUseAnotherAccount:
     (AgeMismatchSignoutCoordinator*)coordinator;
 
 @end

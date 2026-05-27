@@ -87,14 +87,15 @@
   base::UmaHistogramEnumeration(kAgeMismatchSignoutActionHistogram,
                                 AgeMismatchSignoutAction::kUseAnotherAccount);
   [_viewController blockUI];
-  [self.delegate ageMismatchSignoutCoordinatorWantsToSignIn:self];
+  [self.delegate
+      ageMismatchSignoutCoordinatorUserWantsToUseAnotherAccount:self];
 }
 
 - (void)didTapSecondaryActionButton {
   base::UmaHistogramEnumeration(kAgeMismatchSignoutActionHistogram,
                                 AgeMismatchSignoutAction::kUseWithoutAccount);
   [_viewController blockUI];
-  [self.delegate ageMismatchSignoutCoordinatorWantsToBeStopped:self];
+  [self.delegate ageMismatchSignoutCoordinatorUserWantsToStaySignedOut:self];
 }
 
 - (void)didTapURLInDisclaimer:(NSURL*)URL {

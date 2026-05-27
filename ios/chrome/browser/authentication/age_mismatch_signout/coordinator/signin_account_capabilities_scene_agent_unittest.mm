@@ -209,7 +209,8 @@ TEST_F(SigninAccountCapabilitiesSceneAgentTest, TestWantsToSignIn) {
   // Call the delegate method.
   id<AgeMismatchSignoutCoordinatorDelegate> delegate =
       (id<AgeMismatchSignoutCoordinatorDelegate>)agent_;
-  [delegate ageMismatchSignoutCoordinatorWantsToSignIn:coordinator_mock];
+  [delegate ageMismatchSignoutCoordinatorUserWantsToUseAnotherAccount:
+                coordinator_mock];
 
   base::RunLoop run_loop;
   task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,

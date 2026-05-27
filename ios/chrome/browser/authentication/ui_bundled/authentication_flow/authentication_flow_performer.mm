@@ -575,9 +575,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
 
 #pragma mark - AgeMismatchSignoutCoordinatorDelegate
 
-// TODO(crbug.com/486124651): The user wants to stay signed out.
-// Update the naming.
-- (void)ageMismatchSignoutCoordinatorWantsToBeStopped:
+- (void)ageMismatchSignoutCoordinatorUserWantsToStaySignedOut:
     (AgeMismatchSignoutCoordinator*)coordinator {
   CHECK_EQ(coordinator, _ageMismatchSignoutCoordinator);
   [self stopAgeMismatchSignoutCoordinator];
@@ -586,7 +584,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
           signin_ui::CancelationReason::kAgeMismatchCanceledStaySignedOut];
 }
 
-- (void)ageMismatchSignoutCoordinatorWantsToSignIn:
+- (void)ageMismatchSignoutCoordinatorUserWantsToUseAnotherAccount:
     (AgeMismatchSignoutCoordinator*)coordinator {
   CHECK_EQ(coordinator, _ageMismatchSignoutCoordinator);
   [self stopAgeMismatchSignoutCoordinator];

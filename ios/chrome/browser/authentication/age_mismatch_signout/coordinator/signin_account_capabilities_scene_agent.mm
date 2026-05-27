@@ -205,14 +205,14 @@ void SignOutDoneForSceneState(id<SystemIdentity> identity,
 
 #pragma mark - AgeMismatchSignoutCoordinatorDelegate
 
-- (void)ageMismatchSignoutCoordinatorWantsToBeStopped:
+- (void)ageMismatchSignoutCoordinatorUserWantsToStaySignedOut:
     (AgeMismatchSignoutCoordinator*)coordinator {
   CHECK_EQ(coordinator, _ageMismatchSignoutCoordinator,
            base::NotFatalUntil::M153);
   [self stopAgeMismatchSignoutCoordinator];
 }
 
-- (void)ageMismatchSignoutCoordinatorWantsToSignIn:
+- (void)ageMismatchSignoutCoordinatorUserWantsToUseAnotherAccount:
     (AgeMismatchSignoutCoordinator*)coordinator {
   CHECK_EQ(coordinator, _ageMismatchSignoutCoordinator,
            base::NotFatalUntil::M155);
