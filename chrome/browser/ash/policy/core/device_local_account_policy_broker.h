@@ -131,8 +131,7 @@ class DeviceLocalAccountPolicyBroker
   // Return whether the cache is currently running.
   bool IsCacheRunning() const;
 
-  // Returns all cached extensions, both the ones meant for Ash and the ones
-  // meant for Lacros.
+  // Returns the cached extensions.
   base::DictValue GetCachedExtensionsForTesting() const;
 
  private:

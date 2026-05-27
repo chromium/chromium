@@ -86,16 +86,13 @@ std::unique_ptr<CloudPolicyClient> CreateClient(
   return client;
 }
 
-base::DictValue GetAshPrefsFromPolicy(const policy::PolicyMap& policy_map) {
+base::DictValue GetExtensionPrefsFromPolicy(
+    const policy::PolicyMap& policy_map) {
   extensions::ExtensionInstallForceListPolicyHandler policy_handler;
   return policy_handler.GetPolicyDict(policy_map).value_or(base::DictValue());
 }
 
-base::DictValue GetLacrosPrefsFromPolicy(const policy::PolicyMap& policy_map) {
-  return base::DictValue();
-}
-
-void SendExtensionsToAsh(
+void SendExtensions(
     scoped_refptr<chromeos::DeviceLocalAccountExternalPolicyLoader> loader,
     const std::string& user_id,
     base::DictValue cached_extensions) {
@@ -147,11 +144,8 @@ DeviceLocalAccountPolicyBroker::DeviceLocalAccountPolicyBroker(
         account, store_.get(), &schema_registry_);
   }
   external_cache_ = std::make_unique<chromeos::DeviceLocalAccountExternalCache>(
-      /*ash_loader=*/base::BindRepeating(SendExtensionsToAsh,
-                                         extension_loader_),
-      // TODO(b/392567217) remove the Lacros callback from
-      // DeviceLocalAccountExternalCache
-      /*lacros_loader=*/base::DoNothing(), user_id_,
+      /*loader=*/base::BindRepeating(SendExtensions, extension_loader_),
+      user_id_,
       base::PathService::CheckedGet(ash::DIR_DEVICE_LOCAL_ACCOUNT_EXTENSIONS)
           .Append(GetUniqueSubDirectoryForAccountID(account.account_id)));
   store_->AddObserver(this);
@@ -276,8 +270,7 @@ bool DeviceLocalAccountPolicyBroker::IsCacheRunning() const {
 
 void DeviceLocalAccountPolicyBroker::UpdateExtensionListFromStore() {
   external_cache_->UpdateExtensionsList(
-      /*ash_extensions=*/GetAshPrefsFromPolicy(store_->policy_map()),
-      /*lacros_extensions=*/GetLacrosPrefsFromPolicy(store_->policy_map()));
+      /*extensions=*/GetExtensionPrefsFromPolicy(store_->policy_map()));
 }
 
 base::DictValue DeviceLocalAccountPolicyBroker::GetCachedExtensionsForTesting()
