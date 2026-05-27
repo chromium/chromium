@@ -18,8 +18,8 @@ desc: |-
 
   See the help center article for detailed explanations of what each level entails for both PINs and passwords.
 
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:150-
 
 features:
   dynamic_refresh: true
