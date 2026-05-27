@@ -33,6 +33,7 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -455,6 +456,13 @@ class SearchEngineChoiceUIPixelTest
 };
 
 IN_PROC_BROWSER_TEST_P(SearchEngineChoiceUIPixelTest, InvokeUi_default) {
+#if BUILDFLAG(IS_WIN)
+  if (GetParam().test_suffix == "NarrowSize" &&
+      base::FeatureList::IsEnabled(features::kInitialWebUI)) {
+    GTEST_SKIP() << "Skipping NarrowSize test on Windows with InitialWebUI "
+                    "enabled. See crbug.com/477426026.";
+  }
+#endif
   ShowAndVerifyUi();
 }
 
