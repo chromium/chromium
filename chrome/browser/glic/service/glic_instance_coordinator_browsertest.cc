@@ -83,8 +83,7 @@ content::Visibility GetContentsVisibility(GlicInstanceImpl* instance) {
                         : content::Visibility::HIDDEN;
 }
 
-std::string GetContentsVisibilityAsString(GlicInstanceImpl* instance) {
-  content::Visibility visibility = GetContentsVisibility(instance);
+std::string VisibilityAsString(content::Visibility visibility) {
   switch (visibility) {
     case content::Visibility::HIDDEN:
       return "HIDDEN";
@@ -94,6 +93,16 @@ std::string GetContentsVisibilityAsString(GlicInstanceImpl* instance) {
       return "VISIBLE";
   }
   return "UNKNOWN";
+}
+
+[[nodiscard]] TestResult<> WaitForWebUiContentsVisibility(
+    GlicInstanceImpl* instance,
+    content::Visibility visibility) {
+  return RunUntilEqual(
+      [&]() { return VisibilityAsString(GetContentsVisibility(instance)); },
+      VisibilityAsString(visibility),
+      "Timeout waiting for webui WebContents visibility to be " +
+          VisibilityAsString(visibility));
 }
 
 // Waits for a tab to be added using GlicTabObserver.
@@ -215,18 +224,14 @@ TestResult<> WaitForEmbedderActivationOrPeek(GlicInstanceImpl* instance,
         "Timeout waiting for embedder to bind"));
     RETURN_IF_ERROR(
         WaitForSidePanelState(tab, GlicSidePanelCoordinator::State::kPeek));
-    return RunUntilEqual(
-        [&]() { return GetContentsVisibilityAsString(instance); },
-        std::string("HIDDEN"),
-        "Timeout waiting for webui WebContents visibility to be HIDDEN");
+    return WaitForWebUiContentsVisibility(instance,
+                                          content::Visibility::HIDDEN);
   } else {
     RETURN_IF_ERROR(RunUntilEqual(
         [&]() { return instance->GetActiveEmbedderTabForTesting(); }, tab,
         "Timeout waiting for active embedder to match tab"));
-    return RunUntilEqual(
-        [&]() { return GetContentsVisibilityAsString(instance); },
-        std::string("VISIBLE"),
-        "Timeout waiting for webui WebContents visibility to be VISIBLE");
+    return WaitForWebUiContentsVisibility(instance,
+                                          content::Visibility::VISIBLE);
   }
 }
 
@@ -306,21 +311,15 @@ class GlicInstanceCoordinatorBrowserTest
     // views hierarchy. Android doesn't seem to have the same automatic
     // visibility change.
 #if BUILDFLAG(IS_ANDROID)
-    bool is_actuating = instance->IsActuating();
-    std::string expected_visibility = is_actuating ? "VISIBLE" : "HIDDEN";
+    content::Visibility expected_visibility = instance->IsActuating()
+                                                  ? content::Visibility::VISIBLE
+                                                  : content::Visibility::HIDDEN;
 #else
-    std::string expected_visibility = "HIDDEN";
+    content::Visibility expected_visibility = content::Visibility::HIDDEN;
 #endif
 
-    return RunUntilEqual(
-        [&]() {
-          return weak_instance
-                     ? GetContentsVisibilityAsString(weak_instance.get())
-                     : "HIDDEN";
-        },
-        expected_visibility,
-        "Timeout waiting for webui WebContents visibility to be " +
-            expected_visibility);
+    return WaitForWebUiContentsVisibility(weak_instance.get(),
+                                          expected_visibility);
   }
 
  protected:
@@ -369,16 +368,16 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_EQ(coordinator().GetInstancesForTesting().size(), 0u);
 }
 
-// Flaky test. crbug.com/492576266
-IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
-                       DISABLED_CloseHidesInstance) {
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest, CloseHidesInstance) {
   ToggleGlicForActiveTab();
   ASSERT_OK_AND_ASSIGN(auto* instance, WaitForGlicOpen());
 
+  PreventDeletionOnClose(instance, "test_conversation");
   ToggleGlicForActiveTab();
   ASSERT_OK(WaitForGlicClose());
   EXPECT_FALSE(instance->IsShowing());
-  EXPECT_EQ(GetContentsVisibility(instance), content::Visibility::HIDDEN);
+  EXPECT_OK(
+      WaitForWebUiContentsVisibility(instance, content::Visibility::HIDDEN));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
