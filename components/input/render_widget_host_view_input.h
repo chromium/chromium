@@ -153,6 +153,14 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
       RenderWidgetHostViewInput* target_view,
       gfx::PointF* transformed_point);
 
+  // Returns true if |target_view| is one of |starting_view|'s ancestors.
+  // If |stay_within| is provided, we only consider ancestors within that
+  // sub-tree.
+  static bool IsAncestorView(
+      RenderWidgetHostViewInput* starting_view,
+      const RenderWidgetHostViewInput* target_view,
+      const RenderWidgetHostViewInput* stay_within = nullptr);
+
   // On success, returns true and modifies |*transform| to represent the
   // transformation mapping a point in the coordinate space of this view
   // into the coordinate space of the target view.
@@ -236,6 +244,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
       blink::mojom::StylusWritingFocusResultPtr focus_result) {}
 
   virtual void OnAutoscrollStart() = 0;
+  virtual void OnAutoscrollTargetResolved(bool success) {}
 
   // Add and remove observers for lifetime event notifications. The order in
   // which notifications are sent to observers is undefined. Clients must be

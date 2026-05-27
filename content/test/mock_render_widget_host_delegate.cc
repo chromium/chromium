@@ -111,4 +111,7 @@ input::TouchEmulator* MockRenderWidgetHostDelegate::GetTouchEmulator(
   return nullptr;
 }
 
+void MockRenderWidgetHostDelegate::CancelAutoscroll(
+    input::RenderWidgetHostViewInput* view) {}
+
 }  // namespace content
