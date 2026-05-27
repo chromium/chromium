@@ -722,10 +722,8 @@ void WorkspaceWindowResizer::Drag(const gfx::PointF& location_in_parent,
             // restored (i.e. update the caption buttons and height of the
             // browser frame).
 
-            // TODO(http://crbug.com/1200599): Speculative, remove if not fixed.
-            // Change window property kFrameRestoreLookKey or window bounds may
-            // cause the window being destroyed during the drag and return early
-            // if that's the case.
+            // TODO(http://crbug.com/40178336): This is most likely fixed
+            // by the fix for 513311386. Change if to CHECK.
             base::WeakPtr<WorkspaceWindowResizer> resizer(
                 weak_ptr_factory_.GetWeakPtr());
             window_state()->window()->SetProperty(kFrameRestoreLookKey, true);

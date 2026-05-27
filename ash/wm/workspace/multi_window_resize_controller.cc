@@ -14,6 +14,7 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_metrics.h"
 #include "ash/wm/workspace/workspace_window_resizer.h"
+#include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -208,7 +209,7 @@ class MultiWindowResizeController::ResizeView : public views::View {
     controller_->CompleteResize();
   }
 
-  void OnMouseCaptureLost() override { controller_->CancelResize(); }
+  void OnMouseCaptureLost() override { controller_->OnMouseCaptureLost(); }
 
   gfx::NativeCursor GetCursor(const ui::MouseEvent& event) override {
     int component = (direction_ == Direction::kLeftRight) ? HTRIGHT : HTBOTTOM;
@@ -343,7 +344,8 @@ MultiWindowResizeController::~MultiWindowResizeController() {
     Shell::Get()->overview_controller()->RemoveObserver(this);
   }
 
-  ResetResizer();
+  is_resizing_ = false;
+  CancelResize();
 }
 
 void MultiWindowResizeController::Show(aura::Window* window,
@@ -384,8 +386,9 @@ void MultiWindowResizeController::OnWindowPropertyChanged(aura::Window* window,
                                                           intptr_t old) {
   // If the window is now non-resizeable, make sure the resizer is not showing.
   if ((window->GetProperty(aura::client::kResizeBehaviorKey) &
-       aura::client::kResizeBehaviorCanResize) == 0)
-    ResetResizer();
+       aura::client::kResizeBehaviorCanResize) == 0) {
+    RequestStopResizing();
+  }
 }
 
 void MultiWindowResizeController::OnWindowVisibilityChanged(
@@ -398,12 +401,13 @@ void MultiWindowResizeController::OnWindowVisibilityChanged(
   if (!IsObserving(window))
     return;
 
-  if (!visible)
-    ResetResizer();
+  if (!visible) {
+    RequestStopResizing();
+  }
 }
 
 void MultiWindowResizeController::OnWindowDestroying(aura::Window* window) {
-  ResetResizer();
+  RequestStopResizing();
 }
 
 void MultiWindowResizeController::OnPostWindowStateTypeChange(
@@ -411,14 +415,14 @@ void MultiWindowResizeController::OnPostWindowStateTypeChange(
     chromeos::WindowStateType old_type) {
   if (window_state->IsMaximized() || window_state->IsFullscreen() ||
       window_state->IsMinimized()) {
-    ResetResizer();
+    RequestStopResizing();
   }
 }
 
 void MultiWindowResizeController::OnOverviewModeStarting() {
   // Hide resizing UI when entering overview.
   Shell::Get()->resize_shadow_controller()->HideAllShadows();
-  ResetResizer();
+  RequestStopResizing();
 }
 
 void MultiWindowResizeController::OnOverviewModeEndingAnimationComplete(
@@ -429,6 +433,13 @@ void MultiWindowResizeController::OnOverviewModeEndingAnimationComplete(
 
   // Show shadow for the resizer after exiting overview.
   Shell::Get()->resize_shadow_controller()->TryShowAllShadows();
+}
+
+void MultiWindowResizeController::OnMouseCaptureLost() {
+  RequestStopResizing();
+  if (!in_resize_) {
+    CancelResize();
+  }
 }
 
 MultiWindowResizeController::ResizeWindows
@@ -640,7 +651,7 @@ bool MultiWindowResizeController::IsShowing() const {
 
 void MultiWindowResizeController::Hide() {
   // Ignore `Hide` while actively resizing.
-  if (window_resizer_) {
+  if (is_resizing_) {
     return;
   }
 
@@ -668,12 +679,6 @@ void MultiWindowResizeController::Hide() {
   windows_ = ResizeWindows();
 }
 
-void MultiWindowResizeController::ResetResizer() {
-  // Have to explicitly reset the WindowResizer, otherwise Hide() does nothing.
-  window_resizer_.reset();
-  Hide();
-}
-
 void MultiWindowResizeController::StartResize(
     const gfx::PointF& location_in_screen) {
   DCHECK(!window_resizer_.get());
@@ -698,6 +703,8 @@ void MultiWindowResizeController::StartResize(
                                   ::wm::WINDOW_MOVE_SOURCE_MOUSE);
   window_resizer_ = WorkspaceWindowResizer::Create(window_state, windows);
 
+  is_resizing_ = true;
+
   // Do not hide the resize widget while a drag is active.
   mouse_watcher_.reset();
   base::RecordAction(base::UserMetricsAction(kMultiWindowResizerClick));
@@ -714,9 +721,20 @@ void MultiWindowResizeController::StartResize(
 
 void MultiWindowResizeController::Resize(const gfx::PointF& location_in_screen,
                                          int event_flags) {
+  base::AutoReset auto_reset(&in_resize_, true, /*expected=*/false);
+  if (!is_resizing_) {
+    CancelResize();
+    return;
+  }
+
   gfx::PointF location_in_parent =
       ConvertPointFromScreen(windows_.window1->parent(), location_in_screen);
   window_resizer_->Drag(location_in_parent, event_flags);
+  if (!is_resizing_) {
+    CancelResize();
+    return;
+  }
+
   gfx::Rect bounds =
       ConvertRectToScreen(windows_.window1->parent(),
                           CalculateResizeWidgetBounds(location_in_parent));
@@ -728,9 +746,13 @@ void MultiWindowResizeController::Resize(const gfx::PointF& location_in_screen,
   }
 
   resize_widget_->SetBounds(bounds);
+
+  CHECK(is_resizing_);
 }
 
 void MultiWindowResizeController::CompleteResize() {
+  DCHECK(is_resizing_);
+  is_resizing_ = false;
   window_resizer_->CompleteDrag();
   WindowState::Get(window_resizer_->GetTarget())->DeleteDragDetails();
   window_resizer_.reset();
@@ -752,15 +774,20 @@ void MultiWindowResizeController::CompleteResize() {
   }
 }
 
+void MultiWindowResizeController::RequestStopResizing() {
+  is_resizing_ = false;
+  Hide();
+}
+
 void MultiWindowResizeController::CancelResize() {
   // Happens if window was destroyed and we nuked the WindowResizer.
   if (!window_resizer_) {
     return;
   }
-
   window_resizer_->RevertDrag();
   WindowState::Get(window_resizer_->GetTarget())->DeleteDragDetails();
-  ResetResizer();
+  Hide();
+  window_resizer_.reset();
 }
 
 gfx::Rect MultiWindowResizeController::CalculateResizeWidgetBounds(

@@ -79,6 +79,22 @@ class ASH_EXPORT MultiWindowResizeController
   void OnOverviewModeStarting() override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
+  void OnMouseCaptureLost();
+
+  bool is_resizing() const { return is_resizing_; }
+
+  const gfx::Rect& resize_widget_show_bounds_in_screen_for_testing() {
+    return resize_widget_show_bounds_in_screen_;
+  }
+
+  const views::Widget* resize_widget_for_testing() const {
+    return resize_widget_.get();
+  }
+
+  const WorkspaceWindowResizer* window_resizer_for_testing() const {
+    return window_resizer_.get();
+  }
+
  private:
   friend class MultiWindowResizeControllerTest;
   friend class SnapGroupTest;
@@ -166,9 +182,6 @@ class ASH_EXPORT MultiWindowResizeController
   // Hides the `resize_widget_` if it gets created.
   void Hide();
 
-  // Resets the window resizer and hides the widget.
-  void ResetResizer();
-
   // Initiates a resize.
   void StartResize(const gfx::PointF& location_in_screen);
 
@@ -177,6 +190,10 @@ class ASH_EXPORT MultiWindowResizeController
 
   // Completes the resize.
   void CompleteResize();
+
+  // Stops resizing, but doesn't cancel the resizing yet,
+  // which will be done in `CancelResize()`.
+  void RequestStopResizing();
 
   // Cancels the resize.
   void CancelResize();
@@ -218,6 +235,9 @@ class ASH_EXPORT MultiWindowResizeController
   // |resize_widget_| is non-NULL (ie the widget is showing) we ignore calls
   // to Show().
   std::unique_ptr<views::MouseWatcher> mouse_watcher_;
+
+  bool is_resizing_ = false;
+  bool in_resize_ = false;
 
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};

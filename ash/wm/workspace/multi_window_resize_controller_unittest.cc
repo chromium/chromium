@@ -27,6 +27,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/aura/client/capture_client.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
@@ -351,43 +352,33 @@ TEST_F(MultiWindowResizeControllerTest, Three) {
   generator->PressLeftButton();
 }
 
-TEST_F(MultiWindowResizeControllerTest, ReentrantResetDuringLayoutAttached) {
-  // WorkspaceWindowResizer::LayoutAttachedWindows() calls
-  // attached_windows_[i]->SetBounds() in a loop with no WeakPtr guard on
-  // |this|. MultiWindowResizeController observes every attached window and
-  // several of its observer callbacks (OnWindowVisibilityChanged,
-  // OnWindowDestroying, OnWindowPropertyChanged, OnPostWindowStateTypeChange)
-  // call ResetResizer(), which synchronously deletes the
-  // WorkspaceWindowResizer.
-  //
-  // This test installs an aura::WindowObserver that hides the third window
-  // (other_windows[0]) synchronously inside the second window's SetBounds()
-  // notification, simulating any code path that mutates an observed window
-  // during the LayoutAttachedWindows loop. Without a WeakPtr guard the next
-  // loop iteration dereferences |this| after free.
+// This test ensures that multi window resizing will not cause a crash/UAF if an
+// attribute of the window involved in the multi resizing (visibility, property
+// or capture) has changed while resizing.
+TEST_F(MultiWindowResizeControllerTest, ModifyWindowDuringResize) {
+  static auto release_capture = [](aura::Window* window) {
+    auto* capture_client =
+        aura::client::GetCaptureClient(window->GetRootWindow());
+    auto* capture_window = capture_client->GetCaptureWindow();
+    capture_window->ReleaseCapture();
+  };
 
-  aura::test::TestWindowDelegate delegate1;
-  std::unique_ptr<aura::Window> w1(
-      CreateTestWindowInShell({.delegate = &delegate1, .bounds = {100, 100}}));
-  delegate1.set_window_component(HTRIGHT);
-  aura::test::TestWindowDelegate delegate2;
-  std::unique_ptr<aura::Window> w2(CreateTestWindowInShell(
-      {.delegate = &delegate2, .bounds = {100, 0, 100, 100}, .window_id = -2}));
-  delegate2.set_window_component(HTRIGHT);
-  aura::test::TestWindowDelegate delegate3;
-  std::unique_ptr<aura::Window> w3(CreateTestWindowInShell(
-      {.delegate = &delegate3, .bounds = {200, 0, 100, 100}, .window_id = -3}));
-  delegate3.set_window_component(HTRIGHT);
+  enum TestCase {
+    kVisibilityChange,
+    kPropertyChange,
+    kLostCaptureInside,
+    // Following happens outside of event handling.
+    kLostCaptureOutside,
+    kDestroyOutside,
+  };
 
-  // Observer that hides |w3| the first time |w2|'s bounds change. This
-  // simulates any synchronous reaction to the attached-window SetBounds()
-  // (e.g. an exo surface destroying itself, a window-state transition, or a
-  // property change on a non-resizable other_window) that causes
-  // MultiWindowResizeController::ResetResizer() to run while
-  // LayoutAttachedWindows() is on the stack.
-  class HideOnBoundsChange : public aura::WindowObserver {
+  class WindowChangeObserver : public aura::WindowObserver {
    public:
-    explicit HideOnBoundsChange(aura::Window* victim) : victim_(victim) {}
+    explicit WindowChangeObserver(TestCase test_case) : test_case_(test_case) {}
+    ~WindowChangeObserver() override {
+      CHECK(fired_ || test_case_ == kLostCaptureOutside ||
+            test_case_ == kDestroyOutside);
+    }
     void OnWindowBoundsChanged(aura::Window* window,
                                const gfx::Rect& old_bounds,
                                const gfx::Rect& new_bounds,
@@ -396,34 +387,92 @@ TEST_F(MultiWindowResizeControllerTest, ReentrantResetDuringLayoutAttached) {
         return;
       }
       fired_ = true;
-      // Triggers MultiWindowResizeController::OnWindowVisibilityChanged ->
-      // ResetResizer() -> window_resizer_.reset() -> ~WorkspaceWindowResizer.
-      victim_->Hide();
+      switch (test_case_) {
+        case kVisibilityChange:
+          window->Hide();
+          break;
+        case kPropertyChange:
+          window->SetProperty(aura::client::kResizeBehaviorKey, 0);
+          break;
+        case kLostCaptureInside: {
+          release_capture(window);
+        } break;
+        case kLostCaptureOutside:
+        case kDestroyOutside:
+          break;
+      }
     }
     bool fired_ = false;
-    raw_ptr<aura::Window> victim_;
+    const TestCase test_case_;
   };
 
-  HideOnBoundsChange hide_observer(w3.get());
-  w2->AddObserver(&hide_observer);
+  for (auto test_case : {kVisibilityChange, kPropertyChange, kLostCaptureInside,
+                         kLostCaptureOutside, kDestroyOutside}) {
+    std::string_view test_name;
+    switch (test_case) {
+      case kVisibilityChange:
+        test_name = "VisibilityChange";
+        break;
+      case kPropertyChange:
+        test_name = "PropertyChange";
+        break;
+      case kLostCaptureInside:
+        test_name = "LostCaptureInside";
+        break;
+      case kLostCaptureOutside:
+        test_name = "LostCaptureOutside";
+        break;
+      case kDestroyOutside:
+        test_name = "DestroyOutside";
+    };
+    SCOPED_TRACE(test_name);
 
-  ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(w1->bounds().CenterPoint());
-  ShowNow();
-  ASSERT_TRUE(resize_widget());
+    aura::test::TestWindowDelegate delegate1;
+    std::unique_ptr<aura::Window> w1(CreateTestWindowInShell(
+        {.delegate = &delegate1, .bounds = {100, 100}}));
+    delegate1.set_window_component(HTRIGHT);
+    aura::test::TestWindowDelegate delegate2;
+    std::unique_ptr<aura::Window> w2(
+        CreateTestWindowInShell({.delegate = &delegate2,
+                                 .bounds = {100, 0, 100, 100},
+                                 .window_id = -2}));
+    delegate2.set_window_component(HTRIGHT);
 
-  // Start the drag. This constructs WorkspaceWindowResizer with
-  // attached_windows_ = {w2, w3} and makes the controller observe w3.
-  gfx::Rect bounds(resize_widget()->GetWindowBoundsInScreen());
-  generator->MoveMouseTo(bounds.x() + 1, bounds.y() + 1);
-  generator->PressLeftButton();
-  ASSERT_TRUE(HasTarget(w3.get()));
+    ASSERT_FALSE(resize_controller()->is_resizing());
 
-  // Drag: Drag() -> LayoutAttachedWindows() -> w2->SetBounds() ->
-  // HideOnBoundsChange hides w3 -> ResetResizer() frees |this| mid-loop.
-  // The implemented CHECK should cause the process to crash here safely.
-  EXPECT_CHECK_DEATH(generator->MoveMouseTo(bounds.x() + 11, bounds.y() + 10));
-  w2->RemoveObserver(&hide_observer);
+    WindowChangeObserver obs(test_case);
+    w2->AddObserver(&obs);
+
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    generator->MoveMouseTo(w1->bounds().CenterPoint());
+    ShowNow();
+    generator->MoveMouseTo(
+        resize_controller()
+            ->resize_widget_show_bounds_in_screen_for_testing()
+            .CenterPoint());
+    generator->PressLeftButton();
+    EXPECT_TRUE(resize_controller()->is_resizing());
+    if (test_case == kLostCaptureOutside) {
+      release_capture(w2.get());
+    } else if (test_case == kDestroyOutside) {
+      w2->RemoveObserver(&obs);
+      w2.reset();
+    } else {
+      // Updating bounds triggers the cancel scenario.
+      generator->MoveMouseBy(10, 0);
+    }
+    EXPECT_FALSE(resize_controller()->is_resizing());
+    // Make sure an extra mouse move will not cause any issue.
+    generator->MoveMouseBy(10, 0);
+    EXPECT_FALSE(resize_controller()->is_resizing());
+    generator->ReleaseLeftButton();
+    EXPECT_FALSE(resize_controller()->resize_widget_for_testing());
+    EXPECT_FALSE(resize_controller()->window_resizer_for_testing());
+
+    if (test_case != kDestroyOutside) {
+      w2->RemoveObserver(&obs);
+    }
+  }
 }
 
 // Tests that clicking outside of the resize handle dismisses it.
