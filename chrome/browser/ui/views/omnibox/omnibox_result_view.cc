@@ -434,7 +434,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {icon_color_id,
        /* omnibox buttons are never disabled */
-       gfx::kPlaceholderColor});
+       gfx::kPlaceholderColor, icon_color_id});
   if (thumbs_up_button_->GetVisible()) {
     views::FocusRing::Get(thumbs_up_button_)->Refresh();
   }
@@ -450,7 +450,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {icon_color_id,
        /* omnibox buttons are never disabled */
-       gfx::kPlaceholderColor});
+       gfx::kPlaceholderColor, icon_color_id});
   if (thumbs_down_button_->GetVisible()) {
     views::FocusRing::Get(thumbs_down_button_)->Refresh();
   }
@@ -462,7 +462,7 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
       GetLayoutConstant(LayoutConstant::kLocationBarIconSize),
       {icon_color_id,
        /* omnibox buttons are never disabled */
-       gfx::kPlaceholderColor});
+       gfx::kPlaceholderColor, icon_color_id});
   if (remove_suggestion_button_->GetVisible()) {
     views::FocusRing::Get(remove_suggestion_button_)->Refresh();
   }
