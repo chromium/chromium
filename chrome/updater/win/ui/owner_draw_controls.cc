@@ -592,11 +592,10 @@ void OwnerDrawTitleBar::CreateOwnerDrawTitleBar(HWND parent_hwnd,
 
   // This title bar is a child window and occupies the top portion of the parent
   // dialog box window. DS_MODALFRAME and WS_BORDER are incompatible with this
-  // title bar. WS_DLGFRAME is recommended as well.
+  // title bar.
   const LONG parent_style = ::GetWindowLong(parent_hwnd, GWL_STYLE);
   CHECK(!(parent_style & DS_MODALFRAME));
   CHECK(!(parent_style & WS_BORDER));
-  CHECK(parent_style & WS_DLGFRAME);
 
   title_bar_window_.set_bk_color(bk_color);
   title_bar_window_.Create(parent_hwnd, title_bar_client_rect);

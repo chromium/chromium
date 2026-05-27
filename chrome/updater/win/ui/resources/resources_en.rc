@@ -16,7 +16,7 @@ IDI_APP   ICON    "chrome/updater/win/ui/resources/google_update.ico"
 IDB_ERROR_ILLUSTRATION BITMAP  "chrome/updater/win/ui/resources/error.bmp"
 
 IDD_PROGRESS DIALOGEX 0, 0, 433, 187
-STYLE DS_SETFONT | WS_DLGFRAME | WS_POPUP | WS_SYSMENU | WS_MINIMIZEBOX
+STYLE DS_SETFONT | WS_POPUP | WS_SYSMENU | WS_MINIMIZEBOX
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     CTEXT       "",IDC_TITLE_BAR_SPACER,0,0,1,34, WS_VISIBLE

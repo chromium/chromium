@@ -148,6 +148,9 @@ LRESULT ProgressWnd::OnInitDialog(UINT, WPARAM, LPARAM) {
 
   ChangeControlState();
 
+  // Apply rounded corners on initialization.
+  UpdateWindowRgn();
+
   // Force a full redraw of the dialog and all its children so the static
   // controls re-erase through the dark/gradient background painted by
   // `OnEraseBkgnd` instead of keeping their initial system-default
@@ -156,6 +159,46 @@ LRESULT ProgressWnd::OnInitDialog(UINT, WPARAM, LPARAM) {
                  RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_UPDATENOW);
 
   return 1;  // Let the system set the focus.
+}
+
+LRESULT ProgressWnd::OnSize(UINT /*msg*/,
+                            WPARAM /*wparam*/,
+                            LPARAM /*lparam*/) {
+  UpdateWindowRgn();
+  SetMsgHandled(FALSE);  // Let other handlers process `WM_SIZE` if needed.
+  return 0;
+}
+
+void ProgressWnd::UpdateWindowRgn() {
+  // In High Contrast Mode, restore the standard rectangular window region
+  // to ensure standard OS high-contrast accessibility borders draw correctly.
+  if (IsHighContrastOn()) {
+    ::SetWindowRgn(hwnd(), nullptr, TRUE);
+    return;
+  }
+
+  RECT rect = {};
+  ::GetWindowRect(hwnd(), &rect);
+  const int width = rect.right - rect.left;
+  const int height = rect.bottom - rect.top;
+
+  // Defensive check to prevent region creation with invalid or zero
+  // coordinates.
+  if (width <= 0 || height <= 0) {
+    return;
+  }
+
+  // Scale the 16px corner radius based on the current DPI of the window to
+  // ensure proportional rounded corners on high-DPI displays.
+  const int scaled_radius =
+      ::MulDiv(16, ::GetDpiForWindow(hwnd()), USER_DEFAULT_SCREEN_DPI);
+
+  HRGN rgn =
+      ::CreateRoundRectRgn(0, 0, width, height, scaled_radius, scaled_radius);
+  if (rgn) {
+    // SetWindowRgn takes ownership of the HRGN object.
+    ::SetWindowRgn(hwnd(), rgn, TRUE);
+  }
 }
 
 LRESULT ProgressWnd::OnEraseBkgnd(UINT, WPARAM wparam, LPARAM) {
