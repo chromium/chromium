@@ -204,8 +204,7 @@ public class BookmarkManagerCoordinator
         DragTouchHandler dragTouchHandler = new DragTouchHandler(mContext, mModelList);
 
         // Disable the default long press so that our custom one can be used.
-        dragTouchHandler.setDefaultLongPressDragEnabled(
-                !ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled());
+        dragTouchHandler.setDefaultLongPressDragEnabled(false);
 
         DragReorderableRecyclerViewAdapter dragReorderableRecyclerViewAdapter =
                 new DragAndCancelAdapter(activity, mModelList, dragTouchHandler);
@@ -632,8 +631,6 @@ public class BookmarkManagerCoordinator
     @SuppressLint("ClickableViewAccessibility")
     private void bindDragProperties(
             RecyclerView.ViewHolder viewHolder, ItemTouchHelper itemTouchHelper) {
-        if (!ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) return;
-
         int position = viewHolder.getBindingAdapterPosition();
         if (position == RecyclerView.NO_POSITION) return;
 

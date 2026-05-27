@@ -428,9 +428,7 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public @Nullable PointerIcon onResolvePointerIcon(MotionEvent event, int pointerIndex) {
 
-        if (mView != null
-                && mView.getVisibility() == View.VISIBLE
-                && ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
+        if (mView != null && mView.getVisibility() == View.VISIBLE) {
 
             // Delegate to standard Android behavior (View Group). This internally loops through the
             // children of the CompositorViewHolder and calculates the correct offsets.

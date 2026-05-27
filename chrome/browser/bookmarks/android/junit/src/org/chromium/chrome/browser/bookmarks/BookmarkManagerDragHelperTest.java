@@ -33,8 +33,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -46,7 +44,6 @@ import java.util.concurrent.TimeUnit;
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW)
 public class BookmarkManagerDragHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

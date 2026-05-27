@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.dragreorder.DragTouchHandler.DraggabilityProvider;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -121,9 +120,7 @@ public class DragReorderableRecyclerViewAdapter extends SimpleRecyclerViewAdapte
 
         // If this view was previously used during a drag (and drifted off-screen), it might still
         // have the "closed hand" cursor set, so we reset it to a default cursor.
-        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
-            viewHolder.itemView.setPointerIcon(null);
-        }
+        viewHolder.itemView.setPointerIcon(null);
 
         // Overridden to given the draggable items a chance to bind correctly since a ViewHolder
         // is required.

@@ -13,15 +13,12 @@ import android.util.SparseArray;
 import android.view.PointerIcon;
 import android.view.View;
 
-import androidx.core.graphics.ColorUtils;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ObserverList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -91,15 +88,7 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
         mListData = listData;
 
         Resources resources = context.getResources();
-        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
-            mDraggedBackgroundColor = Color.TRANSPARENT;
-        } else {
-            // Set the alpha to 90% when dragging which is 230/255
-            mDraggedBackgroundColor =
-                    ColorUtils.setAlphaComponent(
-                            SemanticColorUtils.getColorSurfaceContainerHigh(context),
-                            resources.getInteger(R.integer.list_item_dragged_alpha));
-        }
+        mDraggedBackgroundColor = Color.TRANSPARENT;
 
         mDraggedElevation = resources.getDimension(R.dimen.list_item_dragged_elevation);
     }
@@ -233,26 +222,24 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
             mStartPosition = viewHolder.getAdapterPosition();
             onDragStateChange(true);
             updateVisualState(true, viewHolder);
-            if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
-                if (mRecyclerView != null) {
+            if (mRecyclerView != null) {
 
-                    PointerIcon icon =
-                            PointerIcon.getSystemIcon(
-                                    mRecyclerView.getContext(), PointerIcon.TYPE_GRABBING);
+                PointerIcon icon =
+                        PointerIcon.getSystemIcon(
+                                mRecyclerView.getContext(), PointerIcon.TYPE_GRABBING);
 
-                    // This ensures that even when the user moves the cursor outside of the row
-                    // while dragging, the cursor will still be TYPE_GRABBING instead of
-                    // default.
-                    mRecyclerView.setPointerIcon(icon);
+                // This ensures that even when the user moves the cursor outside of the row
+                // while dragging, the cursor will still be TYPE_GRABBING instead of
+                // default.
+                mRecyclerView.setPointerIcon(icon);
 
-                    // Iterate through all of the children (ImprovedBookmarkRows) and set the
-                    // cursor explicitly to TYPE_GRABBING. This is to ensure that when we drag
-                    // row A over row B, row B's grab handle's onHoverListener (open hand
-                    // cursor) does not get activated.
-                    for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
-                        View child = mRecyclerView.getChildAt(i);
-                        child.setPointerIcon(icon);
-                    }
+                // Iterate through all of the children (ImprovedBookmarkRows) and set the
+                // cursor explicitly to TYPE_GRABBING. This is to ensure that when we drag
+                // row A over row B, row B's grab handle's onHoverListener (open hand
+                // cursor) does not get activated.
+                for (int i = 0; i < mRecyclerView.getChildCount(); i++) {
+                    View child = mRecyclerView.getChildAt(i);
+                    child.setPointerIcon(icon);
                 }
             }
         }
@@ -262,17 +249,15 @@ public class DragTouchHandler extends ItemTouchHelper.Callback {
     public void clearView(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder) {
         super.clearView(recyclerView, viewHolder);
 
-        if (ChromeFeatureList.sAndroidBookmarkBarFastFollow.isEnabled()) {
-            assert recyclerView != null;
+        assert recyclerView != null;
 
-            // Reset to default cursor.
-            recyclerView.setPointerIcon(null);
+        // Reset to default cursor.
+        recyclerView.setPointerIcon(null);
 
-            // Reset children to default cursor.
-            for (int i = 0; i < recyclerView.getChildCount(); i++) {
-                View child = recyclerView.getChildAt(i);
-                child.setPointerIcon(null);
-            }
+        // Reset children to default cursor.
+        for (int i = 0; i < recyclerView.getChildCount(); i++) {
+            View child = recyclerView.getChildAt(i);
+            child.setPointerIcon(null);
         }
         // No need to commit change if recycler view is not attached to window, such as dragging
         // is terminated by destroying activity.

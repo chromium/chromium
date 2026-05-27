@@ -4278,11 +4278,6 @@ const FeatureEntry::FeatureVariation kSeamlessSigninVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAndroidBookmarkBarFastFollowDynamic[] = {
-    {"dynamic_width_enabled", "true"}};
-const FeatureEntry::FeatureVariation kAndroidBookmarkBarFastFollowVariations[] =
-    {{"(Dynamic Width - no animations)", kAndroidBookmarkBarFastFollowDynamic,
-      nullptr}};
 const FeatureEntry::FeatureParam kDefaultBrowserPromoEntryPointSettingsOnly[] =
     {{"show_app_menu_item", "false"}};
 const FeatureEntry::FeatureVariation
@@ -10736,14 +10731,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"android-bookmark-bar", flag_descriptions::kAndroidBookmarkBarName,
      flag_descriptions::kAndroidBookmarkBarDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kAndroidBookmarkBar)},
-
-    {"android-bookmark-bar-fast-follow",
-     flag_descriptions::kAndroidBookmarkBarFastFollowName,
-     flag_descriptions::kAndroidBookmarkBarFastFollowDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kAndroidBookmarkBarFastFollow,
-         kAndroidBookmarkBarFastFollowVariations,
-         "AndroidBookmarkBarFastFollow")},
 
     {"default-browser-promo-entry-point",
      flag_descriptions::kDefaultBrowserPromoEntryPointName,

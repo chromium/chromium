@@ -189,13 +189,6 @@ inline constexpr char kAndroidBookmarkBarDescription[] =
     "Enables the bookmark bar which provides users with bookmark access from "
     "top chrome. Note that device form factor restrictions also apply.";
 
-inline constexpr char kAndroidBookmarkBarFastFollowName[] =
-    "Android Bookmark Bar Fast Follow";
-inline constexpr char kAndroidBookmarkBarFastFollowDescription[] =
-    "Enables fast follow for the bookmark bar which adds addition "
-    "functionality. This flag requires having the Android Bookmark Bar flag "
-    "enabled as well.";
-
 inline constexpr char kAndroidBottomBarName[] = "Android Bottom Bar";
 inline constexpr char kAndroidBottomBarDescription[] =
     "Enables the chrome android bottom bar.";

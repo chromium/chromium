@@ -179,7 +179,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_APP_RATING_PROMPT = "AndroidAppRatingPrompt";
     public static final String ANDROID_AUTO_MINTED_TWA = "AndroidAutoMintedTWA";
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
-    public static final String ANDROID_BOOKMARK_BAR_FAST_FOLLOW = "AndroidBookmarkBarFastFollow";
     public static final String ANDROID_BOTTOM_BAR = "AndroidBottomBar";
     public static final String ANDROID_BOTTOM_TOOLBAR_V2 = "AndroidBottomToolbarV2";
     public static final String ANDROID_CONTEXT_MENU_NEW_ACTIONS = "AndroidContextMenuNewActions";
@@ -1434,8 +1433,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_ACTOR_TASK_TIMEOUT, false);
     public static final MutableFlagWithSafeDefault sAndroidBookmarkBar =
             newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR, true);
-    public static final MutableFlagWithSafeDefault sAndroidBookmarkBarFastFollow =
-            newMutableFlagWithSafeDefault(ANDROID_BOOKMARK_BAR_FAST_FOLLOW, true);
     public static final MutableFlagWithSafeDefault sAndroidContextMenuNewActions =
             newMutableFlagWithSafeDefault(ANDROID_CONTEXT_MENU_NEW_ACTIONS, false);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotifications =
