@@ -3,40 +3,14 @@
     "os": [
       "ios"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "MetricsReportingLevel": 0
-        },
-        "prefs": {
-          "user_experience_metrics.reporting_level": {
-            "location": "local_state",
-            "value": 0
-          }
-        }
-      },
-      {
-        "policies": {
-          "MetricsReportingLevel": 1
-        },
-        "prefs": {
-          "user_experience_metrics.reporting_level": {
-            "location": "local_state",
-            "value": 1
-          }
-        }
-      },
-      {
-        "policies": {
-          "MetricsReportingLevel": 2
-        },
-        "prefs": {
-          "user_experience_metrics.reporting_level": {
-            "location": "local_state",
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "user_experience_metrics.reporting_level",
+      "pref_location": "local_state",
+      "default_value": 0,
+      "values_to_test": [
+        1,
+        2
+      ]
+    }
   }
 ]

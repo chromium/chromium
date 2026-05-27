@@ -3,45 +3,14 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "filebrowser.office.microsoft_one_drive_mount": {
-            "value": "disallowed"
-          }
-        }
-      },
-      {
-        "policies": {
-          "MicrosoftOneDriveMount": "allowed"
-        },
-        "prefs": {
-          "filebrowser.office.microsoft_one_drive_mount": {
-            "value": "allowed"
-          }
-        }
-      },
-      {
-        "policies": {
-          "MicrosoftOneDriveMount": "disallowed"
-        },
-        "prefs": {
-          "filebrowser.office.microsoft_one_drive_mount": {
-            "value": "disallowed"
-          }
-        }
-      },
-      {
-        "policies": {
-          "MicrosoftOneDriveMount": "automated"
-        },
-        "prefs": {
-          "filebrowser.office.microsoft_one_drive_mount": {
-            "value": "automated"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "filebrowser.office.microsoft_one_drive_mount",
+      "default_for_enterprise_users": "disallowed",
+      "values_to_test": [
+        "allowed",
+        "disallowed",
+        "automated"
+      ]
+    }
   }
 ]

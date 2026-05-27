@@ -3,33 +3,15 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "note": "Check default values (no policies set).",
-        "policies": {},
-        "prefs": {
-          "filebrowser.office.microsoft_one_drive_account_restrictions": {
-            "value": ["organizations"]
-          }
-        }
-      },
-      {
-        "note": "Simple value.",
-        "policies": {
-          "MicrosoftOneDriveAccountRestrictions": [
-            "domain.com",
-            "consumer"
-          ]
-        },
-        "prefs": {
-          "filebrowser.office.microsoft_one_drive_account_restrictions": {
-            "value": [
-              "domain.com",
-              "consumer"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "filebrowser.office.microsoft_one_drive_account_restrictions",
+      "default_for_enterprise_users": ["organizations"],
+      "values_to_test": [
+        [
+          "domain.com",
+          "consumer"
+        ]
+      ]
+    }
   }
 ]
