@@ -32,11 +32,6 @@ struct InstallParams;
 void AddUninstallShortcutWorkItems(const InstallParams& install_params,
                                    WorkItemList* install_list);
 
-// Creates Chrome's Clients key (if not already present) and sets the new
-// product version as the last step.  Also set "lang" for user-level installs.
-void AddVersionKeyWorkItems(const InstallParams& install_params,
-                            WorkItemList* list);
-
 // Updates the RLZ brand code or distribution tag.  This is called by the
 // installer to update deprecated, organic enterprise brand codes.
 void AddUpdateBrandCodeWorkItem(const InstallerState& installer_state,
