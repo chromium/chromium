@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.app.usb;
 
+import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** See {@link UsbNotificationServiceImpl}. */
 @NullMarked

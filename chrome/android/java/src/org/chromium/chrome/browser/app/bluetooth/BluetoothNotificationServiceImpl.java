@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.app.bluetooth;
 import android.content.Intent;
 import android.os.IBinder;
 
+import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManagerDelegate;
 

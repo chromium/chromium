@@ -7,11 +7,11 @@ package org.chromium.chrome.browser.app.usb;
 import android.content.Intent;
 import android.os.IBinder;
 
+import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManagerDelegate;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;

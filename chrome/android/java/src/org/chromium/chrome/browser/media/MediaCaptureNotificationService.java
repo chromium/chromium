@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.media;
 
+import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** See {@link MediaCaptureNotificationServiceImpl}. */
 @NullMarked

@@ -7,10 +7,10 @@ package org.chromium.chrome.browser.app.serial;
 import android.content.Intent;
 import android.os.IBinder;
 
+import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.chrome.browser.serial.SerialNotificationManager;
 import org.chromium.chrome.browser.serial.SerialNotificationManagerDelegate;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;

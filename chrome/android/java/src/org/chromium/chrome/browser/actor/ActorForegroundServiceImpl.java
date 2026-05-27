@@ -16,11 +16,11 @@ import android.os.SystemClock;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.app.ServiceCompat;
 
+import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceUmaHelper.ForegroundLifecycle;
 import org.chromium.chrome.browser.actor.ActorForegroundServiceUmaHelper.StopReason;
-import org.chromium.chrome.browser.base.SplitCompatService;
 import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 
 /** Implementation of ActorForegroundService. */

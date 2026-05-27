@@ -4,9 +4,9 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import org.chromium.base.SplitCompatService;
 import org.chromium.build.annotations.IdentifierNameString;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.base.SplitCompatService;
 
 /** Exposes services from {@link ChromeMediaNotificationControllerDelegate} in the base module. */
 @NullMarked
