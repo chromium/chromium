@@ -167,6 +167,11 @@ public class WebViewResizingHelperUnitTest {
         when(mMockWebContents.getHeight()).thenReturn(200);
         container.layout(0, 0, 100, 200);
         verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
+
+        // Case 4: mWebContents.isDestroyed() is true
+        when(mMockWebContents.isDestroyed()).thenReturn(true);
+        container.layout(0, 0, 150, 250);
+        verify(mMockWebContents, never()).setSize(anyInt(), anyInt());
     }
 
     @Test

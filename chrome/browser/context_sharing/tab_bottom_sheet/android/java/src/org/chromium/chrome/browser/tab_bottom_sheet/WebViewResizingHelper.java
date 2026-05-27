@@ -240,6 +240,7 @@ public class WebViewResizingHelper {
         @Px int height = mResizingContainer.getHeight();
 
         if (mWebContents == null
+                || mWebContents.isDestroyed()
                 || (width == mWebContents.getWidth() && height == mWebContents.getHeight())
                 || width == 0
                 || height == 0) {
