@@ -166,7 +166,12 @@ class CC_ANIMATION_EXPORT Animation : public base::RefCounted<Animation>,
   bool IsPaused() const;
   bool IsFinished() const;
 
-  void Play(base::TimeTicks monotonic_time);
+  // Controls whether to force the animation to start from the beginning.
+  // With kDisabled, Play only rewinds if the animation has already finished.
+  // With kEnabled, Play rewinds unconditionally.
+  enum class ForcePlayRewind { kDisabled, kEnabled };
+  void Play(base::TimeTicks monotonic_time,
+            ForcePlayRewind force_rewind = ForcePlayRewind::kDisabled);
 
   virtual bool IsWorkletAnimation() const;
 

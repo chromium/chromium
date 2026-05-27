@@ -13,6 +13,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/animation_trigger_delegate.h"
 #include "cc/animation/keyframe_effect.h"
+#include "ui/gfx/animation/keyframe/keyframe_model.h"
 
 namespace cc {
 
@@ -148,6 +149,11 @@ void AnimationTrigger::PerformPause(Animation& animation,
   animation.Pause(animation.CalculateCurrentTime(monotonic_time));
 }
 
+void AnimationTrigger::PerformReplay(Animation& animation,
+                                     base::TimeTicks monotonic_time) {
+  animation.Play(monotonic_time, Animation::ForcePlayRewind::kEnabled);
+}
+
 void AnimationTrigger::PerformBehavior(Animation& animation,
                                        Behavior behavior,
                                        base::TimeTicks monotonic_time) {
@@ -158,11 +164,13 @@ void AnimationTrigger::PerformBehavior(Animation& animation,
     case Behavior::kPause:
       PerformPause(animation, monotonic_time);
       break;
+    case Behavior::kReplay:
+      PerformReplay(animation, monotonic_time);
+      break;
     case Behavior::kPlayOnce:
     case Behavior::kPlayForwards:
     case Behavior::kPlayBackwards:
     case Behavior::kReset:
-    case Behavior::kReplay:
       // TODO(crbug.com/451238244): Implement these behaviors.
       NOTREACHED();
     case Behavior::kNone:

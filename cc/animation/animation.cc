@@ -315,9 +315,14 @@ bool Animation::IsFinished() const {
           km.IsFinishedAtMonotonicTime(*keyframe_effect()->last_tick_time()));
 }
 
-void Animation::Play(base::TimeTicks monotonic_time) {
-  if (GetRunState() == gfx::KeyframeModel::RunState::RUNNING ||
-      GetRunState() == gfx::KeyframeModel::RunState::STARTING) {
+void Animation::Play(base::TimeTicks monotonic_time,
+                     Animation::ForcePlayRewind force_rewind) {
+  bool forcing_rewind = (force_rewind == Animation::ForcePlayRewind::kEnabled);
+
+  // If we are not forcing a rewind, ignore the call if we are already running.
+  if (!forcing_rewind &&
+      (GetRunState() == gfx::KeyframeModel::RunState::RUNNING ||
+       GetRunState() == gfx::KeyframeModel::RunState::STARTING)) {
     return;
   }
 
@@ -325,9 +330,10 @@ void Animation::Play(base::TimeTicks monotonic_time) {
       keyframe_effect()->keyframe_models().front().get());
   std::optional<base::TimeDelta> hold_time = first_km->hold_time();
 
-  // If the animation had finished, we need to set it up to start playing from
-  // the "beginning."
-  if (IsFinished() || !hold_time) {
+  // We need to set it up to start playing from the "beginning" if:
+  // - we are forcing a rewind, i.e. ForcePlayRewind::kEnabled, or
+  // - the animation had finished.
+  if (forcing_rewind || IsFinished() || !hold_time) {
     hold_time = first_km->CalculateInitialHoldTime(first_km->playback_rate());
   }
 

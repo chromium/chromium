@@ -89,11 +89,12 @@ void PerformReset(Animation& animation,
 }
 
 void PerformReplay(Animation& animation,
-                   V8AnimationPlayState::Enum play_state,
+                   std::optional<base::TimeDelta> event_time,
                    ExceptionState& exception_state) {
+  // TODO(crbug.com/451238244): Instead of resetting playback here, add an
+  // AutoRewind::kForced and make the API consistent with cc Animation::Play.
   animation.ResetPlayback();
-
-  animation.PlayInternal(Animation::AutoRewind::kEnabled, exception_state);
+  PerformPlay(animation, event_time, exception_state);
 }
 
 }  // namespace
@@ -129,7 +130,7 @@ void AnimationTrigger::PerformBehavior(
       PerformReset(animation, play_state, exception_state);
       break;
     case Behavior::kReplay:
-      PerformReplay(animation, play_state, exception_state);
+      PerformReplay(animation, async_event_time, exception_state);
       break;
     case Behavior::kNone:
       break;
@@ -182,11 +183,11 @@ bool AnimationTrigger::CanCompositeBehavior(Behavior behavior) {
     case Behavior::kPlay:
     case Behavior::kPause:
     case Behavior::kNone:
+    case Behavior::kReplay:
       return true;
     case Behavior::kPlayOnce:
     case Behavior::kPlayForwards:
     case Behavior::kPlayBackwards:
-    case Behavior::kReplay:
     case Behavior::kReset:
       return false;
   }
