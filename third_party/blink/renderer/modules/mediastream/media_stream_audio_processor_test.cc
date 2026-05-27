@@ -98,9 +98,9 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     // Read the audio data from a file.
     const media::AudioParameters& params =
         audio_processor.GetInputFormatForTesting();
-    const int frames_per_packet =
-        params.frames_per_buffer() * params.channels();
-    const size_t length = frames_per_packet * kNumberOfPacketsForTest;
+    const size_t samples_per_packet =
+        static_cast<size_t>(params.frames_per_buffer() * params.channels());
+    const size_t length = samples_per_packet * kNumberOfPacketsForTest;
     auto capture_data = base::HeapArray<int16_t>::Uninit(length);
     ReadDataFromSpeechFile(capture_data);
     base::span<const int16_t> data_span = capture_data.as_span();
@@ -111,7 +111,7 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
     int num_preferred_channels = -1;
     for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
       data_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-          data_span.data(), data_bus->frames());
+          data_span.take_first(samples_per_packet));
 
       // 1. Provide playout audio, if echo cancellation is enabled.
       const bool is_aec_enabled =
@@ -138,9 +138,6 @@ class MediaStreamAudioProcessorTest : public ::testing::Test {
                 audio_processor.output_format().channels());
       EXPECT_EQ(expected_output_buffer_size,
                 audio_processor.output_format().frames_per_buffer());
-
-      data_span = data_span.subspan(
-          static_cast<size_t>(params.frames_per_buffer() * params.channels()));
 
       // Test different values of num_preferred_channels.
       if (++num_preferred_channels > 5) {

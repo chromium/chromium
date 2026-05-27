@@ -13,10 +13,13 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/aligned_memory.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/mock_callback.h"
@@ -62,7 +65,7 @@ AudioProcessor::LogCallback LogCallbackForTesting() {
 // The number of packets used for testing.
 const int kNumberOfPacketsForTest = 100;
 
-void ReadDataFromSpeechFile(char* data, int length) {
+void ReadDataFromSpeechFile(base::span<int16_t> data) {
   base::FilePath file;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &file));
   file = file.Append(FILE_PATH_LITERAL("media"))
@@ -72,8 +75,11 @@ void ReadDataFromSpeechFile(char* data, int length) {
   DCHECK(base::PathExists(file));
   std::optional<int64_t> data_file_size64 = base::GetFileSize(file);
   DCHECK(data_file_size64.has_value());
-  EXPECT_EQ(length, base::ReadFile(file, data, length));
-  DCHECK(data_file_size64.value() > length);
+  auto bytes = base::as_writable_chars(data);
+  EXPECT_EQ(base::checked_cast<int>(bytes.size_bytes()),
+            base::ReadFile(file, bytes));
+  DCHECK_GT(data_file_size64.value(),
+            base::checked_cast<int64_t>(data.size_bytes()));
 }
 
 void DisableDefaultSettings(AudioProcessingSettings& settings) {
@@ -102,13 +108,12 @@ class AudioProcessorTest : public ::testing::Test {
     const media::AudioParameters& input_params = audio_processor.input_format();
     const media::AudioParameters& output_params =
         audio_processor.output_format();
-    const int packet_size =
-        input_params.frames_per_buffer() * 2 * input_params.channels();
-    const size_t length = packet_size * kNumberOfPacketsForTest;
-    auto capture_data = std::make_unique<char[]>(length);
-    ReadDataFromSpeechFile(capture_data.get(), static_cast<int>(length));
-    const int16_t* data_ptr =
-        reinterpret_cast<const int16_t*>(capture_data.get());
+    const size_t samples_per_packet = static_cast<size_t>(
+        input_params.frames_per_buffer() * input_params.channels());
+    const size_t length = samples_per_packet * kNumberOfPacketsForTest;
+    auto capture_data = base::HeapArray<int16_t>::Uninit(length);
+    ReadDataFromSpeechFile(capture_data.as_span());
+    base::span<const int16_t> data_span = capture_data.as_span();
     std::unique_ptr<media::AudioBus> data_bus = media::AudioBus::Create(
         input_params.channels(), input_params.frames_per_buffer());
 
@@ -116,7 +121,7 @@ class AudioProcessorTest : public ::testing::Test {
     int num_preferred_channels = -1;
     for (int i = 0; i < kNumberOfPacketsForTest; ++i) {
       data_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-          data_ptr, data_bus->frames());
+          data_span.take_first(samples_per_packet));
 
       // 1. Provide playout audio, if echo cancellation is enabled.
       const bool is_aec_enabled =
@@ -140,9 +145,6 @@ class AudioProcessorTest : public ::testing::Test {
           });
       audio_processor.ProcessCapturedAudio(*data_bus, input_capture_time,
                                            num_preferred_channels, 1.0);
-
-      UNSAFE_TODO(data_ptr +=
-                  input_params.frames_per_buffer() * input_params.channels());
 
       // Test different values of num_preferred_channels.
       if (++num_preferred_channels > 5) {
