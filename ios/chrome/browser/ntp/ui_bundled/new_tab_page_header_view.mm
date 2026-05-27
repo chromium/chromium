@@ -257,6 +257,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   UIStackView* _buttonStack;
   // Default search engine logo view.
   UIImageView* _logoView;
+  // Default search engine logo image.
+  UIImage* _dseLogo;
 
   // Constraints to update the `toolbarView`'s postion according to the
   // `tabGroupIndicatorView`'s visibility.
@@ -662,6 +664,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   } else {
     _logoView = [[UIImageView alloc] init];
     _logoView.contentMode = UIViewContentModeScaleAspectFit;
+    _logoView.image = _dseLogo;
     leadingView = _logoView;
     leadingViewYOffset = 1.0;
   }
@@ -694,6 +697,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 }
 
 - (void)setDefaultSearchEngineLogo:(UIImage*)logo {
+  _dseLogo = logo;
   _logoView.image = logo;
 }
 
