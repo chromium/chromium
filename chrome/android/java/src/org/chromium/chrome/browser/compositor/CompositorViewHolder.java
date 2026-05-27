@@ -196,8 +196,6 @@ public class CompositorViewHolder extends FrameLayout
     @VisibleForTesting @Nullable View mAccessibilityView;
     private @Nullable CompositorAccessibilityProvider mNodeProvider;
 
-    private boolean mIsAnimating;
-
     /** The toolbar control container. */
     private @Nullable ControlContainer mControlContainer;
 
@@ -1147,10 +1145,13 @@ public class CompositorViewHolder extends FrameLayout
 
         // The view size takes into account side-anchored UI whose width should be subtracted from
         // the view if they are visible, therefore shrinking the Blink-side view size.
+        //
+        // Note that a non-null widthOverride already considered side-anchored UI (see callers of
+        // this method), so we only need to consider side-anchored UI when widthOverride is null.
         int horizontalViewportInsets = 0;
-        if (!mIsAnimating
-                && AndroidSidePanelEnabledFn.isEnabled()
-                && mSideUiStateProvider != null) {
+        if (AndroidSidePanelEnabledFn.isEnabled()
+                && mSideUiStateProvider != null
+                && widthOverride == null) {
             SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
             horizontalViewportInsets = sideUiSpecs.leftWidth() + sideUiSpecs.rightWidth();
         }
@@ -1450,7 +1451,6 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void onTransitionBegun(SideUiSpecs sideUiSpecs) {
-        mIsAnimating = true;
         // Trigger changes to Java Views, but delay any direct changes to composited views until
         // #onSideUiSpecsChanged().
         repositionTabViewForSideUi(sideUiSpecs);
@@ -1458,13 +1458,14 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void onTransitionEnded(SideUiSpecs sideUiSpecs) {
-        mIsAnimating = false;
         onSideUiSpecsChanged(sideUiSpecs);
     }
 
     @Override
     public void onSideUiSpecsChanged(SideUiSpecs sideUiSpecs) {
-        updateWebContentsSize(getCurrentTab());
+        int sideUiTotalWidth = sideUiSpecs.leftWidth() + sideUiSpecs.rightWidth();
+        int webContentsWidth = getViewportSize().x - sideUiTotalWidth;
+        updateWebContentsSize(getCurrentTab(), webContentsWidth);
 
         // TODO(crbug.com/514774842): Account for offset X for animations.
         mLayoutManager.setContentOffsetX(sideUiSpecs.leftWidth());

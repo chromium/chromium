@@ -1411,9 +1411,8 @@ public class CompositorViewHolderUnitTest {
         mSideUiStateProviderSupplier.set(mSideUiStateProvider);
         runCurrentTasks();
 
-        // Act. Pass empty specs, as the CompositorViewHolder is expected to instead query from
-        // the set SideUiStateProvider.
-        mCompositorViewHolder.onSideUiSpecsChanged(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
+        // Act.
+        mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
 
         // Verify.
         verify(mWebContents)
