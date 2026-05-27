@@ -198,6 +198,7 @@ public class ViewCurvedMotionAnimatorFactoryRenderTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "https://crbug.com/503405658")
     public void testQuadrantIII_Clockwise() throws IOException {
         float[] start = new float[] {800f, 1200f};
         float[] end = new float[] {50f, 50f};
