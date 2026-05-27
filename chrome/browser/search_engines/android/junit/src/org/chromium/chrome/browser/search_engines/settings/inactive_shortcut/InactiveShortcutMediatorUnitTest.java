@@ -28,6 +28,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.AimEligibilityServiceFactory;
+import org.chromium.chrome.browser.search_engines.AimEligibilityServiceFactoryJni;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
@@ -58,6 +60,7 @@ public class InactiveShortcutMediatorUnitTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
+    @Mock private AimEligibilityServiceFactory.Natives mAimEligibilityNativesMock;
 
     private Context mContext;
     private InactiveShortcutMediator mMediator;
@@ -68,6 +71,7 @@ public class InactiveShortcutMediatorUnitTest {
         mContext = RuntimeEnvironment.application;
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
+        AimEligibilityServiceFactoryJni.setInstanceForTesting(mAimEligibilityNativesMock);
 
         mModelList = new ModelList();
 

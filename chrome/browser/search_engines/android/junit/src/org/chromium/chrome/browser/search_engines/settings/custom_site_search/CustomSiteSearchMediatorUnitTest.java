@@ -28,6 +28,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.AimEligibilityServiceFactory;
+import org.chromium.chrome.browser.search_engines.AimEligibilityServiceFactoryJni;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.search_engines.settings.common.SiteSearchProperties;
@@ -57,6 +59,7 @@ public class CustomSiteSearchMediatorUnitTest {
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
+    @Mock private AimEligibilityServiceFactory.Natives mAimEligibilityNativesMock;
     @Mock private Runnable mOnAddSearchEngine;
     @Mock private Callback<TemplateUrl> mOnEditSearchEngine;
     @Mock private Callback<TemplateUrl> mOnRemoveSearchEngine;
@@ -69,6 +72,7 @@ public class CustomSiteSearchMediatorUnitTest {
     public void setUp() {
         mContext = RuntimeEnvironment.application;
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        AimEligibilityServiceFactoryJni.setInstanceForTesting(mAimEligibilityNativesMock);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
 
         mModelList = new ModelList();
