@@ -432,11 +432,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     this.expanding_ = expanding;
   }
 
-  protected computeCancelButtonTitle_() {
-    return this.input.trim().length > 0 || this.files.size > 0 ?
-        this.i18n('composeboxCancelButtonTitleInput') :
-        this.i18n('composeboxCancelButtonTitle');
-  }
 
   override hasValidQuery(): boolean {
     // If there is at least one file that supports unimodal search, query is
@@ -892,8 +887,8 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
     super.clearAllInputs(querySubmitted, shouldBlockAutoSuggestedTabs);
   }
 
-  protected shouldDisableFileInputs_() {
-    return !this.contextMenuEnabled || !this.showMenuOnClick ||
+  override shouldDisableFileInputs() {
+    return super.shouldDisableFileInputs() ||
         this.entrypointName === 'ContextualTasks';
   }
 

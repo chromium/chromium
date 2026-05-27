@@ -19,6 +19,7 @@ all_ts_files = [
                  "new_tab_page_proxy.ts",
                  "new_tab_page.ts",
                  "ntp_composebox.html.ts",
+                 "ntp_composebox_context_menu.html.ts",
                  "ntp_composebox.ts",
                  "ntp_searchbox.html.ts",
                  "ntp_searchbox.ts",

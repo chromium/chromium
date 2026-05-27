@@ -2180,6 +2180,16 @@ export const ComposeboxEmbedderMixin =
           return this.searchboxNextEnabled && this.submitEnabled;
         }
 
+        shouldDisableFileInputs(): boolean {
+          return !this.contextMenuEnabled || !this.showMenuOnClick;
+        }
+
+        computeCancelButtonTitle(): string {
+          return this.input.trim().length > 0 || this.files.size > 0 ?
+              this.i18n('composeboxCancelButtonTitleInput') :
+              this.i18n('composeboxCancelButtonTitle');
+        }
+
         computeShowDropdown() {
           // Don't show dropdown if there's multiple files.
           if (this.files.size > 1) {
@@ -2441,4 +2451,6 @@ export interface ComposeboxEmbedderMixinInterface extends
   shouldShowDivider(): boolean;
   shouldShowSubmitButton(): boolean;
   computeShowDropdown(): boolean;
+  shouldDisableFileInputs(): boolean;
+  computeCancelButtonTitle(): string;
 }

@@ -6,6 +6,8 @@ import {ToolMode} from '//resources/cr_components/composebox/composebox_query.mo
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {NtpComposeboxElement} from './ntp_composebox.js';
+import {getHtml as getContextMenuHtml} from './ntp_composebox_context_menu.html.js';
+
 
 export function getHtml(this: NtpComposeboxElement) {
   // clang-format off
@@ -14,33 +16,39 @@ export function getHtml(this: NtpComposeboxElement) {
       <div id="inputContainer" part="input-container">
         <cr-composebox-input id="composeboxInput"
             exportparts="text-container, icon-container, mirror, input, smart-compose, cancel, action-icon, cancel-icon"
+            .disableCaretColorAnimation="${this.disableCaretColorAnimation}"
             .showDropdown="${this.showDropdown}"
             .inputPlaceholder="${this.inputPlaceholder}"
             .input="${this.input}"
             .smartComposeEnabled="${this.smartComposeEnabled}"
             .smartComposeInlineHint="${this.smartComposeInlineHint}"
             .submitEnabled="${this.submitEnabled}"
-            .cancelButtonTitle="${this.computeCancelButtonTitle_()}"
+            .cancelButtonTitle="${this.computeCancelButtonTitle()}"
             @input-input="${this.onInputInput}"
             @input-focusin="${this.onInputFocusin}"
             @cancel-click="${this.onCancelClick}">
         </cr-composebox-input>
         <div id="context" part="context-entrypoint">
-          <cr-composebox-dropdown
-              id="matches"
-              part="dropdown"
-              exportparts="match-text-container"
-              role="listbox"
-              .result="${this.result}"
-              .selectedMatchIndex="${this.selectedMatchIndex}"
-              .maxSuggestions="${this.maxSuggestions}"
-              .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
-              @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
-              @match-focusin="${this.onMatchFocusin}"
-              @match-click="${this.onMatchClick}"
-              ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
-              .lastQueriedInput="${this.lastQueriedInput}">
-          </cr-composebox-dropdown>
+          <cr-composebox-file-inputs id="fileInputs"
+              @file-change="${this.onFileChange}"
+              .disableFileInputs="${this.shouldDisableFileInputs()}">
+            ${getContextMenuHtml.bind(this)()}
+            <cr-composebox-dropdown
+                id="matches"
+                part="dropdown"
+                exportparts="match-text-container"
+                role="listbox"
+                .result="${this.result}"
+                .selectedMatchIndex="${this.selectedMatchIndex}"
+                .maxSuggestions="${this.maxSuggestions}"
+                .toolMode="${this.inputState?.activeTool || ToolMode.kUnspecified}"
+                @selected-match-index-changed="${this.onSelectedMatchIndexChanged}"
+                @match-focusin="${this.onMatchFocusin}"
+                @match-click="${this.onMatchClick}"
+                ?hidden="${!this.showDropdown || !this.dropdownNeeded}"
+                .lastQueriedInput="${this.lastQueriedInput}">
+            </cr-composebox-dropdown>
+          </cr-composebox-file-inputs>
         </div>
       </div>
     </div>

@@ -54,7 +54,7 @@ export function getHtml(this: ComposeboxElement) {
             .isCollapsible="${this.isCollapsible}"
             .submitEnabled="${this.submitEnabled}"
             .entrypointName="${this.entrypointName}"
-            .cancelButtonTitle="${this.computeCancelButtonTitle_()}"
+            .cancelButtonTitle="${this.computeCancelButtonTitle()}"
             @input-input="${this.onInputInput}"
             @input-focusin="${this.onInputFocusin}"
             @cancel-click="${this.onCancelClick}">
@@ -63,7 +63,7 @@ export function getHtml(this: ComposeboxElement) {
             class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}">
           <cr-composebox-file-inputs id="fileInputs"
               @file-change="${this.onFileChange}"
-              .disableFileInputs="${this.shouldDisableFileInputs_()}">
+              .disableFileInputs="${this.shouldDisableFileInputs()}">
            ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ ?
               (this.hasTabs() ? '' : getContextMenuHtml.bind(this)())
             : ''}

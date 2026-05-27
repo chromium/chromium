@@ -12,6 +12,7 @@
 
 :host {
   --composebox-cancel-button-top: var(--cr-composebox-cancel-button-top, 10px);
+  --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
 
   --text-input-top-spacing: 10px;
   --text-input-inline-end-spacing: 80px;
@@ -57,4 +58,43 @@ cr-composebox-input::part(cancel) {
 
 :host([searchbox-next-enabled]) #composebox {
   padding-bottom: 10px;
+}
+
+#contextEntrypoint {
+  color: var(--color-searchbox-results-foreground);
+  padding-inline-start: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-start, 8px);
+  padding-inline-end: var(--contextual-entrypoint-and-carousel-context-entrypoint-padding-inline-end, 8px);
+}
+
+:host(:not([file-uploads-complete])) .upload-button {
+  cursor: not-allowed;
+}
+
+:host([upload-button-disabled]) .upload-button {
+  color: var(--color-composebox-upload-button-disabled);
+}
+
+#contextEntrypoint::part(context-menu-entrypoint-icon) {
+  position: absolute;
+  top: 10px;
+  --cr-icon-button-icon-size: 24px;
+  --cr-icon-button-margin-start: 2px;
+  --cr-icon-button-size: 36px;
+}
+
+#voiceSearchButton {
+  --cr-icon-button-fill-color: var(--color-composebox-font-light);
+  --cr-icon-button-hover-background-color: var(--color-composebox-voice-button-hover-background);
+  --cr-icon-button-margin-end: 0px;
+  --cr-icon-button-margin-start: 0px;
+  --cr-icon-button-size: 36px;
+  position: absolute;
+  inset-inline-end: calc(40px + 12px); /* 40px is the submit container size */
+  top: 10px;
+}
+
+@media (forced-colors: active) {
+  #voiceSearchButton {
+    --cr-icon-button-fill-color: ButtonText;
+  }
 }

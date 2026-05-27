@@ -70,6 +70,10 @@ import {SubmitButtonIconType} from '//resources/cr_components/composebox/compose
           <ntp-composebox id="composebox"
               searchbox-layout-mode="Compact"
               searchbox-next-enabled
+              ?disable-caret-color-animation="${!this.caretAnimationsEnabled_}"
+              .state="${this.composeboxState_}"
+              .usePecApi="${this.usePecApi_}"
+              .showVoiceSearch="${true}"
               @close-composebox="${this.onCloseComposebox_}">
           </ntp-composebox>
         ` : html`
