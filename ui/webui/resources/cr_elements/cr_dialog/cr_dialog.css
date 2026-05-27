@@ -41,6 +41,13 @@ dialog {
   }
 }
 
+:host-context([webui-refresh-2026]) {
+  dialog {
+    background-color: var(--cr-dialog-background-color,
+        var(--color-webui-dialog-background));
+  }
+}
+
 @media (forced-colors: active) {
   dialog {
     /* Use border instead of box-shadow (which does not work) in Windows

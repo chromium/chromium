@@ -297,6 +297,10 @@ html {
       var(--cr-fallback-color-primary));
 }
 
+html[webui-refresh-2026] {
+  --cr-card-background-color: var(--color-webui-card-background);
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     /* Colors */
