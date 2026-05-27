@@ -356,15 +356,26 @@ void FindsService::RecordThemeURLVisited(
     return;
   }
 
-  // Increment the theme url visit count for the given theme type and notify
-  // observers if the threshold is met.
+  // Increment the theme url visit count for the given theme type and record
+  // if theme url visit count opt in criteria has been fulfilled.
   theme_url_visit_count_[theme_type]++;
   if (theme_url_visit_count_[theme_type] >=
       finds::features::kThemeUrlVisitCountForOptIn.Get()) {
-    NotifyOptInCriteriaFulfilled(FindsOptInTriggerReason::kThemeUrlVisitCount);
+    theme_opt_in_criteria_fulfilled_ = true;
 
     // Reset the count for the theme type.
     theme_url_visit_count_[theme_type] = 0;
+  }
+}
+
+void FindsService::RecordNTPVisited() {
+  if (!IsFindsFeatureAllowedForUser()) {
+    return;
+  }
+
+  if (theme_opt_in_criteria_fulfilled_) {
+    NotifyOptInCriteriaFulfilled(FindsOptInTriggerReason::kThemeUrlVisitCount);
+    theme_opt_in_criteria_fulfilled_ = false;
   }
 }
 

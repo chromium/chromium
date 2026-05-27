@@ -15,6 +15,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -23,12 +24,21 @@ namespace finds {
 
 namespace {
 
+// Evaluates whether the URL is the native Android New Tab Page.
+// We perform this check instead of calling search::IsNTPURL() because
+// importing //chrome/browser/search introduces a dependency cycle.
+bool IsAndroidNTP(const GURL& url) {
+  return url.SchemeIs(chrome::kChromeNativeScheme) &&
+         url.host() == chrome::kChromeUINewTabHost;
+}
+
 bool IsValidNavigation(content::NavigationHandle* navigation_handle) {
   return navigation_handle->HasCommitted() &&
          navigation_handle->IsInPrimaryMainFrame() &&
          !navigation_handle->IsSameDocument() &&
          navigation_handle->GetURL().is_valid() &&
-         navigation_handle->GetURL().SchemeIsHTTPOrHTTPS();
+         (navigation_handle->GetURL().SchemeIsHTTPOrHTTPS() ||
+          IsAndroidNTP(navigation_handle->GetURL()));
 }
 
 bool IsFindsOptInPromoCooldownPassed(const PrefService* pref_service) {
@@ -110,6 +120,11 @@ void FindsTabHelper::DidFinishNavigation(
   if (IsFindsOptInPromoAlreadyInteracted(pref_service_) ||
       IsFindsOptInPromoMaxCountExceeded(pref_service_) ||
       !IsFindsOptInPromoCooldownPassed(pref_service_)) {
+    return;
+  }
+
+  if (IsAndroidNTP(navigation_handle->GetURL())) {
+    finds_service_->RecordNTPVisited();
     return;
   }
 

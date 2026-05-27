@@ -943,9 +943,15 @@ TEST_F(FindsServiceTest, RecordThemeURLVisitedIncrementsCount) {
 }
 
 TEST_F(FindsServiceTest, RecordThemeURLVisitedThresholdTriggersOptIn) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      finds::features::kChromeFinds,
+      {{"finds_theme_url_visit_count_for_opt_in", "3"}});
+
   testing::NiceMock<MockFindsServiceObserver> observer;
   service_->AddObserver(&observer);
 
+  // Observer will be triggered exactly once when RecordNTPVisited is called.
   EXPECT_CALL(observer, OnOptInCriteriaFulfilled()).Times(1);
 
   service_->RecordThemeURLVisited(
@@ -968,6 +974,9 @@ TEST_F(FindsServiceTest, RecordThemeURLVisitedThresholdTriggersOptIn) {
       optimization_guide::proto::FindsMetadata::SHOPPING);
   EXPECT_NE(it, theme_url_visit_count().end());
   EXPECT_EQ(it->second, 0);
+
+  // NTP visit triggers the opt-in promo.
+  service_->RecordNTPVisited();
 
   histogram_tester_.ExpectUniqueSample(
       "Notifications.ChromeFinds.OptInCriteriaFulfilled.Reason",
@@ -1074,6 +1083,11 @@ TEST_F(FindsServiceTest, TestExecuteModelEnterprisePolicyDisabled) {
 }
 
 TEST_F(FindsServiceTest, TestRecordThemeURLVisitedEnterprisePolicyDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      finds::features::kChromeFinds,
+      {{"finds_theme_url_visit_count_for_opt_in", "3"}});
+
   prefs_.SetInteger(
       optimization_guide::prefs::kFindsEnterprisePolicyAllowed,
       static_cast<int>(optimization_guide::model_execution::prefs::
@@ -1084,7 +1098,6 @@ TEST_F(FindsServiceTest, TestRecordThemeURLVisitedEnterprisePolicyDisabled) {
 
   EXPECT_CALL(observer, OnOptInCriteriaFulfilled()).Times(0);
 
-  // Threshold is 3.
   service_->RecordThemeURLVisited(
       optimization_guide::proto::FindsMetadata::SHOPPING);
   service_->RecordThemeURLVisited(

@@ -30,6 +30,7 @@ static_library("core") {
     "//chrome/browser/notifications/scheduler/public",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
+    "//chrome/common",
     "//components/history/core/browser",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
