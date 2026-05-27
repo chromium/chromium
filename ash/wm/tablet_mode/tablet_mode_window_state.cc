@@ -289,6 +289,10 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
   if (ignore_wm_events_) {
     return;
   }
+  // A window state change should not lead to the window destruction.
+  // It is the caller's responsibility to delete the window in a safe way
+  // after the transition is completed if necessary (crbug.com/513489429).
+  aura::Window::ScopedDeleteBlocker blocker(window_state->window());
 
   const chromeos::WindowStateType previous_state_type =
       window_state->GetStateType();
