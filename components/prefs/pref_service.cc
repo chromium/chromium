@@ -642,3 +642,7 @@ uint32_t PrefService::GetWriteFlags(const PrefService::Preference* pref) {
   }
   return write_flags;
 }
+
+bool PrefService::IsSyncable() const {
+  return false;
+}
