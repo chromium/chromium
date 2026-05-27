@@ -56,6 +56,12 @@ class TaskDatabase {
   std::optional<TaskData> GetTaskData(int64_t task_definition_id);
   bool DeleteTaskData(int64_t task_definition_id);
 
+  // Full CRUD for Task Observations (Create & Update are unified under Save)
+  int64_t SaveObservation(TaskObservation observation);
+  std::vector<TaskObservation> GetObservationsForDefinition(
+      int64_t definition_id);
+  bool DeleteObservation(int64_t observation_id);
+
  private:
   // Returns the current version of the database.
   int GetDatabaseVersion();
@@ -77,6 +83,15 @@ class TaskDatabase {
 
   // Creates the "task_data" table if it doesn't exist.
   bool CreateTaskDataTable();
+
+  // Creates the "task_observations" table if it doesn't exist.
+  bool CreateTaskObservationsTable();
+
+  // Creates the "task_parameter_values" table if it doesn't exist.
+  bool CreateTaskParameterValuesTable();
+
+  // Prunes old observations (>365 days).
+  bool PruneOldObservations(base::TimeDelta max_age);
 
   // Reads a file and seeds the database if empty.
   base::expected<std::vector<TaskDefinition>, std::string>
@@ -131,6 +146,23 @@ class TaskDatabase {
   std::vector<TaskStep> GetStepsOfDefinition(
       int64_t definition_id,
       base::flat_map<int64_t, std::vector<TaskParameter>> step_params);
+
+  // Task Observation helpers:
+  bool HasObservationWithId(int64_t observation_id);
+  std::optional<int64_t> AddObservation(const TaskObservation& observation);
+  bool UpdateObservation(int64_t observation_id,
+                         const TaskObservation& observation);
+  base::flat_map<std::pair<int32_t, std::string>, int64_t>
+  GetParameterIdsForDefinition(int64_t definition_id);
+  bool HasValueForParameter(int64_t parameter_id, int64_t observation_id);
+  bool AddParameterValue(int64_t parameter_id,
+                         int64_t observation_id,
+                         const std::string& value);
+  bool UpdateParameterValue(int64_t parameter_id,
+                            int64_t observation_id,
+                            const std::string& value);
+  std::optional<std::string> GetParameterValue(int64_t parameter_id,
+                                               int64_t observation_id);
 
   sql::Database db_;
 

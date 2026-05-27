@@ -161,6 +161,22 @@ TEST_F(TaskDatabaseTest, DeleteTaskDefinitionCascades) {
   std::optional<TaskDefinition> saved = db_->GetTaskDefinition(def_id);
   ASSERT_TRUE(saved.has_value());
 
+  // Create an observation.
+  TaskObservation obs;
+  *obs.mutable_definition() = std::move(*saved);
+  obs.set_start_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  obs.set_end_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  obs.set_execution_source(ExecutionSource::MANUAL);
+  obs.mutable_definition()
+      ->mutable_task_steps(0)
+      ->mutable_parameters(0)
+      ->set_value("Chicago");
+
+  int64_t obs_id = db_->SaveObservation(obs);
+  EXPECT_GT(obs_id, 0);
+
   // Delete definition.
   EXPECT_TRUE(db_->DeleteTaskDefinition(def_id));
 
@@ -187,6 +203,16 @@ TEST_F(TaskDatabaseTest, DeleteTaskDefinitionCascades) {
         raw_db.GetUniqueStatement("SELECT COUNT(*) FROM task_parameters"));
     ASSERT_TRUE(check_param.Step());
     EXPECT_EQ(check_param.ColumnInt(0), 0);
+
+    sql::Statement check_obs(
+        raw_db.GetUniqueStatement("SELECT COUNT(*) FROM task_observations"));
+    ASSERT_TRUE(check_obs.Step());
+    EXPECT_EQ(check_obs.ColumnInt(0), 0);
+
+    sql::Statement check_val(raw_db.GetUniqueStatement(
+        "SELECT COUNT(*) FROM task_parameter_values"));
+    ASSERT_TRUE(check_val.Step());
+    EXPECT_EQ(check_val.ColumnInt(0), 0);
   }
 }
 
@@ -335,6 +361,136 @@ TEST_F(TaskDatabaseTest, DeleteStepCascadesParameters) {
     ASSERT_TRUE(check_param.Step());
     EXPECT_EQ(check_param.ColumnInt(0), 1);
   }
+}
+
+TEST_F(TaskDatabaseTest, SaveAndRetrieveObservations) {
+  TaskDefinition definition;
+  definition.set_title("Amtrak Booking");
+  definition.set_url("https://www.amtrak.com");
+
+  TaskStep* step = definition.add_task_steps();
+  step->set_step_index(0);
+  step->set_description("Select seats");
+  step->set_url("https://www.amtrak.com/seatSelection");
+
+  TaskParameter* param = step->add_parameters();
+  param->set_key("seat_type");
+  param->set_name("Seat Preference");
+  param->set_type("string");
+
+  int64_t def_id = db_->SaveTaskDefinition(std::nullopt, definition);
+  EXPECT_GT(def_id, 0);
+
+  std::optional<TaskDefinition> saved_definition =
+      db_->GetTaskDefinition(def_id);
+  ASSERT_TRUE(saved_definition.has_value());
+
+  // Save execution log 1
+  TaskObservation obs1;
+  *obs1.mutable_definition() = *saved_definition;
+  obs1.set_start_time((base::Time::Now() - base::Minutes(10))
+                          .ToDeltaSinceWindowsEpoch()
+                          .InMicroseconds());
+  obs1.set_end_time((base::Time::Now() - base::Minutes(10))
+                        .ToDeltaSinceWindowsEpoch()
+                        .InMicroseconds());
+  obs1.set_execution_source(ExecutionSource::AUTOMATIC);
+  obs1.mutable_definition()
+      ->mutable_task_steps(0)
+      ->mutable_parameters(0)
+      ->set_value("Window");
+
+  int64_t obs_id1 = db_->SaveObservation(obs1);
+  EXPECT_GT(obs_id1, 0);
+
+  // Save execution log 2 (More recent)
+  TaskObservation obs2;
+  *obs2.mutable_definition() = *saved_definition;
+  obs2.set_start_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  obs2.set_end_time(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  obs2.set_execution_source(ExecutionSource::MANUAL);
+  obs2.mutable_definition()
+      ->mutable_task_steps(0)
+      ->mutable_parameters(0)
+      ->set_value("Aisle");
+
+  int64_t obs_id2 = db_->SaveObservation(obs2);
+  EXPECT_GT(obs_id2, 0);
+
+  // Fetch Observations
+  std::vector<TaskObservation> observations =
+      db_->GetObservationsForDefinition(def_id);
+  ASSERT_EQ(observations.size(), 2u);
+
+  // Must be sorted descending chronological
+  EXPECT_EQ(observations[0].id(), obs_id2);
+  EXPECT_EQ(observations[0].start_time(), obs2.start_time());
+  EXPECT_EQ(observations[0].execution_source(), ExecutionSource::MANUAL);
+  EXPECT_EQ(observations[0].definition().task_steps(0).parameters(0).value(),
+            "Aisle");
+
+  EXPECT_EQ(observations[1].id(), obs_id1);
+  EXPECT_EQ(observations[1].start_time(), obs1.start_time());
+  EXPECT_EQ(observations[1].execution_source(), ExecutionSource::AUTOMATIC);
+  EXPECT_EQ(observations[1].definition().task_steps(0).parameters(0).value(),
+            "Window");
+}
+
+TEST_F(TaskDatabaseTest, PruneOldObservations) {
+  base::ScopedTempDir local_temp_dir;
+  ASSERT_TRUE(local_temp_dir.CreateUniqueTempDir());
+
+  int64_t def_id = 0;
+  int64_t recent_obs_time = 0;
+
+  {
+    TaskDatabase writer_db;
+    writer_db.Init(local_temp_dir.GetPath());
+
+    TaskDefinition definition;
+    definition.set_title("Seed Amtrak");
+    definition.set_url("https://www.amtrak.com");
+    def_id = writer_db.SaveTaskDefinition(std::nullopt, definition);
+
+    std::optional<TaskDefinition> saved = writer_db.GetTaskDefinition(def_id);
+    ASSERT_TRUE(saved.has_value());
+
+    // Write recent execution log (10 days old)
+    TaskObservation obs1;
+    *obs1.mutable_definition() = *saved;
+    recent_obs_time = (base::Time::Now() - base::Days(10))
+                          .ToDeltaSinceWindowsEpoch()
+                          .InMicroseconds();
+    obs1.set_start_time(recent_obs_time);
+    obs1.set_end_time(recent_obs_time);
+    obs1.set_execution_source(ExecutionSource::AUTOMATIC);
+    EXPECT_GT(writer_db.SaveObservation(obs1), 0);
+
+    // Write stale execution log (366 days old)
+    TaskObservation obs2;
+    *obs2.mutable_definition() = *saved;
+    int64_t old_obs_time = (base::Time::Now() - base::Days(366))
+                               .ToDeltaSinceWindowsEpoch()
+                               .InMicroseconds();
+    obs2.set_start_time(old_obs_time);
+    obs2.set_end_time(old_obs_time);
+    obs2.set_execution_source(ExecutionSource::MANUAL);
+    EXPECT_GT(writer_db.SaveObservation(obs2), 0);
+
+    EXPECT_EQ(writer_db.GetObservationsForDefinition(def_id).size(), 2u);
+  }
+
+  // Init triggers PruneOldObservations(base::Days(365)) synchronously on
+  // startup.
+  TaskDatabase reader_db;
+  reader_db.Init(local_temp_dir.GetPath());
+
+  std::vector<TaskObservation> retrieved =
+      reader_db.GetObservationsForDefinition(def_id);
+  ASSERT_EQ(retrieved.size(), 1u);
+  EXPECT_EQ(retrieved[0].start_time(), recent_obs_time);
 }
 
 }  // namespace record_replay

@@ -78,6 +78,8 @@ void TaskDatabase::Init(const base::FilePath& profile_path) {
     std::ignore = db_.Execute("DROP TABLE IF EXISTS task_data");
     std::ignore = db_.Execute("DROP TABLE IF EXISTS task_definitions");
     std::ignore = db_.Execute("DROP TABLE IF EXISTS recordings");
+    std::ignore = db_.Execute("DROP TABLE IF EXISTS task_parameter_values");
+    std::ignore = db_.Execute("DROP TABLE IF EXISTS task_observations");
   }
 
   if (!CreateRecordingsTable()) {
@@ -110,6 +112,18 @@ void TaskDatabase::Init(const base::FilePath& profile_path) {
     return;
   }
 
+  if (!CreateTaskObservationsTable()) {
+    DLOG(ERROR) << "Failed to create task_observations table.";
+    db_.Close();
+    return;
+  }
+
+  if (!CreateTaskParameterValuesTable()) {
+    DLOG(ERROR) << "Failed to create task_parameter_values table.";
+    db_.Close();
+    return;
+  }
+
   if (!Migrate(GetDatabaseVersion())) {
     DLOG(ERROR) << "Failed to migrate database.";
     db_.Close();
@@ -117,6 +131,8 @@ void TaskDatabase::Init(const base::FilePath& profile_path) {
   }
 
   transaction.Commit();
+
+  std::ignore = PruneOldObservations(base::Days(365));
 }
 
 int TaskDatabase::GetDatabaseVersion() {
@@ -261,6 +277,64 @@ bool TaskDatabase::CreateTaskDataTable() {
           "proto BLOB NOT NULL)";
   // clang-format on
   return db_.Execute(kSql);
+}
+
+bool TaskDatabase::CreateTaskObservationsTable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (db_.DoesTableExist("task_observations")) {
+    return true;
+  }
+
+  static constexpr char kSql[] =
+      "CREATE TABLE task_observations("
+      "observation_id INTEGER PRIMARY KEY NOT NULL,"
+      "definition_id INTEGER NOT NULL,"
+      "start_time INTEGER NOT NULL,"
+      "end_time INTEGER NOT NULL,"
+      "execution_source INTEGER NOT NULL)";
+  if (!db_.Execute(kSql)) {
+    return false;
+  }
+
+  if (!db_.Execute("CREATE INDEX IF NOT EXISTS idx_task_observations_def_time "
+                   "ON task_observations(definition_id, start_time DESC)")) {
+    return false;
+  }
+  return db_.Execute(
+      "CREATE INDEX IF NOT EXISTS idx_task_observations_start_time "
+      "ON task_observations(start_time)");
+}
+
+bool TaskDatabase::CreateTaskParameterValuesTable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (db_.DoesTableExist("task_parameter_values")) {
+    return true;
+  }
+
+  static constexpr char kSql[] =
+      "CREATE TABLE task_parameter_values("
+      "value_id INTEGER PRIMARY KEY NOT NULL,"
+      "parameter_id INTEGER NOT NULL,"
+      "observation_id INTEGER NOT NULL,"
+      "value TEXT NOT NULL)";
+  if (!db_.Execute(kSql)) {
+    return false;
+  }
+
+  if (!db_.Execute("CREATE UNIQUE INDEX IF NOT EXISTS "
+                   "idx_task_parameter_values_param_obs "
+                   "ON task_parameter_values(parameter_id, observation_id)")) {
+    return false;
+  }
+
+  if (!db_.Execute(
+          "CREATE INDEX IF NOT EXISTS idx_task_parameter_values_observation "
+          "ON task_parameter_values(observation_id)")) {
+    return false;
+  }
+  return db_.Execute(
+      "CREATE INDEX IF NOT EXISTS idx_task_parameter_values_parameter "
+      "ON task_parameter_values(parameter_id)");
 }
 
 bool TaskDatabase::IsTaskDefinitionsTableEmpty() {
@@ -616,13 +690,31 @@ bool TaskDatabase::DeleteTaskDefinition(int64_t definition_id) {
     return false;
   }
 
-  // 1. Delete orphaned parameter values (TaskParameter has no cascade since
-  // foreign keys are disabled).
+  // 1. Delete associated parameter values of observations of this definition.
+  static constexpr char kDeleteValuesSql[] =
+      "DELETE FROM task_parameter_values WHERE observation_id IN ("
+      "SELECT observation_id FROM task_observations WHERE definition_id=?)";
+  sql::Statement delete_values(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteValuesSql));
+  delete_values.BindInt64(0, definition_id);
+  if (!delete_values.Run()) {
+    return false;
+  }
+
+  // 2. Delete task observations associated with this definition.
+  static constexpr char kDeleteObsSql[] =
+      "DELETE FROM task_observations WHERE definition_id=?";
+  sql::Statement delete_obs(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteObsSql));
+  delete_obs.BindInt64(0, definition_id);
+  if (!delete_obs.Run()) {
+    return false;
+  }
+
+  // 3. Delete orphaned parameter values.
   static constexpr char kDeleteParamsSql[] =
-      // clang-format off
       "DELETE FROM task_parameters WHERE step_id IN "
       "(SELECT step_id FROM task_steps WHERE definition_id=?)";
-  // clang-format on
   sql::Statement delete_params(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteParamsSql));
   delete_params.BindInt64(0, definition_id);
@@ -630,11 +722,9 @@ bool TaskDatabase::DeleteTaskDefinition(int64_t definition_id) {
     return false;
   }
 
-  // 2. Delete steps associated with this definition.
+  // 4. Delete steps associated with this definition.
   static constexpr char kDeleteStepsSql[] =
-      // clang-format off
       "DELETE FROM task_steps WHERE definition_id=?";
-  // clang-format on
   sql::Statement delete_steps(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteStepsSql));
   delete_steps.BindInt64(0, definition_id);
@@ -642,11 +732,9 @@ bool TaskDatabase::DeleteTaskDefinition(int64_t definition_id) {
     return false;
   }
 
-  // 3. Delete task data.
+  // 5. Delete task data.
   static constexpr char kDeleteDataSql[] =
-      // clang-format off
       "DELETE FROM task_data WHERE task_definition_id=?";
-  // clang-format on
   sql::Statement delete_data(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteDataSql));
   delete_data.BindInt64(0, definition_id);
@@ -654,11 +742,9 @@ bool TaskDatabase::DeleteTaskDefinition(int64_t definition_id) {
     return false;
   }
 
-  // 4. Delete definition itself.
+  // 6. Delete definition itself.
   static constexpr char kDeleteDefSql[] =
-      // clang-format off
       "DELETE FROM task_definitions WHERE definition_id=?";
-  // clang-format on
   sql::Statement statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kDeleteDefSql));
   statement.BindInt64(0, definition_id);
@@ -667,6 +753,300 @@ bool TaskDatabase::DeleteTaskDefinition(int64_t definition_id) {
   }
 
   return transaction.Commit();
+}
+
+int64_t TaskDatabase::SaveObservation(TaskObservation observation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!observation.definition().has_id()) {
+    DLOG(ERROR) << "SaveObservation failed: definition id missing.";
+    return 0;
+  }
+  if (!HasDefinitionWithId(observation.definition().id())) {
+    DLOG(ERROR) << "SaveObservation failed: definition id "
+                << observation.definition().id() << " does not exist.";
+    return 0;
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return 0;
+  }
+
+  bool exists = observation.has_id() && HasObservationWithId(observation.id());
+  int64_t final_observation_id = 0;
+
+  if (exists) {
+    final_observation_id = observation.id();
+    if (!UpdateObservation(final_observation_id, observation)) {
+      return 0;
+    }
+  } else {
+    std::optional<int64_t> added_id = AddObservation(observation);
+    if (!added_id) {
+      return 0;
+    }
+    final_observation_id = *added_id;
+  }
+
+  base::flat_map<std::pair<int32_t, std::string>, int64_t> parameter_id_map =
+      GetParameterIdsForDefinition(observation.definition().id());
+
+  for (const TaskStep& step : observation.definition().task_steps()) {
+    int32_t step_index = step.step_index();
+    for (const TaskParameter& param : step.parameters()) {
+      auto it = parameter_id_map.find(std::make_pair(step_index, param.key()));
+      if (it == parameter_id_map.end()) {
+        continue;
+      }
+      int64_t parameter_id = it->second;
+
+      if (HasValueForParameter(parameter_id, final_observation_id)) {
+        if (!UpdateParameterValue(parameter_id, final_observation_id,
+                                  param.value())) {
+          return 0;
+        }
+      } else {
+        if (!AddParameterValue(parameter_id, final_observation_id,
+                               param.value())) {
+          return 0;
+        }
+      }
+    }
+  }
+
+  if (!transaction.Commit()) {
+    return 0;
+  }
+  return final_observation_id;
+}
+
+std::vector<TaskObservation> TaskDatabase::GetObservationsForDefinition(
+    int64_t definition_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  static constexpr char kSql[] =
+      "SELECT observation_id, start_time, end_time, execution_source FROM "
+      "task_observations WHERE definition_id=? ORDER BY start_time DESC";
+  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  statement.BindInt64(0, definition_id);
+
+  std::vector<TaskObservation> observations;
+  while (statement.Step()) {
+    TaskObservation observation;
+    int64_t observation_id = statement.ColumnInt64(0);
+    observation.set_id(observation_id);
+    observation.set_start_time(statement.ColumnInt64(1));
+    observation.set_end_time(statement.ColumnInt64(2));
+    observation.set_execution_source(
+        static_cast<ExecutionSource>(statement.ColumnInt(3)));
+
+    if (std::optional<TaskDefinition> definition =
+            GetTaskDefinition(definition_id)) {
+      for (TaskStep& step : *definition->mutable_task_steps()) {
+        for (TaskParameter& param : *step.mutable_parameters()) {
+          if (std::optional<std::string> val =
+                  GetParameterValue(param.id(), observation_id)) {
+            param.set_value(std::move(*val));
+          }
+        }
+      }
+      *observation.mutable_definition() = std::move(*definition);
+    }
+
+    observations.push_back(std::move(observation));
+  }
+
+  return observations;
+}
+
+bool TaskDatabase::DeleteObservation(int64_t observation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  // 1. Delete associated parameter values.
+  static constexpr char kDeleteValuesSql[] =
+      "DELETE FROM task_parameter_values WHERE observation_id=?";
+  sql::Statement delete_values(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteValuesSql));
+  delete_values.BindInt64(0, observation_id);
+  if (!delete_values.Run()) {
+    return false;
+  }
+
+  // 2. Delete the observation itself.
+  static constexpr char kDeleteObsSql[] =
+      "DELETE FROM task_observations WHERE observation_id=?";
+  sql::Statement delete_obs(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteObsSql));
+  delete_obs.BindInt64(0, observation_id);
+  if (!delete_obs.Run()) {
+    return false;
+  }
+
+  return transaction.Commit();
+}
+
+bool TaskDatabase::PruneOldObservations(base::TimeDelta max_age) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  int64_t threshold =
+      (base::Time::Now() - max_age).ToDeltaSinceWindowsEpoch().InMicroseconds();
+
+  // 1. Delete associated parameter values of pruned observations.
+  static constexpr char kDeleteValuesSql[] =
+      "DELETE FROM task_parameter_values WHERE observation_id IN ("
+      "SELECT observation_id FROM task_observations WHERE start_time < ?)";
+  sql::Statement delete_values(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteValuesSql));
+  delete_values.BindInt64(0, threshold);
+  if (!delete_values.Run()) {
+    return false;
+  }
+
+  // 2. Delete observations themselves.
+  static constexpr char kDeleteObsSql[] =
+      "DELETE FROM task_observations WHERE start_time < ?";
+  sql::Statement delete_obs(
+      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteObsSql));
+  delete_obs.BindInt64(0, threshold);
+  if (!delete_obs.Run()) {
+    return false;
+  }
+
+  return transaction.Commit();
+}
+
+// Task Observation helpers:
+bool TaskDatabase::HasObservationWithId(int64_t observation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "SELECT 1 FROM task_observations WHERE observation_id=?";
+  sql::Statement stmt(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  stmt.BindInt64(0, observation_id);
+  return stmt.Step();
+}
+
+std::optional<int64_t> TaskDatabase::AddObservation(
+    const TaskObservation& observation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "INSERT INTO task_observations(observation_id, definition_id, "
+      "start_time, end_time, execution_source) VALUES(?, ?, ?, ?, ?)";
+  sql::Statement stmt(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  if (observation.has_id()) {
+    stmt.BindInt64(0, observation.id());
+  } else {
+    stmt.BindNull(0);
+  }
+  stmt.BindInt64(1, observation.definition().id());
+  stmt.BindInt64(2, observation.start_time());
+  stmt.BindInt64(3, observation.end_time());
+  stmt.BindInt(4, static_cast<int>(observation.execution_source()));
+  if (!stmt.Run()) {
+    return std::nullopt;
+  }
+  return observation.has_id() ? observation.id() : db_.GetLastInsertRowId();
+}
+
+bool TaskDatabase::UpdateObservation(int64_t observation_id,
+                                     const TaskObservation& observation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "UPDATE task_observations SET definition_id=?, start_time=?, end_time=?, "
+      "execution_source=? WHERE observation_id=?";
+  sql::Statement stmt(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  stmt.BindInt64(0, observation.definition().id());
+  stmt.BindInt64(1, observation.start_time());
+  stmt.BindInt64(2, observation.end_time());
+  stmt.BindInt(3, static_cast<int>(observation.execution_source()));
+  stmt.BindInt64(4, observation_id);
+  return stmt.Run();
+}
+
+base::flat_map<std::pair<int32_t, std::string>, int64_t>
+TaskDatabase::GetParameterIdsForDefinition(int64_t definition_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "SELECT ts.step_index, tp.parameter_key, tp.parameter_id "
+      "FROM task_steps ts "
+      "JOIN task_parameters tp ON ts.step_id = tp.step_id "
+      "WHERE ts.definition_id = ?";
+  sql::Statement stmt(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  stmt.BindInt64(0, definition_id);
+
+  base::flat_map<std::pair<int32_t, std::string>, int64_t> parameter_id_map;
+  while (stmt.Step()) {
+    int32_t step_idx = stmt.ColumnInt(0);
+    std::string param_key = stmt.ColumnString(1);
+    int64_t parameter_id = stmt.ColumnInt64(2);
+    parameter_id_map.emplace(std::make_pair(step_idx, std::move(param_key)),
+                             parameter_id);
+  }
+  return parameter_id_map;
+}
+
+bool TaskDatabase::HasValueForParameter(int64_t parameter_id,
+                                        int64_t observation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "SELECT 1 FROM task_parameter_values WHERE parameter_id=? AND "
+      "observation_id=?";
+  sql::Statement stmt(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  stmt.BindInt64(0, parameter_id);
+  stmt.BindInt64(1, observation_id);
+  return stmt.Step();
+}
+
+bool TaskDatabase::AddParameterValue(int64_t parameter_id,
+                                     int64_t observation_id,
+                                     const std::string& value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "INSERT INTO task_parameter_values(parameter_id, observation_id, value) "
+      "VALUES(?, ?, ?)";
+  sql::Statement stmt(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  stmt.BindInt64(0, parameter_id);
+  stmt.BindInt64(1, observation_id);
+  stmt.BindString(2, value);
+  return stmt.Run();
+}
+
+bool TaskDatabase::UpdateParameterValue(int64_t parameter_id,
+                                        int64_t observation_id,
+                                        const std::string& value) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "UPDATE task_parameter_values SET value=? WHERE parameter_id=? AND "
+      "observation_id=?";
+  sql::Statement stmt(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  stmt.BindString(0, value);
+  stmt.BindInt64(1, parameter_id);
+  stmt.BindInt64(2, observation_id);
+  return stmt.Run();
+}
+
+std::optional<std::string> TaskDatabase::GetParameterValue(
+    int64_t parameter_id,
+    int64_t observation_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static constexpr char kSql[] =
+      "SELECT value FROM task_parameter_values WHERE parameter_id=? AND "
+      "observation_id=?";
+  sql::Statement stmt(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
+  stmt.BindInt64(0, parameter_id);
+  stmt.BindInt64(1, observation_id);
+  if (stmt.Step()) {
+    return stmt.ColumnString(0);
+  }
+  return std::nullopt;
 }
 
 bool TaskDatabase::SaveTaskData(int64_t task_definition_id,
@@ -925,7 +1305,6 @@ std::optional<int64_t> TaskDatabase::FindStepIndex(
 
 bool TaskDatabase::DeleteStepById(int64_t step_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // 1. Manually delete associated parameters to prevent orphaned rows
   // (since foreign keys are disabled).
   static constexpr char kDeleteParamsSql[] =
