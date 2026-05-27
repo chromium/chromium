@@ -75,7 +75,10 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                     return false;
                 }
 
-                if (mConstraintsChecker != null && mConstraintsChecker.areControlsLocked()) {
+                // Defer captures while locked, unless we have never captured a screenshot before.
+                if (mConstraintsChecker != null
+                        && mConstraintsChecker.areControlsLocked()
+                        && mLastCaptureSnapshotToken != null) {
                     mConstraintsChecker.scheduleRequestResourceOnUnlock();
                     return false;
                 }
