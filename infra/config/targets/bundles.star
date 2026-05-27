@@ -5282,11 +5282,6 @@ targets.bundle(
                 "--test-launcher-filter-file=testing/buildbot/filters/ios.services_unittests.filter",
             ],
         ),
-        "ui_base_unittests": targets.mixin(
-            args = [
-                "--test-launcher-filter-file=testing/buildbot/filters/ios.ui_base_unittests.filter",
-            ],
-        ),
         "viz_unittests": targets.mixin(
             args = [
                 "--test-launcher-bot-mode",

@@ -2545,7 +2545,6 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=testing/buildbot/filters/ios.ui_base_unittests.filter",
           "--use-simulator-cache",
           "--platform",
           "iPhone 15",
