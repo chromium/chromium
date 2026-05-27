@@ -430,14 +430,14 @@ void ModelExecutionFeaturesController::InitializePrefListener() {
         optimization_guide::prefs::GetSettingEnabledPrefName(feature),
         base::BindRepeating(
             &ModelExecutionFeaturesController::OnFeatureSettingPrefChanged,
-            base::Unretained(this), feature));
+            weak_ptr_factory_.GetWeakPtr(), feature));
     const SettingsUiMetadata* metadata = registry.GetFeature(feature);
     CHECK(metadata);
     pref_change_registrar_.Add(
         metadata->enterprise_policy().name(),
         base::BindRepeating(&ModelExecutionFeaturesController::
                                 OnFeatureEnterprisePolicyPrefChanged,
-                            base::Unretained(this), feature));
+                            weak_ptr_factory_.GetWeakPtr(), feature));
   }
 }
 
