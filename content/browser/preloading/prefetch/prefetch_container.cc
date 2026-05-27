@@ -308,6 +308,8 @@ PrefetchContainer::PrefetchContainer(
   // in non-test code.
   prefetch_container_metrics_.time_added_to_prefetch_service =
       base::TimeTicks::Now();
+  prefetch_container_metrics_.is_constructed_from_pre_prefetch =
+      is_constructed_from_pre_prefetch_;
 
   if (pre_prefetch_container) {
     CHECK(base::FeatureList::IsEnabled(features::kPrefetchOffTheMainThread));
