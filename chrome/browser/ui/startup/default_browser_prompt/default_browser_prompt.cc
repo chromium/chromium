@@ -76,8 +76,6 @@ void OnCheckIsDefaultBrowserFinished(
 void RegisterDefaultBrowserPromptPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kBrowserSuppressDefaultBrowserPrompt,
                                std::string());
-  registry->RegisterStringPref(prefs::kDefaultBrowserPromptRefreshStudyGroup,
-                               std::string());
 }
 
 // Migrates the last declined time from the old int pref (profile) to the new

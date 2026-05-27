@@ -2197,11 +2197,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // BEGIN_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS
   // Please don't delete the preceding line. It is used by PRESUBMIT.py.
 
-  // Added 02/2025
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  local_state->ClearPref(prefs::kDefaultBrowserPromptRefreshStudyGroup);
-#endif
-
   // Added 06/2025.
   local_state->ClearPref(kVariationsLimitedEntropySyntheticTrialSeed);
   local_state->ClearPref(kVariationsLimitedEntropySyntheticTrialSeedV2);

@@ -1417,11 +1417,6 @@ inline constexpr char kStabilitySystemUncleanShutdownCount[] =
 inline constexpr char kBrowserSuppressDefaultBrowserPrompt[] =
     "browser.suppress_default_browser_prompt_for_version";
 
-// String that refers to the study group in which this install was enrolled.
-// Used to implement the sticky experiment tracking.
-inline constexpr char kDefaultBrowserPromptRefreshStudyGroup[] =
-    "browser.default_browser_prompt_refresh_study_group";
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // The time at which the default-PDF-viewer infobar was last shown.
 inline constexpr char kPdfInfoBarLastShown[] = "browser.pdf_infobar_last_shown";
