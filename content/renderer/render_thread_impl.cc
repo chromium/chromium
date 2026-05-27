@@ -165,6 +165,7 @@
 #include "third_party/blink/public/web/web_v8_features.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
+#include "third_party/perfetto/include/perfetto/tracing/track_event_args.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkGraphics.h"
 #include "ui/base/ui_base_switches.h"
@@ -1358,19 +1359,21 @@ scoped_refptr<gpu::GpuChannelHost> RenderThreadImpl::EstablishGpuChannelSync() {
 
 void RenderThreadImpl::EstablishGpuChannel(
     EstablishGpuChannelCallback callback) {
-  TRACE_EVENT_BEGIN("gpu", "RenderThreadImpl::EstablishGpuChannel",
-                    perfetto::Track::FromPointer(this));
+  TRACE_EVENT_INSTANT("gpu", "RenderThreadImpl::EstablishGpuChannel",
+                      perfetto::Flow::FromPointer(this));
   gpu_->EstablishGpuChannel(base::BindOnce(
       [](EstablishGpuChannelCallback callback, RenderThreadImpl* thread,
+         perfetto::TerminatingFlow flow,
          scoped_refptr<gpu::GpuChannelHost> host) {
-        TRACE_EVENT_END("gpu", perfetto::Track::FromPointer(thread));
+        TRACE_EVENT_INSTANT(
+            "gpu", "RenderThreadImpl::EstablishGpuChannel callback", flow);
         OnPotentialNewGpuChannelHost(host.get());
         std::move(callback).Run(std::move(host));
       },
       // The GPU process can crash; in that case, run the callback with no host
       // to signal the compositor to wait and try again.
       mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback), nullptr),
-      this));
+      this, perfetto::TerminatingFlow::FromPointer(this)));
 }
 
 blink::AssociatedInterfaceRegistry*
