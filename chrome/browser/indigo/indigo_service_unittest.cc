@@ -353,4 +353,40 @@ TEST_F(IndigoServiceTest, LoadPrompts) {
   EXPECT_EQ(service_->GetPrompt("non_existent"), std::nullopt);
 }
 
+TEST_F(IndigoServiceTest, LoadPromptsComponentAlreadyReady) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+
+  // Create a test proto.
+  chrome::aix::indigo::IndigoPrompts proto;
+  auto* prompt1 = proto.add_prompts();
+  prompt1->set_key("v5");
+  prompt1->set_prompt("Test prompt v5");
+
+  // Serialize to file.
+  base::FilePath prompts_path =
+      temp_dir.GetPath().Append(FILE_PATH_LITERAL("indigo_prompts.bin"));
+  std::string serialized;
+  ASSERT_TRUE(proto.SerializeToString(&serialized));
+  ASSERT_TRUE(base::WriteFile(prompts_path, serialized));
+
+  // Simulate component ready BEFORE service creation.
+  component_updater::IndigoComponentInstallerPolicy policy;
+  policy.ComponentReady(base::Version("1.0"), temp_dir.GetPath(),
+                        base::DictValue());
+
+  CreateService();
+
+  // Verify prompts are loaded. Since the component was already ready,
+  // the service should start loading them immediately.
+  if (service_->GetPrompt("v5") != "Test prompt v5") {
+    base::test::TestFuture<void> prompts_loaded_future;
+    service_->SetPromptsLoadedCallbackForTesting(
+        prompts_loaded_future.GetCallback());
+    EXPECT_TRUE(prompts_loaded_future.Wait());
+  }
+
+  EXPECT_EQ(service_->GetPrompt("v5"), "Test prompt v5");
+}
+
 }  // namespace indigo

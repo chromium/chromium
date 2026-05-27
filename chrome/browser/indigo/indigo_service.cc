@@ -121,10 +121,15 @@ IndigoService::IndigoService(Profile* profile,
       indigo_extension_utils::GetManifest(),
       base::FilePath(FILE_PATH_LITERAL("indigo")));
 
-  indigo_component_ready_subscription_ =
-      component_updater::RegisterIndigoComponentReadyCallback(
-          base::BindRepeating(&IndigoService::OnIndigoComponentReady,
-                              base::Unretained(this)));
+  // If component was already installed skip registering ready callback.
+  if (component_updater::GetIndigoComponentInstallDir().has_value()) {
+    OnIndigoComponentReady();
+  } else {
+    indigo_component_ready_subscription_ =
+        component_updater::RegisterIndigoComponentReadyCallback(
+            base::BindRepeating(&IndigoService::OnIndigoComponentReady,
+                                base::Unretained(this)));
+  }
 }
 
 IndigoService::~IndigoService() = default;
