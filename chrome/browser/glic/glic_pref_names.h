@@ -161,6 +161,10 @@ inline constexpr char kGlicActuationOnWebAllowedForURLs[] =
 inline constexpr char kGlicActuationOnWebBlockedForURLs[] =
     "glic.actuation_on_web_blocked_for_urls";
 
+// Dict pref storing details for Gemini Enterprise.
+inline constexpr char kGlicGeminiEnterpriseSettings[] =
+    "glic.gemini_enterprise_settings";
+
 // Boolean pref that tracks if the Glic partition needs a cookie sync.
 inline constexpr char kGlicPartitionNeedsCookieSync[] =
     "glic.partition_needs_cookie_sync";

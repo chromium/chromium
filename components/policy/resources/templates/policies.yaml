@@ -1455,6 +1455,7 @@ policies:
   1454: HttpHeaderInjection
   1455: ChromeSuggestionsSettings
   1456: RestrictBackgroundFetchFromServiceWorkerEnabled
+  1457: GeminiEnterpriseSettings
 
 atomic_groups:
   1: Homepage

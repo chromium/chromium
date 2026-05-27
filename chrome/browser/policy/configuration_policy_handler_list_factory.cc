@@ -3656,6 +3656,14 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
       key::kGeminiActOnWebBlockedForURLs,
       glic::prefs::kGlicActuationOnWebBlockedForURLs));
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
+      key::kGeminiEnterpriseSettings, glic::prefs::kGlicGeminiEnterpriseSettings,
+      chrome_schema, SCHEMA_ALLOW_UNKNOWN,
+      SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
+      SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
+#endif
+
   handlers->AddHandler(std::make_unique<CloudUserOnlyPolicyChecker>(
       std::make_unique<SimplePolicyHandler>(
           key::kTabGroupSharingSettings,
