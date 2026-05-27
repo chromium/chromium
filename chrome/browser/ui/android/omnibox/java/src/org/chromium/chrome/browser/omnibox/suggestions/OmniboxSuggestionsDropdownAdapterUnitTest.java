@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -30,7 +29,6 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter.ViewHolder;
 
 import java.util.Set;
 
@@ -53,37 +51,10 @@ public class OmniboxSuggestionsDropdownAdapterUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
         mContainer = new FrameLayout(mContext);
         mModel = new ModelList();
-        mAdapter = new OmniboxSuggestionsDropdownAdapter(mModel);
+        mAdapter = new OmniboxSuggestionsDropdownAdapter(mModel, new OmniboxViewHolderFactory());
     }
 
-    @Test
-    public void createView_allUiTypesHaveAssociatedViewTypes() {
-        for (@OmniboxSuggestionUiType int type = OmniboxSuggestionUiType.DEFAULT;
-                type < OmniboxSuggestionUiType.COUNT;
-                type++) {
-            if (OBSOLETE_UI_TYPES.contains(type)) continue;
 
-            var view = mAdapter.createView(mContainer, type);
-            // Each view type should have a corresponding view object.
-            // The only exception are the deprecated views - exceptions should be explicitly handled
-            // here.
-            assertNotNull(view);
-            // View creation does not immediately mean view is retained.
-            assertEquals(0, mAdapter.getItemCount());
-        }
-    }
-
-    @Test
-    public void onCreateViewHolder_retainsItemsByType() {
-        for (@OmniboxSuggestionUiType int type = OmniboxSuggestionUiType.DEFAULT;
-                type < OmniboxSuggestionUiType.COUNT;
-                type++) {
-            if (OBSOLETE_UI_TYPES.contains(type)) continue;
-            ViewHolder viewHolder = mAdapter.onCreateViewHolder(mContainer, type);
-            assertNotNull(viewHolder);
-            assertNotNull(viewHolder.itemView);
-        }
-    }
 
     @Test
     public void onViewRecycled_deselectAnyPreviouslySelectedViews() {

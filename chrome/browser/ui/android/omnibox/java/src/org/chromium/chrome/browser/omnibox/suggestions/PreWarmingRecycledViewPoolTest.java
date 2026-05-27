@@ -13,7 +13,6 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
@@ -33,7 +32,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
-import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 import java.util.Arrays;
@@ -45,27 +43,22 @@ public class PreWarmingRecycledViewPoolTest {
     private @Mock View mView;
 
     private Context mContext;
-    private OmniboxSuggestionsDropdownAdapter mAdapter;
+    private OmniboxViewHolderFactory mFactory;
     private PreWarmingRecycledViewPool mPool;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        mAdapter =
+        mFactory =
                 spy(
-                        new OmniboxSuggestionsDropdownAdapter(new ModelList()) {
+                        new OmniboxViewHolderFactory() {
                             @Override
-                            protected View createView(ViewGroup parent, int viewType) {
-                                return mView;
-                            }
-
-                            @Override
-                            public @NonNull SimpleRecyclerViewAdapter.ViewHolder onCreateViewHolder(
-                                    @NonNull ViewGroup parent, int viewType) {
+                            protected SimpleRecyclerViewAdapter.ViewHolder createViewHolderForType(
+                                    ViewGroup parent, int viewType) {
                                 return new SimpleRecyclerViewAdapter.ViewHolder(mView, null);
                             }
                         });
-        mPool = new PreWarmingRecycledViewPool(mAdapter, mContext);
+        mPool = new PreWarmingRecycledViewPool(mFactory, mContext);
     }
 
     private void ensureNoViewsCreated() {
@@ -74,7 +67,6 @@ public class PreWarmingRecycledViewPoolTest {
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.HEADER));
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION));
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.DEFAULT));
-        assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION));
         assertEquals(0, mPool.getRecycledViewCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION));
     }
 
@@ -105,9 +97,8 @@ public class PreWarmingRecycledViewPoolTest {
 
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
     @Test
-    public void testCreateViews() {
+    public void testCreateViewsSync() {
         mPool.onNativeInitialized();
-
         ensureNoViewsCreated();
 
         // Run first, then cancel.
@@ -142,23 +133,22 @@ public class PreWarmingRecycledViewPoolTest {
 
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
     @Test
-    public void createViews_noViewsCreatedOnLowEndDevices() {
-        OmniboxCapabilities.setIsLowMemoryDeviceForTesting(true);
-        mPool.onNativeInitialized();
-        ensureNoViewsCreated();
+    public void testCreateViewsAsync() {
+        ensureAllViewsCreated();
     }
 
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
     @Test
-    public void createViews_noViewsCreatedIfCanceledBeforeNative() {
-        mPool.stopCreatingViews();
-        mPool.onNativeInitialized();
+    public void createViews_noViewsCreatedOnLowEndDevices() {
+        OmniboxCapabilities.setIsLowMemoryDeviceForTesting(true);
+        mPool = new PreWarmingRecycledViewPool(mFactory, mContext);
         ensureNoViewsCreated();
     }
 
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
     @Test
     public void createViews_recordViewCreated() {
+        mPool.clear();
         ensureNoViewsCreated();
 
         try (var watcher =
@@ -172,7 +162,6 @@ public class PreWarmingRecycledViewPoolTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
     @Test
     public void createViews_recordViewReused() {
-        mPool.onNativeInitialized();
         ensureAllViewsCreated();
 
         try (var watcher =
@@ -181,12 +170,5 @@ public class PreWarmingRecycledViewPoolTest {
                         OmniboxSuggestionUiType.DEFAULT)) {
             assertNotNull(mPool.getRecycledView(OmniboxSuggestionUiType.DEFAULT));
         }
-    }
-
-    @EnableFeatures(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION)
-    @Test
-    public void createViews_viewsCreatedSynchronouslyWhenUsingAsyncViewInflater() {
-        mPool.onNativeInitialized();
-        ensureAllViewsCreated();
     }
 }

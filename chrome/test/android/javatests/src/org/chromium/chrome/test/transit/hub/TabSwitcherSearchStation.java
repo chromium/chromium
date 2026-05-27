@@ -50,7 +50,10 @@ import java.util.List;
 /** The base station for Hub tab switcher stations. */
 public class TabSwitcherSearchStation extends Station<SearchActivity> {
     private static final ViewSpec<View> SUGGESTIONS_LIST =
-            viewSpec(withId(R.id.search_activity_suggestions_container));
+            viewSpec(
+                    allOf(
+                            withId(R.id.search_activity_suggestions_container),
+                            withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
     private final boolean mIsIncognito;
     public ViewElement<LocationBarLayout> locationBarElement;
@@ -160,7 +163,11 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
                                         withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))));
             }
             matchers.add(instanceOf(BaseSuggestionView.class));
-            matchers.add(isDescendantOfA(withId(R.id.search_activity_suggestions_container)));
+            matchers.add(
+                    isDescendantOfA(
+                            allOf(
+                                    withId(R.id.search_activity_suggestions_container),
+                                    withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE))));
 
             // Generic array creation is not permitted in Java; suppress the unchecked warning.
             @SuppressWarnings("unchecked")
@@ -210,7 +217,12 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
         public SectionHeaderFacility(int index, String text) {
             if (OmniboxFeatures.sOmniboxItemDecoration.isEnabled()) {
                 headerElement =
-                        declareView(viewSpec(withId(R.id.search_activity_suggestions_container)));
+                        declareView(
+                                viewSpec(
+                                        allOf(
+                                                withId(R.id.search_activity_suggestions_container),
+                                                withEffectiveVisibility(
+                                                        ViewMatchers.Visibility.VISIBLE))));
             } else {
                 headerElement =
                         declareView(
@@ -218,9 +230,11 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
                                         withText(text),
                                         withParentIndex(index),
                                         isDescendantOfA(
-                                                withId(
-                                                        R.id
-                                                                .search_activity_suggestions_container))));
+                                                allOf(
+                                                        withId(
+                                                                R.id.search_activity_suggestions_container),
+                                                        withEffectiveVisibility(
+                                                                ViewMatchers.Visibility.VISIBLE)))));
             }
         }
     }

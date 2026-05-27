@@ -56,20 +56,19 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
                 new ViewTypeAndCount(OmniboxSuggestionUiType.ENTITY_SUGGESTION, 3)
             };
 
-    private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
+    private final OmniboxViewHolderFactory mViewHolderFactory;
     private final @Nullable Handler mHandler;
     private final FrameLayout mPlaceholderParent;
+    private final Thread mThread = Thread.currentThread();
     private boolean mStopCreatingViews;
     private final List<ViewHolder> mPrewarmedViews = new ArrayList<>(22);
 
-    PreWarmingRecycledViewPool(
-            @Nullable OmniboxSuggestionsDropdownAdapter adapter, Context context) {
-        mAdapter = adapter;
+    PreWarmingRecycledViewPool(OmniboxViewHolderFactory factory, Context context) {
+        mViewHolderFactory = factory;
         mHandler =
                 OmniboxFeatures.sAsyncViewInflation.isEnabled()
                         // If AsyncViewInflation is enabled, we use AsyncViewStub to handle
-                        // asynchrony and we
-                        // don't need to do it ourselves.
+                        // asynchrony and we don't need to do it ourselves.
                         ? null
                         // Otherwise, we handle asynchrony.
                         : new Handler();
@@ -88,40 +87,51 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
         setMaxRecycledViews(OmniboxSuggestionUiType.HEADER, 4);
         setMaxRecycledViews(OmniboxSuggestionUiType.TILE_NAVSUGGEST, 1);
         setMaxRecycledViews(OmniboxSuggestionUiType.GROUP_SEPARATOR, 1);
+
+        if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
+            startCreatingViews();
+        }
     }
 
     public void destroy() {
         stopCreatingViews();
-        mAdapter = null;
+        clear();
     }
 
     public void onNativeInitialized() {
-        if (OmniboxCapabilities.shouldPreWarmRecyclerViewPool()) {
+        if (!OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
             startCreatingViews();
         }
     }
 
     /**
-     * Starts creating views. This will immediately post a separate delayed task for every view we
-     * intend to create with a delay equal to STEP_MILLIS * order_of_view_creation.
+     * Starts creating views. If mHandler is not null (async view inflation disabled), this will
+     * immediately post a separate delayed task for every view we intend to create with a delay
+     * equal to STEP_MILLIS. If mHandler is null (async view inflation enabled), this will
+     * immediately create all views.
      */
     public void startCreatingViews() {
-        if (mStopCreatingViews) return;
-        for (var viewTypeAndCount : mViewsToCreate) {
-            for (int index = 0; index < viewTypeAndCount.count; ++index) {
-                Runnable createViewRunnable = () -> createViewHolder(viewTypeAndCount.viewType);
-                final long delay = STEP_MILLIS * (index + 1);
-                if (mHandler != null) {
-                    mHandler.postDelayed(createViewRunnable, delay);
-                } else {
-                    createViewRunnable.run();
+        assert mThread == Thread.currentThread()
+                : "startCreatingViews must be called on the same thread the pool was created on";
+        try (TraceEvent t = TraceEvent.scoped("PreWarmingRecycledViewPool.startCreatingViews")) {
+            if (mStopCreatingViews || !OmniboxCapabilities.shouldPreWarmRecyclerViewPool()) return;
+            for (var viewTypeAndCount : mViewsToCreate) {
+                for (int index = 0; index < viewTypeAndCount.count; ++index) {
+                    if (mHandler != null) {
+                        Runnable createViewRunnable =
+                                () -> createViewHolder(viewTypeAndCount.viewType);
+                        final long delay = STEP_MILLIS * (index + 1);
+                        mHandler.postDelayed(createViewRunnable, delay);
+                    } else {
+                        createViewHolder(viewTypeAndCount.viewType);
+                    }
                 }
             }
-        }
 
-        // Synchronously apply all views.
-        if (mHandler == null) {
-            putViewsIntoPool();
+            // Synchronously apply all views.
+            if (mHandler == null) {
+                stopCreatingViews();
+            }
         }
     }
 
@@ -138,9 +148,11 @@ public class PreWarmingRecycledViewPool extends RecycledViewPool {
     }
 
     private void createViewHolder(@OmniboxSuggestionUiType int viewType) {
-        if (mAdapter == null || mStopCreatingViews) return;
+        if (mStopCreatingViews) return;
+
         try (TraceEvent t = TraceEvent.scoped("PreWarmingRecycledViewPool.createNextViewHolder")) {
-            mPrewarmedViews.add(mAdapter.createViewHolder(mPlaceholderParent, viewType));
+            mPrewarmedViews.add(
+                    mViewHolderFactory.createViewHolderForPool(mPlaceholderParent, viewType));
         }
     }
 

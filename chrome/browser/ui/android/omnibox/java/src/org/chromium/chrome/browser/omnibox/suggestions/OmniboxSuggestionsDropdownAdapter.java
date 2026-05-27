@@ -9,99 +9,21 @@ import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.TraceEvent;
-import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
-import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.suggestions.answer.AnswerSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
-import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.basic.SuggestionViewViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionItemViewBuilder;
-import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.entity.EntitySuggestionViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.groupseparator.GroupSeparatorView;
-import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderView;
-import org.chromium.chrome.browser.omnibox.suggestions.header.HeaderViewBinder;
-import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionView;
-import org.chromium.chrome.browser.omnibox.suggestions.tail.TailSuggestionViewBinder;
-import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** ModelListAdapter for OmniboxSuggestionsDropdown (RecyclerView version). */
 @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
 @NullMarked
 public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter {
+    private final OmniboxViewHolderFactory mViewHolderFactory;
     private int mNumSessionViewsCreated;
     private int mNumSessionViewsBound;
 
-    OmniboxSuggestionsDropdownAdapter(ModelList data) {
+    OmniboxSuggestionsDropdownAdapter(ModelList data, OmniboxViewHolderFactory factory) {
         super(data);
-
-        // Register a view type for a default omnibox suggestion.
-        registerType(
-                OmniboxSuggestionUiType.DEFAULT,
-                parent ->
-                        new BaseSuggestionView<>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<>(SuggestionViewViewBinder::bind));
-
-        // Similar to a default suggestion, with more action buttons.
-        registerType(
-                OmniboxSuggestionUiType.EDIT_URL_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<>(SuggestionViewViewBinder::bind));
-
-        registerType(
-                OmniboxSuggestionUiType.ANSWER_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<>(
-                                parent.getContext(), R.layout.omnibox_answer_suggestion),
-                new BaseSuggestionViewBinder<>(AnswerSuggestionViewBinder::bind));
-
-        registerType(
-                OmniboxSuggestionUiType.ENTITY_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<>(EntitySuggestionViewBinder::bind));
-
-        registerType(
-                OmniboxSuggestionUiType.TAIL_SUGGESTION,
-                parent -> new BaseSuggestionView<>(new TailSuggestionView(parent.getContext())),
-                new BaseSuggestionViewBinder<>(TailSuggestionViewBinder::bind));
-
-        registerType(
-                OmniboxSuggestionUiType.CLIPBOARD_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<>(SuggestionViewViewBinder::bind));
-
-        registerType(
-                OmniboxSuggestionUiType.TAB_GROUP_SUGGESTION,
-                parent ->
-                        new BaseSuggestionView<>(
-                                parent.getContext(), R.layout.omnibox_basic_suggestion),
-                new BaseSuggestionViewBinder<>(SuggestionViewViewBinder::bind));
-
-        registerType(
-                OmniboxSuggestionUiType.TILE_NAVSUGGEST,
-                BaseCarouselSuggestionItemViewBuilder::createView,
-                BaseCarouselSuggestionViewBinder::bind);
-
-        registerType(
-                OmniboxSuggestionUiType.HEADER,
-                parent -> new HeaderView(parent.getContext()),
-                HeaderViewBinder::bind);
-
-        registerType(
-                OmniboxSuggestionUiType.GROUP_SEPARATOR,
-                parent -> new GroupSeparatorView(parent.getContext()),
-                (m, v, p) -> {});
+        mViewHolderFactory = factory;
     }
 
     /* package */ void recordSessionMetrics() {
@@ -123,22 +45,15 @@ public class OmniboxSuggestionsDropdownAdapter extends SimpleRecyclerViewAdapter
     }
 
     @Override
-    // extend this
+    @VisibleForTesting
     protected View createView(ViewGroup parent, int viewType) {
-        // This skips measuring Adapter.CreateViewHolder, which is final, but it capture
-        // the creation of a view holder.
-        try (TraceEvent tracing =
-                        TraceEvent.scoped("OmniboxSuggestionsList.CreateView", "type:" + viewType);
-                TimingMetric metric = OmniboxMetrics.recordSuggestionViewCreateTime();
-                TimingMetric metric2 = OmniboxMetrics.recordSuggestionViewCreateWallTime()) {
-            return super.createView(parent, viewType);
-        }
+        return mViewHolderFactory.createView(parent, viewType);
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mNumSessionViewsCreated++;
-        return super.onCreateViewHolder(parent, viewType);
+        return mViewHolderFactory.createViewHolderForAdapter(parent, viewType);
     }
 
     @Override

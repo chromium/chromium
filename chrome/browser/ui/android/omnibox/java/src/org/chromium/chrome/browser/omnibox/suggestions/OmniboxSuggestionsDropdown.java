@@ -31,9 +31,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.base.KeyNavigationUtil;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.util.MotionEventUtils;
 
 /** A widget for showing a list of omnibox suggestions. */
@@ -64,6 +64,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private final SuggestionLayoutScrollListener mLayoutScrollListener;
     private final RecyclerViewSelectionController mSelectionController;
     private final Handler mHandler;
+    private final OmniboxViewHolderFactory mViewHolderFactory;
+    private final PreWarmingRecycledViewPool mRecycledViewPool;
 
     private @Nullable OmniboxSuggestionsDropdownAdapter mAdapter;
     private @Nullable GestureObserver mGestureObserver;
@@ -316,12 +318,9 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         mLayoutScrollListener = suggestionLayoutScrollListener;
         setLayoutManager(mLayoutScrollListener);
 
-        @SelectionController.Mode
-        int mode =
-                OmniboxCapabilities.hasDesktopExperience(context)
-                        ? SelectionController.Mode.WRAPPING
-                        : SelectionController.Mode.WRAPPING_WITH_SENTINEL;
-        mSelectionController = new RecyclerViewSelectionController(mLayoutScrollListener, mode);
+        mSelectionController =
+                new RecyclerViewSelectionController(
+                        mLayoutScrollListener, SelectionController.Mode.WRAPPING_WITH_SENTINEL);
         addOnChildAttachStateChangeListener(mSelectionController);
 
         final Resources resources = context.getResources();
@@ -335,9 +334,22 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         // scrollbar not dispatched to the underlying views.
         setVerticalScrollBarEnabled(false);
 
-        if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
-            setRecycledViewPool(new PreWarmingRecycledViewPool(mAdapter, context));
-        }
+        mViewHolderFactory = new OmniboxViewHolderFactory();
+        mRecycledViewPool = new PreWarmingRecycledViewPool(mViewHolderFactory, context);
+        setRecycledViewPool(mRecycledViewPool);
+    }
+
+    public void onNativeInitialized() {
+        mRecycledViewPool.onNativeInitialized();
+    }
+
+    /**
+     * Initializes the suggestion list with the data model list.
+     *
+     * @param listItems The list of suggestion items to be displayed.
+     */
+    public void setModelList(ModelList listItems) {
+        setAdapter(new OmniboxSuggestionsDropdownAdapter(listItems, mViewHolderFactory));
     }
 
     @Override
@@ -352,7 +364,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /** Clean up resources and remove observers installed by this class. */
     public void destroy() {
-        getRecycledViewPool().clear();
+        mRecycledViewPool.destroy();
         mGestureObserver = null;
     }
 

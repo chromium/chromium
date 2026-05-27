@@ -6942,7 +6942,7 @@
   {
     "name": "omnibox-asynchronous-view-inflation",
     "owners": ["ender@google.com", "pnoland@google.com", "gangwu@google.com"],
-    "expiry_milestone": 135
+    "expiry_milestone": 160
   },
   {
     "name": "omnibox-calc-provider",
