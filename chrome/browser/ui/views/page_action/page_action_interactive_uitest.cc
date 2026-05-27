@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
 
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -1054,26 +1057,6 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelReorderTest, InvokeUi_Default) {
   ShowAndVerifyUi();
 }
 
-struct PageActionPixelTestParams {
-  ui::NativeTheme::PreferredColorScheme color_scheme =
-      ui::NativeTheme::PreferredColorScheme::kLight;
-  bool rtl = false;
-
-  std::string ToString() const {
-    std::string name;
-    if (color_scheme == ui::NativeTheme::PreferredColorScheme::kDark) {
-      name += "Dark";
-    }
-    if (rtl) {
-      name += "Rtl";
-    }
-    if (name.empty()) {
-      name = "Default";
-    }
-    return name;
-  }
-};
-
 class PageActionPixelShowAnchoredMessageTest : public InteractiveBrowserTest,
                                                public PageActionUiTestBase {
  public:
@@ -1090,44 +1073,6 @@ class PageActionPixelShowAnchoredMessageTest : public InteractiveBrowserTest,
   ui::MockOsSettingsProvider os_settings_provider_;
 };
 
-class PageActionExpandedAnchoredMessageTest
-    : public InteractiveBrowserTest,
-      public PageActionUiTestBase,
-      public testing::WithParamInterface<PageActionPixelTestParams> {
- public:
-  PageActionExpandedAnchoredMessageTest() {
-    os_settings_provider_.SetPreferredColorScheme(GetParam().color_scheme);
-  }
-  ~PageActionExpandedAnchoredMessageTest() override = default;
-
-  void SetUp() override {
-    if (GetParam().rtl) {
-      base::i18n::SetRTLForTesting(true);
-    }
-    InteractiveBrowserTest::SetUp();
-  }
-
-  // PageActionUiTestBase:
-  Browser* GetBrowser() const override { return browser(); }
-
- private:
-  ui::MockOsSettingsProvider os_settings_provider_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PageActionExpandedAnchoredMessageTest,
-    testing::ValuesIn(std::vector<PageActionPixelTestParams>{
-        {},
-        {
-            .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
-        },
-        {
-            .rtl = true,
-        }}),
-    [](const testing::TestParamInfo<PageActionPixelTestParams>& info) {
-      return info.param.ToString();
-    });
 
 IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest,
                        InvokeUi_Default) {
@@ -1220,25 +1165,107 @@ IN_PROC_BROWSER_TEST_F(PageActionPixelShowAnchoredMessageTest, InvokeUi_Text) {
       WaitForHide(AnchoredMessageBubbleView::kAnchoredMessageBubbleId));
 }
 
+struct PageActionPixelTestParams {
+  static constexpr int kDefaultExpandableContentItems = 4;
+
+  ui::NativeTheme::PreferredColorScheme color_scheme =
+      ui::NativeTheme::PreferredColorScheme::kLight;
+  bool rtl = false;
+  int expandable_content_items = kDefaultExpandableContentItems;
+
+  std::string ToString() const {
+    std::string name;
+    if (expandable_content_items > 0 &&
+        expandable_content_items != kDefaultExpandableContentItems) {
+      name += base::StringPrintf("%dItems", expandable_content_items);
+    }
+    if (color_scheme == ui::NativeTheme::PreferredColorScheme::kDark) {
+      name += "Dark";
+    }
+    if (rtl) {
+      name += "Rtl";
+    }
+    if (name.empty()) {
+      name = "Default";
+    }
+    return name;
+  }
+};
+
+class PageActionExpandedAnchoredMessageTest
+    : public InteractiveBrowserTest,
+      public PageActionUiTestBase,
+      public testing::WithParamInterface<PageActionPixelTestParams> {
+ public:
+  PageActionExpandedAnchoredMessageTest() {
+    os_settings_provider_.SetPreferredColorScheme(GetParam().color_scheme);
+  }
+  ~PageActionExpandedAnchoredMessageTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    if (GetParam().rtl) {
+      base::i18n::SetRTLForTesting(true);
+    }
+  }
+
+  // PageActionUiTestBase:
+  Browser* GetBrowser() const override { return browser(); }
+
+ private:
+  ui::MockOsSettingsProvider os_settings_provider_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PageActionExpandedAnchoredMessageTest,
+    testing::ValuesIn(std::vector<PageActionPixelTestParams>{
+        {},
+        {
+            .color_scheme = ui::NativeTheme::PreferredColorScheme::kDark,
+        },
+        {
+            .rtl = true,
+        },
+        // Single item.
+        {
+            .expandable_content_items = 1,
+        },
+        // Multiple items, but not overflowing the expand button.
+        {
+            .expandable_content_items = 3,
+        },
+    }),
+    [](const testing::TestParamInfo<PageActionPixelTestParams>& info) {
+      return info.param.ToString();
+    });
+
 IN_PROC_BROWSER_TEST_P(PageActionExpandedAnchoredMessageTest,
-                       InvokeUi_ExpandableContent) {
+                       ExpandableContent) {
   RunTestSequence(
       SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
                               "Screenshot can only run in pixel_tests."),
       Do([this]() {
         AnchoredMessageExpandableContent content;
-        content.heading = u"Will share 4 items";
-        const struct {
+        const int num_items = GetParam().expandable_content_items;
+        content.heading = base::ASCIIToUTF16(
+            base::StringPrintf("Will share %d items", num_items));
+        struct Item {
           raw_ptr<const gfx::VectorIcon> icon;
           std::u16string text;
-        } kItems[] = {
+        };
+        // Use a set of sample items to have varied icons and text. Test cases
+        // will use any number of these, depending on what the test wants. The
+        // content here is arbitrary.
+        const std::array<Item, 4> kItems = {{
             {&vector_icons::kEditOldIcon, u"Site with sample items"},
             {&vector_icons::kGlobeOldIcon,
              u"Another site with more sample items"},
             {&vector_icons::kSettingsOldIcon, u"Sample items galore"},
             {&vector_icons::kExtensionOldIcon, u"Too many sites with items"},
-        };
-        for (const auto& item : kItems) {
+        }};
+        for (int i = 0; i < num_items; ++i) {
+          const auto& item = kItems[static_cast<size_t>(i) % kItems.size()];
           content.items.push_back(
               {ui::ImageModel::FromVectorIcon(*item.icon, ui::kColorIcon, 16),
                item.text});
@@ -1250,9 +1277,6 @@ IN_PROC_BROWSER_TEST_P(PageActionExpandedAnchoredMessageTest,
       WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageBubbleId),
       EnsureNotPresent(
           AnchoredMessageBubbleView::kAnchoredMessageExpandedContentId),
-      // Screenshot(AnchoredMessageBubbleView::kAnchoredMessageBubbleId,
-      // "expandable_content_hidden",
-      //            "20260324"),
       PressButton(AnchoredMessageBubbleView::kAnchoredMessageExpandButtonId),
       WaitForShow(AnchoredMessageBubbleView::kAnchoredMessageExpandedContentId),
       // In interactive mode, this allows the user to see the expanded state.
