@@ -6220,6 +6220,8 @@ if (!is_android) {
       sources += [
         "../browser/printing/print_browsertest.cc",
         "../browser/printing/print_browsertest.h",
+        "../browser/printing/print_preview_browsertest.cc",
+        "../browser/printing/print_preview_browsertest.h",
         "../browser/printing/print_preview_dialog_controller_browsertest.cc",
         "../browser/printing/pwg_raster_converter_browsertest.cc",
         "../browser/printing/test_print_preview_observer.cc",
@@ -10283,7 +10285,6 @@ test("unit_tests") {
 
     if (enable_print_preview) {
       sources += [
-        "../browser/printing/print_preview_dialog_controller_unittest.cc",
         "../browser/printing/print_preview_sticky_settings_unittest.cc",
         "../browser/printing/print_preview_test.cc",
         "../browser/printing/print_preview_test.h",
