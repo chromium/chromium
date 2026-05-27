@@ -279,8 +279,8 @@ void SecureChannelImpl::OnHandshakeMessageReady(
 void SecureChannelImpl::RecordSessionDurationMetrics() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == State::kEstablished) {
-    base::UmaHistogramMediumTimes(
-        "PrivateAi.SecureChannel.SessionDuration",
+    base::UmaHistogramLongTimes(
+        "PrivateAi.SecureChannel.SessionDuration2",
         base::TimeTicks::Now() - state_entry_times_[State::kEstablished]);
     base::UmaHistogramCounts1000("PrivateAi.SecureChannel.RequestsPerSession",
                                  requests_in_session_count_);

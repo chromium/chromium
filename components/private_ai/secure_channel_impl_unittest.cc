@@ -551,7 +551,7 @@ TEST_F(SecureChannelImplTest, TransportErrorAfterSessionEstablished) {
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error(), StatusCode::kNetworkError);
 
-  histogram_tester_.ExpectTotalCount("PrivateAi.SecureChannel.SessionDuration",
+  histogram_tester_.ExpectTotalCount("PrivateAi.SecureChannel.SessionDuration2",
                                      1);
   histogram_tester_.ExpectUniqueSample(
       "PrivateAi.SecureChannel.RequestsPerSession", /*sample=*/1,

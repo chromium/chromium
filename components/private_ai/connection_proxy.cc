@@ -116,6 +116,7 @@ void ConnectionProxy::Send(proto::PrivateAiRequest request,
   if (!inner_connection_) {
     // Initialization failed or connection disconnected.
     std::move(callback).Run(base::unexpected(StatusCode::kError));
+    CallOnDisconnect(StatusCode::kError);
     return;
   }
 

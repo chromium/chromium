@@ -51,12 +51,6 @@ std::unique_ptr<Connection> CreateConnectionStack(
         std::move(connection), token_manager, logger, on_disconnect);
   }
 
-  connection = std::make_unique<ConnectionMetrics>(std::move(connection));
-
-  connection = std::make_unique<ConnectionUnusedTimeout>(
-      std::move(connection), on_disconnect,
-      kPrivateAiUnusedConnectionTimeout.Get());
-
   return connection;
 }
 
@@ -93,9 +87,9 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
   if (!proxy_url_.is_valid()) {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server (direct).");
-    connection = CreateConnectionStack(
-        url_, logger_, token_manager_, secure_channel_override_,
-        std::move(on_disconnect), network_context_);
+    connection = CreateConnectionStack(url_, logger_, token_manager_,
+                                       secure_channel_override_, on_disconnect,
+                                       network_context_);
   } else {
     logger_->LogInfo(FROM_HERE,
                      "Creating connection to Private AI server via proxy: " +
@@ -109,9 +103,17 @@ std::unique_ptr<Connection> ConnectionFactoryImpl::Create(
 
     connection = std::make_unique<ConnectionProxy>(
         proxy_url_, logger_, token_manager_,
-        std::move(inner_connection_factory), std::move(on_disconnect));
+        std::move(inner_connection_factory), on_disconnect);
   }
+
+  connection = std::make_unique<ConnectionUnusedTimeout>(
+      std::move(connection), on_disconnect,
+      kPrivateAiUnusedConnectionTimeout.Get());
+
   connection = std::make_unique<ConnectionTimeout>(std::move(connection));
+
+  connection = std::make_unique<ConnectionMetrics>(std::move(connection));
+
   return connection;
 }
 
