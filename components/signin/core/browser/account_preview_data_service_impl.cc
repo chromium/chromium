@@ -82,6 +82,9 @@ void AccountPreviewDataServiceImpl::OnFetchCompleted(
     const GaiaId& gaia_id,
     std::optional<AccountPreviewData> data) {
   if (data.has_value()) {
+    // TODO(crbug.com/510760810): Metrics logging can happen here for data type
+    // counts of interest.
+
     cached_data_[gaia_id] = std::move(data).value();
   }
 

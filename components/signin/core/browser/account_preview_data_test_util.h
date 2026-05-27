@@ -22,8 +22,9 @@ inline constexpr char kTestStatsUrl[] =
     "dataTypes/-/dataTypesStatistics";
 inline constexpr char kTestPreviewsUrl[] =
     "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1/"
-    "dataTypes/-/entitiesPreviews";
+    "dataTypes/154522/entitiesPreviews";
 
+// Subset of all data types for testing purposes.
 struct DataTypeCounts {
   int bookmark_count = 0;
   int password_count = 0;

@@ -5,6 +5,7 @@ include_rules = [
   "+components/signin/public/identity_manager",
   "+components/supervised_user/core/common/features.h",
   "+components/supervised_user/core/common/buildflags.h",
+  "+components/sync/base/data_type.h",
 ]
 
 specific_include_rules = {

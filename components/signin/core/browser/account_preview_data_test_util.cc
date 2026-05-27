@@ -18,15 +18,15 @@ void MockSuccessfulStatsFetch(
       R"({
     "dataTypeStatistics": [
       {
-        "name": "dataTypes/bookmarks/stats",
+        "name": "dataTypes/32904/dataTypeStatistics",
         "count": "%d"
       },
       {
-        "name": "dataTypes/passwords/stats",
+        "name": "dataTypes/45873/dataTypeStatistics",
         "count": "%d"
       },
       {
-        "name": "dataTypes/history/stats",
+        "name": "dataTypes/963985/dataTypeStatistics",
         "count": "%d"
       }
     ]

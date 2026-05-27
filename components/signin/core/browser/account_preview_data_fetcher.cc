@@ -16,6 +16,7 @@
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/data_type.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -33,9 +34,24 @@ constexpr char kStablePreviewUrl[] =
 constexpr char kStagingPreviewUrl[] =
     "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1";
 
-// TODO(crbug.com/510760810): Exact content of the parser will need to be
-// re-iterated on, when we will be able to fully test the final API.
-//
+// Parses the specifics field number (data type ID) from the stats name string.
+// Returns std::nullopt if the format doesn't match or cannot be parsed.
+std::optional<int> ParseDataTypeId(std::string_view name) {
+  // Expected format: "dataTypes/{data_type_number}/dataTypeStatistics"
+  static constexpr std::string_view kPrefix = "dataTypes/";
+  static constexpr std::string_view kSuffix = "/dataTypeStatistics";
+  if (!name.starts_with(kPrefix) || !name.ends_with(kSuffix)) {
+    return std::nullopt;
+  }
+  std::string_view number_str = name.substr(
+      kPrefix.size(), name.size() - kPrefix.size() - kSuffix.size());
+  int id = 0;
+  if (base::StringToInt(number_str, &id)) {
+    return id;
+  }
+  return std::nullopt;
+}
+
 // Parses the response from the stats endpoint. Returns std::nullopt if the
 // response format is not as expected or if the data is empty.
 std::optional<AccountPreviewData> ParseStatsResponse(
@@ -58,28 +74,28 @@ std::optional<AccountPreviewData> ParseStatsResponse(
     if (!item.is_dict()) {
       continue;
     }
-    const auto& item_dict = item.GetDict();
-    const std::string* name = item_dict.FindString("name");
-    const std::string* count_str = item_dict.FindString("count");
-    int64_t count = 0;
-    if (count_str) {
-      base::StringToInt64(*count_str, &count);
-    } else {
-      std::optional<int> count_int = item_dict.FindInt("count");
-      if (count_int) {
-        count = *count_int;
-      }
+
+    const base::DictValue& data_type_statistic = item.GetDict();
+    const std::string* data_type_name = data_type_statistic.FindString("name");
+    const std::string* count_str = data_type_statistic.FindString("count");
+    if (!data_type_name || !count_str) {
+      continue;
+    }
+    std::optional<int> type_id = ParseDataTypeId(*data_type_name);
+    if (!type_id) {
+      continue;
+    }
+    syncer::DataType type =
+        syncer::GetDataTypeFromSpecificsFieldNumber(*type_id);
+    if (!syncer::IsRealDataType(type)) {
+      continue;
     }
 
-    if (name) {
-      if (*name == "dataTypes/bookmarks/stats") {
-        data->bookmark_count = count;
-      } else if (*name == "dataTypes/passwords/stats") {
-        data->password_count = count;
-      } else if (*name == "dataTypes/history/stats") {
-        data->history_count = count;
-      }
-    }
+    int64_t count_int64 = 0;
+    base::StringToInt64(*count_str, &count_int64);
+    // Counts should always be non-negative.
+    size_t count = count_int64 >= 0 ? static_cast<size_t>(count_int64) : 0;
+    data->counts[type] = count;
   }
   return data;
 }
@@ -141,8 +157,10 @@ GURL GetStatsUrlForChannel(version_info::Channel channel) {
 }
 
 GURL GetPreviewsUrlForChannel(version_info::Channel channel) {
-  return GURL(
-      base::StrCat({GetBaseUrl(channel), "/dataTypes/-/entitiesPreviews"}));
+  // ID: 154522 is specific to DEVICE_INFO.
+  // TODO(crbug.com/510760810): Fix parsing to match DEVICE_INFO results.
+  return GURL(base::StrCat(
+      {GetBaseUrl(channel), "/dataTypes/154522/entitiesPreviews"}));
 }
 
 }  // namespace

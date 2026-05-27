@@ -20,6 +20,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/data_type.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,9 +85,9 @@ TEST_F(AccountPreviewDataServiceTest, FetchesForPrimaryAccount) {
   std::optional<AccountPreviewData> data =
       service_->GetAccountPreviewData(primary_info.gaia);
   ASSERT_TRUE(data.has_value());
-  EXPECT_EQ(10, data->bookmark_count);
-  EXPECT_EQ(20, data->password_count);
-  EXPECT_EQ(30, data->history_count);
+  EXPECT_EQ(10U, data->counts[syncer::BOOKMARKS]);
+  EXPECT_EQ(20U, data->counts[syncer::PASSWORDS]);
+  EXPECT_EQ(30U, data->counts[syncer::HISTORY]);
   ASSERT_EQ(2U, data->password_domains.size());
   EXPECT_EQ("google.com", data->password_domains[0]);
   EXPECT_EQ("yahoo.com", data->password_domains[1]);
@@ -241,9 +242,9 @@ TEST_F(AccountPreviewDataServiceTest, QueuesFetchWhenOffline) {
   std::optional<AccountPreviewData> data =
       service_->GetAccountPreviewData(account_info.gaia);
   ASSERT_TRUE(data.has_value());
-  EXPECT_EQ(5, data->bookmark_count);
-  EXPECT_EQ(10, data->password_count);
-  EXPECT_EQ(15, data->history_count);
+  EXPECT_EQ(5U, data->counts[syncer::BOOKMARKS]);
+  EXPECT_EQ(10U, data->counts[syncer::PASSWORDS]);
+  EXPECT_EQ(15U, data->counts[syncer::HISTORY]);
 }
 
 }  // namespace signin

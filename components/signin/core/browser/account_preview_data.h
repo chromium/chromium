@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/values.h"
+#include "components/sync/base/data_type.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace signin {
 
@@ -26,10 +28,7 @@ struct AccountPreviewData {
   AccountPreviewData& operator=(AccountPreviewData&&) noexcept;
   ~AccountPreviewData();
 
-  // Example statistics data: counts of different items.
-  int password_count = 0;
-  int bookmark_count = 0;
-  int history_count = 0;
+  absl::flat_hash_map<syncer::DataType, size_t> counts;
 
   // Example preview data: urls for which the account has saved data.
   std::vector<std::string> password_domains;

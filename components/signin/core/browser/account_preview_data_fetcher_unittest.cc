@@ -19,6 +19,7 @@
 #include "components/signin/core/browser/account_preview_data_test_util.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/sync/base/data_type.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,9 +62,9 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
   ASSERT_TRUE(result_data.has_value());
-  EXPECT_EQ(10, result_data->bookmark_count);
-  EXPECT_EQ(20, result_data->password_count);
-  EXPECT_EQ(30, result_data->history_count);
+  EXPECT_EQ(10U, result_data->counts[syncer::BOOKMARKS]);
+  EXPECT_EQ(20U, result_data->counts[syncer::PASSWORDS]);
+  EXPECT_EQ(30U, result_data->counts[syncer::HISTORY]);
   ASSERT_EQ(2U, result_data->password_domains.size());
   EXPECT_EQ("google.com", result_data->password_domains[0]);
   EXPECT_EQ("yahoo.com", result_data->password_domains[1]);
@@ -86,9 +87,9 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
   ASSERT_TRUE(result_data.has_value());
-  EXPECT_EQ(0, result_data->bookmark_count);
-  EXPECT_EQ(0, result_data->password_count);
-  EXPECT_EQ(0, result_data->history_count);
+  EXPECT_EQ(0U, result_data->counts[syncer::BOOKMARKS]);
+  EXPECT_EQ(0U, result_data->counts[syncer::PASSWORDS]);
+  EXPECT_EQ(0U, result_data->counts[syncer::HISTORY]);
   EXPECT_TRUE(result_data->password_domains.empty());
 }
 
