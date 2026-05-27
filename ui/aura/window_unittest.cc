@@ -3241,6 +3241,24 @@ class DeleteOnVisibilityChangedObserver : public WindowObserver {
   raw_ptr<Window> to_delete_;
 };
 
+TEST_F(WindowTest, DeleteWindowFromOnWindowVisibilityChanged) {
+  std::unique_ptr<Window> root =
+      CreateTestWindow({.bounds = {100, 100}, .window_id = 0});
+  Window* child =
+      CreateTestWindow(
+          {.parent = root.get(), .bounds = {100, 100}, .window_id = 0})
+          .release();
+  auto weak_root = root->GetWeakPtr();
+  auto weak_child = child->GetWeakPtr();
+
+  // This deletes |child| when OnWindowVisibilityChanged() is
+  // received by |child|.
+  DeleteOnVisibilityChangedObserver deletion_observer(child, child);
+  child->Hide();
+  EXPECT_FALSE(weak_child);
+  EXPECT_TRUE(weak_root);
+}
+
 TEST_F(WindowTest, DeleteParentWindowFromOnWindowVisibiltyChanged) {
   WindowTracker tracker;
   Window* root =

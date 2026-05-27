@@ -19,6 +19,8 @@ namespace aura {
 
 class Window;
 
+// Window lifetime and safely: A WindowObserver implementation should not delete
+// the observing window, except for OnWindowVisibilityChanged.
 class AURA_EXPORT WindowObserver : public base::CheckedObserver {
  public:
   struct HierarchyChangeParams {
@@ -82,7 +84,7 @@ class AURA_EXPORT WindowObserver : public base::CheckedObserver {
   // called for all observers attached to descendants of the Window as well
   // as all observers attached to ancestors of the Window. The Window supplied
   // to OnWindowVisibilityChanged() is the Window that Show()/Hide() was called
-  // on.
+  // on. This method is allowed to delete the observing window.
   virtual void OnWindowVisibilityChanged(Window* window, bool visible) {}
 
   // Invoked when the bounds of the |window|'s layer change. |old_bounds| and
