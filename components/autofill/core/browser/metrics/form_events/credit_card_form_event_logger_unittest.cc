@@ -1834,6 +1834,45 @@ TEST_F(CreditCardFormEventLoggerTest,
                  0)));
 }
 
+TEST_F(CreditCardFormEventLoggerTest,
+       OnSaveAndFillSuggestionShown_GenericMetricsNotLogged) {
+  base::HistogramTester histogram_tester;
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnSaveAndFillSuggestionShown();
+  DidShowAutofillSuggestions(form, /*field_index=*/0,
+                             SuggestionType::kCreditCardEntry);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(Bucket(FORM_EVENT_SUGGESTIONS_SHOWN, 0),
+                             Bucket(FORM_EVENT_SUGGESTIONS_SHOWN_ONCE, 0)));
+}
+
+TEST_F(CreditCardFormEventLoggerTest,
+       OnDidAcceptSaveAndFillSuggestion_GenericMetricsNotLogged) {
+  base::HistogramTester histogram_tester;
+  FormStructure form =
+      FormStructure(test::GetFormData({.fields = {{}, {}, {}}}));
+  test_api(form).SetFieldTypes({CREDIT_CARD_EXP_MONTH,
+                                CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                                CREDIT_CARD_NUMBER});
+  CreditCard card = test::GetCreditCard();
+
+  autofill_manager()
+      .GetCreditCardFormEventLogger()
+      .OnDidAcceptSaveAndFillSuggestion();
+  autofill_manager().GetCreditCardFormEventLogger().OnDidSelectCardSuggestion(
+      card, form, AutofillMetrics::PaymentsSigninState::kSignedIn);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FormEvents.CreditCard"),
+              BucketsInclude(
+                  Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED, 0),
+                  Bucket(FORM_EVENT_LOCAL_CARD_SUGGESTION_SELECTED_ONCE, 0)));
+}
+
 // Test that we log parsed form events for address and cards in the same form.
 TEST_F(CreditCardFormEventLoggerTest, MixedParsedFormEvents) {
   FormData form = CreateForm(

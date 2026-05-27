@@ -100,6 +100,13 @@ void CreditCardFormEventLogger::OnDidShowSuggestions(
     base::TimeTicks form_parsed_timestamp,
     bool off_the_record,
     base::span<const Suggestion> suggestions) {
+  // If a Save & Fill suggestion was offered, we exit early to avoid
+  // logging this as a generic credit card suggestion shown. Save & Fill
+  // suggestion events are tracked separately in a Save & Fill specific
+  // histogram.
+  if (has_logged_save_and_fill_suggestion_shown_) {
+    return;
+  }
   if (DoSuggestionsIncludeVirtualCard())
     Log(FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD, form);
 
@@ -203,6 +210,13 @@ void CreditCardFormEventLogger::OnDidSelectCardSuggestion(
     const CreditCard& credit_card,
     const FormStructure& form,
     AutofillMetrics::PaymentsSigninState signin_state_for_metrics) {
+  // If a Save & Fill suggestion was accepted, we exit early to avoid
+  // logging this as a generic credit card suggestion selection. Save & Fill
+  // suggestion events are tracked separately in a Save & Fill specific
+  // histogram.
+  if (has_logged_save_and_fill_suggestion_accepted_) {
+    return;
+  }
   signin_state_for_metrics_ = signin_state_for_metrics;
   metadata_logging_context_.SetSelectedCardInfo(credit_card);
 
