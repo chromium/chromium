@@ -18,9 +18,6 @@ void SkLog_FileLine(const char* file,
 #if DCHECK_IS_ON()
   int severity;
   switch (priority) {
-    case SkLogPriority::kFatal:
-      severity = logging::LOGGING_FATAL;
-      break;
     case SkLogPriority::kError:
       severity = logging::LOGGING_ERROR;
       break;
