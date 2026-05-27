@@ -393,12 +393,7 @@ class CC_PAINT_EXPORT PaintImage {
     return gainmap_info_.value();
   }
 
-  gfx::HDRMetadata GetHDRMetadata() const {
-    if (const auto* image_metadata = GetImageHeaderMetadata()) {
-      return image_metadata->hdr_metadata;
-    }
-    return gfx::HDRMetadata();
-  }
+  const gfx::HDRMetadata& GetHDRMetadata() const { return hdr_metadata_; }
 
   std::string ToString() const;
 

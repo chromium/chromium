@@ -93,6 +93,14 @@ PaintImage PaintImageBuilder::TakePaintImage() {
       DCHECK_GT(frame.duration, base::TimeDelta());
   }
 #endif
+  // Merge any explicitly specified HDR metadata on top of the paint image
+  // generator's.
+  if (const auto* image_metadata = paint_image_.GetImageHeaderMetadata()) {
+    gfx::HDRMetadata merged = image_metadata->hdr_metadata;
+    merged.MergeMetadataFrom(paint_image_.hdr_metadata_);
+    paint_image_.hdr_metadata_ = merged;
+  }
+
   if (paint_image_.reinterpret_as_srgb_) {
     if (paint_image_.sk_image_) {
       paint_image_.sk_image_ = paint_image_.sk_image_->reinterpretColorSpace(
