@@ -8,6 +8,7 @@
 #import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/timer/elapsed_timer.h"
 #import "build/branding_buildflags.h"
 #import "components/application_locale_storage/application_locale_storage.h"
@@ -71,6 +72,36 @@ const CGFloat kGoogleWalletLogoHeight = 32.0;
 
 // Separator for expiration date components (Month/Year).
 NSString* const kDateSeparator = @"/";
+
+// Alpha value for the save button in loading and success states.
+const CGFloat kSaveButtonActiveAlpha = 1.0;
+
+// State of the save button during async transitions.
+enum class SaveButtonState {
+  kLoading,
+  kConfirmation,
+};
+
+// Styles the button for the loading state.
+void StyleButtonForLoading(UIButtonConfiguration* config) {
+  config.showsActivityIndicator = YES;
+  config.background.backgroundColor = [UIColor colorNamed:kGrey400Color];
+  config.baseForegroundColor = [UIColor whiteColor];
+  config.activityIndicatorColorTransformer = ^UIColor*(UIColor* _) {
+    return [UIColor whiteColor];
+  };
+}
+
+// Styles the button for the success/confirmation state.
+void StyleButtonForConfirmation(UIButtonConfiguration* config) {
+  config.showsActivityIndicator = NO;
+  config.background.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  UIColor* blueColor = [UIColor colorNamed:kBlueColor];
+  config.baseForegroundColor = blueColor;
+  config.image =
+      [config.image imageWithTintColor:blueColor
+                         renderingMode:UIImageRenderingModeAlwaysOriginal];
+}
 }  // namespace
 
 @interface PaymentsScanSaveAndFillEditViewController () <
@@ -326,9 +357,17 @@ NSString* const kDateSeparator = @"/";
 
 // Triggered when the user taps the save button.
 - (void)didTapSave {
-  _saveButton.enabled = NO;
+  [self showLoadingStateWithAccessibilityLabel:nil];
   [self logScanCardAction:ScanCardOfferToSaveAction::kAccept];
-  [self.mutator didTapSave];
+
+  // Defer the mutator call to the next run loop cycle to allow UIKit to
+  // establish the spinner layout stably before the local save synchronous
+  // completion triggers the progress dialog and dismisses the view controller.
+  __weak __typeof__(_mutator) weakMutator = _mutator;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakMutator didTapSave];
+      }));
 }
 
 // Triggered when the user taps the cancel button.
@@ -387,9 +426,8 @@ NSString* const kDateSeparator = @"/";
 #pragma mark - SaveCardBottomSheetConsumer
 
 - (void)showConfirmationState {
-  _saveButton.enabled = NO;
-  _saveButton.title = nil;
-  _saveButton.primaryButtonImage = PrimaryButtonImageCheckmark;
+  [self transitionSaveButtonToState:SaveButtonState::kConfirmation
+                          withImage:PrimaryButtonImageCheckmark];
 }
 
 - (void)setField:(AutofillCreditCardUIType)type
@@ -456,12 +494,12 @@ NSString* const kDateSeparator = @"/";
 }
 
 - (void)showLoadingStateWithAccessibilityLabel:(NSString*)accessibilityLabel {
-  _saveButton.enabled = NO;
-  _saveButton.title = nil;
-  _saveButton.primaryButtonImage = PrimaryButtonImageSpinner;
   if (accessibilityLabel.length > 0) {
     _saveButton.accessibilityLabel = accessibilityLabel;
   }
+
+  [self transitionSaveButtonToState:SaveButtonState::kLoading
+                          withImage:PrimaryButtonImageSpinner];
 }
 
 - (void)setLegalMessages:(NSArray<SaveCardMessageWithLinks*>*)legalMessages {
@@ -538,6 +576,34 @@ NSString* const kDateSeparator = @"/";
 }
 
 #pragma mark - Private
+
+// Transitions the save button to a textless state displaying the specified
+// image and applies custom configuration styling based on `state`.
+- (void)transitionSaveButtonToState:(SaveButtonState)state
+                          withImage:(PrimaryButtonImage)primaryButtonImage {
+  _saveButton.enabled = NO;
+  _saveButton.title = nil;
+  _saveButton.primaryButtonImage = primaryButtonImage;
+
+  _saveButton.configurationUpdateHandler = ^(UIButton* button) {
+    UIButtonConfiguration* config = button.configuration;
+    config.title = nil;
+    config.attributedTitle = nil;
+
+    switch (state) {
+      case SaveButtonState::kLoading:
+        StyleButtonForLoading(config);
+        break;
+      case SaveButtonState::kConfirmation:
+        StyleButtonForConfirmation(config);
+        break;
+    }
+
+    button.alpha = kSaveButtonActiveAlpha;
+    button.configuration = config;
+  };
+  [_saveButton setNeedsUpdateConfiguration];
+}
 
 // Sets up the bottom container view and subview constraints.
 - (void)setupBottomContainerAndConstraints {

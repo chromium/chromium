@@ -8,7 +8,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/run_until.h"
+#import "base/test/task_environment.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/autofill/core/browser/payments/payments_autofill_client.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_credit_card_ui_type.h"
@@ -162,6 +165,8 @@ const NSInteger kSectionIdentifierEnumOne = 1;
 
 class PaymentsScanSaveAndFillEditViewControllerTest : public PlatformTest {
  protected:
+  base::test::TaskEnvironment task_environment_;
+
   void SetUp() override {
     PlatformTest::SetUp();
 
@@ -346,11 +351,11 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestDidTapSave) {
   [view_controller_
       validateAndReconfigureItems:@[ nameItem, cvcItem, nicknameItem ]];
 
-  // Simulate tapping the save button.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wundeclared-selector"
   [view_controller_ performSelector:@selector(didTapSave)];
-#pragma clang diagnostic pop
+
+  // Wait for the mutator task to execute.
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return fake_mutator_.saveAndFillCalled; }));
 
   // Verify that onUpdatedAndAcceptedForSaveAndFill was called with correct
   // details.
@@ -364,6 +369,12 @@ TEST_F(PaymentsScanSaveAndFillEditViewControllerTest, TestDidTapSave) {
   EXPECT_EQ(u"123", fake_mutator_.savedDetails.security_code.value());
   EXPECT_TRUE(fake_mutator_.savedDetails.nickname.has_value());
   EXPECT_EQ(u"My Card", fake_mutator_.savedDetails.nickname.value());
+
+  // Verify that the save button transitioned to the loading state.
+  UIButton* saveButton = [view_controller_ valueForKey:@"_saveButton"];
+  EXPECT_FALSE(saveButton.enabled);
+  EXPECT_NSEQ(nil, [saveButton valueForKey:@"title"]);
+  EXPECT_TRUE(saveButton.configuration.showsActivityIndicator);
 }
 
 // Tests the behavior of showLoadingStateWithAccessibilityLabel.
