@@ -57,6 +57,34 @@ NSAttributedString* AttributedStringFromStringWithLink(
   return attributed_string;
 }
 
+NSAttributedString* AttributedStringFromStringWithLinks(
+    NSString* text,
+    NSDictionary* text_attributes,
+    NSArray<NSDictionary*>* links_attributes) {
+  StringWithTags parsed_string = ParseStringWithLinks(text);
+  NSMutableAttributedString* attributed_string =
+      [[NSMutableAttributedString alloc] initWithString:parsed_string.string
+                                             attributes:text_attributes];
+
+  if (links_attributes == nil) {
+    DCHECK(parsed_string.ranges.empty());
+    return attributed_string;
+  }
+
+  DCHECK_EQ(parsed_string.ranges.size(), links_attributes.count);
+
+  const NSUInteger links_count =
+      MIN(parsed_string.ranges.size(), links_attributes.count);
+  for (NSUInteger i = 0; i < links_count; ++i) {
+    NSDictionary* attrs = links_attributes[i];
+    if (attrs != nil && attrs.count > 0) {
+      [attributed_string addAttributes:attrs range:parsed_string.ranges[i]];
+    }
+  }
+
+  return attributed_string;
+}
+
 StringWithTag ParseStringWithTag(NSString* text,
                                  NSString* begin_tag,
                                  NSString* end_tag) {
