@@ -61,21 +61,20 @@ LensPreselectionBubble::LensPreselectionBubble(
     tabs::TabHandle tab_handle,
     views::View* anchor_view,
     bool offline,
-    bool show_cancel_button,
     ui::ColorId bubble_background_color,
     const gfx::VectorIcon* icon,
-    std::optional<ui::ColorId> cancel_button_color,
+    std::optional<OverlayBaseController::CancelButtonConfig>
+        cancel_button_config,
     ExitClickedCallback exit_clicked_callback,
     base::OnceClosure on_cancel_callback)
     : BubbleDialogDelegateView(anchor_view,
                                views::BubbleBorder::NONE,
                                views::BubbleBorder::NO_SHADOW),
       tab_handle_(tab_handle),
-      show_cancel_button_(show_cancel_button),
-      cancel_button_color_(cancel_button_color),
       offline_(offline),
       bubble_background_color_(bubble_background_color),
       icon_(icon),
+      cancel_button_config_(cancel_button_config),
       exit_clicked_callback_(std::move(exit_clicked_callback)) {
   CHECK(icon_);
   SetShowCloseButton(false);
@@ -94,8 +93,12 @@ void LensPreselectionBubble::Init() {
   views::BoxLayout* layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets()));
-  offline_ ? set_margins(gfx::Insets::TLBR(6, 16, 6, 6))
-           : set_margins(gfx::Insets::TLBR(12, 16, 12, 16));
+  if (cancel_button_config_.has_value()) {
+    set_margins(cancel_button_config_->bubble_margins);
+  } else {
+    offline_ ? set_margins(gfx::Insets::TLBR(6, 16, 6, 6))
+             : set_margins(gfx::Insets::TLBR(12, 16, 12, 16));
+  }
 
   // Set bubble icon and text
   const std::u16string online_toast_text = l10n_util::GetStringUTF16(
@@ -130,7 +133,7 @@ void LensPreselectionBubble::Init() {
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
     button->SetTooltipText(
         l10n_util::GetStringUTF16(IDS_LENS_OVERLAY_MORE_OPTIONS_BUTTON_LABEL));
-    if (!show_cancel_button_) {
+    if (!cancel_button_config_.has_value()) {
       more_info_button_ = AddChildView(std::move(button));
       more_info_button_->SetButtonController(
           std::make_unique<views::MenuButtonController>(
@@ -157,7 +160,7 @@ void LensPreselectionBubble::Init() {
     exit_button_->SetProperty(views::kElementIdentifierKey,
                               kExitButtonElementId);
   }
-  if (show_cancel_button_) {
+  if (cancel_button_config_.has_value()) {
     cancel_button_ = AddChildView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(&LensPreselectionBubble::CancelDialog,
                             // Safe to unretain since this class (and its
@@ -231,16 +234,14 @@ void LensPreselectionBubble::OnThemeChanged() {
     exit_button_->SetBgColorIdOverride(bubble_background_color_);
   }
 
-  if (show_cancel_button_) {
+  if (cancel_button_config_.has_value()) {
     CHECK(cancel_button_);
-    ui::ColorId text_color_id =
-        cancel_button_color_.value_or(kColorLensOverlayToastForeground);
-    ui::ColorId border_color_id =
-        cancel_button_color_.value_or(kColorLensOverlayToastButtonBorder);
-    cancel_button_->SetEnabledTextColors(
-        color_provider->GetColor(text_color_id));
-    cancel_button_->SetBorder(views::CreateRoundedRectBorder(
-        1, 48, color_provider->GetColor(border_color_id)));
+    ui::ColorId color_id = cancel_button_config_->color;
+    cancel_button_->SetEnabledTextColors(color_provider->GetColor(color_id));
+    cancel_button_->SetBorder(views::CreatePaddedBorder(
+        views::CreateRoundedRectBorder(1, 48,
+                                       color_provider->GetColor(color_id)),
+        cancel_button_config_->padding));
     cancel_button_->SetBgColorIdOverride(bubble_background_color_);
   }
 }
