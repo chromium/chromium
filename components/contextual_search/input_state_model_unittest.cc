@@ -44,7 +44,7 @@ class InputStateModelTest : public testing::Test {
             contextual_search::SearchContentSharingSettingsValue::kEnabled));
     input_state_model_ = std::make_unique<InputStateModel>(
         session_handle_, config_, active_url_, /*is_off_the_record=*/false,
-        /*is_signed_in=*/false);
+        /*browser_identity_matches_aim_identity=*/false);
     input_state_model_->SetPrefService(&pref_service_);
   }
 
@@ -74,7 +74,7 @@ TEST_F(InputStateModelTest, DoesNotRemoveDriveInputWhenSignedInAndFlagEnabled) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/true);
+      /*browser_identity_matches_aim_identity=*/true);
   const auto& state = input_state_model_->get_state_for_testing();
 
   EXPECT_THAT(state.allowed_input_types,
@@ -98,7 +98,7 @@ TEST_F(InputStateModelTest, RemovesDriveInputWhenFlagDisabled) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/true);
+      /*browser_identity_matches_aim_identity=*/true);
   const auto& state = input_state_model_->get_state_for_testing();
 
   EXPECT_THAT(state.allowed_input_types,
@@ -122,7 +122,7 @@ TEST_F(InputStateModelTest, RemovesDriveInputWhenNotSignedIn) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
   EXPECT_THAT(state.allowed_input_types,
@@ -157,7 +157,7 @@ TEST_F(InputStateModelTest,
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
   EXPECT_THAT(state.allowed_input_types,
@@ -195,7 +195,7 @@ TEST_F(InputStateModelTest, DefaultToFirstAllowedModel) {
   // Initialize Model.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
   // Verify Initialization Logic.
@@ -230,7 +230,7 @@ TEST_F(InputStateModelTest, ParsesActiveModelFromUrl) {
   GURL regular_url("https://example.com/?abc=1");
   auto state_model_regular = std::make_unique<InputStateModel>(
       session_handle_, config, regular_url, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model_regular->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_REGULAR);
@@ -238,7 +238,7 @@ TEST_F(InputStateModelTest, ParsesActiveModelFromUrl) {
   GURL pro_url("https://example.com/?xyz=1");
   auto state_model_pro = std::make_unique<InputStateModel>(
       session_handle_, config, pro_url, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model_pro->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
@@ -246,7 +246,7 @@ TEST_F(InputStateModelTest, ParsesActiveModelFromUrl) {
   GURL unknown_url("https://example.com/?qwe=1");
   auto state_model_unknown = std::make_unique<InputStateModel>(
       session_handle_, config, unknown_url, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   // Fallback to the default model which is the first one in the list.
   EXPECT_EQ(state_model_unknown->get_state_for_testing().active_model,
@@ -271,7 +271,7 @@ TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
   GURL ds_url("https://example.com/?dr=1");
   auto state_model_ds = std::make_unique<InputStateModel>(
       session_handle_, config, ds_url, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model_ds->get_state_for_testing().active_tool,
             omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH);
@@ -279,7 +279,7 @@ TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
   GURL canvas_url("https://example.com/?rc=1");
   auto state_model_canvas = std::make_unique<InputStateModel>(
       session_handle_, config, canvas_url, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model_canvas->get_state_for_testing().active_tool,
             omnibox::ToolMode::TOOL_MODE_CANVAS);
@@ -287,7 +287,7 @@ TEST_F(InputStateModelTest, ParsesActiveToolFromUrl) {
   GURL unknown_url("https://example.com/?qwe=1");
   auto state_model_unknown = std::make_unique<InputStateModel>(
       session_handle_, config, unknown_url, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   // Defaults to ToolMode::TOOL_MODE_UNSPECIFIED if not in the URL.
   EXPECT_EQ(state_model_unknown->get_state_for_testing().active_tool,
@@ -305,7 +305,7 @@ TEST_F(InputStateModelTest, UpdateToolFromUrl) {
 
   auto state_model = std::make_unique<InputStateModel>(
       session_handle_, config, GURL(), /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(state_model->get_state_for_testing().active_tool,
             omnibox::ToolMode::TOOL_MODE_UNSPECIFIED);
@@ -361,7 +361,7 @@ TEST_F(InputStateModelTest, RegularModelAllowsAllToolsAndInputsWithEmptyLists) {
   // 3. Initialize the model.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   const auto& state = input_state_model_->get_state_for_testing();
@@ -401,7 +401,7 @@ TEST_F(InputStateModelTest, ModelWithAllowAllToolsIsNotDisabled) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // Select Deep Search tool.
@@ -442,7 +442,7 @@ TEST_F(InputStateModelTest, ModelWithAllowAllInputsIsNotDisabled) {
 
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // Simulate adding a file.
@@ -637,7 +637,7 @@ TEST_F(InputStateModelTest, GetAdditionalQueryParams) {
   // Recreate the model with the new config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
 
   // No tool or model added.
@@ -757,7 +757,7 @@ TEST_F(InputStateModelCompatibilityTest, MaxTotalInputsDisablesInputs) {
   // Recreate the model with the new config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
@@ -846,7 +846,7 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithAllowAllInputs) {
   // Re-create the model with the modified config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
@@ -885,7 +885,7 @@ TEST_F(InputStateModelCompatibilityTest, ToolWithSpecificInputs) {
   // Re-create the model with the modified config.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config_, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   input_state_model_->SetPrefService(&pref_service_);
   input_state_model_->setActiveModel(
       omnibox::ModelMode::MODEL_MODE_UNSPECIFIED);
@@ -963,7 +963,7 @@ TEST_F(InputStateModelTest, FiltersImageGenInIncognito) {
   // Initialize with is_off_the_record = true.
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/true,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   const auto& state = input_state_model_->get_state_for_testing();
 
   // Verify that IMAGE_GEN is filtered out but DEEP_SEARCH remains.
@@ -981,7 +981,7 @@ TEST_F(InputStateModelTest,
 
   auto local_model = std::make_unique<InputStateModel>(
       *local_session, config, GURL(), /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   local_session.reset();  // Destroy session.
 
@@ -1004,7 +1004,7 @@ TEST_F(InputStateModelTest,
 
   auto model_with_image = std::make_unique<InputStateModel>(
       session_handle_, config, active_url_, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
   model_with_image->SetPrefService(&prefs);
 
   const auto& state = model_with_image->get_state_for_testing();
@@ -1107,7 +1107,7 @@ TEST_F(InputStateModelTest, UpdateModelFromUrl) {
   GURL pro_url("https://example.com/?udm=50&arv=1");
   input_state_model_ = std::make_unique<InputStateModel>(
       session_handle_, config, pro_url, /*is_off_the_record=*/false,
-      /*is_signed_in=*/false);
+      /*browser_identity_matches_aim_identity=*/false);
 
   EXPECT_EQ(input_state_model_->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
