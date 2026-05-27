@@ -4,15 +4,24 @@
 
 #include "gpu/vulkan/vulkan_image.h"
 
+#include <sys/types.h>
+#include <unistd.h>
+
 #include <tuple>
 #include <vector>
 
+#include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 #include "gpu/vulkan/vulkan_util.h"
 
 namespace gpu {
+
+namespace {
+BASE_FEATURE(kVulkanValidateDmabufSize, base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
 
 //  static
 std::unique_ptr<VulkanImage> VulkanImage::CreateWithExternalMemoryAndModifiers(
@@ -87,6 +96,42 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     external_image_create_info.pNext = &modifier_info;
   }
 
+  device_queue_ = device_queue;
+  disjoint_planes_ = false;
+
+  if (!CreateVkImage(size, format, usage, flags, image_tiling,
+                     &external_image_create_info)) {
+    device_queue_ = nullptr;
+    return false;
+  }
+
+  VkMemoryRequirements requirements = GetMemoryRequirements(0);
+
+  // SECURITY: |gmb_handle| (including |size| and the fd) may originate from an
+  // untrusted process. Verify that the dma-buf is at least large enough to back
+  // an image of |size| before letting vkAllocateMemory import it with an
+  // allocationSize derived from vkGetImageMemoryRequirements().
+  // dma-bufs support lseek(SEEK_END) to report their allocation size; treat an
+  // un-seekable fd as invalid since real dma-bufs always do.
+  off_t fd_size = lseek(scoped_fd.get(), 0, SEEK_END);
+  if (fd_size < 0) {
+    DLOG(ERROR) << "lseek() on dma-buf fd failed.";
+    Destroy();
+    return false;
+  }
+  lseek(scoped_fd.get(), 0, SEEK_SET);
+
+  if (static_cast<uint64_t>(fd_size) < requirements.size) {
+    LOG(ERROR) << "dma-buf (" << fd_size << " bytes) is too small for "
+               << size.width() << "x" << size.height() << " VkImage "
+               << "(requires " << requirements.size << " bytes)";
+    base::debug::DumpWithoutCrashing();
+    if (base::FeatureList::IsEnabled(kVulkanValidateDmabufSize)) {
+      Destroy();
+      return false;
+    }
+  }
+
   int memory_fd = scoped_fd.release();
   VkImportMemoryFdInfoKHR import_memory_fd_info = {
       .sType = VK_STRUCTURE_TYPE_IMPORT_MEMORY_FD_INFO_KHR,
@@ -109,18 +154,36 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
     import_memory_fd_info.pNext = &export_memory_info;
   }
 
-  VkMemoryRequirements* requirements = nullptr;
-  // TODO support multiple plane
-  auto result = InitializeSingleOrJointPlanes(
-      device_queue, size, format, usage, flags, image_tiling,
-      &external_image_create_info, &import_memory_fd_info, requirements);
+  // Allocate device memory and bind it to the image. On Linux, if
+  // |import_memory_fd_info| is provided, it will import the dma-buf FD.
+  auto result = AllocateAndBindMemory(0, &requirements, &import_memory_fd_info);
   // If vkAllocateMemory() returned successfully, the fd in scoped_fd should be
   // owned by vulkan, otherwise take the ownership of the fd back.
   if (result == kFailedBeforeAllocateMemory) {
     scoped_fd.reset(memory_fd);
   }
 
-  return result;
+  if (result != kSuccess) {
+    Destroy();
+    return false;
+  }
+
+  // Get subresource layout for images with VK_IMAGE_TILING_LINEAR.
+  // For images with VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT, the layout is
+  // initialized in InitializeWithExternalMemoryAndModifiers(). For
+  // VK_IMAGE_TILING_OPTIMAL the layout is not usable and
+  // vkGetImageSubresourceLayout() is illegal.
+  if (image_tiling == VK_IMAGE_TILING_LINEAR) {
+    const VkImageSubresource image_subresource = {
+        .aspectMask = VK_IMAGE_ASPECT_COLOR_BIT,
+        .mipLevel = 0,
+        .arrayLayer = 0,
+    };
+    vkGetImageSubresourceLayout(device_queue_->GetVulkanDevice(), image_,
+                                &image_subresource, &layouts_[0]);
+  }
+
+  return true;
 }
 
 bool VulkanImage::InitializeWithExternalMemoryAndModifiers(
