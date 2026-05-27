@@ -10,6 +10,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "content/public/common/content_constants.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/api/messaging/messaging_endpoint.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/context_type.mojom.h"
@@ -24,6 +25,8 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

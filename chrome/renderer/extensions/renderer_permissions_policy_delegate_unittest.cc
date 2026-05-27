@@ -16,6 +16,7 @@
 #include "chrome/renderer/process_state.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/mock_render_thread.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -24,6 +25,8 @@
 #include "extensions/renderer/extensions_renderer_api_provider.h"
 #include "extensions/renderer/test_extensions_renderer_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
@@ -72,12 +75,16 @@ TEST_F(RendererPermissionsPolicyDelegateTest, CannotScriptWebstore) {
   GURL kAnyUrl("http://example.com/");
   scoped_refptr<const Extension> extension(CreateTestExtension("a"));
   std::string error;
+
+  // Android does not support kInstantUsesSpareRenderer.
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
     // If the feature is enabled, we use is_instant_process flag to check.
     // We need to set the process state to bypass the CHECK as the test code
     // does not trigger `process_state::SetIsInstantProcess()`;
     process_state::SetIsInstantProcess(false);
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(extension->permissions_data()->CanAccessPage(kAnyUrl, -1, &error))
       << error;
 
@@ -97,6 +104,9 @@ TEST_F(RendererPermissionsPolicyDelegateTest, CannotScriptInInstantProcess) {
   GURL kAnyUrl("http://example.com/");
   scoped_refptr<const Extension> extension(CreateTestExtension("a"));
   std::string error;
+
+  // Android does not support kInstantUsesSpareRenderer.
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
     // Pretend we are in the instant process by overriding the instant process
     // param. We should not be able to execute script.
@@ -105,18 +115,21 @@ TEST_F(RendererPermissionsPolicyDelegateTest, CannotScriptInInstantProcess) {
         extension->permissions_data()->CanAccessPage(kAnyUrl, -1, &error))
         << error;
     process_state::SetIsInstantProcess(false);
-  } else {
-    // If the feature is not enabled, we still replying on the command line
-    // switch `kInstantProcess`. Pretend we are in the instant process by
-    // adding the command line switches. We should not be able to execute
-    // script.
-    base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-    command_line->AppendSwitch(switches::kInstantProcess);
-    EXPECT_FALSE(
-        extension->permissions_data()->CanAccessPage(kAnyUrl, -1, &error))
-        << error;
-    command_line->RemoveSwitch(switches::kInstantProcess);
+    return;
   }
+  // Fall through if feature not enabled.
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  // If the feature is not enabled, we still replying on the command line
+  // switch `kInstantProcess`. Pretend we are in the instant process by
+  // adding the command line switches. We should not be able to execute
+  // script.
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(switches::kInstantProcess);
+  EXPECT_FALSE(
+      extension->permissions_data()->CanAccessPage(kAnyUrl, -1, &error))
+      << error;
+  command_line->RemoveSwitch(switches::kInstantProcess);
 }
 
 }  // namespace extensions

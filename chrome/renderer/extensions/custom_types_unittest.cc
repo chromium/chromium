@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/test/values_test_util.h"
 #include "components/crx_file/id_util.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/features/simple_feature.h"
@@ -18,6 +19,8 @@
 #include "extensions/renderer/native_extension_bindings_system_test_base.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/storage_area.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

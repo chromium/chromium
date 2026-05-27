@@ -5,9 +5,12 @@
 #include "chrome/renderer/extensions/chrome_policy_activity_log_filter_delegate.h"
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/dom_action_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
