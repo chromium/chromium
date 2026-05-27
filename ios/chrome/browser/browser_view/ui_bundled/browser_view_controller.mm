@@ -1022,6 +1022,7 @@ bool IsFullscreenNextIAEnabled() {
   // in the upcoming pass, avoiding a redundant extra layout pass.
   if (IsFullscreenNextIAEnabled() && self.view.window) {
     [self addConstraintsToAppBar];
+    [self updateToolbarConstraints];
     [self updateSecondaryToolbarBottomConstraint];
   }
 }
