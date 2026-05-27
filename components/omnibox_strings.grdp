@@ -523,7 +523,7 @@
     Remove Suggestion button, press Enter to remove this suggestion
   </message>
   <!-- Accessibility labels for the omnibox AI Mode button. -->
-  <message name="IDS_ACC_AI_MODE_PLACEHOLDER_TEXT" desc="Announcement when omnibox text field is empty and AI Mode is available.">
+  <message name="IDS_ACC_AI_MODE_PLACEHOLDER_TEXT" desc="The text shown and announced, prompting the user to use the AI mode button, conditionally displayed in the Omnibox when it is focused with no input and AI Mode is enabled.">
     Press tab then enter to ask AI Mode
   </message>
   <message name="IDS_ACC_AI_MODE_BUTTON_FOCUSED" desc="Announcement when AI Mode button is focused.">

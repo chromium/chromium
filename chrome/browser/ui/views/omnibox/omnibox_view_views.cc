@@ -201,6 +201,11 @@ void LogOmniboxFocusToCutOrCopyAllTextTime(
   }
 }
 
+std::u16string AimPlaceholderText() {
+  return u"\u21E5 " +
+         l10n_util::GetStringUTF16(IDS_ACC_AI_MODE_PLACEHOLDER_TEXT);
+}
+
 }  // namespace
 
 // OmniboxState ---------------------------------------------------------------
@@ -399,8 +404,7 @@ void OmniboxViewViews::InstallPlaceholderText() {
     // placeholder text to suggest tabbing into AI Mode. Note, even if the AI
     // placeholder text is installed, it will only be visible if
     // `ShouldShowPlaceholderText()` is also true.
-    SetPlaceholderText(
-        l10n_util::GetStringUTF16(IDS_OMNIBOX_AIM_PLACEHOLDER_TEXT));
+    SetPlaceholderText(AimPlaceholderText());
     // Override the AIM accessibility placeholder text, so that the tab icon is
     // not announced.
     GetViewAccessibility().SetPlaceholder(
@@ -699,9 +703,7 @@ void OmniboxViewViews::OnPaint(gfx::Canvas* canvas) {
 
   // Record an impression of the AIM hint text if it is being shown.
   const bool should_show_placeholder = ShouldShowPlaceholderText();
-  const bool is_aim_placeholder =
-      GetPlaceholderText() ==
-      l10n_util::GetStringUTF16(IDS_OMNIBOX_AIM_PLACEHOLDER_TEXT);
+  const bool is_aim_placeholder = GetPlaceholderText() == AimPlaceholderText();
   if (should_show_placeholder && is_aim_placeholder && !aim_hint_shown_) {
     aim_hint_shown_ = true;
     RecordAimHintImpression();
