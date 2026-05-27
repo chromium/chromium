@@ -278,9 +278,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         // features requested in the Intent as they should apply only for the initial launch of the
         // Activity.
         if (getIntentDataProvider().getUiType() == CustomTabsUiType.POPUP
-                && getSavedInstanceState() == null
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN)) {
+                && getSavedInstanceState() == null) {
             PopupCreatorImpl.adjustWindowBoundsToRequested(
                     this, getIntentDataProvider().getRequestedWindowFeatures());
         }

@@ -15,7 +15,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 @NullMarked
 public class DesktopPopupHeaderUtils {
@@ -29,7 +28,6 @@ public class DesktopPopupHeaderUtils {
     public static boolean isDesktopPopupHeaderEnabled(
             final BrowserServicesIntentDataProvider intentDataProvider) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && ChromeFeatureList.sAndroidWindowPopupCustomTabUi.isEnabled()
                 && intentDataProvider.getUiType() == CustomTabsUiType.POPUP;
     }
 

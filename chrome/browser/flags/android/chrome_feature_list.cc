@@ -245,10 +245,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidToolbarScrollAblation,
     &kAndroidUseAdminsForEnterpriseInfo,
     &kAndroidVerticalTabs,
-    &kAndroidWindowPopupCustomTabUi,
-    &kAndroidWindowPopupLargeScreen,
-    &kAndroidWindowPopupPredictFinalBounds,
-    &kAndroidWindowPopupResizeAfterSpawn,
     &kAndroidXRUsesSurfaceControl,
     &kAndroidXrImmersivePlayer,
     &kAndroidZoomImmersive,
@@ -601,10 +597,6 @@ BASE_FEATURE(kAndroidThemeResourceProvider, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidToolbarScrollAblation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidUseAdminsForEnterpriseInfo, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidVerticalTabs, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidWindowPopupCustomTabUi, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidWindowPopupLargeScreen, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidWindowPopupPredictFinalBounds, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kAndroidWindowPopupResizeAfterSpawn, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidXRUsesSurfaceControl, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidXrImmersivePlayer, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kAndroidZoomImmersive, base::FEATURE_DISABLED_BY_DEFAULT);

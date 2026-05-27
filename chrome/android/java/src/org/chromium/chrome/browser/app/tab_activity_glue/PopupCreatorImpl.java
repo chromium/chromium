@@ -40,7 +40,6 @@ import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
 import org.chromium.chrome.browser.customtabs.features.desktop_popup_header.DesktopPopupHeaderUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.media.AutoPictureInPictureTabHelper;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -420,14 +419,9 @@ public class PopupCreatorImpl implements PopupCreator {
      */
     private static int predictBrowserTopControlsTotalHeightBelowTopInsetPx(
             Context targetDisplayContext, int topInsetPx) {
-        // Without edge-to-edge drawing the caption bar is precisely the top inset.
-        int captionBarOverflowOverTopInsetPx = 0;
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)) {
-            final int customTabsE2EHeaderHeightPx =
-                    DesktopPopupHeaderUtils.getFinalHeaderHeightPx(
-                            targetDisplayContext, topInsetPx);
-            captionBarOverflowOverTopInsetPx = customTabsE2EHeaderHeightPx - topInsetPx;
-        }
+        final int customTabsE2EHeaderHeightPx =
+                DesktopPopupHeaderUtils.getFinalHeaderHeightPx(targetDisplayContext, topInsetPx);
+        final int captionBarOverflowOverTopInsetPx = customTabsE2EHeaderHeightPx - topInsetPx;
 
         final int customTabsHeaderHeightPx =
                 targetDisplayContext
@@ -528,10 +522,7 @@ public class PopupCreatorImpl implements PopupCreator {
     private static @Nullable ActivityOptions createPopupActivityOptions(
             @Nullable Rect windowBounds, @Nullable WindowAndroid sourceWindow) {
         return createPopupActivityOptions(
-                windowBounds,
-                sourceWindow,
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS));
+                windowBounds, sourceWindow, /* predictFinalBounds= */ true);
     }
 
     private static @Nullable ActivityOptions createDocumentPipActivityOptions(

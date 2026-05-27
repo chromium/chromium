@@ -214,12 +214,6 @@ public abstract class ChromeFeatureList {
             "AndroidUseAdminsForEnterpriseInfo";
     public static final String ANDROID_VERTICAL_TABS = "AndroidVerticalTabs";
     public static final String ANDROID_WINDOW_MANAGEMENT_WEB_API = "AndroidWindowManagementWebApi";
-    public static final String ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI = "AndroidWindowPopupCustomTabUi";
-    public static final String ANDROID_WINDOW_POPUP_LARGE_SCREEN = "AndroidWindowPopupLargeScreen";
-    public static final String ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS =
-            "AndroidWindowPopupPredictFinalBounds";
-    public static final String ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN =
-            "AndroidWindowPopupResizeAfterSpawn";
     public static final String ANDROID_XR_IMMERSIVE_PLAYER = "AndroidXrImmersivePlayer";
     public static final String ANDROID_XR_USES_SURFACE_CONTROL = "AndroidXRUsesSurfaceControl";
     public static final String ANDROID_ZOOM_IMMERSIVE = "AndroidZoomImmersive";
@@ -803,14 +797,6 @@ public abstract class ChromeFeatureList {
                     ANDROID_WINDOW_MANAGEMENT_WEB_API,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sAndroidWindowPopupCustomTabUi =
-            newCachedFlag(ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI, true);
-    public static final CachedFlag sAndroidWindowPopupLargeScreen =
-            newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, true);
-    public static final CachedFlag sAndroidWindowPopupPredictFinalBounds =
-            newCachedFlag(ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS, true);
-    public static final CachedFlag sAndroidWindowPopupResizeAfterSpawn =
-            newCachedFlag(ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN, true);
     public static final CachedFlag sAndroidXrImmersivePlayer =
             newCachedFlag(ANDROID_XR_IMMERSIVE_PLAYER, false);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
@@ -1259,10 +1245,6 @@ public abstract class ChromeFeatureList {
                     sAndroidUseAdminsForEnterpriseInfo,
                     sAndroidVerticalTabs,
                     sAndroidWindowManagementWebApi,
-                    sAndroidWindowPopupCustomTabUi,
-                    sAndroidWindowPopupLargeScreen,
-                    sAndroidWindowPopupPredictFinalBounds,
-                    sAndroidWindowPopupResizeAfterSpawn,
                     sAndroidXrImmersivePlayer,
                     sAppSpecificHistory,
                     sAppSpecificHistoryViewIntent,

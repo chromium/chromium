@@ -53,8 +53,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.IntentHandler;
@@ -63,7 +61,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.IncognitoCctCallerId;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.media.AutoPictureInPictureTabHelper;
 import org.chromium.chrome.browser.media.DocumentPictureInPictureActivity;
@@ -81,7 +78,6 @@ import org.chromium.ui.insets.InsetObserver;
 
 /** Unit test for {@link PopupCreatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
 public class PopupCreatorImplUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -289,28 +285,6 @@ public class PopupCreatorImplUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
-    public void testActivityOptionsSetWhenWindowFeaturesComplete() {
-        final WindowFeatures windowFeatures =
-                new WindowFeatures(100, 200, 300, 400); // left, top, width, height
-        final Rect windowBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
-
-        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
-
-        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
-        ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
-
-        assertEquals(
-                "The launch display ID specified in ActivityOptions is incorrect",
-                DISPLAY_ID,
-                activityOptions.getLaunchDisplayId());
-        assertEquals(
-                "The launch bounds specified in ActivityOptions are incorrect",
-                windowBounds,
-                activityOptions.getLaunchBounds());
-    }
-
-    @Test
     public void testActivityOptionsWhenWindowFeaturesDegenerated() {
         WindowFeatures windowFeatures = new WindowFeatures(null, null, null, 100);
 
@@ -341,51 +315,6 @@ public class PopupCreatorImplUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
-    public void testSizeIsPreservedIfSpecifiedInWindowFeatures() {
-        final WindowFeatures windowFeatures =
-                new WindowFeatures(null, null, 300, 400); // left, top, width, height
-        final Rect windowBounds = new Rect(0, 0, 300, 400); // left, top, right, bottom
-
-        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
-
-        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
-        ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
-
-        Rect launchBounds = activityOptions.getLaunchBounds();
-
-        assertEquals(
-                "The launch bounds specified in ActivityOptions have not preserved the provided"
-                        + " width",
-                windowBounds.width(),
-                launchBounds.width());
-        assertEquals(
-                "The launch bounds specified in ActivityOptions have not preserved the provided"
-                        + " height",
-                windowBounds.height(),
-                launchBounds.height());
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
-    public void testRequestedBoundsAreClampedToDisplayBounds_predictionFlagDisabled() {
-        final Rect displayLocalBounds = new Rect(0, 0, 600, 800);
-        doReturn(displayLocalBounds).when(mDisplay).getLocalBounds();
-        final WindowFeatures windowFeatures =
-                new WindowFeatures(-100, -100, 1000, 1000); // left, top, width, height
-        final Rect windowBounds = new Rect(-100, -100, 900, 900); // left, top, right, bottom
-
-        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
-
-        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
-        Rect launchBounds = getActivityOptionsPassedToReparentingTask().getLaunchBounds();
-
-        assertTrue(
-                "The launch bounds specified in ActivityOptions do not fit inside display",
-                displayLocalBounds.contains(launchBounds));
-    }
-
-    @Test
     public void testRequestedBoundsAreClampedToDisplayBounds() {
         final Rect displayLocalBounds = new Rect(0, 0, 600, 800);
         doReturn(displayLocalBounds).when(mDisplay).getLocalBounds();
@@ -401,28 +330,6 @@ public class PopupCreatorImplUnitTest {
         assertTrue(
                 "The launch bounds specified in ActivityOptions do not fit inside display",
                 displayLocalBounds.contains(launchBounds));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_PREDICT_FINAL_BOUNDS)
-    public void testInsetsForecastNotUsedForNewPopups_flagDisabled() {
-        PopupCreatorImpl.setInsetsForecastForTesting(
-                Insets.of(-12, -34, -56, -78)); // left, top, right, bottom
-        WindowFeatures windowFeatures =
-                new WindowFeatures(100, 200, 300, 400); // left, top, width, height
-        final Rect windowBounds = new Rect(100, 200, 400, 600); // left, top, right, bottom
-
-        doReturn(mDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
-
-        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
-        ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
-
-        Rect launchBounds = activityOptions.getLaunchBounds();
-
-        assertEquals(
-                "The launch bounds specified in ActivityOptions are incorrect",
-                windowBounds,
-                launchBounds);
     }
 
     @Test
@@ -450,40 +357,6 @@ public class PopupCreatorImplUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
-    public void testPopupInsetsForecastUseExpectedValues_standardUiMode() {
-        PopupCreatorImpl.setInsetsForecastForTesting(null);
-
-        /* Insets.of(
-         *     0,
-         *     0,
-         *     -(left inset + right inset),
-         *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
-        assertEquals(
-                "The insets returned are invalid",
-                Insets.of(0, 0, -(12 + 56), -(34 + 20 + 9 + 78)),
-                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mDisplay));
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
-    public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_standardUiMode() {
-        PopupCreatorImpl.setInsetsForecastForTesting(null);
-
-        /* Pixel values of insets are scaled by the density quotient between displays.
-         * Insets.of(
-         *     0,
-         *     0,
-         *     -(left inset + right inset),
-         *     -(top inset + CCT toolbar height + hairline height + bottom inset)) */
-        assertEquals(
-                "The insets returned are invalid",
-                Insets.of(0, 0, -(24 + 112), -(68 + 20 + 9 + 156)),
-                PopupCreatorImpl.getPopupInsetsForecast(mWindow, mExternalDisplay));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValues_E2EUiMode() {
         PopupCreatorImpl.setInsetsForecastForTesting(null);
 
@@ -499,7 +372,6 @@ public class PopupCreatorImplUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_E2EUiMode() {
         PopupCreatorImpl.setInsetsForecastForTesting(null);
 
@@ -520,7 +392,6 @@ public class PopupCreatorImplUnitTest {
      * header height should match the top inset height.
      */
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValues_E2EUiMode_smallHeader() {
         PopupCreatorImpl.setInsetsForecastForTesting(null);
         doReturn(10)
@@ -546,7 +417,6 @@ public class PopupCreatorImplUnitTest {
      * header height should match the top inset height.
      */
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupInsetsForecastUseExpectedValuesCrossDisplays_E2EUiMode_smallHeader() {
         PopupCreatorImpl.setInsetsForecastForTesting(null);
         doReturn(10)
@@ -569,37 +439,6 @@ public class PopupCreatorImplUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
-    public void testPopupOnExternalDisplay_standardUiMode() {
-        final WindowFeatures windowFeatures =
-                new WindowFeatures(-390, -1350, 300, 400); // left, top, width, height
-        final Rect windowBounds = new Rect(-390, -1350, -90, -950); // left, top, right, bottom
-
-        doReturn(mExternalDisplay).when(mDisplayAndroidManager).getDisplayMatching(windowBounds);
-
-        PopupCreatorImpl.setInsetsForecastForTesting(null);
-        mPopupCreator.moveTabToNewPopup(mTab, windowFeatures);
-
-        final ActivityOptions activityOptions = getActivityOptionsPassedToReparentingTask();
-
-        final Rect targetBounds =
-                new Rect(
-                        0,
-                        0,
-                        (300 + 12 + 56) * 2,
-                        (400 + 34 + 78) * 2 + 20 + 9); // left, top, right, bottom
-        assertEquals(
-                "The launch display ID specified in ActivityOptions is incorrect",
-                EXTERNAL_DISPLAY_ID,
-                activityOptions.getLaunchDisplayId());
-        assertEquals(
-                "The launch bounds specified in ActivityOptions is incorrect",
-                targetBounds,
-                activityOptions.getLaunchBounds());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_CUSTOM_TAB_UI)
     public void testPopupOnExternalDisplay_E2EUiMode() {
         final WindowFeatures windowFeatures =
                 new WindowFeatures(-390, -1350, 300, 400); // left, top, width, height

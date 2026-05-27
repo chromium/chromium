@@ -5304,42 +5304,6 @@ inline constexpr char kAndroidWindowOcclusionDescription[] =
     "Enables occlusion tracking on Android, which can save CPU and memory in "
     "multi-window environments.";
 
-inline constexpr char kAndroidWindowPopupCustomTabUiName[] =
-    "Enable new UI mode in Custom Tabs for contextual popups.";
-inline constexpr char kAndroidWindowPopupCustomTabUiDescription[] =
-    "Show the title of a tab opened in a pop-up window in caption bar of the "
-    "top-level window, if exists and has sufficient dimensions.";
-
-inline constexpr char kAndroidWindowPopupLargeScreenName[] =
-    "Enable desktop-like behavior of window popup web API in desktop windowing "
-    "on Android.";
-inline constexpr char kAndroidWindowPopupLargeScreenDescription[] =
-    "Open an actual new window instead of new tab on window.open() Javascript "
-    "call and make moving windows with window.{move|resize}{By|To}() "
-    "possible.";
-
-inline constexpr char kAndroidWindowPopupPredictFinalBoundsName[] =
-    "Try to predict the displacement between top-level window and website "
-    "viewport before creating a popup.";
-inline constexpr char kAndroidWindowPopupPredictFinalBoundsDescription[] =
-    "Size of the website viewport of a new contextual popup may be requested "
-    "as a parameter in a window.open() Javascript call. If this flag is "
-    "enabled, then the final bounds of the popup will be predicted before its "
-    "creation in hope the resizing action won't be needed. See also the "
-    "enable-android-window-popup-resize-after-spawn flag that regulates "
-    "post-creation bounds adjustments.";
-
-inline constexpr char kAndroidWindowPopupResizeAfterSpawnName[] =
-    "Resize a contextual popup after spawning it to compensate for UI elements "
-    "so that its website viewport dimensions match requested ones.";
-inline constexpr char kAndroidWindowPopupResizeAfterSpawnDescription[] =
-    "Size of the website viewport of a new contextual popup may be requested "
-    "as a parameter in a window.open() Javascript call. If this flag is "
-    "enabled, then the popup will be resized after its creation to ensure that "
-    "this web API contract is satisfied. See also the "
-    "enable-android-window-popup-predict-final-bounds flag that regulates "
-    "pre-creation bounds adjustments.";
-
 inline constexpr char kHomeButtonRemovalName[] = "Home Button Removal";
 inline constexpr char kHomeButtonRemovalDescription[] =
     "Enables the Home Button Removal feature.";

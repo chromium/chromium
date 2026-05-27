@@ -2930,38 +2930,6 @@
     "expiry_milestone": 148
   },
   {
-    "name": "enable-android-window-popup-custom-tab-ui",
-    "owners": [
-      "chominskib@google.com",
-      "lt-web-apps-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "enable-android-window-popup-large-screen",
-    "owners": [
-      "chominskib@google.com",
-      "lt-web-apps-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "enable-android-window-popup-predict-final-bounds",
-    "owners": [
-      "chominskib@google.com",
-      "lt-web-apps-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "enable-android-window-popup-resize-after-spawn",
-    "owners": [
-      "chominskib@google.com",
-      "lt-web-apps-team@google.com"
-    ],
-    "expiry_milestone": 150
-  },
-  {
     "name": "enable-annotated-page-contents-for-virtual-structure",
     "owners": ["ssid@chromium.org", "salg@google.com"],
     "expiry_milestone": 150

@@ -10968,37 +10968,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"enable-android-window-popup-custom-tab-ui",
-     flag_descriptions::kAndroidWindowPopupCustomTabUiName,
-     flag_descriptions::kAndroidWindowPopupCustomTabUiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidWindowPopupCustomTabUi)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-android-window-popup-large-screen",
-     flag_descriptions::kAndroidWindowPopupLargeScreenName,
-     flag_descriptions::kAndroidWindowPopupLargeScreenDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidWindowPopupLargeScreen)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-android-window-popup-predict-final-bounds",
-     flag_descriptions::kAndroidWindowPopupPredictFinalBoundsName,
-     flag_descriptions::kAndroidWindowPopupPredictFinalBoundsDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         chrome::android::kAndroidWindowPopupPredictFinalBounds)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"enable-android-window-popup-resize-after-spawn",
-     flag_descriptions::kAndroidWindowPopupResizeAfterSpawnName,
-     flag_descriptions::kAndroidWindowPopupResizeAfterSpawnDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidWindowPopupResizeAfterSpawn)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
     {"enable-android-window-occlusion",
      flag_descriptions::kAndroidWindowOcclusionName,
      flag_descriptions::kAndroidWindowOcclusionDescription, kOsAndroid,

@@ -68,7 +68,6 @@ import java.util.function.Supplier;
 @EnableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
 @DisableFeatures({
     ChromeFeatureList.FORCE_WEB_CONTENTS_DARK_MODE,
-    ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN,
     ChromeFeatureList.DOCUMENT_PICTURE_IN_PICTURE_API
 })
 public class ActivityTabWebContentsDelegateAndroidUnitTest {
@@ -252,37 +251,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testAddNewContentsAddToTabModelWhenPopupFlagNotEnabled() {
-        WebContents newWebContents = mock(WebContents.class);
-        Tab newTab = mock(Tab.class);
-        doReturn(newTab)
-                .when(mTabCreator)
-                .createTabWithWebContents(any(), anyBoolean(), any(), anyInt(), any(), any());
-
-        mTabWebContentsDelegateAndroid.addNewContents(
-                mWebContents,
-                newWebContents,
-                new GURL("https://foo.com"),
-                WindowOpenDisposition.NEW_POPUP,
-                new WindowFeatures(),
-                true,
-                null);
-
-        verify(mTabCreator, times(1))
-                .createTabWithWebContents(
-                        any(), anyBoolean(), any(), anyInt(), any(), mFutureCaptor.capture());
-        CompletableFuture<Boolean> capturedFuture = mFutureCaptor.getValue();
-        assertTrue(
-                "The final decision to add the tab to the TabModel should have already been made",
-                capturedFuture.isDone());
-        assertTrue(
-                "The final decision to add the tab to the TabModel should be positive",
-                capturedFuture.getNow(null));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testAddNewContentsDoesNotAddToTabModelWhenMovingTabToPopupIsSuccessful() {
         when(mPopupCreator.moveTabToNewPopup(any(), any())).thenReturn(true);
         WebContents newWebContents = mock(WebContents.class);
@@ -313,7 +281,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testAddNewContentsAddToTabModelWhenMovingTabToPopupIsUnsuccessful() {
         when(mPopupCreator.moveTabToNewPopup(any(), any())).thenReturn(false);
         WebContents newWebContents = mock(WebContents.class);
@@ -433,7 +400,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testSetContentsBoundsClampsBounds() {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
         mTabWebContentsDelegateAndroid.setContentsBounds(
@@ -448,17 +414,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @DisableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-    public void testSetContentsBoundsNoOpIfFlagDisabled() {
-        mTabWebContentsDelegateAndroid.setIsPopup(true);
-
-        mTabWebContentsDelegateAndroid.setContentsBounds(mWebContents, new Rect(0, 0, 400, 400));
-
-        verify(mFlaggedApiDelegate, never()).moveTaskTo(any(), anyInt(), any());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testSetContentsBoundsNoOpIfDelegateNull() {
         mTabWebContentsDelegateAndroid.setIsPopup(true);
         AconfigFlaggedApiDelegate.setInstanceForTesting(null);
@@ -468,7 +423,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testSetContentsBoundsNoOpIfNotPopup() {
         mTabWebContentsDelegateAndroid.setIsPopup(false);
 
@@ -478,7 +432,6 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
     public void testSetContentsBoundsNoOpIfNoDisplayMatching() {
         doReturn(null).when(mDisplayAndroidManager).getDisplayMatching(any());
 

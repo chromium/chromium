@@ -292,9 +292,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
             final boolean launchedMovablePopup =
-                    ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)
-                            && PopupCreatorFactory.getInstance()
-                                    .moveTabToNewPopup(tab, windowFeatures);
+                    PopupCreatorFactory.getInstance().moveTabToNewPopup(tab, windowFeatures);
             addTabToModel.complete(!launchedMovablePopup);
             RecordHistogram.recordBooleanHistogram(
                     "Android.MultiWindowMode.PopupOpensInNewWindow", launchedMovablePopup);
@@ -360,10 +358,6 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     public void setContentsBounds(WebContents source, Rect bounds) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_WINDOW_POPUP_LARGE_SCREEN)) {
-            return;
-        }
-
         if (!isPopup() || mActivity == null) {
             return;
         }

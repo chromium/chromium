@@ -1734,24 +1734,6 @@
             ]
         }
     ],
-    "AndroidWindowPopupLargeScreen": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidWindowPopupCustomTabUi",
-                        "AndroidWindowPopupLargeScreen",
-                        "AndroidWindowPopupPredictFinalBounds",
-                        "AndroidWindowPopupResizeAfterSpawn"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidZeroCopyVideoCapture": [
         {
             "platforms": [
