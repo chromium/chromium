@@ -38,6 +38,8 @@ class AndroidNotificationHandler : public ReceivingUiHandler,
   // Overridden in tests to mock actual Android JNI notification calls.
   virtual void ShowNotification(const SendTabToSelfEntry& entry);
   virtual void HideNotification(const std::string& guid);
+  virtual void ShowMessageBanner(std::string_view device_name,
+                                 content::WebContents* web_contents);
 
  private:
   void DisplayNewEntriesOnUIThread(

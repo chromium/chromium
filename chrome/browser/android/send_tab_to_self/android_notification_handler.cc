@@ -12,6 +12,7 @@
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chrome/browser/android/send_tab_to_self/send_tab_to_self_android_bridge.h"
 #include "chrome/browser/send_tab_to_self/send_tab_to_self_util.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -22,6 +23,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/window_open_disposition.h"
 #include "url/origin.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -116,6 +118,10 @@ AndroidNotificationHandler::~AndroidNotificationHandler() {
 
 void AndroidNotificationHandler::DisplayNewEntries(
     const std::vector<const SendTabToSelfEntry*>& new_entries) {
+  if (new_entries.empty()) {
+    return;
+  }
+
   std::vector<SendTabToSelfEntry> vector_copy;
 
   for (const SendTabToSelfEntry* entry : new_entries) {
@@ -131,20 +137,23 @@ void AndroidNotificationHandler::DisplayNewEntries(
 void AndroidNotificationHandler::DisplayNewEntriesOnUIThread(
     const std::vector<SendTabToSelfEntry>& new_entries) {
   // Called when new entries are received from sync.
-  content::WebContents* target_web_contents =
+  content::WebContents* const target_web_contents =
       base::FeatureList::IsEnabled(kSendTabToSelfAutoOpen)
           ? GetActiveWebContents(/*require_visible=*/true)
           : nullptr;
 
-  for (const SendTabToSelfEntry& entry : new_entries) {
-    if (target_web_contents) {
-      // If Chrome is already open and active in the foreground, entries are
-      // opened directly as new background tabs.
+  // If Chrome is already open and active in the foreground, entries are
+  // opened directly as new background tabs.
+  if (target_web_contents) {
+    for (const SendTabToSelfEntry& entry : new_entries) {
       OpenEntryInBackgroundTab(entry, *target_web_contents);
-      continue;
     }
+    ShowMessageBanner(new_entries.back().GetDeviceName(), target_web_contents);
+  } else {
     // Otherwise, show a standard system notification.
-    ShowNotification(entry);
+    for (const SendTabToSelfEntry& entry : new_entries) {
+      ShowNotification(entry);
+    }
   }
 }
 
@@ -216,22 +225,23 @@ void AndroidNotificationHandler::CheckAndOpenPendingEntries() {
 
   // If an active browser window WebContents is available, auto-opens all unread
   // entries as new background tabs and dismisses their system notifications.
-  content::WebContents* target_web_contents =
+  content::WebContents* const target_web_contents =
       GetActiveWebContents(/*require_visible=*/false);
   if (!target_web_contents) {
     return;
   }
 
-  std::vector<const SendTabToSelfEntry*> pending_entries =
+  const std::vector<const SendTabToSelfEntry*> pending_entries =
       send_tab_to_self_model_->GetUnopenedEntriesTargetedToLocalDevice();
-  std::vector<std::string> guids_to_dismiss;
+
   for (const SendTabToSelfEntry* entry : pending_entries) {
     OpenEntryInBackgroundTab(*entry, *target_web_contents);
-    guids_to_dismiss.push_back(entry->GetGUID());
+    HideNotification(entry->GetGUID());
   }
 
-  if (!guids_to_dismiss.empty()) {
-    DismissEntries(guids_to_dismiss);
+  if (!pending_entries.empty()) {
+    ShowMessageBanner(pending_entries.back()->GetDeviceName(),
+                      target_web_contents);
   }
 }
 
@@ -257,6 +267,12 @@ void AndroidNotificationHandler::OpenEntryInBackgroundTab(
   }
 
   send_tab_to_self_model_->MarkEntryOpened(entry.GetGUID());
+}
+
+void AndroidNotificationHandler::ShowMessageBanner(
+    std::string_view device_name,
+    content::WebContents* web_contents) {
+  send_tab_to_self::ShowMessageBanner(web_contents, device_name);
 }
 
 }  // namespace send_tab_to_self
