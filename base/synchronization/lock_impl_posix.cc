@@ -41,7 +41,7 @@ namespace {
 
 #if BUILDFLAG(IS_POSIX)
 // static
-std::atomic<int> g_spin_count{1024};
+std::atomic<int> g_spin_count{0};
 #endif  // BUILDFLAG(IS_POSIX)
 
 #if BUILDFLAG(ENABLE_MUTEX_PRIORITY_INHERITANCE) && BUILDFLAG(IS_ANDROID)
