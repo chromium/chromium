@@ -75,6 +75,13 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
                                                             name_or_value);
   }
 
+  ui::BrowserAccessibility* FindNodeWithRole(ax::mojom::Role role) {
+    ui::BrowserAccessibility* root =
+        GetManager()->GetBrowserAccessibilityRoot();
+    CHECK(root);
+    return FindFirstAccessibilityNodeWithRole(*root, role);
+  }
+
   ui::BrowserAccessibilityManager* GetManager() {
     WebContentsImpl* web_contents =
         static_cast<WebContentsImpl*>(shell()->web_contents());
@@ -1507,5 +1514,85 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   EXPECT_TRUE(target->HasState(ax::mojom::State::kCollapsed));
   EXPECT_FALSE(target->HasState(ax::mojom::State::kExpanded));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+// Test that the leaf cache is updated when changing a node's role updates the
+// node's BrowserAccessibilityAndroid::IsLeaf() status.
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       DynamicRoleChangeStaleLeafCache) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <blockquote id="target">
+        <strong>child1</strong>
+        <em>child2</em>
+      </blockquote>
+      )HTML");
+
+  ui::BrowserAccessibility* target =
+      FindNodeWithRole(ax::mojom::Role::kBlockquote);
+  EXPECT_FALSE(target->IsLeaf());
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::AXEventGenerator::Event::ROLE_CHANGED);
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      "document.getElementById('target').setAttribute('role', 'button');"));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  target = FindNodeWithRole(ax::mojom::Role::kButton);
+  EXPECT_TRUE(target->IsLeaf());
+}
+
+// Test that the leaf cache is updated when changing a node's aria-label updates
+// the node's BrowserAccessibilityAndroid::IsLeaf() status.
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       DynamicLabelChangeStaleLeafCache) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <h1 id="target" tabindex=0>
+        <strong>child1</strong>
+        <em>child2</em>
+      </h1>
+      )HTML");
+
+  ui::BrowserAccessibility* target =
+      FindNodeWithRole(ax::mojom::Role::kHeading);
+  EXPECT_TRUE(target->IsLeaf());
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::AXEventGenerator::Event::NAME_CHANGED);
+  EXPECT_TRUE(ExecJs(shell(),
+                     "document.getElementById('target').setAttribute('aria-"
+                     "label', 'label1');"));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  target = FindNodeWithRole(ax::mojom::Role::kHeading);
+  EXPECT_FALSE(target->IsLeaf());
+}
+
+// Test that the leaf cache is updated when changing a node's tabindex updates
+// the node's BrowserAccessibilityAndroid::IsLeaf() status.
+IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
+                       DynamicTabIndexChangeStaleLeafCache) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <div role="tooltip" id="target" title="label1">
+        <strong>child1</strong>
+        <em>child2</em>
+      </div>
+      )HTML");
+
+  ui::BrowserAccessibility* target =
+      FindNodeWithRole(ax::mojom::Role::kTooltip);
+  EXPECT_FALSE(target->IsLeaf());
+
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::AXEventGenerator::Event::STATE_CHANGED);
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      "document.getElementById('target').setAttribute('tabindex', '0');"));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  target = FindNodeWithRole(ax::mojom::Role::kTooltip);
+  EXPECT_TRUE(target->IsLeaf());
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

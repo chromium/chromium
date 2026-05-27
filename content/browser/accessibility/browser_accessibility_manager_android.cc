@@ -852,24 +852,24 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
                                                       changes);
 
   WebContentsAccessibilityAndroid* wcax = GetWebContentsAXFromRootManager();
-  if (!wcax) {
-    return;
-  }
+  if (wcax) {
+    // Reset content changed events counter every time we finish an atomic
+    // update.
+    wcax->ResetContentChangedEventsCounter();
 
-  // Reset content changed events counter every time we finish an atomic update.
-  wcax->ResetContentChangedEventsCounter();
+    // When the root changes, send the new root id and a navigate signal to
+    // Java.
+    if (root_changed) {
+      auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
+          GetManagerForRootFrame());
+      DCHECK(root_manager);
 
-  // When the root changes, send the new root id and a navigate signal to Java.
-  if (root_changed) {
-    auto* root_manager = static_cast<BrowserAccessibilityManagerAndroid*>(
-        GetManagerForRootFrame());
-    DCHECK(root_manager);
+      auto* root = static_cast<BrowserAccessibilityAndroid*>(
+          root_manager->GetBrowserAccessibilityRoot());
+      DCHECK(root);
 
-    auto* root = static_cast<BrowserAccessibilityAndroid*>(
-        root_manager->GetBrowserAccessibilityRoot());
-    DCHECK(root);
-
-    wcax->HandleNavigate(root->GetUniqueId());
+      wcax->HandleNavigate(root->GetUniqueId());
+    }
   }
 
   // Invalidate java-side cache for structural generated events. This
@@ -884,12 +884,21 @@ void BrowserAccessibilityManagerAndroid::OnAtomicUpdateFinished(
     CHECK(wrapper);
 
     auto event_type = targeted_event.event_params->event;
-    if (event_type == ui::AXEventGenerator::Event::CHILDREN_CHANGED ||
-        event_type == ui::AXEventGenerator::Event::PARENT_CHANGED) {
-      // Structural changes in the unignored/platform tree requires the leaf
-      // cache be invalidated.
-      BrowserAccessibilityAndroid::ResetLeafCache();
-      ClearNodeInfoCacheForGivenId(wrapper->GetUniqueId());
+    switch (event_type) {
+      case ui::AXEventGenerator::Event::CHILDREN_CHANGED:
+      case ui::AXEventGenerator::Event::PARENT_CHANGED:
+        // Structural changes in the unignored/platform tree requires the leaf
+        // cache be invalidated.
+        BrowserAccessibilityAndroid::ResetLeafCache();
+        ClearNodeInfoCacheForGivenId(wrapper->GetUniqueId());
+        break;
+      case ui::AXEventGenerator::Event::NAME_CHANGED:
+      case ui::AXEventGenerator::Event::ROLE_CHANGED:
+      case ui::AXEventGenerator::Event::STATE_CHANGED:
+        wrapper->EraseLeafCacheDataForNode();
+        break;
+      default:
+        break;
     }
   }
 }

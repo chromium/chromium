@@ -2841,6 +2841,10 @@ const std::vector<int> BrowserAccessibilityAndroid::GetLabelledByAndroidIds()
   return android_ids;
 }
 
+void BrowserAccessibilityAndroid::EraseLeafCacheDataForNode() {
+  GetLeafMap().erase(this);
+}
+
 bool BrowserAccessibilityAndroid::ShouldExposeEditableValue() const {
   if (base::FeatureList::IsEnabled(
           features::kAccessibilityExposeNonAtomicTextFieldChildren) &&

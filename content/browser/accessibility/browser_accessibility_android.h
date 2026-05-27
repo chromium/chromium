@@ -323,6 +323,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // aria-labelledby.
   const std::vector<int> GetLabelledByAndroidIds() const;
 
+  void EraseLeafCacheDataForNode();
+
  protected:
   BrowserAccessibilityAndroid(ui::BrowserAccessibilityManager* manager,
                               ui::AXNode* node);
