@@ -27,7 +27,10 @@ rust_static_library("tpm") {
   # Required for cxx bridge generated code.
   allow_unsafe = true
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//third_party/boringssl:bssl_crypto",
+  ]
 }
 
 rust_static_library("tpm_unittests") {
