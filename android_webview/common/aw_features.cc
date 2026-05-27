@@ -32,6 +32,9 @@ BASE_FEATURE(kWebViewBypassHttpCacheForPrefetchFromHeader,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 
+// Enables C++ UMA metrics filtering.
+BASE_FEATURE(kWebViewCppMetricsFiltering, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables content restriction support in WebView.
 BASE_FEATURE(kWebViewContentRestrictionSupport,
              base::FEATURE_DISABLED_BY_DEFAULT);

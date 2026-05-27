@@ -851,6 +851,7 @@ test("android_webview_unittests") {
     "../browser/gfx/test/rendering_test.cc",
     "../browser/gfx/test/rendering_test.h",
     "../browser/lifecycle/aw_contents_lifecycle_notifier_unittest.cc",
+    "../browser/metrics/android_metrics_log_uploader_unittest.cc",
     "../browser/metrics/android_metrics_provider_unittest.cc",
     "../browser/metrics/aw_metrics_filtering_status_metrics_provider_unittest.cc",
     "../browser/metrics/aw_metrics_service_accessor_unittest.cc",

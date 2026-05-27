@@ -719,21 +719,29 @@ public final class AwBrowserProcess {
                             && AwFeatureMap.isEnabled(
                                     AwFeatures.WEBVIEW_USE_METRICS_UPLOAD_SERVICE_ONLY_SDK_RUNTIME);
 
+            boolean useCppFiltering =
+                    AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CPP_METRICS_FILTERING);
+
             if (metricServiceEnabledOnlySdkRuntime) {
                 AwMetricsLogUploader uploader = new AwMetricsLogUploader();
                 // Open a connection during startup while connecting to other services such as
                 // ComponentsProviderService and VariationSeedServer to try to avoid spinning the
                 // nonembedded ":webview_service" twice.
                 uploader.initialize();
-                AndroidMetricsLogUploader.setConsumer(new MetricsFilteringDecorator(uploader));
+                AndroidMetricsLogConsumer consumer =
+                        useCppFiltering ? uploader : new MetricsFilteringDecorator(uploader);
+                AndroidMetricsLogUploader.setConsumer(consumer);
             } else {
                 AndroidMetricsLogConsumer directUploader =
                         data -> {
                             PlatformServiceBridge.getInstance().logMetrics(data);
                             return HttpURLConnection.HTTP_OK;
                         };
-                AndroidMetricsLogUploader.setConsumer(
-                        new MetricsFilteringDecorator(directUploader));
+                AndroidMetricsLogConsumer consumer =
+                        useCppFiltering
+                                ? directUploader
+                                : new MetricsFilteringDecorator(directUploader);
+                AndroidMetricsLogUploader.setConsumer(consumer);
             }
         }
     }

@@ -8,6 +8,8 @@ source_set("metrics") {
     "android_metrics_log_uploader.h",
     "android_metrics_provider.cc",
     "android_metrics_provider.h",
+    "aw_histograms_allowlist.cc",
+    "aw_histograms_allowlist.h",
     "aw_metrics_filtering_status_metrics_provider.cc",
     "aw_metrics_filtering_status_metrics_provider.h",
     "aw_metrics_service_accessor.cc",
@@ -44,6 +46,7 @@ source_set("metrics") {
     "//components/version_info/android:channel_getter",
     "//content/public/browser",
     "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
+    "//third_party/metrics_proto",
   ]
 }
 

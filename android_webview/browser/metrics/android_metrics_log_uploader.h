@@ -34,6 +34,9 @@ class AndroidMetricsLogUploader : public MetricsLogUploader {
                  const std::string& log_signature,
                  const ReportingInfo& reporting_info) override;
 
+  // Filters the log data in place if filtering is enabled in the proto.
+  static void MaybeFilterLog(std::string& log_data);
+
  private:
   const MetricsLogUploader::UploadCallback on_upload_complete_;
   base::WeakPtrFactory<AndroidMetricsLogUploader> weak_factory_{this};

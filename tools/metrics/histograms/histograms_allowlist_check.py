@@ -22,9 +22,11 @@ class WellKnownAllowlistPath(enum.Enum):
   constants or duplicated code among users of this check.
   """
 
-  ANDROID_WEBVIEW = os.path.join('android_webview', 'java', 'src', 'org',
-                                 'chromium', 'android_webview', 'metrics',
-                                 'HistogramsAllowlist.java')
+  # LINT.IfChange(AndroidWebViewHistogramsAllowlistPath)
+  ANDROID_WEBVIEW = os.path.join('android_webview', 'browser', 'metrics',
+                                 'aw_histograms_allowlist.cc')
+
+  # LINT.ThenChange(//android_webview/browser/metrics/aw_histograms_allowlist.cc:AndroidWebViewHistogramsAllowlistPath)
 
   def relative_path(self):
     """Returns the path of the allowlist file relative to src/."""

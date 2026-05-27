@@ -27,6 +27,8 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwWindowCoverageTracker;
+import org.chromium.android_webview.common.AwFeatureMap;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.metrics.AndroidMetricsLogConsumer;
 import org.chromium.android_webview.metrics.AndroidMetricsLogUploader;
@@ -105,8 +107,13 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
                                 PlatformServiceBridge.getInstance().logMetrics(data);
                                 return HttpURLConnection.HTTP_OK;
                             };
-                    AndroidMetricsLogUploader.setConsumer(
-                            new MetricsFilteringDecorator(directUploader));
+                    boolean useCppFiltering =
+                            AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CPP_METRICS_FILTERING);
+                    AndroidMetricsLogConsumer consumer =
+                            useCppFiltering
+                                    ? directUploader
+                                    : new MetricsFilteringDecorator(directUploader);
+                    AndroidMetricsLogUploader.setConsumer(consumer);
 
                     // Need to configure the metrics delay first, because
                     // handleMinidumpsAndSetMetricsConsent() triggers MetricsService initialization.
