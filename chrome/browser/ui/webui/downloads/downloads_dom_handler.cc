@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/webui/fileicon_source.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -566,7 +567,15 @@ void DownloadsDOMHandler::RemoveDownloads(const DownloadVector& to_remove) {
   IdSet ids;
 
   for (download::DownloadItem* download : to_remove) {
-    if (download->IsDangerous() || download->IsInsecure()) {
+    bool should_remove = download->IsDangerous() || download->IsInsecure();
+    if (!should_remove) {
+      download::DownloadDangerType danger_type = download->GetDangerType();
+      should_remove =
+          danger_type == download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING ||
+          danger_type ==
+              download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING;
+    }
+    if (should_remove) {
       // Don't allow users to revive dangerous downloads; just nuke 'em.
       download->Remove();
       continue;

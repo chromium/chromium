@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/webui/downloads/mock_downloads_page.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/mock_download_item.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -125,6 +126,8 @@ TEST_F(DownloadsDOMHandlerTest, ClearAll) {
   testing::StrictMock<download::MockDownloadItem> in_progress;
   EXPECT_CALL(in_progress, IsDangerous()).WillOnce(testing::Return(false));
   EXPECT_CALL(in_progress, IsInsecure()).WillOnce(testing::Return(false));
+  EXPECT_CALL(in_progress, GetDangerType())
+      .WillOnce(testing::Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
   EXPECT_CALL(in_progress, IsTransient()).WillOnce(testing::Return(false));
   EXPECT_CALL(in_progress, GetState())
       .WillOnce(testing::Return(download::DownloadItem::IN_PROGRESS));
@@ -140,6 +143,8 @@ TEST_F(DownloadsDOMHandlerTest, ClearAll) {
   testing::StrictMock<download::MockDownloadItem> completed;
   EXPECT_CALL(completed, IsDangerous()).WillOnce(testing::Return(false));
   EXPECT_CALL(completed, IsInsecure()).WillOnce(testing::Return(false));
+  EXPECT_CALL(completed, GetDangerType())
+      .WillOnce(testing::Return(download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS));
   EXPECT_CALL(completed, IsTransient()).WillRepeatedly(testing::Return(false));
   EXPECT_CALL(completed, GetState())
       .WillOnce(testing::Return(download::DownloadItem::COMPLETE));
@@ -160,6 +165,41 @@ TEST_F(DownloadsDOMHandlerTest, ClearAll) {
   EXPECT_CALL(*manager(), GetDownload(1)).WillOnce(testing::Return(&completed));
   EXPECT_CALL(completed, Remove());
   handler.FinalizeRemovals();
+}
+
+TEST_F(DownloadsDOMHandlerTest, RemoveDownloadsAsyncScanning) {
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+
+  testing::StrictMock<download::MockDownloadItem> async_scanning;
+  EXPECT_CALL(async_scanning, IsDangerous()).WillOnce(testing::Return(false));
+  EXPECT_CALL(async_scanning, IsInsecure()).WillOnce(testing::Return(false));
+  EXPECT_CALL(async_scanning, GetDangerType())
+      .WillOnce(testing::Return(download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING));
+  EXPECT_CALL(async_scanning, Remove());
+  downloads.push_back(&async_scanning);
+
+  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                  web_ui());
+  handler.RemoveDownloads(downloads);
+}
+
+TEST_F(DownloadsDOMHandlerTest, RemoveDownloadsLocalPasswordScanning) {
+  std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
+
+  testing::StrictMock<download::MockDownloadItem> local_password_scanning;
+  EXPECT_CALL(local_password_scanning, IsDangerous())
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(local_password_scanning, IsInsecure())
+      .WillOnce(testing::Return(false));
+  EXPECT_CALL(local_password_scanning, GetDangerType())
+      .WillOnce(testing::Return(
+          download::DOWNLOAD_DANGER_TYPE_ASYNC_LOCAL_PASSWORD_SCANNING));
+  EXPECT_CALL(local_password_scanning, Remove());
+  downloads.push_back(&local_password_scanning);
+
+  TestDownloadsDOMHandler handler(page_.BindAndGetRemote(), manager(),
+                                  web_ui());
+  handler.RemoveDownloads(downloads);
 }
 
 class DownloadsDOMHandlerWithFakeSafeBrowsingTest
