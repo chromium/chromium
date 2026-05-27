@@ -107,6 +107,26 @@ class SpellcheckCustomDictionaryTest : public testing::Test {
         std::move(dictionary_change), path);
   }
 
+  // Wrappers around private methods of SpellcheckCustomDictionary to make them
+  // accessible to tests (since TEST_F creates a subclass and friendship is not
+  // inherited).
+  void Apply(SpellcheckCustomDictionary* dict,
+             const SpellcheckCustomDictionary::Change& change) {
+    dict->Apply(change);
+  }
+  void Notify(SpellcheckCustomDictionary* dict,
+              const SpellcheckCustomDictionary::Change& change) {
+    dict->Notify(change);
+  }
+  void Sync(SpellcheckCustomDictionary* dict,
+            const SpellcheckCustomDictionary::Change& change) {
+    dict->Sync(change);
+  }
+  void Save(SpellcheckCustomDictionary* dict,
+            std::unique_ptr<SpellcheckCustomDictionary::Change> change) {
+    dict->Save(std::move(change));
+  }
+
   // A wrapper around SpellcheckCustomDictionary::OnLoaded private method to
   // avoid a large number of FRIEND_TEST declarations in
   // SpellcheckCustomDictionary.
@@ -727,9 +747,16 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionarySyncLimit) {
                         server_custom_dictionary)))
             .has_value());
 
+    auto dictionary_change =
+        std::make_unique<SpellcheckCustomDictionary::Change>();
     for (size_t i = 0; i < spellcheck::kMaxSyncableDictionaryWords; ++i) {
-      custom_dictionary->AddWord("foo" + base::NumberToString(i));
+      dictionary_change->AddWord("foo" + base::NumberToString(i));
     }
+    dictionary_change->Sanitize(custom_dictionary->GetWords());
+    Apply(custom_dictionary, *dictionary_change);
+    Notify(custom_dictionary, *dictionary_change);
+    Sync(custom_dictionary, *dictionary_change);
+    Save(custom_dictionary, std::move(dictionary_change));
 
     EXPECT_TRUE(custom_dictionary->IsSyncing());
     EXPECT_EQ(spellcheck::kMaxSyncableDictionaryWords,
@@ -762,9 +789,16 @@ TEST_F(SpellcheckCustomDictionaryTest, DictionarySyncLimit) {
 
     // Add the maximum number of words to the client. These words are all
     // different from those on the server.
+    auto dictionary_change =
+        std::make_unique<SpellcheckCustomDictionary::Change>();
     for (size_t i = 0; i < spellcheck::kMaxSyncableDictionaryWords; ++i) {
-      client_custom_dictionary->AddWord("bar" + base::NumberToString(i));
+      dictionary_change->AddWord("bar" + base::NumberToString(i));
     }
+    dictionary_change->Sanitize(client_custom_dictionary->GetWords());
+    Apply(client_custom_dictionary, *dictionary_change);
+    Notify(client_custom_dictionary, *dictionary_change);
+    Sync(client_custom_dictionary, *dictionary_change);
+    Save(client_custom_dictionary, std::move(dictionary_change));
     EXPECT_EQ(client_custom_dictionary->IsSyncing(),
               base::FeatureList::IsEnabled(
                   syncer::kSpellcheckSeparateLocalAndAccountDictionaries));
