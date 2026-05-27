@@ -4282,14 +4282,8 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_REMOVE_CURRENT_DESK" desc="Label for accelerator action - Remove current desk.">
         Remove current desk
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_ACTIVATE" desc="Label for accelerator action - Go to desk 1 to 8.">
-        Go to desk 1 to 8
-      </message>
       <message name="IDS_ASH_ACCELERATOR_ACTIONDESKS_TOGGLE_ASSIGN_TO_ALL_DESKS" desc="Label for accelerator action - Assign active window to all desk.">
         Assign active window to all desks
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DISABLE_CAPS_LOCK" translateable="false" desc="Label for accelerator action - Disable Caps Lock.">
-        Disable Caps Lock
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_EXIT" desc="Label for accelerator action - Sign out.">
         Sign out
@@ -4301,12 +4295,6 @@ No devices connected.
         Turn on/off do not disturb
       </message>
 
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_CAMERA_PREVIEW" translateable="false" desc="Label for accelerator action - Focus on the camera preview.">
-        Focus on the camera preview
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_NEXT_PANE" translateable="false" desc="Label for accelerator action - Next pane.">
-        Next pane
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_FOCUS_PIP" desc="Label for accelerator action - Focus on the picture-in-picture window.">
         Focus on the picture-in-picture window
       </message>
@@ -4328,26 +4316,14 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SNAP_GROUP" desc="Label for accelerator action - Create or sever Snap Group with two side by side windows.">
         Group or ungroup two side-by-side windows
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Label for accelerator action - Toggle keyboard backlight.">
-        Toggle keyboard backlight
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_KEYBOARD_BRIGHTNESS_DOWN" desc="Label for accelerator action - Dim keyboard.">
         Dim keyboard
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_KEYBOARD_BRIGHTNESS_UP" desc="Label for accelerator action - Make keyboard brighter.">
         Make keyboard brighter
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LAUNCH_APP" translateable="false" desc="Label for accelerator action - Click or tap shelf icons 1-8.">
-        Click or tap shelf icons 1-8
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LAUNCH_LAST_APP" desc="Label for accelerator action - Click or tap last icon on shelf.">
         Click or tap last icon on shelf
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_PRESSED" translateable="false" desc="Label for accelerator action - Lock pressed.">
-        Lock pressed
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_RELEASED" translateable="false" desc="Label for accelerator action - Lock released.">
-        Lock released
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_LOCK_SCREEN" desc="Label for accelerator action - Lock device.">
         Lock device
@@ -4358,20 +4334,8 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MAGNIFIER_ZOOM_OUT" desc="Label for accelerator action - Zoom out when magnifier is on.">
         Zoom out when magnifier is on
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_REWIND" translateable="false" desc="Label for accelerator action - Rewind media.">
-        Rewind media
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MEDIA_STOP" translateable="false" desc="Label for accelerator action - Stop media.">
-        Stop media
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MICROPHONE_MUTE_TOGGLE" translateable="false" desc="Label for accelerator action - Toggle mute microphone.">
-        Toggle mute microphone
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MOVE_ACTIVE_WINDOW_BETWEEN_DISPLAYS" desc="Label for accelerator action - Move active window between displays.">
         Move active window between displays
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" translateable="false" desc="Label for accelerator action - Open new Incognito window.">
-        Open new Incognito window
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_SPLIT_VIEW" desc="Label for accelerator action - Add tab to new split view.">
         Add tab to new split view
@@ -4379,13 +4343,10 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_TAB" desc="Label for accelerator action - Open new tab.">
         Open new tab
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_WINDOW" desc="Label for accelerator action - Open new tab in new window.">
-        Open new tab in new window
-      </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CALCULATOR" desc="Label for accelerator action - Open Calculator app.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CALCULATOR" desc="Label for accelerator action - Open Calculator app.">
         Open Calculator app
       </message>
-       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH" desc="Label for accelerator action - Open Crosh window.">
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_CROSH" desc="Label for accelerator action - Open Crosh window.">
         Open Crosh window
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_GEMINI_APP" desc="Label for accelerator action - Toggle Gemini App.">
@@ -4402,21 +4363,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_OPEN_GET_HELP" desc="Label for accelerator action - Open 'Help' in Explore app.">
         Open "Help" in Explore app
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_POWER_PRESSED" translateable="false" desc="Label for accelerator action - Power pressed.">
-        Power pressed
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_POWER_RELEASED" translateable="false" desc="Label for accelerator action - Power released.">
-        Power released
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_PRINT_UI_HIERARCHIES" translateable="false" desc="Label for accelerator action - Print UI hierarchies.">
-        Print UI hierarchies.
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_PRIVACY_SCREEN_TOGGLE" translateable="false" desc="Label for accelerator action - Toggle privacy screen.">
-        Toggle privacy screen
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_RESTORE_TAB" translateable="false" desc="Label for accelerator action - Reopen the last tab or window closed.">
-        Reopen the last tab or window closed
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_ROTATE_SCREEN" desc="Label for accelerator action - Rotate screen 90 degrees clockwise.">
         Rotate screen 90 degrees clockwise
@@ -4451,9 +4397,6 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SHOW_TASK_MANAGER" desc="Label for accelerator action - Open task manager.">
         Open task manager
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_AMBIENT_MODE" translateable="false" desc="Label for accelerator action - Start ambient mode.">
-        Start ambient mode
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_ASSISTANT" desc="Label for accelerator action - Open/close Google assistant.">
         Open/close Google assistant
       </message>
@@ -4462,9 +4405,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWAP_PRIMARY_DISPLAY" desc="Label for accelerator action - Swap primary monitor.">
         Swap primary monitor
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_IME" translateable="false" desc="Label for accelerator action - Switch input method.">
-        Switch input method
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_SWITCH_TO_LAST_USED_IME" desc="Label for accelerator action - Switch to last language selected.">
         Switch to last language selected
@@ -4486,9 +4426,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TAKE_WINDOW_SCREENSHOT" desc="Label for accelerator action - Take window screenshot or screen recording.">
         Take window screenshot or screen recording
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION" desc="Label for accelerator action - Search my screen with Google Lens.">
-        Search my screen with Google Lens
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_START_SUNFISH_SESSION_ALT" desc="Label for accelerator action - Search my screen. Does not mention Google Lens in case the default search engine is not set to Google.">
         Search my screen
@@ -4559,9 +4496,6 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_SPOKEN_FEEDBACK" desc="Label for accelerator action - Turn on/off ChromeVox (spoken feedback).">
         Turn on/off ChromeVox (spoken feedback)
       </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_WIFI" translateable="false" desc="Label for accelerator action - Turn wifi on or off.">
-        Turn wifi on or off
-      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_UNPIN" desc="Label for accelerator action - Unpin app from shelf.">
         Unpin app from shelf
       </message>
@@ -4585,81 +4519,6 @@ No devices connected.
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_MINIMIZE_TOP_WINDOW_ON_BACK" desc="Label for accelerator action - Minimize top window when there's no back history in Chrome.">
         Minimize top window when there's no back history in Chrome
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_KEYBOARD_BACKLIGHT_TOGGLE" translateable="false" desc="Label for accelerator action - Turn keyboard backlight on or off.">
-        Turn keyboard backlight on or off
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_MICROPHONE_MUTE_TOGGLE" translateable="false" desc="Label for accelerator action - Mute or unmute microphone.">
-        Mute or unmute microphone
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_PRINT_LAYER_HIERARCHY" translateable="false" desc="Label for accelerator action - Print layer hierarchy.">
-        Print layer hierarchy
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_PRINT_VIEW_HIERARCHY" translateable="false" desc="Label for accelerator action - Print view hierarchy.">
-        Print view hierarchy
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_PRINT_WINDOW_HIERARCHY" translateable="false" desc="Label for accelerator action - Print window hierarchy.">
-        Print window hierarchy
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_SHOW_TOAST" translateable="false" desc="Label for accelerator action - Show Toast.">
-        Show Toast
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_SYSTEM_UI_STYLE_VIEWER" translateable="false" desc="Label for accelerator action - System UI Style Viewer.">
-        System UI Style Viewer
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TUCK_FLOATED_WINDOW_LEFT" translateable="false" desc="Label for accelerator action - Tuck floated window to leftt.">
-        Tuck floated window to left
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TUCK_FLOATED_WINDOW_RIGHT" translateable="false" desc="Label for accelerator action -Tuck floated window to right.">
-        Tuck floated window to right
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_DARK_MODE" translateable="false" desc="Label for accelerator action - Turn on or off dark mode.">
-        Turn on or off dark mode
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_DYNAMIC_COLOR" translateable="false" desc="Label for accelerator action - Turn on or off dynamic color.">
-        Turn on or off dynamic color
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_SHOW_DEBUG_BORDERS" translateable="false" desc="Label for accelerator action - Show debug borders.">
-        Show debug borders
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_SHOW_FPS_COUNTER" translateable="false" desc="Label for accelerator action - Show fps counter.">
-        Show fps counter
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_SHOW_PAINT_RECTS" translateable="false" desc="Label for accelerator action - Show paint rects.">
-        Show paint rects
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_TOUCH_PAD" translateable="false" desc="Label for accelerator action - Toggle touch pad.">
-        Toggle touch pad
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_TOUCH_SCREEN" translateable="false" desc="Label for accelerator action - Toggle touch screen.">
-        Toggle touch screen
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_TABLET_MODE" translateable="false" desc="Label for accelerator action - Turn Tablet mode on or off.">
-        Turn tablet mode on or off
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_VIDEO_CONFERENCE_CAMERA_TRAY_ICON" translateable="false" desc="Label for accelerator action - Turn video conference camera tray icon on or off.">
-        Turn video conference camera tray icon on or off
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_WALLPAPER_MODE" translateable="false" desc="Label for accelerator action - Turn wallpapaer mode on or off.">
-        Turn wallpapaer mode on or off
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TRIGGER_CRASH" translateable="false" desc="Label for accelerator action - Trigger crash.">
-        Trigger crash
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEBUG_TOGGLE_HUD_DISPLAY" translateable="false" desc="Label for accelerator action - Toggle hud display.">
-        Toggle hud display
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEV_ADD_REMOVE_DISPLAY" translateable="false" desc="Label for accelerator action - Add or remove display.">
-        Add or remove display
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEV_TOGGLE_APP_LIST" translateable="false" desc="Label for accelerator action - Toggle app list.">
-        Toggle app list
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DEV_TOGGLE_UNIFIED_DESKTOP" translateable="false" desc="Label for accelerator action - Toggle unified desktop.">
-        Toggle unified desktop
-      </message>
-      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS" translateable="false" desc="Label for accelerator action - Assign active window to all desks.">
-        Assign active window to all desks
       </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_TOGGLE_PRIVACY_SCREEN" desc="Label for accelerator action - Turn on/off privacy screen.">
         Turn on/off privacy screen
