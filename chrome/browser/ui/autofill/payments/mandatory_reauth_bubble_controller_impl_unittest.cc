@@ -10,6 +10,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/metrics/payments/mandatory_reauth_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -136,6 +137,27 @@ TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
       "Autofill.PaymentMethods.MandatoryReauth.OptInConfirmationBubble",
       autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::kShown,
       1);
+}
+
+// Regression test: on macOS without biometrics, it's possible for the
+// accept/cancel callbacks to destroy web contents when a user accepts the
+// re-auth bubble, which would cause a use-after-free. This test ensures this
+// case is handled.
+TEST_P(MandatoryReauthBubbleControllerImplTestWithFeatureOverride,
+       OnBubbleClosedSurvivesWebContentsDestructionInAcceptCallback) {
+  // The accept callback destroys the WebContents that owns `ctrl` (via
+  // WebContentsUserData).
+  base::OnceClosure destroy_web_contents = base::BindOnce(
+      [](Browser* browser) {
+        browser->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
+      },
+      browser());
+
+  controller()->SetupAndShowBubble(std::move(destroy_web_contents),
+                                   base::DoNothing(), base::DoNothing());
+
+  // Simulate the user clicking "Yes" on the opt-in bubble.
+  controller()->OnBubbleClosed(PaymentsUiClosedReason::kAccepted);
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
