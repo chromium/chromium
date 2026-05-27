@@ -872,11 +872,10 @@ void HTMLConstructionSite::AdjustInsertionLocation(
       task.parent = parent_item->GetNode();
     }
 
+    // This can happen if the reference node moved right before closing the
+    // stream, and the stream close has some side effects (e.g. <head>
+    // processing). In this case, ignore the reference node and append.
     if (task.next_child && task.next_child->parentNode() != task.parent) {
-      // TODO(https://crbug.com/506629815): This is a rare case where some timing scenario causes a mismatch here.
-      // It is not easily reproducible, so making this a DUMP_WILL_CHECK to
-      // investigate given more cases. For now making this into an append.
-      DUMP_WILL_BE_CHECK(false) << "DOM state changed during parser tick";
       task.next_child = nullptr;
     }
   }
