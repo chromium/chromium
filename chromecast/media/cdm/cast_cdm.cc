@@ -4,6 +4,7 @@
 
 #include "chromecast/media/cdm/cast_cdm.h"
 
+#include <array>
 #include <memory>
 #include <utility>
 
@@ -161,16 +162,17 @@ void CastCdm::OnSessionKeysChange(const std::string& session_id,
                                   ::media::CdmKeysInfo keys_info) {
   logging::LogMessage log_message(__FILE__, __LINE__, logging::LOGGING_INFO);
   log_message.stream() << "keystatuseschange ";
-  int status_count[kKeyStatusCount] = {};
+  std::array<int, kKeyStatusCount> status_count = {};
   for (const auto& key_info : keys_info) {
-    UNSAFE_TODO(status_count[key_info->status])++;
+    size_t status_idx = static_cast<size_t>(key_info->status);
+    status_count[status_idx]++;
   }
-  for (int i = 0; i != ::media::CdmKeyInformation::KEY_STATUS_MAX; ++i) {
-    if (UNSAFE_TODO(status_count[i]) == 0) {
+  for (size_t i = 0; i < status_count.size(); ++i) {
+    if (status_count[i] == 0) {
       continue;
     }
-    log_message.stream() << UNSAFE_TODO(status_count[i]) << " "
-                         << static_cast<KeyStatus>(i) << " ";
+    log_message.stream() << status_count[i] << " " << static_cast<KeyStatus>(i)
+                         << " ";
   }
 
   session_keys_change_cb_.Run(session_id, newly_usable_keys,
