@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string_view>
 
+#include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/values_equivalent.h"
@@ -258,7 +259,7 @@ const ui::ThemeProvider* AppBrowserController::GetThemeProvider() const {
   return theme_provider_.get();
 }
 
-AppBrowserController::AppBrowserController(Browser* browser,
+AppBrowserController::AppBrowserController(BrowserWindowInterface* browser,
                                            webapps::AppId app_id,
                                            bool has_tab_strip)
     : content::WebContentsObserver(nullptr),
@@ -266,13 +267,17 @@ AppBrowserController::AppBrowserController(Browser* browser,
       app_id_(std::move(app_id)),
       has_tab_strip_(has_tab_strip),
       theme_provider_(
-          ThemeService::CreateBoundThemeProvider(browser_->profile(), this)),
+          ThemeService::CreateBoundThemeProvider(browser_->GetProfile(), this)),
       scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {
-  CHECK(browser->tab_strip_model()->empty());
-  browser->tab_strip_model()->AddObserver(this);
+  if (browser_->GetTabStripModel()) {
+    CHECK(browser_->GetTabStripModel()->empty());
+    browser_->GetTabStripModel()->AddObserver(this);
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
-AppBrowserController::AppBrowserController(Browser* browser,
+AppBrowserController::AppBrowserController(BrowserWindowInterface* browser,
                                            webapps::AppId app_id)
     : AppBrowserController(browser, std::move(app_id), false) {}
 
@@ -281,7 +286,11 @@ void AppBrowserController::Init() {
 }
 
 AppBrowserController::~AppBrowserController() {
-  browser()->tab_strip_model()->RemoveObserver(this);
+  if (browser_ && browser_->GetTabStripModel()) {
+    browser_->GetTabStripModel()->RemoveObserver(this);
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 bool AppBrowserController::ShouldShowCustomTabBar() const {

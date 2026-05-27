@@ -544,9 +544,12 @@ namespace {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 const extensions::Extension* GetExtensionForBrowser(
     BrowserWindowInterface* browser) {
+  auto* controller = web_app::AppBrowserController::From(browser);
+  if (!controller) {
+    return nullptr;
+  }
   return extensions::ExtensionRegistry::Get(browser->GetProfile())
-      ->GetExtensionById(web_app::GetAppIdFromApplicationName(
-                             browser->GetBrowserForMigrationOnly()->app_name()),
+      ->GetExtensionById(controller->app_id(),
                          extensions::ExtensionRegistry::EVERYTHING);
 }
 #endif

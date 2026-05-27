@@ -25,7 +25,7 @@ namespace chromeos {
 
 KioskWebAppBrowserController::KioskWebAppBrowserController(
     web_app::WebAppProvider& provider,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     webapps::AppId app_id)
     : AppBrowserController(browser, std::move(app_id), false),
       provider_(provider) {}

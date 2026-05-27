@@ -30,7 +30,7 @@ namespace chromeos {
 class KioskWebAppBrowserController : public web_app::AppBrowserController {
  public:
   KioskWebAppBrowserController(web_app::WebAppProvider& provider,
-                               Browser* browser,
+                               BrowserWindowInterface* browser,
                                webapps::AppId app_id);
   KioskWebAppBrowserController(const KioskWebAppBrowserController&) = delete;
   KioskWebAppBrowserController& operator=(const KioskWebAppBrowserController&) =

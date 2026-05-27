@@ -328,7 +328,7 @@ struct AppShimManager::ProfileState {
   const std::unique_ptr<AppShimHost> single_profile_host;
 
   // All browser instances for this (app, Profile) pair.
-  std::set<Browser*> browsers;
+  std::set<BrowserWindowInterface*> browsers;
 
   // The current BadgeValue for this (app, Profile) pair.
   std::optional<badging::BadgeManager::BadgeValue> badge;
@@ -355,7 +355,7 @@ struct AppShimManager::AppState {
   // app, or if `did_save_last_active_profiles_on_terminate` is true.
   void MaybeSaveLastActiveProfiles() const;
 
-  const std::string app_id;
+  const webapps::AppId app_id;
 
   // Multi-profile apps share the same shim process across multiple profiles.
   const std::unique_ptr<AppShimHost> multi_profile_host;
@@ -719,26 +719,33 @@ void AppShimManager::UpdateApplicationBadge(ProfileState* profile_state) {
   }
 }
 
-AppShimHost* AppShimManager::GetHostForRemoteCocoaBrowser(Browser* browser) {
-  const std::string app_id =
-      web_app::GetAppIdFromApplicationName(browser->app_name());
-  if (!delegate_->AppUsesRemoteCocoa(browser->profile(), app_id)) {
+AppShimHost* AppShimManager::GetHostForRemoteCocoaBrowser(
+    BrowserWindowInterface* browser) {
+  auto* controller = web_app::AppBrowserController::From(browser);
+  if (!controller) {
     return nullptr;
   }
-  auto* profile_state = GetOrCreateProfileState(browser->profile(), app_id);
+  const webapps::AppId& app_id = controller->app_id();
+  if (!delegate_->AppUsesRemoteCocoa(browser->GetProfile(), app_id)) {
+    return nullptr;
+  }
+  auto* profile_state = GetOrCreateProfileState(browser->GetProfile(), app_id);
   if (!profile_state) {
     return nullptr;
   }
   return profile_state->GetHost();
 }
 
-bool AppShimManager::BrowserUsesRemoteCocoa(Browser* browser) {
-  const std::string app_id =
-      web_app::GetAppIdFromApplicationName(browser->app_name());
+bool AppShimManager::BrowserUsesRemoteCocoa(BrowserWindowInterface* browser) {
   if (web_app::AppShimCreationAndLaunchDisabledForTest()) {
     return false;
   }
-  return delegate_->AppUsesRemoteCocoa(browser->profile(), app_id);
+  auto* controller = web_app::AppBrowserController::From(browser);
+  if (!controller) {
+    return false;
+  }
+  const webapps::AppId& app_id = controller->app_id();
+  return delegate_->AppUsesRemoteCocoa(browser->GetProfile(), app_id);
 }
 
 void AppShimManager::OnShimLaunchRequested(
@@ -1690,10 +1697,10 @@ void AppShimManager::OnProfileMarkedForPermanentDeletion(Profile* profile) {
 }
 
 void AppShimManager::OnAppStart(content::BrowserContext* context,
-                                const std::string& app_id) {}
+                                const webapps::AppId& app_id) {}
 
 void AppShimManager::OnAppActivated(content::BrowserContext* context,
-                                    const std::string& app_id) {
+                                    const webapps::AppId& app_id) {
   Profile* profile = Profile::FromBrowserContext(context);
   if (!delegate_->AppIsInstalled(profile, app_id)) {
     return;
@@ -1704,7 +1711,7 @@ void AppShimManager::OnAppActivated(content::BrowserContext* context,
 }
 
 void AppShimManager::OnAppDeactivated(content::BrowserContext* context,
-                                      const std::string& app_id) {
+                                      const webapps::AppId& app_id) {
   Profile* profile = static_cast<Profile*>(context);
   auto found_app = apps_.find(app_id);
   if (found_app != apps_.end()) {
@@ -1742,17 +1749,20 @@ void AppShimManager::OnAppDeactivated(content::BrowserContext* context,
 }
 
 void AppShimManager::OnAppStop(content::BrowserContext* context,
-                               const std::string& app_id) {}
+                               const webapps::AppId& app_id) {}
 
 void AppShimManager::OnBrowserCreated(BrowserWindowInterface* browser) {
+  auto* controller = web_app::AppBrowserController::From(browser);
+  if (!controller) {
+    return;
+  }
+  const webapps::AppId& app_id = controller->app_id();
   Profile* profile = browser->GetProfile();
-  const std::string app_id = web_app::GetAppIdFromApplicationName(
-      browser->GetBrowserForMigrationOnly()->app_name());
   if (!delegate_->AppUsesRemoteCocoa(profile, app_id)) {
     return;
   }
   if (auto* profile_state = GetOrCreateProfileState(profile, app_id)) {
-    profile_state->browsers.insert(browser->GetBrowserForMigrationOnly());
+    profile_state->browsers.insert(browser);
     if (profile_state->browsers.size() == 1) {
       OnAppActivated(browser->GetProfile(), app_id);
     }
@@ -1766,8 +1776,7 @@ void AppShimManager::OnBrowserClosed(BrowserWindowInterface* browser) {
 
   for (const auto& [app_id, app_state] : apps_) {
     for (const auto& [profile, profile_state] : app_state->profiles) {
-      auto found =
-          profile_state->browsers.find(browser->GetBrowserForMigrationOnly());
+      auto found = profile_state->browsers.find(browser);
       if (found != profile_state->browsers.end()) {
         // If we have no browser windows open after erasing this window, then
         // close the ProfileState (and potentially the shim as well).
@@ -1797,9 +1806,12 @@ void AppShimManager::OnBrowserActivated(BrowserWindowInterface* browser) {
   }
   UpdateAllProfileMenus();
 
+  auto* controller = web_app::AppBrowserController::From(browser);
+  if (!controller) {
+    return;
+  }
+  const webapps::AppId& app_id = controller->app_id();
   // Update the application dock menu for the current profile.
-  const std::string app_id = web_app::GetAppIdFromApplicationName(
-      browser->GetBrowserForMigrationOnly()->app_name());
   if (!delegate_->AppUsesRemoteCocoa(browser->GetProfile(), app_id)) {
     return;
   }
@@ -1828,13 +1840,13 @@ void AppShimManager::OnProfileWillBeDestroyed(Profile* profile) {
     }
   }
 
-  for (const std::string& app_id : apps_to_deactivate) {
+  for (const webapps::AppId& app_id : apps_to_deactivate) {
     OnAppDeactivated(profile, app_id);
   }
 }
 
 void AppShimManager::OnAppLaunchCancelled(content::BrowserContext* context,
-                                          const std::string& app_id) {
+                                          const webapps::AppId& app_id) {
   auto found_app = apps_.find(app_id);
   if (found_app == apps_.end()) {
     return;
@@ -2099,7 +2111,7 @@ AppShimManager::BuildAppShimRequirementStringFromFrameworkRequirementString(
 void AppShimManager::OnAppsDeactivatedForBrowserClose(
     Profile* profile,
     std::vector<std::string> apps_to_deactivate) {
-  for (const std::string& app_id : apps_to_deactivate) {
+  for (const webapps::AppId& app_id : apps_to_deactivate) {
     OnAppDeactivated(profile, app_id);
   }
 }

@@ -133,7 +133,7 @@ base::OnceClosure& ManifestUpdateAppliedCallbackForTesting() {
 
 WebAppBrowserController::WebAppBrowserController(
     WebAppProvider& provider,
-    Browser* browser,
+    BrowserWindowInterface* browser,
     webapps::AppId app_id,
 #if BUILDFLAG(IS_CHROMEOS)
     const ash::SystemWebAppDelegate* system_app,
@@ -853,15 +853,15 @@ void WebAppBrowserController::OnReadIcon(IconPurpose purpose, SkBitmap bitmap) {
 }
 
 void WebAppBrowserController::PerformDigitalAssetLinkVerification(
-    Browser* browser) {
+    BrowserWindowInterface* browser) {
 #if BUILDFLAG(IS_CHROMEOS)
   asset_link_handler_ = std::make_unique<
       content_relationship_verification::DigitalAssetLinksHandler>(
-      browser->profile()->GetURLLoaderFactory());
+      browser->GetProfile()->GetURLLoaderFactory());
   is_verified_ = std::nullopt;
 
   ash::ApkWebAppService* apk_web_app_service =
-      ash::ApkWebAppService::Get(browser->profile());
+      ash::ApkWebAppService::Get(browser->GetProfile());
   if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id())) {
     return;
   }

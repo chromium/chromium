@@ -26,6 +26,8 @@
 #include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/browser/apps/app_shim/code_signature_mac.h"
 #include "chrome/browser/profiles/avatar_menu.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
@@ -375,6 +377,31 @@ class TestHost : public AppShimHost {
   bool did_connect_to_host_ = false;
 
   base::WeakPtrFactory<TestHost> test_weak_factory_;
+};
+
+class MockAppBrowserController : public web_app::AppBrowserController {
+ public:
+  MockAppBrowserController(BrowserWindowInterface* browser,
+                           webapps::AppId app_id)
+      : web_app::AppBrowserController(browser, std::move(app_id)) {
+    ON_CALL(*this, HasMinimalUiButtons).WillByDefault(testing::Return(false));
+    ON_CALL(*this, GetAppShortName).WillByDefault(testing::Return(u""));
+    ON_CALL(*this, GetAppStartUrl)
+        .WillByDefault(testing::ReturnRef(GURL::EmptyGURL()));
+    ON_CALL(*this, IsUrlInAppScope).WillByDefault(testing::Return(false));
+    ON_CALL(*this, CanUserUninstall).WillByDefault(testing::Return(false));
+    ON_CALL(*this, IsInstalled).WillByDefault(testing::Return(true));
+  }
+
+  MOCK_METHOD(bool, HasMinimalUiButtons, (), (const, override));
+  MOCK_METHOD(ui::ImageModel, GetWindowAppIcon, (), (const, override));
+  MOCK_METHOD(ui::ImageModel, GetWindowIcon, (), (const, override));
+  MOCK_METHOD(std::u16string, GetAppShortName, (), (const, override));
+  MOCK_METHOD(std::u16string, GetFormattedUrlOrigin, (), (const, override));
+  MOCK_METHOD(const GURL&, GetAppStartUrl, (), (const, override));
+  MOCK_METHOD(bool, IsUrlInAppScope, (const GURL& url), (const, override));
+  MOCK_METHOD(bool, CanUserUninstall, (), (const, override));
+  MOCK_METHOD(bool, IsInstalled, (), (const, override));
 };
 
 class AppShimManagerTest : public testing::Test {
@@ -835,13 +862,13 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
   EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
 
   // Notify manager that a new browser has been associated with the app.
-  auto browser_window = std::make_unique<TestBrowserWindow>();
-  std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
-  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-      app_name, true, browser_window->GetBounds(), &profile_a_, true);
-  params.window = browser_window.release();
-  auto browser = Browser::DeprecatedCreateOwnedForTesting(params);
-  manager_->OnBrowserCreated(browser.get());
+  auto mock_browser = std::make_unique<MockBrowserWindowInterface>();
+  EXPECT_CALL(*mock_browser, GetProfile()).WillRepeatedly(Return(&profile_a_));
+  ui::UnownedUserDataHost user_data_host;
+  ON_CALL(testing::Const(*mock_browser), GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host));
+  MockAppBrowserController controller(mock_browser.get(), kTestAppIdA);
+  manager_->OnBrowserCreated(mock_browser.get());
 
   // Validate that OnAppLaunchCancelled does not close the app,
   // and that the state is still valid.
@@ -851,7 +878,7 @@ TEST_F(AppShimManagerTest, AppLaunchCancelled) {
 
   // Removing the browser should close the app.
   EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce(Return());
-  manager_->OnBrowserClosed(browser.get());
+  manager_->OnBrowserClosed(mock_browser.get());
   EXPECT_TRUE(base::test::RunUntil([&] {
     return !host_aa_ && !manager_->FindHost(&profile_a_, kTestAppIdA);
   }));
@@ -1544,12 +1571,16 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
   // Notify manager that a new browser has been associated with the app.
   auto browser_window_a = std::make_unique<TestBrowserWindowShow>();
   TestBrowserWindowShow* browser_window_a_ptr = browser_window_a.get();
-  std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
-  Browser::CreateParams params_a = Browser::CreateParams::CreateForApp(
-      app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
-  params_a.window = browser_window_a.release();
-  auto browser_a = Browser::DeprecatedCreateOwnedForTesting(params_a);
-  manager_->OnBrowserCreated(browser_a.get());
+  auto mock_browser_a = std::make_unique<MockBrowserWindowInterface>();
+  EXPECT_CALL(*mock_browser_a, GetProfile())
+      .WillRepeatedly(Return(&profile_a_));
+  EXPECT_CALL(*mock_browser_a, GetWindow())
+      .WillRepeatedly(Return(browser_window_a.get()));
+  ui::UnownedUserDataHost user_data_host_a;
+  ON_CALL(testing::Const(*mock_browser_a), GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host_a));
+  MockAppBrowserController controller_a(mock_browser_a.get(), kTestAppIdA);
+  manager_->OnBrowserCreated(mock_browser_a.get());
 
   // Select profile B from the menu. This should request that the app be
   // launched.
@@ -1563,11 +1594,16 @@ TEST_F(AppShimManagerTest, MultiProfileSelectMenu_ShowsBrowser) {
   // Notify manager that a new browser has been associated with the app.
   auto browser_window_b = std::make_unique<TestBrowserWindowShow>();
   TestBrowserWindowShow* browser_window_b_ptr = browser_window_b.get();
-  Browser::CreateParams params_b = Browser::CreateParams::CreateForApp(
-      app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
-  params_b.window = browser_window_b.release();
-  auto browser_b = Browser::DeprecatedCreateOwnedForTesting(params_b);
-  manager_->OnBrowserCreated(browser_b.get());
+  auto mock_browser_b = std::make_unique<MockBrowserWindowInterface>();
+  EXPECT_CALL(*mock_browser_b, GetProfile())
+      .WillRepeatedly(Return(&profile_b_));
+  EXPECT_CALL(*mock_browser_b, GetWindow())
+      .WillRepeatedly(Return(browser_window_b.get()));
+  ui::UnownedUserDataHost user_data_host_b;
+  ON_CALL(testing::Const(*mock_browser_b), GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host_b));
+  MockAppBrowserController controller_b(mock_browser_b.get(), kTestAppIdA);
+  manager_->OnBrowserCreated(mock_browser_b.get());
 
   EXPECT_FALSE(browser_window_a_ptr->did_show);
   EXPECT_FALSE(browser_window_b_ptr->did_show);
@@ -1932,25 +1968,22 @@ TEST_F(AppShimManagerTest, UpdateApplicationDockMenu) {
   // Validate no application dock menu items have been set yet.
   ValidateDockMenuItems(nullptr, 0);
 
-  // Create browser objects that can be passed via OnBrowserActivated.
-  std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
-  std::unique_ptr<Browser> browser_profile_a, browser_profile_b;
+  // Create mock browser objects that can be passed via OnBrowserActivated.
+  auto browser_profile_a = std::make_unique<MockBrowserWindowInterface>();
+  EXPECT_CALL(*browser_profile_a, GetProfile())
+      .WillRepeatedly(Return(&profile_a_));
+  ui::UnownedUserDataHost user_data_host_a;
+  ON_CALL(testing::Const(*browser_profile_a), GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host_a));
+  MockAppBrowserController controller_a(browser_profile_a.get(), kTestAppIdA);
 
-  {
-    auto browser_window_a = std::make_unique<TestBrowserWindow>();
-    Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-        app_name, true, browser_window_a->GetBounds(), &profile_a_, true);
-    params.window = browser_window_a.release();
-    browser_profile_a = Browser::DeprecatedCreateOwnedForTesting(params);
-  }
-
-  {
-    auto browser_window_b = std::make_unique<TestBrowserWindow>();
-    Browser::CreateParams params = Browser::CreateParams::CreateForApp(
-        app_name, true, browser_window_b->GetBounds(), &profile_b_, true);
-    params.window = browser_window_b.release();
-    browser_profile_b = Browser::DeprecatedCreateOwnedForTesting(params);
-  }
+  auto browser_profile_b = std::make_unique<MockBrowserWindowInterface>();
+  EXPECT_CALL(*browser_profile_b, GetProfile())
+      .WillRepeatedly(Return(&profile_b_));
+  ui::UnownedUserDataHost user_data_host_b;
+  ON_CALL(testing::Const(*browser_profile_b), GetUnownedUserDataHost())
+      .WillByDefault(testing::ReturnRef(user_data_host_b));
+  MockAppBrowserController controller_b(browser_profile_b.get(), kTestAppIdA);
 
   // Set profile A browser as last active, and validate the application dock
   // menu items.

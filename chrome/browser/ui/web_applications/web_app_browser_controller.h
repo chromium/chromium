@@ -66,7 +66,7 @@ class WebAppBrowserController : public AppBrowserController,
                                 public WebAppRegistrarObserver {
  public:
   WebAppBrowserController(WebAppProvider& provider,
-                          Browser* browser,
+                          BrowserWindowInterface* browser,
                           webapps::AppId app_id,
 #if BUILDFLAG(IS_CHROMEOS)
                           const ash::SystemWebAppDelegate* system_app,
@@ -176,7 +176,7 @@ class WebAppBrowserController : public AppBrowserController,
 
   void OnReadHomeTabIcon(SkBitmap home_tab_icon_bitmap) const;
   void OnReadIcon(IconPurpose purpose, SkBitmap bitmap);
-  void PerformDigitalAssetLinkVerification(Browser* browser);
+  void PerformDigitalAssetLinkVerification(BrowserWindowInterface* browser);
   void CreateMetadataAndTriggerAppUpdateDialog(
       base::TimeTicks start_time) const;
   void CreateMetadataAndTriggerAppMigrationDialog(

@@ -28,7 +28,8 @@ class Extension;
 class HostedAppBrowserController : public web_app::AppBrowserController,
                                    public ExtensionUninstallDialog::Delegate {
  public:
-  explicit HostedAppBrowserController(Browser* browser);
+  HostedAppBrowserController(BrowserWindowInterface* browser,
+                             webapps::AppId app_id);
 
   HostedAppBrowserController(const HostedAppBrowserController&) = delete;
   HostedAppBrowserController& operator=(const HostedAppBrowserController&) =

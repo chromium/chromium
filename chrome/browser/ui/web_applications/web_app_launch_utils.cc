@@ -203,7 +203,8 @@ std::unique_ptr<AppBrowserController> MaybeCreateHostedAppBrowserController(
       extensions::ExtensionRegistry::Get(browser->profile())
           ->GetExtensionById(app_id, extensions::ExtensionRegistry::EVERYTHING);
   if (extension && extension->is_hosted_app()) {
-    return std::make_unique<extensions::HostedAppBrowserController>(browser);
+    return std::make_unique<extensions::HostedAppBrowserController>(browser,
+                                                                    app_id);
   }
 #endif  // BUILDFLAG(ENABLE_HOSTED_APPS)
   return nullptr;

@@ -54,10 +54,10 @@ bool IsSameHostAndPort(const GURL& app_url, const GURL& page_url) {
 
 }  // namespace
 
-HostedAppBrowserController::HostedAppBrowserController(Browser* browser)
-    : AppBrowserController(
-          browser,
-          web_app::GetAppIdFromApplicationName(browser->app_name())) {}
+HostedAppBrowserController::HostedAppBrowserController(
+    BrowserWindowInterface* browser,
+    webapps::AppId app_id)
+    : AppBrowserController(browser, std::move(app_id)) {}
 
 HostedAppBrowserController::~HostedAppBrowserController() = default;
 

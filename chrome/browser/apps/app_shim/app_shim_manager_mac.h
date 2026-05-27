@@ -157,12 +157,12 @@ class AppShimManager
   // it. If an AppShimHost had to be created (e.g, because the app process is
   // still launching), create one, which will bind to the app process when it
   // finishes launching.
-  AppShimHost* GetHostForRemoteCocoaBrowser(Browser* browser);
+  AppShimHost* GetHostForRemoteCocoaBrowser(BrowserWindowInterface* browser);
 
   // Returns true if the specified `browser` should be using RemoteCocoa. This
   // is equivalent to `GetHostForRemoteCocoaBrowser` return a non-null value,
   // except that this method does not cause an AppShimHost to be created.
-  bool BrowserUsesRemoteCocoa(Browser* browser);
+  bool BrowserUsesRemoteCocoa(BrowserWindowInterface* browser);
 
   // Return true if any non-bookmark app windows open.
   bool HasNonBookmarkAppWindowsOpen();
@@ -170,7 +170,7 @@ class AppShimManager
   // Called when the launch of the app was cancelled by the user. For example,
   // if the user clicks cancel during a protocol launch.
   void OnAppLaunchCancelled(content::BrowserContext* context,
-                            const std::string& app_id);
+                            const webapps::AppId& app_id);
 
   void UpdateAppBadge(
       Profile* profile,
