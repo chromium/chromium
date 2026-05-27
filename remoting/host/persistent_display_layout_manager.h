@@ -22,6 +22,10 @@
 #include "remoting/proto/control.pb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
+
 namespace remoting {
 
 // Class that reads and applies any previously stored display layouts from a
@@ -63,6 +67,8 @@ class PersistentDisplayLayoutManager {
   base::CallbackListSubscription display_info_subscription_
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::WeakPtr<DesktopResizer> desktop_resizer_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<protocol::VideoLayout> latest_display_layout_
       GUARDED_BY_CONTEXT(sequence_checker_);

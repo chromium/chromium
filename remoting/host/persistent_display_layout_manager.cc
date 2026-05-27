@@ -12,6 +12,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "remoting/base/async_file_util.h"
 #include "remoting/base/constants.h"
@@ -79,6 +82,8 @@ PersistentDisplayLayoutManager::PersistentDisplayLayoutManager(
     : display_layout_file_path_(display_layout_file_path),
       display_info_monitor_(std::move(display_info_monitor)),
       desktop_resizer_(std::move(desktop_resizer)),
+      io_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       write_display_layout_timer_(
           FROM_HERE,
           kWriteDisplayLayoutDelay,
@@ -169,15 +174,18 @@ void PersistentDisplayLayoutManager::ApplyDisplayLayout(
 void PersistentDisplayLayoutManager::WriteDisplayLayout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  WriteFileAsync(
+  if (!latest_display_layout_) {
+    return;
+  }
+
+  WriteImportantFileAndEnsureParentDirAsync(
       display_layout_file_path_, latest_display_layout_->SerializeAsString(),
+      io_task_runner_,
       base::BindOnce(
-          [](const base::FilePath& display_layout_file_path,
-             base::FileErrorOr<void> result) {
+          [](const base::FilePath& path, base::FileErrorOr<void> result) {
             if (!result.has_value()) {
-              LOG(ERROR) << "Failed to write display layout to file "
-                         << display_layout_file_path << ": "
-                         << base::File::ErrorToString(result.error());
+              LOG(ERROR) << "Failed to write display layout to file " << path
+                         << ": " << base::File::ErrorToString(result.error());
             }
           },
           display_layout_file_path_));

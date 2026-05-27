@@ -11,7 +11,9 @@
 #include "base/files/file_error_or.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/files/important_file_writer.h"
 #include "base/functional/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
@@ -62,6 +64,38 @@ void WriteFileAsync(const base::FilePath& file,
             }
           },
           file, std::string(content)),
+      std::move(on_done));
+}
+
+void WriteImportantFileAndEnsureParentDirAsync(
+    const base::FilePath& file,
+    std::string content,
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    base::OnceCallback<void(base::FileErrorOr<void>)> on_done) {
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::FilePath file,
+             std::string content) -> base::FileErrorOr<void> {
+            base::File::Error error;
+            if (!base::CreateDirectoryAndGetError(file.DirName(), &error)) {
+              return base::unexpected(error);
+            }
+            if (base::ImportantFileWriter::WriteFileAtomically(file, content)) {
+              return base::ok();
+            }
+            base::File::Error last_error = base::File::GetLastFileError();
+            if (last_error == base::File::FILE_OK) {
+              // WriteFileAtomically returns false on failure. If it failed but
+              // no system error was recorded (e.g. due to internal logical
+              // checks failing or errno being cleared before we read it),
+              // GetLastFileError() might return FILE_OK. We map this to a
+              // generic failure to ensure we don't incorrectly report success.
+              last_error = base::File::FILE_ERROR_FAILED;
+            }
+            return base::unexpected(last_error);
+          },
+          file, std::move(content)),
       std::move(on_done));
 }
 
