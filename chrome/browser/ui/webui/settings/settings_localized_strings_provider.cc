@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/i18n/message_formatter.h"
 #include "base/i18n/number_formatting.h"
+#include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -45,6 +46,7 @@
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
+#include "chrome/browser/ui/side_panel/side_panel_prefs.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
@@ -550,6 +552,8 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"showHoverCardMemoryUsageStandalone",
        IDS_SETTINGS_SHOW_HOVER_CARD_MEMORY_USAGE_STANDALONE},
       {"sidePanelPosition", IDS_SETTINGS_SIDE_PANEL_POSITION},
+      {"sidePanelAlignmentChromePanels",
+       IDS_SETTINGS_SIDE_PANEL_ALIGNMENT_CHROME_PANELS},
       {"tabSearchPosition", IDS_SETTINGS_TAB_SEARCH_POSITION},
       {"homePageNtp", IDS_SETTINGS_HOME_PAGE_NTP},
       {"changeHomePage", IDS_SETTINGS_CHANGE_HOME_PAGE},
@@ -614,6 +618,13 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
 
   html_source->AddBoolean("showCtrlTabMru",
                           base::FeatureList::IsEnabled(features::kCtrlTabMru));
+
+  std::string configurable_alignments_json;
+  base::JSONWriter::Write(
+      side_panel_prefs::GetConfigurableSidePanelAlignments(profile),
+      &configurable_alignments_json);
+  html_source->AddString("configurableSidePanelAlignments",
+                         configurable_alignments_json);
 
 #if BUILDFLAG(IS_LINUX)
   bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()

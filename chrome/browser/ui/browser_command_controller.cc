@@ -2362,6 +2362,10 @@ void BrowserCommandController::UpdateGlicState() {
       command_updater_.UpdateCommandEnabled(
           IDC_OPEN_GLIC,
           glic::GlicEnabling::IsEnabledForProfile(profile()) && !glic_active);
+
+      if (auto* const action = FindAction(kActionSidePanelShowGlic)) {
+        action->SetVisible(glic::GlicEnabling::ShouldShowGlicButton(profile()));
+      }
     }
   }
 }
@@ -2534,6 +2538,12 @@ void BrowserCommandController::UpdateCommandAndActionEnabled(
 void BrowserCommandController::UpdateCommandsForEnableGlicChanged() {
   command_updater_.UpdateCommandEnabled(
       IDC_OPEN_GLIC, glic::GlicEnabling::IsEnabledForProfile(profile()));
+
+  if (glic::GlicEnabling::IsEnabledByGlobalCriteria()) {
+    if (auto* const action = FindAction(kActionSidePanelShowGlic)) {
+      action->SetVisible(glic::GlicEnabling::ShouldShowGlicButton(profile()));
+    }
+  }
 }
 
 BrowserWindow* BrowserCommandController::window() {
