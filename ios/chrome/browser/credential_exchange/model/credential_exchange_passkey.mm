@@ -13,7 +13,8 @@
                             userName:(NSString*)userName
                      userDisplayName:(NSString*)userDisplayName
                               userId:(NSData*)userId
-                          privateKey:(NSData*)privateKey {
+                          privateKey:(NSData*)privateKey
+                        creationDate:(NSDate*)creationDate {
   self = [super init];
   if (self) {
     _credentialId = credentialId;
@@ -22,6 +23,7 @@
     _userDisplayName = userDisplayName;
     _userId = userId;
     _privateKey = privateKey;
+    _creationDate = creationDate;
   }
   return self;
 }
@@ -33,16 +35,20 @@
   CredentialExchangePasskey* other =
       base::apple::ObjCCast<CredentialExchangePasskey>(object);
   return other && [self.userName isEqualToString:other.userName] &&
-         [self.userDisplayName isEqualToString:other.userDisplayName] &&
+         (self.userDisplayName == other.userDisplayName ||
+          [self.userDisplayName isEqualToString:other.userDisplayName]) &&
          [self.rpId isEqualToString:other.rpId] &&
          [self.credentialId isEqualToData:other.credentialId] &&
          [self.userId isEqualToData:other.userId] &&
-         [self.privateKey isEqualToData:other.privateKey];
+         [self.privateKey isEqualToData:other.privateKey] &&
+         (self.creationDate == other.creationDate ||
+          [self.creationDate isEqual:other.creationDate]);
 }
 
 - (NSUInteger)hash {
   return self.userName.hash ^ self.userDisplayName.hash ^ self.rpId.hash ^
-         self.credentialId.hash ^ self.userId.hash ^ self.privateKey.hash;
+         self.credentialId.hash ^ self.userId.hash ^ self.privateKey.hash ^
+         self.creationDate.hash;
 }
 
 @end

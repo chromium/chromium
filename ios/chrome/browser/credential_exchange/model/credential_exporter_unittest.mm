@@ -50,6 +50,7 @@ sync_pb::WebauthnCredentialSpecifics CreatePasskeySpecifics() {
   passkey.set_user_id("user_id");
   passkey.set_user_name("userName");
   passkey.set_user_display_name("userDisplayName");
+  passkey.set_creation_time(123456789000);
   std::vector<uint8_t> private_key = {'p', 'r', 'i', 'v', 'a', 't',
                                       'e', '_', 'k', 'e', 'y'};
   sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
@@ -67,14 +68,16 @@ CredentialExchangePassword* CreateCredentialExchangePassword() {
              note:@"note"];
 }
 
-CredentialExchangePasskey* CreateCredentialExchangePasskey() {
+CredentialExchangePasskey* CreateCredentialExchangePasskey(
+    NSDate* creationDate = nil) {
   return [[CredentialExchangePasskey alloc]
       initWithCredentialId:ToNSData("1234567890123456")
                       rpId:@"example.com"
                   userName:@"userName"
            userDisplayName:@"userDisplayName"
                     userId:ToNSData("user_id")
-                privateKey:ToNSData("private_key")];
+                privateKey:ToNSData("private_key")
+              creationDate:creationDate];
 }
 
 class CredentialExporterTest : public PlatformTest {
@@ -143,9 +146,12 @@ TEST_F(CredentialExporterTest, ExportsPasskeys) {
         [[CredentialExporter alloc] initWithWindow:window_
                                           delegate:mock_delegate_];
 
+    NSDate* expectedCreationDate =
+        [NSDate dateWithTimeIntervalSince1970:123456789.0];
     [[mockExportManager expect]
         startExportWithPasswords:@[]
-                        passkeys:@[ CreateCredentialExchangePasskey() ]
+                        passkeys:@[ CreateCredentialExchangePasskey(
+                                     expectedCreationDate) ]
                           window:window_
                        userEmail:kUserEmail
                     exporterName:[OCMArg any]];

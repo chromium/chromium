@@ -65,7 +65,8 @@ CredentialExchangePasskey* CreateTestPasskey() {
                   userName:@"userName"
            userDisplayName:@"userDisplayName"
                     userId:ToNSData("user_id")
-                privateKey:ToNSData("private_key")];
+                privateKey:ToNSData("private_key")
+              creationDate:nil];
 }
 
 scoped_refptr<RefcountedKeyedService> BuildPasswordStore(

@@ -107,7 +107,8 @@ import Foundation
                 userName: passkey.userName,
                 userDisplayName: passkey.userDisplayName,
                 userId: passkey.userHandle,
-                privateKey: passkey.key))
+                privateKey: passkey.key,
+                creationDate: nil))
           case .address:
             stats.addressCount += 1
           case .apiKey:

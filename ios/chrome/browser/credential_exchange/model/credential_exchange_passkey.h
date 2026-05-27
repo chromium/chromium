@@ -36,12 +36,16 @@
 // Private key of a passkey, unencrypted.
 @property(nonatomic, copy) NSData* privateKey;
 
+// Creation date of the credential.
+@property(nonatomic, copy) NSDate* creationDate;
+
 - (instancetype)initWithCredentialId:(NSData*)credentialId
                                 rpId:(NSString*)rpId
                             userName:(NSString*)userName
                      userDisplayName:(NSString*)userDisplayName
                               userId:(NSData*)userId
                           privateKey:(NSData*)privateKey
+                        creationDate:(NSDate*)creationDate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

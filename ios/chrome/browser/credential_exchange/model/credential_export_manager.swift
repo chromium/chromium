@@ -45,6 +45,7 @@ import UIKit
     let userDisplayName: String?
     let userId: Data
     let privateKey: Data
+    let creationDate: Date
 
     init?(_ key: CredentialExchangePasskey) {
       self.credentialId = key.credentialId
@@ -53,6 +54,7 @@ import UIKit
       self.userDisplayName = key.userDisplayName
       self.userId = key.userId
       self.privateKey = key.privateKey
+      self.creationDate = key.creationDate ?? Date()
     }
   }
 
@@ -114,7 +116,7 @@ import UIKit
 
       let item = ASImportableItem(
         id: UUID().uuidString.data(using: .utf8)!,
-        created: Date(),
+        created: passkey.creationDate,
         lastModified: Date(),
         title: passkey.rpId,
         subtitle: nil,
