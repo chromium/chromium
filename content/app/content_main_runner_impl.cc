@@ -21,6 +21,7 @@
 #include "base/allocator/partition_alloc_support.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
+#include "base/byte_size.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
 #include "base/debug/leak_annotations.h"
@@ -390,7 +391,7 @@ void PreSandboxInit() {
 
   // May use sysinfo(), sched_getaffinity(), and open various /sys/ and /proc/
   // files.
-  base::SysInfo::AmountOfPhysicalMemory();
+  base::SysInfo::AmountOfTotalPhysicalMemory();
   base::SysInfo::NumberOfProcessors();
   base::SysInfo::NumberOfEfficientProcessors();
 
