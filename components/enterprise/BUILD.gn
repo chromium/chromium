@@ -12,6 +12,9 @@ static_library("enterprise") {
   configs += [ "//components/enterprise:extra_warnings" ]
 
   sources = [
+    "browser/reporting/browser_launch/browser_launch_event_controller.cc",
+    "browser/reporting/browser_launch/browser_launch_event_controller.h",
+    "browser/reporting/browser_launch/browser_launch_event_uploader.h",
     "browser/reporting/browser_report_generator.cc",
     "browser/reporting/browser_report_generator.h",
     "browser/reporting/chrome_profile_request_generator.cc",
@@ -127,6 +130,7 @@ static_library("enterprise") {
   # Include certain intermediate targets as public deps so consumers
   # can start using them as needed.
   public_deps = [
+    "//components/enterprise/common/proto:browser_events_proto",
     "//components/reporting/client:report_queue_configuration",
     "//components/reporting/util:status",
   ]
@@ -200,6 +204,7 @@ source_set("unit_tests") {
 
   sources = [
     "browser/identifiers/profile_id_service_unittest.cc",
+    "browser/reporting/browser_launch/browser_launch_event_controller_unittest.cc",
     "browser/reporting/chrome_profile_request_generator_unittest.cc",
     "browser/reporting/pref_url_list_matcher_unittest.cc",
     "browser/reporting/report_uploader_unittest.cc",
@@ -229,6 +234,7 @@ source_set("unit_tests") {
     "//components/device_signals/core/common:features",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/identifiers:test_support",
+    "//components/enterprise/common/proto:browser_events_proto",
     "//components/enterprise/common/proto:saas_usage_report_event",
     "//components/enterprise/connectors/core:constants",
     "//components/enterprise/device_attestation:test_support",
