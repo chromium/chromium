@@ -186,6 +186,8 @@ Window::Window(WindowDelegate* delegate, client::WindowType type)
 }
 
 Window::~Window() {
+  CHECK_EQ(delete_block_count_, 0u);
+
   // TODO(crbug.com/461127606): Crash on re-entrant destruction.
   // TODO(crbug.com/497548912): Continue crashing on re-entrant destruction
   // on Chrome M149 or newer.

@@ -124,6 +124,21 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
  public:
   METADATA_HEADER_BASE(Window);
 
+  // A helper class to ensure that the Window is not deleted while it is
+  // notifying observers or doing other operations where re-entrant deletion
+  // would be problematic. Attempting to delete the Window while a
+  // ScopedDeleteBlocker is active will cause a crash.
+  class ScopedDeleteBlocker {
+   public:
+    explicit ScopedDeleteBlocker(aura::Window* window) : window_(window) {
+      window_->delete_block_count_++;
+    }
+    ScopedDeleteBlocker(const ScopedDeleteBlocker&) = delete;
+    ScopedDeleteBlocker& operator=(const ScopedDeleteBlocker&) = delete;
+    ~ScopedDeleteBlocker() { window_->delete_block_count_--; }
+    raw_ptr<aura::Window> window_;
+  };
+
   // Initial value of id() for newly created windows.
   static constexpr int kInitialId = -1;
 
@@ -867,6 +882,8 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Used when this is embedding external content.
   base::WeakPtr<cc::LayerTreeFrameSink> frame_sink_;
+
+  size_t delete_block_count_ = 0;
 
   base::WeakPtrFactory<Window> weak_factory_{this};
 };

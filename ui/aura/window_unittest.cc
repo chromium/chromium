@@ -3161,6 +3161,51 @@ TEST_F(WindowTest, DeleteWindowFromOnWindowDestroyed) {
 }
 
 // WindowObserver implementation that deletes a window in
+// OnWindowBoundsChanged().
+class DeleteOnBoundsChangedObserver : public WindowObserver {
+ public:
+  explicit DeleteOnBoundsChangedObserver(Window* window) : window_(window) {
+    window_->AddObserver(this);
+  }
+
+  DeleteOnBoundsChangedObserver(const DeleteOnBoundsChangedObserver&) = delete;
+  DeleteOnBoundsChangedObserver& operator=(
+      const DeleteOnBoundsChangedObserver&) = delete;
+
+  ~DeleteOnBoundsChangedObserver() override {
+    CHECK(window_);
+    window_->RemoveObserver(this);
+  }
+
+  // WindowObserver:
+  void OnWindowBoundsChanged(Window* window,
+                             const gfx::Rect& old_bounds,
+                             const gfx::Rect& new_bounds,
+                             ui::PropertyChangeReason reason) override {
+    // This will fail with CHECK.
+    delete window_;
+    NOTREACHED();
+  }
+
+  void OnWindowDestroyed(Window* window) override { NOTREACHED(); }
+
+ private:
+  raw_ptr<Window> window_;
+};
+
+using WindowDeathTest = WindowTest;
+
+TEST_F(WindowDeathTest, DeleteWindowInBoundsChange) {
+  std::unique_ptr<Window> window = std::make_unique<Window>(nullptr);
+  window->Init(ui::LAYER_NOT_DRAWN);
+  auto weak_window = window->GetWeakPtr();
+  DeleteOnBoundsChangedObserver observer(window.get());
+  EXPECT_DEATH(window->SetBounds(gfx::Rect(10, 10, 300, 300)), "");
+  // Deletion fails with CHECK.
+  EXPECT_TRUE(weak_window);
+}
+
+// WindowObserver implementation that deletes a window in
 // OnWindowVisibilityChanged().
 class DeleteOnVisibilityChangedObserver : public WindowObserver {
  public:
