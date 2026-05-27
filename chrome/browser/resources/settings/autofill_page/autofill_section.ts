@@ -124,6 +124,12 @@ export class SettingsAutofillSectionElement extends
         value: () => loadTimeData.getBoolean('plusAddressEnabled'),
       },
 
+      isEmailVerificationProtocolEnabled_: {
+        type: Boolean,
+        value: () =>
+            loadTimeData.getBoolean('emailVerificationProtocolEnabled'),
+      },
+
       /**
        * Indicates if this element is used as a Your saved info subpage. Causes
        * slight adjustments like different title, no page shadow, cards being
@@ -144,6 +150,7 @@ export class SettingsAutofillSectionElement extends
   declare private showAddressRemoveConfirmationDialog_: boolean;
   declare private isGoogleProfileAddress: boolean;
   declare private isPlusAddressEnabled_: boolean;
+  declare private isEmailVerificationProtocolEnabled_: boolean;
   declare private isYourSavedInfoSubpage_: boolean;
   private autofillManager_: AutofillManagerProxy =
       AutofillManagerImpl.getInstance();

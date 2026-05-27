@@ -141,6 +141,11 @@ const ADDRESS_COMPONENTS_IL = {
 };
 
 suite('AutofillSectionUiTest', function() {
+  setup(function() {
+    loadTimeData.overrideValues({emailVerificationProtocolEnabled: false});
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+  });
+
   test('AutofillExtensionIndicator', function() {
     // Initializing with fake prefs
     const section = document.createElement('settings-autofill-section');
@@ -154,8 +159,18 @@ suite('AutofillSectionUiTest', function() {
 
     assertTrue(
         !!section.shadowRoot!.querySelector('#autofillExtensionIndicator'));
+  });
 
-    document.body.removeChild(section);
+  test('EmailVerificationToggle', async function() {
+    loadTimeData.overrideValues({emailVerificationProtocolEnabled: true});
+
+    const section = await createAutofillSection([], {
+      profile_enabled: {value: true},
+      email_verification_enabled: {value: true},
+    });
+    const toggle =
+        section.shadowRoot!.querySelector('#autofillEmailVerificationToggle');
+    assertTrue(!!toggle);
   });
 
   test('verifyAddressDeleteRecordTypeNotice', async () => {
@@ -250,8 +265,6 @@ suite('AutofillSectionUiTest', function() {
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
     }
-
-    document.body.removeChild(section);
   });
 
   test('verifyAddressDeleteHomeAddressNotice', async () => {
@@ -285,8 +298,6 @@ suite('AutofillSectionUiTest', function() {
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
     }
-
-    document.body.removeChild(section);
   });
 
   test('verifyAddressDeleteWorkAddressNotice', async () => {
@@ -320,8 +331,6 @@ suite('AutofillSectionUiTest', function() {
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
     }
-
-    document.body.removeChild(section);
   });
 
   test('verifyAddressDeleteNameEmailAddressNotice', async () => {
@@ -372,8 +381,6 @@ suite('AutofillSectionUiTest', function() {
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
     }
-
-    document.body.removeChild(section);
   });
 
   test('verifyAddressEditRecordTypeNotice', async () => {
@@ -413,8 +420,6 @@ suite('AutofillSectionUiTest', function() {
       // Make sure closing clean-ups are finished.
       await eventToPromise('close', dialog.$.dialog);
     }
-
-    document.body.removeChild(section);
   });
 });
 

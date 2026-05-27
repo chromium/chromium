@@ -166,4 +166,15 @@
         </cr-link-row>
       </template>
     </div>
+    <div class="card">
+      <div class="cr-row continuation">
+        <h2 class="flex">$i18n{emailVerificationSectionTitle}</h2>
+      </div>
+      <template is="dom-if" if="[[isEmailVerificationProtocolEnabled_]]">
+        <settings-toggle-button id="autofillEmailVerificationToggle"
+            no-extension-indicator label="$i18n{emailVerificationLabel}"
+            pref="{{prefs.autofill.email_verification_enabled}}">
+        </settings-toggle-button>
+      </template>
+    </div>
   </settings-subpage>
