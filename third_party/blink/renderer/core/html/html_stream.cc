@@ -157,6 +157,13 @@ WritableStream* HTMLStream::Create(ScriptState* script_state,
     return nullptr;
   }
 
+  if (!SanitizerAPI::AllowMutatingRootElement(sanitizer_mode, target)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNoModificationAllowedError,
+        "Cannot stream safely into a script element");
+    return nullptr;
+  }
+
   std::optional<FragmentParserOptions> trusted_options =
       sanitizer_mode == Sanitizer::Mode::kSafe
           ? std::make_optional(options)
