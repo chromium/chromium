@@ -1369,6 +1369,10 @@ void VerifySingleBooleanSampleOrEmpty(
 
 }  // namespace
 
+std::string MakeGuid(size_t last_digit) {
+  return base::StringPrintf("00000000-4000-8000-0000-%012zu", last_digit);
+}
+
 void VerifySingleSubmissionKeyMetricExpectations(
     const base::HistogramTester& histogram_tester,
     std::string_view form_type_name,

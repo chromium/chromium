@@ -386,6 +386,10 @@ void GenerateTestAutofillPopup(
 std::string ObfuscatedCardDigitsAsUTF8(const std::string& str,
                                        int obfuscation_length);
 
+// Creates a GUID for testing. For example,
+// MakeGuid(123) = "00000000-4000-8000-0000-000000000123";
+std::string MakeGuid(size_t last_digit);
+
 // Returns 2-digit month string, like "02", "10".
 std::string NextMonth();
 std::string LastYear();
