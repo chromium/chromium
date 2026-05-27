@@ -60,12 +60,16 @@ class IndigoAgentHost : public content::PageUserData<IndigoAgentHost>,
 
   chrome::mojom::IndigoAgent& GetAgent();
 
+  void ExecuteReset();
+  void OnResetComplete();
+
   mojo::AssociatedReceiver<chrome::mojom::IndigoAgentHost> receiver_{this};
   mojo::AssociatedRemote<chrome::mojom::IndigoAgent> agent_;
   InjectionState injection_state_ = InjectionState::kNotInjected;
 
   enum class PendingOperation { kInvoke, kReset };
   std::vector<PendingOperation> pending_operations_;
+  int pending_reset_ack_count_ = 0;
 
   PAGE_USER_DATA_KEY_DECL();
 

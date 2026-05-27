@@ -333,7 +333,14 @@ void IndigoPageActionController::DidFinishNavigation(
     return;
   }
 
-  HideToolbar();
+  // We only listen for same document navigations here because for
+  // cross-document navigations, the previous page gets destroyed (the
+  // replacements will already be reset as part of page destruction).
+  // Note: A page with active IndigoImageReplacements will never enter BFCache
+  // since we don't currently support keeping extension frames in BFCache.
+  if (navigation_handle->IsSameDocument()) {
+    Reset(ResetType::kResetReplacementsAndContentScript);
+  }
 
   if (onboarding_dialog_) {
     onboarding_dialog_->Close();

@@ -21,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -29,9 +30,11 @@
 #include "extensions/common/extension.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -52,17 +55,27 @@ class FakeIndigoAgent : public chrome::mojom::IndigoAgent {
       const url::Origin& origin,
       mojo::PendingAssociatedRemote<chrome::mojom::IndigoAgentHost> host,
       InjectScriptCallback callback) override {
+    host_.Bind(std::move(host));
     std::move(callback).Run();
   }
 
   void Invoke(InvokeCallback callback) override {
     std::move(callback).Run();
-    invoke_called_future_.SetValue();
+    if (!invoke_called_future_.IsReady()) {
+      invoke_called_future_.SetValue();
+    }
+    if (invoke_callback_) {
+      std::move(invoke_callback_).Run();
+    }
   }
 
   void Reset(ResetCallback callback) override {
     reset_called_ = true;
-    std::move(callback).Run();
+    if (keep_reset_pending_) {
+      pending_reset_callback_ = std::move(callback);
+    } else {
+      std::move(callback).Run();
+    }
     reset_called_future_.SetValue();
   }
 
@@ -78,11 +91,28 @@ class FakeIndigoAgent : public chrome::mojom::IndigoAgent {
 
   bool reset_called() const { return reset_called_; }
 
+  void set_keep_reset_pending(bool keep) { keep_reset_pending_ = keep; }
+
+  void CompleteReset() {
+    CHECK(pending_reset_callback_);
+    std::move(pending_reset_callback_).Run();
+  }
+
+  chrome::mojom::IndigoAgentHost* host() { return host_.get(); }
+
+  void set_invoke_callback(base::OnceClosure callback) {
+    invoke_callback_ = std::move(callback);
+  }
+
  private:
   mojo::AssociatedReceiverSet<chrome::mojom::IndigoAgent> receivers_;
+  mojo::AssociatedRemote<chrome::mojom::IndigoAgentHost> host_;
   base::test::TestFuture<void> invoke_called_future_;
   base::test::TestFuture<void> reset_called_future_;
+  base::OnceClosure invoke_callback_;
   bool reset_called_ = false;
+  bool keep_reset_pending_ = false;
+  ResetCallback pending_reset_callback_;
 };
 
 // 1x1 red pixel in image/webp.
@@ -258,6 +288,26 @@ class IndigoImageReplacementManagerBrowserTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;
   base::FilePath script_path_;
+};
+
+class IndigoImageReplacementManagerBFCacheBrowserTest
+    : public IndigoImageReplacementManagerBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    bfcache_feature_list_.InitWithFeaturesAndParameters(
+        content::GetDefaultEnabledBackForwardCacheFeaturesForTesting(),
+        content::GetDefaultDisabledBackForwardCacheFeaturesForTesting());
+
+    IndigoImageReplacementManagerBrowserTest::SetUpCommandLine(command_line);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    IndigoImageReplacementManagerBrowserTest::SetUpOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList bfcache_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
@@ -698,4 +748,147 @@ IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
   mock_replacement.WaitForDisconnect();
 }
 
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       ResetsReplacementsOnSameDocumentNavigation) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(main_rfh->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+
+  // Trigger a same-document navigation using pushState so that the path changes
+  // and it is not treated as a fragment-only navigation.
+  content::TestNavigationObserver nav_observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "history.pushState({}, '', '/new-path.html');"));
+  nav_observer.Wait();
+
+  // Verify that the replacements are reset, which disconnects the receiver.
+  mock_replacement.WaitForDisconnect();
+}
+
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBrowserTest,
+                       IgnoresReplacementDuringReset) {
+  GURL test_url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper main_rfh(web_contents->GetPrimaryMainFrame());
+
+  // 1) Setup IndigoAgent host and get the fake agent.
+  std::unique_ptr<FakeIndigoAgent> fake_agent =
+      SetupAndInvokeIndigoAgent(main_rfh.get());
+
+  // Enable keeping reset pending in the fake agent.
+  fake_agent->set_keep_reset_pending(true);
+
+  // 2) Trigger a same-document navigation. This will start the reset process on
+  // the browser side, incrementing `pending_reset_ack_count_` and calling
+  // `FakeIndigoAgent::Reset()`.
+  content::TestNavigationObserver nav_observer(web_contents);
+  ASSERT_TRUE(content::ExecJs(web_contents,
+                              "history.pushState({}, '', '/new-path.html');"));
+  nav_observer.Wait();
+
+  // 3) Now register a primary replacement via the agent host's Mojo interface,
+  // while the reset is still pending. This explicitly happens before Reset is
+  // processed in the renderer process to simulate a replacement being
+  // registered while a reset is ongoing.
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+  auto pending_remote = receiver.BindNewPipeAndPassRemote();
+
+  base::test::TestFuture<void> disconnect_future;
+  receiver.set_disconnect_handler(disconnect_future.GetCallback());
+
+  base::test::TestFuture<void> start_replacement_callback_future;
+  fake_agent->host()->StartImageReplacement(
+      std::move(pending_remote),
+      /*is_primary=*/true, start_replacement_callback_future.GetCallback());
+
+  // Wait for the Mojo call callback to complete.
+  EXPECT_TRUE(start_replacement_callback_future.Wait());
+
+  // Verify that FakeIndigoAgent::Reset was indeed called.
+  fake_agent->WaitForReset();
+
+  // Since a reset is pending, the IndigoAgentHost should ignore the
+  // registration, resulting in the receiver being disconnected and
+  // StartReplacement not being called.
+  EXPECT_TRUE(disconnect_future.Wait());
+  mock_replacement.ExpectStartReplacementToNotBeCalled();
+
+  // 4) Complete the reset process.
+  fake_agent->CompleteReset();
+
+  // 5) Invoke the agent host again to start the new session.
+  base::test::TestFuture<void> invoke_future;
+  fake_agent->set_invoke_callback(invoke_future.GetCallback());
+  IndigoAgentHost* host =
+      IndigoAgentHost::GetOrCreateForPage(main_rfh->GetPage());
+  EXPECT_TRUE(host->Invoke());
+  EXPECT_TRUE(invoke_future.Wait());
+
+  // Subsequent registrations should succeed.
+  MockImageReplacement mock_replacement2(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver2(&mock_replacement2);
+  base::test::TestFuture<void> start_replacement_callback_future2;
+  fake_agent->host()->StartImageReplacement(
+      receiver2.BindNewPipeAndPassRemote(),
+      /*is_primary=*/true, start_replacement_callback_future2.GetCallback());
+
+  EXPECT_TRUE(start_replacement_callback_future2.Wait());
+  mock_replacement2.WaitForStartReplacement();
+}
+
+// Note: This tests currently verifies that a page with Indigo ImageReplacements
+// is never put into BFCache because the replacement subframes load an extension
+// page and we don't currently support putting extension frames in BFCache. If
+// we do ever support this in the future, we should add logic to reset active
+// ImageReplacements when the page is put into BFCache (we do not want the
+// replacements to be kept around in this case).
+IN_PROC_BROWSER_TEST_F(IndigoImageReplacementManagerBFCacheBrowserTest,
+                       PageEmbeddingExtensionFrameEvictedFromBackForwardCache) {
+  GURL url_a = embedded_test_server()->GetURL("a.com", "/empty.html");
+  GURL url_b = embedded_test_server()->GetURL("b.com", "/empty.html");
+
+  // 1) Navigate to A.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::RenderFrameHostWrapper rfh_a(web_contents->GetPrimaryMainFrame());
+
+  IndigoImageReplacementManager* manager =
+      IndigoImageReplacementManager::GetOrCreateForPage(rfh_a->GetPage());
+  ASSERT_TRUE(manager);
+
+  MockImageReplacement mock_replacement(web_contents);
+  mojo::Receiver<blink::mojom::ImageReplacement> receiver(&mock_replacement);
+
+  manager->RegisterImageReplacement(receiver.BindNewPipeAndPassRemote(),
+                                    /*is_primary=*/true);
+  mock_replacement.WaitForStartReplacement();
+  mock_replacement.WaitForRenderReplacement();
+
+  // 2) Navigate away to B. Since page A embeds an extension subframe, it cannot
+  // enter the back-forward cache and must be deleted.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
+
+  ASSERT_TRUE(rfh_a.WaitUntilRenderFrameDeleted());
+  mock_replacement.WaitForDisconnect();
+}
 }  // namespace indigo

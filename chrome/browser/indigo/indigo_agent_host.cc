@@ -72,10 +72,21 @@ bool IndigoAgentHost::Invoke() {
 
 void IndigoAgentHost::Reset() {
   if (injection_state_ == InjectionState::kInjected) {
-    GetAgent().Reset(base::DoNothing());
+    ExecuteReset();
   } else if (injection_state_ == InjectionState::kInjecting) {
     pending_operations_.push_back(PendingOperation::kReset);
   }
+}
+
+void IndigoAgentHost::ExecuteReset() {
+  pending_reset_ack_count_++;
+  GetAgent().Reset(base::BindOnce(&IndigoAgentHost::OnResetComplete,
+                                  weak_factory_.GetWeakPtr()));
+}
+
+void IndigoAgentHost::OnResetComplete() {
+  CHECK_GT(pending_reset_ack_count_, 0);
+  pending_reset_ack_count_--;
 }
 
 void IndigoAgentHost::OnScriptLoaded(
@@ -99,7 +110,7 @@ void IndigoAgentHost::OnScriptLoaded(
         GetAgent().Invoke(base::DoNothing());
         break;
       case PendingOperation::kReset:
-        GetAgent().Reset(base::DoNothing());
+        ExecuteReset();
         break;
     }
   }
@@ -110,6 +121,14 @@ void IndigoAgentHost::StartImageReplacement(
     mojo::PendingRemote<blink::mojom::ImageReplacement> replacement,
     bool is_primary,
     StartImageReplacementCallback callback) {
+  // The renderer could still register new replacements between when Reset()
+  // is called and when it's processed in the renderer process. We ignore and
+  // drop these replacements.
+  if (pending_reset_ack_count_ > 0) {
+    std::move(callback).Run();
+    return;
+  }
+
   auto* manager = IndigoImageReplacementManager::GetOrCreateForPage(page());
   manager->RegisterImageReplacement(std::move(replacement), is_primary);
   std::move(callback).Run();
