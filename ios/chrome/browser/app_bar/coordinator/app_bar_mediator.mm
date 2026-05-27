@@ -509,9 +509,8 @@
   } else {
     CGPoint center = [sender.superview convertPoint:sender.center toView:nil];
     OpenNewTabCommand* command = [OpenNewTabCommand
-        commandWithURLFromChrome:GURL(kChromeUINewTabURL)
-                     inIncognito:_incognitoState.incognitoContentVisible];
-    command.originPoint = center;
+        commandWithIncognito:_incognitoState.incognitoContentVisible
+                 originPoint:center];
     [self.sceneHandler openURLInNewTab:command];
 
     [IntentDonationHelper donateIntent:IntentType::kOpenNewTab];
