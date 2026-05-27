@@ -1748,6 +1748,16 @@ class BaseActionSanitizer():
             os.path.splitext(it)[1] == '.h' for it in self.target.outputs)
 
 
+class GenerateCanonicalLocalesListSanitizer(BaseActionSanitizer):
+
+    def _sanitize_args(self):
+        self._set_arg_at(0, '$(out)')
+        super()._sanitize_args()
+
+    def is_header_generated(self):
+        return True
+
+
 class WriteBuildDateHeaderSanitizer(BaseActionSanitizer):
 
     def _sanitize_args(self):
@@ -2184,6 +2194,8 @@ def get_action_sanitizer(gn, target, gn_type, arch, is_test_target):
         return PerfettoWriteBuildFlagHeaderSanitizer(target, arch)
     if target.script == "//base/write_build_date_header.py":
         return WriteBuildDateHeaderSanitizer(target, arch)
+    if target.script == "//tools/i18n/generate_canonical_locales_list.py":
+        return GenerateCanonicalLocalesListSanitizer(target, arch)
     if target.script == "//tools/metrics/histograms/generate_allowlist_from_histograms_file.py":
         return WriteGenerateAllowlistFromHistogramsFileSanitizer(target, arch)
     if target.script == "//build/util/version.py":
