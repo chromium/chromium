@@ -10313,6 +10313,26 @@ To shut down the device, press and hold the power button on the device again.
         Restart to powerwash
       </message>
 
+      <!-- Skip Enrollment confirmation dialog -->
+      <message name="IDS_SKIP_ENROLLMENT_DIALOG_TITLE" desc="The title for the modal dialog shown when skipping enrollment. Only displayed if the device is License Packaged device.">
+        Skip enterprise enrollment?
+      </message>
+      <message name="IDS_SKIP_ENROLLMENT_DIALOG_EDUCATION_TITLE" desc="The title for the modal dialog shown when skipping enrollment. Only displayed if the device is License Packaged device.">
+        Skip school enrollment?
+      </message>
+      <message name="IDS_SKIP_ENROLLMENT_DIALOG_TEXT" desc="The message for the modal dialog shown when skipping enrollment. Only displayed if the device is License Packaged device.">
+        You will have to factory reset this device to use enterprise features.
+      </message>
+      <message name="IDS_SKIP_ENROLLMENT_DIALOG_EDUCATION_TEXT" desc="The message for the modal dialog shown when skipping enrollment. Only displayed if the device is License Packaged device.">
+        You will have to factory reset this device to use Chrome Education Upgrade features.
+      </message>
+      <message name="IDS_SKIP_ENROLLMENT_DIALOG_GO_BACK_BUTTON" desc="Cancel button for skipping enrollment">
+        Go back
+      </message>
+      <message name="IDS_SKIP_ENROLLMENT_DIALOG_SKIP_BUTTON" desc="Confirmation button for skipping enrollment">
+        Skip
+      </message>
+
       <!-- Status bar -->
       <message name="IDS_STATUSBAR_NETWORK_DEVICE_ETHERNET" desc="Label for an ethernet network device.">
         Ethernet

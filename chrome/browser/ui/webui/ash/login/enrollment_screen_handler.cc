@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
