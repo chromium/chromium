@@ -7,13 +7,6 @@ module feed_internals.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
-// Feed sorting order options.
-enum FeedOrder {
-  kUnspecified = 0,
-  kGrouped,
-  kReverseChron
-};
-
 // General properties of Feed suggestions.
 struct Properties {
   // Whether the Feed feature flag is enabled.
@@ -28,12 +21,6 @@ struct Properties {
   // Whether prefetching for offline availability is enabled.
   bool is_prefetching_enabled;
 
-  // Whether debugging the WebFeed follow intro is enabled.
-  bool is_web_feed_follow_intro_debug_enabled;
-
-  // Whether the legacy feed endpoint should be used.
-  bool use_feed_query_requests;
-
   // Last load stream status, human readable.
   string load_stream_status;
 
@@ -42,9 +29,6 @@ struct Properties {
 
   // Feed upload actions URL.
   url.mojom.Url feed_actions_url;
-
-  // Following feed order.
-  FeedOrder following_feed_order;
 };
 
 struct LastFetchProperties {
@@ -83,12 +67,6 @@ interface PageHandler {
   // Trigger a refresh of the For-you Feed.
   RefreshForYouFeed();
 
-  // Trigger a refresh of the Following Feed.
-  RefreshFollowingFeed();
-
-  // Trigger a refresh of the Web Feed suggestions.
-  RefreshWebFeedSuggestions();
-
   // Internal state dump of the Feed library's process scope. Human-readable.
   GetFeedProcessScopeDump() => (string dump);
 
@@ -110,14 +88,4 @@ interface PageHandler {
   // Overrides the feed stream data with the payload inside a feedui::Slice for
   // testing purpose. See go/feed-stream-data-testing for more details.
   OverrideFeedStreamData(array<uint8> data);
-
-  // Sets whether debugging the WebFeed follow intro is enabled.
-  SetWebFeedFollowIntroDebugEnabled(bool enabled);
-
-  // Sets whether the legacy feed endpoint should be used for Web Feed content
-  // fetches.
-  SetUseFeedQueryRequests(bool use_legacy);
-
-  // Sets the Following feed order in local preferences.
-  SetFollowingFeedOrder(FeedOrder order);
 };

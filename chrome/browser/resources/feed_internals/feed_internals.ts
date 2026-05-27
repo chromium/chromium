@@ -7,7 +7,7 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 import type {TimeDelta} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
 import type {LastFetchProperties, PageHandlerRemote} from './feed_internals.mojom-webui.js';
-import {FeedOrder, PageHandler} from './feed_internals.mojom-webui.js';
+import {PageHandler} from './feed_internals.mojom-webui.js';
 
 /**
  * Reference to the backend.
@@ -34,36 +34,6 @@ function updatePageWithProperties() {
     getRequiredElement('feed-fetch-url').textContent = properties.feedFetchUrl;
     getRequiredElement('feed-actions-url').textContent =
         properties.feedActionsUrl;
-    getRequiredElement<HTMLInputElement>('enable-webfeed-follow-intro-debug')
-        .checked = properties.isWebFeedFollowIntroDebugEnabled;
-    getRequiredElement<HTMLInputElement>('enable-webfeed-follow-intro-debug')
-        .disabled = false;
-    getRequiredElement<HTMLInputElement>('use-feed-query-requests').checked =
-        properties.useFeedQueryRequests;
-
-    switch (properties.followingFeedOrder) {
-      case FeedOrder.kUnspecified:
-        getRequiredElement<HTMLInputElement>('following-feed-order-unset')
-            .checked = true;
-        break;
-      case FeedOrder.kGrouped:
-        getRequiredElement<HTMLInputElement>('following-feed-order-grouped')
-            .checked = true;
-        break;
-      case FeedOrder.kReverseChron:
-        getRequiredElement<HTMLInputElement>(
-            'following-feed-order-reverse-chron')
-            .checked = true;
-        break;
-      default:
-        break;
-    }
-    getRequiredElement<HTMLInputElement>('following-feed-order-grouped')
-        .disabled = false;
-    getRequiredElement<HTMLInputElement>('following-feed-order-reverse-chron')
-        .disabled = false;
-    getRequiredElement<HTMLInputElement>('following-feed-order-unset')
-        .disabled = false;
   });
 }
 
@@ -108,17 +78,6 @@ function setupEventListeners() {
     assert(pageHandler);
     pageHandler.refreshForYouFeed();
   });
-
-  getRequiredElement('refresh-following').addEventListener('click', function() {
-    assert(pageHandler);
-    pageHandler.refreshFollowingFeed();
-  });
-
-  getRequiredElement('refresh-webfeed-suggestions')
-      .addEventListener('click', () => {
-        assert(pageHandler);
-        pageHandler.refreshWebFeedSuggestions();
-      });
 
   getRequiredElement('dump-feed-process-scope')
       .addEventListener('click', function() {
@@ -173,46 +132,6 @@ function setupEventListeners() {
           };
         }
       });
-
-  getRequiredElement('enable-webfeed-follow-intro-debug')
-      .addEventListener('click', function() {
-        assert(pageHandler);
-        pageHandler.setWebFeedFollowIntroDebugEnabled(
-            getRequiredElement<HTMLInputElement>(
-                'enable-webfeed-follow-intro-debug')
-                .checked);
-        getRequiredElement<HTMLInputElement>(
-            'enable-webfeed-follow-intro-debug')
-            .disabled = true;
-      });
-
-  getRequiredElement('use-feed-query-requests')
-      .addEventListener('click', function() {
-        assert(pageHandler);
-        pageHandler.setUseFeedQueryRequests(
-            getRequiredElement<HTMLInputElement>('use-feed-query-requests')
-                .checked);
-      });
-
-  const orderRadioClickListener = function(order: FeedOrder) {
-    assert(pageHandler);
-    getRequiredElement<HTMLInputElement>('following-feed-order-grouped')
-        .disabled = true;
-    getRequiredElement<HTMLInputElement>('following-feed-order-reverse-chron')
-        .disabled = true;
-    getRequiredElement<HTMLInputElement>('following-feed-order-unset')
-        .disabled = true;
-    pageHandler.setFollowingFeedOrder(order);
-  };
-  getRequiredElement('following-feed-order-unset')
-      .addEventListener(
-          'click', () => orderRadioClickListener(FeedOrder.kUnspecified));
-  getRequiredElement('following-feed-order-grouped')
-      .addEventListener(
-          'click', () => orderRadioClickListener(FeedOrder.kGrouped));
-  getRequiredElement('following-feed-order-reverse-chron')
-      .addEventListener(
-          'click', () => orderRadioClickListener(FeedOrder.kReverseChron));
 }
 
 function updatePage() {

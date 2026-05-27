@@ -58,9 +58,6 @@ void FeedV2InternalsPageHandler::GetGeneralProperties(
   properties->is_feed_visible = feed_stream_->IsArticlesListVisible();
   properties->is_feed_allowed = IsFeedAllowed();
   properties->is_prefetching_enabled = false;
-  properties->is_web_feed_follow_intro_debug_enabled =
-      IsWebFeedFollowIntroDebugEnabled();
-  properties->use_feed_query_requests = ShouldUseFeedQueryRequests();
   if (debug_data.fetch_info) {
     properties->feed_fetch_url = debug_data.fetch_info->base_request_url;
   }
@@ -69,8 +66,6 @@ void FeedV2InternalsPageHandler::GetGeneralProperties(
   }
 
   properties->load_stream_status = debug_data.load_stream_status;
-
-  properties->following_feed_order = GetFollowingFeedOrder();
 
   std::move(callback).Run(std::move(properties));
 }
@@ -100,16 +95,6 @@ void FeedV2InternalsPageHandler::GetLastFetchProperties(
 void FeedV2InternalsPageHandler::RefreshForYouFeed() {
   feed_stream_->ForceRefreshForDebugging(
       feed::StreamType(feed::StreamKind::kForYou));
-}
-
-void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
-  // TODO(crbug.com/407797637): Remove this function and the related button in
-  // chrome://snippets-internals.
-}
-
-void FeedV2InternalsPageHandler::RefreshWebFeedSuggestions() {
-  // TODO(crbug.com/407797637): Remove this function and the related button in
-  // chrome://snippets-internals.
 }
 
 void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(
@@ -147,38 +132,4 @@ void FeedV2InternalsPageHandler::OverrideFeedStreamData(
   slice->set_slice_id("SetByInternalsPage");
   slice->mutable_xsurface_slice()->set_xsurface_frame(data.data(), data.size());
   feed_stream_->SetForcedStreamUpdateForDebugging(stream_update);
-}
-
-bool FeedV2InternalsPageHandler::IsWebFeedFollowIntroDebugEnabled() {
-  // TODO(crbug.com/407797637): remove the web feed this function and the
-  // related UI
-  return false;
-}
-
-void FeedV2InternalsPageHandler::SetWebFeedFollowIntroDebugEnabled(
-    const bool enabled) {
-  // TODO(crbug.com/407797637): remove the web feed this function and the
-  // related UI
-}
-
-bool FeedV2InternalsPageHandler::ShouldUseFeedQueryRequests() {
-  return feed::GetFeedConfig().use_feed_query_requests;
-}
-
-void FeedV2InternalsPageHandler::SetUseFeedQueryRequests(
-    const bool use_legacy) {
-  feed::SetUseFeedQueryRequests(use_legacy);
-}
-
-feed_internals::mojom::FeedOrder
-FeedV2InternalsPageHandler::GetFollowingFeedOrder() {
-  // TODO(crbug.com/407797637): remove this function along with its UI as the
-  // part of web feed deprecation.
-  return feed_internals::mojom::FeedOrder::kUnspecified;
-}
-
-void FeedV2InternalsPageHandler::SetFollowingFeedOrder(
-    const feed_internals::mojom::FeedOrder new_order) {
-  // TODO(crbug.com/407797637): remove this function along with its UI as the
-  // part of web feed deprecation.
 }
