@@ -125,7 +125,7 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
 
   // Whether or not non-zero insets have been sent to a frame over the course of
   // this SafeAreaInsetsHost.
-  bool has_sent_non_zero_insets_;
+  bool has_sent_non_zero_insets_ = false;
 };
 
 }  // namespace content
