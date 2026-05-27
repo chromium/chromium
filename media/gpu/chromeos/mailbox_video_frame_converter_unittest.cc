@@ -5,8 +5,11 @@
 #include "media/gpu/chromeos/mailbox_video_frame_converter.h"
 
 #include <fcntl.h>
+#include <linux/memfd.h>
+#include <sys/mman.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <unistd.h>
 
 #include <array>
 #include <optional>
@@ -54,12 +57,6 @@ namespace media {
 
 namespace {
 
-base::ScopedFD GetDummyFD() {
-  base::ScopedFD fd(open("/dev/zero", O_RDWR));
-  DCHECK(fd.is_valid());
-  return fd;
-}
-
 gfx::GpuMemoryBufferHandle CreatePixmapHandle(const gfx::Size& size,
                                               viz::SharedImageFormat format) {
   std::optional<VideoPixelFormat> video_pixel_format =
@@ -73,9 +70,15 @@ gfx::GpuMemoryBufferHandle CreatePixmapHandle(const gfx::Size& size,
   for (size_t i = 0; i < VideoFrame::NumPlanes(*video_pixel_format); i++) {
     const gfx::Size plane_size_in_bytes =
         VideoFrame::PlaneSize(*video_pixel_format, i, size);
+
+    // Placeholder plane fd.
+    base::ScopedFD fd(memfd_create("test_shared_image", MFD_CLOEXEC));
+    CHECK(fd.is_valid());
+    CHECK_EQ(ftruncate(fd.get(), plane_size_in_bytes.GetArea()), 0);
+
     native_pixmap_handle.planes.emplace_back(plane_size_in_bytes.width(), 0,
                                              plane_size_in_bytes.GetArea(),
-                                             GetDummyFD());
+                                             std::move(fd));
   }
   native_pixmap_handle.modifier = gfx::NativePixmapHandle::kNoModifier;
   gfx::GpuMemoryBufferHandle handle(std::move(native_pixmap_handle));
