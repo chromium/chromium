@@ -24,11 +24,13 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     IdentityManager* identity_manager,
     PrefService* pref_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper)
+    std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
+    version_info::Channel channel)
     : identity_manager_(identity_manager),
       pref_service_(CHECK_DEREF(pref_service)),
       url_loader_factory_(std::move(url_loader_factory)),
-      network_delay_helper_(std::move(network_delay_helper)) {
+      network_delay_helper_(std::move(network_delay_helper)),
+      channel_(channel) {
   CHECK(network_delay_helper_);
   identity_manager_observation_.Observe(identity_manager_);
 
@@ -205,7 +207,7 @@ void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
 
   CHECK(!network_delay_helper_->AreNetworkCallsDelayed());
   active_fetchers_[gaia_id] = std::make_unique<AccountPreviewDataFetcher>(
-      gaia_id, identity_manager_, url_loader_factory_,
+      gaia_id, identity_manager_, url_loader_factory_, channel_,
       base::BindOnce(&AccountPreviewDataServiceImpl::OnFetchCompleted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

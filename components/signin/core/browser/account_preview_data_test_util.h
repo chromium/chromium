@@ -16,6 +16,14 @@ class TestURLLoaderFactory;
 
 namespace signin {
 
+// These url matches the non-Stable/Beta urls for testing.
+inline constexpr char kTestStatsUrl[] =
+    "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1/"
+    "dataTypes/-/dataTypesStatistics";
+inline constexpr char kTestPreviewsUrl[] =
+    "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1/"
+    "dataTypes/-/entitiesPreviews";
+
 struct DataTypeCounts {
   int bookmark_count = 0;
   int password_count = 0;

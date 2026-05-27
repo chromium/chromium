@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/version_info/channel.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -24,12 +25,6 @@ class SimpleURLLoader;
 namespace signin {
 
 class IdentityManager;
-
-inline constexpr char kAccountPreviewStatsUrl[] =
-    "https://chromesyncpreview.pa.googleapis.com/v1/dataTypes/-/statistics";
-inline constexpr char kAccountPreviewPreviewsUrl[] =
-    "https://chromesyncpreview.pa.googleapis.com/v1/dataTypes/-/"
-    "entitiesPreviews";
 
 // Helper class to fetch account preview data from the Sync Preview API.
 // Fetches both statistics and entities previews in parallel (after acquiring a
@@ -48,6 +43,7 @@ class AccountPreviewDataFetcher {
       const GaiaId& gaia_id,
       IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      version_info::Channel channel,
       FetchCompleteCallback callback);
   ~AccountPreviewDataFetcher();
 
@@ -62,6 +58,7 @@ class AccountPreviewDataFetcher {
   const GaiaId gaia_id_;
   const raw_ptr<IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const version_info::Channel channel_;
   FetchCompleteCallback callback_;
 
   std::unique_ptr<AccessTokenFetcher> token_fetcher_;

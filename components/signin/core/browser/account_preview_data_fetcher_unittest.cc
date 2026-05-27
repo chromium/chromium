@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "base/version_info/channel.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_test_util.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -54,7 +55,8 @@ TEST_F(AccountPreviewDataFetcherTest, Success) {
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -78,7 +80,8 @@ TEST_F(AccountPreviewDataFetcherTest, SuccessEmpty) {
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -100,7 +103,8 @@ TEST_F(AccountPreviewDataFetcherTest, AccessTokenFailure) {
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
 
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
       account_info.account_id,
@@ -123,7 +127,8 @@ TEST_F(AccountPreviewDataFetcherTest, StatsFailure) {
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -141,7 +146,8 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsFailure) {
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -152,15 +158,15 @@ TEST_F(AccountPreviewDataFetcherTest, StatsInvalidJson) {
   AccountInfo account_info =
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
-  test_url_loader_factory_.AddResponse(kAccountPreviewStatsUrl,
-                                       "{ invalid json }");
+  test_url_loader_factory_.AddResponse(kTestStatsUrl, "{ invalid json }");
   MockSuccessfulPreviewsFetch(&test_url_loader_factory_);
 
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);
@@ -172,14 +178,14 @@ TEST_F(AccountPreviewDataFetcherTest, PreviewsInvalidJson) {
       identity_test_env_.MakeAccountAvailable("user@gmail.com");
 
   MockSuccessfulStatsFetch(&test_url_loader_factory_);
-  test_url_loader_factory_.AddResponse(kAccountPreviewPreviewsUrl,
-                                       "{ invalid json }");
+  test_url_loader_factory_.AddResponse(kTestPreviewsUrl, "{ invalid json }");
 
   base::test::TestFuture<const GaiaId&, std::optional<AccountPreviewData>>
       future;
   auto fetcher = std::make_unique<AccountPreviewDataFetcher>(
       account_info.gaia, identity_test_env_.identity_manager(),
-      test_url_loader_factory_.GetSafeWeakWrapper(), future.GetCallback());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      version_info::Channel::UNKNOWN, future.GetCallback());
 
   auto [gaia_id, result_data] = future.Take();
   EXPECT_EQ(account_info.gaia, gaia_id);

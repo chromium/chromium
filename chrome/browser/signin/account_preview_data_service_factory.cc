@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/common/channel_info.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
@@ -62,7 +63,7 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
       IdentityManagerFactory::GetForProfile(profile), prefs,
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      std::move(network_delay_helper));
+      std::move(network_delay_helper), chrome::GetChannel());
 }
 
 void AccountPreviewDataServiceFactory::RegisterProfilePrefs(

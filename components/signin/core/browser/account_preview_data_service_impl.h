@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/version_info/channel.h"
 #include "components/signin/core/browser/account_preview_data_service.h"
 #include "components/signin/public/base/wait_for_network_callback_helper.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -37,7 +38,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
       IdentityManager* identity_manager,
       PrefService* pref_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper);
+      std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
+      version_info::Channel channel);
 
   AccountPreviewDataServiceImpl(const AccountPreviewDataServiceImpl&) = delete;
   AccountPreviewDataServiceImpl& operator=(
@@ -80,6 +82,7 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   const raw_ref<PrefService> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper_;
+  const version_info::Channel channel_;
 
   std::unique_ptr<PersistentRepeatingTimer> repeating_timer_;
   bool deferred_refresh_pending_ = false;

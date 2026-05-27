@@ -22,10 +22,16 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "url/gurl.h"
 
 namespace signin {
 
 namespace {
+
+constexpr char kStablePreviewUrl[] =
+    "https://chromesyncpreview.pa.googleapis.com/v1";
+constexpr char kStagingPreviewUrl[] =
+    "https://alpha-chromesyncpreview-googleapis.pa.sandbox.google.com/v1";
 
 // TODO(crbug.com/510760810): Exact content of the parser will need to be
 // re-iterated on, when we will be able to fully test the final API.
@@ -120,16 +126,37 @@ std::optional<AccountPreviewData> ParsePreviewsResponse(
   return data;
 }
 
+std::string_view GetBaseUrl(version_info::Channel channel) {
+  if (channel == version_info::Channel::STABLE ||
+      channel == version_info::Channel::BETA) {
+    return kStablePreviewUrl;
+  }
+  // This URL is also used for testing.
+  return kStagingPreviewUrl;
+}
+
+GURL GetStatsUrlForChannel(version_info::Channel channel) {
+  return GURL(
+      base::StrCat({GetBaseUrl(channel), "/dataTypes/-/dataTypesStatistics"}));
+}
+
+GURL GetPreviewsUrlForChannel(version_info::Channel channel) {
+  return GURL(
+      base::StrCat({GetBaseUrl(channel), "/dataTypes/-/entitiesPreviews"}));
+}
+
 }  // namespace
 
 AccountPreviewDataFetcher::AccountPreviewDataFetcher(
     const GaiaId& gaia_id,
     IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    version_info::Channel channel,
     FetchCompleteCallback callback)
     : gaia_id_(gaia_id),
       identity_manager_(identity_manager),
       url_loader_factory_(std::move(url_loader_factory)),
+      channel_(channel),
       callback_(std::move(callback)) {
   CHECK(identity_manager_);
   AccountInfo account_info =
@@ -205,7 +232,7 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
 
   // 1. Stats Request
   auto stats_request = std::make_unique<network::ResourceRequest>();
-  stats_request->url = GURL(kAccountPreviewStatsUrl);
+  stats_request->url = GetStatsUrlForChannel(channel_);
   stats_request->method = "GET";
   stats_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   stats_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
@@ -221,7 +248,7 @@ void AccountPreviewDataFetcher::StartNetworkRequests(
 
   // 2. Previews Request
   auto previews_request = std::make_unique<network::ResourceRequest>();
-  previews_request->url = GURL(kAccountPreviewPreviewsUrl);
+  previews_request->url = GetPreviewsUrlForChannel(channel_);
   previews_request->method = "GET";
   previews_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   previews_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,

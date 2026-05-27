@@ -8,6 +8,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/version_info/channel.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
@@ -53,7 +54,8 @@ class AccountPreviewDataServiceTest : public testing::Test {
     network_delay_helper_ = helper.get();
     service_ = std::make_unique<AccountPreviewDataServiceImpl>(
         identity_test_env_.identity_manager(), &prefs_,
-        test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper));
+        test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+        version_info::Channel::UNKNOWN);
   }
 
   void TearDown() override {
@@ -145,7 +147,8 @@ TEST_F(AccountPreviewDataServiceTest, LoadsCachedDataFromPrefs) {
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
       identity_test_env_.identity_manager(), &prefs_,
       test_url_loader_factory_.GetSafeWeakWrapper(),
-      std::make_unique<TestWaitForNetworkCallbackHelper>());
+      std::make_unique<TestWaitForNetworkCallbackHelper>(),
+      version_info::Channel::UNKNOWN);
 
   std::optional<AccountPreviewData> data =
       service_->GetAccountPreviewData(account_info.gaia);
@@ -178,7 +181,8 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
       identity_test_env_.identity_manager(), &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper));
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
+      version_info::Channel::UNKNOWN);
 
   // Verify that it did NOT fetch yet (pref is empty).
   EXPECT_FALSE(prefs_.GetDict(prefs::kAccountPreviewDataDict)

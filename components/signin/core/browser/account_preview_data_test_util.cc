@@ -6,7 +6,6 @@
 
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "components/signin/core/browser/account_preview_data_fetcher.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 
@@ -33,7 +32,7 @@ void MockSuccessfulStatsFetch(
     ]
   })",
       counts.bookmark_count, counts.password_count, counts.history_count);
-  test_url_loader_factory->AddResponse(kAccountPreviewStatsUrl, stats_json);
+  test_url_loader_factory->AddResponse(kTestStatsUrl, stats_json);
 }
 
 void MockSuccessfulPreviewsFetch(
@@ -60,8 +59,7 @@ void MockSuccessfulPreviewsFetch(
   })",
                          base::JoinString(entries, ",").c_str());
 
-  test_url_loader_factory->AddResponse(kAccountPreviewPreviewsUrl,
-                                       previews_json);
+  test_url_loader_factory->AddResponse(kTestPreviewsUrl, previews_json);
 }
 
 void MockSuccessfulFetch(network::TestURLLoaderFactory* test_url_loader_factory,
@@ -75,16 +73,15 @@ void MockFailedStatsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     net::Error error_code) {
   network::URLLoaderCompletionStatus status(error_code);
-  test_url_loader_factory->AddResponse(GURL(kAccountPreviewStatsUrl),
-                                       network::mojom::URLResponseHead::New(),
-                                       "", status);
+  test_url_loader_factory->AddResponse(
+      GURL(kTestStatsUrl), network::mojom::URLResponseHead::New(), "", status);
 }
 
 void MockFailedPreviewsFetch(
     network::TestURLLoaderFactory* test_url_loader_factory,
     net::Error error_code) {
   network::URLLoaderCompletionStatus status(error_code);
-  test_url_loader_factory->AddResponse(GURL(kAccountPreviewPreviewsUrl),
+  test_url_loader_factory->AddResponse(GURL(kTestPreviewsUrl),
                                        network::mojom::URLResponseHead::New(),
                                        "", status);
 }
