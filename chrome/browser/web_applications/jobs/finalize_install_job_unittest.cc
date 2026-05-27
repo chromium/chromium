@@ -4,58 +4,54 @@
 
 #include "chrome/browser/web_applications/jobs/finalize_install_job.h"
 
-#include <initializer_list>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
+#include <vector>
 
-#include "base/feature_list.h"
-#include "base/scoped_observation.h"
-#include "base/test/bind.h"
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
-#include "base/traits_bag.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
+#include "base/time/default_clock.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
-#include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
-#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/common/chrome_features.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
+#include "components/webapps/isolated_web_apps/types/iwa_origin.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
-#include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -69,6 +65,9 @@ namespace web_app {
 namespace {
 
 using testing::_;
+
+constexpr char kDefaultAppUrl[] = "https://foo.example";
+constexpr char16_t kDefaultAppTitle[] = u"Foo Title";
 
 struct FinalizeInstallResult {
   webapps::AppId installed_app_id;
@@ -177,6 +176,22 @@ class FinalizeInstallJobTest : public WebAppTest {
     WebAppTest::TearDown();
   }
 
+  std::unique_ptr<WebAppInstallInfo> CreateAppInfo(std::string_view start_url,
+                                                   std::u16string title) {
+    auto info =
+        WebAppInstallInfo::CreateWithStartUrlForTesting(GURL(start_url));
+    info->title = std::move(title);
+    return info;
+  }
+
+  IconBitmaps CreateDummyIconBitmaps() {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(16, 16);
+    IconBitmaps bitmaps;
+    bitmaps.any[16] = std::move(bitmap);
+    return bitmaps;
+  }
+
   FinalizeInstallResult AwaitFinalizeInstall(
       const WebAppInstallInfo& info,
       const FinalizeJobOptions& options) {
@@ -214,9 +229,7 @@ class FinalizeInstallJobTest : public WebAppTest {
 };
 
 TEST_F(FinalizeInstallJobTest, BasicInstallSucceeds) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
@@ -228,13 +241,8 @@ TEST_F(FinalizeInstallJobTest, BasicInstallSucceeds) {
 }
 
 TEST_F(FinalizeInstallJobTest, ConcurrentInstallSucceeds) {
-  auto info1 = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo1.example"));
-  info1->title = u"Foo1 Title";
-
-  auto info2 = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo2.example"));
-  info2->title = u"Foo2 Title";
+  auto info1 = CreateAppInfo("https://foo1.example", u"Foo1 Title");
+  auto info2 = CreateAppInfo("https://foo2.example", u"Foo2 Title");
 
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
@@ -265,9 +273,7 @@ TEST_F(FinalizeInstallJobTest, ConcurrentInstallSucceeds) {
 }
 
 TEST_F(FinalizeInstallJobTest, InstallStoresLatestWebAppInstallSource) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
@@ -277,9 +283,7 @@ TEST_F(FinalizeInstallJobTest, InstallStoresLatestWebAppInstallSource) {
 }
 
 TEST_F(FinalizeInstallJobTest, NonLocalThenLocalInstallSetsBothInstallTime) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.install_state = proto::SUGGESTED_FROM_ANOTHER_DEVICE;
   // OS Hooks must be disabled for non-locally installed app.
@@ -319,9 +323,7 @@ TEST_F(FinalizeInstallJobTest, NonLocalThenLocalInstallSetsBothInstallTime) {
 }
 
 TEST_F(FinalizeInstallJobTest, LatestInstallTimeAlwaysUpdatedIfReinstalled) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.add_to_applications_menu = false;
   options.add_to_desktop = false;
@@ -379,9 +381,7 @@ TEST_F(FinalizeInstallJobTest, LatestInstallTimeAlwaysUpdatedIfReinstalled) {
 }
 
 TEST_F(FinalizeInstallJobTest, InstallNoDesktopShortcut) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
@@ -395,9 +395,7 @@ TEST_F(FinalizeInstallJobTest, InstallNoDesktopShortcut) {
 }
 
 TEST_F(FinalizeInstallJobTest, InstallNoQuickLaunchBarShortcut) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_quick_launch_bar = false;
@@ -412,9 +410,7 @@ TEST_F(FinalizeInstallJobTest, InstallNoQuickLaunchBarShortcut) {
 
 TEST_F(FinalizeInstallJobTest,
        InstallNoDesktopShortcutAndNoQuickLaunchBarShortcut) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
@@ -429,9 +425,7 @@ TEST_F(FinalizeInstallJobTest,
 }
 
 TEST_F(FinalizeInstallJobTest, InstallNoCreateOsShorcuts) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   options.add_to_desktop = false;
@@ -445,9 +439,7 @@ TEST_F(FinalizeInstallJobTest, InstallNoCreateOsShorcuts) {
 }
 
 TEST_F(FinalizeInstallJobTest, InstallOsHooksEnabledForUserInstalledApps) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
@@ -460,9 +452,7 @@ TEST_F(FinalizeInstallJobTest, InstallOsHooksEnabledForUserInstalledApps) {
 }
 
 TEST_F(FinalizeInstallJobTest, InstallUrlSetInWebAppDB) {
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
-      GURL("https://foo.example"));
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   info->install_url = GURL("https://foo.example/installer");
   FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
@@ -483,16 +473,19 @@ TEST_F(FinalizeInstallJobTest, InstallUrlSetInWebAppDB) {
             *it->second.install_urls.begin());
 }
 
-TEST_F(FinalizeInstallJobTest, IsolationDataSetInWebAppDB) {
+class FinalizeInstallJobTestIwaUpdateManifest
+    : public FinalizeInstallJobTest,
+      public testing::WithParamInterface<IsolatedWebAppStorageLocation> {};
+
+TEST_P(FinalizeInstallJobTestIwaUpdateManifest, IsolationDataSetInWebAppDB) {
+  const IsolatedWebAppStorageLocation& location = GetParam();
   IwaVersion version = *IwaVersion::Create("1.2.3");
 
   auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(
       IwaOrigin(test::GetDefaultEcdsaP256WebBundleId()).origin().GetURL());
-  info->title = u"Foo Title";
+  info->title = kDefaultAppTitle;
   info->set_isolated_web_app_version(version);
 
-  const IsolatedWebAppStorageLocation location(
-      IwaStorageUnownedBundle{base::FilePath(FILE_PATH_LITERAL("p"))});
   FinalizeJobOptions options(webapps::WebappInstallSource::EXTERNAL_POLICY);
 
   auto integrity_block_data =
@@ -516,6 +509,18 @@ TEST_F(FinalizeInstallJobTest, IsolationDataSetInWebAppDB) {
                                            integrity_block_data)));
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FinalizeInstallJobTestIwaUpdateManifest,
+    testing::Values(IsolatedWebAppStorageLocation(IwaStorageOwnedBundle{
+                        "dir", /*dev_mode=*/false}),
+                    IsolatedWebAppStorageLocation(IwaStorageOwnedBundle{
+                        "dir", /*dev_mode=*/true}),
+                    IsolatedWebAppStorageLocation(IwaStorageUnownedBundle{
+                        base::FilePath(FILE_PATH_LITERAL("p"))}),
+                    IsolatedWebAppStorageLocation(IwaStorageProxy{
+                        url::Origin::Create(GURL("http://localhost:1234"))})));
+
 TEST_F(FinalizeInstallJobTest, PopUpContentSettingsGrantedForIwa) {
   std::unique_ptr<ScopedBundledIsolatedWebApp> app =
       IsolatedWebAppBuilder(ManifestBuilder().SetVersion("1.0.0"))
@@ -533,13 +538,11 @@ TEST_F(FinalizeInstallJobTest, PopUpContentSettingsGrantedForIwa) {
 }
 
 TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsApproved) {
-  GURL start_url("https://foo.example");
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   auto scope_extension =
-      ScopeExtensionInfo::CreateForScope(start_url,
+      ScopeExtensionInfo::CreateForScope(GURL(kDefaultAppUrl),
                                          /*has_origin_wildcard=*/true);
   CHECK(!scope_extension.origin.opaque());
   info->scope_extensions = {scope_extension};
@@ -562,13 +565,11 @@ TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsApproved) {
 }
 
 TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsDenied) {
-  GURL start_url("https://foo.example");
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   auto scope_extension =
-      ScopeExtensionInfo::CreateForScope(start_url,
+      ScopeExtensionInfo::CreateForScope(GURL(kDefaultAppUrl),
                                          /*has_origin_wildcard=*/true);
   info->scope_extensions = {scope_extension};
 
@@ -588,9 +589,7 @@ TEST_F(FinalizeInstallJobTest, ValidateOriginAssociationsDenied) {
 }
 
 TEST_F(FinalizeInstallJobTest, ValidateMigrationSourcesApproved) {
-  GURL start_url("https://foo.example");
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   MigrationSource source(
@@ -624,9 +623,7 @@ TEST_F(FinalizeInstallJobTest, ValidateMigrationSourcesApproved) {
 }
 
 TEST_F(FinalizeInstallJobTest, ValidateShortcutsSanitizedOutsideScope) {
-  GURL start_url("https://foo.example");
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
 
   WebAppShortcutsMenuItemInfo valid_shortcut;
   valid_shortcut.name = u"Valid";
@@ -639,13 +636,8 @@ TEST_F(FinalizeInstallJobTest, ValidateShortcutsSanitizedOutsideScope) {
   info->shortcuts_menu_item_infos = {valid_shortcut, invalid_shortcut};
 
   // Provide dummy icon bitmaps for both shortcuts.
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(16, 16);
-  IconBitmaps valid_bitmaps;
-  valid_bitmaps.any[16] = bitmap;
-  IconBitmaps invalid_bitmaps;
-  invalid_bitmaps.any[16] = bitmap;
-  info->shortcuts_menu_icon_bitmaps = {valid_bitmaps, invalid_bitmaps};
+  info->shortcuts_menu_icon_bitmaps = {CreateDummyIconBitmaps(),
+                                       CreateDummyIconBitmaps()};
 
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   FinalizeInstallResult result = AwaitFinalizeInstall(*info, options);
@@ -659,20 +651,14 @@ TEST_F(FinalizeInstallJobTest, ValidateShortcutsSanitizedOutsideScope) {
 }
 
 TEST_F(FinalizeInstallJobTest, ValidateShortcutsKeptInExtendedScope) {
-  GURL start_url("https://foo.example");
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
 
   WebAppShortcutsMenuItemInfo extended_scope_shortcut;
   extended_scope_shortcut.name = u"Extended Scope";
   extended_scope_shortcut.url = GURL("https://bar.example/shortcut");
 
   info->shortcuts_menu_item_infos = {extended_scope_shortcut};
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(16, 16);
-  IconBitmaps extended_bitmaps;
-  extended_bitmaps.any[16] = bitmap;
-  info->shortcuts_menu_icon_bitmaps = {extended_bitmaps};
+  info->shortcuts_menu_icon_bitmaps = {CreateDummyIconBitmaps()};
 
   // Add bar.example as a validated scope extension.
   auto scope_extension =
@@ -701,9 +687,7 @@ TEST_F(FinalizeInstallJobTest, ValidateShortcutsKeptInExtendedScope) {
 
 TEST_F(FinalizeInstallJobTest,
        SuggestedFromMigrationSucceedsWithoutValidatedSource) {
-  GURL start_url("https://foo.example");
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
   options.add_to_applications_menu = false;
@@ -733,11 +717,10 @@ TEST_F(FinalizeInstallJobTest,
           webapps::ManifestId(GURL("https://migration.foo.example/")))));
   EXPECT_TRUE(installed_app->validated_migration_sources().empty());
 }
+
 TEST_F(FinalizeInstallJobTest,
        SuggestedFromMigrationFailsWithoutMigrationSources) {
-  GURL start_url("https://foo.example");
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(kDefaultAppUrl, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
   options.install_state = proto::InstallState::SUGGESTED_FROM_MIGRATION;
 
@@ -767,8 +750,7 @@ TEST_P(FinalizeInstallJobTestQueriesAndFragments,
   std::tie(start_url_str, expected_sanitized_start_url_str) = GetParam();
   GURL start_url(start_url_str);
   GURL expected_sanitized_start_url(expected_sanitized_start_url_str);
-  auto info = WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
-  info->title = u"Foo Title";
+  auto info = CreateAppInfo(start_url_str, kDefaultAppTitle);
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
   auto scope_extension =
