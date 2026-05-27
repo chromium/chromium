@@ -548,6 +548,8 @@ class alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   PA_ALWAYS_INLINE static PartitionRoot* GetRootFromAddressInFirstSuperpage(
       void* object);
 
+  PA_NOINLINE static PartitionRoot* GetRootFromAddress(void* object);
+
   template <FreeFlags flags>
   PA_ALWAYS_INLINE void FreeNoHooksImmediate(internal::SlotStart slot_start,
                                              SlotSpanMetadata* slot_span);

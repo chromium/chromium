@@ -7,7 +7,6 @@
 #include "base/allocator/partition_alloc_features.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "partition_alloc/internal/partition_root_internal.h"  // nogncheck
 #include "partition_alloc/partition_address_space.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/scheduler_loop_quarantine.h"
@@ -230,9 +229,11 @@ TEST(MemorySafetyCheckTest, InfiniteQuarantine) {
       reinterpret_cast<uintptr_t>(partition_alloc::UntagPtr(obj1))));
   delete obj1;
 
-  auto* root =
-      partition_alloc::PartitionRoot::GetRootFromAddressInFirstSuperpage(obj1);
+  auto* root = partition_alloc::PartitionRoot::GetRootFromAddress(obj1);
   ASSERT_NE(root, nullptr);
+  EXPECT_EQ(reinterpret_cast<uintptr_t>(root),
+            base::internal::
+                GetPartitionRootForLeakySecurityObjectAllocationForTesting());
   partition_alloc::internal::
       ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch(root);
   EXPECT_FALSE(branch.IsQuarantined(obj1));

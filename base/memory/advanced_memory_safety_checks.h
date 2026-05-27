@@ -267,6 +267,12 @@ void HandleMemorySafetyCheckedOperatorDelete(void* ptr,
 FOR_EACH_BASE_INTERNAL_MEMORY_SAFETY_CHECK_VALUE(
     DECLARE_BASE_INTERNAL_HANDLE_MEMORY_SAFETY_CHECKED_OPERATORS)
 
+// Returns `PartitionRoot` for leaky security object allocation.
+// To only compare between roots from leaky security objects and roots
+// used at allocations, no need to return as `PartitionRoot*`.
+BASE_EXPORT uintptr_t
+GetPartitionRootForLeakySecurityObjectAllocationForTesting();
+
 }  // namespace base::internal
 
 #endif  // BASE_MEMORY_ADVANCED_MEMORY_SAFETY_CHECKS_H_

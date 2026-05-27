@@ -2020,6 +2020,29 @@ void PartitionRoot::CheckMetadataIntegrity(const void* ptr) {
 #endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 }
 
+// static
+PA_NOINLINE PartitionRoot* PartitionRoot::GetRootFromAddress(void* object) {
+  uintptr_t address = reinterpret_cast<uintptr_t>(UntagPtr(object));
+  if (!IsManagedByPartitionAlloc(address)) {
+    // No PartitionRoot because the `object` is not managed by PartitionAlloc.
+    return nullptr;
+  }
+
+  auto table = internal::ReservationOffsetTable::Get(address);
+  if (table.IsManagedByNormalBuckets(address)) {
+    return GetRootFromAddressInFirstSuperpage(object);
+  }
+
+  if (table.IsManagedByDirectMap(address)) {
+    uintptr_t reservation_start_address =
+        table.GetDirectMapReservationStart(address);
+    return GetRootFromAddressInFirstSuperpage(
+        internal::TagAddr(reservation_start_address));
+  }
+
+  return nullptr;
+}
+
 template <AllocFlags flags>
 PA_NOINLINE PA_MALLOC_FN void* PartitionRoot::AlignedAlloc(
     size_t alignment,

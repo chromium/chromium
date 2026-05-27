@@ -65,7 +65,7 @@ GetPartitionRootForMemorySafetyCheckedAllocation() {
 }
 
 partition_alloc::PartitionOptions
-GetPartitionRootOptionsForLeakyScurityObjectAllocation() {
+GetPartitionRootOptionsForLeakySecurityObjectAllocation() {
   partition_alloc::PartitionOptions opts;
   opts.thread_cache = partition_alloc::PartitionOptions::kDisabled;
   opts.backup_ref_ptr = partition_alloc::PartitionOptions::kDisabled;
@@ -73,9 +73,9 @@ GetPartitionRootOptionsForLeakyScurityObjectAllocation() {
 }
 
 ALWAYS_INLINE partition_alloc::PartitionRoot*
-GetPartitionRootForLeakyScurityObjectAllocation() {
+GetPartitionRootForLeakySecurityObjectAllocation() {
   static base::NoDestructor<partition_alloc::PartitionRoot> s_root(
-      GetPartitionRootOptionsForLeakyScurityObjectAllocation());
+      GetPartitionRootOptionsForLeakySecurityObjectAllocation());
   return s_root.get();
 }
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -84,7 +84,7 @@ template <MemorySafetyCheck checks>
 NOINLINE void* HandleMemorySafetyCheckedOperatorNew(std::size_t count) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (IsLeakedSanitizedObject(checks)) {
-    return GetPartitionRootForLeakyScurityObjectAllocation()
+    return GetPartitionRootForLeakySecurityObjectAllocation()
         ->AllocInline<GetAllocFlags(checks)>(count);
   }
   if constexpr (ShouldUsePartitionAlloc(checks)) {
@@ -101,7 +101,7 @@ NOINLINE void* HandleMemorySafetyCheckedOperatorNew(
     std::align_val_t alignment) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (IsLeakedSanitizedObject(checks)) {
-    return GetPartitionRootForLeakyScurityObjectAllocation()
+    return GetPartitionRootForLeakySecurityObjectAllocation()
         ->AlignedAlloc<GetAllocFlags(checks)>(static_cast<size_t>(alignment),
                                               count);
   }
@@ -118,7 +118,7 @@ template <MemorySafetyCheck checks>
 NOINLINE void HandleMemorySafetyCheckedOperatorDelete(void* ptr) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (IsLeakedSanitizedObject(checks)) {
-    return GetPartitionRootForLeakyScurityObjectAllocation()
+    return GetPartitionRootForLeakySecurityObjectAllocation()
         ->Free<GetFreeFlags(checks)>(ptr);
   }
   if constexpr (ShouldUsePartitionAlloc(checks)) {
@@ -136,7 +136,7 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
     std::align_val_t alignment) {
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   if constexpr (IsLeakedSanitizedObject(checks)) {
-    return GetPartitionRootForLeakyScurityObjectAllocation()
+    return GetPartitionRootForLeakySecurityObjectAllocation()
         ->Free<GetFreeFlags(checks)>(ptr);
   }
   if constexpr (ShouldUsePartitionAlloc(checks)) {
@@ -150,5 +150,14 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 
 FOR_EACH_BASE_INTERNAL_MEMORY_SAFETY_CHECK_VALUE(
     DEFINE_BASE_INTERNAL_HANDLE_MEMORY_SAFETY_CHECKED_OPERATORS)
+
+uintptr_t GetPartitionRootForLeakySecurityObjectAllocationForTesting() {
+#if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  return reinterpret_cast<uintptr_t>(
+      GetPartitionRootForLeakySecurityObjectAllocation());
+#else
+  return 0;
+#endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+}
 
 }  // namespace base::internal
