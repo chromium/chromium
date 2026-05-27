@@ -200,27 +200,6 @@ gpu::SyncToken ConvertYuvVideoFrameToRgbSharedImage(
   return ri_sync_token;
 }
 
-template <typename T>
-base::span<T> CastSpan(base::span<uint8_t> span) {
-  CHECK_EQ(span.size() % sizeof(T), 0u);
-  CHECK(base::IsAligned(span.data(), alignof(T)));
-  // SAFETY: Spanification documentation strongly discourages
-  // `reinterpret_cast`, but this code is a "hot path", it might be worth it in
-  // this case.
-  return UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<T*>(span.data()), span.size() / sizeof(T)));
-}
-
-template <typename T>
-base::span<const T> CastConstSpan(base::span<const uint8_t> span) {
-  CHECK_EQ(span.size() % sizeof(T), 0u);
-  CHECK(base::IsAligned(span.data(), alignof(T)));
-  // SAFETY: See `CastSpan()` comment.
-  return UNSAFE_BUFFERS(base::span(reinterpret_cast<const T*>(span.data()),
-                                   span.size() / sizeof(T)));
-}
-
-
 // Update |video_frame|'s release sync token to reflect the work done in |ri|,
 // and ensure that |video_frame| be kept remain alive until |ri|'s commands have
 // been completed. This is implemented for both gpu::gles2::GLES2Interface and
@@ -1088,10 +1067,12 @@ void FlipAndConvertY16(const VideoFrame* video_frame,
     base::span<uint8_t> out_row = out.subspan(
         flip_y ? output_row_bytes * (height - i - 1) : output_row_bytes * i,
         output_row_bytes);
-    auto row = CastConstSpan<uint16_t>(row_head.subspan(
+    // This code in `//media` is hot, so it's worth using
+    // `reinterpret_span` to keep performance up.
+    auto row = base::subtle::reinterpret_span<const uint16_t>(row_head.subspan(
         stride * i, video_frame->visible_rect().width() * sizeof(uint16_t)));
     if (type == GL_FLOAT) {
-      auto out_row_float = CastSpan<float>(out_row);
+      auto out_row_float = base::subtle::reinterpret_span<float>(out_row);
       if (format == GL_RGBA) {
         std::array<float, 4> temp_buffer = {};
         temp_buffer[3] = 1.0f;
@@ -1116,7 +1097,9 @@ void FlipAndConvertY16(const VideoFrame* video_frame,
       // Y16 as RG_88.  To get the full precision use float textures with WebGL1
       // and e.g. R16UI or R32F textures with WebGL2.
       DCHECK_EQ(static_cast<unsigned>(GL_RGBA), format);
-      auto out_row_uint32 = CastSpan<uint32_t>(out_row);
+      // This code in `//media` is hot, so it's worth using
+      // `reinterpret_span` to keep performance up.
+      auto out_row_uint32 = base::subtle::reinterpret_span<uint32_t>(out_row);
       std::ranges::transform(row, out_row_uint32.begin(), [](uint16_t value) {
         const uint32_t gray_value = value >> 8;
         return SkColorSetRGB(gray_value, gray_value, gray_value);
