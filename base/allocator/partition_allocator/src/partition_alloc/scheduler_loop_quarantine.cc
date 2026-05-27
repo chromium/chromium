@@ -10,6 +10,7 @@
 #include "partition_alloc/internal/thread_cache_internal.h"
 #include "partition_alloc/internal_allocator.h"
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/scheduler_loop_quarantine_support.h"
@@ -18,16 +19,6 @@
 namespace partition_alloc::internal {
 
 namespace {
-// Utility to disable thread safety analysis when we know it is safe.
-class PA_SCOPED_LOCKABLE FakeScopedGuard {
- public:
-  PA_ALWAYS_INLINE explicit FakeScopedGuard(Lock& lock)
-      PA_EXCLUSIVE_LOCK_FUNCTION(lock) {}
-  // For some reason, defaulting this causes a thread safety annotation failure.
-  PA_ALWAYS_INLINE
-  ~FakeScopedGuard()  // NOLINT(modernize-use-equals-default)
-      PA_UNLOCK_FUNCTION() {}
-};
 
 // Utility classes to lock only if a condition is met.
 template <bool thread_bound>
@@ -110,7 +101,9 @@ template <bool thread_bound>
 SchedulerLoopQuarantineBranch<thread_bound>::SchedulerLoopQuarantineBranch(
     PartitionRoot* allocator_root,
     ThreadCache* tcache)
-    : allocator_root_(allocator_root), tcache_(tcache) {
+    : allocator_root_(allocator_root),
+      tcache_(tcache),
+      thread_id_(tcache ? tcache->thread_id() : base::kInvalidThreadId) {
   PA_CHECK(allocator_root);
   if constexpr (kThreadBound) {
     PA_CHECK(tcache_);
@@ -133,6 +126,8 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
   PA_CHECK(allocator_root_ == &root.allocator_root_);
   if constexpr (kThreadBound) {
     PA_CHECK(tcache_->GetRoot() == &root.allocator_root_);
+    PA_DCHECK(tcache_->thread_id() ==
+              internal::base::PlatformThread::CurrentId());
   }
 
   ScopedGuardIfNeeded<kThreadBound> guard(lock_);
@@ -149,6 +144,38 @@ void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
   enable_quarantine_ = config.enable_quarantine;
   enable_zapping_ = config.enable_zapping;
   leak_on_destruction_ = config.leak_on_destruction;
+  bool old_pause_in_between_tasks = pause_in_between_tasks_;
+  bool old_purge_control_enabled =
+      enable_task_controlled_purge_ || pause_in_between_tasks_;
+
+  enable_task_controlled_purge_ = config.enable_task_controlled_purge;
+  pause_in_between_tasks_ = config.pause_in_between_tasks;
+
+  bool new_purge_control_enabled =
+      enable_task_controlled_purge_ || pause_in_between_tasks_;
+
+  if constexpr (kThreadBound) {
+    if (task_nesting_depth_ > 0) {
+      if (new_purge_control_enabled && !old_purge_control_enabled) {
+        for (int i = 0; i < task_nesting_depth_; ++i) {
+          DisallowScanlessPurge();
+        }
+      } else if (!new_purge_control_enabled && old_purge_control_enabled) {
+        for (int i = 0; i < task_nesting_depth_; ++i) {
+          AllowScanlessPurge();
+        }
+      }
+    } else {
+      if (pause_in_between_tasks_ && !old_pause_in_between_tasks) {
+        // Transition false -> true: pause quarantine.
+        ++pause_quarantine_;
+      } else if (!pause_in_between_tasks_ && old_pause_in_between_tasks) {
+        // Transition true -> false: un-pause quarantine.
+        PA_CHECK(pause_quarantine_ > 0);
+        --pause_quarantine_;
+      }
+    }
+  }
   branch_capacity_in_bytes_ = config.branch_capacity_in_bytes;
 
   // This bucket index can be invalid if "Neutral" distribution is in use,
@@ -348,30 +375,7 @@ SchedulerLoopQuarantineBranch<thread_bound>::PurgeInternal(
   root_->count_.fetch_sub(freed_count, std::memory_order_relaxed);
 }
 
-template <bool thread_bound>
-void SchedulerLoopQuarantineBranch<thread_bound>::AllowScanlessPurge() {
-  PA_DCHECK(kThreadBound);
-  // Always thread-bound; no need to lock.
-  FakeScopedGuard guard(lock_);
 
-  PA_CHECK(disallow_scanless_purge_ > 0);
-  --disallow_scanless_purge_;
-  if (disallow_scanless_purge_ == 0) {
-    // Now scanless purge is allowed. Purging at this timing is more performance
-    // efficient.
-    PurgeInternal(0);
-  }
-}
-
-template <bool thread_bound>
-void SchedulerLoopQuarantineBranch<thread_bound>::DisallowScanlessPurge() {
-  PA_DCHECK(kThreadBound);
-  // Always thread-bound; no need to lock.
-  FakeScopedGuard guard(lock_);
-
-  ++disallow_scanless_purge_;
-  PA_CHECK(disallow_scanless_purge_ > 0);  // Overflow check.
-}
 
 // static
 template <bool thread_bound>

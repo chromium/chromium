@@ -454,6 +454,8 @@ TEST(SchedulerLoopQuarantineTaskControlledPurgeTest, PurgeAfterTaskCompletion) {
   // Prepare PA root for testing.
   partition_alloc::PartitionOptions opts;
   opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config
+      .enable_task_controlled_purge = true;
   opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
       4096;
   partition_alloc::PartitionAllocatorForTesting allocator(opts);
@@ -483,6 +485,217 @@ TEST(SchedulerLoopQuarantineTaskControlledPurgeTest, PurgeAfterTaskCompletion) {
 
   // `ptr` must not be in the quarantine as RunTask finished.
   EXPECT_FALSE(branch_accessor.IsQuarantined(ptr));
+#endif
+}
+
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest, PauseInBetweenTasks) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks =
+      true;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  // Initially the branch should be paused (PausedCount should be 1).
+  EXPECT_EQ(1, branch_accessor.PausedCount());
+
+  void* ptr = root.Alloc(16);
+
+  // Freeing outside of TaskRunner/TaskAnnotator should NOT quarantine.
+  root.Free<partition_alloc::internal::FreeFlags::kSchedulerLoopQuarantine>(
+      ptr);
+  EXPECT_FALSE(branch_accessor.IsQuarantined(ptr));
+
+  // Alloc again.
+  ptr = root.Alloc(16);
+
+  TaskAnnotator annotator;
+  PendingTask pending_task(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        // Inside Task, it should be active (PausedCount should be 0).
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+        EXPECT_FALSE(branch_accessor.IsQuarantined(ptr));
+        root.Free<
+            partition_alloc::internal::FreeFlags::kSchedulerLoopQuarantine>(
+            ptr);
+        EXPECT_TRUE(branch_accessor.IsQuarantined(ptr));
+      }));
+  annotator.RunTask("TestTask", pending_task);
+
+  // After Task, it should be paused again (PausedCount should be 1).
+  EXPECT_EQ(1, branch_accessor.PausedCount());
+
+  // The quarantined pointer should have been purged at the end of RunTask.
+  EXPECT_FALSE(branch_accessor.IsQuarantined(ptr));
+#endif
+}
+
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
+     ConfigureInsideTask_TrueToTrue) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks =
+      true;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  EXPECT_EQ(1, branch_accessor.PausedCount());
+
+  TaskAnnotator annotator;
+  PendingTask pending_task(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+
+        // Reconfigure inside task, keeping pause_in_between_tasks = true.
+        partition_alloc::internal::SchedulerLoopQuarantineConfig new_config;
+        new_config.enable_quarantine = true;
+        new_config.pause_in_between_tasks = true;
+        new_config.branch_capacity_in_bytes = 8192;
+        root.ReconfigureSchedulerLoopQuarantineForCurrentThread(new_config);
+
+        // Should still be active.
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+      }));
+  annotator.RunTask("TestTask", pending_task);
+
+  // After task, it should be paused.
+  EXPECT_EQ(1, branch_accessor.PausedCount());
+#endif
+}
+
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
+     ConfigureInsideTask_TrueToFalse) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks =
+      true;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  EXPECT_EQ(1, branch_accessor.PausedCount());
+
+  TaskAnnotator annotator;
+  PendingTask pending_task(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+
+        // Reconfigure inside task, changing pause_in_between_tasks to false.
+        partition_alloc::internal::SchedulerLoopQuarantineConfig new_config;
+        new_config.enable_quarantine = true;
+        new_config.pause_in_between_tasks = false;
+        new_config.branch_capacity_in_bytes = 8192;
+        root.ReconfigureSchedulerLoopQuarantineForCurrentThread(new_config);
+
+        // Should still be active (0).
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+      }));
+  annotator.RunTask("TestTask", pending_task);
+
+  // After task, it should remain active (0) because pause_in_between_tasks is
+  // now false.
+  EXPECT_EQ(0, branch_accessor.PausedCount());
+#endif
+}
+
+TEST(SchedulerLoopQuarantineTaskControlledPurgeTest,
+     ConfigureInsideTask_FalseToTrue) {
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  GTEST_SKIP() << "This test does not work with memory tools.";
+#elif !PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !PA_CONFIG(THREAD_CACHE_SUPPORTED)
+  GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
+#else
+  EnableSchedulerLoopQuarantineTaskControlledPurge();
+
+  partition_alloc::PartitionOptions opts;
+  opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
+  opts.scheduler_loop_quarantine_thread_local_config.pause_in_between_tasks =
+      false;
+  opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
+      4096;
+  partition_alloc::PartitionAllocatorForTesting allocator(opts);
+  partition_alloc::PartitionRoot& root = *allocator.root();
+
+  partition_alloc::internal::ThreadCacheProcessScopeForTesting tcache_scope(
+      &root);
+
+  partition_alloc::internal::
+      ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
+          &root);
+
+  EXPECT_EQ(0, branch_accessor.PausedCount());
+
+  TaskAnnotator annotator;
+  PendingTask pending_task(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+
+        // Reconfigure inside task, changing pause_in_between_tasks to true.
+        partition_alloc::internal::SchedulerLoopQuarantineConfig new_config;
+        new_config.enable_quarantine = true;
+        new_config.pause_in_between_tasks = true;
+        new_config.branch_capacity_in_bytes = 8192;
+        root.ReconfigureSchedulerLoopQuarantineForCurrentThread(new_config);
+
+        // Should still be active (0) during the task.
+        EXPECT_EQ(0, branch_accessor.PausedCount());
+      }));
+  annotator.RunTask("TestTask", pending_task);
+
+  // After task, it should be paused (1) because pause_in_between_tasks is now
+  // true.
+  EXPECT_EQ(1, branch_accessor.PausedCount());
 #endif
 }
 

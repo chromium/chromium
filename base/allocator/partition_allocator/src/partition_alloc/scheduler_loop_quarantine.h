@@ -56,6 +56,7 @@
 #include "partition_alloc/partition_alloc_base/export_template.h"
 #include "partition_alloc/partition_alloc_base/rand_util.h"
 #include "partition_alloc/partition_alloc_base/thread_annotations.h"
+#include "partition_alloc/partition_alloc_base/threading/platform_thread.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_stats.h"
@@ -67,6 +68,17 @@ struct SchedulerLoopQuarantineStats;
 
 namespace internal {
 
+// Utility to disable thread safety analysis when we know it is safe.
+class PA_SCOPED_LOCKABLE FakeScopedGuard {
+ public:
+  PA_ALWAYS_INLINE explicit FakeScopedGuard(Lock& lock)
+      PA_EXCLUSIVE_LOCK_FUNCTION(lock) {}
+  // For some reason, defaulting this causes a thread safety annotation failure.
+  PA_ALWAYS_INLINE
+  ~FakeScopedGuard()  // NOLINT(modernize-use-equals-default)
+      PA_UNLOCK_FUNCTION() {}
+};
+
 class ThreadCache;
 
 struct SchedulerLoopQuarantineConfig {
@@ -76,6 +88,8 @@ struct SchedulerLoopQuarantineConfig {
   bool leak_on_destruction = false;
   bool enable_quarantine = false;
   bool enable_zapping = false;
+  bool enable_task_controlled_purge = false;
+  bool pause_in_between_tasks = false;
   // Accepts allocations up to this bucket size. If the given number does not
   // match bucket size, it is rounded up to next bucket size.
   size_t max_quarantine_size = BucketIndexLookup::kMaxBucketSize;
@@ -162,8 +176,75 @@ class SchedulerLoopQuarantineBranch {
                   const internal::BucketSizeDetails& size_details)
       PA_LOCKS_EXCLUDED(lock_);
 
-  void AllowScanlessPurge();
-  void DisallowScanlessPurge();
+  // TODO(crbug.com/329027914): Make these private once migration to
+  // TaskAnnotator is complete and SchedulerLoopQuarantineTaskObserver is
+  // removed.
+  PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION
+  PA_ALWAYS_INLINE void AllowScanlessPurge()
+    requires kThreadBound
+  {
+    // Always thread-bound; no need to lock.
+    FakeScopedGuard guard(lock_);
+
+    PA_CHECK(disallow_scanless_purge_ > 0);
+    --disallow_scanless_purge_;
+    if (disallow_scanless_purge_ == 0) {
+      // Now scanless purge is allowed. Purging at this timing is more
+      // performance efficient.
+      PurgeInternal(0);
+    }
+  }
+
+  PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION
+  PA_ALWAYS_INLINE void DisallowScanlessPurge()
+    requires kThreadBound
+  {
+    // Always thread-bound; no need to lock.
+    FakeScopedGuard guard(lock_);
+
+    ++disallow_scanless_purge_;
+    PA_CHECK(disallow_scanless_purge_ > 0);  // Overflow check.
+  }
+
+  PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION
+  PA_ALWAYS_INLINE void OnTaskStart()
+    requires kThreadBound
+  {
+    PA_DCHECK(thread_id_ == base::PlatformThread::CurrentId());
+    task_nesting_depth_++;
+    // We only un-pause quarantine on entering the outermost task to avoid
+    // decrementing `pause_quarantine_` multiple times in nested tasks.
+    if (task_nesting_depth_ == 1) {
+      if (pause_in_between_tasks_) {
+        PA_DCHECK(pause_quarantine_ > 0);
+        --pause_quarantine_;  // Un-pause
+      }
+    }
+    // Both features require disallowing scanless purge during task execution.
+    if (enable_task_controlled_purge_ || pause_in_between_tasks_) {
+      DisallowScanlessPurge();
+    }
+  }
+
+  PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION
+  PA_ALWAYS_INLINE void OnTaskFinish()
+    requires kThreadBound
+  {
+    PA_DCHECK(thread_id_ == base::PlatformThread::CurrentId());
+    // Both features require allowing scanless purge (and potentially purging)
+    // after task execution.
+    if (enable_task_controlled_purge_ || pause_in_between_tasks_) {
+      AllowScanlessPurge();
+    }
+    PA_DCHECK(task_nesting_depth_ > 0);
+    task_nesting_depth_--;
+    // We only restore the paused state on exiting the outermost task.
+    if (task_nesting_depth_ == 0) {
+      if (pause_in_between_tasks_) {
+        ++pause_quarantine_;  // Pause
+      }
+    }
+  }
 
   // Once called, all the branches stop purging. This means every branch grows
   // unbounded, potentially resulting in OOM. However, if we know the program
@@ -204,13 +285,13 @@ class SchedulerLoopQuarantineBranch {
   // It is possible that this branch cannot satisfy the
   // request as it has control over only what it has. If you need to ensure the
   // constraint, call `Purge()` for each branch in sequence, synchronously.
-  PA_ALWAYS_INLINE void PurgeInternal(
-      size_t target_size_in_bytes,
-      [[maybe_unused]] bool for_destruction = false)
+  void PurgeInternal(size_t target_size_in_bytes,
+                     [[maybe_unused]] bool for_destruction = false)
       PA_EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   PartitionRoot* const allocator_root_;
   ThreadCache* const tcache_;
+  const base::PlatformThreadId thread_id_;
   Root* root_;
   Lock lock_;
 
@@ -221,6 +302,9 @@ class SchedulerLoopQuarantineBranch {
   bool enable_quarantine_ = false;
   bool enable_zapping_ = false;
   bool leak_on_destruction_ = false;
+  bool enable_task_controlled_purge_ = false;
+  bool pause_in_between_tasks_ = false;
+  int task_nesting_depth_ = 0;
 
   uint16_t largest_bucket_index_ = BucketIndexLookup::kNumBuckets - 1;
 

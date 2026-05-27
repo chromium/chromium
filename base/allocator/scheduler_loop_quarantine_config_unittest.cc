@@ -41,6 +41,8 @@ constexpr char kValidTestingConfigJSON[] = R"({
       "enable-quarantine": true,
       "enable-zapping": true,
       "leak-on-destruction": false,
+      "enable-task-controlled-purge": true,
+      "pause-in-between-tasks": true,
       "branch-capacity-in-bytes": 400
     },
   },
@@ -78,6 +80,8 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_TRUE(config.enable_quarantine);
   EXPECT_TRUE(config.enable_zapping);
   EXPECT_TRUE(config.leak_on_destruction);
+  EXPECT_FALSE(config.enable_task_controlled_purge);
+  EXPECT_FALSE(config.pause_in_between_tasks);
   EXPECT_EQ(100, config.branch_capacity_in_bytes);
   EXPECT_STREQ(config.branch_name, "browser/global");
 
@@ -86,6 +90,8 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_TRUE(config.enable_quarantine);
   EXPECT_TRUE(config.enable_zapping);
   EXPECT_FALSE(config.leak_on_destruction);
+  EXPECT_FALSE(config.enable_task_controlled_purge);
+  EXPECT_FALSE(config.pause_in_between_tasks);
   EXPECT_EQ(300, config.branch_capacity_in_bytes);
   EXPECT_STREQ(config.branch_name, "browser/*");
 
@@ -94,6 +100,8 @@ TEST(SchedulerLoopQuarantineConfigTest, ValidConfig) {
   EXPECT_TRUE(config.enable_quarantine);
   EXPECT_TRUE(config.enable_zapping);
   EXPECT_FALSE(config.leak_on_destruction);
+  EXPECT_TRUE(config.enable_task_controlled_purge);
+  EXPECT_TRUE(config.pause_in_between_tasks);
   EXPECT_EQ(400, config.branch_capacity_in_bytes);
   EXPECT_STREQ(config.branch_name, "browser/main");
 

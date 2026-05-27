@@ -216,11 +216,11 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   {
     const AutoReset<const PendingTask*> resetter(&current_pending_task,
                                                  &pending_task);
-    std::optional<ScopedSchedulerLoopQuarantineDisallowScanlessPurge>
-        scoped_disallow_purge;
+    std::optional<ScopedSchedulerLoopQuarantineTaskScope>
+        scoped_quarantine_task_scope;
     if (g_scheduler_loop_quarantine_task_controlled_purge_enabled.load(
             std::memory_order_relaxed)) {
-      scoped_disallow_purge.emplace();
+      scoped_quarantine_task_scope.emplace();
     }
 
     if (g_task_annotator_observer) {

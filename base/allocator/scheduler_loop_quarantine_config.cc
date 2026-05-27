@@ -54,6 +54,8 @@ constexpr int kJSONParserOptions =
 constexpr char kKeyEnableQuarantine[] = "enable-quarantine";
 constexpr char kKeyEnableZapping[] = "enable-zapping";
 constexpr char kKeyLeakOnDestruction[] = "leak-on-destruction";
+constexpr char kKeyEnableTaskControlledPurge[] = "enable-task-controlled-purge";
+constexpr char kKeyPauseInBetweenTasks[] = "pause-in-between-tasks";
 constexpr char kKeyBranchCapacityInBytes[] = "branch-capacity-in-bytes";
 constexpr char kKeyMaxQuarantineSize[] = "max-quarantine-size";
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -173,6 +175,12 @@ GetSchedulerLoopQuarantineConfiguration(
       config_entry->FindBool(kKeyEnableZapping).value_or(config.enable_zapping);
   config.leak_on_destruction = config_entry->FindBool(kKeyLeakOnDestruction)
                                    .value_or(config.leak_on_destruction);
+  config.enable_task_controlled_purge =
+      config_entry->FindBool(kKeyEnableTaskControlledPurge)
+          .value_or(config.enable_task_controlled_purge);
+  config.pause_in_between_tasks =
+      config_entry->FindBool(kKeyPauseInBetweenTasks)
+          .value_or(config.pause_in_between_tasks);
   config.branch_capacity_in_bytes =
       static_cast<size_t>(config_entry->FindInt(kKeyBranchCapacityInBytes)
                               .value_or(config.branch_capacity_in_bytes));

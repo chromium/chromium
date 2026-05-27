@@ -105,6 +105,26 @@
 #define PA_ALWAYS_INLINE inline
 #endif
 
+// Annotates a member function of a class template to prevent it from being
+// instantiated during the explicit instantiation of the enclosing class.
+//
+// Usage:
+// ```
+//   template <typename T>
+//   struct S {
+//     PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION void Func() requires ...;
+//   };
+// ```
+#if PA_HAS_CPP_ATTRIBUTE(clang::exclude_from_explicit_instantiation)
+#define PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION \
+  [[clang::exclude_from_explicit_instantiation]]
+#elif PA_HAS_ATTRIBUTE(exclude_from_explicit_instantiation)
+#define PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION \
+  __attribute__((exclude_from_explicit_instantiation))
+#else
+#define PA_EXCLUDE_FROM_EXPLICIT_INSTANTIATION
+#endif
+
 // Annotates a function indicating it should never be tail called. Useful to
 // make sure callers of the annotated function are never omitted from call
 // stacks. Often useful with `PA_NOINLINE` to make sure the function itself is

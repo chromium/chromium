@@ -49,14 +49,14 @@ class BASE_EXPORT ScopedSafetyChecksExclusion {
 
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 using base::allocator::SchedulerLoopQuarantineScanPolicyUpdater;
-using base::allocator::ScopedSchedulerLoopQuarantineDisallowScanlessPurge;
+using base::allocator::ScopedSchedulerLoopQuarantineTaskScope;
 #else
 class SchedulerLoopQuarantineScanPolicyUpdater {
  public:
   ALWAYS_INLINE void DisallowScanlessPurge() {}
   ALWAYS_INLINE void AllowScanlessPurge() {}
 };
-class ScopedSchedulerLoopQuarantineDisallowScanlessPurge {};
+class ScopedSchedulerLoopQuarantineTaskScope {};
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 }  // namespace base
