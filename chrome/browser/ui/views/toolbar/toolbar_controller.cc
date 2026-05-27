@@ -250,7 +250,7 @@ ToolbarController::GetDefaultResponsiveElements(Browser* browser) {
               &(features::IsRoundedIconsEnabled() ? kSplitSceneIcon
                                                   : kSplitSceneOldIcon),
               kToolbarSplitTabsToolbarButtonElementId},
-          /*is_section_end=*/false),
+          /*is_section_end=*/true),
       ToolbarController::ResponsiveElementInfo(
           ToolbarController::ElementIdInfo{
               ContextualTasksButton::kContextualTasksToolbarButton,
