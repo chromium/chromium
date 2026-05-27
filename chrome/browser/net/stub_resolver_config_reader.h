@@ -115,10 +115,10 @@ class StubResolverConfigReader {
   virtual bool ShouldDisableDohForParentalControls();
 
 #if BUILDFLAG(IS_ANDROID)
-  // Updates the android owned state and network service if the device/prfile is
+  // Updates the android owned state and network service if the device/profile is
   // owned.
-  void OnAndroidOwnedStateCheckComplete(bool has_profile_owner,
-                                        bool has_device_owner);
+  void OnAndroidOwnedStateCheckComplete(bool has_device_owner,
+                                        bool has_profile_owner);
 #endif
 
   void OverrideParentalControlsForTesting(bool parental_controls_override) {

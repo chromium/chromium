@@ -113,6 +113,6 @@ public abstract class EnterpriseInfo {
 
     @NativeMethods
     interface Natives {
-        void updateNativeOwnedState(boolean hasProfileOwnerApp, boolean hasDeviceOwnerApp);
+        void updateNativeOwnedState(boolean hasDeviceOwnerApp, boolean hasProfileOwnerApp);
     }
 }

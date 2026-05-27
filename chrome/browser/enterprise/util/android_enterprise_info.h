@@ -24,6 +24,7 @@ class AndroidEnterpriseInfoFriendHelper;
 
 class AndroidEnterpriseInfo {
  public:
+  // Callback invoked with (bool device_owned, bool profile_owned).
   using EnterpriseInfoCallback = base::OnceCallback<void(bool, bool)>;
   ~AndroidEnterpriseInfo();
 
@@ -39,8 +40,8 @@ class AndroidEnterpriseInfo {
   void set_skip_jni_call_for_testing(bool value) {
     skip_jni_call_for_testing_ = value;
   }
-  void ServiceCallbacksForTesting(bool profile_owned, bool device_owned) {
-    ServiceCallbacks(profile_owned, device_owned);
+  void ServiceCallbacksForTesting(bool device_owned, bool profile_owned) {
+    ServiceCallbacks(device_owned, profile_owned);
   }
 
  private:
@@ -56,7 +57,7 @@ class AndroidEnterpriseInfo {
 
   // This function is for the Java side code to return its result.
   // Calls are made on the UI thread.
-  void ServiceCallbacks(bool profile_owned, bool device_owned);
+  void ServiceCallbacks(bool device_owned, bool profile_owned);
 
   std::queue<EnterpriseInfoCallback> callback_queue_;
 

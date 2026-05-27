@@ -13,8 +13,8 @@
 
 // Forward declaration
 static void JNI_EnterpriseInfo_UpdateNativeOwnedState(JNIEnv* env,
-                                                      bool hasProfileOwnerApp,
-                                                      bool hasDeviceOwnerApp);
+                                                      bool hasDeviceOwnerApp,
+                                                      bool hasProfileOwnerApp);
 
 namespace enterprise_util {
 AndroidEnterpriseInfo::AndroidEnterpriseInfo() = default;
@@ -43,8 +43,8 @@ void AndroidEnterpriseInfo::GetAndroidEnterpriseInfoState(
       base::android::AttachCurrentThread());
 }
 
-void AndroidEnterpriseInfo::ServiceCallbacks(bool profile_owned,
-                                             bool device_owned) {
+void AndroidEnterpriseInfo::ServiceCallbacks(bool device_owned,
+                                             bool profile_owned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Move the queue to a local so that we can handle re-entrancy.
@@ -52,7 +52,7 @@ void AndroidEnterpriseInfo::ServiceCallbacks(bool profile_owned,
   local_queue.swap(callback_queue_);
 
   while (local_queue.size() > 0) {
-    std::move(local_queue.front()).Run(profile_owned, device_owned);
+    std::move(local_queue.front()).Run(device_owned, profile_owned);
     local_queue.pop();
   }
 }
@@ -67,22 +67,22 @@ class AndroidEnterpriseInfoFriendHelper {
  private:
   friend void ::JNI_EnterpriseInfo_UpdateNativeOwnedState(
       JNIEnv* env,
-      bool hasProfileOwnerApp,
-      bool hasDeviceOwnerApp);
+      bool hasDeviceOwnerApp,
+      bool hasProfileOwnerApp);
 
-  static void ForwardToServiceCallbacks(bool profile_owned, bool device_owned) {
-    AndroidEnterpriseInfo::GetInstance()->ServiceCallbacks(profile_owned,
-                                                           device_owned);
+  static void ForwardToServiceCallbacks(bool device_owned, bool profile_owned) {
+    AndroidEnterpriseInfo::GetInstance()->ServiceCallbacks(device_owned,
+                                                           profile_owned);
   }
 };
 
 }  // namespace enterprise_util
 
 static void JNI_EnterpriseInfo_UpdateNativeOwnedState(JNIEnv* env,
-                                                      bool hasProfileOwnerApp,
-                                                      bool hasDeviceOwnerApp) {
+                                                      bool hasDeviceOwnerApp,
+                                                      bool hasProfileOwnerApp) {
   enterprise_util::AndroidEnterpriseInfoFriendHelper::ForwardToServiceCallbacks(
-      hasProfileOwnerApp, hasDeviceOwnerApp);
+      hasDeviceOwnerApp, hasProfileOwnerApp);
 }
 
 DEFINE_JNI(EnterpriseInfo)

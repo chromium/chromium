@@ -455,10 +455,10 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
 
 #if BUILDFLAG(IS_ANDROID)
 void StubResolverConfigReader::OnAndroidOwnedStateCheckComplete(
-    bool has_profile_owner,
-    bool has_device_owner) {
+    bool has_device_owner,
+    bool has_profile_owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  android_has_owner_ = has_profile_owner || has_device_owner;
+  android_has_owner_ = has_device_owner || has_profile_owner;
   // update the network service if the actual result is "true" to save time.
   if (android_has_owner_.value())
     UpdateNetworkService(false /* record_metrics */);
