@@ -107,7 +107,7 @@ TODO(http://crbug.com/485940935): Delete this.
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:inflatedId="@+id/omnibox_suggestions_container"
-            app:layout="@layout/omnibox_results_container" />
+            app:layout="@layout/suggestions_result_container" />
 
         <org.chromium.chrome.browser.ui.BottomContainer
             android:id="@+id/bottom_container"

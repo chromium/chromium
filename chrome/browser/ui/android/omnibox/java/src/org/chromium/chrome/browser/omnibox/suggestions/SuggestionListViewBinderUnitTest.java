@@ -64,7 +64,7 @@ public class SuggestionListViewBinderUnitTest {
         mContainer =
                 (OmniboxSuggestionsContainer)
                         LayoutInflater.from(mActivity)
-                                .inflate(R.layout.omnibox_results_container, /* root= */ null);
+                                .inflate(R.layout.suggestions_result_container, /* root= */ null);
         mDropdown = spy(mContainer.findViewById(R.id.omnibox_suggestions_dropdown));
         PropertyModelChangeProcessor.create(
                 mListModel,

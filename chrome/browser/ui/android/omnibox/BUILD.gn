@@ -412,7 +412,7 @@ android_resources("java_resources") {
     "java/res/layout/omnibox_back_button.xml",
     "java/res/layout/omnibox_basic_suggestion.xml",
     "java/res/layout/omnibox_chip_full.xml",
-    "java/res/layout/omnibox_results_container.xml",
+    "java/res/layout/suggestions_result_container.xml",
     "java/res/layout/suggestions_tile_vertical_divider.xml",
     "java/res/layout/suggestions_tile_view.xml",
     "java/res/layout/url_action_container.xml",
