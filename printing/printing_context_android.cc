@@ -254,7 +254,6 @@ mojom::ResultCode PrintingContextAndroid::DocumentDone() {
 void PrintingContextAndroid::Cancel() {
   abort_printing_ = true;
   in_print_job_ = false;
-  ReleaseContext();
 }
 
 void PrintingContextAndroid::ReleaseContext() {
