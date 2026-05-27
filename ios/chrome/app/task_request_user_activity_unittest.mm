@@ -133,9 +133,9 @@ class TaskRequestForUserActivityTest : public PlatformTest {
     [user_activity addUserInfoEntriesFromDictionary:user_info];
 
     TaskRequestForUserActivity* request =
-        [[TaskRequestForUserActivity alloc] initWithUserActivity:user_activity
-                                                      sceneState:scene_state_
-                                                     isColdStart:NO];
+        [TaskRequestForUserActivity taskRequestWithUserActivity:user_activity
+                                                     sceneState:scene_state_
+                                                    isColdStart:NO];
     [request execute];
   }
 };

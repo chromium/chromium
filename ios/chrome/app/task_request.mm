@@ -68,9 +68,9 @@
 + (instancetype)taskForUserActivity:(NSUserActivity*)userActivity
                          sceneState:(SceneState*)sceneState
                         isColdStart:(BOOL)isColdStart {
-  return [[TaskRequestForUserActivity alloc] initWithUserActivity:userActivity
-                                                       sceneState:sceneState
-                                                      isColdStart:isColdStart];
+  return [TaskRequestForUserActivity taskRequestWithUserActivity:userActivity
+                                                      sceneState:sceneState
+                                                     isColdStart:isColdStart];
 }
 
 + (instancetype)taskForShortcutItem:(UIApplicationShortcutItem*)shortcutItem

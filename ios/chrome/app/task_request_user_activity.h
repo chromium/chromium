@@ -13,9 +13,9 @@
 // Task request for handling user activities.
 @interface TaskRequestForUserActivity : TaskRequest
 
-- (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
-                          sceneState:(SceneState*)sceneState
-                         isColdStart:(BOOL)isColdStart;
++ (instancetype)taskRequestWithUserActivity:(NSUserActivity*)userActivity
+                                 sceneState:(SceneState*)sceneState
+                                isColdStart:(BOOL)isColdStart;
 
 @end
 

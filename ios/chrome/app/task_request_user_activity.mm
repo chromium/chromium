@@ -636,11 +636,56 @@ void OpenSpotlightURL(NSURL* webpage_url,
 
 }  // namespace
 
-@implementation TaskRequestForUserActivity {
-  NSUserActivity* _userActivity;
-  UserActivityType _userActivityType;
-  SpotlightActionType _spotlightActionType;
-  ApplicationModeForTabOpening _targetMode;
+// Class extension containing properties and methods common to all user activity
+// intent types.
+@interface TaskRequestForUserActivity ()
+@property(nonatomic, strong, readonly) NSUserActivity* userActivity;
+@property(nonatomic, assign, readonly) UserActivityType userActivityType;
+@property(nonatomic, assign) ApplicationModeForTabOpening targetMode;
+
+- (void)openURLs:(const std::vector<GURL>&)URLs
+      sceneState:(SceneState*)sceneState
+      targetMode:(ApplicationModeForTabOpening)targetMode
+      completion:(CallbackWithBrowser)callback;
+@end
+
+// Subclass handling siri shortcuts, passkey import and handoff.
+@interface TaskRequestForUserActivitySimple : TaskRequestForUserActivity
+@end
+
+// Subclass handling Spotlight intents.
+@interface TaskRequestForUserActivitySpotlight : TaskRequestForUserActivity
+@property(nonatomic, assign, readonly) SpotlightActionType spotlightActionType;
+
+- (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
+                          sceneState:(SceneState*)sceneState
+                         isColdStart:(BOOL)isColdStart
+                 spotlightActionType:(SpotlightActionType)spotlightActionType;
+@end
+
+@implementation TaskRequestForUserActivity
+
++ (instancetype)taskRequestWithUserActivity:(NSUserActivity*)userActivity
+                                 sceneState:(SceneState*)sceneState
+                                isColdStart:(BOOL)isColdStart {
+  UserActivityType activityType = UserActivityTypeOf(userActivity);
+  switch (activityType) {
+    case UserActivityType::kSpotlight: {
+      NSString* item_id =
+          userActivity.userInfo[CSSearchableItemActivityIdentifier];
+      SpotlightActionType spotlightActionType = SpotlightActionTypeOf(item_id);
+      return [[TaskRequestForUserActivitySpotlight alloc]
+          initWithUserActivity:userActivity
+                    sceneState:sceneState
+                   isColdStart:isColdStart
+           spotlightActionType:spotlightActionType];
+    }
+    default:
+      return [[TaskRequestForUserActivitySimple alloc]
+          initWithUserActivity:userActivity
+                    sceneState:sceneState
+                   isColdStart:isColdStart];
+  }
 }
 
 - (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
@@ -649,13 +694,6 @@ void OpenSpotlightURL(NSURL* webpage_url,
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _userActivity = userActivity;
     _userActivityType = UserActivityTypeOf(userActivity);
-    _spotlightActionType = SpotlightActionType::kUnknown;
-    if (_userActivityType == UserActivityType::kSpotlight) {
-      NSString* item_id =
-          userActivity.userInfo[CSSearchableItemActivityIdentifier];
-      _spotlightActionType = SpotlightActionTypeOf(item_id);
-    }
-    RecordMetrics(_userActivityType, _spotlightActionType, userActivity);
   }
   return self;
 }
@@ -683,171 +721,9 @@ void OpenSpotlightURL(NSURL* webpage_url,
   [self handleUserActivityWithSceneState:sceneState];
 }
 
-#pragma mark - Private
-
 - (void)handleUserActivityWithSceneState:(SceneState*)sceneState {
-  switch (_userActivityType) {
-    case UserActivityType::kHandoff:
-      // TODO(crbug.com/492115056): Add implementation.
-      break;
-    case UserActivityType::kSpotlight:
-      [self handleSpotlightUserActivityWithSceneState:sceneState];
-      break;
-    case UserActivityType::kSearchInChrome: {
-      URLAndCallback urlAndCallback = GetURLAndCallbackFromSearchInChromeIntent(
-          _userActivity.interaction.intent, sceneState.profileState.profile);
-      [self openURLs:{urlAndCallback.url}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:std::move(urlAndCallback.callback)];
-      break;
-    }
-    case UserActivityType::kOpenInChrome:
-      [self openURLs:GetURLsFromOpenInChromeIntent(
-                         _userActivity.interaction.intent)
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:{}];
-      break;
-    case UserActivityType::kOpenInIncognito:
-      [self openURLs:GetURLsFromOpenInIncognitoIntent(
-                         _userActivity.interaction.intent)
-          sceneState:sceneState
-          targetMode:ApplicationModeForTabOpening::INCOGNITO
-          completion:{}];
-      break;
-    case UserActivityType::kAddBookmarkToChrome:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&AddBookmarkToChromeWithIntent,
-                                    _userActivity.interaction.intent)];
-      break;
-    case UserActivityType::kAddReadingListItemToChrome:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&AddReadingListToChromeWithIntent,
-                                    _userActivity.interaction.intent)];
-      break;
-    case UserActivityType::kOpenLatestTab:
-      // TODO(crbug.com/492115056): Add implementation.
-      break;
-    case UserActivityType::kOpenReadingList:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenReadingListWithBrowser)];
-      break;
-    case UserActivityType::kOpenBookmarks:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenBookmarksWithBrowser)];
-      break;
-    case UserActivityType::kOpenRecentTabs:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenRecentTabsWithBrowser)];
-      break;
-    case UserActivityType::kOpenTabGrid:
-      [self openURLs:{}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenTabGridWithBrowser)];
-      break;
-    case UserActivityType::kVoiceSearch:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenVoiceSearchWithBrowser)];
-      break;
-    case UserActivityType::kOpenNewTab:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:{}];
-      break;
-    case UserActivityType::kPlayDinoGame:
-      [self openURLs:{GURL(kChromeDinoGameURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:{}];
-      break;
-    case UserActivityType::kSetChromeDefaultBrowser:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&SetChromeDefaultBrowserWithBrowser)];
-      break;
-    case UserActivityType::kViewHistory:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenHistoryWithBrowser)];
-      break;
-    case UserActivityType::kOpenNewIncognitoTab:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:ApplicationModeForTabOpening::INCOGNITO
-          completion:{}];
-      break;
-    case UserActivityType::kManagePaymentMethods:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenPaymentMethodsWithBrowser)];
-      break;
-    case UserActivityType::kRunSafetyCheck:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&RunSafetyCheckWithBrowser)];
-      break;
-    case UserActivityType::kManagePasswords:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenPasswordSearchWithBrowser)];
-      break;
-    case UserActivityType::kManageSettings:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenSettingsWithBrowser)];
-      break;
-    case UserActivityType::kOpenLensFromIntents:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:_targetMode
-          completion:base::BindOnce(&OpenLensFromIntentsWithBrowser,
-                                    LensEntrypoint::Intents)];
-      break;
-    case UserActivityType::kClearBrowsingData:
-      [self openURLs:{GURL(kChromeUINewTabURL)}
-          sceneState:sceneState
-          targetMode:ApplicationModeForTabOpening::NORMAL
-          completion:base::BindOnce(&OpenClearBrowsingDataWithBrowser)];
-      break;
-    case UserActivityType::kCredentialExchange: {
-      if (@available(iOS 26, *)) {
-        if (NSUUID* UUID = base::apple::ObjCCast<NSUUID>([_userActivity.userInfo
-                objectForKey:[CredentialImportManager
-                                 credentialImportToken]])) {
-          [self openURLs:{}
-              sceneState:sceneState
-              targetMode:_targetMode
-              completion:base::BindOnce(
-                             &ShowPasswordManagerForCredentialImportWithBrowser,
-                             UUID)];
-        }
-      }
-      break;
-    }
-    case UserActivityType::kInvalid:
-      NOTREACHED();
-  }
+  // This method must be overridden by subclasses.
+  NOTREACHED();
 }
 
 - (void)openURLs:(const std::vector<GURL>&)URLs
@@ -898,7 +774,7 @@ void OpenSpotlightURL(NSURL* webpage_url,
   // TODO(crbug.com/462018636): Find a centralized solution for dino game
   // intents. Potentially move this logic inside TabOpener.
   UrlLoadParams params = UrlLoadParams::InNewTab(URLs.back());
-  if (_userActivityType == UserActivityType::kPlayDinoGame) {
+  if (self.userActivityType == UserActivityType::kPlayDinoGame) {
     params.web_params.transition_type = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
   }
 
@@ -913,9 +789,207 @@ void OpenSpotlightURL(NSURL* webpage_url,
   // Confirm the correct behavior and update code accordingly.
 }
 
-- (void)handleSpotlightUserActivityWithSceneState:(SceneState*)sceneState {
-  NSString* itemId =
-      [_userActivity.userInfo objectForKey:CSSearchableItemActivityIdentifier];
+@end
+
+@implementation TaskRequestForUserActivitySimple
+
+- (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
+                          sceneState:(SceneState*)sceneState
+                         isColdStart:(BOOL)isColdStart {
+  if ((self = [super initWithUserActivity:userActivity
+                               sceneState:sceneState
+                              isColdStart:isColdStart])) {
+    RecordMetrics(self.userActivityType, SpotlightActionType::kUnknown,
+                  userActivity);
+  }
+  return self;
+}
+
+- (void)handleUserActivityWithSceneState:(SceneState*)sceneState {
+  switch (self.userActivityType) {
+    case UserActivityType::kHandoff:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kSearchInChrome: {
+      URLAndCallback urlAndCallback = GetURLAndCallbackFromSearchInChromeIntent(
+          self.userActivity.interaction.intent,
+          sceneState.profileState.profile);
+      [self openURLs:{urlAndCallback.url}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:std::move(urlAndCallback.callback)];
+      break;
+    }
+    case UserActivityType::kOpenInChrome:
+      [self openURLs:GetURLsFromOpenInChromeIntent(
+                         self.userActivity.interaction.intent)
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:{}];
+      break;
+    case UserActivityType::kOpenInIncognito:
+      [self openURLs:GetURLsFromOpenInIncognitoIntent(
+                         self.userActivity.interaction.intent)
+          sceneState:sceneState
+          targetMode:ApplicationModeForTabOpening::INCOGNITO
+          completion:{}];
+      break;
+    case UserActivityType::kAddBookmarkToChrome:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&AddBookmarkToChromeWithIntent,
+                                    self.userActivity.interaction.intent)];
+      break;
+    case UserActivityType::kAddReadingListItemToChrome:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&AddReadingListToChromeWithIntent,
+                                    self.userActivity.interaction.intent)];
+      break;
+    case UserActivityType::kOpenLatestTab:
+      // TODO(crbug.com/492115056): Add implementation.
+      break;
+    case UserActivityType::kOpenReadingList:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenReadingListWithBrowser)];
+      break;
+    case UserActivityType::kOpenBookmarks:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenBookmarksWithBrowser)];
+      break;
+    case UserActivityType::kOpenRecentTabs:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenRecentTabsWithBrowser)];
+      break;
+    case UserActivityType::kOpenTabGrid:
+      [self openURLs:{}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenTabGridWithBrowser)];
+      break;
+    case UserActivityType::kVoiceSearch:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenVoiceSearchWithBrowser)];
+      break;
+    case UserActivityType::kOpenNewTab:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:{}];
+      break;
+    case UserActivityType::kPlayDinoGame:
+      [self openURLs:{GURL(kChromeDinoGameURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:{}];
+      break;
+    case UserActivityType::kSetChromeDefaultBrowser:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&SetChromeDefaultBrowserWithBrowser)];
+      break;
+    case UserActivityType::kViewHistory:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenHistoryWithBrowser)];
+      break;
+    case UserActivityType::kOpenNewIncognitoTab:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:ApplicationModeForTabOpening::INCOGNITO
+          completion:{}];
+      break;
+    case UserActivityType::kManagePaymentMethods:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenPaymentMethodsWithBrowser)];
+      break;
+    case UserActivityType::kRunSafetyCheck:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&RunSafetyCheckWithBrowser)];
+      break;
+    case UserActivityType::kManagePasswords:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenPasswordSearchWithBrowser)];
+      break;
+    case UserActivityType::kManageSettings:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenSettingsWithBrowser)];
+      break;
+    case UserActivityType::kOpenLensFromIntents:
+      [self openURLs:{}
+          sceneState:sceneState
+          targetMode:self.targetMode
+          completion:base::BindOnce(&OpenLensFromIntentsWithBrowser,
+                                    LensEntrypoint::Intents)];
+      break;
+    case UserActivityType::kClearBrowsingData:
+      [self openURLs:{GURL(kChromeUINewTabURL)}
+          sceneState:sceneState
+          targetMode:ApplicationModeForTabOpening::NORMAL
+          completion:base::BindOnce(&OpenClearBrowsingDataWithBrowser)];
+      break;
+    case UserActivityType::kCredentialExchange: {
+      if (@available(iOS 26, *)) {
+        if (NSUUID* UUID =
+                base::apple::ObjCCast<NSUUID>([self.userActivity.userInfo
+                    objectForKey:[CredentialImportManager
+                                     credentialImportToken]])) {
+          [self openURLs:{}
+              sceneState:sceneState
+              targetMode:self.targetMode
+              completion:base::BindOnce(
+                             &ShowPasswordManagerForCredentialImportWithBrowser,
+                             UUID)];
+        }
+      }
+      break;
+    }
+    case UserActivityType::kSpotlight:
+    case UserActivityType::kInvalid:
+      NOTREACHED();
+  }
+}
+
+@end
+
+@implementation TaskRequestForUserActivitySpotlight
+
+- (instancetype)initWithUserActivity:(NSUserActivity*)userActivity
+                          sceneState:(SceneState*)sceneState
+                         isColdStart:(BOOL)isColdStart
+                 spotlightActionType:(SpotlightActionType)spotlightActionType {
+  if ((self = [super initWithUserActivity:userActivity
+                               sceneState:sceneState
+                              isColdStart:isColdStart])) {
+    _spotlightActionType = spotlightActionType;
+    RecordMetrics(self.userActivityType, _spotlightActionType, userActivity);
+  }
+  return self;
+}
+
+- (void)handleUserActivityWithSceneState:(SceneState*)sceneState {
+  NSString* itemId = [self.userActivity.userInfo
+      objectForKey:CSSearchableItemActivityIdentifier];
   spotlight::Domain domain = spotlight::SpotlightDomainFromString(itemId);
 
   if (!itemId || domain == spotlight::DOMAIN_UNKNOWN) {
@@ -935,7 +1009,7 @@ void OpenSpotlightURL(NSURL* webpage_url,
 // Search).
 - (void)handleSpotlightActionWithItemId:(NSString*)itemId
                              sceneState:(SceneState*)sceneState {
-  switch (_spotlightActionType) {
+  switch (self.spotlightActionType) {
     case SpotlightActionType::kNewIncognitoTab:
       [self openURLs:{GURL(kChromeUINewTabURL)}
           sceneState:sceneState
@@ -945,19 +1019,19 @@ void OpenSpotlightURL(NSURL* webpage_url,
     case SpotlightActionType::kVoiceSearch:
       [self openURLs:{GURL(kChromeUINewTabURL)}
           sceneState:sceneState
-          targetMode:_targetMode
+          targetMode:self.targetMode
           completion:base::BindOnce(&OpenVoiceSearchWithBrowser)];
       break;
     case SpotlightActionType::kQRScanner:
       [self openURLs:{GURL(kChromeUINewTabURL)}
           sceneState:sceneState
-          targetMode:_targetMode
+          targetMode:self.targetMode
           completion:base::BindOnce(&OpenQRCodeScannerWithBrowser)];
       break;
     case SpotlightActionType::kNewTab:
       [self openURLs:{GURL(kChromeUINewTabURL)}
           sceneState:sceneState
-          targetMode:_targetMode
+          targetMode:self.targetMode
           completion:{}];
       break;
     case SpotlightActionType::kSetDefaultBrowser:
@@ -970,7 +1044,7 @@ void OpenSpotlightURL(NSURL* webpage_url,
     case SpotlightActionType::kLens:
       [self openURLs:{GURL(kChromeUINewTabURL)}
           sceneState:sceneState
-          targetMode:_targetMode
+          targetMode:self.targetMode
           completion:base::BindOnce(&OpenLensFromIntentsWithBrowser,
                                     LensEntrypoint::Spotlight)];
       break;
@@ -984,12 +1058,12 @@ void OpenSpotlightURL(NSURL* webpage_url,
                               domain:(spotlight::Domain)domain
                           sceneState:(SceneState*)sceneState {
   // If the URL is already in the activity, use it directly.
-  if (NSURL* webpageURL = _userActivity.webpageURL) {
-    OpenSpotlightURL(webpageURL, domain, _targetMode, sceneState);
+  if (NSURL* webpageURL = self.userActivity.webpageURL) {
+    OpenSpotlightURL(webpageURL, domain, self.targetMode, sceneState);
     return;
   }
   // Fetch the URL asynchronously.
-  ApplicationModeForTabOpening targetMode = _targetMode;
+  ApplicationModeForTabOpening targetMode = self.targetMode;
   __weak SceneState* weakSceneState = sceneState;
   spotlight::GetURLForSpotlightItemID(
       itemId, base::CallbackToBlock(base::BindPostTask(
