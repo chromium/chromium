@@ -150,8 +150,10 @@ int GetLayoutConstant(LayoutConstant constant) {
       return 8;
     case LayoutConstant::kVerticalTabStripComboButtonIconSize:
       return 18;
-    case LayoutConstant::kVerticalTabStripButtonIconSize:
+    case LayoutConstant::kVerticalTabStripTopContainerButtonIconSize:
       return 20;
+    case LayoutConstant::kVerticalTabStripNewTabButtonIconSize:
+      return features::IsRoundedIconsEnabled() ? 18 : 20;
     case LayoutConstant::kVerticalTabStripTopButtonPadding:
       return 4;
     case LayoutConstant::kVerticalTabStripFlatEdgeButtonPadding:

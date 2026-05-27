@@ -49,7 +49,8 @@ void TopContainerButton::UpdateIcon(const ui::ImageModel& icon_image) {
 
   const ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
       *icon_image.GetVectorIcon().vector_icon(), GetForegroundColor(),
-      GetLayoutConstant(LayoutConstant::kVerticalTabStripButtonIconSize));
+      GetLayoutConstant(
+          LayoutConstant::kVerticalTabStripTopContainerButtonIconSize));
 
   SetImageModel(views::Button::STATE_NORMAL, image_model);
   SetImageModel(views::Button::STATE_HOVERED, image_model);
