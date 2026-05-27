@@ -331,11 +331,21 @@ std::unique_ptr<network::ResourceRequest> CreateResourceRequest(
         *request_info.begin_params->trust_token_params;
   }
 
-  new_request->storage_access_api_status =
+  const bool is_storage_access_grant_eligible =
       frame_tree_node->current_frame_host()
-              ->document_associated_data()
-              .cookie_setting_overrides()
-              .Has(net::CookieSettingOverride::kStorageAccessGrantEligible)
+          ->document_associated_data()
+          .cookie_setting_overrides()
+          .Has(net::CookieSettingOverride::kStorageAccessGrantEligible);
+
+  const bool is_same_origin_initiator =
+      request_info.begin_params->initiator_frame_token ==
+          frame_tree_node->current_frame_host()->GetFrameToken() &&
+      request_info.common_params->initiator_origin &&
+      request_info.common_params->initiator_origin->IsSameOriginWith(
+          request_info.common_params->url);
+
+  new_request->storage_access_api_status =
+      is_storage_access_grant_eligible && is_same_origin_initiator
           ? net::StorageAccessApiStatus::kAccessViaAPI
           : net::StorageAccessApiStatus::kNone;
 

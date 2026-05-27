@@ -19,8 +19,10 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/browser/loader/navigation_url_loader.h"
+#include "content/browser/renderer_host/document_associated_data.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request_info.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -60,8 +62,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
+
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "content/public/browser/plugin_service.h"
 #endif
@@ -128,7 +132,10 @@ class NavigationURLLoaderImplTest : public testing::Test {
       bool upgrade_if_insecure = false,
       bool is_ad_tagged = false,
       std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors =
-          {}) {
+          {},
+      std::optional<blink::LocalFrameToken> initiator_frame_token =
+          std::nullopt,
+      std::optional<url::Origin> initiator_origin = std::nullopt) {
     // NavigationURLLoader assumes that the corresponding FrameTreeNode has an
     // associated NavigationRequest.
     // NOTE: This also creates and starts another `NavigationURLLoaderImpl`
@@ -140,7 +147,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
 
     blink::mojom::BeginNavigationParamsPtr begin_params =
         blink::mojom::BeginNavigationParams::New(
-            std::nullopt /* initiator_frame_token */, headers, net::LOAD_NORMAL,
+            initiator_frame_token, headers, net::LOAD_NORMAL,
             false /* skip_service_worker */,
             blink::mojom::RequestContextType::LOCATION,
             blink::mojom::MixedContentContextType::kBlockable,
@@ -163,7 +170,9 @@ class NavigationURLLoaderImplTest : public testing::Test {
 
     auto common_params = blink::CreateCommonNavigationParams();
     common_params->url = url;
-    common_params->initiator_origin = url::Origin::Create(url);
+    common_params->initiator_origin = initiator_origin.has_value()
+                                          ? *initiator_origin
+                                          : url::Origin::Create(url);
     common_params->method = method;
     common_params->download_policy = download_policy;
     common_params->request_destination =
@@ -1564,6 +1573,74 @@ TEST_F(NavigationURLLoaderImplTest,
   delegate.WaitForResponseStarted();
 
   EXPECT_FALSE(loader->GetResourceRequestForTesting().permissions_policy);
+}
+
+TEST_F(NavigationURLLoaderImplTest, StorageAccessApiStatus_AccessViaAPI) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL url = http_test_server_.GetURL("/foo");
+
+  TestRenderFrameHost* rfh =
+      static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame());
+  rfh->document_associated_data().PutCookieSettingOverride(
+      net::CookieSettingOverride::kStorageAccessGrantEligible);
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(
+      url, "", "GET", &delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true,
+      /*upgrade_if_insecure=*/false,
+      /*is_ad_tagged=*/false, {}, rfh->GetFrameToken());
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  EXPECT_EQ(loader->GetResourceRequestForTesting().storage_access_api_status,
+            net::StorageAccessApiStatus::kAccessViaAPI);
+}
+
+TEST_F(NavigationURLLoaderImplTest,
+       StorageAccessApiStatus_None_MismatchedFrameToken) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL url = http_test_server_.GetURL("/foo");
+
+  TestRenderFrameHost* rfh =
+      static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame());
+  rfh->document_associated_data().PutCookieSettingOverride(
+      net::CookieSettingOverride::kStorageAccessGrantEligible);
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(
+      url, "", "GET", &delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true,
+      /*upgrade_if_insecure=*/false,
+      /*is_ad_tagged=*/false, {}, blink::LocalFrameToken());
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  EXPECT_EQ(loader->GetResourceRequestForTesting().storage_access_api_status,
+            net::StorageAccessApiStatus::kNone);
+}
+
+TEST_F(NavigationURLLoaderImplTest, StorageAccessApiStatus_None_CrossOrigin) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL url = http_test_server_.GetURL("/foo");
+
+  TestRenderFrameHost* rfh =
+      static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame());
+  rfh->document_associated_data().PutCookieSettingOverride(
+      net::CookieSettingOverride::kStorageAccessGrantEligible);
+
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(
+      url, "", "GET", &delegate, blink::NavigationDownloadPolicy(),
+      /*is_main_frame=*/true,
+      /*upgrade_if_insecure=*/false,
+      /*is_ad_tagged=*/false, {}, rfh->GetFrameToken(),
+      url::Origin::Create(GURL("http://a.com")));
+  loader->Start();
+  delegate.WaitForResponseStarted();
+
+  EXPECT_EQ(loader->GetResourceRequestForTesting().storage_access_api_status,
+            net::StorageAccessApiStatus::kNone);
 }
 
 }  // namespace content

@@ -20,6 +20,7 @@
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
 #include "content/browser/loader/keep_alive_url_loader_service.h"
+#include "content/common/content_export.h"
 #include "net/cookies/cookie_setting_override.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/confidence_level.mojom.h"
@@ -41,7 +42,7 @@ class RenderFrameHostImpl;
 // directly while consumers of RenderFrameHostImpl should store data via
 // GetDocumentUserData(). Please refer to the description at
 // content/public/browser/document_user_data.h for more details.
-class DocumentAssociatedData : public base::SupportsUserData {
+class CONTENT_EXPORT DocumentAssociatedData : public base::SupportsUserData {
  public:
   // Helper for looking up a RenderFrameHostImpl based on the DocumentToken.
   // Restricted to RenderFrameHostImpl, which performs additional security
