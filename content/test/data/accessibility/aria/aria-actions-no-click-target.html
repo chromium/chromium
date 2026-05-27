@@ -1,0 +1,58 @@
+<!--
+@AURALINUX-ALLOW:actions*
+@BLINK-ALLOW:actions*
+@BLINK-ALLOW:name*
+@BLINK-ALLOW:hasActions*
+@WIN-ALLOW:has-actions*
+@UIA-WIN-ALLOW:*hasactions=true*
+-->
+
+<!-- Spec PR 1805 #aria-actions requires aria-actions targets to respond to a
+     click activation event. AXNodeObject::IsClickable() considers
+     event listeners, contenteditable, native clickable roles, and
+     returns false for disabled elements. Every target in this file
+     carries a valid accessible name so the accname check (added in
+     CL 7850801) passes — these scenarios isolate the click-handler
+     check. -->
+
+<!-- Mixed: a native button (kept) and an ARIA-role-only button with
+     no click listener (dropped). -->
+<div role="group" id="mixed-host" aria-actions="native-button aria-button">
+  Mixed host
+</div>
+<button id="native-button">Save</button>
+<div id="aria-button" role="button">Edit</div>
+
+<!-- Disabled native button: clickable role but IsClickable() returns
+     false for disabled elements, so the target is dropped. -->
+<div role="group" id="disabled-host" aria-actions="disabled-button">
+  Disabled host
+</div>
+<button id="disabled-button" disabled>Delete</button>
+
+<!-- Plain span with text but no click listener: no clickable role,
+     no listener — dropped. -->
+<div role="group" id="span-host" aria-actions="plain-span">
+  Span host
+</div>
+<span id="plain-span">Not clickable</span>
+
+<!-- ARIA-button with a click listener attached via JS: kept (the
+     listener satisfies the click-handler requirement). -->
+<div role="group" id="listener-host" aria-actions="aria-button-with-listener">
+  Listener host
+</div>
+<div id="aria-button-with-listener" role="button">Run</div>
+
+<!-- All targets fail the click-handler check — kHasActions must not
+     appear on this host. -->
+<div role="group" id="all-invalid-host" aria-actions="aria-button2 plain-span2">
+  All invalid host
+</div>
+<div id="aria-button2" role="button">No listener</div>
+<span id="plain-span2">Plain text</span>
+
+<script>
+  document.getElementById('aria-button-with-listener')
+      .addEventListener('click', () => {});
+</script>

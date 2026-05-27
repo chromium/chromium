@@ -12,7 +12,9 @@
     your-file-name.pdf
     <button id="edit">Edit</button>
     <a href="https://google.com" id="open">Open</a>
-    <div role="switch" id="close">Close</div>
+    <!-- A native button with the switch role satisfies the click-handler
+         Author MUST while preserving the role-switch coverage. -->
+    <button role="switch" id="close">Close</button>
   </div>
 </div>
 <!-- aria-actions can point to non-descendant. -->

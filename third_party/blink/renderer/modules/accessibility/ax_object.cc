@@ -232,11 +232,17 @@ void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
 // Returns true if |target| satisfies the Author MUST requirements for
 // aria-actions targets per the spec PR
 // (https://github.com/w3c/aria/pull/1805) #aria-actions. The UA drops targets
-// that fail these checks. Currently validates accessible name;
-// follow-up CLs add click-handler and keyboard-access checks.
+// that fail these checks. Validates accessible name and click-handler
+// availability; a follow-up CL adds the keyboard-accessibility check.
 bool IsValidAriaActionsTarget(const AXObject& target) {
   String name = target.ComputedName();
-  return !name.StripWhiteSpace().empty();
+  if (name.StripWhiteSpace().empty()) {
+    return false;
+  }
+  // IsClickable() is virtually dispatched to AXNodeObject::IsClickable(),
+  // which considers mouse-button event listeners, contenteditable, native
+  // clickable roles, and correctly returns false for disabled elements.
+  return target.IsClickable();
 }
 
 // Max length for attributes such as aria-label.

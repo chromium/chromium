@@ -1,0 +1,39 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++group hasActions actionsIds=button
+++++++++staticText name='Mixed host' nameFrom=contents
+++++++++++inlineTextBox name='Mixed host' nameFrom=contents
+++++++button name='Save' nameFrom=contents
+++++++++staticText name='Save' nameFrom=contents
+++++++++++inlineTextBox name='Save' nameFrom=contents
+++++++button name='Edit' nameFrom=contents
+++++++++staticText name='Edit' nameFrom=contents
+++++++++++inlineTextBox name='Edit' nameFrom=contents
+++++++group
+++++++++staticText name='Disabled host' nameFrom=contents
+++++++++++inlineTextBox name='Disabled host' nameFrom=contents
+++++++button name='Delete' nameFrom=contents restriction=disabled
+++++++++staticText name='Delete' nameFrom=contents
+++++++++++inlineTextBox name='Delete' nameFrom=contents
+++++++group
+++++++++staticText name='Span host' nameFrom=contents
+++++++++++inlineTextBox name='Span host' nameFrom=contents
+++++++genericContainer
+++++++++staticText name='Not clickable' nameFrom=contents
+++++++++++inlineTextBox name='Not clickable' nameFrom=contents
+++++++group hasActions actionsIds=button
+++++++++staticText name='Listener host' nameFrom=contents
+++++++++++inlineTextBox name='Listener host' nameFrom=contents
+++++++button name='Run' nameFrom=contents
+++++++++staticText name='Run' nameFrom=contents
+++++++++++inlineTextBox name='Run' nameFrom=contents
+++++++group
+++++++++staticText name='All invalid host' nameFrom=contents
+++++++++++inlineTextBox name='All invalid host' nameFrom=contents
+++++++button name='No listener' nameFrom=contents
+++++++++staticText name='No listener' nameFrom=contents
+++++++++++inlineTextBox name='No listener' nameFrom=contents
+++++++genericContainer
+++++++++staticText name='Plain text' nameFrom=contents
+++++++++++inlineTextBox name='Plain text' nameFrom=contents

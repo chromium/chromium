@@ -480,6 +480,11 @@ data/accessibility/aria/aria-actions-expected-uia-win.txt
 data/accessibility/aria/aria-actions-expected-win.txt
 data/accessibility/aria/aria-actions-implicit-expected-blink.txt
 data/accessibility/aria/aria-actions-implicit.html
+data/accessibility/aria/aria-actions-no-click-target-expected-auralinux.txt
+data/accessibility/aria/aria-actions-no-click-target-expected-blink.txt
+data/accessibility/aria/aria-actions-no-click-target-expected-uia-win.txt
+data/accessibility/aria/aria-actions-no-click-target-expected-win.txt
+data/accessibility/aria/aria-actions-no-click-target.html
 data/accessibility/aria/aria-actions-no-name-target-expected-auralinux.txt
 data/accessibility/aria/aria-actions-no-name-target-expected-blink.txt
 data/accessibility/aria/aria-actions-no-name-target-expected-uia-win.txt

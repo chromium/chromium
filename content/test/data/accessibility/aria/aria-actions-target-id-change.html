@@ -9,29 +9,30 @@
 <html>
   <body>
     <main aria-actions="id1"></main>
-    <!-- Different roles distinguish targets in the expectations file. Both
-         support accessible names so they satisfy Author MUSTs. -->
-    <div role="button" id="id1">Target A</div>
-    <div role="link" id="id2">Target B</div>
+    <!-- Different native roles distinguish targets in the expectations
+         file. Both are native interactive elements so they satisfy the
+         click-handler Author MUST. -->
+    <button id="id1">Target A</button>
+    <a href="#" id="id2">Target B</a>
     <script>
       function switchReference() {
         // Switch the IDs around. Now the relation points to the link.
-        document.querySelector("div[role=button]").id = "id2";
-        document.querySelector("div[role=link]").id = "id1";
+        document.querySelector("button").id = "id2";
+        document.querySelector("a").id = "id1";
         document.title = "switch-reference";
         return "switch-reference";
       }
 
       function removeReference() {
         // Remove the id on the relation target. Now the relation is empty.
-        document.querySelector("div[role=link]").removeAttribute('id');
+        document.querySelector("a").removeAttribute('id');
         document.title = "remove-reference";
         return "remove-reference";
       }
 
       function restoreReference() {
         // Restore the original relation pointing to the button.
-        document.querySelector("div[role=button]").id = "id1";
+        document.querySelector("button").id = "id1";
         document.title = "restore-reference";
         return "restore-reference";
       }
