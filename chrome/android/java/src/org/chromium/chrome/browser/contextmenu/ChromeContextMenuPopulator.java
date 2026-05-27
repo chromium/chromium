@@ -903,6 +903,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                             intent.putExtra(
                                     CustomTabsIntent.EXTRA_CONTEXT_IMAGE_ALT_TEXT,
                                     getTitleOrGuessIfNotPresent());
+                            mItemDelegate.getPageTitle();
+                            intent.putExtra(
+                                    CustomTabsIntent.EXTRA_CONTEXT_PAGE_TITLE,
+                                    mItemDelegate.getPageTitle());
 
                             intent.setData(Uri.parse(mItemDelegate.getPageUrl().getSpec()));
 
