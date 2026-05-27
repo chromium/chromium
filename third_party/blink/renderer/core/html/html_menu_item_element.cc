@@ -538,18 +538,13 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         if (!invoked_menulist->popoverOpen()) {
           invoked_menulist->InvokePopover(*this);
         }
-        MenuItemList invoked_menuitems = invoked_menulist->ItemList();
         if (key == keywords::kArrowDown) {
-          if (auto* first = invoked_menuitems.NextFocusableElement(
-                  *invoked_menuitems.begin(), /*inclusive=*/true)) {
-            first->Focus(focus_params);
+          if (invoked_menulist->FocusFirstItem()) {
             event.SetDefaultHandled();
             return;
           }
         } else if (key == keywords::kArrowUp) {
-          if (auto* last = invoked_menuitems.PreviousFocusableElement(
-                  *invoked_menuitems.last(), /*inclusive=*/true)) {
-            last->Focus(focus_params);
+          if (invoked_menulist->FocusLastItem()) {
             event.SetDefaultHandled();
             return;
           }

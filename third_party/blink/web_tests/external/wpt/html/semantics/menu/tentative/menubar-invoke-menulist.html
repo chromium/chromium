@@ -85,9 +85,7 @@ test(() => {
  assert_true(menulist.matches(':popover-open'),
     'toggle-menu opens the menulist');
 
- menubaritem.click();
- assert_false(menulist.matches(':popover-open'),
-    "toggle-menu closes the menulist");
+ menulist.hidePopover();
 
  menubaritem.setAttribute("command", "show-menu");
  menubaritem.click();
@@ -153,6 +151,5 @@ test(() => {
   assert_true(menulist.matches(":popover-open"), "menulist is open");
   checkableMenuitem.click();
   assert_false(checkableMenuitem.checked, "still not checked");
-  assert_false(menulist.matches(":popover-open"), "menulist closes");
 }, "menuitems that invoke menulists cannot be checkable");
 </script>

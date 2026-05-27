@@ -24,6 +24,18 @@ class CORE_EXPORT HTMLMenuListElement final : public HTMLMenuOwnerElement {
   // InvokingMenuItem returns the menuitem element which invoked this menulist
   // element, if this menulist is currently open and was opened by a menuitem.
   HTMLMenuItemElement* InvokingMenuItem();
+
+  PopoverHideResult HidePopoverInternal(
+      Element* invoker,
+      HidePopoverFocusBehavior focus_behavior,
+      HidePopoverTransitionBehavior event_firing,
+      ExceptionState* exception_state) override;
+
+  // These methods focus either the first or last of their descendant menuitem
+  // elements, and return true if such a focusable menuitem was found and
+  // focused.
+  bool FocusFirstItem();
+  bool FocusLastItem();
 };
 
 }  // namespace blink
