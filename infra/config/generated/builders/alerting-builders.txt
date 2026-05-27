@@ -642,6 +642,7 @@ try/linux-libfuzzer-asan-rel
 try/linux-metadata-validator
 try/linux-msan-chained-origins-rel
 try/linux-msan-no-origins-rel
+try/linux-no-initial-webui-rel
 try/linux-oi-rel
 try/linux-perfetto-rel
 try/linux-presubmit

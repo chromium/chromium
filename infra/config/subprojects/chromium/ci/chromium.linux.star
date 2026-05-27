@@ -562,6 +562,70 @@ ci.builder(
 )
 
 ci.thin_tester(
+    name = "linux-no-initial-webui-rel",
+    description_html = "Runs tests with Initial WebUI disabled to check legacy UI path. See b/505579819.",
+    parent = "ci/Linux Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.LINUX,
+        ),
+    ),
+    targets = targets.bundle(
+        targets = [
+            "browser_tests",
+            "interactive_ui_tests",
+            "unit_tests",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "linux-jammy",
+            "retry_only_failed_tests",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                args = [
+                    "--disable-features=InitialWebUI,WebUIReloadButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
+                ],
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                args = [
+                    "--disable-features=InitialWebUI,WebUIReloadButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
+                ],
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "unit_tests": targets.mixin(
+                args = [
+                    "--disable-features=InitialWebUI,WebUIReloadButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
+                ],
+            ),
+        },
+    ),
+    # TODO(crbug.com/505579819): Enable gardening once the bot is stable.
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "linux",
+        short_name = "no-webui",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    contact_team_email = "chrome-webium-product-eng@google.com",
+)
+
+ci.thin_tester(
     name = "linux-webium-product-rel",
     description_html = "Webium Product Linux tests.",
     parent = "ci/Linux Builder",

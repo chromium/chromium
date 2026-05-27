@@ -1014,6 +1014,23 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-no-initial-webui-rel",
+    description_html = "Mirror of Linux No Initial WebUI CI builder",
+    mirrors = [
+        "ci/Linux Builder",
+        "ci/linux-no-initial-webui-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/Linux Builder",
+            "release_try_builder",
+            "remoteexec",
+        ],
+    ),
+    contact_team_email = "chrome-webium-product-eng@google.com",
+)
+
+try_.builder(
     name = "linux-webium-product-rel",
     mirrors = [
         "ci/linux-webium-product-rel",
