@@ -9,8 +9,7 @@
 
 class GURL;
 
-// This represents the site info to use with manual fill for passwords and
-// plus_addresses.
+// This represents the site info to use with manual fill for passwords.
 @interface ManualFillSiteInfo : NSObject
 
 // The site name is the last part of the domain. In some cases it will be the

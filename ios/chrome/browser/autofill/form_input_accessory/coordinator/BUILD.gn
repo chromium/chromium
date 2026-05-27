@@ -23,7 +23,6 @@ source_set("coordinator") {
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",
-    "//components/plus_addresses/core/browser/resources/strings",
     "//components/prefs",
     "//components/strings",
     "//ios/chrome/app/strings",
