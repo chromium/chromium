@@ -6,18 +6,14 @@
       "mac",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "UserDataSnapshotRetentionLimit": 2
-        },
-        "prefs": {
-          "downgrade.snapshot_retention_limit": {
-            "location": "local_state",
-            "value": 2
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "downgrade.snapshot_retention_limit",
+      "pref_location": "local_state",
+      "default_value": 3,
+      "values_to_test": [
+        2,
+        3
+      ]
+    }
   }
 ]
