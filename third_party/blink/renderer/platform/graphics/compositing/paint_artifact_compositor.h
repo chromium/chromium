@@ -267,11 +267,18 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   struct SynthesizedClipEntry {
     DISALLOW_NEW();
 
-    Member<const ClipPaintPropertyNode> key;
+    Member<const ClipPaintPropertyNode> clip_key;
     std::unique_ptr<SynthesizedClip> synthesized_clip;
     bool in_use;
+    // Transform space of the emitted mask layer. The same clip can be
+    // re-emitted in a different transform space, so the cache key must
+    // include both clip and transform.
+    Member<const TransformPaintPropertyNode> transform_key;
 
-    void Trace(Visitor* visitor) const { visitor->Trace(key); }
+    void Trace(Visitor* visitor) const {
+      visitor->Trace(clip_key);
+      visitor->Trace(transform_key);
+    }
   };
 
  private:

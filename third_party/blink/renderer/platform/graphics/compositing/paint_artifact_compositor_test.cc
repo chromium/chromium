@@ -3899,6 +3899,88 @@ TEST_P(PaintArtifactCompositorTest, SynthesizedClipDelegateBackdropFilter) {
             mask_isolation_2.mask_filter_info.rounded_corner_bounds());
 }
 
+TEST_P(PaintArtifactCompositorTest,
+       SynthesizedClipPathReEmittedForBackdropFilterSibling) {
+  // Regression test for crbug.com/505751225. The same clip-path clip can be
+  // emitted in different transform spaces across frames. Those emissions must
+  // not reuse the same SynthesizedClip cache entry. Run Update() twice because
+  // `in_use` already prevents reuse within a frame.
+  auto* c1 = CreateClipPathClip(c0(), t0(), FloatRoundedRect(50, 50, 300, 200));
+
+  auto* t1 = Create2DTranslation(t0(), 10, 20);
+  CompositorFilterOperations blur_filter;
+  blur_filter.AppendBlurFilter(5);
+  auto* e_backdrop = CreateBackdropFilterEffect(e0(), *t1, c1, blur_filter);
+
+  // Frame 1: emit only the backdrop-filter chunk.
+  TestPaintArtifact frame1;
+  frame1.Chunk(*t1, *c1, *e_backdrop)
+      .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack);
+  Update(frame1.Build());
+
+  ASSERT_EQ(2u, LayerCount());  // content + mask
+  ASSERT_EQ(1u, SynthesizedClipLayerCount());
+  const cc::Layer* frame1_content = LayerAt(0);
+  const cc::Layer* frame1_mask = LayerAt(1);
+  EXPECT_EQ(SynthesizedClipLayerAt(0), frame1_mask);
+  int frame1_e_backdrop_id = frame1_content->effect_tree_index();
+  int frame1_mask_isolation_id =
+      GetPropertyTrees().effect_tree().Node(frame1_e_backdrop_id).parent_id;
+  CompositorElementId frame1_mask_isolation_element_id =
+      GetPropertyTrees()
+          .effect_tree()
+          .Node(frame1_mask_isolation_id)
+          .element_id;
+  EXPECT_TRUE(static_cast<bool>(frame1_mask_isolation_element_id));
+
+  // Frame 2: emit a non-backdrop sibling under `c1` before the
+  // backdrop-filter chunk.
+  TestPaintArtifact frame2;
+  frame2.Chunk(t0(), *c1, e0())
+      .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack);
+  frame2.Chunk(*t1, *c1, *e_backdrop)
+      .RectDrawing(gfx::Rect(0, 0, 100, 100), Color::kBlack);
+  Update(frame2.Build());
+
+  ASSERT_EQ(4u, LayerCount());  // 2 content + 2 mask
+  ASSERT_EQ(2u, SynthesizedClipLayerCount());
+
+  const cc::Layer* content0 = LayerAt(0);
+  const cc::Layer* mask0 = LayerAt(1);
+  const cc::Layer* content1 = LayerAt(2);
+  const cc::Layer* mask1 = LayerAt(3);
+
+  // Clip-path masks do not use mask_filter_info, so both mask layers must
+  // exist. The cache keeps insertion order rather than layer_list order.
+  EXPECT_NE(nullptr, SynthesizedClipLayerAt(0));
+  EXPECT_NE(nullptr, SynthesizedClipLayerAt(1));
+  EXPECT_TRUE((SynthesizedClipLayerAt(0) == mask0 &&
+               SynthesizedClipLayerAt(1) == mask1) ||
+              (SynthesizedClipLayerAt(0) == mask1 &&
+               SynthesizedClipLayerAt(1) == mask0));
+  EXPECT_NE(mask0, mask1);
+
+  int mask_isolation_0_id = content0->effect_tree_index();
+  const cc::EffectNode& mask_isolation_0 =
+      GetPropertyTrees().effect_tree().Node(mask_isolation_0_id);
+  EXPECT_EQ(cc::RenderSurfaceReason::kClipPath,
+            mask_isolation_0.render_surface_reason);
+
+  int e_backdrop_id = content1->effect_tree_index();
+  const cc::EffectNode& cc_e_backdrop =
+      GetPropertyTrees().effect_tree().Node(e_backdrop_id);
+  int mask_isolation_1_id = cc_e_backdrop.parent_id;
+  const cc::EffectNode& mask_isolation_1 =
+      GetPropertyTrees().effect_tree().Node(mask_isolation_1_id);
+  EXPECT_FALSE(mask_isolation_1.backdrop_filters.IsEmpty());
+
+  EXPECT_NE(mask_isolation_0_id, mask_isolation_1_id);
+  EXPECT_NE(mask_isolation_0.element_id, mask_isolation_1.element_id);
+
+  // Frame 2's non-backdrop mask must not reuse frame 1's mask element id.
+  EXPECT_NE(frame1_mask_isolation_element_id, mask_isolation_0.element_id);
+}
+
 TEST_P(PaintArtifactCompositorTest, SynthesizedClipMultipleNonBackdropEffects) {
   // This tests the case that multiple non-backdrop effects can share the
   // synthesized mask.
