@@ -41,6 +41,11 @@ class SerializationTest : public EditingTestBase {
     return builder.ToString();
   }
 
+  String StrictlyProcessedMarkup(const String& html) {
+    return CreateStrictlyProcessedMarkupWithContext(GetDocument(), html, 0,
+                                                    html.length(), KURL());
+  }
+
   Element* GetFirstChildElementNamed(const Node& parent,
                                      const AtomicString& tag_name) {
     for (Node* child = parent.firstChild(); child;
@@ -189,6 +194,34 @@ TEST_F(SerializationTest, SVGForeignObjectCrash) {
   // This is a crash test. We don't verify the content of the strictly processed
   // markup as it's too verbose and not interesting.
   EXPECT_TRUE(strictly_processed_fragment);
+}
+
+TEST_F(SerializationTest, StrictlyProcessedMarkupDropsScriptsAndPlugins) {
+  const String markup =
+      "<div>safe"
+      "<script>alert(1)</script>"
+      "<svg><script>alert(2)</script><circle></circle></svg>"
+      "<object data='plugin'></object>"
+      "<embed src='plugin'>"
+      "<applet code='plugin'></applet>"
+      "</div>";
+
+  EXPECT_EQ("<div>safe<svg><circle></circle></svg></div>",
+            StrictlyProcessedMarkup(markup));
+}
+
+TEST_F(SerializationTest, StrictlyProcessedMarkupStripsScriptingAttributes) {
+  const String markup =
+      "<a href='javascript:alert(1)' onclick='alert(2)' title='safe'>link</a>"
+      "<img src='x' onerror='alert(3)'>"
+      "<iframe srcdoc='<script>alert(4)</script>'></iframe>"
+      "<svg><a href='javascript:alert(5)'><text onclick='alert(6)'>x</text>"
+      "</a></svg>";
+
+  EXPECT_EQ(
+      "<a title=\"safe\">link</a><img src=\"x\"><iframe></iframe>"
+      "<svg><a><text>x</text></a></svg>",
+      StrictlyProcessedMarkup(markup));
 }
 
 // Regression test for https://crbug.com/40840595
