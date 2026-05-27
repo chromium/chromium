@@ -22,6 +22,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/history/core/browser/download_row.h"
@@ -29,7 +30,9 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/mock_download_manager.h"
 #include "extensions/buildflags/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -190,6 +193,14 @@ class DownloadsCounterTest : public InProcessBrowserTest,
     }
   }
 
+  void ManagerGoingDown(content::DownloadManager* manager) override {
+    if (manager == manager_) {
+      manager_ = nullptr;
+    } else if (manager == otr_manager_) {
+      otr_manager_ = nullptr;
+    }
+  }
+
   // Waiting for downloads to be stored. ---------------------------------------
 
   // DownloadHistory::Observer implementation:
@@ -223,6 +234,8 @@ class DownloadsCounterTest : public InProcessBrowserTest,
       run_loop_->Quit();
     }
   }
+
+  void OnDownloadHistoryDestroyed() override { history_ = nullptr; }
 
   void WaitForDownloadHistory() {
     if (guids_to_add_.empty() && ids_to_remove_.empty()) {
@@ -279,8 +292,7 @@ class DownloadsCounterTest : public InProcessBrowserTest,
 };
 
 // Tests that we count the total number of downloads correctly.
-// Disabled due to crbug.com/448186274.
-IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, DISABLED_Count) {
+IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, Count) {
   Profile* profile = browser()->profile();
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
@@ -307,6 +319,48 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, DISABLED_Count) {
   WaitForDownloadHistory();
   counter.Restart();
   EXPECT_EQ(2, GetResult());
+}
+
+// Tests that the counter correctly counts downloads asynchronously when the
+// manager is initialized after the count is requested.
+IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, AsynchronousInitialization) {
+  std::unique_ptr<TestingProfile> testing_profile =
+      std::make_unique<TestingProfile>();
+
+  auto mock_download_manager =
+      std::make_unique<testing::NiceMock<content::MockDownloadManager>>();
+  content::MockDownloadManager* mock_manager_ptr = mock_download_manager.get();
+
+  testing_profile->SetDownloadManagerForTesting(
+      std::move(mock_download_manager));
+
+  DownloadsCounter counter(testing_profile.get());
+  counter.Init(testing_profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&DownloadsCounterTest::ResultCallback,
+                                   base::Unretained(this)));
+
+  // 1. Set up expectations to start as uninitialized.
+  content::DownloadManager::Observer* observer = nullptr;
+  EXPECT_CALL(*mock_manager_ptr, AddObserver(testing::_))
+      .WillOnce(testing::SaveArg<0>(&observer));
+  EXPECT_CALL(*mock_manager_ptr, IsManagerInitialized())
+      .WillRepeatedly(testing::Return(false));
+
+  // 2. Trigger count (will enter the waiting observer state).
+  counter.Restart();
+  ASSERT_TRUE(observer);
+
+  // 3. Transition manager to initialized and notify the observer.
+  EXPECT_CALL(*mock_manager_ptr, IsManagerInitialized())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(*mock_manager_ptr, GetAllDownloads(testing::_)).Times(1);
+  EXPECT_CALL(*mock_manager_ptr, RemoveObserver(observer)).Times(1);
+
+  observer->OnManagerInitialized();
+
+  // 4. Verify that the result is successfully reported.
+  EXPECT_EQ(0u, GetResult());
 }
 
 // Tests that not just standard complete downloads are counted.

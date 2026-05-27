@@ -22,7 +22,35 @@ const char* DownloadsCounter::GetPrefName() const {
 }
 
 void DownloadsCounter::Count() {
+  download_manager_observation_.Reset();
+
   content::DownloadManager* download_manager = profile_->GetDownloadManager();
+  if (download_manager) {
+    if (download_manager->IsManagerInitialized()) {
+      CountDownloads();
+    } else {
+      download_manager_observation_.Observe(download_manager);
+    }
+  } else {
+    ReportResult(0);
+  }
+}
+
+void DownloadsCounter::OnManagerInitialized() {
+  download_manager_observation_.Reset();
+  CountDownloads();
+}
+
+void DownloadsCounter::ManagerGoingDown(content::DownloadManager* manager) {
+  download_manager_observation_.Reset();
+}
+
+void DownloadsCounter::CountDownloads() {
+  content::DownloadManager* download_manager = profile_->GetDownloadManager();
+  if (!download_manager) {
+    ReportResult(0);
+    return;
+  }
   std::vector<raw_ptr<download::DownloadItem, VectorExperimental>> downloads;
   download_manager->GetAllDownloads(&downloads);
   base::Time begin_time = GetPeriodStart();
