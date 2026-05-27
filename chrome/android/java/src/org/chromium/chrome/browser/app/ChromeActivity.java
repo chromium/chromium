@@ -2917,17 +2917,26 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
 
         if (id == R.id.bookmark_menu_id) {
-            if (menuItemData != null
+            assert menuItemData != null
                     && menuItemData.containsKey(
-                            AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY)) {
-                BookmarkId bookmarkId =
-                        BookmarkId.getBookmarkIdFromString(
-                                menuItemData.getString(
-                                        AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY));
-                BookmarkOpener opener =
-                        new BookmarkOpenerImpl(mBookmarkModelSupplier, this, getComponentName());
-                opener.openBookmarkInCurrentTab(bookmarkId, currentTab.isIncognito());
-            }
+                            AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY);
+            BookmarkId bookmarkId =
+                    BookmarkId.getBookmarkIdFromString(
+                            menuItemData.getString(
+                                    AppMenuPropertiesDelegateImpl.BOOKMARK_ID_BUNDLE_KEY));
+            BookmarkOpener opener =
+                    new BookmarkOpenerImpl(mBookmarkModelSupplier, this, getComponentName());
+            opener.openBookmarkInCurrentTab(bookmarkId, currentTab.isIncognito());
+            return true;
+        }
+
+        if (id == R.id.tab_group_tab_menu_item) {
+            assert menuItemData != null
+                    && menuItemData.containsKey(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY);
+            TabModelUtils.selectTabById(
+                    getTabModelSelector(),
+                    menuItemData.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY),
+                    TabSelectionType.FROM_USER);
             return true;
         }
 

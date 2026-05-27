@@ -29,7 +29,9 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 
@@ -47,6 +49,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.mockito.stubbing.Answer;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -67,6 +70,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl.MenuGroup;
 import org.chromium.chrome.browser.bookmarks.BookmarkImageFetcher;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -111,14 +115,16 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuItemState;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateBridgeJni;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuBookmarkItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsBuildflags;
 import org.chromium.chrome.browser.ui.extensions.FakeExtensionUiBackendRule;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.browser.ui.lens.LensOverlayTabHelper;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -260,6 +266,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private PaneManager mPaneManager;
     @Mock private Pane mPane;
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
+    @Mock private FaviconHelper.Natives mFaviconHelperJniMock;
 
     private ShadowPackageManager mShadowPackageManager;
 
@@ -316,6 +323,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         }
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mTab.getProfile()).thenReturn(mProfile);
+        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
@@ -388,6 +396,9 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         mBookmarkModel.addBookmark(folderId, 0, "Bookmark in folder 1", JUnitTestGURLs.URL_3);
         mBookmarkModel.addBookmark(folderId, 1, "Bookmark in folder 2", JUnitTestGURLs.SEARCH_URL);
 
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
+        when(mFaviconHelperJniMock.init()).thenReturn(1L);
+
         TabbedAppMenuPropertiesDelegate delegate =
                 new TabbedAppMenuPropertiesDelegate(
                         context,
@@ -428,7 +439,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Nullable
-    private ListItem findItemById(Iterable<ListItem> items, int id) {
+    private static ListItem findItemById(Iterable<ListItem> items, int id) {
         for (ListItem item : items) {
             if (item.model.get(AppMenuItemProperties.MENU_ITEM_ID) == id) {
                 return item;
@@ -525,9 +536,8 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item.model.containsKey(AppMenuItemProperties.ICON)
                                         && item.model.get(AppMenuItemProperties.ICON) != null;
                         boolean hasIconSupplier =
-                                item.model.containsKey(AppMenuBookmarkItemProperties.ICON_SUPPLIER)
-                                        && item.model.get(
-                                                        AppMenuBookmarkItemProperties.ICON_SUPPLIER)
+                                item.model.containsKey(AppMenuItemProperties.ICON_SUPPLIER)
+                                        && item.model.get(AppMenuItemProperties.ICON_SUPPLIER)
                                                 != null;
                         Assert.assertTrue(
                                 "Item should have an icon: " + getMenuTitle(item),
@@ -645,6 +655,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
@@ -678,11 +692,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0))),
-                                item(
-                                        R.id.tab_groups_parent_menu_id,
-                                        item(R.id.add_to_group_menu_id),
-                                        item(R.id.create_new_tab_group_menu_id))));
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -729,6 +739,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
@@ -764,11 +778,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0))),
-                                item(
-                                        R.id.tab_groups_parent_menu_id,
-                                        item(R.id.add_to_group_menu_id),
-                                        item(R.id.create_new_tab_group_menu_id))));
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -826,6 +836,17 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             expectedItems.add(item(R.id.new_incognito_tab_menu_id));
             expectedTitles.add(item(R.string.menu_new_incognito_tab));
         }
+
+        expectedItems.add(
+                item(
+                        R.id.tab_groups_parent_menu_id,
+                        item(R.id.add_to_group_menu_id),
+                        item(R.id.create_new_tab_group_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_tab_groups,
+                        item(R.string.menu_add_tab_to_new_group),
+                        item(R.string.menu_create_new_tab_group)));
 
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
@@ -910,17 +931,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(0),
                         item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
                         item(R.string.menu_other_bookmarks, item(0))));
-
-        expectedItems.add(
-                item(
-                        R.id.tab_groups_parent_menu_id,
-                        item(R.id.add_to_group_menu_id),
-                        item(R.id.create_new_tab_group_menu_id)));
-        expectedTitles.add(
-                item(
-                        R.string.menu_tab_groups,
-                        item(R.string.menu_add_tab_to_new_group),
-                        item(R.string.menu_create_new_tab_group)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1050,6 +1060,17 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.new_incognito_tab_menu_id));
         expectedTitles.add(item(R.string.menu_new_incognito_tab));
 
+        expectedItems.add(
+                item(
+                        R.id.tab_groups_parent_menu_id,
+                        item(R.id.add_to_group_menu_id),
+                        item(R.id.create_new_tab_group_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_tab_groups,
+                        item(R.string.menu_add_tab_to_new_group),
+                        item(R.string.menu_create_new_tab_group)));
+
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
 
@@ -1125,17 +1146,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(0),
                         item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
                         item(R.string.menu_other_bookmarks, item(0))));
-
-        expectedItems.add(
-                item(
-                        R.id.tab_groups_parent_menu_id,
-                        item(R.id.add_to_group_menu_id),
-                        item(R.id.create_new_tab_group_menu_id)));
-        expectedTitles.add(
-                item(
-                        R.string.menu_tab_groups,
-                        item(R.string.menu_add_tab_to_new_group),
-                        item(R.string.menu_create_new_tab_group)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1263,6 +1273,17 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(item(R.id.new_incognito_tab_menu_id));
         expectedTitles.add(item(R.string.menu_new_incognito_tab));
 
+        expectedItems.add(
+                item(
+                        R.id.tab_groups_parent_menu_id,
+                        item(R.id.add_to_group_menu_id),
+                        item(R.id.create_new_tab_group_menu_id)));
+        expectedTitles.add(
+                item(
+                        R.string.menu_tab_groups,
+                        item(R.string.menu_add_tab_to_new_group),
+                        item(R.string.menu_create_new_tab_group)));
+
         expectedItems.add(item(R.id.divider_line_id));
         expectedTitles.add(item(0));
 
@@ -1344,17 +1365,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         item(0),
                         item(R.string.menu_mobile_bookmarks, item("Partner bookmarks", item(0))),
                         item(R.string.menu_other_bookmarks, item(0))));
-
-        expectedItems.add(
-                item(
-                        R.id.tab_groups_parent_menu_id,
-                        item(R.id.add_to_group_menu_id),
-                        item(R.id.create_new_tab_group_menu_id)));
-        expectedTitles.add(
-                item(
-                        R.string.menu_tab_groups,
-                        item(R.string.menu_add_tab_to_new_group),
-                        item(R.string.menu_create_new_tab_group)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1469,6 +1479,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
@@ -1504,11 +1518,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0))),
-                                item(
-                                        R.id.tab_groups_parent_menu_id,
-                                        item(R.id.add_to_group_menu_id),
-                                        item(R.id.create_new_tab_group_menu_id))));
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1568,6 +1578,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.update_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
@@ -1604,12 +1618,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
                                         item(R.id.bookmark_folder_menu_id, item(0)))));
-
-        expectedItems.add(
-                item(
-                        R.id.tab_groups_parent_menu_id,
-                        item(R.id.add_to_group_menu_id),
-                        item(R.id.create_new_tab_group_menu_id)));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -1915,6 +1923,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
@@ -1950,11 +1962,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0))),
-                                item(
-                                        R.id.tab_groups_parent_menu_id,
-                                        item(R.id.add_to_group_menu_id),
-                                        item(R.id.create_new_tab_group_menu_id))));
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -2047,6 +2055,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
@@ -2082,11 +2094,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0))),
-                                item(
-                                        R.id.tab_groups_parent_menu_id,
-                                        item(R.id.add_to_group_menu_id),
-                                        item(R.id.create_new_tab_group_menu_id))));
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -2153,6 +2161,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                 item(R.id.icon_row_menu_id),
                                 item(R.id.new_tab_menu_id),
                                 item(R.id.new_incognito_tab_menu_id),
+                                item(
+                                        R.id.tab_groups_parent_menu_id,
+                                        item(R.id.add_to_group_menu_id),
+                                        item(R.id.create_new_tab_group_menu_id)),
                                 item(R.id.divider_line_id),
                                 item(
                                         R.id.passwords_and_autofill_parent_menu_id,
@@ -2188,11 +2200,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                                         item(
                                                 R.id.bookmark_folder_menu_id,
                                                 item(R.id.bookmark_folder_menu_id, item(0))),
-                                        item(R.id.bookmark_folder_menu_id, item(0))),
-                                item(
-                                        R.id.tab_groups_parent_menu_id,
-                                        item(R.id.add_to_group_menu_id),
-                                        item(R.id.create_new_tab_group_menu_id))));
+                                        item(R.id.bookmark_folder_menu_id, item(0)))));
 
         if (ExtensionsBuildflags.ENABLE_DESKTOP_ANDROID_EXTENSIONS) {
             expectedItems.add(
@@ -3924,7 +3932,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertNotNull(bookmarkListItem);
 
         LazyOneshotSupplier<Drawable> iconSupplier =
-                bookmarkListItem.model.get(AppMenuBookmarkItemProperties.ICON_SUPPLIER);
+                bookmarkListItem.model.get(AppMenuItemProperties.ICON_SUPPLIER);
         assertNotNull(iconSupplier);
 
         Drawable mockFavicon = mock(Drawable.class);
@@ -3952,10 +3960,23 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(tabModel.getProfile()).thenReturn(mProfile);
 
         Token token1 = new Token(1L, 1L);
+        when(tabModel.getTabGroupCount()).thenReturn(1);
         when(tabModel.getAllTabGroupIds()).thenReturn(java.util.Set.of(token1));
         when(tabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
         when(tabModel.getTabGroupColorWithFallback(token1))
                 .thenReturn(org.chromium.components.tab_groups.TabGroupColorId.BLUE);
+
+        Tab tab1 = Mockito.mock(Tab.class);
+        when(tab1.getId()).thenReturn(101);
+        when(tab1.getTitle()).thenReturn("Tab 1");
+        when(tab1.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+
+        Tab tab2 = Mockito.mock(Tab.class);
+        when(tab2.getId()).thenReturn(102);
+        when(tab2.getTitle()).thenReturn("Tab 2");
+        when(tab2.getUrl()).thenReturn(JUnitTestGURLs.URL_2);
+
+        when(tabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(tab1, tab2));
 
         setUpMocksForPageMenu();
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
@@ -3966,27 +3987,182 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                         R.id.tab_groups_parent_menu_id);
         assertNotNull(tabGroupsParent);
 
-        List<ListItem> subItems =
+        List<ListItem> tabGroupsSubmenuItems =
                 tabGroupsParent.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
 
-        List<MenuItem> expectedSubItems =
+        List<MenuItem> expectedItems =
                 Arrays.asList(
                         item(R.id.add_to_group_menu_id),
                         item(R.id.create_new_tab_group_menu_id),
                         item(R.id.divider_line_id),
-                        item(R.id.tab_group_menu_item_id));
+                        item(
+                                R.id.tab_group_menu_item_id,
+                                item(R.id.tab_group_tab_menu_item),
+                                item(R.id.tab_group_tab_menu_item)));
+        assertMenuItemsAreEqual(tabGroupsSubmenuItems, expectedItems);
 
-        assertMenuItemsAreEqual(subItems, expectedSubItems);
+        List<MenuItem> expectedTitles =
+                Arrays.asList(
+                        item(R.string.menu_add_tab_to_group),
+                        item(R.string.menu_create_new_tab_group),
+                        item(0),
+                        item("Group 1", item("Tab 1"), item("Tab 2")));
+        assertMenuTitlesAreEqual(tabGroupsSubmenuItems, expectedTitles);
 
-        ListItem groupItem = findItemById(subItems, R.id.tab_group_menu_item_id);
-        assertNotNull(groupItem);
-        assertEquals("Group 1", groupItem.model.get(AppMenuItemProperties.TITLE));
+        ListItem groupItem = tabGroupsSubmenuItems.get(3);
+        List<ListItem> tabsSubmenuItems =
+                groupItem.model.get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER).get();
+
+        ListItem tabItem1 = tabsSubmenuItems.get(0);
+        assertEquals(AppMenuHandler.AppMenuItemType.TAB, tabItem1.type);
+        assertEquals(101, tabItem1.model.get(AppMenuTabItemProperties.TAB_ID));
+        Bundle bundle1 = mTabbedAppMenuPropertiesDelegate.getBundleForMenuItem(tabItem1.model);
+        assertNotNull("Bundle 1 should not be null", bundle1);
+        assertEquals(101, bundle1.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY));
+
+        ListItem tabItem2 = tabsSubmenuItems.get(1);
+        assertEquals(AppMenuHandler.AppMenuItemType.TAB, tabItem2.type);
+        assertEquals(102, tabItem2.model.get(AppMenuTabItemProperties.TAB_ID));
+        Bundle bundle2 = mTabbedAppMenuPropertiesDelegate.getBundleForMenuItem(tabItem2.model);
+        assertNotNull("Bundle 2 should not be null", bundle2);
+        assertEquals(102, bundle2.getInt(AppMenuPropertiesDelegateImpl.TAB_ID_BUNDLE_KEY));
+    }
+
+    private Tab setUpMockTabGroup(TabModel tabModel, boolean isIncognito, boolean hasGroupId) {
+        Token token1 = new Token(1L, 1L);
+        when(tabModel.getTabGroupCount()).thenReturn(1);
+        when(tabModel.getAllTabGroupIds()).thenReturn(java.util.Set.of(token1));
+        when(tabModel.getTabGroupTitle(token1)).thenReturn("Group 1");
+        when(tabModel.getTabGroupColorWithFallback(token1))
+                .thenReturn(org.chromium.components.tab_groups.TabGroupColorId.BLUE);
+
+        Tab tab = Mockito.mock(Tab.class);
+        when(tab.getId()).thenReturn(101);
+        when(tab.getTitle()).thenReturn("Tab 1");
+        when(tab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
+        when(tab.getTabGroupId()).thenReturn(hasGroupId ? token1 : null);
+        when(tab.isOffTheRecord()).thenReturn(isIncognito);
+        when(tab.isInitialized()).thenReturn(true);
+        when(tab.isDestroyed()).thenReturn(false);
+        when(tab.getUserDataHost()).thenReturn(new UserDataHost());
+
+        when(tabModel.getTabsInGroup(token1)).thenReturn(Arrays.asList(tab));
+
+        return tab;
+    }
+
+    @Test
+    public void testTabGroupsSubmenu_Favicons_GroupedNonIncognito() {
+        // Configure an non-incognito TabModel.
+        TabModel tabModel = Mockito.mock(TabModel.class);
+        when(mTabModelSelector.getCurrentModel()).thenReturn(tabModel);
+        when(mTabModelSelector.getModel(false)).thenReturn(tabModel);
+        when(tabModel.getProfile()).thenReturn(mProfile);
+        setUpMockTabGroup(tabModel, /* isIncognito= */ false, /* hasGroupId= */ true);
+        GURL tabUrl = JUnitTestGURLs.URL_1;
+
+        setUpMocksForPageMenu();
+
+        // Intercept the JNI callback and invoke it synchronously with a mock favicon bitmap.
+        Answer<Boolean> faviconCallbackAnswer =
+                invocation -> {
+                    FaviconHelper.FaviconImageCallback callback = invocation.getArgument(5);
+                    callback.onFaviconAvailable(
+                            Bitmap.createBitmap(10, 10, android.graphics.Bitmap.Config.ARGB_8888),
+                            tabUrl);
+                    return true;
+                };
+
+        // Should call {@code getForeignFaviconImageForURL()} because it is not incognito.
+        doAnswer(faviconCallbackAnswer)
+                .when(mFaviconHelperJniMock)
+                .getForeignFaviconImageForURL(
+                        eq(1L), eq(mProfile), eq(tabUrl), anyInt(), eq(false), any());
+
+        // Get the first tab group item in the menu.
+        ListItem tabGroupItem =
+                findItemById(
+                        findItemById(
+                                        mTabbedAppMenuPropertiesDelegate.getMenuItems(),
+                                        R.id.tab_groups_parent_menu_id)
+                                .model
+                                .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                                .get(),
+                        R.id.tab_group_menu_item_id);
+        assertNotNull(tabGroupItem);
+
+        // Get the first tab item in that group.
+        LazyOneshotSupplier<Drawable> iconSupplier =
+                tabGroupItem
+                        .model
+                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                        .get()
+                        .get(0)
+                        .model
+                        .get(AppMenuItemProperties.ICON_SUPPLIER);
+
+        Drawable drawable = iconSupplier.get();
+        assertNotNull(drawable);
+    }
+
+    @Test
+    public void testTabGroupsSubmenu_Favicons_GroupedIncognito() {
+        // Configure an incognito TabModel.
+        when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
+        when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
+        when(mIncognitoTabModel.getProfile()).thenReturn(mProfile);
+        when(mTabModelSelector.isIncognitoSelected()).thenReturn(true);
+        setUpMockTabGroup(mIncognitoTabModel, /* isIncognito= */ true, /* hasGroupId= */ true);
+        GURL tabUrl = JUnitTestGURLs.URL_1;
+
+        setUpMocksForPageMenu();
+        when(mTab.isIncognito()).thenReturn(true);
+
+        // Intercept the JNI callback and invoke it synchronously with a mock favicon bitmap.
+        Answer<Boolean> faviconCallbackAnswer =
+                invocation -> {
+                    FaviconHelper.FaviconImageCallback callback = invocation.getArgument(5);
+                    callback.onFaviconAvailable(
+                            Bitmap.createBitmap(10, 10, android.graphics.Bitmap.Config.ARGB_8888),
+                            tabUrl);
+                    return true;
+                };
+
+        // Should call {@code getLocalFaviconImageForURL()} because it is incognito.
+        doAnswer(faviconCallbackAnswer)
+                .when(mFaviconHelperJniMock)
+                .getLocalFaviconImageForURL(
+                        eq(1L), eq(mProfile), eq(tabUrl), anyInt(), eq(false), any());
+
+        // Get the first tab group item in the menu.
+        ListItem tabGroupItem =
+                findItemById(
+                        findItemById(
+                                        mTabbedAppMenuPropertiesDelegate.getMenuItems(),
+                                        R.id.tab_groups_parent_menu_id)
+                                .model
+                                .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                                .get(),
+                        R.id.tab_group_menu_item_id);
+        assertNotNull(tabGroupItem);
+
+        // Get the first tab item in that group.
+        LazyOneshotSupplier<Drawable> iconSupplier =
+                tabGroupItem
+                        .model
+                        .get(AppMenuItemWithSubmenuProperties.SUBMENU_PROVIDER)
+                        .get()
+                        .get(0)
+                        .model
+                        .get(AppMenuItemProperties.ICON_SUPPLIER);
+
+        Drawable drawable = iconSupplier.get();
+        assertNotNull(drawable);
     }
 
     @Test
     public void testHomepageMenuItem_shouldShow() {
         setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
         HomepageManager homepageManagerMock = mock(HomepageManager.class);
         HomepageManager.setInstanceForTesting(homepageManagerMock);
@@ -4000,7 +4176,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Test
     public void testHomepageMenuItem_shouldNotShow() {
         setUpMocksForPageMenu();
-        when(mTab.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
 
         HomepageManager homepageManagerMock = mock(HomepageManager.class);
         HomepageManager.setInstanceForTesting(homepageManagerMock);

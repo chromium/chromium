@@ -610,6 +610,10 @@ class AppMenuHandlerImpl
                 new LayoutViewBuilder<>(standardItemResId),
                 AppMenuItemViewBinder::bindStandardItem);
         adapter.registerType(
+                AppMenuItemType.TAB,
+                new LayoutViewBuilder<>(standardItemResId),
+                AppMenuItemViewBinder::bindStandardItem);
+        adapter.registerType(
                 AppMenuItemType.EMPTY,
                 new LayoutViewBuilder<>(R.layout.menu_item_empty),
                 AppMenuItemViewBinder::bindStandardItem);

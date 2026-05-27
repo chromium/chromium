@@ -76,9 +76,9 @@ class AppMenuItemViewBinder {
             }
         } else if (key == AppMenuItemProperties.ICON) {
             setIcon(view, model);
-        } else if (key == AppMenuBookmarkItemProperties.ICON_SUPPLIER) {
+        } else if (key == AppMenuItemProperties.ICON_SUPPLIER) {
             LazyOneshotSupplier<Drawable> iconSupplier =
-                    model.get(AppMenuBookmarkItemProperties.ICON_SUPPLIER);
+                    model.get(AppMenuItemProperties.ICON_SUPPLIER);
             if (iconSupplier != null) {
                 iconSupplier.onAvailable(
                         (drawable) -> {
@@ -292,9 +292,9 @@ class AppMenuItemViewBinder {
                     .setIsExpanded(model.get(AppMenuItemWithSubmenuProperties.IS_EXPANDED));
         } else if (key == AppMenuItemProperties.ICON) {
             setIcon(view, model);
-        } else if (key == AppMenuBookmarkItemProperties.ICON_SUPPLIER) {
+        } else if (key == AppMenuItemProperties.ICON_SUPPLIER) {
             LazyOneshotSupplier<Drawable> iconSupplier =
-                    model.get(AppMenuBookmarkItemProperties.ICON_SUPPLIER);
+                    model.get(AppMenuItemProperties.ICON_SUPPLIER);
             if (iconSupplier != null) {
                 iconSupplier.onAvailable(
                         (drawable) -> {

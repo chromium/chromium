@@ -69,6 +69,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler.AppMenuItemType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuItemWithSubmenuProperties;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.appmenu.AppMenuTabItemProperties;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.chrome.browser.webapps.WebappRegistry;
@@ -107,6 +108,7 @@ import java.util.function.Supplier;
 public abstract class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate {
 
     public static final String BOOKMARK_ID_BUNDLE_KEY = "BookmarkId";
+    public static final String TAB_ID_BUNDLE_KEY = "TabId";
 
     private static @Nullable Boolean sItemBookmarkedForTesting;
 
@@ -466,6 +468,24 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             String title,
             @DrawableRes int iconResId,
             Supplier<List<ListItem>> submenuItemProvider) {
+        Drawable icon = iconResId != 0 ? AppCompatResources.getDrawable(mContext, iconResId) : null;
+        return buildModelForMenuItemWithSubmenu(id, title, icon, submenuItemProvider);
+    }
+
+    public PropertyModel buildModelForMenuItemWithSubmenu(
+            @IdRes int id,
+            @StringRes int titleId,
+            @Nullable Drawable icon,
+            Supplier<List<ListItem>> submenuItemProvider) {
+        return buildModelForMenuItemWithSubmenu(
+                id, mContext.getString(titleId), icon, submenuItemProvider);
+    }
+
+    public PropertyModel buildModelForMenuItemWithSubmenu(
+            @IdRes int id,
+            String title,
+            @Nullable Drawable icon,
+            Supplier<List<ListItem>> submenuItemProvider) {
         PropertyModel model =
                 new PropertyModel.Builder(AppMenuItemWithSubmenuProperties.ALL_KEYS)
                         .with(AppMenuItemProperties.MENU_ITEM_ID, id)
@@ -481,10 +501,8 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                                 AppMenuItemProperties.ICON_SHOW_BADGE,
                                 shouldShowBadgeOnMenuItemIcon(id))
                         .build();
-        if (iconResId != 0) {
-            model.set(
-                    AppMenuItemProperties.ICON,
-                    AppCompatResources.getDrawable(mContext, iconResId));
+        if (icon != null) {
+            model.set(AppMenuItemProperties.ICON, icon);
         }
         return model;
     }
@@ -888,6 +906,11 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
                         bookmarkId.toString());
                 return bundle;
             }
+        }
+        if (model.containsKey(AppMenuTabItemProperties.TAB_ID)) {
+            Bundle bundle = new Bundle();
+            bundle.putInt(TAB_ID_BUNDLE_KEY, model.get(AppMenuTabItemProperties.TAB_ID));
+            return bundle;
         }
         return null;
     }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.appmenu;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -81,6 +82,10 @@ public class AppMenuItemProperties {
     public static final WritableBooleanPropertyKey ICON_NO_TINT =
             new WritableBooleanPropertyKey("ICON_NO_TINT");
 
+    /** The supplier for the icon for the menu item. */
+    public static final WritableObjectPropertyKey<LazyOneshotSupplier<Drawable>> ICON_SUPPLIER =
+            new WritableObjectPropertyKey<>("ICON_SUPPLIER");
+
     /** The the menu item's position in the menu. */
     static final WritableIntPropertyKey POSITION = new WritableIntPropertyKey("POSITION");
 
@@ -149,6 +154,7 @@ public class AppMenuItemProperties {
                 KEY_LISTENER,
                 MENU_ICON_AT_START,
                 ADDITIONAL_ICONS,
-                ICON_NO_TINT
+                ICON_NO_TINT,
+                ICON_SUPPLIER
             };
 }
