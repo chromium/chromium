@@ -2716,9 +2716,6 @@ crbug.com/488071544 external/wpt/webrtc/simulcast/negotiation-encodings.https.ht
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?interop-2026 [ Failure Timeout ]
 crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?rest [ Failure Timeout ]
 
-# TODO(crbug.com/512953564): Remove expectation after WebRTC roll.
-crbug.com/488071544 crbug.com/512953564 external/wpt/webrtc/RTCPeerConnection-setLocalDescription-offer.html?rest [ Failure Pass Timeout ]
-
 # Unstable memory addresses dumped into test output.
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
