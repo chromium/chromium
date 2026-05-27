@@ -1825,6 +1825,10 @@ void BrowserAutofillManager::FillOrPreviewField(
   form_filler_->FillOrPreviewField(action_persistence, action_type, field,
                                    autofill_field, value, filling_product,
                                    field_type_used);
+  // Notify observers of the single-field filling event.
+  NotifyObservers(&Observer::OnFillOrPreviewField, form.global_id(),
+                  field.global_id(), action_persistence, value,
+                  field_type_used);
   if (action_persistence != mojom::ActionPersistence::kFill) {
     return;
   }

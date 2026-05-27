@@ -37,8 +37,22 @@ class EmailVerifierDelegate : public AutofillManager::Observer {
       mojom::ActionPersistence action_persistence,
       const base::flat_set<FieldGlobalId>& filled_field_ids,
       const FillingPayload& filling_payload) override;
+  void OnFillOrPreviewField(AutofillManager& manager,
+                            FormGlobalId form_id,
+                            FieldGlobalId field_id,
+                            mojom::ActionPersistence action_persistence,
+                            const std::u16string& value,
+                            std::optional<FieldType> field_type_used) override;
 
  private:
+  // Initiates the verification of the given `email_value` by checking the frame
+  // for a `nonce` attribute, prompting the user for verification, and sending
+  // the token to the renderer on completion.
+  void TriggerVerification(AutofillManager& manager,
+                           const FormStructure& form,
+                           const AutofillField& email_field,
+                           const std::u16string& email_value);
+
   ScopedAutofillManagersObservation observation_{this};
 };
 

@@ -121,38 +121,75 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
     return;
   }
 
-  const std::vector<std::unique_ptr<AutofillField>>& fields = form->fields();
+  // TODO(crbug.com/446288895): Currently, when filling a form, the browser
+  // notifies observers via `OnFillOrPreviewForm()` **before** it sends the fill
+  // request to the renderer and **before** it updates its own cache with the
+  // newly filled values. Because of this timing, if we try to read
+  // `email_field->value()` inside the callback, we will get the old value
+  // (before filling), not the new email address. So, we extract it manually
+  // from the profile instead.
+  // We should introduce `OnFilledOrPreviewedForm` and move the notification to
+  // a later stage (specifically after the renderer confirms the fill and the
+  // browser updates its cache) so we can use the `email_field->value()`
+  // instead.
+  std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
+  TriggerVerification(manager, *form, *triggering_email_field, email);
+}
+
+void EmailVerifierDelegate::OnFillOrPreviewField(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id,
+    mojom::ActionPersistence action_persistence,
+    const std::u16string& value,
+    std::optional<FieldType> field_type_used) {
+  if (!base::FeatureList::IsEnabled(::features::kEmailVerificationProtocol)) {
+    return;
+  }
+
+  if (action_persistence != mojom::ActionPersistence::kFill) {
+    return;
+  }
+
+  const FormStructure* form = manager.FindCachedFormById(form_id);
+  if (!form) {
+    return;
+  }
+
+  const AutofillField* triggering_email_field = form->GetFieldById(field_id);
+  if (!triggering_email_field || field_type_used != EMAIL_ADDRESS) {
+    return;
+  }
+
+  TriggerVerification(manager, *form, *triggering_email_field, value);
+}
+
+void EmailVerifierDelegate::TriggerVerification(
+    AutofillManager& manager,
+    const FormStructure& form,
+    const AutofillField& email_field,
+    const std::u16string& email_value) {
+  const std::vector<std::unique_ptr<AutofillField>>& fields = form.fields();
   const AutofillField* nonce_field =
       FindField(fields, [&](const AutofillField& field) {
         return field.parsed_autocomplete() &&
                field.parsed_autocomplete()->email_verification_token &&
                !field.nonce().empty() &&
-               field.host_form_id() == triggering_email_field->host_form_id();
+               field.host_form_id() == email_field.host_form_id();
       });
 
   if (!nonce_field) {
     return;
   }
 
-  content::webid::EmailVerifier* verifier = GetOrCreateEmailVerifier(
-      manager.client(), triggering_email_field->host_frame());
+  content::webid::EmailVerifier* verifier =
+      GetOrCreateEmailVerifier(manager.client(), email_field.host_frame());
   if (!verifier) {
     return;
   }
 
-  // TODO(crbug.com/446288895): Currently, when filling a form, the browser
-  // notifies observers via OnFillOrPreviewForm() **before** it sends the fill
-  // request to the renderer and **before** it updates its own cache with the
-  // newly filled values. Because of this timing, if we try to read
-  // email_field->value() inside the callback, we will get the old value
-  // (before filling), not the new email address. So, we extract it manually
-  // from the profile instead.
-  // We should introduce OnFilledOrPreviewedForm and move the notification to a
-  // later stage (specifically after the renderer confirms the fill and the
-  // browser updates its cache) so we can use the email_field->value() instead.
-  std::u16string email = (*profile)->GetRawInfo(EMAIL_ADDRESS);
   verifier->Verify(
-      base::UTF16ToUTF8(email), base::UTF16ToUTF8(nonce_field->nonce()),
+      base::UTF16ToUTF8(email_value), base::UTF16ToUTF8(nonce_field->nonce()),
       base::BindOnce(
           [](base::WeakPtr<AutofillManager> manager,
              FieldGlobalId email_field_id, FieldGlobalId nonce_field_id,
@@ -177,8 +214,8 @@ void EmailVerifierDelegate::OnFillOrPreviewForm(
                     manager, email_field_id, base::UTF16ToUTF8(email),
                     nonce_field_id, std::move(result->verification)));
           },
-          manager.GetWeakPtr(), trigger_field_id, nonce_field->global_id(),
-          triggering_email_field->bounds(), email));
+          manager.GetWeakPtr(), email_field.global_id(),
+          nonce_field->global_id(), email_field.bounds(), email_value));
 }
 
 }  // namespace autofill

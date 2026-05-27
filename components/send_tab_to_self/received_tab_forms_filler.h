@@ -13,6 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -82,7 +83,7 @@ class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
     FormFieldMatchOutcome outcome = FormFieldMatchOutcome::kNoMatch;
   };
 
-  void FillForms(autofill::AutofillManager& manager);
+  void FillForms(base::WeakPtr<autofill::AutofillManager> manager);
   void SelfDestruct();
 
   // Finds a matching field in `pending_fields_` for the given `field` in
@@ -134,6 +135,7 @@ class ReceivedTabFormsFiller : public autofill::AutofillManager::Observer {
   base::OneShotTimer timeout_timer_;
   base::OnceClosure on_completion_callback_for_test_;
   autofill::ScopedAutofillManagersObservation observation_{this};
+  base::WeakPtrFactory<ReceivedTabFormsFiller> weak_ptr_factory_{this};
 };
 
 }  // namespace send_tab_to_self

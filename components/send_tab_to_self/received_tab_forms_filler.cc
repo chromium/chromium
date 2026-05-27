@@ -188,7 +188,13 @@ ReceivedTabFormsFiller::ReceivedTabFormsFiller(
        client.GetAutofillDriverFactory().GetExistingDrivers()) {
     switch (driver->GetLifecycleState()) {
       case autofill::AutofillDriver::LifecycleState::kActive:
-        FillForms(driver->GetAutofillManager());
+        // Post task to avoid reentrancy check failures in the synchronous
+        // AutofillManager observer list (see OnAfterFormsSeen() for details).
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&ReceivedTabFormsFiller::FillForms,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           driver->GetAutofillManager().GetWeakPtr()));
         break;
       case autofill::AutofillDriver::LifecycleState::kPendingDeletion:
       case autofill::AutofillDriver::LifecycleState::kPendingReset:
@@ -237,11 +243,20 @@ bool ReceivedTabFormsFiller::FieldUniquenessKeyComparator::operator()(
   return a < ToKey(b);
 }
 
+// AutofillManager observer events are notified synchronously under a
+// base::ObserverList that disallows reentrancy by default. Since FillForms()
+// synchronously invokes AutofillManager::FillOrPreviewField() (which triggers
+// its own synchronous observer notifications), executing this directly inside
+// observer callbacks would trigger a reentrancy crash.
+// To prevent this, we post a task to execute the filling asynchronously.
 void ReceivedTabFormsFiller::OnAfterFormsSeen(
     autofill::AutofillManager& manager,
     base::span<const autofill::FormGlobalId> updated_forms,
     base::span<const autofill::FormGlobalId> removed_forms) {
-  FillForms(manager);
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ReceivedTabFormsFiller::FillForms,
+                     weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr()));
 }
 
 void ReceivedTabFormsFiller::OnAutofillManagerStateChanged(
@@ -250,7 +265,12 @@ void ReceivedTabFormsFiller::OnAutofillManagerStateChanged(
     autofill::AutofillManager::LifecycleState current) {
   switch (current) {
     case autofill::AutofillManager::LifecycleState::kActive:
-      FillForms(manager);
+      // Post task to avoid reentrancy check failures in the synchronous
+      // AutofillManager observer list (see OnAfterFormsSeen() for details).
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ReceivedTabFormsFiller::FillForms,
+                         weak_ptr_factory_.GetWeakPtr(), manager.GetWeakPtr()));
       break;
     case autofill::AutofillManager::LifecycleState::kPendingDeletion:
     case autofill::AutofillManager::LifecycleState::kPendingReset:
@@ -351,8 +371,12 @@ ReceivedTabFormsFiller::FindPendingFieldByExactTypeSet(
   return find_it != pending_fields_.end() ? &*find_it : nullptr;
 }
 
-void ReceivedTabFormsFiller::FillForms(autofill::AutofillManager& manager) {
-  manager.ForEachCachedForm([&](const autofill::FormStructure& form) {
+void ReceivedTabFormsFiller::FillForms(
+    base::WeakPtr<autofill::AutofillManager> manager) {
+  if (!manager) {
+    return;
+  }
+  manager->ForEachCachedForm([&](const autofill::FormStructure& form) {
     const base::flat_set<autofill::FieldSignature> form_unique_signatures =
         GetUniqueSignaturesInForm(form);
     const base::flat_set<AutofillTypeSet> form_unique_type_sets =
@@ -387,10 +411,11 @@ void ReceivedTabFormsFiller::FillForms(autofill::AutofillManager& manager) {
           NOTREACHED();
       }
 
-      manager.FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
-                                 autofill::mojom::FieldActionType::kReplaceAll,
-                                 form.ToFormData(), *field, match.field->value,
-                                 autofill::FillingProduct::kNone, std::nullopt);
+      manager->FillOrPreviewField(autofill::mojom::ActionPersistence::kFill,
+                                  autofill::mojom::FieldActionType::kReplaceAll,
+                                  form.ToFormData(), *field, match.field->value,
+                                  autofill::FillingProduct::kNone,
+                                  std::nullopt);
       // Erase the successfully filled field immediately to prevent duplicate
       // fills or double-logging in the destructor.
       pending_fields_.erase(*match.field);
