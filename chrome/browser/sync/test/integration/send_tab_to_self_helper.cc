@@ -294,10 +294,6 @@ bool SendTabToSelfUrlDeletedChecker::IsExitConditionSatisfied(
   return true;
 }
 
-void SendTabToSelfUrlDeletedChecker::OnEntriesAddedRemotely(
-    const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-        new_entries) {}
-
 void SendTabToSelfUrlDeletedChecker::OnEntriesRemovedRemotely(
     const std::vector<std::string>& guids_removed) {
   CheckExitCondition();

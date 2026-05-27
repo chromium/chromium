@@ -251,9 +251,6 @@ class SendTabToSelfUrlDeletedChecker
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
   // SendTabToSelfModelObserver implementation.
-  void OnEntriesAddedRemotely(
-      const std::vector<const send_tab_to_self::SendTabToSelfEntry*>&
-          new_entries) override;
   void OnEntriesRemovedRemotely(
       const std::vector<std::string>& guids_removed) override;
 
