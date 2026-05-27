@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -108,6 +109,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     private @AdaptiveToolbarButtonVariant int mCurrentButtonVariant =
             AdaptiveToolbarButtonVariant.NONE;
+    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private boolean mCanCurrentButtonShow;
     private int mActionChipCollapseDelayMs;
 
@@ -205,6 +207,18 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     public void setIsIncognitoBranded(boolean isIncognitoBranded) {
         mIsIncognitoBranded = isIncognitoBranded;
         // Logic for setting the background resource is in #updateButtonWithAnimation.
+    }
+
+    void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
+        if (mBrandedColorScheme != brandedColorScheme) {
+            mBrandedColorScheme = brandedColorScheme;
+            updateTheming();
+        }
+    }
+
+    private boolean isBranded() {
+        return mBrandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME
+                || mBrandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME;
     }
 
     void setSuppressCollapsedBackground(boolean suppressCollapsedBackground) {
@@ -466,7 +480,41 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     void setBackgroundColorFilter(int color) {
         mBackgroundColorFilter = color;
-        mBackground.setColorFilter(color);
+        updateBackgroundColorFilter();
+    }
+
+    private void updateBackgroundColorFilter() {
+        boolean isExpanded =
+                mState == State.SHOWING_ACTION_CHIP
+                        || mState == State.RUNNING_ACTION_CHIP_EXPANSION_TRANSITION;
+        updateBackgroundColorFilter(isExpanded);
+    }
+
+    private void updateBackgroundColorFilter(boolean isActionChipExpanded) {
+        if (isActionChipExpanded) {
+            if (mActionChipBackgroundColorResId != Resources.ID_NULL && !isBranded()) {
+                mBackground.setColorFilter(
+                        MaterialColors.getColor(this, mActionChipBackgroundColorResId));
+            } else if (AdaptiveToolbarFeatures.shouldUseAlternativeActionChipColor(
+                            mCurrentButtonVariant)
+                    && !isBranded()) {
+                int highlightColor = MaterialColors.getColor(this, R.attr.colorSecondaryContainer);
+                mBackground.setColorFilter(highlightColor);
+            } else {
+                mBackground.setColorFilter(mBackgroundColorFilter);
+            }
+        } else {
+            mBackground.setColorFilter(mBackgroundColorFilter);
+        }
+    }
+
+    private void updateTheming() {
+        updateBackgroundColorFilter();
+        ImageViewCompat.setImageTintList(mButton, getButtonTintForCurrentState());
+        ColorStateList actionChipLabelTextColor = getActionChipLabelTextColor();
+        if (actionChipLabelTextColor != null) {
+            mActionChipLabel.setTextColor(actionChipLabelTextColor);
+        }
     }
 
     void setBackgroundAlpha(int alpha) {
@@ -479,13 +527,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
     void setColorStateList(ColorStateList colorStateList) {
         mForegroundColorTint = colorStateList;
-
-        ImageViewCompat.setImageTintList(mButton, getButtonTintForCurrentState());
-
-        ColorStateList actionChipLabelTextColor = getActionChipLabelTextColor();
-        if (actionChipLabelTextColor != null) {
-            mActionChipLabel.setTextColor(actionChipLabelTextColor);
-        }
+        updateTheming();
     }
 
     void setHandlerForTesting(Handler handler) {
@@ -776,7 +818,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         // Set the background color filter before the transition, these changes are done instantly.
         if (mNextButtonType == ButtonType.DYNAMIC) {
-            mBackground.setColorFilter(mBackgroundColorFilter);
+            updateBackgroundColorFilter(/* isActionChipExpanded= */ false);
         }
 
         // In mSwapIconTransition mAnimationImage always slides from/to the top, and mButton always
@@ -866,16 +908,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         ImageViewCompat.setImageTintList(mButton, getButtonTintForCurrentState());
         mButton.setVisibility(GONE);
 
-        if (mActionChipBackgroundColorResId != Resources.ID_NULL) {
-            mBackground.setColorFilter(
-                    MaterialColors.getColor(this, mActionChipBackgroundColorResId));
-        } else if (AdaptiveToolbarFeatures.shouldUseAlternativeActionChipColor(
-                mCurrentButtonVariant)) {
-            int highlightColor = MaterialColors.getColor(this, R.attr.colorSecondaryContainer);
-            mBackground.setColorFilter(highlightColor);
-        } else {
-            mBackground.setColorFilter(mBackgroundColorFilter);
-        }
+        updateBackgroundColorFilter(/* isActionChipExpanded= */ true);
 
         ColorStateList actionChipLabelTextColor = getActionChipLabelTextColor();
         if (actionChipLabelTextColor != null) {
@@ -921,7 +954,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         // starts at the next frame.
         beginDelayedTransition(createActionChipTransition());
 
-        mBackground.setColorFilter(mBackgroundColorFilter);
+        updateBackgroundColorFilter(/* isActionChipExpanded= */ false);
         if (mSuppressCollapsedBackground) {
             mBackground.setVisibility(GONE);
         }
@@ -1009,7 +1042,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         setWidth(mCollapsedStateWidthPx);
         mButton.setVisibility(VISIBLE);
 
-        mBackground.setColorFilter(mBackgroundColorFilter);
+        updateBackgroundColorFilter(/* isActionChipExpanded= */ false);
         mBackground.setVisibility(
                 (mNextButtonType == ButtonType.DYNAMIC && !mSuppressCollapsedBackground)
                         ? VISIBLE
@@ -1039,12 +1072,13 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     }
 
     private @Nullable ColorStateList getActionChipLabelTextColor() {
-        if (mActionChipTextColorResId != Resources.ID_NULL) {
+        if (mActionChipTextColorResId != Resources.ID_NULL && !isBranded()) {
             return ColorStateList.valueOf(MaterialColors.getColor(this, mActionChipTextColorResId));
         }
         if (AdaptiveToolbarFeatures.shouldShowActionChip(mCurrentButtonVariant)
                 && AdaptiveToolbarFeatures.shouldUseAlternativeActionChipColor(
-                        mCurrentButtonVariant)) {
+                        mCurrentButtonVariant)
+                && !isBranded()) {
             return ColorStateList.valueOf(
                     MaterialColors.getColor(this, R.attr.colorOnSecondaryContainer));
         }
@@ -1058,13 +1092,14 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
 
         if (mState == State.SHOWING_ACTION_CHIP
                 || mState == State.RUNNING_ACTION_CHIP_EXPANSION_TRANSITION) {
-            if (mActionChipTextColorResId != Resources.ID_NULL) {
+            if (mActionChipTextColorResId != Resources.ID_NULL && !isBranded()) {
                 return ColorStateList.valueOf(
                         MaterialColors.getColor(this, mActionChipTextColorResId));
             }
             if (AdaptiveToolbarFeatures.shouldShowActionChip(mCurrentButtonVariant)
                     && AdaptiveToolbarFeatures.shouldUseAlternativeActionChipColor(
-                            mCurrentButtonVariant)) {
+                            mCurrentButtonVariant)
+                    && !isBranded()) {
                 return ColorStateList.valueOf(
                         MaterialColors.getColor(this, R.attr.colorOnSecondaryContainer));
             }

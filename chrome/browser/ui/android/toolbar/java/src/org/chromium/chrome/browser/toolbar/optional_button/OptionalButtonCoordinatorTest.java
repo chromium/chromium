@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator.TransitionType;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -138,6 +139,14 @@ public class OptionalButtonCoordinatorTest {
         mOptionalButtonCoordinator.setBackgroundColorFilter(Color.GREEN);
 
         verify(mMockOptionalButtonView).setBackgroundColorFilter(Color.GREEN);
+    }
+
+    @Test
+    public void testSetBrandedColorScheme() {
+        mOptionalButtonCoordinator.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
+
+        verify(mMockOptionalButtonView)
+                .setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
     }
 
     @Test

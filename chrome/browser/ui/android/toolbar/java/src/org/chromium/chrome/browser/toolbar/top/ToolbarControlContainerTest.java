@@ -1072,6 +1072,7 @@ public class ToolbarControlContainerTest {
     public void testUpdateOptionalButton_TransitionsNtp() {
         initControlContainer(R.layout.toolbar_phone);
         ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
+        toolbarPhone.setThemeColorProvider(mThemeColorProvider);
         toolbarPhone.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
 
         ButtonData buttonData = mock(ButtonData.class);
@@ -1085,6 +1086,7 @@ public class ToolbarControlContainerTest {
     public void testUpdateOptionalButton_DelegatesToLocationBar() {
         initControlContainer(R.layout.toolbar_phone);
         ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
+        toolbarPhone.setThemeColorProvider(mThemeColorProvider);
         toolbarPhone.setLocationBarCoordinator(mLocationBarCoordinator);
 
         // NOTE: In this test mOptionalButtonCoordinator is never created.
@@ -1107,6 +1109,7 @@ public class ToolbarControlContainerTest {
     public void testUpdateOptionalButton_OnNtp_UpdatesToolbarButton() {
         initControlContainer(R.layout.toolbar_phone);
         ToolbarPhone toolbarPhone = mControlContainer.findViewById(R.id.toolbar);
+        toolbarPhone.setThemeColorProvider(mThemeColorProvider);
         toolbarPhone.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
         toolbarPhone.setLocationBarCoordinator(mLocationBarCoordinator);
 

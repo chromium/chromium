@@ -2144,6 +2144,7 @@ public class ToolbarPhone extends ToolbarLayout
             @Nullable ColorStateList activityFocusTint,
             @BrandedColorScheme int brandedColorScheme) {
         if (mOptionalButtonCoordinator != null) {
+            mOptionalButtonCoordinator.setBrandedColorScheme(brandedColorScheme);
             mOptionalButtonCoordinator.setIconForegroundColor(tint);
         }
 
@@ -3575,6 +3576,8 @@ public class ToolbarPhone extends ToolbarLayout
             initializeOptionalButton();
         }
 
+        mOptionalButtonCoordinator.setBrandedColorScheme(
+                mThemeColorProvider.getBrandedColorScheme());
         mOptionalButtonCoordinator.updateButton(buttonData, isIncognitoBranded());
     }
 

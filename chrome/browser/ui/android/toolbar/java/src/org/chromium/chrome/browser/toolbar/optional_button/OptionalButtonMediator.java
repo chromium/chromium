@@ -53,6 +53,10 @@ class OptionalButtonMediator {
         mModel.set(OptionalButtonProperties.IS_INCOGNITO_BRANDED, isIncognitoBranded);
     }
 
+    void setBrandedColorScheme(int brandedColorScheme) {
+        mModel.set(OptionalButtonProperties.BRANDED_COLOR_SCHEME, brandedColorScheme);
+    }
+
     void setCanChangeVisibility(boolean canChange) {
         mModel.set(OptionalButtonProperties.CAN_CHANGE_VISIBILITY, canChange);
     }

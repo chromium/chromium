@@ -23,6 +23,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonProperties.OnBeforeWidthTransitionCallback;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.PulseDrawable.Bounds;
@@ -96,6 +97,9 @@ public class OptionalButtonCoordinator {
                         .with(
                                 OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE,
                                 isAnimationAllowedPredicate)
+                        .with(
+                                OptionalButtonProperties.BRANDED_COLOR_SCHEME,
+                                BrandedColorScheme.APP_DEFAULT)
                         .build();
 
         assert view instanceof OptionalButtonView;
@@ -162,6 +166,15 @@ public class OptionalButtonCoordinator {
      */
     public void setTransitionStartedCallback(Callback<Integer> transitionStartedCallback) {
         mMediator.setTransitionStartedCallback(transitionStartedCallback);
+    }
+
+    /**
+     * Sets the branded color scheme of the toolbar.
+     *
+     * @param brandedColorScheme The current {@link BrandedColorScheme}.
+     */
+    public void setBrandedColorScheme(int brandedColorScheme) {
+        mMediator.setBrandedColorScheme(brandedColorScheme);
     }
 
     /**

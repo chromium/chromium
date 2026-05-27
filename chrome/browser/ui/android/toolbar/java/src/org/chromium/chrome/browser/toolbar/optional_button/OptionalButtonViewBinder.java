@@ -62,6 +62,8 @@ class OptionalButtonViewBinder {
                     model.get(OptionalButtonProperties.IS_ANIMATION_ALLOWED_PREDICATE));
         } else if (OptionalButtonProperties.IS_INCOGNITO_BRANDED.equals(propertyKey)) {
             view.setIsIncognitoBranded(model.get(OptionalButtonProperties.IS_INCOGNITO_BRANDED));
+        } else if (OptionalButtonProperties.BRANDED_COLOR_SCHEME.equals(propertyKey)) {
+            view.setBrandedColorScheme(model.get(OptionalButtonProperties.BRANDED_COLOR_SCHEME));
         }
     }
 }

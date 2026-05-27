@@ -63,6 +63,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.optional_button.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonConstants.TransitionType;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -1279,5 +1280,49 @@ public class OptionalButtonViewTest {
                                 R.dimen.toolbar_phone_optional_button_background_vertical_margin);
         assertEquals(expectedMargin, backgroundLayoutParams.topMargin);
         assertEquals(expectedMargin, backgroundLayoutParams.bottomMargin);
+    }
+
+    @Test
+    public void testBrandedColorSchemeChange_reappliesTheming() {
+        ButtonDataImpl actionChipButtonData = getDataForReaderModeActionChip();
+
+        mOptionalButtonView.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
+        mOptionalButtonView.setColorStateList(ColorStateList.valueOf(Color.BLUE));
+        mOptionalButtonView.setBackgroundColorFilter(Color.GRAY);
+
+        mOptionalButtonView.updateButtonWithAnimation(actionChipButtonData);
+        mOptionalButtonView.onTransitionStart(null);
+        mOptionalButtonView.onTransitionEnd(null);
+
+        ColorFilter defaultBackgroundFilter = mButtonBackground.getColorFilter();
+        ColorStateList defaultButtonTint = ImageViewCompat.getImageTintList(mButton);
+        int defaultTextColor = mActionChipLabel.getCurrentTextColor();
+
+        assertNotNull(defaultBackgroundFilter);
+        assertEquals(ColorStateList.valueOf(Color.BLUE), defaultButtonTint);
+        assertEquals(Color.BLUE, defaultTextColor);
+
+        // Change color scheme to branded
+        mOptionalButtonView.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
+        mOptionalButtonView.setColorStateList(ColorStateList.valueOf(Color.RED));
+        mOptionalButtonView.setBackgroundColorFilter(Color.YELLOW);
+
+        ColorFilter brandedBackgroundFilter = mButtonBackground.getColorFilter();
+        ColorStateList brandedButtonTint = ImageViewCompat.getImageTintList(mButton);
+        int brandedTextColor = mActionChipLabel.getCurrentTextColor();
+
+        assertNotNull(brandedBackgroundFilter);
+        assertNotEquals(defaultBackgroundFilter, brandedBackgroundFilter);
+        assertEquals(ColorStateList.valueOf(Color.RED), brandedButtonTint);
+        assertEquals(Color.RED, brandedTextColor);
+
+        // Revert back to unbranded/default color scheme
+        mOptionalButtonView.setBrandedColorScheme(BrandedColorScheme.APP_DEFAULT);
+        mOptionalButtonView.setColorStateList(ColorStateList.valueOf(Color.BLUE));
+        mOptionalButtonView.setBackgroundColorFilter(Color.GRAY);
+
+        assertEquals(defaultBackgroundFilter, mButtonBackground.getColorFilter());
+        assertEquals(ColorStateList.valueOf(Color.BLUE), ImageViewCompat.getImageTintList(mButton));
+        assertEquals(Color.BLUE, mActionChipLabel.getCurrentTextColor());
     }
 }
