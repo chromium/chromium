@@ -383,6 +383,25 @@ TEST(VideoFrameLayout, FitsInContiguousBufferOfSize) {
     EXPECT_FALSE(
         exact_layout->FitsInContiguousBufferOfSize(exact_data_size - 1));
   }
+
+  // Validate out-of-order planes.
+  {
+    std::vector<ColorPlaneLayout> ooo_planes(2);
+    ooo_planes[0].stride = 512;
+    ooo_planes[0].offset = 5046272;
+    ooo_planes[0].size = 512 * 112;
+
+    ooo_planes[1].stride = 512;
+    ooo_planes[1].offset = 0;
+    ooo_planes[1].size = 512 * 56;
+
+    auto ooo_layout = VideoFrameLayout::CreateWithPlanes(
+        PIXEL_FORMAT_NV12, gfx::Size(112, 112), ooo_planes);
+    ASSERT_TRUE(ooo_layout.has_value());
+    // Max end is 5046272 + 57344 = 5103616.
+    // It should fit in a buffer of size 12582912.
+    EXPECT_TRUE(ooo_layout->FitsInContiguousBufferOfSize(12582912));
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)

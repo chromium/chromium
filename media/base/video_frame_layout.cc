@@ -4,6 +4,8 @@
 
 #include "media/base/video_frame_layout.h"
 
+#include <algorithm>
+#include <array>
 #include <numeric>
 #include <sstream>
 
@@ -206,15 +208,31 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
   if (planes_.size() != VideoFrame::NumPlanes(format_)) {
     return false;
   }
+
+  const size_t num_planes = planes_.size();
+  CHECK_LE(num_planes, VideoFrame::kMaxPlanes);
+
+  // The planes in `planes_` are not guaranteed to be ordered by offset.
+  // We sort the plane indices by offset so that we can check for overlaps in
+  // the offset order.
+  std::array<size_t, VideoFrame::kMaxPlanes> sorted_plane_indices;
+  std::iota(sorted_plane_indices.begin(),
+            sorted_plane_indices.begin() + num_planes, 0);
+  std::sort(sorted_plane_indices.begin(),
+            sorted_plane_indices.begin() + num_planes,
+            [this](size_t a, size_t b) {
+              return planes_[a].offset < planes_[b].offset;
+            });
+
   size_t previous_plane_end = 0;
-  for (size_t plane_idx = 0; plane_idx < planes_.size(); ++plane_idx) {
+  for (size_t i = 0; i < num_planes; ++i) {
+    size_t plane_idx = sorted_plane_indices[i];
     const auto& plane = planes_[plane_idx];
     if (plane.offset > data_size || plane.size > data_size) {
       return false;
     }
 
-    // Check that planes do not overlap and are in order. This must be
-    // satisfied because the buffer given in this function is contiguous.
+    // Check that planes do not overlap.
     if (plane.offset < previous_plane_end) {
       return false;
     }
