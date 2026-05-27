@@ -113,7 +113,8 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   glic_instance_helper_ =
       GetUserDataFactory().CreateInstance<glic::GlicInstanceHelper>(*tab, tab);
-  if (base::FeatureList::IsEnabled(features::kGlicAndroidSidePanel)) {
+  if (base::FeatureList::IsEnabled(features::kGlicAndroidSidePanel) &&
+      AndroidSidePanelEnabledFn::IsEnabled()) {
     glic_side_panel_coordinator_ =
         GetUserDataFactory()
             .CreateInstance<glic::GlicSidePanelCoordinatorDesktopAndroid>(

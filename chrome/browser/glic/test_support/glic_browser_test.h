@@ -25,6 +25,7 @@
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
@@ -144,6 +145,13 @@ class GlicBrowserTestMixin : public T {
         {chrome::android::kBrowserWindowInterfaceMobile, {}},
         {chrome::android::kTabBottomSheet, {}},
 #endif
+    // TODO(crbug.com/516793173): Remove this compile-time check once C++
+    // browser tests automatically inherit --force-desktop-android just like
+    // Java.
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+        {chrome::android::kEnableAndroidSidePanel, {}},
+        {features::kGlicAndroidSidePanel, {}},
+#endif
     };
     glic_test_environment_.SetGlicPagePath(
         "/glic/browser_tests/minimal_client.html");
@@ -158,6 +166,8 @@ class GlicBrowserTestMixin : public T {
   // PlatformBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     T::SetUpCommandLine(command_line);
+    // TODO(crbug.com/516793173): Remove this switch once C++ browser tests
+    // automatically inherit --force-desktop-android just like Java.
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
     // This is needed to force is_desktop() to return true for desktop Android
     // builds.
