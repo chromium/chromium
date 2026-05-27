@@ -37,6 +37,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/trace_event/named_trigger.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
@@ -244,6 +245,9 @@ void WorkerThread::Pause() {
 }
 
 void WorkerThread::Freeze(bool is_in_back_forward_cache) {
+  if (is_in_back_forward_cache) {
+    base::trace_event::EmitNamedTrigger("worker_thread_freeze");
+  }
   PauseOrFreeze(mojom::blink::FrameLifecycleState::kFrozen,
                 is_in_back_forward_cache);
 }
@@ -261,6 +265,7 @@ void WorkerThread::Resume() {
 }
 
 void WorkerThread::Terminate() {
+  TRACE_EVENT0("blink.worker", "WorkerThread::Terminate");
   DCHECK_CALLED_ON_VALID_THREAD(parent_thread_checker_);
   {
     base::AutoLock locker(lock_);
@@ -787,6 +792,8 @@ void WorkerThread::FetchAndRunModuleScriptOnWorkerThread(
 }
 
 void WorkerThread::PrepareForShutdownOnWorkerThread() {
+  TRACE_EVENT0("blink.worker",
+               "WorkerThread::PrepareForShutdownOnWorkerThread");
   DCHECK(IsCurrentThread());
   {
     base::AutoLock locker(lock_);
@@ -863,6 +870,8 @@ void WorkerThread::PerformShutdownOnWorkerThread() {
   // of. This can free this thread object, hence it must not be touched
   // afterwards.
   GetWorkerReportingProxy().DidTerminateWorkerThread();
+
+  base::trace_event::EmitNamedTrigger("worker_thread_terminate");
 
   // This should be signaled at the end because this may induce the main thread
   // to clear the worker backing thread and stop thread execution in the system
@@ -976,6 +985,7 @@ void WorkerThread::PauseOrFreezeOnWorkerThread(
 }
 
 void WorkerThread::ResumeOnWorkerThread() {
+  TRACE_EVENT0("blink.worker", "WorkerThread::ResumeOnWorkerThread");
   DCHECK(IsCurrentThread());
   if (pause_or_freeze_count_ > 0) {
     DCHECK(nested_runner_);

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/modulator_impl_base.h"
 
 #include "base/feature_list.h"
+#include "base/trace_event/named_trigger.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -200,6 +201,7 @@ void ModulatorImplBase::ResolveDynamically(
   }
   // Check if `ExecutionContextClient::GetExecutionContext()` would return null.
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
+    base::trace_event::EmitNamedTrigger("dynamic_import_missing_ctx_worker");
     resolver->Reject(V8ThrowException::CreateTypeError(
         GetScriptState()->GetIsolate(), "No execution context"));
     return;
