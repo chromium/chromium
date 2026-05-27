@@ -206,10 +206,16 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
   if (planes_.size() != VideoFrame::NumPlanes(format_)) {
     return false;
   }
-
+  size_t previous_plane_end = 0;
   for (size_t plane_idx = 0; plane_idx < planes_.size(); ++plane_idx) {
     const auto& plane = planes_[plane_idx];
     if (plane.offset > data_size || plane.size > data_size) {
+      return false;
+    }
+
+    // Check that planes do not overlap and are in order. This must be
+    // satisfied because the buffer given in this function is contiguous.
+    if (plane.offset < previous_plane_end) {
       return false;
     }
 
@@ -235,6 +241,7 @@ bool VideoFrameLayout::FitsInContiguousBufferOfSize(size_t data_size) const {
         return false;
       }
     }
+    previous_plane_end = plane_end.ValueOrDie();
   }
 
   return true;
