@@ -818,6 +818,45 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
                 "fullscreen_signin_and_history_sync_history_sync_customized");
     }
 
+    @Test
+    @MediumTest
+    public void testWithSelectedAccountEmail_existingAccount() {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
+        FullscreenSigninAndHistorySyncConfig config =
+                getDefaultConfigBuilder()
+                        .selectedAccountEmail(TestAccounts.ACCOUNT2.getEmail())
+                        .build();
+
+        launchActivity(/* shouldReplaceProgressBars= */ true, config);
+
+        // Verify that the fullscreen sign-in promo is shown with the specified account.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    public void testWithSelectedAccountEmail_nonExistingAccount() {
+        mSigninTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2);
+        FullscreenSigninAndHistorySyncConfig config =
+                getDefaultConfigBuilder()
+                        .selectedAccountEmail(TestAccounts.ACCOUNT2.getEmail())
+                        .build();
+
+        // launchActivity() helper is not used as this test starts the add account flow immediately.
+        Intent intent =
+                SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
+                        ApplicationProvider.getApplicationContext(), config, mSigninAccessPoint);
+        mActivity = mActivityTestRule.launchActivity(intent);
+
+        // Brought directly to the add account flow.
+        onViewWaiting(SigninTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
+
+        // Verify that the fullscreen sign-in promo is shown with the newly added account.
+        onViewWaiting(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
+        onViewWaiting(withText(TestAccounts.ACCOUNT2.getFullName())).check(matches(isDisplayed()));
+    }
+
     private void launchActivity() {
         launchActivity(true);
     }

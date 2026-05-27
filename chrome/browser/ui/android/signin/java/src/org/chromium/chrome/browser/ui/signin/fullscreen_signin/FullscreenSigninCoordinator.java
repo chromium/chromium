@@ -36,8 +36,17 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class FullscreenSigninCoordinator implements IdentityManager.Observer {
     /** Delegate for the fullscreen signin MVC. */
     public interface Delegate {
-        /** Notifies when the user clicked the "add account" button. */
+        /**
+         * Notifies when the user clicked the "add account" button.
+         *
+         * @deprecated Use {@link #addAccount(String)} instead.
+         */
+        @Deprecated
+        // TODO(crbug.com/512202548): Remove this method as it is now redundant.
         void addAccount();
+
+        /** Notifies when the user clicked the "add account" button with a specified email. */
+        void addAccount(@Nullable String accountEmail);
 
         /**
          * Notifies when the user accepts the terms of service. Only implemented for the FRE.

@@ -335,13 +335,22 @@ public class SigninAndHistorySyncActivity extends FullscreenSigninAndHistorySync
     /**
      * Implements {@link FullscreenSigninAndHistorySyncCoordinator.Delegate} and {@link
      * BottomSheetSigninAndHistorySyncCoordinator.ActivityDelegate}
+     *
+     * @deprecated Use {@link #addAccount(String)} instead.
      */
     @Override
+    @Deprecated
     public void addAccount() {
+        addAccount(null);
+    }
+
+    /** Implements {@link FullscreenSigninAndHistorySyncCoordinator.Delegate} */
+    @Override
+    public void addAccount(@Nullable String accountEmail) {
         SigninMetricsUtils.logAddAccountStateHistogram(State.REQUESTED);
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
-                        null,
+                        accountEmail,
                         intent -> {
                             final ActivityWindowAndroid windowAndroid = getWindowAndroid();
                             if (windowAndroid == null) {

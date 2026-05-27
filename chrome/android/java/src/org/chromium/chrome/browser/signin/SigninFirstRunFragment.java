@@ -186,14 +186,25 @@ public class SigninFirstRunFragment extends Fragment
         mFullscreenSigninCoordinator.reset();
     }
 
+    /**
+     * Implements {@link FullscreenSigninCoordinator.Delegate}.
+     *
+     * @deprecated Use {@link #addAccount(String)} instead.
+     */
+    @Override
+    @Deprecated
+    public void addAccount() {
+        addAccount(null);
+    }
+
     /** Implements {@link FullscreenSigninCoordinator.Delegate}. */
     @Override
-    public void addAccount() {
+    public void addAccount(@Nullable String accountEmail) {
         assumeNonNull(getPageDelegate())
                 .recordFreProgressHistogram(MobileFreProgress.WELCOME_ADD_ACCOUNT);
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
-                        null,
+                        accountEmail,
                         (@Nullable Intent intent) -> {
                             if (intent != null) {
                                 startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);

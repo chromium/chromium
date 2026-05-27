@@ -55,8 +55,16 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         implements HistorySyncCoordinator.HistorySyncDelegate,
                 FullscreenSigninCoordinator.Delegate {
     public interface Delegate {
-        /** Notifies when the user clicked the "add account" button. */
+        /**
+         * Notifies when the user clicked the "add account" button.
+         *
+         * @deprecated Use {@link #addAccount(String)} instead.
+         */
+        @Deprecated
         void addAccount();
+
+        /** Notifies when the user clicked the "add account" button with a specified email. */
+        void addAccount(@Nullable String accountEmail);
 
         /**
          * The supplier that supplies whether reading policy value is necessary. See {@link
@@ -231,6 +239,17 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
     @Override
+    public void addAccount(@Nullable String accountEmail) {
+        mDelegate.addAccount(accountEmail);
+    }
+
+    /**
+     * Implements {@link FullscreenSigninCoordinator.Delegate}
+     *
+     * @deprecated Use {@link #addAccount(String)} instead.
+     */
+    @Override
+    @Deprecated
     public void addAccount() {
         mDelegate.addAccount();
     }
