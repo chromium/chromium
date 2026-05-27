@@ -6,7 +6,7 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/python.gni")
 import("//testing/test.gni")
 
-action("ulp_serialized_to_static_c") {
+action_with_pydeps("ulp_serialized_to_static_c") {
   script = "ulp_serialized_to_static_c.py"
   inputs = [
     "geolanguage-data_rank0.bin",

@@ -2599,6 +2599,7 @@ _GENERIC_PYDEPS_FILES = [
     'components/cronet/tools/check_combined_proguard_file.pydeps',
     'components/cronet/tools/generate_proguard_file.pydeps',
     'components/cronet/tools/jar_src.pydeps',
+    'components/language/content/browser/ulp_language_code_locator/ulp_serialized_to_static_c.pydeps',
     'components/module_installer/android/module_desc_java.pydeps',
     'components/policy/tools/template_writers/template_formatter.pydeps',
     'content/public/android/generate_child_service.pydeps',
