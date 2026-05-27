@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "chrome/browser/actor/tools/observation_delay_test_util.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/common/chrome_features.h"
@@ -29,6 +30,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -267,6 +269,35 @@ IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest,
 
   // Ensure the controller doesn't break out of waiting for page stability.
   EXPECT_TRUE(DoesReachSteadyState(controller, State::kWaitForPageStability));
+}
+
+IN_PROC_BROWSER_TEST_F(ObservationDelayControllerTest, PdfFlow) {
+  const GURL pdf_url = embedded_test_server()->GetURL("/pdf/test.pdf");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), pdf_url));
+
+  TestObservationDelayController controller(*main_frame(), actor::TaskId(),
+                                            journal(), PageStabilityConfig());
+
+  TestFuture<ObservationDelayController::Result> result;
+  controller.Wait(*active_tab(), result.GetCallback());
+
+#if BUILDFLAG(ENABLE_PDF)
+  // PDF should transition through WaitForPdfLoadCompletion if enabled.
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForPdfLoadCompletion));
+#endif
+
+  ASSERT_TRUE(controller.WaitForState(State::kWaitForVisualStateUpdate));
+  ASSERT_TRUE(controller.WaitForState(State::kMaybeDelayForLcp));
+
+  // On non-PDF platforms, we expect to enter kDelayForLcp.
+#if !BUILDFLAG(ENABLE_PDF)
+  ASSERT_TRUE(controller.WaitForState(State::kDelayForLcp));
+#endif
+
+  ASSERT_TRUE(controller.WaitForState(State::kDone));
+
+  ASSERT_TRUE(result.Wait());
+  ASSERT_EQ(result.Get(), ObservationDelayController::Result::kOk);
 }
 
 class ObservationDelayControllerLcpTest : public ObservationDelayTest {

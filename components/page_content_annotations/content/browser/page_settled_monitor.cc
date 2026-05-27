@@ -10,28 +10,47 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/feature.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/state_transitions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
+#include "components/pdf/common/constants.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "pdf/buildflags.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif
+
 namespace page_content_annotations {
+
+namespace features {
+
+// If enabled, PageSettledMonitor will wait for the PDF document to fully load
+// before considering the page "settled".
+#if BUILDFLAG(ENABLE_PDF)
+BASE_FEATURE(kPageSettledMonitorWaitForPdf, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
+}  // namespace features
 
 std::ostream& operator<<(std::ostream& o,
                          const PageSettledMonitor::State& state) {
@@ -163,6 +182,34 @@ void PageSettledMonitor::OnMojoDisconnected() {
   MoveToState(State::kPageStabilityMonitorDisconnected);
 }
 
+#if BUILDFLAG(ENABLE_PDF)
+void PageSettledMonitor::OnPdfDocumentHelperCreated() {
+  if (state_ != State::kWaitForPdfLoadCompletion) {
+    return;
+  }
+
+  auto* helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents());
+  CHECK(helper);
+
+  if (helper->IsDocumentLoadComplete()) {
+    OnPdfDocumentLoadComplete();
+  } else {
+    helper->RegisterForDocumentLoadComplete(
+        base::BindOnce(&PageSettledMonitor::OnPdfDocumentLoadComplete,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void PageSettledMonitor::OnPdfDocumentLoadComplete() {
+  if (state_ != State::kWaitForPdfLoadCompletion) {
+    return;
+  }
+
+  delegate_->OnEvent(Event::kPdfLoadCompleted);
+  NotifyMilestone(Milestone::kPdfLoadCompletion);
+}
+#endif
+
 void PageSettledMonitor::MoveToState(State new_state) {
   if (state_ == State::kDone) {
     return;
@@ -209,6 +256,39 @@ void PageSettledMonitor::MoveToState(State new_state) {
       NotifyMilestone(Milestone::kLoadCompletion);
       break;
     }
+    case State::kWaitForPdfLoadCompletion: {
+      base::UmaHistogramBoolean(
+          "OptimizationGuide.PageContentExtraction.PageSettledMonitor."
+          "ShouldWaitForPdfLoadAtPdfLoadCompletion",
+          ShouldWaitForPdfLoad());
+
+      waited_for_pdf_load_completion_ = true;
+
+#if BUILDFLAG(ENABLE_PDF)
+      if (auto* pdf_helper =
+              pdf::PDFDocumentHelper::MaybeGetForWebContents(web_contents())) {
+        if (pdf_helper->IsDocumentLoadComplete()) {
+          NotifyMilestone(Milestone::kPdfLoadCompletion);
+        } else {
+          pdf_helper->RegisterForDocumentLoadComplete(
+              base::BindOnce(&PageSettledMonitor::OnPdfDocumentLoadComplete,
+                             weak_ptr_factory_.GetWeakPtr()));
+        }
+      } else {
+        // If the PDF helper is not yet created, wait for it.
+        // Note: We rely on the global monitor timeout to handle cases where the
+        // PDF viewer is disabled by the user or the helper is otherwise never
+        // created, preventing the monitor from hanging indefinitely.
+        // Unretained(this) is safe here since `pdf_helper_subscription_` is a
+        // member of `this`.
+        pdf_helper_subscription_ = pdf::PDFDocumentHelper::RegisterForCreate(
+            web_contents(),
+            base::BindOnce(&PageSettledMonitor::OnPdfDocumentHelperCreated,
+                           base::Unretained(this)));
+      }
+#endif
+      break;
+    }
     case State::kWaitForVisualStateUpdate:
       if (delegate_->ShouldSkipVisualStateUpdateForHiddenTabs() &&
           web_contents()->GetVisibility() != content::Visibility::VISIBLE &&
@@ -227,6 +307,11 @@ void PageSettledMonitor::MoveToState(State new_state) {
       }
       break;
     case State::kMaybeDelayForLcp: {
+      if (waited_for_pdf_load_completion_) {
+        // PDF document loading is handled in `kWaitForPdfLoadCompletion`.
+        NotifyMilestone(Milestone::kLcpSettled);
+        break;
+      }
       if (delegate_->GetLcpDelay().is_positive()) {
         // Conservatively, only apply delay if we get a clear signal that LCP
         // has not yet occurred on a trackable webpage. This avoids adding
@@ -316,6 +401,13 @@ void PageSettledMonitor::Resume(Milestone milestone) {
       PostMoveToStateClosure(State::kWaitForLoadCompletion).Run();
       break;
     case Milestone::kLoadCompletion:
+      if (ShouldWaitForPdfLoad()) {
+        PostMoveToStateClosure(State::kWaitForPdfLoadCompletion).Run();
+      } else {
+        PostMoveToStateClosure(State::kWaitForVisualStateUpdate).Run();
+      }
+      break;
+    case Milestone::kPdfLoadCompletion:
       PostMoveToStateClosure(State::kWaitForVisualStateUpdate).Run();
       break;
     case Milestone::kVisualStateUpdate:
@@ -348,6 +440,11 @@ void PageSettledMonitor::DCheckStateTransition(State old_state,
           {State::kWaitForLoadCompletion,
               {State::kDidTimeout,
                State::kDone,
+               State::kWaitForPdfLoadCompletion,
+               State::kWaitForVisualStateUpdate}},
+          {State::kWaitForPdfLoadCompletion,
+              {State::kDidTimeout,
+               State::kDone,
                State::kWaitForVisualStateUpdate}},
           {State::kWaitForVisualStateUpdate,
               {State::kDidTimeout,
@@ -378,6 +475,8 @@ std::string_view PageSettledMonitor::StateToString(State state) {
       return "PageStabilityMonitorDisconnected";
     case State::kWaitForLoadCompletion:
       return "WaitForLoadCompletion";
+    case State::kWaitForPdfLoadCompletion:
+      return "WaitForPdfLoadCompletion";
     case State::kWaitForVisualStateUpdate:
       return "WaitForVisualStateUpdate";
     case State::kMaybeDelayForLcp:
@@ -407,6 +506,20 @@ base::OnceClosure PageSettledMonitor::PostMoveToStateClosure(
       },
       base::SequencedTaskRunner::GetCurrentDefault(),
       MoveToStateClosure(new_state), delay);
+}
+
+bool PageSettledMonitor::IsPdf() const {
+  return web_contents() &&
+         web_contents()->GetContentsMimeType() == pdf::kPDFMimeType;
+}
+
+bool PageSettledMonitor::ShouldWaitForPdfLoad() const {
+#if BUILDFLAG(ENABLE_PDF)
+  return IsPdf() &&
+         base::FeatureList::IsEnabled(features::kPageSettledMonitorWaitForPdf);
+#else
+  return false;
+#endif
 }
 
 }  // namespace page_content_annotations

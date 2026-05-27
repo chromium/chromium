@@ -9,13 +9,16 @@
 #include <optional>
 #include <string_view>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "components/page_content_annotations/content/mojom/page_stability.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "pdf/buildflags.h"
 
 namespace actor {
 class TestObservationDelayController;
@@ -48,6 +51,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
     kWaitForPageStability,
     kPageStabilityMonitorDisconnected,
     kWaitForLoadCompletion,
+    kWaitForPdfLoadCompletion,
     kWaitForVisualStateUpdate,
     kMaybeDelayForLcp,
     kDelayForLcp,
@@ -61,6 +65,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
   enum class Milestone {
     kPageStability,
     kLoadCompletion,
+    kPdfLoadCompletion,
     kVisualStateUpdate,
     kLcpSettled,
   };
@@ -70,6 +75,7 @@ class PageSettledMonitor : public content::WebContentsObserver {
     kPageStabilized,
     kMojoDisconnected,
     kLoadCompleted,
+    kPdfLoadCompleted,
     kVisualStateUpdated,
     kVisualStateUpdateSkipped,
   };
@@ -140,6 +146,10 @@ class PageSettledMonitor : public content::WebContentsObserver {
   // content::WebContentsObserver:
   void DidStopLoading() override;
 
+#if BUILDFLAG(ENABLE_PDF)
+  void OnPdfDocumentHelperCreated();
+#endif
+
   void MoveToState(State new_state);
   void DCheckStateTransition(State old_state, State new_state);
   base::OnceClosure MoveToStateClosure(State new_state);
@@ -149,16 +159,26 @@ class PageSettledMonitor : public content::WebContentsObserver {
 
   void OnPageStable();
   void OnMojoDisconnected();
+#if BUILDFLAG(ENABLE_PDF)
+  void OnPdfDocumentLoadComplete();
+#endif
   void OnVisualStateUpdated(bool);
   void OnLcpSettled();
 
   void NotifyMilestone(Milestone milestone);
   void Resume(Milestone milestone);
 
+  bool IsPdf() const;
+  bool ShouldWaitForPdfLoad() const;
+
   std::unique_ptr<Delegate> delegate_;
   ReadyCallback ready_callback_;
   State state_ = State::kInitial;
   std::optional<Milestone> last_notified_milestone_;
+  bool waited_for_pdf_load_completion_ = false;
+#if BUILDFLAG(ENABLE_PDF)
+  base::CallbackListSubscription pdf_helper_subscription_;
+#endif
   mojo::Remote<mojom::PageStabilityMonitor> page_stability_monitor_remote_;
   base::WeakPtrFactory<PageSettledMonitor> weak_ptr_factory_{this};
 };

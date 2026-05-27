@@ -2442,6 +2442,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="OptimizationGuide.PageContentExtraction.PageSettledMonitor.ShouldWaitForPdfLoadAtPdfLoadCompletion"
+    enum="Boolean" expires_after="2026-11-22">
+  <owner>linnan@chromium.org</owner>
+  <owner>chrome-intelligence-core@google.com</owner>
+  <summary>
+    Records whether the page is still a PDF (and should wait for PDF load
+    completion) when the PageSettledMonitor enters the kWaitForPdfLoadCompletion
+    state. Recorded every time this state is entered.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.PageContentExtraction.RequestType"
     enum="PageContentExtractionRequestType" expires_after="2027-05-05">
   <owner>xiaochenzh@chromium.org</owner>

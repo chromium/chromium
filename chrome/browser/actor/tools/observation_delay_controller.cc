@@ -295,6 +295,12 @@ void ObservationDelayController::MoveToState(State new_state) {
           "WaitForLoadCompletion", {});
       break;
     }
+    case State::kWaitForPdfLoadCompletion: {
+      inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
+          GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
+          "WaitForPdfLoadCompletion", {});
+      break;
+    }
     case State::kWaitForVisualStateUpdate: {
       inner_journal_entry_ = journal_->CreatePendingAsyncEntry(
           GURL::EmptyGURL(), task_id_, MakeBrowserTrackUUID(task_id_),
@@ -394,6 +400,9 @@ void ObservationDelayController::WillMoveToState(
     case PageSettledMonitorState::kWaitForLoadCompletion:
       actor_state = State::kWaitForLoadCompletion;
       break;
+    case PageSettledMonitorState::kWaitForPdfLoadCompletion:
+      actor_state = State::kWaitForPdfLoadCompletion;
+      break;
     case PageSettledMonitorState::kWaitForVisualStateUpdate:
       actor_state = State::kWaitForVisualStateUpdate;
       break;
@@ -438,6 +447,11 @@ void ObservationDelayController::OnMilestoneReached(
       std::move(resume_callback_).Run();
       break;
     case page_content_annotations::PageSettledMonitor::Milestone::
+        kPdfLoadCompletion:
+      // Just resume the monitor.
+      std::move(resume_callback_).Run();
+      break;
+    case page_content_annotations::PageSettledMonitor::Milestone::
         kVisualStateUpdate:
       // Just resume the monitor.
       std::move(resume_callback_).Run();
@@ -466,6 +480,11 @@ void ObservationDelayController::OnEvent(
     case page_content_annotations::PageSettledMonitor::Event::kLoadCompleted:
       if (metrics_) {
         metrics_->OnLoadCompleted();
+      }
+      break;
+    case page_content_annotations::PageSettledMonitor::Event::kPdfLoadCompleted:
+      if (metrics_) {
+        metrics_->OnPdfLoadCompleted();
       }
       break;
     case page_content_annotations::PageSettledMonitor::Event::
@@ -520,6 +539,12 @@ void ObservationDelayController::DCheckStateTransition(State old_state,
                State::kDone,
                State::kPageNavigated}},
           {State::kWaitForLoadCompletion,
+              {State::kDidTimeout,
+               State::kDone,
+               State::kPageNavigated,
+               State::kWaitForPdfLoadCompletion,
+               State::kWaitForVisualStateUpdate}},
+          {State::kWaitForPdfLoadCompletion,
               {State::kDidTimeout,
                State::kDone,
                State::kPageNavigated,
@@ -587,6 +612,8 @@ std::string_view ObservationDelayController::StateToString(State state) {
       return "WaitForFederatedLogin";
     case State::kWaitForLoadCompletion:
       return "WaitForLoadCompletion";
+    case State::kWaitForPdfLoadCompletion:
+      return "WaitForPdfLoadCompletion";
     case State::kWaitForVisualStateUpdate:
       return "WaitForVisualStateUpdate";
     case State::kMaybeDelayForLcp:

@@ -85,12 +85,14 @@ class ObservationDelayController : public content::WebContentsObserver {
 
   // Internal states of the controller, including both generic page settling
   // states and Actor-specific wait states.
+  // LINT.IfChange(State)
   enum class State {
     kInitial,
     kWaitForPageStability,
     kPageStabilityMonitorDisconnected,
     kWaitForFederatedLogin,
     kWaitForLoadCompletion,
+    kWaitForPdfLoadCompletion,
     kWaitForVisualStateUpdate,
     kMaybeDelayForLcp,
     kDelayForLcp,
@@ -99,6 +101,8 @@ class ObservationDelayController : public content::WebContentsObserver {
     kPageNavigated,
     kDone
   };
+  // LINT.ThenChange(//components/page_content_annotations/content/browser/page_settled_monitor.h:State)
+
   static std::string_view StateToString(State state);
 
  protected:

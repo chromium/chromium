@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/callback_list.h"
+#include "base/check.h"
 #include "base/notreached.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
 #include "components/pdf/browser/pdf_frame_util.h"
@@ -13,6 +15,7 @@
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/referrer_type_converters.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_features.h"
@@ -24,17 +27,66 @@
 
 namespace pdf {
 
+namespace {
+
+class PDFDocumentHelperCreationTracker
+    : public content::WebContentsUserData<PDFDocumentHelperCreationTracker> {
+ public:
+  explicit PDFDocumentHelperCreationTracker(content::WebContents* contents)
+      : content::WebContentsUserData<PDFDocumentHelperCreationTracker>(
+            *contents) {}
+  ~PDFDocumentHelperCreationTracker() override = default;
+
+  base::CallbackListSubscription RegisterCallback(base::OnceClosure callback) {
+    return callbacks_.Add(std::move(callback));
+  }
+
+  void NotifyCreated() { callbacks_.Notify(); }
+
+ private:
+  friend class content::WebContentsUserData<PDFDocumentHelperCreationTracker>;
+  base::OnceClosureList callbacks_;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(PDFDocumentHelperCreationTracker);
+
+}  // namespace
+
+// static
+base::CallbackListSubscription PDFDocumentHelper::RegisterForCreate(
+    content::WebContents* web_contents,
+    base::OnceClosure callback) {
+  // Disallow calling this if the helper already exists, as the caller is
+  // expected to check this beforehand.
+  DCHECK(!MaybeGetForWebContents(web_contents));
+
+  return PDFDocumentHelperCreationTracker::GetOrCreateForWebContents(
+             web_contents)
+      ->RegisterCallback(std::move(callback));
+}
+
 // static
 void PDFDocumentHelper::BindPdfHost(
     mojo::PendingAssociatedReceiver<mojom::PdfHost> pdf_host,
     content::RenderFrameHost* rfh,
     std::unique_ptr<PDFDocumentHelperClient> client) {
   auto* pdf_helper = PDFDocumentHelper::GetForCurrentDocument(rfh);
+  bool newly_created = false;
   if (!pdf_helper) {
     PDFDocumentHelper::CreateForCurrentDocument(rfh, std::move(client));
     pdf_helper = PDFDocumentHelper::GetForCurrentDocument(rfh);
+    newly_created = true;
   }
   pdf_helper->pdf_host_receivers_.Bind(rfh, std::move(pdf_host));
+
+  if (newly_created) {
+    auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+    if (auto* tracker =
+            PDFDocumentHelperCreationTracker::FromWebContents(web_contents)) {
+      tracker->NotifyCreated();
+    }
+  }
 }
 
 // static

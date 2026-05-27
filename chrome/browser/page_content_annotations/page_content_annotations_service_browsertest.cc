@@ -2166,11 +2166,8 @@ class PageContentAnnotationsServiceContentExtractionPdfTest
           features::kAnnotatedPageContentPDFTextExtraction);
     }
 
-    // TODO(b/514315323): Remove the capture delay once the race condition
-    // between page settling and PDF Document loading is fixed.
     AddPageSettledMonitorFeatureState(IsPageSettledMonitorEnabled(),
-                                      enabled_features, disabled_features,
-                                      capture_delay);
+                                      enabled_features, disabled_features);
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/document_user_data.h"
@@ -43,6 +44,13 @@ class PDFDocumentHelper
       public ui::TouchSelectionMenuClient,
       public content::TouchSelectionControllerClientManager::Observer {
  public:
+  // Registers a callback to be called when a `PDFDocumentHelper` is created
+  // for `web_contents`. This should only be called if a `PDFDocumentHelper`
+  // does not already exist for `web_contents`.
+  static base::CallbackListSubscription RegisterForCreate(
+      content::WebContents* web_contents,
+      base::OnceClosure callback);
+
   PDFDocumentHelper(const PDFDocumentHelper&) = delete;
   PDFDocumentHelper& operator=(const PDFDocumentHelper&) = delete;
 
