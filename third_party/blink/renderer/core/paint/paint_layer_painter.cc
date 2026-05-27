@@ -527,8 +527,10 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
           PaintWithPhase(PaintPhase::kMask, context, paint_flags);
         }
       }
-      if (properties->ClipPathMask())
-        ClipPathClipper::PaintClipPathAsMaskImage(context, object, object);
+      if (properties->ClipPathMask()) {
+        ClipPathClipper::PaintClipPathAsMaskImage(context, object, object,
+                                                  paint_flags);
+      }
     }
     if (PaintTransitionPseudos(context, object, paint_flags) ==
         kMayBeClippedByCullRect) {

@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/geometry/contoured_rect.h"
 #include "third_party/blink/renderer/platform/geometry/path.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -95,7 +96,8 @@ class CORE_EXPORT ClipPathClipper {
 
   static void PaintClipPathAsMaskImage(GraphicsContext&,
                                        const LayoutObject&,
-                                       const DisplayItemClient&);
+                                       const DisplayItemClient&,
+                                       PaintFlags);
 
   // Returns the local reference box for a given operation. Useful for
   // when the desired operation is already known, or clip-path is not currently

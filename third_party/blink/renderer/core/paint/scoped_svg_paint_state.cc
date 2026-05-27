@@ -94,7 +94,8 @@ ScopedSVGPaintState::~ScopedSVGPaintState() {
 
   if (should_paint_clip_path_as_mask_image_) {
     ClipPathClipper::PaintClipPathAsMaskImage(paint_info_.context, object_,
-                                              display_item_client_);
+                                              display_item_client_,
+                                              paint_info_.GetPaintFlags());
   }
 }
 
