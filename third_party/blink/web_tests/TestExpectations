@@ -108,6 +108,7 @@ crbug.com/395914611 [ Mac12-arm64 ] virtual/scalefactor200/external/wpt/css/filt
 crbug.com/395914611 [ Mac13-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-plus-mask-large.html [ Failure ]
 crbug.com/395914611 [ Mac14-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-plus-mask-large.html [ Failure ]
 crbug.com/395914611 [ Mac15-arm64 ] virtual/scalefactor200/external/wpt/css/filter-effects/backdrop-filter-plus-mask-large.html [ Failure ]
+crbug.com/515086469 external/wpt/css/filter-effects/backdrop-filter-blur-large-value.html [ Failure ]
 # backdrop-filter nested border-radius clip
 crbug.com/40890814 external/wpt/css/filter-effects/backdrop-filter-nested-border-radius-clip.html [ Failure ]
 crbug.com/40890814 external/wpt/css/filter-effects/backdrop-filter-nested-border-radius-clip-3.html [ Failure ]
