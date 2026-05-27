@@ -124,25 +124,17 @@ public abstract class FeedbackCollector<T> implements Runnable {
         return mDescription;
     }
 
-    /** @return The currently signed in account, or null if the user is not signed in. */
-    // TODO(b/513561388): Rename this to getAccountInUse() once old downstream usages have been
-    //  migrated to getAccountEmailInUse().
-    public @Nullable Account getAccount() {
+    /**
+     * @return The currently signed in account, or null if the user is not signed in.
+     */
+    public @Nullable Account getAccountInUse() {
         return mAccountInUse;
-    }
-
-    /** @return The currently signed in account email, or null if the user is not signed in. */
-    public @Nullable String getAccountEmailInUse() {
-        return mAccountEmailInUse;
     }
 
     /**
      * @return The currently signed in account email, or null if the user is not signed in.
-     *
-     * @deprecated Use {@link #getAccountEmailInUse()} instead.
      */
-    @Deprecated
-    public @Nullable String getAccountInUse() {
+    public @Nullable String getAccountEmailInUse() {
         return mAccountEmailInUse;
     }
 

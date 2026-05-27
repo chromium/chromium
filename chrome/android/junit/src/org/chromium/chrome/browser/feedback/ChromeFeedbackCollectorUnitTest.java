@@ -382,7 +382,7 @@ public class ChromeFeedbackCollectorUnitTest {
                             TestAccounts.ACCOUNT1.getEmail(), collector.getAccountEmailInUse());
                     Account expectedAccount =
                             AccountUtils.createAccountFromEmail(TestAccounts.ACCOUNT1.getEmail());
-                    assertEquals(expectedAccount, collector.getAccount());
+                    assertEquals(expectedAccount, collector.getAccountInUse());
                 });
     }
 
@@ -419,7 +419,7 @@ public class ChromeFeedbackCollectorUnitTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertNull(collector.getAccountEmailInUse());
-                    assertNull(collector.getAccount());
+                    assertNull(collector.getAccountInUse());
                 });
     }
 
