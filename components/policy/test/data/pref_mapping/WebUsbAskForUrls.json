@@ -1,5 +1,6 @@
 [
   {
+    "note": "TODO(http://crbug.com/106682): Flag this with can_be_recommended when bug is fixed.",
     "os": [
       "win",
       "linux",
@@ -8,14 +9,21 @@
       "android",
       "fuchsia"
     ],
-    "simple_policy_pref_mapping_test": {
-      "pref_name": "profile.managed_web_usb_ask_for_urls",
-      "default_value": [],
-      "values_to_test": [
-        [
-          "[*.].com"
-        ]
-      ]
-    }
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "WebUsbAskForUrls": [
+            "[*.].com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_web_usb_ask_for_urls": {
+            "value": [
+              "[*.].com"
+            ]
+          }
+        }
+      }
+    ]
   }
 ]
