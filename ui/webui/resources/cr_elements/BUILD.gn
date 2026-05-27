@@ -164,7 +164,7 @@ build_webui("build") {
     ]
   }
 
-  if ((!is_android && !is_ios) || enable_webui_ntp) {
+  if ((!is_android && !is_ios) || is_desktop_android) {
     ts_files += [
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_ripple/cr_ripple_mixin_polymer.ts",
@@ -246,7 +246,7 @@ build_webui("build") {
     "../js:build_ts",
     "//third_party/lit/v3_0:build_ts",
   ]
-  if ((!is_android && !is_ios) || enable_webui_ntp) {
+  if ((!is_android && !is_ios) || is_desktop_android) {
     ts_deps += [ "//third_party/polymer/v3_0:library" ]
   }
 

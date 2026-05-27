@@ -3042,6 +3042,8 @@ class BannedTypeCheckTest(unittest.TestCase):
             MockFile('some/path/ok.gn', ['# A comment with no flag']),
             MockFile('some/path/BUILD_lower.gn',
                      ['if (is_desktop_android) {']),
+            MockFile('ui/webui/resources/BUILD.gn',
+                     ['if (is_desktop_android) {']),
         ]
 
         results = PRESUBMIT.CheckNoBannedPatterns(input_api, MockOutputApi())
@@ -3052,6 +3054,8 @@ class BannedTypeCheckTest(unittest.TestCase):
         self.assertIn('some/path/BUILD_lower.gn', results[2].message)
         self.assertTrue(
             all('some/path/ok.gn' not in r.message for r in results))
+        self.assertTrue(
+            all('ui/webui/resources/' not in r.message for r in results))
 
     def testBannedCppFunctions(self):
         input_api = MockInputApi()

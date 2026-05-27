@@ -57,7 +57,7 @@ build_webui("build") {
   mojo_files_deps = [ "./metrics_reporter:mojo_bindings_ts__generator" ]
   mojo_files = [ "$root_gen_dir/ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom-webui.ts" ]
 
-  if ((!is_android && !is_ios) || enable_webui_ntp) {
+  if ((!is_android && !is_ios) || is_desktop_android) {
     ts_files += [ "browser_command/browser_command_proxy.ts" ]
     mojo_files_deps += [ "./browser_command:mojo_bindings_ts__generator" ]
     mojo_files += [ "$root_gen_dir/ui/webui/resources/js/browser_command/browser_command.mojom-webui.ts" ]

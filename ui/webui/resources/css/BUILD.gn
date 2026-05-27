@@ -36,7 +36,7 @@ preprocess_if_expr("preprocess") {
     in_files += [ "roboto.css" ]
   }
 
-  if (include_polymer || is_desktop_android || enable_webui_ntp) {
+  if (include_polymer || is_desktop_android) {
     in_files += [ "md_colors.css" ]
   }
 }
