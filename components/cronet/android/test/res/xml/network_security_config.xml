@@ -64,5 +64,6 @@ found in the LICENSE file.
     <domain includeSubdomains="true">test-hostname</domain>
     <!-- Used by HostnameTest -->
     <domain includeSubdomains="true">example-idn-begin-ss-end</domain>
+    <domain includeSubdomains="true">xn--example-idn-begin--end-71b</domain>
   </domain-config>
 </network-security-config>
