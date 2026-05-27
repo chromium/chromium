@@ -89,6 +89,7 @@ const CGFloat kScalingMultiplier = 0.75;
         // finishing isn't handled anywhere.
         animatedView.clipsToBounds = oldClipsToBounds;
         animatedView.transform = CGAffineTransformIdentity;
+        animatedView.alpha = 1.0;
         if (completion) {
           completion();
         }
