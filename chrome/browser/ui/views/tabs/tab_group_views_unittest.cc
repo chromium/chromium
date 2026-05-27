@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/tabs/tab_group_highlight.h"
 #include "chrome/browser/ui/views/tabs/tab_group_underline.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 
@@ -113,6 +114,18 @@ TEST_F(TabGroupViewsTest, HeaderTitleIsCentered) {
   SetGroupTitle(u"a");
 
   EXPECT_EQ(CenteredTitleX(), title_label()->x());
+}
+
+TEST_F(TabGroupViewsTest, HeaderTitleChipHasOutsetClipPath) {
+  SetGroupTitle(u"Title");
+
+  const SkPath& clip_path = title_chip()->clip_path();
+  EXPECT_FALSE(clip_path.isEmpty());
+
+  gfx::Rect expected_clip_bounds = title_chip()->GetLocalBounds();
+  expected_clip_bounds.Outset(1);
+  EXPECT_EQ(gfx::SkRectToRectF(clip_path.getBounds()),
+            gfx::RectF(expected_clip_bounds));
 }
 
 // The visual centering offset for color-emoji titles only applies on macOS

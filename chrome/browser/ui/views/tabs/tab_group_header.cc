@@ -61,6 +61,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -544,6 +545,14 @@ void TabGroupHeader::VisualsChanged() {
   } else {
     CreateHeaderWithTitle();
   }
+
+  // Expand the clip by 1 DIP to prevent clipping the title chip's anti-aliased
+  // rrect background at fractional display scales. This won't paint over
+  // anything else since nothing is painted outside the background region.
+  // See https://crbug.com/40662024 for more details.
+  gfx::Rect clip_bounds = title_chip_->GetLocalBounds();
+  clip_bounds.Outset(1);
+  title_chip_->SetClipPath(SkPath::Rect(gfx::RectToSkRect(clip_bounds)));
 
   if (views::FocusRing::Get(this)) {
     views::FocusRing::Get(this)->DeprecatedLayoutImmediately();
