@@ -92,9 +92,9 @@ namespace views {
 class ElementTrackerViews;
 }
 
-namespace user_education {
-class HelpBubbleHandler;
-}
+namespace pdf {
+class PdfHelpBubbleHandlerFactory;
+}  // namespace pdf
 
 namespace ui {
 class TrackedElementHandler;
@@ -105,6 +105,8 @@ class ElementIdentifierPropertyCasterHelper;
 }
 
 class ElementTracker;
+class TrackedElementHandler;
+class TrackedElementHandlerDocumentSingleton;
 
 DECLARE_UNIQUE_IDENTIFIER_TYPE(ElementIdentifier,
                                ElementTracker,
@@ -137,9 +139,9 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementContext {
   // contexts. All other code should defer to these classes.
   template <class T, class U>
     requires std::same_as<U, views::ElementTrackerViews> ||
-             std::same_as<U, user_education::HelpBubbleHandler> ||
              std::same_as<U, ui::TrackedElementHandler> ||
-             std::same_as<U, ui::TrackedElementHandlerDocumentSingleton>
+             std::same_as<U, ui::TrackedElementHandlerDocumentSingleton> ||
+             std::same_as<U, pdf::PdfHelpBubbleHandlerFactory>
   explicit ElementContext(T* value, base::PassKey<U>)
       : value_(reinterpret_cast<uintptr_t>(value)) {}
 

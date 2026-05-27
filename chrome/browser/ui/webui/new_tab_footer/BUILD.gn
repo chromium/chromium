@@ -57,6 +57,7 @@ source_set("impl") {
     "//components/search",
     "//content/public/browser",
     "//ui/base",
+    "//ui/webui/tracked_element",
     "//url",
   ]
 }

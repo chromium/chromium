@@ -72,6 +72,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
 namespace {
@@ -263,6 +264,9 @@ HistoryUI::HistoryUI(content::WebUI* web_ui)
   web_ui->AddMessageHandler(
       std::make_unique<HistoryLoginHandler>(base::BindRepeating(
           &HistoryUI::UpdateDataSource, base::Unretained(this))));
+
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this, std::vector<ui::ElementIdentifier>{kHistorySearchInputElementId});
 }
 
 HistoryUI::~HistoryUI() = default;
@@ -373,6 +377,7 @@ void HistoryUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{kHistorySearchInputElementId});
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
 }

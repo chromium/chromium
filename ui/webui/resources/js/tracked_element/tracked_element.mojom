@@ -19,8 +19,9 @@ enum TextEntryMode {
   kAppend
 };
 
-// Implemented by the browser. The WebUI notifies the browser of changes to
-// tracked elements, such as their visibility and bounds.
+// Implemented by the browser. This API is exposed to the all WebUI pages, both
+// "chrome://" and "chrome-untrusted://". The WebUI notifies the browser of
+// changes to tracked elements, such as their visibility and bounds.
 interface TrackedElementHandler {
   // Sets the WebUI end of the connection; used to handle requests to update
   // the element initiated by the browser.

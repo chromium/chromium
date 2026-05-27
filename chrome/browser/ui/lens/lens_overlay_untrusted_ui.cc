@@ -30,6 +30,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #include "ui/webui/webui_util.h"
 
 namespace lens {
@@ -348,6 +349,10 @@ LensOverlayUntrustedUI::LensOverlayUntrustedUI(content::WebUI* web_ui)
       "enablePrivacyNotice",
       lens::features::IsLensOverlayNonBlockingPrivacyNoticeEnabled() &&
           !MaybeIncrementPrivacyNoticeShownCountAndGrantPermissions(profile));
+
+  ui::TrackedElementHandlerDocumentSingleton::Register(
+      this,
+      std::vector<ui::ElementIdentifier>{kLensOverlayTranslateButtonElementId});
 }
 
 void LensOverlayUntrustedUI::BindInterface(
@@ -429,8 +434,9 @@ void LensOverlayUntrustedUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client), this,
-      std::vector<ui::ElementIdentifier>{kLensOverlayTranslateButtonElementId});
+      std::move(handler), std::move(client),
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          web_ui()->GetRenderFrameHost()));
 }
 
 LensOverlayUntrustedUI::~LensOverlayUntrustedUI() = default;
