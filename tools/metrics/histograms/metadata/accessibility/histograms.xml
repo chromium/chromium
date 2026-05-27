@@ -3030,6 +3030,18 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
+    name="Accessibility.ReadAnything.DistilledPageStructure.TopTwoHeadersHaveMinimumTwoItems"
+    enum="Boolean" expires_after="2027-05-01">
+  <owner>lwinston@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records whether the page has at least 2 headers each of its top two headers,
+    excluding h1 if there is exactly 1 h1. Recorded when the content is
+    successfully distilled and updated in the Reading Mode panel.
+  </summary>
+</histogram>
+
+<histogram
     name="Accessibility.ReadAnything.DistilledPageStructure.{CountMetric}"
     units="count" expires_after="2027-05-01">
   <owner>lwinston@google.com</owner>
@@ -3041,6 +3053,9 @@ even if they fit the naming pattern. -->
   <token key="CountMetric">
     <variant name="NumberParagraphs"
         summary="the number of paragraphs distilled on the page"/>
+    <variant name="TopTwoHeadersCount"
+        summary="the sum of the number of the top two headers present on the
+                 page, excluding h1 if there is exactly 1 h1"/>
     <variant name="TotalHeaderCount"
         summary="the sum of all headers on the distilled page"/>
     <variant name="UniqueHeaderTags"

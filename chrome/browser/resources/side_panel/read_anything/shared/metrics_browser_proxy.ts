@@ -17,6 +17,10 @@ export enum UmaName {
   TEXT_SETTINGS_CHANGE = 'Accessibility.ReadAnything.SettingsChange',
   TOTAL_HEADER_COUNT =
       'Accessibility.ReadAnything.DistilledPageStructure.TotalHeaderCount',
+  TOP_TWO_HEADERS_COUNT =
+      'Accessibility.ReadAnything.DistilledPageStructure.TopTwoHeadersCount',
+  TOP_TWO_HEADERS_HAVE_MINIMUM_TWO_ITEMS =
+      'Accessibility.ReadAnything.DistilledPageStructure.TopTwoHeadersHaveMinimumTwoItems',
   UNIQUE_HEADER_TAGS =
       'Accessibility.ReadAnything.DistilledPageStructure.UniqueHeaderTags',
   VOICE = 'Accessibility.ReadAnything.ReadAloud.Voice',
@@ -155,6 +159,7 @@ export interface MetricsBrowserProxy {
   recordVoiceLanguageChange(): void;
   recordExtensionState(): void;
   recordCount(umaName: string, count: number): void;
+  recordBoolean(umaName: string, value: boolean): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -245,6 +250,10 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
 
   recordCount(umaName: string, count: number) {
     chrome.metricsPrivate.recordCount(umaName, count);
+  }
+
+  recordBoolean(umaName: string, value: boolean) {
+    chrome.metricsPrivate.recordBoolean(umaName, value);
   }
 
   static getInstance(): MetricsBrowserProxy {

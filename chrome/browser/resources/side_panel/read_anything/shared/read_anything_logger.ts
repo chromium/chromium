@@ -230,6 +230,44 @@ export class ReadAnythingLogger {
     // The number of unique header tags present.
     const uniqueHeaderTags = headerCounts.filter(item => item.count > 0).length;
     this.metrics.recordCount(UmaName.UNIQUE_HEADER_TAGS, uniqueHeaderTags);
+
+    this.logTopTwoHeaderMetrics_(headerCounts);
+  }
+
+  // The "top two" headers in a hierarchy represent the first two non-zero
+  // header tags present in the hierarchy. e.g. if there are 5 h1 tags,
+  // 4 h2 tags, and 20 h3 tags, the top two header count would be h1 + h2 = 9.
+  // There's an exception for h1 tags. Since the h1 tag is often used for
+  // the title, it is excluded from being counted as one of the top two headers
+  // if there is exactly one h1 tag present, as that means it's likely being
+  // used as a title. headerCounts is assumed to be already sorted in order of hierarchy
+  // based on how it was originally created from getHeaderCounts.
+  private logTopTwoHeaderMetrics_(
+      headerCounts: Array<{tag: string, count: number}>) {
+    let hierarchy = [...headerCounts];
+    const h1Count = headerCounts.find(item => item.tag === 'h1')?.count ?? 0;
+    if (h1Count === 1) {
+      hierarchy = hierarchy.filter(item => item.tag !== 'h1');
+    }
+    const presentHeaders = hierarchy.filter(item => item.count > 0);
+
+    let topTwoHeadersCount = 0;
+    if (presentHeaders.length > 0) {
+      topTwoHeadersCount += presentHeaders[0]!.count;
+    }
+    if (presentHeaders.length > 1) {
+      topTwoHeadersCount += presentHeaders[1]!.count;
+    }
+    this.metrics.recordCount(UmaName.TOP_TWO_HEADERS_COUNT, topTwoHeadersCount);
+
+    let topTwoHeadersHaveMinimumTwoItems = false;
+    if (presentHeaders.length >= 2) {
+      topTwoHeadersHaveMinimumTwoItems =
+          presentHeaders[0]!.count >= 2 && presentHeaders[1]!.count >= 2;
+    }
+    this.metrics.recordBoolean(
+        UmaName.TOP_TWO_HEADERS_HAVE_MINIMUM_TWO_ITEMS,
+        topTwoHeadersHaveMinimumTwoItems);
   }
 
   static getHeaderCounts(wordCountContainer: Element):

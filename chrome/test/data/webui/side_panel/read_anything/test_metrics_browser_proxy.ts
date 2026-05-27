@@ -33,6 +33,7 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
       'recordVoiceType',
       'recordVoiceLanguageChange',
       'recordCount',
+      'recordBoolean',
     ]);
   }
 
@@ -118,5 +119,9 @@ export class TestMetricsBrowserProxy extends TestBrowserProxy implements
 
   recordCount(umaName: string, count: number) {
     this.methodCalled('recordCount', umaName, count);
+  }
+
+  recordBoolean(umaName: string, value: boolean) {
+    this.methodCalled('recordBoolean', umaName, value);
   }
 }
