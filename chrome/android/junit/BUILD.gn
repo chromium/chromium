@@ -1438,10 +1438,15 @@ if (is_android) {
       "src/org/chromium/chrome/browser/ui/ExpandedSheetHelperImplUnitTest.java",
       "src/org/chromium/chrome/browser/ui/IncognitoRestoreAppLaunchDrawBlockerUnitTest.java",
       "src/org/chromium/chrome/browser/ui/activity_recreation/ActivityRecreationControllerUnitTest.java",
+      "src/org/chromium/chrome/browser/ui/color/ColorProviderBridgeImplTest.java",
       "src/org/chromium/chrome/browser/ui/system/StatusBarColorControllerUnitTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//ui/android:ui_java_test_support",
+      "//ui/color:ui_color_android_java",
+    ]
   }
 
   robolectric_library(

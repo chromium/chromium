@@ -1,0 +1,4 @@
+include_rules = [
+  "+base/android",
+  "+third_party/jni_zero",
+]

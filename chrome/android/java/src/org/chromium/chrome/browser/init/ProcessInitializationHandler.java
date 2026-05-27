@@ -107,6 +107,7 @@ import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStoreImpl;
 import org.chromium.chrome.browser.ui.cars.DrivingRestrictionsManager;
+import org.chromium.chrome.browser.ui.color.ColorProviderBridgeImpl;
 import org.chromium.chrome.browser.ui.hats.SurveyClientFactory;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityPreferencesManager;
 import org.chromium.chrome.browser.usb.UsbNotificationManager;
@@ -142,6 +143,7 @@ import org.chromium.ui.base.PhotoPickerDelegate;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.color.ColorProviderBridgeFactory;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.native_theme.OsSettingsProviderAndroidBridge;
 import org.chromium.url.GURL;
@@ -231,6 +233,7 @@ public class ProcessInitializationHandler {
     protected void handlePreNativeInitialization() {
         ChromeCachedFlags.getInstance().setFullListOfFlags();
         setProcessStateSummaryForAnrs();
+        ColorProviderBridgeFactory.setInstance(new ColorProviderBridgeImpl());
 
         PostTask.setShutdownPostTaskPreNativeThreadPoolEnabled(
                 ChromeFeatureList.sShutdownPreNativeThreadPoolAfterStartup.isEnabled());
