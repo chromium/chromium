@@ -21,6 +21,7 @@
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_id_helper.h"
+#include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
@@ -91,7 +92,8 @@ const char* RequestStartTriggerString(RequestStartTrigger trigger) {
 
 const scoped_refptr<base::SingleThreadTaskRunner>& TaskRunner(
     net::RequestPriority priority) {
-  if (features::kNetworkServiceTaskSchedulerResourceScheduler.Get()) {
+  if (base::FeatureList::IsEnabled(net::features::kNetTaskScheduler) &&
+      features::kNetworkServiceTaskSchedulerResourceScheduler.Get()) {
     return net::GetTaskRunner(priority);
   }
   return base::SingleThreadTaskRunner::GetCurrentDefault();

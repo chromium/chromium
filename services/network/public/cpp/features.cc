@@ -587,9 +587,6 @@ BASE_FEATURE_PARAM(bool,
                    "url_loader",
                    true);
 
-BASE_FEATURE(kNetworkServicePerPriorityTaskQueues,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kUseUnexportableKeyServiceInBrowserProcess,
 #if BUILDFLAG(IS_WIN)
              base::FEATURE_ENABLED_BY_DEFAULT

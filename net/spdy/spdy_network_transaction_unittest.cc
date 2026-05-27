@@ -126,14 +126,15 @@ class SpdyNetworkTransactionTest
     : public TestWithTaskEnvironment,
       public ::testing::WithParamInterface<TestParams> {
  protected:
-  SpdyNetworkTransactionTest()
+  explicit SpdyNetworkTransactionTest(
+      std::vector<base::test::FeatureRef> disabled_features = {})
       : TestWithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME,
+            disabled_features),
         default_url_(kDefaultUrl),
         host_port_pair_(HostPortPair::FromURL(default_url_)),
         spdy_util_(/*use_priority_header=*/true) {
     std::vector<base::test::FeatureRef> enabled_features;
-    std::vector<base::test::FeatureRef> disabled_features;
 
     if (HappyEyeballsV2Enabled()) {
       enabled_features.emplace_back(features::kHappyEyeballsV2);
@@ -1371,12 +1372,26 @@ TEST_P(SpdyNetworkTransactionTest, ThreeGetsWithMaxConcurrent) {
   EXPECT_THAT(out.rv, IsOk());
 }
 
+class SpdyNetworkTransactionNoSchedulerTest
+    : public SpdyNetworkTransactionTest {
+ protected:
+  SpdyNetworkTransactionNoSchedulerTest()
+      : SpdyNetworkTransactionTest({features::kNetTaskScheduler}) {}
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SpdyNetworkTransactionNoSchedulerTest,
+                         testing::ValuesIn(GetTestParams()));
+
 // Similar to ThreeGetsWithMaxConcurrent above, however this test adds
 // a fourth transaction.  The third and fourth transactions have
 // different data ("hello!" vs "hello!hello!") and because of the
 // user specified priority, we expect to see them inverted in
 // the response from the server.
-TEST_P(SpdyNetworkTransactionTest, FourGetsWithMaxConcurrentPriority) {
+//
+// TODO(crbug.com/463794414): Enable the Net Task Scheduler on this test.
+TEST_P(SpdyNetworkTransactionNoSchedulerTest,
+       FourGetsWithMaxConcurrentPriority) {
   // Construct the request.
   spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyGet(
       base::span<const std::string_view>(), 1, LOWEST));

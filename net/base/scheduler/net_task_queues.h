@@ -2,28 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_QUEUES_H_
-#define SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_QUEUES_H_
+#ifndef NET_BASE_SCHEDULER_NET_TASK_QUEUES_H_
+#define NET_BASE_SCHEDULER_NET_TASK_QUEUES_H_
 
 #include <array>
 
-#include "base/component_export.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 
 namespace base::sequence_manager {
 class SequenceManager;
 }  // namespace base::sequence_manager
 
-namespace network {
+namespace net {
 
-class NetworkServiceTaskObserver;
+class NetworkTaskObserver;
 
-// Task queues for the network service thread.
+// Task queues for the network thread.
 //
 // Instances must be created and destroyed on the same thread as the
 // underlying SequenceManager and instances are not allowed to outlive this
@@ -31,33 +31,33 @@ class NetworkServiceTaskObserver;
 // associated thread unless noted otherwise.
 //
 // This class creates and manages a set of `base::sequence_manager::TaskQueue`s
-// with different priorities for the network service thread. It provides
+// with different priorities for the network thread. It provides
 // `base::SingleThreadTaskRunner`s for each of these queues.
-class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
+class NET_EXPORT NetTaskQueues {
  public:
   // Creates task queues and task runners using the provided `sequence_manager`.
-  // The `sequence_manager` must outlive this `NetworkServiceTaskQueues`
+  // The `sequence_manager` must outlive this `NetTaskQueues`
   // instance.
-  explicit NetworkServiceTaskQueues(
+  explicit NetTaskQueues(
       base::sequence_manager::SequenceManager* sequence_manager);
 
   // Destroys all managed task queues.
-  ~NetworkServiceTaskQueues();
+  ~NetTaskQueues();
 
   // Returns the task runner that should be returned by
   // SingleThreadTaskRunner::GetCurrentDefault().
   // This is typically the task runner for the DEFAULT priority.
   const scoped_refptr<base::SingleThreadTaskRunner>& GetDefaultTaskRunner()
       const {
-    return GetTaskRunner(net::RequestPriority::DEFAULT_PRIORITY);
+    return GetTaskRunner(RequestPriority::DEFAULT_PRIORITY);
   }
   base::sequence_manager::TaskQueue* GetDefaultTaskQueue() const {
-    return GetTaskQueue(net::RequestPriority::DEFAULT_PRIORITY);
+    return GetTaskQueue(RequestPriority::DEFAULT_PRIORITY);
   }
 
   // Returns the task runner for the specified `RequestPriority`.
   const scoped_refptr<base::SingleThreadTaskRunner>& GetTaskRunner(
-      net::RequestPriority priority) const {
+      RequestPriority priority) const {
     return task_runners_[static_cast<size_t>(priority)];
   }
 
@@ -69,32 +69,32 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceTaskQueues {
  private:
   // Helper to get the underlying `TaskQueue` for a given priority.
   base::sequence_manager::TaskQueue* GetTaskQueue(
-      net::RequestPriority priority) const {
+      RequestPriority priority) const {
     return task_queues_[static_cast<size_t>(priority)].get();
   }
 
   void CreateTaskQueues(
       base::sequence_manager::SequenceManager* sequence_manager);
 
-  void CreateNetworkServiceTaskRunners();
+  void CreateNetworkTaskRunners();
 
   // Array of handles to the underlying task queues.
-  std::array<base::sequence_manager::TaskQueue::Handle, net::NUM_PRIORITIES>
+  std::array<base::sequence_manager::TaskQueue::Handle, NUM_PRIORITIES>
       task_queues_;
 
   // Array of task observers, one for each `TaskQueue` in `task_queues_`. There
   // is a 1:1 correspondence: `task_observers_[i]` is the task observer for
   // `task_queues_[i]`.
-  std::array<std::unique_ptr<NetworkServiceTaskObserver>, net::NUM_PRIORITIES>
+  std::array<std::unique_ptr<NetworkTaskObserver>, NUM_PRIORITIES>
       task_observers_;
 
   // Array of task runners, one for each `TaskQueue` in `task_queues_`. There is
   // a 1:1 correspondence: `task_runners_[i]` is the runner for
   // `task_queues_[i]`.
-  std::array<scoped_refptr<base::SingleThreadTaskRunner>, net::NUM_PRIORITIES>
+  std::array<scoped_refptr<base::SingleThreadTaskRunner>, NUM_PRIORITIES>
       task_runners_;
 };
 
-}  // namespace network
+}  // namespace net
 
-#endif  // SERVICES_NETWORK_SCHEDULER_NETWORK_SERVICE_TASK_QUEUES_H_
+#endif  // NET_BASE_SCHEDULER_NET_TASK_QUEUES_H_

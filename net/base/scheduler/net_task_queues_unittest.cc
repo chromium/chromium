@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/scheduler/network_service_task_queues.h"
+#include "net/base/scheduler/net_task_queues.h"
 
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
@@ -11,39 +11,38 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "net/base/request_priority.h"
-#include "services/network/public/cpp/network_service_task_priority.h"
+#include "net/base/scheduler/net_task_priority.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace network {
+namespace net {
 namespace {
 
 using StrictMockTask =
     testing::StrictMock<base::MockCallback<base::RepeatingCallback<void()>>>;
 
-// Test fixture for NetworkServiceTaskQueues. Sets up a SequenceManager and
-// NetworkServiceTaskQueues instance for each test.
-class NetworkServiceTaskQueuesTest : public testing::Test {
+// Test fixture for NetTaskQueues. Sets up a SequenceManager and
+// NetTaskQueues instance for each test.
+class NetTaskQueuesTest : public testing::Test {
  protected:
-  NetworkServiceTaskQueuesTest()
+  NetTaskQueuesTest()
       : sequence_manager_(
             base::sequence_manager::
                 CreateSequenceManagerOnCurrentThreadWithPump(
                     base::MessagePump::Create(base::MessagePumpType::DEFAULT),
                     base::sequence_manager::SequenceManager::Settings::Builder()
-                        .SetPrioritySettings(
-                            CreateNetworkServiceTaskPrioritySettings())
+                        .SetPrioritySettings(CreateNetTaskPrioritySettings())
                         .Build())),
         queues_(sequence_manager_.get()) {
     sequence_manager_->SetDefaultTaskQueue(queues_.GetDefaultTaskQueue());
   }
 
   std::unique_ptr<base::sequence_manager::SequenceManager> sequence_manager_;
-  NetworkServiceTaskQueues queues_;
+  NetTaskQueues queues_;
 };
 
 // Tests that tasks posted to the default task runner are executed in order.
-TEST_F(NetworkServiceTaskQueuesTest, SimplePosting) {
+TEST_F(NetTaskQueuesTest, SimplePosting) {
   scoped_refptr<base::SingleThreadTaskRunner> tq =
       queues_.GetDefaultTaskRunner();
 
@@ -63,11 +62,11 @@ TEST_F(NetworkServiceTaskQueuesTest, SimplePosting) {
 
 // Tests that tasks posted to different priority queues are executed according
 // to their priority (highest priority first, then default).
-TEST_F(NetworkServiceTaskQueuesTest, PostingToMultipleQueues) {
+TEST_F(NetTaskQueuesTest, PostingToMultipleQueues) {
   scoped_refptr<base::SingleThreadTaskRunner> tq1 =
       queues_.GetDefaultTaskRunner();
   scoped_refptr<base::SingleThreadTaskRunner> tq2 =
-      queues_.GetTaskRunner(net::RequestPriority::HIGHEST);
+      queues_.GetTaskRunner(RequestPriority::HIGHEST);
 
   StrictMockTask task_1;
   StrictMockTask task_2;
@@ -87,4 +86,4 @@ TEST_F(NetworkServiceTaskQueuesTest, PostingToMultipleQueues) {
 }
 
 }  // namespace
-}  // namespace network
+}  // namespace net

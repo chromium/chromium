@@ -349,11 +349,6 @@ BASE_DECLARE_FEATURE_PARAM(bool, kNetworkServiceTaskSchedulerResourceScheduler);
 COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
 BASE_DECLARE_FEATURE_PARAM(bool, kNetworkServiceTaskSchedulerURLLoader);
 
-// When enabled, Network Service Task Scheduler supports
-// per-net::RequestrPriority task queues for each RequestPriority variant.
-COMPONENT_EXPORT(NETWORK_CPP_FLAGS_AND_SWITCHES)
-BASE_DECLARE_FEATURE(kNetworkServicePerPriorityTaskQueues);
-
 // When enabled, URLLoader in Network Service check header consistency for the
 // ServiceWorker SyntheticResponse.
 // TODO(crbug.com/447039330): This is temporary for the SyntheticResponse

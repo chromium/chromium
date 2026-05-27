@@ -65,6 +65,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
+#include "net/base/scheduler/sequence_manager_configurator.h"
 #include "net/base/switches.h"
 #include "net/first_party_sets/global_first_party_sets.h"
 #include "net/log/file_net_log_observer.h"
@@ -75,7 +76,6 @@
 #include "services/network/network_service.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/network_switches.h"
-#include "services/network/public/cpp/sequence_manager_configurator.h"
 #include "services/network/public/mojom/net_log.mojom.h"
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -416,9 +416,8 @@ void CreateInProcessNetworkService(
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
   if (base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread)) {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    if (base::FeatureList::IsEnabled(
-            network::features::kNetworkServiceTaskScheduler)) {
-      network::ConfigureSequenceManager(options);
+    if (base::FeatureList::IsEnabled(net::features::kNetTaskScheduler)) {
+      net::ConfigureSequenceManager(options);
     }
 #if BUILDFLAG(IS_ANDROID)
     // Local testing shows that when priority inheritance (PI) locks are enabled

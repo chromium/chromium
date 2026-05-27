@@ -967,7 +967,14 @@ typedef std::tuple<bool, bool, EmbeddedTestServerConfig> ThreadingTestParams;
 
 class EmbeddedTestServerThreadingTest
     : public testing::TestWithParam<ThreadingTestParams>,
-      public WithTaskEnvironment {};
+      public WithTaskEnvironment {
+ public:
+  EmbeddedTestServerThreadingTest()
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::DEFAULT,
+                            // TODO(crbug.com/463794414): Enable the Net Task
+                            // Scheduler on this test.
+                            {features::kNetTaskScheduler}) {}
+};
 
 class EmbeddedTestServerThreadingTestDelegate
     : public base::PlatformThread::Delegate {

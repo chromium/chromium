@@ -679,6 +679,13 @@ BASE_FEATURE_PARAM(bool,
                    "url_request_redirect_job",
                    true);
 
+BASE_FEATURE(kNetTaskSchedulerInTests, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kNetTaskSchedulerForceEnableInTests,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kNetworkServicePerPriorityTaskQueues,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNetTaskScheduler2, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kNetTaskSchedulerHttpCache,

@@ -635,7 +635,7 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
     // execution order, potentially causing disk_cache::Backend to be destructed
     // before disk_cache::Entry. See the crbug for more details.
     scoped_feature_list_.InitAndDisableFeature(
-        network::features::kNetworkServicePerPriorityTaskQueues);
+        net::features::kNetworkServicePerPriorityTaskQueues);
   }
 
  protected:

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/network/scheduler/network_service_task_scheduler.h"
+#include "net/base/scheduler/net_task_scheduler.h"
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
@@ -10,21 +10,21 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/task_queue.h"
 #include "base/task/single_thread_task_runner.h"
+#include "net/base/features.h"
 #include "net/base/request_priority.h"
+#include "net/base/scheduler/net_task_priority.h"
+#include "net/base/scheduler/sequence_manager_configurator.h"
 #include "net/base/task/task_runner.h"
-#include "services/network/public/cpp/features.h"
-#include "services/network/public/cpp/network_service_task_priority.h"
-#include "services/network/public/cpp/sequence_manager_configurator.h"
 
-namespace network {
+namespace net {
 
 namespace {
 
-// `g_network_service_task_scheduler` is intentionally leaked on shutdown.
-NetworkServiceTaskScheduler* g_network_service_task_scheduler = nullptr;
+// `g_net_task_scheduler` is intentionally leaked on shutdown.
+NetTaskScheduler* g_net_task_scheduler = nullptr;
 
-// Network service thread extension of CurrentThread.
-class CurrentNetworkServiceThread : public ::base::CurrentThread {
+// Network thread extension of CurrentThread.
+class CurrentNetworkThread : public ::base::CurrentThread {
  public:
   static base::sequence_manager::internal::SequenceManagerImpl*
   GetCurrentSequenceManagerImpl() {
@@ -35,57 +35,63 @@ class CurrentNetworkServiceThread : public ::base::CurrentThread {
 }  // namespace
 
 // static
-void NetworkServiceTaskScheduler::MaybeCreate() {
+void NetTaskScheduler::MaybeCreate() {
   if (!IsSequenceManagerConfigured()) {
     return;
   }
   // For testing scenarios, `MaybeCreate` can be called multiple times.
-  if (g_network_service_task_scheduler) {
+  if (g_net_task_scheduler) {
     return;
   }
   auto* sequence_manager =
-      CurrentNetworkServiceThread::GetCurrentSequenceManagerImpl();
+      CurrentNetworkThread::GetCurrentSequenceManagerImpl();
   CHECK_EQ(static_cast<size_t>(sequence_manager->GetPriorityCount()),
-           static_cast<size_t>(
-               internal::NetworkServiceTaskPriority::kPriorityCount));
-  g_network_service_task_scheduler =
-      new NetworkServiceTaskScheduler(sequence_manager);
-  g_network_service_task_scheduler->SetUpNetTaskRunners();
+           static_cast<size_t>(internal::NetTaskPriority::kPriorityCount));
+  g_net_task_scheduler = new NetTaskScheduler(sequence_manager);
+  g_net_task_scheduler->SetUpNetTaskRunners();
 }
 
 // static
-std::unique_ptr<NetworkServiceTaskScheduler>
-NetworkServiceTaskScheduler::CreateForTesting(
+std::unique_ptr<NetTaskScheduler>
+NetTaskScheduler::CreateForTesting(  // IN-TEST
     base::sequence_manager::SequenceManager* manager) {
-  return base::WrapUnique(new NetworkServiceTaskScheduler(manager));
+  return base::WrapUnique(new NetTaskScheduler(manager));
 }
 
-// The NetworkServiceTaskScheduler's lifetime is effectively static when
-// assigned to `g_network_service_task_scheduler` (in non-testing scenarios).
+// static
+std::unique_ptr<NetTaskScheduler> NetTaskScheduler::CreateForNetTaskEnvironment(
+    base::sequence_manager::SequenceManager* sequence_manager) {
+  auto scheduler = base::WrapUnique(new NetTaskScheduler(sequence_manager));
+  scheduler->SetUpNetTaskRunnersForTesting();  // IN-TEST
+  return scheduler;
+}
+
+// The NetTaskScheduler's lifetime is effectively static when
+// assigned to `g_net_task_scheduler` (in non-testing scenarios).
 // Therefore, explicit cleanup of resources like
 // `net::internal::TaskRunnerGlobals` (for non-test scenarios) is not required
 // here as they are managed elsewhere or their lifetime is tied to the process.
 //
 // For testing scenarios created via `CreateForTesting()`, the original task
 // runners for the thread are restored upon destruction.
-NetworkServiceTaskScheduler::~NetworkServiceTaskScheduler() {
+NetTaskScheduler::~NetTaskScheduler() {
   if (original_task_runners_for_testing_.has_value()) {
     net::internal::GetTaskRunnerGlobals().task_runners =
         *original_task_runners_for_testing_;
   }
 }
 
-NetworkServiceTaskScheduler::NetworkServiceTaskScheduler(
+NetTaskScheduler::NetTaskScheduler(
     base::sequence_manager::SequenceManager* sequence_manager)
     : task_queues_(sequence_manager) {
   // Enable crash keys for the sequence manager to help debug scheduler related
   // crashes.
-  sequence_manager->EnableCrashKeys("network_service_scheduler_async_stack");
+  sequence_manager->EnableCrashKeys("network_scheduler_async_stack");
   // Set the default task runner for the current thread.
   sequence_manager->SetDefaultTaskQueue(task_queues_.GetDefaultTaskQueue());
 }
 
-void NetworkServiceTaskScheduler::OnTaskCompleted(
+void NetTaskScheduler::OnTaskCompleted(
     const base::sequence_manager::Task& task,
     base::sequence_manager::TaskQueue::TaskTiming* task_timing,
     base::LazyNow* lazy_now) {
@@ -96,35 +102,35 @@ void NetworkServiceTaskScheduler::OnTaskCompleted(
   //
   // Note: Thread time is already subsampled in sequence manager by a factor of
   // `kTaskSamplingRateForRecordingCPUTime`.
+  //
+  // TODO(crbug.com/463794414): Rename this histogram prefix to "Net.Scheduler"
+  // once the current "NetworkService.Scheduler" metrics transition is fully
+  // coordinated with metrics users to preserve telemetry durability.
   task_timing->RecordUmaOnCpuMetrics("NetworkService.Scheduler.IOThread");
 }
 
-void NetworkServiceTaskScheduler::SetUpNetTaskRunners() {
+void NetTaskScheduler::SetUpNetTaskRunners() {
   net::internal::TaskRunnerGlobals& globals =
       net::internal::GetTaskRunnerGlobals();
   if (base::FeatureList::IsEnabled(
           features::kNetworkServicePerPriorityTaskQueues)) {
-    for (int i = 0; i < net::NUM_PRIORITIES; ++i) {
-      globals.task_runners[i] =
-          GetTaskRunner(static_cast<net::RequestPriority>(i));
+    for (int i = 0; i < NUM_PRIORITIES; ++i) {
+      globals.task_runners[i] = GetTaskRunner(static_cast<RequestPriority>(i));
     }
     return;
   }
 
   // Unless the feature is enabled, we use two task queues, DEFAULT and
   // HIGHEST.
-  static_assert(net::RequestPriority::DEFAULT_PRIORITY <
-                net::RequestPriority::HIGHEST);
-  for (int i = 0; i < net::NUM_PRIORITIES; ++i) {
-    globals.task_runners[i] =
-        GetTaskRunner(net::RequestPriority::DEFAULT_PRIORITY);
+  static_assert(DEFAULT_PRIORITY < HIGHEST);
+  for (int i = 0; i < NUM_PRIORITIES; ++i) {
+    globals.task_runners[i] = GetTaskRunner(DEFAULT_PRIORITY);
   }
   // Highest is used only for net::RequestPriority::HIGHEST.
-  globals.task_runners[net::RequestPriority::HIGHEST] =
-      GetTaskRunner(net::RequestPriority::HIGHEST);
+  globals.task_runners[HIGHEST] = GetTaskRunner(HIGHEST);
 }
 
-void NetworkServiceTaskScheduler::SetUpNetTaskRunnersForTesting() {
+void NetTaskScheduler::SetUpNetTaskRunnersForTesting() {
   CHECK(!original_task_runners_for_testing_.has_value());
   original_task_runners_for_testing_ =
       net::internal::GetTaskRunnerGlobals().task_runners;
@@ -132,19 +138,17 @@ void NetworkServiceTaskScheduler::SetUpNetTaskRunnersForTesting() {
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&
-NetworkServiceTaskScheduler::GetTaskRunner(
-    net::RequestPriority priority) const {
+NetTaskScheduler::GetTaskRunner(RequestPriority priority) const {
   return task_queues_.GetTaskRunner(priority);
 }
 
 const scoped_refptr<base::SingleThreadTaskRunner>&
-NetworkServiceTaskScheduler::GetDefaultTaskRunner() const {
+NetTaskScheduler::GetDefaultTaskRunner() const {
   return task_queues_.GetDefaultTaskRunner();
 }
 
-base::sequence_manager::TaskQueue*
-NetworkServiceTaskScheduler::GetDefaultTaskQueue() {
+base::sequence_manager::TaskQueue* NetTaskScheduler::GetDefaultTaskQueue() {
   return task_queues_.GetDefaultTaskQueue();
 }
 
-}  // namespace network
+}  // namespace net

@@ -83,7 +83,11 @@ struct NetworkThreadState {
 class CertNetFetcherURLRequestTest : public PlatformTest,
                                      public WithTaskEnvironment {
  public:
-  CertNetFetcherURLRequestTest() {
+  CertNetFetcherURLRequestTest()
+      : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::DEFAULT,
+                            // TODO(crbug.com/463794414): Enable the Net Task
+                            // Scheduler on this test.
+                            {features::kNetTaskScheduler}) {
     test_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
     StartNetworkThread();
   }

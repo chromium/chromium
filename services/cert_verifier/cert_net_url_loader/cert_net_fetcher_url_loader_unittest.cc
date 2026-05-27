@@ -16,6 +16,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/base/features.h"
 #include "net/cert/cert_net_fetcher.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
@@ -80,7 +81,12 @@ void VerifyFailure(net::Error expected_error,
 class CertNetFetcherURLLoaderTest : public PlatformTest,
                                     public net::WithTaskEnvironment {
  public:
-  CertNetFetcherURLLoaderTest() {
+  CertNetFetcherURLLoaderTest()
+      : net::WithTaskEnvironment(
+            base::test::TaskEnvironment::TimeSource::DEFAULT,
+            // TODO(crbug.com/463794414): Enable the Net Task Scheduler on
+            // this test.
+            {net::features::kNetTaskScheduler}) {
     test_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
     StartNetworkThread();
   }
