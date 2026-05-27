@@ -72,7 +72,6 @@ TEST_F(TravelInfoMediatorTest, SetsConsumerValuesSafe) {
 
 - (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
     didRequestToCreateEntityWithType:(autofill::EntityType)entityType {
-  // TODO(crbug.com/491417039): Implement missing method.
 }
 @end
 
@@ -120,4 +119,71 @@ TEST_F(TravelInfoMediatorTest, SplitsItemsByType) {
   [mediator_ pushItemsToConsumer:@[ ktn, redress, vehicle, flight ]];
 
   [consumer_ verify];
+}
+
+// Tests that the mediator returns the correct supported entity types.
+TEST_F(TravelInfoMediatorTest, SupportedEntityTypes) {
+  autofill::DenseSet<autofill::EntityTypeName> expected_types = {
+      autofill::EntityTypeName::kFlightReservation,
+      autofill::EntityTypeName::kKnownTravelerNumber,
+      autofill::EntityTypeName::kRedressNumber,
+      autofill::EntityTypeName::kVehicle};
+  EXPECT_EQ([mediator_ supportedEntityTypes], expected_types);
+}
+
+@interface FakeTravelInfoConsumer : NSObject <TravelInfoConsumer>
+- (const std::vector<autofill::EntityType>&)writableEntityTypes;
+@end
+
+@implementation FakeTravelInfoConsumer {
+  std::vector<autofill::EntityType> _writableEntityTypes;
+}
+- (void)setTravelInfoWithFlightReservations:
+            (NSArray<TableViewItem*>*)flightReservations
+                       knownTravelerNumbers:
+                           (NSArray<TableViewItem*>*)knownTravelerNumbers
+                             redressNumbers:
+                                 (NSArray<TableViewItem*>*)redressNumbers
+                                   vehicles:(NSArray<TableViewItem*>*)vehicles {
+}
+
+- (void)setWritableEntityTypes:
+    (const std::vector<autofill::EntityType>&)writableEntityTypes {
+  _writableEntityTypes = writableEntityTypes;
+}
+
+- (const std::vector<autofill::EntityType>&)writableEntityTypes {
+  return _writableEntityTypes;
+}
+@end
+
+// Tests that pushing items correctly calls setWritableEntityTypes: on the
+// consumer with the expected writable types.
+TEST_F(TravelInfoMediatorTest, PushesWritableEntityTypes) {
+  FakeTravelInfoConsumer* fake_consumer = [[FakeTravelInfoConsumer alloc] init];
+  mediator_.consumer = fake_consumer;
+
+  [mediator_ pushItemsToConsumer:@[]];
+
+  std::vector<autofill::EntityType> expected_writable_types = {
+      autofill::EntityType(autofill::EntityTypeName::kVehicle),
+      autofill::EntityType(autofill::EntityTypeName::kKnownTravelerNumber),
+      autofill::EntityType(autofill::EntityTypeName::kRedressNumber)};
+
+  EXPECT_EQ(fake_consumer.writableEntityTypes, expected_writable_types);
+}
+
+// Tests that setting the consumer to nil after disconnect does not crash.
+TEST_F(TravelInfoMediatorTest, DoesNotCrashOnSetConsumerNilAfterDisconnect) {
+  mediator_.consumer = consumer_;
+  [mediator_ disconnect];
+
+  mediator_.consumer = nil;
+}
+
+// Tests that setting a non-nil consumer after disconnect does not crash.
+TEST_F(TravelInfoMediatorTest, DoesNotCrashOnSetConsumerAfterDisconnect) {
+  [mediator_ disconnect];
+
+  mediator_.consumer = consumer_;
 }

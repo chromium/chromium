@@ -5,10 +5,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/identity_docs_mediator.h"
 
 #import "base/apple/foundation_util.h"
-#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
-#import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
-#import "components/autofill/core/browser/integrators/autofill_ai/management_utils.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator_protected.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/ui/identity_docs_consumer.h"
@@ -24,18 +21,7 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
 }  // namespace
 
 // Mediator implementation for Identity Docs.
-@implementation IdentityDocsMediator {
-  raw_ptr<autofill::EntityDataManager> _entityDataManager;
-}
-
-- (instancetype)initWithEntityDataManager:
-    (autofill::EntityDataManager*)entityDataManager {
-  self = [super initWithEntityDataManager:entityDataManager];
-  if (self) {
-    _entityDataManager = entityDataManager;
-  }
-  return self;
-}
+@implementation IdentityDocsMediator
 
 - (void)setConsumer:(id<IdentityDocsConsumer>)consumer {
   if (_consumer == consumer) {
@@ -51,7 +37,6 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
 - (void)disconnect {
   [super disconnect];
   _consumer = nil;
-  _entityDataManager = nullptr;
 }
 
 #pragma mark - AutofillAIBaseMediator
@@ -95,15 +80,7 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kIdentityDocs = {
                                     nationalIdCards:nationalIdCards
                                           passports:passports];
 
-  std::vector<autofill::EntityType> writableTypes;
-  autofill::DenseSet<autofill::EntityType> all_types =
-      autofill::GetWritableEntityTypes(
-          _entityDataManager->GetVariationCountryCode());
-  std::ranges::copy_if(all_types, std::back_inserter(writableTypes),
-                       [](const autofill::EntityType& type) {
-                         return kIdentityDocs.contains(type.name());
-                       });
-  [self.consumer setWritableEntityTypes:writableTypes];
+  [self.consumer setWritableEntityTypes:[self writableEntityTypes]];
 }
 
 @end

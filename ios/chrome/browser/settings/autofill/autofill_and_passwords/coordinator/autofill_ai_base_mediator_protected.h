@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_COORDINATOR_AUTOFILL_AI_BASE_MEDIATOR_PROTECTED_H_
 #define IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AND_PASSWORDS_COORDINATOR_AUTOFILL_AI_BASE_MEDIATOR_PROTECTED_H_
 
+#import <vector>
+
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #import "components/autofill/core/common/dense_set.h"
 #import "ios/chrome/browser/settings/autofill/autofill_and_passwords/coordinator/autofill_ai_base_mediator.h"
@@ -13,6 +15,9 @@
 
 // Protected methods for subclasses of AutofillAIBaseMediator.
 @interface AutofillAIBaseMediator (Protected)
+
+// Writable entity types supported by this mediator.
+- (std::vector<autofill::EntityType>)writableEntityTypes;
 
 // Subclasses must override to define which entities to display.
 - (autofill::DenseSet<autofill::EntityTypeName>)supportedEntityTypes;

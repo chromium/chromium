@@ -45,8 +45,7 @@
 }
 
 - (void)start {
-  _viewController = [[TravelInfoTableViewController alloc]
-      initWithStyle:ChromeTableViewStyle()];
+  _viewController = [[TravelInfoTableViewController alloc] init];
   _viewController.delegate = self;
 
   autofill::EntityDataManager* entityDataManager =
@@ -93,7 +92,7 @@
 
 - (void)autofillAIBaseMediator:(AutofillAIBaseMediator*)mediator
     didRequestToCreateEntityWithType:(autofill::EntityType)entityType {
-  // TODO(crbug.com/491417039): Implement missing method.
+  [self startEntityEditCoordinatorWithType:entityType];
 }
 
 #pragma mark - AutofillAIEntityEditCoordinatorDelegate
@@ -114,6 +113,18 @@
       initWithBaseNavigationController:self.baseNavigationController
                                browser:self.browser
                               entityID:entityID];
+  _entityEditCoordinator.delegate = self;
+  [_entityEditCoordinator start];
+}
+
+// Starts the coordinator responsible for creating a new travel info
+// entity of the specified type.
+- (void)startEntityEditCoordinatorWithType:(autofill::EntityType)entityType {
+  [self stopEntityEditCoordinator];
+  _entityEditCoordinator = [[AutofillAIEntityEditCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser
+                            entityType:entityType];
   _entityEditCoordinator.delegate = self;
   [_entityEditCoordinator start];
 }

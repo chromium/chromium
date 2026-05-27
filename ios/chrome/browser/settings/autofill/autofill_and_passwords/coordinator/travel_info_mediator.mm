@@ -84,6 +84,8 @@ static constexpr autofill::DenseSet<autofill::EntityTypeName> kTravelInfo = {
                                 knownTravelerNumbers:knownTravelerNumbers
                                       redressNumbers:redressNumbers
                                             vehicles:vehicles];
+
+  [self.consumer setWritableEntityTypes:[self writableEntityTypes]];
 }
 
 @end
