@@ -24,7 +24,7 @@ class GlicSharingManager;
 // candidate.
 //
 // Note: makes no guarantees about de-duping of events, so subscribers should
-// should handle de-duping in cases where that matters.
+// handle de-duping in cases where that matters.
 class GlicActivePinnedFocusedTabManager
     : public GlicFocusedTabManagerInterface {
  public:
