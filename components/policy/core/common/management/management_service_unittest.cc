@@ -158,4 +158,87 @@ TEST_F(ManagementServiceTests, LoadCachedValues) {
             ManagementAuthorityTrustworthiness::FULLY_TRUSTED);
 }
 
+class AsyncTestManagementStatusProvider : public ManagementStatusProvider {
+ public:
+  explicit AsyncTestManagementStatusProvider(const std::string& cache_pref_name,
+                                             EnterpriseManagementAuthority authority)
+      : ManagementStatusProvider(cache_pref_name), authority_(authority) {}
+  ~AsyncTestManagementStatusProvider() override = default;
+
+  void FetchAuthorityAsync(
+      base::OnceCallback<void(std::pair<ManagementStatusProvider*,
+                                        EnterpriseManagementAuthority>)>
+          callback) override {
+    callback_ = std::move(callback);
+  }
+
+  void RunCallback() {
+    if (callback_) {
+      std::move(callback_).Run({this, authority_});
+    }
+  }
+
+ protected:
+  EnterpriseManagementAuthority FetchAuthority() override { return authority_; }
+
+ private:
+  EnterpriseManagementAuthority authority_;
+  base::OnceCallback<void(std::pair<ManagementStatusProvider*,
+                                    EnterpriseManagementAuthority>)>
+      callback_;
+};
+
+TEST_F(ManagementServiceTests, AsyncRefreshCache) {
+  base::test::TaskEnvironment task_environment;
+  prefs()->SetInteger(kPrefName, EnterpriseManagementAuthority::NONE);
+
+  auto provider1 = std::make_unique<AsyncTestManagementStatusProvider>(
+      kPrefName, EnterpriseManagementAuthority::CLOUD);
+  auto* provider1_ptr = provider1.get();
+
+  std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
+  providers.push_back(std::move(provider1));
+
+  auto management_service =
+      std::make_unique<TestManagementService>(std::move(providers));
+  management_service->UsePrefServiceAsCache(prefs());
+
+  base::test::TestFuture<ManagementAuthorityTrustworthiness,
+                         ManagementAuthorityTrustworthiness>
+      test_future;
+  management_service->RefreshCache(test_future.GetCallback());
+
+  EXPECT_EQ(management_service->GetManagementAuthorityTrustworthiness(),
+            ManagementAuthorityTrustworthiness::NONE);
+
+  provider1_ptr->RunCallback();
+
+  EXPECT_EQ(test_future.Get<0>(), ManagementAuthorityTrustworthiness::NONE);
+  EXPECT_EQ(test_future.Get<1>(), ManagementAuthorityTrustworthiness::TRUSTED);
+  EXPECT_EQ(management_service->GetManagementAuthorityTrustworthiness(),
+            ManagementAuthorityTrustworthiness::TRUSTED);
+}
+
+TEST_F(ManagementServiceTests, RefreshCacheWeakPtrSafety) {
+  base::test::TaskEnvironment task_environment;
+  prefs()->SetInteger(kPrefName, EnterpriseManagementAuthority::NONE);
+
+  auto provider1 = std::make_unique<AsyncTestManagementStatusProvider>(
+      kPrefName, EnterpriseManagementAuthority::CLOUD);
+
+  std::vector<std::unique_ptr<ManagementStatusProvider>> providers;
+  providers.push_back(std::move(provider1));
+
+  auto management_service =
+      std::make_unique<TestManagementService>(std::move(providers));
+  management_service->UsePrefServiceAsCache(prefs());
+
+  base::test::TestFuture<ManagementAuthorityTrustworthiness,
+                         ManagementAuthorityTrustworthiness>
+      test_future;
+  management_service->RefreshCache(test_future.GetCallback());
+
+  management_service.reset();
+}
+
 }  // namespace policy

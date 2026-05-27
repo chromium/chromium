@@ -51,6 +51,10 @@ inline constexpr char kEnterpriseMDMManagementWindows[] =
 // Integer pref that stores the Mac enterprise MDM management authority.
 inline constexpr char kEnterpriseMDMManagementMac[] =
     "management.platform.enterprise_mdm_mac";
+#elif BUILDFLAG(IS_ANDROID)
+// Integer pref that stores the Android enterprise MDM/ownership management authority.
+inline constexpr char kEnterpriseMDMManagementAndroid[] =
+    "management.platform.enterprise_mdm_android";
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)

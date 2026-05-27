@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_PLATFORM_MANAGEMENT_SERVICE_H_
 #define COMPONENTS_POLICY_CORE_COMMON_MANAGEMENT_PLATFORM_MANAGEMENT_SERVICE_H_
 
-#include "base/containers/flat_map.h"
 #include "base/no_destructor.h"
 
 #include "components/policy/core/common/management/management_service.h"
@@ -34,30 +33,26 @@ class POLICY_EXPORT PlatformManagementService : public ManagementService {
   bool has_cros_status_provider() const { return has_cros_status_provider_; }
 #endif
 
-  void RefreshCache(CacheRefreshCallback callback) override;
+#if BUILDFLAG(IS_ANDROID)
+  void AddAndroidStatusProvider(
+      std::unique_ptr<ManagementStatusProvider> provider);
+  bool has_android_status_provider() const {
+    return has_android_status_provider_;
+  }
+#endif
 
  private:
   friend class base::NoDestructor<PlatformManagementService>;
 
-  // Returns a map of the status providers to their non-cached management
-  // authority. This is used to update their cache. This may have some I/O
-  // calls, therefore must never be called on the main thread.
-  base::flat_map<ManagementStatusProvider*, EnterpriseManagementAuthority>
-  GetCacheUpdate();
-
-  // Updates the cached values of the status providers with the appropriate
-  // value and call `callback` with the previous and new management authority
-  // trustworthiness.
-  void UpdateCache(CacheRefreshCallback callback,
-                   base::flat_map<ManagementStatusProvider*,
-                                  EnterpriseManagementAuthority> cache_update);
-
   PlatformManagementService();
   ~PlatformManagementService() override;
 
-  bool has_local_browser_managment_status_provider_;
+  bool has_local_browser_managment_status_provider_ = false;
 #if BUILDFLAG(IS_CHROMEOS)
-  bool has_cros_status_provider_;
+  bool has_cros_status_provider_ = false;
+#endif
+#if BUILDFLAG(IS_ANDROID)
+  bool has_android_status_provider_ = false;
 #endif
 };
 

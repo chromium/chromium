@@ -141,6 +141,7 @@ source_set("enterprise") {
 
   if (is_android) {
     public += [
+      "browser_management/platform_management_status_provider_android.h",
       "platform_auth/entra_provider_android.h",
       "reporting/browser_report_generator_android.h",
       "reporting/profile_report_generator_android.h",
@@ -525,6 +526,7 @@ source_set("impl") {
 
   if (is_android) {
     sources += [
+      "browser_management/platform_management_status_provider_android.cc",
       "platform_auth/entra_provider_android.cc",
       "reporting/browser_report_generator_android.cc",
       "reporting/profile_report_generator_android.cc",

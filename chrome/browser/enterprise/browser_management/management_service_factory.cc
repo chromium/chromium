@@ -10,6 +10,9 @@
 #include "chrome/browser/enterprise/browser_management/browser_management_status_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/common/management/platform_management_service.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/enterprise/browser_management/platform_management_status_provider_android.h"
+#endif
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -45,6 +48,19 @@ ManagementService* ManagementServiceFactory::GetForPlatform() {
   if (!instance->has_cros_status_provider()) {
     instance->AddChromeOsStatusProvider(
         std::make_unique<DeviceManagementStatusProvider>());
+  }
+#endif
+
+  // This has to be done here since `AndroidManagementStatusProvider` cannot be
+  // defined in `components/policy/`, as it requires `AndroidEnterpriseInfo`.
+  // TODO(b/515740441): Move `AndroidEnterpriseInfo` and
+  // `AndroidManagementStatusProvider` to components/ because the former has no
+  // Chrome-specific dependencies. Therefore dependency injection via factory
+  // will not be needed.
+#if BUILDFLAG(IS_ANDROID)
+  if (!instance->has_android_status_provider()) {
+    instance->AddAndroidStatusProvider(
+        std::make_unique<AndroidManagementStatusProvider>());
   }
 #endif
   return instance;

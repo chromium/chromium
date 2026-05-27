@@ -13,6 +13,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/policy/policy_export.h"
@@ -85,6 +86,15 @@ class POLICY_EXPORT ManagementStatusProvider {
   // This value is never ached and may required blocking I/O to get.
   virtual EnterpriseManagementAuthority FetchAuthority() = 0;
 
+  // The default implementation uses `base::Unretained(this)` when
+  // posting to the `ThreadPool`. This is safe for `PlatformManagementService`
+  // but introduces a Use-After-Free risk if used by destructible providers.
+  // Destructible caching providers should override this method.
+  virtual void FetchAuthorityAsync(
+      base::OnceCallback<void(std::pair<ManagementStatusProvider*,
+                                        EnterpriseManagementAuthority>)>
+          callback);
+
   bool RequiresCache() const;
   void UpdateCache(EnterpriseManagementAuthority authority);
 
@@ -98,6 +108,7 @@ class POLICY_EXPORT ManagementStatusProvider {
   std::variant<PrefService*, scoped_refptr<PersistentPrefStore>> cache_ =
       nullptr;
   const std::string cache_pref_name_;
+  base::WeakPtrFactory<ManagementStatusProvider> weak_factory_{this};
 };
 
 // Interface to gives information related to an entity's management state.
@@ -182,6 +193,12 @@ class POLICY_EXPORT ManagementService {
     return management_status_providers_;
   }
 
+  void OnAuthFetched(
+      CacheRefreshCallback callback,
+      ManagementAuthorityTrustworthiness previous,
+      std::vector<std::pair<ManagementStatusProvider*,
+                            EnterpriseManagementAuthority>> results);
+
  private:
   // Returns a bitset of with the active `EnterpriseManagementAuthority` on the
   // managed entity.
@@ -193,6 +210,7 @@ class POLICY_EXPORT ManagementService {
       management_status_providers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<ManagementService> weak_factory_{this};
 };
 
 }  // namespace policy

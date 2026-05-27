@@ -4,11 +4,7 @@
 
 #include "components/policy/core/common/management/platform_management_service.h"
 
-#include "base/memory/singleton.h"
 #include "base/no_destructor.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #if BUILDFLAG(IS_MAC)
 #include "components/policy/core/common/management/platform_management_status_provider_mac.h"
@@ -65,40 +61,12 @@ void PlatformManagementService::AddChromeOsStatusProvider(
 }
 #endif
 
-void PlatformManagementService::RefreshCache(CacheRefreshCallback callback) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      // Unretained here since this class should never be destroyed.
-      base::BindOnce(&PlatformManagementService::GetCacheUpdate,
-                     base::Unretained(this)),
-      base::BindOnce(&PlatformManagementService::UpdateCache,
-                     base::Unretained(this), std::move(callback)));
+#if BUILDFLAG(IS_ANDROID)
+void PlatformManagementService::AddAndroidStatusProvider(
+    std::unique_ptr<ManagementStatusProvider> provider) {
+  AddManagementStatusProvider(std::move(provider));
+  has_android_status_provider_ = true;
 }
-
-base::flat_map<ManagementStatusProvider*, EnterpriseManagementAuthority>
-PlatformManagementService::GetCacheUpdate() {
-  base::flat_map<ManagementStatusProvider*, EnterpriseManagementAuthority>
-      result;
-  for (const auto& provider : management_status_providers()) {
-    if (provider->RequiresCache())
-      result.insert({provider.get(), provider->FetchAuthority()});
-  }
-  return result;
-}
-
-void PlatformManagementService::UpdateCache(
-    CacheRefreshCallback callback,
-    base::flat_map<ManagementStatusProvider*, EnterpriseManagementAuthority>
-        cache_update) {
-  ManagementAuthorityTrustworthiness previous =
-      GetManagementAuthorityTrustworthiness();
-  for (const auto& it : cache_update) {
-    it.first->UpdateCache(it.second);
-  }
-  ManagementAuthorityTrustworthiness next =
-      GetManagementAuthorityTrustworthiness();
-  if (callback)
-    std::move(callback).Run(previous, next);
-}
+#endif
 
 }  // namespace policy

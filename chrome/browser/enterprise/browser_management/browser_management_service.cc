@@ -4,6 +4,8 @@
 
 #include "chrome/browser/enterprise/browser_management/browser_management_service.h"
 
+#include <algorithm>
+
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,6 +52,15 @@ GetManagementStatusProviders(Profile* profile) {
 
 BrowserManagementService::BrowserManagementService(Profile* profile)
     : ManagementService(GetManagementStatusProviders(profile)) {
+  // Ensure no profile management status provider requires a cache.
+  // If we want to support async providers in `BrowserManagementService`,
+  // we can use `ScopedProfileKeepAlive` to make sure the provider is not
+  // deleted while it is running.
+  CHECK(std::none_of(
+      management_status_providers().begin(),
+      management_status_providers().end(),
+      [](const auto& provider) { return provider->RequiresCache(); }));
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
