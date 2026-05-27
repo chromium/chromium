@@ -141,6 +141,52 @@ suite('Remove Extraneous Elements', function() {
     assertEquals('DIV', remainingElements[3]?.tagName);
   });
 
+  test('keeps visually hidden empty elements that contain images', () => {
+    // 1. Container (0x0) wrapping an img (should be kept).
+    const wrap1 = addElement(
+        testContainer, 'div', {attrs: {style: 'width: 0; height: 0;'}});
+    addElement(wrap1, 'img');
+
+    // 2. Container (0x0) wrapping a canvas (should be kept).
+    const wrap2 = addElement(
+        testContainer, 'div', {attrs: {style: 'width: 0; height: 0;'}});
+    addElement(wrap2, 'canvas');
+
+    // 3. Container (0x0) wrapping a picture (should be kept).
+    const wrap3 = addElement(
+        testContainer, 'div', {attrs: {style: 'width: 0; height: 0;'}});
+    addElement(wrap3, 'picture');
+
+    // Simulate getBoundingClientRect for testing
+    const elements = testContainer.querySelectorAll('*');
+    for (const el of elements) {
+      const htmlEl = el as HTMLElement;
+      htmlEl.getBoundingClientRect = function() {
+        const style = this.getAttribute('style') || '';
+        return {
+          width: style.includes('width: 0') ? 0 : 10,
+          height: style.includes('height: 0') ? 0 : 10,
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          x: 0,
+          y: 0,
+          toJSON: () => {},
+        } as DOMRect;
+      };
+    }
+
+    removeExtraneousElementsFrom(testContainer);
+
+    // wrap1, wrap2, wrap3 should be kept.
+    const remainingElements = testContainer.querySelectorAll('div');
+    assertEquals(3, remainingElements.length);
+    assertEquals(wrap1, remainingElements[0]);
+    assertEquals(wrap2, remainingElements[1]);
+    assertEquals(wrap3, remainingElements[2]);
+  });
+
   test('removes nested extraneous elements correctly', () => {
     const keep1 = addElement(testContainer, 'div', {
       id: 'keep1',

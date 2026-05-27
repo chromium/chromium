@@ -13,7 +13,8 @@ suite('ReadabilityImageClassifier', function() {
   function createImageTest(
       id: string, naturalWidth: number, naturalHeight: number,
       parentTag: string, parentContent: string,
-      attributes: Record<string, string> = {}): Promise<HTMLImageElement> {
+      attributes: Record<string, string> = {},
+      wrapperTags: string[] = []): Promise<HTMLImageElement> {
     return new Promise((resolve) => {
       const parent = document.createElement(parentTag);
       const img = document.createElement('img');
@@ -22,7 +23,17 @@ suite('ReadabilityImageClassifier', function() {
       if (parentContent.includes('Some text')) {
         parent.appendChild(document.createTextNode('Some text '));
       }
-      parent.appendChild(img);
+
+      let leaf: HTMLElement = img;
+      for (let i = wrapperTags.length - 1; i >= 0; i--) {
+        const tag = wrapperTags[i];
+        if (tag) {
+          const wrapper = document.createElement(tag);
+          wrapper.appendChild(leaf);
+          leaf = wrapper;
+        }
+      }
+      parent.appendChild(leaf);
 
       if (parentContent.includes('figcaption')) {
         const caption = document.createElement('figcaption');
@@ -105,6 +116,16 @@ suite('ReadabilityImageClassifier', function() {
       createImageTest(
           'sole_content_with_br', 400, 300, 'p', '<img><br>',
           {src: 'url4.jpg'}),
+      createImageTest(
+          'figure_with_caption_nested_picture', 400, 300, 'figure',
+          '<img><figcaption>Test</figcaption>', {src: 'url_nested_picture.jpg'},
+          ['div', 'picture']),
+      createImageTest(
+          'sole_content_nested_picture', 400, 300, 'p', '<img>',
+          {src: 'url_sole_nested.jpg'}, ['picture']),
+      createImageTest(
+          'nested_picture_with_text_sibling', 200, 100, 'p', 'Some text <img>',
+          {src: 'url_nested_with_text.jpg'}, ['picture']),
 
       // 5. Fallback
       createImageTest(
@@ -151,6 +172,9 @@ suite('ReadabilityImageClassifier', function() {
     assertHasClass('figure_with_caption', FULL);
     assertHasClass('sole_content_in_p', FULL);
     assertHasClass('sole_content_with_br', FULL);
+    assertHasClass('figure_with_caption_nested_picture', FULL);
+    assertHasClass('sole_content_nested_picture', FULL);
+    assertHasClass('nested_picture_with_text_sibling', INLINE);
 
     assertHasClass('fallback_wide', FULL);
     assertHasClass('fallback_narrow', INLINE);

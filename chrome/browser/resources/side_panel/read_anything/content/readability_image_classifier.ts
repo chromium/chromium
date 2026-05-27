@@ -47,7 +47,10 @@ export class ReadabilityImageClassifier {
 
   constructor() {
     // Baseline thresholds in density-independent units (CSS pixels).
-    this.smallAreaUpperBoundDp = 64 * 64;
+    // 200px are roughly 2in which is small for desktop.
+    // TODO(crbug.com/515160078): We should classify based on the intended
+    // width and area of the developer based on the sizes attribute.
+    this.smallAreaUpperBoundDp = 200 * 200;
     this.inlineWidthFallbackUpperBoundDp = 300;
 
     // Matches common keywords for icons or mathematical formulas.
@@ -109,37 +112,44 @@ export class ReadabilityImageClassifier {
   // Checks if the image is the primary content of its container.
   private isDefinitelyFullWidth_(img: HTMLImageElement): boolean {
     // Image is in a <figure> with a <figcaption>.
-    const parent = img.parentElement;
-    if (parent && parent.tagName === 'FIGURE' &&
-        parent.querySelector('figcaption')) {
+    const figure = img.closest('figure');
+    if (figure && figure.querySelector('figcaption')) {
       return true;
     }
 
     // Image is the only significant content in its container.
-    let container: HTMLElement|null = parent;
+    let container: HTMLElement|null = img.parentElement;
     while (container &&
            !['P', 'DIV', 'FIGURE', 'BODY'].includes(container.tagName)) {
       container = container.parentElement;
     }
 
     if (container) {
-      for (const child of Array.from(container.childNodes)) {
-        // Skip insignificant nodes.
-        if (child === img) {
-          continue;
+      // Helper to check if a node (or any of its descendants) contains
+      // significant content other than the image itself.
+      const hasOtherSignificantContent = (node: Node): boolean => {
+        if (node === img) {
+          return false;
         }
-        if ((child as HTMLElement).tagName === 'BR') {
-          continue;
+        if (node.nodeType === Node.TEXT_NODE) {
+          return !!node.textContent?.trim();
         }
-        if (child.nodeType === Node.TEXT_NODE &&
-            child.textContent?.trim() === '') {
-          continue;
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          if ((node as HTMLElement).tagName === 'BR') {
+            return false;
+          }
+          return Array.from(node.childNodes).some(hasOtherSignificantContent);
         }
-
-        // If we reach this point, the node must be significant.
         return false;
+      };
+
+      for (const child of Array.from(container.childNodes)) {
+        if (hasOtherSignificantContent(child)) {
+          return false;
+        }
       }
-      // If we finish the loop, no significant siblings were found.
+      // If we finish the loop, no significant siblings or other content were
+      // found.
       return true;
     }
 
