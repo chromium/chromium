@@ -4467,16 +4467,25 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
         send_tab_to_self_submenu_.get());
 
 #if BUILDFLAG(IS_MAC)
-    menu_model_.AddSubMenu(IDC_SEND_TAB_TO_SELF,
-                           l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
-                           send_tab_to_self_submenu_.get());
+    if (features::IsMenuSimplificationEnabled()) {
+      menu_model_.AddSubMenuWithStringIdAndIcon(
+          IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,
+          send_tab_to_self_submenu_.get(),
+          ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                             ? kDevicesIcon
+                                             : kDevicesOldIcon));
+    } else {
+      menu_model_.AddSubMenu(
+          IDC_SEND_TAB_TO_SELF,
+          l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
+          send_tab_to_self_submenu_.get());
+    }
 #else
     menu_model_.AddSubMenuWithStringIdAndIcon(
         IDC_SEND_TAB_TO_SELF, IDS_MENU_SEND_TAB_TO_SELF,
         send_tab_to_self_submenu_.get(),
         ui::ImageModel::FromVectorIcon(
             features::IsRoundedIconsEnabled()   ? kDevicesIcon
-            : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
                                                 : kDevicesOldIcon));
 #endif
 
@@ -4490,15 +4499,23 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
   }
 
 #if BUILDFLAG(IS_MAC)
-  menu_model_.AddItem(IDC_SEND_TAB_TO_SELF,
-                      l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
+  if (features::IsMenuSimplificationEnabled()) {
+    menu_model_.AddItemWithIcon(
+        IDC_SEND_TAB_TO_SELF,
+        l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
+        ui::ImageModel::FromVectorIcon(features::IsRoundedIconsEnabled()
+                                           ? kDevicesIcon
+                                           : kDevicesOldIcon));
+  } else {
+    menu_model_.AddItem(IDC_SEND_TAB_TO_SELF,
+                        l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF));
+  }
 #else
   menu_model_.AddItemWithIcon(
       IDC_SEND_TAB_TO_SELF,
       l10n_util::GetStringUTF16(IDS_MENU_SEND_TAB_TO_SELF),
       ui::ImageModel::FromVectorIcon(
           features::IsRoundedIconsEnabled()   ? kDevicesIcon
-          : features::IsRoundedIconsEnabled() ? vector_icons::kDevicesIcon
                                               : kDevicesOldIcon));
 #endif
 }
