@@ -834,7 +834,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that content is injected in iframe messaging.
-- (void)testPasswordControllerSupportsIFrameMessaging {
+// TODO(crbug.com/517074595): Test is consitently failing on iPad Air.
+- (void)DISABLED_testPasswordControllerSupportsIFrameMessaging {
   // Disable the credential bottom sheet.
   [CredentialSuggestionBottomSheetAppInterface disableBottomSheet];
 
