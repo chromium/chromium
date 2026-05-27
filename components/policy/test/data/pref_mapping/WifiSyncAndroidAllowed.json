@@ -3,35 +3,13 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "wifi_sync.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "WifiSyncAndroidAllowed": false
-        },
-        "prefs": {
-          "wifi_sync.allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "WifiSyncAndroidAllowed": true
-        },
-        "prefs": {
-          "wifi_sync.allowed": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "wifi_sync.allowed",
+      "default_for_enterprise_users": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

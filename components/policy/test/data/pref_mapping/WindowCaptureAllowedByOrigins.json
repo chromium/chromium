@@ -8,25 +8,16 @@
       "android",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "WindowCaptureAllowedByOrigins": [
-            "[*.]google.com",
-            "example.com",
-            "https://example2.com"
-          ]
-        },
-        "prefs": {
-          "hardware.window_capture_allowed_by_origins": {
-            "value": [
-              "[*.]google.com",
-              "example.com",
-              "https://example2.com"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "hardware.window_capture_allowed_by_origins",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "[*.]google.com",
+          "example.com",
+          "https://example2.com"
+        ]
+      ]
+    }
   }
 ]

@@ -7,35 +7,13 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "webauthn.remote_proxied_requests_allowed": {
-            "default_value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "WebAuthenticationRemoteProxiedRequestsAllowed": false
-        },
-        "prefs": {
-          "webauthn.remote_proxied_requests_allowed": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "WebAuthenticationRemoteProxiedRequestsAllowed": true
-        },
-        "prefs": {
-          "webauthn.remote_proxied_requests_allowed": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webauthn.remote_proxied_requests_allowed",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

@@ -3,21 +3,27 @@
     "os": [
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "WaitForInitialUserActivity": true
-        },
-        "prefs": {
-          "power.wait_for_initial_user_activity": {
-            "value": true
-          },
-          "session.wait_for_initial_user_activity": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "session.wait_for_initial_user_activity",
+      "pref_location": "local_state",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
+  },
+  {
+    "os": [
+      "chromeos"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "power.wait_for_initial_user_activity",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

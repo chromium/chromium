@@ -7,23 +7,15 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "WebRtcLocalIpsAllowedUrls": [
-            "https://www.example.com",
-            "*example.com*"
-          ]
-        },
-        "prefs": {
-          "webrtc.local_ips_allowed_urls": {
-            "value": [
-              "https://www.example.com",
-              "*example.com*"
-            ]
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "webrtc.local_ips_allowed_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "https://www.example.com",
+          "*example.com*"
+        ]
+      ]
+    }
   }
 ]
