@@ -156,8 +156,6 @@ ci/Linux UBSan Builder
 ci/Linux UBSan Tests
 ci/Linux Wayland FYI Release (AMD)
 ci/Linux Wayland FYI Release (Intel)
-ci/MSAN Release (chained origins)
-ci/MSAN Release (no origins)
 ci/Mac ASAN Release
 ci/Mac ASAN Release Media
 ci/Mac ASan 64 Builder
@@ -640,8 +638,6 @@ try/linux-headless-shell-rel
 try/linux-js-coverage-rel
 try/linux-libfuzzer-asan-rel
 try/linux-metadata-validator
-try/linux-msan-chained-origins-rel
-try/linux-msan-no-origins-rel
 try/linux-no-initial-webui-rel
 try/linux-oi-rel
 try/linux-perfetto-rel
