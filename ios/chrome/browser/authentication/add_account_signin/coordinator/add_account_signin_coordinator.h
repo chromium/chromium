@@ -21,11 +21,15 @@
     NS_UNAVAILABLE;
 
 // Designated initializer.
+// `contextStyle` is used to customize content on screens.
 // `viewController` presents the sign-in.
 // `accessPoint` is the view where the sign-in button was displayed.
 // `promoAction` is promo button used to trigger the sign-in.
 // `signinIntent` is the sign-in flow that will be triggered.
-// `contextStyle` is used to customize content on screens.
+// `prefilledEmail` preset the email in the add account dialog. The user can
+//     change this email. If the user changes the email and finishes the flow
+//     successfully, the coordinator flow is successful and the sign-in callback
+//     returns SigninCoordinatorResultSuccess.
 - (instancetype)
     initWithBaseViewController:(UIViewController*)viewController
                        browser:(Browser*)browser
@@ -33,7 +37,7 @@
                    accessPoint:(signin_metrics::AccessPoint)accessPoint
                    promoAction:(signin_metrics::PromoAction)promoAction
                   signinIntent:(AddAccountSigninIntent)signinIntent
-                prefilledEmail:(NSString*)email
+                prefilledEmail:(NSString*)prefilledEmail
           continuationProvider:
               (const ChangeProfileContinuationProvider&)continuationProvider
     NS_DESIGNATED_INITIALIZER;

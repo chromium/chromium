@@ -55,7 +55,9 @@ enum class ReauthResult : int {
 // Designated initializer for SigninReauthCoordinator started from an explicit
 // reauthentication UI.
 // `account` - the account for which the reauthentication flow should be
-//            shown.
+//            shown. If the user changes the email address in the add account
+//            dialog, and the reauth dialog is successful, the coordinator
+//            delegate receives kCancelledByUser.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                    account:(const CoreAccountInfo&)account
