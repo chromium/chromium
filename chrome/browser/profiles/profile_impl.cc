@@ -339,6 +339,14 @@ bool LocaleNotChanged(const std::string& pref_locale,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_CHROMEOS)
+ProfileImpl::CloudPolicyManagerTestFactory&
+GetTestingCloudPolicyManagerFactory() {
+  static base::NoDestructor<ProfileImpl::CloudPolicyManagerTestFactory> factory;
+  return *factory;
+}
+#endif
+
 }  // namespace
 
 // static
@@ -443,6 +451,14 @@ void ProfileImpl::RegisterProfilePrefs(
 #endif
   registry->RegisterIntegerPref(prefs::kEnterpriseBadgingTemporarySetting, 0);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+// static
+void ProfileImpl::SetCloudPolicyManagerFactoryForTesting(
+    CloudPolicyManagerTestFactory factory) {
+  GetTestingCloudPolicyManagerFactory() = std::move(factory);
+}
+#endif
 
 ProfileImpl::ProfileImpl(
     const base::FilePath& path,
@@ -594,8 +610,8 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
   // policy data immediately.
   bool force_immediate_policy_load = !async_prefs;
 
-  policy::CloudPolicyManager* cloud_policy_manager;
-  policy::ConfigurationPolicyProvider* policy_provider;
+  policy::CloudPolicyManager* cloud_policy_manager = nullptr;
+  policy::ConfigurationPolicyProvider* policy_provider = nullptr;
 #if BUILDFLAG(IS_CHROMEOS)
   if (force_immediate_policy_load)
     ash::DeviceSettingsService::Get()->LoadImmediately();
@@ -610,28 +626,51 @@ void ProfileImpl::LoadPrefsForNormalStartup(bool async_prefs) {
 #else  // !BUILDFLAG(IS_CHROMEOS)
   {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    ProfileManager* profile_manager = g_browser_process->profile_manager();
-    ProfileAttributesEntry* entry =
-        profile_manager->GetProfileAttributesStorage()
-            .GetProfileAttributesWithPath(GetPath());
-
-    if (entry && (!entry->GetProfileManagementEnrollmentToken().empty() ||
-                  entry->IsDasherlessManagement())) {
-      profile_cloud_policy_manager_ = policy::ProfileCloudPolicyManager::Create(
-          GetPath(), GetPolicySchemaRegistryService()->registry(),
-          force_immediate_policy_load, io_task_runner_,
-          base::BindRepeating(&content::GetNetworkConnectionTracker),
-          entry->IsDasherlessManagement());
-      cloud_policy_manager = profile_cloud_policy_manager_.get();
-    } else {
-#else
-    {
+    if (GetTestingCloudPolicyManagerFactory()) {
+      auto result = GetTestingCloudPolicyManagerFactory().Run(this);
+      if (std::holds_alternative<
+              std::unique_ptr<policy::ProfileCloudPolicyManager>>(result)) {
+        profile_cloud_policy_manager_ = std::move(
+            std::get<std::unique_ptr<policy::ProfileCloudPolicyManager>>(
+                result));
+        cloud_policy_manager = profile_cloud_policy_manager_.get();
+      } else if (std::holds_alternative<
+                     std::unique_ptr<policy::UserCloudPolicyManager>>(result)) {
+        user_cloud_policy_manager_ = std::move(
+            std::get<std::unique_ptr<policy::UserCloudPolicyManager>>(result));
+        cloud_policy_manager = user_cloud_policy_manager_.get();
+      }
+    }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
-          GetPath(), GetPolicySchemaRegistryService()->registry(),
-          force_immediate_policy_load, io_task_runner_,
-          base::BindRepeating(&content::GetNetworkConnectionTracker));
-      cloud_policy_manager = user_cloud_policy_manager_.get();
+
+    if (!cloud_policy_manager) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+      ProfileAttributesEntry* entry = nullptr;
+      if (g_browser_process->profile_manager()) {
+        entry = g_browser_process->profile_manager()
+                    ->GetProfileAttributesStorage()
+                    .GetProfileAttributesWithPath(GetPath());
+      }
+
+      if (entry && (!entry->GetProfileManagementEnrollmentToken().empty() ||
+                    entry->IsDasherlessManagement())) {
+        profile_cloud_policy_manager_ =
+            policy::ProfileCloudPolicyManager::Create(
+                GetPath(), GetPolicySchemaRegistryService()->registry(),
+                force_immediate_policy_load, io_task_runner_,
+                base::BindRepeating(&content::GetNetworkConnectionTracker),
+                entry->IsDasherlessManagement());
+        cloud_policy_manager = profile_cloud_policy_manager_.get();
+      } else {
+#else
+      {
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+        user_cloud_policy_manager_ = policy::UserCloudPolicyManager::Create(
+            GetPath(), GetPolicySchemaRegistryService()->registry(),
+            force_immediate_policy_load, io_task_runner_,
+            base::BindRepeating(&content::GetNetworkConnectionTracker));
+        cloud_policy_manager = user_cloud_policy_manager_.get();
+      }
     }
     policy_provider = cloud_policy_manager;
   }

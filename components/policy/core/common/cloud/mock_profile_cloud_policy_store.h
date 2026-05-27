@@ -12,7 +12,8 @@ namespace policy {
 
 class MockProfileCloudPolicyStore : public ProfileCloudPolicyStore {
  public:
-  explicit MockProfileCloudPolicyStore(const std::string& policy_type);
+  explicit MockProfileCloudPolicyStore(const std::string& policy_type,
+                                       bool is_dasherless = false);
   MockProfileCloudPolicyStore(const MockProfileCloudPolicyStore&) = delete;
   MockProfileCloudPolicyStore& operator=(const MockProfileCloudPolicyStore&) =
       delete;
