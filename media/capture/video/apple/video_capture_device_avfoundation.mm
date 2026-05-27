@@ -269,7 +269,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // pending until we're ready to take another photo, which involves a PostTask
   // back to the main thread after the photo was taken.
   size_t _pendingTakePhotos;
-  SelfHolder _weakPtrHolderForTakePhoto;
 
   // For testing.
   base::RepeatingCallback<void()> _onPhotoOutputStopped;
@@ -323,7 +322,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     _useGPUMemoryBuffer = true;
     _capturedFirstFrame = false;
     _weakPtrHolderForStallCheck.the_self = self;
-    _weakPtrHolderForTakePhoto.the_self = self;
     [self setFrameReceiver:frameReceiver];
     _captureSession = [[AVCaptureSession alloc] init];
     _sampleBufferTransformer = media::SampleBufferTransformer::Create();
@@ -628,11 +626,6 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     // the next takePhotoInternal(), so there is nothing more to do here.
     return;
   }
-  // `_pendingTakePhotos` just went from 0 to 1. In case the 60 second delayed
-  // task to perform stopPhotoOutput() is in-flight, invalidate weak ptrs to
-  // cancel any such operation.
-  _weakPtrHolderForTakePhoto.weak_ptr_factory.InvalidateWeakPtrs();
-
   // Ready to take a photo immediately?
   // Thread-safe because `_photoOutput` is only modified on the main thread.
   if (_photoOutput) {
@@ -664,16 +657,17 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
   // A delay is needed before taking the photo or else the photo may be dark.
   // 2 seconds was enough in manual testing; we delay by 3 for good measure.
+  __weak VideoCaptureDeviceAVFoundation* weakSelf = self;
   _mainThreadTaskRunner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<SelfHolder> weakSelf) {
-            if (!weakSelf.get()) {
-              return;
+          [](VideoCaptureDeviceAVFoundation* __weak wSelf) {
+            VideoCaptureDeviceAVFoundation* sSelf = wSelf;
+            if (sSelf) {
+              [sSelf takePhotoInternal];
             }
-            [weakSelf.get()->the_self takePhotoInternal];
           },
-          _weakPtrHolderForTakePhoto.weak_ptr_factory.GetWeakPtr()),
+          weakSelf),
       base::Seconds(3));
 }
 
@@ -736,19 +730,23 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   }
   // Whether we succeeded or failed, we need to resolve the pending
   // takePhoto() operation.
+  __weak VideoCaptureDeviceAVFoundation* weakSelf = self;
   _mainThreadTaskRunner->PostTask(
       FROM_HERE, base::BindOnce(
-                     [](base::WeakPtr<SelfHolder> weakSelf) {
-                       if (!weakSelf.get()) {
-                         return;
+                     [](VideoCaptureDeviceAVFoundation* __weak wSelf) {
+                       VideoCaptureDeviceAVFoundation* sSelf = wSelf;
+                       if (sSelf) {
+                         [sSelf takePhotoResolved];
                        }
-                       [weakSelf.get()->the_self takePhotoResolved];
                      },
-                     _weakPtrHolderForTakePhoto.weak_ptr_factory.GetWeakPtr()));
+                     weakSelf));
 }
 
 - (void)takePhotoResolved {
   DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  if (_pendingTakePhotos == 0) {
+    return;
+  }
   --_pendingTakePhotos;
   if (_pendingTakePhotos > 0u) {
     // Take another photo.
@@ -758,28 +756,31 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // All pending takePhoto()s have completed. If no more photos are taken
   // within 60 seconds, stop photo output to avoid expensive MJPEG conversions
   // going forward.
+  __weak VideoCaptureDeviceAVFoundation* weakSelf = self;
   _mainThreadTaskRunner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
-          [](base::WeakPtr<SelfHolder> weakSelf) {
-            if (!weakSelf.get()) {
-              return;
+          [](VideoCaptureDeviceAVFoundation* __weak wSelf) {
+            VideoCaptureDeviceAVFoundation* sSelf = wSelf;
+            if (sSelf) {
+              [sSelf stopPhotoOutput];
             }
-            [weakSelf.get()->the_self stopPhotoOutput];
           },
-          _weakPtrHolderForTakePhoto.weak_ptr_factory.GetWeakPtr()),
+          weakSelf),
       base::Seconds(kTimeToWaitBeforeStoppingPhotoOutputInSeconds));
 }
 
 - (void)stopPhotoOutput {
   DCHECK(_mainThreadTaskRunner->BelongsToCurrentThread());
+  if (_pendingTakePhotos > 0u) {
+    return;
+  }
   // Already stopped?
   // Thread-safe because `_photoOutput` is only modified on the main thread.
   if (!_photoOutput) {
     return;
   }
   // Cancel all in-flight operations.
-  _weakPtrHolderForTakePhoto.weak_ptr_factory.InvalidateWeakPtrs();
   {
     base::AutoLock lock(_lock);
     if (_captureSession) {
