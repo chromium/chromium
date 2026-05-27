@@ -481,14 +481,6 @@ inline constexpr char kFirstRunTutorialShown[] =
 inline constexpr char kFileSystemProviderMounted[] =
     "file_system_provider.mounted";
 
-// A boolean pref set to true if the virtual keyboard should be enabled.
-inline constexpr char kTouchVirtualKeyboardEnabled[] =
-    "ui.touch_virtual_keyboard_enabled";
-
-// A boolean pref to enable virtual keyboard smart visibility.
-inline constexpr char kVirtualKeyboardSmartVisibilityEnabled[] =
-    "ui.virtual_keyboard_smart_visibility_enabled";
-
 // A boolean pref. If set to true, the Unified Desktop feature is made
 // available and turned on by default, which allows applications to span
 // multiple screens. Users may turn the feature off and on in the settings

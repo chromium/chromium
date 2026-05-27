@@ -394,9 +394,10 @@ void Preferences::RegisterProfilePrefs(
 
   registry->RegisterStringPref(ash::prefs::kTermsOfServiceURL, "");
 
-  registry->RegisterBooleanPref(::prefs::kTouchVirtualKeyboardEnabled, false);
-  registry->RegisterBooleanPref(::prefs::kVirtualKeyboardSmartVisibilityEnabled,
-                                true);
+  registry->RegisterBooleanPref(ash::prefs::kTouchVirtualKeyboardEnabled,
+                                false);
+  registry->RegisterBooleanPref(
+      ash::prefs::kVirtualKeyboardSmartVisibilityEnabled, true);
 
   registry->RegisterStringPref(prefs::kCaptureModePolicySavePath,
                                std::string());

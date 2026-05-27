@@ -3045,6 +3045,14 @@ inline constexpr char kLanguageShouldMergeInputMethods[] =
 // "xkb:us::eng".
 inline constexpr char kHardwareKeyboardLayout[] = "intl.hardware_keyboard";
 
+// A boolean pref set to true if the virtual keyboard should be enabled.
+inline constexpr char kTouchVirtualKeyboardEnabled[] =
+    "ui.touch_virtual_keyboard_enabled";
+
+// A boolean pref to enable virtual keyboard smart visibility.
+inline constexpr char kVirtualKeyboardSmartVisibilityEnabled[] =
+    "ui.virtual_keyboard_smart_visibility_enabled";
+
 //-----------------------------------------------------------------------------
 // Clock/Timezone related Prefs
 //-----------------------------------------------------------------------------
