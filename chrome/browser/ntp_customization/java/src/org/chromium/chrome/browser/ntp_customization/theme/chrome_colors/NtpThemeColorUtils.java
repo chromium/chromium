@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -222,6 +223,9 @@ public class NtpThemeColorUtils {
         }
 
         if (BottomBarConfigUtils.isBottomBarEnabled(context)) {
+            if (ColorUtils.inNightMode(context)) {
+                return SemanticColorUtils.getColorSurface(context);
+            }
             return SemanticColorUtils.getColorSurfaceContainer(context);
         }
 

@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getO
 import android.content.Context;
 import android.graphics.Color;
 
-import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.MediumTest;
 
@@ -23,12 +22,12 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -88,7 +87,7 @@ public class NewTabPageColorWithFeedV2Test {
 
         Context context = mActivityTestRule.getActivity();
         int expectedTextBoxBackground =
-                ContextCompat.getColor(context, R.color.home_surface_background_color);
+                ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(context);
         Assert.assertEquals(
                 expectedTextBoxBackground, mNtp.getToolbarTextBoxBackgroundColor(Color.BLACK));
 

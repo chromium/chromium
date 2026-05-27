@@ -34,7 +34,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
-import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
@@ -91,6 +90,7 @@ import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordin
 import org.chromium.chrome.browser.toolbar.signin_button.SigninButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone.VisualState;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -612,8 +612,8 @@ public class ToolbarPhoneTest {
         @ColorInt
         int homeSurfaceToolbarBackgroundColor =
                 ColorUtils.setAlphaComponent(
-                        ContextCompat.getColor(
-                                mToolbar.getContext(), R.color.home_surface_background_color),
+                        ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(
+                                mToolbar.getContext()),
                         0);
 
         assertEquals(false, mToolbar.isLocationBarShownInNtp());
@@ -685,8 +685,7 @@ public class ToolbarPhoneTest {
         ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
         @ColorInt
         int homeSurfaceToolbarBackgroundColor =
-                ContextCompat.getColor(
-                        mToolbar.getContext(), R.color.home_surface_background_color);
+                ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(mToolbar.getContext());
 
         assertEquals(false, mToolbar.isLocationBarShownInGeneralNtp());
         assertNotEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());

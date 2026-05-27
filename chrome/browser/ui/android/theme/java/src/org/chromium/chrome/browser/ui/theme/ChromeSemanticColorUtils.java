@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.theme.R;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.util.ColorUtils;
 
 /** Chrome specific version of {@link SemanticColorUtils}. */
 @NullMarked
@@ -48,10 +49,14 @@ public class ChromeSemanticColorUtils {
      * Returns the semantic color value that corresponds to home_surface_background_color.
      *
      * <p>For light mode is colorSurfaceContainerHigh and for dark mode is colorSurface. If the
-     * bottom bar is enabled, returns the surface container color.
+     * bottom bar is enabled, returns the surface container color in light mode and the surface
+     * color in dark mode.
      */
     public static @ColorInt int getHomeSurfaceBackgroundColor(Context context) {
         if (BottomBarConfigUtils.isBottomBarEnabled(context)) {
+            if (ColorUtils.inNightMode(context)) {
+                return SemanticColorUtils.getColorSurface(context);
+            }
             return SemanticColorUtils.getColorSurfaceContainer(context);
         }
         return context.getColor(R.color.home_surface_background_color);

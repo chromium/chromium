@@ -29,7 +29,6 @@ import android.graphics.Matrix;
 import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
-import androidx.core.content.ContextCompat;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
@@ -66,6 +65,7 @@ import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgrou
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.concurrent.Executor;
@@ -380,7 +380,7 @@ public class NtpCustomizationConfigManagerUnitTest {
         int backgroundColor =
                 NtpThemeColorUtils.getBackgroundColorFromNtpBackgroundData(mContext, dataColor);
         @ColorInt
-        int defaultColor = ContextCompat.getColor(mContext, R.color.home_surface_background_color);
+        int defaultColor = ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(mContext);
 
         assertEquals(defaultColor, NtpThemeColorUtils.getDefaultBackgroundColor(mContext));
         mNtpCustomizationConfigManager.setBackgroundTypeForTesting(NtpBackgroundType.DEFAULT);

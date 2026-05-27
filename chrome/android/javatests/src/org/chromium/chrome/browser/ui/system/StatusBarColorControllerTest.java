@@ -54,6 +54,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -174,7 +175,7 @@ public class StatusBarColorControllerTest {
     public void testStatusBarColorNtp() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         final @ColorInt int expectedColor =
-                ContextCompat.getColor(activity, R.color.home_surface_background_color);
+                ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(activity);
 
         mActivityTestRule.loadUrlInNewTab(getOriginalNativeNtpUrl(), false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());

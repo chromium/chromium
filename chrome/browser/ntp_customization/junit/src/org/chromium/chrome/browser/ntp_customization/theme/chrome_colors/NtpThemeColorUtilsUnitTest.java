@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataBase;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataColor;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataCustomizedColor;
+import org.chromium.chrome.browser.ui.theme.ChromeSemanticColorUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 import java.util.ArrayList;
@@ -286,7 +287,7 @@ public class NtpThemeColorUtilsUnitTest {
     @Test
     public void testGetDefaultBackgroundColor() {
         assertEquals(
-                ContextCompat.getColor(mContext, R.color.home_surface_background_color),
+                ChromeSemanticColorUtils.getHomeSurfaceBackgroundColor(mContext),
                 NtpThemeColorUtils.getDefaultBackgroundColor(mContext));
     }
 
