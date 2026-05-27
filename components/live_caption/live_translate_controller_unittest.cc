@@ -180,4 +180,68 @@ TEST_F(LiveTranslateControllerTest,
       "Accessibility.LiveTranslate.GetTranslation.Latency", 1);
 }
 
+TEST_F(LiveTranslateControllerTest, GetTranslation_OnDeviceRestriction) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{live_caption::kLiveCaptionOnDeviceTranslation,
+                            live_caption::
+                                kLiveCaptionOnDeviceTranslationEnglishOnly},
+      /*disabled_features=*/{});
+
+  auto mock_on_device_dispatcher =
+      std::make_unique<testing::NiceMock<MockTranslationDispatcher>>();
+  auto mock_google_api_dispatcher =
+      std::make_unique<testing::NiceMock<MockTranslationDispatcher>>();
+
+  auto* on_device_ptr = mock_on_device_dispatcher.get();
+  auto* google_api_ptr = mock_google_api_dispatcher.get();
+
+  LiveTranslateController controller(&prefs_,
+                                     std::move(mock_on_device_dispatcher),
+                                     std::move(mock_google_api_dispatcher));
+
+  base::MockCallback<TranslateEventCallback> translate_callback;
+
+  // 1. English to French: Should use on-device.
+  EXPECT_CALL(*on_device_ptr, GetTranslation("hello", "en", "fr", testing::_))
+      .Times(1);
+  EXPECT_CALL(*google_api_ptr, GetTranslation("hello", "en", "fr", testing::_))
+      .Times(0);
+  controller.GetTranslation("hello", "en", "fr", translate_callback.Get());
+
+  // 2. French to English: Should use on-device.
+  EXPECT_CALL(*on_device_ptr, GetTranslation("bonjour", "fr", "en", testing::_))
+      .Times(1);
+  EXPECT_CALL(*google_api_ptr,
+              GetTranslation("bonjour", "fr", "en", testing::_))
+      .Times(0);
+  controller.GetTranslation("bonjour", "fr", "en", translate_callback.Get());
+
+  // 3. French to Spanish (no English): Should use Google API.
+  EXPECT_CALL(*on_device_ptr, GetTranslation("bonjour", "fr", "es", testing::_))
+      .Times(0);
+  EXPECT_CALL(*google_api_ptr,
+              GetTranslation("bonjour", "fr", "es", testing::_))
+      .Times(1);
+  controller.GetTranslation("bonjour", "fr", "es", translate_callback.Get());
+
+  // 4. English to zh-tw: Should use Google API.
+  EXPECT_CALL(*on_device_ptr,
+              GetTranslation("hello", "en", "zh-TW", testing::_))
+      .Times(0);
+  EXPECT_CALL(*google_api_ptr,
+              GetTranslation("hello", "en", "zh-TW", testing::_))
+      .Times(1);
+  controller.GetTranslation("hello", "en", "zh-TW", translate_callback.Get());
+
+  // 5. zh-tw to English: Should use Google API.
+  EXPECT_CALL(*on_device_ptr,
+              GetTranslation("hello", "zh-TW", "en", testing::_))
+      .Times(0);
+  EXPECT_CALL(*google_api_ptr,
+              GetTranslation("hello", "zh-TW", "en", testing::_))
+      .Times(1);
+  controller.GetTranslation("hello", "zh-TW", "en", translate_callback.Get());
+}
+
 }  // namespace captions

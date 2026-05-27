@@ -11,4 +11,8 @@ namespace live_caption {
 BASE_FEATURE(kLiveCaptionOnDeviceTranslation,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// By default, do not restrict on-device translation to English-only.
+BASE_FEATURE(kLiveCaptionOnDeviceTranslationEnglishOnly,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace live_caption
