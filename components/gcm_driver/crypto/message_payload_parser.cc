@@ -8,7 +8,9 @@
 
 #include "base/check_op.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/strings/string_view_util.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"
 
 namespace gcm {
@@ -31,26 +33,26 @@ constexpr size_t kMinimumMessageSize =
 
 }  // namespace
 
-MessagePayloadParser::MessagePayloadParser(std::string_view message) {
+MessagePayloadParser::MessagePayloadParser(std::string_view message_view) {
+  auto message = base::as_byte_span(message_view);
   if (message.size() < kMinimumMessageSize) {
     failure_reason_ = GCMDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH;
     return;
   }
 
-  salt_ = std::string(message.substr(0, kSaltSize));
-  message.remove_prefix(kSaltSize);
+  base::SpanReader reader(message);
 
-  record_size_ = base::U32FromBigEndian(base::as_byte_span(message).first<4>());
-  message.remove_prefix(sizeof(record_size_));
+  // We know these reads will succeed because we checked kMinimumMessageSize.
+  salt_ = std::string(base::as_string_view(*reader.Read<kSaltSize>()));
+
+  record_size_ = *reader.ReadU32BigEndian();
 
   if (record_size_ < kMinimumRecordSize) {
     failure_reason_ = GCMDecryptionResult::INVALID_BINARY_HEADER_RECORD_SIZE;
     return;
   }
 
-  uint8_t public_key_length =
-      base::U8FromBigEndian(base::as_byte_span(message).first<1>());
-  message.remove_prefix(sizeof(public_key_length));
+  uint8_t public_key_length = *reader.ReadU8BigEndian();
 
   if (public_key_length != kUncompressedPointSize) {
     failure_reason_ =
@@ -58,16 +60,15 @@ MessagePayloadParser::MessagePayloadParser(std::string_view message) {
     return;
   }
 
-  if (message[0] != 0x04) {
+  auto public_key = *reader.Read<kUncompressedPointSize>();
+  if (public_key[0] != 0x04) {
     failure_reason_ =
         GCMDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_FORMAT;
     return;
   }
+  public_key_ = std::string(base::as_string_view(public_key));
 
-  public_key_ = std::string(message.substr(0, kUncompressedPointSize));
-  message.remove_prefix(kUncompressedPointSize);
-
-  ciphertext_ = std::string(message);
+  ciphertext_ = std::string(base::as_string_view(reader.remaining_span()));
   DCHECK_GE(ciphertext_.size(), kMinimumRecordSize);
 
   is_valid_ = true;
