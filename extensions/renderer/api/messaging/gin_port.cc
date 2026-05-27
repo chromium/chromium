@@ -20,7 +20,6 @@
 #include "gin/arguments.h"
 #include "gin/converter.h"
 #include "gin/object_template_builder.h"
-#include "v8/include/cppgc/persistent.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-object.h"
@@ -48,13 +47,20 @@ GinPort::GinPort(v8::Local<v8::Context> context,
       channel_type_(channel_type),
       event_handler_(event_handler),
       delegate_(delegate),
-      accessed_sender_(false),
-      context_invalidation_listener_(
-          context,
-          base::BindOnce(&GinPort::OnContextInvalidated,
-                         cppgc::WeakPersistent(this))) {}
+      accessed_sender_(false) {
+  context_invalidation_listener_.emplace(
+      context,
+      base::BindOnce(&GinPort::OnContextInvalidated, base::Unretained(this)));
+}
 
 GinPort::~GinPort() = default;
+
+void GinPort::Dispose() {
+  // Destruct the listener synchronously on the main thread to prevent its
+  // CheckedObserver (WeakPtrFactory) from being destroyed during background
+  // GC sweeping, which is not thread-safe.
+  context_invalidation_listener_.reset();
+}
 
 gin::ObjectTemplateBuilder GinPort::GetObjectTemplateBuilder(
     v8::Isolate* isolate) {

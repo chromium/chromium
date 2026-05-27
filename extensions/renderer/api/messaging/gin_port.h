@@ -35,7 +35,6 @@ class APIEventHandler;
 // from JS and forward events to JS).
 class GinPort final : public gin::Wrappable<GinPort> {
   CPPGC_USING_PRE_FINALIZER(GinPort, Dispose);
-
  public:
   class Delegate {
    public:
@@ -93,8 +92,6 @@ class GinPort final : public gin::Wrappable<GinPort> {
   bool is_closed_for_testing() const { return state_ == State::kDisconnected; }
 
  private:
-  void Dispose() { context_invalidation_listener_.Dispose(); }
-
   const gin::WrapperInfo* wrapper_info() const override;
 
   enum class State {
@@ -133,6 +130,9 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // to postMessage() or instantiating new events will fail.
   void OnContextInvalidated();
 
+  // CppGC pre-finalizer cleanup.
+  void Dispose();
+
   // Invalidates the port's events after the port has been disconnected.
   void InvalidateEvents(v8::Local<v8::Context> context);
 
@@ -166,7 +166,8 @@ class GinPort final : public gin::Wrappable<GinPort> {
   // port JS object.
   bool accessed_sender_;
 
-  binding::ContextInvalidationListener context_invalidation_listener_;
+  std::optional<binding::ContextInvalidationListener>
+      context_invalidation_listener_;
 };
 
 }  // namespace extensions
