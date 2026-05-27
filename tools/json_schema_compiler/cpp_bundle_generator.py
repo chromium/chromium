@@ -113,8 +113,8 @@ class CppBundleGenerator(object):
     c = code_util.Code()
     c.Append(cpp_util.CHROMIUM_LICENSE)
     c.Append()
-    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE %
-             cpp_util.ToPosixPath(self._source_file_dir))
+    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE % (cpp_util.ToPosixPath(
+        self._source_file_dir), cpp_util.GetGeneratedByCommandLine()))
     ifndef_name = cpp_util.GenerateIfndefName(
         '%s/%s.h' % (cpp_util.ToPosixPath(self._source_file_dir), file_base))
     c.Append()
@@ -244,6 +244,9 @@ class _APICCGenerator(object):
     c = code_util.Code()
     c.Append(cpp_util.CHROMIUM_LICENSE)
     c.Append()
+    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE % (cpp_util.ToPosixPath(
+        self._bundle._source_file_dir), cpp_util.GetGeneratedByCommandLine()))
+    c.Append()
     c.Append('#include "%s"' % (cpp_util.ToPosixPath(
         os.path.join(self._bundle._impl_dir, 'generated_api_registration.h'))))
     c.Append()
@@ -326,6 +329,9 @@ class _SchemasCCGenerator(object):
   def Generate(self, _):  # namespace not relevant, this is a bundle
     c = code_util.Code()
     c.Append(cpp_util.CHROMIUM_LICENSE)
+    c.Append()
+    c.Append(cpp_util.GENERATED_BUNDLE_FILE_MESSAGE % (cpp_util.ToPosixPath(
+        self._bundle._source_file_dir), cpp_util.GetGeneratedByCommandLine()))
     c.Append()
     c.Append('#include "%s"' % (cpp_util.ToPosixPath(
         os.path.join(self._bundle._source_file_dir, 'generated_schemas.h'))))

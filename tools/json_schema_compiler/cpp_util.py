@@ -10,6 +10,7 @@ from model import PropertyType
 import os
 import posixpath
 import re
+import sys
 
 CHROMIUM_LICENSE = ("""// Copyright %d The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
@@ -18,17 +19,30 @@ GENERATED_FILE_MESSAGE = """// GENERATED FROM THE API DEFINITION IN
 //   %s
 // by tools/json_schema_compiler.
 // DO NOT EDIT.
+//
+// Generator run command:
+//   %s
 """
 GENERATED_BUNDLE_FILE_MESSAGE = """// GENERATED FROM THE API DEFINITIONS IN
 //   %s
 // by tools/json_schema_compiler.
 // DO NOT EDIT.
+//
+// Generator run command:
+//   %s
 """
 GENERATED_FEATURE_MESSAGE = """// GENERATED FROM THE FEATURE DEFINITIONS IN
 //   %s
 // by tools/json_schema_compiler.
 // DO NOT EDIT.
+//
+// Generator run command:
+//   %s
 """
+
+
+def GetGeneratedByCommandLine():
+  return "python3 " + " ".join(sys.argv)
 
 
 def Classname(s):
