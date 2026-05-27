@@ -169,23 +169,15 @@ class CORE_EXPORT SoftNavigationContext
   // Emits the soft navigation performance entry. The context must not have been
   // previously emitted. `WasEmitted()` returns true after this is called.
   //
-  // Note: There are several reasons why we might have an FCP but have not
+  // Note: There are a couple reasons why we might have an FCP but have not
   // emitted an ICP, all of which should be fixed:
-  //   1. crbug.com/383568320: For <video>, we set the paint timestamp for the
-  //      first video frame outside of paint, but require BeginMainFrame +
-  //      presentation feedback to emit the ICP entry. The soft nav entry can be
-  //      emitted in this gap.
+  //  1. crbug.com/383568320: For <video>, we set the paint timestamp for the
+  //     first video frame outside of paint, but require BeginMainFrame +
+  //     presentation feedback to emit the ICP entry. The soft nav entry can be
+  //     emitted in this gap.
   //  2. crbug.com/454082773: If the FCP element is detached from the DOM before
   //     its presentation feedback is processed, we won't emit an ICP entry for
   //     this.
-  //  3. crbug.com/454082771, crbug.com/434160944: We overwrite image and text
-  //     candidates during paint, which affects which candidates we emit when
-  //     processing presentation feedback. For example, if we paint a text node
-  //     (FCP) in frame 1 and a larger image in frame 2, and the feedback for
-  //     frame 1 arrives after frame 2, the image blocks emitting the ICP entry
-  //     for the text. Moving more logic into presentation time, like we do for
-  //     hard LCP, in conjunction with emitting largest presented image/text
-  //     (vs. pending image) would fix this.
   void EmitSoftNavigation();
   bool WasEmitted() const { return was_emitted_; }
 
