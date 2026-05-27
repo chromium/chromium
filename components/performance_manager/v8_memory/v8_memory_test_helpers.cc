@@ -360,8 +360,8 @@ WorkerNodeImpl* WebMemoryTestHarness::AddWorkerNodeImpl(
     NOTREACHED();
   }();
   auto worker_node = CreateNode<WorkerNodeImpl>(
-      worker_type, process_.get(), /*browser_context_id=*/std::string(),
-      worker_token, origin);
+      worker_type, process_.get(),
+      /*browser_context_id=*/base::UnguessableToken(), worker_token, origin);
   if (!script_url.empty()) {
     worker_node->OnFinalResponseURLDetermined(GURL(script_url));
   }

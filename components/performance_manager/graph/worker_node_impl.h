@@ -5,13 +5,11 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_WORKER_NODE_IMPL_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_WORKER_NODE_IMPL_H_
 
-#include <memory>
-#include <string>
-
 #include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/execution_context/execution_context_impl.h"
 #include "components/performance_manager/graph/node_attached_data_storage.h"
 #include "components/performance_manager/graph/node_base.h"
@@ -40,7 +38,7 @@ class WorkerNodeImpl
 
   using TypedNodeBase<WorkerNodeImpl, WorkerNode, WorkerNodeObserver>::FromNode;
 
-  WorkerNodeImpl(const std::string& browser_context_id,
+  WorkerNodeImpl(const base::UnguessableToken& browser_context_id,
                  WorkerType worker_type,
                  ProcessNodeImpl* process_node,
                  const blink::WorkerToken& worker_token,
@@ -53,7 +51,7 @@ class WorkerNodeImpl
 
   // Partial WorkerNode implementation:
   WorkerType GetWorkerType() const override;
-  const std::string& GetBrowserContextID() const override;
+  const base::UnguessableToken& GetBrowserContextID() const override;
   const blink::WorkerToken& GetWorkerToken() const override;
   resource_attribution::WorkerContext GetResourceContext() const override;
   const GURL& GetURL() const override;
@@ -110,7 +108,7 @@ class WorkerNodeImpl
   void RemoveChildWorker(WorkerNodeImpl* worker_node);
 
   // The unique ID of the browser context that this worker belongs to.
-  const std::string browser_context_id_;
+  const base::UnguessableToken browser_context_id_;
 
   // The type of this worker.
   const WorkerType worker_type_;

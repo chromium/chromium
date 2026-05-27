@@ -83,8 +83,8 @@ TestNodeWrapper<WorkerNodeImpl> CreateWorkerNodeWithOrigin(
     const url::Origin& origin) {
   return TestNodeWrapper<WorkerNodeImpl>::Create(
       graph, WorkerNode::WorkerType::kDedicated, process_node,
-      /*browser_context_id=*/std::string(), blink::DedicatedWorkerToken(),
-      origin);
+      /*browser_context_id=*/base::UnguessableToken(),
+      blink::DedicatedWorkerToken(), origin);
 }
 
 // Like MockMultiplePagesAndWorkersWithMultipleProcessesGraph (see

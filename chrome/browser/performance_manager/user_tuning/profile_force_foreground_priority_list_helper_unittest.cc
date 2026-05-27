@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 
+#include "base/unguessable_token.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -21,9 +22,9 @@ class MockDelegate : public ProfileForceForegroundPriorityListHelper::Delegate {
  public:
   MOCK_METHOD(void,
               SetPatterns,
-              (const std::string&, const base::ListValue&),
+              (const base::UnguessableToken&, const base::ListValue&),
               (override));
-  MOCK_METHOD(void, ClearPatterns, (const std::string&), (override));
+  MOCK_METHOD(void, ClearPatterns, (const base::UnguessableToken&), (override));
 };
 
 class ProfileForceForegroundPriorityListHelperTest : public ::testing::Test {
@@ -54,23 +55,27 @@ TEST_F(ProfileForceForegroundPriorityListHelperTest, OriginsPref) {
   TestingPrefServiceSimple prefs;
   RegisterPrefs(&prefs);
 
+  const auto browser_context_id = base::UnguessableToken::Create();
+
   // Initially empty list should trigger a SetPatterns with empty list.
   EXPECT_CALL(*delegate_,
-              SetPatterns("", ::testing::Property(&base::ListValue::size, 0)));
-  helper_->OnProfileAddedImpl("", &prefs);
+              SetPatterns(browser_context_id,
+                          ::testing::Property(&base::ListValue::size, 0)));
+  helper_->OnProfileAddedImpl(browser_context_id, &prefs);
 
   // Add origin.
   base::ListValue patterns;
   patterns.Append("google.com");
   EXPECT_CALL(*delegate_,
-              SetPatterns("", ::testing::Property(&base::ListValue::size, 1)));
+              SetPatterns(browser_context_id,
+                          ::testing::Property(&base::ListValue::size, 1)));
   prefs.SetList(performance_manager::user_tuning::prefs::
                     kForceForegroundPriorityForUrls,
                 patterns.Clone());
 
   // Removing profile should clear patterns.
-  EXPECT_CALL(*delegate_, ClearPatterns(""));
-  helper_->OnProfileWillBeRemovedImpl("");
+  EXPECT_CALL(*delegate_, ClearPatterns(browser_context_id));
+  helper_->OnProfileWillBeRemovedImpl(browser_context_id);
 }
 
 }  // namespace performance_manager::user_tuning

@@ -32,17 +32,17 @@ SiteDataCacheFacade::SiteDataCacheFacade(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SiteDataCacheFacadeFactory::GetInstance()->OnBeforeFacadeCreated(PassKey());
 
-  std::optional<std::string> parent_context_id;
+  std::optional<base::UnguessableToken> parent_context_id;
   if (browser_context->IsOffTheRecord()) {
     content::BrowserContext* parent_context =
         GetBrowserContextRedirectedInIncognito(browser_context);
-    parent_context_id = parent_context->UniqueId();
+    parent_context_id = parent_context->UniqueToken();
   }
 
   // Creates the real cache on the SiteDataCache's sequence.
   SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
-      ->OnBrowserContextCreated(browser_context->UniqueId(),
+      ->OnBrowserContextCreated(browser_context->UniqueToken(),
                                 browser_context->GetPath(), parent_context_id);
 
   history::HistoryService* history =
@@ -56,7 +56,7 @@ SiteDataCacheFacade::~SiteDataCacheFacade() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
-      ->OnBrowserContextDestroyed(browser_context_->UniqueId());
+      ->OnBrowserContextDestroyed(browser_context_->UniqueToken());
   SiteDataCacheFacadeFactory::GetInstance()->OnFacadeDestroyed(PassKey());
 }
 
@@ -65,7 +65,7 @@ bool SiteDataCacheFacade::IsDataCacheRecordingForTesting() {
   return SiteDataCacheFacadeFactory::GetInstance()
       ->cache_factory()
       ->IsDataCacheRecordingForTesting(  // IN-TEST
-          browser_context_->UniqueId());
+          browser_context_->UniqueToken());
 }
 
 void SiteDataCacheFacade::WaitUntilCacheInitializedForTesting() {
@@ -75,7 +75,7 @@ void SiteDataCacheFacade::WaitUntilCacheInitializedForTesting() {
   auto* cache =
       SiteDataCacheFacadeFactory::GetInstance()
           ->cache_factory()
-          ->GetDataCacheForBrowserContext(browser_context_->UniqueId());
+          ->GetDataCacheForBrowserContext(browser_context_->UniqueToken());
   if (cache->IsRecording()) {
     static_cast<SiteDataCacheImpl*>(cache)
         ->SetInitializationCallbackForTesting(  // IN-TEST
@@ -113,7 +113,7 @@ void SiteDataCacheFacade::OnHistoryDeletions(
   auto* cache =
       SiteDataCacheFacadeFactory::GetInstance()
           ->cache_factory()
-          ->GetDataCacheForBrowserContext(browser_context_->UniqueId());
+          ->GetDataCacheForBrowserContext(browser_context_->UniqueToken());
   if (cache->IsRecording()) {
     static_cast<SiteDataCacheImpl*>(cache)->ClearSiteDataForOrigins(
         origins_to_remove);
@@ -133,7 +133,7 @@ void SiteDataCacheFacade::ClearAllSiteData() {
   auto* cache =
       SiteDataCacheFacadeFactory::GetInstance()
           ->cache_factory()
-          ->GetDataCacheForBrowserContext(browser_context_->UniqueId());
+          ->GetDataCacheForBrowserContext(browser_context_->UniqueToken());
   if (cache->IsRecording()) {
     static_cast<SiteDataCacheImpl*>(cache)->ClearAllSiteData();
   }

@@ -71,7 +71,7 @@ DiscardEligibilityPolicy::DiscardEligibilityPolicy() = default;
 DiscardEligibilityPolicy::~DiscardEligibilityPolicy() = default;
 
 void DiscardEligibilityPolicy::SetNoDiscardPatternsForProfile(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     const std::vector<std::string>& patterns) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::unique_ptr<url_matcher::URLMatcher>& entry =
@@ -84,7 +84,7 @@ void DiscardEligibilityPolicy::SetNoDiscardPatternsForProfile(
 }
 
 void DiscardEligibilityPolicy::ClearNoDiscardPatternsForProfile(
-    const std::string& browser_context_id) {
+    const base::UnguessableToken& browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   profiles_no_discard_patterns_.erase(browser_context_id);
   if (opt_out_policy_changed_callback_) {
@@ -104,7 +104,7 @@ void DiscardEligibilityPolicy::RemovesDiscardAttemptMarkerForTesting(
 }
 
 void DiscardEligibilityPolicy::SetOptOutPolicyChangedCallback(
-    base::RepeatingCallback<void(std::string_view)> callback) {
+    base::RepeatingCallback<void(const base::UnguessableToken&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   opt_out_policy_changed_callback_ = std::move(callback);
 }
@@ -435,7 +435,7 @@ CanDiscardResult DiscardEligibilityPolicy::CanDiscard(
 }
 
 bool DiscardEligibilityPolicy::IsPageOptedOutOfDiscarding(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     const GURL& url) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto it = profiles_no_discard_patterns_.find(browser_context_id);

@@ -23,8 +23,9 @@ constexpr char kDataStoreDBName[] = "Site Characteristics Database";
 
 }  // namespace
 
-SiteDataCacheImpl::SiteDataCacheImpl(const std::string& browser_context_id,
-                                     const base::FilePath& browser_context_path)
+SiteDataCacheImpl::SiteDataCacheImpl(
+    const base::UnguessableToken& browser_context_id,
+    const base::FilePath& browser_context_path)
     : browser_context_id_(browser_context_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   data_store_ = std::make_unique<LevelDBSiteDataStore>(
@@ -38,7 +39,8 @@ SiteDataCacheImpl::SiteDataCacheImpl(const std::string& browser_context_id,
   factory->SetDataCacheInspectorForBrowserContext(this, browser_context_id_);
 }
 
-SiteDataCacheImpl::SiteDataCacheImpl(const std::string& browser_context_id)
+SiteDataCacheImpl::SiteDataCacheImpl(
+    const base::UnguessableToken& browser_context_id)
     : browser_context_id_(browser_context_id) {}
 
 SiteDataCacheImpl::~SiteDataCacheImpl() {

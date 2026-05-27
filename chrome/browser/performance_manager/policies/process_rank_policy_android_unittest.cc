@@ -72,7 +72,8 @@ class ProcessRankPolicyAndroidTest : public ChromeRenderViewHostTestHarness {
 
     graph_->PassToGraph(std::make_unique<DiscardEligibilityPolicy>());
     DiscardEligibilityPolicy::GetFromGraph(graph_.get())
-        ->SetNoDiscardPatternsForProfile(GetBrowserContext()->UniqueId(), {});
+        ->SetNoDiscardPatternsForProfile(GetBrowserContext()->UniqueToken(),
+                                         {});
   }
 
   void TearDown() override {
@@ -85,7 +86,7 @@ class ProcessRankPolicyAndroidTest : public ChromeRenderViewHostTestHarness {
     auto process = TestNodeWrapper<ProcessNodeImpl>::Create(graph_.get());
     auto page = TestNodeWrapper<PageNodeImpl>::Create(
         graph_.get(), web_contents()->GetWeakPtr(),
-        GetBrowserContext()->UniqueId());
+        GetBrowserContext()->UniqueToken());
     page->SetType(PageType::kTab);
     auto frame = graph_->CreateFrameNodeAutoId(
         process.get(), page.get(),
@@ -425,7 +426,7 @@ TEST_F(ProcessRankPolicyAndroidTest, OptedOutURLPage) {
   // `DiscardEligibilityPolicy::profiles_no_discard_patterns_` changes was
   // introduced, we can to move this after the navigation.
   DiscardEligibilityPolicy::GetFromGraph(graph_.get())
-      ->SetNoDiscardPatternsForProfile(GetBrowserContext()->UniqueId(),
+      ->SetNoDiscardPatternsForProfile(GetBrowserContext()->UniqueToken(),
                                        {kDefaultUrl.spec()});
 
   DefaultNavigation(page_graph.page.get());
@@ -900,7 +901,7 @@ TEST_F(ProcessRankPolicyAndroidTest,
   auto guest_process = TestNodeWrapper<ProcessNodeImpl>::Create(graph_.get());
   auto guest_page = TestNodeWrapper<PageNodeImpl>::Create(
       graph_.get(), guest_contents->GetWeakPtr(),
-      GetBrowserContext()->UniqueId());
+      GetBrowserContext()->UniqueToken());
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   std::unique_ptr<guest_view::GuestViewBase> webview_guest =

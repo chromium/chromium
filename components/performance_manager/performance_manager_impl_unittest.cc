@@ -8,6 +8,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -64,8 +65,9 @@ TEST_F(PerformanceManagerImplTest, InstantiateNodes) {
   EXPECT_NE(nullptr, process_node.get());
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
-          nullptr, content::WebContents::UniqueToken(), std::string(), GURL(),
-          PagePropertyFlags{}, base::TimeTicks::Now());
+          nullptr, content::WebContents::UniqueToken(),
+          base::UnguessableToken(), GURL(), PagePropertyFlags{},
+          base::TimeTicks::Now());
   EXPECT_NE(nullptr, page_node.get());
 
   // Create a node of each type.
@@ -112,8 +114,9 @@ TEST_F(PerformanceManagerImplTest, BatchDeleteNodes) {
           base::Process::Priority::kMaxValue);
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
-          nullptr, content::WebContents::UniqueToken(), std::string(), GURL(),
-          PagePropertyFlags{}, base::TimeTicks::Now());
+          nullptr, content::WebContents::UniqueToken(),
+          base::UnguessableToken(), GURL(), PagePropertyFlags{},
+          base::TimeTicks::Now());
 
   std::unique_ptr<FrameNodeImpl> parent1_frame =
       PerformanceManagerImpl::CreateFrameNode(
@@ -181,8 +184,9 @@ TEST_F(PerformanceManagerImplTest, GetGraphImpl) {
   // Create a page node for something to target.
   std::unique_ptr<PageNodeImpl> page_node =
       PerformanceManagerImpl::CreatePageNode(
-          nullptr, content::WebContents::UniqueToken(), std::string(), GURL(),
-          PagePropertyFlags{}, base::TimeTicks::Now());
+          nullptr, content::WebContents::UniqueToken(),
+          base::UnguessableToken(), GURL(), PagePropertyFlags{},
+          base::TimeTicks::Now());
 
   ASSERT_TRUE(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   GraphImpl* graph = PerformanceManagerImpl::GetGraphImpl();

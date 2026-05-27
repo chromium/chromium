@@ -48,7 +48,8 @@ class TerminationTargetPolicyTest : public GraphTestHarness {
 
     auto eligibility_policy =
         std::make_unique<policies::DiscardEligibilityPolicy>();
-    eligibility_policy->SetNoDiscardPatternsForProfile("", {});
+    eligibility_policy->SetNoDiscardPatternsForProfile(base::UnguessableToken(),
+                                                       {});
 
     graph()->PassToGraph(std::move(eligibility_policy));
   }

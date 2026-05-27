@@ -4,8 +4,6 @@
 
 #include "chrome/browser/performance_manager/policies/freezing_opt_out_checker.h"
 
-#include <string>
-#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -28,15 +26,15 @@ void FreezingOptOutChecker::SetOptOutPolicyChangedCallback(
 }
 
 bool FreezingOptOutChecker::IsPageOptedOutOfFreezing(
-    std::string_view browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     const GURL& main_frame_url) {
   if (!eligibility_policy_) {
     // If DiscardEligibilityPolicy is deleted before FreezingOptOutChecker, the
     // opt-out policy is unavailable. Assume the page *could* be opted out.
     return true;
   }
-  return eligibility_policy_->IsPageOptedOutOfDiscarding(
-      std::string(browser_context_id), main_frame_url);
+  return eligibility_policy_->IsPageOptedOutOfDiscarding(browser_context_id,
+                                                         main_frame_url);
 }
 
 }  // namespace performance_manager::policies

@@ -48,7 +48,7 @@ base::DictValue WorkerNodeImplDescriber::DescribeWorkerNodeData(
 
   base::DictValue ret;
   ret.Set("worker_type", WorkerTypeToString(impl->GetWorkerType()));
-  ret.Set("browser_context_id", impl->GetBrowserContextID());
+  ret.Set("browser_context_id", impl->GetBrowserContextID().ToString());
   ret.Set("worker_token", impl->GetWorkerToken().ToString());
   ret.Set("resource_context", impl->GetResourceContext().ToString());
   ret.Set("url", impl->GetURL().spec());

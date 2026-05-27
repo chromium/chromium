@@ -17,6 +17,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 #include "components/performance_manager/persistence/site_data/site_data_impl.h"
@@ -35,7 +36,7 @@ class SiteDataCacheImpl : public SiteDataCache,
       base::flat_map<url::Origin,
                      raw_ptr<internal::SiteDataImpl, CtnExperimental>>;
 
-  SiteDataCacheImpl(const std::string& browser_context_id,
+  SiteDataCacheImpl(const base::UnguessableToken& browser_context_id,
                     const base::FilePath& browser_context_path);
 
   SiteDataCacheImpl(const SiteDataCacheImpl&) = delete;
@@ -87,7 +88,7 @@ class SiteDataCacheImpl : public SiteDataCache,
  protected:
   // Version of the constructor that doesn't create the data store, for testing
   // purposes only.
-  explicit SiteDataCacheImpl(const std::string& browser_context_id);
+  explicit SiteDataCacheImpl(const base::UnguessableToken& browser_context_id);
 
  private:
   // Returns a pointer to the SiteDataImpl object associated with |origin|,
@@ -104,7 +105,7 @@ class SiteDataCacheImpl : public SiteDataCache,
       GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The ID of the browser context this data store is associated with.
-  const std::string browser_context_id_;
+  const base::UnguessableToken browser_context_id_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

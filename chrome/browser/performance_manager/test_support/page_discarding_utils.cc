@@ -73,7 +73,8 @@ void GraphTestHarnessWithDiscardablePage::SetUp() {
   // browser context ID, which is the one used by default for new PageNodes.
   auto eligibility_policy =
       std::make_unique<policies::DiscardEligibilityPolicy>();
-  eligibility_policy->SetNoDiscardPatternsForProfile("", {});
+  eligibility_policy->SetNoDiscardPatternsForProfile(base::UnguessableToken(),
+                                                     {});
 
   graph()->PassToGraph(std::move(eligibility_policy));
 

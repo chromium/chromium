@@ -56,7 +56,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
                       public content::SharedWorkerService::Observer,
                       public content::ServiceWorkerContextObserver {
  public:
-  WorkerWatcher(const std::string& browser_context_id,
+  WorkerWatcher(const base::UnguessableToken& browser_context_id,
                 content::DedicatedWorkerService* dedicated_worker_service,
                 content::SharedWorkerService* shared_worker_service,
                 ServiceWorkerContextAdapter* service_worker_context_adapter,
@@ -204,7 +204,7 @@ class WorkerWatcher : public content::DedicatedWorkerService::Observer,
   SEQUENCE_CHECKER(sequence_checker_);
 
   // The ID of the BrowserContext who owns the shared worker service.
-  const std::string browser_context_id_;
+  const base::UnguessableToken browser_context_id_;
 
   // Observes the DedicatedWorkerService for this browser context.
   base::ScopedObservation<content::DedicatedWorkerService,

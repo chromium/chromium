@@ -19,6 +19,7 @@
 #include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -199,7 +200,8 @@ class FreezingPolicyTest_BaseWithNoPage : public GraphTestHarness {
   std::pair<TestNodeWrapper<PageNodeImpl>, TestNodeWrapper<FrameNodeImpl>>
   CreatePageAndFrameWithBrowsingInstanceId(
       content::BrowsingInstanceId browsing_instance_id,
-      const std::string& browsing_context_id = "") {
+      const base::UnguessableToken& browsing_context_id =
+          base::UnguessableToken()) {
     auto page =
         CreateNode<PageNodeImpl>(/*web_contents=*/nullptr, browsing_context_id);
     page->SetType(PageType::kTab);
@@ -1794,8 +1796,8 @@ namespace {
 
 constexpr char kOptOutUrl1[] = "http://a.com/";
 constexpr char kOptOutUrl2[] = "http://b.com/";
-constexpr char kBrowsingContext1[] = "browsing-context-1";
-constexpr char kBrowsingContext2[] = "browsing-context-2";
+const auto kBrowsingContext1 = base::UnguessableToken::CreateForTesting(1, 1);
+const auto kBrowsingContext2 = base::UnguessableToken::CreateForTesting(2, 2);
 
 // A test implementation of OptOutChecker that opts out a single URL.
 class TestOptOutChecker final : public freezing::OptOutChecker {
@@ -1810,13 +1812,14 @@ class TestOptOutChecker final : public freezing::OptOutChecker {
   // of the change.
   void SetOptedOutUrl(
       const std::string& url,
-      const std::vector<std::string>& browser_contexts_to_notify);
+      const std::vector<base::UnguessableToken>& browser_contexts_to_notify);
 
   // OptOutChecker:
   void SetOptOutPolicyChangedCallback(
       OnPolicyChangedForBrowserContextCallback callback) final;
-  bool IsPageOptedOutOfFreezing(std::string_view browser_context_id,
-                                const GURL& main_frame_url) final;
+  bool IsPageOptedOutOfFreezing(
+      const base::UnguessableToken& browser_context_id,
+      const GURL& main_frame_url) final;
 
  private:
   OnPolicyChangedForBrowserContextCallback on_policy_changed_callback_;
@@ -1825,10 +1828,11 @@ class TestOptOutChecker final : public freezing::OptOutChecker {
 
 void TestOptOutChecker::SetOptedOutUrl(
     const std::string& url,
-    const std::vector<std::string>& browser_contexts_to_notify = {}) {
+    const std::vector<base::UnguessableToken>& browser_contexts_to_notify =
+        {}) {
   ASSERT_TRUE(on_policy_changed_callback_);
   opted_out_url_ = GURL(url);
-  for (const std::string& browser_context_id : browser_contexts_to_notify) {
+  for (const auto& browser_context_id : browser_contexts_to_notify) {
     on_policy_changed_callback_.Run(browser_context_id);
   }
 }
@@ -1839,7 +1843,7 @@ void TestOptOutChecker::SetOptOutPolicyChangedCallback(
 }
 
 bool TestOptOutChecker::IsPageOptedOutOfFreezing(
-    std::string_view browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     const GURL& main_frame_url) {
   return opted_out_url_.is_valid() && main_frame_url == opted_out_url_;
 }
@@ -2116,7 +2120,8 @@ TEST_F(FreezingPolicyInfiniteTabsTest, InitiallyVisible) {
   // of most recently used pages. `pages_[0]` should be frozen.
   EXPECT_CALL(*freezer(), MaybeFreezePageNode(pages_[0].get()));
   auto page5 = CreateNode<PageNodeImpl>(
-      /*web_contents=*/nullptr, /*browsing_context_id=*/std::string(), GURL(),
+      /*web_contents=*/nullptr,
+      /*browsing_context_id=*/base::UnguessableToken(), GURL(),
       PagePropertyFlags{PagePropertyFlag::kIsVisible});
   EXPECT_TRUE(page5->IsVisible());
   page5->SetType(PageType::kTab);
@@ -2144,7 +2149,8 @@ TEST_F(FreezingPolicyInfiniteTabsTest, ManyVisibleTabs) {
   for (int i = 0;
        i < features::kInfiniteTabsFreezing_NumProtectedTabs.Get() * 2; ++i) {
     more_pages.push_back(CreateNode<PageNodeImpl>(
-        /*web_contents=*/nullptr, /*browsing_context_id=*/std::string(), GURL(),
+        /*web_contents=*/nullptr,
+        /*browsing_context_id=*/base::UnguessableToken(), GURL(),
         PagePropertyFlags{PagePropertyFlag::kIsVisible}));
     more_pages.back()->SetType(PageType::kTab);
     more_frames.push_back(CreateFrameNodeAutoId(
@@ -2383,7 +2389,8 @@ TEST_F(FreezingPolicyInfiniteTabsTest, NonTab) {
   // Create a new page of type `kExtension`. Unlike the previous case, this
   // should have no effect on freezing.
   auto non_tab_page = CreateNode<PageNodeImpl>(
-      /*web_contents=*/nullptr, /* browsing_context_id=*/std::string(), GURL(),
+      /*web_contents=*/nullptr,
+      /*browsing_context_id=*/base::UnguessableToken(), GURL(),
       PagePropertyFlags{PagePropertyFlag::kIsVisible});
   non_tab_page->SetType(PageType::kExtension);
   auto non_tab_frame =

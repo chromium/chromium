@@ -1181,7 +1181,7 @@ void FreezingPolicy::UpdateFrozenStateOnCPUMeasurement(
 }
 
 void FreezingPolicy::OnOptOutPolicyChanged(
-    std::string_view browser_context_id) {
+    const base::UnguessableToken& browser_context_id) {
   CHECK(opt_out_checker_);
   // Check all pages  with the given `browser_context_id` to see if they're
   // opted out of freezing by the new policy.

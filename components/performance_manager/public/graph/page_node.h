@@ -13,6 +13,7 @@
 #include "base/containers/flat_set.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/public/graph/node.h"
 #include "components/performance_manager/public/graph/node_set_view.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
@@ -88,7 +89,7 @@ class PageNode : public TypedNode<PageNode> {
   ~PageNode() override;
 
   // Returns the unique ID of the browser context that this page belongs to.
-  virtual const std::string& GetBrowserContextID() const = 0;
+  virtual const base::UnguessableToken& GetBrowserContextID() const = 0;
 
   // Returns the opener frame node, if there is one. This may change over the
   // lifetime of this page. See "OnOpenerFrameNodeChanged".

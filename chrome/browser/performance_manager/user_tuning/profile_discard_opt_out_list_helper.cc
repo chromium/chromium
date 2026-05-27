@@ -27,13 +27,14 @@ class ProfileDiscardOptOutListHelperDelegateImpl
  public:
   ~ProfileDiscardOptOutListHelperDelegateImpl() override = default;
 
-  void ClearPatterns(const std::string& browser_context_id) override {
+  void ClearPatterns(
+      const base::UnguessableToken& browser_context_id) override {
     Graph* graph = PerformanceManager::GetGraph();
     policies::DiscardEligibilityPolicy::GetFromGraph(graph)
         ->ClearNoDiscardPatternsForProfile(browser_context_id);
   }
 
-  void SetPatterns(const std::string& browser_context_id,
+  void SetPatterns(const base::UnguessableToken& browser_context_id,
                    const std::vector<std::string>& patterns) override {
     Graph* graph = PerformanceManager::GetGraph();
     policies::DiscardEligibilityPolicy::GetFromGraph(graph)
@@ -44,9 +45,10 @@ class ProfileDiscardOptOutListHelperDelegateImpl
 }  // namespace
 
 ProfileDiscardOptOutListHelper::ProfileDiscardOptOutTracker::
-    ProfileDiscardOptOutTracker(const std::string& browser_context_id,
-                                PrefService* pref_service,
-                                Delegate* delegate)
+    ProfileDiscardOptOutTracker(
+        const base::UnguessableToken& browser_context_id,
+        PrefService* pref_service,
+        Delegate* delegate)
     : browser_context_id_(browser_context_id), delegate_(delegate) {
   pref_change_registrar_.Init(pref_service);
 
@@ -105,15 +107,15 @@ ProfileDiscardOptOutListHelper::ProfileDiscardOptOutListHelper(
 ProfileDiscardOptOutListHelper::~ProfileDiscardOptOutListHelper() = default;
 
 void ProfileDiscardOptOutListHelper::OnProfileAdded(Profile* profile) {
-  OnProfileAddedImpl(profile->UniqueId(), profile->GetPrefs());
+  OnProfileAddedImpl(profile->UniqueToken(), profile->GetPrefs());
 }
 
 void ProfileDiscardOptOutListHelper::OnProfileWillBeRemoved(Profile* profile) {
-  OnProfileWillBeRemovedImpl(profile->UniqueId());
+  OnProfileWillBeRemovedImpl(profile->UniqueToken());
 }
 
 void ProfileDiscardOptOutListHelper::OnProfileAddedImpl(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     PrefService* pref_service) {
   discard_opt_out_trackers_.emplace(
       std::piecewise_construct, std::forward_as_tuple(browser_context_id),
@@ -121,7 +123,7 @@ void ProfileDiscardOptOutListHelper::OnProfileAddedImpl(
 }
 
 void ProfileDiscardOptOutListHelper::OnProfileWillBeRemovedImpl(
-    const std::string& browser_context_id) {
+    const base::UnguessableToken& browser_context_id) {
   auto it = discard_opt_out_trackers_.find(browser_context_id);
   CHECK(it != discard_opt_out_trackers_.end());
   discard_opt_out_trackers_.erase(it);

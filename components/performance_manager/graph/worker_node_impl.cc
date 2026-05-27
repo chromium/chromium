@@ -17,7 +17,7 @@ constexpr char WorkerNodeImpl::kDefaultPriorityReason[] =
 
 using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
-WorkerNodeImpl::WorkerNodeImpl(const std::string& browser_context_id,
+WorkerNodeImpl::WorkerNodeImpl(const base::UnguessableToken& browser_context_id,
                                WorkerType worker_type,
                                ProcessNodeImpl* process_node,
                                const blink::WorkerToken& worker_token,
@@ -43,7 +43,7 @@ WorkerNode::WorkerType WorkerNodeImpl::GetWorkerType() const {
   return worker_type_;
 }
 
-const std::string& WorkerNodeImpl::GetBrowserContextID() const {
+const base::UnguessableToken& WorkerNodeImpl::GetBrowserContextID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return browser_context_id_;
 }

@@ -139,7 +139,7 @@ class SiteDataRecorderTest : public PerformanceManagerTestHarness {
     recorder_ = PerformanceManager::GetGraph()->PassToGraph(
         std::make_unique<SiteDataRecorder>());
 
-    auto browser_context_id = GetBrowserContext()->UniqueId();
+    auto browser_context_id = GetBrowserContext()->UniqueToken();
     auto* factory = SiteDataCacheFactory::GetInstance();
     ASSERT_TRUE(factory);
     factory->SetCacheForTesting(browser_context_id,

@@ -33,7 +33,8 @@ class NonRecordingSiteDataCacheTest : public testing::Test {
 
   void SetUp() override {
     recording_data_cache_ = std::make_unique<SiteDataCacheImpl>(
-        parent_browser_context_.UniqueId(), parent_browser_context_.GetPath());
+        parent_browser_context_.UniqueToken(),
+        parent_browser_context_.GetPath());
 
     // Wait for the database to be initialized.
     base::RunLoop run_loop;
@@ -42,8 +43,8 @@ class NonRecordingSiteDataCacheTest : public testing::Test {
     run_loop.Run();
 
     non_recording_data_cache_ = std::make_unique<NonRecordingSiteDataCache>(
-        off_the_record_browser_context_.UniqueId(), recording_data_cache_.get(),
-        recording_data_cache_.get());
+        off_the_record_browser_context_.UniqueToken(),
+        recording_data_cache_.get(), recording_data_cache_.get());
   }
 
  protected:
@@ -99,7 +100,7 @@ TEST_F(NonRecordingSiteDataCacheTest, EndToEnd) {
 TEST_F(NonRecordingSiteDataCacheTest, InspectorWorks) {
   // Make sure the inspector interface was registered at construction.
   SiteDataCacheInspector* inspector = factory_->GetInspectorForBrowserContext(
-      off_the_record_browser_context_.UniqueId());
+      off_the_record_browser_context_.UniqueToken());
   EXPECT_NE(nullptr, inspector);
   EXPECT_EQ(non_recording_data_cache_.get(), inspector);
 
@@ -133,7 +134,7 @@ TEST_F(NonRecordingSiteDataCacheTest, InspectorWorks) {
   // destruction.
   non_recording_data_cache_.reset();
   EXPECT_EQ(nullptr, factory_->GetInspectorForBrowserContext(
-                         off_the_record_browser_context_.UniqueId()));
+                         off_the_record_browser_context_.UniqueToken()));
 }
 
 }  // namespace performance_manager

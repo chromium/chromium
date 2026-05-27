@@ -48,7 +48,7 @@ class SiteDataCacheImplTest : public ::testing::Test {
   SiteDataCacheImplTest()
       : data_cache_factory_(std::make_unique<SiteDataCacheFactory>()) {
     data_cache_ = std::make_unique<SiteDataCacheImpl>(
-        browser_context_.UniqueId(), browser_context_.GetPath());
+        browser_context_.UniqueToken(), browser_context_.GetPath());
     mock_db_ = new ::testing::StrictMock<MockSiteCache>();
     data_cache_->SetDataStoreForTesting(base::WrapUnique(mock_db_.get()));
     WaitForAsyncOperationsToComplete();
@@ -230,7 +230,7 @@ TEST_F(SiteDataCacheImplTest, InspectorWorks) {
   auto* factory = SiteDataCacheFactory::GetInstance();
   ASSERT_TRUE(factory);
   SiteDataCacheInspector* inspector =
-      factory->GetInspectorForBrowserContext(browser_context_.UniqueId());
+      factory->GetInspectorForBrowserContext(browser_context_.UniqueToken());
   EXPECT_NE(nullptr, inspector);
   EXPECT_EQ(data_cache_.get(), inspector);
 
@@ -264,7 +264,7 @@ TEST_F(SiteDataCacheImplTest, InspectorWorks) {
   // destruction.
   data_cache_.reset();
   EXPECT_EQ(nullptr, factory->GetInspectorForBrowserContext(
-                         browser_context_.UniqueId()));
+                         browser_context_.UniqueToken()));
 }
 
 // TODO(crbug.com/40056631): Turn this into a death test to verify that

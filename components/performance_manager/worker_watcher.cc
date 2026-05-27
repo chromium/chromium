@@ -46,7 +46,7 @@ ProcessNodeImpl* GetProcessNode(content::ChildProcessId render_process_id) {
 }  // namespace
 
 WorkerWatcher::WorkerWatcher(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     content::DedicatedWorkerService* dedicated_worker_service,
     content::SharedWorkerService* shared_worker_service,
     ServiceWorkerContextAdapter* service_worker_context_adapter,

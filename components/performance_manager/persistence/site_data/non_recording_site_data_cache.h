@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache.h"
 #include "components/performance_manager/persistence/site_data/site_data_cache_inspector.h"
 
@@ -21,7 +22,7 @@ namespace performance_manager {
 class NonRecordingSiteDataCache : public SiteDataCache,
                                   public SiteDataCacheInspector {
  public:
-  NonRecordingSiteDataCache(const std::string& browser_context_id,
+  NonRecordingSiteDataCache(const base::UnguessableToken& browser_context_id,
                             SiteDataCacheInspector* data_cache_inspector,
                             SiteDataCache* data_cache_for_readers);
 
@@ -58,7 +59,7 @@ class NonRecordingSiteDataCache : public SiteDataCache,
   raw_ptr<SiteDataCacheInspector> data_cache_inspector_;
 
   // The ID of the browser context this data store is associated with.
-  const std::string browser_context_id_;
+  const base::UnguessableToken browser_context_id_;
 };
 
 }  // namespace performance_manager

@@ -7,6 +7,7 @@
 #include <map>
 
 #include "base/json/values_util.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -16,24 +17,25 @@
 namespace performance_manager::user_tuning {
 namespace {
 
-const char kFirstProfileUniqueId[] = "profile1";
-const char kSecondProfileUniqueId[] = "profile2";
+const auto kFirstProfileUniqueId = base::UnguessableToken::Create();
+const auto kSecondProfileUniqueId = base::UnguessableToken::Create();
 
 class FakeProfileDiscardOptOutListHelperDelegate
     : public ProfileDiscardOptOutListHelper::Delegate {
  public:
   ~FakeProfileDiscardOptOutListHelperDelegate() override = default;
 
-  void ClearPatterns(const std::string& browser_context_id) override {
+  void ClearPatterns(
+      const base::UnguessableToken& browser_context_id) override {
     patterns_.erase(browser_context_id);
   }
 
-  void SetPatterns(const std::string& browser_context_id,
+  void SetPatterns(const base::UnguessableToken& browser_context_id,
                    const std::vector<std::string>& patterns) override {
     patterns_[browser_context_id] = patterns;
   }
 
-  std::map<std::string, std::vector<std::string>> patterns_;
+  std::map<base::UnguessableToken, std::vector<std::string>> patterns_;
 };
 
 }  // namespace
@@ -59,11 +61,12 @@ class ProfileDiscardOptOutListHelperTest : public testing::Test {
 
   void TearDown() override { RemoveProfile(kFirstProfileUniqueId); }
 
-  void AddProfile(const std::string& profile_id, PrefService* prefs) {
+  void AddProfile(const base::UnguessableToken& profile_id,
+                  PrefService* prefs) {
     helper_->OnProfileAddedImpl(profile_id, prefs);
   }
 
-  void RemoveProfile(const std::string& profile_id) {
+  void RemoveProfile(const base::UnguessableToken& profile_id) {
     helper_->OnProfileWillBeRemovedImpl(profile_id);
   }
 

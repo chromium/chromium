@@ -5,8 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_DISCARDS_DISCARDS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_DISCARDS_DISCARDS_UI_H_
 
-#include <memory>
-
+#include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/discards/discards.mojom-forward.h"
 #include "chrome/browser/ui/webui/discards/site_data.mojom-forward.h"
 #include "chrome/common/webui_url_constants.h"
@@ -50,7 +49,7 @@ class DiscardsUI : public ui::MojoWebUIController {
       mojo::PendingReceiver<discards::mojom::GraphDump> receiver);
 
  private:
-  std::string profile_id_;
+  base::UnguessableToken profile_id_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

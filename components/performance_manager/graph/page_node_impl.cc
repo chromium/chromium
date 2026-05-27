@@ -68,7 +68,7 @@ perfetto::StaticString PageNodeVisibilityToString(const bool& is_visible) {
 
 PageNodeImpl::PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
                            const content::WebContents::UniqueToken& page_token,
-                           const std::string& browser_context_id,
+                           const base::UnguessableToken& browser_context_id,
                            const GURL& visible_url,
                            PagePropertyFlags initial_properties,
                            base::TimeTicks visibility_change_time)
@@ -112,7 +112,7 @@ PageNodeImpl::~PageNodeImpl() {
   DCHECK_EQ(nullptr, embedder_frame_node_);
 }
 
-const std::string& PageNodeImpl::GetBrowserContextID() const {
+const base::UnguessableToken& PageNodeImpl::GetBrowserContextID() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return browser_context_id_;
 }

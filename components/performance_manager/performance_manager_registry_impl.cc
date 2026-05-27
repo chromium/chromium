@@ -113,7 +113,7 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(
       insertion_result.first->second.get();
 
   auto worker_watcher = std::make_unique<WorkerWatcher>(
-      browser_context->UniqueId(),
+      browser_context->UniqueToken(),
       storage_partition->GetDedicatedWorkerService(),
       storage_partition->GetSharedWorkerService(),
       service_worker_context_adapter, &frame_node_source_);

@@ -158,7 +158,7 @@ TEST_F(V8ContextTrackerHelpersTest, ValidateV8ContextDescriptionWorkerWorld) {
   blink::DedicatedWorkerToken worker_token;
   auto worker = TestNodeWrapper<WorkerNodeImpl>::Create(
       graph(), WorkerNode::WorkerType::kDedicated, mock_graph->process.get(),
-      "browser_context", worker_token);
+      base::UnguessableToken(), worker_token);
 
   // A valid worker description.
   auto desc = mojom::V8ContextDescription(

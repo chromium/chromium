@@ -184,7 +184,8 @@ template <>
 struct TestNodeWrapper<PageNodeImpl>::Factory {
   static std::unique_ptr<PageNodeImpl> Create(
       base::WeakPtr<content::WebContents> web_contents = nullptr,
-      const std::string& browser_context_id = std::string(),
+      const base::UnguessableToken& browser_context_id =
+          base::UnguessableToken(),
       const GURL& url = GURL(),
       PagePropertyFlags initial_property_flags = {},
       base::TimeTicks visibility_change_time = base::TimeTicks::Now(),
@@ -203,7 +204,8 @@ struct TestNodeWrapper<WorkerNodeImpl>::Factory {
   static std::unique_ptr<WorkerNodeImpl> Create(
       WorkerNode::WorkerType worker_type,
       ProcessNodeImpl* process_node,
-      const std::string& browser_context_id = std::string(),
+      const base::UnguessableToken& browser_context_id =
+          base::UnguessableToken(),
       const blink::WorkerToken& token = blink::WorkerToken(),
       const url::Origin& origin = url::Origin()) {
     return std::make_unique<WorkerNodeImpl>(browser_context_id, worker_type,

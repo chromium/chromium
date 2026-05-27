@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "base/types/token_type.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/performance_manager/decorators/page_aggregator_data.h"
 #include "components/performance_manager/decorators/page_load_tracker_decorator_data.h"
@@ -67,7 +68,7 @@ class PageNodeImpl
 
   PageNodeImpl(base::WeakPtr<content::WebContents> web_contents,
                const content::WebContents::UniqueToken& page_token,
-               const std::string& browser_context_id,
+               const base::UnguessableToken& browser_context_id,
                const GURL& visible_url,
                PagePropertyFlags initial_properties,
                base::TimeTicks visibility_change_time);
@@ -78,7 +79,7 @@ class PageNodeImpl
   ~PageNodeImpl() override;
 
   // Partial PageNode implementation:
-  const std::string& GetBrowserContextID() const override;
+  const base::UnguessableToken& GetBrowserContextID() const override;
   resource_attribution::PageContext GetResourceContext() const override;
   PageType GetType() const override;
   bool IsFocused() const override;
@@ -321,7 +322,7 @@ class PageNodeImpl
       notification_permission_status_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // The unique ID of the browser context that this page belongs to.
-  const std::string browser_context_id_;
+  const base::UnguessableToken browser_context_id_;
 
   // The opener of this page, if there is one.
   raw_ptr<FrameNodeImpl> opener_frame_node_

@@ -126,7 +126,7 @@ TEST_F(PageNodeImplTest, GetTimeSinceLastAudibleChange) {
 
   // Test a page that's audible at creation.
   auto audible_page = CreateNode<PageNodeImpl>(
-      nullptr, /*browser_context_id=*/std::string(), GURL(),
+      nullptr, /*browser_context_id=*/base::UnguessableToken(), GURL(),
       PagePropertyFlags{PagePropertyFlag::kIsAudible});
   AdvanceClock(base::Seconds(56));
   EXPECT_EQ(base::Seconds(56), audible_page->GetTimeSinceLastAudibleChange());
@@ -184,8 +184,7 @@ TEST_F(PageNodeImplTest, GetTimeSinceLastNavigation) {
 }
 
 TEST_F(PageNodeImplTest, BrowserContextID) {
-  const std::string kTestBrowserContextId =
-      base::UnguessableToken::Create().ToString();
+  const auto kTestBrowserContextId = base::UnguessableToken::Create();
   auto page_node = CreateNode<PageNodeImpl>(nullptr, kTestBrowserContextId);
 
   EXPECT_EQ(page_node->GetBrowserContextID(), kTestBrowserContextId);

@@ -68,8 +68,7 @@ TEST_F(WorkerNodeImplDeathTest, SafeDowncast) {
 
 TEST_F(WorkerNodeImplTest, ConstProperties) {
   const WorkerNode::WorkerType kWorkerType = WorkerNode::WorkerType::kShared;
-  const std::string kTestBrowserContextId =
-      base::UnguessableToken::Create().ToString();
+  const auto kTestBrowserContextId = base::UnguessableToken::Create();
   auto process = CreateNode<ProcessNodeImpl>();
   static const blink::WorkerToken kTestWorkerToken;
   static const auto kTestWorkerOrigin =

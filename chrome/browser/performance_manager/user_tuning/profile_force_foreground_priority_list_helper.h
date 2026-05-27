@@ -7,9 +7,9 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -26,9 +26,10 @@ class ProfileForceForegroundPriorityListHelper {
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    virtual void SetPatterns(const std::string& browser_context_id,
+    virtual void SetPatterns(const base::UnguessableToken& browser_context_id,
                              const base::ListValue& patterns) = 0;
-    virtual void ClearPatterns(const std::string& browser_context_id) = 0;
+    virtual void ClearPatterns(
+        const base::UnguessableToken& browser_context_id) = 0;
   };
 
   explicit ProfileForceForegroundPriorityListHelper(
@@ -41,24 +42,26 @@ class ProfileForceForegroundPriorityListHelper {
   // These get their arguments from the public versions above (that take a
   // Profile*). Splitting them off here allows unit testing without creating an
   // entire Profile and all the associated components.
-  void OnProfileAddedImpl(const std::string& browser_context_id,
+  void OnProfileAddedImpl(const base::UnguessableToken& browser_context_id,
                           PrefService* pref_service);
-  void OnProfileWillBeRemovedImpl(const std::string& browser_context_id);
+  void OnProfileWillBeRemovedImpl(
+      const base::UnguessableToken& browser_context_id);
 
  private:
   // A helper class to encapsulate the tracking of a single profile's
   // preference.
   class ProfileForceForegroundPriorityTracker {
    public:
-    ProfileForceForegroundPriorityTracker(const std::string& browser_context_id,
-                                          PrefService* pref_service,
-                                          Delegate* delegate);
+    ProfileForceForegroundPriorityTracker(
+        const base::UnguessableToken& browser_context_id,
+        PrefService* pref_service,
+        Delegate* delegate);
     ~ProfileForceForegroundPriorityTracker();
 
    private:
     void OnPrefChanged();
 
-    const std::string browser_context_id_;
+    const base::UnguessableToken browser_context_id_;
     PrefChangeRegistrar pref_change_registrar_;
     const raw_ptr<Delegate> delegate_;
     // The last value of the preference. This is used to deduplicate updates. It
@@ -69,7 +72,7 @@ class ProfileForceForegroundPriorityListHelper {
 
   std::unique_ptr<Delegate> delegate_;
 
-  absl::flat_hash_map<std::string,
+  absl::flat_hash_map<base::UnguessableToken,
                       std::unique_ptr<ProfileForceForegroundPriorityTracker>>
       trackers_;
 };

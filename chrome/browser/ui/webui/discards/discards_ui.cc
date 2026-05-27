@@ -396,7 +396,7 @@ DiscardsUI::DiscardsUI(content::WebUI* web_ui)
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
-  profile_id_ = profile->UniqueId();
+  profile_id_ = profile->UniqueToken();
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(DiscardsUI)

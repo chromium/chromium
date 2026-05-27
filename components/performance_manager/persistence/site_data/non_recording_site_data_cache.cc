@@ -14,7 +14,7 @@
 namespace performance_manager {
 
 NonRecordingSiteDataCache::NonRecordingSiteDataCache(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     SiteDataCacheInspector* data_cache_inspector,
     SiteDataCache* data_cache_for_readers)
     : data_cache_for_readers_(data_cache_for_readers),

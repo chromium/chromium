@@ -42,8 +42,8 @@ WorkerNodeImpl* TestWorkerNodeFactory::CreateDedicatedWorker(
     const url::Origin& origin) {
   auto insertion_result =
       worker_nodes_.insert(TestNodeWrapper<WorkerNodeImpl>::Create(
-          graph_, WorkerNode::WorkerType::kDedicated, process_node, "",
-          blink::WorkerToken(), origin));
+          graph_, WorkerNode::WorkerType::kDedicated, process_node,
+          base::UnguessableToken(), blink::WorkerToken(), origin));
   DCHECK(insertion_result.second);
 
   WorkerNodeImpl* worker_node = insertion_result.first->get();
@@ -59,8 +59,8 @@ WorkerNodeImpl* TestWorkerNodeFactory::CreateDedicatedWorker(
     const url::Origin& origin) {
   auto insertion_result =
       worker_nodes_.insert(TestNodeWrapper<WorkerNodeImpl>::Create(
-          graph_, WorkerNode::WorkerType::kDedicated, process_node, "",
-          blink::WorkerToken(), origin));
+          graph_, WorkerNode::WorkerType::kDedicated, process_node,
+          base::UnguessableToken(), blink::WorkerToken(), origin));
   DCHECK(insertion_result.second);
 
   WorkerNodeImpl* worker_node = insertion_result.first->get();

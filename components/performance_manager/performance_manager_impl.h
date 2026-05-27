@@ -73,7 +73,7 @@ class PerformanceManagerImpl : public PerformanceManager {
   static std::unique_ptr<PageNodeImpl> CreatePageNode(
       base::WeakPtr<content::WebContents> web_contents,
       const content::WebContents::UniqueToken& web_contents_token,
-      const std::string& browser_context_id,
+      const base::UnguessableToken& browser_context_id,
       const GURL& visible_url,
       PagePropertyFlags initial_properties,
       base::TimeTicks visibility_change_time);
@@ -86,7 +86,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       content::ProcessType process_type,
       BrowserChildProcessHostProxy proxy);
   static std::unique_ptr<WorkerNodeImpl> CreateWorkerNode(
-      const std::string& browser_context_id,
+      const base::UnguessableToken& browser_context_id,
       WorkerNode::WorkerType worker_type,
       ProcessNodeImpl* process_node,
       const blink::WorkerToken& worker_token,

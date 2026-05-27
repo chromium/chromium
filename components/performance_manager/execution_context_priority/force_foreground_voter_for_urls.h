@@ -6,9 +6,9 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_EXECUTION_CONTEXT_PRIORITY_FORCE_FOREGROUND_VOTER_FOR_URLS_H_
 
 #include <memory>
-#include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/public/execution_context_priority/execution_context_priority.h"
 #include "components/performance_manager/public/execution_context_priority/priority_voting_system.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -40,11 +40,12 @@ class ForceForegroundVoterForUrls
   // Sets the URL patterns for a given browser context. Any frame or worker
   // associated with this browser context that matches one of these patterns
   // will be foregrounded.
-  void SetPatternsForProfile(const std::string& browser_context_id,
+  void SetPatternsForProfile(const base::UnguessableToken& browser_context_id,
                              const base::ListValue& patterns);
 
   // Clear the patterns for a given browser context.
-  void ClearPatternsForProfile(const std::string& browser_context_id);
+  void ClearPatternsForProfile(
+      const base::UnguessableToken& browser_context_id);
 
   // PriorityVoter:
   void InitializeOnGraph(Graph* graph, VotingChannel voting_channel) override;
@@ -81,14 +82,15 @@ class ForceForegroundVoterForUrls
   void ReleaseForeground(
       const execution_context::ExecutionContext* execution_context);
 
-  bool ShouldBoost(const std::string& browser_context_id,
+  bool ShouldBoost(const base::UnguessableToken& browser_context_id,
                    const GURL& url) const;
 
   raw_ptr<Graph> graph_ = nullptr;
   VotingChannel voting_channel_;
 
   // Maps each browser context ID to its associated URLMatcher.
-  absl::flat_hash_map<std::string, std::unique_ptr<url_matcher::URLMatcher>>
+  absl::flat_hash_map<base::UnguessableToken,
+                      std::unique_ptr<url_matcher::URLMatcher>>
       profiles_force_foreground_patterns_;
 
   // Keeps track of foregrounded contexts.

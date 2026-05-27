@@ -390,8 +390,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, NoDiscardPatterns) {
-  const std::string default_browser_context_id =
-      browser()->profile()->UniqueId();
+  const auto& default_browser_context_id = browser()->profile()->UniqueToken();
   const std::string base_url_pattern =
       embedded_test_server()->base_url().spec();
 
@@ -403,7 +402,7 @@ IN_PROC_BROWSER_TEST_P(PageDiscardingHelperBrowserTest, NoDiscardPatterns) {
         DiscardReason::FROZEN_WITH_GROWING_MEMORY}) {
     // Also test that FreezingOptOutChecker is hooked up to
     // PageDiscardingHelper correctly.
-    base::test::TestFuture<std::string_view> policy_changed_future;
+    base::test::TestFuture<const base::UnguessableToken&> policy_changed_future;
     auto policy_changed_callback = policy_changed_future.GetRepeatingCallback();
 
     auto* eligibility_policy =

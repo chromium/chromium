@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -30,7 +31,7 @@ using DummyVoteObserver = voting::test::DummyVoteObserver<Vote>;
 
 namespace {
 
-const char kBrowserContextId[] = "browser_context_id";
+const auto kBrowserContextId = base::UnguessableToken::Create();
 
 class ForceForegroundVoterForUrlsTest : public GraphTestHarness {
  public:
@@ -50,7 +51,7 @@ class ForceForegroundVoterForUrlsTest : public GraphTestHarness {
     voter_->InitializeOnGraph(graph(), observer_.BuildVotingChannel());
   }
 
-  void SetPatterns(const std::string& browser_context_id,
+  void SetPatterns(const base::UnguessableToken& browser_context_id,
                    const std::vector<std::string>& patterns_vector) {
     base::ListValue patterns;
     for (const auto& pattern : patterns_vector) {
@@ -144,8 +145,8 @@ TEST_F(ForceForegroundVoterForUrlsTest, WorkerMatchingUrl) {
 }
 
 TEST_F(ForceForegroundVoterForUrlsTest, MultipleProfiles) {
-  const char kProfile1[] = "profile1";
-  const char kProfile2[] = "profile2";
+  const auto kProfile1 = base::UnguessableToken::Create();
+  const auto kProfile2 = base::UnguessableToken::Create();
 
   SetPatterns(kProfile1, {"example.com"});
   SetPatterns(kProfile2, {"other.com"});

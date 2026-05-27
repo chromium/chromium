@@ -343,7 +343,7 @@ class CpuHealthTrackerActionabilityTest
     policies::DiscardEligibilityPolicy* const eligibility_policy =
         policies::DiscardEligibilityPolicy::GetFromGraph(graph);
     CHECK(eligibility_policy);
-    eligibility_policy->SetNoDiscardPatternsForProfile(profile()->UniqueId(),
+    eligibility_policy->SetNoDiscardPatternsForProfile(profile()->UniqueToken(),
                                                        {});
 
     helper_ = std::make_unique<ProfileDiscardOptOutListHelper>();
@@ -692,7 +692,7 @@ TEST_F(CpuHealthTrackerActionabilityTest, ActionableTabsIgnoreIncognitoTabs) {
   // doesn't happen in tests.
   Graph* graph = PerformanceManager::GetGraph();
   policies::DiscardEligibilityPolicy::GetFromGraph(graph)
-      ->SetNoDiscardPatternsForProfile(incognito_profile->UniqueId(), {});
+      ->SetNoDiscardPatternsForProfile(incognito_profile->UniqueToken(), {});
 
   resource_attribution::PageContext default_page_context =
       AddBackgroundTab("http://b.com", default_profile);

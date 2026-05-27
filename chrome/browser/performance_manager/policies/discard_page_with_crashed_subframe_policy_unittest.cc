@@ -49,7 +49,8 @@ class DiscardPageWithCrashedSubframePolicyTest
         std::make_unique<DiscardPageWithCrashedSubframePolicy>());
 
     DiscardEligibilityPolicy::GetFromGraph(graph_.get())
-        ->SetNoDiscardPatternsForProfile(GetBrowserContext()->UniqueId(), {});
+        ->SetNoDiscardPatternsForProfile(GetBrowserContext()->UniqueToken(),
+                                         {});
   }
 
   void TearDown() override {
@@ -63,7 +64,7 @@ class DiscardPageWithCrashedSubframePolicyTest
     auto process_node = TestNodeWrapper<ProcessNodeImpl>::Create(graph_.get());
     auto page_node = TestNodeWrapper<PageNodeImpl>::Create(
         graph_.get(), web_contents()->GetWeakPtr(),
-        GetBrowserContext()->UniqueId());
+        GetBrowserContext()->UniqueToken());
     // Set page node properties to make it eligible for discarding.
     page_node.get()->SetMainFrameRestoredState(
         GURL("http://foo.com"), /* notification_permission_status= */ blink::

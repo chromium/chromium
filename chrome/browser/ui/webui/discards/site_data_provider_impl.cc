@@ -84,7 +84,8 @@ discards::mojom::SiteDataEntryPtr ConvertEntryFromProto(SiteDataProto* proto) {
 
 }  // namespace
 
-SiteDataProviderImpl::SiteDataProviderImpl(const std::string& profile_id)
+SiteDataProviderImpl::SiteDataProviderImpl(
+    const base::UnguessableToken& profile_id)
     : profile_id_(profile_id) {}
 
 SiteDataProviderImpl::~SiteDataProviderImpl() = default;
@@ -92,7 +93,7 @@ SiteDataProviderImpl::~SiteDataProviderImpl() = default;
 // static
 void SiteDataProviderImpl::CreateAndBind(
     mojo::PendingReceiver<discards::mojom::SiteDataProvider> receiver,
-    const std::string& profile_id_,
+    const base::UnguessableToken& profile_id_,
     performance_manager::Graph* graph) {
   std::unique_ptr<SiteDataProviderImpl> site_data_provider =
       std::make_unique<SiteDataProviderImpl>(profile_id_);

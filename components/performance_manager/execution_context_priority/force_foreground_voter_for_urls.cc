@@ -22,7 +22,7 @@ ForceForegroundVoterForUrls::ForceForegroundVoterForUrls() = default;
 ForceForegroundVoterForUrls::~ForceForegroundVoterForUrls() = default;
 
 void ForceForegroundVoterForUrls::SetPatternsForProfile(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     const base::ListValue& patterns) {
   std::unique_ptr<url_matcher::URLMatcher>& entry =
       profiles_force_foreground_patterns_[browser_context_id];
@@ -51,7 +51,7 @@ void ForceForegroundVoterForUrls::SetPatternsForProfile(
 }
 
 void ForceForegroundVoterForUrls::ClearPatternsForProfile(
-    const std::string& browser_context_id) {
+    const base::UnguessableToken& browser_context_id) {
   size_t removed =
       profiles_force_foreground_patterns_.erase(browser_context_id);
   CHECK_EQ(removed, 1u);
@@ -171,7 +171,7 @@ void ForceForegroundVoterForUrls::ReleaseForeground(
 }
 
 bool ForceForegroundVoterForUrls::ShouldBoost(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     const GURL& url) const {
   auto it = profiles_force_foreground_patterns_.find(browser_context_id);
   if (it == profiles_force_foreground_patterns_.end()) {

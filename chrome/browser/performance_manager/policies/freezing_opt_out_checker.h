@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_FREEZING_OPT_OUT_CHECKER_H_
 #define CHROME_BROWSER_PERFORMANCE_MANAGER_POLICIES_FREEZING_OPT_OUT_CHECKER_H_
 
-#include <string_view>
-
 #include "base/memory/weak_ptr.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "components/performance_manager/public/freezing/freezing.h"
 
@@ -26,8 +25,9 @@ class FreezingOptOutChecker final : public freezing::OptOutChecker {
 
   void SetOptOutPolicyChangedCallback(
       OnPolicyChangedForBrowserContextCallback callback) final;
-  bool IsPageOptedOutOfFreezing(std::string_view browser_context_id,
-                                const GURL& main_frame_url) final;
+  bool IsPageOptedOutOfFreezing(
+      const base::UnguessableToken& browser_context_id,
+      const GURL& main_frame_url) final;
 
  private:
   base::WeakPtr<DiscardEligibilityPolicy> eligibility_policy_;

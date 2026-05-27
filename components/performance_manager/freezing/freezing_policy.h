@@ -235,7 +235,7 @@ class FreezingPolicy : public PageNodeObserver,
 
   // Invoked by the OptOutChecker when the opt-out policy for
   // `browser_context_id` changes.
-  void OnOptOutPolicyChanged(std::string_view browser_context_id);
+  void OnOptOutPolicyChanged(const base::UnguessableToken& browser_context_id);
 
   // Removes the last page from the most recently used list if needed, to keep
   // its size below the limit.

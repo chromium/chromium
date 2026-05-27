@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/unguessable_token.h"
 #include "components/performance_manager/public/freezing/cannot_freeze_reason.h"
 #include "components/performance_manager/public/graph/page_node.h"
 
@@ -55,7 +56,7 @@ class OptOutChecker {
   // A callback that should be invoked with a browser context ID string
   // whenever the opt-out policy for that browser context changes.
   using OnPolicyChangedForBrowserContextCallback =
-      base::RepeatingCallback<void(std::string_view)>;
+      base::RepeatingCallback<void(const base::UnguessableToken&)>;
 
   virtual ~OptOutChecker() = default;
 
@@ -67,8 +68,9 @@ class OptOutChecker {
   // The freezing policy will call this to check if a page with the given
   // `main_frame_url` should be opted out of freezing, according to the freezing
   // policy for `browser_context_id`.
-  virtual bool IsPageOptedOutOfFreezing(std::string_view browser_context_id,
-                                        const GURL& main_frame_url) = 0;
+  virtual bool IsPageOptedOutOfFreezing(
+      const base::UnguessableToken& browser_context_id,
+      const GURL& main_frame_url) = 0;
 };
 
 // Whether a page can be frozen.

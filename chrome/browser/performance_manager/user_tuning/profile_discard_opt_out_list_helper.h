@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
+#include "base/unguessable_token.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
@@ -25,8 +26,9 @@ class ProfileDiscardOptOutListHelper {
   class Delegate {
    public:
     virtual ~Delegate() = default;
-    virtual void ClearPatterns(const std::string& browser_context_id) = 0;
-    virtual void SetPatterns(const std::string& browser_context_id,
+    virtual void ClearPatterns(
+        const base::UnguessableToken& browser_context_id) = 0;
+    virtual void SetPatterns(const base::UnguessableToken& browser_context_id,
                              const std::vector<std::string>& patterns) = 0;
   };
 
@@ -47,15 +49,16 @@ class ProfileDiscardOptOutListHelper {
    public:
     // Initialize this tracker's state, such that it starts observing the
     // relevant prefs in `pref_service`.
-    ProfileDiscardOptOutTracker(const std::string& browser_context_id,
-                                PrefService* pref_service,
-                                Delegate* delegate);
+    ProfileDiscardOptOutTracker(
+        const base::UnguessableToken& browser_context_id,
+        PrefService* pref_service,
+        Delegate* delegate);
     ~ProfileDiscardOptOutTracker();
 
    private:
     void OnOptOutListChanged();
 
-    const std::string browser_context_id_;
+    const base::UnguessableToken browser_context_id_;
     PrefChangeRegistrar pref_change_registrar_;
     const raw_ptr<Delegate> delegate_;
   };
@@ -63,13 +66,15 @@ class ProfileDiscardOptOutListHelper {
   // These get their arguments from the public versions above (that take a
   // Profile*). Splitting them off here allows unit testing without creating an
   // entire Profile and all the associated components.
-  void OnProfileAddedImpl(const std::string& browser_context_id,
+  void OnProfileAddedImpl(const base::UnguessableToken& browser_context_id,
                           PrefService* pref_service);
-  void OnProfileWillBeRemovedImpl(const std::string& browser_context_id);
+  void OnProfileWillBeRemovedImpl(
+      const base::UnguessableToken& browser_context_id);
 
   const std::unique_ptr<Delegate> delegate_;
 
-  std::map<std::string, ProfileDiscardOptOutTracker> discard_opt_out_trackers_;
+  std::map<base::UnguessableToken, ProfileDiscardOptOutTracker>
+      discard_opt_out_trackers_;
 };
 
 }  // namespace performance_manager::user_tuning

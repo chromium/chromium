@@ -111,7 +111,7 @@ std::unique_ptr<FrameNodeImpl> PerformanceManagerImpl::CreateFrameNode(
 std::unique_ptr<PageNodeImpl> PerformanceManagerImpl::CreatePageNode(
     base::WeakPtr<content::WebContents> web_contents,
     const content::WebContents::UniqueToken& web_contents_token,
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     const GURL& visible_url,
     PagePropertyFlags initial_property_flags,
     base::TimeTicks visibility_change_time) {
@@ -144,7 +144,7 @@ std::unique_ptr<ProcessNodeImpl> PerformanceManagerImpl::CreateProcessNode(
 
 // static
 std::unique_ptr<WorkerNodeImpl> PerformanceManagerImpl::CreateWorkerNode(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     WorkerNode::WorkerType worker_type,
     ProcessNodeImpl* process_node,
     const blink::WorkerToken& worker_token,

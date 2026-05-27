@@ -20,7 +20,7 @@ class ProfileForceForegroundPriorityListHelperDelegateImpl
  public:
   ~ProfileForceForegroundPriorityListHelperDelegateImpl() override = default;
 
-  void SetPatterns(const std::string& browser_context_id,
+  void SetPatterns(const base::UnguessableToken& browser_context_id,
                    const base::ListValue& patterns) override {
     auto* voter_for_urls =
         execution_context_priority::ForceForegroundVoterForUrls::GetFromGraph(
@@ -29,7 +29,8 @@ class ProfileForceForegroundPriorityListHelperDelegateImpl
     voter_for_urls->SetPatternsForProfile(browser_context_id, patterns);
   }
 
-  void ClearPatterns(const std::string& browser_context_id) override {
+  void ClearPatterns(
+      const base::UnguessableToken& browser_context_id) override {
     auto* voter_for_urls =
         execution_context_priority::ForceForegroundVoterForUrls::GetFromGraph(
             PerformanceManager::GetGraph());
@@ -43,7 +44,7 @@ class ProfileForceForegroundPriorityListHelperDelegateImpl
 ProfileForceForegroundPriorityListHelper::
     ProfileForceForegroundPriorityTracker::
         ProfileForceForegroundPriorityTracker(
-            const std::string& browser_context_id,
+            const base::UnguessableToken& browser_context_id,
             PrefService* pref_service,
             Delegate* delegate)
     : browser_context_id_(browser_context_id), delegate_(delegate) {
@@ -91,16 +92,16 @@ ProfileForceForegroundPriorityListHelper::
 
 void ProfileForceForegroundPriorityListHelper::OnProfileAdded(
     Profile* profile) {
-  OnProfileAddedImpl(profile->UniqueId(), profile->GetPrefs());
+  OnProfileAddedImpl(profile->UniqueToken(), profile->GetPrefs());
 }
 
 void ProfileForceForegroundPriorityListHelper::OnProfileWillBeRemoved(
     Profile* profile) {
-  OnProfileWillBeRemovedImpl(profile->UniqueId());
+  OnProfileWillBeRemovedImpl(profile->UniqueToken());
 }
 
 void ProfileForceForegroundPriorityListHelper::OnProfileAddedImpl(
-    const std::string& browser_context_id,
+    const base::UnguessableToken& browser_context_id,
     PrefService* pref_service) {
   trackers_.try_emplace(browser_context_id,
                         std::make_unique<ProfileForceForegroundPriorityTracker>(
@@ -108,7 +109,7 @@ void ProfileForceForegroundPriorityListHelper::OnProfileAddedImpl(
 }
 
 void ProfileForceForegroundPriorityListHelper::OnProfileWillBeRemovedImpl(
-    const std::string& browser_context_id) {
+    const base::UnguessableToken& browser_context_id) {
   trackers_.erase(browser_context_id);
 }
 
