@@ -54,8 +54,8 @@ struct EncodedFrame {
   base::TimeTicks reference_time;
 
   // Playout delay for this and all future frames. Used by the Adaptive
-  // Playout delay extension. Zero means no change.
-  uint16_t new_playout_delay_ms = 0;
+  // Playout delay extension. A zero or negative duration means no change.
+  base::TimeDelta new_playout_delay;
 
   // The encoded signal data.
   base::HeapArray<uint8_t> data;

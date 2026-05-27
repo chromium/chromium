@@ -25,7 +25,7 @@ TEST(OpenscreenConversionHelpersTest, EncodedFrameConversions) {
   original.frame_id = FrameId::first();
   original.rtp_timestamp = ToRtpTimeTicks(base::Seconds(3), 9000);
   original.reference_time = base::TimeTicks() + base::Milliseconds(1338);
-  original.new_playout_delay_ms = 564;
+  original.new_playout_delay = base::Milliseconds(564);
   constexpr const char kData[] = "i am actually a very complex video image!";
 
   original.data =

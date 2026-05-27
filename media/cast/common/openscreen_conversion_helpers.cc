@@ -87,7 +87,8 @@ const openscreen::cast::EncodedFrame ToOpenscreenEncodedFrame(
       encoded_frame.frame_id, encoded_frame.referenced_frame_id,
       encoded_frame.rtp_timestamp,
       ToOpenscreenTimePoint(encoded_frame.reference_time),
-      std::chrono::milliseconds(encoded_frame.new_playout_delay_ms),
+      std::chrono::milliseconds(
+          encoded_frame.new_playout_delay.InMilliseconds()),
       ToOpenscreenTimePoint(encoded_frame.capture_begin_time),
       ToOpenscreenTimePoint(encoded_frame.capture_end_time),
       openscreen::ByteView(
