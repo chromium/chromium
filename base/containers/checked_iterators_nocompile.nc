@@ -13,12 +13,14 @@ constexpr int kArray1[] = {1, 2, 3, 4, 5};
 constexpr int kArray2[] = {1, 2, 3, 4, 5};
 
 constexpr auto GetBeginIter() {
-  return CheckedContiguousIterator<const int>(kArray1, kArray1 + 5);
+  // SAFETY: Test helper.
+  return UNSAFE_BUFFERS(CheckedContiguousIterator<const int>(kArray1, kArray1 + 5));
 }
 
 constexpr auto GetEndIter() {
-  return CheckedContiguousIterator<const int>(kArray1, kArray1 + 5,
-                                              kArray1 + 5);
+  // SAFETY: Test helper.
+  return UNSAFE_BUFFERS(CheckedContiguousIterator<const int>(kArray1, kArray1 + 5,
+                                                             kArray1 + 5));
 }
 
 void ConstructorOrdering() {
