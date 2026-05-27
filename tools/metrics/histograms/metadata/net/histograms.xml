@@ -8506,19 +8506,24 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.SqlDiskCache.Backend.{EvictionType}.ScannedEntriesCount.{TimeType}"
+    name="Net.SqlDiskCache.Backend.{EvictionType}.ScannedEntriesCount.{LookupType}.{ResultType}"
     units="entries" expires_after="2026-09-06">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
-    Records the number of entries scanned in the database during a single
-    eviction candidate selection run in the SQL-based disk cache.
+    Records the number of entries scanned in the database or in-memory index
+    during a single eviction candidate selection run in the SQL-based disk
+    cache.
   </summary>
   <token key="EvictionType">
     <variant name="RunEviction"/>
     <variant name="RunEvictionOnIdleTime"/>
   </token>
-  <token key="TimeType">
+  <token key="LookupType">
+    <variant name="Database"/>
+    <variant name="InMemory"/>
+  </token>
+  <token key="ResultType">
     <variant name="Abort"/>
     <variant name="Failure"/>
     <variant name="Success"/>
@@ -8540,7 +8545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.SqlDiskCache.Backend.{EvictionType}.TimeToSelectEntries.{TimeType}"
+    name="Net.SqlDiskCache.Backend.{EvictionType}.TimeToSelectEntries.{LookupType}.{ResultType}"
     units="microseconds" expires_after="2026-09-06">
   <owner>horo@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
@@ -8554,7 +8559,11 @@ chromium-metrics-reviews@google.com.
     <variant name="RunEviction"/>
     <variant name="RunEvictionOnIdleTime"/>
   </token>
-  <token key="TimeType">
+  <token key="LookupType">
+    <variant name="Database"/>
+    <variant name="InMemory"/>
+  </token>
+  <token key="ResultType">
     <variant name="Abort"/>
     <variant name="Failure"/>
     <variant name="Success"/>

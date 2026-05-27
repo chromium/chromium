@@ -280,6 +280,38 @@ class MonitoredVectorIOBuffer : public net::IOBuffer {
   std::vector<uint8_t> vector_;
 };
 
+uint64_t CalculateSortValue(uint64_t time_since_last_used,
+                            uint64_t bytes_usage,
+                            bool is_high_priority,
+                            bool prioritized_caching_enabled,
+                            uint64_t caching_prioritization_period_in_seconds,
+                            int caching_prioritization_factor) {
+  uint64_t sort_value = base::ClampMul(
+      time_since_last_used,
+      base::ClampAdd(bytes_usage, kSqlBackendStaticResourceSize));
+  if (prioritized_caching_enabled &&
+      time_since_last_used < caching_prioritization_period_in_seconds &&
+      is_high_priority) {
+    sort_value /= caching_prioritization_factor;
+  }
+  return sort_value;
+}
+
+void SortAndFilterCandidates(
+    EvictionCandidateAggregator::EvictionCandidateList& candidates,
+    int64_t size_to_be_removed) {
+  std::sort(
+      candidates.begin(), candidates.end(),
+      [](const auto& a, const auto& b) { return a.sort_value > b.sort_value; });
+  base::ClampedNumeric<int64_t> candidates_total_size = 0;
+  auto it = candidates.begin();
+  while (it != candidates.end() && size_to_be_removed > candidates_total_size) {
+    candidates_total_size += it->entry_size_with_overhead;
+    ++it;
+  }
+  candidates.erase(it, candidates.end());
+}
+
 }  // namespace
 
 SqlPersistentStore::Backend::Backend(
@@ -2447,22 +2479,25 @@ void SqlPersistentStore::Backend::StartEviction(
                      });
   base::ElapsedTimer timer;
   size_t scanned_count = 0;
-  auto result =
-      SelectEvictionCandidates(size_to_be_removed, std::move(excluded_res_ids),
-                               index, is_idle_time_eviction, scanned_count);
+  bool used_in_memory_index = false;
+  auto result = SelectEvictionCandidates(
+      size_to_be_removed, std::move(excluded_res_ids), index,
+      is_idle_time_eviction, scanned_count, used_in_memory_index);
   const std::string_view eviction_type =
       !is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
   const std::string_view result_type =
       result.has_value()
           ? "Success"
           : (result.error() == Error::kAborted ? "Abort" : "Failure");
+  const std::string_view lookup_type =
+      used_in_memory_index ? "InMemory." : "Database.";
   base::UmaHistogramMicrosecondsTimes(
       base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
-                    ".TimeToSelectEntries.", result_type}),
+                    ".TimeToSelectEntries.", lookup_type, result_type}),
       timer.Elapsed());
   base::UmaHistogramCounts1M(
       base::StrCat({kSqlDiskCacheBackendHistogramPrefix, eviction_type,
-                    ".ScannedEntriesCount.", result_type}),
+                    ".ScannedEntriesCount.", lookup_type, result_type}),
       scanned_count);
 
   TRACE_EVENT_END1("disk_cache", "SqlBackend.StartEviction", "result",
@@ -2490,7 +2525,9 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
     base::flat_set<ResId> excluded_res_ids,
     std::optional<SqlPersistentStoreInMemoryIndex>& index,
     bool is_idle_time_eviction,
-    size_t& scanned_count) {
+    size_t& scanned_count,
+    bool& used_in_memory_index) {
+  used_in_memory_index = false;
   if (is_idle_time_eviction && !IsBrowserIdle()) {
     return base::unexpected(Error::kAborted);
   }
@@ -2514,14 +2551,41 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
   const bool need_to_update_index =
       index && consolidated_in_memory_index && size_and_priority_aware_eviction;
 
+  const base::Time now = base::Time::Now();
   base::flat_set<ResId> high_priority_res_ids_set;
   absl::flat_hash_map<ResId, CacheEntryKeyHash> res_id_to_hash_map;
+  EvictionCandidateList candidates;
 
   if (index) {
     if (size_and_priority_aware_eviction) {
       if (consolidated_in_memory_index) {
-        // TODO: When `index->is_entry_metadata_ready()` is true, gather
-        // eviction targets from the index without accessing to the DB.
+        if (index->is_entry_metadata_ready()) {
+          index->ForEach([&](CacheEntryKeyHash hash,
+                             SqlPersistentStoreResId res_id,
+                             base::Time approximate_last_used,
+                             uint64_t approximate_bytes_usage,
+                             MemoryEntryDataHints hints) {
+            if (excluded_res_ids.contains(res_id)) {
+              return;
+            }
+            const uint64_t sort_value = CalculateSortValue(
+                /*time_since_last_used=*/(now - approximate_last_used)
+                    .InSeconds(),
+                approximate_bytes_usage,
+                (hints.value() & HINT_HIGH_PRIORITY) == HINT_HIGH_PRIORITY,
+                prioritized_caching_enabled,
+                caching_prioritization_period_in_seconds,
+                caching_prioritization_factor);
+            candidates.emplace_back(
+                res_id, shard_id_,
+                approximate_bytes_usage + kSqlBackendStaticResourceSize,
+                sort_value);
+            scanned_count++;
+          });
+          SortAndFilterCandidates(candidates, size_to_be_removed);
+          used_in_memory_index = true;
+          return candidates;
+        }
         index->ForEach([&](CacheEntryKeyHash hash,
                            SqlPersistentStoreResId res_id,
                            MemoryEntryDataHints hints) {
@@ -2542,8 +2606,6 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
     }
   }
 
-  EvictionCandidateList candidates;
-  const base::Time now = base::Time::Now();
   const std::string_view eviction_type =
       !is_idle_time_eviction ? "RunEviction" : "RunEvictionOnIdleTime";
   {
@@ -2562,15 +2624,14 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
       const int64_t bytes_usage = statement.ColumnInt64(1);
       const base::Time last_used = statement.ColumnTime(2);
       const uint64_t time_since_last_used = (now - last_used).InSeconds();
-      uint64_t sort_value = time_since_last_used;
-      if (size_and_priority_aware_eviction) {
-        sort_value *= bytes_usage + kSqlBackendStaticResourceSize;
-        if (prioritized_caching_enabled &&
-            time_since_last_used < caching_prioritization_period_in_seconds &&
-            high_priority_res_ids_set.contains(res_id)) {
-          sort_value /= caching_prioritization_factor;
-        }
-      }
+      const uint64_t sort_value =
+          size_and_priority_aware_eviction
+              ? CalculateSortValue(time_since_last_used, bytes_usage,
+                                   high_priority_res_ids_set.contains(res_id),
+                                   prioritized_caching_enabled,
+                                   caching_prioritization_period_in_seconds,
+                                   caching_prioritization_factor)
+              : time_since_last_used;
       candidates.emplace_back(res_id, shard_id_,
                               bytes_usage + kSqlBackendStaticResourceSize,
                               sort_value);
@@ -2613,16 +2674,7 @@ SqlPersistentStore::Backend::SelectEvictionCandidates(
   // `candidates` at this point. Since we don't need more than
   // `size_to_be_removed`, we remove unnecessary candidates before passing them
   // to the aggregator.
-  std::sort(
-      candidates.begin(), candidates.end(),
-      [](const auto& a, const auto& b) { return a.sort_value > b.sort_value; });
-  base::ClampedNumeric<int64_t> candidates_total_size = 0;
-  auto it = candidates.begin();
-  while (it != candidates.end() && size_to_be_removed > candidates_total_size) {
-    candidates_total_size += it->entry_size_with_overhead;
-    ++it;
-  }
-  candidates.erase(it, candidates.end());
+  SortAndFilterCandidates(candidates, size_to_be_removed);
   return candidates;
 }
 

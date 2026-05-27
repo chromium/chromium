@@ -96,6 +96,14 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
   void SetEntryMetadataReady();
 
   // Iterates over all entries in the index and calls `fun` for each entry.
+  // This version includes approximate metadata (last used time and usage).
+  // This must only be called when the consolidated in-memory index is enabled.
+  void ForEach(base::FunctionRef<void(CacheEntryKeyHash hash,
+                                      SqlPersistentStoreResId res_id,
+                                      base::Time approximate_last_used,
+                                      uint64_t approximate_bytes_usage,
+                                      MemoryEntryDataHints hints)> fun) const;
+  // Iterates over all entries in the index and calls `fun` for each entry.
   // This version does not include metadata.
   // This must only be called when the consolidated in-memory index is enabled.
   void ForEach(base::FunctionRef<void(CacheEntryKeyHash hash,
@@ -319,6 +327,21 @@ class NET_EXPORT_PRIVATE SqlPersistentStoreInMemoryIndex {
                                MemoryEntryDataHints hints)> fun) const {
       hash_res_id_map_.ForEach([&](CacheEntryKeyHash hash, const Entry& entry) {
         fun(hash, SqlPersistentStoreResId(entry.res_id.value()),
+            MemoryEntryDataHints(entry.hints));
+      });
+    }
+
+    void ForEach(
+        base::FunctionRef<void(CacheEntryKeyHash hash,
+                               SqlPersistentStoreResId res_id,
+                               base::Time approximate_last_used,
+                               uint64_t approximate_bytes_usage,
+                               MemoryEntryDataHints hints)> fun) const {
+      hash_res_id_map_.ForEach([&](CacheEntryKeyHash hash, const Entry& entry) {
+        fun(hash, SqlPersistentStoreResId(entry.res_id.value()),
+            base::Time::FromSecondsSinceUnixEpoch(
+                entry.last_used_time_seconds_since_epoch),
+            static_cast<uint64_t>(entry.entry_size_256b_chunks) << 8,
             MemoryEntryDataHints(entry.hints));
       });
     }

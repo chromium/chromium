@@ -6264,6 +6264,196 @@ TEST_P(SqlPersistentStoreTest, EvictionCollectsMetadata) {
   EXPECT_EQ(second_metadata->hints.value(), 0);
 }
 
+TEST_P(SqlPersistentStoreTest, SecondEvictionUsesInMemoryIndex) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"},
+         {"SqlDiskCacheConsolidatedInMemoryIndex", "true"}}}},
+      {});
+
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%04d", i++));
+    auto create_result = CreateEntry(key);
+    task_environment_.AdvanceClock(base::Seconds(1));
+  }
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.RunEviction.TimeToSelectEntries.Database."
+      "Success",
+      1);
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.RunEviction.TimeToSelectEntries.InMemory."
+      "Success",
+      0);
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%04d", i++));
+    auto create_result = CreateEntry(key);
+    task_environment_.AdvanceClock(base::Seconds(1));
+  }
+
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+  EXPECT_LT(GetSizeOfAllEntries(), kHighWatermark);
+
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.RunEviction.TimeToSelectEntries.InMemory."
+      "Success",
+      1);
+}
+
+TEST_P(SqlPersistentStoreTest, InMemoryEvictionRespectsPriority) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"},
+         {"SqlDiskCacheConsolidatedInMemoryIndex", "true"}}},
+       {net::features::kSimpleCachePrioritizedCaching, {}}},
+      {});
+
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  std::vector<CacheEntryKey> keys;
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%04d", i++));
+    keys.push_back(key);
+    auto create_result = CreateEntry(key);
+    task_environment_.AdvanceClock(base::Seconds(1));
+  }
+
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  std::vector<CacheEntryKey> alive_keys;
+  for (const auto& key : keys) {
+    if (store_->GetIndexStateForHash(key.hash()) ==
+        SqlPersistentStore::IndexState::kHashFound) {
+      alive_keys.push_back(key);
+    }
+  }
+  ASSERT_GE(alive_keys.size(), 1u);
+
+  CacheEntryKey oldest_alive_key = alive_keys.front();
+  auto open_oldest = OpenEntry(oldest_alive_key);
+  auto oldest_res_id = (*open_oldest)->res_id;
+
+  base::Time new_last_used = base::Time::Now() + base::Seconds(10);
+  task_environment_.AdvanceClock(base::Seconds(10));
+
+  ASSERT_EQ(UpdateEntryHeaderAndLastUsed(
+                oldest_alive_key, oldest_res_id, new_last_used, nullptr, 0,
+                MemoryEntryDataHints(HINT_HIGH_PRIORITY)),
+            SqlPersistentStore::Error::kOk);
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%04d", i++));
+    auto create_result = CreateEntry(key);
+    task_environment_.AdvanceClock(base::Seconds(1));
+  }
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+  EXPECT_LT(GetSizeOfAllEntries(), kHighWatermark);
+
+  EXPECT_EQ(store_->GetIndexStateForHash(oldest_alive_key.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.RunEviction.TimeToSelectEntries.InMemory."
+      "Success",
+      1);
+}
+
+TEST_P(SqlPersistentStoreTest, InMemoryEvictionRespectsExcludedResIds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{net::features::kDiskCacheBackendExperiment,
+        {{"SqlDiskCacheSizeAndPriorityAwareEviction", "true"},
+         {"SqlDiskCacheConsolidatedInMemoryIndex", "true"}}}},
+      {});
+
+  const int64_t kMaxBytes = 10000;
+  const int64_t kHighWatermark =
+      kMaxBytes * kSqlBackendEvictionHighWaterMarkPermille / 1000;
+
+  CreateStore(kMaxBytes);
+  ASSERT_EQ(Init(), SqlPersistentStore::Error::kOk);
+  EXPECT_TRUE(LoadInMemoryIndex());
+
+  std::vector<CacheEntryKey> keys;
+  int i = 0;
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%04d", i++));
+    keys.push_back(key);
+    auto create_result = CreateEntry(key);
+    task_environment_.AdvanceClock(base::Seconds(1));
+  }
+
+  ASSERT_EQ(StartEviction({}, /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+
+  std::vector<CacheEntryKey> alive_keys;
+  for (const auto& key : keys) {
+    if (store_->GetIndexStateForHash(key.hash()) ==
+        SqlPersistentStore::IndexState::kHashFound) {
+      alive_keys.push_back(key);
+    }
+  }
+  ASSERT_GE(alive_keys.size(), 1u);
+
+  CacheEntryKey oldest_alive_key = alive_keys.front();
+  auto open_oldest = OpenEntry(oldest_alive_key);
+  auto oldest_res_id = (*open_oldest)->res_id;
+
+  task_environment_.AdvanceClock(base::Seconds(1));
+  while (GetSizeOfAllEntries() <= kHighWatermark) {
+    const CacheEntryKey key(base::StringPrintf("key%04d", i++));
+    auto create_result = CreateEntry(key);
+    task_environment_.AdvanceClock(base::Seconds(1));
+  }
+
+  base::HistogramTester histogram_tester;
+
+  ASSERT_EQ(StartEviction({{oldest_res_id, SqlPersistentStoreShardId(0)}},
+                          /*is_idle_time_eviction=*/false),
+            SqlPersistentStore::Error::kOk);
+  EXPECT_LT(GetSizeOfAllEntries(), kHighWatermark);
+
+  EXPECT_EQ(store_->GetIndexStateForHash(oldest_alive_key.hash()),
+            SqlPersistentStore::IndexState::kHashFound);
+
+  histogram_tester.ExpectTotalCount(
+      "Net.SqlDiskCache.Backend.RunEviction.TimeToSelectEntries.InMemory."
+      "Success",
+      1);
+}
+
 #if DCHECK_IS_ON()
 TEST_P(SqlPersistentStoreTest, DetectAndFixEntryCountMetadataInconsistency) {
   CreateAndCloseInitializedStore();

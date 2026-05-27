@@ -581,6 +581,38 @@ TEST_P(SqlPersistentStoreInMemoryIndexTest,
             std::nullopt);
 }
 
+TEST_P(SqlPersistentStoreInMemoryIndexTest, ForEachAndMetadata) {
+  if (!GetParam()) {
+    // ForEach is only supported when consolidated in-memory index is enabled.
+    return;
+  }
+  SqlPersistentStoreInMemoryIndex index;
+  const base::Time now = base::Time::Now();
+  const uint64_t bytes = 1024;
+  const MemoryEntryDataHints kHints(1);
+
+  EXPECT_TRUE(index.Insert(kHash1, kResId1));
+  index.SetEntryLastUsedAndUsage(kHash1, kResId1, now, bytes);
+  index.SetEntryDataHints(kHash1, kResId1, kHints);
+  index.SetEntryMetadataReady();
+
+  bool called = false;
+  index.ForEach([&](CacheEntryKeyHash hash, SqlPersistentStoreResId res_id,
+                    base::Time last_used, uint64_t usage,
+                    MemoryEntryDataHints hints) {
+    EXPECT_EQ(hash, kHash1);
+    EXPECT_EQ(res_id, kResId1);
+    // last_used is stored in seconds, so we might lose sub-second precision.
+    EXPECT_EQ(static_cast<uint32_t>(last_used.InSecondsFSinceUnixEpoch()),
+              static_cast<uint32_t>(now.InSecondsFSinceUnixEpoch()));
+    // entry_size_256b_chunks stores usage in 256-byte chunks.
+    EXPECT_EQ(usage, bytes);
+    EXPECT_EQ(hints, kHints);
+    called = true;
+  });
+  EXPECT_TRUE(called);
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SqlPersistentStoreInMemoryIndexTest,
                          testing::Bool(),

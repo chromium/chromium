@@ -372,7 +372,8 @@ class SqlPersistentStore::Backend {
       base::flat_set<ResId> excluded_res_ids,
       std::optional<SqlPersistentStoreInMemoryIndex>& index,
       bool is_idle_time_eviction,
-      size_t& scanned_count);
+      size_t& scanned_count,
+      bool& used_in_memory_index);
   // Called by the `EvictionCandidateAggregator` to evict a list of selected
   // entries.
   void EvictEntries(

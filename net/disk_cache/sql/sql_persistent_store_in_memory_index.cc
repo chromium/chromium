@@ -172,6 +172,19 @@ void SqlPersistentStoreInMemoryIndex::SetEntryMetadataReady() {
 void SqlPersistentStoreInMemoryIndex::ForEach(
     base::FunctionRef<void(CacheEntryKeyHash hash,
                            SqlPersistentStoreResId res_id,
+                           base::Time approximate_last_used,
+                           uint64_t approximate_bytes_usage,
+                           MemoryEntryDataHints hints)> fun) const {
+  CHECK(IsConsolidatedInMemoryIndexEnabled());
+  std::get<ConsolidatedImpl<ResId32>>(impl32_).ForEach(fun);
+  if (impl64_) {
+    std::get<ConsolidatedImpl<SqlPersistentStoreResId>>(*impl64_).ForEach(fun);
+  }
+}
+
+void SqlPersistentStoreInMemoryIndex::ForEach(
+    base::FunctionRef<void(CacheEntryKeyHash hash,
+                           SqlPersistentStoreResId res_id,
                            MemoryEntryDataHints hints)> fun) const {
   CHECK(IsConsolidatedInMemoryIndexEnabled());
   std::get<ConsolidatedImpl<ResId32>>(impl32_).ForEach(fun);
