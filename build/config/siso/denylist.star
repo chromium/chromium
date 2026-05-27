@@ -33,8 +33,12 @@ def __step_config(ctx, step_config):
         "build/rust/gni_impl/rustc_print_cfg.py",
         "build/rust/gni_impl/write_rustflags.py",
         "chrome/test/chromedriver/embed_mobile_devices_in_cpp.py",
+        "chrome/installer/linux/debian/build.py",
         "chrome/installer/linux/debian/calculate_package_deps.py",
+        "chrome/installer/linux/debian/merge_package_versions.py",
+        "chrome/installer/linux/rpm/build.py",
         "chrome/installer/linux/rpm/calculate_package_deps.py",
+        "chrome/installer/linux/rpm/merge_package_deps.py",
         "components/autofill/core/browser/data_model/autofill_ai/transpile_entity_schema.py",
         "components/optimization_guide/tools/gen_on_device_proto_descriptors.py",
         # Requires dynamic globbing of hundreds of policy definition YAML files
