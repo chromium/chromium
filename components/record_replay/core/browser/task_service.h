@@ -22,6 +22,7 @@ class TaskData;
 class TaskDefinition;
 class TaskObservation;
 class TaskObserver;
+class TaskParametersExtractor;
 
 // Temporary type alias until TaskParameterValues is defined separately.
 // Currently the values are the same as the TaskData.
@@ -30,7 +31,8 @@ using TaskParameterValues = TaskData;
 // Service responsible for coordinating the lifecycle of automation tasks.
 class TaskService : public KeyedService {
  public:
-  explicit TaskService(RecordingDataManager* recording_data_manager);
+  TaskService(RecordingDataManager* recording_data_manager,
+              TaskParametersExtractor* task_parameters_extractor);
   TaskService(const TaskService&) = delete;
   TaskService& operator=(const TaskService&) = delete;
   TaskService(TaskService&&) = delete;
@@ -60,6 +62,8 @@ class TaskService : public KeyedService {
                                   std::vector<TaskDefinition> task_definitions);
 
   raw_ptr<RecordingDataManager> recording_data_manager_;
+  raw_ptr<TaskParametersExtractor> task_parameters_extractor_;
+
   // For simplification, we assume there is just one task to be observed at one
   // time, and therefore there is just one observer.
   std::unique_ptr<TaskObserver> observer_;

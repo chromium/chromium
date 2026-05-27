@@ -9,11 +9,14 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/record_replay/core/browser/recording.pb.h"
 #include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
 #include "components/record_replay/core/browser/task_observer.h"
+#include "components/record_replay/core/browser/task_parameters_extractor.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -73,7 +76,7 @@ class MockRecordingDataManager : public RecordingDataManager {
 
 class TaskServiceTest : public testing::Test {
  protected:
-  TaskServiceTest() : task_service_(&mock_data_manager_) {}
+  TaskServiceTest() : task_service_(&mock_data_manager_, nullptr) {}
   ~TaskServiceTest() override = default;
 
   NiceMock<MockRecordingDataManager> mock_data_manager_;
@@ -82,14 +85,14 @@ class TaskServiceTest : public testing::Test {
 };
 
 TEST_F(TaskServiceTest, CanInstantiate) {
-  TaskService task_service(nullptr);
+  TaskService task_service(nullptr, nullptr);
   // Check that we can instantiate it successfully.
   EXPECT_TRUE(true);
 }
 
 TEST_F(TaskServiceTest, OnURLVisitedRetrievesTaskDefinitions) {
   NiceMock<MockRecordingDataManager> mock_data_manager;
-  TaskService task_service(&mock_data_manager);
+  TaskService task_service(&mock_data_manager, nullptr);
 
   GURL url("https://example.com");
   EXPECT_CALL(mock_data_manager,
@@ -186,6 +189,80 @@ TEST_F(TaskServiceTest, RegisterAndObserveTaskFlow) {
 
   task_service_.OnTaskCompleted(completed_obs);
   EXPECT_EQ(task_service_.getObserverForTesting(), nullptr);
+}
+
+TEST_F(TaskServiceTest, TaskFlowWithParametersExtractor) {
+  TaskParametersExtractor extractor;
+  TaskService task_service(&mock_data_manager_, &extractor);
+
+  // Set up a task definition with steps and parameters.
+  TaskDefinition definition;
+  definition.set_id(101);
+  definition.set_title("Journey with Parameters");
+  definition.set_url("https://example.com/start");
+
+  TaskStep* step = definition.add_task_steps();
+  step->set_step_index(0);
+  step->set_url("https://example.com/final");
+  TaskParameter* param = step->add_parameters();
+  param->set_key("key1");
+  param->set_name("param1");
+
+  // Register mock expectation to retrieve the task when start URL is visited.
+  EXPECT_CALL(
+      mock_data_manager_,
+      GetTaskDefinitionsByUrl("https://example.com/start", ::testing::_))
+      .WillOnce(
+          [definition](
+              std::string url,
+              base::OnceCallback<void(std::vector<TaskDefinition>)> callback) {
+            std::vector<TaskDefinition> task_definitions;
+            task_definitions.push_back(definition);
+            std::move(callback).Run(std::move(task_definitions));
+          });
+
+  // 1. Visit start URL. TaskObserver should be created.
+  GURL start_url("https://example.com/start");
+  task_service.OnURLVisited(start_url);
+
+  ASSERT_NE(task_service.getObserverForTesting(), nullptr);
+
+  // 2. Simulate parameters being extracted by the page.
+  extractor.StoreExtractedValue("key1", "value_from_dom");
+
+  // 3. Visit final URL which triggers asynchronous parameters filling, then
+  // completion. Expect that mock_data_manager_.SaveTaskDefinition will be
+  // called.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_data_manager_,
+              SaveTaskDefinition(::testing::Eq(std::nullopt), ::testing::_,
+                                 ::testing::_))
+      .WillOnce([&run_loop](std::optional<int64_t> task_definition_id,
+                            TaskDefinition saved_definition,
+                            base::OnceCallback<void(int64_t)> callback) {
+        // Verify the value was correctly extracted and filled into the step
+        // parameter!
+        ASSERT_EQ(saved_definition.task_steps_size(), 1);
+        EXPECT_EQ(saved_definition.task_steps(0).parameters(0).value(),
+                  "value_from_dom");
+        std::move(callback).Run(101);
+        run_loop.Quit();
+      });
+
+  GURL final_url("https://example.com/final");
+  task_service.OnURLVisited(final_url);
+
+  run_loop.Run();
+
+  // 4. Verify observer is reset and extractor has completed (FinishExtraction
+  // is called).
+  EXPECT_EQ(task_service.getObserverForTesting(), nullptr);
+  // Let's try to fill parameters to a new observation to verify the session has
+  // finished.
+  TaskObservation observation;
+  base::test::TestFuture<bool> future;
+  extractor.FillExtractedParametersTo(&observation, future.GetCallback());
+  EXPECT_FALSE(future.Get());
 }
 
 }  // namespace record_replay

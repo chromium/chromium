@@ -6,10 +6,14 @@
 #define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_OBSERVER_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
 #include "url/gurl.h"
 
 namespace record_replay {
+
+class TaskParametersExtractor;
 
 class TaskObserver {
  public:
@@ -17,7 +21,8 @@ class TaskObserver {
       base::RepeatingCallback<void(const TaskObservation&)>;
 
   TaskObserver(const TaskDefinition& definition,
-               CompletionCallback completion_callback);
+               CompletionCallback completion_callback,
+               TaskParametersExtractor* task_parameters_extractor);
   ~TaskObserver();
   TaskObserver(const TaskObserver&) = delete;
   TaskObserver& operator=(const TaskObserver&) = delete;
@@ -40,6 +45,9 @@ class TaskObserver {
   TaskObservation observation_;
   CompletionCallback completion_callback_;
   GURL final_url_;  // Caches the parsed final/target URL
+  raw_ptr<TaskParametersExtractor> task_parameters_extractor_;
+
+  base::WeakPtrFactory<TaskObserver> weak_ptr_factory_{this};
 };
 
 }  // namespace record_replay

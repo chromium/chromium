@@ -14,8 +14,10 @@
 
 namespace record_replay {
 
-TaskService::TaskService(RecordingDataManager* recording_data_manager)
-    : recording_data_manager_(recording_data_manager) {}
+TaskService::TaskService(RecordingDataManager* recording_data_manager,
+                         TaskParametersExtractor* task_parameters_extractor)
+    : recording_data_manager_(recording_data_manager),
+      task_parameters_extractor_(task_parameters_extractor) {}
 
 TaskService::~TaskService() = default;
 
@@ -43,8 +45,10 @@ void TaskService::OnTaskDefinitionsRetrieved(
   for (const TaskDefinition& definition : task_definitions) {
     if (definition.url() == visited_url.spec()) {
       observer_ = std::make_unique<TaskObserver>(
-          definition, base::BindRepeating(&TaskService::OnTaskCompleted,
-                                          weak_ptr_factory_.GetWeakPtr()));
+          definition,
+          base::BindRepeating(&TaskService::OnTaskCompleted,
+                              weak_ptr_factory_.GetWeakPtr()),
+          task_parameters_extractor_);
       observer_->StartObserving(visited_url);
       observer_->OnURLVisited(visited_url);
     }
