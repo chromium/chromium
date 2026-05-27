@@ -63,10 +63,6 @@ id<GREYMatcher> AddBookmarkButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  // TODO(crbug.com/514608938): Fix test for Chrome Next.
-  if ([self isRunningTest:@selector(testContextMenuForMultipleURLOpenAll)]) {
-    config.features_disabled.push_back(kChromeNextIa);
-  }
   return config;
 }
 
@@ -331,6 +327,7 @@ id<GREYMatcher> AddBookmarkButton() {
   [BookmarkEarlGreyUI closeContextBarEditMode];
 
   // Navigate to "Folder 1.1" and verify "Second URL" is under it.
+  [ChromeEarlGreyUI waitForAppToIdle];
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1.1")]
       performAction:grey_tap()];
