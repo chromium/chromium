@@ -5049,6 +5049,32 @@ TEST_F(ReadAnythingAppControllerReadabilityTest,
             ReadAnythingAppModel::DistillationMethod::kScreen2x);
 }
 
+TEST_F(
+    ReadAnythingAppControllerReadabilityTest,
+    AccessibilityEventReceived_Readability_DoesNotProcessSelectionIfFeatureDisabled) {
+  // Set conditions to process readability accessibility updates
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  controller().SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+
+  // Set up: requires_post_process_selection is true.
+  model().set_requires_post_process_selection(true);
+
+  // Call AccessibilityEventReceived.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  AccessibilityEventReceived({update});
+
+  // Verification: PostProcessSelection was NOT called because the feature flag
+  // is disabled, so requires_post_process_selection remains true.
+  EXPECT_TRUE(model().requires_post_process_selection());
+}
+
 TEST_F(ReadAnythingAppControllerTest, Draw_DebouncesForPdf) {
   static constexpr ui::AXNodeID kId = 4;
   ui::AXNodeData node;
@@ -5282,4 +5308,29 @@ TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
   ASSERT_TRUE(result->IsArray());
   v8::Local<v8::Array> array = result.As<v8::Array>();
   EXPECT_EQ(array->Length(), 1u);
+}
+
+TEST_F(ReadAnythingAppControllerReadabilitySelectTextTest,
+       AccessibilityEventReceived_Readability_ProcessesSelectionIfRequired) {
+  // Set conditions to process readability accessibility updates
+  EXPECT_CALL(page_handler_,
+              OnDistillationStateChanged(
+                  read_anything::mojom::ReadAnythingDistillationState::
+                      kDistillationInProgress))
+      .Times(1);
+  controller().SetDistillationState(
+      read_anything::mojom::ReadAnythingDistillationState::
+          kDistillationInProgress);
+
+  // Set up: requires_post_process_selection is true.
+  model().set_requires_post_process_selection(true);
+
+  // Call AccessibilityEventReceived.
+  ui::AXTreeUpdate update;
+  test::SetUpdateTreeID(&update, tree_id_);
+  AccessibilityEventReceived({update});
+
+  // Verification: PostProcessSelection was called, which reset
+  // requires_post_process_selection to false.
+  EXPECT_FALSE(model().requires_post_process_selection());
 }

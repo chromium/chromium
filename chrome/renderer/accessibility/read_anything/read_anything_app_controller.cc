@@ -3041,6 +3041,16 @@ void ReadAnythingAppController::ApplyAccessibilityUpdatesForReadability(
     ExecuteJavaScript("chrome.readingMode.onAnchorsReadyForReadability();");
   }
 
+  // If there's been a selection on the main page, the selection should be
+  // processed so that Immersive can open to the correctly selected text.
+  if (IsReadabilitySelectTextEnabled() &&
+      model_.requires_post_process_selection()) {
+    // TODO: crbug.com/505770261- Once general select-to-distill is enabled
+    // this should be re-evaluated to prevent switching distillation modes
+    // before the selection mapping is ready.
+    PostProcessSelection();
+  }
+
   // Check if we should perform text mapping for readability text selection.
   MaybeMapRenderedTextToTree();
 }
