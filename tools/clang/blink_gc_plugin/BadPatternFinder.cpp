@@ -88,13 +88,14 @@ class UniquePtrGarbageCollectedMatcher : public MatchFinder::MatchCallback {
 };
 
 bool IsOnStack(const clang::Decl* decl, RecordCache& record_cache) {
-  if (dyn_cast<const clang::VarDecl>(decl)) {
+  if (llvm::dyn_cast<const clang::VarDecl>(decl)) {
     return true;
   }
-  const clang::FieldDecl* field_decl = dyn_cast<const clang::FieldDecl>(decl);
+  const clang::FieldDecl* field_decl =
+      llvm::dyn_cast<const clang::FieldDecl>(decl);
   assert(field_decl);
   const clang::CXXRecordDecl* parent_decl =
-      dyn_cast<const clang::CXXRecordDecl>(field_decl->getParent());
+      llvm::dyn_cast<const clang::CXXRecordDecl>(field_decl->getParent());
   assert(parent_decl);
   return record_cache.Lookup(parent_decl)->IsStackAllocated();
 }
