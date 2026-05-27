@@ -1790,7 +1790,9 @@ void AutocompleteController::AttachActions() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  internal_result_.AttachSiteSearchActionToMatches(template_url_service_);
+  if (base::FeatureList::IsEnabled(omnibox::kOmniboxSiteSearch)) {
+    internal_result_.AttachSiteSearchActionToMatches(template_url_service_);
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
