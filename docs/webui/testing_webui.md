@@ -449,6 +449,13 @@ are often dozens of individual test cases under a single C++ GTest suite.
 Disabling the whole suite when a single test is failing results in decreased
 test coverage and a higher change that regressions could be introduced.
 
+Disabling a Mocha test for a specific bot configuration (e.g. MSAN or ASAN)
+isn't supported. If you encounter a failure, weigh the benefits of disabling
+all tests for that bot configuration versus a specific test for all
+configurations. If the configuration is only run for a single OS, you could
+disable the test case for just that OS using `<if expr>` syntax described
+above.
+
 Here is how to disable a test in GTest if that is required:
 
 ```c++
