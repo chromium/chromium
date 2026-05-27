@@ -169,6 +169,9 @@ class ReadAnythingAppModel {
     // block's* text content that correspond to this AXNode.
     int start;
     int end;
+    // The 0-based character offset within the *AXNode's* own text content where
+    // this segment begins.
+    int ax_node_offset;
   };
 
   // Represents a segment of the flattened |global_ax_tree_text_| and the AXNode

@@ -418,9 +418,12 @@ export class ContentController {
     chrome.readingMode.updateSelection();
   }
 
-  private mapBlockToAxNodes_(
-      node: Text,
-      segments: Array<{axNodeId: number, start: number, end: number}>) {
+  private mapBlockToAxNodes_(node: Text, segments: Array<{
+                               axNodeId: number,
+                               start: number,
+                               end: number,
+                               axNodeOffset: number,
+                             }>) {
     // Link the block (rendered text node) to it's equivalent segment in the
     // AXnode. For multiple segments, mapping to a single block, we split the
     // block to create a 1:1 mapping between rendered text and an AXNode.
@@ -442,9 +445,11 @@ export class ContentController {
       if (segmentLength < nodeLength) {
         const remainingNode = currentNode.splitText(segmentLength);
         this.nodeStore_.setDomNode(currentNode, segment.axNodeId);
+        this.nodeStore_.setAxNodeOffset(currentNode, segment.axNodeOffset);
         currentNode = remainingNode;
       } else {
         this.nodeStore_.setDomNode(currentNode, segment.axNodeId);
+        this.nodeStore_.setAxNodeOffset(currentNode, segment.axNodeOffset);
       }
 
       lastOffset = segment.end;
