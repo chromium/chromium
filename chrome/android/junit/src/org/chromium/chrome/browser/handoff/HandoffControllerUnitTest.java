@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.handoff;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.clearInvocations;
@@ -40,6 +41,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.ExternalIntentUrlChecker;
+import org.chromium.chrome.browser.ExternalIntentUrlCheckerJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.url.GURL;
@@ -60,6 +63,7 @@ public class HandoffControllerUnitTest {
     @Mock private UserManager mUserManager;
     @Mock private Tab mTab;
     @Mock private HandoffController.Delegate mDelegate;
+    @Mock private ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerJni;
 
     private ActivityTabProvider mActivityTabProvider;
     private HandoffController mController;
@@ -72,6 +76,8 @@ public class HandoffControllerUnitTest {
         // Force SDK_INT to HANDOFF_SDK_VERSION so the controller logic executes.
         ReflectionHelpers.setStaticField(Build.VERSION.class, "SDK_INT", HANDOFF_SDK_VERSION);
 
+        ExternalIntentUrlCheckerJni.setInstanceForTesting(mExternalIntentUrlCheckerJni);
+
         mActivityTabProvider = new ActivityTabProvider();
         mUserRestrictions = new Bundle();
 
@@ -82,6 +88,15 @@ public class HandoffControllerUnitTest {
         when(mTab.isOffTheRecord()).thenReturn(false);
         when(mTab.isIncognitoBranded()).thenReturn(false);
         when(mTab.getUrl()).thenReturn(new GURL("https://example.com"));
+
+        // By default, standard web URLs are safe.
+        when(mExternalIntentUrlCheckerJni.validateUrl(any()))
+                .thenAnswer(
+                        invocation -> {
+                            GURL url = invocation.getArgument(0);
+                            return url.getScheme().equals("https")
+                                    || url.getScheme().equals("http");
+                        });
 
         mActivityTabProvider.setForTesting(mTab);
     }
@@ -104,8 +119,20 @@ public class HandoffControllerUnitTest {
     }
 
     @Test
+    public void testUpdateHandoffState_StandardWebUrl_Enabled() {
+        when(mTab.getUrl()).thenReturn(new GURL("https://google.com"));
+        mController =
+                new HandoffController(
+                        mActivity, mTabModelSelector, mActivityTabProvider, mDelegate);
+        ShadowLooper.idleMainLooper();
+
+        verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(true));
+    }
+
+    @Test
     public void testUpdateHandoffState_Initialization_Incognito_Disabled() {
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+        when(mTab.isIncognitoBranded()).thenReturn(true);
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Android.Handoff.Enabled.TabSwitch")
@@ -150,6 +177,60 @@ public class HandoffControllerUnitTest {
     }
 
     @Test
+    public void testUpdateHandoffState_UnsafeUrl_Disabled() {
+        when(mTab.getUrl()).thenReturn(new GURL("chrome://settings"));
+        mController =
+                new HandoffController(
+                        mActivity, mTabModelSelector, mActivityTabProvider, mDelegate);
+        ShadowLooper.idleMainLooper();
+
+        verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(false));
+    }
+
+    @Test
+    public void testUpdateHandoffState_SafeInternalUrl_Enabled() {
+        when(mTab.getUrl()).thenReturn(new GURL("chrome://dino"));
+        mController =
+                new HandoffController(
+                        mActivity, mTabModelSelector, mActivityTabProvider, mDelegate);
+        ShadowLooper.idleMainLooper();
+
+        verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(true));
+    }
+
+    @Test
+    public void testUpdateHandoffState_FileUrl_Disabled() {
+        when(mTab.getUrl()).thenReturn(new GURL("file:///sdcard/test.html"));
+        mController =
+                new HandoffController(
+                        mActivity, mTabModelSelector, mActivityTabProvider, mDelegate);
+        ShadowLooper.idleMainLooper();
+
+        verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(false));
+    }
+
+    @Test
+    public void testUpdateHandoffState_ContentUrl_Disabled() {
+        when(mTab.getUrl()).thenReturn(new GURL("content://com.example.provider/file"));
+        mController =
+                new HandoffController(
+                        mActivity, mTabModelSelector, mActivityTabProvider, mDelegate);
+        ShadowLooper.idleMainLooper();
+
+        verify(mDelegate, atLeastOnce()).setHandoffEnabled(eq(mActivity), eq(false));
+    }
+
+    @Test
+    public void testOnHandoffActivityDataRequested_UnsafeUrl_ReturnsNull() throws Exception {
+        initializeController();
+        when(mTab.getUrl()).thenReturn(new GURL("chrome://flags"));
+
+        var data = callOnHandoffActivityDataRequested(null);
+
+        assertNull(data);
+    }
+
+    @Test
     public void testOnHandoffActivityDataRequested_Success() throws Exception {
         initializeController();
         Object mockRequest = mock(Class.forName("android.app.HandoffActivityDataRequestInfo"));
@@ -163,6 +244,17 @@ public class HandoffControllerUnitTest {
     public void testOnHandoffActivityDataRequested_IncognitoTab_ReturnsNull() throws Exception {
         initializeController();
         when(mTab.isOffTheRecord()).thenReturn(true);
+        when(mTab.isIncognitoBranded()).thenReturn(true);
+
+        var data = callOnHandoffActivityDataRequested(null);
+
+        assertNull(data);
+    }
+
+    @Test
+    public void testOnHandoffActivityDataRequested_Policy_Disabled_ReturnsNull() throws Exception {
+        initializeController();
+        mUserRestrictions.putBoolean("disallow_handoff", true);
 
         var data = callOnHandoffActivityDataRequested(null);
 
@@ -186,6 +278,7 @@ public class HandoffControllerUnitTest {
 
         // Change state to incognito
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(true);
+        when(mTab.isIncognitoBranded()).thenReturn(true);
 
         // Trigger observer
         mController.onChange();

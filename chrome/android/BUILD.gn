@@ -2963,6 +2963,7 @@ if (_is_default_toolchain) {
       "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfMetricsRecorder.java",
       "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
       "java/src/org/chromium/chrome/browser/DevToolsServer.java",
+      "java/src/org/chromium/chrome/browser/ExternalIntentUrlChecker.java",
       "java/src/org/chromium/chrome/browser/IntentHandler.java",
       "java/src/org/chromium/chrome/browser/KeyboardShortcuts.java",
       "java/src/org/chromium/chrome/browser/PlayServicesVersionInfo.java",

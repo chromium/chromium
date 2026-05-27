@@ -24,10 +24,12 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityTabProvider.ActivityTabTabObserver;
+import org.chromium.chrome.browser.ExternalIntentUrlChecker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -168,27 +170,14 @@ public class HandoffController implements TabModelSelectorObserver, Destroyable 
 
     /**
      * Updates the handoff enablement state for the activity. Handoff is disabled if the user is in
-     * Incognito mode or if there is no active tab (e.g. in the tab switcher).
+     * Incognito mode, if there is no active tab (e.g. in the tab switcher), or if the current URL
+     * is an internal/unsafe scheme.
      */
     private void updateHandoffState(@HandoffEnableTrigger int updateType) {
         if (mActivityTabProvider == null) return;
 
         Tab tab = mActivityTabProvider.get();
-        boolean isIncognito = mTabModelSelector.isIncognitoBrandedModelSelected();
-
-        // 1. Check enterprise policy / user restrictions.
-        UserManager userManager = (UserManager) mActivity.getSystemService(Context.USER_SERVICE);
-        boolean isDisallowedByPolicy = false;
-        if (userManager != null) {
-            Bundle restrictions = userManager.getUserRestrictions();
-            // TODO(crbug.com/444503472): Change "disallow_handoff" to UserManager#DISALLOW_HANDOFF,
-            // once it is integrated into the Chrome build.
-            isDisallowedByPolicy = restrictions.getBoolean("disallow_handoff", false);
-        }
-
-        // 2. Opt-out if in incognito, disallowed by policy, or no active tab to protect
-        // privacy/comply with enterprise/reflect actual activity.
-        boolean handoffEnabled = tab != null && !isIncognito && !isDisallowedByPolicy;
+        boolean handoffEnabled = isHandoffEnabled(tab);
         boolean wasHandoffEnabled = mDelegate.isHandoffEnabled(mActivity);
 
         if (handoffEnabled && !wasHandoffEnabled) {
@@ -215,11 +204,31 @@ public class HandoffController implements TabModelSelectorObserver, Destroyable 
         mDelegate.setHandoffEnabled(mActivity, handoffEnabled);
     }
 
+    @Contract("null -> false")
+    private boolean isHandoffEnabled(@Nullable Tab tab) {
+        if (tab == null || tab.isIncognitoBranded() || isDisallowedByPolicy()) {
+            return false;
+        }
+        return !ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(
+                tab.getUrl(), /* allowLocalFiles= */ false);
+    }
+
+    private boolean isDisallowedByPolicy() {
+        UserManager userManager = (UserManager) mActivity.getSystemService(Context.USER_SERVICE);
+        if (userManager != null) {
+            Bundle restrictions = userManager.getUserRestrictions();
+            // TODO(crbug.com/444503472): Change "disallow_handoff" to UserManager#DISALLOW_HANDOFF,
+            // once it is integrated into the Chrome build.
+            return restrictions.getBoolean("disallow_handoff", false);
+        }
+        return false;
+    }
+
     public @Nullable HandoffActivityData onHandoffActivityDataRequested(
             HandoffActivityDataRequestInfo requestInfo) {
         // 1. Get the active tab.
         Tab tab = mActivityTabProvider.get();
-        if (tab == null || tab.isOffTheRecord()) {
+        if (!isHandoffEnabled(tab)) {
             return null;
         }
 

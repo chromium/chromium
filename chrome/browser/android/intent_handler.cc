@@ -9,6 +9,7 @@
 #include "url/android/gurl_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/ExternalIntentUrlChecker_jni.h"
 #include "chrome/android/chrome_jni_headers/IntentHandler_jni.h"
 
 using base::android::JavaRef;
@@ -23,8 +24,9 @@ static bool JNI_IntentHandler_IsCorsSafelistedHeader(
   return network::cors::IsCorsSafelistedHeader(header_name, header_value);
 }
 
-static bool JNI_IntentHandler_ValidateLaunchUrl(JNIEnv* env,
-                                                const JavaRef<jobject>& url) {
+static bool JNI_ExternalIntentUrlChecker_ValidateUrl(
+    JNIEnv* env,
+    const JavaRef<jobject>& url) {
   return startup::ValidateLaunchUrl(url::GURLAndroid::ToNativeGURL(env, url));
 }
 
@@ -32,3 +34,4 @@ static bool JNI_IntentHandler_ValidateLaunchUrl(JNIEnv* env,
 }  // namespace chrome
 
 DEFINE_JNI(IntentHandler)
+DEFINE_JNI(ExternalIntentUrlChecker)

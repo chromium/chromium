@@ -36,7 +36,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.SessionHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
-import org.chromium.url.GURL;
 
 /** Unit tests for {@link LaunchIntentDispatcher}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -48,14 +47,14 @@ public class LaunchIntentDispatcherTest {
     @Mock private SessionHandler mSessionHandler;
     @Mock private ActivityManager mActivityManager;
     @Mock IntentHandler.Natives mIntentHandlerNativeMock;
+    @Mock ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerNativeMock;
 
     private Activity mActivity;
 
     @Before
     public void setUp() {
-        doReturn(true)
-                .when(mIntentHandlerNativeMock)
-                .validateLaunchUrl(eq(new GURL("https://example.com")));
+        ExternalIntentUrlCheckerJni.setInstanceForTesting(mExternalIntentUrlCheckerNativeMock);
+        doReturn(true).when(mExternalIntentUrlCheckerNativeMock).validateUrl(any());
         IntentHandlerJni.setInstanceForTesting(mIntentHandlerNativeMock);
 
         mActivity = Robolectric.buildActivity(Activity.class).get();

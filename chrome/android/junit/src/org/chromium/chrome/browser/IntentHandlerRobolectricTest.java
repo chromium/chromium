@@ -7,7 +7,7 @@ package org.chromium.chrome.browser;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.lenient;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
@@ -202,6 +202,7 @@ public class IntentHandlerRobolectricTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock IntentHandler.Natives mNativeMock;
+    @Mock ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerNativeMock;
 
     @Captor ArgumentCaptor<LoadUrlParams> mLoadUrlParamsCaptor;
 
@@ -213,7 +214,7 @@ public class IntentHandlerRobolectricTest {
 
         for (String url : urls) {
             mIntent.setData(Uri.parse(url));
-            if (IntentHandler.isValidUrl(url) != isValid) {
+            if (IntentHandler.isSchemeValid(url) != isValid) {
                 failedTests.add(url);
             }
         }
@@ -245,8 +246,16 @@ public class IntentHandlerRobolectricTest {
         // To allow use of Origin.
         LibraryLoader.getInstance().ensureMainDexInitialized();
 
-        lenient().doReturn(true).when(mNativeMock).validateLaunchUrl(eq(new GURL(GOOGLE_URL)));
         IntentHandlerJni.setInstanceForTesting(mNativeMock);
+
+        ExternalIntentUrlCheckerJni.setInstanceForTesting(mExternalIntentUrlCheckerNativeMock);
+        lenient()
+                .when(mExternalIntentUrlCheckerNativeMock.validateUrl(any()))
+                .thenAnswer(
+                        invocation -> {
+                            GURL url = invocation.getArgument(0);
+                            return url.getSpec().startsWith(GOOGLE_URL);
+                        });
 
         IntentHandler.setTestIntentsEnabled(false);
         mIntent = new Intent();
@@ -272,6 +281,20 @@ public class IntentHandlerRobolectricTest {
         IntentUtils.addTrustedIntentExtras(intent);
         params = IntentHandler.createLoadUrlParamsForIntent(GOOGLE_URL, intent, 0);
         Assert.assertNull(params.getInitiatorOrigin());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testGoogleChromeScheme() {
+        processUrls(new String[] {"googlechrome://navigate?url=https://www.google.com"}, true);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testGoogleChromeScheme_Invalid() {
+        processUrls(new String[] {"googlechrome://navigate?url=javascript:alert(1)"}, false);
     }
 
     @Test
@@ -357,7 +380,8 @@ public class IntentHandlerRobolectricTest {
     public void testNullUrlIntent() {
         mIntent.setData(null);
         String url = IntentHandler.getUrlFromIntent(mIntent);
-        Assert.assertTrue("Intent with null data should be valid", IntentHandler.isValidUrl(url));
+        Assert.assertTrue(
+                "Intent with null data should be valid", IntentHandler.isSchemeValid(url));
     }
 
     @Test

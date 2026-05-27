@@ -36,7 +36,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.Contract;
 import org.chromium.build.annotations.NullMarked;
@@ -76,7 +75,6 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.content_public.common.Referrer;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.net.HttpUtil;
@@ -995,8 +993,7 @@ public class IntentHandler {
                 Iterator<Entry<Integer, String>> iterator = tabIdsToUrls.iterator();
                 while (iterator.hasNext()) {
                     Map.Entry<Integer, String> entry = iterator.next();
-                    String url = entry.getValue();
-                    if (shouldIgnoreIntentUrl(intent, context, url, isCustomTab)) {
+                    if (shouldIgnoreIntentUrl(intent, context, entry.getValue(), isCustomTab)) {
                         iterator.remove();
                     }
                 }
@@ -1014,7 +1011,7 @@ public class IntentHandler {
 
     private static boolean shouldIgnoreIntentUrl(
             Intent intent, @Nullable Context context, @Nullable String url, boolean isCustomTab) {
-        if (!isValidUrl(url)) {
+        if (!isSchemeValid(url)) {
             return true;
         }
 
@@ -1074,36 +1071,28 @@ public class IntentHandler {
     @Contract("null -> false")
     private static boolean isUrlUnsafe(@Nullable String url) {
         if (url == null) return false;
-
-        // The native library may be uninitialized at this point. Ensure it's initialized before
-        // calling a native function validateLaunchUrl().
-        LibraryLoader.getInstance().ensureInitialized();
-        if (IntentHandlerJni.get().validateLaunchUrl(new GURL(url))) return false;
-
-        // Allow certain "safe" internal URLs to be launched by external
-        // applications.
-        String lowerCaseUrl = url.toLowerCase(Locale.US);
-        if (ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL.equals(lowerCaseUrl)
-                || ContentUrlConstants.ABOUT_BLANK_URL.equals(lowerCaseUrl)
-                || UrlConstants.CHROME_DINO_URL.equals(lowerCaseUrl)
-                || lowerCaseUrl.startsWith(UrlConstants.CHROME_EXTENSIONS_URL)
-                || lowerCaseUrl.startsWith(UrlConstants.PDF_URL)) {
-            return false;
-        }
-        return true;
+        return ExternalIntentUrlChecker.isUnsafeExternalIntentUrl(new GURL(url));
     }
 
+    /**
+     * @param url The URL to check.
+     * @return Whether the URL has a valid scheme. This sanitizes URL scheme first and allows
+     *     ExternalIntentUrlChecker#isUnsafeExternalSchemeas rejects {@link #GOOGLECHROME_SCHEME} as
+     *     unsafe.
+     */
     @VisibleForTesting
-    static boolean isValidUrl(@Nullable String url) {
+    static boolean isSchemeValid(@Nullable String url) {
         // Check if this is a valid googlechrome:// URL.
         if (isGoogleChromeScheme(url)) {
             url = ExternalNavigationHandler.getUrlFromSelfSchemeUrl(GOOGLECHROME_SCHEME, url);
             if (url == null) return false;
         }
 
-        // Always drop insecure urls.
-        if (url != null && isJavascriptSchemeOrInvalidUrl(url)) {
-            return false;
+        if (url != null) {
+            String urlScheme = ExternalNavigationHandler.getSanitizedUrlScheme(url);
+            if (ExternalIntentUrlChecker.isUnsafeExternalScheme(urlScheme)) {
+                return false;
+            }
         }
 
         return true;
@@ -1203,17 +1192,6 @@ public class IntentHandler {
         return ContextUtils.getApplicationContext().getPackageName().equals(appId)
                 ? TabOpenType.CLOBBER_CURRENT_TAB
                 : TabOpenType.REUSE_APP_ID_MATCHING_TAB_ELSE_NEW_TAB;
-    }
-
-    private static boolean isInvalidScheme(@Nullable String scheme) {
-        return scheme != null
-                && (scheme.toLowerCase(Locale.US).equals(UrlConstants.JAVASCRIPT_SCHEME)
-                        || scheme.toLowerCase(Locale.US).equals(UrlConstants.JAR_SCHEME));
-    }
-
-    private static boolean isJavascriptSchemeOrInvalidUrl(String url) {
-        String urlScheme = ExternalNavigationHandler.getSanitizedUrlScheme(url);
-        return isInvalidScheme(urlScheme);
     }
 
     /**
@@ -1414,7 +1392,7 @@ public class IntentHandler {
     public static boolean isGoogleChromeScheme(@Nullable String url) {
         if (url == null) return false;
         String urlScheme = Uri.parse(url).getScheme();
-        return urlScheme != null && urlScheme.equals(GOOGLECHROME_SCHEME);
+        return GOOGLECHROME_SCHEME.equalsIgnoreCase(urlScheme);
     }
 
     // TODO(mariakhomenko): pending referrer and pending incognito intent could potentially
@@ -1938,7 +1916,5 @@ public class IntentHandler {
         boolean isCorsSafelistedHeader(
                 @JniType("std::string") String name,
                 @JniType("std::string") @Nullable String value);
-
-        boolean validateLaunchUrl(GURL rul);
     }
 }

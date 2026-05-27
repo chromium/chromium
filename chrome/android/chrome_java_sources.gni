@@ -27,6 +27,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/DefaultBrowserInfoUmaRecorder.java",
   "java/src/org/chromium/chrome/browser/DefaultBrowserMenuUtils.java",
   "java/src/org/chromium/chrome/browser/DevToolsServer.java",
+  "java/src/org/chromium/chrome/browser/ExternalIntentUrlChecker.java",
   "java/src/org/chromium/chrome/browser/FileProviderHelper.java",
   "java/src/org/chromium/chrome/browser/IntentHandler.java",
   "java/src/org/chromium/chrome/browser/KeyboardShortcuts.java",

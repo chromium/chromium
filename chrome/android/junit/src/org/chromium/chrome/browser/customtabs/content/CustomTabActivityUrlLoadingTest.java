@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -32,6 +31,8 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.ExternalIntentUrlChecker;
+import org.chromium.chrome.browser.ExternalIntentUrlCheckerJni;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandlerJni;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
@@ -63,6 +64,7 @@ public class CustomTabActivityUrlLoadingTest {
 
     @Mock private UserPrefsJni mMockUserPrefsJni;
     @Mock IntentHandler.Natives mIntentHandlerNativeMock;
+    @Mock ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerNativeMock;
 
     @Before
     public void setUp() {
@@ -70,8 +72,8 @@ public class CustomTabActivityUrlLoadingTest {
         UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mock(PrefService.class)).when(mMockUserPrefsJni).get(any());
 
-        doReturn(true).when(mIntentHandlerNativeMock).validateLaunchUrl(eq(new GURL(INITIAL_URL)));
-        doReturn(true).when(mIntentHandlerNativeMock).validateLaunchUrl(eq(new GURL(OTHER_URL)));
+        ExternalIntentUrlCheckerJni.setInstanceForTesting(mExternalIntentUrlCheckerNativeMock);
+        doReturn(true).when(mExternalIntentUrlCheckerNativeMock).validateUrl(any());
         IntentHandlerJni.setInstanceForTesting(mIntentHandlerNativeMock);
 
         // Ensure the test can read the Autofill pref. Assume it's turned off by default.
