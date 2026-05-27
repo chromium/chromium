@@ -388,6 +388,40 @@ IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest, MigratingPolicyApp) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// A policy entry with a non-HTTP/S scheme URL (e.g. corp-app://) must be
+// silently rejected. The valid HTTPS entry in the same batch must still
+// install normally.
+IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTest,
+                       InvalidSchemePolicyEntryDoesNotCrash) {
+  auto policy = base::JSONReader::Read(R"([
+    {
+      "url": "corp-app://example.com/App",
+      "default_launch_container": "window"
+    },
+    {
+      "url": "https://valid.example.com/",
+      "default_launch_container": "window"
+    }
+  ])",
+                                       base::JSON_PARSE_CHROMIUM_EXTENSIONS)
+                    .value();
+
+  WebAppTestInstallWithOsHooksObserver install_observer(profile());
+  install_observer.BeginListening();
+
+  profile()->GetPrefs()->Set(prefs::kWebAppInstallForceList, policy);
+
+  // Wait for the valid app to install, confirming the full policy batch was
+  // processed without crashing.
+  const webapps::AppId app_id = install_observer.Wait();
+
+  const auto& registrar = provider().registrar_unsafe();
+  EXPECT_EQ(registrar.GetAppIds().size(), 1u);
+  EXPECT_NE(registrar.GetAppById(app_id), nullptr);
+  EXPECT_EQ(registrar.GetAppStartUrl(app_id),
+            GURL("https://valid.example.com/"));
+}
+
 class WebAppPolicyManagerGuestModeTest : public WebAppPolicyManagerBrowserTest {
  public:
   WebAppPolicyManagerGuestModeTest() = default;
@@ -465,7 +499,7 @@ class WebAppPolicyManagerBrowserTestWithAuthProxy
   Profile* profile() { return browser()->profile(); }
 
   net::test_server::EmbeddedTestServer auth_proxy_server_{
-      net::test_server::EmbeddedTestServer ::Type::TYPE_HTTPS};
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTPS};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppPolicyManagerBrowserTestWithAuthProxy, Install) {

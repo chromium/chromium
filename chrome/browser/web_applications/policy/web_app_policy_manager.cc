@@ -53,6 +53,7 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/web_app_url_config.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -648,7 +649,7 @@ WebAppPolicyManager::ParseInstallPolicyEntry(const base::DictValue& entry) {
          (*default_launch_container == kDefaultLaunchContainerWindowValue) ||
          (*default_launch_container == kDefaultLaunchContainerTabValue));
 
-  if (!install_gurl.is_valid()) {
+  if (!webapps::IsUrlEligibleForWebApp(install_gurl)) {
     LOG(WARNING) << "Policy-installed web app has invalid URL " << *install_url;
     return std::nullopt;
   }
