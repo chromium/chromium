@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -24675,6 +24676,81 @@ IN_PROC_BROWSER_TEST_F(ViewSourceNavigation, WithErrorInChain) {
   EXPECT_EQ(view_source_url, shell()->web_contents()->GetLastCommittedURL());
   NavigationEntryImpl* entry = controller.GetLastCommittedEntry();
   EXPECT_TRUE(entry->IsViewSourceMode());
+}
+
+namespace {
+
+// Captures commit_params().internal_scroll_to_text_fragment at
+// ReadyToCommitNavigation time so we can inspect what was sent to the
+// renderer.
+class InternalScrollFragmentCommitObserver : public WebContentsObserver {
+ public:
+  explicit InternalScrollFragmentCommitObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override {
+    if (!navigation_handle->IsInPrimaryMainFrame()) {
+      return;
+    }
+    committed_url_ = navigation_handle->GetURL();
+    fragment_at_commit_ =
+        GetInternalScrollToTextFragmentForNavigation(navigation_handle);
+  }
+
+  const std::optional<std::string>& fragment_at_commit() const {
+    return fragment_at_commit_;
+  }
+  const GURL& committed_url() const { return committed_url_; }
+
+ private:
+  std::optional<std::string> fragment_at_commit_;
+  GURL committed_url_;
+};
+
+}  // namespace
+
+// Regression test demonstrating that internal_scroll_to_text_fragment is
+// cleared by NavigationRequest::OnRequestRedirected() and therefore does NOT
+// survive a cross-origin server redirect.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    InternalScrollToTextFragmentIsClearedOnCrossOriginServerRedirect) {
+  // Victim page on b.com containing "Some text" far below the fold.
+  const GURL victim_url = embedded_test_server()->GetURL(
+      "b.com", "/scrollable_page_with_content.html");
+  // Attacker URL on a.com that 302-redirects to the victim.
+  const GURL attacker_url = embedded_test_server()->GetURL(
+      "a.com", "/server-redirect?" + victim_url.spec());
+  ASSERT_FALSE(url::Origin::Create(attacker_url)
+                   .IsSameOriginWith(url::Origin::Create(victim_url)));
+
+  InternalScrollFragmentCommitObserver commit_observer(contents());
+
+  // Simulate the receiving device opening the shared tab: a browser-initiated
+  // PAGE_TRANSITION_LINK navigation to the attacker URL with an
+  // attacker-chosen internal_scroll_to_text_fragment ("Some%20text" matches
+  // text that exists only on the cross-origin victim page).
+  NavigationController::LoadURLParams params(attacker_url);
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  params.internal_scroll_to_text_fragment = "Some%20text";
+
+  TestNavigationObserver nav_observer(contents());
+  contents()->GetController().LoadURLWithParams(params);
+  nav_observer.Wait();
+  ASSERT_TRUE(nav_observer.last_navigation_succeeded());
+
+  // The navigation followed the cross-origin redirect.
+  EXPECT_EQ(victim_url, contents()->GetLastCommittedURL());
+  EXPECT_EQ(victim_url, commit_observer.committed_url());
+
+  // The internal_scroll_to_text_fragment that was set for the *attacker*
+  // origin must NOT be sent to the *victim* renderer.
+  EXPECT_EQ(std::nullopt, commit_observer.fragment_at_commit())
+      << "internal_scroll_to_text_fragment survived a cross-origin server "
+         "redirect and was committed to the victim renderer";
+
+  // Ensure the victim page was NOT scrolled.
+  EXPECT_EQ(0.0, EvalJs(contents(), "window.scrollY").ExtractDouble());
 }
 
 }  // namespace content

@@ -3748,6 +3748,11 @@ void NavigationRequest::OnRequestRedirected(
   // for the redirected one.
   commit_params_->not_restored_reasons = nullptr;
 
+  // Reset the internal scroll-to-text-fragment as it was generated for the
+  // original page and must not be applied to a (potentially cross-origin)
+  // redirect target.
+  commit_params_->internal_scroll_to_text_fragment = std::nullopt;
+
   // Reset the tentative origin_to_commit, as the redirected one is different.
   tentative_data_origin_to_commit_ = std::nullopt;
 
