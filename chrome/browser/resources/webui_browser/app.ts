@@ -25,8 +25,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
-import {FullscreenContext, SecurityIcon} from './browser.mojom-webui.js';
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory, FullscreenContext, SecurityIcon} from './browser.mojom-webui.js';
 import type {ContentRegionElement} from './content_region.js';
 import type {SidePanelElement} from './side_panel.js';
 import type {TabActivated, TabAdded, TabClosed, TabUpdated} from './tab_strip/events.js';
@@ -90,7 +89,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
     this.trackedElementManager_ = TrackedElementManager.getInstance();
 
-    const callbackRouter = BrowserProxy.getCallbackRouter();
+    const callbackRouter = browserProxyFactory.getInstance().callbackRouter;
     callbackRouter.showSidePanel.addListener(this.showSidePanel_.bind(this));
     callbackRouter.closeSidePanel.addListener(this.closeSidePanel_.bind(this));
     callbackRouter.onFullscreenModeChanged.addListener(
@@ -117,7 +116,8 @@ export class WebuiBrowserAppElement extends CrLitElement {
         this.$.contentRegion, 'kContentsContainerViewElementId');
     this.setUpLongPress_(this.$.backButton, /*isBack=*/ true);
     this.setUpLongPress_(this.$.forwardButton, /*isBack=*/ false);
-    const {width} = await BrowserProxy.getPageHandler().getTabStripInset();
+    const {width} =
+        await browserProxyFactory.getInstance().handler.getTabStripInset();
     this.tabStripInset_ = width;
   }
 
@@ -144,27 +144,27 @@ export class WebuiBrowserAppElement extends CrLitElement {
   ]);
 
   protected onAppMenuClick_(_: Event) {
-    BrowserProxy.getPageHandler().openAppMenu();
+    browserProxyFactory.getInstance().handler.openAppMenu();
   }
 
   protected onAvatarClick_(_: Event) {
-    BrowserProxy.getPageHandler().openProfileMenu();
+    browserProxyFactory.getInstance().handler.openProfileMenu();
   }
 
   protected onMinimizeClick_(_: Event) {
-    BrowserProxy.getPageHandler().minimize();
+    browserProxyFactory.getInstance().handler.minimize();
   }
 
   protected onMaximizeClick_(_: Event) {
-    BrowserProxy.getPageHandler().maximize();
+    browserProxyFactory.getInstance().handler.maximize();
   }
 
   protected onRestoreClick_(_: Event) {
-    BrowserProxy.getPageHandler().restore();
+    browserProxyFactory.getInstance().handler.restore();
   }
 
   protected onCloseClick_(_: Event) {
-    BrowserProxy.getPageHandler().close();
+    browserProxyFactory.getInstance().handler.close();
   }
 
   protected onBackClick_(_: Event) {
@@ -175,7 +175,8 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
   protected onBackContextmenu_(e: Event) {
     e.preventDefault();
-    BrowserProxy.getPageHandler().showBackForwardMenu(/*isBack=*/ true);
+    browserProxyFactory.getInstance().handler.showBackForwardMenu(
+        /*isBack=*/ true);
   }
 
   protected onForwardClick_(_: Event) {
@@ -186,7 +187,8 @@ export class WebuiBrowserAppElement extends CrLitElement {
 
   protected onForwardContextmenu_(e: Event) {
     e.preventDefault();
-    BrowserProxy.getPageHandler().showBackForwardMenu(/*isBack=*/ false);
+    browserProxyFactory.getInstance().handler.showBackForwardMenu(
+        /*isBack=*/ false);
   }
 
   // Long-press on back/forward buttons shows the navigation history menu,
@@ -203,7 +205,7 @@ export class WebuiBrowserAppElement extends CrLitElement {
       }
       this.longPressTimer_ = window.setTimeout(() => {
         clearTimer();
-        BrowserProxy.getPageHandler().showBackForwardMenu(isBack);
+        browserProxyFactory.getInstance().handler.showBackForwardMenu(isBack);
       }, 500);
     });
     button.addEventListener('pointerup', clearTimer);
@@ -303,10 +305,12 @@ export class WebuiBrowserAppElement extends CrLitElement {
   }
 
   protected override firstUpdated() {
-    BrowserProxy.getCallbackRouter().setFocusToLocationBar.addListener(
-        this.setFocusToLocationBar.bind(this));
-    BrowserProxy.getCallbackRouter().setReloadStopState.addListener(
-        this.setReloadStopState.bind(this));
+    browserProxyFactory.getInstance()
+        .callbackRouter.setFocusToLocationBar.addListener(
+            this.setFocusToLocationBar.bind(this));
+    browserProxyFactory.getInstance()
+        .callbackRouter.setReloadStopState.addListener(
+            this.setReloadStopState.bind(this));
   }
 
   protected onTabDragMousedown_(e: MouseEvent) {

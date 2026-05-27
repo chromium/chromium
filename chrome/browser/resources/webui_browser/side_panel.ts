@@ -6,7 +6,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {BrowserProxy} from './browser_proxy.js';
+import {browserProxyFactory} from './browser.mojom-webui.js';
 import {getCss} from './side_panel.css.js';
 import {getHtml} from './side_panel.html.js';
 import {WebviewElement} from './webview.js';
@@ -53,7 +53,7 @@ export class SidePanelElement extends CrLitElement {
     this.webView = null;
     this.dispatchEvent(new Event('side-panel-closed', {bubbles: true}));
     await this.updateComplete;
-    BrowserProxy.getPageHandler().onSidePanelClosed();
+    browserProxyFactory.getInstance().handler.onSidePanelClosed();
   }
 
   hide() {

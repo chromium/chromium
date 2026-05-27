@@ -11,9 +11,8 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getHtml} from './bookmark_bar.html.js';
 import type {BookmarkData} from './bookmark_bar.mojom-webui.js';
-import {BookmarkType} from './bookmark_bar.mojom-webui.js';
-import type {BrowserProxy} from './bookmark_bar_browser_proxy.js';
-import {BrowserProxyImpl} from './bookmark_bar_browser_proxy.js';
+import {BookmarkType, browserProxyFactory} from './bookmark_bar.mojom-webui.js';
+import type {BrowserProxy} from './bookmark_bar.mojom-webui.js';
 
 export class BookmarkBarElement extends CrLitElement {
   static get is() {
@@ -36,7 +35,7 @@ export class BookmarkBarElement extends CrLitElement {
 
   protected accessor bookmarks_: BookmarkData[] = [];
   private listenerIds_: number[] = [];
-  private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private browserProxy_: BrowserProxy = browserProxyFactory.getInstance();
 
   override connectedCallback() {
     super.connectedCallback();
