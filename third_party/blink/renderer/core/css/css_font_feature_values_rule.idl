@@ -7,12 +7,12 @@
 interface CSSFontFeatureValuesRule : CSSRule {
   attribute CSSOMString fontFamily;
 
-  readonly attribute CSSFontFeatureValuesMap annotation;
-  readonly attribute CSSFontFeatureValuesMap ornaments;
-  readonly attribute CSSFontFeatureValuesMap stylistic;
-  readonly attribute CSSFontFeatureValuesMap swash;
-  readonly attribute CSSFontFeatureValuesMap characterVariant;
-  readonly attribute CSSFontFeatureValuesMap styleset;
+  [SameObject] readonly attribute CSSFontFeatureValuesMap annotation;
+  [SameObject] readonly attribute CSSFontFeatureValuesMap ornaments;
+  [SameObject] readonly attribute CSSFontFeatureValuesMap stylistic;
+  [SameObject] readonly attribute CSSFontFeatureValuesMap swash;
+  [SameObject] readonly attribute CSSFontFeatureValuesMap characterVariant;
+  [SameObject] readonly attribute CSSFontFeatureValuesMap styleset;
 };
 
 interface CSSFontFeatureValuesMap {

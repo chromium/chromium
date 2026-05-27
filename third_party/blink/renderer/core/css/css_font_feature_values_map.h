@@ -37,6 +37,12 @@ class CSSFontFeatureValuesMap : public ScriptWrappable,
   CSSFontFeatureValuesMap(const CSSFontFeatureValuesMap&) = delete;
   CSSFontFeatureValuesMap& operator=(const CSSFontFeatureValuesMap&) = delete;
 
+  void Reattach(StyleRuleFontFeatureValues* style_rule_font_feature_values,
+                FontFeatureAliases* aliases) {
+    backing_style_rule_ = style_rule_font_feature_values;
+    aliases_ = aliases;
+  }
+
   // IDL attributes / methods
   uint32_t size() const;
 

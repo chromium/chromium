@@ -43,6 +43,12 @@ class CSSFontFeatureValuesRule final : public CSSRule {
   CSSRule::Type GetType() const override { return kFontFeatureValuesRule; }
 
   Member<StyleRuleFontFeatureValues> font_feature_values_rule_;
+  Member<CSSFontFeatureValuesMap> annotation_;
+  Member<CSSFontFeatureValuesMap> ornaments_;
+  Member<CSSFontFeatureValuesMap> stylistic_;
+  Member<CSSFontFeatureValuesMap> swash_;
+  Member<CSSFontFeatureValuesMap> character_variant_;
+  Member<CSSFontFeatureValuesMap> styleset_;
 };
 
 template <>
