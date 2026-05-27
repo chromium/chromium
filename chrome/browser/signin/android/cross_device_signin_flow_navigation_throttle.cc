@@ -7,11 +7,14 @@
 #include <optional>
 #include <utility>
 
+#include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "components/signin/public/base/signin_deep_link_parser.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/browser/web_contents.h"
@@ -32,6 +35,7 @@ CrossDeviceSigninFlowNavigationThrottle::WillStartRequest() {
   const auto payload = deep_link_parser_.Parse(url);
   if (payload.has_value() && payload->HasAllRequiredFields()) {
     signin_bridge_->StartSigninDeepLinkFlow(payload.value());
+    ClosePageIfNeeded();
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
   return content::NavigationThrottle::PROCEED;
@@ -48,6 +52,32 @@ const char* CrossDeviceSigninFlowNavigationThrottle::GetNameForLogging() {
 
 CrossDeviceSigninFlowNavigationThrottle::
     ~CrossDeviceSigninFlowNavigationThrottle() = default;
+
+// When the cross-device deep link is opened via intent, Chrome starts a new
+// empty tab to handle the intent. We need to close the empty tab to avoid the
+// user seeing a blank page. Tab is not closed if it was not empty, meaning user
+// navigated to the deep link by entering the URL in the address bar or clicking
+// a link in the page.
+void CrossDeviceSigninFlowNavigationThrottle::ClosePageIfNeeded() {
+  content::WebContents* web_contents = navigation_handle()->GetWebContents();
+  if (web_contents && navigation_handle()->IsInPrimaryMainFrame() &&
+      web_contents->GetController().IsInitialBlankNavigation()) {
+    // ClosePage() must be executed asynchronously. Calling it synchronously
+    // could lead to immediate WebContents destruction, violating
+    // NavigationThrottle requirements and causing a use-after-free crash when
+    // returning CANCEL_AND_IGNORE.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<content::WebContents> weak_web_contents) {
+              if (weak_web_contents && weak_web_contents->GetController()
+                                           .IsInitialBlankNavigation()) {
+                weak_web_contents->ClosePage();
+              }
+            },
+            web_contents->GetWeakPtr()));
+  }
+}
 
 // static
 void CrossDeviceSigninFlowNavigationThrottle::MaybeCreateAndAdd(

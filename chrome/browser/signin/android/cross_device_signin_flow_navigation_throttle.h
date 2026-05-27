@@ -38,11 +38,14 @@ class CrossDeviceSigninFlowNavigationThrottle
 
  private:
   friend class CrossDeviceSigninFlowNavigationThrottleUnitTest;
+  friend class CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest;
 
   CrossDeviceSigninFlowNavigationThrottle(
       content::NavigationThrottleRegistry& registry,
       SigninBridge* signin_bridge,
       signin::SigninDeepLinkParser deep_link_parser);
+
+  void ClosePageIfNeeded();
 
   raw_ptr<SigninBridge> signin_bridge_;
   signin::SigninDeepLinkParser deep_link_parser_;

@@ -10,6 +10,8 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/run_loop.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
@@ -17,6 +19,8 @@
 #include "components/signin/public/base/signin_deep_link_payload.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/mock_navigation_throttle_registry.h"
 #include "content/public/test/web_contents_tester.h"
@@ -42,6 +46,11 @@ std::unique_ptr<KeyedService> BuildMockSigninBridgeForTesting(
     content::BrowserContext* context) {
   return std::make_unique<testing::NiceMock<MockSigninBridge>>();
 }
+
+class MockWebContentsDelegate : public content::WebContentsDelegate {
+ public:
+  MOCK_METHOD(void, CloseContents, (content::WebContents*), (override));
+};
 
 }  // namespace
 
@@ -255,4 +264,84 @@ TEST_F(CrossDeviceSigninFlowNavigationThrottleFactoryDisabledUnitTest,
 
   CrossDeviceSigninFlowNavigationThrottle::MaybeCreateAndAdd(registry);
   EXPECT_TRUE(registry.throttles().empty());
+}
+
+class CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest
+    : public ChromeRenderViewHostTestHarness {
+ protected:
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        switches::kCrossDeviceSignin, {{"url", kValidBaseUrl}});
+    web_contents()->SetDelegate(&mock_web_contents_delegate_);
+  }
+
+  content::NavigationThrottle* CreateAndGetThrottle(
+      content::MockNavigationThrottleRegistry& registry) {
+    auto parser =
+        signin::SigninDeepLinkParser::CreateForCrossDeviceSigninIfEnabled();
+    CHECK(parser.has_value());
+    throttle_ = base::WrapUnique(new CrossDeviceSigninFlowNavigationThrottle(
+        registry, &mock_signin_bridge_, std::move(parser.value())));
+    return throttle_.get();
+  }
+
+  void TearDown() override {
+    web_contents()->SetDelegate(nullptr);
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+  MockWebContentsDelegate* web_contents_delegate() {
+    return &mock_web_contents_delegate_;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  testing::NiceMock<MockSigninBridge> mock_signin_bridge_;
+  std::unique_ptr<CrossDeviceSigninFlowNavigationThrottle> throttle_;
+  MockWebContentsDelegate mock_web_contents_delegate_;
+};
+
+TEST_F(CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest,
+       ClosePageIfTabIsEmpty) {
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://www.google.com/chrome/"
+           "go-mobile?entry_point_id=0&email=test@gmail.com"),
+      main_rfh());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+  auto* throttle = CreateAndGetThrottle(registry);
+
+  ASSERT_TRUE(throttle);
+  base::RunLoop run_loop;
+  EXPECT_CALL(*web_contents_delegate(), CloseContents(web_contents()))
+      .WillOnce([&run_loop](content::WebContents*) { run_loop.Quit(); });
+  EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
+            throttle->WillStartRequest().action());
+  run_loop.Run();
+}
+
+TEST_F(CrossDeviceSigninFlowNavigationThrottleTabClosingUnitTest,
+       NoClosePageIfTabIsNotEmpty) {
+  NavigateAndCommit(GURL("https://www.example.com"));
+  testing::NiceMock<content::MockNavigationHandle> handle(
+      GURL("https://www.google.com/chrome/"
+           "go-mobile?entry_point_id=0&email=test@gmail.com"),
+      main_rfh());
+  content::MockNavigationThrottleRegistry registry(
+      &handle,
+      content::MockNavigationThrottleRegistry::RegistrationMode::kHold);
+
+  auto* throttle = CreateAndGetThrottle(registry);
+
+  ASSERT_TRUE(throttle);
+  EXPECT_CALL(*web_contents_delegate(), CloseContents(testing::_)).Times(0);
+  EXPECT_EQ(content::NavigationThrottle::CANCEL_AND_IGNORE,
+            throttle->WillStartRequest().action());
+  base::RunLoop run_loop;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
 }
