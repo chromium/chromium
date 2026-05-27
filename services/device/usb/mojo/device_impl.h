@@ -139,7 +139,6 @@ class DeviceImpl : public mojom::UsbDevice, public device::UsbDevice::Observer {
   // has been closed. |opening_| is set to true while the asynchronous open is
   // in progress.
   bool opening_ = false;
-  bool device_state_change_in_progress_ = false;
   scoped_refptr<UsbDeviceHandle> device_handle_;
 
   const base::flat_set<uint8_t> blocked_interface_classes_;

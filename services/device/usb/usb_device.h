@@ -97,6 +97,11 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   }
   const mojom::UsbConfigurationInfo* GetActiveConfiguration() const;
 
+  bool state_change_in_progress() const { return state_change_in_progress_; }
+  void set_state_change_in_progress(bool in_progress) {
+    state_change_in_progress_ = in_progress;
+  }
+
   // On ChromeOS the permission_broker service must be used to open USB devices.
   // This function asks it to check whether a future Open call will be allowed.
   // On all other platforms this is a no-op and always returns true.
@@ -167,6 +172,8 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   std::list<raw_ptr<UsbDeviceHandle, CtnExperimental>> handles_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
+
+  bool state_change_in_progress_ = false;
 };
 
 }  // namespace device
