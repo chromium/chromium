@@ -1534,6 +1534,49 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWithAutoSubmitHidden) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+  base::test::TestFuture<void> success_future;
+  base::test::TestFuture<std::string> conversation_id_future;
+
+  GlicInvokeOptions options(glic::Target(tab),
+                            mojom::InvocationSource::kOsButton);
+  options.on_success = success_future.GetCallback();
+
+  GlicInvokeWithAutoSubmitOptions auto_submit_options;
+  auto_submit_options.on_conversation_id_ready =
+      conversation_id_future.GetCallback();
+  auto_submit_options.show_panel = false;
+
+  // Call invoke with auto-submit in background (hidden).
+  coordinator().InvokeWithAutoSubmit(GetPassKey(), std::move(options),
+                                     std::move(auto_submit_options));
+
+  GlicInstanceImpl* instance = coordinator().GetInstanceImplForTab(tab);
+  ASSERT_TRUE(instance);
+
+  // Simulate the client registering a conversation (which completes the flow).
+  const std::string expected_conversation_id = "test_conversation_id";
+  auto info = mojom::ConversationInfo::New();
+  info->conversation_id = expected_conversation_id;
+  instance->RegisterConversation(std::move(info), base::DoNothing());
+
+  // The conversation ID should be passed to our callback.
+  EXPECT_EQ(conversation_id_future.Get(), expected_conversation_id);
+
+  // The success callback should be called after full completion.
+  EXPECT_TRUE(success_future.Wait());
+
+  // The instance should be connected.
+  EXPECT_TRUE(instance->host().IsWebClientConnected());
+
+  // BUT the panel must NOT be showing and its visibility must be HIDDEN.
+  EXPECT_FALSE(instance->IsShowing());
+  EXPECT_OK(
+      WaitForWebUiContentsVisibility(instance, content::Visibility::HIDDEN));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
                        InvokeWithWaitForPanelOpen) {
   // Create a tab with a loaded page to measure width.
   tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
