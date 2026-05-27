@@ -295,6 +295,9 @@
 -keep,allowobfuscation,allowoptimization,allowaccessmodification public class ** extends org.chromium.chrome.browser.base.SplitCompat*$Impl {
   public <init>();
 }
+-keep,allowobfuscation,allowoptimization,allowaccessmodification public class ** extends org.chromium.base.SplitCompatService$Impl {
+  public <init>();
+}
 
 # To fix crbug.com/40654856. This is because AppBarLayout$ScrollingViewBehavior
 # is instantiated via java.lang.reflect.Constructor in CoordinatorLayout.java.
