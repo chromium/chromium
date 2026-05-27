@@ -561,6 +561,9 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                     default -> mCurrentPosition.get();
                 };
 
+        boolean animatingToTop = stateTransition == StateTransition.ANIMATE_TO_TOP;
+        boolean animatingToBottom = stateTransition == StateTransition.ANIMATE_TO_BOTTOM;
+
         if (newControlsPosition == mCurrentPosition.get()) return;
 
         int newTopHeight;
@@ -573,7 +576,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         if (newControlsPosition == ControlsPosition.TOP) {
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() + controlContainerHeight;
-            updateLayerVisibility();
+            updateLayerVisibility(animatingToTop);
             mControlContainer.getView().setTranslationY(0);
             mToolbarProgressBarContainer.setTranslationY(0);
             Runnable progressBarChangeRunnable =
@@ -603,7 +606,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             maybeForceBottomToolbarLayoutUpdateAndCapture(ntpShowing);
 
             newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - controlContainerHeight;
-            updateLayerVisibility();
+            updateLayerVisibility(animatingToBottom);
             CoordinatorLayout.LayoutParams progressBarLayoutParams =
                     (LayoutParams) mToolbarProgressBarContainer.getLayoutParams();
             progressBarLayoutParams.setAnchorId(View.NO_ID);
@@ -611,9 +614,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             progressBarLayoutParams.gravity = Gravity.BOTTOM;
             mToolbarProgressBarContainer.setLayoutParams(progressBarLayoutParams);
         }
-
-        boolean animatingToTop = stateTransition == StateTransition.ANIMATE_TO_TOP;
-        boolean animatingToBottom = stateTransition == StateTransition.ANIMATE_TO_BOTTOM;
 
         mBottomControlsStacker.updateLayerVisibilitiesAndSizes();
         if (animatingToTop || animatingToBottom) {
@@ -944,6 +944,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      * @return Whether the layer visibility is changed.
      */
     private boolean updateLayerVisibility() {
+        return updateLayerVisibility(/* animate= */ false);
+    }
+
+    private boolean updateLayerVisibility(boolean animate) {
         boolean isBottomToolbar = mCurrentPosition.get() == ControlsPosition.BOTTOM;
         BottomSheetContent bottomSheetContent = mBottomSheetController.getCurrentSheetContent();
         @SheetState int bottomSheetState = mBottomSheetController.getSheetState();
@@ -968,16 +972,22 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             @LayerVisibility
             int finalTarget = isBottomToolbar ? LayerVisibility.VISIBLE : LayerVisibility.HIDDEN;
             if (finalTarget == LayerVisibility.VISIBLE) {
-                if (mLayerVisibility == LayerVisibility.HIDDEN
-                        || mLayerVisibility == LayerVisibility.HIDING) {
+                if (animate
+                        && (mLayerVisibility == LayerVisibility.HIDDEN
+                                || mLayerVisibility == LayerVisibility.HIDING)) {
                     targetVisibility = LayerVisibility.SHOWING;
+                } else if (!animate) {
+                    targetVisibility = LayerVisibility.VISIBLE;
                 } else {
                     targetVisibility = mLayerVisibility;
                 }
             } else {
-                if (mLayerVisibility == LayerVisibility.VISIBLE
-                        || mLayerVisibility == LayerVisibility.SHOWING) {
+                if (animate
+                        && (mLayerVisibility == LayerVisibility.VISIBLE
+                                || mLayerVisibility == LayerVisibility.SHOWING)) {
                     targetVisibility = LayerVisibility.HIDING;
+                } else if (!animate) {
+                    targetVisibility = LayerVisibility.HIDDEN;
                 } else {
                     targetVisibility = mLayerVisibility;
                 }

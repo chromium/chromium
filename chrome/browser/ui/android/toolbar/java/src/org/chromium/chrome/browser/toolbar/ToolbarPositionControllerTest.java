@@ -1246,6 +1246,34 @@ public class ToolbarPositionControllerTest {
         assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
     }
 
+    @Test
+    @Config(qualifiers = "sw400dp")
+    public void testLayerVisibilityTransitions_Snap() {
+        // Start at BOTTOM (pref is BOTTOM).
+        setUserToolbarAnchorPreference(false);
+        assertControlsAtBottom();
+        mBrowserControlsObserver
+                .onBottomControlsHeightAnimationEnded(); // Resolve initial SHOWING to VISIBLE
+
+        BottomControlsLayer toolbarLayer =
+                mBottomControlsStacker.getLayerForTesting(LayerType.BOTTOM_TOOLBAR);
+        assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
+
+        // Simulate Omnibox Focus -> Should SNAP to TOP.
+        mIsOmniboxFocused.set(true);
+        assertControlsAtTop();
+
+        // It should be in HIDDEN state IMMEDIATELY, not HIDING.
+        assertEquals(LayerVisibility.HIDDEN, toolbarLayer.getLayerVisibility());
+
+        // Simulate Omnibox Unfocus -> Should SNAP to BOTTOM.
+        mIsOmniboxFocused.set(false);
+        assertControlsAtBottom();
+
+        // It should be in VISIBLE state IMMEDIATELY, not SHOWING.
+        assertEquals(LayerVisibility.VISIBLE, toolbarLayer.getLayerVisibility());
+    }
+
     private void assertControlsAtBottom() {
         assertEquals(ControlsPosition.BOTTOM, mBrowserControlsSizer.getControlsPosition());
         assertEquals(0, mBrowserControlsSizer.getTopControlsHeight());
