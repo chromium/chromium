@@ -514,9 +514,8 @@ id<GREYMatcher> SearchIconButton() {
 }
 
 - (void)verifyEmptyBackgroundAppears {
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kTableViewIllustratedEmptyViewID)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      grey_accessibilityID(kTableViewIllustratedEmptyViewID)];
 
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_BOOKMARK_EMPTY_TITLE))]
