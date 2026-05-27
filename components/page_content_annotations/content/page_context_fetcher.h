@@ -198,6 +198,12 @@ class PageContextFetcher : public content::WebContentsObserver {
                            RedactScreenshotOnWorkerThread);
   FRIEND_TEST_ALL_PREFIXES(PageContextFetcherTest,
                            RedactScreenshotOnWorkerThreadNoRedaction);
+  FRIEND_TEST_ALL_PREFIXES(PageContextFetcherIframeInfoTest,
+                           AddIframeInfoSuccess);
+  FRIEND_TEST_ALL_PREFIXES(PageContextFetcherIframeInfoTest,
+                           AddIframeInfoNoUrlOrigin);
+  FRIEND_TEST_ALL_PREFIXES(PageContextFetcherIframeInfoTest,
+                           NoIframeInfoWhenFeatureDisabled);
 
   // Redacts a screenshot by painting over sensitive regions with
   // `redaction_color`.

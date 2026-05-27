@@ -1042,11 +1042,18 @@ void PageContextFetcher::MaybeAddIframeInfoToAPC() {
     return;
   }
 
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kAIPageContentTrackedElementsIframe)) {
+    return;
+  }
+
   // If we don't have an APC result or iframe info, there's nothing to do.
   // TODO(b/441532128): If we don't have an APC result, we should create one and
   // populate the screenshot iframe info.
   if (!pending_result_->annotated_page_content_result.has_value() ||
       iframe_info_.empty()) {
+    base::UmaHistogramBoolean("Glic.PageContextFetcher.IframeInfoAddedToAPC",
+                              false);
     return;
   }
 
@@ -1056,8 +1063,13 @@ void PageContextFetcher::MaybeAddIframeInfoToAPC() {
           .mutable_gemini_in_chrome_page_metadata()
           ->mutable_screenshot_info();
   for (const auto& iframe_info : iframe_info_) {
+    base::UmaHistogramBoolean("Glic.PageContextFetcher.IframeInfoHasUrlOrigin",
+                              iframe_info.has_security_origin());
     *screenshot_info->add_iframe_info() = iframe_info;
   }
+
+  base::UmaHistogramBoolean("Glic.PageContextFetcher.IframeInfoAddedToAPC",
+                            true);
 }
 
 void PageContextFetcher::CollectTrackedElementRectsForPassword(

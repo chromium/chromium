@@ -1773,6 +1773,29 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded when a page gets screenshot error from Viz.</summary>
 </histogram>
 
+<histogram name="Glic.PageContextFetcher.IframeInfoAddedToAPC" enum="Boolean"
+    expires_after="2027-06-01">
+  <owner>ryankalla@google.com</owner>
+  <owner>chrome-ai-security@google.com</owner>
+  <summary>
+    Recorded when a page context fetcher processes iframe data after the
+    screenshot is taken and the annotated page content is generated. Records
+    true if any iframe info was added to the annotated page content, and false
+    otherwise.
+  </summary>
+</histogram>
+
+<histogram name="Glic.PageContextFetcher.IframeInfoHasUrlOrigin" enum="Boolean"
+    expires_after="2027-06-01">
+  <owner>ryankalla@google.com</owner>
+  <owner>chrome-ai-security@google.com</owner>
+  <summary>
+    Recorded for each iframe-info message that was added to the annotated page
+    content. Records whether the iframe-info origin field was populated. If
+    false, that means we were unable to determine the src origin of the iframe.
+  </summary>
+</histogram>
+
 <histogram name="Glic.PageContextFetcher.PdfTextExtraction.Size" units="bytes"
     expires_after="2027-05-05">
   <owner>xiaochenzh@chromium.org</owner>
