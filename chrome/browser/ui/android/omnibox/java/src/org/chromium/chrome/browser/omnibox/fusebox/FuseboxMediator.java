@@ -65,6 +65,7 @@ import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.AutocompleteState;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.IconResourceIdsProto.IconResourceIds;
 import org.chromium.components.omnibox.InputTypeProto.InputType;
@@ -456,6 +457,8 @@ import java.util.function.Supplier;
                                 == PageClassification.CO_BROWSING_COMPOSEBOX_VALUE;
 
         if (!isInInputSession()) {
+            targetState = FuseboxState.DISABLED;
+        } else if (mInput.getAutocompleteState() == AutocompleteState.STANDBY_NO_FOCUS) {
             targetState = FuseboxState.DISABLED;
         } else if (!mHasContextualTasksFocus && isContextualTasks) {
             targetState = FuseboxState.COMPACT;
