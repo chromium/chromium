@@ -109,9 +109,8 @@ public class AutofillProviderUMA {
     // 3) Increment Provider.MAX_VALUE.
     // 4) Update tools/metrics/histograms/enums.xml with the new entry.
     // 5) Look for switch statements that uses those values and update them accordingly.
-    private static final String UMA_AUTOFILL_PROVIDER = "Autofill.WebView.Provider.PackageName";
-    private static final String UMA_AUTOFILL_MANAGER_ERROR =
-            "Autofill.AndroidAutofillManagerErrors";
+    public static final String UMA_AUTOFILL_PROVIDER = "Autofill.WebView.Provider.PackageName";
+    public static final String UMA_AUTOFILL_MANAGER_ERROR = "Autofill.AndroidAutofillManagerErrors";
     private static final String AWG_PACKAGE_NAME = "com.google.android.gms";
     private static final String SAMSUNG_PASS_PACKAGE_NAME =
             "com.samsung.android.samsungpassautofill";

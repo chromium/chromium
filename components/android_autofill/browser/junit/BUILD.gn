@@ -8,6 +8,7 @@ import("//build/config/android/rules.gni")
 robolectric_library("components_autofill_junit_tests") {
   sources = [
     "src/org/chromium/components/autofill/AutofillProviderTest.java",
+    "src/org/chromium/components/autofill/AutofillProviderUMATest.java",
     "src/org/chromium/components/autofill/AutofillRequestTest.java",
     "src/org/chromium/components/autofill/AutofillSessionUMATest.java",
     "src/org/chromium/components/autofill/FormDataTest.java",
