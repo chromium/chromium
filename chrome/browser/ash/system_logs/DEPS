@@ -28,7 +28,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "touch_log_source\.cc": [
+  "touch_log_source\\.cc": [
     "+ash/touch/touch_hud_debug.h",
   ],
 }

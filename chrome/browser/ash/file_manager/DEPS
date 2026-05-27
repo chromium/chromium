@@ -81,7 +81,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*test.*\..*": [
+  ".*test.*\\..*": [
     "+chrome/browser/ash/login/test",
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",

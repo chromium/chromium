@@ -38,7 +38,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*multi_capture_notifications_unittest\.cc": [
+  ".*multi_capture_notifications_unittest\\.cc": [
     "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service.h",
     "+chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h",
     "+chrome/browser/prefs/browser_prefs.h",

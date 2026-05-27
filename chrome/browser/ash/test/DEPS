@@ -16,13 +16,13 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "device_restriction_schedule_controller_browsertest\.cc": [
+  "device_restriction_schedule_controller_browsertest\\.cc": [
     "+ui/message_center",
   ],
-  ".*_browser_test_mixin\.(h|cc)": [
+  ".*_browser_test_mixin\\.(h|cc)": [
     "+chrome/test/base/mixin_based_in_process_browser_test.h",
   ],
-  ".*_browsertest\.cc": [
+  ".*_browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/browser_process_platform_part.h",
   ],

@@ -19,7 +19,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "privacy_hub_geolocation_browsertest\.cc": [
+  "privacy_hub_geolocation_browsertest\\.cc": [
     "+chrome/browser",
     "+chrome/browser/ash/login",
   ],

@@ -30,7 +30,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "floating_workspace_service_unittest\.cc": [
+  "floating_workspace_service_unittest\\.cc": [
     "+chrome/browser/ash/settings/scoped_cros_settings_test_helper.h",
   ]
 }
