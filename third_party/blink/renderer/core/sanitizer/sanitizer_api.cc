@@ -48,14 +48,16 @@ const Sanitizer* SanitizerFromOptions(const FragmentParserOptions& options,
 bool SanitizerAPI::AllowMutatingRootElement(
     Sanitizer::Mode mode,
     const ContainerNode* context_element) {
-  if (mode == Sanitizer::Mode::kSafe && context_element->IsElementNode()) {
-    const Element* real_element = To<Element>(context_element);
-    if (real_element->TagQName() == html_names::kScriptTag ||
-        real_element->TagQName() == svg_names::kScriptTag) {
-      return false;
-    }
+  if (mode == Sanitizer::Mode::kUnsafe) {
+    return true;
   }
-  return true;
+  if (!context_element->IsElementNode()) {
+    return true;
+  }
+
+  const Element* real_element = To<Element>(context_element);
+  return !html_names::kScriptTag.Matches(real_element->TagQName()) &&
+         !svg_names::kScriptTag.Matches(real_element->TagQName());
 }
 
 void SanitizerAPI::SanitizeInternal(Sanitizer::Mode mode,
