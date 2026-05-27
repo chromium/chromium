@@ -532,7 +532,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
 
   if ([ChromeEarlGrey isChromeNextEnabled]) {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
-        assertWithMatcher:grey_nil()];
+        assertWithMatcher:grey_notVisible()];
   } else {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
         assertWithMatcher:grey_not(grey_enabled())];
@@ -561,7 +561,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
       assertWithMatcher:grey_interactable()];
   if ([ChromeEarlGrey isChromeNextEnabled]) {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
-        assertWithMatcher:grey_nil()];
+        assertWithMatcher:grey_notVisible()];
   } else {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
         assertWithMatcher:grey_not(grey_enabled())];
@@ -580,7 +580,7 @@ id<GREYMatcher> FormInputAccessoryOmniboxTypingShield() {
   // Check the buttons status.
   if ([ChromeEarlGrey isChromeNextEnabled]) {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
-        assertWithMatcher:grey_nil()];
+        assertWithMatcher:grey_notVisible()];
   } else {
     [[EarlGrey selectElementWithMatcher:ForwardButton()]
         assertWithMatcher:grey_not(grey_enabled())];
