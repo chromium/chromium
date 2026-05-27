@@ -10,7 +10,6 @@
 
 #include <cstdint>
 
-#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 
@@ -147,9 +146,8 @@ void Lock::RemoveFromLocksHeldOnCurrentThread() {
 namespace subtle {
 
 span<const uintptr_t> GetTrackedLocksHeldByCurrentThread() {
-  return UNSAFE_TODO(
-      span<const uintptr_t>(g_tracked_locks_held_by_thread.begin(),
-                            g_num_tracked_locks_held_by_thread));
+  return span(g_tracked_locks_held_by_thread)
+      .first(g_num_tracked_locks_held_by_thread);
 }
 
 }  // namespace subtle
