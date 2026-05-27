@@ -21,8 +21,9 @@ void FetchFaviconAsync(NSString* favicon,
     if (data && !error) {
       NSKeyedUnarchiver* unarchiver =
           [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
-      unarchiver.requiresSecureCoding = NO;
-      attributes = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+      unarchiver.requiresSecureCoding = YES;
+      attributes = [unarchiver decodeObjectOfClass:[FaviconAttributes class]
+                                            forKey:NSKeyedArchiveRootObjectKey];
     }
     completion(attributes);
   });

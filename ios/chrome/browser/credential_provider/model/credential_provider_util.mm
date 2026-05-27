@@ -126,7 +126,7 @@ void SaveFaviconToSharedAppContainer(FaviconAttributes* attributes,
   base::OnceCallback<void()> write_image = base::BindOnce(^{
     NSError* error = nil;
     NSData* data = [NSKeyedArchiver archivedDataWithRootObject:attributes
-                                         requiringSecureCoding:NO
+                                         requiringSecureCoding:YES
                                                          error:&error];
     if (!data || error) {
       DLOG(WARNING) << base::SysNSStringToUTF8([error description]);
