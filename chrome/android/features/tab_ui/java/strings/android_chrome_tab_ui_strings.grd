@@ -1153,6 +1153,11 @@
       <message name="IDS_NEW_TAB_TO_THE_RIGHT_MENU_ITEM" desc="Content description for an action which creates a new tab to the right of the current tab.">
         New tab to the right
       </message>
+      <message name="IDS_ADD_TAB_TO_READING_LIST_MENU_ITEM" desc="Content description for an action which adds the currently selected tabs to the reading list.">
+        {TAB_COUNT, plural,
+          =1 {Add tab to reading list}
+          other {Add tabs to reading list}}
+      </message>
 
       <!-- Tab Group List Bottom Sheet -->
       <message name="IDS_TAB_GROUP_LIST_BOTTOM_SHEET_TITLE" desc="Title text for a bottom sheet which is used to add a tab to a tab group.">

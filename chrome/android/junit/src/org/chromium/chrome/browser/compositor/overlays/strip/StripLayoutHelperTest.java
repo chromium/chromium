@@ -90,6 +90,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.collaboration.messaging.MessagingBackendServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -234,6 +235,7 @@ public class StripLayoutHelperTest {
     @Mock TabStripIphController mController;
     @Mock private TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     @Mock private StripTabUnderlineManager.Natives mStripTabUnderlineMock;
+    @Mock private TabBookmarker mTabBookmarker;
 
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
     @Captor private ArgumentCaptor<TabModelActionListener> mTabModelActionListenerCaptor;
@@ -4744,6 +4746,7 @@ public class StripLayoutHelperTest {
                         mBottomSheetController,
                         mMultiInstanceManager,
                         ObservableSuppliers.createMonotonic(mShareDelegate),
+                        () -> mTabBookmarker,
                         mBottomSheetCoordinatorFactory,
                         mSnackbarManager);
         // Inject the test IPH controller so that setTabModel doesn't try to construct a real one

@@ -18,6 +18,7 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
@@ -93,6 +94,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
      * @param bottomSheetController The {@link BottomSheetController} used to show bottom sheets.
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
+     * @param tabBookmarkerSupplier Supplies {@link TabBookmarker} to add/edit bookmarks.
      * @param xrSceneCoreSessionManager The {@link XrSceneCoreSessionManager} to switch between
      *     space modes on XR.
      * @param backPressManager The {@link BackPressManager} for handling back press.
@@ -121,6 +123,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             DataSharingTabManager dataSharingTabManager,
             BottomSheetController bottomSheetController,
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
             @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager,
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
@@ -163,6 +166,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         dataSharingTabManager,
                         bottomSheetController,
                         shareDelegateSupplier,
+                        tabBookmarkerSupplier,
                         xrSpaceModeObservableSupplier,
                         backPressManager,
                         snackbarManager,

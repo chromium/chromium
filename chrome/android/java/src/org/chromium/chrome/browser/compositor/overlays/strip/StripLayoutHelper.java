@@ -60,6 +60,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerHost;
@@ -501,6 +502,7 @@ public class StripLayoutHelper
 
     private final BottomSheetController mBottomSheetController;
     private final MonotonicObservableSupplier<ShareDelegate> mShareDelegateSupplier;
+    private final Supplier<TabBookmarker> mTabBookmarkerSupplier;
 
     private final TabGroupListBottomSheetCoordinatorFactory
             mTabGroupListBottomSheetCoordinatorFactory;
@@ -728,6 +730,7 @@ public class StripLayoutHelper
      * @param multiInstanceManager The {@link MultiInstanceManager} used to move tabs to other
      *     windows.
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
+     * @param tabBookmarkerSupplier Supplies {@link TabBookmarker} to add/edit bookmarks.
      * @param tabGroupListBottomSheetCoordinatorFactory The factory used to create the {@link
      *     TabGroupListBottomSheetCoordinator}.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
@@ -750,6 +753,7 @@ public class StripLayoutHelper
             BottomSheetController bottomSheetController,
             MultiInstanceManager multiInstanceManager,
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
             TabGroupListBottomSheetCoordinatorFactory tabGroupListBottomSheetCoordinatorFactory,
             SnackbarManager snackbarManager) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
@@ -765,6 +769,7 @@ public class StripLayoutHelper
         mBottomSheetController = bottomSheetController;
         mMultiInstanceManager = multiInstanceManager;
         mShareDelegateSupplier = shareDelegateSupplier;
+        mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTabGroupListBottomSheetCoordinatorFactory = tabGroupListBottomSheetCoordinatorFactory;
         mSnackbarManager = snackbarManager;
         mScrollDelegate = new ScrollDelegate(context);
@@ -2478,6 +2483,7 @@ public class StripLayoutHelper
                             mShareDelegateSupplier,
                             mWindowAndroid,
                             assertNonNull(mWindowAndroid.getActivity().get()),
+                            mTabBookmarkerSupplier,
                             (ids, toLeft) -> {
                                 // Don't use anchorTab here, since that will be the anchor of the
                                 // first-opened tab context menu (it won't change when a new context

@@ -33163,6 +33163,12 @@ should be able to be added at any place in this file.
   </description>
   <token key="ActionType">
     <variant name="" summary="aggregated"/>
+    <variant name=".AddTabToReadingList"
+        summary="User added a tab to their reading list via the tab context
+                 menu on tab strip on Android."/>
+    <variant name=".AddTabToReadingList.MultiTab"
+        summary="User added multiple tabs to their reading list via the tab
+                 context menu on tab strip on Android."/>
     <variant name=".AddToTabGroup"
         summary="User opened the bottom sheet to add a tab to a new or
                  existing tab group, via the tab context menu on tab strip on

@@ -39,6 +39,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.build.annotations.RequiresNonNull;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabContextMenuCoordinator.AnchorInfo;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -159,6 +160,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             Activity activity,
             @Nullable TabGroupSyncService tabGroupSyncService,
             CollaborationService collaborationService,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
             BiConsumer<AnchorInfo, Boolean> reorderFunction) {
         super(
                 R.layout.tab_switcher_action_menu_layout,
@@ -168,7 +170,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                         tabGroupListBottomSheetCoordinator,
                         tabGroupCreationCallback,
                         multiInstanceManager,
-                        shareDelegateSupplier),
+                        shareDelegateSupplier,
+                        tabBookmarkerSupplier),
                 tabModelSupplier,
                 multiInstanceManager,
                 tabGroupSyncService,
@@ -267,6 +270,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             WindowAndroid windowAndroid,
             Activity activity,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
             BiConsumer<AnchorInfo, Boolean> reorderFunction) {
         Profile profile = assumeNonNull(tabModelSupplier.get().getProfile());
 
@@ -286,6 +290,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 activity,
                 tabGroupSyncService,
                 collaborationService,
+                tabBookmarkerSupplier,
                 reorderFunction);
     }
 
@@ -295,7 +300,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             TabGroupListBottomSheetCoordinator tabGroupListBottomSheetCoordinator,
             TabGroupCreationCallback tabGroupCreationCallback,
             MultiInstanceManager multiInstanceManager,
-            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier) {
+            MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<TabBookmarker> tabBookmarkerSupplier) {
         return (menuId, anchorInfo, collaborationId, listViewTouchTracker) -> {
             List<Integer> tabIds = anchorInfo.getAllTabIds();
             assert !tabIds.isEmpty() : "Empty tab id list provided";
@@ -335,6 +341,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                 closeTabsToTheRightItemCallback(tabModel, tabIds);
             } else if (menuId == R.id.new_tab_to_the_right_menu_id) {
                 newTabToTheRightItemCallback(tabModel, anchorInfo);
+            } else if (menuId == R.id.add_tab_to_reading_list_menu_id) {
+                addTabToReadingListItemCallback(tabBookmarkerSupplier, tabs);
             }
         };
     }
@@ -483,6 +491,14 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         }
     }
 
+    private static void addTabToReadingListItemCallback(
+            Supplier<TabBookmarker> tabBookmarkerSupplier, List<Tab> tabs) {
+        TabBookmarker tabBookmarker = tabBookmarkerSupplier.get();
+        if (tabBookmarker != null) {
+            tabBookmarker.addToReadingList(tabs);
+        }
+    }
+
     /**
      * Show the context menu for the given tabs.
      *
@@ -572,6 +588,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
         }
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isIncognito) {
+            itemList.add(createAddTabToReadingListItem(anchorInfo, isIncognito));
+        }
         itemList.add(createCloseItem(isIncognito));
         itemList.add(createCloseAllTabsItem(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
@@ -605,6 +624,9 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         itemList.add(createPinUnpinTabItem(tabs, isIncognito));
         if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             itemList.add(createMuteUnmuteSiteItem(tabs, isIncognito));
+        }
+        if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled() && !isIncognito) {
+            itemList.add(createAddTabToReadingListItem(anchorInfo, isIncognito));
         }
         itemList.add(createCloseItem(isIncognito));
         if (ChromeFeatureList.sAndroidContextMenuNewActions.isEnabled()) {
@@ -824,6 +846,21 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
         return true;
     }
 
+    private ListItem createAddTabToReadingListItem(AnchorInfo anchorInfo, boolean isIncognito) {
+        String title =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.add_tab_to_reading_list_menu_item,
+                                anchorInfo.getAllTabIds().size());
+
+        return new ListItemBuilder()
+                .withTitle(title)
+                .withMenuId(R.id.add_tab_to_reading_list_menu_id)
+                .withIsIncognito(isIncognito)
+                .build();
+    }
+
     private ListItem createCloseItem(boolean isIncognito) {
         return buildListItem(R.string.close, R.id.close_tab, isIncognito);
     }
@@ -884,6 +921,8 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
             recordUserAction("CloseTabsToTheRight", isMultipleTabs);
         } else if (menuId == R.id.new_tab_to_the_right_menu_id) {
             recordUserAction("NewTabToTheRight", /* isMultipleTabs= */ false);
+        } else if (menuId == R.id.add_tab_to_reading_list_menu_id) {
+            recordUserAction("AddTabToReadingList", isMultipleTabs);
         } else {
             assert false : "Unknown menu id: " + menuId;
         }

@@ -44,6 +44,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
 import org.chromium.chrome.browser.back_press.BackPressManager;
+import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -128,6 +129,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * This class handles managing which StripLayoutHelper is currently active and dispatches all input
@@ -485,6 +487,7 @@ public class StripLayoutHelperManager
      * @param dataSharingTabManager The {@link DataSharingTabManager} for shared groups.
      * @param bottomSheetController The {@link BottomSheetController} used to show bottom sheets.
      * @param shareDelegateSupplier Supplies {@link ShareDelegate} to share tab URLs.
+     * @param tabBookmarkerSupplier Supplies {@link TabBookmarker} to add/edit bookmarks.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
      * @param backPressManager The {@link BackPressManager} for handling back press.
@@ -517,6 +520,7 @@ public class StripLayoutHelperManager
             DataSharingTabManager dataSharingTabManager,
             BottomSheetController bottomSheetController,
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
+            Supplier<TabBookmarker> tabBookmarkerSupplier,
             @Nullable NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
@@ -687,6 +691,7 @@ public class StripLayoutHelperManager
                         bottomSheetController,
                         multiInstanceManager,
                         shareDelegateSupplier,
+                        tabBookmarkerSupplier,
                         TabGroupListBottomSheetCoordinator::new,
                         snackbarManager);
         mIncognitoHelper =
@@ -710,6 +715,7 @@ public class StripLayoutHelperManager
                         bottomSheetController,
                         multiInstanceManager,
                         shareDelegateSupplier,
+                        tabBookmarkerSupplier,
                         TabGroupListBottomSheetCoordinator::new,
                         snackbarManager);
 

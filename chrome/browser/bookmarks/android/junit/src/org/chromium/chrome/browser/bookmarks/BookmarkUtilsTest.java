@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +26,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -34,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -62,6 +67,9 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
+import java.util.Collections;
+import java.util.List;
+
 /** Unit tests for {@link BookmarkUtils}. */
 @Batch(Batch.UNIT_TESTS)
 @RunWith(BaseRobolectricTestRunner.class)
@@ -80,7 +88,8 @@ public class BookmarkUtilsTest {
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private Callback<BookmarkId> mBookmarkIdCallback;
+    @Mock private Callback<List<@Nullable BookmarkId>> mBookmarkIdListCallback;
+    @Captor private ArgumentCaptor<List<@Nullable BookmarkId>> mBookmarkIdListCaptor;
     @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Mock private ShoppingService mShoppingService;
@@ -185,19 +194,81 @@ public class BookmarkUtilsTest {
         doReturn("test title").when(mTab).getTitle();
         doReturn(new GURL("https://test.com")).when(mTab).getOriginalUrl();
         BookmarkUtils.addOrEditBookmark(
-                null,
+                Collections.singletonList(null),
                 mBookmarkModel,
-                mTab,
+                Collections.singletonList(mTab),
+                /* snackbarManager= */ null,
                 mBottomSheetController,
                 mActivity,
                 BookmarkType.NORMAL,
-                mBookmarkIdCallback,
+                mBookmarkIdListCallback,
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
                 false);
 
         histograms.assertExpected();
+    }
+
+    @Test
+    public void testAddOrEditMultipleBookmarks() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Bookmarks.AddBookmarkType",
+                                BookmarkType.NORMAL,
+                                BookmarkType.NORMAL)
+                        .expectIntRecords(
+                                "Bookmarks.AddedPerProfileType",
+                                BrowserProfileType.REGULAR,
+                                BrowserProfileType.REGULAR)
+                        .build();
+        Tab tab1 = mock(Tab.class);
+        doReturn(mProfile).when(tab1).getProfile();
+        doReturn(true).when(tab1).isInitialized();
+        doReturn(false).when(tab1).isClosing();
+        doReturn("Title 1").when(tab1).getTitle();
+        doReturn(new GURL("https://test1.com")).when(tab1).getOriginalUrl();
+        Tab tab2 = mock(Tab.class);
+        doReturn(mProfile).when(tab2).getProfile();
+        doReturn(true).when(tab2).isInitialized();
+        doReturn(false).when(tab2).isClosing();
+        doReturn("Title 2").when(tab2).getTitle();
+        doReturn(new GURL("https://test2.com")).when(tab2).getOriginalUrl();
+        List<Tab> tabList = List.of(tab1, tab2);
+        BookmarkUtils.addOrEditBookmark(
+                Collections.singletonList(null),
+                mBookmarkModel,
+                tabList,
+                mSnackbarManager,
+                mBottomSheetController,
+                mActivity,
+                BookmarkType.NORMAL,
+                mBookmarkIdListCallback,
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager,
+                false);
+        histograms.assertExpected();
+        // Verify index-aligned results list has size 2 and non-null elements
+        verify(mBookmarkIdListCallback).onResult(mBookmarkIdListCaptor.capture());
+        assertEquals(2, mBookmarkIdListCaptor.getValue().size());
+
+        BookmarkId id1 = mBookmarkIdListCaptor.getValue().get(0);
+        BookmarkId id2 = mBookmarkIdListCaptor.getValue().get(1);
+        assertNotNull(id1);
+        assertNotNull(id2);
+        // Verify both pages are children of the newly created subfolder
+        BookmarkId folderId = mBookmarkModel.getBookmarkById(id1).getParentId();
+        assertEquals(folderId, mBookmarkModel.getBookmarkById(id2).getParentId());
+
+        // Verify the folder is a child of the Mobile Bookmarks parent
+        assertEquals(
+                mBookmarkModel.getDefaultBookmarkFolder(),
+                mBookmarkModel.getBookmarkById(folderId).getParentId());
+        assertTrue(mBookmarkModel.getBookmarkById(folderId).isFolder());
+        // Verify standard folder confirmation snackbar is shown once
+        verify(mSnackbarManager).showSnackbar(any());
     }
 
     @Test
@@ -212,19 +283,81 @@ public class BookmarkUtilsTest {
         doReturn("test title").when(mTab).getTitle();
         doReturn(new GURL("https://test.com")).when(mTab).getOriginalUrl();
         BookmarkUtils.addOrEditBookmark(
-                null,
+                Collections.singletonList(null),
                 mBookmarkModel,
-                mTab,
+                Collections.singletonList(mTab),
+                /* snackbarManager= */ null,
                 mBottomSheetController,
                 mActivity,
                 BookmarkType.READING_LIST,
-                mBookmarkIdCallback,
+                mBookmarkIdListCallback,
                 /* fromExplicitTrackUi= */ false,
                 mBookmarkManagerOpener,
                 mPriceDropNotificationManager,
                 false);
 
         histograms.assertExpected();
+    }
+
+    @Test
+    public void testAddOrEditMultipleBookmarks_readingList() {
+        HistogramWatcher histograms =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Bookmarks.AddBookmarkType",
+                                BookmarkType.READING_LIST,
+                                BookmarkType.READING_LIST)
+                        .expectIntRecords(
+                                "Bookmarks.AddedPerProfileType",
+                                BrowserProfileType.REGULAR,
+                                BrowserProfileType.REGULAR)
+                        .build();
+        Tab tab1 = mock(Tab.class);
+        doReturn(mProfile).when(tab1).getProfile();
+        doReturn(true).when(tab1).isInitialized();
+        doReturn(false).when(tab1).isClosing();
+        doReturn("Title 1").when(tab1).getTitle();
+        doReturn(new GURL("https://test1.com")).when(tab1).getOriginalUrl();
+        Tab tab2 = mock(Tab.class);
+        doReturn(mProfile).when(tab2).getProfile();
+        doReturn(true).when(tab2).isInitialized();
+        doReturn(false).when(tab2).isClosing();
+        doReturn("Title 2").when(tab2).getTitle();
+        doReturn(new GURL("https://test2.com")).when(tab2).getOriginalUrl();
+        List<Tab> tabList = List.of(tab1, tab2);
+        BookmarkUtils.addOrEditBookmark(
+                Collections.singletonList(null),
+                mBookmarkModel,
+                tabList,
+                mSnackbarManager,
+                mBottomSheetController,
+                mActivity,
+                BookmarkType.READING_LIST,
+                mBookmarkIdListCallback,
+                /* fromExplicitTrackUi= */ false,
+                mBookmarkManagerOpener,
+                mPriceDropNotificationManager,
+                false);
+        histograms.assertExpected();
+        // Verify index-aligned results list has size 2 and non-null elements
+        verify(mBookmarkIdListCallback).onResult(mBookmarkIdListCaptor.capture());
+        assertEquals(2, mBookmarkIdListCaptor.getValue().size());
+
+        BookmarkId id1 = mBookmarkIdListCaptor.getValue().get(0);
+        BookmarkId id2 = mBookmarkIdListCaptor.getValue().get(1);
+        assertNotNull(id1);
+        assertNotNull(id2);
+        // Verify they are children of default Reading List folder directly (no timestamped
+        // subfolder)
+        assertEquals(
+                mBookmarkModel.getDefaultReadingListFolder(),
+                mBookmarkModel.getBookmarkById(id1).getParentId());
+        assertEquals(
+                mBookmarkModel.getDefaultReadingListFolder(),
+                mBookmarkModel.getBookmarkById(id2).getParentId());
+        // Verify Reading List quantity snackbar is shown once and tracker event dispatches once
+        verify(mSnackbarManager).showSnackbar(any());
+        verify(mTracker).notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
     }
 
     @Test

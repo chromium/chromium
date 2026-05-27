@@ -4681,8 +4681,11 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_READING_LIST_UNREAD" desc="The header for the unread section in the reading list UI.">
         Unread - Available offline
       </message>
-      <message name="IDS_READING_LIST_SAVED" desc="App-based message shown after user adds a new link to the reading list. [CHAR_LIMIT=32]">
+      <message name="IDS_READING_LIST_SAVED" desc="App-based message shown after user adds a new link to the reading list.">
         Added to reading list
+      </message>
+      <message name="IDS_READING_LIST_SAVED_PLURAL" desc="App-based message shown after user adds multiple links to the reading list.">
+        Pages added to reading list
       </message>
       <message name="IDS_READING_LIST_MARK_AS_READ" desc="The text for the action to mark the reading list as read.">
         Mark as read

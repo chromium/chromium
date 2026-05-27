@@ -47,6 +47,7 @@ import org.chromium.url.GURL;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -67,9 +68,10 @@ public class BookmarkUtils {
      * bookmark or show the reading list page for reading list bookmark. If not, add the bookmark to
      * {@link BookmarkModel}, and show a snackbar notifying the user.
      *
-     * @param existingBookmarkItem The {@link BookmarkItem} if the tab has already been bookmarked.
+     * @param existingBookmarkItems The {@link BookmarkItem} if the tab has already been bookmarked.
      * @param bookmarkModel The bookmark model.
-     * @param tab The tab to add or edit a bookmark.
+     * @param tabs A list of tabs to add or edit a bookmark.
+     * @param snackbarManager The {@link SnackbarManager} used to show the snack bar.
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
      * @param activity Current activity.
      * @param bookmarkType Type of the added bookmark.
@@ -80,13 +82,58 @@ public class BookmarkUtils {
      * @param priceDropNotificationManager Manages price drop notifications.
      */
     public static void addOrEditBookmark(
+            @Nullable List<@Nullable BookmarkItem> existingBookmarkItems,
+            BookmarkModel bookmarkModel,
+            List<Tab> tabs,
+            @Nullable SnackbarManager snackbarManager,
+            @Nullable BottomSheetController bottomSheetController,
+            Activity activity,
+            @BookmarkType int bookmarkType,
+            Callback<List<@Nullable BookmarkId>> callback,
+            boolean fromExplicitTrackUi,
+            BookmarkManagerOpener bookmarkManagerOpener,
+            PriceDropNotificationManager priceDropNotificationManager,
+            boolean isBookmarkBarVisible) {
+        if (tabs.size() == 1) {
+            assert bottomSheetController != null;
+            BookmarkItem existingBookmarkItem =
+                    existingBookmarkItems != null && !existingBookmarkItems.isEmpty()
+                            ? existingBookmarkItems.get(0)
+                            : null;
+            addOrEditSingleBookmark(
+                    existingBookmarkItem,
+                    bookmarkModel,
+                    tabs.get(0),
+                    bottomSheetController,
+                    activity,
+                    bookmarkType,
+                    callback,
+                    fromExplicitTrackUi,
+                    bookmarkManagerOpener,
+                    priceDropNotificationManager,
+                    isBookmarkBarVisible);
+        } else {
+            assert snackbarManager != null : "Snackbar manager should never be null";
+            addOrEditMultipleBookmarks(
+                    bookmarkModel,
+                    tabs,
+                    snackbarManager,
+                    activity,
+                    bookmarkType,
+                    callback,
+                    bookmarkManagerOpener,
+                    isBookmarkBarVisible);
+        }
+    }
+
+    private static void addOrEditSingleBookmark(
             @Nullable BookmarkItem existingBookmarkItem,
             BookmarkModel bookmarkModel,
             Tab tab,
             BottomSheetController bottomSheetController,
             Activity activity,
             @BookmarkType int bookmarkType,
-            Callback<@Nullable BookmarkId> callback,
+            Callback<List<@Nullable BookmarkId>> callback,
             boolean fromExplicitTrackUi,
             BookmarkManagerOpener bookmarkManagerOpener,
             PriceDropNotificationManager priceDropNotificationManager,
@@ -95,7 +142,7 @@ public class BookmarkUtils {
         if (existingBookmarkItem != null) {
             bookmarkManagerOpener.startEditActivity(
                     activity, tab.getProfile(), existingBookmarkItem.getId());
-            callback.onResult(existingBookmarkItem.getId());
+            callback.onResult(Collections.singletonList(existingBookmarkItem.getId()));
             return;
         }
 
@@ -128,7 +175,85 @@ public class BookmarkUtils {
                 /* isNewBookmark= */ true,
                 bookmarkManagerOpener,
                 priceDropNotificationManager);
-        callback.onResult(newBookmarkId);
+        callback.onResult(Collections.singletonList(newBookmarkId));
+    }
+
+    private static void addOrEditMultipleBookmarks(
+            BookmarkModel bookmarkModel,
+            List<Tab> tabs,
+            SnackbarManager snackbarManager,
+            Activity activity,
+            @BookmarkType int bookmarkType,
+            Callback<List<@Nullable BookmarkId>> callback,
+            BookmarkManagerOpener bookmarkManagerOpener,
+            boolean isBookmarkBarVisible) {
+        assert bookmarkModel.isBookmarkModelLoaded();
+        // Multi-Tab Reading List Logic
+        if (bookmarkType == BookmarkType.READING_LIST) {
+            bookmarkModel.finishLoadingBookmarkModel(
+                    () -> {
+                        List<@Nullable BookmarkId> createdIds = new ArrayList<>();
+                        Profile profile = null;
+                        for (Tab tab : tabs) {
+                            assert !tab.isClosing() && tab.isInitialized();
+                            if (profile == null) {
+                                profile = tab.getProfile();
+                            } else {
+                                assert profile == tab.getProfile();
+                            }
+
+                            BookmarkId bookmarkId =
+                                    addBookmarkInternal(
+                                            activity,
+                                            profile,
+                                            bookmarkModel,
+                                            tab.getTitle(),
+                                            tab.getOriginalUrl(),
+                                            bookmarkModel.getDefaultReadingListFolder(),
+                                            BookmarkType.READING_LIST,
+                                            isBookmarkBarVisible);
+                            createdIds.add(bookmarkId);
+                        }
+                        assert profile != null;
+
+                        int addedCount = 0;
+                        for (BookmarkId id : createdIds) {
+                            if (id != null) addedCount++;
+                        }
+
+                        if (addedCount > 0) {
+                            String snackbarMessage =
+                                    activity.getResources()
+                                            .getString(R.string.reading_list_saved_plural);
+                            Snackbar snackbar =
+                                    Snackbar.make(
+                                            snackbarMessage,
+                                            new SnackbarController() {},
+                                            Snackbar.TYPE_ACTION,
+                                            Snackbar.UMA_READING_LIST_BOOKMARK_ADDED);
+                            snackbarManager.showSnackbar(snackbar);
+
+                            TrackerFactory.getTrackerForProfile(profile)
+                                    .notifyEvent(EventConstants.READ_LATER_ARTICLE_SAVED);
+                        }
+                        callback.onResult(createdIds);
+                    });
+        } else if (bookmarkType == BookmarkType.NORMAL) {
+            // Multi-Tab Normal Bookmarks Logic (Timestamped Subfolder approach)
+            bookmarkModel.finishLoadingBookmarkModel(
+                    () -> {
+                        List<@Nullable BookmarkId> createdIds =
+                                addTabsToBookmarksFolder(
+                                        activity,
+                                        bookmarkModel,
+                                        tabs,
+                                        snackbarManager,
+                                        bookmarkManagerOpener);
+                        callback.onResult(createdIds);
+                    });
+        } else {
+            assert false : "Multi-tab bookmark is only supported for READING_LIST and NORMAL types";
+        }
     }
 
     /**
@@ -368,7 +493,6 @@ public class BookmarkUtils {
         // TODO(crbug.com/40879467): Refactor the bookmark folder select activity to allow for the
         // view to display in a dialog implementation approach.
         assert bookmarkModel != null && !tabList.isEmpty();
-
         // For a single selected bookmark, default to the single tab-to-bookmark approach.
         if (tabList.size() == 1) {
             BookmarkId id =
@@ -382,8 +506,26 @@ public class BookmarkUtils {
                             bookmarkManagerOpener);
             return id != null ? 1 : 0;
         }
+        // Delegate to the unified bulk normal helper
+        List<@Nullable BookmarkId> createdIds =
+                addTabsToBookmarksFolder(
+                        activity, bookmarkModel, tabList, snackbarManager, bookmarkManagerOpener);
+        // Count successful additions
+        int tabsBookmarkedCount = 0;
+        for (@Nullable BookmarkId id : createdIds) {
+            if (id != null) {
+                tabsBookmarkedCount++;
+            }
+        }
+        return tabsBookmarkedCount;
+    }
 
-        // Current date time format with an example would be: Nov 17, 2022 4:34:20 PM PST
+    static List<@Nullable BookmarkId> addTabsToBookmarksFolder(
+            Activity activity,
+            BookmarkModel bookmarkModel,
+            List<Tab> tabList,
+            SnackbarManager snackbarManager,
+            BookmarkManagerOpener bookmarkManagerOpener) {
         DateFormat dateFormat =
                 DateFormat.getDateTimeInstance(
                         DateFormat.MEDIUM, DateFormat.LONG, getLocale(activity));
@@ -393,11 +535,8 @@ public class BookmarkUtils {
                         dateFormat.format(new Date(System.currentTimeMillis())));
         BookmarkId newFolder =
                 bookmarkModel.addFolder(bookmarkModel.getDefaultBookmarkFolder(), 0, fileName);
-
         assumeNonNull(newFolder);
-
-        int tabsBookmarkedCount = 0;
-
+        List<@Nullable BookmarkId> createdIds = new ArrayList<>();
         Profile profile = null;
         for (Tab tab : tabList) {
             if (profile == null) {
@@ -405,8 +544,7 @@ public class BookmarkUtils {
             } else {
                 assert profile == tab.getProfile();
             }
-
-            BookmarkId tabToBookmark =
+            BookmarkId bookmarkId =
                     addBookmarkInternal(
                             activity,
                             profile,
@@ -414,16 +552,15 @@ public class BookmarkUtils {
                             tab.getTitle(),
                             tab.getOriginalUrl(),
                             newFolder,
-                            BookmarkType.NORMAL);
-
-            if (bookmarkModel.doesBookmarkExist(tabToBookmark)) {
-                tabsBookmarkedCount++;
-            }
+                            BookmarkType.NORMAL,
+                            /* isBookmarkBarVisible= */ false);
+            createdIds.add(bookmarkId);
         }
+        assert profile != null;
 
         SnackbarController snackbarController =
                 createSnackbarControllerForBookmarkFolderEditButton(
-                        activity, assumeNonNull(profile), newFolder, bookmarkManagerOpener);
+                        activity, profile, newFolder, bookmarkManagerOpener);
         Snackbar snackbar =
                 Snackbar.make(
                         activity.getString(R.string.bookmark_page_saved_default),
@@ -433,8 +570,7 @@ public class BookmarkUtils {
         snackbar.setDefaultLines(false)
                 .setAction(activity.getString(R.string.bookmark_item_edit), null);
         snackbarManager.showSnackbar(snackbar);
-
-        return tabsBookmarkedCount;
+        return createdIds;
     }
 
     /**
