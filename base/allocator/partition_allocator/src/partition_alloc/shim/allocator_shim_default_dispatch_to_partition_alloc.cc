@@ -537,8 +537,9 @@ PartitionAllocFunctionsInternal<base_alloc_flags,
       return;
     }
   }
-  partition_alloc::PartitionRoot::FreeWithSizeInUnknownRoot<base_free_flags>(
-      object, size);
+  partition_alloc::PartitionRoot::FreeInUnknownRoot<
+      base_free_flags | partition_alloc::FreeFlags::kWithSizeHint>(
+      object, {.size = size});
 }
 
 // static
@@ -576,8 +577,10 @@ PA_ALWAYS_INLINE void PartitionAllocFunctionsInternal<
   // alignments, ensuring correct size adjustments, 2) Alignment only affects
   // the size determination, so always calling aligned Free doesn't incur
   // overhead, and 3) it avoids the binary size increase.
-  partition_alloc::PartitionRoot::FreeWithSizeAndAlignmentInUnknownRoot<
-      base_free_flags>(object, size, alignment);
+  partition_alloc::PartitionRoot::FreeInUnknownRoot<
+      base_free_flags | partition_alloc::FreeFlags::kWithSizeHint |
+      partition_alloc::FreeFlags::kWithAlignmentHint>(
+      object, {.size = size, .alignment = alignment});
 }
 
 // static

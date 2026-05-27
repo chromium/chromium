@@ -341,7 +341,7 @@ GetPartitionAllocWithSizedFreeTestParams() {
   auto params = GetPartitionAllocTestParams();
   auto free_with_size_func = [](PartitionRoot* root, void* ptr, size_t size,
                                 size_t) {
-    root->FreeWithSizeInline(ptr, size);
+    root->Free<FreeFlags::kWithSizeHint>(ptr, {.size = size});
   };
   params.emplace_back(PartitionAllocTestParam{BucketDistribution::kNeutral,
                                               false, free_with_size_func});
@@ -355,7 +355,8 @@ GetPartitionAllocWithFreeWithSizeAndAlignmentTestParams() {
   auto params = GetPartitionAllocTestParams();
   auto free_with_size_and_alignment_func = [](PartitionRoot* root, void* ptr,
                                               size_t size, size_t alignment) {
-    root->FreeWithSizeAndAlignmentInline(ptr, size, alignment);
+    root->Free<FreeFlags::kWithSizeHint | FreeFlags::kWithAlignmentHint>(
+        ptr, {.size = size, .alignment = alignment});
   };
   params.emplace_back(PartitionAllocTestParam{
       BucketDistribution::kNeutral, false, free_with_size_and_alignment_func});

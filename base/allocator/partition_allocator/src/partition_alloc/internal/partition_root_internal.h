@@ -473,7 +473,6 @@ PartitionRoot::GetRootFromAddressInFirstSuperpage(void* object) {
   return FromAddrInFirstSuperpage(object_addr);
 }
 
-// static
 template <FreeFlags flags>
 PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(void* object) {
   bool early_return = FreeProlog<flags>(object, nullptr);
@@ -489,9 +488,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(void* object) {
 
 // static
 template <FreeFlags flags>
-PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeInlineInUnknownRoot(
+PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInUnknownRoot(
     void* object,
-    size_t size) {
+    FreeHintType<FreeHintFlags(flags)> hint) {
   bool early_return = FreeProlog<flags>(object, nullptr);
   if (early_return) {
     return;
@@ -500,25 +499,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeInlineInUnknownRoot(
   PA_DCHECK(object);
 
   auto* root = GetRootFromAddressInFirstSuperpage(object);
-  root->FreeWithSizeInline<flags | FreeFlags::kNoHooks>(object, size);
-}
-
-// static
-template <FreeFlags flags>
-PA_ALWAYS_INLINE void
-PartitionRoot::FreeWithSizeAndAlignmentInlineInUnknownRoot(void* object,
-                                                           size_t size,
-                                                           size_t alignment) {
-  bool early_return = FreeProlog<flags>(object, nullptr);
-  if (early_return) {
-    return;
-  }
-  // FreeProlog ensures the object is not nullptr.
-  PA_DCHECK(object);
-
-  auto* root = GetRootFromAddressInFirstSuperpage(object);
-  root->FreeWithSizeAndAlignmentInline<flags | FreeFlags::kNoHooks>(
-      object, size, alignment);
+  root->FreeInline<flags | FreeFlags::kNoHooks>(object, hint);
 }
 
 PA_ALWAYS_INLINE std::pair<internal::SlotStart, internal::SlotSpanMetadata*>
@@ -574,36 +555,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInternal(void* object) {
 }
 
 template <FreeFlags flags>
-PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeInline(void* object,
-                                                        size_t size) {
-  if (!settings_.enable_free_with_size) {
-    FreeInlineInternal<flags>(object);
-    return;
-  }
-  // The correct PartitionRoot might not be deducible if the |object| originates
-  // from an override hook.
-  bool early_return = FreeProlog<flags>(object, this);
-  if (early_return) {
-    return;
-  }
-  // FreeProlog ensures the object is not nullptr.
-  PA_DCHECK(object);
-
-  // Almost all calls to FreeWithSizeNoHooks() will end up writing to |*object|.
-  PA_PREFETCH_FOR_WRITE(object);
-  auto [slot_start, slot_span] = GetSlotStartAndSlotSpanFromAddress(object);
-  FreeWithSizeNoHooksImmediate<flags>(slot_start, slot_span, size);
-}
-
-template <FreeFlags flags>
-PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeAndAlignmentInline(
+PA_ALWAYS_INLINE void PartitionRoot::FreeInlineInternal(
     void* object,
-    size_t size,
-    size_t alignment) {
-  if (!settings_.enable_free_with_size) {
-    FreeInlineInternal<flags>(object);
-    return;
-  }
+    FreeHintType<FreeHintFlags(flags)> hint) {
   // The correct PartitionRoot might not be deducible if the |object| originates
   // from an override hook.
   bool early_return = FreeProlog<flags>(object, this);
@@ -617,10 +571,28 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeAndAlignmentInline(
   PA_PREFETCH_FOR_WRITE(object);
   auto [slot_start, slot_span] = GetSlotStartAndSlotSpanFromAddress(object);
 
-  auto adjusted_size = GetAdjustedSizeForAlignment(alignment, size);
-  // Overflow check. adjusted_size must be larger or equal to the original size.
-  PA_CHECK(adjusted_size >= size);
-  FreeWithSizeNoHooksImmediate<flags>(slot_start, slot_span, adjusted_size);
+  if constexpr (ContainsFlags(flags, FreeFlags::kWithAlignmentHint) &&
+                ContainsFlags(flags, FreeFlags::kWithSizeHint)) {
+    if (settings_.enable_free_with_size) {
+      auto adjusted_size =
+          GetAdjustedSizeForAlignment(hint.alignment, hint.size);
+      // Overflow check. adjusted_size must be larger or equal to the original
+      // size.
+      PA_CHECK(adjusted_size >= hint.size);
+
+      FreeHintType<FreeHintFlags(flags)> new_hint = hint;
+      new_hint.size = adjusted_size;
+      FreeNoHooksImmediate<flags>(slot_start, slot_span, new_hint);
+      return;
+    }
+  }
+
+  // We are going to read from |*slot_span| in all branches, but haven't
+  // done it yet.
+  if constexpr (!ContainsFlags(flags, FreeFlags::kWithSizeHint)) {
+    PA_PREFETCH(slot_span);
+  }
+  FreeNoHooksImmediate<flags>(slot_start, slot_span, hint);
 }
 
 template <FreeFlags flags>
@@ -748,11 +720,20 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
 }
 
 template <FreeFlags flags>
-PA_ALWAYS_INLINE void PartitionRoot::FreeWithSizeNoHooksImmediate(
+PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
     internal::SlotStart slot_start,
     SlotSpanMetadata* slot_span,
-    size_t size) {
-  auto size_details = SizeToBucketSizeDetails(size, slot_span);
+    FreeHintType<FreeHintFlags(flags)> hint) {
+  internal::BucketSizeDetails size_details;
+  if constexpr (ContainsFlags(flags, FreeFlags::kWithSizeHint)) {
+    if (settings_.enable_free_with_size) {
+      size_details = SizeToBucketSizeDetails(hint.size, slot_span);
+      FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, size_details);
+      return;
+    }
+  }
+  size_details = SlotSpanToBucketSizeDetails(slot_span);
+
   FreeNoHooksImmediateInternal<flags>(slot_start, slot_span, size_details);
 }
 

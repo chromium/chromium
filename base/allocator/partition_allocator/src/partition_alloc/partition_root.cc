@@ -2050,9 +2050,12 @@ template <FreeFlags flags>
 PA_NOINLINE void PartitionRoot::FreeInline(void* object) {
   FreeInlineInternal<flags>(object);
 }
+
 template <FreeFlags flags>
-PA_NOINLINE void PartitionRoot::FreeWithSize(void* object, size_t size) {
-  FreeWithSizeInline<flags>(object, size);
+PA_NOINLINE void PartitionRoot::FreeInline(
+    void* object,
+    FreeHintType<FreeHintFlags(flags)> hint) {
+  FreeInlineInternal<flags>(object, hint);
 }
 
 template <FreeFlags flags>
@@ -2074,17 +2077,10 @@ PA_NOINLINE void PartitionRoot::AlignedFree(void* object) {
 }
 
 template <FreeFlags flags>
-PA_NOINLINE void PartitionRoot::FreeWithSizeInUnknownRoot(void* object,
-                                                          size_t size) {
-  FreeWithSizeInlineInUnknownRoot<flags>(object, size);
-}
-
-template <FreeFlags flags>
-PA_NOINLINE void PartitionRoot::FreeWithSizeAndAlignmentInUnknownRoot(
+PA_NOINLINE void PartitionRoot::FreeInUnknownRoot(
     void* object,
-    size_t size,
-    size_t alignment) {
-  FreeWithSizeAndAlignmentInlineInUnknownRoot<flags>(object, size, alignment);
+    FreeHintType<FreeHintFlags(flags)> hint) {
+  FreeInlineInUnknownRoot<flags>(object, hint);
 }
 
 #define DEFINE_PARTITION_ROOT_EXPORT_TEMPLATE 1

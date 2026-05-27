@@ -69,10 +69,13 @@ enum class FreeFlags {
   kSchedulerLoopQuarantine = 1 << 2,
   // Quarantine for a while to ensure no UaF from on-stack pointers.
   kSchedulerLoopQuarantineForAdvancedMemorySafetyChecks = 1 << 3,
+  // `kWith[A-Za-z]+Hint` shows whether `FreeHint`'s member is available or not.
+  kWithSizeHint = 1 << 4,       // `FreeHint::size` is available.
+  kWithAlignmentHint = 1 << 5,  // `FreeHint::alignment` is available.
   // Only used when MEMORY_TOOL_REPLACES_ALLOCATOR is defined, we will attempt
   // to use an aligned free function.
-  kAlignedFreeForMemoryTool = 1 << 4,  // Internal.
-  kIntendedLeak = 1 << 5,              // Internal.
+  kAlignedFreeForMemoryTool = 1 << 6,  // Internal.
+  kIntendedLeak = 1 << 7,              // Internal.
   kMaxValue = kIntendedLeak,
 };
 PA_DEFINE_OPERATORS_FOR_FLAGS(FreeFlags);
