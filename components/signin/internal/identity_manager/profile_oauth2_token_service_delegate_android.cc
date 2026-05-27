@@ -359,6 +359,10 @@ void ProfileOAuth2TokenServiceDelegateAndroid::FireRefreshTokensLoaded() {
 
 void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentialsInternal(
     signin_metrics::SourceForRefreshTokenOperation source) {
+  // Revoking credentials on Android is not allowed.
+  NOTREACHED(base::NotFatalUntil::M153);
+
+  // TODO(crbug.com/512831931): Cleanup after M153 is rolled out.
   DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials";
   ScopedBatchChange batch(this);
   std::vector<CoreAccountId> accounts_to_revoke = GetAccounts();
