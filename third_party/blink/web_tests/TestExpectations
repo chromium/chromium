@@ -3349,7 +3349,7 @@ crbug.com/431938385 [ Win11-arm64 ] external/wpt/device-bound-session-credential
 crbug.com/438909307 [ Win11-arm64 ] virtual/split-http-cache/external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-signature_verification_error.tentative.html [ Crash ]
 crbug.com/438780143 [ Win11-arm64 ] external/wpt/FileAPI/BlobURL/cross-partition.https.html [ Skip Timeout ]
 crbug.com/438780122 external/wpt/digital-credentials/non-fully-active.https.html [ Timeout ]
-crbug.com/438789183 [ Win11-arm64 ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash ]
+crbug.com/438789183 [ Win11-arm64 ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash Pass Failure ]
 crbug.com/438789183 [ Mac ] external/wpt/fetch/fetch-later/new-window.https.window.html [ Crash Pass ]
 crbug.com/438873385 [ Win11-arm64 ] external/wpt/html/cross-origin-opener-policy/reporting/access-reporting/access-to-coop-page-from-other_coop-ro_cross-origin.https.html [ Crash ]
 crbug.com/438780144 [ Win11-arm64 ] external/wpt/html/document-isolation-policy/credentialless-shared-worker.https.tentative.window.html?request_origin=same_origin&worker_dip=none&window_dip=credentialless [ Skip Timeout ]
