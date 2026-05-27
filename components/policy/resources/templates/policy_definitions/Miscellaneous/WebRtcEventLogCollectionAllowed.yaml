@@ -10,8 +10,6 @@ example_value: true
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- android
 items:
 - caption: Allow WebRTC event log collection from Google services
   value: true
@@ -24,6 +22,7 @@ schema:
 supported_on:
 - chrome.*:70-
 - chrome_os:70-
+- android:150-
 tags:
 - google-sharing
 type: main
