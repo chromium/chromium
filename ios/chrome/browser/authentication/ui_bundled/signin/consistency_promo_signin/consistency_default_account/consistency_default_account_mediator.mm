@@ -168,6 +168,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kAvatarPillExpandPromo:
     case signin_metrics::AccessPoint::kSearchAIModeBubble:
     case signin_metrics::AccessPoint::kSettingsAutofillAndPasswords:
+    case signin_metrics::AccessPoint::kIndigo:
     case signin_metrics::AccessPoint::kDeepLinkDefault:
     case signin_metrics::AccessPoint::kAgeMismatchSignout:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController

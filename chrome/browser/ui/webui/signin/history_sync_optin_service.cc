@@ -264,6 +264,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
     case signin_metrics::AccessPoint::kCctAccountMismatchNotification:
     case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kGlicLaunchButton:
+    case signin_metrics::AccessPoint::kIndigo:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
     case signin_metrics::AccessPoint::kWidget:

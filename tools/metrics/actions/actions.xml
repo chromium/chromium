@@ -46655,6 +46655,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromIndigo">
+  <owner>jbroman@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kIndigo.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromIOSAppBar">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>

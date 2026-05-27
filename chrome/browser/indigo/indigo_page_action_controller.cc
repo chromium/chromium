@@ -31,6 +31,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/page_action/page_action_controller.h"
@@ -39,6 +40,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -63,6 +65,10 @@ void RecordTransformationResultCannotGenerateImage(
     switch (eligibility.local_eligibility) {
       case LocalEligibility::kNotSignedIn:
         result = IndigoTransformationResult::kNotSignedIn;
+        break;
+      case LocalEligibility::kRefreshTokenInPersistentErrorState:
+        result =
+            IndigoTransformationResult::kRefreshTokenInPersistentErrorState;
         break;
       case LocalEligibility::kMissingCapabilities:
         result = IndigoTransformationResult::kMissingCapabilities;
@@ -168,6 +174,21 @@ void IndigoPageActionController::InvokeAction() {
 
 void IndigoPageActionController::CheckEligibilityForOnboarding(
     const CombinedEligibility& eligibility) {
+  if (eligibility.local_eligibility ==
+      LocalEligibility::kRefreshTokenInPersistentErrorState) {
+    RecordTransformationResultCannotGenerateImage(eligibility);
+    content::WebContents* web_contents = tab().GetContents();
+    if (web_contents) {
+      Profile* profile =
+          Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      // TODO(b/513564094): Consider a gentler UI (e.g. a toast/bubble) if users
+      // are confused by the sudden tab launch.
+      signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
+          profile, signin_metrics::AccessPoint::kIndigo);
+    }
+    return;
+  }
+
   const base::CommandLine* command_line =
       base::CommandLine::ForCurrentProcess();
   const bool force_onboarding =

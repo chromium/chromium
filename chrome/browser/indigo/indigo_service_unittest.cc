@@ -153,6 +153,30 @@ TEST_F(IndigoServiceTest, CapabilitiesDisable) {
   EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kMissingCapabilities));
 }
 
+TEST_F(IndigoServiceTest, RefreshTokenError) {
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  identity_test_env_.SetInvalidRefreshTokenForPrimaryAccount();
+  EXPECT_TRUE(LocalEligibilityBecomes(
+      LocalEligibility::kRefreshTokenInPersistentErrorState));
+  EXPECT_TRUE(service_->IsLocallyEligible());
+}
+
+TEST_F(IndigoServiceTest, RefreshTokenErrorResolved) {
+  CreateService();
+  MakeAccountAvailableAndCapable();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+
+  identity_test_env_.SetInvalidRefreshTokenForPrimaryAccount();
+  EXPECT_TRUE(LocalEligibilityBecomes(
+      LocalEligibility::kRefreshTokenInPersistentErrorState));
+
+  identity_test_env_.SetRefreshTokenForPrimaryAccount();
+  EXPECT_TRUE(LocalEligibilityBecomes(LocalEligibility::kEligible));
+}
+
 TEST_F(IndigoServiceTest, PolicyDisabledFromConstruction) {
   SetPolicySettings(prefs::Policy::kDisallowed);
   CreateService();

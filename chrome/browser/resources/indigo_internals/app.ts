@@ -103,6 +103,8 @@ export class IndigoInternalsAppElement extends CrLitElement {
         return 'Disabled By Policy';
       case LocalEligibility.kMissingScript:
         return 'Missing Script';
+      case LocalEligibility.kRefreshTokenInPersistentErrorState:
+        return 'Refresh Token In Persistent Error State';
       default:
         assertNotReachedCase(this.localEligibility_);
     }
@@ -115,6 +117,7 @@ export class IndigoInternalsAppElement extends CrLitElement {
       case LocalEligibility.kEligible:
         return 'status-eligible';
       case LocalEligibility.kNotSignedIn:
+      case LocalEligibility.kRefreshTokenInPersistentErrorState:
       case LocalEligibility.kMissingCapabilities:
       case LocalEligibility.kDisabledByPolicy:
       case LocalEligibility.kMissingScript:

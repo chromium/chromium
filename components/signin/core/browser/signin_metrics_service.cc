@@ -174,6 +174,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kDriveFilePickerIos:
     case signin_metrics::AccessPoint::kCollaborationShareTabGroup:
     case signin_metrics::AccessPoint::kGlicLaunchButton:
+    case signin_metrics::AccessPoint::kIndigo:
     case signin_metrics::AccessPoint::kHistoryPage:
     case signin_metrics::AccessPoint::kCollaborationJoinTabGroup:
     case signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup:

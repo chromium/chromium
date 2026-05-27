@@ -349,10 +349,12 @@ enum class AccessPoint : int {
   kAgeMismatchSignout = 103,
   // Sign in via the iOS assistant button toolbar button on iPad.
   kIosGeminiButtonToolbar = 104,
+  // Sign in via Indigo.
+  kIndigo = 105,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kIosGeminiButtonToolbar,  // This must be last.
+  kMaxValue = kIndigo,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

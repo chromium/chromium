@@ -8,6 +8,7 @@ module indigo_internals.mojom;
 enum LocalEligibility {
   kEligible,
   kNotSignedIn,
+  kRefreshTokenInPersistentErrorState,
   kMissingCapabilities,
   kDisabledByPolicy,
   kMissingScript,

@@ -37,6 +37,7 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Missing user image"/>
   <int value="9" label="Not onboarded"/>
   <int value="10" label="Generate image error"/>
+  <int value="11" label="Refresh token in persistent error state"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/indigo/indigo_page_action_controller.h:IndigoTransformationResult) -->

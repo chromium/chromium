@@ -56,7 +56,8 @@ enum class IndigoTransformationResult {
   kMissingUserImage = 8,
   kNotOnboarded = 9,
   kGenerateImageError = 10,
-  kMaxValue = kGenerateImageError,
+  kRefreshTokenInPersistentErrorState = 11,
+  kMaxValue = kRefreshTokenInPersistentErrorState,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/indigo/enums.xml:IndigoTransformationResult)

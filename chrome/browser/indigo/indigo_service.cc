@@ -20,8 +20,11 @@
 #include "chrome/common/chrome_features.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace indigo {
@@ -144,6 +147,17 @@ void IndigoService::OnExtendedAccountInfoUpdated(const AccountInfo& info) {
   UpdateLocalEligibilityAndNotify();
 }
 
+void IndigoService::OnErrorStateOfRefreshTokenUpdatedForAccount(
+    const CoreAccountInfo& account_info,
+    const GoogleServiceAuthError& error,
+    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
+  if (account_info.account_id !=
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+  UpdateLocalEligibilityAndNotify();
+}
+
 base::CallbackListSubscription
 IndigoService::RegisterLocalEligibilityChangedCallback(
     LocalEligibilityChangedCallback callback) {
@@ -185,6 +199,11 @@ LocalEligibility IndigoService::ComputeLocalEligibility() const {
   if (info.capabilities.can_use_model_execution_features() !=
       signin::Tribool::kTrue) {
     return LocalEligibility::kMissingCapabilities;
+  }
+
+  if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
+          account_id)) {
+    return LocalEligibility::kRefreshTokenInPersistentErrorState;
   }
 
   return LocalEligibility::kEligible;

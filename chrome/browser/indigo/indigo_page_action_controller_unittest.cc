@@ -11,6 +11,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
@@ -31,6 +32,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/signin/signin_ui_delegate.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/page_action/test_support/fake_tab_interface.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
@@ -40,6 +43,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -65,6 +69,27 @@ auto HasGlicPrompt(std::string_view prompt) {
   return ::testing::Field("prompts", &glic::GlicInvokeOptions::prompts,
                           ::testing::ElementsAre(prompt));
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
+ public:
+  MOCK_METHOD(void,
+              ShowSigninUI,
+              (Profile*,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
+  MOCK_METHOD(void,
+              ShowReauthUI,
+              (Profile*,
+               const std::string&,
+               bool,
+               signin_metrics::AccessPoint,
+               signin_metrics::PromoAction),
+              (override));
+};
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr bool kSignOutSupportedOnPlatform = false;
@@ -699,6 +724,37 @@ TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicForSuggestionChip) {
 
   controller_->InvokeAction();
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(IndigoPageActionControllerTest, InvokeActionTriggerReauthWhenPaused) {
+  CreateController();
+
+  // Set the account in paused state.
+  identity_test_env_adaptor_->identity_test_env()
+      ->SetInvalidRefreshTokenForPrimaryAccount();
+
+  base::HistogramTester histogram_tester;
+
+  // We expect ShowReauthUI to be called on the mock delegate.
+  testing::StrictMock<MockSigninUiDelegate> mock_signin_ui_delegate;
+  base::AutoReset<signin_ui_util::SigninUiDelegate*> delegate_auto_reset =
+      signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
+
+  EXPECT_CALL(
+      mock_signin_ui_delegate,
+      ShowReauthUI(profile_.get(), "user@example.com",
+                   /*enable_sync=*/false, signin_metrics::AccessPoint::kIndigo,
+                   signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
+
+  controller_->InvokeAction();
+
+  histogram_tester.ExpectUniqueSample(
+      "Indigo.Transformation.Result",
+      static_cast<int>(
+          IndigoTransformationResult::kRefreshTokenInPersistentErrorState),
+      1);
+}
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST_F(IndigoPageActionControllerTest, InvokeActionOpensGlicWithProtoPrompt) {
   base::ScopedTempDir temp_dir;

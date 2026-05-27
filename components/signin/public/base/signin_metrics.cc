@@ -119,6 +119,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kDriveFilePickerIos:
     case AccessPoint::kCollaborationShareTabGroup:
     case AccessPoint::kGlicLaunchButton:
+    case AccessPoint::kIndigo:
     case AccessPoint::kHistoryPage:
     case AccessPoint::kCollaborationJoinTabGroup:
     case AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
@@ -688,6 +689,9 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(
           base::UserMetricsAction("Signin_Signin_FromGlicLaunchButton"));
       break;
+    case AccessPoint::kIndigo:
+      base::RecordAction(base::UserMetricsAction("Signin_Signin_FromIndigo"));
+      break;
     case AccessPoint::kHistorySyncOptinExpansionPillOnStartup:
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromHistorySyncOptinExpansionPillOnStartup"));
@@ -916,6 +920,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kDriveFilePickerIos:
     case AccessPoint::kCollaborationShareTabGroup:
     case AccessPoint::kGlicLaunchButton:
+    case AccessPoint::kIndigo:
     case AccessPoint::kHistoryPage:
     case AccessPoint::kCollaborationJoinTabGroup:
     case AccessPoint::kHistorySyncOptinExpansionPillOnStartup:

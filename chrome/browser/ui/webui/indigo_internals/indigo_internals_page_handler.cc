@@ -20,6 +20,9 @@ indigo_internals::mojom::LocalEligibility MapLocalEligibility(
       return indigo_internals::mojom::LocalEligibility::kEligible;
     case indigo::LocalEligibility::kNotSignedIn:
       return indigo_internals::mojom::LocalEligibility::kNotSignedIn;
+    case indigo::LocalEligibility::kRefreshTokenInPersistentErrorState:
+      return indigo_internals::mojom::LocalEligibility::
+          kRefreshTokenInPersistentErrorState;
     case indigo::LocalEligibility::kMissingCapabilities:
       return indigo_internals::mojom::LocalEligibility::kMissingCapabilities;
     case indigo::LocalEligibility::kDisabledByPolicy:
