@@ -10015,6 +10015,41 @@ To shut down the device, press and hold the power button on the device again.
         The on-screen keyboard doesn’t work in Linux apps yet
       </message>
 
+      <!-- Easy Unlock strings -->
+      <!-- Strings for notification shown when the Chromebook is added to Easy Unlock -->
+      <message name="IDS_EASY_UNLOCK_CHROMEBOOK_ADDED_NOTIFICATION_TITLE" desc="Title for notification shown when this Chromebook is added to Easy Unlock as an additional Easy Unlock device.">
+        Smart Lock is turned on
+      </message>
+      <message name="IDS_EASY_UNLOCK_CHROMEBOOK_ADDED_NOTIFICATION_MESSAGE" desc="Message for the notification shown when this Chromebook is added to Easy Unlock as an additional Easy Unlock device.">
+        Next time, your phone will unlock your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can turn off Smart Lock in Settings.
+      </message>
+      <message name="IDS_EASY_UNLOCK_CHROMEBOOK_ADDED_NOTIFICATION_ABOUT_BUTTON" desc="Label of a button on the new chrome notification to bring user to smart lock settings.">
+        Change settings
+      </message>
+      <!-- Strings for the phone changed (aka old Chromebook setup) notification -->
+      <message name="IDS_EASY_UNLOCK_PAIRING_CHANGED_NOTIFICATION_TITLE" desc="Title for notification shown when the paired phone is changed.">
+        Smart Lock phone changed
+      </message>
+      <message name="IDS_EASY_UNLOCK_PAIRING_CHANGED_NOTIFICATION_MESSAGE" desc="Message for notification shown when the paired phone is changed.">
+        Next time, a new phone will unlock this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>. You can turn off Smart Lock in Settings.
+      </message>
+      <message name="IDS_EASY_UNLOCK_PAIRING_CHANGED_NOTIFICATION_UPDATE_BUTTON" desc="Label of a button on the notification shown when the paired phone is changed to update Smart lock now.">
+        Update now
+      </message>
+      <!-- Strings for the phone change applied notification -->
+      <message name="IDS_EASY_UNLOCK_PAIRING_CHANGE_APPLIED_NOTIFICATION_TITLE" desc="Title for notification shown when the pairing change is applied.">
+        Phone change updated
+      </message>
+      <message name="IDS_EASY_UNLOCK_PAIRING_CHANGE_APPLIED_NOTIFICATION_MESSAGE" desc="Message for notification shown when the pairing change is applied.">
+        Your <ph name="PHONE_NAME">$1<ex>Moto X</ex></ph> can now unlock this <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph> too.
+      </message>
+
+      <!-- Strings for the Easy Unlock setup dialog -->
+      <!-- Easy Unlock strings shown on the lock screen -->
+      <message name="IDS_EASY_UNLOCK_SCREENLOCK_USER_POD_AUTH_VALUE" desc="Message on lock screen user pod shown in place of password field when Easy Unlock is enabled and a phone that can unlock the Chromebook is detected in proximity.">
+        Select your photo
+      </message>
+
       <!-- Floating Workspace -->
       <message name="IDS_FLOATING_WORKSPACE_STARTUP_DIALOG_TITLE" desc="Title for floating workspace startup dialog.">
         Restoring windows from your previous session...

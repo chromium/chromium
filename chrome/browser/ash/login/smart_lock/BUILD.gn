@@ -39,8 +39,8 @@ static_library("smart_lock") {
   deps = [
     "//ash/constants",
     "//ash/public/cpp",
+    "//ash/strings",
     "//ash/webui/settings/public/constants:mojom",
-    "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser/ash/device_sync",
     "//chrome/browser/ash/login/session",

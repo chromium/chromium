@@ -5,12 +5,12 @@
 #include "chrome/browser/ash/login/smart_lock/smart_lock_notification_controller.h"
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/proximity_auth/screenlock_bridge.h"

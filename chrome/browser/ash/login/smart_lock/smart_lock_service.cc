@@ -10,6 +10,7 @@
 
 #include "ash/constants/ash_login_pref_names.h"
 #include "ash/public/cpp/smartlock_state.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -32,7 +33,6 @@
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
