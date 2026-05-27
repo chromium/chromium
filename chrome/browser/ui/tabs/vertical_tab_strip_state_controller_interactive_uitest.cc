@@ -125,6 +125,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
                        MAYBE_EnablingExpandOnHoverSystemContextMenu) {
   tabs::VerticalTabStripStateController::From(browser())
       ->SetVerticalTabsEnabled(true);
+  tabs::VerticalTabStripStateController::From(browser())
+      ->SetExpandOnHoverEnabled(false);
 
   EXPECT_TRUE(
       SystemMenuContainsStringId(IDS_VERTICAL_TABS_ENABLE_EXPAND_ON_HOVER));
@@ -154,14 +156,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
 #define MAYBE_DisablingExpandOnHoverSystemContextMenu \
   DisablingExpandOnHoverSystemContextMenu
 #endif
-// This test checks that we can enable the expand on hover behavior via the
+// This test checks that we can disable the expand on hover behavior via the
 // system context menu.
 IN_PROC_BROWSER_TEST_F(VerticalTabStripInteractiveUiTest,
                        MAYBE_DisablingExpandOnHoverSystemContextMenu) {
   tabs::VerticalTabStripStateController::From(browser())
       ->SetVerticalTabsEnabled(true);
-  tabs::VerticalTabStripStateController::From(browser())
-      ->SetExpandOnHoverEnabled(true);
 
   EXPECT_TRUE(
       SystemMenuContainsStringId(IDS_VERTICAL_TABS_DISABLE_EXPAND_ON_HOVER));

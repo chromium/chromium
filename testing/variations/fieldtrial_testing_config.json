@@ -25006,6 +25006,10 @@
                     "params": {
                         "expand_on_hover_default_enabled": "true",
                         "expand_on_hover_use_velocity_heuristic": "true",
+                        "expand_on_hover_velocity_heuristic_delay": "50ms",
+                        "expand_on_hover_velocity_heuristic_distance_from_edge": "12",
+                        "expand_on_hover_velocity_heuristic_edge_delay": "200ms",
+                        "expand_on_hover_velocity_heuristic_interval": "10ms",
                         "expand_on_hover_velocity_heuristic_min_samples": "3",
                         "expand_on_hover_velocity_heuristic_threshold": "0.25"
                     },
