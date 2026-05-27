@@ -1052,7 +1052,13 @@ H264Parser::Result H264Parser::ParseSPS(int* sps_id) {
   READ_BOOL_OR_RETURN(&sps->gaps_in_frame_num_value_allowed_flag);
 
   READ_UE_OR_RETURN(&sps->pic_width_in_mbs_minus1);
+  // H.264 Level 6.2 restricts max frame width to 8704 samples (544
+  // macroblocks).
+  IN_RANGE_OR_RETURN(sps->pic_width_in_mbs_minus1, 0, 543);
   READ_UE_OR_RETURN(&sps->pic_height_in_map_units_minus1);
+  // H.264 Level 6.2 restricts max frame height to 8704 samples (544
+  // macroblocks).
+  IN_RANGE_OR_RETURN(sps->pic_height_in_map_units_minus1, 0, 543);
 
   READ_BOOL_OR_RETURN(&sps->frame_mbs_only_flag);
   if (!sps->frame_mbs_only_flag)

@@ -622,8 +622,9 @@ H265Parser::Result H265Parser::ParseSPS(int* sps_id) {
   }
   READ_UE_OR_RETURN(&sps->pic_width_in_luma_samples);
   READ_UE_OR_RETURN(&sps->pic_height_in_luma_samples);
-  TRUE_OR_RETURN(sps->pic_width_in_luma_samples != 0);
-  TRUE_OR_RETURN(sps->pic_height_in_luma_samples != 0);
+  // H.265 Level 6.2 restricts max frame dimensions to 16888 luma samples.
+  IN_RANGE_OR_RETURN(sps->pic_width_in_luma_samples, 1, 16888);
+  IN_RANGE_OR_RETURN(sps->pic_height_in_luma_samples, 1, 16888);
 
   // Equation A-2: Calculate max_dpb_size.
   int max_luma_ps = sps->profile_tier_level.GetMaxLumaPs();
