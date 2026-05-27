@@ -14,13 +14,15 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class SignInCelebrationHandler : public intro::mojom::PageHandler,
-                                 public signin::IdentityManager::Observer {
+class SignInCelebrationHandler
+    : public intro::mojom::SignInCelebrationPageHandler,
+      public signin::IdentityManager::Observer {
  public:
   SignInCelebrationHandler(
       signin::IdentityManager* identity_manager,
-      mojo::PendingRemote<intro::mojom::Page> page,
-      mojo::PendingReceiver<intro::mojom::PageHandler> receiver,
+      mojo::PendingRemote<intro::mojom::SignInCelebrationPage> page,
+      mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandler>
+          receiver,
       base::OnceClosure celebration_finished_callback);
 
   SignInCelebrationHandler(const SignInCelebrationHandler&) = delete;
@@ -29,7 +31,7 @@ class SignInCelebrationHandler : public intro::mojom::PageHandler,
 
   ~SignInCelebrationHandler() override;
 
-  // intro::mojom::PageHandler:
+  // intro::mojom::SignInCelebrationPageHandler:
   void GetSignInCelebrationUserInfo(
       GetSignInCelebrationUserInfoCallback callback) override;
   void SignInCelebrationFinished() override;
@@ -49,8 +51,8 @@ class SignInCelebrationHandler : public intro::mojom::PageHandler,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
 
-  mojo::Receiver<intro::mojom::PageHandler> receiver_;
-  mojo::Remote<intro::mojom::Page> page_;
+  mojo::Receiver<intro::mojom::SignInCelebrationPageHandler> receiver_;
+  mojo::Remote<intro::mojom::SignInCelebrationPage> page_;
 
   base::OnceClosure celebration_finished_callback_;
 };

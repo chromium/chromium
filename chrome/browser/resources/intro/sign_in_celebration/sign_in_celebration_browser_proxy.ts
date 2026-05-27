@@ -2,29 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '../sign_in_celebration.mojom-webui.js';
-import type {PageHandlerInterface} from '../sign_in_celebration.mojom-webui.js';
+import {SignInCelebrationPageCallbackRouter, SignInCelebrationPageHandlerFactory, SignInCelebrationPageHandlerRemote} from '../sign_in_celebration.mojom-webui.js';
+import type {SignInCelebrationPageHandlerInterface} from '../sign_in_celebration.mojom-webui.js';
 
 export interface SignInCelebrationBrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  handler: PageHandlerInterface;
+  callbackRouter: SignInCelebrationPageCallbackRouter;
+  handler: SignInCelebrationPageHandlerInterface;
 
   matchMedia(query: string): MediaQueryList;
 }
 
 export class SignInCelebrationBrowserProxyImpl implements
     SignInCelebrationBrowserProxy {
-  callbackRouter: PageCallbackRouter;
-  handler: PageHandlerInterface;
+  callbackRouter: SignInCelebrationPageCallbackRouter;
+  handler: SignInCelebrationPageHandlerInterface;
 
   private constructor() {
-    this.callbackRouter = new PageCallbackRouter();
-    this.handler = new PageHandlerRemote();
+    this.callbackRouter = new SignInCelebrationPageCallbackRouter();
+    this.handler = new SignInCelebrationPageHandlerRemote();
 
-    const factory = PageHandlerFactory.getRemote();
-    factory.createPageHandler(
+    const factory = SignInCelebrationPageHandlerFactory.getRemote();
+    factory.createSignInCelebrationPageHandler(
         this.callbackRouter.$.bindNewPipeAndPassRemote(),
-        (this.handler as PageHandlerRemote).$.bindNewPipeAndPassReceiver());
+        (this.handler as SignInCelebrationPageHandlerRemote)
+            .$.bindNewPipeAndPassReceiver());
   }
 
   static getInstance(): SignInCelebrationBrowserProxy {

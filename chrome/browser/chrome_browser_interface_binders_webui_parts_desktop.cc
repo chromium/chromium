@@ -607,8 +607,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     RegisterWebUIControllerInterfaceBinder<
         history_sync_optin::mojom::PageHandlerFactory, HistorySyncOptinUI>(map);
   }
-  RegisterWebUIControllerInterfaceBinder<intro::mojom::PageHandlerFactory,
-                                         IntroUI>(map);
+  RegisterWebUIControllerInterfaceBinder<
+      intro::mojom::SignInCelebrationPageHandlerFactory, IntroUI>(map);
   RegisterWebUIControllerInterfaceBinder<::app_home::mojom::PageHandlerFactory,
                                          webapps::AppHomeUI>(map);
 #endif

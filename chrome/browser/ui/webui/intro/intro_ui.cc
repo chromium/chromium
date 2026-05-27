@@ -260,19 +260,21 @@ void IntroUI::SetCanPinToTaskbar(bool can_pin) {
 void IntroUI::SetSignInCelebrationFinishedCallback(
     base::OnceClosure celebration_finished_callback) {
   initialize_handler_callback_ = base::BindOnce(
-      &IntroUI::OnMojoHandlerReady, weak_ptr_factory_.GetWeakPtr(),
-      std::move(celebration_finished_callback));
+      &IntroUI::OnSignInCelebrationMojoHandlerReady,
+      weak_ptr_factory_.GetWeakPtr(), std::move(celebration_finished_callback));
 }
 
 void IntroUI::BindInterface(
-    mojo::PendingReceiver<intro::mojom::PageHandlerFactory> receiver) {
-  factory_receiver_.reset();
-  factory_receiver_.Bind(std::move(receiver));
+    mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandlerFactory>
+        receiver) {
+  sign_in_celebration_factory_receiver_.reset();
+  sign_in_celebration_factory_receiver_.Bind(std::move(receiver));
 }
 
-void IntroUI::CreatePageHandler(
-    mojo::PendingRemote<intro::mojom::Page> page,
-    mojo::PendingReceiver<intro::mojom::PageHandler> receiver) {
+void IntroUI::CreateSignInCelebrationPageHandler(
+    mojo::PendingRemote<intro::mojom::SignInCelebrationPage> page,
+    mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandler>
+        receiver) {
   CHECK(page);
   CHECK(receiver);
   if (!initialize_handler_callback_) {
@@ -282,10 +284,11 @@ void IntroUI::CreatePageHandler(
       .Run(std::move(page), std::move(receiver));
 }
 
-void IntroUI::OnMojoHandlerReady(
+void IntroUI::OnSignInCelebrationMojoHandlerReady(
     base::OnceClosure celebration_finished_callback,
-    mojo::PendingRemote<intro::mojom::Page> page,
-    mojo::PendingReceiver<intro::mojom::PageHandler> receiver) {
+    mojo::PendingRemote<intro::mojom::SignInCelebrationPage> page,
+    mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandler>
+        receiver) {
   CHECK(!intro_sign_in_celebration_handler_);
   Profile* profile = Profile::FromWebUI(web_ui());
   intro_sign_in_celebration_handler_ =

@@ -16,8 +16,8 @@
 
 SignInCelebrationHandler::SignInCelebrationHandler(
     signin::IdentityManager* identity_manager,
-    mojo::PendingRemote<intro::mojom::Page> page,
-    mojo::PendingReceiver<intro::mojom::PageHandler> receiver,
+    mojo::PendingRemote<intro::mojom::SignInCelebrationPage> page,
+    mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandler> receiver,
     base::OnceClosure celebration_finished_callback)
     : identity_manager_(CHECK_DEREF(identity_manager)),
       receiver_(this, std::move(receiver)),

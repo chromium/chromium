@@ -68,7 +68,7 @@ class IntroUIConfig : public content::DefaultWebUIConfig<IntroUI> {
 // Drops user inputs until a callback to receive the next one is provided by
 // calling `SetSigninChoiceCallback()`.
 class IntroUI : public ui::MojoWebUIController,
-                public intro::mojom::PageHandlerFactory {
+                public intro::mojom::SignInCelebrationPageHandlerFactory {
  public:
   explicit IntroUI(content::WebUI* web_ui);
 
@@ -86,22 +86,25 @@ class IntroUI : public ui::MojoWebUIController,
       base::OnceClosure celebration_finished_callback);
 
   void BindInterface(
-      mojo::PendingReceiver<intro::mojom::PageHandlerFactory> receiver);
+      mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandlerFactory>
+          receiver);
 
-  // intro::mojom::PageHandlerFactory:
-  void CreatePageHandler(
-      mojo::PendingRemote<intro::mojom::Page> page,
-      mojo::PendingReceiver<intro::mojom::PageHandler> receiver) override;
+  // intro::mojom::SignInCelebrationPageHandlerFactory:
+  void CreateSignInCelebrationPageHandler(
+      mojo::PendingRemote<intro::mojom::SignInCelebrationPage> page,
+      mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandler>
+          receiver) override;
 
  private:
   void HandleSigninChoice(IntroChoice choice);
   void HandleDefaultBrowserChoice(DefaultBrowserChoice choice);
 
   // Callback awaiting `CreatePageHandler` to create the handler with the closure.
-  void OnMojoHandlerReady(
+  void OnSignInCelebrationMojoHandlerReady(
       base::OnceClosure celebration_finished_callback,
-      mojo::PendingRemote<intro::mojom::Page> page,
-      mojo::PendingReceiver<intro::mojom::PageHandler> receiver);
+      mojo::PendingRemote<intro::mojom::SignInCelebrationPage> page,
+      mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandler>
+          receiver);
 
   IntroSigninChoiceCallback signin_choice_callback_;
   DefaultBrowserCallback default_browser_callback_;
@@ -110,13 +113,14 @@ class IntroUI : public ui::MojoWebUIController,
   // Callback that temporarily holds the information to be passed onto the
   // handler. The callback is called once the mojo handlers are available.
   base::OnceCallback<void(
-      mojo::PendingRemote<intro::mojom::Page>,
-      mojo::PendingReceiver<intro::mojom::PageHandler>)>
+      mojo::PendingRemote<intro::mojom::SignInCelebrationPage>,
+      mojo::PendingReceiver<intro::mojom::SignInCelebrationPageHandler>)>
       initialize_handler_callback_;
   std::unique_ptr<SignInCelebrationHandler>
       intro_sign_in_celebration_handler_;
 
-  mojo::Receiver<intro::mojom::PageHandlerFactory> factory_receiver_{this};
+  mojo::Receiver<intro::mojom::SignInCelebrationPageHandlerFactory>
+      sign_in_celebration_factory_receiver_{this};
 
   base::WeakPtrFactory<IntroUI> weak_ptr_factory_{this};
 

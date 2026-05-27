@@ -12,14 +12,15 @@ struct SignInCelebrationUserInfo {
 };
 
 // Used by the WebUI page to bootstrap bidirectional communication.
-interface PageHandlerFactory {
+interface SignInCelebrationPageHandlerFactory {
   // Creates a PageHandler for the sign-in celebration page.
-  CreatePageHandler(pending_remote<Page> page,
-                    pending_receiver<PageHandler> handler);
+  CreateSignInCelebrationPageHandler(
+      pending_remote<SignInCelebrationPage> page,
+      pending_receiver<SignInCelebrationPageHandler> handler);
 };
 
 // Browser-side handler for requests from WebUI.
-interface PageHandler {
+interface SignInCelebrationPageHandler {
   // Requests user information for the sign-in celebration page.
   GetSignInCelebrationUserInfo() => (SignInCelebrationUserInfo user_info);
 
@@ -28,7 +29,7 @@ interface PageHandler {
 };
 
 // WebUI-side handler for requests from browser.
-interface Page {
+interface SignInCelebrationPage {
   // Sends an updated user info to the WebUI.
   OnSignInCelebrationUserInfoUpdated(SignInCelebrationUserInfo user_info);
 };

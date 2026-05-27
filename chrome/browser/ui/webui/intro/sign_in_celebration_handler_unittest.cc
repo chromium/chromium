@@ -36,12 +36,12 @@ using ::testing::_;
 using ::testing::Field;
 using ::testing::Pointee;
 
-class MockPage : public intro::mojom::Page {
+class MockPage : public intro::mojom::SignInCelebrationPage {
  public:
   MockPage() = default;
   ~MockPage() override = default;
 
-  mojo::PendingRemote<intro::mojom::Page> BindAndGetRemote() {
+  mojo::PendingRemote<intro::mojom::SignInCelebrationPage> BindAndGetRemote() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
@@ -53,7 +53,7 @@ class MockPage : public intro::mojom::Page {
               (override));
 
  private:
-  mojo::Receiver<intro::mojom::Page> receiver_{this};
+  mojo::Receiver<intro::mojom::SignInCelebrationPage> receiver_{this};
 };
 
 class SignInCelebrationHandlerTest : public testing::Test {
@@ -80,7 +80,7 @@ class SignInCelebrationHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   testing::StrictMock<MockPage> mock_page_;
-  mojo::Remote<intro::mojom::PageHandler> handler_remote_;
+  mojo::Remote<intro::mojom::SignInCelebrationPageHandler> handler_remote_;
   std::unique_ptr<SignInCelebrationHandler> handler_;
   base::MockOnceClosure mock_celebration_finished_callback_;
 };
