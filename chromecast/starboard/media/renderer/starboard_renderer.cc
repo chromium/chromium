@@ -55,6 +55,7 @@ void StarboardRenderer::Initialize(::media::MediaResource* media_resource,
                                    ::media::PipelineStatusCallback init_cb) {
   CHECK(media_task_runner_->RunsTasksInCurrentSequence());
   CHECK(client);
+  CHECK(!player_manager_);
 
   ::media::DemuxerStream* audio_stream =
       media_resource->GetFirstStream(::media::DemuxerStream::Type::AUDIO);
