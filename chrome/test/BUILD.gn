@@ -9599,52 +9599,14 @@ test("unit_tests") {
     }
   }
 
-  # Unit tests that run on Win/Mac/Linux and Android desktop.
+  # Unit tests that run on Win/Mac/Linux and Android desktop. Note that most
+  # extensions tests are listed in their subdirectory BUILD.gn file, like
+  # //chrome/browser/extensions/BUILD.gn or //chrome/common/extensions/BUILD.gn.
   if (enable_extensions_core) {
     sources += [
       "../browser/metrics/extensions_metrics_provider_unittest.cc",
       "../browser/sync/glue/extensions_activity_monitor_unittest.cc",
       "../browser/ui/webui/extensions/extensions_internals_unittest.cc",
-      "../common/extensions/api/storage/storage_schema_manifest_handler_unittest.cc",
-      "../common/extensions/manifest_handlers/automation_unittest.cc",
-      "../common/extensions/manifest_handlers/background_scripts_manifest_unittest.cc",
-      "../common/extensions/manifest_handlers/content_scripts_manifest_unittest.cc",
-      "../common/extensions/manifest_handlers/exclude_matches_manifest_unittest.cc",
-      "../common/extensions/manifest_handlers/icons_manifest_unittest.cc",
-      "../common/extensions/manifest_handlers/natively_connectable_handler_unittest.cc",
-      "../common/extensions/manifest_handlers/settings_overrides_handler_unittest.cc",
-      "../common/extensions/manifest_handlers/theme_handler_unittest.cc",
-      "../common/extensions/manifest_handlers/theme_manifest_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_background_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_chromepermission_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_contentsecuritypolicy_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_default_extent_path_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_experimental_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_icons_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_initvalue_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_kiosk_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_launch_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_manifest_version_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_name_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_offline_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_old_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_options_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_portsinpermissions_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_sample_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_theme_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_ui_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_validapp_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_web_accessible_resources_unittest.cc",
-      "../common/extensions/manifest_tests/extension_manifests_web_unittest.cc",
-      "../common/extensions/manifest_tests/permissions_parser_unittest.cc",
-      "../common/extensions/manifest_unittest.cc",
-      "../common/extensions/permissions/chrome_api_permissions_unittest.cc",
-      "../common/extensions/permissions/chrome_permission_message_provider_unittest.cc",
-      "../common/extensions/permissions/chrome_permission_message_rules_unittest.cc",
-      "../common/extensions/permissions/permission_set_unittest.cc",
-      "../common/extensions/permissions/permissions_data_unittest.cc",
-      "../common/extensions/permissions/settings_override_permission_unittest.cc",
-      "../common/extensions/sync_type_unittest.cc",
     ]
     deps += [
       "//base",
@@ -9718,17 +9680,6 @@ test("unit_tests") {
       "../browser/sync_file_system/syncable_file_system_util_unittest.cc",
     ]
 
-    # Side panel is not yet supported on desktop Android.
-    sources += [ "../common/extensions/manifest_tests/extension_manifests_side_panel_unittest.cc" ]
-
-    # Platform apps are not supported on desktop Android.
-    if (enable_platform_apps) {
-      sources += [
-        "../common/extensions/api/url_handlers/url_handlers_parser_unittest.cc",
-        "../common/extensions/manifest_tests/extension_manifests_platformapp_unittest.cc",
-      ]
-    }
-
     if (enterprise_data_controls) {
       sources += [
         "../../components/enterprise/data_controls/core/browser/data_controls_policy_handler_unittest.cc",
@@ -9790,7 +9741,6 @@ test("unit_tests") {
         "../common/apps/platform_apps/media_galleries_permission_unittest.cc",
         "../common/chromeos/extensions/chromeos_system_extension_info_unittest.cc",
         "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
-        "../common/extensions/manifest_tests/extension_manifests_webview_accessible_resources_unittest.cc",
       ]
 
       deps += [
