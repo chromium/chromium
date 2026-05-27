@@ -2113,7 +2113,8 @@
 
     // https://drafts.csswg.org/css-conditional-5/#typedef-supports-named-feature-fn
     "named-feature",
-    "align-content-on-display-block",
+    "anchor-position-follows-transforms",
+    "single-axis-scroll-container",
 
     // hanging-punctuation
     // "first",

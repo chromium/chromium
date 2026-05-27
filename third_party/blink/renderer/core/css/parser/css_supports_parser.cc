@@ -229,7 +229,13 @@ namespace {
 bool IsSupportedNamedFeature(CSSValueID id) {
   // When this list becomes longer we should use an algorithm better than
   // linear search.
-  return id == CSSValueID::kAlignContentOnDisplayBlock;
+  if (id == CSSValueID::kAnchorPositionFollowsTransforms) {
+    return true;
+  }
+  if (id == CSSValueID::kSingleAxisScrollContainer) {
+    return RuntimeEnabledFeatures::SingleAxisScrollContainersEnabled();
+  }
+  return false;
 }
 }  // namespace
 
