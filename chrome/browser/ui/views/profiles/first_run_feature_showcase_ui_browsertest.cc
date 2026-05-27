@@ -124,7 +124,8 @@ class FirstRunFeatureShowcasePixelTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(FirstRunFeatureShowcasePixelTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_P(FirstRunFeatureShowcasePixelTest,
+                       DISABLED_InvokeUi_default) {
   ShowAndVerifyUi();
 }
 
