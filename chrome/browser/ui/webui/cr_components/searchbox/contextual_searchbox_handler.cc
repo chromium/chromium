@@ -531,7 +531,10 @@ void ContextualSearchboxHandler::SetSmartTabSharingActive(bool active) {
       // Don't process the default-on promo if STS is already default-on.
       const bool default_on = profile_->GetPrefs()->GetBoolean(
           contextual_tasks::kContextualTasksShareOpenTabsEveryThread);
-      if (!default_on) {
+      if (!default_on &&
+          base::FeatureList::IsEnabled(
+              contextual_tasks::
+                  kContextualTasksContextSmartTabSharingDefaultOnAvailability)) {
         if (feature_engagement::NonIphPromo::RequestPermissionToShow(
                 profile_,
                 feature_engagement::kIPHSmartTabSharingDefaultOnFeature)) {

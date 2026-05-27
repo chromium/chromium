@@ -39,6 +39,10 @@ BASE_FEATURE(kEnableContextualTasksPinButtonInToolbar,
 // Enables relevant context determination for contextual tasks.
 BASE_FEATURE(kContextualTasksContext, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables whether the option to enable smart tab sharing by default is enabled.
+BASE_FEATURE(kContextualTasksContextSmartTabSharingDefaultOnAvailability,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables integration with the server side context library.
 BASE_FEATURE(kContextualTasksContextLibrary, base::FEATURE_ENABLED_BY_DEFAULT);
 

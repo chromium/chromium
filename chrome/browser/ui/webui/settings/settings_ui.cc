@@ -635,8 +635,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddString("aiSuggestionsHelpCenterArticleLink",
                          contextual_cueing::kHelpCenterArticleLink.Get());
 
-  const bool enable_ai_mode_search = contextual_tasks::
-      ContextualTasksContextService::GetIsSmartTabSharingEnabled(profile);
+  const bool enable_ai_mode_search =
+      contextual_tasks::ContextualTasksContextService::
+          GetIsSmartTabSharingEnabled(profile) &&
+      base::FeatureList::IsEnabled(
+          contextual_tasks::
+              kContextualTasksContextSmartTabSharingDefaultOnAvailability);
   html_source->AddBoolean("enableAiModeSearchSetting", enable_ai_mode_search);
 
   const bool show_ai_settings_for_testing = base::FeatureList::IsEnabled(

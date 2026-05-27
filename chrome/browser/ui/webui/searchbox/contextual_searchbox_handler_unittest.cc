@@ -27,6 +27,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/tab_list/mock_tab_list_interface.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -53,6 +54,7 @@
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/contextual_tasks/public/prefs.h"
+#include "components/feature_engagement/test/mock_tracker.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -1060,6 +1062,27 @@ class SmartTabSharingTest : public ContextualSearchboxHandlerTestHarness {
  public:
   ~SmartTabSharingTest() override = default;
 
+  TestingProfile::TestingFactories GetTestingFactories() const override {
+    auto factories =
+        ContextualSearchboxHandlerTestHarness::GetTestingFactories();
+    factories.emplace_back(
+        feature_engagement::TrackerFactory::GetInstance(),
+        base::BindRepeating([](content::BrowserContext* context)
+                                -> std::unique_ptr<KeyedService> {
+          auto tracker = std::make_unique<
+              testing::NiceMock<feature_engagement::test::MockTracker>>();
+          ON_CALL(*tracker, IsInFeatureTestMode)
+              .WillByDefault(testing::Return(true));
+          return tracker;
+        }));
+    return factories;
+  }
+
+  feature_engagement::test::MockTracker* mock_tracker() {
+    return static_cast<feature_engagement::test::MockTracker*>(
+        feature_engagement::TrackerFactory::GetForBrowserContext(profile()));
+  }
+
   void SetUp() override {
     ContextualSearchboxHandlerTestHarness::SetUp();
 
@@ -1250,6 +1273,60 @@ TEST_F(SmartTabSharingTest, SetSmartTabSharingActive_FeatureDisabled) {
 
   handler().SetSmartTabSharingActive(true);
   EXPECT_FALSE(handler().IsSmartTabSharingActive());
+}
+
+TEST_F(SmartTabSharingTest, SetSmartTabSharingActive_AvailabilityDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      contextual_tasks::
+          kContextualTasksContextSmartTabSharingDefaultOnAvailability);
+
+  EXPECT_CALL(*mock_tracker(), NotifyEvent("smart_tab_sharing_activated"))
+      .Times(1);
+  EXPECT_CALL(*mock_tracker(), ShouldTriggerHelpUI(testing::_)).Times(0);
+
+  profile()->GetPrefs()->SetBoolean(
+      contextual_tasks::kContextualTasksShareOpenTabsEveryThread, false);
+
+  handler().SetSmartTabSharingActive(true);
+}
+
+TEST_F(SmartTabSharingTest,
+       SetSmartTabSharingActive_AvailabilityEnabled_RequestPromo) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::
+          kContextualTasksContextSmartTabSharingDefaultOnAvailability);
+
+  EXPECT_CALL(*mock_tracker(), NotifyEvent("smart_tab_sharing_activated"))
+      .Times(1);
+  EXPECT_CALL(*mock_tracker(),
+              ShouldTriggerHelpUI(testing::Ref(
+                  feature_engagement::kIPHSmartTabSharingDefaultOnFeature)))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
+  profile()->GetPrefs()->SetBoolean(
+      contextual_tasks::kContextualTasksShareOpenTabsEveryThread, false);
+
+  handler().SetSmartTabSharingActive(true);
+}
+
+TEST_F(SmartTabSharingTest,
+       SetSmartTabSharingActive_AvailabilityEnabled_StsAlreadyDefaultOn) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      contextual_tasks::
+          kContextualTasksContextSmartTabSharingDefaultOnAvailability);
+
+  EXPECT_CALL(*mock_tracker(), NotifyEvent("smart_tab_sharing_activated"))
+      .Times(1);
+  EXPECT_CALL(*mock_tracker(), ShouldTriggerHelpUI(testing::_)).Times(0);
+
+  profile()->GetPrefs()->SetBoolean(
+      contextual_tasks::kContextualTasksShareOpenTabsEveryThread, true);
+
+  handler().SetSmartTabSharingActive(true);
 }
 
 TEST_F(SmartTabSharingTest, GetSmartTabSharingActive) {
