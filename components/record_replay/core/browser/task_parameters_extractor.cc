@@ -33,20 +33,17 @@ std::string TaskParametersExtractor::GetSelectorForKey(
 std::map<std::string, std::string>
 TaskParametersExtractor::GetParameterValueSelectorsForUrl(const GURL& url) {
   std::map<std::string, std::string> parameter_value_selectors;
-  // TODO(crbug.com/511996748): Refine the logic of URL comparison. We also need
-  // to check URLs of different steps.
-  if (!active_task_definition_.has_value() ||
-      GURL(active_task_definition_->url()) != url) {
+  if (!active_task_definition_.has_value()) {
     return parameter_value_selectors;
   }
 
-  // TODO(crbug.com/511996748): Instead of iterating over all steps - collect
-  // selectors only for the step that corresponds to the current URL.
   for (const TaskStep& step : active_task_definition_->task_steps()) {
-    for (const TaskParameter& task_parameter : step.parameters()) {
-      std::string css_selector = GetSelectorForKey(task_parameter.key());
-      if (!css_selector.empty()) {
-        parameter_value_selectors[task_parameter.key()] = css_selector;
+    if (!step.url().empty() && GURL(step.url()) == url) {
+      for (const TaskParameter& task_parameter : step.parameters()) {
+        std::string css_selector = GetSelectorForKey(task_parameter.key());
+        if (!css_selector.empty()) {
+          parameter_value_selectors[task_parameter.key()] = css_selector;
+        }
       }
     }
   }
