@@ -29,7 +29,7 @@
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x150e amd-0x1900 amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821
-#             amd-0x7340 amd-0x7480
+#             amd-0x7340 amd-0x7480 amd-0x7550
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -282,6 +282,9 @@ crbug.com/476389233 [ mac intel-0x3e9b asan angle-opengl graphite-disabled ] Web
 
 # EncodingError: Decoding error.
 crbug.com/487768758 [ amd-0x7480 linux ] WebCodecs_cropEncode_hw_decoder_prefer-software [ Failure ]
+
+# AMD RX 9070 XT failures
+crbug.com/515133241 [ amd-0x7550 linux mesa_ge_24.2 ] WebCodecs_SVC_avc1.42001E_prefer-software_layers_3 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

@@ -29,7 +29,7 @@
 #         cros-chrome ]
 # GPU
 # tags: [ amd amd-0x150e amd-0x1900 amd-0x6613 amd-0x679e amd-0x67ef amd-0x6821
-#             amd-0x7340 amd-0x7480
+#             amd-0x7340 amd-0x7480 amd-0x7550
 #         apple apple-apple-m1 apple-apple-m2 apple-apple-m3
 #             apple-angle-metal-renderer:-apple-m1
 #             apple-angle-metal-renderer:-apple-m2
@@ -820,6 +820,11 @@ crbug.com/329698340 [ linux intel angle-opengl passthrough mesa_ge_23.2 ] confor
 ## Linux NVIDIA RTX 5080 ##
 
 crbug.com/515133241 [ linux nvidia-0x2c02 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+
+## Linux AMD RX 9070 XT ##
+
+crbug.com/515133241 [ linux amd-0x7550 ] deqp/functional/gles3/shaderoperator/unary_operator_00.html [ Failure ]
+crbug.com/515133241 [ linux amd-0x7550 ] deqp/functional/gles3/uniformbuffers/random.html [ Failure ]
 
 ####################
 # Android failures #
