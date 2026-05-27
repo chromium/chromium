@@ -28,7 +28,10 @@ by DocumentPictureInPictureHeaderViewBinder.
             "@dimen/document_picture_in_picture_header_component_size"
         android:scaleType="center" />
 
-    <!-- Ellipsize start (head elision) is consistent with desktop (ELIDE_HEAD) to prevent origin spoofing. -->
+    <!-- Ellipsize START is set as the default here for layout editor previewing and
+         initial inflation. The behavior is overridden programmatically:
+         - START (head) elision for web URLs to prevent origin spoofing.
+         - END (tail) elision for file URLs to prevent local path spoofing. -->
     <TextView
         android:id="@+id/document_picture_in_picture_header_url_bar"
         android:background="@null"

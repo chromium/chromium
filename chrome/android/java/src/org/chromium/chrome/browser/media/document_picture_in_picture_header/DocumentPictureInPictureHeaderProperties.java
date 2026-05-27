@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.media.document_picture_in_picture_header;
 
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.core.graphics.Insets;
@@ -47,6 +48,8 @@ public class DocumentPictureInPictureHeaderProperties {
             ON_SECURITY_ICON_CLICK_LISTENER = new WritableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<String> URL_STRING =
             new WritableObjectPropertyKey<>();
+    public static final WritableObjectPropertyKey<TextUtils.TruncateAt> URL_ELLIPSIZE_BEHAVIOR =
+            new WritableObjectPropertyKey<>();
     public static final WritableIntPropertyKey BRANDED_COLOR_SCHEME = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
@@ -63,6 +66,7 @@ public class DocumentPictureInPictureHeaderProperties {
         SECURITY_ICON_CONTENT_DESCRIPTION_RES_ID,
         ON_SECURITY_ICON_CLICK_LISTENER,
         URL_STRING,
+        URL_ELLIPSIZE_BEHAVIOR,
         BRANDED_COLOR_SCHEME
     };
 }

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.media.document_picture_in_picture_header;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -113,9 +114,15 @@ public class DocumentPictureInPictureHeaderMediator
         onAppHeaderStateChanged(mDesktopWindowStateManager.getAppHeaderState());
 
         updateSecurityIcon();
+        GURL visibleUrl = mOpenerWebContents.getVisibleUrl();
+        mModel.set(DocumentPictureInPictureHeaderProperties.URL_STRING, getUrlString(visibleUrl));
+        // To prevent spoofing, local URLs are tail-elided (keeping the scheme prefix
+        // visible) and standard web URLs are head-elided, matching desktop elision behavior.
         mModel.set(
-                DocumentPictureInPictureHeaderProperties.URL_STRING,
-                getUrlString(mOpenerWebContents.getVisibleUrl()));
+                DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR,
+                isLocalFileOrContentScheme(visibleUrl.getScheme())
+                        ? TextUtils.TruncateAt.END
+                        : TextUtils.TruncateAt.START);
 
         mThemeColorProvider.addThemeColorObserver(this);
         mThemeColorProvider.addTintObserver(this);
@@ -267,6 +274,11 @@ public class DocumentPictureInPictureHeaderMediator
 
         mModel.set(
                 DocumentPictureInPictureHeaderProperties.NON_DRAGGABLE_AREAS, mNonDraggableAreas);
+    }
+
+    private boolean isLocalFileOrContentScheme(@Nullable String scheme) {
+        return UrlConstants.FILE_SCHEME.equals(scheme)
+                || UrlConstants.CONTENT_SCHEME.equals(scheme);
     }
 
     private String getUrlString(GURL url) {

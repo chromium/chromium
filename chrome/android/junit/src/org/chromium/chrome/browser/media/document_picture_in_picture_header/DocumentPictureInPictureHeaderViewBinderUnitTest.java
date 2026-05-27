@@ -17,6 +17,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
+import android.text.TextUtils;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup;
@@ -200,5 +201,19 @@ public class DocumentPictureInPictureHeaderViewBinderUnitTest {
                 DocumentPictureInPictureHeaderProperties.BRANDED_COLOR_SCHEME,
                 BrandedColorScheme.APP_DEFAULT);
         verify(mUrlBar).setTextColor(anyInt());
+    }
+
+    @Test
+    @SmallTest
+    public void testUrlEllipsizeBehavior() {
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR,
+                TextUtils.TruncateAt.START);
+        verify(mUrlBar).setEllipsize(TextUtils.TruncateAt.START);
+
+        mModel.set(
+                DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR,
+                TextUtils.TruncateAt.END);
+        verify(mUrlBar).setEllipsize(TextUtils.TruncateAt.END);
     }
 }

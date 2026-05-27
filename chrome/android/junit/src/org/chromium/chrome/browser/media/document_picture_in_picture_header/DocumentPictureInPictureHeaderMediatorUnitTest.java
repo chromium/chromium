@@ -21,6 +21,7 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.Rect;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -82,6 +83,7 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
             BrandedColorScheme.LIGHT_BRANDED_THEME;
     private static final GURL HTTPS_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final GURL LOCAL_FILE_URL = new GURL("file:///android_asset/index.html");
+    private static final GURL CONTENT_URL = new GURL("content://media/external/images/media/1");
 
     private Context mContext;
     private PropertyModel mModel;
@@ -105,7 +107,11 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
                 .thenAnswer(
                         invocation -> {
                             GURL url = invocation.getArgument(0);
-                            return url.getHost();
+                            String scheme = url.getScheme();
+                            if (scheme.equals("http") || scheme.equals("https")) {
+                                return url.getHost();
+                            }
+                            return url.getSpec();
                         });
         mOpenerWebContents =
                 Mockito.mock(
@@ -170,6 +176,9 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         assertEquals(
                 HTTPS_URL.getHost(),
                 mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
+        assertEquals(
+                TextUtils.TruncateAt.START,
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR));
     }
 
     @Test
@@ -466,6 +475,22 @@ public class DocumentPictureInPictureHeaderMediatorUnitTest {
         assertEquals(
                 LOCAL_FILE_URL.getPath(),
                 mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
+        assertEquals(
+                TextUtils.TruncateAt.END,
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR));
+    }
+
+    @Test
+    @SmallTest
+    public void testContentUrl() {
+        createMediator(/* isBackToTabShown= */ true, CONTENT_URL);
+
+        assertEquals(
+                CONTENT_URL.getSpec(),
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_STRING));
+        assertEquals(
+                TextUtils.TruncateAt.END,
+                mModel.get(DocumentPictureInPictureHeaderProperties.URL_ELLIPSIZE_BEHAVIOR));
     }
 
     @Test
