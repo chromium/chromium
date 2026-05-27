@@ -2800,8 +2800,6 @@ crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-bas
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=text-bottom [ Failure ]
 crbug.com/515750299 external/wpt/css/css-inline/alignment-baseline/alignment-baseline-vertical-rl-003.html?class=text-top [ Failure ]
 
-crbug.com/515776658 external/wpt/css/css-masking/clip-path/clip-path-circle-closest-corner.html [ Failure ]
-
 crbug.com/515776376 external/wpt/css/css-pseudo/first-letter-c0.tentative.html [ Failure ]
 crbug.com/515776376 external/wpt/css/css-pseudo/first-letter-trailing-punctuation.html [ Failure ]
 crbug.com/515776376 external/wpt/css/css-pseudo/first-line-input-textarea.tentative.html [ Failure ]
