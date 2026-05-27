@@ -607,7 +607,7 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
         ThreadUtils.runOnUiThreadBlocking(() -> awContents.destroy());
     }
 
-    public String getTitleOnUiThread(final AwContents awContents) throws Exception {
+    public String getTitleOnUiThread(final AwContents awContents) {
         return ThreadUtils.runOnUiThreadBlocking(() -> awContents.getTitle());
     }
 
