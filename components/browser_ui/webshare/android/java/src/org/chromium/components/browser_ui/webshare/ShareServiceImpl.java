@@ -169,14 +169,16 @@ public class ShareServiceImpl implements ShareService {
             return;
         }
 
-        GURL shareUrl = new GURL(url.url);
-        boolean hasAllowedSchemes =
-                UrlConstants.HTTPS_SCHEME.equals(shareUrl.getScheme())
-                        || UrlConstants.HTTP_SCHEME.equals(shareUrl.getScheme());
-        if (GURL.isEmptyOrInvalid(shareUrl) || !hasAllowedSchemes) {
-            callback.call(ShareError.PERMISSION_DENIED);
-            mDelegate.terminateRendererDueToBadMessage(11 /* RFH_INVALID_WEB_FRAME_URL */);
-            return;
+        if (!android.text.TextUtils.isEmpty(url.url)) {
+            GURL shareUrl = new GURL(url.url);
+            boolean hasAllowedSchemes =
+                    UrlConstants.HTTPS_SCHEME.equals(shareUrl.getScheme())
+                            || UrlConstants.HTTP_SCHEME.equals(shareUrl.getScheme());
+            if (GURL.isEmptyOrInvalid(shareUrl) || !hasAllowedSchemes) {
+                callback.call(ShareError.PERMISSION_DENIED);
+                mDelegate.terminateRendererDueToBadMessage(11 /* RFH_INVALID_WEB_FRAME_URL */);
+                return;
+            }
         }
 
         ShareParams.TargetChosenCallback innerCallback =
