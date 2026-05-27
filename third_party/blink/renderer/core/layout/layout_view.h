@@ -117,28 +117,15 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
 
   LayoutUnit ComputeMinimumWidth();
 
-  // Based on LocalFrameView::LayoutSize, but:
-  // - checks for null LocalFrameView
-  // - Accounts for printing layout
-  // - scrollbar exclusion is compatible with root layer scrolling
+  // Based on `LocalFrameView::GetLayoutSize()`, but:
+  // - Checks for null `LocalFrameView`.
+  // - Accounts for printing layout.
+  // - Scrollbar exclusion is compatible with root layer scrolling.
   gfx::Size GetLayoutSize(IncludeScrollbarsInRect = kExcludeScrollbars) const;
 
   // Same as above, but ignore print settings.
   gfx::Size GetNonPrintingLayoutSize(IncludeScrollbarsInRect) const;
 
-  int ViewHeight(
-      IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
-    NOT_DESTROYED();
-    return GetLayoutSize(scrollbar_inclusion).height();
-  }
-  int ViewWidth(
-      IncludeScrollbarsInRect scrollbar_inclusion = kExcludeScrollbars) const {
-    NOT_DESTROYED();
-    return GetLayoutSize(scrollbar_inclusion).width();
-  }
-
-  int ViewLogicalWidth(IncludeScrollbarsInRect = kExcludeScrollbars) const;
-  int ViewLogicalHeight(IncludeScrollbarsInRect = kExcludeScrollbars) const;
 
   LayoutUnit ViewLogicalHeightForPercentages() const;
 
@@ -334,7 +321,7 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
                           TransformState&,
                           MapCoordinatesFlags) const override;
 
-  LogicalSize InitialContainingBlockSize() const;
+  PhysicalSize InitialContainingBlockSize() const;
 
   SVGTextDescendantsMap& SvgTextDescendantsMap() {
     NOT_DESTROYED();
@@ -358,14 +345,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   void StyleDidChange(StyleDifference,
                       const ComputedStyle* old_style,
                       const StyleChangeContext&) override;
-  int ViewLogicalWidthForBoxSizing() const {
-    NOT_DESTROYED();
-    return ViewLogicalWidth(kIncludeScrollbars);
-  }
-  int ViewLogicalHeightForBoxSizing() const {
-    NOT_DESTROYED();
-    return ViewLogicalHeight(kIncludeScrollbars);
-  }
 
   // Set if laying out with a new initial containing block size, and populated
   // as we handle nodes that may have been affected by that.

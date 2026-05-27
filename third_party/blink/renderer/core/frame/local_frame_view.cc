@@ -922,10 +922,8 @@ gfx::SizeF LocalFrameView::SmallViewportSizeForViewportUnits() const {
   if (!layout_view)
     return gfx::SizeF();
 
-  gfx::SizeF layout_size;
-  layout_size.set_width(layout_view->ViewWidth(kIncludeScrollbars) / zoom);
-  layout_size.set_height(layout_view->ViewHeight(kIncludeScrollbars) / zoom);
-
+  gfx::SizeF layout_size(layout_view->GetLayoutSize(kIncludeScrollbars));
+  layout_size.InvScale(zoom);
   return layout_size;
 }
 

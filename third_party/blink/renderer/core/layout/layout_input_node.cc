@@ -188,9 +188,7 @@ LayoutInputNode LayoutInputNode::NextSibling() const {
 }
 
 PhysicalSize LayoutInputNode::InitialContainingBlockSize() const {
-  gfx::Size icb_size =
-      GetDocument().GetLayoutView()->GetLayoutSize(kIncludeScrollbars);
-  return PhysicalSize(icb_size);
+  return GetDocument().GetLayoutView()->InitialContainingBlockSize();
 }
 
 const ComputedStyle& LayoutInputNode::FirstLineStyle() const {

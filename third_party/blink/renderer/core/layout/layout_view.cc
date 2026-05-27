@@ -375,10 +375,9 @@ void LayoutView::MapAncestorToLocal(const LayoutBoxModelObject* ancestor,
   }
 }
 
-LogicalSize LayoutView::InitialContainingBlockSize() const {
+PhysicalSize LayoutView::InitialContainingBlockSize() const {
   NOT_DESTROYED();
-  return LogicalSize(LayoutUnit(ViewLogicalWidthForBoxSizing()),
-                     LayoutUnit(ViewLogicalHeightForBoxSizing()));
+  return PhysicalSize(GetLayoutSize(kIncludeScrollbars));
 }
 
 void LayoutView::RegisterVariableLengthTransformResult(
@@ -825,27 +824,15 @@ gfx::Size LayoutView::GetNonPrintingLayoutSize(
   return result;
 }
 
-int LayoutView::ViewLogicalWidth(
-    IncludeScrollbarsInRect scrollbar_inclusion) const {
-  NOT_DESTROYED();
-  return StyleRef().IsHorizontalWritingMode() ? ViewWidth(scrollbar_inclusion)
-                                              : ViewHeight(scrollbar_inclusion);
-}
-
-int LayoutView::ViewLogicalHeight(
-    IncludeScrollbarsInRect scrollbar_inclusion) const {
-  NOT_DESTROYED();
-  return StyleRef().IsHorizontalWritingMode() ? ViewHeight(scrollbar_inclusion)
-                                              : ViewWidth(scrollbar_inclusion);
-}
-
 LayoutUnit LayoutView::ViewLogicalHeightForPercentages() const {
   NOT_DESTROYED();
+  PhysicalSize size;
   if (GetDocument().Printing()) {
-    PhysicalSize size = initial_containing_block_size_for_printing_;
-    return IsHorizontalWritingMode() ? size.height : size.width;
+    size = initial_containing_block_size_for_printing_;
+  } else {
+    size = PhysicalSize(GetLayoutSize(kExcludeScrollbars));
   }
-  return LayoutUnit(ViewLogicalHeight());
+  return IsHorizontalWritingMode() ? size.height : size.width;
 }
 
 const LayoutBox& LayoutView::RootBox() const {
@@ -876,9 +863,10 @@ void LayoutView::LayoutRoot() {
       chrome_client.GetScreenInfo(frame).device_scale_factor);
 #endif
 
-  bool is_resizing_initial_containing_block =
-      LogicalWidth() != ViewLogicalWidthForBoxSizing() ||
-      LogicalHeight() != ViewLogicalHeightForBoxSizing();
+  const PhysicalSize initial_containing_block_size =
+      InitialContainingBlockSize();
+  const bool is_resizing_initial_containing_block =
+      StitchedSize() != initial_containing_block_size;
   DCHECK(!initial_containing_block_resize_handled_list_);
   if (is_resizing_initial_containing_block) {
     initial_containing_block_resize_handled_list_ =
@@ -889,7 +877,8 @@ void LayoutView::LayoutRoot() {
   ConstraintSpaceBuilder builder(style.GetWritingMode(),
                                  style.GetWritingDirection(),
                                  /* is_new_fc */ true);
-  builder.SetAvailableSize(InitialContainingBlockSize());
+  builder.SetAvailableSize(
+      ToLogicalSize(initial_containing_block_size, style.GetWritingMode()));
   builder.SetIsFixedInlineSize(true);
   builder.SetIsFixedBlockSize(true);
 
@@ -1062,8 +1051,7 @@ void LayoutView::StyleDidChange(
 
 PhysicalRect LayoutView::DebugRect() const {
   NOT_DESTROYED();
-  return PhysicalRect(gfx::Rect(0, 0, ViewWidth(kIncludeScrollbars),
-                                ViewHeight(kIncludeScrollbars)));
+  return PhysicalRect(gfx::Rect(GetLayoutSize(kIncludeScrollbars)));
 }
 
 CompositingReasons LayoutView::AdditionalCompositingReasons() const {
