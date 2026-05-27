@@ -100,4 +100,5 @@
 //ios/chrome/test/data/policy/pref_mapping/URLBlocklist.json
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedAnonymizedDataCollectionEnabled.json
 //ios/chrome/test/data/policy/pref_mapping/UrlKeyedMetricsAllowed.json
+//ios/chrome/test/data/policy/pref_mapping/UserSecuritySignalsReporting.json
 //ios/chrome/test/data/policy/pref_mapping/WebAnnotations.json

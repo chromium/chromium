@@ -703,6 +703,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       enterprise_reporting::kCloudReportingUploadFrequency, base::Hours(24));
   registry->RegisterBooleanPref(
       enterprise_reporting::kPoliciesEverFetchedWithProfileId, false);
+  registry->RegisterBooleanPref(
+      enterprise_reporting::kUserSecuritySignalsReporting, false);
 
   // Register prefs related to Enterprise Isolated Mode.
   enterprise_isolated_mode::RegisterProfilePrefs(registry);
