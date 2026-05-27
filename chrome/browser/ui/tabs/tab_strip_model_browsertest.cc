@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/json/json_reader.h"
 #include "base/scoped_observation.h"
+#include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
@@ -520,8 +521,7 @@ IN_PROC_BROWSER_TEST_F(TabStripModelBrowserTest,
   TabStripModelCloseWebContentsOnChangeObserver close_tab_observer;
   tab_strip_model->AddObserver(&close_tab_observer);
 
-  EXPECT_DEATH_IF_SUPPORTED(tab_strip_model->MoveWebContentsAt(0, 1, false),
-                            "Check failed");
+  EXPECT_CHECK_DEATH(tab_strip_model->MoveWebContentsAt(0, 1, false));
   tab_strip_model->RemoveObserver(&close_tab_observer);
 }
 
