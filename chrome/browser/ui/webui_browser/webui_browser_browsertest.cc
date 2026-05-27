@@ -14,6 +14,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/desktop_browser_window_capabilities.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -460,4 +461,65 @@ IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, RealboxSubmitQueryDoesNotCrash) {
 
   // Call SubmitQuery to trigger the navigation code path.
   realbox_handler->SubmitQuery("test", 0, false, false, false, false);
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeResizesWindow) {
+  content::WebContents* tab_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab_contents);
+
+  GURL url = embedded_https_test_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(tab_contents, url));
+
+  auto* window = WebUIBrowserWindow::FromBrowser(browser());
+  ASSERT_TRUE(window);
+
+  // 1) Verify initially the active contents viewport height is smaller than the
+  // outermost window widget height due to Top Chrome WebUI decorations.
+  gfx::Rect bounds_before = window->GetBounds();
+  gfx::Size contents_before = window->GetContentsSize();
+  EXPECT_LT(contents_before.height(), bounds_before.height());
+
+  // 2) Resize layout contents area dynamically to exactly 800x600
+  gfx::Size target_size(800, 600);
+  window->SetContentsSize(target_size);
+
+  // 3) Wait for the parent views::Widget to resize and propagate to WebUI
+  // layout
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return window->GetContentsSize() == target_size;
+  })) << "Window contents size did not update to the expected size."
+      << "Window contents size: " << window->GetContentsSize().ToString()
+      << ", expected: " << target_size.ToString();
+}
+
+IN_PROC_BROWSER_TEST_F(WebUIBrowserTest, SetContentsSizeEarlyResizesWindow) {
+  // 1) Create a new browser window and add a default tab
+  Browser* new_browser = Browser::Create(Browser::CreateParams(
+      Browser::Type::TYPE_NORMAL, browser()->profile(), true));
+  chrome::AddTabAt(new_browser, GURL(), -1, true);
+
+  auto* window = WebUIBrowserWindow::FromBrowser(new_browser);
+  ASSERT_TRUE(window);
+
+  // 2) Call SetContentsSize immediately before the Top Chrome WebUI layout has
+  // committed
+  gfx::Size target_size(800, 600);
+  window->SetContentsSize(target_size);
+
+  // 3) Show the window and navigate to our layout testing page
+  new_browser->window()->Show();
+  content::WebContents* tab_contents =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(tab_contents);
+  GURL url = embedded_https_test_server().GetURL("a.com", "/empty.html");
+  EXPECT_TRUE(content::NavigateToURL(tab_contents, url));
+
+  // 4) Verify that the early request was cached and successfully applied when
+  // the WebUI became ready
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return window->GetContentsSize() == target_size;
+  })) << "Window contents size did not update to the expected size."
+      << "Window contents size: " << window->GetContentsSize().ToString()
+      << ", expected: " << target_size.ToString();
 }
