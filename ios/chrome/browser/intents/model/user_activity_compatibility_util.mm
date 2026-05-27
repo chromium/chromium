@@ -36,7 +36,6 @@ ActivityCompatibilityMode CompatibleModeForActivityType(
       [activity_type isEqualToString:kSiriShortcutAddReadingListItemToChrome] ||
       [activity_type isEqualToString:kSiriShortcutSearchInChrome] ||
       [activity_type isEqualToString:NSUserActivityTypeBrowsingWeb] ||
-      [activity_type isEqualToString:kSiriOpenLatestTab] ||
       [activity_type isEqualToString:kSiriOpenReadingList] ||
       [activity_type isEqualToString:kSiriOpenBookmarks] ||
       [activity_type isEqualToString:kSiriOpenTabGrid] ||
@@ -58,6 +57,7 @@ ActivityCompatibilityMode CompatibleModeForActivityType(
     }
   }
   if ([activity_type isEqualToString:kSiriShortcutOpenInChrome] ||
+      [activity_type isEqualToString:kSiriOpenLatestTab] ||
       [activity_type isEqualToString:kSiriOpenRecentTabs] ||
       [activity_type isEqualToString:kSiriViewHistory] ||
       [activity_type isEqualToString:kSiriClearBrowsingData]) {

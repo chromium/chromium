@@ -64,8 +64,8 @@ TEST_F(UserActivityCompatibilityUtilTest,
   // UserActivityTypes to test.
   NSArray* user_activity_types = @[
     handoff::kChromeHandoffActivityType, kSiriShortcutOpenInIncognito,
-    kSiriOpenLatestTab, kSiriOpenReadingList, kSiriOpenBookmarks,
-    kSiriOpenTabGrid, kSiriVoiceSearch, kSiriOpenNewTab, kSiriPlayDinoGame,
+    kSiriOpenReadingList, kSiriOpenBookmarks, kSiriOpenTabGrid,
+    kSiriVoiceSearch, kSiriOpenNewTab, kSiriPlayDinoGame,
     kSiriSetChromeDefaultBrowser, kSiriManagePaymentMethods,
     kSiriRunSafetyCheck, kSiriManagePasswords, kSiriManageSettings,
     kSiriOpenLensFromIntents, kSiriOpenNewIncognitoTab
@@ -88,8 +88,8 @@ TEST_F(UserActivityCompatibilityUtilTest,
   ForceIncognitoMode();
 
   NSArray* user_activity_types = @[
-    kSiriShortcutOpenInChrome, kSiriOpenRecentTabs, kSiriViewHistory,
-    kSiriClearBrowsingData
+    kSiriShortcutOpenInChrome, kSiriOpenLatestTab, kSiriOpenRecentTabs,
+    kSiriViewHistory, kSiriClearBrowsingData
   ];
 
   for (NSString* user_activity_type in user_activity_types) {
