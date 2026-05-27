@@ -47,14 +47,6 @@ chromium-metrics-reviews@google.com.
   <variant name="TiledContent"/>
 </variants>
 
-<variants name="LCDTextDisallowedReasonDPI">
-  <variant name="HighDPI"
-      summary="In web pages where device scale factor is greater than or
-               equal to 1.5."/>
-  <variant name="LowDPI"
-      summary="In web pages where device scale factor is less than 1.5."/>
-</variants>
-
 <variants name="SmoothnessSequence">
   <variant name="CanvasAnimation" summary="canvas animations"/>
   <variant name="CompositorAnimation"
@@ -557,20 +549,6 @@ chromium-metrics-reviews@google.com.
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
     solution.
   </summary>
-</histogram>
-
-<histogram name="Compositing.Renderer.LCDTextDisallowedReasonKPixels2.{DPI}"
-    enum="LCDTextDisallowedReason" expires_after="2026-02-22">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Records the approximate kilo-pixels covered by text drawing operations by
-    LCD-text disallowed reasons. Hence the histogram value for each reason is
-    the approximate number of non-LCD kilo-pixels resulting from that reason.
-    Recorded when the renderer is idle, at minimum interval of the longer of 1
-    minute and 500 begin frames for each local frame tree.
-  </summary>
-  <token key="DPI" variants="LCDTextDisallowedReasonDPI"/>
 </histogram>
 
 <histogram name="Compositing.ResourcePool.PeakMemoryUsage" units="MB"

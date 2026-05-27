@@ -13,8 +13,7 @@
 
 namespace cc {
 
-// These values are used in UMA and benchmarks. Entries should not be renumbered
-// and numeric values should never be reused.
+// These values are used in benchmarks.
 enum class LCDTextDisallowedReason : uint8_t {
   kNone = 0,
   kSetting = 1,

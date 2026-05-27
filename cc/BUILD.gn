@@ -228,8 +228,6 @@ cc_component("cc") {
     "metrics/frame_sorter.cc",
     "metrics/frame_sorter.h",
     "metrics/histogram_macros.h",
-    "metrics/lcd_text_metrics_reporter.cc",
-    "metrics/lcd_text_metrics_reporter.h",
     "metrics/predictor_jank_tracker.cc",
     "metrics/predictor_jank_tracker.h",
     "metrics/scroll_jank_dropped_frame_tracker.cc",

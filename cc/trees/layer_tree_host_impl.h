@@ -98,7 +98,6 @@ class DebugRectHistory;
 class EvictionTilePriorityQueue;
 class ImageAnimationController;
 class ImageDecodeCache;
-class LCDTextMetricsReporter;
 class LatencyInfoSwapPromiseMonitor;
 class LayerContext;
 class LayerImpl;
@@ -1303,8 +1302,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   AverageLagTrackingManager lag_tracking_manager_;
 
   EventsMetricsManager events_metrics_manager_;
-
-  std::unique_ptr<LCDTextMetricsReporter> lcd_text_metrics_reporter_;
 
   bool has_input_for_frame_interval_ = false;
   DelayedUniqueNotifier has_input_resetter_;

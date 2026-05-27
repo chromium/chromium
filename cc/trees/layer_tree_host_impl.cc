@@ -72,7 +72,6 @@
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/frame_sequence_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
-#include "cc/metrics/lcd_text_metrics_reporter.h"
 #include "cc/metrics/stub_compositor_frame_reporting_controller.h"
 #include "cc/metrics/submit_info.h"
 #include "cc/paint/display_item_list.h"
@@ -503,7 +502,6 @@ LayerTreeHostImpl::LayerTreeHostImpl(
       id_(id),
       consecutive_frame_with_damage_count_(settings.damaged_frame_limit),
       frame_trackers_(settings.single_thread_proxy_scheduler),
-      lcd_text_metrics_reporter_(LCDTextMetricsReporter::CreateIfNeeded(this)),
       has_input_resetter_(
           GetTaskRunner(),
           base::BindRepeating(&LayerTreeHostImpl::ResetHasInputForFrameInterval,
@@ -2073,9 +2071,6 @@ void LayerTreeHostImpl::NotifyCompositorMetricsTrackerResults(
 
 void LayerTreeHostImpl::DidNotNeedBeginFrame() {
   frame_trackers_.NotifyPauseFrameProduction();
-  if (lcd_text_metrics_reporter_) {
-    lcd_text_metrics_reporter_->NotifyPauseFrameProduction();
-  }
 }
 
 void LayerTreeHostImpl::ReclaimResources(
@@ -2793,11 +2788,6 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   } else if (!mutator_host_->HasViewTransition()) {
     frame_trackers_.StopSequence(
         FrameSequenceTrackerType::kSETMainThreadAnimation);
-  }
-
-  if (lcd_text_metrics_reporter_) {
-    lcd_text_metrics_reporter_->NotifySubmitFrame(
-        frame->origin_begin_main_frame_args);
   }
 
   // Clears the list of swap promises after calling DidSwap on each of them to

@@ -98,20 +98,6 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="HDR"/>
 </enum>
 
-<enum name="LCDTextDisallowedReason">
-  <int value="0" label="None"/>
-  <int value="1" label="Setting"/>
-  <int value="2" label="Background color not opaque"/>
-  <int value="3" label="Other contents not opaque"/>
-  <int value="4" label="Non-integral translation"/>
-  <int value="5" label="Non-integral x offset"/>
-  <int value="6" label="Non-integral y offset"/>
-  <int value="7" label="Will-change: transform"/>
-  <int value="8" label="Pixel or color effect"/>
-  <int value="9" label="Transform animation"/>
-  <int value="10" label="No text"/>
-</enum>
-
 <enum name="PropertyMutation">
   <int value="0" label="Transform"/>
   <int value="1" label="Opacity"/>
