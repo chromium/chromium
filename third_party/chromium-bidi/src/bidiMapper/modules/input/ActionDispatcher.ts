@@ -32,8 +32,9 @@ import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js'
 
 import type {ActionOption} from './ActionOption.js';
 import {
+  ClickContext,
   type KeySource,
-  PointerSource,
+  type PointerSource,
   type WheelSource,
 } from './InputSource.js';
 import type {InputState} from './InputState.js';
@@ -252,7 +253,7 @@ export class ActionDispatcher {
             buttons: source.buttons,
             clickCount: source.setClickCount(
               button,
-              new PointerSource.ClickContext(x, y, performance.now()),
+              new ClickContext(x, y, performance.now()),
             ),
             pointerType,
             tangentialPressure,

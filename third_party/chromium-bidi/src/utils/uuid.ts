@@ -47,11 +47,6 @@ export function uuidv4(): `${string}-${string}-${string}-${string}-${string}` {
     // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
     // browser.
     globalThis.crypto.getRandomValues(randomValues);
-  } else {
-    // Node (<=16) without
-    // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('crypto').webcrypto.getRandomValues(randomValues);
   }
 
   // Set version (4) and variant (RFC4122) bits.

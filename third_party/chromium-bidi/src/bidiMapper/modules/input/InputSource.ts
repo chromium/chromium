@@ -71,6 +71,32 @@ export class KeySource {
   }
 }
 
+export class ClickContext {
+  static #DOUBLE_CLICK_TIME_MS = 500;
+  static #MAX_DOUBLE_CLICK_RADIUS = 2;
+
+  count = 0;
+
+  #x;
+  #y;
+  #time;
+  constructor(x: number, y: number, time: number) {
+    this.#x = x;
+    this.#y = y;
+    this.#time = time;
+  }
+
+  compare(context: ClickContext) {
+    return (
+      // The click needs to be within a certain amount of ms.
+      context.#time - this.#time > ClickContext.#DOUBLE_CLICK_TIME_MS ||
+      // The click needs to be within a certain square radius.
+      Math.abs(context.#x - this.#x) > ClickContext.#MAX_DOUBLE_CLICK_RADIUS ||
+      Math.abs(context.#y - this.#y) > ClickContext.#MAX_DOUBLE_CLICK_RADIUS
+    );
+  }
+}
+
 export class PointerSource {
   type = SourceType.Pointer as const;
   subtype: Input.PointerType;
@@ -117,42 +143,10 @@ export class PointerSource {
   // Input.dispatchMouseEvent doesn't know the concept of double click, so we
   // need to create the logic, similar to how it's done for OSes:
   // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:ui/events/event.cc;l=479
-  static ClickContext = class ClickContext {
-    static #DOUBLE_CLICK_TIME_MS = 500;
-    static #MAX_DOUBLE_CLICK_RADIUS = 2;
 
-    count = 0;
+  #clickContexts = new Map<number, ClickContext>();
 
-    #x;
-    #y;
-    #time;
-    constructor(x: number, y: number, time: number) {
-      this.#x = x;
-      this.#y = y;
-      this.#time = time;
-    }
-
-    compare(context: ClickContext) {
-      return (
-        // The click needs to be within a certain amount of ms.
-        context.#time - this.#time > ClickContext.#DOUBLE_CLICK_TIME_MS ||
-        // The click needs to be within a certain square radius.
-        Math.abs(context.#x - this.#x) >
-          ClickContext.#MAX_DOUBLE_CLICK_RADIUS ||
-        Math.abs(context.#y - this.#y) > ClickContext.#MAX_DOUBLE_CLICK_RADIUS
-      );
-    }
-  };
-
-  #clickContexts = new Map<
-    number,
-    InstanceType<typeof PointerSource.ClickContext>
-  >();
-
-  setClickCount(
-    button: number,
-    context: InstanceType<typeof PointerSource.ClickContext>,
-  ) {
+  setClickCount(button: number, context: ClickContext) {
     let storedContext = this.#clickContexts.get(button);
     if (!storedContext || storedContext.compare(context)) {
       storedContext = context;
@@ -172,10 +166,7 @@ export class PointerSource {
    * clicks. Required for https://github.com/GoogleChromeLabs/chromium-bidi/issues/3043.
    */
   resetClickCount(): void {
-    this.#clickContexts = new Map<
-      number,
-      InstanceType<typeof PointerSource.ClickContext>
-    >();
+    this.#clickContexts = new Map<number, ClickContext>();
   }
   // --- Platform-specific state ends here ---
 }
