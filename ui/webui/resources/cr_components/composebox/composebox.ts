@@ -36,7 +36,7 @@ import type {PageHandlerRemote} from './composebox.mojom-webui.js';
 import type {ComposeboxDropdownElement} from './composebox_dropdown.js';
 import type {ComposeboxFileInputsElement} from './composebox_file_inputs.js';
 import type {ComposeboxInputElement} from './composebox_input.js';
-import {ComposeboxEmbedderMixin, VoiceSearchAction} from './composebox_mixin.js';
+import {ComposeboxEmbedderMixin, SubmitButtonIconType, VoiceSearchAction} from './composebox_mixin.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
 import type {ContextUploadErrorType} from './composebox_query.mojom-webui.js';
 import {ContextUploadStatus, ToolMode} from './composebox_query.mojom-webui.js';
@@ -45,12 +45,7 @@ import type {ContextualEntrypointButtonElement} from './contextual_entrypoint_bu
 import type {ErrorScrimElement} from './error_scrim.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
-export {VoiceSearchAction};
-
-export enum SubmitButtonIconType {
-  FORWARD = 'forward',
-  UPWARD = 'upward',
-}
+export {SubmitButtonIconType, VoiceSearchAction};
 
 const DEBOUNCE_TIMEOUT_MS: number = 20;
 
@@ -110,9 +105,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
         // NOTE: Do not reflect this property. For shared UI, use
         // `searchboxNextEnabled`. For NTP-specific styling, use CSS from the
         // embedding component (e.g., `new_tab_page/app.css`).
-      },
-      submitButtonIconType: {
-        type: String,
       },
       lensButtonDisabled: {
         reflect: true,
@@ -175,9 +167,6 @@ export class ComposeboxElement extends ComposeboxEmbedderMixin
   accessor lensButtonDisabled: boolean = false;
   accessor voiceSearchCoherenceEnabled: boolean = false;
   accessor applyContextButtonBackground: boolean = false;
-
-  accessor submitButtonIconType: SubmitButtonIconType =
-      SubmitButtonIconType.UPWARD;
   protected isRtl_: boolean = document.documentElement.dir === 'rtl';
 
   // If isCollapsible is set to true, the composebox will be a pill shape until

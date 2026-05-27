@@ -35,6 +35,11 @@ export enum VoiceSearchAction {
   QUERY_SUBMITTED = 1,
 }
 
+export enum SubmitButtonIconType {
+  FORWARD = 'forward',
+  UPWARD = 'upward',
+}
+
 const PERMISSION_PROMPT_CSS_CLASS = 'embedded-permission-prompt-showing';
 
 type Constructor<T> = new (...args: any[]) => T;
@@ -73,6 +78,7 @@ export const ComposeboxEmbedderMixin =
             smartTabSharingActive: {type: Boolean},
             shouldShowGhostFiles: {type: Boolean},
             showMenuOnClick: {type: Boolean},
+            submitButtonIconType: {type: String},
             isCanvasQuerySubmitted: {type: Boolean},
             canSubmitFilesAndInput: {
               type: Boolean,
@@ -218,6 +224,8 @@ export const ComposeboxEmbedderMixin =
             loadTimeData.getString('searchboxComposePlaceholder');
         accessor inputState: InputState|null = null;
         accessor inToolMode: boolean = false;
+        accessor submitButtonIconType: SubmitButtonIconType =
+            SubmitButtonIconType.UPWARD;
         // Indicates if voice search overlay is open. Does not indicate if it
         // is 'listening'. This is because there might be an error scrim showing
         // (see `hasVoiceSearchError`), making voice search not 'listening'.
@@ -2305,6 +2313,7 @@ export interface ComposeboxEmbedderMixinInterface extends
   smartComposeStats: SmartComposeStats;
   state: ComposeboxState|null;
   submitEnabled: boolean;
+  submitButtonIconType: SubmitButtonIconType;
   tabSuggestions: TabInfo[];
   transcript: string;
   uploadButtonDisabled: boolean;
