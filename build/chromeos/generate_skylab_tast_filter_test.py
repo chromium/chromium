@@ -17,7 +17,6 @@ tast_disabled_tests_from_chrome_all = [
 tast_disabled_tests_from_chrome_m100 = [
   "example.m100.test1",
 ]
-tast_disabled_tests_from_lacros_all = []
 '''
 
 TAST_EXPR = '"group:mainline" && "dep:chrome" && !informational'

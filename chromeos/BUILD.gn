@@ -120,7 +120,6 @@ if (is_chromeos_device) {
 
   # Tast test sources live in the Chromium OS repository.
   # To diagnose tast failures or disable tests, see go/tast-failures
-  # For any builders that run this target, it should also build Lacros.
   tast_test("chrome_all_tast_tests") {
     tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !informational"
     if (is_skylab) {
@@ -140,12 +139,10 @@ if (is_chromeos_device) {
   }
 
   tast_test("chrome_criticalstaging_tast_tests") {
-    tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && !\"dep:lacros\" && \"informational\" && \"group:criticalstaging\""
+    tast_attr_expr = "\"group:mainline\" && \"dep:chrome\" && \"informational\" && \"group:criticalstaging\""
     if (is_skylab) {
       # TODO(b/284405976): Add a !no_chrome_dcheck condition automatically by
       # reading the build configuration.
-      # TODO(b/294489383): Re-enable lacros tests once lacros chrome is deployed
-      # to ash skylab builders.
       tast_attr_expr = "($tast_attr_expr && !\"dep:no_chrome_dcheck\")"
     }
 
