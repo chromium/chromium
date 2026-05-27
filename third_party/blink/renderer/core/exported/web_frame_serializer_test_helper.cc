@@ -69,7 +69,7 @@ String GenerateMHTMLHelper(WebLocalFrameImpl* frame,
   run_loop.Run();
 
   if (!only_body_parts) {
-    scoped_refptr<RawDataBytes> footer_data = RawDataBytes::Create();
+    scoped_refptr<RawData> footer_data = RawData::Create();
     MHTMLArchive::GenerateMHTMLFooterForTesting(boundary,
                                                 *footer_data->MutableData());
     mhtml.Append(*footer_data);

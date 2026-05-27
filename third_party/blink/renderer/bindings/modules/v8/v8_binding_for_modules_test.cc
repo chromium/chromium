@@ -179,7 +179,7 @@ constexpr static size_t kSSVHeaderV8VersionTagOffset = 15;
 // Follows the same steps as the IndexedDB value serialization code.
 void SerializeV8Value(v8::Local<v8::Value> value,
                       v8::Isolate* isolate,
-                      Vector<char>* wire_bytes) {
+                      Vector<uint8_t>* wire_bytes) {
   NonThrowableExceptionState non_throwable_exception_state;
 
   SerializedScriptValue::SerializeOptions options;
@@ -196,7 +196,7 @@ void SerializeV8Value(v8::Local<v8::Value> value,
   // The cast from Vector<char> to base::span<const uint8_t> is necessary
   // to avoid VS2015 warning C4309 (truncation of constant value). This happens
   // because VersionTag is 0xFF.
-  base::span<const uint8_t> wire_data_span = base::as_byte_span(*wire_bytes);
+  base::span<const uint8_t> wire_data_span = *wire_bytes;
   ASSERT_EQ(kVersionTag, wire_data_span[kSSVHeaderBlinkVersionTagOffset]);
   ASSERT_EQ(SerializedScriptValue::kWireFormatVersion,
             wire_data_span[kSSVHeaderBlinkVersionOffset]);
@@ -208,7 +208,7 @@ void SerializeV8Value(v8::Local<v8::Value> value,
 }
 
 std::unique_ptr<IDBValue> CreateIDBValue(v8::Isolate* isolate,
-                                         Vector<char>&& wire_bytes,
+                                         Vector<uint8_t>&& wire_bytes,
                                          double primary_key,
                                          const String& key_path) {
   auto value = std::make_unique<IDBValue>();
@@ -657,7 +657,7 @@ TEST(DeserializeIDBValueTest, CurrentVersions) {
   V8TestingScope scope;
   v8::Isolate* isolate = scope.GetIsolate();
 
-  Vector<char> object_bytes;
+  Vector<uint8_t> object_bytes;
   v8::Local<v8::Object> empty_object = v8::Object::New(isolate);
   SerializeV8Value(empty_object, isolate, &object_bytes);
   std::unique_ptr<IDBValue> idb_value =
@@ -683,7 +683,7 @@ TEST(DeserializeIDBValueTest, FutureV8Version) {
   v8::Isolate* isolate = scope.GetIsolate();
 
   // Pretend that the object was serialized by a future version of V8.
-  Vector<char> object_bytes;
+  Vector<uint8_t> object_bytes;
   v8::Local<v8::Object> empty_object = v8::Object::New(isolate);
   SerializeV8Value(empty_object, isolate, &object_bytes);
   object_bytes[kSSVHeaderV8VersionTagOffset] += 1;
@@ -709,7 +709,7 @@ TEST(DeserializeIDBValueTest, InjectionIntoNonObject) {
 
   // Simulate a storage corruption where an object is read back as a number.
   // This test uses a one-segment key path.
-  Vector<char> object_bytes;
+  Vector<uint8_t> object_bytes;
   v8::Local<v8::Number> number = v8::Number::New(isolate, 42.0);
   SerializeV8Value(number, isolate, &object_bytes);
   std::unique_ptr<IDBValue> idb_value =
@@ -730,7 +730,7 @@ TEST(DeserializeIDBValueTest, NestedInjectionIntoNonObject) {
 
   // Simulate a storage corruption where an object is read back as a number.
   // This test uses a multiple-segment key path.
-  Vector<char> object_bytes;
+  Vector<uint8_t> object_bytes;
   v8::Local<v8::Number> number = v8::Number::New(isolate, 42.0);
   SerializeV8Value(number, isolate, &object_bytes);
   std::unique_ptr<IDBValue> idb_value =

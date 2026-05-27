@@ -81,31 +81,6 @@ class PLATFORM_EXPORT RawData : public ThreadSafeRefCounted<RawData> {
     return base::AdoptRef(new RawData());
   }
 
-  base::span<const char> span() const { return data_; }
-  const char* data() const { return data_.data(); }
-  size_t size() const { return data_.size(); }
-
-  // Iterators, so this type meets the requirements of
-  // `std::ranges::contiguous_range`.
-  auto begin() const { return data_.begin(); }
-  auto end() const { return data_.end(); }
-
-  Vector<char>* MutableData() { return &data_; }
-
- private:
-  RawData();
-
-  Vector<char> data_;
-};
-
-// Transitional type. Will be renamed to RawData once the old RawData (above)
-// can be removed.
-class PLATFORM_EXPORT RawDataBytes : public ThreadSafeRefCounted<RawDataBytes> {
- public:
-  static scoped_refptr<RawDataBytes> Create() {
-    return base::AdoptRef(new RawDataBytes());
-  }
-
   const uint8_t* data() const { return data_.data(); }
   size_t size() const { return data_.size(); }
 
@@ -117,7 +92,7 @@ class PLATFORM_EXPORT RawDataBytes : public ThreadSafeRefCounted<RawDataBytes> {
   Vector<uint8_t>* MutableData() { return &data_; }
 
  private:
-  RawDataBytes() = default;
+  RawData();
 
   Vector<uint8_t> data_;
 };
@@ -166,7 +141,7 @@ class PLATFORM_EXPORT BlobData {
   }
 
  private:
-  void AppendDataInternal(base::span<const char> data,
+  void AppendDataInternal(base::span<const uint8_t> data,
                           scoped_refptr<RawData> = nullptr);
 
   String content_type_;

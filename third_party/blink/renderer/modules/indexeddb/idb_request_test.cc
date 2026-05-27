@@ -149,7 +149,7 @@ Vector<mojom::blink::IDBRecordPtr> GenerateGetAllResults(
     mojom::blink::IDBReturnValuePtr return_value;
     if (generate_value) {
       String value_string = u"value_" + String::Number(next_id);
-      Vector<char> value_bytes(value_string.Utf8());
+      Vector<uint8_t> value_bytes(value_string.Utf8());
       return_value = mojom::blink::IDBReturnValue::New();
       (return_value->value = std::make_unique<IDBValue>())
           ->SetData(std::move(value_bytes));
@@ -182,7 +182,7 @@ IDBRecordArray ToIDBRecordArray(
       if (record->return_value) {
         mojom::blink::IDBReturnValuePtr& idb_return_value =
             record->return_value;
-        Vector<char> expected_value_bytes(idb_return_value->value->Data());
+        Vector<uint8_t> expected_value_bytes(idb_return_value->value->Data());
         std::unique_ptr<IDBValue> expected_value = std::make_unique<IDBValue>();
         expected_value->SetData(std::move(expected_value_bytes));
 

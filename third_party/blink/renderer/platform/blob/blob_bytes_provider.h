@@ -31,7 +31,7 @@ class PLATFORM_EXPORT BlobBytesProvider : public mojom::blink::BytesProvider {
   ~BlobBytesProvider() override;
 
   void AppendData(scoped_refptr<RawData>);
-  void AppendData(base::span<const char>);
+  void AppendData(base::span<const uint8_t>);
 
   // Binds `provider` to `receiver` on a threadpool task runner, transferring
   // ownership.

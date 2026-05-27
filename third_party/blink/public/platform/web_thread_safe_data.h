@@ -44,7 +44,7 @@
 
 namespace blink {
 
-class RawDataBytes;
+class RawData;
 
 // A container for raw bytes. It is inexpensive to copy a WebThreadSafeData
 // object.  It is safe to pass a WebThreadSafeData across threads.
@@ -79,8 +79,8 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
   WebThreadSafeData& operator=(const WebThreadSafeData&);
 
 #if INSIDE_BLINK
-  explicit WebThreadSafeData(scoped_refptr<RawDataBytes>);
-  WebThreadSafeData& operator=(scoped_refptr<RawDataBytes>);
+  explicit WebThreadSafeData(scoped_refptr<RawData>);
+  WebThreadSafeData& operator=(scoped_refptr<RawData>);
 #else
   operator std::string() const {
     size_t len = size();
@@ -89,7 +89,7 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
 #endif
 
  private:
-  WebPrivatePtrForRefCounted<RawDataBytes> private_;
+  WebPrivatePtrForRefCounted<RawData> private_;
 };
 
 }  // namespace blink

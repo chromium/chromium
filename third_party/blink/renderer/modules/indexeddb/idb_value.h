@@ -55,7 +55,7 @@ class MODULES_EXPORT IDBValue final {
   void SetBlobInfo(Vector<WebBlobInfo> blob_info);
   const Vector<WebBlobInfo>& BlobInfo() const { return blob_info_; }
 
-  void SetData(Vector<char> data);
+  void SetData(Vector<uint8_t> data);
   void SetData(SerializedScriptValue::DataBufferPtr data);
   void SetData(mojo_base::BigBuffer data);
   base::span<const uint8_t> Data() const;
@@ -112,7 +112,7 @@ class MODULES_EXPORT IDBValue final {
   //   data)
   mojo_base::BigBuffer data_from_mojo_;
   SerializedScriptValue::DataBufferPtr data_;
-  Vector<char> massaged_data_;
+  Vector<uint8_t> massaged_data_;
 
   Vector<WebBlobInfo> blob_info_;
 

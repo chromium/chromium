@@ -55,7 +55,7 @@ base::span<const uint8_t> IDBValue::Data() const {
     return data_from_mojo_;
   }
   if (!massaged_data_.empty()) {
-    return base::as_byte_span(massaged_data_);
+    return massaged_data_;
   }
   return data_.as_span();
 }
@@ -64,7 +64,7 @@ void IDBValue::SetBlobInfo(Vector<WebBlobInfo> blob_info) {
   blob_info_ = std::move(blob_info);
 }
 
-void IDBValue::SetData(Vector<char> massaged_data) {
+void IDBValue::SetData(Vector<uint8_t> massaged_data) {
   if (isolate_) {
     external_memory_accounter_.Set(isolate_.get(), massaged_data.size());
   }

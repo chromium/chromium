@@ -20,7 +20,7 @@ std::unique_ptr<IDBValue> CreateNullIDBValueForTesting(v8::Isolate* isolate) {
   scoped_refptr<SerializedScriptValue> null_ssv =
       SerializedScriptValue::NullValue();
 
-  Vector<char> ssv_wire_bytes(null_ssv->GetWireData());
+  Vector<uint8_t> ssv_wire_bytes(null_ssv->GetWireData());
 
   auto idb_value = std::make_unique<IDBValue>();
   idb_value->SetData(std::move(ssv_wire_bytes));

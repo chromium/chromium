@@ -56,7 +56,7 @@ TEST(IDBMojomTraitsTest, IDBValue) {
   wtf_size_t test_data_size = 10000;
   Vector<char> test_data(test_data_size);
   std::generate(test_data.begin(), test_data.end(), rng);
-  Vector<char> input_data = Vector<char>(test_data);
+  Vector<uint8_t> input_data(test_data);
 
   // Verify expectations.
   ASSERT_EQ(input_data.size(), test_data_size);

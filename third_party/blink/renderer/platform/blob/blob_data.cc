@@ -158,17 +158,17 @@ void BlobData::AppendText(const String& text,
       NormalizeLineEndingsToNative(utf8_text, *raw_data->MutableData());
       AppendDataInternal(base::span(*raw_data), raw_data);
     } else {
-      Vector<char> buffer;
+      Vector<uint8_t> buffer;
       NormalizeLineEndingsToNative(utf8_text, buffer);
       AppendDataInternal(base::span(buffer));
     }
   } else {
-    AppendDataInternal(base::span(utf8_text));
+    AppendDataInternal(base::as_byte_span(utf8_text));
   }
 }
 
 void BlobData::AppendBytes(base::span<const uint8_t> bytes) {
-  AppendDataInternal(base::as_chars(bytes));
+  AppendDataInternal(bytes);
 }
 
 uint64_t BlobData::length() const {
@@ -190,7 +190,7 @@ uint64_t BlobData::length() const {
   return length;
 }
 
-void BlobData::AppendDataInternal(base::span<const char> data,
+void BlobData::AppendDataInternal(base::span<const uint8_t> data,
                                   scoped_refptr<RawData> raw_data) {
   DCHECK_EQ(file_composition_, FileCompositionStatus::kNoUnknownSizeFiles)
       << "Blobs with a unknown-size file cannot have other items.";

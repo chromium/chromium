@@ -35,7 +35,7 @@ TEST(LineEndingTest, NormalizeLineEndingsToLf) {
   }
 
   for (const auto& test : kTestCases) {
-    Vector<char> out;
+    Vector<uint8_t> out;
     NormalizeLineEndingsToLf(test.test, out);
     EXPECT_EQ(std::string_view(test.expected), base::as_string_view(out));
   }

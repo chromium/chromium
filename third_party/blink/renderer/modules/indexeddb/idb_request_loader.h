@@ -94,7 +94,7 @@ class IDBRequestLoader : public GarbageCollected<IDBRequestLoader>,
   LoadCompleteCallback load_complete_callback_;
 
   // Buffer used to unwrap an IDBValue.
-  Vector<char> wrapped_data_;
+  Vector<uint8_t> wrapped_data_;
 
   // The value being currently unwrapped.
   Vector<std::unique_ptr<IDBValue>>::iterator current_value_;

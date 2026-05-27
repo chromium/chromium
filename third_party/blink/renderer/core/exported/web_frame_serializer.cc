@@ -77,7 +77,7 @@ void ContinueGenerateMHTMLParts(
   }
 
   // Encode serialized resources as MHTML.
-  scoped_refptr<RawDataBytes> output = RawDataBytes::Create();
+  scoped_refptr<RawData> output = RawData::Create();
   {
     // Frame is the 1st resource (see FrameSerializer::serializeFrame doc
     // comment). Frames get a Content-ID header.
@@ -109,7 +109,7 @@ WebThreadSafeData WebFrameSerializer::GenerateMHTMLHeader(
 
   Document* document = web_local_frame->GetFrame()->GetDocument();
 
-  scoped_refptr<RawDataBytes> buffer = RawDataBytes::Create();
+  scoped_refptr<RawData> buffer = RawData::Create();
   MHTMLArchive::GenerateMHTMLHeader(
       boundary, document->Url(), document->title(),
       document->SuggestedMIMEType(), base::Time::Now(), *buffer->MutableData());

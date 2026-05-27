@@ -122,7 +122,7 @@ void BlobBytesProvider::AppendData(scoped_refptr<RawData> data) {
   data_.push_back(std::move(data));
 }
 
-void BlobBytesProvider::AppendData(base::span<const char> data) {
+void BlobBytesProvider::AppendData(base::span<const uint8_t> data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (data_.empty() ||

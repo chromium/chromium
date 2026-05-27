@@ -30,134 +30,134 @@
 namespace blink {
 
 TEST(IDBValueWrapperTest, WriteVarIntOneByte) {
-  Vector<char> output;
+  Vector<uint8_t> output;
 
   IDBValueWrapper::WriteVarInt(0, output);
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x00', output[0]);
+  EXPECT_EQ(0x00, output[0]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(1, output);
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x01', output[0]);
+  EXPECT_EQ(0x01, output[0]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x34, output);
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x34', output[0]);
+  EXPECT_EQ(0x34, output[0]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x7f, output);
   ASSERT_EQ(1U, output.size());
-  EXPECT_EQ('\x7f', output[0]);
+  EXPECT_EQ(0x7f, output[0]);
 }
 
 TEST(IDBValueWrapperTest, WriteVarIntMultiByte) {
-  Vector<char> output;
+  Vector<uint8_t> output;
 
   IDBValueWrapper::WriteVarInt(0xff, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\xff', output[0]);
-  EXPECT_EQ('\x01', output[1]);
+  EXPECT_EQ(0xff, output[0]);
+  EXPECT_EQ(0x01, output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x100, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\x80', output[0]);
-  EXPECT_EQ('\x02', output[1]);
+  EXPECT_EQ(0x80, output[0]);
+  EXPECT_EQ(0x02, output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x1234, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\xb4', output[0]);
-  EXPECT_EQ('\x24', output[1]);
+  EXPECT_EQ(0xb4, output[0]);
+  EXPECT_EQ(0x24, output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0xabcd, output);
   ASSERT_EQ(3U, output.size());
-  EXPECT_EQ('\xcd', output[0]);
-  EXPECT_EQ('\xd7', output[1]);
-  EXPECT_EQ('\x2', output[2]);
+  EXPECT_EQ(0xcd, output[0]);
+  EXPECT_EQ(0xd7, output[1]);
+  EXPECT_EQ(0x2, output[2]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x123456, output);
   ASSERT_EQ(3U, output.size());
-  EXPECT_EQ('\xd6', output[0]);
-  EXPECT_EQ('\xe8', output[1]);
-  EXPECT_EQ('\x48', output[2]);
+  EXPECT_EQ(0xd6, output[0]);
+  EXPECT_EQ(0xe8, output[1]);
+  EXPECT_EQ(0x48, output[2]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0xabcdef, output);
   ASSERT_EQ(4U, output.size());
-  EXPECT_EQ('\xef', output[0]);
-  EXPECT_EQ('\x9b', output[1]);
-  EXPECT_EQ('\xaf', output[2]);
-  EXPECT_EQ('\x05', output[3]);
+  EXPECT_EQ(0xef, output[0]);
+  EXPECT_EQ(0x9b, output[1]);
+  EXPECT_EQ(0xaf, output[2]);
+  EXPECT_EQ(0x05, output[3]);
   output.clear();
 }
 
 TEST(IDBValueWrapperTest, WriteVarIntMultiByteEdgeCases) {
-  Vector<char> output;
+  Vector<uint8_t> output;
 
   IDBValueWrapper::WriteVarInt(0x80, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\x80', output[0]);
-  EXPECT_EQ('\x01', output[1]);
+  EXPECT_EQ(0x80, output[0]);
+  EXPECT_EQ(0x01, output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x3fff, output);
   ASSERT_EQ(2U, output.size());
-  EXPECT_EQ('\xff', output[0]);
-  EXPECT_EQ('\x7f', output[1]);
+  EXPECT_EQ(0xff, output[0]);
+  EXPECT_EQ(0x7f, output[1]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x4000, output);
   ASSERT_EQ(3U, output.size());
-  EXPECT_EQ('\x80', output[0]);
-  EXPECT_EQ('\x80', output[1]);
-  EXPECT_EQ('\x01', output[2]);
+  EXPECT_EQ(0x80, output[0]);
+  EXPECT_EQ(0x80, output[1]);
+  EXPECT_EQ(0x01, output[2]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x1fffff, output);
   ASSERT_EQ(3U, output.size());
-  EXPECT_EQ('\xff', output[0]);
-  EXPECT_EQ('\xff', output[1]);
-  EXPECT_EQ('\x7f', output[2]);
+  EXPECT_EQ(0xff, output[0]);
+  EXPECT_EQ(0xff, output[1]);
+  EXPECT_EQ(0x7f, output[2]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x200000, output);
   ASSERT_EQ(4U, output.size());
-  EXPECT_EQ('\x80', output[0]);
-  EXPECT_EQ('\x80', output[1]);
-  EXPECT_EQ('\x80', output[2]);
-  EXPECT_EQ('\x01', output[3]);
+  EXPECT_EQ(0x80, output[0]);
+  EXPECT_EQ(0x80, output[1]);
+  EXPECT_EQ(0x80, output[2]);
+  EXPECT_EQ(0x01, output[3]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0xfffffff, output);
   ASSERT_EQ(4U, output.size());
-  EXPECT_EQ('\xff', output[0]);
-  EXPECT_EQ('\xff', output[1]);
-  EXPECT_EQ('\xff', output[2]);
-  EXPECT_EQ('\x7f', output[3]);
+  EXPECT_EQ(0xff, output[0]);
+  EXPECT_EQ(0xff, output[1]);
+  EXPECT_EQ(0xff, output[2]);
+  EXPECT_EQ(0x7f, output[3]);
   output.clear();
 
   IDBValueWrapper::WriteVarInt(0x10000000, output);
   ASSERT_EQ(5U, output.size());
-  EXPECT_EQ('\x80', output[0]);
-  EXPECT_EQ('\x80', output[1]);
-  EXPECT_EQ('\x80', output[2]);
-  EXPECT_EQ('\x80', output[3]);
-  EXPECT_EQ('\x01', output[4]);
+  EXPECT_EQ(0x80, output[0]);
+  EXPECT_EQ(0x80, output[1]);
+  EXPECT_EQ(0x80, output[2]);
+  EXPECT_EQ(0x80, output[3]);
+  EXPECT_EQ(0x01, output[4]);
   output.clear();
 
   // Maximum value of unsigned on 32-bit platforms.
   IDBValueWrapper::WriteVarInt(0xffffffff, output);
   ASSERT_EQ(5U, output.size());
-  EXPECT_EQ('\xff', output[0]);
-  EXPECT_EQ('\xff', output[1]);
-  EXPECT_EQ('\xff', output[2]);
-  EXPECT_EQ('\xff', output[3]);
-  EXPECT_EQ('\x0f', output[4]);
+  EXPECT_EQ(0xff, output[0]);
+  EXPECT_EQ(0xff, output[1]);
+  EXPECT_EQ(0xff, output[2]);
+  EXPECT_EQ(0xff, output[3]);
+  EXPECT_EQ(0x0f, output[4]);
   output.clear();
 }
 
@@ -375,11 +375,11 @@ TEST(IDBValueUnwrapperTest, ReadVarIntDenormalizedInput) {
 
 TEST(IDBValueUnwrapperTest, WriteVarIntMaxUnsignedRoundtrip) {
   unsigned max_value = std::numeric_limits<unsigned>::max();
-  Vector<char> output;
+  Vector<uint8_t> output;
   IDBValueWrapper::WriteVarInt(max_value, output);
 
   IDBValueUnwrapperReadTestHelper helper;
-  helper.ReadVarInt(base::as_bytes(base::span(output)));
+  helper.ReadVarInt(output);
   EXPECT_TRUE(helper.success());
   EXPECT_EQ(max_value, helper.read_varint());
   EXPECT_EQ(output.size(), helper.consumed_bytes());
@@ -399,7 +399,7 @@ TEST(IDBValueUnwrapperTest, ReadBytes) {
   helper.ReadBytes({0x01, 0x42, 0x01});
   EXPECT_TRUE(helper.success());
   ASSERT_EQ(1U, helper.read_bytes().size());
-  EXPECT_EQ('\x42', helper.read_bytes()[0]);
+  EXPECT_EQ(0x42, helper.read_bytes()[0]);
   EXPECT_EQ(2U, helper.consumed_bytes());
 
   Vector<uint8_t> long_output;
@@ -418,7 +418,7 @@ TEST(IDBValueUnwrapperTest, ReadBytes) {
   helper.ReadBytes({0x01, 0x42});
   EXPECT_TRUE(helper.success());
   ASSERT_EQ(1U, helper.read_bytes().size());
-  EXPECT_EQ('\x42', helper.read_bytes()[0]);
+  EXPECT_EQ(0x42, helper.read_bytes()[0]);
   EXPECT_EQ(2U, helper.consumed_bytes());
 }
 
@@ -458,7 +458,7 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
 
   std::unique_ptr<IDBValue> wrapped_value = std::move(wrapper).Build();
 
-  const Vector<char> wrapped_marker_bytes(wrapped_value->Data());
+  const Vector<uint8_t> wrapped_marker_bytes(wrapped_value->Data());
 
   wrapped_value->SetIsolate(scope.GetIsolate());
   EXPECT_TRUE(IDBValueUnwrapper::IsWrapped(wrapped_value.get()));
@@ -470,7 +470,7 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   for (wtf_size_t i = 0; i < 3; ++i) {
     IDBValue mutant_value;
     mutant_value.SetData(
-        Vector<char>(base::span(wrapped_marker_bytes).first(i)));
+        Vector<uint8_t>(base::span(wrapped_marker_bytes).first(i)));
     mutant_value.SetIsolate(scope.GetIsolate());
 
     EXPECT_FALSE(IDBValueUnwrapper::IsWrapped(&mutant_value));
@@ -481,8 +481,8 @@ TEST(IDBValueUnwrapperTest, IsWrapped) {
   ASSERT_LT(3U, wrapped_marker_bytes.size());
   for (wtf_size_t i = 0; i < 3; ++i) {
     for (int j = 0; j < 8; ++j) {
-      char mask = 1 << j;
-      Vector<char> copy = wrapped_marker_bytes;
+      uint8_t mask = 1 << j;
+      Vector<uint8_t> copy = wrapped_marker_bytes;
       copy[i] ^= mask;
       IDBValue mutant_value;
       mutant_value.SetData(std::move(copy));
@@ -616,7 +616,7 @@ TEST(IDBValueUnwrapperTest, Compression) {
 TEST(IDBValueUnwrapperTest, Decompression) {
   test::TaskEnvironment task_environment;
   Vector<WebBlobInfo> blob_infos;
-  Vector<char> buffer;
+  Vector<uint8_t> buffer;
   std::unique_ptr<IDBValue> value;
   V8TestingScope scope;
   v8::Local<v8::Value> v8_value;
