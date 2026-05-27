@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -245,10 +246,12 @@ class WebNNGraphBuilderImplTest : public testing::Test {
         graph_builder_remote_.BindNewPipeAndPassReceiver());
   }
   void TearDown() override {
-    // Give WebNNContext a chance to disconnect.
+    graph_builder_remote_.reset();
     webnn_context_.reset();
-    webnn_test_environment_.RunUntilIdle();
+    webnn_test_environment_.WaitForAllContextsToBeDestroyed();
 
+    provider_remote_.reset();
+    webnn_test_environment_.TearDown();
     WebNNContextProviderImpl::SetBackendForTesting(nullptr);
   }
 
@@ -295,8 +298,8 @@ TEST_F(WebNNGraphBuilderImplTest, CreateGraph) {
   // The remote should disconnect shortly after the future resolves since the
   // `WebNNGraphBuilder` is destroyed shortly after firing its `CreateGraph()`
   // callback.
-  test_environment().RunUntilIdle();
-  EXPECT_FALSE(graph_builder_remote().is_connected());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !graph_builder_remote().is_connected(); }));
 }
 
 TEST_F(WebNNGraphBuilderImplTest, CreateGraphTwice) {

@@ -340,9 +340,11 @@ class WebNNGraphImplTest : public testing::Test {
   }
 
   void TearDown() override {
-    // Give WebNNContext a chance to disconnect.
     webnn_context_.reset();
-    webnn_test_environment_.RunUntilIdle();
+    webnn_test_environment_.WaitForAllContextsToBeDestroyed();
+
+    provider_remote_.reset();
+    webnn_test_environment_.TearDown();
 
     WebNNContextProviderImpl::SetBackendForTesting(nullptr);
   }

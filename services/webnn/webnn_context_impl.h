@@ -88,6 +88,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
 
   static void RecordContextBackendUma(ContextBackendUma backend_uma);
 
+  // Sets a callback invoked from ~WebNNContextImpl for testing. Allows tests
+  // to observe when context destruction completes (e.g., to wait for
+  // MultiplexRouter ref release). Pass nullptr to clear.
+  static void SetDestructionCallbackForTesting(
+      base::RepeatingClosure* callback);
+
   using CreateGraphImplCallback = base::OnceCallback<void(
       base::expected<scoped_refptr<WebNNGraphImpl>, mojom::ErrorPtr>)>;
 
@@ -349,6 +355,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   void InitializeContext(ContextBackendUma backend_uma);
 
   void OnDisconnect() override;
+
+  // Reports a bad message from the renderer and disconnects this context.
+  // After this call, the context will be scheduled for removal. Callers
+  // must return immediately after calling this method.
+  void ReportBadMessageAndDisconnect(std::string_view message);
 
   // Callback for BuildGraph. Takes ownership of the graph and
   // extracts the devices for the builder.

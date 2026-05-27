@@ -171,7 +171,13 @@ void WebNNContextImpl::InitializeContext(ContextBackendUma backend_uma) {
       this, "WebNN", owning_task_runner_);
 }
 
+// static
+base::RepeatingClosure* g_destruction_callback_for_testing = nullptr;
+
 WebNNContextImpl::~WebNNContextImpl() {
+  CHECK(graph_builder_impls_.empty())
+      << "Graph builders must be cleared in OnDisconnect().";
+
   for (auto impl : tensor_impls_) {
     // Delete non-interop tensor instances from the tracker as they can't
     // unregister themselves since they're ref-counted and might outlive the
@@ -192,6 +198,22 @@ WebNNContextImpl::~WebNNContextImpl() {
     CHECK_EQ(status, xnn_status_success);
   }
 #endif  // BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
+
+  // Destroy the GPU sequence before signaling destruction. This runs
+  // DestroySequence() which releases any pending MultiplexRouter refs held
+  // by queued tasks (via WrapRefCounted). The callback must fire after this
+  // to guarantee the router is fully cleaned up.
+  gpu_sequence_.reset();
+
+  if (g_destruction_callback_for_testing) {
+    g_destruction_callback_for_testing->Run();
+  }
+}
+
+// static
+void WebNNContextImpl::SetDestructionCallbackForTesting(  // IN-TEST
+    base::RepeatingClosure* callback) {
+  g_destruction_callback_for_testing = callback;
 }
 
 // static
@@ -200,6 +222,8 @@ void WebNNContextImpl::RecordContextBackendUma(ContextBackendUma backend_uma) {
 }
 
 void WebNNContextImpl::OnDisconnect() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Explicitly reset all tensor and graph receivers before destruction since
   // destroying bound receivers can cause Mojo to DCHECK due to pending
   // callbacks or if destruction occurs on a different runner than the bound
@@ -212,7 +236,11 @@ void WebNNContextImpl::OnDisconnect() {
     impl->ResetMojoReceiver();
   }
 
+  // Close the primary pipe before clearing builders. Closing the pipe detaches
+  // all endpoint clients on the router, so the subsequent Clear() won't trigger
+  // MaybePostToProcessTasks() and leak a router ref.
   ResetMojoReceiver();
+  graph_builder_impls_.Clear();
 
   base::OnceClosure remove_task;
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
@@ -229,11 +257,13 @@ void WebNNContextImpl::OnDisconnect() {
                        context_provider_, handle());
   }
 
-  if (!main_task_runner_->RunsTasksInCurrentSequence()) {
-    main_task_runner_->PostTask(FROM_HERE, std::move(remove_task));
-  } else {
-    std::move(remove_task).Run();
-  }
+  main_task_runner_->PostTask(FROM_HERE, std::move(remove_task));
+}
+
+void WebNNContextImpl::ReportBadMessageAndDisconnect(std::string_view message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  GetMojoReceiver().ReportBadMessage(message);
+  OnDisconnect();
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -342,7 +372,7 @@ void WebNNContextImpl::CreateTensor(
   ScopedTrace scoped_trace("WebNNContextImpl::CreateTensor");
 
   if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return;
   }
 
@@ -353,18 +383,18 @@ void WebNNContextImpl::CreateTensor(
             properties_, tensor_info->descriptor.data_type(),
             tensor_info->descriptor.shape(), "WebNNGraphConstant");
     if (!validated_descriptor.has_value()) {
-      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
       return;
     }
 
     if (!properties_.data_type_limits.constant.Supports(
             validated_descriptor.value())) {
-      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
       return;
     }
 
     if (tensor_data.size() != validated_descriptor->PackedByteLength()) {
-      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
       return;
     }
   } else {
@@ -449,18 +479,18 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   ScopedTrace scoped_trace("WebNNContextImpl::CreateTensorFromMailbox");
 
   if (!tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return;
   }
 
   if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return;
   }
 
   // WebNN graph constants cannot be shared since they may not be readable.
   if (tensor_info->usage.Has(MLTensorUsageFlags::kGraphConstant)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return;
   }
 
@@ -549,14 +579,14 @@ void WebNNContextImpl::Dispatch(
   ScopedTrace scoped_trace("WebNNContextImpl::Dispatch");
 
   if (!ValidateWebNNTensorsUsage(named_inputs, named_outputs)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return;
   }
 
   // Resolve graph token to graph impl.
   auto graph_it = graph_impls_.find(graph_token);
   if (graph_it == graph_impls_.end()) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidGraph);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidGraph);
     return;
   }
   scoped_refptr<WebNNGraphImpl> graph_impl = *graph_it;
@@ -576,7 +606,7 @@ void WebNNContextImpl::Dispatch(
     // Input MLTensor is always dispatchable, which isn't allowed when used as
     // a graph constant.
     if (input_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
-      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
       return;
     }
 
@@ -587,7 +617,7 @@ void WebNNContextImpl::Dispatch(
   if (!ValidateWebNNTensors(
           name_to_input_tensor_map,
           graph_impl->compute_resource_info().input_names_to_descriptors)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return;
   }
 
@@ -606,7 +636,7 @@ void WebNNContextImpl::Dispatch(
     // Output MLTensor is always dispatchable, which isn't allowed when used as
     // a graph constant.
     if (output_tensor->usage().Has(MLTensorUsageFlags::kGraphConstant)) {
-      GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+      ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
       return;
     }
 
@@ -618,7 +648,7 @@ void WebNNContextImpl::Dispatch(
   if (!ValidateWebNNTensors(
           name_to_output_tensor_map,
           graph_impl->compute_resource_info().output_names_to_descriptors)) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return;
   }
 
@@ -697,7 +727,7 @@ scoped_refptr<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(
     const blink::WebNNTensorToken& tensor_handle) {
   const auto it = tensor_impls_.find(tensor_handle);
   if (it == tensor_impls_.end()) {
-    GetMojoReceiver().ReportBadMessage(kBadMessageInvalidTensor);
+    ReportBadMessageAndDisconnect(kBadMessageInvalidTensor);
     return nullptr;
   }
   return it->get();

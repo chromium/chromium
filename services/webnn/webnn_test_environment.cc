@@ -6,6 +6,8 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/run_until.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -13,6 +15,8 @@
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/host/weights_file_provider.h"
+#include "services/webnn/webnn_context_impl.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(WEBNN_USE_TFLITE) || BUILDFLAG(WEBNN_USE_LITERT)
 #include "services/webnn/host/weights_file_creator_impl.h"
@@ -174,7 +178,11 @@ WebNNTestEnvironment::WebNNTestEnvironment(
     WebNNContextProviderImpl::LoseAllContextsCallback
         lose_all_contexts_callback,
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
-    : task_environment_(std::move(task_environment)) {
+    : task_environment_(std::move(task_environment)),
+      destruction_callback_(
+          base::BindRepeating(&WebNNTestEnvironment::OnContextDestroyed,
+                              base::Unretained(this))) {
+  WebNNContextImpl::SetDestructionCallbackForTesting(&destruction_callback_);
   gpu::GpuFeatureInfo gpu_feature_info;
   gpu::GPUInfo gpu_info;
 
@@ -212,6 +220,8 @@ WebNNTestEnvironment::WebNNTestEnvironment(
       std::move(lose_all_contexts_callback),
       task_environment_->GetMainThreadTaskRunner(), g_webnn_scheduler.get(),
       mojo::SharedRemote(std::move(gpu_host_proxy)));
+  context_provider_->SetDisconnectHandlerForTesting(base::BindRepeating(
+      &WebNNTestEnvironment::OnReceiverDisconnected, base::Unretained(this)));
 }
 
 void WebNNTestEnvironment::BindWebNNContextProvider(
@@ -231,8 +241,49 @@ void WebNNTestEnvironment::BindWebNNContextProvider(
                                   std::move(gpu_process_remote), is_incognito,
                                   task_environment_->GetMainThreadTaskRunner()),
                               std::move(pending_receiver));
+  pending_receiver_count_++;
 }
 
-WebNNTestEnvironment::~WebNNTestEnvironment() = default;
+void WebNNTestEnvironment::OnReceiverDisconnected() {
+  CHECK_GT(pending_receiver_count_, 0u);
+  pending_receiver_count_--;
+}
+
+void WebNNTestEnvironment::OnContextDestroyed() {
+  destroyed_context_count_++;
+}
+
+void WebNNTestEnvironment::WaitForAllContextsToBeDestroyed() {
+  // Mojo pipe closure notifications are delivered by the IO thread (managed
+  // by ScopedMojoIoForTest inside TaskEnvironment). Flushing the thread pool
+  // ensures those notifications have been forwarded to the GPU scheduler,
+  // which then posts disconnect tasks to the main thread. Without this flush,
+  // RunUntil would never see the disconnect tasks arrive.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  // Wait for all contexts to be fully destroyed (not just removed from the
+  // provider's map). After RemoveWebNNContextImpl erases a context,
+  // OnTaskRunnerDeleter posts the actual deletion to the SchedulerTaskRunner.
+  // The destructor explicitly resets gpu_sequence_ (releasing MultiplexRouter
+  // refs) then fires our callback, incrementing destroyed_context_count_.
+  const size_t target_destroyed =
+      destroyed_context_count_ + context_provider_->GetContextCountForTesting();
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return destroyed_context_count_ >= target_destroyed; }));
+}
+
+void WebNNTestEnvironment::TearDown() {
+  // Flush the thread pool to drain MultiplexRouter bounced tasks that hold
+  // scoped_refptr<MultiplexRouter> via WrapRefCounted. In production these
+  // drain naturally, but in tests the thread pool may shut down first.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  EXPECT_TRUE(
+      base::test::RunUntil([&]() { return pending_receiver_count_ == 0; }));
+}
+
+WebNNTestEnvironment::~WebNNTestEnvironment() {
+  WebNNContextImpl::SetDestructionCallbackForTesting(nullptr);
+}
 
 }  // namespace webnn::test

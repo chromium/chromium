@@ -201,6 +201,17 @@ void WebNNContextProviderImpl::BindWebNNContextProvider(
   provider_receivers_.Add(this, std::move(receiver), params);
 }
 
+void WebNNContextProviderImpl::SetDisconnectHandlerForTesting(  // IN-TEST
+    base::RepeatingClosure handler) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  provider_receivers_.set_disconnect_handler(std::move(handler));
+}
+
+size_t WebNNContextProviderImpl::GetContextCountForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  return context_impls_.size();
+}
+
 void WebNNContextProviderImpl::BindWebNNServiceIntrospection(
     mojo::PendingReceiver<mojom::WebNNServiceIntrospection> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);

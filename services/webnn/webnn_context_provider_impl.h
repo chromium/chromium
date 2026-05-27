@@ -83,6 +83,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
       const WebNNReceiversParams& params);
 
+  void SetDisconnectHandlerForTesting(base::RepeatingClosure handler);
+
+  size_t GetContextCountForTesting() const;
+
   void BindWebNNServiceIntrospection(
       mojo::PendingReceiver<mojom::WebNNServiceIntrospection> receiver);
 
