@@ -20,7 +20,9 @@
 #include "extensions/browser/process_manager_observer.h"
 #include "extensions/browser/service_worker/service_worker_task_queue.h"
 #include "extensions/common/extension_id.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -34,6 +36,14 @@ namespace service_worker_test_utils {
 // Get the ServiceWorkerContext for the `browser_context`.
 content::ServiceWorkerContext* GetServiceWorkerContext(
     content::BrowserContext* browser_context);
+
+// Stops the service worker running for the given `sw_scope` and
+// `sw_storage_key`. Wait until it actually stops. Returns an assertion
+// result indicating success or failure.
+testing::AssertionResult StopServiceWorkerForScope(
+    content::ServiceWorkerContext* sw_context,
+    const GURL& sw_scope,
+    const blink::StorageKey& sw_storage_key);
 
 // A class for ServiceWorkerContextObserver events.
 // Note: This class only works well when there is a *single* service worker

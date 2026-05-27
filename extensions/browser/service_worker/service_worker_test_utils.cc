@@ -24,6 +24,33 @@ content::ServiceWorkerContext* GetServiceWorkerContext(
       ->GetServiceWorkerContext();
 }
 
+testing::AssertionResult StopServiceWorkerForScope(
+    content::ServiceWorkerContext* sw_context,
+    const GURL& sw_scope,
+    const blink::StorageKey& sw_storage_key) {
+  std::optional<int64_t> version_id;
+  for (const auto& [id, info] : sw_context->GetRunningServiceWorkerInfos()) {
+    if (info.scope == sw_scope && info.key == sw_storage_key) {
+      version_id = id;
+      break;
+    }
+  }
+
+  if (!version_id.has_value()) {
+    return testing::AssertionFailure()
+           << "Could not find running Service Worker for scope "
+           << sw_scope.spec();
+  }
+
+  extensions::service_worker_test_utils::TestServiceWorkerContextObserver
+      observer(sw_context);
+  observer.SetRunningId(version_id.value());
+  sw_context->StopAllServiceWorkersForStorageKey(sw_storage_key);
+  observer.WaitForWorkerStopped();
+
+  return testing::AssertionSuccess();
+}
+
 namespace {
 
 std::optional<GURL> GetScopeForExtensionID(

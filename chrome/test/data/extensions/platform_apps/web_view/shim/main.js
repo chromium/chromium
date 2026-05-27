@@ -4023,6 +4023,81 @@ function testCannotLockKeyboard() {
   document.body.appendChild(webview);
 }
 
+async function testWebRequestOnErrorOccurredNavigation() {
+  var webview = util.createWebViewTagInDOM();
+
+  // Helper promise to await the next loadstop event on the webview.
+  const waitForLoadStop = () => new Promise((resolve) => {
+    webview.addEventListener('loadstop', resolve, {once: true});
+  });
+
+  // Helper promise for chrome.test.sendMessage.
+  const sendMessage = (msg) => new Promise((resolve) => {
+    chrome.test.sendMessage(msg, resolve);
+  });
+
+  // Helper promise to await SW registration via postMessage.
+  const waitForSwRegistration = () => new Promise((resolve) => {
+    webview.addEventListener('loadstop', () => {
+      const channel = new MessageChannel();
+      channel.port1.onmessage = (e) => {
+        if (e.data === 'SW_REGISTERED') {
+          resolve();
+        }
+      };
+      webview.contentWindow.postMessage(
+          'CHECK_SW_REGISTRATION', '*', [channel.port2]);
+    }, {once: true});
+  });
+
+  // Initial registration.
+  let swRegisteredPromise = waitForSwRegistration();
+  webview.src = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/sw_register.html';
+  await swRegisteredPromise;
+
+  // Step 1: Navigate to the page (SW installed)
+  let loadStopPromise1 = waitForLoadStop();
+  webview.src = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/sw/index.html';
+  await loadStopPromise1;
+
+  // Step 2: Navigate away and stop the SW.
+  let loadStopPromise2 = waitForLoadStop();
+  webview.src = embedder.emptyGuestURL;
+  await loadStopPromise2;
+
+  const reply = await sendMessage('SW_REGISTERED');
+  embedder.test.assertEq('SW_STOPPED', reply);
+
+  // SW is stopped. Now register WebRequest listener.
+  webview.request.onErrorOccurred.addListener(function(details) {
+    // This should NOT be called!
+    LOG('Unexpected onErrorOccurred: ' + details.error);
+    embedder.test.fail();
+  }, {urls: ['<all_urls>']});
+
+  // Step 3: Navigate to the page again using ?stream=1.
+  let loadStopPromise3 = waitForLoadStop();
+  webview.addEventListener('loadcommit', (e) => {
+    const channel = new MessageChannel();
+    channel.port1.onmessage = (event) => {
+      if (event.data === 'SW_READY') {
+        channel.port1.postMessage('FINISH');
+      }
+    };
+    webview.contentWindow.postMessage('START', '*', [channel.port2]);
+  }, {once: true});
+
+  webview.src = embedder.baseGuestURL +
+      '/extensions/platform_apps/web_view/shim/sw/index.html?stream=1';
+  await loadStopPromise3;
+
+  // Step 4: Confirm that SWAutoPreload is not enabled (onErrorOccurred not
+  // called).
+  embedder.test.succeed();
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -4174,6 +4249,8 @@ embedder.test.testList = {
   'testCannotLockKeyboard': testCannotLockKeyboard,
   'testRequestInterceptionCoverage': testRequestInterceptionCoverage,
   'testPictureInPictureRequestWindow': testPictureInPictureRequestWindow,
+  'testWebRequestOnErrorOccurredNavigation':
+      testWebRequestOnErrorOccurredNavigation,
 };
 
 onload = function() {

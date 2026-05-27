@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<head>
+  <title>Service Worker Registration</title>
+  <script>
+    window.swActivationPromise = navigator.serviceWorker.register('sw.js', {scope: 'sw/'})
+      .then(reg => {
+        if (reg.active) {
+          return 'SW_REGISTERED';
+        }
+        const worker = reg.installing || reg.waiting;
+        if (worker) {
+          return new Promise((resolve) => {
+            worker.addEventListener('statechange', () => {
+              if (worker.state === 'activated') {
+                resolve('SW_REGISTERED');
+              }
+            });
+          });
+        }
+      });
+
+    window.addEventListener('message', async (e) => {
+      if (e.data === 'CHECK_SW_REGISTRATION') {
+        const result = await window.swActivationPromise;
+        e.ports[0].postMessage(result);
+      }
+    });
+  </script>
+</head>
+<body>
+  Registering Service Worker...
+</body>
+</html>

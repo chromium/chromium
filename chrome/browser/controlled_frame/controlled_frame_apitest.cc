@@ -29,6 +29,9 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_running_info.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_features.h"
@@ -40,6 +43,7 @@
 #include "extensions/browser/api/web_request/extension_web_request_event_router.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -850,6 +854,126 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
       blink::mojom::WebFeature::kHTMLControlledFrameElement, 1);
+}
+
+class ControlledFrameServiceWorkerAutoPreloadTest
+    : public ControlledFrameApiTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ControlledFrameServiceWorkerAutoPreloadTest() {
+    scoped_feature_list_.InitWithFeatureState(
+        features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload,
+        GetParam());
+  }
+  ~ControlledFrameServiceWorkerAutoPreloadTest() override = default;
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    return base::StrCat({"Optimization", info.param ? "Enabled" : "Disabled"});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    ControlledFrameServiceWorkerAutoPreloadTest,
+    testing::Bool(),
+    ControlledFrameServiceWorkerAutoPreloadTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameServiceWorkerAutoPreloadTest,
+                       WebRequestOnErrorOccurredNavigation) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  const GURL sw_register_url =
+      embedded_https_test_server().GetURL("/sw_register.html");
+  const GURL sw_scope_url =
+      embedded_https_test_server().GetURL("/sw/index.html");
+  const GURL empty_url =
+      embedded_https_test_server().GetURL("/empty_title.html");
+
+  ASSERT_TRUE(CreateControlledFrame(app_frame, sw_register_url));
+
+  extensions::WebViewGuest* web_view_guest = GetWebViewGuest(app_frame);
+  ASSERT_TRUE(web_view_guest);
+
+  EXPECT_EQ("SW_REGISTERED",
+            content::EvalJs(web_view_guest->GetGuestMainFrame(),
+                            "window.swActivationPromise"));
+
+  // Step 1: Navigate to the page (SW installed)
+  web_view_guest->NavigateGuest(sw_scope_url.spec(), {}, false);
+  EXPECT_TRUE(content::WaitForLoadStop(web_view_guest->web_contents()));
+  EXPECT_EQ(
+      "SW Scope Page",
+      content::EvalJs(web_view_guest->GetGuestMainFrame(), "document.title"));
+
+  // Step 2: Navigate away and stop the SW.
+  web_view_guest->NavigateGuest(empty_url.spec(), {}, false);
+  EXPECT_TRUE(content::WaitForLoadStop(web_view_guest->web_contents()));
+
+  content::StoragePartition* storage_partition =
+      web_view_guest->GetGuestMainFrame()->GetStoragePartition();
+  content::ServiceWorkerContext* sw_context =
+      storage_partition->GetServiceWorkerContext();
+
+  const blink::StorageKey& sw_storage_key =
+      web_view_guest->GetGuestMainFrame()->GetStorageKey();
+  GURL sw_scope = sw_storage_key.origin().GetURL().Resolve("/sw/");
+
+  // ServiceWorkerAutoPreload only operates during the Service Worker startup
+  // phase. We must ensure the Service Worker is completely stopped before
+  // triggering navigation. Since JavaScript cannot reliably trigger a
+  // force-stop and synchronize with the browser, we use the C++ side helper.
+  ASSERT_TRUE(extensions::service_worker_test_utils::StopServiceWorkerForScope(
+      sw_context, sw_scope, sw_storage_key));
+
+  // Step 3: Add WebRequest interceptor and navigate to the page again.
+  // Step 4: Confirm that SWAutoPreload is not enabled (onErrorOccurred not
+  // called).
+  GURL sw_scope_stream_url =
+      embedded_https_test_server().GetURL("/sw/index.html?stream=1");
+  EXPECT_EQ("SUCCESS", content::EvalJs(app_frame, content::JsReplace(
+                                                      R"(
+    new Promise((resolve, reject) => {
+      const frame = document.getElementsByTagName('controlledframe')[0];
+      if (!frame || !frame.request) {
+        reject('Controlled Frame request API not found');
+        return;
+      }
+      frame.request.createWebRequestInterceptor({
+        urlPatterns: ['*://*/*'],
+      }).addEventListener('erroroccurred', (e) => {
+        reject('Unexpected erroroccurred: ' + e.error);
+      });
+
+      frame.addEventListener('loadcommit', () => {
+        const channel = new MessageChannel();
+        channel.port1.onmessage = (e) => {
+          if (e.data === 'SW_READY') {
+            channel.port1.postMessage('FINISH');
+          }
+        };
+        frame.contentWindow.postMessage('START', '*', [channel.port2]);
+      });
+
+      frame.addEventListener('loadstop', () => {
+        resolve('SUCCESS');
+      });
+
+      frame.src = $1;
+    });
+  )",
+                                                      sw_scope_stream_url)));
+
+  EXPECT_EQ(sw_scope_stream_url,
+            web_view_guest->GetGuestMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ(
+      "SW Scope Page",
+      content::EvalJs(web_view_guest->GetGuestMainFrame(), "document.title"));
 }
 
 // This test verifies that various types of network requests (defined in

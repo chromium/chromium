@@ -114,7 +114,10 @@
 #include "content/public/browser/render_widget_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/security_principal.h"
+#include "content/public/browser/service_worker_context.h"
+#include "content/public/browser/service_worker_running_info.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/child_process_id.h"
@@ -155,6 +158,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/process_map.h"
+#include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
@@ -5110,6 +5114,90 @@ IN_PROC_BROWSER_TEST_P(WebViewTest, Shim_TestWebRequestBlockedNavigation) {
 
   TestHelper("testWebRequestBlockedNavigation", "web_view/shim",
              NEEDS_TEST_SERVER);
+}
+
+class WebViewServiceWorkerAutoPreloadTest
+    : public WebViewTestBase,
+      public testing::WithParamInterface<testing::tuple<bool, bool>> {
+ public:
+  WebViewServiceWorkerAutoPreloadTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{features::kGuestViewMPArch, testing::get<0>(GetParam())},
+         {features::kOptimizeWebRequestProxyForServiceWorkerAutoPreload,
+          testing::get<1>(GetParam())}});
+  }
+  ~WebViewServiceWorkerAutoPreloadTest() override = default;
+
+  static std::string DescribeParams(
+      const testing::TestParamInfo<ParamType>& info) {
+    const auto [mparch, optimization] = info.param;
+    return base::StrCat({mparch ? "MPArch" : "InnerWebContents",
+                         "_Optimization",
+                         optimization ? "Enabled" : "Disabled"});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WebViewServiceWorkerAutoPreloadTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    WebViewServiceWorkerAutoPreloadTest::DescribeParams);
+
+IN_PROC_BROWSER_TEST_P(WebViewServiceWorkerAutoPreloadTest,
+                       Shim_TestWebRequestOnErrorOccurredNavigation) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  LoadAndLaunchPlatformApp("web_view/shim", "Launched");
+
+  content::WebContents* embedder_web_contents = GetFirstAppWindowWebContents();
+  ASSERT_TRUE(embedder_web_contents);
+
+  ExtensionTestMessageListener sw_registered_listener(
+      "SW_REGISTERED", ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener done_listener("TEST_PASSED");
+  done_listener.set_failure_message("TEST_FAILED");
+
+  content::ExecuteScriptAsync(
+      embedder_web_contents,
+      "runTest('testWebRequestOnErrorOccurredNavigation')");
+
+  ASSERT_TRUE(sw_registered_listener.WaitUntilSatisfied());
+
+  // Get the guest view.
+  guest_view::GuestViewBase* guest_view =
+      GetGuestViewManager()->WaitForSingleGuestViewCreated();
+  ASSERT_TRUE(guest_view);
+
+  // SW is registered. Stop it in the guest's storage partition.
+  content::StoragePartition* storage_partition =
+      guest_view->GetGuestMainFrame()->GetStoragePartition();
+  content::ServiceWorkerContext* sw_context =
+      storage_partition->GetServiceWorkerContext();
+
+  const blink::StorageKey& sw_storage_key =
+      guest_view->GetGuestMainFrame()->GetStorageKey();
+  GURL sw_scope = sw_storage_key.origin().GetURL().Resolve(
+      "/extensions/platform_apps/web_view/shim/sw/");
+
+  // ServiceWorkerAutoPreload only operates during the Service Worker startup
+  // phase. We must ensure the Service Worker is completely stopped before
+  // triggering navigation. Since JavaScript cannot reliably trigger a
+  // force-stop and synchronize with the browser, we use the C++ side helper.
+  ASSERT_TRUE(extensions::service_worker_test_utils::StopServiceWorkerForScope(
+      sw_context, sw_scope, sw_storage_key));
+
+  // Reply to JS to resume.
+  sw_registered_listener.Reply("SW_STOPPED");
+
+  ASSERT_TRUE(done_listener.WaitUntilSatisfied());
+
+  EXPECT_EQ(sw_scope.Resolve("index.html?stream=1"),
+            guest_view->GetGuestMainFrame()->GetLastCommittedURL());
+  EXPECT_EQ("SW Scope Page",
+            content::EvalJs(guest_view->GetGuestMainFrame(), "document.title"));
 }
 
 // This test verifies that various types of network requests (defined in
