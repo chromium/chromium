@@ -500,6 +500,22 @@ bool DevToolsFileHelper::IsFileSystemAdded(
   return file_system_paths_.contains(file_system_path);
 }
 
+bool DevToolsFileHelper::IsFileInFileSystem(const std::string& file_path) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  base::FilePath path = base::FilePath::FromUTF8Unsafe(file_path);
+  if (path.ReferencesParent()) {
+    return false;
+  }
+  for (const auto& pair : file_system_paths_) {
+    base::FilePath file_system_path =
+        base::FilePath::FromUTF8Unsafe(pair.first);
+    if (file_system_path == path || file_system_path.IsParent(path)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 void DevToolsFileHelper::OnOpenItemComplete(
     const base::FilePath& path,
     platform_util::OpenOperationResult result) {

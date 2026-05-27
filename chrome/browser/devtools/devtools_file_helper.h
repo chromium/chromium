@@ -173,6 +173,9 @@ class DevToolsFileHelper {
   // granted.
   bool IsFileSystemAdded(const std::string& file_system_path);
 
+  // Returns whether the given |file_path| is a part of any added file systems.
+  bool IsFileInFileSystem(const std::string& file_path);
+
   // Opens and reveals file in OS's default file manager.
   void ShowItemInFolder(const std::string& file_system_path);
 
