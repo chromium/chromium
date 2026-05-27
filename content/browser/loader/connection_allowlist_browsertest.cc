@@ -11,6 +11,9 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/preloading/prefetch/prefetch_key.h"
+#include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
@@ -38,6 +41,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/gurl.h"
 
@@ -1094,6 +1098,111 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
       fetch($1).then(() => 'allowed').catch(() => 'blocked');
     )",
                                                                denied_url)));
+}
+
+// SpeculationRules API allows specifying the rules in a JSON using the response
+// header:
+//
+// Speculation-Rules: "/rules.json"
+//
+// It fetches the rules via a subresource request, which is subject to
+// connection allowlist. This test verifies the prefetch succeeds if both the
+// rules URL and prefetch URL are allowed.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesFetchRulesBaseline) {
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL allowed_url = embedded_https_test_server().GetURL("a.test", "/allow.js");
+
+  RegisterResponse("/allow.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse(kSameOriginAllowlistedPage,
+                   ResponseEntry("<html><body>Hello</body></html>",
+                                 {{"Connection-Allowlist", "(response-origin)"},
+                                  {"Speculation-Rules", R"("/rules.json")"}}));
+  RegisterResponse(
+      "/rules.json",
+      ResponseEntry(absl::StrFormat(R"(
+        {
+          "prefetch": [
+            {"source": "list", "urls": ["%s"], "eagerness": "immediate"}
+          ]
+        }
+      )",
+                                    allowed_url.spec().c_str()),
+                    {{"Content-Type", "application/speculationrules+json"}}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // The rules json is fetched, which initiates the prefetch request. Both are
+  // allowed by the connection allowlist.
+  GURL rules_url = embedded_https_test_server().GetURL("a.test", "/rules.json");
+  monitor.WaitForUrls({rules_url, allowed_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(rules_url).error_code, net::OK);
+  EXPECT_EQ(monitor.WaitForRequestCompletion(allowed_url).error_code, net::OK);
+}
+
+// The rules URL is not allowed. The prefetch does not take place.
+IN_PROC_BROWSER_TEST_F(ConnectionAllowlistTest,
+                       SpeculationRulesFetchRulesBlocked) {
+  auto server_handle = embedded_https_test_server().StartAndReturnHandle();
+  ASSERT_TRUE(server_handle);
+
+  GURL main_url =
+      embedded_https_test_server().GetURL("a.test", kSameOriginAllowlistedPage);
+  GURL same_origin_url =
+      embedded_https_test_server().GetURL("a.test", "/same_origin.js");
+  GURL cross_origin_url =
+      embedded_https_test_server().GetURL("b.test", "/cross_origin.js");
+
+  RegisterResponse("/same_origin.js", ResponseEntry("console.log('allow');"));
+  RegisterResponse("/cross_origin.js",
+                   ResponseEntry("console.log('also allow');"));
+
+  // The connection allowlist allows the prefetch URLs, but not the rules URL.
+  RegisterResponse(
+      kSameOriginAllowlistedPage,
+      ResponseEntry("<html><body>Hello</body></html>",
+                    {{"Connection-Allowlist",
+                      R"(("*://a.test:*/*.js" "*://b.test:*/*.js"))"},
+                     {"Speculation-Rules", R"("/rules.json")"}}));
+  RegisterResponse(
+      "/rules.json",
+      ResponseEntry(absl::StrFormat(R"(
+        {
+          "prefetch": [
+            {"source": "list", "urls": ["%s", "%s"], "eagerness": "immediate"}
+          ]
+        }
+      )",
+                                    same_origin_url.spec().c_str(),
+                                    cross_origin_url.spec().c_str()),
+                    {{"Content-Type", "application/speculationrules+json"}}));
+
+  URLLoaderMonitor monitor;
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // The fetch of rules is blocked.
+  GURL rules_url = embedded_https_test_server().GetURL("a.test", "/rules.json");
+  monitor.WaitForUrls({rules_url});
+  EXPECT_EQ(monitor.WaitForRequestCompletion(rules_url).error_code,
+            net::ERR_NETWORK_ACCESS_REVOKED);
+
+  // Since the rules are not fetched, the prefetch requests do not exist.
+  RenderFrameHost* rfh = shell()->web_contents()->GetPrimaryMainFrame();
+  PrefetchService* prefetch_service =
+      PrefetchService::GetFromFrameTreeNodeId(rfh->GetFrameTreeNodeId());
+  ASSERT_TRUE(prefetch_service);
+
+  const blink::DocumentToken& document_token =
+      static_cast<const RenderFrameHostImpl*>(rfh)->GetDocumentToken();
+  EXPECT_FALSE(
+      prefetch_service->MatchUrl(PrefetchKey(document_token, same_origin_url)));
+  EXPECT_FALSE(prefetch_service->MatchUrl(
+      PrefetchKey(document_token, cross_origin_url)));
 }
 
 }  // namespace content
