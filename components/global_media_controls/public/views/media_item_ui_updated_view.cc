@@ -347,7 +347,7 @@ MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {
 
 gfx::Size MediaItemUIUpdatedView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  auto size = GetLayoutManager()->GetPreferredSize(this);
+  auto size = GetLayoutManager()->GetPreferredSize(this, {kFixedWidth, {}});
   return gfx::Size(kFixedWidth, size.height());
 }
 
