@@ -3348,12 +3348,22 @@ void RenderFrameImpl::CommitSameDocumentNavigation(
     bool should_skip_screenshot =
         navigation_state->commit_params().should_skip_screenshot;
 
-    // Load the request.
-    commit_status = frame_->CommitSameDocumentNavigation(
-        url, load_type, item_for_history_navigation, is_client_redirect,
-        started_with_transient_activation, initiator_origin,
-        is_browser_initiated, has_ua_visual_transition,
-        soft_navigation_heuristics_task_id, should_skip_screenshot);
+    {
+      // Load the request.
+      // Guard the commit call so reentrant calls to
+      // DidFailAsyncSameDocumentCommit know that a new same-document navigation
+      // commit is actively in progress.
+      is_committing_same_document_navigation_ = true;
+      auto self = GetWeakPtr();
+      commit_status = frame_->CommitSameDocumentNavigation(
+          url, load_type, item_for_history_navigation, is_client_redirect,
+          started_with_transient_activation, initiator_origin,
+          is_browser_initiated, has_ua_visual_transition,
+          soft_navigation_heuristics_task_id, should_skip_screenshot);
+      if (self) {
+        self->is_committing_same_document_navigation_ = false;
+      }
+    }
 
     // If `commit_status` is Ok, RunCommitSameDocumentNavigationCallback() was
     // called in DidCommitNavigationInternal() or the NavigationApi deferred the
@@ -4264,6 +4274,9 @@ void RenderFrameImpl::DidFailAsyncSameDocumentCommit() {
   // callback if this commit was browser-initiated. If the commit is aborted
   // due to frame detach or another navigation preempting it, NavigationState's
   // destructor will run the callback instead.
+  if (is_committing_same_document_navigation_) {
+    return;
+  }
   DocumentState* document_state =
       DocumentState::FromDocumentLoader(frame_->GetDocumentLoader());
   if (auto navigation_state = document_state->TakeNavigationState()) {

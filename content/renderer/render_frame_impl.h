@@ -1596,6 +1596,11 @@ class CONTENT_EXPORT RenderFrameImpl
   // browser startup, e.g. the reload button.
   bool is_initial_webui_ = false;
 
+  // Set to true while CommitSameDocumentNavigation is calling into Blink,
+  // so reentrant calls to DidFailAsyncSameDocumentCommit know not to consume
+  // the incoming NavigationState.
+  bool is_committing_same_document_navigation_ = false;
+
   base::WeakPtrFactory<RenderFrameImpl> weak_factory_{this};
 };
 
