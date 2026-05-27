@@ -117,6 +117,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -175,6 +176,7 @@ public class StripLayoutHelperManagerTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private GlicKeyedService mGlicKeyedService;
     @Mock private TabBookmarker mTabBookmarker;
+    @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private PrefService mPrefService;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJniMock;
@@ -283,6 +285,7 @@ public class StripLayoutHelperManagerTest {
                         /* xrSpaceModeObservableSupplier= */ null,
                         mBackPressManager,
                         mSnackbarManager,
+                        mActivityResultTracker,
                         CallbackUtils.emptyCallback(),
                         mGlicKeyedService);
         mStripLayoutHelperManager.setTabStripTreeProviderForTesting(mTabStripTreeProvider);

@@ -1182,6 +1182,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             mXrSceneCoreSessionManagerSupplier.get(),
                             mBackPressManager,
                             getSnackbarManager(),
+                            getActivityResultTracker(),
                             glicClickHandler,
                             GlicKeyedServiceFactory.getForProfile(mTabModelProfileSupplier.get()));
             mLayoutStateProviderSupplier.set(mLayoutManager);

@@ -115,6 +115,7 @@ import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateMa
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.content_public.browser.LoadUrlParams;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
@@ -492,6 +493,7 @@ public class StripLayoutHelperManager
      *     space mode, false otherwise.
      * @param backPressManager The {@link BackPressManager} for handling back press.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
+     * @param activityResultTracker The {@link ActivityResultTracker}.
      * @param glicClickHandler The {@link Callback<Boolean>} for the Glic button.
      */
     // TODO(crbug.com/484116872): Suppressing to observe SharedPreferences, which is discouraged;
@@ -524,6 +526,7 @@ public class StripLayoutHelperManager
             @Nullable NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             BackPressManager backPressManager,
             SnackbarManager snackbarManager,
+            @Nullable ActivityResultTracker activityResultTracker,
             Callback<Boolean> glicClickHandler,
             @Nullable GlicKeyedService glicKeyedService) {
         mContext = context;
@@ -693,7 +696,8 @@ public class StripLayoutHelperManager
                         shareDelegateSupplier,
                         tabBookmarkerSupplier,
                         TabGroupListBottomSheetCoordinator::new,
-                        snackbarManager);
+                        snackbarManager,
+                        activityResultTracker);
         mIncognitoHelper =
                 new StripLayoutHelper(
                         context,
@@ -717,7 +721,8 @@ public class StripLayoutHelperManager
                         shareDelegateSupplier,
                         tabBookmarkerSupplier,
                         TabGroupListBottomSheetCoordinator::new,
-                        snackbarManager);
+                        snackbarManager,
+                        activityResultTracker);
 
         tabHoverCardViewStub.setOnInflateListener(
                 (viewStub, view) -> {

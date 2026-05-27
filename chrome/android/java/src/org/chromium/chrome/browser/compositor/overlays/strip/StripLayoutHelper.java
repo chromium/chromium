@@ -134,6 +134,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.TriggerSource;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.accessibility.AccessibilityState;
+import org.chromium.ui.base.ActivityResultTracker;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
@@ -670,6 +671,7 @@ public class StripLayoutHelper
     // time.
     private @MonotonicNonNull TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
     private final SnackbarManager mSnackbarManager;
+    private final @Nullable ActivityResultTracker mActivityResultTracker;
 
     // Tab group share.
     // These are set if shouldEnableGroupSharing() is true.
@@ -734,6 +736,7 @@ public class StripLayoutHelper
      * @param tabGroupListBottomSheetCoordinatorFactory The factory used to create the {@link
      *     TabGroupListBottomSheetCoordinator}.
      * @param snackbarManager The {@link SnackbarManager} used to show snackbar UI.
+     * @param activityResultTracker The {@link ActivityResultTracker}.
      */
     public StripLayoutHelper(
             Context context,
@@ -755,7 +758,8 @@ public class StripLayoutHelper
             MonotonicObservableSupplier<ShareDelegate> shareDelegateSupplier,
             Supplier<TabBookmarker> tabBookmarkerSupplier,
             TabGroupListBottomSheetCoordinatorFactory tabGroupListBottomSheetCoordinatorFactory,
-            SnackbarManager snackbarManager) {
+            SnackbarManager snackbarManager,
+            @Nullable ActivityResultTracker activityResultTracker) {
         mGroupTitleDrawXOffset = TAB_OVERLAP_WIDTH_DP - FOLIO_FOOT_LENGTH_DP;
         mGroupTitleOverlapWidth = FOLIO_FOOT_LENGTH_DP - mGroupTitleDrawXOffset;
         mNewTabButtonWidth = BUTTON_BACKGROUND_SIZE_DP;
@@ -772,6 +776,7 @@ public class StripLayoutHelper
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mTabGroupListBottomSheetCoordinatorFactory = tabGroupListBottomSheetCoordinatorFactory;
         mSnackbarManager = snackbarManager;
+        mActivityResultTracker = activityResultTracker;
         mScrollDelegate = new ScrollDelegate(context);
 
         // Use toolbar menu button padding to align NTB with menu button.
@@ -2495,7 +2500,10 @@ public class StripLayoutHelper
                                         mStripTabs,
                                         assumeNonNull(findTabById(ids.getAnchorTabId())),
                                         toLeft);
-                            });
+                            },
+                            mSnackbarManager,
+                            mActivityResultTracker,
+                            mWindowAndroid.getModalDialogManager());
         }
         RectProvider anchorRectProvider = new RectProvider();
         anchorTab.getAnchorRect(anchorRectProvider.getRect());

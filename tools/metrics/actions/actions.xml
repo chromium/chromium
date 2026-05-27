@@ -33259,6 +33259,9 @@ should be able to be added at any place in this file.
     <variant name=".RemoveTabFromTabGroup.MultiTab"
         summary="User removed multiple tabs from their tab group via the tab
                  context menu on tab strip on Android."/>
+    <variant name=".SendToYourDevices"
+        summary="User sent a tab to another device via the tab context menu
+                 on tab strip on Android."/>
     <variant name=".ShareTab"
         summary="User shared the URL open in a tab, via the tab context menu
                  on tab strip on Android."/>
