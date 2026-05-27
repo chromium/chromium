@@ -62,6 +62,8 @@ constexpr char kSwImagePath[] = "/sw-image.png";
 // SW observes the fetch event but does NOT call respondWith, exercising the
 // "result == nullopt" fallback branch.
 constexpr char kSwFallbackPath[] = "/sw-target-fallback.txt";
+// Same as kSwFallbackPath but for the Save Image As path (image/png MIME type).
+constexpr char kSwImageFallbackPath[] = "/sw-image-fallback.png";
 // SW returns a 404 response with a non-empty body. The user explicitly asked
 // to save, so the body should still land on disk.
 constexpr char kSwErrorPath[] = "/sw-target-error.txt";
@@ -114,7 +116,8 @@ self.addEventListener('fetch', (e) => {
         { headers: {'content-type': 'image/png'} }));
     return;
   }
-  if (url.pathname === '/sw-target-fallback.txt') {
+  if (url.pathname === '/sw-target-fallback.txt' ||
+      url.pathname === '/sw-image-fallback.png') {
     // Observe the event but decline to respond. The download path must
     // fall back to the network factory.
     return;
@@ -214,6 +217,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
   if (request.relative_url == kSwFallbackPath) {
     // Network response used by the SW-declines-to-respond fallback test.
     return reply(kNetworkResponseBody, "text/plain");
+  }
+  if (request.relative_url == kSwImageFallbackPath) {
+    return reply(kNetworkResponseBody, "image/png");
   }
   if (request.relative_url == kSwErrorPath) {
     // Network counterpart for kSwErrorPath; only reached if the SW path is
@@ -315,15 +321,16 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
   EXPECT_EQ(std::string(kSwResponseBody), ReadFile(saved));
 }
 
-// Context-menu Save Link As / Save Image As -> SW intercepts -> SW's
-// bytes on disk. The two entry points share the browser-initiated
-// download path in RenderViewContextMenu; parameterize them so both
-// variants run against the same assertions.
+// Context-menu Save Link As / Save Image As variants — covers both SW-served
+// and SW-declines-to-respond (fallback) cases. The two entry points share the
+// browser-initiated download path in RenderViewContextMenu; parameterize so
+// all variants run against the same body.
 struct ContextMenuSaveAsCase {
   const char* test_name;
   const char* url_path;
   blink::mojom::ContextMenuDataMediaType media_type;
   int command_id;
+  std::string_view expected_body;
 };
 
 class ServiceWorkerDownloadContextMenuTest
@@ -331,7 +338,7 @@ class ServiceWorkerDownloadContextMenuTest
       public ::testing::WithParamInterface<ContextMenuSaveAsCase> {};
 
 IN_PROC_BROWSER_TEST_P(ServiceWorkerDownloadContextMenuTest,
-                       ServedByServiceWorker) {
+                       ContextMenuDownload) {
   const ContextMenuSaveAsCase& cs = GetParam();
   content::WebContents* web_contents = NavigateAndWaitForSWControl();
 
@@ -358,7 +365,7 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerDownloadContextMenuTest,
 
   base::FilePath saved = WaitForOneCompletedDownload();
   ASSERT_FALSE(saved.empty());
-  EXPECT_EQ(std::string(kSwResponseBody), ReadFile(saved));
+  EXPECT_EQ(std::string(cs.expected_body), ReadFile(saved));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -370,12 +377,30 @@ INSTANTIATE_TEST_SUITE_P(
             kSwTargetPath,
             blink::mojom::ContextMenuDataMediaType::kNone,
             IDC_CONTENT_CONTEXT_SAVELINKAS,
+            kSwResponseBody,
         },
         ContextMenuSaveAsCase{
             "SaveImageAs",
             kSwImagePath,
             blink::mojom::ContextMenuDataMediaType::kImage,
             IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
+            kSwResponseBody,
+        },
+        // SW observes the FetchEvent but does NOT call respondWith; the
+        // download must fall back to the network factory.
+        ContextMenuSaveAsCase{
+            "SaveLinkAsFallback",
+            kSwFallbackPath,
+            blink::mojom::ContextMenuDataMediaType::kNone,
+            IDC_CONTENT_CONTEXT_SAVELINKAS,
+            kNetworkResponseBody,
+        },
+        ContextMenuSaveAsCase{
+            "SaveImageAsFallback",
+            kSwImageFallbackPath,
+            blink::mojom::ContextMenuDataMediaType::kImage,
+            IDC_CONTENT_CONTEXT_SAVEIMAGEAS,
+            kNetworkResponseBody,
         }),
     [](const ::testing::TestParamInfo<ContextMenuSaveAsCase>& info) {
       return info.param.test_name;
@@ -384,15 +409,8 @@ INSTANTIATE_TEST_SUITE_P(
 // SW observes the FetchEvent but does NOT call respondWith; the
 // download must fall back to the network factory and the file on disk
 // must contain the network's bytes.
-//
-// TODO(crbug.com/40410035): The current implementation passes a no-op
-// FallbackCallback to ServiceWorkerMainResourceLoaderInterceptor::
-// MaybeCreateLoader (returning nullptr), so when the SW declines to respond
-// the download hangs instead of proceeding to the network. Re-enable this
-// test once the FallbackCallback returns a valid network URLLoaderFactory.
-IN_PROC_BROWSER_TEST_F(
-    ServiceWorkerDownloadBrowserTest,
-    DISABLED_DirectDownloadFallsBackToNetworkWhenSWDeclines) {
+IN_PROC_BROWSER_TEST_F(ServiceWorkerDownloadBrowserTest,
+                       DirectDownloadFallsBackToNetworkWhenSWDeclines) {
   NavigateAndWaitForSWControl();
   StartDirectDownload(embedded_test_server()->GetURL(kSwFallbackPath));
 

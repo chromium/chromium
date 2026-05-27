@@ -36,6 +36,8 @@ promise_test(async (t) => {
       'fetch event URL matches the <a download> target.');
   assert_equals(data.destination, '',
       'Per HTML "Downloading hyperlinks", the request destination must be "".');
+  assert_equals(data.mode, 'navigate',
+      'Per HTML "Downloading hyperlinks", the request mode must be "navigate".');
   assert_equals(data.method, 'GET',
       'Downloads use GET.');
 }, 'FetchEvent fires for <a download> with destination "".');

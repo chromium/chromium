@@ -38,6 +38,8 @@ promise_test(async (t) => {
   assert_equals(data.type, 'fetch',
       'SW must still observe the fetch event even without respondWith().');
   assert_equals(data.destination, '');
+  assert_equals(data.mode, 'navigate',
+      'Download FetchEvent mode must be "navigate" (HTML "Downloading hyperlinks").');
 
   // The page must not navigate as a result of the download click.
   assert_equals(location.href, urlBefore,

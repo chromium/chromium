@@ -107,6 +107,111 @@ namespace {
 constexpr char kPdfMimeType[] = "application/pdf";
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// A SharedURLLoaderFactory that accepts CreateLoaderAndStart calls on the UI
+// thread and forwards them to the IO thread, where the wrapped
+// PendingSharedURLLoaderFactory is materialized. This is needed for the
+// Service Worker download fallback path: Fallback() runs on the UI thread, but
+// the network-service factory (ReconnectableURLLoaderFactoryForIOThread)
+// requires IO-thread materialisation.
+//
+// Single-use: CreateLoaderAndStart() consumes the wrapped
+// PendingSharedURLLoaderFactory by moving it into the IO-thread task, so a
+// second call would dereference a null pending factory. A CHECK guards
+// against this misuse; callers must construct a fresh instance per request.
+//
+// Lifetime: the materialised factory is parked in an IO-thread-resident
+// IOState struct so its mojo::Remote outlives the synchronous
+// CreateLoaderAndStart call (the network-service-side URLLoaderFactory may
+// observe a receiver disconnect otherwise). IOState is owned by the wrapper
+// via a unique_ptr with OnTaskRunnerDeleter targeting the IO sequence, so
+// destruction of IOState — and release of the materialised factory's
+// scoped_refptr — happens on IO regardless of which thread destroys the
+// wrapper.
+//
+// The wrapper itself is not ref-counted across threads: SharedURLLoaderFactory
+// uses single-thread base::RefCounted, so AddRef/Release must stay on the
+// sequence that created the first ref. The IO-thread task captures only a
+// raw IOState* (base::Unretained), valid because the wrapper's
+// OnTaskRunnerDeleter posts IOState destruction to the same IO sequence and
+// PostTask is FIFO — IOState deletion is ordered strictly after this task.
+class DeferredIOThreadURLLoaderFactory
+    : public network::SharedURLLoaderFactory {
+ public:
+  explicit DeferredIOThreadURLLoaderFactory(
+      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending)
+      : pending_(std::move(pending)),
+        io_state_(new IOState,
+                  base::OnTaskRunnerDeleter(GetIOThreadTaskRunner({}))) {}
+
+  DeferredIOThreadURLLoaderFactory(const DeferredIOThreadURLLoaderFactory&) =
+      delete;
+  DeferredIOThreadURLLoaderFactory& operator=(
+      const DeferredIOThreadURLLoaderFactory&) = delete;
+
+  // network::SharedURLLoaderFactory:
+  void CreateLoaderAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
+      override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    CHECK(pending_);
+    GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &DeferredIOThreadURLLoaderFactory::CreateLoaderAndStartOnIO,
+            base::Unretained(io_state_.get()), std::move(pending_),
+            std::move(loader), request_id, options, request, std::move(client),
+            traffic_annotation));
+  }
+
+  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory>) override {
+    NOTREACHED();
+  }
+
+  std::unique_ptr<network::PendingSharedURLLoaderFactory> Clone() override {
+    NOTREACHED();
+  }
+
+ private:
+  // IO-thread-resident state. `materialized` is default-constructed (null)
+  // on the wrapper's construction thread and only assigned/read/destroyed on
+  // the IO thread.
+  struct IOState {
+    scoped_refptr<network::SharedURLLoaderFactory> materialized;
+  };
+
+  ~DeferredIOThreadURLLoaderFactory() override = default;
+
+  static void CreateLoaderAndStartOnIO(
+      IOState* io_state,
+      std::unique_ptr<network::PendingSharedURLLoaderFactory> pending,
+      mojo::PendingReceiver<network::mojom::URLLoader> loader,
+      int32_t request_id,
+      uint32_t options,
+      const network::ResourceRequest& request,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
+    DCHECK_CURRENTLY_ON(BrowserThread::IO);
+    DCHECK(!io_state->materialized);
+    io_state->materialized =
+        network::SharedURLLoaderFactory::Create(std::move(pending));
+    io_state->materialized->CreateLoaderAndStart(
+        std::move(loader), request_id, options, request, std::move(client),
+        traffic_annotation);
+  }
+
+  // UI thread: set in the constructor, moved into the IO-thread task.
+  std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_;
+  // Holds the materialised factory on the IO thread for the wrapper's
+  // lifetime. Destruction is posted to the IO sequence by
+  // OnTaskRunnerDeleter.
+  std::unique_ptr<IOState, base::OnTaskRunnerDeleter> io_state_;
+};
+
 // A SharedURLLoaderFactory that wraps the service worker's
 // SingleRequestURLLoaderFactory and extends the lifetime of the interceptor
 // and handle across the download's async URLLoader invocation. The interceptor
@@ -122,9 +227,11 @@ class ServiceWorkerDownloadURLLoaderFactory
  public:
   ServiceWorkerDownloadURLLoaderFactory(
       scoped_refptr<network::SharedURLLoaderFactory> wrapped,
+      scoped_refptr<network::SharedURLLoaderFactory> network_fallback_factory,
       std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor> interceptor,
       std::unique_ptr<ServiceWorkerMainResourceHandle> handle)
       : wrapped_(std::move(wrapped)),
+        network_fallback_factory_(std::move(network_fallback_factory)),
         interceptor_(std::move(interceptor)),
         handle_(std::move(handle)) {}
 
@@ -162,6 +269,8 @@ class ServiceWorkerDownloadURLLoaderFactory
   ~ServiceWorkerDownloadURLLoaderFactory() override = default;
 
   scoped_refptr<network::SharedURLLoaderFactory> wrapped_;
+  // Keeps the FallbackCallback's returned raw pointer valid.
+  scoped_refptr<network::SharedURLLoaderFactory> network_fallback_factory_;
   std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor> interceptor_;
   std::unique_ptr<ServiceWorkerMainResourceHandle> handle_;
 };
@@ -1612,6 +1721,17 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
                 *resource_request, handle->AsWeakPtr());
 
         if (interceptor) {
+          // Fallback factory bridged to the IO thread; see
+          // DeferredIOThreadURLLoaderFactory.
+          scoped_refptr<network::SharedURLLoaderFactory> fallback_factory =
+              base::MakeRefCounted<DeferredIOThreadURLLoaderFactory>(
+                  CreatePendingSharedURLLoaderFactory(storage_partition, rfh));
+          // Explicit copy: C++ does not order argument evaluation, so we
+          // cannot mix copy and std::move of the same scoped_refptr in one
+          // call.
+          scoped_refptr<network::SharedURLLoaderFactory>
+              fallback_callback_factory = fallback_factory;
+
           auto* interceptor_ptr = interceptor.get();
           interceptor_ptr->MaybeCreateLoader(
               *resource_request, browser_context_,
@@ -1624,6 +1744,8 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
                      std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
                          interceptor,
                      std::unique_ptr<ServiceWorkerMainResourceHandle> handle,
+                     scoped_refptr<network::SharedURLLoaderFactory>
+                         fallback_factory,
                      std::optional<NavigationLoaderInterceptor::Result>
                          result) {
                     if (!manager) {
@@ -1634,11 +1756,13 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
                       // Wrap the SW factory so the interceptor and handle
                       // outlive the async URLLoader invocation. See
                       // ServiceWorkerDownloadURLLoaderFactory's class-level
-                      // comment for the ownership chain.
+                      // comment for the ownership chain. Owns the network
+                      // factory referenced by the FallbackCallback.
                       sw_factory = base::MakeRefCounted<
                           ServiceWorkerDownloadURLLoaderFactory>(
                           std::move(result->single_request_factory),
-                          std::move(interceptor), std::move(handle));
+                          std::move(fallback_factory), std::move(interceptor),
+                          std::move(handle));
                     }
                     manager
                         ->ContinueResourceDownloadAfterServiceWorkerIntercept(
@@ -1648,16 +1772,15 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
                   },
                   weak_factory_.GetWeakPtr(), std::move(params),
                   is_new_download, storage_partition_config, tab_url,
-                  tab_referrer_url, std::move(interceptor), std::move(handle)),
-              // TODO(crbug.com/40410035): Using a no-op fallback for now.
-              // It causes the download to hang when the SW declines to respond
-              // (doesn't call respondWith()). The fix would require to post
-              // CreateLoaderAndStart from the IO thread to materialize a
-              // pending network factory.
-              base::BindOnce([](ResponseHeadUpdateParams)
-                                 -> network::mojom::URLLoaderFactory* {
-                return nullptr;
-              }));
+                  tab_referrer_url, std::move(interceptor), std::move(handle),
+                  std::move(fallback_factory)),
+              base::BindOnce(
+                  [](scoped_refptr<network::SharedURLLoaderFactory> factory,
+                     ResponseHeadUpdateParams)
+                      -> network::mojom::URLLoaderFactory* {
+                    return factory.get();
+                  },
+                  std::move(fallback_callback_factory)));
           return;
         }
       }
