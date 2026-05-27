@@ -9,14 +9,18 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
+#include "v8/include/v8-cpp-heap-external.h"
+#include "v8/include/v8-forward.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-persistent-handle.h"
 
 namespace blink {
 
@@ -128,7 +132,7 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
             std::unique_ptr<v8::MicrotaskQueue> microtask_queue);
   ~EventLoop();
 
-  static void RunPendingMicrotask(void* data);
+  static void RunPendingMicrotask(v8::Local<v8::Data> data);
   static void RunEndOfCheckpointTasks(v8::Isolate* isolat, void* data);
 
   WeakPersistent<Delegate> delegate_;
@@ -139,6 +143,9 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
   Vector<base::OnceClosure> end_of_checkpoint_tasks_;
   std::unique_ptr<v8::MicrotaskQueue> microtask_queue_;
   HashSet<FrameOrWorkerScheduler*> schedulers_;
+  v8::Global<v8::CppHeapExternal> microtask_data_;
+
+  base::WeakPtrFactory<EventLoop> weak_ptr_factory_{this};
 };
 
 }  // namespace scheduler

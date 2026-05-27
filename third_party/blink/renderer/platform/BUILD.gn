@@ -467,6 +467,7 @@ component("platform") {
     "bindings/callback_interface_base.h",
     "bindings/callback_method_retriever.cc",
     "bindings/callback_method_retriever.h",
+    "bindings/cpp_heap_external_tag.h",
     "bindings/cross_thread_copier.h",
     "bindings/cross_thread_source_location.cc",
     "bindings/cross_thread_source_location.h",

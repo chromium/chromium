@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/scheduler/task_attribution_task_state.h"
 
+#include "third_party/blink/renderer/platform/bindings/cpp_heap_external_tag.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "v8/include/v8-cpp-heap-external.h"

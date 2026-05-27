@@ -61,6 +61,7 @@ specific_include_rules = {
     '+testing/libfuzzer/proto/lpm_interface.h'
   ],
   "event_loop.cc": [
+    "+third_party/blink/renderer/platform/bindings/cpp_heap_external_tag.h",
     "+third_party/blink/renderer/platform/bindings/script_forbidden_scope.h",
   ]
 }

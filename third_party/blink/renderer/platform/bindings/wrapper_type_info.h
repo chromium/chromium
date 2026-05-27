@@ -36,6 +36,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "gin/public/wrapper_info.h"
+#include "third_party/blink/renderer/platform/bindings/cpp_heap_external_tag.h"
 #include "third_party/blink/renderer/platform/bindings/v8_interface_bridge_base.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -105,6 +106,9 @@ static_assert(static_cast<uint16_t>(kLastScriptWrappableTag) <
               "disjoint. If they overlap, then the gin:Wrappable range should "
               "be moved backwards");
 
+static_assert(static_cast<std::underlying_type_t<v8::CppHeapPointerTag>>(
+                  CppHeapExternalTag::kLastTag) < kScriptWrappableStartTag);
+
 constexpr v8::CppHeapPointerTagRange kScriptWrappableTagRange(
     static_cast<v8::CppHeapPointerTag>(kScriptWrappableStartTag),
     kLastScriptWrappableTag);
@@ -112,16 +116,6 @@ constexpr v8::CppHeapPointerTagRange kScriptWrappableTagRange(
 constexpr v8::CppHeapPointerTagRange kScriptWrappableOrGinWrappableTagRange(
     static_cast<v8::CppHeapPointerTag>(kScriptWrappableStartTag),
     static_cast<v8::CppHeapPointerTag>(gin::kLastPointerTag));
-
-enum class CppHeapExternalTag : std::underlying_type_t<v8::CppHeapPointerTag> {
-  kFirst = 1,
-  kTaskAttributionTaskStateTag = kFirst,
-
-  kLastTag = kTaskAttributionTaskStateTag
-};
-
-static_assert(static_cast<std::underlying_type_t<v8::CppHeapPointerTag>>(
-                  CppHeapExternalTag::kLastTag) < kScriptWrappableStartTag);
 
 // This struct provides a way to store a bunch of information that is helpful
 // when unwrapping v8 objects. Each v8 bindings class has exactly one static
