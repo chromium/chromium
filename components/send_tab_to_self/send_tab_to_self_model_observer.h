@@ -42,6 +42,9 @@ class SendTabToSelfModelObserver : public base::CheckedObserver {
   // sync server.
   virtual void OnEntriesOpenedRemotely(
       const std::vector<const SendTabToSelfEntry*>& opened_entries) {}
+  // Invoked when the model becomes operational and ready to sync (initial data
+  // is loaded).
+  virtual void OnModelReady() {}
 };
 
 }  // namespace send_tab_to_self

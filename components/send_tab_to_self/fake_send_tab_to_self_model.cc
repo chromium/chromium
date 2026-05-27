@@ -127,6 +127,11 @@ FakeSendTabToSelfModel::GetTargetDeviceInfoSortedList() {
 
 void FakeSendTabToSelfModel::SetIsReady(bool is_ready) {
   is_ready_ = is_ready;
+  if (is_ready_) {
+    for (auto& observer : observers_) {
+      observer.OnModelReady();
+    }
+  }
 }
 
 void FakeSendTabToSelfModel::SetHasValidTargetDevice(

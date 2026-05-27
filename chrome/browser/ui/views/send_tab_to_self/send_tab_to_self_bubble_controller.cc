@@ -14,6 +14,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/send_tab_to_self_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -45,6 +46,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/service/sync_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -75,12 +77,33 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
   }
 
   show_back_button_ = show_back_button;
+
+  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+      GetEntryPointDisplayReason();
+
+  if (!reason) {
+    // If the user has just signed in, the model might not be ready yet.
+    // Defer the bubble display until the model is fully loaded and ready.
+    if (ShouldStartWaitingForModel()) {
+      StartWaitingForModel();
+    }
+    return;
+  }
+
+  // If we were waiting for the model but it is now ready, clear the waiting
+  // state.
+  if (model_observation_.IsObserving()) {
+    model_observation_.Reset();
+  }
+
+  ShowBubbleImpl(*reason);
+}
+
+void SendTabToSelfBubbleController::ShowBubbleImpl(
+    EntryPointDisplayReason reason) {
   BrowserWindowInterface* browser =
       GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
           &GetWebContents());
-  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
-      GetEntryPointDisplayReason();
-  CHECK(reason);
 
   base::WeakPtr<BrowserWindowInterface> browser_weak_ptr;
   views::BubbleAnchor anchor;
@@ -94,7 +117,7 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
       pinned_toolbar_actions->GetBubbleAnchorAsync(
           kActionSendTabToSelf,
           base::BindOnce(&SendTabToSelfBubbleController::ShowBubbleWithAnchor,
-                         weak_ptr_factory_.GetWeakPtr(), *reason,
+                         weak_ptr_factory_.GetWeakPtr(), reason,
                          browser_weak_ptr));
       return;
     }
@@ -102,7 +125,7 @@ void SendTabToSelfBubbleController::ShowBubble(bool show_back_button) {
         kActionSendTabToSelf);
   }
 
-  ShowBubbleWithAnchor(*reason, browser_weak_ptr, std::move(anchor));
+  ShowBubbleWithAnchor(reason, browser_weak_ptr, std::move(anchor));
 }
 
 void SendTabToSelfBubbleController::ShowBubbleWithAnchor(
@@ -194,6 +217,13 @@ AccountInfo SendTabToSelfBubbleController::GetSharingAccountInfo() {
 
 Profile* SendTabToSelfBubbleController::GetProfile() {
   return Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
+}
+
+send_tab_to_self::SendTabToSelfModel*
+SendTabToSelfBubbleController::GetModel() {
+  send_tab_to_self::SendTabToSelfSyncService* service =
+      SendTabToSelfSyncServiceFactory::GetForProfile(GetProfile());
+  return service ? service->GetSendTabToSelfModel() : nullptr;
 }
 
 std::optional<send_tab_to_self::EntryPointDisplayReason>
@@ -300,6 +330,40 @@ void SendTabToSelfBubbleController::SetSelectorGenerationTimeoutForTesting(
     base::TimeDelta timeout) {
   SendTabToSelfPageHandler::GetOrCreateForWebContents(&GetWebContents())
       ->SetSelectorGenerationTimeoutForTesting(timeout);
+}
+
+void SendTabToSelfBubbleController::OnEntriesAddedRemotely(
+    const std::vector<const SendTabToSelfEntry*>& new_entries) {}
+
+void SendTabToSelfBubbleController::OnEntriesRemovedRemotely(
+    const std::vector<std::string>& guids) {}
+
+void SendTabToSelfBubbleController::OnModelReady() {
+  model_observation_.Reset();
+
+  std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
+      GetEntryPointDisplayReason();
+  // If the user signed out or sync has been disabled during the asynchronous
+  // wait, the model will no longer be in a state where we should show the
+  // bubble.
+  if (!reason.has_value() ||
+      reason.value() == EntryPointDisplayReason::kOfferSignIn) {
+    return;
+  }
+
+  ShowBubbleImpl(*reason);
+}
+
+bool SendTabToSelfBubbleController::ShouldStartWaitingForModel() {
+  send_tab_to_self::SendTabToSelfModel* model = GetModel();
+  return model && !model->IsReady() && !model_observation_.IsObserving();
+}
+
+void SendTabToSelfBubbleController::StartWaitingForModel() {
+  send_tab_to_self::SendTabToSelfModel* model = GetModel();
+  if (model && !model_observation_.IsObserving()) {
+    model_observation_.Observe(model);
+  }
 }
 
 // Static:

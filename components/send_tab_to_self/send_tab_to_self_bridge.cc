@@ -728,6 +728,10 @@ void SendTabToSelfBridge::OnReadAllMetadata(
   }
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 
+  for (auto& observer : observers_) {
+    observer.OnModelReady();
+  }
+
   DoGarbageCollection();
 }
 
