@@ -95,19 +95,6 @@ VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kAdpf);
 VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kADPFSocManufacturerAllowlist;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFRendererMain);
-VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableAdpfEfficiencyMode);
-enum class AdpfEfficiencyMode {
-  // Never opts ADPF sessions into efficient scheduling (default).
-  kNever,
-  // Attempt to shift ADPF sessions between setPreferPowerEfficiency states,
-  // based on the current context.
-  kAdaptive,
-  // Always opt ADPF sessions into efficient scheduling whenever possible -
-  // costs considerable performance.
-  kAlwaysEfficient
-};
-extern const VIZ_COMMON_EXPORT base::FeatureParam<AdpfEfficiencyMode>
-    kAdpfEfficiencyModeParam;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFSeparateRendererMainSession);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFWorkloadIncreaseOnPageLoad);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFWorkloadReset);

@@ -585,13 +585,6 @@ inline constexpr char kDevToolsProjectSettingsDescription[] =
     "form of a `com.chrome.devtools.json` file from a well-known URI "
     "on local debugging targets.";
 
-inline constexpr char kEnableAdpfEfficiencyModeName[] =
-    "Android Power Efficiency Mode";
-inline constexpr char kEnableAdpfEfficiencyModeDescription[] =
-    "Enables experimental power management on Pixel devices. When active, "
-    "Chrome instructs the system to prioritize battery life over maximum "
-    "performance. Responsiveness may be affected.";
-
 inline constexpr char kEnableSeamlessSigninName[] = "Enable Seamless Sign-in";
 inline constexpr char kEnableSeamlessSigninDescription[] =
     "Enables the Seamless Sign-in flow that signs in the user without showing "

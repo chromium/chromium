@@ -146,11 +146,6 @@ struct StructTraits<viz::mojom::CompositorFrameMetadataDataView,
     return metadata.is_mobile_optimized;
   }
 
-  static bool prefer_efficient_scheduling(
-      const viz::CompositorFrameMetadata& metadata) {
-    return metadata.prefer_efficient_scheduling;
-  }
-
   static const std::unique_ptr<gfx::DelegatedInkMetadata>&
   delegated_ink_metadata(const viz::CompositorFrameMetadata& metadata) {
     return metadata.delegated_ink_metadata;

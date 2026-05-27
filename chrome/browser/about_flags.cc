@@ -658,16 +658,6 @@ const FeatureEntry::FeatureVariation kCCTAdaptiveButtonVariations[] = {
     {"CPA+OIB+RMFallbackMenu", kCCTAdaptiveButton_CPA_RMFallbackMenu, nullptr},
 };
 
-const FeatureEntry::Choice kAdpfEfficiencyChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {"High Efficiency", switches::kEnableFeatures,
-     "EnableAdpfEfficiencyMode:mode/always_efficient"},
-    {"Adaptive", switches::kEnableFeatures,
-     "EnableAdpfEfficiencyMode:mode/adaptive,UsePerformanceHelper:helper_mode/"
-     "compositor"},
-    {"High Performance", switches::kEnableFeatures,
-     "EnableAdpfEfficiencyMode:mode/never"}};
-
 const FeatureEntry::FeatureParam kCCTAdaptiveButtonTestSwitchHide[] = {
     {"hide-button", "true"},
     {"always-animate", "false"}};
@@ -12195,11 +12185,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"persist-across-reboots", flag_descriptions::kPersistAcrossRebootsName,
      flag_descriptions::kPersistAcrossRebootsDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kPersistAcrossReboots)},
-
-    {"android-adpf-efficiency-mode",
-     flag_descriptions::kEnableAdpfEfficiencyModeName,
-     flag_descriptions::kEnableAdpfEfficiencyModeDescription, kOsAndroid,
-     MULTI_VALUE_TYPE(kAdpfEfficiencyChoices)},
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

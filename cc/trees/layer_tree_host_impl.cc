@@ -2465,7 +2465,6 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   }
 
   metadata.is_software = GetDrawMode() != DrawMode::DRAW_MODE_HARDWARE;
-  metadata.prefer_efficient_scheduling = prefer_efficient_scheduling_;
 
   return metadata;
 }

@@ -821,24 +821,20 @@
             ]
         }
     ],
-    "AndroidAdaptiveAdpfEfficiencyMode": [
+    "AndroidAdaptiveAffinity": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Compositor",
+                    "name": "AdaptiveAffinity",
                     "params": {
-                        "helper_mode": "compositor",
+                        "helper_mode": "affinity",
                         "mode": "adaptive"
                     },
                     "enable_features": [
-                        "EnableAdpfEfficiencyMode",
                         "UsePerformanceHelper"
-                    ],
-                    "disable_features": [
-                        "RestrictBigCoreThreadAffinity"
                     ]
                 }
             ]

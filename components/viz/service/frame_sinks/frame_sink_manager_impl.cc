@@ -1062,16 +1062,6 @@ void FrameSinkManagerImpl::DiscardPendingCopyOfOutputRequests(
   }
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void FrameSinkManagerImpl::SetPreferEfficientScheduling(
-    bool prefer_efficient_scheduling) const {
-  if (hint_session_factory_) {
-    hint_session_factory_->SetPreferPowerEfficientScheduling(
-        prefer_efficient_scheduling);
-  }
-}
-#endif
-
 void FrameSinkManagerImpl::OnCaptureStarted(const FrameSinkId& id) {
   if (captured_frame_sink_ids_.insert(id).second) {
     UpdateThrottling();

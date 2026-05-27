@@ -99,37 +99,7 @@ class PageSchedulerImpl;
 class WebRenderWidgetSchedulingState;
 class WidgetSchedulerImpl;
 
-#if BUILDFLAG(IS_ANDROID)
-PLATFORM_EXPORT BASE_DECLARE_FEATURE(kRestrictMainThreadBigCoreAffinity);
 
-// Must be created on the main thread, can be deleted from any thread.
-class PLATFORM_EXPORT ThreadAffinityBoost {
- public:
-  ThreadAffinityBoost();
-  ~ThreadAffinityBoost();
-  static void StopDelayed(std::unique_ptr<ThreadAffinityBoost> boost,
-                          base::TimeDelta delay);
-
-  using SetCanRunOnBigCoreFn =
-      base::RepeatingCallback<void(base::PlatformThreadId, bool)>;
-
-  static void SetTaskRunnerForTesting(base::TaskRunner* task_runner) {
-    task_runner_for_testing_ = task_runner;
-  }
-
-  static void SetCanRunOnBigCoreOverrideForTesting(SetCanRunOnBigCoreFn* cb) {
-    set_can_run_on_big_core_override_ = cb;
-  }
-
- private:
-  static base::Lock& lock();
-
-  const base::PlatformThreadId thread_id_;
-  static uint64_t depth_ GUARDED_BY(lock());
-  static base::TaskRunner* task_runner_for_testing_;
-  static SetCanRunOnBigCoreFn* set_can_run_on_big_core_override_;
-};
-#endif  // BUILDFLAG(IS_ANDROID)
 
 class PLATFORM_EXPORT MainThreadSchedulerImpl
     : public ThreadSchedulerBase,
@@ -675,7 +645,9 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       MainThreadTaskQueue*,
       const base::sequence_manager::TaskQueue::TaskTiming&);
 
+#if BUILDFLAG(IS_ANDROID)
   void ApplyPerformanceState(bool prefer_efficient_scheduling);
+#endif
 
   // Computes the priority for compositing based on the current use case.
   // Returns nullopt if the use case does not need to set the priority.
@@ -855,12 +827,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     // `WidgetScheduler`s that have not been shut down.
     HashSet<scoped_refptr<WidgetSchedulerImpl>> widget_schedulers;
     raw_ptr<base::MessagePump> message_pump;
-
-#if BUILDFLAG(IS_ANDROID)
-    // Used to change thread affinity when KRestrictMainThreadAffinity is
-    // enabled.
-    std::unique_ptr<ThreadAffinityBoost> affinity_boost = nullptr;
-#endif  // BUILDFLAG(IS_ANDROID)
 
     // Multiplier to apply to the message busy loop maximum duration
     float busy_loop_scale_factor = 0.f;

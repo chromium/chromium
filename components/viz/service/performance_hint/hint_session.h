@@ -52,8 +52,6 @@ class VIZ_SERVICE_EXPORT HintSession {
 
   virtual void NotifyWorkloadReset() = 0;
   virtual void NotifyWorkloadIncrease() = 0;
-  virtual void SetPreferPowerEfficientScheduling(
-      bool prefer_efficient_scheduling) = 0;
 };
 
 class VIZ_SERVICE_EXPORT HintSessionFactory {
@@ -84,9 +82,6 @@ class VIZ_SERVICE_EXPORT HintSessionFactory {
   virtual void WakeUp() = 0;
 
   virtual void NotifyWorkloadIncrease() = 0;
-
-  virtual void SetPreferPowerEfficientScheduling(
-      bool prefer_efficient_scheduling) = 0;
 
   // Returns the full list of threads for the given session type.
   // For animation (SessionType::kAnimation) sessions, this is a union of
