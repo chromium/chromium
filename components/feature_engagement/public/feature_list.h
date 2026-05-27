@@ -278,6 +278,8 @@ DEFINE_VARIATION_PARAM(kIPHiOSFeedSwipeAnimatedFeature,
                        "IPH_iOSFeedSwipeAnimatedFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSFeedSwipeStaticFeature,
                        "IPH_iOSFeedSwipeStaticFeature");
+DEFINE_VARIATION_PARAM(kIPHiOSBackendPromoFeature,
+                       "IPH_iOSBackendPromoFeature");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoAppStoreFeature, "IPH_iOSPromoAppStore");
 DEFINE_VARIATION_PARAM(kIPHiOSLensKeyboardFeature, "IPH_iOSLensKeyboard");
 DEFINE_VARIATION_PARAM(kIPHiOSPromoWhatsNewFeature, "IPH_iOSPromoWhatsNew");
@@ -750,6 +752,7 @@ inline constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHFollowWhileBrowsingFeature),
         VARIATION_ENTRY(kIPHHomeCustomizationMenuFeature),
         VARIATION_ENTRY(kIPHiOSAIHubNewBadge),
+        VARIATION_ENTRY(kIPHiOSBackendPromoFeature),
         VARIATION_ENTRY(kIPHiOSContextualPanelPriceInsightsFeature),
         VARIATION_ENTRY(kIPHiOSContextualPanelSampleModelFeature),
         VARIATION_ENTRY(kIPHiOSDefaultBrowserBannerPromoFeature),

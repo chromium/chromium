@@ -164,6 +164,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHHomeCustomizationMenuFeature,
     &kIPHiOSActiveDaysTrackingFeature,
     &kIPHiOSAIHubNewBadge,
+    &kIPHiOSBackendPromoFeature,
     &kIPHiOSContextualPanelPriceInsightsFeature,
     &kIPHiOSContextualPanelSampleModelFeature,
     &kIPHiOSDefaultBrowserBadgeEligibilityFeature,

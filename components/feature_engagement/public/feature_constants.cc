@@ -709,6 +709,9 @@ BASE_FEATURE(kIPHiOSDownloadAutoDeletionFeature,
 BASE_FEATURE(kIPHiOSLensKeyboardFeature,
              "IPH_iOSLensKeyboard",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHiOSBackendPromoFeature,
+             "IPH_iOSBackendPromoFeature",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHiOSPromoAppStoreFeature,
              "IPH_iOSPromoAppStore",
              base::FEATURE_ENABLED_BY_DEFAULT);
