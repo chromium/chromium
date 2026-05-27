@@ -384,12 +384,12 @@ public class SearchActivity extends AsyncInitializationActivity
                             @Override
                             public @Nullable AsyncViewStub getSuggestionsContainerStub() {
                                 return contentView.findViewById(
-                                        R.id.omnibox_results_container_stub);
+                                        R.id.search_activity_suggestions_container_stub);
                             }
 
                             @Override
                             public @IdRes int getSuggestionsContainerInflatedViewId() {
-                                return R.id.omnibox_results_container;
+                                return R.id.search_activity_suggestions_container;
                             }
                         },
                         mLocationBarUiOverrides,

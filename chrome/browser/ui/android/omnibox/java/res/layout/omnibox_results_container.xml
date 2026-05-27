@@ -6,7 +6,6 @@ found in the LICENSE file.
 -->
 <org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsContainer
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/omnibox_results_container"
     android:background="@android:color/transparent"
     android:visibility="gone"
     android:layout_width="match_parent"

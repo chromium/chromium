@@ -751,12 +751,12 @@ public abstract class ToolbarLayout extends FrameLayout
 
     @Override
     public @Nullable AsyncViewStub getSuggestionsContainerStub() {
-        return getRootView().findViewById(R.id.omnibox_results_container_stub);
+        return getRootView().findViewById(R.id.omnibox_suggestions_container_stub);
     }
 
     @Override
     public @IdRes int getSuggestionsContainerInflatedViewId() {
-        return R.id.omnibox_results_container;
+        return R.id.omnibox_suggestions_container;
     }
 
     /** Returns the {@link ToolbarTabController} for interacting with the current tab. */

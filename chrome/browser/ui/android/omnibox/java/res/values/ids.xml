@@ -8,7 +8,7 @@ found in the LICENSE file.
     <!-- Tags -->
     <item type="id" name="highlight_color"/>
     <item type="id" name="fusebox_view_holder_key"/>
-    <item type="id" name="omnibox_results_container_stub"/>
+    <item type="id" name="omnibox_suggestions_container_stub"/>
     <item type="id" name="omnibox_suggestions_dropdown"/>
     <item type="id" name="omnibox_actions_carousel"/>
     <item type="id" name="base_suggestion_view_metadata_key"/>
