@@ -57,12 +57,6 @@ message BlingPrototypingRequest {
   enum ModelEnum {
     MODEL_ENUM_UNSPECIFIED = 0;
 
-    MODEL_ENUM_EVERGREEN_GEMINI_V2 = 1;
-
-    MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL = 3;
-
-    MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL_MPP = 4;
-
     MODEL_ENUM_EVERGREEN_GEMINI_V3 = 5;
 
     MODEL_ENUM_EVERGREEN_GEMINI_NANO_V2_MULTI_MODAL = 6;
@@ -75,7 +69,7 @@ message BlingPrototypingRequest {
 
     MODEL_ENUM_EVERGREEN_GEMINI_V3P1_S = 10;
 
-    reserved 2;
+    reserved 1, 2, 3, 4;
   }
 
   reserved 1;
