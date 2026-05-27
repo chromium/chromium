@@ -63,6 +63,7 @@ export class SignInCelebrationAppElement extends
   private darkModeListener_: (e: MediaQueryListEvent) => void;
   private matchMedia_: MediaQueryList;
   private listenerIds_: number[] = [];
+  private isAnimationFinished_: boolean = false;
 
   constructor() {
     super();
@@ -84,6 +85,10 @@ export class SignInCelebrationAppElement extends
 
     this.browserProxy_.handler.getSignInCelebrationUserInfo().then(
         res => this.updateUserInfo_(res.userInfo));
+
+    if (this.disableAnimations_) {
+      this.onAvatarAnimationCrLottieCompleted_();
+    }
   }
 
   override disconnectedCallback() {
@@ -99,6 +104,14 @@ export class SignInCelebrationAppElement extends
     return this.isDarkMode_ ?
         'animations/avatar_sign_in_celebration_dark.json' :
         'animations/avatar_sign_in_celebration.json';
+  }
+
+  protected onAvatarAnimationCrLottieCompleted_() {
+    if (this.isAnimationFinished_) {
+      return;
+    }
+    this.isAnimationFinished_ = true;
+    this.browserProxy_.handler.signInCelebrationFinished();
   }
 
   private updateUserInfo_(userInfo: SignInCelebrationUserInfo) {

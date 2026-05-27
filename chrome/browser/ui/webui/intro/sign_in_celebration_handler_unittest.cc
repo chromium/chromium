@@ -10,6 +10,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/webui/intro/sign_in_celebration.mojom.h"
@@ -62,7 +63,8 @@ class SignInCelebrationHandlerTest : public testing::Test {
 
     handler_ = std::make_unique<SignInCelebrationHandler>(
         identity_env().identity_manager(), mock_page_.BindAndGetRemote(),
-        handler_remote_.BindNewPipeAndPassReceiver());
+        handler_remote_.BindNewPipeAndPassReceiver(),
+        mock_celebration_finished_callback_.Get());
   }
 
   signin::IdentityTestEnvironment& identity_env() {
@@ -70,6 +72,9 @@ class SignInCelebrationHandlerTest : public testing::Test {
   }
   MockPage& mock_page() { return mock_page_; }
   SignInCelebrationHandler& handler() { return CHECK_DEREF(handler_); }
+  base::MockOnceClosure& mock_celebration_finished_callback() {
+    return mock_celebration_finished_callback_;
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -77,6 +82,7 @@ class SignInCelebrationHandlerTest : public testing::Test {
   testing::StrictMock<MockPage> mock_page_;
   mojo::Remote<intro::mojom::PageHandler> handler_remote_;
   std::unique_ptr<SignInCelebrationHandler> handler_;
+  base::MockOnceClosure mock_celebration_finished_callback_;
 };
 
 TEST_F(SignInCelebrationHandlerTest, ReturnsUserInfo) {
@@ -197,6 +203,18 @@ TEST_F(SignInCelebrationHandlerTest, ReturnsAvatarUrl) {
     EXPECT_TRUE(user_info->avatar_url.is_valid());
     EXPECT_TRUE(user_info->avatar_url.SchemeIs(url::kDataScheme));
   }
+}
+
+TEST_F(SignInCelebrationHandlerTest, SignInCelebrationFinished) {
+  base::test::TestFuture<void> celebration_finished_future;
+
+  EXPECT_CALL(mock_celebration_finished_callback(), Run())
+      .WillOnce(base::test::RunOnceClosure(
+          celebration_finished_future.GetCallback()));
+
+  handler().SignInCelebrationFinished();
+
+  EXPECT_TRUE(celebration_finished_future.Wait());
 }
 
 }  // namespace

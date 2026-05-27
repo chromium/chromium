@@ -66,6 +66,10 @@ class MockHistorySyncOptinHelperDelegate
               (signin::SigninChoiceCallback),
               (override));
   MOCK_METHOD(void, FinishFlowWithoutHistorySyncOptin, (), (override));
+  MOCK_METHOD(void,
+              ShowSignInCelebration,
+              (base::OnceClosure celebration_finished),
+              (override));
 };
 
 class MockHistorySyncOptinService : public HistorySyncOptinService {

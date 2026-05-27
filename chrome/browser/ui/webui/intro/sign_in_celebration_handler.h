@@ -20,7 +20,8 @@ class SignInCelebrationHandler : public intro::mojom::PageHandler,
   SignInCelebrationHandler(
       signin::IdentityManager* identity_manager,
       mojo::PendingRemote<intro::mojom::Page> page,
-      mojo::PendingReceiver<intro::mojom::PageHandler> receiver);
+      mojo::PendingReceiver<intro::mojom::PageHandler> receiver,
+      base::OnceClosure celebration_finished_callback);
 
   SignInCelebrationHandler(const SignInCelebrationHandler&) = delete;
   SignInCelebrationHandler& operator=(
@@ -31,6 +32,7 @@ class SignInCelebrationHandler : public intro::mojom::PageHandler,
   // intro::mojom::PageHandler:
   void GetSignInCelebrationUserInfo(
       GetSignInCelebrationUserInfoCallback callback) override;
+  void SignInCelebrationFinished() override;
 
   // signin::IdentityManager::Observer:
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
@@ -49,6 +51,8 @@ class SignInCelebrationHandler : public intro::mojom::PageHandler,
 
   mojo::Receiver<intro::mojom::PageHandler> receiver_;
   mojo::Remote<intro::mojom::Page> page_;
+
+  base::OnceClosure celebration_finished_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_INTRO_SIGN_IN_CELEBRATION_HANDLER_H_

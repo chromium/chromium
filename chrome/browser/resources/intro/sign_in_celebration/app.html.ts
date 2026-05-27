@@ -12,6 +12,7 @@ export function getHtml(this: SignInCelebrationAppElement) {
 <div id="headerContainer">
   <cr-lottie id="avatarAnimation"
       animation-url="${this.getAnimationUrl_()}"
+      @cr-lottie-completed="${this.onAvatarAnimationCrLottieCompleted_}"
       single-loop
       ?autoplay="${!this.disableAnimations_}">
   </cr-lottie>

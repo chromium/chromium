@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/intro/sign_in_celebration_handler.h"
 
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -16,10 +17,12 @@
 SignInCelebrationHandler::SignInCelebrationHandler(
     signin::IdentityManager* identity_manager,
     mojo::PendingRemote<intro::mojom::Page> page,
-    mojo::PendingReceiver<intro::mojom::PageHandler> receiver)
+    mojo::PendingReceiver<intro::mojom::PageHandler> receiver,
+    base::OnceClosure celebration_finished_callback)
     : identity_manager_(CHECK_DEREF(identity_manager)),
       receiver_(this, std::move(receiver)),
-      page_(std::move(page)) {
+      page_(std::move(page)),
+      celebration_finished_callback_(std::move(celebration_finished_callback)) {
   identity_manager_observation_.Observe(&identity_manager_.get());
 }
 
@@ -28,6 +31,11 @@ SignInCelebrationHandler::~SignInCelebrationHandler() = default;
 void SignInCelebrationHandler::GetSignInCelebrationUserInfo(
     GetSignInCelebrationUserInfoCallback callback) {
   std::move(callback).Run(GetUserInformationMojo());
+}
+
+void SignInCelebrationHandler::SignInCelebrationFinished() {
+  CHECK(celebration_finished_callback_);
+  std::move(celebration_finished_callback_).Run();
 }
 
 void SignInCelebrationHandler::OnExtendedAccountInfoUpdated(

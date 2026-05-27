@@ -177,6 +177,9 @@ class HistorySyncOptinHelper {
     // after the history sync optin screen (e.g. opening of the browser in the
     // profile picker flow).
     virtual void FinishFlowWithoutHistorySyncOptin() = 0;
+    // Displays the sign in celebration screen.
+    virtual void ShowSignInCelebration(
+        base::OnceClosure celebration_finished) = 0;
   };
 
   static std::unique_ptr<HistorySyncOptinHelper> Create(
@@ -239,6 +242,8 @@ class HistorySyncOptinHelper {
       HistorySyncSkipReason skip_reason);
 
   void AwaitSyncStartupAndShowHistorySyncScreen();
+
+  void MaybeShowSignInCelebration(signin::Tribool maybe_managed_account);
 
   // Accessors.
   Profile* profile() { return profile_.get(); }

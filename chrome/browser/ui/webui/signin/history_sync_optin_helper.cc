@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/enterprise/signin/profile_management_disclaimer_service_factory.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -30,6 +32,7 @@
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper_policy_fetch_tracker.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -614,6 +617,29 @@ void HistorySyncOptinHelper::ResumeShowHistorySyncOptinScreenFlow(
     }
   }
 
+  MaybeShowSignInCelebration(maybe_managed_account);
+}
+
+void HistorySyncOptinHelper::MaybeShowSignInCelebration(
+    signin::Tribool maybe_managed_account) {
+  if (maybe_managed_account != signin::Tribool::kFalse) {
+    AwaitSyncStartupAndShowHistorySyncScreen();
+    return;
+  }
+
+  if (access_point() == signin_metrics::AccessPoint::kForYouFre) {
+    const bool is_in_search_engine_choice_region =
+        CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                        GetForProfile(profile_))
+            .IsInSearchEngineChoiceScreenRegion();
+    if (switches::IsFirstRunDesktopRevampEnabled(
+            is_in_search_engine_choice_region)) {
+      delegate_->ShowSignInCelebration(base::BindOnce(
+          &HistorySyncOptinHelper::AwaitSyncStartupAndShowHistorySyncScreen,
+          weak_ptr_factory_.GetWeakPtr()));
+      return;
+    }
+  }
   AwaitSyncStartupAndShowHistorySyncScreen();
 }
 

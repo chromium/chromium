@@ -7,13 +7,12 @@ import 'chrome://intro/sign_in_celebration/app.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://intro/sign_in_celebration.mojom-webui.js';
 import type {PageRemote} from 'chrome://intro/sign_in_celebration.mojom-webui.js';
 import {SignInCelebrationBrowserProxyImpl} from 'chrome://intro/sign_in_celebration/sign_in_celebration_browser_proxy.js';
-import type {SignInCelebrationAppElement} from 'chrome://intro/sign_in_celebration/app.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('SignInCelebrationTest', function() {
-  let testElement: SignInCelebrationAppElement;
   let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
   let page: PageRemote;
 
@@ -38,12 +37,18 @@ suite('SignInCelebrationTest', function() {
     handler.setPromiseResolveFor(
         'getSignInCelebrationUserInfo', {userInfo: userInfo});
 
-    testElement = document.createElement('sign-in-celebration-app');
-    document.body.appendChild(testElement);
-    return microtasksFinished();
+    loadTimeData.overrideValues({disableAnimations: false});
   });
 
+  async function createSignInCelebrationAppElement() {
+    const element = document.createElement('sign-in-celebration-app');
+    document.body.appendChild(element);
+    await microtasksFinished();
+    return element;
+  }
+
   test('SetsInitialUserInfo', async function() {
+    const testElement = await createSignInCelebrationAppElement();
     await handler.whenCalled('getSignInCelebrationUserInfo');
     await microtasksFinished();
 
@@ -52,6 +57,7 @@ suite('SignInCelebrationTest', function() {
   });
 
   test('UpdatesUserInfo', async function() {
+    const testElement = await createSignInCelebrationAppElement();
     const newUserInfo = {
       avatarUrl: 'chrome://theme/IDR_PROFILE_AVATAR_1',
       title: 'Welcome, Updated User',
@@ -63,5 +69,21 @@ suite('SignInCelebrationTest', function() {
 
     assertEquals(newUserInfo.title, testElement.$.title.textContent);
     assertEquals(newUserInfo.avatarUrl, testElement.$.avatar.src);
+  });
+
+  test('CallsCelebrationFinishedWhenAnimationsDisabled', async function() {
+    loadTimeData.overrideValues({disableAnimations: true});
+    await createSignInCelebrationAppElement();
+
+    await handler.whenCalled('signInCelebrationFinished');
+  });
+
+  test('CallsCelebrationFinishedWhenAnimationCompletes', async function() {
+    const testElement = await createSignInCelebrationAppElement();
+
+    testElement.$.avatarAnimation.dispatchEvent(
+        new CustomEvent('cr-lottie-completed'));
+
+    await handler.whenCalled('signInCelebrationFinished');
   });
 });

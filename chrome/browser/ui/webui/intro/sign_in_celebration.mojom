@@ -22,6 +22,9 @@ interface PageHandlerFactory {
 interface PageHandler {
   // Requests user information for the sign-in celebration page.
   GetSignInCelebrationUserInfo() => (SignInCelebrationUserInfo user_info);
+
+  // Is called when the sign-in celebration page animation finishes.
+  SignInCelebrationFinished();
 };
 
 // WebUI-side handler for requests from browser.

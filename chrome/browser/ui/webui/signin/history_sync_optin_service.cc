@@ -61,6 +61,13 @@ void HistorySyncOptinServiceDefaultDelegate::ShowAccountManagementScreen(
   NOTREACHED();
 }
 
+void HistorySyncOptinServiceDefaultDelegate::ShowSignInCelebration(
+    base::OnceClosure celebration_finished) {
+  // The celebration screen is only available for the FRE flow, which does
+  // not use this delegate.
+  NOTREACHED();
+}
+
 void HistorySyncOptinServiceDefaultDelegate::
     FinishFlowWithoutHistorySyncOptin() {}
 

@@ -96,6 +96,18 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   // switch screen. It uses the system profile for showing the switch screen.
   void SwitchToProfileSwitch(const base::FilePath& profile_path);
 
+  // HistorySyncOptinHelper::Delegate implementation:
+  void ShowHistorySyncOptinScreen(
+      Profile*,
+      HistorySyncOptinHelper::FlowCompletedCallback
+          history_optin_completed_callback) override;
+  void ShowAccountManagementScreen(
+      signin::SigninChoiceCallback on_account_management_screen_closed)
+      override;
+  void FinishFlowWithoutHistorySyncOptin() override;
+  void ShowSignInCelebration(
+      base::OnceClosure celebration_finished) override;
+
   base::WeakPtr<ProfilePickerPostSignInAdapter> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -129,15 +141,7 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   bool HandleKeyboardEvent(content::WebContents* source,
                            const input::NativeWebKeyboardEvent& event) override;
 
-  // HistorySyncOptinHelper::Delegate implementation:
-  void ShowHistorySyncOptinScreen(
-      Profile*,
-      HistorySyncOptinHelper::FlowCompletedCallback
-          history_optin_completed_callback) override;
-  void ShowAccountManagementScreen(
-      signin::SigninChoiceCallback on_account_management_screen_closed)
-      override;
-  void FinishFlowWithoutHistorySyncOptin() override;
+
 
   // Callbacks that finalize initialization of WebUI pages.
   void SwitchToSyncConfirmationFinished();
@@ -145,6 +149,7 @@ class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate,
   void SwitchToManagedUserProfileNoticeFinished(
       ManagedUserProfileNoticeUI::ScreenType type,
       signin::SigninChoiceCallback process_user_choice_callback);
+  void SwitchToSignInCelebrationFinished(base::OnceClosure celebration_finished);
 
   // Returns whether the flow is initialized (i.e. whether `Init()` has been
   // called).
