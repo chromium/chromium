@@ -311,7 +311,7 @@ void OnListFamilyMembersResponse(
   }
 
   if (IsAssistantContainerEnabled()) {
-    UIViewController* baseViewController = IsAssistantSidePanelEnabled()
+    UIViewController* baseViewController = IsUseSceneViewControllerEnabled()
                                                ? _viewController
                                                : self.activeViewController;
     _assistantContainerCoordinator = [[AssistantContainerCoordinator alloc]
