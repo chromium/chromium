@@ -43,5 +43,6 @@ found in the LICENSE file.
       android:id="@+id/menu_item_end_icon"
       style="@style/ListMenuItemIconStyle"
       android:visibility="gone"
+      android:duplicateParentState="true"
       android:importantForAccessibility="no" />
 </LinearLayout>

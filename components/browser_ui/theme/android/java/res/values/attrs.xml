@@ -22,4 +22,7 @@ found in the LICENSE file.
 
   <attr name="closeButtonWidth" format="dimension" />
   <attr name="closeButtonHeight" format="dimension" />
+
+  <attr name="glicTaskMenuEndIconWidth" format="dimension" />
+  <attr name="glicTaskMenuMaxWidth" format="dimension" />
 </resources>

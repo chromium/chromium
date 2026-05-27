@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_hovered="true" android:drawable="@drawable/glic_menu_move_item_icon" />
+    <item android:state_focused="true" android:drawable="@drawable/glic_menu_move_item_icon" />
+    <item android:state_pressed="true" android:drawable="@drawable/glic_menu_move_item_icon" />
+    <item android:drawable="@drawable/glic_menu_dot" />
+</selector>

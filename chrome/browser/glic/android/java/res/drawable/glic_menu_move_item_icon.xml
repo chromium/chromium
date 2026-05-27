@@ -15,17 +15,12 @@ found in the LICENSE file.
         </shape>
     </item>
     <!-- LINT.IfChange -->
-    <!-- Small dot centered vertically, pushed to the right.
-         Left margin 23dp = 16dp (offset) + 7dp (margin). -->
+    <!-- Align the 24dp move icon's horizontal center precisely with the center of
+         the dirty dot in glic_menu_dot.xml (which sits at 28dp from the start).
+         Start margin 16dp = 28dp (center of dot) - 12dp (half icon width). -->
     <item
-        android:left="23dp"
-        android:top="7dp"
-        android:right="7dp"
-        android:bottom="7dp">
-        <shape android:shape="oval">
-            <solid android:color="@macro/menu_button_dot_primary" />
-            <size android:width="10dp" android:height="10dp" />
-        </shape>
-    </item>
+        android:drawable="@drawable/ic_move_item_24dp"
+        android:start="16dp"
+        android:end="0dp" />
     <!-- LINT.ThenChange(//chrome/browser/glic/android/java/res/values/dimens.xml) -->
 </layer-list>

@@ -5,11 +5,13 @@
 package org.chromium.chrome.browser.glic;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.widget.PopupWindow.OnDismissListener;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.annotations.NullMarked;
@@ -27,6 +29,7 @@ import org.chromium.ui.listmenu.ListMenu;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
@@ -135,12 +138,15 @@ public class GlicTaskMenuCoordinator {
         // Add gap to the right of the menu so it is not at the right edge of the screen.
         int endOffsetPx =
                 mContext.getResources().getDimensionPixelSize(R.dimen.glic_task_menu_end_offset);
-        int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
-        int widthPx = listMenu.getMaxItemWidth() + lateralPadding;
+        int maxWidthPx = AttrUtils.getDimensionPixelSize(mContext, R.attr.glicTaskMenuMaxWidth);
+        int widthPx;
 
-        int maxWidthPx =
-                mContext.getResources().getDimensionPixelSize(R.dimen.glic_task_menu_max_width);
-        widthPx = Math.min(widthPx, maxWidthPx);
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
+            widthPx = maxWidthPx;
+        } else {
+            int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
+            widthPx = Math.min(listMenu.getMaxItemWidth() + lateralPadding, maxWidthPx);
+        }
 
         mMenuWindow =
                 new AnchoredPopupWindow.Builder(
@@ -172,7 +178,7 @@ public class GlicTaskMenuCoordinator {
     ModelList buildModelList(List<ActorTask> tasks) {
         ModelList modelList = new ModelList();
         int endIconWidthPx =
-                mContext.getResources().getDimensionPixelSize(R.dimen.glic_menu_dot_width);
+                AttrUtils.getDimensionPixelSize(mContext, R.attr.glicTaskMenuEndIconWidth);
 
         // TODO(crbug.com/498721993): Listen to the task and update menu item when needed.
         for (ActorTask task : tasks) {
@@ -188,11 +194,12 @@ public class GlicTaskMenuCoordinator {
                                         dismiss();
                                     });
 
-            if (GlicButtonStateController.mapTaskStateToButtonState(task.getState())
-                    == GlicButtonStateController.ButtonState.NEEDS_REVIEW) {
-                builder.withStartIconRes(R.drawable.ic_hourglass_empty_24dp)
-                        .withEndIconRes(R.drawable.glic_menu_dot)
-                        .withEndIconWidth(endIconWidthPx);
+            boolean needsReview =
+                    GlicButtonStateController.mapTaskStateToButtonState(task.getState())
+                            == GlicButtonStateController.ButtonState.NEEDS_REVIEW;
+
+            if (needsReview) {
+                builder.withStartIconRes(R.drawable.ic_hourglass_empty_24dp);
             } else {
                 builder.withStartIconRes(R.drawable.ic_arrow_selector_spark_24dp);
             }
@@ -200,6 +207,9 @@ public class GlicTaskMenuCoordinator {
             if (AndroidSidePanelEnabledFn.isEnabled()) {
                 builder.withSubtitle(getTaskSubtitle(mContext, task));
             }
+
+            int endIconRes = getEndIconRes(needsReview, AndroidSidePanelEnabledFn.isEnabled());
+            builder.withEndIconWidth(endIconWidthPx).withEndIconRes(endIconRes);
 
             modelList.add(builder.build());
         }
@@ -266,6 +276,16 @@ public class GlicTaskMenuCoordinator {
                 }
             }
         }
+    }
+
+    @DrawableRes
+    private static int getEndIconRes(boolean needsReview, boolean sidePanelEnabled) {
+        if (sidePanelEnabled) {
+            return needsReview
+                    ? R.drawable.glic_menu_end_icon_needs_review
+                    : R.drawable.glic_menu_end_icon_standard;
+        }
+        return needsReview ? R.drawable.glic_menu_dot : Resources.ID_NULL;
     }
 
     private boolean shouldShowAskGemini() {
