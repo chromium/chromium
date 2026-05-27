@@ -484,6 +484,7 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.BrowserUI.NoDisplay"
             android:taskAffinity=""
             android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
             android:exported="false">
             <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI"
                 android:value="true" />

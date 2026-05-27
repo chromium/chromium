@@ -102,6 +102,7 @@
         android:name="org.chromium.chrome.browser.LauncherShortcutActivity"
         android:excludeFromRecents="true"
         android:exported="false"
+        android:launchMode="singleInstance"
         android:taskAffinity=""
         android:theme="@style/Theme.BrowserUI.NoDisplay">
       <property android:name="android.window.PROPERTY_SUPPORTS_MULTI_INSTANCE_SYSTEM_UI" android:value="true"/>

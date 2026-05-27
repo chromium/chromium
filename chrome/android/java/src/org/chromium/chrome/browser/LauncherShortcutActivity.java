@@ -66,11 +66,29 @@ public class LauncherShortcutActivity extends Activity {
 
     private static @Nullable String sLabelForTesting;
 
+    private boolean mIsProcessingIntent;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mIsProcessingIntent = false;
+        handleIntent(getIntent());
+    }
 
-        Intent intent = getIntent();
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+
+        // Guard: Drop incoming duplicate intents if we are already handling a routing pipeline.
+        if (mIsProcessingIntent || isFinishing()) {
+            return;
+        }
+
         String intentAction = intent.getAction();
         assumeNonNull(intentAction);
 
@@ -82,6 +100,8 @@ public class LauncherShortcutActivity extends Activity {
             finish();
             return;
         }
+
+        mIsProcessingIntent = true;
 
         Intent newIntent = getChromeLauncherActivityIntent(this, intentAction);
         // Retain FLAG_ACTIVITY_MULTIPLE_TASK in the intent if present, to support multi-instance

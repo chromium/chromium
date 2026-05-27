@@ -380,4 +380,43 @@ public class LauncherShortcutTest {
     public void testDynamicShortcuts_LanguageChange() {
         testDynamicShortcuts_LanguageChangeInternal();
     }
+
+    @Test
+    @MediumTest
+    public void testLauncherShortcut_DuplicateIntentsDeduplicated() throws Exception {
+        int initialTabCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> mTabModelSelector.getTotalTabCount());
+
+        android.content.Context context = ContextUtils.getApplicationContext();
+        Intent intent1 = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_TAB);
+        intent1.setClass(context, LauncherShortcutActivity.class);
+        intent1.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Intent intent2 = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_TAB);
+        intent2.setClass(context, LauncherShortcutActivity.class);
+        intent2.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    context.startActivity(intent1);
+                    context.startActivity(intent2);
+                });
+
+        mTabAddedCallback.waitForCallback(0);
+
+        // Wait a little bit to make sure no extra tab is added by the duplicate intent.
+        try {
+            mTabAddedCallback.waitForCallback(1, 1, 2, java.util.concurrent.TimeUnit.SECONDS);
+            Assert.fail("A second tab was added when duplicate intents were sent back-to-back!");
+        } catch (TimeoutException e) {
+            // Expected: no second tab added.
+        }
+
+        int tabCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> mTabModelSelector.getTotalTabCount());
+        Assert.assertEquals(
+                "Incorrect total tab count. Duplicate intent was not deduplicated.",
+                initialTabCount + 1,
+                tabCount);
+    }
 }
