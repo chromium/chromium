@@ -339,6 +339,8 @@ TEST_F(MetricsLogTest, BasicRecord) {
 #elif BUILDFLAG(IS_ANDROID)
   system_profile->mutable_os()->set_build_fingerprint(
       base::android::android_info::android_build_fp());
+  system_profile->mutable_hardware()->set_manufacturer(
+      base::SysInfo::HardwareManufacturer());
   system_profile->set_app_package_name("test app");
 #elif BUILDFLAG(IS_IOS)
   system_profile->mutable_os()->set_build_number(

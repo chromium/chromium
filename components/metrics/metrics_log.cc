@@ -454,6 +454,8 @@ void MetricsLog::RecordCoreSystemProfile(
 
 #if BUILDFLAG(IS_ANDROID)
   os->set_build_fingerprint(base::android::android_info::android_build_fp());
+  system_profile->mutable_hardware()->set_manufacturer(
+      base::SysInfo::HardwareManufacturer());
   if (!package_name.empty() && package_name != "com.android.chrome") {
     system_profile->set_app_package_name(package_name);
   }
