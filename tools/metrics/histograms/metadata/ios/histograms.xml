@@ -5376,7 +5376,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PasswordManager.TrustedVaultNotification.Events"
-    enum="IOSTipsTrustedVaultNotificationEvents" expires_after="2026-06-01">
+    enum="IOSTipsTrustedVaultNotificationEvents" expires_after="2027-01-01">
   <owner>ylahodiuk@google.com</owner>
   <owner>rgod@google.com</owner>
   <summary>
