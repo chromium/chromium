@@ -74,7 +74,7 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationSuccess) {
   base::RunLoop run_loop;
   auto mock_service_controller =
       std::make_unique<MockOnDeviceTranslationServiceController>();
-  EXPECT_CALL(*mock_service_controller, CanTranslate("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CanTranslate("en-US", "es", _))
       .WillOnce(
           [](const std::string& source_lang, const std::string& target_lang,
              base::OnceCallback<void(
@@ -82,7 +82,7 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationSuccess) {
             std::move(callback).Run(
                 OnDeviceTranslationController::CanTranslateResult::kReadily);
           });
-  EXPECT_CALL(*mock_service_controller, CreateTranslator("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CreateTranslator("en-US", "es", _))
       .WillOnce([&](const std::string& source_lang,
                     const std::string& target_lang,
                     OnDeviceTranslationController::CreateTranslatorCallback
@@ -110,7 +110,7 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailure) {
   base::RunLoop run_loop;
   auto mock_service_controller =
       std::make_unique<MockOnDeviceTranslationServiceController>();
-  EXPECT_CALL(*mock_service_controller, CanTranslate("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CanTranslate("en-US", "es", _))
       .WillOnce(
           [](const std::string& source_lang, const std::string& target_lang,
              base::OnceCallback<void(
@@ -118,7 +118,7 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailure) {
             std::move(callback).Run(
                 OnDeviceTranslationController::CanTranslateResult::kReadily);
           });
-  EXPECT_CALL(*mock_service_controller, CreateTranslator("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CreateTranslator("en-US", "es", _))
       .WillOnce(
           [](const std::string& source_lang, const std::string& target_lang,
              OnDeviceTranslationController::CreateTranslatorCallback callback) {
@@ -141,7 +141,7 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailureOnCanTranslate) {
   base::RunLoop run_loop;
   auto mock_service_controller =
       std::make_unique<MockOnDeviceTranslationServiceController>();
-  EXPECT_CALL(*mock_service_controller, CanTranslate("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CanTranslate("en-US", "es", _))
       .WillOnce(
           [](const std::string& source_lang, const std::string& target_lang,
              base::OnceCallback<void(
@@ -149,7 +149,7 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailureOnCanTranslate) {
             std::move(callback).Run(OnDeviceTranslationController::
                                         CanTranslateResult::kNoServiceCrashed);
           });
-  EXPECT_CALL(*mock_service_controller, CreateTranslator("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CreateTranslator("en-US", "es", _))
       .Times(0);
   std::unique_ptr<TranslationDispatcherOnDevice> dispatcher =
       CreateTranslationDispatcher(std::move(mock_service_controller));
@@ -160,6 +160,87 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailureOnCanTranslate) {
       std::move(on_translated_cb).Then(run_loop.QuitClosure()));
   run_loop.Run();
   EXPECT_TRUE(translated_text_.empty());
+}
+
+TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationChineseHantPreserved) {
+  base::RunLoop run_loop;
+  auto mock_service_controller =
+      std::make_unique<MockOnDeviceTranslationServiceController>();
+  auto* mock_service_controller_ptr = mock_service_controller.get();
+
+  EXPECT_CALL(*mock_service_controller_ptr, CanTranslate("zh-Hant", "es", _))
+      .WillOnce(
+          [](const std::string& source_lang, const std::string& target_lang,
+             base::OnceCallback<void(
+                 OnDeviceTranslationController::CanTranslateResult)> callback) {
+            std::move(callback).Run(
+                OnDeviceTranslationController::CanTranslateResult::kReadily);
+          });
+  EXPECT_CALL(*mock_service_controller_ptr,
+              CreateTranslator("zh-Hant", "es", _))
+      .WillOnce([&](const std::string& source_lang,
+                    const std::string& target_lang,
+                    OnDeviceTranslationController::CreateTranslatorCallback
+                        callback) {
+        mojo::PendingRemote<on_device_translation::mojom::OnDeviceTranslator>
+            remote;
+        auto receiver = remote.InitWithNewPipeAndPassReceiver();
+        fake_translator_ =
+            std::make_unique<on_device_translation::FakeTranslator>(
+                std::move(receiver));
+        std::move(callback).Run(std::move(remote));
+      });
+
+  std::unique_ptr<TranslationDispatcherOnDevice> dispatcher =
+      CreateTranslationDispatcher(std::move(mock_service_controller));
+
+  TranslateEventCallback on_translated_cb = base::BindOnce(
+      &TranslationDispatcherOnDeviceTest::OnTranslated, base::Unretained(this));
+  dispatcher->GetTranslation(
+      "Hello world", "zh-Hant", "es",
+      std::move(on_translated_cb).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(translated_text_, "Hola mundo");
+}
+
+TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationChineseTwPreserved) {
+  base::RunLoop run_loop;
+  auto mock_service_controller =
+      std::make_unique<MockOnDeviceTranslationServiceController>();
+  auto* mock_service_controller_ptr = mock_service_controller.get();
+
+  EXPECT_CALL(*mock_service_controller_ptr, CanTranslate("zh-TW", "es", _))
+      .WillOnce(
+          [](const std::string& source_lang, const std::string& target_lang,
+             base::OnceCallback<void(
+                 OnDeviceTranslationController::CanTranslateResult)> callback) {
+            std::move(callback).Run(
+                OnDeviceTranslationController::CanTranslateResult::kReadily);
+          });
+  EXPECT_CALL(*mock_service_controller_ptr, CreateTranslator("zh-TW", "es", _))
+      .WillOnce([&](const std::string& source_lang,
+                    const std::string& target_lang,
+                    OnDeviceTranslationController::CreateTranslatorCallback
+                        callback) {
+        mojo::PendingRemote<on_device_translation::mojom::OnDeviceTranslator>
+            remote;
+        auto receiver = remote.InitWithNewPipeAndPassReceiver();
+        fake_translator_ =
+            std::make_unique<on_device_translation::FakeTranslator>(
+                std::move(receiver));
+        std::move(callback).Run(std::move(remote));
+      });
+
+  std::unique_ptr<TranslationDispatcherOnDevice> dispatcher =
+      CreateTranslationDispatcher(std::move(mock_service_controller));
+
+  TranslateEventCallback on_translated_cb = base::BindOnce(
+      &TranslationDispatcherOnDeviceTest::OnTranslated, base::Unretained(this));
+  dispatcher->GetTranslation(
+      "Hello world", "zh-TW", "es",
+      std::move(on_translated_cb).Then(run_loop.QuitClosure()));
+  run_loop.Run();
+  EXPECT_EQ(translated_text_, "Hola mundo");
 }
 
 }  // namespace
