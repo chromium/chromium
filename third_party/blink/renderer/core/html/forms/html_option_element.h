@@ -162,6 +162,11 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   bool IsFiltered() const { return is_filtered_; }
   void SetFiltered(bool);
 
+  // Returns true if this option is currently scrolled into view in its
+  // scrollable listbox container, which is the popover for dropdown select
+  // elements or the select element itself for listboxes.
+  bool IsVisibleInViewport();
+
   // This constant is a distance in pixels (post zoom, page-relative). It is
   // used in multiple cases (select popups, submenu popups) where we support
   // mousedown -> popup opens -> drag into popup -> mouseup on item in popup
@@ -207,7 +212,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void RecalcOwnerSelectElement() const;
 
-  bool IsVisibleInViewport();
   bool NeedsMutationObserver();
 
   Member<OptionTextObserver> text_observer_;

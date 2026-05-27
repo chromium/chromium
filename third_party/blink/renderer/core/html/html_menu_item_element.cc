@@ -438,67 +438,12 @@ void HTMLMenuItemElement::HandleMenuKeyboardEvents(Event& event) {
         return;
       }
     } else if (key == keywords::kPageUp) {
-      // TODO(crbug.com/422940462): Deduplicate this PageUp/PageDown handling
-      // code with the same code in HTMLOptionElement by moving to a shared
-      // class.
-      if (!IsVisibleInViewport()) {
-        // If the menuitem isn't visible at all right now, *only* scroll it into
-        // view.
-        scrollIntoViewIfNeeded(/*center_if_needed=*/false);
-      } else {
-        auto* previous_menuitem = menuitems.PreviousFocusableElement(
-            *this, /*inclusive=*/false, /*wrap=*/false);
-        if (previous_menuitem && !previous_menuitem->IsVisibleInViewport()) {
-          // The previous menuitem isn't visible, which means we were at the
-          // very top. Scroll the current menuitem to the bottom, and then focus
-          // the top one.
-          ScrollIntoViewOptions* scroll_into_view_options =
-              ScrollIntoViewOptions::Create();
-          scroll_into_view_options->setBlock(
-              V8ScrollLogicalPosition::Enum::kEnd);
-          scroll_into_view_options->setInlinePosition(
-              V8ScrollLogicalPosition::Enum::kNearest);
-          scrollIntoViewWithOptions(scroll_into_view_options);
-        }
-        // Then find the first menuitem that is in the view.
-        HTMLMenuItemElement* next_focus = this;
-        for (auto* current = this; current && current->IsVisibleInViewport();
-             current = menuitems.PreviousFocusableElement(
-                 *current, /*inclusive=*/false, /*wrap=*/false)) {
-          next_focus = current;
-        }
-        next_focus->Focus(focus_params);
-      }
+      menuitems.HandlePageUpDown(*this, MenuItemList::PageKey::kUp,
+                                 focus_params);
       event.SetDefaultHandled();
     } else if (key == keywords::kPageDown) {
-      if (!IsVisibleInViewport()) {
-        // If the menuitem isn't visible at all right now, *only* scroll it into
-        // view.
-        scrollIntoViewIfNeeded(/*center_if_needed=*/false);
-      } else {
-        auto* next_menuitem = menuitems.NextFocusableElement(
-            *this, /*inclusive=*/false, /*wrap=*/false);
-        if (next_menuitem && !next_menuitem->IsVisibleInViewport()) {
-          // The next menuitem isn't visible, which means we were at the very
-          // bottom. Scroll the current menuitem to the top, and then focus the
-          // bottom one.
-          ScrollIntoViewOptions* scroll_into_view_options =
-              ScrollIntoViewOptions::Create();
-          scroll_into_view_options->setBlock(
-              V8ScrollLogicalPosition::Enum::kStart);
-          scroll_into_view_options->setInlinePosition(
-              V8ScrollLogicalPosition::Enum::kNearest);
-          scrollIntoViewWithOptions(scroll_into_view_options);
-        }
-        // Then find the last menuitem that is still in the view.
-        HTMLMenuItemElement* next_focus = this;
-        for (auto* current = this; current && current->IsVisibleInViewport();
-             current = menuitems.NextFocusableElement(
-                 *current, /*inclusive=*/false, /*wrap=*/false)) {
-          next_focus = current;
-        }
-        next_focus->Focus(focus_params);
-      }
+      menuitems.HandlePageUpDown(*this, MenuItemList::PageKey::kDown,
+                                 focus_params);
       event.SetDefaultHandled();
     }
   } else {

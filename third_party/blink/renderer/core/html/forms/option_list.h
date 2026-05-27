@@ -15,6 +15,7 @@ class HTMLSelectElement;
 class HTMLOptionElement;
 class HTMLMenuOwnerElement;
 class HTMLMenuItemElement;
+struct FocusParams;
 
 template <typename OwnerType, typename ItemType>
 class ElementListIterator final {
@@ -134,6 +135,11 @@ class ElementList final {
   ItemType* PreviousFocusableElement(ItemType& element,
                                      bool inclusive = false,
                                      bool wrap = false);
+
+  enum class PageKey { kDown, kUp };
+  void HandlePageUpDown(ItemType& element,
+                        PageKey page_key,
+                        FocusParams& focus_params);
 
  private:
   ItemType* FindElement(ItemType& element,
