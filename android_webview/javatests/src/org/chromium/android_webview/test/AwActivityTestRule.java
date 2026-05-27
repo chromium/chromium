@@ -35,6 +35,7 @@ import org.chromium.android_webview.gfx.AwDrawFnImpl;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.Log;
+import org.chromium.base.PathUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.ApplicationTestUtils;
@@ -46,10 +47,12 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
@@ -797,6 +800,22 @@ public class AwActivityTestRule extends BaseActivityTestRule<AwTestRunnerActivit
      */
     public void clearCacheOnUiThread(final AwContents awContents, final boolean includeDiskFiles) {
         ThreadUtils.runOnUiThreadBlocking(() -> awContents.clearCache(includeDiskFiles));
+        if (includeDiskFiles) {
+            waitForCacheToBeCleared();
+        }
+    }
+
+    private void waitForCacheToBeCleared() {
+        final File cacheDir = new File(PathUtils.getCacheDirectory(), "Default/HTTP Cache");
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    File[] files = cacheDir.listFiles();
+                    return files == null
+                            || Arrays.stream(files)
+                                    .noneMatch(f -> f.getName().matches("[0-9a-fA-F]{16}"));
+                },
+                WAIT_TIMEOUT_MS,
+                CHECK_INTERVAL);
     }
 
     /** Returns pure page scale. */
