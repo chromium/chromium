@@ -105,7 +105,8 @@ struct NET_EXPORT SessionError {
     kFailedToUnwrapKey = 80,
     kSessionDeletedDuringRefresh = 81,
     kTransientSigningError = 82,
-    kMaxValue = kTransientSigningError,
+    kCrossOriginRegistrationSiteNotIncluded = 83,
+    kMaxValue = kCrossOriginRegistrationSiteNotIncluded,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:DeviceBoundSessionError,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionError)
 

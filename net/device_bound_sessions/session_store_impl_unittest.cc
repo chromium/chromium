@@ -39,6 +39,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace net::device_bound_sessions {
 
@@ -94,6 +95,12 @@ std::unique_ptr<Session> CreateSessionHelper(
     std::string_view origin = "https://foo.test") {
   SessionParams::Scope scope;
   scope.origin = origin;
+  if (url::Origin::Create(GURL(url_string)) !=
+      url::Origin::Create(GURL(origin))) {
+    // Cross-origin mock sessions must specify include_site = true to pass
+    // validation.
+    scope.include_site = true;
+  }
   std::string cookie_attr = "Secure; Domain=" + GURL(url_string).GetHost();
   std::vector<SessionParams::Credential> cookie_credentials(
       {SessionParams::Credential{"test_cookie", cookie_attr}});

@@ -2160,6 +2160,10 @@ String BuildProtocolDeviceBoundSessionFetchResult(
         kSessionDeletedDuringRefresh:
       return protocol::Network::DeviceBoundSessionFetchResultEnum::
           SessionDeletedDuringRefresh;
+    case net::device_bound_sessions::SessionError::ErrorType::
+        kCrossOriginRegistrationSiteNotIncluded:
+      return protocol::Network::DeviceBoundSessionFetchResultEnum::
+          CrossOriginRegistrationSiteNotIncluded;
   }
 }
 

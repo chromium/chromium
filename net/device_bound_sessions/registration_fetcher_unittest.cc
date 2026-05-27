@@ -95,6 +95,27 @@ constexpr char kBasicValidJson[] =
   }]
 })";
 
+constexpr char kSubdomainValidJsonIncludeSiteFalse[] =
+    R"({
+  "session_identifier": "session_id",
+  "refresh_url": "/refresh",
+  "scope": {
+    "origin": "https://a.test",
+    "include_site": false,
+    "scope_specification" : [
+      {
+        "type": "include",
+        "path": "/only_trusted_path"
+      }
+    ]
+  },
+  "credentials": [{
+    "type": "cookie",
+    "name": "auth_cookie",
+    "attributes": "Domain=a.test; Path=/; Secure; SameSite=None"
+  }]
+})";
+
 constexpr char kSessionIdentifier[] = "session_id";
 constexpr char kRedirectPath[] = "/redirect";
 constexpr char kChallenge[] = "test_challenge";
@@ -1528,6 +1549,69 @@ TEST_F(RegistrationTest, FollowHttpsToHttpsRedirect) {
   callback.outcome().SessionForTesting();
 }
 
+TEST_F(RegistrationTest, Registration_RedirectToCrossOrigin_Fails) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+  bool followed = false;
+  server_.RegisterRequestHandler(base::BindLambdaForTesting(
+      [&](const test_server::HttpRequest& request)
+          -> std::unique_ptr<test_server::HttpResponse> {
+        if (request.relative_url == "/") {
+          auto response = std::make_unique<test_server::BasicHttpResponse>();
+          response->set_code(HTTP_FOUND);
+          response->AddCustomHeader(
+              "Location",
+              server_.GetURL("subdomain.a.test", "/redirect_dest").spec());
+          response->set_content("Redirected");
+          response->set_content_type("text/plain");
+          return response;
+        }
+        if (request.relative_url == "/redirect_dest") {
+          followed = true;
+          return ReturnResponse(HTTP_OK, R"json(
+            {
+              "session_identifier": "session_id",
+              "credentials": [
+                {
+                  "type": "cookie",
+                  "name": "auth_cookie",
+                  "attributes": "Domain=.a.test; Path=/; Secure; SameSite=None"
+                }
+              ],
+              "scope": {
+                "origin": "https://a.test",
+                "include_site": false
+              }
+            }
+          )json",
+                                request);
+        }
+        return nullptr;
+      }));
+
+  server_.SetSSLConfig(EmbeddedTestServer::CERT_TEST_NAMES);
+  ASSERT_TRUE(server_.Start());
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+
+  RegistrationRequestParam param = GetBasicParam(server_.GetURL("a.test", "/"));
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+
+  callback.WaitForCall();
+
+  EXPECT_TRUE(followed);
+  EXPECT_EQ(callback.outcome().SessionErrorForTesting()->type,
+            SessionError::kCrossOriginRegistrationSiteNotIncluded);
+}
+
 TEST_F(RegistrationTest, FailOnSslErrorExpired) {
   crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
   server_.RegisterRequestHandler(
@@ -2650,6 +2734,35 @@ TEST_F(RegistrationTest, RegistrationBySubdomain_Unauthorized) {
   const RegistrationResult& out_session = callback.outcome();
   EXPECT_EQ(out_session.SessionErrorForTesting()->type,
             SessionError::kSubdomainRegistrationUnauthorized);
+}
+
+TEST_F(RegistrationTest, RegistrationBySubdomain_IncludeSiteFalse_Fails) {
+  crypto::ScopedFakeUnexportableKeyProvider scoped_fake_key_provider;
+
+  server_.RegisterRequestHandler(base::BindRepeating(
+      &ReturnResponse, HTTP_OK, kSubdomainValidJsonIncludeSiteFalse));
+  ASSERT_TRUE(server_.Start());
+
+  GURL registration_url = server_.GetURL("subdomain.a.test", "/");
+
+  RecordingNetLogObserver net_log_observer;
+  TestRegistrationCallback callback;
+
+  auto param = GetBasicParam(registration_url);
+  std::unique_ptr<RegistrationFetcher> fetcher =
+      RegistrationFetcher::CreateFetcher(
+          param, session_service(), unexportable_key_service(), context_.get(),
+          IsolationInfo::CreateTransient(/*nonce=*/std::nullopt),
+          /*net_log_source=*/std::nullopt,
+          /*original_request_initiator=*/std::nullopt,
+          unexportable_keys::BackgroundTaskPriority::kBestEffort);
+  fetcher->StartCreateTokenAndFetch(param, CreateAlgArray(),
+                                    callback.callback());
+  callback.WaitForCall();
+  const RegistrationResult& out_session = callback.outcome();
+  ASSERT_NE(out_session.SessionErrorForTesting(), nullptr);
+  EXPECT_EQ(out_session.SessionErrorForTesting()->type,
+            SessionError::kCrossOriginRegistrationSiteNotIncluded);
 }
 
 TEST_F(RegistrationTest, RegistrationBySubdomain_MultipleAllowed) {

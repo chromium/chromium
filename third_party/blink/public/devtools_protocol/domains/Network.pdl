@@ -2228,6 +2228,7 @@ domain Network
       InvalidFederatedSessionProviderFailedToRestoreKey
       FailedToUnwrapKey
       SessionDeletedDuringRefresh
+      CrossOriginRegistrationSiteNotIncluded
 
   # Details about a failed device bound session network request.
   experimental type DeviceBoundSessionFailedRequest extends object

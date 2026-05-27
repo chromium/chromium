@@ -127,6 +127,14 @@ base::expected<std::unique_ptr<Session>, SessionError> Session::CreateIfValid(
         SessionError{SessionError::kScopeOriginSameSiteMismatch});
   }
 
+  // Cross-origin registrations must specify `include_site = true`.
+  const bool is_same_origin =
+      url::Origin::Create(params.fetcher_url).IsSameOriginWith(scope_origin);
+  if (!is_same_origin && !params.scope.include_site) {
+    return base::unexpected(
+        SessionError{SessionError::kCrossOriginRegistrationSiteNotIncluded});
+  }
+
   // The refresh endpoint can be a full URL (samesite with request origin)
   // or a relative URL, starting with a "/" to make it origin-relative,
   // and starting with anything else making it current-path-relative to
@@ -580,6 +588,7 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kRegistrationAttemptedChallenge:
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
     case kFailedToUnwrapKey:
+    case kCrossOriginRegistrationSiteNotIncluded:
       NOTREACHED();
   }
 

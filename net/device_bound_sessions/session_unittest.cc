@@ -548,6 +548,7 @@ TEST_F(SessionTest, DeferredEmptyCookieAttributesCredentialsField) {
 TEST_F(SessionTest, DeferredNarrowerScopeOrigin) {
   auto params = CreateValidParams();
   params.scope.origin = "https://sub.example.test";
+  params.fetcher_url = GURL("https://sub.example.test/index.html");
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
                        Session::CreateIfValid(params));
   ASSERT_TRUE(session);
@@ -573,6 +574,7 @@ TEST_F(SessionTest, DeferredNarrowerScopeOrigin) {
 TEST_F(SessionTest, NotDeferredNarrowerScopeOrigin) {
   auto params = CreateValidParams();
   params.scope.origin = "https://sub.example.test";
+  params.fetcher_url = GURL("https://sub.example.test/index.html");
   ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
                        Session::CreateIfValid(params));
   ASSERT_TRUE(session);
@@ -1119,6 +1121,36 @@ TEST_F(SessionTest, RefreshInitiators) {
       initiator_rule, GURL("https://subdomain.not-example.test").GetHost()));
   EXPECT_FALSE(MatchesHostPattern(
       initiator_rule, GURL("https://some-other-example.test").GetHost()));
+}
+
+TEST_F(SessionTest, CreateIfValid_SameOrigin_IncludeSiteFalse) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://example.test";
+  params.fetcher_url = GURL("https://example.test/index.html");
+  params.scope.include_site = false;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  ASSERT_TRUE(session);
+}
+
+TEST_F(SessionTest, CreateIfValid_CrossOrigin_IncludeSiteTrue) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://example.test";
+  params.fetcher_url = GURL("https://sub.example.test/index.html");
+  params.scope.include_site = true;
+  ASSERT_OK_AND_ASSIGN(std::unique_ptr<Session> session,
+                       Session::CreateIfValid(params));
+  ASSERT_TRUE(session);
+}
+
+TEST_F(SessionTest, CreateIfValid_CrossOrigin_IncludeSiteFalse) {
+  auto params = CreateValidParams();
+  params.scope.origin = "https://example.test";
+  params.fetcher_url = GURL("https://sub.example.test/index.html");
+  params.scope.include_site = false;
+  EXPECT_THAT(Session::CreateIfValid(params),
+              ErrorIs(MatchesErrorType(
+                  SessionError::kCrossOriginRegistrationSiteNotIncluded)));
 }
 
 TEST_F(SessionTest, InvalidRefreshInitiators) {
