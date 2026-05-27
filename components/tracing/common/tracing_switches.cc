@@ -70,7 +70,7 @@ const char kTraceProcessTrackUuid[] = "trace-process-track-uuid";
 const char kTraceStartupDuration[]          = "trace-startup-duration";
 
 // If supplied, sets the file which startup tracing will be stored into, if
-// omitted the default will be used "chrometrace.log" in the current directory.
+// omitted the default will be used "chrome.pftrace" in the current directory.
 // Has no effect unless --trace-startup is also supplied.
 // Example: --trace-startup --trace-startup-file=/tmp/trace_event.log
 // As a special case, can be set to 'none' - this disables automatically saving

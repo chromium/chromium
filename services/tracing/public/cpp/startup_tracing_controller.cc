@@ -424,7 +424,7 @@ base::FilePath StartupTracingController::GetOutputPath() {
     base::FilePath result =
         command_line->GetSwitchValuePath(switches::kTraceStartupFile);
     if (result.empty()) {
-      return BasenameToPath("chrometrace.log");
+      return BasenameToPath("chrome.pftrace");
     }
     return result;
   }
@@ -432,9 +432,9 @@ base::FilePath StartupTracingController::GetOutputPath() {
   base::FilePath result =
       command_line->GetSwitchValuePath(switches::kEnableTracingOutput);
   if (result.empty() && command_line->HasSwitch(switches::kTraceStartup)) {
-    // If --trace-startup is present, return chrometrace.log for backwards
+    // If --trace-startup is present, return chrome.pftrace for backwards
     // compatibility.
-    return BasenameToPath("chrometrace.log");
+    return BasenameToPath("chrome.pftrace");
   }
 
   // If a non-directory path is specified, use it.
@@ -444,7 +444,7 @@ base::FilePath StartupTracingController::GetOutputPath() {
 
   std::string_view basename = GetGlobalDefaultBasename();
   if (basename.empty()) {
-    basename = "chrometrace.log";
+    basename = "chrome.pftrace";
   }
 
   // If a non-empty directory is specified, use it.

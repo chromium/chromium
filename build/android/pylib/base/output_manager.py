@@ -12,6 +12,7 @@ from devil.utils import reraiser_thread
 
 
 class Datatype:
+  BINARY = 'application/octet-stream'
   HTML = 'text/html'
   JSON = 'application/json'
   PNG = 'image/png'
@@ -116,7 +117,7 @@ class ArchivedFile:
     self._datatype = datatype
 
     mode = 'w+'
-    if datatype == Datatype.PNG:
+    if datatype in (Datatype.PNG, Datatype.BINARY):
       mode = 'w+b'
     self._f = tempfile.NamedTemporaryFile(mode=mode, delete=False)
     self._ready_to_archive = False

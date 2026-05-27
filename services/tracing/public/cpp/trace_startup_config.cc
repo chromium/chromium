@@ -480,7 +480,7 @@ TraceStartupConfig::ParseTraceJsonConfigFileContent(
     // Java time to get an int instead of a double.
     result_file_ = result_file_.AppendASCII(
         base::NumberToString(base::Time::Now().InMillisecondsSinceUnixEpoch()) +
-        "_chrometrace.log");
+        "_chrome.pftrace");
   }
 
   return perfetto_config;
