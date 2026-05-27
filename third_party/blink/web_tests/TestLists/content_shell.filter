@@ -928,14 +928,5 @@ virtual/webnn-service-on-npu/*
 virtual/webnn-service-with-gpu/*
 virtual/lna-webrtc/wpt_internal/*
 
-# See crbug.com/476646486:
-# > Requires content plugin:
+# Requires content plugin, see crbug.com/476646486:
 virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-web-plugin.tentative.https.html
-# > Requires site isolation:
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-cross-origin-frame.tentative.sub.https.html
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-cross-origin-frame-in-same-origin-frame.tentative.https.html
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-cross-origin-frame.tentative.sub.https.html
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-cross-origin-navigation-in-srcdoc-frame.tentative.sub.https.html
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-same-origin-frame-in-cross-origin-frame.tentative.sub.https.html
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-same-origin-frame-reload-as-sandbox.tentative.https.html
-virtual/prevent-svg-filter-paint/external/wpt/svg/styling/svg-filter-render-sandbox-frame.tentative.https.html

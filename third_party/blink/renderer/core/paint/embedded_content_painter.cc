@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/core/paint/paint_property_tree_builder.h"
 #include "third_party/blink/renderer/core/paint/replaced_painter.h"
 #include "third_party/blink/renderer/core/paint/scrollable_area_painter.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
@@ -102,16 +103,6 @@ void EmbeddedContentPainter::PaintReplaced(const PaintInfo& paint_info,
   }
 }
 
-BASE_FEATURE(kPreventSvgFilterPaint, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(bool,
-                   kPreventSvgFilterPaintOnRemoteFrame,
-                   &kPreventSvgFilterPaint,
-                   false);
-BASE_FEATURE_PARAM(bool,
-                   kPreventSvgFilterPaintOnWebPlugin,
-                   &kPreventSvgFilterPaint,
-                   false);
-
 // static
 std::optional<ScopedPaintChunkProperties>
 EmbeddedContentPainter::RemoveSvgFilterPaint(
@@ -119,26 +110,34 @@ EmbeddedContentPainter::RemoveSvgFilterPaint(
     const PaintInfo& paint_info) {
   // First, we gate the removal of the reference filter paint behind a feature
   // flag. This is differentiated per-type of embedded content.
-  if (!layout_embedded_content.GetEmbeddedContentView() ||
-      !base::FeatureList::IsEnabled(kPreventSvgFilterPaint)) {
+  const EmbeddedContentView* embedded_content_view =
+      layout_embedded_content.GetEmbeddedContentView();
+  if (!embedded_content_view ||
+      !base::FeatureList::IsEnabled(features::kPreventSvgFilterPaint)) {
     return std::nullopt;
   }
   DisplayItem::Type display_item_type = DisplayItem::kUninitializedType;
-  switch (layout_embedded_content.GetEmbeddedContentView()
-              ->SvgFilterPaintedCounter()) {
+  switch (embedded_content_view->SvgFilterPaintedCounter()) {
     case mojom::blink::WebFeature::kSvgFilterPaintedOnLocalFrame:
-      // We are not disabling svg filters on local frames at this time, and even
-      // if we did want to we could not accomplish that goal here as they are
-      // not composited the same way.
-      return std::nullopt;
+      // We only care about restricted local frames.
+      if (!features::kPreventSvgFilterPaintOnLocalFrameRestricted.Get() ||
+          !To<LocalFrameView>(embedded_content_view)
+               ->GetFrame()
+               .IsCrossOriginToParentOrOuterDocument()) {
+        return std::nullopt;
+      }
+      // We cannot remove the filter here as that must be done during pre-paint
+      // in PaintPropertyTreeBuilder::SetupContextForFrame, but we still want to
+      // call CountDeprecation below, so we keep kUninitializedType as the type.
+      break;
     case mojom::blink::WebFeature::kSvgFilterPaintedOnRemoteFrame:
-      if (!kPreventSvgFilterPaintOnRemoteFrame.Get()) {
+      if (!features::kPreventSvgFilterPaintOnRemoteFrame.Get()) {
         return std::nullopt;
       }
       display_item_type = DisplayItem::kForeignLayerRemoteFrame;
       break;
     case mojom::blink::WebFeature::kSvgFilterPaintedOnWebPlugin:
-      if (!kPreventSvgFilterPaintOnWebPlugin.Get()) {
+      if (!features::kPreventSvgFilterPaintOnWebPlugin.Get()) {
         return std::nullopt;
       }
       display_item_type = DisplayItem::kWebPlugin;
@@ -147,31 +146,26 @@ EmbeddedContentPainter::RemoveSvgFilterPaint(
       NOTREACHED();
   }
 
-  // First we iterate the effect tree looking for the nearest parent effect
-  // without a reference filter applied to any of its parents.
-  const blink::EffectPaintPropertyNode* current_effect =
-      &paint_info.context.GetPaintController()
-           .CurrentPaintChunkProperties()
-           .Effect()
-           .Unalias();
-  const blink::EffectPaintPropertyNode* candidate_effect = nullptr;
-  while (current_effect) {
-    const blink::EffectPaintPropertyNode* next_effect =
-        current_effect->UnaliasedParent();
-    if (current_effect->HasReferenceFilter()) {
-      candidate_effect = next_effect;
-    }
-    current_effect = next_effect;
-  }
+  // Then find the parent effect to overwrite with (if it exists).
+  const blink::EffectPaintPropertyNode* candidate_effect =
+      PaintPropertyTreeBuilder::GetFirstParentEffectWithoutReferenceFilter(
+          &paint_info.context.GetPaintController()
+               .CurrentPaintChunkProperties()
+               .Effect());
 
   // We can exit early if there is no effect with a reference filter.
   if (!candidate_effect) {
     return std::nullopt;
   }
-
-  // Finally we emplace the (revised) scoped properties.
   layout_embedded_content.GetDocument().CountDeprecation(
       mojom::blink::WebFeature::kPreventSvgFilterPaint);
+
+  // We can exit at this point if we don't have a targetable type.
+  if (display_item_type == DisplayItem::kUninitializedType) {
+    return std::nullopt;
+  }
+
+  // Finally we emplace the (revised) scoped properties.
   return std::optional<ScopedPaintChunkProperties>{
       std::in_place, paint_info.context.GetPaintController(), *candidate_effect,
       layout_embedded_content, display_item_type};

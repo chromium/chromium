@@ -19419,6 +19419,7 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "PreventSvgFilterPaintOnLocalFrameRestricted": "true",
                         "PreventSvgFilterPaintOnRemoteFrame": "true",
                         "PreventSvgFilterPaintOnWebPlugin": "true"
                     },

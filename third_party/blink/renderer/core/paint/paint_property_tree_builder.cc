@@ -102,6 +102,24 @@
 
 namespace blink {
 
+namespace features {
+
+BASE_FEATURE(kPreventSvgFilterPaint, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(bool,
+                   kPreventSvgFilterPaintOnLocalFrameRestricted,
+                   &kPreventSvgFilterPaint,
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kPreventSvgFilterPaintOnRemoteFrame,
+                   &kPreventSvgFilterPaint,
+                   false);
+BASE_FEATURE_PARAM(bool,
+                   kPreventSvgFilterPaintOnWebPlugin,
+                   &kPreventSvgFilterPaint,
+                   false);
+
+}  // namespace features
+
 namespace {
 
 // This function is for convenience of debugging. For example, we can set a
@@ -192,6 +210,17 @@ void PaintPropertyTreeBuilder::SetupContextForFrame(
     PaintPropertyTreeBuilderContext& full_context) {
   PaintPropertyTreeBuilderFragmentContext& context =
       full_context.fragment_context;
+
+  // Potentially disable svg filter applied to restricted local frame.
+  if (base::FeatureList::IsEnabled(features::kPreventSvgFilterPaint) &&
+      features::kPreventSvgFilterPaintOnLocalFrameRestricted.Get() &&
+      frame_view.GetFrame().IsCrossOriginToParentOrOuterDocument()) {
+    const blink::EffectPaintPropertyNode* candidate_effect =
+        GetFirstParentEffectWithoutReferenceFilter(context.current_effect);
+    if (candidate_effect) {
+      context.current_effect = candidate_effect;
+    }
+  }
 
   // Block fragmentation doesn't cross frame boundaries.
   context.current.is_in_block_fragmentation = false;
@@ -4534,6 +4563,27 @@ bool PaintPropertyTreeBuilder::ScheduleDeferredOpacityNodeUpdate(
     return true;
   }
   return false;
+}
+
+// static
+const blink::EffectPaintPropertyNode*
+PaintPropertyTreeBuilder::GetFirstParentEffectWithoutReferenceFilter(
+    const blink::EffectPaintPropertyNodeOrAlias* node_or_alias) {
+  if (!node_or_alias) {
+    return nullptr;
+  }
+  const blink::EffectPaintPropertyNode* current_effect =
+      &node_or_alias->Unalias();
+  const blink::EffectPaintPropertyNode* candidate_effect = nullptr;
+  while (current_effect) {
+    const blink::EffectPaintPropertyNode* next_effect =
+        current_effect->UnaliasedParent();
+    if (current_effect->HasReferenceFilter()) {
+      candidate_effect = next_effect;
+    }
+    current_effect = next_effect;
+  }
+  return candidate_effect;
 }
 
 // Fast-path for directly updating transforms. This

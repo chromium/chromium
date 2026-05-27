@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_PROPERTY_TREE_BUILDER_H_
 
 #include "base/dcheck_is_on.h"
+#include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/clip_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
@@ -14,6 +16,15 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
+
+namespace features {
+
+BASE_DECLARE_FEATURE(kPreventSvgFilterPaint);
+BASE_DECLARE_FEATURE_PARAM(bool, kPreventSvgFilterPaintOnLocalFrameRestricted);
+BASE_DECLARE_FEATURE_PARAM(bool, kPreventSvgFilterPaintOnRemoteFrame);
+BASE_DECLARE_FEATURE_PARAM(bool, kPreventSvgFilterPaintOnWebPlugin);
+
+}  // namespace features
 
 class FragmentData;
 class LayoutObject;
@@ -435,6 +446,12 @@ class PaintPropertyTreeBuilder {
 
   static bool ScheduleDeferredTransformNodeUpdate(LayoutObject& object);
   static bool ScheduleDeferredOpacityNodeUpdate(LayoutObject& object);
+
+  // Returns the parent of the highest effect that has a reference filter
+  // applied.
+  static const blink::EffectPaintPropertyNode*
+  GetFirstParentEffectWithoutReferenceFilter(
+      const blink::EffectPaintPropertyNodeOrAlias* node_or_alias);
 
  private:
   ALWAYS_INLINE void InitPaintProperties();

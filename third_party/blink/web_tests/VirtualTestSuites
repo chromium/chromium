@@ -5344,7 +5344,7 @@
       "wpt_internal/svg/svg-filter-render.sub.https.html"
     ],
     "args": [
-      "--enable-features=PreventSvgFilterPaint:PreventSvgFilterPaintOnRemoteFrame/true/PreventSvgFilterPaintOnWebPlugin/true"
+      "--enable-features=PreventSvgFilterPaint:PreventSvgFilterPaintOnLocalFrameRestricted/true/PreventSvgFilterPaintOnRemoteFrame/true/PreventSvgFilterPaintOnWebPlugin/true"
     ],
     "expires": "Nov 1, 2026"
   },
