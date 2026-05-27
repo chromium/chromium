@@ -7,35 +7,13 @@
       "chromeos",
       "fuchsia"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {},
-        "prefs": {
-          "hardware.video_capture_enabled": {
-            "default_value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "VideoCaptureAllowed": false
-        },
-        "prefs": {
-          "hardware.video_capture_enabled": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "VideoCaptureAllowed": true
-        },
-        "prefs": {
-          "hardware.video_capture_enabled": {
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "hardware.video_capture_enabled",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

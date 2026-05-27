@@ -3,35 +3,13 @@
     "os": [
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "VirtualKeyboardResizesLayoutByDefault": true
-        },
-        "prefs": {
-          "virtual_keyboard_resizes_layout_by_default": {
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {
-          "VirtualKeyboardResizesLayoutByDefault": false
-        },
-        "prefs": {
-          "virtual_keyboard_resizes_layout_by_default": {
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "virtual_keyboard_resizes_layout_by_default": {
-            "default_value": false
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "virtual_keyboard_resizes_layout_by_default",
+      "default_value": false,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]
