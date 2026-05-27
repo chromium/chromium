@@ -22,6 +22,7 @@
 #include "services/webnn/ort/logging.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
+#include "services/webnn/public/mojom/webnn_service_introspection.mojom-forward.h"
 #include "services/webnn/webnn_switches.h"
 
 namespace webnn::ort {
@@ -510,11 +511,57 @@ const OrtEpDevice* SelectUserSpecifiedEpDevice(
   return *it;
 }
 
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+ConvertEpListForIntrospection(base::span<const OrtEpDevice* const> ep_devices) {
+  std::vector<mojom::WebNNExecutionProviderDetailsPtr> ep_details_list;
+  ep_details_list.reserve(ep_devices.size());
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  for (const OrtEpDevice* ep_device : ep_devices) {
+    auto ep_details = mojom::WebNNExecutionProviderDetails::New();
+    // SAFETY: ORT guarantees that `ep_name` is valid and null-terminated.
+    ep_details->name = UNSAFE_BUFFERS(ort_api->EpDevice_EpName(ep_device));
+    // SAFETY: ORT guarantees that `ep_vendor` is valid and null-terminated.
+    ep_details->vendor = UNSAFE_BUFFERS(ort_api->EpDevice_EpVendor(ep_device));
+    const OrtHardwareDevice* hardware_device =
+        ort_api->EpDevice_Device(ep_device);
+    CHECK(hardware_device);
+    ep_details->hardware_type = OrtHardwareDeviceTypeToString(
+        ort_api->HardwareDevice_Type(hardware_device));
+    const OrtKeyValuePairs* ep_metadata =
+        ort_api->EpDevice_EpMetadata(ep_device);
+    CHECK(ep_metadata);
+    size_t num_entries = 0;
+    const char* const* keys = nullptr;
+    const char* const* values = nullptr;
+    ort_api->GetKeyValuePairs(ep_metadata, &keys, &values, &num_entries);
+    for (size_t i = 0; i < num_entries; ++i) {
+      // SAFETY: ORT guarantees that `keys[i]` is valid and null-terminated.
+      if (UNSAFE_BUFFERS(base::cstring_view(keys[i])) == "version") {
+        // SAFETY: ORT guarantees that `values[i]` is valid and null-terminated.
+        ep_details->version = UNSAFE_BUFFERS(base::cstring_view(values[i]));
+        break;
+      }
+    }
+    ep_details->first_selected = false;
+    ep_details_list.push_back(std::move(ep_details));
+  }
+  return ep_details_list;
+}
+
 }  // namespace
 
 // static
+std::optional<scoped_refptr<Environment>> Environment::GetInstance() {
+  base::AutoLock auto_lock(GetLock());
+  if (instance_) {
+    return base::WrapRefCounted(instance_);
+  }
+  return std::nullopt;
+}
+
+// static
 base::expected<scoped_refptr<Environment>, std::string>
-Environment::GetInstance(
+Environment::GetOrCreateInstance(
     const gpu::GpuFeatureInfo& gpu_feature_info,
     const base::flat_map<std::string, mojom::EpPackageInfoPtr>&
         ep_package_info_map) {
@@ -690,6 +737,29 @@ base::span<const OrtEpDevice* const> Environment::GetRegisteredEpDevices()
     const {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
   return GetRegisteredEpDevicesImpl(ort_api, this->get());
+}
+
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+Environment::GetAvailableEpDetails() const {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  base::span<const OrtEpDevice* const> registered_ep_devices =
+      GetRegisteredEpDevicesImpl(ort_api, this->get());
+  return ConvertEpListForIntrospection(registered_ep_devices);
+}
+
+std::vector<mojom::WebNNExecutionProviderDetailsPtr>
+Environment::GetSelectedEpDetails(OrtHardwareDeviceType device_type) const {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  base::span<const OrtEpDevice* const> registered_ep_devices =
+      GetRegisteredEpDevicesImpl(ort_api, this->get());
+  std::vector<const OrtEpDevice*> selected_ep_devices =
+      Environment::SelectEpDevices(registered_ep_devices, device_type);
+  auto ep_list = ConvertEpListForIntrospection(selected_ep_devices);
+  // Mark the first EP as selected for introspection purposes.
+  if (!ep_list.empty()) {
+    ep_list.front()->first_selected = true;
+  }
+  return ep_list;
 }
 
 EpWorkarounds Environment::GetEpWorkarounds(

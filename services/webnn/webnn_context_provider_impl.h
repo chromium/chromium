@@ -154,6 +154,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void GetExistingContextsDetails(
       GetExistingContextsDetailsCallback callback) override;
 
+  void GetAvailableExecutionProvidersDetails(
+      GetAvailableExecutionProvidersDetailsCallback callback) override;
+
   std::vector<mojom::WebNNContextIntrospectionDetailsPtr>
   PopulateContextsDetailsForIntrospection();
 

@@ -31,6 +31,9 @@ class CONTENT_EXPORT WebNNIntrospectionManager {
     virtual void OnUpdateExistingContextDetails(
         const std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>&
             contexts_details) = 0;
+    virtual void OnUpdateAvailableExecutionProvidersDetails(
+        const std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>&
+            available_execution_providers) = 0;
   };
 
   // Return the singleton instance.
@@ -44,6 +47,14 @@ class CONTENT_EXPORT WebNNIntrospectionManager {
   virtual void EstablishServiceConnectionAndGetExistingContextsDetails(
       base::OnceCallback<
           void(std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>)>
+          callback) = 0;
+
+  // Query the WebNN service in the GPU process for the details of installed
+  // execution providers.
+  virtual void
+  EstablishServiceConnectionAndGetAvailableExecutionProvidersDetails(
+      base::OnceCallback<
+          void(std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>)>
           callback) = 0;
 
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)

@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "gpu/command_buffer/service/scheduler.h"
@@ -245,6 +246,29 @@ void WebNNContextProviderImpl::GetExistingContextsDetails(
   std::move(callback).Run(std::move(contexts_details));
 }
 
+void WebNNContextProviderImpl::GetAvailableExecutionProvidersDetails(
+    GetAvailableExecutionProvidersDetailsCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  // This implementation currently only supports reporting execution providers
+  // for the ORT backend on Windows, and returns an empty list for other
+  // platforms and backends. This is because the ORT backend is the only one
+  // that has multiple execution providers and where the available execution
+  // providers can vary based on the system configuration.
+#if BUILDFLAG(IS_WIN)
+  std::optional<scoped_refptr<ort::Environment>> environment =
+      ort::Environment::GetInstance();
+  // If the ORT environment is not initialized, there is no EP information to
+  // report, so return an empty list.
+  if (!environment.has_value()) {
+    std::move(callback).Run({});
+    return;
+  }
+  std::move(callback).Run(environment.value()->GetAvailableEpDetails());
+#else
+  std::move(callback).Run({});
+#endif  // BUILDFLAG(IS_WIN)
+}
+
 void WebNNContextProviderImpl::UpdateWebNNServiceIntrospection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   if (!service_introspection_client_.is_bound()) {
@@ -253,6 +277,20 @@ void WebNNContextProviderImpl::UpdateWebNNServiceIntrospection() {
   auto contexts_details = PopulateContextsDetailsForIntrospection();
   service_introspection_client_->OnUpdateExistingContextDetails(
       std::move(contexts_details));
+
+#if BUILDFLAG(IS_WIN)
+  std::optional<scoped_refptr<ort::Environment>> environment =
+      ort::Environment::GetInstance();
+  // If the list of contexts is empty, then the ORT environment will be
+  // destroyed soon.
+  if (environment.has_value() && !context_impls_.empty()) {
+    service_introspection_client_->OnUpdateAvailableExecutionProvidersDetails(
+        environment.value()->GetAvailableEpDetails());
+  } else {
+    service_introspection_client_->OnUpdateAvailableExecutionProvidersDetails(
+        {});
+  }
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void WebNNContextProviderImpl::RemoveWebNNContextImpl(
@@ -683,7 +721,7 @@ void WebNNContextProviderImpl::DidEnsureWebNNExecutionProvidersReady(
 
   task_runner->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ort::Environment::GetInstance, gpu_feature_info_,
+      base::BindOnce(&ort::Environment::GetOrCreateInstance, gpu_feature_info_,
                      std::move(ep_package_info)),
       base::BindOnce(
           &WebNNContextProviderImpl::OnOrtEnvCreated, AsWeakPtr(),

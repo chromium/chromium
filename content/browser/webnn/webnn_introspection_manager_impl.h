@@ -48,6 +48,11 @@ class WebNNIntrospectionManagerImpl
           void(std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>)>
           callback) override;
 
+  void EstablishServiceConnectionAndGetAvailableExecutionProvidersDetails(
+      base::OnceCallback<
+          void(std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>)>
+          callback) override;
+
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
   void SetMLGraphRecordEnabled(bool enabled) override;
   bool IsMLGraphRecordEnabled() const override;
@@ -69,6 +74,10 @@ class WebNNIntrospectionManagerImpl
   void OnUpdateExistingContextDetails(
       std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>
           contexts_details) override;
+  void OnUpdateAvailableExecutionProvidersDetails(
+      std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>
+          available_execution_providers) override;
+  void EnsureIntrospectionServiceConnection();
 
 #if BUILDFLAG(WEBNN_ENABLE_GRAPH_DUMP)
   void ConfigWebNNIntrospectionForProcess(content::RenderProcessHost* host);

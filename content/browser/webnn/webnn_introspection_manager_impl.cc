@@ -131,14 +131,17 @@ void WebNNIntrospectionManagerImpl::OnUpdateExistingContextDetails(
   }
 }
 
-void WebNNIntrospectionManagerImpl::
-    EstablishServiceConnectionAndGetExistingContextsDetails(
-        base::OnceCallback<void(
-            std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>)>
-            callback) {
+void WebNNIntrospectionManagerImpl::OnUpdateAvailableExecutionProvidersDetails(
+    std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>
+        available_execution_providers) {
+  for (auto& observer : observers_) {
+    observer.OnUpdateAvailableExecutionProvidersDetails(
+        available_execution_providers);
+  }
+}
+
+void WebNNIntrospectionManagerImpl::EnsureIntrospectionServiceConnection() {
   if (introspection_service_remote_.is_bound()) {
-    introspection_service_remote_->GetExistingContextsDetails(
-        std::move(callback));
     return;
   }
   auto* host = content::GpuProcessHost::Get(content::GPU_PROCESS_KIND_SANDBOXED,
@@ -164,7 +167,35 @@ void WebNNIntrospectionManagerImpl::
   introspection_service_remote_.set_disconnect_handler(
       base::BindOnce(&WebNNIntrospectionManagerImpl::OnServiceDisconnect,
                      base::Unretained(this)));
+}
+
+void WebNNIntrospectionManagerImpl::
+    EstablishServiceConnectionAndGetExistingContextsDetails(
+        base::OnceCallback<void(
+            std::vector<webnn::mojom::WebNNContextIntrospectionDetailsPtr>)>
+            callback) {
+  EnsureIntrospectionServiceConnection();
+  if (!introspection_service_remote_.is_bound()) {
+    // If the connection couldn't be established, return an empty list.
+    std::move(callback).Run({});
+    return;
+  }
   introspection_service_remote_->GetExistingContextsDetails(
+      std::move(callback));
+}
+
+void WebNNIntrospectionManagerImpl::
+    EstablishServiceConnectionAndGetAvailableExecutionProvidersDetails(
+        base::OnceCallback<
+            void(std::vector<webnn::mojom::WebNNExecutionProviderDetailsPtr>)>
+            callback) {
+  EnsureIntrospectionServiceConnection();
+  if (!introspection_service_remote_.is_bound()) {
+    // If the connection couldn't be established, return an empty list.
+    std::move(callback).Run({});
+    return;
+  }
+  introspection_service_remote_->GetAvailableExecutionProvidersDetails(
       std::move(callback));
 }
 

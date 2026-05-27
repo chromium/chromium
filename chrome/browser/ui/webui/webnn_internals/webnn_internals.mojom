@@ -20,6 +20,11 @@ interface PageHandler {
   // Requests the details of existing contexts from the WebNN service.
   RequestExistingContextsDetails()
       => (array<webnn.mojom.WebNNContextIntrospectionDetails> contexts_info);
+
+  // Requests the details of available execution providers on the device.
+  RequestAvailableExecutionProvidersDetails()
+      => (array<webnn.mojom.WebNNExecutionProviderDetails>
+            available_execution_providers);
 };
 
 // Interface for the browser to communicate with the WebUI page.
@@ -36,6 +41,12 @@ interface Page {
   // Called when the WebNN contexts list is updated.
   OnUpdateExistingContextDetails(
       array<webnn.mojom.WebNNContextIntrospectionDetails> contexts_info);
+
+  // Called when the available execution providers list from the platform is
+  // updated.
+  OnUpdateAvailableExecutionProvidersDetails(
+      array<webnn.mojom.WebNNExecutionProviderDetails>
+          available_execution_providers);
 };
 
 // Factory interface to create the handler.
