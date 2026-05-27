@@ -51,6 +51,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -178,7 +179,13 @@ class DiscardsDetailsProviderImpl
 
     std::vector<performance_manager::policies::PageNodeSortProxy> candidates;
     for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
-      if (page_node->GetType() != performance_manager::PageType::kTab) {
+      const bool is_tab =
+          page_node->GetType() == performance_manager::PageType::kTab;
+      const bool is_webui =
+          page_node->GetMainFrameUrl().SchemeIs(content::kChromeUIScheme) ||
+          page_node->GetMainFrameUrl().SchemeIs(
+              content::kChromeUIUntrustedScheme);
+      if (!is_tab && !is_webui) {
         continue;
       }
       performance_manager::policies::CanDiscardResult can_discard_result =
