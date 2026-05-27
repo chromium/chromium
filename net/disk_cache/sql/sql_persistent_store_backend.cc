@@ -491,8 +491,11 @@ void SqlPersistentStore::Backend::DatabaseErrorCallback(
   // For the HTTP Cache, a kFullDisk error is not recoverable and freeing up
   // disk space is the best course of action. So, we treat it as a catastrophic
   // error to raze the database.
+  // kConstraintUnique is also treated as catastrophic here because UMA data
+  // suggests it is often a symptom of file corruption.
   if ((sql::IsErrorCatastrophic(error) ||
-       error == static_cast<int>(sql::SqliteErrorCode::kFullDisk)) &&
+       error == static_cast<int>(sql::SqliteErrorCode::kFullDisk) ||
+       error == static_cast<int>(sql::SqliteErrorCode::kConstraintUnique)) &&
       db_.is_open()) {
     // Normally this will poison the database, causing any subsequent operations
     // to silently fail without any side effects. However, if RazeAndPoison() is
