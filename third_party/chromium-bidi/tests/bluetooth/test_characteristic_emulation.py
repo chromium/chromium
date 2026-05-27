@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import sys
+
 import pytest
 import pytest_asyncio
 from test_helpers import execute_command, send_JSON_command, subscribe, wait_for_event
@@ -171,7 +173,13 @@ async def teardown(websocket, context_id):
         "authenticatedSignedWrites",
     ],
 )
-async def test_bluetooth_simulateCharacteristic(websocket, context_id, html, property):
+async def test_bluetooth_simulateCharacteristic(
+    websocket, context_id, html, property, test_headless_mode
+):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     device_address = await setup_granted_device(
         websocket, context_id, html, [HEART_RATE_SERVICE_UUID]
     )
@@ -239,7 +247,13 @@ async def test_bluetooth_simulateCharacteristic(websocket, context_id, html, pro
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_add_same_characteristic_uuid_twice(websocket, context_id):
+async def test_bluetooth_add_same_characteristic_uuid_twice(
+    websocket, context_id, test_headless_mode
+):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     device_address = await setup_device(websocket, context_id)
     await simulate_service(
         websocket, context_id, device_address, HEART_RATE_SERVICE_UUID, "add"
@@ -408,8 +422,12 @@ async def test_bluetooth_remove_characteristic_uuid_with_properties(
     ],
 )
 async def test_bluetooth_characteristic_write_event(
-    websocket, context_id, html, write_type
+    websocket, context_id, html, write_type, test_headless_mode
 ):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     await setup_characteristic(
         websocket,
         context_id,
@@ -542,7 +560,13 @@ async def test_bluetooth_characteristic_read_event(websocket, context_id, html):
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_characteristic_notification_event(websocket, context_id, html):
+async def test_bluetooth_characteristic_notification_event(
+    websocket, context_id, html, test_headless_mode
+):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     device_address = await setup_characteristic(
         websocket,
         context_id,

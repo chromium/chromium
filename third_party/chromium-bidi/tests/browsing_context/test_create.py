@@ -12,6 +12,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+import sys
+
 import pytest
 from anys import ANY_STR
 from test_helpers import (
@@ -479,6 +481,10 @@ async def test_browsingContext_subscribe_to_contextCreated_emits_for_existing(
 async def test_browsingContext_create_background(
     websocket, background, test_headless_mode, type
 ):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     resp = await execute_command(
         websocket,
         {

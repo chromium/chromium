@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import sys
+
 import pytest
 import pytest_asyncio
 from test_helpers import execute_command
@@ -66,7 +68,13 @@ async def teardown(websocket, context_id):
 
 
 @pytest.mark.asyncio
-async def test_bluetooth_simulateService(websocket, context_id, html):
+async def test_bluetooth_simulateService(
+    websocket, context_id, html, test_headless_mode
+):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     device_address = await setup_granted_device(
         websocket, context_id, html, [HEART_RATE_SERVICE_UUID, BATTERY_SERVICE_UUID]
     )

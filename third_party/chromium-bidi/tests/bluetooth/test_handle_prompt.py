@@ -13,6 +13,8 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
+import sys
+
 import pytest
 import pytest_asyncio
 from test_helpers import (
@@ -53,7 +55,13 @@ async def test_bluetooth_requestDevicePromptUpdated(websocket, context_id, html)
 
 @pytest.mark.asyncio
 @pytest.mark.parametrize("accept", [True, False])
-async def test_bluetooth_handleRequestDevicePrompt(websocket, context_id, html, accept):
+async def test_bluetooth_handleRequestDevicePrompt(
+    websocket, context_id, html, accept, test_headless_mode
+):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     await subscribe(websocket, ["bluetooth"])
     await goto_url(websocket, context_id, html())
     await setup_device(websocket, context_id)

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import sys
+
 import pytest
 from anys import ANY_BOOL, ANY_NUMBER
 from test_helpers import execute_command, goto_url
@@ -130,8 +132,12 @@ async def test_set_client_window_state_maximized(
 
 @pytest.mark.asyncio
 async def test_set_client_window_state_minimized(
-    websocket, context_id, client_window_id
+    websocket, context_id, client_window_id, test_headless_mode
 ):
+    if sys.platform == "darwin" and test_headless_mode == "false":
+        pytest.skip(
+            "Skip on macOS headful (https://github.com/GoogleChromeLabs/chromium-bidi/issues/4159)"
+        )
     await goto_url(websocket, context_id, "about:blank")
 
     result = await execute_command(
