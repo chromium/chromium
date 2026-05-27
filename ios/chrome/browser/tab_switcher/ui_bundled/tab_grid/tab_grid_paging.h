@@ -19,4 +19,11 @@ enum class TabGridMode {
   kSearch,
 };
 
+// Behavior of the scroll when setting active page.
+typedef NS_ENUM(NSUInteger, TabGridScrollBehavior) {
+  TabGridScrollBehaviorAnimated,
+  TabGridScrollBehaviorInstant,
+  TabGridScrollBehaviorNone,
+};
+
 #endif  // IOS_CHROME_BROWSER_TAB_SWITCHER_UI_BUNDLED_TAB_GRID_TAB_GRID_PAGING_H_

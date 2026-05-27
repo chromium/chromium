@@ -215,8 +215,9 @@ using ScopedTabGroupSyncObservation =
   }
 }
 
-- (void)setPageAsActive {
-  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
+- (void)setPageAsActiveWithBehavior:(TabGridScrollBehavior)behavior {
+  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs
+                                  behavior:behavior];
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
@@ -361,7 +362,8 @@ using ScopedTabGroupSyncObservation =
 }
 
 - (void)displayActiveTab {
-  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs];
+  [self.gridConsumer setActivePageFromPage:TabGridPageRegularTabs
+                                  behavior:TabGridScrollBehaviorAnimated];
   [self.tabPresentationDelegate showActiveTabInPage:TabGridPageRegularTabs
                                        focusOmnibox:NO];
 }

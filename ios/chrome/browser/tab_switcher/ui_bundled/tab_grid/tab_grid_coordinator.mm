@@ -399,10 +399,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       [self showPage:page animated:NO];
     } else {
       // Fallback to regular tabs if the feature is disabled.
-      [_mediator setActivePage:TabGridPage::TabGridPageRegularTabs];
+      [_mediator setActivePage:TabGridPage::TabGridPageRegularTabs
+                      behavior:TabGridScrollBehaviorAnimated];
     }
   } else {
-    [_mediator setActivePage:page];
+    [_mediator setActivePage:page behavior:TabGridScrollBehaviorAnimated];
   }
   SceneState* sceneState = self.regularBrowser->GetSceneState();
   sceneState.tabGridState.tabGridVisible = YES;
@@ -636,6 +637,9 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [strongSelf.delegate tabGridDismissTransitionDidEnd:strongSelf];
     if (IsChromeNextIaEnabled() && !IsFullscreenRefactoringEnabled()) {
       [strongSelf->_viewController setContentVisible:NO];
+    }
+    if (IsChromeNextIaEnabled()) {
+      [strongSelf showPage:strongSelf->_viewController.activePage animated:NO];
     }
     // In search mode, the tabgrid mode is not reset before the animation so
     // the animation can start from the correct cell. Once the animation is
@@ -1200,7 +1204,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   // Set the `baseViewController` active and current page.
   TabGridPage page = profile->IsOffTheRecord() ? TabGridPageIncognitoTabs
                                                : TabGridPageRegularTabs;
-  [_mediator setActivePage:page];
+  [_mediator setActivePage:page behavior:TabGridScrollBehaviorInstant];
 
   self.incognitoTabsMediator.tabGridIdleStatusHandler = _viewController;
   self.regularTabsMediator.tabGridIdleStatusHandler = _viewController;
@@ -1278,7 +1282,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)showActiveTabInPage:(TabGridPage)page focusOmnibox:(BOOL)focusOmnibox {
   DCHECK(self.regularBrowser && self.incognitoBrowser);
-  [_mediator setActivePage:page];
+  [_mediator setActivePage:page behavior:TabGridScrollBehaviorNone];
 
   Browser* activeBrowser = nullptr;
   switch (page) {

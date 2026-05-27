@@ -9,8 +9,9 @@
 
 @protocol GridConsumer
 
-// Sets the active page.
-- (void)setActivePageFromPage:(TabGridPage)page;
+// Sets the active page with desired scroll `behavior`.
+- (void)setActivePageFromPage:(TabGridPage)page
+                     behavior:(TabGridScrollBehavior)behavior;
 // Notify consumer that the grid will be dismissed.
 - (void)prepareForDismissal;
 

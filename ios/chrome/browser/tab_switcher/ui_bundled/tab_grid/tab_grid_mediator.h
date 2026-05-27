@@ -53,8 +53,10 @@ class PrefService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// Set the active page (incognito, regular, or tab groups).
-- (void)setActivePage:(TabGridPage)page;
+// Set the active page (incognito, regular, or tab groups) with desired scroll
+// `behavior`.
+- (void)setActivePage:(TabGridPage)page
+             behavior:(TabGridScrollBehavior)behavior;
 // Stops mediating and disconnects from backend models.
 - (void)disconnect;
 

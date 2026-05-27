@@ -556,7 +556,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   [self.mutator pageChanged:newActivePage
                 interaction:TabSwitcherPageChangeInteraction::kNone];
-  self.activePage = newActivePage;
+  [self setActivePage:newActivePage behavior:TabGridScrollBehaviorNone];
 }
 
 #pragma mark - Public Properties
@@ -719,7 +719,22 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)setActivePage:(TabGridPage)activePage {
-  [self scrollToPage:activePage animated:YES];
+  [self setActivePage:activePage behavior:TabGridScrollBehaviorAnimated];
+}
+
+- (void)setActivePage:(TabGridPage)activePage
+             behavior:(TabGridScrollBehavior)behavior {
+  switch (behavior) {
+    case TabGridScrollBehaviorAnimated:
+      [self scrollToPage:activePage animated:YES];
+      break;
+    case TabGridScrollBehaviorInstant:
+      [self scrollToPage:activePage animated:NO];
+      break;
+    case TabGridScrollBehaviorNone:
+      // Don't scroll.
+      break;
+  }
   [self.activityObserver updateLastActiveTabPage:activePage];
   if (activePage != _activePage) {
     // Usually, an active page change is a result of an in-page action happening
@@ -2223,8 +2238,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 #pragma mark - GridConsumer
 
-- (void)setActivePageFromPage:(TabGridPage)page {
-  self.activePage = page;
+- (void)setActivePageFromPage:(TabGridPage)page
+                     behavior:(TabGridScrollBehavior)behavior {
+  [self setActivePage:page behavior:behavior];
 }
 
 - (void)prepareForDismissal {

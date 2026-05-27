@@ -1807,7 +1807,7 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   NOTREACHED() << "Should be implemented in a subclass.";
 }
 
-- (void)setPageAsActive {
+- (void)setPageAsActiveWithBehavior:(TabGridScrollBehavior)behavior {
   NOTREACHED() << "Should be implemented in a subclass.";
 }
 

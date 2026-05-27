@@ -80,10 +80,11 @@
 
 #pragma mark - Public
 
-- (void)setActivePage:(TabGridPage)page {
+- (void)setActivePage:(TabGridPage)page
+             behavior:(TabGridScrollBehavior)behavior {
   self.tabGridState.originPage = page;
   [self notifyPageMutatorAboutPage:page];
-  [_currentPageMutator setPageAsActive];
+  [_currentPageMutator setPageAsActiveWithBehavior:behavior];
 }
 
 - (void)setConsumer:(id<TabGridConsumer>)consumer {

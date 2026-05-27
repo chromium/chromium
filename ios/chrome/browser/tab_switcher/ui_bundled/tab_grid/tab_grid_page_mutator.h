@@ -16,8 +16,9 @@
 // if the grid is currently the one selected by the user.
 - (void)currentlySelectedGrid:(BOOL)selected;
 
-// Notifies the model that the current page is the active one.
-- (void)setPageAsActive;
+// Notifies the model that the current page is the active one with a desired
+// scroll `behavior`.
+- (void)setPageAsActiveWithBehavior:(TabGridScrollBehavior)behavior;
 
 @end
 

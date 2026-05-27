@@ -105,8 +105,9 @@
   }
 }
 
-- (void)setPageAsActive {
-  [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
+- (void)setPageAsActiveWithBehavior:(TabGridScrollBehavior)behavior {
+  [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs
+                                  behavior:behavior];
 }
 
 #pragma mark - TabGridToolbarsGridDelegate
@@ -203,7 +204,8 @@
 }
 
 - (void)displayActiveTab {
-  [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs];
+  [self.gridConsumer setActivePageFromPage:TabGridPageIncognitoTabs
+                                  behavior:TabGridScrollBehaviorAnimated];
   [self.tabPresentationDelegate showActiveTabInPage:TabGridPageIncognitoTabs
                                        focusOmnibox:NO];
   if (IsDownloadAutoDeletionFeatureEnabled()) {

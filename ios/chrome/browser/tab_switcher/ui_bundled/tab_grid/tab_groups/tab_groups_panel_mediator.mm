@@ -303,7 +303,7 @@ NSString* CreationText(base::Time creation_date) {
   }
 }
 
-- (void)setPageAsActive {
+- (void)setPageAsActiveWithBehavior:(TabGridScrollBehavior)behavior {
   NOTREACHED() << "Should not be called in Tab Groups.";
 }
 
