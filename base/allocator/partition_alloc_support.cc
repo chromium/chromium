@@ -1013,6 +1013,7 @@ void PartitionAllocSupport::ReconfigureEarlyish(std::string_view process_type) {
     // is earlier than ContentMain().
     if (called_for_tests_) {
       DCHECK(called_earlyish_);
+      established_process_type_ = process_type;
       return;
     }
 
