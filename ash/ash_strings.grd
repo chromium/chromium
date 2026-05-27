@@ -10099,6 +10099,65 @@ To shut down the device, press and hold the power button on the device again.
         Change PIN
       </message>
 
+      <!-- Reset screen strings -->
+      <message name="IDS_RESET_SCREEN_TITLE" desc="Title of the reset screen">
+        Factory reset
+      </message>
+      <message name="IDS_RESET_SCREEN_ICON_TITLE" desc="Accessible title of the reset screen icon depicting exclamation mark.">
+        Exclamation mark icon
+      </message>
+      <message name="IDS_RESET_SCREEN_WARNING_MSG" desc="Warning text shown on reset screen above the exclamation icon.">
+        Reset this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+      </message>
+      <message name="IDS_RESET_SCREEN_WARNING_POWERWASH_MSG" desc="Warning text shown on reset screen below the exclamation icon.">
+        Powerwash to reset your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to be just like new.
+      </message>
+      <message name="IDS_RESET_SCREEN_WARNING_POWERWASH_AND_ROLLBACK_MSG" desc="Warning text shown on reset screen below the exclamation icon.">
+        Powerwash your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and return to the previous version.
+      </message>
+      <message name="IDS_RESET_SCREEN_WARNING_DETAILS_DATA" desc="Additional warning text shown on reset screen below the main warning.">
+        All user accounts and local data will be removed.
+      </message>
+      <message name="IDS_RESET_SCREEN_RESTART_MSG" desc="Text shown on reset screen below warning messages if device needs extra restart before powerwash.">
+        A restart is required to begin the Powerwash process. After restart you will be asked to confirm that you want to proceed.
+      </message>
+      <message name="IDS_RESET_SCREEN_TPM_FIRMWARE_UPDATE_OPTION" desc="Checkbox label for the TPM firmware update option of the powerwash process, shown on the device reset screen.">
+        Update firmware for added security.
+      </message>
+      <message name="IDS_RESET_SCREEN_POWERWASH" desc="Powerwash button text">
+        Powerwash
+      </message>
+      <message name="IDS_RESET_SCREEN_POWERWASH_AND_REVERT" desc="Powerwash+rollback button text">
+        Powerwash and Revert
+      </message>
+      <message name="IDS_RESET_SCREEN_PREPARING_REVERT_PROMISE" desc="Message shown on reset screen after user initiates powerwash with version revert while revert is prepared until reboot.">
+        <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> will restart and reset momentarily
+      </message>
+      <message name="IDS_RESET_SCREEN_PREPARING_REVERT_SPINNER_MESSAGE" desc="Spinner message shown on reset screen after user initiates powerwash with version revert while revert is prepared until reboot.">
+        Reverting to the previously installed version of <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph>
+      </message>
+      <message name="IDS_RESET_SCREEN_REVERT_ERROR" desc="Error message shown when revert was initiated but unavailable to be performed." meaning="Device reset screen revert option context.">
+        Oops, something went wrong.
+      </message>
+      <message name="IDS_RESET_SCREEN_REVERT_ERROR_EXPLANATION" desc="Error description shown when revert was initiated but unavailable to be performed.">
+        <ph name="IDS_SHORT_PRODUCT_NAME">$1<ex>Chrome</ex></ph> is unable to revert to the previously installed version. Please try again to Powerwash your device.
+      </message>
+      <message name="IDS_RESET_SCREEN_POPUP_POWERWASH_TITLE" desc="Confirmational pop-up on top of reset device dialog. Pop-up title for powerwash.">
+        Confirm Powerwash
+      </message>
+      <message name="IDS_RESET_SCREEN_POPUP_ROLLBACK_TITLE" desc="Confirmational pop-up on top of reset device dialog. Pop-up title for rollback.">
+        Confirm Powerwash with return to previous version
+      </message>
+      <message name="IDS_RESET_SCREEN_POPUP_POWERWASH_TEXT" desc="Confirmational pop-up on top of reset device dialog. Pop-up text for powerwash.">
+        Your device will be reset and all user accounts and local data will be removed. This cannot be undone.
+      </message>
+      <message name="IDS_RESET_SCREEN_POPUP_ROLLBACK_TEXT" desc="Confirmational pop-up on top of reset device dialog. Pop-up text for rollback.">
+        Your device will be returned to the previously installed version of Chrome. All user accounts and local data will be removed. This cannot be undone.
+      </message>
+      <message name="IDS_RESET_SCREEN_POPUP_CONFIRM_BUTTON" desc="Confirmational pop-up on top of reset device dialog. Confirm button text.">
+        Continue
+      </message>
+
       <!-- ADB sideloading policy-change notifications -->
       <message name="IDS_ADB_SIDELOADING_POLICY_CHANGE_SIDELOADING_DISALLOWED_NOTIFICATION_TITLE" desc="Title for the notification informing the user that ADB sideloading has been disabled.">
         ADB debugging disabled

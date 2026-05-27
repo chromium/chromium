@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
 
 #include "ash/constants/ash_switches.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/values.h"
