@@ -29,6 +29,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -451,6 +452,70 @@ public class BottomBarMediatorUnitTest {
         when(mButtonManager.hasCenteredButton()).thenReturn(false);
         listener.onButtonChanged(true);
         assertFalse(mModel.get(BottomBarProperties.IS_NEW_TAB_BACKGROUND_VISIBLE));
+    }
+
+    @Test
+    public void testUpdateGlicVisibility_RecordsDecisionTime() {
+        GlicEnabling.setEnabledForTesting(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.BottomBar.GlicVisibilityDecisionTime")
+                        .build();
+
+        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testUpdateGlicVisibility_RecordsTimeToAppear() {
+        GlicEnabling.setEnabledForTesting(true);
+        when(mGlicEnablingJniMock.isEnabledForProfile(any())).thenReturn(true);
+
+        // Initially hide GLIC by making user not signed in.
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+
+        createMediator(/* shouldIncludeHomeButton= */ true, /* shouldIncludeGlic= */ true);
+
+        // Bottom bar is visible by default in constructor.
+        // Now make GLIC appear by signing in.
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord("Android.BottomBar.GlicTimeToAppearSinceBottomBarShown")
+                        .build();
+
+        // Trigger update by notifying identity observer.
+        verify(mIdentityManager).addObserver(mIdentityObserverCaptor.capture());
+        mIdentityObserverCaptor
+                .getValue()
+                .onPrimaryAccountChanged(
+                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET));
+
+        watcher.assertExpected();
+
+        // Now simulate a disappear and appear again. It should not record again.
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        mIdentityObserverCaptor
+                .getValue()
+                .onPrimaryAccountChanged(
+                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.CLEARED));
+
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        HistogramWatcher noRecordWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Android.BottomBar.GlicTimeToAppearSinceBottomBarShown")
+                        .build();
+
+        mIdentityObserverCaptor
+                .getValue()
+                .onPrimaryAccountChanged(
+                        new PrimaryAccountChangeEvent(PrimaryAccountChangeEvent.Type.SET));
+
+        noRecordWatcher.assertExpected();
     }
 
     private void createMediator(boolean shouldIncludeHomeButton, boolean shouldIncludeGlic) {

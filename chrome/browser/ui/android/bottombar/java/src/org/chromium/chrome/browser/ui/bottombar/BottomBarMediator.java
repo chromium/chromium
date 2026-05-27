@@ -5,9 +5,11 @@
 package org.chromium.chrome.browser.ui.bottombar;
 
 import android.content.res.ColorStateList;
+import android.os.SystemClock;
 
 import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -48,6 +50,11 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         void onBackgroundColorChanged();
     }
 
+    private static final String GLIC_VISIBILITY_DECISION_TIME_HISTOGRAM =
+            "Android.BottomBar.GlicVisibilityDecisionTime";
+    private static final String GLIC_TIME_TO_APPEAR_HISTOGRAM =
+            "Android.BottomBar.GlicTimeToAppearSinceBottomBarShown";
+
     private final PropertyModel mModel;
     private final BottomBarButtonManager mButtonManager;
     private final ThemeColorProvider mThemeColorProvider;
@@ -84,6 +91,10 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
 
     private @Nullable Tab mCurrentTab;
     private @Nullable Boolean mIsVisible;
+    private boolean mGlicWasVisible;
+    private boolean mGlicTimeToAppearRecorded;
+    private long mBottomBarShownTimeMs = -1;
+    private long mGlicAppearedTimeMs = -1;
 
     /**
      * @param model The property model to update.
@@ -112,6 +123,7 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         mShouldIncludeGlic = shouldIncludeGlic;
         mProfileSupplier = profileSupplier;
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
+        mGlicTimeToAppearRecorded = false;
 
         mTabObserver =
                 new EmptyTabObserver() {
@@ -163,6 +175,15 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         boolean isVisible = !shouldDisableOnNtp && !isOmniboxFocused;
 
         if (mIsVisible != null && mIsVisible == isVisible) return;
+
+        if (isVisible && (mIsVisible == null || !mIsVisible)) {
+            mBottomBarShownTimeMs = SystemClock.uptimeMillis();
+            if (mGlicAppearedTimeMs != -1 && !mGlicTimeToAppearRecorded) {
+                RecordHistogram.recordLongTimesHistogram(GLIC_TIME_TO_APPEAR_HISTOGRAM, 0);
+                mGlicTimeToAppearRecorded = true;
+            }
+        }
+
         mIsVisible = isVisible;
 
         mModel.set(BottomBarProperties.IS_VISIBLE, isVisible);
@@ -181,7 +202,24 @@ public class BottomBarMediator implements ThemeColorProvider.TintObserver, Destr
         updateObservers(originalProfile);
 
         // Calculate and set visibility.
+        long startTime = SystemClock.uptimeMillis();
         boolean shouldBeVisible = shouldShowGlicButton(originalProfile);
+        long decisionDuration = SystemClock.uptimeMillis() - startTime;
+
+        RecordHistogram.recordTimesHistogram(
+                GLIC_VISIBILITY_DECISION_TIME_HISTOGRAM, decisionDuration);
+
+        if (shouldBeVisible && !mGlicWasVisible) {
+            mGlicAppearedTimeMs = SystemClock.uptimeMillis();
+            if (mBottomBarShownTimeMs != -1 && !mGlicTimeToAppearRecorded) {
+                long timeSinceShown = mGlicAppearedTimeMs - mBottomBarShownTimeMs;
+                RecordHistogram.recordLongTimesHistogram(
+                        GLIC_TIME_TO_APPEAR_HISTOGRAM, timeSinceShown);
+                mGlicTimeToAppearRecorded = true;
+            }
+        }
+        mGlicWasVisible = shouldBeVisible;
+
         setButtonVisibility(ActionId.GLIC, shouldBeVisible);
     }
 

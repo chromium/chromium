@@ -1202,6 +1202,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.BottomBar.GlicTimeToAppearSinceBottomBarShown"
+    units="ms" expires_after="2027-05-26">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Records the time elapsed from when the bottom bar becomes visible to when
+    the GLIC button actually appears (transitions from hidden to visible).
+    Recorded when the GLIC button becomes visible if the bottom bar was already
+    shown. Recorded only the first time it appears after the bottom bar is
+    shown.
+  </summary>
+</histogram>
+
+<histogram name="Android.BottomBar.GlicVisibilityDecisionTime" units="ms"
+    expires_after="2027-05-26">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    Records the time taken to decide whether to show the GLIC button in the
+    bottom bar. This includes the time spent in GlicEnabling checks, which may
+    involve JNI calls. Recorded every time GLIC visibility is checked.
+  </summary>
+</histogram>
+
 <histogram name="Android.BottomControlsStacker.NumberOfVisibleLayers"
     units="layers" expires_after="2026-01-27">
   <owner>pnoland@chromium.org</owner>
