@@ -14,6 +14,12 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "content/public/browser/storage_partition.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/signin/wait_for_network_callback_helper_ash.h"
+#else
+#include "chrome/browser/signin/wait_for_network_callback_helper_chrome.h"
+#endif
+
 AccountPreviewDataServiceFactory::AccountPreviewDataServiceFactory()
     : ProfileKeyedServiceFactory("AccountPreviewDataService") {
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -44,10 +50,19 @@ AccountPreviewDataServiceFactory::BuildServiceInstanceForBrowserContext(
       !prefs->GetBoolean(prefs::kSigninAllowed)) {
     return nullptr;
   }
+
+  std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper;
+#if BUILDFLAG(IS_CHROMEOS)
+  network_delay_helper = std::make_unique<WaitForNetworkCallbackHelperAsh>();
+#else
+  network_delay_helper = std::make_unique<WaitForNetworkCallbackHelperChrome>(
+      /*should_disable_metrics_for_testing=*/profile->AsTestingProfile());
+#endif
   return std::make_unique<signin::AccountPreviewDataServiceImpl>(
       IdentityManagerFactory::GetForProfile(profile), prefs,
       profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
+          ->GetURLLoaderFactoryForBrowserProcess(),
+      std::move(network_delay_helper));
 }
 
 void AccountPreviewDataServiceFactory::RegisterProfilePrefs(

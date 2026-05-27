@@ -23,10 +23,13 @@ namespace signin {
 AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     IdentityManager* identity_manager,
     PrefService* pref_service,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper)
     : identity_manager_(identity_manager),
       pref_service_(CHECK_DEREF(pref_service)),
-      url_loader_factory_(std::move(url_loader_factory)) {
+      url_loader_factory_(std::move(url_loader_factory)),
+      network_delay_helper_(std::move(network_delay_helper)) {
+  CHECK(network_delay_helper_);
   identity_manager_observation_.Observe(identity_manager_);
 
   // Load cached data from prefs at startup.
@@ -188,10 +191,19 @@ void AccountPreviewDataServiceImpl::FetchAccountPreviewData(
     const GaiaId& gaia_id) {
   CHECK(identity_manager_);
 
-  if (active_fetchers_.find(gaia_id) != active_fetchers_.end()) {
+  // TODO(crbug.com/510760810): Consider adding the retry logic while an active
+  // fetch is already in flight and the connection is lost.
+  network_delay_helper_->DelayNetworkCall(
+      base::BindOnce(&AccountPreviewDataServiceImpl::StartFetch,
+                     weak_ptr_factory_.GetWeakPtr(), gaia_id));
+}
+
+void AccountPreviewDataServiceImpl::StartFetch(const GaiaId& gaia_id) {
+  if (active_fetchers_.contains(gaia_id)) {
     return;
   }
 
+  CHECK(!network_delay_helper_->AreNetworkCallsDelayed());
   active_fetchers_[gaia_id] = std::make_unique<AccountPreviewDataFetcher>(
       gaia_id, identity_manager_, url_loader_factory_,
       base::BindOnce(&AccountPreviewDataServiceImpl::OnFetchCompleted,

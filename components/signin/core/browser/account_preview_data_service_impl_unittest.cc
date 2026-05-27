@@ -17,6 +17,7 @@
 #include "components/signin/core/browser/account_preview_data_test_util.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -48,12 +49,17 @@ class AccountPreviewDataServiceTest : public testing::Test {
   void SetUp() override {
     AccountPreviewDataService::RegisterProfilePrefs(prefs_.registry());
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+    auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+    network_delay_helper_ = helper.get();
     service_ = std::make_unique<AccountPreviewDataServiceImpl>(
         identity_test_env_.identity_manager(), &prefs_,
-        test_url_loader_factory_.GetSafeWeakWrapper());
+        test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper));
   }
 
-  void TearDown() override { service_.reset(); }
+  void TearDown() override {
+    network_delay_helper_ = nullptr;
+    service_.reset();
+  }
 
  protected:
   base::test::ScopedFeatureList feature_list_{
@@ -62,6 +68,7 @@ class AccountPreviewDataServiceTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple prefs_;
   IdentityTestEnvironment identity_test_env_;
+  raw_ptr<TestWaitForNetworkCallbackHelper> network_delay_helper_ = nullptr;
   std::unique_ptr<AccountPreviewDataServiceImpl> service_;
 };
 
@@ -133,10 +140,12 @@ TEST_F(AccountPreviewDataServiceTest, LoadsCachedDataFromPrefs) {
   }
 
   // Re-create the service to simulate startup.
+  network_delay_helper_ = nullptr;
   service_.reset();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
       identity_test_env_.identity_manager(), &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper());
+      test_url_loader_factory_.GetSafeWeakWrapper(),
+      std::make_unique<TestWaitForNetworkCallbackHelper>());
 
   std::optional<AccountPreviewData> data =
       service_->GetAccountPreviewData(account_info.gaia);
@@ -149,6 +158,7 @@ TEST_F(AccountPreviewDataServiceTest, LoadsCachedDataFromPrefs) {
 TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
   // Destroy the service created in SetUp to prevent it from fetching when we
   // make the account available.
+  network_delay_helper_ = nullptr;
   service_.reset();
 
   // Make an account available.
@@ -164,9 +174,11 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
 
   // Re-create the service. It will try to refresh on startup because pref is
   // empty, but it should defer because tokens are not loaded.
+  auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
+  network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
       identity_test_env_.identity_manager(), &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper());
+      test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper));
 
   // Verify that it did NOT fetch yet (pref is empty).
   EXPECT_FALSE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
@@ -251,5 +263,39 @@ TEST_F(AccountPreviewDataServiceTest,
   EXPECT_FALSE(service_->GetAccountPreviewData(primary_info.gaia).has_value());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(AccountPreviewDataServiceTest, QueuesFetchWhenOffline) {
+  // 1. Start offline (network calls delayed).
+  network_delay_helper_->SetNetworkCallsDelayed(true);
+
+  AccountInfo account_info =
+      identity_test_env_.MakeAccountAvailable("user@gmail.com");
+
+  // Trigger fetch while offline.
+  service_->OnRefreshTokenUpdatedForAccount(account_info);
+
+  // Assert: No active fetcher was started.
+  EXPECT_FALSE(service_->HasActiveFetcherForTesting(account_info.gaia));
+
+  // Mock successful fetch for when we go online.
+  MockSuccessfulFetch(
+      &test_url_loader_factory_,
+      {.bookmark_count = 5, .password_count = 10, .history_count = 15},
+      {"example.com"});
+
+  PrefUpdateWaiter waiter(&prefs_, prefs::kAccountPreviewDataDict);
+
+  // 2. Go online. This should trigger the queued fetch.
+  network_delay_helper_->SetNetworkCallsDelayed(false);
+  waiter.Wait();
+
+  // Assert: The queued fetch completed successfully and data was stored.
+  const auto& dict = prefs_.GetDict(prefs::kAccountPreviewDataDict);
+  const auto* account_dict = dict.FindDict(account_info.gaia.ToString());
+  ASSERT_TRUE(account_dict);
+  EXPECT_EQ(5, account_dict->FindInt("bookmark_count"));
+  EXPECT_EQ(10, account_dict->FindInt("password_count"));
+  EXPECT_EQ(15, account_dict->FindInt("history_count"));
+}
 
 }  // namespace signin
