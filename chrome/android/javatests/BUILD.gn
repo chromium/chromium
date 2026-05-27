@@ -1790,6 +1790,7 @@ java_group("common_unit_test_deps_java") {
     "//chrome/browser/settings:test_support_java",
     "//chrome/browser/share:java",
     "//chrome/browser/share/android:java_resources",
+    "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/tabpersistence:java",
@@ -1927,6 +1928,7 @@ android_library(
   deps = [
     ":common_unit_test_deps_java",
     "//chrome/browser/ui/android/signin:java",
+    "//google_apis/gaia/android:java",
   ]
 }
 

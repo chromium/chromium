@@ -73,6 +73,7 @@ if (is_android) {
   android_library("util_java") {
     sources = [
       "java/src/org/chromium/chrome/browser/lens/LensEntryPoint.java",
+      "java/src/org/chromium/chrome/browser/lens/LensIdentityUtils.java",
       "java/src/org/chromium/chrome/browser/lens/LensIntentParams.java",
       "java/src/org/chromium/chrome/browser/lens/LensMetrics.java",
       "java/src/org/chromium/chrome/browser/lens/LensQueryParams.java",
@@ -81,6 +82,9 @@ if (is_android) {
     deps = [
       "//base:base_java",
       "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/browser/signin/services/android:java",
+      "//components/signin/public/android:java",
       "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]

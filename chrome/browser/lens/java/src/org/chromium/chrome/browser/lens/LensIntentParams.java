@@ -24,6 +24,7 @@ public class LensIntentParams {
     private @Nullable String mProactiveSessionId;
     private int mProactiveQueryId;
     private @LensEntryPoint int mLensEntryPoint;
+    private @Nullable String mAccountName;
 
     /** Builder class for LensIntentParams. */
     public static class Builder {
@@ -36,6 +37,7 @@ public class LensIntentParams {
         private @Nullable String mProactiveSessionId;
         private int mProactiveQueryId;
         private @LensEntryPoint int mLensEntryPoint;
+        private @Nullable String mAccountName;
 
         public Builder() {}
 
@@ -118,6 +120,16 @@ public class LensIntentParams {
             return this;
         }
 
+        /**
+         * Sets the account name.
+         *
+         * @param accountName The account name to set as a parameter
+         */
+        public Builder withAccountName(@Nullable String accountName) {
+            this.mAccountName = accountName;
+            return this;
+        }
+
         /** Build LensIntentParams object from parameters set. */
         public LensIntentParams build() {
             LensIntentParams lensIntentParams = new LensIntentParams();
@@ -126,6 +138,7 @@ public class LensIntentParams {
             lensIntentParams.mIntentType = mIntentType;
             lensIntentParams.mProactiveSessionId = mProactiveSessionId;
             lensIntentParams.mProactiveQueryId = mProactiveQueryId;
+            lensIntentParams.mAccountName = mAccountName;
             if (!Uri.EMPTY.equals(mImageUri)) {
                 lensIntentParams.mImageUri = mImageUri;
                 if (mSrcUrl != null) {
@@ -185,5 +198,10 @@ public class LensIntentParams {
     /** Returns the {@link LensEntryPoint} for this set of params. */
     public @LensEntryPoint int getLensEntryPoint() {
         return mLensEntryPoint;
+    }
+
+    /** Returns the accountName for this set of params. */
+    public @Nullable String getAccountName() {
+        return mAccountName;
     }
 }

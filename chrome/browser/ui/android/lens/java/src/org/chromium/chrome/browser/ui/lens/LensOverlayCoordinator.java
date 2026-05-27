@@ -22,6 +22,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.lens.LensController;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
+import org.chromium.chrome.browser.lens.LensIdentityUtils;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -175,7 +176,9 @@ public class LensOverlayCoordinator implements UserData {
                         .withPageUrl(pageUrl)
                         .withSrcUrl("")
                         .withImageTitleOrAltText("")
+                        .withAccountName(LensIdentityUtils.getAccountName(mTab.getProfile()))
                         .build();
+
         LensController.getInstance().startLens(window, params);
 
         // For the AGSA intent-based flow, we dismiss the overlay state immediately after

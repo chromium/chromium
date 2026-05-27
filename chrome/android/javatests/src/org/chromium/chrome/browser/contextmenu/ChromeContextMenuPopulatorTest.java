@@ -89,6 +89,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileJni;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuItemDelegate;
 import org.chromium.chrome.browser.ui.signin.ForcedSigninStatusProvider;
@@ -99,9 +100,12 @@ import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.util.EmbedderSupportFeatures;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
+import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.MenuModelBridge;
@@ -159,6 +163,8 @@ public class ChromeContextMenuPopulatorTest {
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private ShareDelegate mShareDelegate;
     @Mock private ExternalAuthUtils mExternalAuthUtils;
+    @Mock private IdentityServicesProvider mIdentityServicesProvider;
+    @Mock private IdentityManager mIdentityManager;
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
     @Mock private ContextMenuNativeDelegate mNativeDelegate;
     @Mock private WebContents mWebContents;
@@ -208,6 +214,9 @@ public class ChromeContextMenuPopulatorTest {
         ProfileJni.setInstanceForTesting(mProfileNatives);
         when(mProfileNatives.fromWebContents(eq(mWebContents))).thenReturn(mProfile);
 
+        IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
+        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
@@ -226,6 +235,7 @@ public class ChromeContextMenuPopulatorTest {
 
     @After
     public void tearDown() {
+        IdentityServicesProvider.setInstanceForTests(null);
         DataProtectionBridge.setInstanceForTesting(null);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(null);
         ThreadUtils.runOnUiThreadBlocking(
@@ -2241,7 +2251,12 @@ public class ChromeContextMenuPopulatorTest {
     @SmallTest
     @UiThreadTest
     public void testGetLensIntentParams() {
-        when(mItemDelegate.isIncognito()).thenReturn(true);
+        final String testEmail = "test@gmail.com";
+        when(mIdentityManager.getPrimaryAccountInfo())
+                .thenReturn(
+                        CoreAccountInfo.createFromEmailAndGaiaId(
+                                testEmail, new GaiaId("test-gaia-id")));
+
         ContextMenuParams params =
                 new ContextMenuParams(
                         0,
@@ -2263,6 +2278,9 @@ public class ChromeContextMenuPopulatorTest {
                         /* openedFromInterestFor= */ false,
                         /* interestForNodeID= */ 0,
                         /* additionalNavigationParams= */ null);
+
+        // Test Non-Incognito.
+        when(mItemDelegate.isIncognito()).thenReturn(false);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
 
         LensIntentParams lensIntentParams =
@@ -2273,7 +2291,7 @@ public class ChromeContextMenuPopulatorTest {
                 "Lens intent parameters has incorrect image URI.",
                 RETRIEVED_IMAGE_URL,
                 lensIntentParams.getImageUri().toString());
-        assertTrue(
+        assertFalse(
                 "Lens intent parameters has incorrect incognito value.",
                 lensIntentParams.getIsIncognito());
         assertEquals(
@@ -2288,6 +2306,25 @@ public class ChromeContextMenuPopulatorTest {
                 "Lens intent parameters has incorrect page URL.",
                 PAGE_URL,
                 lensIntentParams.getPageUrl());
+        assertEquals(
+                "Lens intent parameters has incorrect account name.",
+                testEmail,
+                lensIntentParams.getAccountName());
+
+        // Test Incognito.
+        when(mItemDelegate.isIncognito()).thenReturn(true);
+        when(mProfile.isOffTheRecord()).thenReturn(true);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        lensIntentParams =
+                mPopulator.getLensIntentParams(
+                        LensEntryPoint.CONTEXT_MENU_SEARCH_MENU_ITEM,
+                        Uri.parse(RETRIEVED_IMAGE_URL));
+        assertTrue(
+                "Lens intent parameters has incorrect incognito value.",
+                lensIntentParams.getIsIncognito());
+        assertNull(
+                "Lens intent parameters should have null account name in incognito.",
+                lensIntentParams.getAccountName());
     }
 
     @Test
