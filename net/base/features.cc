@@ -870,4 +870,20 @@ bool IsDnsPlatformSupported() {
 #endif
 }
 
+BASE_FEATURE(kNoVarySearchCacheLoadOnSeparateTaskRunner,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<base::TaskPriority>::Option
+    kNoVarySearchCacheLoadOnSeparateTaskRunnerOptions[] = {
+        {base::TaskPriority::BEST_EFFORT, "BEST_EFFORT"},
+        {base::TaskPriority::USER_VISIBLE, "USER_VISIBLE"},
+        {base::TaskPriority::USER_BLOCKING, "USER_BLOCKING"},
+};
+
+BASE_FEATURE_ENUM_PARAM(base::TaskPriority,
+                        kNoVarySearchCacheLoadTaskRunnerPriority,
+                        &kNoVarySearchCacheLoadOnSeparateTaskRunner,
+                        base::TaskPriority::BEST_EFFORT,
+                        &kNoVarySearchCacheLoadOnSeparateTaskRunnerOptions);
+
 }  // namespace net::features

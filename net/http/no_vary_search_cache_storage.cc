@@ -26,6 +26,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/features.h"
 #include "net/base/pickle.h"
 #include "net/base/pickle_base_types.h"
 #include "net/base/pickle_traits.h"
@@ -78,6 +79,32 @@ enum class JournalEntryType : uint32_t {
   kErase = 1,
 };
 
+enum class JournalCreateResult {
+  kSuccess,
+  kCouldntCreateJournal,
+  kCouldntStartJournal,
+};
+
+// Creates a new "journal.baj" file and writes the magic number to it.
+base::expected<std::unique_ptr<FileOperations::Writer>, JournalCreateResult>
+CreateJournal(FileOperations* operations) {
+  auto maybe_writer =
+      operations->CreateWriter(NoVarySearchCacheStorage::kJournalFilename);
+  if (!maybe_writer.has_value()) {
+    base::UmaHistogramExactLinear("HttpCache.NoVarySearch.JournalCreateError",
+                                  -maybe_writer.error(),
+                                  -base::File::FILE_ERROR_MAX);
+    return base::unexpected(JournalCreateResult::kCouldntCreateJournal);
+  }
+  auto writer = std::move(maybe_writer.value());
+  if (!writer->Write(base::U32ToBigEndian(
+          NoVarySearchCacheStorage::kJournalMagicNumber))) {
+    base::UmaHistogramBoolean("HttpCache.NoVarySearch.JournalStartError", true);
+    return base::unexpected(JournalCreateResult::kCouldntStartJournal);
+  }
+  return writer;
+}
+
 }  // namespace
 
 // Make JournalEntryType serializable.
@@ -112,14 +139,8 @@ struct PickleTraits<JournalEntryType> {
 // the background sequence.
 class NoVarySearchCacheStorage::Journaller final {
  public:
-  enum CreateResult {
-    kSuccess,
-    kCouldntCreateJournal,
-    kCouldntStartJournal,
-  };
-
-  // Journal using `operations` for `storage_ptr`, which should be notified
-  // about important events by posting tasks to `parent_sequence`.
+  // Journal using `operations` and `writer` for `storage_ptr`, which should be
+  // notified about important events by posting tasks to `parent_sequence`.
   // `snapshot_size` is the size of the "snapshot.baf" file, which is used to
   // decide when the journal has got too big and we should trigger a new
   // snapshot of the cache. This object is always constructed by
@@ -127,37 +148,16 @@ class NoVarySearchCacheStorage::Journaller final {
   Journaller(std::unique_ptr<FileOperations> operations,
              base::WeakPtr<NoVarySearchCacheStorage> storage_ptr,
              scoped_refptr<base::SequencedTaskRunner> parent_sequence,
-             size_t snapshot_size)
+             size_t snapshot_size,
+             std::unique_ptr<FileOperations::Writer> writer)
       : operations_(std::move(operations)),
         storage_ptr_(std::move(storage_ptr)),
         parent_sequence_(std::move(parent_sequence)),
+        writer_(std::move(writer)),
+        size_(sizeof(kJournalMagicNumber)),
         snapshot_size_(snapshot_size) {}
 
   ~Journaller() { DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_); }
-
-  // Creates a new "journal.baj" file and writes the magic number to it. Called
-  // by NoVarySearchCacheStorage::Loader and the WriteSnapshot() method.
-  CreateResult Start() {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-    CHECK(!failed_);
-    auto maybe_writer = operations_->CreateWriter(kJournalFilename);
-    if (!maybe_writer.has_value()) {
-      base::UmaHistogramExactLinear("HttpCache.NoVarySearch.JournalCreateError",
-                                    -maybe_writer.error(),
-                                    -base::File::FILE_ERROR_MAX);
-      return CreateResult::kCouldntCreateJournal;
-    }
-    writer_ = std::move(maybe_writer.value());
-    size_ = 0u;
-    if (!writer_->Write(base::U32ToBigEndian(kJournalMagicNumber))) {
-      base::UmaHistogramBoolean("HttpCache.NoVarySearch.JournalStartError",
-                                true);
-      return CreateResult::kCouldntStartJournal;
-    }
-    size_ += sizeof(kJournalMagicNumber);
-    return CreateResult::kSuccess;
-  }
 
   // Appends an update to the journal. Called via PostTask by
   // NoVarySearchCacheStorage.
@@ -212,9 +212,13 @@ class NoVarySearchCacheStorage::Journaller final {
       return;
     }
 
-    if (!Start()) {
+    auto result = CreateJournal(operations_.get());
+    if (!result.has_value()) {
       JournallingFailed();
+      return;
     }
+    writer_ = std::move(result.value());
+    size_ = sizeof(kJournalMagicNumber);
   }
 
  private:
@@ -529,23 +533,28 @@ class NoVarySearchCacheStorage::Loader final {
   // passed back to the main thread. On failure, gives up.
   [[nodiscard]] ResultType StartJournal(Result result) {
     CHECK_GT(snapshot_size_, 0u);
-    auto journal = std::make_unique<Journaller>(
-        std::move(operations_), std::move(storage_ptr_),
-        std::move(parent_sequence_), snapshot_size_);
-    auto create_result = journal->Start();
-    if (create_result != Journaller::CreateResult::kSuccess) {
-      return GiveUp(create_result ==
-                            Journaller::CreateResult::kCouldntCreateJournal
+    auto writer_result = CreateJournal(operations_.get());
+    if (!writer_result.has_value()) {
+      return GiveUp(writer_result.error() ==
+                            JournalCreateResult::kCouldntCreateJournal
                         ? Result::kCouldntCreateJournal
                         : Result::kCouldntStartJournal);
     }
+    scoped_refptr<base::SequencedTaskRunner> journal_task_runner =
+        base::SequencedTaskRunner::GetCurrentDefault();
+    if (base::FeatureList::IsEnabled(
+            features::kNoVarySearchCacheLoadOnSeparateTaskRunner)) {
+      journal_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+    }
+    auto journal = base::SequenceBound<Journaller>(
+        std::move(journal_task_runner), std::move(operations_),
+        std::move(storage_ptr_), std::move(parent_sequence_), snapshot_size_,
+        std::move(writer_result.value()));
     LogResult(result);
     CHECK(cache_);
-    return CacheAndJournalPointers(
-        std::move(cache_),
-        JournallerPtr(journal.release(),
-                      base::OnTaskRunnerDeleter(
-                          base::SequencedTaskRunner::GetCurrentDefault())));
+    return CacheAndJournalPointers(std::move(cache_), std::move(journal));
   }
 
   // Logs a histogram with the final result of loading.
@@ -587,8 +596,7 @@ NoVarySearchCacheStorage::CacheAndJournalPointers::CacheAndJournalPointers(
 NoVarySearchCacheStorage::CacheAndJournalPointers::~CacheAndJournalPointers() =
     default;
 
-NoVarySearchCacheStorage::NoVarySearchCacheStorage()
-    : journal_(nullptr, base::OnTaskRunnerDeleter(nullptr)) {}
+NoVarySearchCacheStorage::NoVarySearchCacheStorage() = default;
 
 NoVarySearchCacheStorage::~NoVarySearchCacheStorage() {
   if (cache_) {
@@ -605,8 +613,14 @@ void NoVarySearchCacheStorage::Load(
   CHECK(!journal_);
   CHECK(start_time_.is_null());
 
+  base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
+  if (base::FeatureList::IsEnabled(
+          features::kNoVarySearchCacheLoadOnSeparateTaskRunner)) {
+    priority = features::kNoVarySearchCacheLoadTaskRunnerPriority.Get();
+  }
+
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), priority,
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   start_time_ = base::Time::Now();
   background_task_runner_->PostTaskAndReplyWithResult(
@@ -626,12 +640,7 @@ void NoVarySearchCacheStorage::TakeSnapshot() {
   CHECK(background_task_runner_);
   base::Pickle pickle;
   WriteToPickle(pickle, *cache_);
-  // This use of `base::Unretained` is safe because `journal_` is owned by this
-  // object and always deleted on `background_task_runner_`.
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Journaller::WriteSnapshot,
-                     base::Unretained(journal_.get()), std::move(pickle)));
+  journal_.AsyncCall(&Journaller::WriteSnapshot).WithArgs(std::move(pickle));
 }
 
 void NoVarySearchCacheStorage::OnInsert(const std::string& partition_key,
@@ -659,12 +668,7 @@ void NoVarySearchCacheStorage::OnErase(
 void NoVarySearchCacheStorage::AppendToJournal(base::Pickle pickle) {
   CHECK(journal_);
   CHECK(background_task_runner_);
-  // This use of `base::Unretained` is safe because `journal_` is owned by this
-  // object and always deleted on `background_task_runner_`.
-  background_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Journaller::Append, base::Unretained(journal_.get()),
-                     std::move(pickle)));
+  journal_.AsyncCall(&Journaller::Append).WithArgs(std::move(pickle));
 }
 
 void NoVarySearchCacheStorage::OnLoadComplete(
@@ -694,7 +698,7 @@ void NoVarySearchCacheStorage::OnLoadComplete(
 
 void NoVarySearchCacheStorage::OnJournallingFailed() {
   cache_->SetJournal(nullptr);
-  journal_ = nullptr;
+  journal_.Reset();
   cache_ = nullptr;
   background_task_runner_ = nullptr;
 }

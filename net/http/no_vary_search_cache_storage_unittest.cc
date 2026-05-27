@@ -26,6 +26,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/run_until.h"
@@ -256,20 +257,45 @@ std::string QueryWithIParameter(size_t i) {
 }
 
 // Common functionality for all NoVarySearchCacheStorage test fixtures.
-class NoVarySearchCacheStorageTestBase : public ::testing::Test {
+class NoVarySearchCacheStorageTestBase : public ::testing::TestWithParam<bool> {
  public:
   NoVarySearchCacheStorageTestBase() {
+    std::vector<base::test::FeatureRefAndParams> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
     // Always test with cache partitioning enabled, as it is more interesting.
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kSplitCacheByNetworkIsolationKey);
+    enabled_features.push_back(
+        {features::kSplitCacheByNetworkIsolationKey, {}});
+
+    if (GetParam()) {
+      enabled_features.push_back(
+          {features::kNoVarySearchCacheLoadOnSeparateTaskRunner,
+           {{"priority", "USER_VISIBLE"}}});
+    } else {
+      disabled_features.push_back(
+          features::kNoVarySearchCacheLoadOnSeparateTaskRunner);
+    }
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
+                                                       disabled_features);
   }
+
+  ~NoVarySearchCacheStorageTestBase() override {
+    base::ThreadPoolInstance::Get()->FlushForTesting();
+    // Ensure that all threadpool tasks are idle when the TaskEnvironment
+    // destructor runs. In this specific case, RunUntilIdle() makes tests less
+    // flaky, despite what the presubmit says.
+    task_environment_.RunUntilIdle();  // NOLINT
+  }
+
+ private:
+  // ScopedFeatureList must be destroyed after TaskEnvironment to avoid
+  // causing flaky crashes.
+  base::test::ScopedFeatureList scoped_feature_list_;
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // A fixture for tests that use a FakeFilesystem.
@@ -372,22 +398,22 @@ class NoVarySearchCacheStorageFakeFilesystemTest
 using NoVarySearchCacheStorageHighLevelTest =
     NoVarySearchCacheStorageFakeFilesystemTest;
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, StartWithNoCache) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, StartWithNoCache) {
   EXPECT_EQ(cache().size(), 0u);
 }
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, StartWithSavedEmptyCache) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, StartWithSavedEmptyCache) {
   Reset();
   EXPECT_EQ(cache().size(), 0u);
 }
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertionRestored) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, InsertionRestored) {
   Insert("a=b", "key-order");
   Reset();
   EXPECT_TRUE(Exists("a=b"));
 }
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertionRestoredTwice) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, InsertionRestoredTwice) {
   Insert("a=b", "key-order");
   // The first reset causes the journal to be loaded and written back to the
   // snapshot dump.
@@ -397,7 +423,7 @@ TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertionRestoredTwice) {
   EXPECT_TRUE(Exists("a=b"));
 }
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertThenErase) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, InsertThenErase) {
   Insert("a=b", "key-order");
   EXPECT_TRUE(Erase("a=b"));
   Reset();
@@ -405,7 +431,7 @@ TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertThenErase) {
   EXPECT_EQ(cache().size(), 0u);
 }
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertResetThenErase) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, InsertResetThenErase) {
   Insert("a=b", "key-order");
   Reset();
   EXPECT_TRUE(Erase("a=b"));
@@ -414,7 +440,7 @@ TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertResetThenErase) {
   EXPECT_EQ(cache().size(), 0u);
 }
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, EvictionOrderIsPreserved) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, EvictionOrderIsPreserved) {
   for (size_t i = 0; i < kCacheMaxSize; ++i) {
     Insert(QueryWithIParameter(i), "key-order");
   }
@@ -426,7 +452,7 @@ TEST_F(NoVarySearchCacheStorageHighLevelTest, EvictionOrderIsPreserved) {
   }
 }
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, NoVarySearchValueIsPreserved) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, NoVarySearchValueIsPreserved) {
   Insert("a=1&b=2", "key-order");
   Insert("c=2&d=3", "params=(\"d\")");
   Insert("e=4&f=3", "params, except=(\"e\")");
@@ -439,7 +465,7 @@ TEST_F(NoVarySearchCacheStorageHighLevelTest, NoVarySearchValueIsPreserved) {
   EXPECT_TRUE(Exists("i=7&h=6"));
 }
 
-TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertMoreThanMaxSize) {
+TEST_P(NoVarySearchCacheStorageHighLevelTest, InsertMoreThanMaxSize) {
   // Insert enough entries that some will have to be evicted while replaying the
   // journal, but not so many as to trigger a new snapshot.
   for (size_t i = 0; i < kCacheMaxSize * 2; ++i) {
@@ -453,7 +479,7 @@ TEST_F(NoVarySearchCacheStorageHighLevelTest, InsertMoreThanMaxSize) {
 }
 
 // The journal should not be replayed if snapshot.baf is missing.
-TEST_F(NoVarySearchCacheStorageFakeFilesystemTest, ErasedSnapshot) {
+TEST_P(NoVarySearchCacheStorageFakeFilesystemTest, ErasedSnapshot) {
   Insert("a=1", "key-order");
   filesystem()->Erase(NoVarySearchCacheStorage::kSnapshotFilename);
   Reset();
@@ -488,7 +514,7 @@ class NoVarySearchCacheStorageCorruptSnapshotTest
 };
 
 // The journal should not be replayed if snapshot.baf is truncated.
-TEST_F(NoVarySearchCacheStorageCorruptSnapshotTest, Truncated) {
+TEST_P(NoVarySearchCacheStorageCorruptSnapshotTest, Truncated) {
   for (size_t i = 0; i < contents().size(); ++i) {
     SCOPED_TRACE(i);
     Overwrite(base::span(contents()).first(i));
@@ -499,7 +525,7 @@ TEST_F(NoVarySearchCacheStorageCorruptSnapshotTest, Truncated) {
 }
 
 // The journal should not be replayed if snapshot.baf has trailing garbage.
-TEST_F(NoVarySearchCacheStorageCorruptSnapshotTest, TrailingGarbage) {
+TEST_P(NoVarySearchCacheStorageCorruptSnapshotTest, TrailingGarbage) {
   contents().insert(contents().end(), {0xff, 0xff, 0xff, 0xff});
   Overwrite(contents());
   Insert("a=1", "key-order");
@@ -508,7 +534,7 @@ TEST_F(NoVarySearchCacheStorageCorruptSnapshotTest, TrailingGarbage) {
 }
 
 // The journal should not be replayed if snapshot.baf has a bad magic number.
-TEST_F(NoVarySearchCacheStorageCorruptSnapshotTest, BadMagic) {
+TEST_P(NoVarySearchCacheStorageCorruptSnapshotTest, BadMagic) {
   contents()[0] = ~contents()[0];
   Overwrite(contents());
   Insert("a=1", "key-order");
@@ -517,7 +543,7 @@ TEST_F(NoVarySearchCacheStorageCorruptSnapshotTest, BadMagic) {
 }
 
 // If journal.baj is missing, everything else still works.
-TEST_F(NoVarySearchCacheStorageFakeFilesystemTest, ErasedJournal) {
+TEST_P(NoVarySearchCacheStorageFakeFilesystemTest, ErasedJournal) {
   Insert("a=1", "key-order");
   Reset();
   Insert("b=7", "key-order");
@@ -567,7 +593,7 @@ class NoVarySearchCacheStorageCorruptJournalTest
 };
 
 // When a journal with 1 entry is truncated, the entry is not used.
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, Truncated) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, Truncated) {
   for (size_t i = 0; i < contents().size(); ++i) {
     InitializeCache();
     Overwrite(base::span(contents()).first(i));
@@ -578,7 +604,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, Truncated) {
 }
 
 // Trailing garbage in the journal is safely ignored.
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, TrailingGarbage) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, TrailingGarbage) {
   for (size_t i = 0; i < 16u; ++i) {
     InitializeCache();
     auto copy = contents();
@@ -594,7 +620,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, TrailingGarbage) {
   }
 }
 
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, BadMagic) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, BadMagic) {
   contents()[0] = ~contents()[0];
   Overwrite(contents());
   Reset();
@@ -602,7 +628,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, BadMagic) {
   EXPECT_TRUE(Exists("b=2"));
 }
 
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, BadLengthField) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, BadLengthField) {
   // The length field is the four bytes immediately after the magic number.
   base::span(contents())
       .subspan<4u, 4u>()
@@ -615,7 +641,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, BadLengthField) {
 
 // Responsibility for checking that a zero-length journal entry is detected as
 // bad is delegated to base::Pickle, so explicitly check it works.
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, ZeroLengthField) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, ZeroLengthField) {
   base::span(contents())
       .subspan<4u, 4u>()
       .copy_from(base::U32ToLittleEndian(0u));
@@ -628,7 +654,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, ZeroLengthField) {
 // The explicit length field makes it hard to hit many cases of deserialization
 // failure. This tests forces deserialization failure by intentionally writing
 // short values into the length field.
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, ShortLengthField) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, ShortLengthField) {
   auto length_field = base::span(contents()).subspan<4u, 4u>();
   const uint32_t original_length = base::U32FromLittleEndian(length_field);
   for (uint32_t i = 1; i < original_length; ++i) {
@@ -642,7 +668,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, ShortLengthField) {
 
 // We can't hit the case where the JournalEntry type is not one of the known
 // types by truncation, so this test explicitly overwrites it.
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, BadJournalEntryType) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, BadJournalEntryType) {
   // The first 16 bytes of the journal:
   // 0-3: Magic number
   // 4-7: Length field for the first entry
@@ -658,7 +684,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, BadJournalEntryType) {
 
 // In the case where the last entry in the journal is truncated, previous
 // entries are still used.
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, TruncatedSecondEntry) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, TruncatedSecondEntry) {
   const size_t initial_size = contents().size();
   Insert("c=3", "key-order");
   auto new_contents = Load();
@@ -674,7 +700,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, TruncatedSecondEntry) {
   }
 }
 
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, TruncatedErase) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, TruncatedErase) {
   const size_t initial_size = contents().size();
   Erase("a=1");
   auto new_contents = Load();
@@ -691,7 +717,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, TruncatedErase) {
 }
 
 // Like the ShortLengthField test, but for a journalled erase.
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, ShortLengthFieldForErase) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, ShortLengthFieldForErase) {
   const size_t initial_size = contents().size();
   Erase("a=1");
   auto new_contents = Load();
@@ -709,7 +735,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, ShortLengthFieldForErase) {
 }
 
 // Any entries after a corrupt entry will be ignored.
-TEST_F(NoVarySearchCacheStorageCorruptJournalTest, CorruptedSecondEntry) {
+TEST_P(NoVarySearchCacheStorageCorruptJournalTest, CorruptedSecondEntry) {
   const size_t initial_size = contents().size();
   Insert("c=3", "key-order");
   const size_t size_after_one_insertion = Load().size();
@@ -730,7 +756,7 @@ TEST_F(NoVarySearchCacheStorageCorruptJournalTest, CorruptedSecondEntry) {
 }
 
 // If journal.baj is older than snapshot.baf, it is ignored.
-TEST_F(NoVarySearchCacheStorageFakeFilesystemTest, JournalTooOld) {
+TEST_P(NoVarySearchCacheStorageFakeFilesystemTest, JournalTooOld) {
   Insert("a=1", "key-order");
   // Update the timestamp on snapshot.baf by rewriting it.
   task_environment_.FastForwardBy(base::Seconds(1));
@@ -744,7 +770,7 @@ TEST_F(NoVarySearchCacheStorageFakeFilesystemTest, JournalTooOld) {
   EXPECT_EQ(cache().size(), 0u);
 }
 
-TEST_F(NoVarySearchCacheStorageFakeFilesystemTest, TakeSnapshot) {
+TEST_P(NoVarySearchCacheStorageFakeFilesystemTest, TakeSnapshot) {
   Insert("a=1", "key-order");
 
   const Sizes sizes_before = GetSizes();
@@ -775,7 +801,7 @@ TEST_F(NoVarySearchCacheStorageFakeFilesystemTest, TakeSnapshot) {
   EXPECT_EQ(sizes_after_snapshot, sizes_after_reset);
 }
 
-TEST_F(NoVarySearchCacheStorageFakeFilesystemTest, AutoSnapshot) {
+TEST_P(NoVarySearchCacheStorageFakeFilesystemTest, AutoSnapshot) {
   // Use a very large query to reduce the number of iterations needed for the
   // journal to reach the size to trigger a snapshot.
   const std::string query = "longparam=" + std::string(4000u, 'x');
@@ -864,7 +890,7 @@ class NoVarySearchCacheStorageMockFilesystemTest
   NoVarySearchCacheStorage storage_;
 };
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemTest, InitFails) {
+TEST_P(NoVarySearchCacheStorageMockFilesystemTest, InitFails) {
   EXPECT_CALL(operations(), Init).WillOnce(Return(false));
 
   TriggerLoad();
@@ -873,7 +899,7 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemTest, InitFails) {
               ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemTest, InitIsCalledFirst) {
+TEST_P(NoVarySearchCacheStorageMockFilesystemTest, InitIsCalledFirst) {
   {
     InSequence s;
     EXPECT_CALL(operations(), Init).WillOnce(Return(true));
@@ -899,7 +925,7 @@ class NoVarySearchCacheStorageMockFilesystemInitCalledTest
   }
 };
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+TEST_P(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
        WriteSnapshotFails) {
   EXPECT_CALL(operations(), Load)
       .WillOnce(Return(base::unexpected(base::File::FILE_ERROR_NOT_FOUND)));
@@ -912,7 +938,7 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
               ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+TEST_P(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
        CreateJournalFails) {
   EXPECT_CALL(operations(), Load)
       .WillOnce(Return(base::unexpected(base::File::FILE_ERROR_NOT_FOUND)));
@@ -926,7 +952,7 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
               ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+TEST_P(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
        StartJournalFails) {
   auto writer = std::make_unique<StrictMock<MockWriter>>();
   EXPECT_CALL(*writer, Write).WillOnce(Return(false));
@@ -942,7 +968,7 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
               ErrorIs(NoVarySearchCacheStorage::LoadFailed::kCannotJournal));
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+TEST_P(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
        JournallingFailsAfterStart) {
   auto writer = std::make_unique<StrictMock<MockWriter>>();
 
@@ -975,7 +1001,7 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
   EXPECT_EQ(cache->size(), 3u);
 }
 
-TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+TEST_P(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
        TakeSnapshotFails) {
   auto writer = std::make_unique<StrictMock<MockWriter>>();
   base::RunLoop run_loop;
@@ -1009,6 +1035,25 @@ TEST_F(NoVarySearchCacheStorageMockFilesystemInitCalledTest,
   // This third call will be ignored on this thread.
   storage().TakeSnapshot();
 }
+
+INSTANTIATE_TEST_SUITE_P(SeparateTaskRunner,
+                         NoVarySearchCacheStorageHighLevelTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(SeparateTaskRunner,
+                         NoVarySearchCacheStorageFakeFilesystemTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(SeparateTaskRunner,
+                         NoVarySearchCacheStorageCorruptSnapshotTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(SeparateTaskRunner,
+                         NoVarySearchCacheStorageCorruptJournalTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(SeparateTaskRunner,
+                         NoVarySearchCacheStorageMockFilesystemTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(SeparateTaskRunner,
+                         NoVarySearchCacheStorageMockFilesystemInitCalledTest,
+                         ::testing::Bool());
 
 }  // namespace
 

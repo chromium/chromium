@@ -12,6 +12,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/task/task_traits.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "crypto/crypto_buildflags.h"
@@ -898,6 +899,15 @@ NET_EXPORT BASE_DECLARE_FEATURE(kCookieParseRejectEmptyNameAmbiguous);
 NET_EXPORT BASE_DECLARE_FEATURE(kEnablePrivateVerificationTokens);
 
 NET_EXPORT bool IsDnsPlatformSupported();
+
+// If enabled, load the NoVarySearchCache persisted data on a different
+// threadpool sequence than used for journalling.
+NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchCacheLoadOnSeparateTaskRunner);
+
+// The priority to load the persisted data with. 0 => BEST_EFFORT,
+// 1 => USER_VISIBLE, 2 => USER_BLOCKING.
+NET_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TaskPriority,
+                                      kNoVarySearchCacheLoadTaskRunnerPriority);
 
 }  // namespace net::features
 

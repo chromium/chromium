@@ -17,6 +17,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "net/base/net_export.h"
@@ -114,7 +115,7 @@ class NET_EXPORT_PRIVATE NoVarySearchCacheStorage final
   class Journaller;
   class Loader;
 
-  using JournallerPtr = std::unique_ptr<Journaller, base::OnTaskRunnerDeleter>;
+  using JournallerPtr = base::SequenceBound<Journaller>;
 
   // On successful creation of the Journaller on the background thread, a
   // pointer to it needs to be passed back to the
