@@ -1083,8 +1083,14 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
                   @"Wrong number of unread entries.");
 }
 
+// TODO(crbug.com/433982582): Reenable on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testMarkAllRead DISABLED_testMarkAllRead
+#else
+#define MAYBE_testMarkAllRead testMarkAllRead
+#endif
 // Marks all unread entries as read.
-- (void)testMarkAllRead {
+- (void)MAYBE_testMarkAllRead {
   AddEntriesAndEnterEdit();
 
   AssertToolbarMarkButtonText(IDS_IOS_READING_LIST_MARK_ALL_BUTTON);
@@ -1365,14 +1371,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
              @"distillablePageURL should have loaded in incognito");
 }
 
-// Tests the Mark as Read/Unread context menu action for a reading list entry.
-- (void)testContextMenuMarkAsReadAndBack {
-#if TARGET_IPHONE_SIMULATOR
-  // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
-  if ([ChromeEarlGrey isIPhoneIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
-  }
+// TODO(crbug.com/433982582): Reenable on simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testContextMenuMarkAsReadAndBack \
+  DISABLED_testContextMenuMarkAsReadAndBack
+#else
+#define MAYBE_testContextMenuMarkAsReadAndBack testContextMenuMarkAsReadAndBack
 #endif
+// Tests the Mark as Read/Unread context menu action for a reading list entry.
+- (void)MAYBE_testContextMenuMarkAsReadAndBack {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
