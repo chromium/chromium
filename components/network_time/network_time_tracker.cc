@@ -19,6 +19,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -305,6 +306,9 @@ void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
 
   tracker_.emplace(time_at_last_measurement, ticks_at_last_measurement,
                    network_time_at_last_measurement, network_time_uncertainty);
+
+  base::UmaHistogramMediumTimes("NetworkTime.NetworkTimeUncertainty",
+                                network_time_uncertainty);
 
   base::DictValue time_mapping;
   time_mapping.Set(kPrefTime,

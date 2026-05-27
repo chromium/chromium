@@ -748,6 +748,22 @@ TEST_F(NetworkTimeTrackerTest, CustomFetchBehaviorTest) {
             tracker_->GetFetchBehavior());
 }
 
+TEST_F(NetworkTimeTrackerTest, UncertaintyHistogram) {
+  base::HistogramTester histogram_tester;
+
+  // Verify that the histogram counts are empty initially.
+  histogram_tester.ExpectTotalCount("NetworkTime.NetworkTimeUncertainty", 0);
+
+  UpdateNetworkTime(clock_->Now(), resolution_, latency_,
+                    tick_clock_->NowTicks());
+
+  // Verify that updating the network time logs the uncertainty correctly.
+  histogram_tester.ExpectTotalCount("NetworkTime.NetworkTimeUncertainty", 1);
+  histogram_tester.ExpectTimeBucketCount("NetworkTime.NetworkTimeUncertainty",
+                                         resolution_ + latency_ + adjustment_,
+                                         1);
+}
+
 TEST_F(NetworkTimeTrackerTest, ObserverTest) {
   // Test that the observer is notified when the network time changes.
   // Also test that the observer removes itself as an observer when it is

@@ -5493,6 +5493,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkTime.NetworkTimeUncertainty" units="ms"
+    expires_after="2027-05-20">
+  <owner>rogerm@chromium.org</owner>
+  <owner>asvitkine@chromium.org</owner>
+  <summary>
+    The uncertainty of the network time, recorded when the network time is
+    successfully synchronized. The uncertainty is calculated based on the
+    resolution of the time source, the latency of the query, and the resolution
+    of the local tick clock. This is the uncertainty in the data which will
+    later be used to estimate/calculate network time.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
