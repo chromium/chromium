@@ -1036,7 +1036,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   NavigateParams switch_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
   switch_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-  Navigate(&switch_params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&switch_params, future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   EXPECT_EQ(2, tab_list_->GetTabCount());
   EXPECT_EQ(1, tab_list_->GetActiveIndex());
@@ -1072,7 +1074,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   NavigateParams switch_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
   switch_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-  Navigate(&switch_params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&switch_params, future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   EXPECT_EQ(1, tab_list_->GetTabCount());
   EXPECT_EQ(url1, web_contents_->GetLastCommittedURL());
@@ -1101,7 +1105,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   NavigateParams switch_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
   switch_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-  Navigate(&switch_params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&switch_params, future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   EXPECT_EQ(1, tab_list_->GetTabCount());
   EXPECT_EQ(0, tab_list_->GetActiveIndex());
@@ -1141,7 +1147,9 @@ IN_PROC_BROWSER_TEST_F(
   // 4. Switch to the second tab.
   NavigateParams switch_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
   switch_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-  Navigate(&switch_params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&switch_params, future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   // 5. Verify the NTP tab is NOT closed because it has history.
   EXPECT_EQ(2, tab_list_->GetTabCount());
@@ -1177,7 +1185,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   // first.
   NavigateParams switch_params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
   switch_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-  Navigate(&switch_params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&switch_params, future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   // Verify the original NTP tab is closed and the second window's tab is
   // active.
@@ -1214,7 +1224,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                                ui::PAGE_TRANSITION_LINK);
   switch_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
   switch_params.source_contents = background_ntp_contents;
-  Navigate(&switch_params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&switch_params, future.GetCallback());
+  EXPECT_FALSE(future.Get());
 
   // 4. Verify the background NTP tab is closed, and the target URL tab (Tab 0)
   // remains active.
@@ -1224,24 +1236,6 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
             tab_list_->GetActiveTab()->GetContents()->GetLastCommittedURL());
 }
 
-IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
-                       Disposition_SwitchToTab_NoMatch_Sync) {
-  const GURL url1 = StartAtURL("/title1.html");
-  const GURL url2 = embedded_test_server()->GetURL("/title2.html");
-  NavigateParams params(browser_window_, url2, ui::PAGE_TRANSITION_LINK);
-  params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-
-  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
-
-  EXPECT_TRUE(handle);
-  content::TestNavigationObserver observer(handle->GetWebContents());
-  observer.Wait();
-
-  EXPECT_EQ(2, tab_list_->GetTabCount());
-  EXPECT_EQ(url1, tab_list_->GetTab(0)->GetContents()->GetLastCommittedURL());
-  EXPECT_EQ(url2, tab_list_->GetTab(1)->GetContents()->GetLastCommittedURL());
-  EXPECT_EQ(WindowOpenDisposition::NEW_FOREGROUND_TAB, params.disposition);
-}
 
 IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
                        Disposition_SwitchToTab_NoMatch_NewForegroundTab_Async) {
@@ -1292,8 +1286,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
 
   content::TestNavigationObserver switch_observer(
       tab_list_->GetTab(0)->GetContents());
-  base::WeakPtr<content::NavigationHandle> switch_handle =
-      Navigate(&switch_params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&switch_params, future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> switch_handle = future.Get();
   ASSERT_TRUE(switch_handle);
   switch_observer.Wait();
 
@@ -1316,7 +1311,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   params.source_contents = web_contents_;
 
   content::TestNavigationObserver navigation_observer(web_contents_);
-  base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
+  base::WeakPtr<content::NavigationHandle> handle = future.Get();
   EXPECT_TRUE(handle);
   EXPECT_EQ(url2, handle->GetURL());
   navigation_observer.Wait();
@@ -1376,7 +1373,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   NavigateParams switch_params1(window3, title2_url,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   switch_params1.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-  Navigate(&switch_params1);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future1;
+  Navigate(&switch_params1, future1.GetCallback());
+  EXPECT_FALSE(future1.Get());
 
   // 3. Assert that the window containing title2.html is the active tab
   EXPECT_EQ(window2, switch_params1.browser);
@@ -1388,7 +1387,9 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   NavigateParams switch_params2(window2, flags_url,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   switch_params2.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
-  Navigate(&switch_params2);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future2;
+  Navigate(&switch_params2, future2.GetCallback());
+  EXPECT_FALSE(future2.Get());
 
   // 5. Assert that the window containing chrome://flags is the newly active tab
   EXPECT_EQ(browser_window_, switch_params2.browser);
@@ -2233,9 +2234,10 @@ IN_PROC_BROWSER_TEST_F(NavigateAndroidBrowserTest,
   params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
   params.browser = nullptr;
 
-  base::WeakPtr<content::NavigationHandle> switch_handle = Navigate(&params);
+  base::test::TestFuture<base::WeakPtr<content::NavigationHandle>> future;
+  Navigate(&params, future.GetCallback());
   // Navigation doesn't actually happen since tab is already at url2.
-  EXPECT_FALSE(switch_handle);
+  EXPECT_FALSE(future.Get());
 
   // 3. Verify it found window2 and activated it.
   EXPECT_EQ(params.browser, window2);

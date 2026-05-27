@@ -527,19 +527,12 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     return nullptr;
   }
 
-  // Only handles dispositions that do not create new windows.
+  // Only handles dispositions that do not require window operations.
   if (params->disposition != WindowOpenDisposition::CURRENT_TAB &&
       params->disposition != WindowOpenDisposition::IGNORE_ACTION &&
       params->disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB &&
-      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB &&
-      params->disposition != WindowOpenDisposition::SWITCH_TO_TAB) {
+      params->disposition != WindowOpenDisposition::NEW_FOREGROUND_TAB) {
     return nullptr;
-  }
-
-  // This call may activate a different window, but no new window will be
-  // created.
-  if (params->disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
-    TrySwitchToMatchingTab(params);
   }
 
   return GetTabAndPerformNavigation(params);
