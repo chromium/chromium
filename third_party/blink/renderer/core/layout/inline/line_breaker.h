@@ -310,8 +310,8 @@ class CORE_EXPORT LineBreaker {
     return AvailableWidthToFit() - position_;
   }
   bool CanFitOnLine() const {
-    return (parent_breaker_ && !auto_wrap_) ||
-           position_ <= AvailableWidthToFit();
+    return position_ <= AvailableWidthToFit() ||
+           (parent_breaker_ && !auto_wrap_);
   }
   void UpdateAvailableWidth();
 
