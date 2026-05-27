@@ -2143,6 +2143,14 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     return E_FAIL;
   }
 
+  // Zero-initialize any trailing bytes (padding) in the buffer to prevent
+  // GPU process information disclosure.
+  size_t written_size = dst_y_size + dst_uv_size;
+  base::span<uint8_t> buffer_span = scoped_buffer.as_span();
+  if (buffer_span.size() > written_size) {
+    std::ranges::fill(buffer_span.subspan(written_size), 0);
+  }
+
   if (!SupportsSharedImageEncoding(workarounds_)) {
     return S_OK;
   }
@@ -2282,9 +2290,16 @@ HRESULT MediaFoundationVideoEncodeAccelerator::CopyInputSampleBufferFromGpu(
     return E_FAIL;
   }
   size_t copied_bytes =
-      input_visible_size_.width() * input_visible_size_.height() * 3 / 2;
+      VideoFrame::AllocationSize(frame->format(), input_visible_size_);
   hr = input_buffer->SetCurrentLength(copied_bytes);
   RETURN_ON_HR_FAILURE(hr, "Failed to set current buffer length", hr);
+
+  // Zero-initialize any trailing bytes (padding) in the buffer to prevent
+  // GPU process information disclosure.
+  base::span<uint8_t> buffer_span = scoped_buffer.as_span();
+  if (buffer_span.size() > copied_bytes) {
+    std::ranges::fill(buffer_span.subspan(copied_bytes), 0);
+  }
   hr = input_sample->RemoveAllBuffers();
   RETURN_ON_HR_FAILURE(hr, "Failed to remove buffers from sample", hr);
   hr = input_sample->AddBuffer(input_buffer.Get());
