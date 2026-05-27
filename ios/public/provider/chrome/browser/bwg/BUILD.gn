@@ -2,10 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("bwg_api") {
+source_set("gemini_api") {
   sources = [
+    # TODO(crbug.com/478259873): Replace with gemini after downstream cleanup
     "bwg_api.h",
     "bwg_gateway_protocol.h",
+    "gemini_api.h",
     "gemini_live_delegate.h",
   ]
   public_deps = [
@@ -13,4 +15,9 @@ source_set("bwg_api") {
     "//ios/chrome/browser/settings/ui_bundled/bwg/model",
     "//services/network/public/cpp:cpp_base",
   ]
+}
+
+# TODO(crbug.com/478259873): Remove this after cleanup of bwg_api is done
+group("bwg_api") {
+  public_deps = [ ":gemini_api" ]
 }

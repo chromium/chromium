@@ -7,7 +7,7 @@
 #import <memory>
 
 #import "components/optimization_guide/proto/features/common_quality_data.pb.h"
-#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 

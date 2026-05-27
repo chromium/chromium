@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
-#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 // TODO(crbug.com/481711842): Replace this enum and its gemini_metrics.h
 // equivalent with an enum in gemini_constants.h

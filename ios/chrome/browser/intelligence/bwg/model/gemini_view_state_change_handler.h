@@ -6,7 +6,7 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_GEMINI_VIEW_STATE_CHANGE_HANDLER_H_
 
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_delegate.h"
-#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 // Target interface to handle changes in the Gemini view state.
 class GeminiViewStateChangeHandlerTarget {

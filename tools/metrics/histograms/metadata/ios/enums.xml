@@ -133,7 +133,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Expanded"/>
 </enum>
 
-<!-- LINT.ThenChange(/ios/public/provider/chrome/browser/bwg/bwg_api.h:GeminiViewState) -->
+<!-- LINT.ThenChange(/ios/public/provider/chrome/browser/bwg/gemini_api.h:GeminiViewState) -->
 
 <enum name="GeolocationAPI">
   <int value="0" label="Clear Watch"/>

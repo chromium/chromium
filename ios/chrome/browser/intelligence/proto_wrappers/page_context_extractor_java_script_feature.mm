@@ -14,7 +14,7 @@
 #import "base/values.h"
 #import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"

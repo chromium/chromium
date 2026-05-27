@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("bwg") {
+source_set("gemini") {
   testonly = true
-  sources = [ "test_bwg.mm" ]
+  sources = [ "test_gemini.mm" ]
+
+  # TODO(crbug.com/478259873): Use gemini this after downstream cleanup
   deps = [ "//ios/public/provider/chrome/browser/bwg:bwg_api" ]
 }

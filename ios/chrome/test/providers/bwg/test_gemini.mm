@@ -1,37 +1,43 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
+#import "ios/public/provider/chrome/browser/bwg/gemini_api.h"
 
 namespace ios::provider {
-
-// Script to check whether PageContext should be detached from the request.
-constexpr const char16_t* kShouldDetachPageContextScript = u"return false;";
 
 void ConfigureWithStartupConfiguration(
     GeminiStartupConfiguration* gemini_startup_configuration) {}
 
+// TODO(crbug.com/478259873): Replace with StartGeminiOverlay
 void StartBwgOverlay(GeminiConfiguration* gemini_configuration) {}
 
 const std::u16string GetPageContextShouldDetachScript() {
-  return kShouldDetachPageContextScript;
+  return uR"JS(
+      if (window.__gCrWeb && window.__gCrWeb.pageContext) {
+        if (typeof window.__gCrWeb.pageContext.shouldDetach === 'boolean') {
+          return window.__gCrWeb.pageContext.shouldDetach;
+        }
+        if (window.__gCrWeb.pageContext.shouldTimeout) {
+          while(true);
+        }
+      }
+      return false;
+  )JS";
 }
 
+// TODO(crbug.com/478259873): Replace with CreateGeminiGateway
 id<BWGGatewayProtocol> CreateBWGGateway() {
   return nil;
 }
 
 void CheckGeminiEligibility(AuthenticationService* auth_service,
-                            BWGEligibilityCallback completion) {}
+                            GeminiEligibilityCallback completion) {}
 
 void ResetGemini() {}
 
 void UpdatePageAttachmentState(
     GeminiPageContextAttachmentState gemini_attachment_state) {}
-
-void UpdatePromptAction(gemini::EntryPoint entry_point,
-                        NSString* prepopulated_prompt) {}
 
 bool IsProtectedUrl(std::string url) {
   return false;
@@ -50,7 +56,12 @@ GeminiSettingsAction* ActionForSettingsContext(GeminiSettingsContext context) {
 
 void UpdateOverlayOffsetWithOpacity(CGFloat offset, CGFloat opacity) {}
 
+void UpdateGeminiViewState(GeminiViewState view_state) {}
+
 void UpdateGeminiViewState(GeminiViewState view_state, bool animated) {}
+
+void UpdatePromptAction(gemini::EntryPoint entry_point,
+                        NSString* prepopulated_prompt) {}
 
 GeminiViewState GetCurrentGeminiViewState() {
   return GeminiViewState::kUnknown;
@@ -68,10 +79,14 @@ GeminiPageContextAttachmentState GetCurrentPageContextAttachmentState() {
   return GeminiPageContextAttachmentState::kUnknown;
 }
 
-void SwitchToMode(GeminiViewMode mode, bool animated) {}
+static GeminiViewMode g_current_mode = GeminiViewMode::kUnknown;
+
+void SwitchToMode(GeminiViewMode mode, bool animated) {
+  g_current_mode = mode;
+}
 
 GeminiViewMode GetCurrentMode() {
-  return GeminiViewMode::kUnknown;
+  return g_current_mode;
 }
 
 void SetLiveStopButtonHidden(bool hidden) {}
