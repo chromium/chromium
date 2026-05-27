@@ -121,6 +121,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillAiShowDialogInSettingsWhenUpstreamingFails,
     &autofill::features::kAutofillAiShowWalletDisabledBanner,
     &autofill::features::kAutofillAiWalletPrivatePassesDeepLink,
+    &autofill::features::kAutofillAiWalletShopping,
     &autofill::features::kAutofillAiWithDataSchema,
     &autofill::features::kAutofillAndroidDesktopKeyboardAccessoryRevamp,
     &autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty,

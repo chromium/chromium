@@ -247,6 +247,7 @@ public abstract class ChromeFeatureList {
             "AutofillAiShowWalletDisabledBanner";
     public static final String AUTOFILL_AI_WALLET_PRIVATE_PASSES_DEEP_LINK =
             "AutofillAiWalletPrivatePassesDeepLink";
+    public static final String AUTOFILL_AI_WALLET_SHOPPING = "AutofillAiWalletShopping";
     public static final String AUTOFILL_AI_WITH_DATA_SCHEMA = "AutofillAiWithDataSchema";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
             "AutofillAllowNonHttpActivation";

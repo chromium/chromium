@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -553,7 +554,7 @@ public class HomeOfTransactionsFragmentTest {
         // We need to set the testing instance right before the click, otherwise Settings tests
         // don't launch proper fragment to initiate tests.
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
-        onView(withText(titleRes)).perform(click());
+        onView(withText(titleRes)).perform(scrollTo(), click());
 
         verify(mSettingsNavigation).startSettings(any(), eq(expectedFragment), any(), eq(true));
     }

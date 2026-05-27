@@ -93,6 +93,56 @@ public final class TestUtils {
                 /* isEligibleForWalletStorage= */ false);
     }
 
+    public static EntityType getOrderEntityType(
+            boolean isReadOnly, boolean isEnabled, boolean isEligibleForWalletStorage) {
+        return new EntityType(
+                EntityTypeName.ORDER,
+                isReadOnly,
+                isEnabled,
+                isEligibleForWalletStorage,
+                /* isMaskedStorageSupported= */ true,
+                /* typeNameAsString= */ "Order",
+                /* typeNameAsMetricsString= */ "Order",
+                /* typeNameSectionTitleString= */ "Orders",
+                /* addEntityTypeString= */ "Add order",
+                /* editEntityTypeString= */ "Edit order",
+                /* deleteEntityTypeString= */ "Delete order",
+                /* attributeTypes= */ Collections.emptyList(),
+                /* requiredAttributes= */ Collections.emptyList());
+    }
+
+    public static EntityType getOrderEntityType() {
+        return getOrderEntityType(
+                /* isReadOnly= */ true,
+                /* isEnabled= */ true,
+                /* isEligibleForWalletStorage= */ true);
+    }
+
+    public static EntityType getShipmentEntityType(
+            boolean isReadOnly, boolean isEnabled, boolean isEligibleForWalletStorage) {
+        return new EntityType(
+                EntityTypeName.SHIPMENT,
+                isReadOnly,
+                isEnabled,
+                isEligibleForWalletStorage,
+                /* isMaskedStorageSupported= */ true,
+                /* typeNameAsString= */ "Shipment",
+                /* typeNameAsMetricsString= */ "Shipment",
+                /* typeNameSectionTitleString= */ "Shipments",
+                /* addEntityTypeString= */ "Add shipment",
+                /* editEntityTypeString= */ "Edit shipment",
+                /* deleteEntityTypeString= */ "Delete shipment",
+                /* attributeTypes= */ Collections.emptyList(),
+                /* requiredAttributes= */ Collections.emptyList());
+    }
+
+    public static EntityType getShipmentEntityType() {
+        return getShipmentEntityType(
+                /* isReadOnly= */ true,
+                /* isEnabled= */ true,
+                /* isEligibleForWalletStorage= */ true);
+    }
+
     public static EntityInstanceWithLabels buildEntityInstanceWithLabels(
             EntityType entityType, String label, String subLabel) {
         EntityInstance entityInstance =
