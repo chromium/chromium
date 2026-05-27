@@ -216,7 +216,7 @@ constexpr base::FeatureParam<std::string> kBocaGeminiUrl{
 // The URL to use for Gemini guided learning in Boca.
 constexpr base::FeatureParam<std::string> kBocaGeminiGuidedLearningUrl{
     &kBocaGeminiIntegration, "BocaGeminiGuidedLearningUrl",
-    "https://gemini.google.com/guided-learning"};
+    "https://gemini.google.com/classtools"};
 
 // Enables or disables Boca network restriction for Boca on ChromeOS.
 BASE_FEATURE(kBocaNetworkRestriction, base::FEATURE_DISABLED_BY_DEFAULT);

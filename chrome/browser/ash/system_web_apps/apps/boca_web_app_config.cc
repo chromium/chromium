@@ -83,11 +83,9 @@ class ChromeBocaUIDelegate : public ash::boca::BocaUIDelegate {
 
     source->AddBoolean("geminiIntegration",
                        features::IsBocaGeminiIntegrationEnabled());
-    if (features::IsBocaGeminiIntegrationEnabled()) {
-      source->AddString("geminiUrl", features::kBocaGeminiUrl.Get());
-      source->AddString("geminiGuidedLearningUrl",
-                        features::kBocaGeminiGuidedLearningUrl.Get());
-    }
+    source->AddString("geminiUrl", features::kBocaGeminiUrl.Get());
+    source->AddString("geminiGuidedLearningUrl",
+                      features::kBocaGeminiGuidedLearningUrl.Get());
   }
 
  private:
