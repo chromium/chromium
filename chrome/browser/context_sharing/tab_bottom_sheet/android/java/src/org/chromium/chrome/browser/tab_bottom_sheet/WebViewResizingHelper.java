@@ -121,13 +121,17 @@ public class WebViewResizingHelper {
 
     private @Px int getDecorViewHeight() {
         Window window = mWindowAndroid.getWindow();
-        assert window != null;
+        if (window == null) {
+            return 0;
+        }
         return window.getDecorView().getHeight();
     }
 
     private @Px int getDecorViewWidth() {
         Window window = mWindowAndroid.getWindow();
-        assert window != null;
+        if (window == null) {
+            return 0;
+        }
         return window.getDecorView().getWidth();
     }
 
