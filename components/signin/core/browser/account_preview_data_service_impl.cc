@@ -9,7 +9,6 @@
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "components/prefs/pref_service.h"
-#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/core/browser/account_preview_data.h"
 #include "components/signin/core/browser/account_preview_data_fetcher.h"
 #include "components/signin/public/base/persistent_repeating_timer.h"
@@ -27,25 +26,14 @@ AccountPreviewDataServiceImpl::AccountPreviewDataServiceImpl(
     std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper,
     version_info::Channel channel)
     : identity_manager_(identity_manager),
-      pref_service_(CHECK_DEREF(pref_service)),
       url_loader_factory_(std::move(url_loader_factory)),
       network_delay_helper_(std::move(network_delay_helper)),
       channel_(channel) {
   CHECK(network_delay_helper_);
   identity_manager_observation_.Observe(identity_manager_);
 
-  // Load cached data from prefs at startup.
-  const auto& dict = pref_service_->GetDict(prefs::kAccountPreviewDataDict);
-  for (auto item : dict) {
-    if (std::optional<AccountPreviewData> data =
-            AccountPreviewData::Deserialize(item.second)) {
-      cached_data_[GaiaId(item.first)] = std::move(data.value());
-    }
-  }
-
   repeating_timer_ = std::make_unique<PersistentRepeatingTimer>(
-      &*pref_service_, prefs::kAccountPreviewDataLastUpdatePref,
-      base::Hours(24),
+      pref_service, prefs::kAccountPreviewDataLastUpdatePref, base::Hours(24),
       base::BindRepeating(
           &AccountPreviewDataServiceImpl::RefreshAllAccountPreviewData,
           weak_ptr_factory_.GetWeakPtr()));
@@ -83,10 +71,11 @@ void AccountPreviewDataServiceImpl::OnRefreshTokenRemovedForAccount(
   GaiaId gaia_id = info.gaia;
   cached_data_.erase(gaia_id);
   active_fetchers_.erase(gaia_id);
+}
 
-  // Delete data from prefs.
-  ScopedDictPrefUpdate update(&*pref_service_, prefs::kAccountPreviewDataDict);
-  update->Remove(gaia_id.ToString());
+void AccountPreviewDataServiceImpl::SetFetchCompleteCallbackForTesting(
+    base::OnceClosure callback) {
+  fetch_complete_callback_for_testing_ = std::move(callback);
 }
 
 void AccountPreviewDataServiceImpl::OnFetchCompleted(
@@ -94,18 +83,14 @@ void AccountPreviewDataServiceImpl::OnFetchCompleted(
     std::optional<AccountPreviewData> data) {
   if (data.has_value()) {
     cached_data_[gaia_id] = std::move(data).value();
-    SaveToPrefs(gaia_id, cached_data_[gaia_id]);
   }
 
   // `gaia_id` is owned by the fetcher and should not be used beyond this point.
   active_fetchers_.erase(gaia_id);
-}
 
-void AccountPreviewDataServiceImpl::SaveToPrefs(
-    const GaiaId& gaia_id,
-    const AccountPreviewData& data) {
-  ScopedDictPrefUpdate update(&*pref_service_, prefs::kAccountPreviewDataDict);
-  update->Set(gaia_id.ToString(), AccountPreviewData::Serialize(data));
+  if (fetch_complete_callback_for_testing_) {
+    std::move(fetch_complete_callback_for_testing_).Run();
+  }
 }
 
 void AccountPreviewDataServiceImpl::OnRefreshTokensLoaded() {
@@ -129,19 +114,14 @@ void AccountPreviewDataServiceImpl::MaybeClearInvalidAccountPreviewData(
   // Gather all gaia_id keys that do not have valid cookies, those will have
   // their data removed in the next step.
   std::vector<GaiaId> accounts_prefs_to_remove;
-  for (const std::pair<const std::string&, const base::Value&> account_prefs :
-       pref_service_->GetDict(prefs::kAccountPreviewDataDict)) {
-    GaiaId gaia_id(account_prefs.first);
+  for (const auto& [gaia_id, data] : cached_data_) {
     if (!gaia_ids_to_keep.contains(gaia_id)) {
-      accounts_prefs_to_remove.push_back(std::move(gaia_id));
+      accounts_prefs_to_remove.push_back(gaia_id);
     }
   }
 
   // Remove the account prefs/data that should not be kept.
-  ScopedDictPrefUpdate scoped_update(pref_service_.get(),
-                                     prefs::kAccountPreviewDataDict);
   for (const GaiaId& account_prefs_to_remove : accounts_prefs_to_remove) {
-    scoped_update->Remove(account_prefs_to_remove.ToString());
     cached_data_.erase(account_prefs_to_remove);
   }
 }

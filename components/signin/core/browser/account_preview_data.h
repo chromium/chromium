@@ -33,12 +33,6 @@ struct AccountPreviewData {
 
   // Example preview data: urls for which the account has saved data.
   std::vector<std::string> password_domains;
-
-  static base::DictValue Serialize(const AccountPreviewData& data);
-  static std::optional<AccountPreviewData> Deserialize(
-      std::string_view response_body);
-  static std::optional<AccountPreviewData> Deserialize(
-      const base::Value& value);
 };
 
 }  // namespace signin

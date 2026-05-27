@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -20,6 +21,7 @@
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 class PrefService;
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -27,7 +29,6 @@ class SharedURLLoaderFactory;
 namespace signin {
 
 class PersistentRepeatingTimer;
-
 class AccountPreviewDataFetcher;
 
 // Concrete implementation of AccountPreviewDataService.
@@ -55,6 +56,8 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
     return active_fetchers_.contains(gaia_id);
   }
 
+  void SetFetchCompleteCallbackForTesting(base::OnceClosure callback);
+
   // IdentityManager::Observer implementation:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
@@ -73,19 +76,18 @@ class AccountPreviewDataServiceImpl : public AccountPreviewDataService,
   void StartFetch(const GaiaId& gaia_id);
   void OnFetchCompleted(const GaiaId& gaia_id,
                         std::optional<AccountPreviewData> data);
-  void SaveToPrefs(const GaiaId& gaia_id, const AccountPreviewData& data);
-
   void MaybeClearInvalidAccountPreviewData(
       const AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
 
   raw_ptr<IdentityManager> identity_manager_ = nullptr;
-  const raw_ref<PrefService> pref_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<WaitForNetworkCallbackHelper> network_delay_helper_;
   const version_info::Channel channel_;
 
   std::unique_ptr<PersistentRepeatingTimer> repeating_timer_;
   bool deferred_refresh_pending_ = false;
+
+  base::OnceClosure fetch_complete_callback_for_testing_;
 
   absl::flat_hash_map<GaiaId, AccountPreviewData, GaiaId::Hash> cached_data_;
   absl::flat_hash_map<GaiaId,

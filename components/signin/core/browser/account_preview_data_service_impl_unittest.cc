@@ -26,22 +26,6 @@
 
 namespace signin {
 
-class PrefUpdateWaiter {
- public:
-  PrefUpdateWaiter(PrefService* prefs, const std::string& path) {
-    registrar_.Init(prefs);
-    registrar_.Add(path, run_loop_.QuitClosure());
-  }
-
-  ~PrefUpdateWaiter() = default;
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  PrefChangeRegistrar registrar_;
-  base::RunLoop run_loop_;
-};
-
 class AccountPreviewDataServiceTest : public testing::Test {
  public:
   AccountPreviewDataServiceTest()
@@ -66,7 +50,8 @@ class AccountPreviewDataServiceTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_{
       switches::kEnableAccountPreviewData};
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple prefs_;
   IdentityTestEnvironment identity_test_env_;
@@ -89,23 +74,22 @@ TEST_F(AccountPreviewDataServiceTest, FetchesForPrimaryAccount) {
       {.bookmark_count = 10, .password_count = 20, .history_count = 30},
       {"google.com", "yahoo.com"});
 
-  PrefUpdateWaiter waiter(&prefs_, prefs::kAccountPreviewDataDict);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
   // Simulating OnRefreshTokenUpdatedForAccount for primary account
   service_->OnRefreshTokenUpdatedForAccount(primary_info);
-  waiter.Wait();
+  run_loop.Run();
 
-  // It should trigger fetcher and save to prefs with correct data
-  const auto& dict = prefs_.GetDict(prefs::kAccountPreviewDataDict);
-  const auto* account_dict = dict.FindDict(primary_info.gaia.ToString());
-  ASSERT_TRUE(account_dict);
-  EXPECT_EQ(10, account_dict->FindInt("bookmark_count"));
-  EXPECT_EQ(20, account_dict->FindInt("password_count"));
-  EXPECT_EQ(30, account_dict->FindInt("history_count"));
-  const auto* domains = account_dict->FindList("password_domains");
-  ASSERT_TRUE(domains);
-  ASSERT_EQ(2U, domains->size());
-  EXPECT_EQ("google.com", (*domains)[0].GetString());
-  EXPECT_EQ("yahoo.com", (*domains)[1].GetString());
+  // It should trigger fetcher and save to memory cache with correct data
+  std::optional<AccountPreviewData> data =
+      service_->GetAccountPreviewData(primary_info.gaia);
+  ASSERT_TRUE(data.has_value());
+  EXPECT_EQ(10, data->bookmark_count);
+  EXPECT_EQ(20, data->password_count);
+  EXPECT_EQ(30, data->history_count);
+  ASSERT_EQ(2U, data->password_domains.size());
+  EXPECT_EQ("google.com", data->password_domains[0]);
+  EXPECT_EQ("yahoo.com", data->password_domains[1]);
 }
 
 TEST_F(AccountPreviewDataServiceTest, RemovesCachedData) {
@@ -114,48 +98,15 @@ TEST_F(AccountPreviewDataServiceTest, RemovesCachedData) {
 
   MockSuccessfulFetch(&test_url_loader_factory_);
 
-  PrefUpdateWaiter waiter(&prefs_, prefs::kAccountPreviewDataDict);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
   service_->OnRefreshTokenUpdatedForAccount(account_info);
-  waiter.Wait();
-  ASSERT_TRUE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                  .contains(account_info.gaia.ToString()));
+  run_loop.Run();
+  ASSERT_TRUE(service_->GetAccountPreviewData(account_info.gaia).has_value());
 
   service_->OnRefreshTokenRemovedForAccount(account_info.account_id);
 
-  EXPECT_FALSE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                   .contains(account_info.gaia.ToString()));
-}
-
-TEST_F(AccountPreviewDataServiceTest, LoadsCachedDataFromPrefs) {
-  AccountInfo account_info =
-      identity_test_env_.MakeAccountAvailable("secondary@gmail.com");
-
-  // Pre-populate the dictionary pref.
-  {
-    ScopedDictPrefUpdate update(&prefs_, prefs::kAccountPreviewDataDict);
-    AccountPreviewData cached_data;
-    cached_data.password_count = 42;
-    cached_data.bookmark_count = 7;
-    cached_data.history_count = 3;
-    update->Set(account_info.gaia.ToString(),
-                AccountPreviewData::Serialize(cached_data));
-  }
-
-  // Re-create the service to simulate startup.
-  network_delay_helper_ = nullptr;
-  service_.reset();
-  service_ = std::make_unique<AccountPreviewDataServiceImpl>(
-      identity_test_env_.identity_manager(), &prefs_,
-      test_url_loader_factory_.GetSafeWeakWrapper(),
-      std::make_unique<TestWaitForNetworkCallbackHelper>(),
-      version_info::Channel::UNKNOWN);
-
-  std::optional<AccountPreviewData> data =
-      service_->GetAccountPreviewData(account_info.gaia);
-  ASSERT_TRUE(data.has_value());
-  EXPECT_EQ(42, data->password_count);
-  EXPECT_EQ(7, data->bookmark_count);
-  EXPECT_EQ(3, data->history_count);
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
 }
 
 TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
@@ -175,8 +126,8 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
   // fires immediately on startup.
   prefs_.ClearPref(prefs::kAccountPreviewDataLastUpdatePref);
 
-  // Re-create the service. It will try to refresh on startup because pref is
-  // empty, but it should defer because tokens are not loaded.
+  // Re-create the service. It will try to refresh on startup, but it should
+  // defer because tokens are not loaded.
   auto helper = std::make_unique<TestWaitForNetworkCallbackHelper>();
   network_delay_helper_ = helper.get();
   service_ = std::make_unique<AccountPreviewDataServiceImpl>(
@@ -184,20 +135,19 @@ TEST_F(AccountPreviewDataServiceTest, PeriodicRefreshDefersUntilTokensLoaded) {
       test_url_loader_factory_.GetSafeWeakWrapper(), std::move(helper),
       version_info::Channel::UNKNOWN);
 
-  // Verify that it did NOT fetch yet (pref is empty).
-  EXPECT_FALSE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                   .contains(account_info.gaia.ToString()));
+  // Verify that it did NOT fetch yet.
+  EXPECT_FALSE(service_->GetAccountPreviewData(account_info.gaia).has_value());
 
   MockSuccessfulFetch(&test_url_loader_factory_);
 
-  PrefUpdateWaiter waiter(&prefs_, prefs::kAccountPreviewDataDict);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
   // Simulate tokens loaded. This should trigger the deferred refresh.
   identity_test_env_.ReloadAccountsFromDisk();
-  waiter.Wait();
+  run_loop.Run();
 
-  // Verify that it HAS fetched now (pref contains the account).
-  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                  .contains(account_info.gaia.ToString()));
+  // Verify that it HAS fetched now.
+  EXPECT_TRUE(service_->GetAccountPreviewData(account_info.gaia).has_value());
 }
 
 TEST_F(AccountPreviewDataServiceTest, ClearsInvalidDataOnCookieUpdate) {
@@ -211,18 +161,20 @@ TEST_F(AccountPreviewDataServiceTest, ClearsInvalidDataOnCookieUpdate) {
   MockSuccessfulFetch(&test_url_loader_factory_);
 
   // Trigger fetches and wait for completion.
-  PrefUpdateWaiter waiter_account_1(&prefs_, prefs::kAccountPreviewDataDict);
-  service_->OnRefreshTokenUpdatedForAccount(account1);
-  waiter_account_1.Wait();
-  PrefUpdateWaiter waiter_account_2(&prefs_, prefs::kAccountPreviewDataDict);
-  service_->OnRefreshTokenUpdatedForAccount(account2);
-  waiter_account_2.Wait();
+  {
+    base::RunLoop run_loop;
+    service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+    service_->OnRefreshTokenUpdatedForAccount(account1);
+    run_loop.Run();
+  }
+  {
+    base::RunLoop run_loop;
+    service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
+    service_->OnRefreshTokenUpdatedForAccount(account2);
+    run_loop.Run();
+  }
 
-  // Verify both are present in prefs and cache.
-  ASSERT_TRUE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                  .contains(account1.gaia.ToString()));
-  ASSERT_TRUE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                  .contains(account2.gaia.ToString()));
+  // Verify both are present in cache.
   ASSERT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
   ASSERT_TRUE(service_->GetAccountPreviewData(account2.gaia).has_value());
 
@@ -230,11 +182,6 @@ TEST_F(AccountPreviewDataServiceTest, ClearsInvalidDataOnCookieUpdate) {
   identity_test_env_.SetCookieAccounts({{account1.email, account1.gaia}});
 
   // 3. Assert: account2's data should be removed, account1's should remain.
-  EXPECT_TRUE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                  .contains(account1.gaia.ToString()));
-  EXPECT_FALSE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                   .contains(account2.gaia.ToString()));
-
   EXPECT_TRUE(service_->GetAccountPreviewData(account1.gaia).has_value());
   EXPECT_FALSE(service_->GetAccountPreviewData(account2.gaia).has_value());
 }
@@ -249,21 +196,18 @@ TEST_F(AccountPreviewDataServiceTest,
   // Mock successful fetch.
   MockSuccessfulFetch(&test_url_loader_factory_);
 
-  PrefUpdateWaiter waiter(&prefs_, prefs::kAccountPreviewDataDict);
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
   // Trigger fetch and wait for completion.
   service_->OnRefreshTokenUpdatedForAccount(primary_info);
-  waiter.Wait();
+  run_loop.Run();
 
-  ASSERT_TRUE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                  .contains(primary_info.gaia.ToString()));
   ASSERT_TRUE(service_->GetAccountPreviewData(primary_info.gaia).has_value());
 
   // 2. Trigger: Clear the primary account.
   identity_test_env_.ClearPrimaryAccount();
 
   // 3. Assert: Its data should be removed.
-  EXPECT_FALSE(prefs_.GetDict(prefs::kAccountPreviewDataDict)
-                   .contains(primary_info.gaia.ToString()));
   EXPECT_FALSE(service_->GetAccountPreviewData(primary_info.gaia).has_value());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -287,19 +231,19 @@ TEST_F(AccountPreviewDataServiceTest, QueuesFetchWhenOffline) {
       {.bookmark_count = 5, .password_count = 10, .history_count = 15},
       {"example.com"});
 
-  PrefUpdateWaiter waiter(&prefs_, prefs::kAccountPreviewDataDict);
-
+  base::RunLoop run_loop;
+  service_->SetFetchCompleteCallbackForTesting(run_loop.QuitClosure());
   // 2. Go online. This should trigger the queued fetch.
   network_delay_helper_->SetNetworkCallsDelayed(false);
-  waiter.Wait();
+  run_loop.Run();
 
   // Assert: The queued fetch completed successfully and data was stored.
-  const auto& dict = prefs_.GetDict(prefs::kAccountPreviewDataDict);
-  const auto* account_dict = dict.FindDict(account_info.gaia.ToString());
-  ASSERT_TRUE(account_dict);
-  EXPECT_EQ(5, account_dict->FindInt("bookmark_count"));
-  EXPECT_EQ(10, account_dict->FindInt("password_count"));
-  EXPECT_EQ(15, account_dict->FindInt("history_count"));
+  std::optional<AccountPreviewData> data =
+      service_->GetAccountPreviewData(account_info.gaia);
+  ASSERT_TRUE(data.has_value());
+  EXPECT_EQ(5, data->bookmark_count);
+  EXPECT_EQ(10, data->password_count);
+  EXPECT_EQ(15, data->history_count);
 }
 
 }  // namespace signin

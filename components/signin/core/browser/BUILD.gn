@@ -115,7 +115,6 @@ source_set("unit_tests") {
     "account_preview_data_service_impl_unittest.cc",
     "account_preview_data_test_util.cc",
     "account_preview_data_test_util.h",
-    "account_preview_data_unittest.cc",
     "account_reconcilor_delegate_unittest.cc",
     "account_reconcilor_unittest.cc",
     "active_primary_accounts_metrics_recorder_unittest.cc",
