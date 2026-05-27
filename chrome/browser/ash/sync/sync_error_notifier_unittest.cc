@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "components/sync/base/features.h"
 #include "components/sync/test/test_sync_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -106,6 +107,40 @@ TEST_F(SyncErrorNotifierTest, NotificationShownOnce) {
                                        kNotificationId, true /* by_user */);
   error_notifier_->OnStateChanged(&service_);
   ExpectNotificationShown(false);
+}
+
+TEST_F(SyncErrorNotifierTest, NotificationClickRedirectsToSyncSetupByDefault) {
+  service_.GetUserSettings()->SetPassphraseRequired();
+  service_.SetInitialSyncFeatureSetupComplete(true);
+
+  EXPECT_EQ(SyncErrorNotifier::GetDestinationSubpage(&service_), "syncSetup");
+}
+
+TEST_F(
+    SyncErrorNotifierTest,
+    NotificationClickRedirectsToAccountSettingsWhenFlagEnabledAndNoSyncConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  // Consent level kSignin (means HasSyncConsent is false).
+  service_.SetSignedIn(signin::ConsentLevel::kSignin);
+  service_.GetUserSettings()->SetPassphraseRequired();
+  service_.SetInitialSyncFeatureSetupComplete(true);
+
+  EXPECT_EQ(SyncErrorNotifier::GetDestinationSubpage(&service_), "account");
+}
+
+TEST_F(SyncErrorNotifierTest,
+       NotificationClickRedirectsToSyncSetupWhenFlagEnabledAndHasSyncConsent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(syncer::kReplaceSyncPromosWithSignInPromos);
+
+  // Consent level kSync (means HasSyncConsent is true).
+  service_.SetSignedIn(signin::ConsentLevel::kSync);
+  service_.GetUserSettings()->SetPassphraseRequired();
+  service_.SetInitialSyncFeatureSetupComplete(true);
+
+  EXPECT_EQ(SyncErrorNotifier::GetDestinationSubpage(&service_), "syncSetup");
 }
 
 }  // namespace

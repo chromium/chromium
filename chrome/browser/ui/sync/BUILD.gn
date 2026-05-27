@@ -26,7 +26,7 @@ source_set("sync") {
     ]
   }
 
-  if (toolkit_views && !is_chromeos) {
+  if (toolkit_views) {
     sources += [ "sync_passphrase_dialog.h" ]
     public_deps += [ "//ui/base/interaction" ]
   }
@@ -68,18 +68,15 @@ source_set("impl") {
   }
 
   if (toolkit_views) {
-    deps += [ "//chrome/common" ]
-
-    if (!is_chromeos) {
-      sources += [ "sync_passphrase_dialog.cc" ]
-      deps += [
-        "//chrome/browser:browser_process",
-        "//chrome/browser/ui/dialogs",
-        "//components/strings",
-        "//ui/base",
-        "//url",
-      ]
-    }
+    sources += [ "sync_passphrase_dialog.cc" ]
+    deps += [
+      "//chrome/browser:browser_process",
+      "//chrome/browser/ui/dialogs",
+      "//chrome/common",
+      "//components/strings",
+      "//ui/base",
+      "//url",
+    ]
   }
 }
 

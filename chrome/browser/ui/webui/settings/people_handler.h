@@ -228,8 +228,6 @@ class PeopleHandler : public SettingsPageUIHandler,
   void HandleGetSyncStatus(const base::ListValue& args);
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  void HandleShowSyncPassphraseDialog(const base::ListValue& args);
-
   // Displays the GAIA login form.
   void DisplayGaiaLogin(signin_metrics::AccessPoint access_point);
 
@@ -238,6 +236,7 @@ class PeopleHandler : public SettingsPageUIHandler,
       signin_metrics::AccessPoint access_point);
 #endif
 
+  void HandleShowSyncPassphraseDialog(const base::ListValue& args);
   void HandleShowAccountSettingsUI(const base::ListValue& args);
   void HandleSetDatatype(const base::ListValue& args);
   void HandleGetStoredAccounts(const base::ListValue& args);

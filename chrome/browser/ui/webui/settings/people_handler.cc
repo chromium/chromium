@@ -377,11 +377,12 @@ void PeopleHandler::RegisterMessages() {
       "SyncSetupStartSignIn",
       base::BindRepeating(&PeopleHandler::HandleStartSignin,
                           base::Unretained(this)));
+#endif
+
   web_ui()->RegisterMessageCallback(
       "SyncShowSyncPassphraseDialog",
       base::BindRepeating(&PeopleHandler::HandleShowSyncPassphraseDialog,
                           base::Unretained(this)));
-#endif
 
   web_ui()->RegisterMessageCallback(
       "ShowAccountSettingsUI",
@@ -955,7 +956,6 @@ void PeopleHandler::HandleSyncShowBookmarkLimitExceededHelp(
       syncer::SyncService::BookmarksLimitExceededHelpClickedSource::kSettings);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 void PeopleHandler::HandleShowSyncPassphraseDialog(
     const base::ListValue& args) {
   BrowserWindowInterface* browser =
@@ -968,7 +968,6 @@ void PeopleHandler::HandleShowSyncPassphraseDialog(
   ShowSyncPassphraseDialogAndDecryptData(
       *browser->GetBrowserForMigrationOnly());
 }
-#endif
 
 void PeopleHandler::HandleShowAccountSettingsUI(const base::ListValue& args) {
   CHECK(syncer::IsReplaceSyncPromosWithSignInPromosEnabled());

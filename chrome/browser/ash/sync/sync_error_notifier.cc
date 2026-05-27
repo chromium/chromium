@@ -16,6 +16,7 @@
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -26,6 +27,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/account_id/account_id.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -49,7 +51,7 @@ struct BubbleViewParameters {
   base::RepeatingClosure click_action;
 };
 
-void ShowSyncSetup(Profile* profile) {
+void OpenSyncSettings(Profile* profile) {
   LoginUIService* login_ui = LoginUIServiceFactory::GetForProfile(profile);
   if (login_ui->current_login_ui()) {
     // TODO(michaelpg): The LoginUI might be on an inactive desktop.
@@ -58,8 +60,9 @@ void ShowSyncSetup(Profile* profile) {
     return;
   }
 
-  chrome::ShowSettingsSubPageForProfile(profile,
-                                        ash::chrome_urls::kSyncSetupSubPage);
+  chrome::ShowSettingsSubPageForProfile(
+      profile, SyncErrorNotifier::GetDestinationSubpage(
+                   SyncServiceFactory::GetForProfile(profile)));
 }
 
 void TriggerSyncKeyRetrieval(Profile* profile) {
@@ -88,7 +91,7 @@ BubbleViewParameters GetBubbleViewParameters(
     // the notification gets transferred to NotificationDisplayService, which is
     // a keyed service that cannot outlive the profile.
     params.click_action =
-        base::BindRepeating(&ShowSyncSetup, base::Unretained(profile));
+        base::BindRepeating(&OpenSyncSettings, base::Unretained(profile));
     return params;
   }
 
@@ -125,6 +128,17 @@ BubbleViewParameters GetBubbleViewParameters(
 }
 
 }  // namespace
+
+// static
+std::string SyncErrorNotifier::GetDestinationSubpage(
+    syncer::SyncService* sync_service) {
+  const bool use_account_page =
+      sync_service && !sync_service->HasSyncConsent() &&
+      syncer::IsReplaceSyncPromosWithSignInPromosEnabled();
+
+  return use_account_page ? ash::chrome_urls::kAccountSubPage
+                          : ash::chrome_urls::kSyncSetupSubPage;
+}
 
 SyncErrorNotifier::SyncErrorNotifier(syncer::SyncService* sync_service,
                                      Profile* profile)

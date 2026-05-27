@@ -19,6 +19,8 @@ namespace ash {
 class SyncErrorNotifier : public syncer::SyncServiceObserver,
                           public KeyedService {
  public:
+  static std::string GetDestinationSubpage(syncer::SyncService* sync_service);
+
   SyncErrorNotifier(syncer::SyncService* sync_service, Profile* profile);
 
   SyncErrorNotifier(const SyncErrorNotifier&) = delete;

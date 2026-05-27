@@ -253,6 +253,7 @@
             '$i18nPolymer{turnOffSync}',
             syncStatus.secondaryButtonActionText)]]
         </cr-button>
+        </if>
         <cr-button id="sync-error-button" class="action-button cr-button-gap"
             hidden="[[!shouldShowErrorActionButton_(syncStatus,
             showSetupButtons_, syncStatus.statusAction)]]"
@@ -260,6 +261,7 @@
             disabled="[[syncStatus.firstSetupInProgress]]">
           [[syncStatus.statusActionText]]
         </cr-button>
+        <if expr="not is_chromeos">
         <cr-button class="action-button cr-button-gap"
             on-click="onSyncButtonClick_" id="account-aware"
             hidden="[[!shouldShowAccountAwareSigninButton_(

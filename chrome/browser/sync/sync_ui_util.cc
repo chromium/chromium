@@ -307,7 +307,7 @@ bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
   return settings->IsPassphraseRequiredForPreferredDataTypes();
 }
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID)
 void ShowSyncPassphraseDialogAndDecryptData(Browser& browser) {
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(browser.profile());
@@ -327,7 +327,7 @@ void ShowSyncPassphraseDialogAndDecryptData(Browser& browser) {
           },
           browser.profile()->GetWeakPtr()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
 void OpenTabForSyncKeyRetrieval(

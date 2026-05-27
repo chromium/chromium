@@ -1212,11 +1212,9 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, DISABLED_Subpage) {
   RunTest("settings/settings_subpage_test.js", "mocha.run()");
 }
 
-#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, SyncAccountControl) {
   RunTest("settings/sync_account_control_test.js", "mocha.run()");
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(SettingsTest, SyncEncryptionOptions) {
   RunTest("settings/sync_encryption_options_test.js", "mocha.run()");
