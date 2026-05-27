@@ -340,7 +340,6 @@ CreatePredictions(const FormData& form,
                   bool is_override = false,
                   DriverId driver_id = DriverId(1)) {
   FormPredictions predictions;
-  predictions.driver_id = driver_id;
   for (const auto& index_prediction : field_predictions) {
     autofill::FieldRendererId renderer_id =
         form.fields()[index_prediction.first].renderer_id();

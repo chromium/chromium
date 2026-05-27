@@ -591,12 +591,10 @@ PasswordFormClassification ChromeAutofillClientIOS::ClassifyAsPasswordForm(
 
   auto field_ids = base::ToVector(renderer_form.value().fields(),
                                   &autofill::FormFieldData::global_id);
-  // The driver id is irrelevant here because it would only be used by password
-  // manager logic that handles the `PasswordForm` returned by the parser.
   return password_manager::ClassifyAsPasswordForm(
-      *renderer_form, password_manager::ConvertToFormPredictions(
-                          password_manager::DriverId(), *renderer_form,
-                          form_structure->GetServerPredictions(field_ids)));
+      *renderer_form,
+      password_manager::ConvertToFormPredictions(
+          *renderer_form, form_structure->GetServerPredictions(field_ids)));
 }
 
 AutofillSaveCardInfoBarDelegateIOS*

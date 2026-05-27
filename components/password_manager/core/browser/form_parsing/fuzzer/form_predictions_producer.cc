@@ -48,8 +48,6 @@ FormPredictions GenerateFormPredictions(const FormData& form_data,
                                         FuzzedDataProvider& provider) {
   FormPredictions predictions;
 
-  predictions.driver_id =
-      DriverId::FromUnsafeValue(provider.ConsumeIntegral<int>());
   predictions.form_signature =
       autofill::FormSignature(provider.ConsumeIntegral<uint64_t>());
 

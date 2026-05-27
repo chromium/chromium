@@ -50,9 +50,9 @@ autofill::PasswordFormClassification ClassifyAsPasswordForm(
   std::vector<autofill::FieldGlobalId> field_ids =
       base::ToVector(it->first.fields(), &autofill::FormFieldData::global_id);
   return ClassifyAsPasswordForm(
-      it->first, ConvertToFormPredictions(
-                     DriverId(), it->first,
-                     manager.GetServerPredictionsForForm(form_id, field_ids)));
+      it->first,
+      ConvertToFormPredictions(
+          it->first, manager.GetServerPredictionsForForm(form_id, field_ids)));
 }
 
 }  // namespace password_manager

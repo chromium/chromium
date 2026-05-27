@@ -37,13 +37,11 @@ const DriverId kAnotherDriverId = DriverId(2);
 constexpr FieldRendererId kAnotherFieldId(2);
 constexpr FieldType kAnotherFieldType = autofill::PASSWORD;
 
-FormPredictions CreateTestPredictions(DriverId driver_id,
-                                      FormSignature form_signature,
+FormPredictions CreateTestPredictions(FormSignature form_signature,
                                       FieldSignature field_signature,
                                       FieldRendererId renderer_id,
                                       FieldType type) {
   FormPredictions predictions;
-  predictions.driver_id = driver_id;
   predictions.form_signature = form_signature;
 
   predictions.fields.emplace_back(renderer_id, field_signature, type,
@@ -122,9 +120,8 @@ TEST_F(FieldInfoManagerTest, FieldValueLowercased) {
 TEST_F(FieldInfoManagerTest, InfoAddedWithPredictions) {
   FieldInfo info(kTestDriverId, kTestFieldId, kTestDomain, u"value",
                  /*is_likely_otp=*/false);
-  FormPredictions predictions =
-      CreateTestPredictions(kTestDriverId, kTestFormSignature,
-                            kTestFieldSignature, kTestFieldId, kTestFieldType);
+  FormPredictions predictions = CreateTestPredictions(
+      kTestFormSignature, kTestFieldSignature, kTestFieldId, kTestFieldType);
   manager_->AddFieldInfo(info, predictions);
 
   auto field_info_cache = manager_->GetFieldInfo(kTestDomain);
@@ -142,9 +139,8 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
   // Create test predictions.
   std::map<std::pair<autofill::FormSignature, DriverId>, FormPredictions>
       predictions;
-  FormPredictions form_prediction =
-      CreateTestPredictions(kTestDriverId, kTestFormSignature,
-                            kTestFieldSignature, kTestFieldId, kTestFieldType);
+  FormPredictions form_prediction = CreateTestPredictions(
+      kTestFormSignature, kTestFieldSignature, kTestFieldId, kTestFieldType);
 
   // Add another field.
   form_prediction.fields.emplace_back(kAnotherFieldId, kAnotherFieldSignature,
@@ -153,9 +149,9 @@ TEST_F(FieldInfoManagerTest, ProcessServerPredictions) {
   predictions[{kTestFormSignature, kTestDriverId}] = form_prediction;
 
   // Add a prediction with the same field id, but different driver.
-  FormPredictions different_driver_prediction = CreateTestPredictions(
-      kAnotherDriverId, kAnotherFormSignature, kAnotherFieldSignature,
-      kTestFieldId, kAnotherFieldType);
+  FormPredictions different_driver_prediction =
+      CreateTestPredictions(kAnotherFormSignature, kAnotherFieldSignature,
+                            kTestFieldId, kAnotherFieldType);
   predictions[{kAnotherFormSignature, kAnotherDriverId}] =
       different_driver_prediction;
 

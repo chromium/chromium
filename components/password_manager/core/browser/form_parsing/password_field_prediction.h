@@ -67,9 +67,6 @@ struct FormPredictions {
   FormPredictions& operator=(FormPredictions&&);
   ~FormPredictions();
 
-  // Id of PasswordManagerDriver which corresponds to the frame of this form.
-  DriverId driver_id;
-
   autofill::FormSignature form_signature;
   std::vector<PasswordFieldPrediction> fields;
 
@@ -79,7 +76,6 @@ struct FormPredictions {
 
 // Extracts password related server predictions from `form` and `predictions`.
 FormPredictions ConvertToFormPredictions(
-    DriverId driver_id,
     const autofill::FormData& form,
     const base::flat_map<autofill::FieldGlobalId,
                          autofill::AutofillServerPrediction>& predictions);

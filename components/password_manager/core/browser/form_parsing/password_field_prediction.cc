@@ -111,7 +111,6 @@ FormPredictions& FormPredictions::operator=(FormPredictions&&) = default;
 FormPredictions::~FormPredictions() = default;
 
 FormPredictions ConvertToFormPredictions(
-    DriverId driver_id,
     const autofill::FormData& form,
     const base::flat_map<FieldGlobalId, AutofillServerPrediction>&
         predictions) {
@@ -164,7 +163,6 @@ FormPredictions ConvertToFormPredictions(
   }
 
   FormPredictions result;
-  result.driver_id = driver_id;
   result.form_signature = CalculateFormSignature(form);
   result.fields = std::move(field_predictions);
   return result;

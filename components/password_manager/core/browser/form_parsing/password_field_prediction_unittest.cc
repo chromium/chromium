@@ -105,12 +105,10 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     test_api(form_data).Append(std::move(field));
   }
 
-  const DriverId driver_id = DriverId(1000);
   FormPredictions actual_predictions =
-      ConvertToFormPredictions(driver_id, form_data, autofill_predictions);
+      ConvertToFormPredictions(form_data, autofill_predictions);
 
   // Check whether actual predictions are equal to expected ones.
-  EXPECT_EQ(driver_id, actual_predictions.driver_id);
   EXPECT_EQ(CalculateFormSignature(form_data),
             actual_predictions.form_signature);
   EXPECT_EQ(std::size(test_fields), actual_predictions.fields.size());
@@ -175,7 +173,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
     }
 
     FormPredictions actual_predictions =
-        ConvertToFormPredictions(DriverId(1), form_data, autofill_predictions);
+        ConvertToFormPredictions(form_data, autofill_predictions);
 
     for (size_t i = 0; i < form_data.fields().size(); ++i) {
       SCOPED_TRACE(
@@ -230,8 +228,6 @@ TEST(FormPredictionsTest, DeriveFromFieldType) {
 // Tests that if |AutofillServerPrediction| has an override flag, it
 // will be propagated to |FormPredictions|.
 TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
-  const DriverId driver_id = DriverId(1);
-
   FormData form;
   FormFieldData single_username_field;
   single_username_field.set_renderer_id(autofill::FieldRendererId(1000));
@@ -245,14 +241,13 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_OverrideFlagPropagated) {
       {single_username_field.global_id(), autofill_prediction});
 
   FormPredictions expected_result;
-  expected_result.driver_id = driver_id;
   expected_result.form_signature = CalculateFormSignature(form);
   expected_result.fields.push_back(
       {single_username_field.renderer_id(),
        CalculateFieldSignatureForField(single_username_field),
        autofill::SINGLE_USERNAME, /*is_override=*/true});
 
-  EXPECT_EQ(ConvertToFormPredictions(driver_id, form, autofill_predictions),
+  EXPECT_EQ(ConvertToFormPredictions(form, autofill_predictions),
             expected_result);
 }
 
