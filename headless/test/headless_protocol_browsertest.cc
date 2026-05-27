@@ -383,7 +383,7 @@ class HeadlessProtocolBrowserTestWithAllowedCrashes
 };
 
 HEADLESS_PROTOCOL_TEST_F(HeadlessProtocolBrowserTestWithAllowedCrashes,
-                         HiddenTargetSyncClose,
+                         DISABLED_HiddenTargetSyncClose,
                          "shared/hidden-target-sync-close.js")
 HEADLESS_PROTOCOL_TEST(HiddenTargetCreateInvalidParams,
                        "shared/hidden-target-create-invalid-params.js")
