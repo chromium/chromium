@@ -6,5 +6,8 @@ file://ui/views/OWNERS
 # For WebUI histograms:
 file://ui/webui/PLATFORM_OWNERS
 
+# For Initial WebUI histograms:
+leimy@chromium.org
+
 # For Default Browser histogram
 koretadaniel@chromium.org
