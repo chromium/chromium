@@ -255,6 +255,23 @@ void PrintViewManagerBase::PrintForPrintPreview(
 #endif
                      std::move(callback), std::move(printer_query)));
 }
+
+void PrintViewManagerBase::AppendPrintPreviewSettings(base::DictValue settings,
+                                                      bool is_pdf) {
+  CHECK(!settings.empty());
+  if (is_pdf) {
+    settings.Set(kSettingHeaderFooterEnabled, false);
+    settings.Set(kSettingMarginsType,
+                 static_cast<int>(mojom::MarginType::kNoMargins));
+  }
+  print_preview_settings_.push(std::move(settings));
+}
+
+void PrintViewManagerBase::ClearPrintPreviewSettings() {
+  while (!print_preview_settings_.empty()) {
+    print_preview_settings_.pop();
+  }
+}
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 void PrintViewManagerBase::PrintToPdf(
@@ -307,7 +324,7 @@ void PrintViewManagerBase::OnDidUpdatePrintableArea(
     std::unique_ptr<PrinterQuery> printer_query,
     base::DictValue job_settings,
     std::unique_ptr<PrintSettings> print_settings,
-    UpdatePrintSettingsCallback callback,
+    GetPrintPreviewParamsCallback callback,
     bool success) {
   if (!success) {
     PRINTER_LOG(ERROR) << "Unable to update printable area for "
@@ -319,15 +336,15 @@ void PrintViewManagerBase::OnDidUpdatePrintableArea(
   }
   PRINTER_LOG(EVENT) << "Paper printable area updated for vendor id "
                      << print_settings->requested_media().vendor_id;
-  CompleteUpdatePrintSettings(std::move(job_settings),
-                              std::move(print_settings), std::move(callback));
+  CompleteGetPrintPreviewParams(std::move(job_settings),
+                                std::move(print_settings), std::move(callback));
 }
 #endif
 
-void PrintViewManagerBase::CompleteUpdatePrintSettings(
+void PrintViewManagerBase::CompleteGetPrintPreviewParams(
     base::DictValue job_settings,
     std::unique_ptr<PrintSettings> print_settings,
-    UpdatePrintSettingsCallback callback) {
+    GetPrintPreviewParamsCallback callback) {
   mojom::PrintPagesParamsPtr settings = mojom::PrintPagesParams::New();
   settings->pages = GetPageRangesFromJobSettings(job_settings);
   settings->params = mojom::PrintParams::New();
@@ -687,14 +704,22 @@ void PrintViewManagerBase::GetDefaultPrintSettings(
 }
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-void PrintViewManagerBase::UpdatePrintSettings(
-    base::DictValue job_settings,
-    UpdatePrintSettingsCallback callback) {
+void PrintViewManagerBase::GetPrintPreviewParams(
+    GetPrintPreviewParamsCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!GetPrintingEnabledBooleanPref()) {
     std::move(callback).Run(nullptr);
     return;
   }
+
+  if (print_preview_settings_.empty()) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  base::DictValue job_settings = std::move(print_preview_settings_.front());
+  print_preview_settings_.pop();
+  CHECK(!job_settings.empty());
 
   std::optional<int> printer_type_value =
       job_settings.FindInt(kSettingPrinterType);
@@ -765,8 +790,8 @@ void PrintViewManagerBase::UpdatePrintSettings(
   }
 #endif
 
-  CompleteUpdatePrintSettings(std::move(job_settings),
-                              std::move(print_settings), std::move(callback));
+  CompleteGetPrintPreviewParams(std::move(job_settings),
+                                std::move(print_settings), std::move(callback));
 }
 
 void PrintViewManagerBase::SetAccessibilityTree(
