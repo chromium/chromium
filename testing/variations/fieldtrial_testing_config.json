@@ -11529,7 +11529,8 @@
                 {
                     "name": "Enabled_AutoOpenGlicForPdf_UnconsentedUsers",
                     "params": {
-                        "AutoOpenGlicForPdfWithOnboarding": "true"
+                        "AutoOpenGlicForPdfWithOnboarding": "true",
+                        "MinWindowWidthForPdfAutoOpen": "1500"
                     },
                     "enable_features": [
                         "AutoOpenGlicForPdf",
