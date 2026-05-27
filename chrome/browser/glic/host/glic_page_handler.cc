@@ -262,13 +262,7 @@ class ActiveStateCalculator : public PanelStateObserver {
   // GlicInstanceCoordinator::StateObserver implementation.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state) override {
     panel_state_kind_ = panel_state.kind;
-    if (panel_state_kind_ != glic::mojom::PanelStateKind::kHidden) {
-      RecalculateAndNotify();
-    } else {
-      // Only delay hidden state. This ensures visible state is applied
-      // immediately.
-      PostRecalcAndNotify();
-    }
+    PostRecalcAndNotify();
   }
 
  private:

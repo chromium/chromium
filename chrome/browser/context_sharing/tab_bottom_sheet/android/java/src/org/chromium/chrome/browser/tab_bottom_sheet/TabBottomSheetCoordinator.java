@@ -244,7 +244,8 @@ public class TabBottomSheetCoordinator {
                         setToFixedHeightOrFallback();
 
                         boolean isSheetHeightSufficient =
-                                mMediator.isSheetHeightSufficient(getDesiredFixedHeight());
+                                mMediator.isSheetHeightSufficient(
+                                        mBottomSheetController.getMaxOffset());
                         if (startsExpanded) {
                             if (mSheetContent != null && isSheetHeightSufficient) {
                                 mBottomSheetController.expandSheet(animate);
@@ -588,13 +589,9 @@ public class TabBottomSheetCoordinator {
         mMediator.setToFlexibleHeight();
     }
 
-    private @Px int getDesiredFixedHeight() {
-        return (int) (getVisibleViewportHeight() * getDefaultHeightRatio());
-    }
-
     private void setToFixedHeightOrFallback() {
         if (isActivityInactive(mWindowAndroid)) return;
-        @Px int fixedHeight = getDesiredFixedHeight();
+        @Px int fixedHeight = (int) (getVisibleViewportHeight() * getDefaultHeightRatio());
         mMediator.setToFixedHeight(fixedHeight);
 
         // In the case the bottom sheet is unable to set to our desired fixed height, fallback to
