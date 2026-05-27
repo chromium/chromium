@@ -11,13 +11,11 @@ import android.content.res.Resources;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import android.widget.FrameLayout;
 
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -31,8 +29,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.components.omnibox.OmniboxCapabilities;
@@ -74,7 +70,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private @Nullable NavigationListener mNavigationListener;
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
-    private boolean mToolbarOnTop = true;
 
     private final int mBaseBottomPadding;
     private final int mBaseTopPadding;
@@ -115,17 +110,10 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         private @Nullable Runnable mSuggestionDropdownScrollListener;
         private @Nullable Runnable mSuggestionDropdownOverscrolledToTopListener;
         private @Nullable Callback<Integer> mScrollOffsetListener;
-        private boolean mToolbarOnTop = true;
 
         public SuggestionLayoutScrollListener(Context context) {
             super(context);
             mIsScrolledToTop = true;
-        }
-
-        void setToolbarPosition(boolean isToolbarOnTop) {
-            mToolbarOnTop = isToolbarOnTop;
-            setStackFromEnd(!isToolbarOnTop);
-            setReverseLayout(!isToolbarOnTop);
         }
 
         @Override
@@ -224,10 +212,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
             // - resultingDeltaY <= 0
             // - requestedDeltaY <= 0
             // - Math.abs(resultingDeltaY) < Math.abs(requestedDeltaY)
-            boolean newIsScrolledToTop =
-                    mToolbarOnTop
-                            ? (resultingDeltaY > requestedDeltaY)
-                            : (resultingDeltaY < requestedDeltaY);
+            boolean newIsScrolledToTop = resultingDeltaY > requestedDeltaY;
 
             if (mIsScrolledToTop == newIsScrolledToTop) return resultingDeltaY;
             mIsScrolledToTop = newIsScrolledToTop;
@@ -517,11 +502,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         boolean isGoDownKey = KeyNavigationUtil.isGoDown(event);
         boolean isGoUpKey = KeyNavigationUtil.isGoUp(event);
 
-        if ((mToolbarOnTop && isGoDownKey) || (!mToolbarOnTop && isGoUpKey)) {
+        if (isGoDownKey) {
             mSelectionController.selectNextItem();
             handleSelectionChange();
             return true;
-        } else if ((mToolbarOnTop && isGoUpKey) || (!mToolbarOnTop && isGoDownKey)) {
+        } else if (isGoUpKey) {
             mSelectionController.selectPreviousItem();
             handleSelectionChange();
             return true;
@@ -593,22 +578,6 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
 
     /* package */ void cancelWindowContentChangedAnnouncement() {
         mHandler.removeCallbacksAndMessages(TOKEN_ACCESSIBILITY_FOCUS);
-    }
-
-    void setToolbarPosition(@ControlsPosition int toolbarPosition) {
-        mToolbarOnTop =
-                !(ChromeFeatureList.sAndroidBottomToolbarV2ReverseOrderSuggestionsList.getValue()
-                        && toolbarPosition == ControlsPosition.BOTTOM);
-        mLayoutScrollListener.setToolbarPosition(mToolbarOnTop);
-
-        var params = (FrameLayout.LayoutParams) getLayoutParams();
-        params.gravity = mToolbarOnTop ? Gravity.TOP : Gravity.BOTTOM;
-        setLayoutParams(params);
-    }
-
-    /** Returns whether the toolbar is currently positioned on top. For testing purposes only. */
-    boolean getToolbarOnTopForTesting() {
-        return mToolbarOnTop;
     }
 
     @VisibleForTesting
