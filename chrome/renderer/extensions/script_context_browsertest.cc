@@ -7,12 +7,15 @@
 #include "chrome/test/base/chrome_render_view_test.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/frame_load_waiter.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/mojom/match_origin_as_fallback.mojom-shared.h"
 #include "extensions/renderer/script_context_set.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using blink::WebLocalFrame;
 

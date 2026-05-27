@@ -1824,6 +1824,7 @@ source_set("platform_browser_tests") {
       "../browser/ui/extensions/extensions_toolbar_view_model_browsertest.cc",
       "../browser/ui/webui/extensions/extension_settings_browsertest.cc",
       "../browser/ui/webui/extensions/extensions_internals_browsertest.cc",
+      "../renderer/extensions/script_context_browsertest.cc",
     ]
     deps += [
       ":test_support",
@@ -1873,6 +1874,7 @@ source_set("platform_browser_tests") {
       "//extensions/browser:crx_installer",
       "//extensions/browser:webstore_installer",
       "//extensions/browser/updater",
+      "//extensions/renderer",
       "//extensions/strings",
       "//ui/base:ozone_buildflags",
       "//ui/base/idle",
@@ -4952,7 +4954,6 @@ if (!is_android) {
         "../browser/ui/views/user_education/recent_session_observer_impl_browsertest.cc",
         "../browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_close_window_browsertest.cc",
         "../renderer/controlled_frame/web_url_pattern_natives_browsertest.cc",
-        "../renderer/extensions/script_context_browsertest.cc",
       ]
 
       sources += [
