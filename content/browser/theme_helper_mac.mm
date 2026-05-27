@@ -175,12 +175,17 @@ SkColor NSColorToSkColor(NSColor* color) {
                   object:nil
       suspensionBehavior:NSNotificationSuspensionBehaviorDeliverImmediately];
 
+  NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+  [center
+      addObserver:self
+         selector:@selector(registeredFontsChanged:)
+             name:(NSString*)kCTFontManagerRegisteredFontsChangedNotification
+           object:nil];
+
   // In single-process mode, renderers will catch these notifications
   // themselves and listening for them here may trigger the DCHECK in Observe().
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kSingleProcess)) {
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-
     [center addObserver:self
                selector:@selector(behaviorPrefsChanged:)
                    name:NSPreferredScrollerStyleDidChangeNotification
@@ -197,6 +202,7 @@ SkColor NSColorToSkColor(NSColor* color) {
 
 - (void)dealloc {
   [NSDistributedNotificationCenter.defaultCenter removeObserver:self];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)appearancePrefsChanged:(NSNotification*)notification {
@@ -205,6 +211,13 @@ SkColor NSColorToSkColor(NSColor* color) {
 
 - (void)behaviorPrefsChanged:(NSNotification*)notification {
   [self notifyPrefsChangedWithRedraw:NO];
+}
+
+- (void)registeredFontsChanged:(NSNotification*)notification {
+  for (RenderProcessHost::iterator it(RenderProcessHost::AllHostsIterator());
+       !it.IsAtEnd(); it.Advance()) {
+    it.GetCurrentValue()->GetRendererInterface()->OnRegisteredFontsChanged();
+  }
 }
 
 - (void)systemColorsChanged:(NSNotification*)notification {

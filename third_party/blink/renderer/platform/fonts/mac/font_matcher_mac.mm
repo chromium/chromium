@@ -84,6 +84,12 @@ const NSFontTraitMask IMPORTANT_FONT_TRAITS =
      NSItalicFontMask | NSNarrowFontMask | NSPosterFontMask |
      NSSmallCapsFontMask);
 
+ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
+    CFStringRef family_name,
+    CTFontSymbolicTraits desired_traits,
+    int desired_weight,
+    float size);
+
 BOOL AcceptableChoice(NSFontTraitMask desired_traits,
                       NSFontTraitMask candidate_traits) {
   desired_traits &= ~SYNTHESIZED_FONT_TRAITS;
@@ -278,6 +284,10 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
 // Unlike `BestStyleMatchForFamily` where we create returned font from the best
 // matched font's descriptor, here we are creating the return font from matched
 // font's postscript name.
+// If availableMembersOfFontFamily returns an empty list, we fall back to
+// `BestStyleMatchForFamily`. This can be useful when a font is activated or
+// deactivated, as NSFontManager does not seem to refresh its list of fonts in
+// sandboxed environments until the font manager is recreated.
 ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
     CFStringRef family_name,
     CTFontSymbolicTraits desired_traits,
@@ -287,6 +297,11 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
   NSFontManager* font_manager = NSFontManager.sharedFontManager;
   NSArray<NSArray*>* fonts =
       [font_manager availableMembersOfFontFamily:CFToNSPtrCast(family_name)];
+
+  if (!fonts || fonts.count == 0) {
+    return BestStyleMatchForFamily(family_name, desired_traits, desired_weight,
+                                   size);
+  }
 
   NSString* matched_font_name;
   CTFontSymbolicTraits chosen_traits;
@@ -331,7 +346,6 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
     CTFontSymbolicTraits desired_traits,
     int desired_weight,
     float size) {
-  DCHECK(RuntimeEnabledFeatures::FontFamilyStyleMatchingCTMigrationEnabled());
   // We need the order of the fonts in the family be same as in
   // `availableMembersOfFontFamily` so that the matching results are the same.
   // That's why we don't pass kCTFontCollectionRemoveDuplicatesOption, it might
@@ -342,7 +356,7 @@ ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
   ScopedCFTypeRef<CFArrayRef> fonts_in_family(
       CTFontCollectionCreateMatchingFontDescriptorsForFamily(
           all_system_fonts.get(), family_name, NULL));
-  if (!fonts_in_family) {
+  if (!fonts_in_family || CFArrayGetCount(fonts_in_family.get()) == 0) {
     return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
 
@@ -570,6 +584,11 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
   if (!desired_family_string) {
     return ScopedCFTypeRef<CTFontRef>(nullptr);
   }
+
+  if (FontCache::Get().IsFontFamilyUnavailable(desired_family_string)) {
+    return ScopedCFTypeRef<CTFontRef>(nullptr);
+  }
+
   ScopedCFTypeRef<CFStringRef> desired_name(
       desired_family_string.Impl()->CreateCFString());
 
@@ -657,6 +676,11 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
       }
     }
   }
+
+  if (!match_in_family) {
+    FontCache::Get().MarkFontFamilyAsUnavailable(desired_family_string);
+  }
+
   return match_in_family;
 }
 
@@ -761,13 +785,15 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
     }
   }
 
-  if (!chose_font)
+  if (!chose_font) {
     return nil;
+  }
 
   NSFont* font = [NSFont fontWithName:chosen_full_name size:size];
 
-  if (!font)
+  if (!font) {
     return nil;
+  }
 
   return font;
 }
