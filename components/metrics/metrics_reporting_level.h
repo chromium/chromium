@@ -10,6 +10,7 @@ namespace metrics {
 // The three levels of the metrics reporting setting.
 // TODO(b/492510818): This is part of a new feature being developed to
 // restructure metrics privacy settings into a cleaner, three-state model.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.metrics
 enum class MetricsReportingLevel {
   kNone = 0,
   kBasic = 1,

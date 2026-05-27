@@ -1590,6 +1590,7 @@ if (is_android) {
       "//components/dom_distiller/content/browser/android:dom_distiller_content_java",
       "//components/dom_distiller/core/android:dom_distiller_core_java",
       "//components/dom_distiller/core/mojom:mojom_java",
+      "//components/metrics:metrics_java",
       "//third_party/androidx:androidx_pdf_pdf_viewer_fragment_java",
       "//ui/android:ui_android_features_java",
     ]

@@ -71,6 +71,10 @@ public class PrivacyPreferencesManagerImpl implements PrivacyPreferencesManager 
 
         mNativeInitialized = true;
 
+        mPrefs.writeBoolean(
+                ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE,
+                shouldUseMetricsChoiceRestructure());
+
         createPolicyServiceObserver();
     }
 

@@ -774,11 +774,28 @@ public final class ChromePreferenceKeys {
     public static final String PRIVACY_IN_SAMPLE_FOR_CRASHES =
             "Chrome.Privacy.InSampleForCrashReporting";
 
+    // TODO(b/483043192): Remove this preference once metrics reporting migration is complete.
     public static final String PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER =
             "Chrome.Privacy.UsageAndCrashReportingPermittedByUser";
 
+    // TODO(b/483043192): Remove this preference once metrics reporting migration is complete.
     public static final String PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY =
             "Chrome.Privacy.UsageAndCrashReportingPermittedByPolicy";
+
+    /**
+     * The metrics reporting level as set by the user. Value is from {@link
+     * org.chromium.components.metrics.MetricsReportingLevel}.
+     */
+    public static final String PRIVACY_METRICS_REPORTING_LEVEL =
+            "Chrome.Privacy.MetricsReportingLevel";
+
+    /** Whether metrics reporting is disabled by policy. */
+    public static final String PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY =
+            "Chrome.Privacy.MetricsReportingDisabledByPolicy";
+
+    /** Whether to use metrics consent restructure. */
+    public static final String PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE =
+            "Chrome.Privacy.ShouldUseMetricsChoiceRestructure";
 
     public static final String PROFILES_BOOT_TIMESTAMP =
             "com.google.android.apps.chrome.ChromeMobileApplication.BOOT_TIMESTAMP";
@@ -1275,6 +1292,9 @@ public final class ChromePreferenceKeys {
                 PRIVACY_IN_SAMPLE_FOR_CRASHES,
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
                 PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+                PRIVACY_METRICS_REPORTING_LEVEL,
+                PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY,
+                PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE,
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
                 PWA_RESTORE_APPS_AVAILABLE,

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.components.metrics.MetricsReportingLevel;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -61,13 +62,18 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 /** Backup agent for Chrome, using Android key/value backup. */
 @SuppressWarnings("UseSharedPreferencesManagerFromChromeCheck")
@@ -149,12 +155,26 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
     @VisibleForTesting static final int MAX_BACKUP_FAILURES = 5;
 
     // Bool entries from SharedPreferences that should be backed up / restored.
-    static final String[] BACKUP_ANDROID_BOOL_PREFS = {
-        ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
-        ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
-        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
-        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
-    };
+    static final Set<String> BACKUP_ANDROID_BOOL_PREFS =
+            Collections.unmodifiableSet(
+                    new LinkedHashSet<>(
+                            List.of(
+                                    ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
+                                    ChromePreferenceKeys.FIRST_RUN_LIGHTWEIGHT_FLOW_COMPLETE,
+                                    ChromePreferenceKeys
+                                            .PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+                                    ChromePreferenceKeys
+                                            .PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY,
+                                    ChromePreferenceKeys
+                                            .PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+                                    ChromePreferenceKeys
+                                            .PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE)));
+
+    // Int entries from SharedPreferences that should be backed up / restored.
+    // Use LinkedHashSet if more keys are added here in the future to maintain deterministic
+    // iteration order.
+    static final Set<String> BACKUP_ANDROID_INT_PREFS =
+            Set.of(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL);
 
     // The supported PrefBackupSerializers, each responsible for allowlisting certain prefs for
     // backup & restore.
@@ -260,6 +280,14 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         return bytes[0] != 0;
     }
 
+    private static byte[] intToBytes(int value) {
+        return ByteBuffer.allocate(Integer.BYTES).putInt(value).array();
+    }
+
+    private static int bytesToInt(byte[] bytes) {
+        return ByteBuffer.wrap(bytes).getInt();
+    }
+
     @Override
     public void onBackup(
             @Nullable ParcelFileDescriptor oldState,
@@ -334,6 +362,14 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
             if (sharedPrefs.contains(prefName)) {
                 backupNames.add(ANDROID_DEFAULT_PREFIX + prefName);
                 backupValues.add(booleanToBytes(sharedPrefs.getBoolean(prefName, false)));
+            }
+        }
+
+        // Add the Android integer prefs.
+        for (String prefName : BACKUP_ANDROID_INT_PREFS) {
+            if (sharedPrefs.contains(prefName)) {
+                backupNames.add(ANDROID_DEFAULT_PREFIX + prefName);
+                backupValues.add(intToBytes(sharedPrefs.getInt(prefName, 0)));
             }
         }
 
@@ -562,11 +598,13 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
         int prefixLength = ANDROID_DEFAULT_PREFIX.length();
         for (int i = 0; i < backupNames.size(); i++) {
             String name = backupNames.get(i);
-            if (name.startsWith(ANDROID_DEFAULT_PREFIX)
-                    && Arrays.asList(BACKUP_ANDROID_BOOL_PREFS)
-                            .contains(name.substring(prefixLength))) {
-                editor.putBoolean(
-                        name.substring(prefixLength), bytesToBoolean(backupValues.get(i)));
+            if (name.startsWith(ANDROID_DEFAULT_PREFIX)) {
+                String prefName = name.substring(prefixLength);
+                if (BACKUP_ANDROID_BOOL_PREFS.contains(prefName)) {
+                    editor.putBoolean(prefName, bytesToBoolean(backupValues.get(i)));
+                } else if (BACKUP_ANDROID_INT_PREFS.contains(prefName)) {
+                    editor.putInt(prefName, bytesToInt(backupValues.get(i)));
+                }
             }
         }
 
@@ -598,13 +636,31 @@ public class ChromeBackupAgentImpl extends SplitCompatBackupAgent.Impl {
 
     private boolean isMetricsReportingEnabled(
             ArrayList<String> backupNames, ArrayList<byte[]> backupValues) {
-        Predicate<String> prefGetter =
+        Predicate<String> booleanPrefGetter =
                 (String prefName) -> {
                     int index = backupNames.indexOf(ANDROID_DEFAULT_PREFIX + prefName);
                     return index != -1 && bytesToBoolean(backupValues.get(index));
                 };
-        return prefGetter.test(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY)
-                && prefGetter.test(
+        if (booleanPrefGetter.test(
+                ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE)) {
+            ToIntFunction<String> intPrefGetter =
+                    (String prefName) -> {
+                        int index = backupNames.indexOf(ANDROID_DEFAULT_PREFIX + prefName);
+                        return index != -1 ? bytesToInt(backupValues.get(index)) : 0;
+                    };
+            boolean isMetricsReportingEnabled =
+                    intPrefGetter.applyAsInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL)
+                            > MetricsReportingLevel.NONE;
+            // If the metrics reporting level is enforced by policy, it's disabled.
+            boolean isMetricsReportingDisabledByPolicy =
+                    booleanPrefGetter.test(
+                            ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY);
+            return !isMetricsReportingDisabledByPolicy && isMetricsReportingEnabled;
+        }
+
+        return booleanPrefGetter.test(
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY)
+                && booleanPrefGetter.test(
                         ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER);
     }
 

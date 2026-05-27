@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.metrics.MetricsReportingLevel;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -86,6 +87,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
@@ -144,13 +146,14 @@ public class ChromeBackupAgentTest {
     private static final String ACCOUNT_SETTINGS_PREF_VALUE = "account_settings_pref_value";
     private static final int BACKUP_BOOL_PREF_COUNT =
             new BoolPrefBackupSerializer().getAllowlistedPrefs().size()
-                    + ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS.length;
+                    + ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS.size();
     // The 1 additional preference is the signed-in account.
     private static final int BACKUP_PREF_COUNT =
             ChromeBackupAgentImpl.NATIVE_PREFS_SERIALIZERS.stream()
                             .mapToInt(serializer -> serializer.getAllowlistedPrefs().size())
                             .sum()
-                    + ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS.length
+                    + ChromeBackupAgentImpl.BACKUP_ANDROID_BOOL_PREFS.size()
+                    + ChromeBackupAgentImpl.BACKUP_ANDROID_INT_PREFS.size()
                     + 1;
     // Number of preferences that default to true in the test, see setUpPrefsToBackup().
     private static final int DEFAULT_TRUE_BOOL_PREF_COUNT = 2;
@@ -178,6 +181,11 @@ public class ChromeBackupAgentTest {
         editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER, false);
         editor.putBoolean(
                 ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY, false);
+        editor.putBoolean(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY, false);
+        editor.putBoolean(
+                ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE, false);
+        editor.putInt(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, MetricsReportingLevel.BASIC);
 
         editor.putBoolean(SHARED_PREF_NOT_BACKED_UP, false);
 
@@ -291,8 +299,15 @@ public class ChromeBackupAgentTest {
                         "AndroidDefault."
                                 + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
                         1);
+        verify(backupData)
+                .writeEntityHeader(
+                        "AndroidDefault." + ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL,
+                        Integer.BYTES);
 
         verify(backupData, times(DEFAULT_TRUE_BOOL_PREF_COUNT)).writeEntityData(new byte[] {1}, 1);
+        byte[] levelBytes =
+                ByteBuffer.allocate(Integer.BYTES).putInt(MetricsReportingLevel.BASIC).array();
+        verify(backupData).writeEntityData(levelBytes, Integer.BYTES);
         verify(backupData, times(BACKUP_BOOL_PREF_COUNT - DEFAULT_TRUE_BOOL_PREF_COUNT))
                 .writeEntityData(new byte[] {0}, 1);
         byte[] unameBytes = ApiCompatibilityUtils.getBytesUtf8(mAccountInfo.getEmail());
@@ -496,6 +511,20 @@ public class ChromeBackupAgentTest {
         verify(backupData, times(DEFAULT_TRUE_BOOL_PREF_COUNT)).writeEntityData(new byte[] {1}, 1);
     }
 
+    private static Pair<String, byte[]> booleanPrefPair(String prefName, boolean value) {
+        return new Pair<>("AndroidDefault." + prefName, value ? new byte[] {1} : new byte[] {0});
+    }
+
+    private static Pair<String, byte[]> intPrefPair(String prefName, int value) {
+        return new Pair<>(
+                "AndroidDefault." + prefName,
+                ByteBuffer.allocate(Integer.BYTES).putInt(value).array());
+    }
+
+    private static Pair<String, byte[]> stringPrefPair(String prefName, String value) {
+        return new Pair<>("AndroidDefault." + prefName, ApiCompatibilityUtils.getBytesUtf8(value));
+    }
+
     private BackupDataInput createMockBackupData(
             boolean hasSyncingUser, boolean hasSignedInUser, boolean hasAccountSettings)
             throws IOException {
@@ -508,19 +537,17 @@ public class ChromeBackupAgentTest {
                 new ArrayList<>(
                         Arrays.asList(
                                 new Pair<>("native." + NATIVE_PREF_NOT_BACKED_UP, new byte[] {1}),
-                                new Pair<>(
-                                        "AndroidDefault."
-                                                + ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE,
-                                        new byte[] {1}),
+                                booleanPrefPair(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, true),
+                                intPrefPair(
+                                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL,
+                                        MetricsReportingLevel.BASIC),
                                 new Pair<>("AndroidDefault.junk", new byte[] {23, 42}),
-                                new Pair<>(
-                                        "AndroidDefault."
-                                                + ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
-                                        ApiCompatibilityUtils.getBytesUtf8(syncingUserEmail)),
-                                new Pair<>(
-                                        "AndroidDefault."
-                                                + ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
-                                        ApiCompatibilityUtils.getBytesUtf8(signedInUserGaiaId))));
+                                stringPrefPair(
+                                        ChromeBackupAgentImpl.SYNCING_ACCOUNT_KEY,
+                                        syncingUserEmail),
+                                stringPrefPair(
+                                        ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
+                                        signedInUserGaiaId)));
 
         for (Map.Entry<String, Boolean> entry : mNativeBoolPrefBackupValues.entrySet()) {
             byte[] value = entry.getValue() ? new byte[] {1} : new byte[] {0};
@@ -992,6 +1019,9 @@ public class ChromeBackupAgentTest {
         }
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         assertTrue(prefs.getBoolean(ChromePreferenceKeys.FIRST_RUN_FLOW_COMPLETE, false));
+        assertEquals(
+                MetricsReportingLevel.BASIC,
+                prefs.getInt(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, 0));
         assertFalse(prefs.contains("junk"));
         assertFalse(prefs.contains(ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY));
         assertFalse(prefs.contains(SyncPrefNames.SELECTED_TYPES_PER_ACCOUNT));
@@ -1078,5 +1108,180 @@ public class ChromeBackupAgentTest {
                     }
                 });
         RobolectricUtil.runAllBackgroundAndUiAllowBlocking();
+    }
+
+    private BackupDataInput createMetricsBackupData(
+            boolean shouldUseRestructure,
+            boolean permittedByUser,
+            boolean permittedByPolicy,
+            int level,
+            boolean levelEnforcedByPolicy)
+            throws IOException {
+        BackupDataInput backupData = mock(BackupDataInput.class);
+        ArrayList<Pair<String, byte[]>> keysAndValues = new ArrayList<>();
+        keysAndValues.add(
+                stringPrefPair(
+                        ChromeBackupAgentImpl.SIGNED_IN_ACCOUNT_ID_KEY,
+                        mAccountInfo.getGaiaId().toString()));
+        keysAndValues.add(
+                booleanPrefPair(
+                        ChromePreferenceKeys.PRIVACY_SHOULD_USE_METRICS_CHOICE_RESTRUCTURE,
+                        shouldUseRestructure));
+        keysAndValues.add(
+                booleanPrefPair(
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_USER,
+                        permittedByUser));
+        keysAndValues.add(
+                booleanPrefPair(
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_PERMITTED_BY_POLICY,
+                        permittedByPolicy));
+        keysAndValues.add(intPrefPair(ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_LEVEL, level));
+        keysAndValues.add(
+                booleanPrefPair(
+                        ChromePreferenceKeys.PRIVACY_METRICS_REPORTING_DISABLED_BY_POLICY,
+                        levelEnforcedByPolicy));
+
+        when(backupData.getKey())
+                .thenAnswer(
+                        new Answer<>() {
+                            private int mPos;
+
+                            @Override
+                            public String answer(InvocationOnMock invocation) {
+                                return keysAndValues.get(mPos++).first;
+                            }
+                        });
+
+        when(backupData.getDataSize())
+                .thenAnswer(
+                        new Answer<>() {
+                            private int mPos;
+
+                            @Override
+                            public Integer answer(InvocationOnMock invocation) {
+                                return keysAndValues.get(mPos++).second.length;
+                            }
+                        });
+
+        when(backupData.readEntityData(any(byte[].class), anyInt(), anyInt()))
+                .thenAnswer(
+                        new Answer<>() {
+                            private int mPos;
+
+                            @Override
+                            public Integer answer(InvocationOnMock invocation) {
+                                byte[] buffer = invocation.getArgument(0);
+                                for (int i = 0; i < keysAndValues.get(mPos).second.length; i++) {
+                                    buffer[i] = keysAndValues.get(mPos).second[i];
+                                }
+                                return keysAndValues.get(mPos++).second.length;
+                            }
+                        });
+
+        when(backupData.readNextHeader())
+                .thenAnswer(
+                        new Answer<>() {
+                            private int mPos;
+
+                            @Override
+                            public Boolean answer(InvocationOnMock invocation) {
+                                return mPos++ < keysAndValues.size();
+                            }
+                        });
+        return backupData;
+    }
+
+    @Test
+    public void testIsMetricsReportingEnabled_restructureEnabled_enabledByLevel()
+            throws IOException {
+        mAccountManagerTestRule.addAccount(mAccountInfo);
+        BackupDataInput backupData =
+                createMetricsBackupData(
+                        /* shouldUseRestructure= */ true,
+                        /* permittedByUser= */ false,
+                        /* permittedByPolicy= */ false,
+                        /* level= */ MetricsReportingLevel.BASIC,
+                        /* levelEnforcedByPolicy= */ false);
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            onRestore(backupData, 0, newState);
+        }
+
+        File consentFile =
+                new File(org.chromium.base.PathUtils.getDataDirectory(), "Consent To Send Stats");
+        assertTrue(consentFile.exists());
+        consentFile.delete();
+    }
+
+    @Test
+    public void testIsMetricsReportingEnabled_restructureEnabled_enabledByAdvancedLevel()
+            throws IOException {
+        mAccountManagerTestRule.addAccount(mAccountInfo);
+        BackupDataInput backupData =
+                createMetricsBackupData(
+                        /* shouldUseRestructure= */ true,
+                        /* permittedByUser= */ false,
+                        /* permittedByPolicy= */ false,
+                        /* level= */ MetricsReportingLevel.ADVANCED,
+                        /* levelEnforcedByPolicy= */ false);
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            onRestore(backupData, 0, newState);
+        }
+
+        File consentFile =
+                new File(org.chromium.base.PathUtils.getDataDirectory(), "Consent To Send Stats");
+        assertTrue(consentFile.exists());
+        consentFile.delete();
+    }
+
+    @Test
+    public void testIsMetricsReportingEnabled_restructureEnabled_disabledByPolicy()
+            throws IOException {
+        mAccountManagerTestRule.addAccount(mAccountInfo);
+        BackupDataInput backupData =
+                createMetricsBackupData(
+                        /* shouldUseRestructure= */ true,
+                        /* permittedByUser= */ false,
+                        /* permittedByPolicy= */ false,
+                        /* level= */ MetricsReportingLevel.NONE,
+                        /* levelEnforcedByPolicy= */ true);
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            onRestore(backupData, 0, newState);
+        }
+
+        File consentFile =
+                new File(org.chromium.base.PathUtils.getDataDirectory(), "Consent To Send Stats");
+        assertFalse(consentFile.exists());
+    }
+
+    @Test
+    public void testIsMetricsReportingEnabled_legacy_enabled() throws IOException {
+        mAccountManagerTestRule.addAccount(mAccountInfo);
+        BackupDataInput backupData =
+                createMetricsBackupData(
+                        /* shouldUseRestructure= */ false,
+                        /* permittedByUser= */ true,
+                        /* permittedByPolicy= */ true,
+                        /* level= */ MetricsReportingLevel.NONE,
+                        /* levelEnforcedByPolicy= */ false);
+
+        try (ParcelFileDescriptor newState =
+                ParcelFileDescriptor.open(
+                        mTempDir.newFile(), ParcelFileDescriptor.MODE_WRITE_ONLY)) {
+            onRestore(backupData, 0, newState);
+        }
+
+        File consentFile =
+                new File(org.chromium.base.PathUtils.getDataDirectory(), "Consent To Send Stats");
+        assertTrue(consentFile.exists());
+        consentFile.delete();
     }
 }

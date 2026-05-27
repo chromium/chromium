@@ -110,6 +110,10 @@ public class PrivacyPreferencesManagerImplTest {
         when(policyService.isInitializationComplete()).thenReturn(false);
         PolicyServiceFactory.setPolicyServiceForTest(policyService);
 
+        PrivacyPreferencesManagerImpl.Natives preferenceManagerNatives =
+                mock(PrivacyPreferencesManagerImpl.Natives.class);
+        PrivacyPreferencesManagerImplJni.setInstanceForTesting(preferenceManagerNatives);
+
         // Simulate native initialization notification call.
         preferenceManager.onNativeInitialized();
 

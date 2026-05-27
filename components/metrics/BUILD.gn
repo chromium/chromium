@@ -62,7 +62,10 @@ if (!is_cronet_build && is_android) {
   java_cpp_enum("java_enum_srcjar") {
     # External code should depend on ":metrics_java" instead.
     visibility = [ ":*" ]
-    sources = [ "stability_metrics_helper.h" ]
+    sources = [
+      "metrics_reporting_level.h",
+      "stability_metrics_helper.h",
+    ]
   }
 
   android_library("metrics_java") {
