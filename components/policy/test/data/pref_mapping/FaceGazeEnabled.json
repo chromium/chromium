@@ -7,8 +7,8 @@
       "pref_name": "settings.a11y.face_gaze.enabled",
       "default_value": false,
       "values_to_test": [
-        false,
-        true
+        true,
+        false
       ]
     }
   }

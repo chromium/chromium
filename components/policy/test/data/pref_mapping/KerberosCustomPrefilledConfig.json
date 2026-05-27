@@ -8,7 +8,7 @@
       "pref_location": "local_state",
       "default_value": "",
       "values_to_test": [
-          "custom-config"
+        "custom-config"
       ]
     }
   }

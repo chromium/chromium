@@ -7,8 +7,8 @@
       "pref_name": "ios.gemini_enabled_by_policy",
       "default_value": 0,
       "values_to_test": [
-        0,
-        1
+        1,
+        0
       ]
     }
   }

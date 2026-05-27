@@ -11,18 +11,18 @@
       "default_value": [],
       "values_to_test": [
         [
-            {
-              "update_manifest_url": "https://example.com/isolated_web_app/update_manifest.json",
-              "web_bundle_id": "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"
-            },
-            {
-              "update_manifest_url": "https://example.com/another_isolated_web_app/update_manifest.json",
-              "web_bundle_id": "bbceqaztij5biqquuksfawpsaibuegqqcirgfcgwuosuofdjabzqaaic",
-              "update_channel": "beta",
-              "allow_downgrades": true,
-              "pinned_version": "3.2.4"
-            }
-          ]
+          {
+            "update_manifest_url": "https://example.com/isolated_web_app/update_manifest.json",
+            "web_bundle_id": "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"
+          },
+          {
+            "update_manifest_url": "https://example.com/another_isolated_web_app/update_manifest.json",
+            "web_bundle_id": "bbceqaztij5biqquuksfawpsaibuegqqcirgfcgwuosuofdjabzqaaic",
+            "update_channel": "beta",
+            "allow_downgrades": true,
+            "pinned_version": "3.2.4"
+          }
+        ]
       ]
     }
   }

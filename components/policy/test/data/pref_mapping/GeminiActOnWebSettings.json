@@ -7,17 +7,13 @@
       "win",
       "chromeos"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "GeminiActOnWebSettings": 1
-        },
-        "prefs": {
-          "glic.actuation_on_web": {
-            "value": 1
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "glic.actuation_on_web",
+      "default_value": 1,
+      "values_to_test": [
+        0,
+        1
+      ]
+    }
   }
 ]

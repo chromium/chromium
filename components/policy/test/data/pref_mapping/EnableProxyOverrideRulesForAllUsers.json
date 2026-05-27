@@ -8,13 +8,9 @@
     "simple_policy_pref_mapping_test": {
       "pref_name": "enable_proxy_override_rules_for_users",
       "pref_location": "local_state",
-      "policy_settings": {
-            "scope": "machine",
-            "source": "platform"
-      },
       "default_value": 0,
       "values_to_test": [
-          1
+        1
       ]
     }
   }
