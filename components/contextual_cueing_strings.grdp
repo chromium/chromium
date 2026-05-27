@@ -30,8 +30,11 @@
   <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_WHEN_ON_2" desc="Second point in the 'when on' column on the suggestions settings subpage.">
     If you select or ignore a suggestion, Chrome will adapt to make sure you only see what’s relevant to you
   </message>
-  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_1" desc="First point in the 'things to consider' column on the suggestions settings subpage.">
-    Chrome processes page titles and URLs on your device or in a private space in the cloud
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_1_PRIVATE" desc="First point in the 'things to consider' column on the suggestions settings subpage.">
+    Chrome processes page titles and URLs in a private space in the cloud
+  </message>
+  <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_1_NON_PRIVATE" desc="First point in the 'things to consider' column on the suggestions settings subpage.">
+    Chrome processes page titles and URLs in the cloud
   </message>
   <message name="IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2" desc="Second point in the 'consider' column on the suggestions settings subpage.">
     If you turn off suggestions the page title and URLs of your tabs may still be processed for other Chrome features. You can manage browser access to this data in your

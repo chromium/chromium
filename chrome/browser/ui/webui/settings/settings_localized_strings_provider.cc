@@ -20,6 +20,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/glic_pref_names.h"
@@ -475,7 +476,6 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_CONTEXTUAL_CUEING_SETTINGS_TOGGLE_SUBLABEL},
       {"aiSuggestionsWhenOn1", IDS_CONTEXTUAL_CUEING_SETTINGS_WHEN_ON_1},
       {"aiSuggestionsWhenOn2", IDS_CONTEXTUAL_CUEING_SETTINGS_WHEN_ON_2},
-      {"aiSuggestionsConsider1", IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_1},
       {"aiSuggestionsConsider2", IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2},
       {"aiSuggestionsConsider2Link",
        IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_2_LINK}};
@@ -484,6 +484,11 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
                                   features::IsWebuiRefresh2026Enabled()
                                       ? IDS_SETTINGS_AI_PAGE_TITLE
                                       : IDS_SETTINGS_AI_INNOVATIONS_PAGE_TITLE);
+  html_source->AddLocalizedString(
+      "aiSuggestionsConsider1",
+      contextual_cueing::kUsePrivateAi.Get()
+          ? IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_1_PRIVATE
+          : IDS_CONTEXTUAL_CUEING_SETTINGS_CONSIDER_1_NON_PRIVATE);
 
   int sts_option_1_sites_added_here_wont_be_referenced_string_id =
       base::FeatureList::IsEnabled(
