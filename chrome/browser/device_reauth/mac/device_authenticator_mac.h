@@ -48,6 +48,9 @@ class DeviceAuthenticatorMac : public DeviceAuthenticatorCommon {
   // Called when the authentication completes with the result |success|.
   void OnAuthenticationCompleted(bool success);
 
+  // Triggers non-biometric authentication asynchronously.
+  void AuthenticateWithNonBiometricsAsync(const std::u16string& message);
+
   // Callback to be executed after the authentication completes.
   AuthenticateCallback callback_;
 
