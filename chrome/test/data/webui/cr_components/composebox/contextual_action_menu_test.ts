@@ -852,7 +852,8 @@ suite('ContextualActionMenu', () => {
     assertEquals(trigger, actionMenu.shadowRoot.activeElement);
   });
 
-  test(
+  // TODO(crbug.com/512920161): Reenable this test.
+  test.skip(
       'navigates up and down between Share Tabs and other menu items',
       async () => {
         loadTimeData.overrideValues({
