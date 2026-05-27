@@ -9,6 +9,7 @@
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/memory/mock_memory_pressure_listener.h"
 #include "base/task/thread_pool.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/sequence_bound.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -282,6 +283,83 @@ TEST(MemoryPressureListenerTest, AsyncIgnoreRepeatedNotifications) {
       MEMORY_PRESSURE_LEVEL_CRITICAL, task_env.QuitClosure());
   task_env.RunUntilQuit();
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
+TEST(MemoryPressureListenerTest, SuppressMemoryListenersSyncInitial) {
+  test::ScopedFeatureList feature_list;
+  // Suppress kTest (tag 0) for MODERATE.
+  // Mask '1' suppresses non-critical (MODERATE).
+  feature_list.InitFromCommandLine(
+      "SuppressMemoryListeners<Trial.Group:suppress_memory_listeners_mask/1",
+      "");
+
+  MemoryPressureListenerRegistry registry;
+  MockMemoryPressureListener listener;
+
+  // Simulate before registration.
+  MemoryPressureListenerRegistry::SimulatePressureNotification(
+      MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  EXPECT_CALL(listener, OnMemoryPressure(_)).Times(0);
+
+  MemoryPressureListenerRegistration registration(
+      MemoryPressureListenerTag::kTest, &listener);
+
+  // Since it is suppressed, it should be initialized to NONE.
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_NONE);
+}
+
+TEST(MemoryPressureListenerTest,
+     SuppressMemoryListenersSyncInitialCriticalNotSuppressed) {
+  test::ScopedFeatureList feature_list;
+  // Suppress kTest (tag 0) for MODERATE only (mask '1').
+  feature_list.InitFromCommandLine(
+      "SuppressMemoryListeners<Trial.Group:suppress_memory_listeners_mask/1",
+      "");
+
+  MemoryPressureListenerRegistry registry;
+  MockMemoryPressureListener listener;
+
+  // Simulate CRITICAL before registration.
+  MemoryPressureListenerRegistry::SimulatePressureNotification(
+      MEMORY_PRESSURE_LEVEL_CRITICAL);
+
+  EXPECT_CALL(listener, OnMemoryPressure(_)).Times(0);
+
+  MemoryPressureListenerRegistration registration(
+      MemoryPressureListenerTag::kTest, &listener);
+
+  // Since it is NOT suppressed for CRITICAL, it should be initialized to
+  // CRITICAL.
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
+}
+
+TEST(MemoryPressureListenerTest, SuppressMemoryListenersAsyncInitial) {
+  test::ScopedFeatureList feature_list;
+  // Suppress kTest (tag 0) for MODERATE.
+  feature_list.InitFromCommandLine(
+      "SuppressMemoryListeners<Trial.Group:suppress_memory_listeners_mask/1",
+      "");
+
+  MemoryPressureListenerRegistry registry;
+  test::TaskEnvironment task_env;
+
+  // Simulate before registration.
+  MemoryPressureListenerRegistry::SimulatePressureNotification(
+      MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  MockMemoryPressureListener listener;
+  EXPECT_CALL(listener, OnMemoryPressure(_)).Times(0);
+
+  AsyncMemoryPressureListenerRegistration registration(
+      FROM_HERE, MemoryPressureListenerTag::kTest, &listener);
+
+  // Spin the loop to run pending tasks.
+  SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
+                                                        task_env.QuitClosure());
+  task_env.RunUntilQuit();
+
+  EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_NONE);
 }
 
 }  // namespace base

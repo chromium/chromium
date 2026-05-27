@@ -4,6 +4,8 @@
 
 #include "base/memory/memory_pressure_listener_registry.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/metrics/field_trial_params.h"
@@ -44,6 +46,34 @@ BASE_FEATURE_PARAM(std::string,
                    ""
 #endif
 );
+
+bool IsListenerSuppressed(MemoryPressureListenerTag tag,
+                          MemoryPressureLevel memory_pressure_level,
+                          std::string_view mask) {
+  const size_t tag_index = static_cast<size_t>(tag);
+  if (tag_index >= mask.size()) {
+    return false;
+  }
+
+  const char mask_char = mask[tag_index];
+  switch (mask_char) {
+    case '0':
+      // '0' means do NOT suppress any notifications (always notify).
+      return false;
+
+    case '1':
+      // '1' means suppress only MODERATE notifications.
+      return memory_pressure_level == MEMORY_PRESSURE_LEVEL_MODERATE;
+
+    case '2':
+      // '2' means suppress all notifications.
+      return true;
+
+    default:
+      // Suppress all on unknown mask characters.
+      return true;
+  }
+}
 }  // namespace
 
 // static
@@ -125,8 +155,17 @@ void MemoryPressureListenerRegistry::AddObserver(
       !SingleThreadTaskRunner::HasMainThreadDefault() ||
       SingleThreadTaskRunner::GetMainThreadDefault()->BelongsToCurrentThread());
   listeners_.AddObserver(listener);
-  listener->SetInitialMemoryPressureLevel(
-      PassKey<MemoryPressureListenerRegistry>(), last_memory_pressure_level_);
+
+  if (last_memory_pressure_level_ == MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
+  if (!FeatureList::IsEnabled(kSuppressMemoryListeners) ||
+      !IsListenerSuppressed(listener->tag(), last_memory_pressure_level_,
+                            kSuppressMemoryListenersMask.Get())) {
+    listener->SetInitialMemoryPressureLevel(
+        PassKey<MemoryPressureListenerRegistry>(), last_memory_pressure_level_);
+  }
 }
 
 void MemoryPressureListenerRegistry::RemoveObserver(
@@ -196,16 +235,9 @@ void MemoryPressureListenerRegistry::SendMemoryPressureNotification(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (FeatureList::IsEnabled(kSuppressMemoryListeners)) {
-    auto mask = kSuppressMemoryListenersMask.Get();
+    std::string mask = kSuppressMemoryListenersMask.Get();
     for (auto& listener : listeners_) {
-      const size_t tag_index = static_cast<size_t>(listener.tag());
-      // Only Notify observers that aren't suppressed. An observer is suppressed
-      // if its tag is present in the mask, the value is not '0'. A value of '1'
-      // suppresses non critical levels, and a value of '2' supressess all
-      // levels.
-      if (tag_index >= mask.size() || mask[tag_index] == '0' ||
-          (mask[tag_index] == '1' &&
-           memory_pressure_level == MEMORY_PRESSURE_LEVEL_CRITICAL)) {
+      if (!IsListenerSuppressed(listener.tag(), memory_pressure_level, mask)) {
         listener.UpdateMemoryPressureLevel(
             PassKey<MemoryPressureListenerRegistry>(), memory_pressure_level);
       }
