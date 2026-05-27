@@ -4,38 +4,14 @@
       "linux",
       "android"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "OutOfProcessSystemDnsResolutionEnabled": false
-        },
-        "prefs": {
-          "net.out_of_process_system_dns_resolution_enabled": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "OutOfProcessSystemDnsResolutionEnabled": true
-        },
-        "prefs": {
-          "net.out_of_process_system_dns_resolution_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      },
-      {
-        "policies": {},
-        "prefs": {
-          "net.out_of_process_system_dns_resolution_enabled": {
-            "default_value": true,
-            "location": "local_state"
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "net.out_of_process_system_dns_resolution_enabled",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]

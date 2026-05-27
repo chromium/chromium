@@ -6,29 +6,14 @@
       "mac",
       "win"
     ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "OopPrintDriversAllowed": false
-        },
-        "prefs": {
-          "printing.oop_print_drivers_allowed_by_policy": {
-            "location": "local_state",
-            "value": false
-          }
-        }
-      },
-      {
-        "policies": {
-          "OopPrintDriversAllowed": true
-        },
-        "prefs": {
-          "printing.oop_print_drivers_allowed_by_policy": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "printing.oop_print_drivers_allowed_by_policy",
+      "pref_location": "local_state",
+      "default_value": true,
+      "values_to_test": [
+        true,
+        false
+      ]
+    }
   }
 ]
