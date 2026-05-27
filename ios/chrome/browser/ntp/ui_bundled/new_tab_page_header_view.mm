@@ -385,6 +385,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
   if (self.fakeOmniboxContainer) {
     [self addLeadingViewToSearchField:self.fakeOmniboxContainer];
+    [self setFakeboxColorsWithProgress:_lastAnimationPercent];
   }
 }
 
