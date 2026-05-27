@@ -125,6 +125,14 @@ export class SelectionController {
       return;
     }
 
+    // If we're using Readability with select text enabled, report a user
+    // selection attempt to try to log this as an early selection attempt from
+    // the side panel.
+    if (isDistilledByReadability() &&
+        chrome.readingMode.isReadabilitySelectTextEnabled) {
+      chrome.readingMode.attemptLogEarlySelection(/*fromSidePanel=*/ true);
+    }
+
     const {anchorNodeId, anchorOffset, focusNodeId, focusOffset} =
         this.getSelectionIds_(
             selection.anchorNode, selection.anchorOffset, selection.focusNode,
@@ -196,6 +204,14 @@ export class SelectionController {
       // The selection in the main panel collapsed, so clear the selection here.
       selectionToUpdate.removeAllRanges();
       return;
+    }
+
+    // If we're using Readability with select text enabled, report a user
+    // selection attempt to try to log this as an early selection attempt from
+    // the main panel.
+    if (isDistilledByReadability() &&
+        chrome.readingMode.isReadabilitySelectTextEnabled) {
+      chrome.readingMode.attemptLogEarlySelection(/*fromSidePanel=*/ false);
     }
 
     const newSelection = this.getNewSelection_(container);

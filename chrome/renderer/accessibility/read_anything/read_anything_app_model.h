@@ -77,6 +77,18 @@ class ReadAnythingAppModel {
     kMaxValue = kSelection,
   };
 
+  // Enum for logging selection attempts before Readability mapping is complete.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(ReadAnythingEarlySelection)
+  enum class EarlySelection {
+    kSidePanelSelection = 0,
+    kMainPanelSelection = 1,
+    kMaxValue = kMainPanelSelection,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingEarlySelection)
+
   struct AXTreeInfo {
     explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> manager);
     AXTreeInfo(const AXTreeInfo&) = delete;
@@ -185,6 +197,9 @@ class ReadAnythingAppModel {
 
   static constexpr char kEmptyStateHistogramName[] =
       "Accessibility.ReadAnything.EmptyState";
+
+  static constexpr char kEarlySelectionHistogramName[] =
+      "Accessibility.ReadAnything.Readability.EarlySelection";
 
   ReadAnythingAppModel();
   ReadAnythingAppModel(const ReadAnythingAppModel&) = delete;
@@ -450,6 +465,20 @@ class ReadAnythingAppModel {
   }
   const std::vector<AXNodeSegment>& flattened_ax_tree_nodes() const {
     return flattened_ax_tree_nodes_;
+  }
+
+  bool is_readability_mapping_in_progress() const {
+    return is_readability_mapping_in_progress_;
+  }
+  void set_is_readability_mapping_in_progress(bool ready) {
+    is_readability_mapping_in_progress_ = ready;
+  }
+
+  bool has_logged_early_selection() const {
+    return has_logged_early_selection_;
+  }
+  void set_has_logged_early_selection(bool logged) {
+    has_logged_early_selection_ = logged;
   }
 
   bool page_finished_loading() const { return page_finished_loading_; }
@@ -1021,6 +1050,13 @@ class ReadAnythingAppModel {
   // If reading mode should attempt to use child trees to distill content. This
   // should only be true if the root tree has no distillable content.
   bool may_use_child_for_active_tree_ = false;
+
+  // Whether the Readability-to-AXTree mapping algorithm is running or has
+  // finished / not started.
+  bool is_readability_mapping_in_progress_ = false;
+
+  // Whether an early selection attempt has been logged for the current page.
+  bool has_logged_early_selection_ = false;
 
   read_anything::mojom::ReadAnythingPresentationState
       active_presentation_state_ =

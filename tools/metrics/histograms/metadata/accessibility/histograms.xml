@@ -3268,6 +3268,19 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.Readability.EarlySelection"
+    enum="ReadAnythingEarlySelection" expires_after="2027-03-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records selection attempts that occur before the Readability distillation
+    has successfully mapped its content to the original page's AXTree. This is
+    recorded at most once per navigation, for either a selection from the Side
+    Panel or the Main Panel. This metric helps measure if the text alignment
+    algorithm is fast enough for user interactions.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.Readability.PageLinks{Status}Count"
     units="count" expires_after="2027-03-01">
   <owner>martinglopez@google.com</owner>

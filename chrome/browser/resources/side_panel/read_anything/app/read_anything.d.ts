@@ -334,6 +334,10 @@ declare namespace chrome {
     // Called when distillation completes with the word count.
     function onDistilled(wordCount: number): void;
 
+    // Reports a user selection attempt. A metric is logged if text mapping is
+    // still in progress. (One time per-navigation).
+    function attemptLogEarlySelection(fromSidePanel: boolean): void;
+
     // Called by the Read Anything app to provide the rendered text blocks from
     // the distilled content for AXTree mapping.
     function onRenderedTextBlocksAvailable(blocks: string[]): void;

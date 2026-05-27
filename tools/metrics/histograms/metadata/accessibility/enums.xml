@@ -2193,6 +2193,15 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:DistillationStatus) -->
 
+<!-- LINT.IfChange(ReadAnythingEarlySelection) -->
+
+<enum name="ReadAnythingEarlySelection">
+  <int value="0" label="Side panel selection"/>
+  <int value="1" label="Main panel selection"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_app_model.h:ReadAnythingEarlySelection) -->
+
 <!-- LINT.IfChange(ReadAnythingEmptyState) -->
 
 <enum name="ReadAnythingEmptyState">
