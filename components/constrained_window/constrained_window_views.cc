@@ -18,6 +18,7 @@
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -321,6 +322,15 @@ views::Widget* CreateBrowserModalDialogViews(views::DialogDelegate* dialog,
   gfx::NativeView parent_view =
       parent ? CurrentBrowserModalClient()->GetDialogHostView(parent)
              : gfx::NativeView();
+  // On Aura platforms, a null parent view when a valid parent window exists
+  // can cause widget initialization failures (e.g. parent/child hierarchy
+  // mismatches). If the client cannot provide a host view, fallback to the
+  // parent window itself.
+#if defined(USE_AURA)
+  if (!parent_view && parent) {
+    parent_view = parent;
+  }
+#endif
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       dialog, gfx::NativeWindow(), parent_view);
   widget->SetNativeWindowProperty(
@@ -362,11 +372,34 @@ views::Widget* ShowBrowserModal(std::unique_ptr<ui::DialogModel> dialog_model,
 
 views::Widget* ShowWebModal(std::unique_ptr<ui::DialogModel> dialog_model,
                             content::WebContents* web_contents) {
-  return constrained_window::ShowWebModalDialogViews(
-      views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
-                                                ui::mojom::ModalType::kChild)
-          .release(),
-      web_contents);
+  content::WebContents* top_level_web_contents =
+      web_contents ? GetTopLevelWebContents(web_contents) : nullptr;
+  web_modal::WebContentsModalDialogManager* manager =
+      top_level_web_contents
+          ? web_modal::WebContentsModalDialogManager::FromWebContents(
+                top_level_web_contents)
+          : nullptr;
+  if (manager && manager->delegate() &&
+      manager->delegate()->GetWebContentsModalDialogHost(
+          top_level_web_contents)) {
+    return constrained_window::ShowWebModalDialogViews(
+        views::BubbleDialogModelHost::CreateModal(std::move(dialog_model),
+                                                  ui::mojom::ModalType::kChild)
+            .release(),
+        web_contents);
+  }
+
+  // Fallback to browser-modal dialog if web-modal is not supported.
+  gfx::NativeWindow parent_window =
+      web_contents ? web_contents->GetTopLevelNativeWindow()
+                   : gfx::NativeWindow();
+#if defined(USE_AURA)
+  if (!parent_window && web_contents) {
+    parent_window = web_contents->GetNativeView();
+  }
+#endif
+  return constrained_window::ShowBrowserModal(std::move(dialog_model),
+                                              parent_window);
 }
 
 bool SupportsGlobalScreenCoordinates() {

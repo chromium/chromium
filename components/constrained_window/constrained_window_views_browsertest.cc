@@ -7,13 +7,16 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "components/constrained_window/constrained_window_views_client.h"
 #include "components/web_modal/test_web_contents_modal_dialog_host.h"
 #include "components/web_modal/test_web_contents_modal_dialog_manager_delegate.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "testing/gtest/include/gtest/gtest-spi.h"
+#include "ui/base/models/dialog_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_ui_types.h"
@@ -22,6 +25,24 @@
 #include "ui/views/window/dialog_delegate.h"
 
 namespace constrained_window {
+
+class TestConstrainedWindowViewsClient : public ConstrainedWindowViewsClient {
+ public:
+  TestConstrainedWindowViewsClient() = default;
+  ~TestConstrainedWindowViewsClient() override = default;
+
+  web_modal::ModalDialogHost* GetModalDialogHost(
+      gfx::NativeWindow parent) override {
+    return nullptr;
+  }
+  gfx::NativeView GetDialogHostView(gfx::NativeWindow parent) override {
+#if BUILDFLAG(IS_MAC)
+    return gfx::NativeView();
+#else
+    return parent;
+#endif
+  }
+};
 
 class ConstrainedWindowViewsBrowserTest : public content::ContentBrowserTest {
  public:
@@ -61,6 +82,30 @@ IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewsBrowserTest,
       delegate.get(), shell()->web_contents(),
       views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   EXPECT_EQ(widget->ownership(), views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+}
+
+IN_PROC_BROWSER_TEST_F(ConstrainedWindowViewsBrowserTest,
+                       ShowWebModalNoManager) {
+  SetConstrainedWindowViewsClient(
+      std::make_unique<TestConstrainedWindowViewsClient>());
+
+  auto* manager = web_modal::WebContentsModalDialogManager::FromWebContents(
+      shell()->web_contents());
+  ASSERT_TRUE(manager);
+  manager->SetDelegate(nullptr);
+
+  auto dialog_model =
+      ui::DialogModel::Builder(std::make_unique<ui::DialogModelDelegate>())
+          .SetTitle(u"Test Title")
+          .Build();
+
+  // Call ShowWebModal with the delegate-less WebContents. Without the fix, this
+  // should crash. With the fix, it should fallback to a browser-modal dialog.
+  views::Widget* widget =
+      ShowWebModal(std::move(dialog_model), shell()->web_contents());
+  EXPECT_TRUE(widget);
+  EXPECT_TRUE(widget->IsVisible());
+  widget->CloseNow();
 }
 
 }  // namespace constrained_window
