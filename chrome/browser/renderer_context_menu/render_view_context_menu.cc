@@ -2420,8 +2420,7 @@ void RenderViewContextMenu::AppendPluginItems() {
     // add "Print" here.
     if (!content_type_->SupportsGroup(
             ContextMenuContentType::ITEM_GROUP_PRINT)) {
-      AddItemWithOptionalIcon(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT,
-                              kPrintMenuOldIcon);
+      menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
     }
   }
 }
@@ -2438,8 +2437,7 @@ void RenderViewContextMenu::AppendPageItems() {
   MaybeAppendOpenGlicItem();
   menu_model_.AddItemWithStringId(IDC_SAVE_PAGE,
                                   IDS_CONTENT_CONTEXT_SAVEPAGEAS);
-  AddItemWithOptionalIcon(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT,
-                          kPrintMenuOldIcon);
+  menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
   AppendLiveCaptionItem();
   AppendMediaRouterItem();
 
@@ -2583,16 +2581,11 @@ void RenderViewContextMenu::AppendPrintItem() {
       params_.misspelled_word.empty()) {
     const std::u16string printable_selection_text = PrintableSelectionText();
     if (use_simplified_text_selection && !printable_selection_text.empty()) {
-      menu_model_.AddItemWithIcon(
-          IDC_PRINT,
-          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_PRINT_SELECTION,
-                                     printable_selection_text),
-          ui::ImageModel::FromVectorIcon(
-              kPrintMenuOldIcon, ui::kColorMenuIcon,
-              ui::SimpleMenuModel::kDefaultIconSize));
+      menu_model_.AddItem(IDC_PRINT, l10n_util::GetStringFUTF16(
+                                         IDS_CONTENT_CONTEXT_PRINT_SELECTION,
+                                         printable_selection_text));
     } else {
-      AddItemWithOptionalIcon(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT,
-                              kPrintMenuOldIcon);
+      menu_model_.AddItemWithStringId(IDC_PRINT, IDS_CONTENT_CONTEXT_PRINT);
     }
   }
 #endif  // BUILDFLAG(ENABLE_PRINTING)
