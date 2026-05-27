@@ -10,10 +10,10 @@ found in the LICENSE file.
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/at_memory_bottom_sheet_horizontal_margin"
-    android:layout_marginEnd="@dimen/at_memory_bottom_sheet_horizontal_margin"
-    android:layout_marginTop="@dimen/at_memory_bottom_sheet_margin_top"
-    android:layout_marginBottom="@dimen/at_memory_bottom_sheet_margin_bottom"
+    android:paddingStart="@dimen/at_memory_bottom_sheet_horizontal_margin"
+    android:paddingEnd="@dimen/at_memory_bottom_sheet_horizontal_margin"
+    android:paddingTop="@dimen/at_memory_bottom_sheet_margin_top"
+    android:paddingBottom="@dimen/at_memory_bottom_sheet_margin_bottom"
     android:orientation="vertical">
 
     <LinearLayout
