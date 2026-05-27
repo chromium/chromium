@@ -16728,29 +16728,6 @@
             ]
         }
     ],
-    "NtpBrowserPromos": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "max-terms": "3",
-                        "promo-type": "simple",
-                        "session-rotation": "2"
-                    },
-                    "enable_features": [
-                        "EnableNtpBrowserPromos"
-                    ]
-                }
-            ]
-        }
-    ],
     "NtpComposeboxDesktop": [
         {
             "platforms": [
