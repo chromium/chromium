@@ -150,16 +150,6 @@
 
 namespace {
 
-// Deprecated 07/2025.
-inline constexpr char kFirstSyncCompletedInFullSyncMode[] =
-    "sync.first_full_sync_completed";
-inline constexpr char kGoogleServicesSecondLastSyncingGaiaId[] =
-    "google.services.second_last_gaia_id";
-constexpr char kOptGuideModelFetcherLastFetchAttempt[] =
-    "optimization_guide.predictionmodelfetcher.last_fetch_attempt";
-constexpr char kOptGuideModelFetcherLastFetchSuccess[] =
-    "optimization_guide.predictionmodelfetcher.last_fetch_success";
-
 // Deprecated 08/2025.
 inline constexpr char kInvalidationClientIDCache[] =
     "invalidation.per_sender_client_id_cache";
@@ -243,52 +233,6 @@ inline constexpr char kFirstPlusAddressCreationTime[] =
 inline constexpr char kLastPlusAddressFillingTime[] =
     "plus_addresses.last.filling.time";
 
-// Migrates a Dict pref from source to target PrefService.
-void MigrateDictPref(std::string_view pref_name,
-                     PrefService* target_pref_service,
-                     PrefService* source_pref_service) {
-  const PrefService::Preference* target_pref =
-      target_pref_service->FindPreference(pref_name);
-  CHECK(target_pref);
-
-  const PrefService::Preference* source_pref =
-      source_pref_service->FindPreference(pref_name);
-  CHECK(source_pref);
-
-  // Only migrate the pref if 1. it is not set in target,
-  // 2. it is not the default in source.
-  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
-    target_pref_service->SetDict(
-        pref_name, source_pref_service->GetDict(pref_name).Clone());
-  }
-
-  // In all cases, clear the pref from source.
-  source_pref_service->ClearPref(pref_name);
-}
-
-// Migrates a List pref from source to target PrefService.
-void MigrateListPref(std::string_view pref_name,
-                     PrefService* target_pref_service,
-                     PrefService* source_pref_service) {
-  const PrefService::Preference* target_pref =
-      target_pref_service->FindPreference(pref_name);
-  CHECK(target_pref);
-
-  const PrefService::Preference* source_pref =
-      source_pref_service->FindPreference(pref_name);
-  CHECK(source_pref);
-
-  // Only migrate the pref if 1. it is not set in target,
-  // 2. it is not the default in source.
-  if (target_pref->IsDefaultValue() && !source_pref->IsDefaultValue()) {
-    target_pref_service->SetList(
-        pref_name, source_pref_service->GetList(pref_name).Clone());
-  }
-
-  // In all cases, clear the pref from source.
-  source_pref_service->ClearPref(pref_name);
-}
-
 // Renames a boolean pref within a PrefService.
 void RenameBooleanPref(std::string_view target_pref_name,
                        std::string_view source_pref_name,
@@ -310,24 +254,6 @@ void RenameBooleanPref(std::string_view target_pref_name,
 
   // In all cases, clear the pref from source.
   pref_service->ClearPref(source_pref_name);
-}
-
-// Helper function migrating the `base::DictValue` preference from LocalState
-// prefs to Profile prefs.
-void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  MigrateDictPref(pref_name, profile_pref_service,
-                  GetApplicationContext()->GetLocalState());
-}
-
-// Helper function migrating the `base::ListValue` preference from LocalState
-// prefs to Profile prefs.
-void MigrateListPrefFromLocalStatePrefsToProfilePrefs(
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  MigrateListPref(pref_name, profile_pref_service,
-                  GetApplicationContext()->GetLocalState());
 }
 
 }  // namespace
@@ -392,12 +318,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                                 false);
   registry->RegisterTimePref(prefs::kAgeMismatchSignoutTimestamp, base::Time());
 
-  // Deprecated 07/2025 (migrated to profile prefs).
-  registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);
-  registry->RegisterListPref(prefs::kIosPromosManagerSingleDisplayActivePromos);
-  registry->RegisterDictionaryPref(
-      prefs::kIosPromosManagerSingleDisplayPendingPromos);
-
   registry->RegisterBooleanPref(enterprise_reporting::kCloudReportingEnabled,
                                 false);
   registry->RegisterTimePref(enterprise_reporting::kLastUploadTimestamp,
@@ -459,9 +379,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
                              base::Time());
 
   registry->RegisterIntegerPref(prefs::kIosDefaultBrowserPromoLastAction, -1);
-
-  // Preference related to the tab pickup feature.
-  registry->RegisterBooleanPref(prefs::kTabPickupEnabled, false);
 
   // Preferences related to the new Safety Check Manager.
   registry->RegisterStringPref(
@@ -956,13 +873,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Prefs for the Synced Set Up Feature.
   registry->RegisterIntegerPref(prefs::kSyncedSetUpImpressionCount, 0);
 
-  // Deprecated 07/2025.
-  registry->RegisterBooleanPref(kFirstSyncCompletedInFullSyncMode, false);
-  registry->RegisterStringPref(kGoogleServicesSecondLastSyncingGaiaId,
-                               std::string());
-  registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchAttempt, 0);
-  registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchSuccess, 0);
-
   // Deprecated 08/2025.
   registry->RegisterDictionaryPref(kInvalidationClientIDCache);
   registry->RegisterDictionaryPref(kInvalidationTopicsToHandler);
@@ -1056,9 +966,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   prefs->ClearPref(
       prefs::kIosMagicStackSegmentationParcelTrackingImpressionsSinceFreshness);
 
-  // Added 07/2025.
-  prefs->ClearPref(prefs::kTabPickupEnabled);
-
   // Added 09/2025.
   RenameBooleanPref(omnibox::kIsOmniboxInBottomPosition, prefs::kBottomOmnibox,
                     prefs);
@@ -1080,25 +987,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 09/2024.
   browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
-
-  // Added 07/2025.
-  prefs->ClearPref(kFirstSyncCompletedInFullSyncMode);
-  prefs->ClearPref(kGoogleServicesSecondLastSyncingGaiaId);
-
-  // Added 07/2025.
-
-  // TODO(crbug.com/429521151): Remove migration call below after successfully
-  // migrating from local to profile prefs.
-  MigrateListPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kIosPromosManagerActivePromos, prefs);
-  MigrateListPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kIosPromosManagerSingleDisplayActivePromos, prefs);
-  MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
-      prefs::kIosPromosManagerSingleDisplayPendingPromos, prefs);
-
-  // Added 07/2025.
-  prefs->ClearPref(kOptGuideModelFetcherLastFetchAttempt);
-  prefs->ClearPref(kOptGuideModelFetcherLastFetchSuccess);
 
   // Added 08/2025.
   prefs->ClearPref(kInvalidationClientIDCache);
