@@ -215,7 +215,6 @@ scheduler::WorkerScheduler* WorkerGlobalScope::GetScheduler() {
 
 void WorkerGlobalScope::Dispose() {
   DCHECK(IsContextThread());
-  TRACE_EVENT0("blink.worker", "WorkerGlobalScope::Dispose");
   loading_virtual_time_pauser_ = WebScopedVirtualTimePauser();
   closing_ = true;
   WorkerOrWorkletGlobalScope::Dispose();
