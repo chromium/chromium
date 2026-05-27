@@ -4,6 +4,7 @@
 
 #include "extensions/browser/api/system_memory/memory_info_provider.h"
 
+#include "base/byte_size.h"
 #include "base/system/sys_info.h"
 
 namespace extensions {
@@ -21,7 +22,7 @@ void MemoryInfoProvider::InitializeForTesting(
 }
 
 bool MemoryInfoProvider::QueryInfo() {
-  info_.capacity = base::SysInfo::AmountOfPhysicalMemory().InBytesF();
+  info_.capacity = base::SysInfo::AmountOfTotalPhysicalMemory().InBytesF();
   info_.available_capacity =
       base::SysInfo::AmountOfAvailablePhysicalMemory().InBytesF();
   return true;
