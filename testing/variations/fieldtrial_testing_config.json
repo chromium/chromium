@@ -17500,6 +17500,36 @@
             ]
         }
     ],
+    "OsSyncAccessibilitySettingsBatch1": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OsSyncAccessibilitySettingsBatch1"
+                    ]
+                }
+            ]
+        }
+    ],
+    "OsSyncAccessibilitySettingsBatch3": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OsSyncAccessibilitySettingsBatch3"
+                    ]
+                }
+            ]
+        }
+    ],
     "OutOfProcessPrintDriversPrint": [
         {
             "platforms": [
