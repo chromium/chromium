@@ -283,8 +283,16 @@ WebUIToolbarWebView::~WebUIToolbarWebView() = default;
 void WebUIToolbarWebView::AddedToWidget() {
   CHECK(web_view_);
 
+  if (initialization_state_ == InitializationState::kInitialized) {
+    // Skips everything if already fully initialized.
+    return;
+  }
+
   // If initialization has already started or completed, do not run it again.
   if (initialization_state_ != InitializationState::kUninitialized) {
+    // For preloaded views, initialization_state_ is kPending. Apply deadline
+    // here which is after LoadURL has finished in InitialWebUIManager.
+    ApplyInitialSurfaceSyncDeadline();
     return;
   }
 
@@ -292,17 +300,9 @@ void WebUIToolbarWebView::AddedToWidget() {
 
   if (!is_preloaded_) {
     web_view_->LoadInitialURL(GURL(chrome::kChromeUIWebUIToolbarURL));
-
-    if (base::FeatureList::IsEnabled(
-            blink::features::kInitialWebUISurfaceSync)) {
-      // Apply specified deadline to toolbar and main content views.
-      size_t frames_param =
-          blink::features::kInitialWebUISurfaceSyncDeadlineInFrames.Get();
-      uint32_t frames = frames_param == std::numeric_limits<size_t>::max()
-                            ? std::numeric_limits<uint32_t>::max()
-                            : base::checked_cast<uint32_t>(frames_param);
-      SetSurfaceSyncDeadline(frames);
-    }
+    // Apply deadline immediately after LoadInitialURL call for non-preloaded
+    // views.
+    ApplyInitialSurfaceSyncDeadline();
   }
 
   // Initialize the split tabs control early to determine its initial visibility
@@ -771,6 +771,17 @@ void WebUIToolbarWebView::SetSurfaceSyncDeadline(
         main_rwhv->SetForceSpecifiedDeadline(deadline_in_frames);
       }
     }
+  }
+}
+
+void WebUIToolbarWebView::ApplyInitialSurfaceSyncDeadline() {
+  if (base::FeatureList::IsEnabled(blink::features::kInitialWebUISurfaceSync)) {
+    size_t frames_param =
+        blink::features::kInitialWebUISurfaceSyncDeadlineInFrames.Get();
+    uint32_t frames = frames_param == std::numeric_limits<size_t>::max()
+                          ? std::numeric_limits<uint32_t>::max()
+                          : base::checked_cast<uint32_t>(frames_param);
+    SetSurfaceSyncDeadline(frames);
   }
 }
 
