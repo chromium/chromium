@@ -53,6 +53,7 @@
 #include "third_party/blink/renderer/modules/webtransport/receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_group.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -712,12 +713,27 @@ class WebTransport::ReceiveStreamVendor final
       uint32_t stream_id,
       mojo::ScopedDataPipeConsumerHandle readable) {
     ScriptState::Scope scope(script_state_);
-    auto* receive_stream = MakeGarbageCollected<ReceiveStream>(
-        script_state_, web_transport_, stream_id, std::move(readable));
     auto* isolate = script_state_->GetIsolate();
     V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
     v8::TryCatch try_catch(isolate);
-    receive_stream->Init(PassThroughException(isolate));
+
+    // TODO(crbug.com/510589920): Remove the legacy ReceiveStream path when
+    // WebTransportReceiveStream ships.
+    ReadableStream* stream_to_enqueue = nullptr;
+    IncomingStream* incoming_stream = nullptr;
+    auto init_stream = [&](auto* s) {
+      s->Init(PassThroughException(isolate));
+      stream_to_enqueue = s;
+      incoming_stream = s->GetIncomingStream();
+    };
+    if (RuntimeEnabledFeatures::WebTransportReceiveStreamEnabled(
+            ExecutionContext::From(script_state_))) {
+      init_stream(MakeGarbageCollected<WebTransportReceiveStream>(
+          script_state_, web_transport_, stream_id, std::move(readable)));
+    } else {
+      init_stream(MakeGarbageCollected<ReceiveStream>(
+          script_state_, web_transport_, stream_id, std::move(readable)));
+    }
 
     if (try_catch.HasCaught()) {
       // Abandon the stream.
@@ -726,8 +742,7 @@ class WebTransport::ReceiveStreamVendor final
 
     // 0xfffffffe and 0xffffffff are reserved values in stream_map_.
     CHECK_LT(stream_id, 0xfffffffe);
-    web_transport_->incoming_stream_map_.insert(
-        stream_id, receive_stream->GetIncomingStream());
+    web_transport_->incoming_stream_map_.insert(stream_id, incoming_stream);
 
     auto it =
         web_transport_->closed_potentially_pending_streams_.find(stream_id);
@@ -736,15 +751,15 @@ class WebTransport::ReceiveStreamVendor final
       const bool fin_received = it->value;
       web_transport_->closed_potentially_pending_streams_.erase(it);
 
-      // This can run JavaScript. This is safe because `receive_stream` hasn't
-      // been exposed yet.
+      // This can run JavaScript. This is safe because the stream hasn't been
+      // exposed yet.
       // Note: OnIncomingStreamClosed() will eventually trigger
       // ForgetIncomingStream() via the on_abort_ callback, which handles
       // removal from incoming_stream_map_.
-      receive_stream->GetIncomingStream()->OnIncomingStreamClosed(fin_received);
+      incoming_stream->OnIncomingStreamClosed(fin_received);
     }
 
-    std::move(enqueue).Run(receive_stream);
+    std::move(enqueue).Run(stream_to_enqueue);
   }
 
   const Member<ScriptState> script_state_;

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_error.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_hash.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_receive_stream_stats.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_send_stream_stats.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/modules/webtransport/send_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/test_utils.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
+#include "third_party/blink/renderer/modules/webtransport/web_transport_receive_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_group.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_send_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -329,8 +331,8 @@ class WebTransportTest : public ::testing::Test {
     return producer;
   }
 
-  ReceiveStream* ReadReceiveStream(const V8TestingScope& scope,
-                                   WebTransport* web_transport) {
+  ReadableStream* ReadReceiveStream(const V8TestingScope& scope,
+                                    WebTransport* web_transport) {
     ReadableStream* streams = web_transport->incomingUnidirectionalStreams();
 
     v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
@@ -339,7 +341,7 @@ class WebTransportTest : public ::testing::Test {
         V8ReadableStream::ToWrappable(scope.GetIsolate(), v8value);
     EXPECT_TRUE(readable);
 
-    return static_cast<ReceiveStream*>(readable);
+    return readable;
   }
 
   void BindConnector(mojo::ScopedMessagePipeHandle handle) {
@@ -1660,7 +1662,7 @@ TEST_F(WebTransportTest, SendStreamGarbageCollectionRemoteClose) {
 TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionCancel) {
   V8TestingScope scope;
 
-  WeakPersistent<ReceiveStream> receive_stream;
+  WeakPersistent<ReadableStream> receive_stream;
   mojo::ScopedDataPipeProducerHandle producer;
 
   {
@@ -1722,7 +1724,7 @@ TEST_F(WebTransportTest, PendingIncomingStreamCloseConsumedOnceStreamExists) {
   EXPECT_TRUE(web_transport->HasPendingClosedStreamForTesting(kStreamId));
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
-  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
+  ReadableStream* receive_stream = ReadReceiveStream(scope, web_transport);
   ASSERT_TRUE(receive_stream);
 
   // Creating the ReceiveStream should consume the pending close entry.
@@ -1745,7 +1747,7 @@ TEST_F(WebTransportTest, CloseIgnoredAfterLocalAbort) {
 
   constexpr uint32_t kStreamId = 0;
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
-  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
+  ReadableStream* receive_stream = ReadReceiveStream(scope, web_transport);
   ASSERT_TRUE(receive_stream);
 
   // Cancel the stream locally (without receiving OnIncomingStreamClosed first).
@@ -1770,7 +1772,7 @@ TEST_F(WebTransportTest, CloseIgnoredAfterLocalAbort) {
 TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
   V8TestingScope scope;
 
-  WeakPersistent<ReceiveStream> receive_stream;
+  WeakPersistent<ReadableStream> receive_stream;
   mojo::ScopedDataPipeProducerHandle producer;
 
   {
@@ -1795,7 +1797,8 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
 
   ASSERT_TRUE(receive_stream);
 
-  receive_stream->GetIncomingStream()->OnIncomingStreamClosed(false);
+  client_remote_->OnIncomingStreamClosed(/*stream_id=*/0,
+                                         /*fin_received=*/false);
 
   test::RunPendingTasks();
 
@@ -1811,7 +1814,7 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteClose) {
 TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteCloseReverse) {
   V8TestingScope scope;
 
-  WeakPersistent<ReceiveStream> receive_stream;
+  WeakPersistent<ReadableStream> receive_stream;
   mojo::ScopedDataPipeProducerHandle producer;
 
   {
@@ -1828,7 +1831,8 @@ TEST_F(WebTransportTest, ReceiveStreamGarbageCollectionRemoteCloseReverse) {
 
   ASSERT_TRUE(receive_stream);
 
-  receive_stream->GetIncomingStream()->OnIncomingStreamClosed(false);
+  client_remote_->OnIncomingStreamClosed(/*stream_id=*/0,
+                                         /*fin_received=*/false);
 
   test::RunPendingTasks();
 
@@ -1885,7 +1889,7 @@ TEST_F(WebTransportTest, CreateReceiveStream) {
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
 
-  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
+  ReadableStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
   const std::string_view data = "what";
   EXPECT_EQ(producer->WriteAllData(base::as_byte_span(data)), MOJO_RESULT_OK);
@@ -1923,7 +1927,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
 
-  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
+  ReadableStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
   auto* reader = receive_stream->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -1951,7 +1955,7 @@ TEST_F(WebTransportTest, CreateReceiveStreamThenRemoteClose) {
 
   mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
 
-  ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
+  ReadableStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
   auto* reader = receive_stream->GetDefaultReaderForTesting(
       script_state, ASSERT_NO_EXCEPTION);
@@ -2975,6 +2979,233 @@ TEST_F(WebTransportTest, CongestionControlFlagOff) {
   ASSERT_EQ(1u, args.size());
   EXPECT_EQ(args[0].congestion_control,
             network::mojom::blink::WebTransportCongestionControl::kDefault);
+}
+
+// ---- WebTransportReceiveStream (crbug.com/487117768) ---------------------
+// These tests cover the receive-side counterpart of the WebTransportSendStream
+// tests above. Behavior of the IncomingStream itself is exercised in
+// incoming_stream_test.cc; here we just verify the wrapper class chosen by
+// the WebTransportReceiveStream runtime flag.
+
+TEST_F(WebTransportTest, IncomingUnidirectionalStreamIsReceiveStream) {
+  ScopedWebTransportReceiveStreamForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
+  ReadableStream* streams = web_transport->incomingUnidirectionalStreams();
+  v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
+
+  ReadableStream* readable =
+      V8ReadableStream::ToWrappable(scope.GetIsolate(), v8value);
+  ASSERT_TRUE(readable);
+
+  // Verify it's a WebTransportReceiveStream (flag on), not a plain
+  // ReceiveStream.
+  auto* receive_stream = DynamicTo<WebTransportReceiveStream>(readable);
+  ASSERT_TRUE(receive_stream);
+  EXPECT_TRUE(receive_stream->GetIncomingStream());
+
+  producer.reset();
+  web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
+}
+
+TEST_F(WebTransportTest, IncomingUnidirectionalStreamFlagOffIsLegacyReceive) {
+  ScopedWebTransportReceiveStreamForTest scoped_feature(false);
+  V8TestingScope scope;
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
+  ReadableStream* streams = web_transport->incomingUnidirectionalStreams();
+  v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
+
+  ReadableStream* readable =
+      V8ReadableStream::ToWrappable(scope.GetIsolate(), v8value);
+  ASSERT_TRUE(readable);
+
+  // With the flag off the wrapper should NOT be a WebTransportReceiveStream.
+  EXPECT_FALSE(DynamicTo<WebTransportReceiveStream>(readable));
+
+  producer.reset();
+  web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
+}
+
+TEST_F(WebTransportTest, ReceiveStreamGetStatsReturnsZeroedStub) {
+  ScopedWebTransportReceiveStreamForTest scoped_feature(true);
+  V8TestingScope scope;
+  auto* script_state = scope.GetScriptState();
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  mojo::ScopedDataPipeProducerHandle producer = DoAcceptUnidirectionalStream();
+  ReadableStream* streams = web_transport->incomingUnidirectionalStreams();
+  v8::Local<v8::Value> v8value = ReadValueFromStream(scope, streams);
+  auto* readable = V8ReadableStream::ToWrappable(scope.GetIsolate(), v8value);
+  auto* receive_stream = DynamicTo<WebTransportReceiveStream>(readable);
+  ASSERT_TRUE(receive_stream);
+
+  auto stats_promise = receive_stream->getStats(script_state);
+  ScriptPromiseTester stats_tester(script_state, stats_promise);
+  stats_tester.WaitUntilSettled();
+  EXPECT_TRUE(stats_tester.IsFulfilled());
+
+  // The resolved value is a WebTransportReceiveStreamStats dictionary. Stub
+  // returns zeroed stats; TODO(crbug.com/510589920) replace with real Mojo
+  // data.
+  v8::Local<v8::Value> result = stats_tester.Value().V8Value();
+  ASSERT_TRUE(result->IsObject());
+  v8::Local<v8::Object> stats_obj = result.As<v8::Object>();
+  auto context = script_state->GetContext();
+  auto* isolate = script_state->GetIsolate();
+
+  v8::Local<v8::Value> bytes_received;
+  ASSERT_TRUE(stats_obj->Get(context, V8AtomicString(isolate, "bytesReceived"))
+                  .ToLocal(&bytes_received));
+  EXPECT_EQ(bytes_received->IntegerValue(context).ToChecked(), 0);
+
+  v8::Local<v8::Value> bytes_read;
+  ASSERT_TRUE(stats_obj->Get(context, V8AtomicString(isolate, "bytesRead"))
+                  .ToLocal(&bytes_read));
+  EXPECT_EQ(bytes_read->IntegerValue(context).ToChecked(), 0);
+
+  producer.reset();
+  web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);
+}
+
+TEST_F(WebTransportTest, BidirectionalStreamReadableIsReceiveStream) {
+  ScopedWebTransportReceiveStreamForTest scoped_feature(true);
+  V8TestingScope scope;
+
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  EXPECT_CALL(*mock_web_transport_, CreateStream(Truly(ValidConsumerHandle),
+                                                 Truly(ValidProducerHandle), _))
+      .WillOnce([](Unused, Unused,
+                   base::OnceCallback<void(bool, uint32_t)> callback) {
+        std::move(callback).Run(true, 0);
+      });
+
+  auto* script_state = scope.GetScriptState();
+  auto bidi_promise = web_transport->createBidirectionalStream(
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, bidi_promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* bidi = V8WebTransportBidirectionalStream::ToWrappable(
+      scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(bidi);
+
+  auto* readable = bidi->readable();
+  ASSERT_TRUE(readable);
+  auto* receive_stream = DynamicTo<WebTransportReceiveStream>(readable);
+  ASSERT_TRUE(receive_stream);
+}
+
+TEST_F(WebTransportTest, BidirectionalStreamFlagOffReadableIsLegacyReceive) {
+  ScopedWebTransportReceiveStreamForTest scoped_feature(false);
+  V8TestingScope scope;
+
+  auto* web_transport =
+      CreateAndConnectSuccessfully(scope, "https://example.com");
+
+  EXPECT_CALL(*mock_web_transport_, CreateStream(Truly(ValidConsumerHandle),
+                                                 Truly(ValidProducerHandle), _))
+      .WillOnce([](Unused, Unused,
+                   base::OnceCallback<void(bool, uint32_t)> callback) {
+        std::move(callback).Run(true, 0);
+      });
+
+  auto* script_state = scope.GetScriptState();
+  auto bidi_promise = web_transport->createBidirectionalStream(
+      script_state, EmptySendStreamOptions(), ASSERT_NO_EXCEPTION);
+  ScriptPromiseTester tester(script_state, bidi_promise);
+  tester.WaitUntilSettled();
+  ASSERT_TRUE(tester.IsFulfilled());
+
+  auto* bidi = V8WebTransportBidirectionalStream::ToWrappable(
+      scope.GetIsolate(), tester.Value().V8Value());
+  ASSERT_TRUE(bidi);
+  EXPECT_FALSE(DynamicTo<WebTransportReceiveStream>(bidi->readable()));
+}
+
+// Regression test for the nullptr guard in web_transport_receive_stream.cc's
+// ForgetStream callback. The callback is bound with
+// WrapWeakPersistent(web_transport), so if WebTransport is garbage-collected
+// before the IncomingStream fires on_abort_, ForgetStream sees `transport ==
+// nullptr` and must return early instead of dereferencing.
+//
+// To exercise the path we must avoid the natural accept flow (which registers
+// the stream in WebTransport's incoming_stream_map_ — a strong ref that keeps
+// WebTransport alive transitively). Instead we construct
+// WebTransportReceiveStream directly so the stream is NOT in the map, then
+// break the mojo connection (Cleanup() iterates the map and would reset
+// on_abort_ on entries it finds — ours isn't there, so on_abort_ survives),
+// GC WebTransport, then trigger AbortAndReset via OnIncomingStreamClosed +
+// pipe close. Removing the guard makes this test crash with a nullptr deref
+// in WebTransport::ForgetIncomingStream.
+TEST_F(WebTransportTest,
+       WebTransportReceiveStreamForgetStreamSurvivesWebTransportGC) {
+  ScopedWebTransportReceiveStreamForTest scoped_feature(true);
+
+  V8TestingScope scope;
+
+  // Build the data pipe ourselves so we own the producer end and can close it
+  // later to drive HandlePipeClosed().
+  MojoCreateDataPipeOptions options;
+  options.struct_size = sizeof(MojoCreateDataPipeOptions);
+  options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
+  options.element_num_bytes = 1;
+  options.capacity_num_bytes = 0;
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(mojo::CreateDataPipe(&options, producer, consumer), MOJO_RESULT_OK);
+
+  WeakPersistent<WebTransport> web_transport;
+  Persistent<WebTransportReceiveStream> receive_stream;
+
+  {
+    v8::HandleScope handle_scope(scope.GetIsolate());
+
+    auto* wt = CreateAndConnectSuccessfully(scope, "https://example.com");
+    web_transport = wt;
+
+    // Construct WebTransportReceiveStream directly. Intentionally does NOT
+    // call wt->incoming_stream_map_.insert(...) — so WebTransport has no
+    // strong reference to our stream. The constructor binds ForgetStream
+    // with WrapWeakPersistent(wt), exactly mirroring production.
+    auto* s = MakeGarbageCollected<WebTransportReceiveStream>(
+        scope.GetScriptState(), wt, /*stream_id=*/0, std::move(consumer));
+    s->Init(ASSERT_NO_EXCEPTION);
+    receive_stream = s;
+  }
+
+  // Break the mojo connection so WebTransport becomes collectable. Cleanup()
+  // iterates incoming_stream_map_ and calls Error() (which resets on_abort_)
+  // on each entry — but our stream isn't in the map, so its callback
+  // survives intact.
+  client_remote_.reset();
+  test::RunPendingTasks();
+
+  ThreadState::Current()->CollectAllGarbageForTesting();
+
+  EXPECT_FALSE(web_transport)
+      << "WebTransport should be GC'd; test scenario not exercised";
+  ASSERT_TRUE(receive_stream);
+
+  // Both signals are required to reach ProcessClose() → CloseAbortAndReset()
+  // → AbortAndReset() → on_abort_.Run().
+  receive_stream->GetIncomingStream()->OnIncomingStreamClosed(
+      /*fin_received=*/true);
+  producer.reset();
+  test::RunPendingTasks();
+
+  // If we reach here without crashing, the nullptr guard worked. Without it,
+  // transport->ForgetIncomingStream(...) would SEGV on the null pointer.
+  EXPECT_TRUE(receive_stream);
 }
 
 }  // namespace
