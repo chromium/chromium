@@ -450,7 +450,13 @@ AnchoredMessageBubbleView::~AnchoredMessageBubbleView() {
 }
 
 void AnchoredMessageBubbleView::OnExpandButtonPressed() {
-  bottom_container_->SetVisible(!bottom_container_->GetVisible());
+  const bool expand = !bottom_container_->GetVisible();
+  bottom_container_->SetVisible(expand);
+  if (expand) {
+    delegate_->AnchoredMessageExpanded();
+  } else {
+    delegate_->AnchoredMessageCollapsed();
+  }
 }
 
 void AnchoredMessageBubbleView::MenuButtonPressed() {
