@@ -771,12 +771,20 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     @Override
     public List<Integer> getOrderedMultiSelectedTabIds() {
         assertOnUiThread();
+        Tab currentTab = mCurrentTabSupplier.get();
+        if (mMultiSelectedTabs.isEmpty() && currentTab != null) {
+            return Collections.singletonList(currentTab.getId());
+        }
         return new ArrayList<>(mMultiSelectedTabs);
     }
 
     @Override
     public List<Tab> getOrderedMultiSelectedTabs() {
         assertOnUiThread();
+        Tab currentTab = mCurrentTabSupplier.get();
+        if (mMultiSelectedTabs.isEmpty() && currentTab != null) {
+            return Collections.singletonList(currentTab);
+        }
         List<Tab> orderedTabs = new ArrayList<>(mMultiSelectedTabs.size());
         for (Integer id : mMultiSelectedTabs) {
             Tab tab = getTabById(id);
