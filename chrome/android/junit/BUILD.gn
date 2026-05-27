@@ -427,6 +427,7 @@ if (is_android) {
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser") {
     sources = [
       "//chrome/android/java/src/org/chromium/chrome/browser/bottombar/BottomBarContainerCoordinatorUnitTest.java",
+      "src/org/chromium/chrome/browser/BrowserExitReasonTrackerUnitTest.java",
       "src/org/chromium/chrome/browser/ChromeActionModeHandlerUnitTest.java",
       "src/org/chromium/chrome/browser/ChromeActivityUnitTest.java",
       "src/org/chromium/chrome/browser/ChromeBaseAppCompatActivityUnitTest.java",

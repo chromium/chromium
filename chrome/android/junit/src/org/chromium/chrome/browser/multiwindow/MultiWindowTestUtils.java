@@ -35,8 +35,11 @@ public class MultiWindowTestUtils {
      * @param taskId ID of the task the activity instance runs in.
      */
     public static void createInstance(int instanceId, String url, int tabCount, int taskId) {
-        ChromeMultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
+        // 'writeLastAccessedTime' must be called first so that
+        // 'ChromeMultiInstancePersistentStore#hasInstance' returns true. Otherwise, it assumes
+        // the instance does not exist and blocks writes to all other fields.
         ChromeMultiInstancePersistentStore.writeLastAccessedTime(instanceId);
+        ChromeMultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
         ChromeMultiInstancePersistentStore.writeTabCount(
                 instanceId, tabCount, /* incognitoTabCount= */ 0);
         ChromeMultiInstancePersistentStore.writeTaskId(instanceId, taskId);

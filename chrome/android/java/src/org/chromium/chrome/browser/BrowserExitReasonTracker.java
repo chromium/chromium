@@ -10,6 +10,7 @@ import android.os.Process;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceOrchestratorFactory;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.crash.browser.ProcessExitReasonFromSystem;
@@ -27,6 +28,8 @@ public class BrowserExitReasonTracker {
             int reason = prefs.readInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_EXIT_REASON);
             ProcessExitReasonFromSystem.recordAsEnumHistogram(
                     "Stability.Android.SystemExitReason.Browser2", reason);
+            MultiInstanceOrchestratorFactory.getInstance()
+                    .onForegroundBrowserProcessInitialized(reason);
         }
         SharedPreferences.Editor ed = prefs.getEditor();
         ed.remove(ChromePreferenceKeys.LAST_SESSION_BROWSER_EXIT_REASON);
