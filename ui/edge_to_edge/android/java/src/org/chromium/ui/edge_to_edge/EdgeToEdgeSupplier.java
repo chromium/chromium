@@ -6,10 +6,12 @@ package org.chromium.ui.edge_to_edge;
 
 import androidx.annotation.Px;
 
+import org.chromium.build.annotations.MockedInTests;
 import org.chromium.build.annotations.NullMarked;
 
 /** A supplier notifying of whether edge to edge is on and the value of the bottom inset. */
 @NullMarked
+@MockedInTests
 public interface EdgeToEdgeSupplier {
 
     /**

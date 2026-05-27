@@ -35,7 +35,6 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
 import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
@@ -150,7 +149,7 @@ public class PasswordGenerationIntegrationTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         rejectPasswordInGenerationBottomSheet(mActivity);
         assertPasswordTextEmpty(PASSWORD_NODE_ID);
-        assertNoInfobarsAreShown();
+        assertNoMessagesAreShown();
         CriteriaHelper.pollUiThread(
                 () -> {
                     PasswordStoreCredential[] credentials =
@@ -177,7 +176,7 @@ public class PasswordGenerationIntegrationTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
         rejectPasswordInGenerationBottomSheet(mActivity);
         assertPasswordTextEmpty(PASSWORD_NODE_ID_MANUAL);
-        assertNoInfobarsAreShown();
+        assertNoMessagesAreShown();
         CriteriaHelper.pollUiThread(
                 () -> {
                     PasswordStoreCredential[] credentials =
@@ -339,12 +338,14 @@ public class PasswordGenerationIntegrationTest {
                 });
     }
 
-    private void assertNoInfobarsAreShown() {
+    private void assertNoMessagesAreShown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    Assert.assertFalse(
-                            InfoBarContainer.from(mActivityTestRule.getActivityTab())
-                                    .hasInfoBars());
+                    WindowAndroid window = mActivity.getWindowAndroid();
+                    Assert.assertEquals(
+                            "No messages should be shown.",
+                            0,
+                            MessagesTestHelper.getMessageCount(window));
                 });
     }
 
