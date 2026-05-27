@@ -49,6 +49,7 @@ class TestDomainReliabilityServiceDelegate;
 namespace extensions {
 class ChromeGuestViewManagerDelegate;
 class ChromeMetricsPrivateDelegate;
+class GlicPrivateInvokeFunction;
 }  // namespace extensions
 
 namespace first_run {
@@ -150,6 +151,7 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class domain_reliability::TestDomainReliabilityServiceDelegate;
   friend class extensions::ChromeGuestViewManagerDelegate;
   friend class extensions::ChromeMetricsPrivateDelegate;
+  friend class extensions::GlicPrivateInvokeFunction;
   friend void ChangeMetricsReportingStateWithReply(
       bool,
       OnMetricsReportingCallbackType,
