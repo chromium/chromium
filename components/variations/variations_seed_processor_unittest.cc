@@ -121,10 +121,15 @@ std::string AssociatedStudyGroup(const base::Feature& feature) {
 // This differs from |CreateDummyClientFilterableState()| by setting membership
 // of a specific google group (which some tests rely on).
 constexpr uint64_t kExampleGoogleGroup = 123456;
+constexpr char kExampleEnterpriseGroup[] = "included_customers";
 std::unique_ptr<ClientFilterableState> CreateTestClientFilterableState() {
-  auto client_state =
-      ClientFilterableState::CreateWithGoogleGroups(base::BindOnce(
-          [] { return base::flat_set<uint64_t>({kExampleGoogleGroup}); }));
+  auto client_state = std::make_unique<ClientFilterableState>(
+      base::BindOnce([] { return false; }), base::BindOnce([] {
+        return base::flat_set<uint64_t>({kExampleGoogleGroup});
+      }),
+      base::BindOnce([] {
+        return base::flat_set<std::string>({kExampleEnterpriseGroup});
+      }));
   client_state->locale = "en-CA";
   client_state->reference_date = base::Time::Now();
   client_state->version = base::Version("20.0.0.0");
@@ -1894,6 +1899,66 @@ TYPED_TEST(VariationsSeedProcessorTest,
   filter->add_exclude_google_group(987654);
   // Also add a platform filter that matches both the environments we're
   // testing in the typed tests.
+  filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_WEBVIEW);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // This study should not be marked as low anonymity, and therefore is returned
+  // by both APIs.
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  EXPECT_EQ(active_groups.size(), 1u);
+
+  base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
+  base::FieldTrialListIncludingLowAnonymity::
+      GetActiveFieldTrialGroupsForTesting(
+          &active_groups_including_low_anonymity);
+  EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudyWithIncludeEnterpriseGroupFilterIsLowAnonymity) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("A");
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("AA", 100, study);
+  AddExperiment("Default", 0, study);
+
+  Study::Filter* filter = study->mutable_filter();
+  filter->add_enterprise_group(kExampleEnterpriseGroup);
+  filter->add_platform(Study::PLATFORM_ANDROID);
+  filter->add_platform(Study::PLATFORM_ANDROID_WEBVIEW);
+
+  this->CreateTrialsFromSeed(seed);
+
+  // This study should be marked as low anonymity, and therefore only returned
+  // by |FieldTrialListIncludingLowAnonymity|.
+  base::FieldTrial::ActiveGroups active_groups;
+  base::FieldTrialList::GetActiveFieldTrialGroups(&active_groups);
+  EXPECT_EQ(active_groups.size(), 0u);
+
+  base::FieldTrial::ActiveGroups active_groups_including_low_anonymity;
+  base::FieldTrialListIncludingLowAnonymity::
+      GetActiveFieldTrialGroupsForTesting(
+          &active_groups_including_low_anonymity);
+  EXPECT_EQ(active_groups_including_low_anonymity.size(), 1u);
+}
+
+TYPED_TEST(VariationsSeedProcessorTest,
+           StudyWithExcludeEnterpriseGroupFilterIsNotLowAnonymity) {
+  VariationsSeed seed;
+  Study* study = seed.add_study();
+  study->set_name("A");
+  study->set_default_experiment_name("Default");
+  study->set_activation_type(Study::ACTIVATE_ON_STARTUP);
+  AddExperiment("AA", 100, study);
+  AddExperiment("Default", 0, study);
+
+  Study::Filter* filter = study->mutable_filter();
+  filter->add_exclude_enterprise_group("excluded_customers");
   filter->add_platform(Study::PLATFORM_ANDROID);
   filter->add_platform(Study::PLATFORM_ANDROID_WEBVIEW);
 

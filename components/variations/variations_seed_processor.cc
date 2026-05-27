@@ -289,7 +289,8 @@ bool StudyIsLowAnonymity(const Study& study) {
   // Studies which are set based on Google group membership are potentially
   // low anonymity (as the groups could in theory have a small number of
   // members).
-  return study.filter().google_group_size() > 0;
+  return study.filter().google_group_size() > 0 ||
+         study.filter().enterprise_group_size() > 0;
 }
 
 // Creates a placeholder trial that indicates the feature conflict.
