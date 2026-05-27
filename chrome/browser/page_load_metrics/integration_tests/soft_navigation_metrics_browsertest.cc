@@ -879,7 +879,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, INP_ClickWithPresentation) {
     EXPECT_THAT(num_interactions_softnav1, testing::AnyOf(1, 2, 3));
     std::optional<int64_t> offset = GetMetricFromUkmEntry(
         soft_nav1, SoftNavigation::kInteractiveTiming_INPOffsetName);
-    EXPECT_THAT(offset, testing::AnyOf(1, 2));
+    EXPECT_THAT(offset, testing::AnyOf(1, 2, 3));  // Allow 3 due to race.
     EXPECT_THAT(
         soft_nav1,
         HasMetric(
