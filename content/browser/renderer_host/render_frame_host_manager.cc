@@ -5113,6 +5113,18 @@ bool RenderFrameHostManager::ReinitializeMainRenderFrame(
   }
 
   CHECK(render_frame_host->IsRenderFrameLive());
+
+  // The RenderWidgetHostView goes away with the render process. Initializing a
+  // RenderFrame means we'll be creating (or reusing, https://crbug.com/419087)
+  // a RenderWidgetHostView. The new RenderWidgetHostView should take its
+  // visibility from the RenderWidgetHostImpl, but this call exists to handle
+  // cases where it did not during a same-process navigation.
+  // TODO(danakj): We now hide the widget unconditionally (treating main frame
+  // and child frames alike) and show in DidFinishNavigation() always, so this
+  // should be able to go away. Try to remove this.
+  if (render_frame_host == render_frame_host_.get())
+    EnsureRenderFrameHostVisibilityConsistent();
+
   return true;
 }
 
@@ -5948,6 +5960,19 @@ void RenderFrameHostManager::ExecuteRemoteFramesBroadcastMethod(
   render_frame_host_->browsing_context_state()
       ->ExecuteRemoteFramesBroadcastMethod(callback, group_to_skip,
                                            outer_delegate_proxy);
+}
+
+void RenderFrameHostManager::EnsureRenderFrameHostVisibilityConsistent() {
+  RenderWidgetHostView* view = GetRenderWidgetHostView();
+  if (view &&
+      static_cast<RenderWidgetHostImpl*>(view->GetRenderWidgetHost())
+              ->IsHidden() != frame_tree_node_->frame_tree().IsHidden()) {
+    if (frame_tree_node_->frame_tree().IsHidden()) {
+      view->Hide();
+    } else {
+      view->Show();
+    }
+  }
 }
 
 void RenderFrameHostManager::EnsureRenderFrameHostPageFocusConsistent() {
