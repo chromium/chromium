@@ -232,52 +232,58 @@ void ResolvePermissionWithOSPrompt(content::WebContents* web_contents,
 
 namespace internal {
 
-void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
+bool ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
                                            ContentSetting setting) {
   if (!web_contents) {
-    return;
+    return false;
   }
   permissions::PermissionRequestManager* permission_request_manager =
       permissions::PermissionRequestManager::FromWebContents(web_contents);
 
   if (!permission_request_manager) {
-    return;
+    return false;
   }
   if (permission_request_manager->IsRequestInProgress() &&
       permission_request_manager->Requests().size() > 0 &&
       permission_request_manager->Requests()[0]->GetContentSettingsType() ==
           ContentSettingsType::NOTIFICATIONS) {
-    if (setting == CONTENT_SETTING_ALLOW) {
-      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
-        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Subscribed",
-                                  true);
-      }
-      permission_request_manager->Accept(/*prompt_options=*/std::monostate());
-    } else if (setting == CONTENT_SETTING_BLOCK) {
-      // There are multiple ways to deny the permission request. This histogram
-      // will track the number of times the user denied the permission request
-      // by closing the PageInfo.
-      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
-        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
-                                  true);
-      }
-      permission_request_manager->Deny(/*prompt_options=*/std::monostate());
-    } else if (setting == CONTENT_SETTING_DEFAULT) {
-      if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
-        base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Reset",
-                                  true);
-      }
-      // After the user interacts with the reset permission button in PageInfo,
-      // all previously decided permissions are reset by setting them to
-      // DEFAULT. There is no a default action or a state for permission
-      // requests, so we need to explicitly dismiss the request.
-      permission_request_manager->Dismiss(/*prompt_options=*/std::monostate());
-    } else {
-      // Currently, only ALLOW and BLOCK are supported. In case other actions
-      // are added in the future, this should be updated.
-      NOTREACHED();
+    switch (setting) {
+      case CONTENT_SETTING_ALLOW:
+        if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+          base::UmaHistogramBoolean(
+              "Permissions.ClapperLoud.PageInfo.Subscribed", true);
+        }
+        permission_request_manager->Accept(/*prompt_options=*/std::monostate());
+        return true;
+      case CONTENT_SETTING_BLOCK:
+        // There are multiple ways to deny the permission request. This
+        // histogram will track the number of times the user denied the
+        // permission request by closing the PageInfo.
+        if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+          base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Closed",
+                                    true);
+        }
+        permission_request_manager->Deny(/*prompt_options=*/std::monostate());
+        return true;
+      case CONTENT_SETTING_DEFAULT:
+        if (!permission_request_manager->ShouldCurrentRequestUseQuietUI()) {
+          base::UmaHistogramBoolean("Permissions.ClapperLoud.PageInfo.Reset",
+                                    true);
+        }
+        // After the user interacts with the reset permission button in
+        // PageInfo, all previously decided permissions are reset by setting
+        // them to DEFAULT. There is no a default action or a state for
+        // permission requests, so we need to explicitly dismiss the request.
+        permission_request_manager->Dismiss(
+            /*prompt_options=*/std::monostate());
+        return true;
+      default:
+        // Currently, only ALLOW and BLOCK are supported. In case other actions
+        // are added in the future, this should be updated.
+        NOTREACHED();
     }
   }
+  return false;
 }
 
 void DismissNotificationsPermissionRequest(content::WebContents* web_contents) {
@@ -314,13 +320,13 @@ static void JNI_PermissionUtil_DismissNotificationsPermissionRequest(
   permissions::internal::DismissNotificationsPermissionRequest(web_contents);
 }
 
-static void JNI_PermissionUtil_ResolveNotificationsPermissionRequest(
+static bool JNI_PermissionUtil_ResolveNotificationsPermissionRequest(
     JNIEnv* env,
     content::WebContents* web_contents,
     int32_t content_setting) {
   ContentSetting setting = static_cast<ContentSetting>(content_setting);
-  permissions::internal::ResolveNotificationsPermissionRequest(web_contents,
-                                                               setting);
+  return permissions::internal::ResolveNotificationsPermissionRequest(
+      web_contents, setting);
 }
 // TODO(crbug.com/463333225): Clean this provisional function name up if
 // Clapper is launched or removed.

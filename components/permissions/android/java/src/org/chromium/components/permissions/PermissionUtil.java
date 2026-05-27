@@ -351,14 +351,16 @@ public class PermissionUtil {
     }
 
     /**
-     * Grants a notifications permission if it is requested.
+     * Grants a notifications permission if it is requested. Returns false if no ongoing
+     * notification permission request is found.
      *
      * <p>This method is called when the user clicks on the "Subscribe" button in the notifications
      * permission row in PageInfo.
      */
-    public static void resolveNotificationsPermissionRequest(
+    public static boolean resolveNotificationsPermissionRequest(
             WebContents webContents, @ContentSetting int contentSetting) {
-        PermissionUtilJni.get().resolveNotificationsPermissionRequest(webContents, contentSetting);
+        return PermissionUtilJni.get()
+                .resolveNotificationsPermissionRequest(webContents, contentSetting);
     }
 
     /**
@@ -376,7 +378,7 @@ public class PermissionUtil {
 
     @NativeMethods
     public interface Natives {
-        void resolveNotificationsPermissionRequest(
+        boolean resolveNotificationsPermissionRequest(
                 @JniType("content::WebContents*") WebContents webContents,
                 @ContentSetting int contentSetting);
 

@@ -58,6 +58,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.components.browser_ui.settings.ChromeButtonPreference;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectInfo;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
@@ -174,6 +175,93 @@ public class SingleWebsiteSettingsTest {
 
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testNotificationSubscribeButton_Embargoed() {
+        Website website =
+                createWebsiteWithContentSettingException(
+                        ContentSettingsType.NOTIFICATIONS,
+                        ContentSetting.BLOCK,
+                        /* isEmbargoed= */ true);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    websitePreferences.setHasRequestedNotificationsPermission(true);
+                    websitePreferences.refreshSitePermissions();
+                    Preference preference =
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.NOTIFICATIONS));
+                    assertNotNull("Notification Preference not found.", preference);
+                    assertTrue(
+                            "Preference should be ChromeButtonPreference",
+                            preference instanceof ChromeButtonPreference);
+                });
+        onView(withText(R.string.notifications_permission_subscribe)).check(matches(isDisplayed()));
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testNotificationSubscribeButton_BlockedNotEmbargoed() {
+        Website website =
+                createWebsiteWithContentSettingException(
+                        ContentSettingsType.NOTIFICATIONS,
+                        ContentSetting.BLOCK,
+                        /* isEmbargoed= */ false);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    websitePreferences.setHasRequestedNotificationsPermission(true);
+                    websitePreferences.refreshSitePermissions();
+                    Preference preference =
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.NOTIFICATIONS));
+                    assertNotNull("Notification Preference not found.", preference);
+                    assertFalse(
+                            "Preference should NOT be ChromeButtonPreference",
+                            preference instanceof ChromeButtonPreference);
+                });
+        onView(withText(R.string.notifications_permission_subscribe)).check(doesNotExist());
+        settingsActivity.finish();
+    }
+
+    @Test
+    @SmallTest
+    public void testNotificationSubscribeButton_Ask() {
+        Website website =
+                createWebsiteWithContentSettingException(
+                        ContentSettingsType.NOTIFICATIONS,
+                        ContentSetting.ASK,
+                        /* isEmbargoed= */ false);
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSingleWebsitePreferences(website);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SingleWebsiteSettings websitePreferences =
+                            (SingleWebsiteSettings) settingsActivity.getMainFragment();
+                    websitePreferences.setHasRequestedNotificationsPermission(true);
+                    websitePreferences.refreshSitePermissions();
+                    Preference preference =
+                            websitePreferences.findPreference(
+                                    SingleWebsiteSettings.getPreferenceKey(
+                                            ContentSettingsType.NOTIFICATIONS));
+                    assertNotNull("Notification Preference not found.", preference);
+                    assertTrue(
+                            "Preference should be ChromeButtonPreference",
+                            preference instanceof ChromeButtonPreference);
+                });
+        onView(withText(R.string.notifications_permission_subscribe)).check(matches(isDisplayed()));
         settingsActivity.finish();
     }
 
@@ -780,7 +868,9 @@ public class SingleWebsiteSettingsTest {
     }
 
     private static Website createWebsiteWithContentSettingException(
-            @ContentSettingsType.EnumType int type, @ContentSetting int value) {
+            @ContentSettingsType.EnumType int type,
+            @ContentSetting int value,
+            boolean isEmbargoed) {
         WebsiteAddress address = WebsiteAddress.create(EXAMPLE_ADDRESS);
         Website website = new Website(address, address);
         website.setContentSettingException(
@@ -790,9 +880,14 @@ public class SingleWebsiteSettingsTest {
                         website.getAddress().getOrigin(),
                         value,
                         ProviderType.PREF_PROVIDER,
-                        /* isEmbargoed= */ false));
+                        isEmbargoed));
 
         return website;
+    }
+
+    private static Website createWebsiteWithContentSettingException(
+            @ContentSettingsType.EnumType int type, @ContentSetting int value) {
+        return createWebsiteWithContentSettingException(type, value, false);
     }
 
     private static Website createWebsiteWithGeolocationPermission(

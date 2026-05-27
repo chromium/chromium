@@ -50,6 +50,9 @@
 #include "components/permissions/features.h"
 #include "components/permissions/permission_decision_auto_blocker.h"
 #include "components/permissions/permission_recovery_success_rate_tracker.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/permissions/test/mock_permission_request.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/safe_browsing/buildflags.h"
@@ -2928,6 +2931,74 @@ TEST_F(PageInfoTest, ResetPermissionClearsEmbargo) {
   EXPECT_FALSE(autoblocker->IsEmbargoed(
       target_url, content_settings::GeolocationContentSettingsType()));
 }
+
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(PageInfoTest, PermanentNotificationSubscribeShowPermission) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      permissions::features::kPermanentNotificationSubscribeInPageInfo);
+
+  // By default, notification permission should not be shown.
+  page_info()->PresentSitePermissionsForTesting();
+  {
+    std::set<ContentSettingsType> expected_visible_permissions;
+    expected_visible_permissions.insert(
+        content_settings::GeolocationContentSettingsType());
+    ExpectPermissionInfoList(expected_visible_permissions,
+                             last_permission_info_list());
+  }
+
+  // Initialize PermissionRequestManager.
+  permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+  permissions::PermissionRequestManager* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+  ASSERT_TRUE(manager);
+
+  auto prompt_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  // Simulate notification request.
+  auto request = std::make_unique<permissions::MockPermissionRequest>(
+      permissions::RequestType::kNotifications);
+  base::RunLoop run_loop;
+  request->RegisterOnPermissionDecidedCallback(run_loop.QuitClosure());
+  prompt_factory->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::DISMISS);
+  manager->AddRequest(web_contents()->GetPrimaryMainFrame(),
+                      std::move(request));
+
+  run_loop.Run();
+
+  // Even if the permission request has been dismissed, the notification entry
+  // should be shown in Page Info.
+  page_info()->PresentSitePermissionsForTesting();
+  {
+    std::set<ContentSettingsType> expected_visible_permissions;
+    expected_visible_permissions.insert(
+        content_settings::GeolocationContentSettingsType());
+    expected_visible_permissions.insert(ContentSettingsType::NOTIFICATIONS);
+    ExpectPermissionInfoList(expected_visible_permissions,
+                             last_permission_info_list());
+  }
+
+  // Simulate navigation to reset the state.
+  ClearPageInfo();
+  SetURL("http://www.example.com/new_page");
+  NavigateAndCommit(url());
+
+  // Recreate PageInfo and present permissions.
+  page_info()->PresentSitePermissionsForTesting();
+
+  // Notification permission should not be shown anymore.
+  {
+    std::set<ContentSettingsType> expected_visible_permissions;
+    expected_visible_permissions.insert(
+        content_settings::GeolocationContentSettingsType());
+    ExpectPermissionInfoList(expected_visible_permissions,
+                             last_permission_info_list());
+  }
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class PageInfoAdPrivacyDeprecationTest : public PageInfoTest {
  public:

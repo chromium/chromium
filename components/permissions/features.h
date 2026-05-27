@@ -105,6 +105,11 @@ BASE_DECLARE_FEATURE(kPermissionPredictionsGeolocationAccuracy);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionsGestureGatedPrompts);
 
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kPermanentNotificationSubscribeInPageInfo);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 
 namespace feature_params {

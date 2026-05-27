@@ -110,6 +110,9 @@ public class PageInfoPermissionsControllerTest {
 
     @Test
     public void testOnNotificationSubscribeClicked_RequestsPermission_Granted() {
+        when(mPermissionUtilJni.resolveNotificationsPermissionRequest(
+                        mWebContents, ContentSetting.ALLOW))
+                .thenReturn(true);
         mRequestAndroidPermissionsResult = true;
         HistogramWatcher histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -141,8 +144,10 @@ public class PageInfoPermissionsControllerTest {
 
     @Test
     public void testOnNotificationSubscribeClicked_PermissionAlreadyGranted() {
+        when(mPermissionUtilJni.resolveNotificationsPermissionRequest(
+                        mWebContents, ContentSetting.ALLOW))
+                .thenReturn(true);
         mRequestAndroidPermissionsResult = false;
-
         mController.onNotificationSubscribeClicked();
 
         verify(mPermissionUtilJni)
@@ -151,6 +156,9 @@ public class PageInfoPermissionsControllerTest {
 
     @Test
     public void testOnNotificationSubscribeClicked_NullWindow() {
+        when(mPermissionUtilJni.resolveNotificationsPermissionRequest(
+                        mWebContents, ContentSetting.ALLOW))
+                .thenReturn(true);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(null);
 
         mController.onNotificationSubscribeClicked();

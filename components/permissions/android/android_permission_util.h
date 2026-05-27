@@ -24,7 +24,9 @@ namespace permissions {
 
 namespace internal {
 
-void ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
+// Resolves an ongoing notification permission request, if there is one. Returns
+// false if no ongoing notification permission request was found.
+bool ResolveNotificationsPermissionRequest(content::WebContents* web_contents,
                                            ContentSetting content_setting);
 
 void DismissNotificationsPermissionRequest(content::WebContents* web_contents);

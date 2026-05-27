@@ -834,58 +834,34 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
         return true;
     }
 
+    // Sets up a preference with  a "subscribe" button for granting notifications permission.
     @RequiresNonNull({"mSite"})
-    private void setUpNotificationsPreference(Preference preference, boolean isEmbargoed) {
-        @ContentSettingsType.EnumType int notificationType = ContentSettingsType.NOTIFICATIONS;
-        final @ContentSetting @Nullable Integer value =
-                mSite.getContentSetting(getBrowserContextHandle(), notificationType);
-        // If `mHasRequestedNotificationsPermission`is true, this means the user clicked on the
-        // "Manage" button in the notification permission prompt, and we should display the
-        // permission request UI in PageInfo. `setupAppDelegatePreference` should not be called if
-        // there is an active permission request.
-        if (!mHasRequestedNotificationsPermission
-                && setupAppDelegatePreference(
-                        preference,
-                        R.string.website_notification_settings,
-                        notificationType,
-                        value)) {
-            return;
-        }
+    private void setupNotificationsSubscribeButtonPreference(Preference preference) {
+        String overrideSummary =
+                getString(
+                        ContentSettingsResources.getCategorySummary(
+                                ContentSetting.BLOCK, /* isOneTime= */ false));
+        ChromeButtonPreference buttonPreference =
+                replaceWithReadOnlyButtonPreference(
+                        preference, overrideSummary, ContentSetting.BLOCK);
+        // For the Permissions row with the subscribe button we do not want for the whole row to
+        // be selectable. It will lead to TalkBack issues.
+        buttonPreference.setSelectable(false);
+        buttonPreference.setButton(
+                R.string.notifications_permission_subscribe,
+                R.string.notifications_permission_subscribe_a11y,
+                view -> {
+                    if (mWebsiteSettingsObserver != null) {
+                        mWebsiteSettingsObserver.onNotificationSubscribeClicked();
+                    }
+                });
+    }
 
-        // `mHasRequestedNotificationsPermission` indicates that the notification permission is
-        // currently being requested, as it is not technically allowed yet, we should display
-        // the "BLOCK" state. Because the requested permission's state is ASK, `mSite` will not
-        // contain a value for this permission.
-        if (mHasRequestedNotificationsPermission) {
-            String overrideSummary =
-                    getString(
-                            ContentSettingsResources.getCategorySummary(
-                                    ContentSetting.BLOCK, /* isOneTime= */ false));
-            ChromeButtonPreference buttonPreference =
-                    replaceWithReadOnlyButtonPreference(
-                            preference, overrideSummary, ContentSetting.BLOCK);
-            // For the Permissions row with the subscribe button we do not want for the whole row to
-            // be selectable. It will lead to TalkBack issues.
-            buttonPreference.setSelectable(false);
-            buttonPreference.setButton(
-                    R.string.notifications_permission_subscribe,
-                    R.string.notifications_permission_subscribe_a11y,
-                    view -> {
-                        if (mWebsiteSettingsObserver != null) {
-                            mWebsiteSettingsObserver.onNotificationSubscribeClicked();
-                        }
-                    });
-            return;
-        }
-
-        if (value == null || (value != ContentSetting.ALLOW && value != ContentSetting.BLOCK)) {
-            // TODO(crbug.com/40526685): Figure out if this is the correct thing to do, for
-            // values that are non-null, but not ALLOW or BLOCK either. (In
-            // setupContentSettingsPreference we treat non-ALLOW settings as BLOCK, but here we
-            // are simply not adding it.)
-            return;
-        }
-
+    // Sets up a preference that displays the current notifications setting and links to OS channel
+    // settings on click.
+    @RequiresNonNull({"mSite"})
+    private void setupNotificationsChannelPreference(
+            Preference preference, @ContentSetting int value, boolean isEmbargoed) {
         String overrideSummary =
                 isEmbargoed
                         ? getString(R.string.automatically_blocked)
@@ -909,6 +885,46 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
                     launchOsChannelSettingsFromPreference(preference);
                     return true;
                 });
+    }
+
+    @RequiresNonNull({"mSite"})
+    private void setUpNotificationsPreference(Preference preference, boolean isEmbargoed) {
+        @ContentSettingsType.EnumType int notificationType = ContentSettingsType.NOTIFICATIONS;
+        final @ContentSetting @Nullable Integer value =
+                mSite.getContentSetting(getBrowserContextHandle(), notificationType);
+
+        // If `mHasRequestedNotificationsPermission`is true, this means the user clicked on the
+        // "Manage" button in the notification permission prompt, and we should display the
+        // permission request UI in PageInfo. `setupAppDelegatePreference` should not be called if
+        // there is an active permission request.
+        if (!mHasRequestedNotificationsPermission
+                && setupAppDelegatePreference(
+                        preference,
+                        R.string.website_notification_settings,
+                        notificationType,
+                        value)) {
+            return;
+        }
+
+        // `mHasRequestedNotificationsPermission` indicates that the notification permission has
+        // been requested. If permission has not been granted or manually blocked yet, show a
+        // Subscribe button.
+        if (mHasRequestedNotificationsPermission
+                && (value == null
+                        || value == ContentSetting.ASK
+                        || (value == ContentSetting.BLOCK && isEmbargoed))) {
+            setupNotificationsSubscribeButtonPreference(preference);
+            return;
+        }
+
+        if (value == null || (value != ContentSetting.ALLOW && value != ContentSetting.BLOCK)) {
+            // TODO(crbug.com/40526685): Figure out if this is the correct thing to do, for
+            // values that are non-null, but not ALLOW or BLOCK either. (In
+            // setupContentSettingsPreference we treat non-ALLOW settings as BLOCK, but here we
+            // are simply not adding it.)
+            return;
+        }
+        setupNotificationsChannelPreference(preference, value, isEmbargoed);
     }
 
     /**

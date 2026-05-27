@@ -328,6 +328,12 @@ class PermissionRequestManager
   // PromptResolved metrics, for ask prompts.
   bool ShouldRecordUmaForCurrentPrompt() const;
 
+#if BUILDFLAG(IS_ANDROID)
+  bool has_requested_notifications() const {
+    return has_requested_notifications_;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class test::MockPermissionRequestManager;
@@ -688,6 +694,11 @@ class PermissionRequestManager
   // |requests_|.
   std::map<PermissionRequest*, ContentSetting>
       current_requests_initial_statuses_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Whether the current page already requested notification permission.
+  bool has_requested_notifications_ = false;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   base::WeakPtrFactory<PermissionRequestManager> weak_factory_{this};
   WEB_CONTENTS_USER_DATA_KEY_DECL();

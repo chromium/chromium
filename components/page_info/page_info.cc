@@ -1378,6 +1378,18 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
             : CONTENT_SETTING_ALLOW;
     permission_info.default_setting = effective_default_setting;
   }
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermanentNotificationSubscribeInPageInfo) &&
+      permission_info.type == ContentSettingsType::NOTIFICATIONS &&
+      web_contents_) {
+    if (permissions::PermissionRequestManager* manager =
+            permissions::PermissionRequestManager::FromWebContents(
+                web_contents_.get())) {
+      if (manager->has_requested_notifications()) {
+        permission_info.is_requested = true;
+      }
+    }
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
@@ -1388,25 +1400,32 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
 // second section, the default behavior used when no per-type exception applies.
 bool PageInfo::ShouldShowPermission(
     const PageInfo::PermissionInfo& info) const {
-  // For the Clapper experiment Chrome should display NOTIFICATIONS
-  // permission while it is being requested.
 #if BUILDFLAG(IS_ANDROID)
-  if (info.type == ContentSettingsType::NOTIFICATIONS &&
-      (base::FeatureList::IsEnabled(
-           permissions::kPermissionsAndroidClapperLoud) ||
-       base::FeatureList::IsEnabled(
-           permissions::kPermissionsAndroidClapperQuiet)
-
-           ) &&
-      web_contents_) {
-    permissions::PermissionRequestManager* manager =
-        permissions::PermissionRequestManager::FromWebContents(
-            web_contents_.get());
-    if (manager && manager->IsRequestInProgress()) {
-      for (const auto& request : manager->Requests()) {
-        if (request->GetContentSettingsType() ==
-            ContentSettingsType::NOTIFICATIONS) {
-          return true;
+  if (info.type == ContentSettingsType::NOTIFICATIONS) {
+    // `is_requested` is only populated if
+    // `kPermanentNotificationSubscribeInPageInfo` is enabled: in that case, we
+    // should show the notification entry in Page Info.
+    if (info.is_requested) {
+      CHECK(base::FeatureList::IsEnabled(
+          permissions::features::kPermanentNotificationSubscribeInPageInfo));
+      return true;
+    }
+    // For the Clapper experiment Chrome should display NOTIFICATIONS
+    // permission while it is being requested.
+    if ((base::FeatureList::IsEnabled(
+             permissions::kPermissionsAndroidClapperLoud) ||
+         base::FeatureList::IsEnabled(
+             permissions::kPermissionsAndroidClapperQuiet)) &&
+        web_contents_) {
+      permissions::PermissionRequestManager* manager =
+          permissions::PermissionRequestManager::FromWebContents(
+              web_contents_.get());
+      if (manager && manager->IsRequestInProgress()) {
+        for (const auto& request : manager->Requests()) {
+          if (request->GetContentSettingsType() ==
+              ContentSettingsType::NOTIFICATIONS) {
+            return true;
+          }
         }
       }
     }

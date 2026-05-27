@@ -208,8 +208,8 @@ void PageInfoControllerAndroid::SetPermissionInfo(
   std::map<ContentSettingsType, /*allowed*/ bool>
       user_specified_settings_to_display;
 
-  // Whether the notifications permission is being requested. This is
-  // needed to determine whether to show the permission in Page Info while it is
+  // Whether the notifications permission is being requested. This is needed to
+  // determine whether to show the permission in Page Info while or after it is
   // being requested. This is needed for the Clapper experiment
   // (crbug.com/458351800) and (crbug.com/463333225).
   bool requested_notifications = false;
@@ -227,13 +227,16 @@ void PageInfoControllerAndroid::SetPermissionInfo(
             info->delegate().IsAnyPermissionAllowed(*setting_to_display);
       }
 
-      // Notifications permission can have the setting to display as DEFAULT
-      // only if it is being requested and the Clapper experiment is
-      // enabled.
-      if (permission.type == ContentSettingsType::NOTIFICATIONS &&
-          setting_to_display.has_value() &&
-          setting_to_display.value() == permission.default_setting) {
-        requested_notifications = true;
+      // It might be that we decided to show a Notification permission entry
+      // even if the setting to display is DEFAULT. That must be either because
+      // kPermanentNotificationSubscribeInPageInfo is enabled or because of the
+      // Clapper experiment.
+      if (permission.type == ContentSettingsType::NOTIFICATIONS) {
+        if (permission.is_requested ||
+            (setting_to_display.has_value() &&
+             setting_to_display.value() == permission.default_setting)) {
+          requested_notifications = true;
+        }
       }
     }
   }

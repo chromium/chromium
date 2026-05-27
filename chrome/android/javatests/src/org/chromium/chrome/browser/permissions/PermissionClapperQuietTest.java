@@ -715,9 +715,9 @@ public class PermissionClapperQuietTest {
         onViewWaiting(withText(PermissionTestRule.CLAPPER_PAGE_INFO_SUBSCRIBE_BUTTON_TEXT_ID))
                 .perform(click());
 
-        // Verify that the permission was NOT granted (because the request was preempted).
+        // Verify that the permission was granted.
         mPermissionRule.checkPermissionSettingForOrigin(
-                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW, PAGE_URL);
 
         // Verify no crash.
         histogramWatcher.assertExpected();
@@ -725,11 +725,12 @@ public class PermissionClapperQuietTest {
         // Cleanup
         pressBack();
         mPermissionRule.waitForPageInfoClose();
+        // Close the microphone permission prompt.
         PermissionTestRule.replyToDialog(
                 PermissionTestRule.PromptDecision.DENY, mPermissionRule.getActivity());
 
         mPermissionRule.checkPermissionSettingForOrigin(
-                ContentSettingsType.NOTIFICATIONS, ContentSetting.ASK, PAGE_URL);
+                ContentSettingsType.NOTIFICATIONS, ContentSetting.ALLOW, PAGE_URL);
     }
 
     @Test

@@ -23,6 +23,7 @@ import org.chromium.components.browser_ui.site_settings.SiteDataCleaner;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -33,6 +34,7 @@ import org.chromium.components.permissions.PermissionUtil;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 import java.util.Collection;
 import java.util.List;
@@ -70,7 +72,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     private final WebContents mWebContents;
     private final PageInfoRowView mRowView;
     private final String mTitle;
-    private final String mPageUrl;
+    private final GURL mPageUrl;
     private boolean mHasRequestedNotificationsPermission;
     private boolean mHasSoundPermission;
     private boolean mHasAutoPictureInPicturePermission;
@@ -89,7 +91,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         mMainController = mainController;
         mRowView = view;
         mWebContents = webContents;
-        mPageUrl = mainController.getURL().getSpec();
+        mPageUrl = mainController.getURL();
         mHighlightedPermission = highlightedPermission;
         Resources resources = mRowView.getContext().getResources();
         mHighlightColor = R.color.iph_highlight_color;
@@ -111,7 +113,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         assert mSubPage == null;
         if (!canCreateSubpageFragment()) return null;
 
-        Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl);
+        Bundle fragmentArgs = SingleWebsiteSettings.createFragmentArgsForSite(mPageUrl.getSpec());
         fragmentArgs.putBoolean(SingleWebsiteSettings.EXTRA_SHOW_SOUND, mHasSoundPermission);
         fragmentArgs.putBoolean(
                 SingleWebsiteSettings.EXTRA_SHOW_AUTO_PIP, mHasAutoPictureInPicturePermission);
@@ -275,7 +277,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
         BrowserContextHandle browserContext = getDelegate().getBrowserContext();
         WebsitePermissionsFetcher fetcher =
                 new WebsitePermissionsFetcher(getDelegate().getSiteSettingsDelegate());
-        String origin = Origin.createOrThrow(mPageUrl).toString();
+        String origin = Origin.createOrThrow(mPageUrl.getSpec()).toString();
         WebsiteAddress address = WebsiteAddress.create(origin);
         assert address != null;
 
@@ -337,7 +339,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     public void onNotificationSubscribeClicked() {
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) {
-            resolvePermissionRequest(true);
+            resolveNotificationPermissionRequestAndMaybeGrant(true);
             return;
         }
         boolean requestSent =
@@ -349,18 +351,18 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                             public void onAndroidPermissionAccepted() {
                                 RecordHistogram.recordBooleanHistogram(
                                         "Permissions.ClapperLoud.PageInfo.OsPromptResolved", true);
-                                resolvePermissionRequest(true);
+                                resolveNotificationPermissionRequestAndMaybeGrant(true);
                             }
 
                             @Override
                             public void onAndroidPermissionCanceled() {
                                 RecordHistogram.recordBooleanHistogram(
                                         "Permissions.ClapperLoud.PageInfo.OsPromptResolved", false);
-                                resolvePermissionRequest(false);
+                                resolveNotificationPermissionRequestAndMaybeGrant(false);
                             }
                         });
         if (!requestSent) {
-            resolvePermissionRequest(true);
+            resolveNotificationPermissionRequestAndMaybeGrant(true);
         }
     }
 
@@ -371,15 +373,24 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                 windowAndroid, contentSettingsTypes, delegate);
     }
 
-    private void resolvePermissionRequest(boolean isGranted) {
+    private void resolveNotificationPermissionRequestAndMaybeGrant(boolean isGranted) {
         // Reset the requested permission state to false, as the permission has been granted and is
         // not longer in request. This will ensure that the notification permission request will not
         // be accidentally denied when the user navigates away from the permission subpage.
         mHasRequestedNotificationsPermission = false;
 
         if (isGranted) {
-            PermissionUtil.resolveNotificationsPermissionRequest(
-                    mWebContents, ContentSetting.ALLOW);
+            if (!PermissionUtil.resolveNotificationsPermissionRequest(
+                    mWebContents, ContentSetting.ALLOW)) {
+                // If the permission request does not exist anymore, just grant notification
+                // permission to the page.
+                WebsitePreferenceBridge.setContentSettingDefaultScope(
+                        getDelegate().getBrowserContext(),
+                        ContentSettingsType.NOTIFICATIONS,
+                        mPageUrl,
+                        mPageUrl,
+                        ContentSetting.ALLOW);
+            }
         } else {
             PermissionUtil.dismissNotificationsPermissionRequest(mWebContents);
         }
@@ -398,8 +409,8 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
                 PermissionInfo permissionInfo =
                         new PermissionInfo(
                                 ContentSettingsType.NOTIFICATIONS,
-                                /* origin= */ mPageUrl,
-                                /* embedder= */ mPageUrl,
+                                /* origin= */ mPageUrl.getSpec(),
+                                /* embedder= */ mPageUrl.getSpec(),
                                 /* isEmbargoed= */ false);
 
                 mSubPage.getSite().setPermissionInfo(permissionInfo);

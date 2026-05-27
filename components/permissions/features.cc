@@ -117,6 +117,14 @@ BASE_FEATURE(kPermissionPredictionsGeolocationAccuracy,
 BASE_FEATURE(kPermissionsGestureGatedPrompts,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+// When enabled, a notification entry in page info will be displayed
+// persistently (until the tab is navigated away) if a document requests
+// notification permission.
+BASE_FEATURE(kPermanentNotificationSubscribeInPageInfo,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace features
 
 namespace feature_params {
