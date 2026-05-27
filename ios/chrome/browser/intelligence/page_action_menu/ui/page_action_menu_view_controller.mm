@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -671,7 +672,7 @@ const CGFloat kDividerWidth = 1.0;
 // Navigates to the Reader mode options.
 - (void)handleReaderModeOptionsTapped:(UIButton*)button {
   RecordAIHubAction(IOSAIHubAction::kReaderModeOptions);
-  [self.delegate viewControllerDidTapReaderModeOptionsButton:self];
+  [self.readerModeOptionsHandler showReaderModeOptions];
 }
 
 // Handles toggle switch changes for permission-based features.

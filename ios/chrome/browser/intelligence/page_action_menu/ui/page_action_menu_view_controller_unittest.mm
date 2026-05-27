@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -79,6 +80,8 @@ class PageActionMenuViewControllerTest : public PlatformTest {
     mock_lens_overlay_handler_ =
         OCMProtocolMock(@protocol(LensOverlayCommands));
     mock_reader_mode_handler_ = OCMProtocolMock(@protocol(ReaderModeCommands));
+    mock_reader_mode_options_handler_ =
+        OCMProtocolMock(@protocol(ReaderModeOptionsCommands));
 
     // Initialize the view controller and inject mocks.
     view_controller_ = [[PageActionMenuViewController alloc] init];
@@ -88,6 +91,8 @@ class PageActionMenuViewControllerTest : public PlatformTest {
     view_controller_.pageActionMenuHandler = mock_page_action_menu_handler_;
     view_controller_.lensOverlayHandler = mock_lens_overlay_handler_;
     view_controller_.readerModeHandler = mock_reader_mode_handler_;
+    view_controller_.readerModeOptionsHandler =
+        mock_reader_mode_options_handler_;
 
     // Stub mutator methods with defaults to avoid fragile tests.
     StubMutatorWithDefaults();
@@ -101,6 +106,7 @@ class PageActionMenuViewControllerTest : public PlatformTest {
     mock_page_action_menu_handler_ = nil;
     mock_lens_overlay_handler_ = nil;
     mock_reader_mode_handler_ = nil;
+    mock_reader_mode_options_handler_ = nil;
     browser_.reset();
     profile_.reset();
     PlatformTest::TearDown();
@@ -128,6 +134,7 @@ class PageActionMenuViewControllerTest : public PlatformTest {
   id mock_page_action_menu_handler_;
   id mock_lens_overlay_handler_;
   id mock_reader_mode_handler_;
+  id mock_reader_mode_options_handler_;
 };
 
 // Tests that the view controller correctly stores its injected dependencies.
@@ -140,6 +147,8 @@ TEST_F(PageActionMenuViewControllerTest, Initialization) {
             mock_page_action_menu_handler_);
   EXPECT_EQ(view_controller_.lensOverlayHandler, mock_lens_overlay_handler_);
   EXPECT_EQ(view_controller_.readerModeHandler, mock_reader_mode_handler_);
+  EXPECT_EQ(view_controller_.readerModeOptionsHandler,
+            mock_reader_mode_options_handler_);
 }
 
 // Tests that the view loads successfully.
@@ -229,18 +238,17 @@ TEST_F(PageActionMenuViewControllerTest, DismissButtonTapped) {
   OCMVerifyAll(mock_page_action_menu_handler_);
 }
 
-// Tests that tapping the Reader Mode options button notifies the delegate.
+// Tests that tapping the Reader Mode options button calls the handler.
 TEST_F(PageActionMenuViewControllerTest, ReaderModeOptionsButtonTapped) {
   OCMStub([mock_mutator_ isReaderModeActive]).andReturn(YES);
   [view_controller_ loadViewIfNeeded];
 
-  OCMExpect([mock_delegate_
-      viewControllerDidTapReaderModeOptionsButton:view_controller_]);
+  OCMExpect([mock_reader_mode_options_handler_ showReaderModeOptions]);
   [view_controller_ handleReaderModeOptionsTapped:nil];
 
   // `self` is needed by OCMVerifyAll macro in C++ tests.
   id self = nil;
-  OCMVerifyAll(mock_delegate_);
+  OCMVerifyAll(mock_reader_mode_options_handler_);
 }
 
 // Tests that tapping the button to hide Reader Mode dismisses the menu and

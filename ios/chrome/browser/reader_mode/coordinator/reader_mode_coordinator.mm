@@ -91,14 +91,6 @@
 #pragma mark - ReaderModeOptionsCommands
 
 - (void)showReaderModeOptions {
-  if ([_mediator GeminiAvailableForProfile]) {
-    id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), PageActionMenuCommands);
-    // The flow when Page Action is available is to show the Page action menu.
-    // The user will have to tap RM options button again from there.
-    [pageActionMenuHandler showPageActionMenu];
-    return;
-  }
   if (_optionsCoordinator) {
     // If the Reader mode options UI is already presented then there is nothing
     // to do.
@@ -111,10 +103,6 @@
 }
 
 - (void)hideReaderModeOptions {
-  id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), PageActionMenuCommands);
-  [pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
-
   if (!_optionsCoordinator) {
     // If the Reader mode options UI is already dismissed then there is nothing
     // to do.

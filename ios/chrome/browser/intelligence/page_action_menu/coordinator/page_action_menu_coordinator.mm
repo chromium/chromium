@@ -53,7 +53,8 @@
     AccountMenuCoordinatorDelegate,
     PageActionMenuViewControllerDelegate,
     UINavigationControllerDelegate,
-    UIAdaptivePresentationControllerDelegate>
+    UIAdaptivePresentationControllerDelegate,
+    ReaderModeOptionsCommands>
 @end
 
 namespace {
@@ -130,6 +131,7 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
 
   _viewController.delegate = self;
   _viewController.mutator = _mediator;
+  _viewController.readerModeOptionsHandler = self;
 
   _viewController.readerModeHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ReaderModeCommands);
@@ -212,21 +214,6 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
 }
 
 #pragma mark - PageActionMenuViewControllerDelegate
-
-- (void)viewControllerDidTapReaderModeOptionsButton:
-    (PageActionMenuViewController*)viewController {
-  _readerModeOptionsViewController =
-      [[ReaderModeOptionsViewController alloc] init];
-  [_readerModeOptionsViewController updateHideReaderModeButtonVisibility:NO];
-  _readerModeOptionsViewController.readerModeOptionsHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         ReaderModeOptionsCommands);
-  _readerModeOptionsViewController.mutator = _readerModeOptionsMediator;
-  _readerModeOptionsViewController.controlsView.mutator =
-      _readerModeOptionsMediator;
-  [_navigationController pushViewController:_readerModeOptionsViewController
-                                   animated:YES];
-}
 
 - (void)viewControllerDidTapTranslateOptionsButton:
     (PageActionMenuViewController*)viewController {
@@ -556,6 +543,24 @@ constexpr NSTimeInterval kEligibilityPollTimeout = 5.0;
 
   [self stopEligibilityPolling];
   [_viewController updateGeminiLoadingState:NO];
+}
+
+#pragma mark - ReaderModeOptionsCommands
+
+- (void)showReaderModeOptions {
+  _readerModeOptionsViewController =
+      [[ReaderModeOptionsViewController alloc] init];
+  [_readerModeOptionsViewController updateHideReaderModeButtonVisibility:NO];
+  _readerModeOptionsViewController.readerModeOptionsHandler = self;
+  _readerModeOptionsViewController.mutator = _readerModeOptionsMediator;
+  _readerModeOptionsViewController.controlsView.mutator =
+      _readerModeOptionsMediator;
+  [_navigationController pushViewController:_readerModeOptionsViewController
+                                   animated:YES];
+}
+
+- (void)hideReaderModeOptions {
+  [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
 }
 
 @end

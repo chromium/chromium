@@ -16,6 +16,7 @@
 @protocol PageActionMenuMutator;
 @protocol PageActionMenuViewControllerDelegate;
 @protocol ReaderModeCommands;
+@protocol ReaderModeOptionsCommands;
 
 // The view controller representing the presented page action menu UI.
 @interface PageActionMenuViewController
@@ -44,6 +45,10 @@
 
 // The handler for sending reader mode commands.
 @property(nonatomic, weak) id<ReaderModeCommands> readerModeHandler;
+
+// The handler for Reader Mode options commands.
+@property(nonatomic, weak) id<ReaderModeOptionsCommands>
+    readerModeOptionsHandler;
 
 // Updates the loading state on the Ask Gemini button.
 - (void)updateGeminiLoadingState:(BOOL)loading;
