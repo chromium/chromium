@@ -2978,13 +2978,19 @@ SqlPersistentStore::Backend::LoadInMemoryIndexInternal() {
   base::ElapsedTimer timer;
 
   absl::flat_hash_map<ResId, MemoryEntryDataHints> hints_map;
+  bool all_hints_valid = true;
   {
     sql::Statement statement(db_.GetCachedStatement(
         SQL_FROM_HERE,
         GetQuery(Query::kLoadInMemoryIndex_SelectHintsFromLiveResources)));
     while (statement.Step()) {
       const auto res_id = ResId(statement.ColumnInt64(0));
-      const auto hints = MemoryEntryDataHints(statement.ColumnInt(1));
+      const int hints_int = statement.ColumnInt(1);
+      if ((hints_int & 0x03) != hints_int) {
+        all_hints_valid = false;
+      }
+      const auto hints =
+          MemoryEntryDataHints(static_cast<uint8_t>(hints_int & 0x03));
       hints_map[res_id] = hints;
     }
   }
@@ -3014,6 +3020,8 @@ SqlPersistentStore::Backend::LoadInMemoryIndexInternal() {
     base::UmaHistogramPercentage(
         "Net.SqlDiskCache.EntriesWithHintsPercentage",
         static_cast<int>(hints_map.size() * 100 / index.size()));
+    base::UmaHistogramBoolean("Net.SqlDiskCache.MemoryEntryDataHintsValid",
+                              all_hints_valid);
   }
 
   base::UmaHistogramMicrosecondsTimes(
