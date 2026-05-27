@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_LITERAL_BUFFER_H_
 
 #include <algorithm>
+#include <array>
 #include <bit>
 #include <memory>
 #include <type_traits>
@@ -106,8 +107,7 @@ class LiteralBufferBase {
     // SAFETY: The `Grow()` call above ensures that there is enough capacity to
     // append `count` characters, or the program would have crashed due to
     // overflow.
-    UNSAFE_BUFFERS(std::copy_n(val.data(), count, end_));
-    UNSAFE_BUFFERS(end_ += count);
+    UNSAFE_BUFFERS(end_ = std::ranges::copy(base::span(val), end_).out);
   }
 
   template <blink::wtf_size_t kOtherInlineSize>
@@ -122,9 +122,12 @@ class LiteralBufferBase {
       // SAFETY: `begin_` was just allocated with `other_size` capacity.
       UNSAFE_BUFFERS(end_of_storage_ = begin_ + other_size);
     }
-    // SAFETY: The capacity check and reallocation above ensure that there is
-    // enough space to copy `other_size` characters.
-    UNSAFE_BUFFERS(std::copy_n(other.data(), other_size, begin_));
+    // SAFETY: The `Grow()` call above ensures that there is enough capacity to
+    // copy `other_size` characters, or the program would have crashed due to
+    // overflow.
+    UNSAFE_BUFFERS(base::span(begin_, other_size)).copy_from(base::span(other));
+    // SAFETY: `begin_` has at least `other_size` capacity, and `end_` is
+    // updated to point to the end of the copied range.
     UNSAFE_BUFFERS(end_ = begin_ + other_size);
   }
 
@@ -136,7 +139,7 @@ class LiteralBufferBase {
       begin_ = other.begin_;
       end_ = other.end_;
       end_of_storage_ = other.end_of_storage_;
-      other.begin_ = &other.inline_storage[0];
+      other.begin_ = other.inline_storage.data();
       other.end_ = other.begin_;
       // SAFETY: We are resetting the `other` buffer to its inline storage.
       // This pointer arithmetic is safe because `other.begin_` points to the
@@ -149,7 +152,8 @@ class LiteralBufferBase {
       blink::wtf_size_t other_size = other.size();
       // SAFETY: The `DCHECK_GE` above ensures that there is enough capacity to
       // copy `other_size` characters.
-      UNSAFE_BUFFERS(std::copy_n(other.data(), other_size, begin_));
+      UNSAFE_BUFFERS(
+          base::span(begin_, other_size).copy_from(base::span(other)));
       UNSAFE_BUFFERS(end_ = begin_ + other_size);
     }
   }
@@ -160,11 +164,11 @@ class LiteralBufferBase {
   }
 
   ALWAYS_INLINE blink::wtf_size_t capacity() const {
-    return end_of_storage_ - begin_;
+    return base::checked_cast<blink::wtf_size_t>(end_of_storage_ - begin_);
   }
 
   ALWAYS_INLINE bool is_stored_inline() const {
-    return begin_ == &inline_storage[0];
+    return begin_ == inline_storage.data();
   }
 
   size_t RoundUpToPowerOfTwo(size_t value) {
@@ -191,14 +195,16 @@ class LiteralBufferBase {
         AllocationSize(new_capacity), "LiteralBufferBase"));
     // SAFETY: The new storage is allocated with `new_capacity`, which is
     // guaranteed to be large enough to hold `in_use` characters.
-    UNSAFE_BUFFERS(std::copy_n(begin_, in_use, new_storage));
+    UNSAFE_BUFFERS(base::span(new_storage, new_capacity)
+                       .copy_prefix_from(base::span(*this)));
     if (!is_stored_inline())
       blink::Partitions::BufferFree(begin_);
     begin_ = new_storage;
     // SAFETY: `new_storage` was allocated with `new_capacity` and `in_use`
     // is less than or equal to `new_capacity`.
     UNSAFE_BUFFERS(end_ = new_storage + in_use);
-    UNSAFE_BUFFERS(end_of_storage_ = new_storage + new_capacity);
+    // SAFETY: `end_of_storage_` is set to the end of the allocated storage.
+    UNSAFE_BUFFERS(end_of_storage_ = new_storage + new_capacity;);
     return end_;
   }
 
@@ -206,12 +212,12 @@ class LiteralBufferBase {
   // of tuple (begin, size, capacity). This makes access of the next characters
   // faster when `AddChar` is inlined, since `end_` is readily available in a
   // register.
-  T* begin_ = &inline_storage[0];
+  std::array<T, BUFFER_INLINE_CAPACITY> inline_storage{};
+  T* begin_ = inline_storage.data();
   T* end_ = begin_;
   // SAFETY: `begin_` points to the start of `inline_storage` and
   // `BUFFER_INLINE_CAPACITY` is the size of that array.
   T* end_of_storage_ = UNSAFE_BUFFERS(begin_ + BUFFER_INLINE_CAPACITY);
-  T inline_storage[BUFFER_INLINE_CAPACITY];
 };
 
 template <blink::wtf_size_t kInlineSize>
