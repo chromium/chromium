@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -183,6 +184,9 @@ class ActorTaskTest : public PlatformTest {
     task_->OnWillExecuteTool(tool_type, web_state_id);
   }
 
+  void TriggerOnPageLoadedTimeout() { task_->OnPageLoadedTimeout(); }
+
+  web::WebTaskEnvironment task_environment_;
   std::unique_ptr<AggregatedJournal> journal_;
   std::unique_ptr<ActorTask> task_;
 };
@@ -532,6 +536,100 @@ TEST_F(ActorTaskTest, SafeSelfRemovalDuringNotification) {
     SetTaskState(ActorTaskState::kFinished);
     EXPECT_FALSE(observer.didChangeStateCalled);
   }
+}
+
+// Test that successful execution of Act transitions the state to reflecting
+// before the Act completion callback is executed.
+TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeCallback) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
+
+  bool callback_executed = false;
+  ActorTaskState state_in_callback = ActorTaskState::kInit;
+
+  task_->Act(
+      std::move(actions), "Performing actions",
+      base::BindOnce(
+          [](bool* executed, ActorTaskState* state, const ActorTask* task,
+             std::vector<ActionResult> results) {
+            *executed = true;
+            *state = task->GetState();
+          },
+          base::Unretained(&callback_executed),
+          base::Unretained(&state_in_callback), base::Unretained(task_.get())));
+
+  EXPECT_TRUE(callback_executed);
+  EXPECT_EQ(ActorTaskState::kReflecting, state_in_callback);
+}
+
+// Test that deferred execution of Act transitions the state to reflecting
+// before the Act completion callback is executed when page loading completes.
+TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeDeferredCallback) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
+
+  bool callback_executed = false;
+  ActorTaskState state_in_callback = ActorTaskState::kInit;
+
+  task_->Act(
+      std::move(actions), "Performing actions on loading state",
+      base::BindOnce(
+          [](bool* executed, ActorTaskState* state, const ActorTask* task,
+             std::vector<ActionResult> results) {
+            *executed = true;
+            *state = task->GetState();
+          },
+          base::Unretained(&callback_executed),
+          base::Unretained(&state_in_callback), base::Unretained(task_.get())));
+
+  // The callback should not be executed yet since the web_state is loading.
+  EXPECT_FALSE(callback_executed);
+
+  // Stop loading to trigger the deferred callback.
+  web_state->SetLoading(false);
+
+  EXPECT_TRUE(callback_executed);
+  EXPECT_EQ(ActorTaskState::kReflecting, state_in_callback);
+}
+
+// Test that deferred execution of Act transitions the state to reflecting
+// before the Act completion callback is executed when page loading times out.
+TEST_F(ActorTaskTest, StateTransitionsToReflectingBeforeTimeoutCallback) {
+  std::unique_ptr<web::FakeWebState> web_state =
+      std::make_unique<web::FakeWebState>();
+  web_state->SetLoading(true);
+
+  std::vector<std::unique_ptr<ActorTool>> actions;
+  actions.push_back(std::make_unique<MockTool>(web_state->GetWeakPtr()));
+
+  bool callback_executed = false;
+  ActorTaskState state_in_callback = ActorTaskState::kInit;
+
+  task_->Act(
+      std::move(actions), "Performing actions on loading state",
+      base::BindOnce(
+          [](bool* executed, ActorTaskState* state, const ActorTask* task,
+             std::vector<ActionResult> results) {
+            *executed = true;
+            *state = task->GetState();
+          },
+          base::Unretained(&callback_executed),
+          base::Unretained(&state_in_callback), base::Unretained(task_.get())));
+
+  // The callback should not be executed yet since the web_state is loading.
+  EXPECT_FALSE(callback_executed);
+
+  // Directly trigger the page load timeout callback.
+  TriggerOnPageLoadedTimeout();
+
+  EXPECT_TRUE(callback_executed);
+  EXPECT_EQ(ActorTaskState::kReflecting, state_in_callback);
 }
 
 }  // namespace actor

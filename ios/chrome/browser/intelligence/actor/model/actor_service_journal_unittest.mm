@@ -120,7 +120,7 @@ TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
   AggregatedJournal* journal = service.GetJournal();
   std::vector<JournalEntry> logs = journal->GetLogs();
 
-  ASSERT_EQ(10u, logs.size());
+  ASSERT_EQ(11u, logs.size());
   EXPECT_EQ(JournalEntryType::kInstant, logs[0].type);  // Attempting.
   EXPECT_EQ(JournalEntryType::kInstant, logs[1].type);  // ActorTask::SetState.
   EXPECT_EQ(JournalEntryType::kInstant, logs[2].type);  // ActorEngine::Act.
@@ -134,7 +134,9 @@ TEST_F(ActorServiceJournalTest, ToolExecutionFails) {
             logs[6].type);  // StateChange (ToolInvoke).
   EXPECT_EQ(JournalEntryType::kBegin, logs[7].type);    // Execute Begin.
   EXPECT_EQ(JournalEntryType::kEnd, logs[8].type);      // Execute End.
-  EXPECT_EQ(JournalEntryType::kInstant, logs[9].type);  // StateChange (Failed).
+  EXPECT_EQ(JournalEntryType::kInstant, logs[9].type);  // ActorTask::SetState.
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[10].type);  // StateChange (Failed).
 
   // Verify error detail in End log
   ASSERT_EQ(1u, logs[8].details.size());
@@ -173,7 +175,7 @@ TEST_F(ActorServiceJournalTest, ToolExecutionSucceeds) {
   AggregatedJournal* journal = service.GetJournal();
   std::vector<JournalEntry> logs = journal->GetLogs();
 
-  ASSERT_EQ(11u, logs.size());
+  ASSERT_EQ(12u, logs.size());
   EXPECT_EQ(JournalEntryType::kInstant, logs[0].type);  // Attempting.
   EXPECT_EQ(JournalEntryType::kInstant, logs[1].type);  // ActorTask::SetState.
   EXPECT_EQ(JournalEntryType::kInstant, logs[2].type);  // ActorEngine::Act.
@@ -192,7 +194,9 @@ TEST_F(ActorServiceJournalTest, ToolExecutionSucceeds) {
   EXPECT_EQ(JournalEntryType::kInstant,
             logs[9].type);  // StateChange (UiPostInvoke).
   EXPECT_EQ(JournalEntryType::kInstant,
-            logs[10].type);  // StateChange (Completed).
+            logs[10].type);  // ActorTask::SetState.
+  EXPECT_EQ(JournalEntryType::kInstant,
+            logs[11].type);  // StateChange (Completed).
 
   // Verify no error detail in End log on success
   EXPECT_EQ(0u, logs[8].details.size());

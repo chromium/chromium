@@ -328,6 +328,10 @@ void ActorService::PauseTask(ActorTaskId task_id, bool from_actor) {
 void ActorService::StopTask(ActorTaskId task_id,
                             ActorTaskStoppedReason reason) {
   // TODO(crbug.com/496163986): Implement and test.
+  auto it = active_tasks_.find(task_id);
+  if (it != active_tasks_.end()) {
+    it->second->Stop(reason);
+  }
   active_tasks_.erase(task_id);
 }
 

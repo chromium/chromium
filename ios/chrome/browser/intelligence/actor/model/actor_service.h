@@ -94,6 +94,8 @@ class ActorService : public KeyedService {
   void AddControlledWebState(ActorTaskId task_id, web::WebState* web_state);
 
  private:
+  friend class ActorServiceTest;
+
   // The profile associated with this service instance.
   raw_ptr<ProfileIOS> profile_;
 

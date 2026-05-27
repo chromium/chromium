@@ -1,3 +1,5 @@
 include_rules = [
   "+components/actor/public/mojom",
+  # TODO(crbug.com/512521102): Remove when the snackbar prototype is removed.
+  "+ios/chrome/browser/intelligence/bwg/ui/gemini_ui_utils.h",
 ]

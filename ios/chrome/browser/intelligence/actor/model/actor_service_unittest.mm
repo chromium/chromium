@@ -18,6 +18,7 @@
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_service_factory.h"
+#import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/model/snackbar_actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -72,6 +73,27 @@ class TestTool : public ActorTool {
   base::WeakPtr<web::WebState> web_state_;
 };
 
+class MockActorTask : public ActorTask {
+ public:
+  MockActorTask(ActorTaskId task_id,
+                const std::string& title,
+                bool allow_incognito_web_states,
+                AggregatedJournal* journal,
+                bool* stop_called)
+      : ActorTask(task_id, title, allow_incognito_web_states, journal),
+        stop_called_(stop_called) {}
+
+  void Stop(ActorTaskStoppedReason stop_reason) override {
+    if (stop_called_) {
+      *stop_called_ = true;
+    }
+    ActorTask::Stop(stop_reason);
+  }
+
+ private:
+  raw_ptr<bool> stop_called_;
+};
+
 class ActorServiceTest : public PlatformTest {
  public:
   explicit ActorServiceTest(
@@ -93,6 +115,32 @@ class ActorServiceTest : public PlatformTest {
   }
 
  protected:
+  // Wait for all currently queued or posted asynchronous tasks on the default
+  // task runner to finish executing. Since `base::SequencedTaskRunner` executes
+  // posted tasks in a strict first-in, first-out order, posting a task to quit
+  // a run loop guarantees that all previously posted tasks (such as deferred
+  // snackbar presentation tasks) have completed before the loop exits.
+  void WaitForTasksToComplete() {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void SwapTask(ActorService* service,
+                ActorTaskId task_id,
+                std::unique_ptr<ActorTask> task) {
+    service->active_tasks_[task_id] = std::move(task);
+  }
+
+  bool HasTask(ActorService* service, ActorTaskId task_id) {
+    return service->active_tasks_.find(task_id) != service->active_tasks_.end();
+  }
+
+  AggregatedJournal* GetJournal(ActorService* service) {
+    return service->journal_.get();
+  }
+
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestProfileIOS> profile_;
@@ -563,7 +611,8 @@ TEST_F(ActorServiceTest, TracksOnlyLatestCreatedTaskObserver) {
   [[snackbar_commands expect]
       showGeminiActorSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
                                                  SnackbarMessage* message) {
-        return [message.title isEqualToString:@"First Task"];
+        return [message.title isEqualToString:@"First Task"] &&
+               [message.subtitle isEqualToString:@"Started"];
       }]
               additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
 
@@ -571,13 +620,15 @@ TEST_F(ActorServiceTest, TracksOnlyLatestCreatedTaskObserver) {
   ActorTaskId task_id1 =
       service->CreateTask("First Task", /*allow_incognito_web_states=*/false);
 
+  WaitForTasksToComplete();
   [snackbar_commands verify];
 
   // Expect second task registration message.
   [[snackbar_commands expect]
       showGeminiActorSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
                                                  SnackbarMessage* message) {
-        return [message.title isEqualToString:@"Second Task"];
+        return [message.title isEqualToString:@"Second Task"] &&
+               [message.subtitle isEqualToString:@"Started"];
       }]
               additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
 
@@ -585,6 +636,7 @@ TEST_F(ActorServiceTest, TracksOnlyLatestCreatedTaskObserver) {
   // and emits a registration snackbar message for the second task.
   service->CreateTask("Second Task", /*allow_incognito_web_states=*/false);
 
+  WaitForTasksToComplete();
   [snackbar_commands verify];
 
   // Now trigger a state update on the first task. Since the observer tracks
@@ -594,7 +646,8 @@ TEST_F(ActorServiceTest, TracksOnlyLatestCreatedTaskObserver) {
   [[snackbar_commands reject]
       showGeminiActorSnackbarMessage:[OCMArg checkWithBlock:^BOOL(
                                                  SnackbarMessage* message) {
-        return [message.title isEqualToString:@"First Task"];
+        return [message.title isEqualToString:@"First Task"] &&
+               [message.subtitle isEqualToString:@"Started"];
       }]
               additionalBottomOffset:kGeminiActorSnackbarBottomOffset];
 
@@ -613,6 +666,38 @@ TEST_F(ActorServiceTest, TracksOnlyLatestCreatedTaskObserver) {
   [test_browser->GetCommandDispatcher()
       stopDispatchingToTarget:snackbar_commands];
   browser_list->RemoveBrowser(test_browser.get());
+}
+
+// Test that StopTask stops and erases the task, and verifies that Stop() is
+// called on the ActorTask.
+TEST_F(ActorServiceTest, StopTask) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kActorTools);
+
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id =
+      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+
+  // Verify that the task exists in service's active tasks.
+  ASSERT_TRUE(HasTask(service, task_id));
+
+  // Swap the task with our MockActorTask.
+  bool stop_called = false;
+  SwapTask(service, task_id,
+           std::make_unique<MockActorTask>(task_id, "Test Task",
+                                           /*allow_incognito_web_states=*/false,
+                                           GetJournal(service), &stop_called));
+
+  // Stop the task.
+  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+
+  // Verify that Stop() was called on our MockActorTask.
+  EXPECT_TRUE(stop_called);
+
+  // Verify the task is also erased from ActorService's active tasks.
+  EXPECT_FALSE(HasTask(service, task_id));
 }
 
 }  // namespace actor

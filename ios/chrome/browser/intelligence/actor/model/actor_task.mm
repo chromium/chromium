@@ -183,6 +183,7 @@ void ActorTask::OnActCompleted(ActCallback callback,
     return;
   }
 
+  SetState(ActorTaskState::kReflecting);
   std::move(callback).Run(std::move(results));
 }
 
@@ -225,6 +226,7 @@ void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
   // Stop the timeout and execute the deferred callback since no more observed
   // WebStates are still loading.
   load_timeout_timer_.Stop();
+  SetState(ActorTaskState::kReflecting);
   if (deferred_act_callback_) {
     std::move(deferred_act_callback_).Run();
   }
@@ -233,6 +235,7 @@ void ActorTask::OnWebStateFinishedLoading(web::WebState* web_state) {
 void ActorTask::OnPageLoadedTimeout() {
   scoped_web_state_observations_.RemoveAllObservations();
 
+  SetState(ActorTaskState::kReflecting);
   if (deferred_act_callback_) {
     std::move(deferred_act_callback_).Run();
   }
