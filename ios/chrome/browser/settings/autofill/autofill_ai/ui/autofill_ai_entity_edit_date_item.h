@@ -35,6 +35,10 @@
 // Delegate to handle date changes.
 @property(nonatomic, weak) id<AutofillAIEntityEditDateItemDelegate> delegate;
 
+// Creates the view controller configured for popover presentation, anchored
+// to the trailing end of the `sourceView`.
+- (UIViewController*)createCustomInputPopoverWithSourceView:(UIView*)sourceView;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_AUTOFILL_AUTOFILL_AI_UI_AUTOFILL_AI_ENTITY_EDIT_DATE_ITEM_H_

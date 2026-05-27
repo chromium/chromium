@@ -5,6 +5,19 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_date_item.h"
 
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_date_picker_input_view.h"
+#import "ui/base/device_form_factor.h"
+
+namespace {
+
+// Width and height of the date picker presented inside a popover.
+const CGFloat kDatePickerPopoverWidth = 320.0;
+const CGFloat kDatePickerPopoverHeight = 290.0;
+
+// The ratio of the date picker popover anchor width relative to the full
+// width of the focused text field (one quarter).
+const CGFloat kDatePickerPopoverAnchorWidthRatio = 0.25;
+
+}  // namespace
 
 @implementation AutofillAIEntityEditDateItem
 
@@ -23,7 +36,8 @@
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
 
-  if (self.editingEnabled) {
+  if (self.editingEnabled &&
+      (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET)) {
     cell.textField.inputView = [self createCustomInputView];
   } else {
     cell.textField.inputView = nil;
@@ -37,6 +51,33 @@
   [self setHasValidText:hasValidValueStatus];
 }
 
+- (UIViewController*)createCustomInputPopoverWithSourceView:
+    (UIView*)sourceView {
+  UIViewController* popoverContentController =
+      [self createCustomInputPopoverView];
+
+  UIPopoverPresentationController* popover =
+      popoverContentController.popoverPresentationController;
+  popover.sourceView = sourceView;
+
+  CGRect sourceRect = sourceView.bounds;
+  CGFloat anchorWidth =
+      CGRectGetWidth(sourceView.bounds) * kDatePickerPopoverAnchorWidthRatio;
+  BOOL isRTL = [sourceView effectiveUserInterfaceLayoutDirection] ==
+               UIUserInterfaceLayoutDirectionRightToLeft;
+  if (isRTL) {
+    sourceRect.origin.x = CGRectGetMinX(sourceView.bounds);
+  } else {
+    sourceRect.origin.x = CGRectGetMaxX(sourceView.bounds) - anchorWidth;
+  }
+  sourceRect.size.width = anchorWidth;
+
+  popover.sourceRect = sourceRect;
+  popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
+
+  return popoverContentController;
+}
+
 #pragma mark - Private
 
 // Creates the custom input view containing a navigation bar and a date picker.
@@ -48,6 +89,16 @@
              dateAction:@selector(dateChanged:)
       clearButtonAction:@selector(clearDate)
        doneButtonAction:@selector(dismissPicker)];
+}
+
+// Creates the custom date picker input view contained in a popover view.
+- (UIViewController*)createCustomInputPopoverView {
+  UIViewController* popoverContentController = [[UIViewController alloc] init];
+  popoverContentController.view = [self createCustomInputView];
+  popoverContentController.preferredContentSize =
+      CGSizeMake(kDatePickerPopoverWidth, kDatePickerPopoverHeight);
+  popoverContentController.modalPresentationStyle = UIModalPresentationPopover;
+  return popoverContentController;
 }
 
 // Handles the value changed event for the date picker.

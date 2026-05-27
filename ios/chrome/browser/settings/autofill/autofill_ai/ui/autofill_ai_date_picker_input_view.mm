@@ -8,6 +8,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -16,6 +17,11 @@ const CGFloat kNavigationBarTopPadding = 21;
 const CGFloat kIOS26NavigationBarTopVerticalPadding = 0;
 const CGFloat kNavigationBarHeight = 44;
 const CGFloat kDatePickerTopVerticalPadding = -8;
+
+// Symmetrical top visual margin padding inside iPad popover (visual padding
+// matches natural navigation bar horizontal layout margins).
+const CGFloat kDatePickerPopoverNavigationBarPortraitTopPadding = 10;
+const CGFloat kDatePickerPopoverNavigationBarLandscapeTopPadding = 24;
 
 // Returns the constant to apply to the navigation bar top constraint.
 CGFloat NavigationBarTopConstraintConstant() {
@@ -80,6 +86,13 @@ CGFloat NavigationBarTopConstraintConstant() {
 // orientation.
 - (void)updateTopConstraintWithWindow:(UIWindow*)window {
   if (!_topConstraint) {
+    return;
+  }
+
+  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+    _topConstraint.constant =
+        IsLandscape(window) ? kDatePickerPopoverNavigationBarLandscapeTopPadding
+                            : kDatePickerPopoverNavigationBarPortraitTopPadding;
     return;
   }
 
