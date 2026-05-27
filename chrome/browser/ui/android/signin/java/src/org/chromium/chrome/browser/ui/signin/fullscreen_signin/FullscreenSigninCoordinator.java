@@ -111,6 +111,7 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
     private final FullscreenSigninMediator mMediator;
     private final Delegate mDelegate;
     @Nullable private IdentityManager mIdentityManager;
+    private boolean mDestroyed;
 
     @Nullable
     private PropertyModelChangeProcessor<PropertyModel, FullscreenSigninView, PropertyKey>
@@ -145,6 +146,8 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
     }
 
     private void onProfileAvailable(ProfileProvider result) {
+        if (mDestroyed) return;
+
         mIdentityManager =
                 IdentityServicesProvider.get().getIdentityManager(result.getOriginalProfile());
         assumeNonNull(mIdentityManager).addObserver(this);
@@ -152,9 +155,11 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
 
     /** Releases the resources used by the coordinator. */
     public void destroy() {
+        mDestroyed = true;
         setView(null);
         if (mIdentityManager != null) {
             mIdentityManager.removeObserver(this);
+            mIdentityManager = null;
         }
         mMediator.destroy();
     }
@@ -162,6 +167,8 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
     /** Implements {@link IdentityManager.Observer}. */
     @Override
     public void onPrimaryAccountChanged(PrimaryAccountChangeEvent eventDetails) {
+        if (mDestroyed) return;
+
         if (mMediator.isContinueOrDismissClicked()) {
             // If the sign-in occurred through this promo, then it is already being handled.
             return;

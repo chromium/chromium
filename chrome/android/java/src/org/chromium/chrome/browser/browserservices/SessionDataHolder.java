@@ -68,9 +68,10 @@ public class SessionDataHolder {
      * @param sessionHandler {@link SessionHandler} to set.
      */
     public void setActiveHandler(SessionHandler sessionHandler) {
-        mActiveSessionHandler = sessionHandler;
         SessionHolder<?> session = sessionHandler.getSession();
         if (session == null) return;
+
+        mActiveSessionHandler = sessionHandler;
 
         mTaskIdToSessionData.append(
                 sessionHandler.getTaskId(),

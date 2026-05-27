@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.embedder_support.util.Origin;
@@ -40,7 +41,8 @@ import java.util.function.Supplier;
  * unregisters itself in {@link SessionDataHolder}.
  */
 @NullMarked
-public class CustomTabSessionHandler implements SessionHandler, StartStopWithNativeObserver {
+public class CustomTabSessionHandler
+        implements SessionHandler, StartStopWithNativeObserver, DestroyObserver {
 
     private static final String TAG = "CctSessionHandler";
 
@@ -80,6 +82,11 @@ public class CustomTabSessionHandler implements SessionHandler, StartStopWithNat
 
     @Override
     public void onStopWithNative() {
+        SessionDataHolder.getInstance().removeActiveHandler(this);
+    }
+
+    @Override
+    public void onDestroy() {
         SessionDataHolder.getInstance().removeActiveHandler(this);
     }
 

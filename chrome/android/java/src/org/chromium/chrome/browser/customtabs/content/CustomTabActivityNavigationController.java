@@ -68,6 +68,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.ref.WeakReference;
 import java.util.function.Predicate;
 
 /** Responsible for navigating to new pages and going back to previous pages. */
@@ -125,6 +126,7 @@ public class CustomTabActivityNavigationController
     private final CustomTabObserver mCustomTabObserver;
     private final CloseButtonNavigator mCloseButtonNavigator;
     private final Activity mActivity;
+    private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final SettableNonNullObservableSupplier<Boolean> mBackPressStateSupplier =
             ObservableSuppliers.createNonNull(false);
 
@@ -185,15 +187,28 @@ public class CustomTabActivityNavigationController
         mCustomTabObserver = customTabObserver;
         mCloseButtonNavigator = closeButtonNavigator;
         mActivity = activity;
+        mLifecycleDispatcher = lifecycleDispatcher;
 
         lifecycleDispatcher.register(this);
         mTabProvider.addObserver(mTabObserver);
         ChromeBrowserInitializer.getInstance()
-                .runNowOrAfterFullBrowserStarted(
-                        () -> {
-                            mBackPressStateSupplier.set(
-                                    mTabProvider.getTab() != null && !shouldDeferToOs());
-                        });
+                .runNowOrAfterFullBrowserStarted(createDeferredBackPressStateUpdate(this));
+    }
+
+    private static Runnable createDeferredBackPressStateUpdate(
+            CustomTabActivityNavigationController controller) {
+        WeakReference<CustomTabActivityNavigationController> weakController =
+                new WeakReference<>(controller);
+        return () -> {
+            CustomTabActivityNavigationController currentController = weakController.get();
+            if (currentController == null
+                    || currentController.mLifecycleDispatcher.isActivityFinishingOrDestroyed()) {
+                return;
+            }
+            currentController.mBackPressStateSupplier.set(
+                    currentController.mTabProvider.getTab() != null
+                            && !currentController.shouldDeferToOs());
+        };
     }
 
     /**
