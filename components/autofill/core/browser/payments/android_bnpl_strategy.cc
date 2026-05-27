@@ -13,9 +13,9 @@ AndroidBnplStrategy::AndroidBnplStrategy() = default;
 
 AndroidBnplStrategy::~AndroidBnplStrategy() = default;
 
-BnplStrategy::SuggestionShownNextAction
-AndroidBnplStrategy::GetNextActionOnSuggestionShown() {
-  return SuggestionShownNextAction::
+BnplStrategy::SuggestionsShownNextAction
+AndroidBnplStrategy::GetNextActionOnSuggestionsShown() {
+  return SuggestionsShownNextAction::
       kSkipNotifyingUpdateCallbackOfSuggestionsShownResponse;
 }
 

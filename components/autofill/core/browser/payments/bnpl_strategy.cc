@@ -11,8 +11,8 @@ namespace autofill::payments {
 
 BnplStrategy::~BnplStrategy() = default;
 
-BnplStrategy::SuggestionShownNextAction
-BnplStrategy::GetNextActionOnSuggestionShown() {
+BnplStrategy::SuggestionsShownNextAction
+BnplStrategy::GetNextActionOnSuggestionsShown() {
   NOTREACHED();
 }
 

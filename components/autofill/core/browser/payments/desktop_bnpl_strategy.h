@@ -20,7 +20,7 @@ class DesktopBnplStrategy : public BnplStrategy {
   ~DesktopBnplStrategy() override;
 
   // BnplStrategy:
-  SuggestionShownNextAction GetNextActionOnSuggestionShown() override;
+  SuggestionsShownNextAction GetNextActionOnSuggestionsShown() override;
   UserDecisionToUseBnplNextAction GetNextActionOnUserDecisionToUseBnpl()
       override;
   BnplAmountExtractionReturnedNextAction

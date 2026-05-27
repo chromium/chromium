@@ -20,7 +20,7 @@ class AndroidBnplStrategy : public BnplStrategy {
   ~AndroidBnplStrategy() override;
 
   // BnplStrategy:
-  SuggestionShownNextAction GetNextActionOnSuggestionShown() override;
+  SuggestionsShownNextAction GetNextActionOnSuggestionsShown() override;
   UserDecisionToUseBnplNextAction GetNextActionOnUserDecisionToUseBnpl()
       override;
   BnplAmountExtractionReturnedNextAction

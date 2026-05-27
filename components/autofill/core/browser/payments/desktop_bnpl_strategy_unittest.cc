@@ -19,11 +19,11 @@ class DesktopBnplStrategyTest : public testing::Test {
   DesktopBnplStrategy desktop_bnpl_strategy_;
 };
 
-// Verify that GetNextActionOnSuggestionShown() returns the correct action for
+// Verify that GetNextActionOnSuggestionsShown() returns the correct action for
 // the desktop platform.
-TEST_F(DesktopBnplStrategyTest, GetNextActionOnSuggestionShown) {
-  EXPECT_EQ(desktop_bnpl_strategy_.GetNextActionOnSuggestionShown(),
-            BnplStrategy::SuggestionShownNextAction::
+TEST_F(DesktopBnplStrategyTest, GetNextActionOnSuggestionsShown) {
+  EXPECT_EQ(desktop_bnpl_strategy_.GetNextActionOnSuggestionsShown(),
+            BnplStrategy::SuggestionsShownNextAction::
                 kNotifyUpdateCallbackOfSuggestionsShownResponse);
 }
 

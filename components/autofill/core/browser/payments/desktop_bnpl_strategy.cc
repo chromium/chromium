@@ -15,9 +15,9 @@ DesktopBnplStrategy::DesktopBnplStrategy() = default;
 
 DesktopBnplStrategy::~DesktopBnplStrategy() = default;
 
-BnplStrategy::SuggestionShownNextAction
-DesktopBnplStrategy::GetNextActionOnSuggestionShown() {
-  return SuggestionShownNextAction::
+BnplStrategy::SuggestionsShownNextAction
+DesktopBnplStrategy::GetNextActionOnSuggestionsShown() {
+  return SuggestionsShownNextAction::
       kNotifyUpdateCallbackOfSuggestionsShownResponse;
 }
 

@@ -312,10 +312,10 @@ void BnplManager::OnCreditCardSuggestionsShown(
   }
 
   CHECK(payments_autofill_client().GetBnplStrategy());
-  using enum BnplStrategy::SuggestionShownNextAction;
+  using enum BnplStrategy::SuggestionsShownNextAction;
   switch (payments_autofill_client()
               .GetBnplStrategy()
-              ->GetNextActionOnSuggestionShown()) {
+              ->GetNextActionOnSuggestionsShown()) {
     case kNotifyUpdateCallbackOfSuggestionsShownResponse:
       // The update suggestions callback attempts to add a BNPL entry to the
       // list of suggestions if no BNPL entry exists in the list.

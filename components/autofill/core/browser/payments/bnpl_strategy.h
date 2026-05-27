@@ -17,8 +17,7 @@ class BnplStrategy {
   // Defines the next step that the BnplManager should take after the user has
   // been shown a payment method autofill suggestion. The strategy
   // implementation determines which action to return based on the platform.
-  // TODO(crbug.com/477689220): Rename to SuggestionsShownNextAction.
-  enum class SuggestionShownNextAction {
+  enum class SuggestionsShownNextAction {
     // The flow should check if a BNPL suggestion is currently being shown.
     // If it isn't, then run the update suggestions barrier callback.
     kNotifyUpdateCallbackOfSuggestionsShownResponse = 0,
@@ -79,7 +78,7 @@ class BnplStrategy {
 
   // Returns the next action to take after the user has been shown a payment
   // method autofill suggestion.
-  virtual SuggestionShownNextAction GetNextActionOnSuggestionShown();
+  virtual SuggestionsShownNextAction GetNextActionOnSuggestionsShown();
 
   // Returns the next action to take after the user has decided to use BNPL.
   virtual UserDecisionToUseBnplNextAction

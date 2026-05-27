@@ -17,11 +17,11 @@ class AndroidBnplStrategyTest : public testing::Test {
   AndroidBnplStrategy android_bnpl_strategy_;
 };
 
-// Verify that GetNextActionOnSuggestionShown() returns the correct action for
+// Verify that GetNextActionOnSuggestionsShown() returns the correct action for
 // the Android platform.
-TEST_F(AndroidBnplStrategyTest, GetNextActionOnSuggestionShown) {
-  EXPECT_EQ(android_bnpl_strategy_.GetNextActionOnSuggestionShown(),
-            BnplStrategy::SuggestionShownNextAction::
+TEST_F(AndroidBnplStrategyTest, GetNextActionOnSuggestionsShown) {
+  EXPECT_EQ(android_bnpl_strategy_.GetNextActionOnSuggestionsShown(),
+            BnplStrategy::SuggestionsShownNextAction::
                 kSkipNotifyingUpdateCallbackOfSuggestionsShownResponse);
 }
 
