@@ -225,6 +225,7 @@ source_set("browser_tests") {
     ":apps",
     "//ash",
     "//ash/constants",
+    "//ash/strings",
     "//ash/webui/boca_ui",
     "//ash/webui/boca_ui:constants",
     "//ash/webui/demo_mode_app_ui",

@@ -4,6 +4,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/webui/eche_app_ui/url_constants.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/grit/generated_resources.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"

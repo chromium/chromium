@@ -10050,6 +10050,26 @@ To shut down the device, press and hold the power button on the device again.
         Select your photo
       </message>
 
+      <!-- Strings for EcheApp -->
+      <message name="IDS_ECHE_APP_NAME" desc="Public facing name for the Eche App.">
+        App Streaming
+      </message>
+      <message name="IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON" desc="Label for the button in the screen lock notification of EcheApp to open the settings app.">
+        Settings
+      </message>
+      <message name="IDS_ECHE_APP_NOTIFICATION_TRY_AGAIN_BUTTON" desc="Label for the connection lost button of EcheApp to try again.">
+        Try again
+      </message>
+      <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE" desc="Title for notification shown when screen lock is not enabled while using app stream of EcheApp.">
+        Can't open <ph name="APP_NAME">$1<ex>the app</ex></ph>
+      </message>
+      <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE" desc="Message for the notification shown when screen lock is not enabled while using app stream of EcheApp.">
+        Turn on "Show lock screen when waking from sleep" and try again
+      </message>
+      <message name="IDS_ECHE_APP_NOTIFICATION_OPEN_AGAIN_BUTTON" desc="Label for the inactivity notification button of EcheApp to open open.">
+        Open again
+      </message>
+
       <!-- Floating Workspace -->
       <message name="IDS_FLOATING_WORKSPACE_STARTUP_DIALOG_TITLE" desc="Title for floating workspace startup dialog.">
         Restoring windows from your previous session...
