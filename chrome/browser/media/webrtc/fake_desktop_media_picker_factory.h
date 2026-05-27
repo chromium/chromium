@@ -8,7 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/types/expected.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
@@ -33,9 +35,10 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
         picker_result;
     bool cancelled = false;
 
-    // Following flags are set by FakeDesktopMediaPicker when it's created and
-    // deleted.
+    // Following flags are set by FakeDesktopMediaPicker when it's created,
+    // shown and deleted.
     bool picker_created = false;
+    bool picker_shown = false;
     bool picker_deleted = false;
   };
 
@@ -48,8 +51,8 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
   ~FakeDesktopMediaPickerFactory() override;
 
   //  |test_flags| are expected to outlive the factory.
-  void SetTestFlags(TestFlags* test_flags, int tests_count);
-  FakeDesktopMediaPicker* picker() const { return picker_; }
+  void SetTestFlags(base::span<TestFlags> test_flags);
+  FakeDesktopMediaPicker* picker() const { return picker_.get(); }
   bool IsWebContentsExcluded() const { return is_web_contents_excluded_; }
   // DesktopMediaPickerFactory implementation
   std::unique_ptr<DesktopMediaPicker> CreatePicker(
@@ -61,11 +64,9 @@ class FakeDesktopMediaPickerFactory : public DesktopMediaPickerFactory {
       override;
 
  private:
-  raw_ptr<FakeDesktopMediaPicker, AcrossTasksDanglingUntriaged> picker_;
-  raw_ptr<TestFlags, AcrossTasksDanglingUntriaged | AllowPtrArithmetic>
-      test_flags_;
-  int tests_count_;
-  int current_test_;
+  base::WeakPtr<FakeDesktopMediaPicker> picker_;
+  base::raw_span<TestFlags> test_flags_;
+  size_t current_test_;
   bool is_web_contents_excluded_ = false;
 };
 
@@ -85,6 +86,7 @@ class FakeDesktopMediaPicker : public DesktopMediaPicker {
             DoneCallback done_callback) override;
 
   DesktopMediaPicker::Params GetParams();
+  base::WeakPtr<FakeDesktopMediaPicker> GetWeakPtr();
 
  private:
   void CallCallback(DoneCallback done_callback);

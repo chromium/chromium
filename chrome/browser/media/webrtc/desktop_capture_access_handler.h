@@ -90,6 +90,8 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
       std::unique_ptr<PendingAccessRequest> pending_request);
   void ProcessQueuedAccessRequest(const RequestsQueue& queue,
                                   content::WebContents* web_contents);
+  void RejectRequest(content::WebContents* web_contents,
+                     blink::mojom::MediaStreamRequestResult result);
   void OnPickerDialogResults(
       base::WeakPtr<content::WebContents> web_contents,
       const std::u16string& application_title,

@@ -6,6 +6,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -258,7 +259,7 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
         .expect_tabs = true,
         .picker_result = std::move(media_id_callback).Run(),
     };
-    picker_factory_.SetTestFlags(&test_flags, /*tests_count=*/1);
+    picker_factory_.SetTestFlags(base::span_from_ref(test_flags));
 
     std::string stream_id = GetDesktopMediaStream(first_tab);
     EXPECT_NE(stream_id, "");

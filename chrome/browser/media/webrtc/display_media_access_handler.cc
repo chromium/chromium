@@ -40,6 +40,7 @@
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "url/origin.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -368,6 +369,9 @@ bool DisplayMediaAccessHandler::IsRequestFirstInQueue(
     const content::MediaStreamRequest& request) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  if (queue.empty()) {
+    return false;
+  }
   const PendingAccessRequest& first_pending_request = *queue.front();
   // If requests are different, then this is a stale request.
   return first_pending_request.request.render_process_id ==
@@ -454,6 +458,22 @@ void DisplayMediaAccessHandler::ProcessQueuedAccessRequest(
   DCHECK(web_contents);
 
   const PendingAccessRequest& pending_request = *queue.front();
+
+  content::RenderFrameHost* const rfh = content::RenderFrameHost::FromID(
+      pending_request.request.render_process_id,
+      pending_request.request.render_frame_id);
+
+  if (!rfh || !rfh->IsActive()) {
+    RejectRequest(web_contents, blink::mojom::MediaStreamRequestResult::
+                                    FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER);
+    return;
+  }
+  if (rfh->GetLastCommittedOrigin() != pending_request.request.url_origin) {
+    RejectRequest(web_contents,
+                  blink::mojom::MediaStreamRequestResult::INVALID_STATE);
+    return;
+  }
+
   UpdateTrusted(pending_request.request, false /* is_trusted */);
 
   const GURL& request_origin = pending_request.request.security_origin;
@@ -488,7 +508,7 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   // Note, this check does not fully account for international characters, but
   // since the puny-encodings of international domains are limited to 255 bytes,
   // it is unlikely that valid domains are excluded by this check.
-  if (GetApplicationTitle(web_contents).size() > 255u) {
+  if (pending_request.application_title.size() > 255u) {
     RejectRequest(
         web_contents,
         MediaStreamRequestResult::CAPTURE_NOT_ALLOWED_FOR_LONG_DOMAINS);
@@ -564,7 +584,7 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   gfx::NativeWindow parent_window = ui_web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
-  picker_params.app_name = GetApplicationTitle(web_contents);
+  picker_params.app_name = pending_request.application_title;
   picker_params.target_name = picker_params.app_name;
   picker_params.request_audio =
       pending_request.request.audio_type ==
@@ -630,8 +650,10 @@ void DisplayMediaAccessHandler::RejectRequest(WebContents* web_contents,
     return;
   }
   PendingAccessRequest& mutable_request = *mutable_queue.front();
-  std::move(mutable_request.callback)
-      .Run(blink::mojom::StreamDevicesSet(), result, /*ui=*/nullptr);
+  if (mutable_request.callback) {
+    std::move(mutable_request.callback)
+        .Run(blink::mojom::StreamDevicesSet(), result, /*ui=*/nullptr);
+  }
   mutable_queue.pop_front();
   if (!mutable_queue.empty()) {
     ProcessQueuedAccessRequest(mutable_queue, web_contents);
@@ -705,8 +727,10 @@ void DisplayMediaAccessHandler::
     stream_devices_set.stream_devices.emplace_back(
         blink::mojom::StreamDevices::New());
     *(stream_devices_set.stream_devices[0]) = std::move(devices);
-    std::move(pending_request.callback)
-        .Run(stream_devices_set, MediaStreamRequestResult::OK, std::move(ui));
+    if (pending_request.callback) {
+      std::move(pending_request.callback)
+          .Run(stream_devices_set, MediaStreamRequestResult::OK, std::move(ui));
+    }
     queue.pop_front();
   }
 

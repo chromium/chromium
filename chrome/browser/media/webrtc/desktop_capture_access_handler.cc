@@ -568,6 +568,20 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
 
   const PendingAccessRequest& pending_request = *queue.front();
 
+  content::RenderFrameHost* const rfh = content::RenderFrameHost::FromID(
+      pending_request.request.render_process_id,
+      pending_request.request.render_frame_id);
+  if (!rfh || !rfh->IsActive()) {
+    RejectRequest(web_contents, blink::mojom::MediaStreamRequestResult::
+                                    FAILED_DUE_TO_SHUTDOWN_NO_RFH_IN_HANDLER);
+    return;
+  }
+  if (rfh->GetLastCommittedOrigin() != pending_request.request.url_origin) {
+    RejectRequest(web_contents,
+                  blink::mojom::MediaStreamRequestResult::INVALID_STATE);
+    return;
+  }
+
   if (!pending_request.picker) {
     DCHECK(!pending_request.request.requested_video_device_ids.empty());
     content::WebContentsMediaCaptureId web_contents_id;
@@ -639,6 +653,31 @@ void DesktopCaptureAccessHandler::ProcessQueuedAccessRequest(
     delegate->ActivateContents(web_contents);
 }
 
+void DesktopCaptureAccessHandler::RejectRequest(
+    content::WebContents* web_contents,
+    blink::mojom::MediaStreamRequestResult result) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(web_contents);
+
+  auto it = pending_requests_.find(web_contents);
+  if (it == pending_requests_.end()) {
+    return;
+  }
+  RequestsQueue& mutable_queue = it->second;
+  if (mutable_queue.empty()) {
+    return;
+  }
+  PendingAccessRequest& mutable_request = *mutable_queue.front();
+  if (mutable_request.callback) {
+    std::move(mutable_request.callback)
+        .Run(blink::mojom::StreamDevicesSet(), result, /*ui=*/nullptr);
+  }
+  mutable_queue.pop_front();
+  if (!mutable_queue.empty()) {
+    ProcessQueuedAccessRequest(mutable_queue, web_contents);
+  }
+}
+
 void DesktopCaptureAccessHandler::OnPickerDialogResults(
     base::WeakPtr<content::WebContents> web_contents,
     const std::u16string& application_title,
@@ -668,9 +707,11 @@ void DesktopCaptureAccessHandler::OnPickerDialogResults(
   queue.pop_front();
 
   if (!result.has_value()) {
-    std::move(pending_request->callback)
-        .Run(blink::mojom::StreamDevicesSet(), result.error(),
-             /*ui=*/nullptr);
+    if (pending_request->callback) {
+      std::move(pending_request->callback)
+          .Run(blink::mojom::StreamDevicesSet(), result.error(),
+               /*ui=*/nullptr);
+    }
   } else {
     const content::DesktopMediaID media_id = result.value();
     CHECK(!media_id.is_null());
@@ -772,8 +813,10 @@ void DesktopCaptureAccessHandler::OnDesktopCaptureDevicesObtained(
   stream_devices_set.stream_devices.emplace_back(
       blink::mojom::StreamDevices::New());
   *(stream_devices_set.stream_devices[0]) = std::move(devices);
-  std::move(pending_request->callback)
-      .Run(stream_devices_set, MediaStreamRequestResult::OK, std::move(ui));
+  if (pending_request->callback) {
+    std::move(pending_request->callback)
+        .Run(stream_devices_set, MediaStreamRequestResult::OK, std::move(ui));
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -792,10 +835,12 @@ void DesktopCaptureAccessHandler::OnDlpRestrictionChecked(
   }
 
   if (!is_dlp_allowed) {
-    std::move(pending_request->callback)
-        .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::DLP_PERMISSION_DENIED,
-             /*ui=*/nullptr);
+    if (pending_request->callback) {
+      std::move(pending_request->callback)
+          .Run(blink::mojom::StreamDevicesSet(),
+               MediaStreamRequestResult::DLP_PERMISSION_DENIED,
+               /*ui=*/nullptr);
+    }
     return;
   }
 

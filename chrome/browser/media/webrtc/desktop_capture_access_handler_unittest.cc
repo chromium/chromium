@@ -50,6 +50,7 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    NavigateAndCommit(GURL(kOrigin));
     auto picker_factory = std::make_unique<FakeDesktopMediaPickerFactory>();
     picker_factory_ = picker_factory.get();
     access_handler_ = std::make_unique<DesktopCaptureAccessHandler>(
@@ -121,12 +122,15 @@ class DesktopCaptureAccessHandlerTest : public ChromeRenderViewHostTestHarness {
          .expect_current_tab = false,
          .expect_audio = request_audio,
          .picker_result = response}};
-    picker_factory_->SetTestFlags(test_flags, std::size(test_flags));
+    picker_factory_->SetTestFlags(test_flags);
     blink::mojom::MediaStreamType audio_type =
         request_audio ? blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE
                       : blink::mojom::MediaStreamType::NO_SERVICE;
     content::MediaStreamRequest request(
-        0, 0, 0, url::Origin::Create(GURL(kOrigin)), false, request_type,
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+        /*page_request_id=*/0, url::Origin::Create(GURL(kOrigin)), false,
+        request_type,
         /*requested_audio_device_ids=*/{},
         /*requested_video_device_ids=*/{}, audio_type,
         blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE,
@@ -227,8 +231,10 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourcePermissionDenied) {
 
 TEST_F(DesktopCaptureAccessHandlerTest,
        ChangeSourceUpdateMediaRequestStateWithClosing) {
-  const int render_process_id = 0;
-  const int render_frame_id = 0;
+  const int render_process_id =
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID();
+  const int render_frame_id =
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID();
   const int page_request_id = 0;
   const blink::mojom::MediaStreamType stream_type =
       blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
@@ -237,7 +243,7 @@ TEST_F(DesktopCaptureAccessHandlerTest,
        true /* expect_tabs */, false /* expect_current_tab */,
        false /* expect_audio */, content::DesktopMediaID(),
        true /* cancelled */}};
-  picker_factory_->SetTestFlags(test_flags, std::size(test_flags));
+  picker_factory_->SetTestFlags(test_flags);
   content::MediaStreamRequest request(
       render_process_id, render_frame_id, page_request_id,
       url::Origin::Create(GURL(kOrigin)), false, blink::MEDIA_DEVICE_UPDATE,
@@ -271,9 +277,11 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceWebContentsDestroyed) {
        true /* expect_tabs */, false /* expect_current_tab */,
        false /* expect_audio */, content::DesktopMediaID(),
        true /* cancelled */}};
-  picker_factory_->SetTestFlags(test_flags, std::size(test_flags));
+  picker_factory_->SetTestFlags(test_flags);
   content::MediaStreamRequest request(
-      0, 0, 0, url::Origin::Create(GURL(kOrigin)), false,
+      web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+      web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+      /*page_request_id=*/0, url::Origin::Create(GURL(kOrigin)), false,
       blink::MEDIA_DEVICE_UPDATE, /*requested_audio_device_ids=*/{},
       /*requested_video_device_ids=*/{},
       blink::mojom::MediaStreamType::NO_SERVICE,
@@ -309,14 +317,16 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceMultipleRequests) {
            content::DesktopMediaID::TYPE_WINDOW,
            content::DesktopMediaID::kNullId) /* selected_source */}};
   const size_t kTestFlagCount = 2;
-  picker_factory_->SetTestFlags(test_flags, kTestFlagCount);
+  picker_factory_->SetTestFlags(test_flags);
 
   blink::mojom::MediaStreamRequestResult result;
   blink::MediaStreamDevices devices;
   base::RunLoop wait_loop[kTestFlagCount];
   for (base::RunLoop& loop : wait_loop) {
     content::MediaStreamRequest request(
-        0, 0, 0, url::Origin::Create(GURL(kOrigin)), false,
+        web_contents()->GetPrimaryMainFrame()->GetProcess()->GetDeprecatedID(),
+        web_contents()->GetPrimaryMainFrame()->GetRoutingID(),
+        /*page_request_id=*/0, url::Origin::Create(GURL(kOrigin)), false,
         blink::MEDIA_DEVICE_UPDATE, /*requested_audio_device_ids=*/{},
         /*requested_video_device_ids=*/{},
         blink::mojom::MediaStreamType::NO_SERVICE,
