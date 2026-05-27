@@ -70,7 +70,7 @@ void LogOpenExtensionMetrics() {
   [shared_defaults removeObjectForKey:kOpenExtensionOutcomes];
 
   for (NSString* key in open_extension_dictionary) {
-    int event_count = [open_extension_dictionary valueForKey:key].intValue;
+    int event_count = open_extension_dictionary[key].intValue;
     app_group::OpenExtensionOutcome bucket_for_histogram =
         OutcomeTypeFromKey(key);
 

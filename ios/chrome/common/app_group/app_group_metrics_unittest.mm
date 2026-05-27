@@ -191,3 +191,30 @@ TEST_F(AppGroupMetricsTest, TestLogOpenExtensionMetricsWithMissingBuckets) {
 
   EXPECT_FALSE([shared_defaults objectForKey:kOpenExtensionOutcomes]);
 }
+
+// Verify that key starting with '@' (potential KVC injection payload) is
+// processed safely.
+TEST_F(AppGroupMetricsTest, TestLogOpenExtensionMetricsWithKVCInjectionKey) {
+  base::HistogramTester histogram_tester;
+
+  NSDictionary<NSString*, NSNumber*>* open_extension_test_dictionary = @{
+    @"@dealloc" : @5,
+    kOpenExtensionOutcomeSuccess : @3,
+  };
+
+  NSUserDefaults* shared_defaults = app_group::GetGroupUserDefaults();
+
+  [shared_defaults setObject:open_extension_test_dictionary
+                      forKey:kOpenExtensionOutcomes];
+
+  LogOpenExtensionMetrics();
+
+  histogram_tester.ExpectTotalCount("IOSOpenExtensionOutcome", 8);
+
+  histogram_tester.ExpectBucketCount("IOSOpenExtensionOutcome",
+                                     OpenExtensionOutcome::kInvalid, 5);
+  histogram_tester.ExpectBucketCount("IOSOpenExtensionOutcome",
+                                     OpenExtensionOutcome::kSuccess, 3);
+
+  EXPECT_FALSE([shared_defaults objectForKey:kOpenExtensionOutcomes]);
+}
