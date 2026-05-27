@@ -639,4 +639,35 @@ ax::mojom::blink::Role FocusgroupItemMinimumAriaRole(
       << static_cast<int>(data.behavior);
 }
 
+bool IsValidFocusgroupToken(const AtomicString& token) {
+  const bool is_grid_enabled = RuntimeEnabledFeatures::FocusgroupGridEnabled();
+
+  // Check behavior tokens.
+  for (const auto& mapping : kBehaviorMap) {
+    if (token == mapping.token) {
+      if (mapping.behavior == FocusgroupBehavior::kGrid) {
+        return is_grid_enabled;
+      }
+      return true;
+    }
+  }
+
+  // Check modifier tokens.
+  for (const auto& mapping : kModifierMap) {
+    if (token == mapping.token) {
+      if (IsGridOnlyFlag(mapping.flag)) {
+        return is_grid_enabled;
+      }
+      return true;
+    }
+  }
+
+  // "nowrap" is valid but has no flag bits (not in kModifierMap).
+  if (token == kNowrapToken) {
+    return true;
+  }
+
+  return false;
+}
+
 }  // namespace blink::focusgroup

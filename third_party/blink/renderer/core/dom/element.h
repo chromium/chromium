@@ -1591,6 +1591,8 @@ class CORE_EXPORT Element : public ContainerNode {
 
   DOMTokenList& classList();
 
+  DOMTokenList& focusGroup();
+
   DOMStringMap& dataset();
 
   virtual bool IsDateTimeEditElement() const { return false; }
@@ -2754,28 +2756,33 @@ inline const AtomicString& Element::FastGetAttribute(
       << TagQName().ToString().Utf8() << "/@" << name.ToString().Utf8();
 #endif
   if (CouldHaveAttribute(name) && HasElementData()) {
-    if (const Attribute* attribute = GetElementData()->Attributes().Find(name))
+    if (const Attribute* attribute =
+            GetElementData()->Attributes().Find(name)) {
       return attribute->Value();
+    }
   }
   return g_null_atom;
 }
 
 inline AttributeCollection Element::Attributes() const {
-  if (!HasElementData())
+  if (!HasElementData()) {
     return AttributeCollection();
+  }
   SynchronizeAllAttributes();
   return GetElementData()->Attributes();
 }
 
 inline AttributeCollection Element::AttributesWithoutUpdate() const {
-  if (!HasElementData())
+  if (!HasElementData()) {
     return AttributeCollection();
+  }
   return GetElementData()->Attributes();
 }
 
 inline AttributeCollection Element::AttributesWithoutStyleUpdate() const {
-  if (!HasElementData())
+  if (!HasElementData()) {
     return AttributeCollection();
+  }
   SynchronizeAllAttributesExceptStyle();
   return GetElementData()->Attributes();
 }
@@ -2798,10 +2805,12 @@ inline const AtomicString& Element::GetNameAttribute() const {
 }
 
 inline const AtomicString& Element::GetClassAttribute() const {
-  if (!HasClass())
+  if (!HasClass()) {
     return g_null_atom;
-  if (IsSVGElement())
+  }
+  if (IsSVGElement()) {
     return getAttribute(html_names::kClassAttr);
+  }
   return FastGetAttribute(html_names::kClassAttr);
 }
 
@@ -2829,16 +2838,19 @@ inline bool Element::HasClass() const {
 }
 
 inline UniqueElementData& Element::EnsureUniqueElementData() {
-  if (!HasElementData() || !GetElementData()->IsUnique())
+  if (!HasElementData() || !GetElementData()->IsUnique()) {
     CreateUniqueElementData();
+  }
   return To<UniqueElementData>(*element_data_);
 }
 
 inline const CSSPropertyValueSet* Element::PresentationAttributeStyle() {
-  if (!HasElementData())
+  if (!HasElementData()) {
     return nullptr;
-  if (GetElementData()->presentation_attribute_style_is_dirty())
+  }
+  if (GetElementData()->presentation_attribute_style_is_dirty()) {
     UpdatePresentationAttributeStyle();
+  }
   // Need to call elementData() again since updatePresentationAttributeStyle()
   // might swap it with a UniqueElementData.
   return GetElementData()->PresentationAttributeStyle();

@@ -153,6 +153,8 @@ blink_core_sources_dom = [
   "flat_tree_traversal_forbidden_scope.h",
   "focus_params.h",
   "focused_element_change_observer.h",
+  "focusgroup_dom_token_list.cc",
+  "focusgroup_dom_token_list.h",
   "focusgroup_flags.cc",
   "focusgroup_flags.h",
   "frame_request_callback_collection.cc",

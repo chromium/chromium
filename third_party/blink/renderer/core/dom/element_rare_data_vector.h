@@ -228,6 +228,10 @@ class CORE_EXPORT ElementRareDataVector final
   DOMTokenList* GetClassList() const;
   [[nodiscard]] ElementRareDataVector* SetClassList(DOMTokenList* class_list);
 
+  DOMTokenList* GetFocusgroupTokenList() const;
+  [[nodiscard]] ElementRareDataVector* SetFocusgroupTokenList(
+      DOMTokenList* token_list);
+
   DatasetDOMStringMap* Dataset() const;
   [[nodiscard]] ElementRareDataVector* SetDataset(DatasetDOMStringMap* dataset);
 
@@ -624,7 +628,8 @@ class CORE_EXPORT ElementRareDataVector final
     kScrollTimelines = 47,
     kFocusgroupData = 48,
     kDOMNodeId = 49,
-    kNumFields = 50,
+    kFocusgroupTokenList = 50,
+    kNumFields = 51,
   };
 
   inline const Member<ElementRareDataField>* ArrayBase() const {

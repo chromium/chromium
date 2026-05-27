@@ -113,6 +113,9 @@ CORE_EXPORT ax::mojom::blink::Role FocusgroupMinimumAriaRole(
 // attribute). Returns kUnknown if no mapping should be implied.
 CORE_EXPORT ax::mojom::blink::Role FocusgroupItemMinimumAriaRole(
     const FocusgroupData& data);
+
+// Returns true if |token| is a recognized focusgroup attribute token.
+CORE_EXPORT bool IsValidFocusgroupToken(const AtomicString& token);
 }  // namespace focusgroup
 
 using FocusgroupFlags = focusgroup::FocusgroupFlags;

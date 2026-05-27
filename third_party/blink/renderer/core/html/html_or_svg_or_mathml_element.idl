@@ -11,7 +11,7 @@ interface mixin HTMLOrSVGOrMathMLElement {
   [CEReactions] attribute long tabIndex;
 
   // https://open-ui.org/components/scoped-focusgroup.explainer/
-  [CEReactions, Reflect, RuntimeEnabled=Focusgroup, Measure] attribute DOMString focusGroup;
+  [SameObject, PutForwards=value, RuntimeEnabled=Focusgroup, Measure] readonly attribute DOMTokenList focusGroup;
   [CEReactions, Reflect, RuntimeEnabled=Focusgroup, MeasureAs=FocusGroupStart] attribute boolean focusGroupStart;
 
   [ImplementedAs=focusForBindings] void focus(optional FocusOptions options = {});

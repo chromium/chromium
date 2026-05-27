@@ -260,6 +260,14 @@ ElementRareDataVector* ElementRareDataVector::SetClassList(
   return SetField(FieldId::kClassList, class_list);
 }
 
+DOMTokenList* ElementRareDataVector::GetFocusgroupTokenList() const {
+  return static_cast<DOMTokenList*>(GetField(FieldId::kFocusgroupTokenList));
+}
+ElementRareDataVector* ElementRareDataVector::SetFocusgroupTokenList(
+    DOMTokenList* token_list) {
+  return SetField(FieldId::kFocusgroupTokenList, token_list);
+}
+
 DatasetDOMStringMap* ElementRareDataVector::Dataset() const {
   return static_cast<DatasetDOMStringMap*>(GetField(FieldId::kDataset));
 }
