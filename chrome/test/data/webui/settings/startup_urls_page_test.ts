@@ -369,4 +369,14 @@ suite('StartupUrlEntry', function() {
     flush();
     assertTrue(!!element.shadowRoot!.querySelector('#dots'));
   });
+
+  test('MoreActionsButtonTitle', function() {
+    element.editable = true;
+    flush();
+    const dots = element.shadowRoot!.querySelector<HTMLElement>('#dots');
+    assertTrue(!!dots);
+    const title = dots.getAttribute('title');
+    assertTrue(!!title);
+    assertTrue(title.includes(element.model.title));
+  });
 });

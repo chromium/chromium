@@ -11,7 +11,9 @@
       </div>
       <template is="dom-if" if="[[editable]]">
         <cr-icon-button class="icon-more-vert" id="dots" on-click="onDotsClick_"
-            title="$i18n{moreActions}" focus-row-control focus-type="menu">
+            title="[[getMoreActionsTitle_(model.title)]]"
+            focus-row-control
+            focus-type="menu">
         </cr-icon-button>
         <cr-lazy-render id="menu">
           <template>

@@ -18,6 +18,7 @@ import '../site_favicon.js';
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {FocusRowMixin} from 'chrome://resources/cr_elements/focus_row_mixin.js';
+import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -31,7 +32,8 @@ import {StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy
  */
 export const EDIT_STARTUP_URL_EVENT: string = 'edit-startup-url';
 
-const SettingsStartupUrlEntryElementBase = FocusRowMixin(PolymerElement);
+const SettingsStartupUrlEntryElementBase =
+    I18nMixin(FocusRowMixin(PolymerElement));
 
 export class SettingsStartupUrlEntryElement extends
     SettingsStartupUrlEntryElementBase {
@@ -57,6 +59,10 @@ export class SettingsStartupUrlEntryElement extends
 
   declare editable: boolean;
   declare model: StartupPageInfo;
+
+  private getMoreActionsTitle_(title: string): string {
+    return this.i18n('moreActionsFor', title);
+  }
 
   private onRemoveClick_() {
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
