@@ -1241,7 +1241,7 @@ if (enable_java_templates) {
     } else {
       _mapping_path = "${invoker.output}.mapping"
     }
-    _keep_radius_path = "${target_gen_dir}/${target_name}.keepradius.pb"
+    _keep_radius_path = "${target_gen_dir}/${target_name}.keepradius.html"
     _outputs = []
     if (!defined(invoker.modules)) {
       _outputs += [ invoker.output ]

@@ -208,7 +208,7 @@ def _ParseOptions():
       help='Log all reasons why API modelling cannot determine API level')
   parser.add_argument('--desugared-library-keep-rule-output',
                       help='Path to desugared library keep rule output file.')
-  parser.add_argument('--keep-radius-output', help='Create a keepradius.pb')
+  parser.add_argument('--keep-radius-output', help='Create a keepradius.html')
 
   diff_utils.AddCommandLineFlags(parser)
   options = parser.parse_args(args)
@@ -376,7 +376,7 @@ def _OptimizeWithR8(options, config_paths, libraries, dynamic_config_data):
       cmd += ['-Dcom.android.tools.r8.reportUnknownApiReferences=1']
     if options.keep_radius_output:
       cmd += [
-          '-Dcom.android.tools.r8.dumpkeepradiustofile=' +
+          '-Dcom.android.tools.r8.dumpkeepradiushtmltofile=' +
           options.keep_radius_output
       ]
     cmd += [
