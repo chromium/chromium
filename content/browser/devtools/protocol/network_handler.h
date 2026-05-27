@@ -487,6 +487,7 @@ class NetworkHandler : public DevToolsDomainHandler,
   base::OnceClosure cleanup_after_modifications_callback_;
   const raw_ref<DevToolsSession> root_session_;
   const base::UnguessableToken throttling_client_id_;
+  bool network_conditions_configured_ = false;
   base::WeakPtrFactory<NetworkHandler> weak_factory_{this};
 };
 
