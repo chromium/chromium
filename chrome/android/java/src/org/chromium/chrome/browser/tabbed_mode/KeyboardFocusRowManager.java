@@ -35,10 +35,7 @@ import java.util.function.Supplier;
 
     // Alphabetical order by field name
     private final Supplier<@Nullable BookmarkBarCoordinator> mBookmarkBarCoordinatorSupplier;
-
-    @SuppressWarnings("unused")
     private final Supplier<@Nullable CompositorViewHolder> mCompositorViewHolderSupplier;
-
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
     private final OneshotSupplierImpl<SideUiStateProvider> mSideUiStateProviderSupplier;
     private final Supplier<@Nullable StripLayoutHelperManager> mStripLayoutHelperManagerSupplier;
