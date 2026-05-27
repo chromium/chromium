@@ -441,15 +441,13 @@ Node::InsertionNotificationRequest HTMLFrameSetElement::InsertedInto(
   return HTMLElement::InsertedInto(insertion_point);
 }
 void HTMLFrameSetElement::WillRecalcStyle(const StyleRecalcChange) {
+  // TODO(futhark): This makes no sense at all. Any style changes should trigger
+  // layout and paint invalidation as a result of the style recalc. With that
+  // fixed, WillRecalcStyle() can be removed.
   if (NeedsStyleRecalc() && GetLayoutObject()) {
-    if (GetForceReattachLayoutTree()) {
-      // Adding a frameset to the top layer for fullscreen forces a reattach.
-      SetNeedsReattachLayoutTree();
-    } else {
-      GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
-          layout_invalidation_reason::kStyleChange);
-    }
-    ClearNeedsStyleRecalc();
+    // fast/frames/ tests for border invalidation rely on this in order to pass
+    GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
+        layout_invalidation_reason::kStyleChange);
   }
 }
 
