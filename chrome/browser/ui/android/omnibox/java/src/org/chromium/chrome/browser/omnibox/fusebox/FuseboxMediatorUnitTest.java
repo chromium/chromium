@@ -914,6 +914,37 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void clickSelectedTool_transitionsToSearchMode() {
+        // Initially in Search mode.
+        assertEquals(
+                AutocompleteRequestType.SEARCH,
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+
+        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
+        assertEquals(
+                AutocompleteRequestType.AI_MODE,
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+
+        clickToolButton(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
+        assertEquals(
+                AutocompleteRequestType.SEARCH,
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+    }
+
+    @Test
+    public void clickSelectedImageGenTool_transitionsToSearchMode() {
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
+        assertEquals(
+                AutocompleteRequestType.IMAGE_GENERATION,
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+
+        clickToolButton(ToolMode.TOOL_MODE_IMAGE_GEN_VALUE);
+        assertEquals(
+                AutocompleteRequestType.SEARCH,
+                (int) mModel.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE));
+    }
+
+    @Test
     public void onToolCreateImageGeneration_disablesNonImageInput() {
         doReturn(true).when(mComposeboxQueryControllerBridge).isPdfUploadEligible();
         doReturn(mTab1).when(mTabModelSelector).getCurrentTab();

@@ -1276,10 +1276,14 @@ import java.util.function.Supplier;
             FuseboxMetrics.notifyModelButtonSelected(data.protoId);
             setModelMode(data.protoId);
         } else if (data.type == PopupButtonType.TOOL) {
-            FuseboxMetrics.notifyToolButtonSelected(data.protoId);
-            @AutocompleteRequestType
-            int requestType = ToolModeUtils.getRequestTypeForToolMode(data.protoId);
-            activateAiMode(requestType, AiModeActivationSource.TOOL_MENU);
+            if (data.selected) {
+                activateSearchMode();
+            } else {
+                FuseboxMetrics.notifyToolButtonSelected(data.protoId);
+                @AutocompleteRequestType
+                int requestType = ToolModeUtils.getRequestTypeForToolMode(data.protoId);
+                activateAiMode(requestType, AiModeActivationSource.TOOL_MENU);
+            }
         }
     }
 
