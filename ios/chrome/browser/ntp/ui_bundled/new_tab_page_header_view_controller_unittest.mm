@@ -9,6 +9,7 @@
 #import "components/signin/public/base/signin_switches.h"
 #import "ios/chrome/browser/content_suggestions/public/ntp_home_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_view_controller+Testing.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -19,6 +20,7 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
@@ -31,11 +33,15 @@ class NewTabPageHeaderViewControllerUnitTest : public PlatformTest {
     view_controller_ = [[NewTabPageHeaderViewController alloc]
         initWithUseNewBadgeForLensButton:YES
          useNewBadgeForCustomizationMenu:YES];
+    command_handler_mock_ =
+        OCMProtocolMock(@protocol(NewTabPageHeaderCommands));
+    view_controller_.commandHandler = command_handler_mock_;
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   NewTabPageHeaderViewController* view_controller_;
+  id command_handler_mock_;
 };
 
 // Tests the header view when the user is signed out.
@@ -46,7 +52,7 @@ TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
   EXPECT_NE(nil, view_controller_.headerView.customizationMenuButton);
 
   // Checks that the identity disc's title is correctly set without avatar.
-  [view_controller_ setSignedOutAccountImage];
+  [view_controller_.headerView setSignedOutAccountImage];
   EXPECT_NSEQ(
       view_controller_.identityDiscButton.configuration.attributedTitle.string,
       l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT));
@@ -70,13 +76,14 @@ TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedIn_AccountMenu) {
       CGSizeMake(ntp_home::kIdentityAvatarDimension,
                  ntp_home::kIdentityAvatarDimension),
       [UIColor redColor]);
-  [view_controller_ updateAccountImage:someIdentityImage
-                                  name:@"Some name"
-                                 email:@"someemail"];
+  [view_controller_.headerView updateAccountImage:someIdentityImage
+                                             name:@"Some name"
+                                            email:@"someemail"];
   EXPECT_NSEQ(view_controller_.identityDiscButton.accessibilityLabel,
               l10n_util::GetNSStringF(
                   IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
                   base::SysNSStringToUTF16(@"Some name"),
                   base::SysNSStringToUTF16(@"someemail")));
-  EXPECT_NE(nil, view_controller_.identityDiscImage);
+  EXPECT_NE(nil, [view_controller_.identityDiscButton
+                     imageForState:UIControlStateNormal]);
 }

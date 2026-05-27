@@ -14,8 +14,6 @@
 
 @property(nonatomic, strong, readonly) NewTabPageHeaderView* headerView;
 
-@property(nonatomic, strong, readonly) UIImage* identityDiscImage;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_NTP_UI_BUNDLED_NEW_TAB_PAGE_HEADER_VIEW_CONTROLLER_TESTING_H_

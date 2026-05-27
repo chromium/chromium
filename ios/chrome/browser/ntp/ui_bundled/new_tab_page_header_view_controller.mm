@@ -63,39 +63,12 @@
 
 using base::UserMetricsAction;
 
-namespace {
-
-// Horizontal padding between the edge of the pill and its label.
-const CGFloat kPillHorizontalPadding = 13;
-
-// Vertical padding between the edge of the pill and its label.
-const CGFloat kPillVerticalPadding = 11;
-
-// Multiplier for applying margins on multiple sides
-const CGFloat kMarginMultiplier = 2;
-
-// The maximum point size of the font for the Identity Disc button.
-const CGFloat kIdentityDiscMaxFontSize = 24;
-
-}  // namespace
-
-@interface NewTabPageHeaderViewController () <SearchEngineLogoConsumer>
+@interface NewTabPageHeaderViewController ()
 
 // `YES` if this consumer is has voice search enabled.
 @property(nonatomic, assign) BOOL voiceSearchIsEnabled;
 
-@property(nonatomic, strong) NewTabPageHeaderView* headerView;
-@property(nonatomic, copy) NSString* identityDiscAccessibilityLabel;
-@property(nonatomic, strong) UIImage* identityDiscImage;
-@property(nonatomic, strong) NSLayoutConstraint* doodleHeightConstraint;
-@property(nonatomic, strong) NSLayoutConstraint* doodleTopMarginConstraint;
-@property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxWidthConstraint;
-@property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxHeightConstraint;
-@property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxTopMarginConstraint;
-@property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
-
-// Whether or not the user is signed in.
-@property(nonatomic, assign) BOOL isSignedIn;
+@property(nonatomic, strong, readonly) NewTabPageHeaderView* headerView;
 
 // Name of the default search engine. Used for the omnibox placeholder text.
 @property(nonatomic, copy) NSString* defaultSearchEngineName;
@@ -111,15 +84,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   // Tracks if the mutator has already been notified of the Homepage
   // Customization "new" badge display.
   BOOL _didNotifyCustomizationBadgeDisplay;
-  BOOL _hasAccountError;
-  // Constraint for the identity disc button width.
-  NSLayoutConstraint* _identityDiscWidthConstraint;
-  // Constraint for the identity disc button height.
-  NSLayoutConstraint* _identityDiscHeightConstraint;
-  // Trailing Anchor for the identity disc button.
-  NSLayoutConstraint* _identityDiscTrailingConstraint;
-  // Constraint for the identity disc button's capsule-style width.
-  NSLayoutConstraint* _identityDiscCapsuleWidthConstraint;
   // Whether AIM is allowed.
   BOOL _isAIMAllowed;
   // Whether the session is fusebox eligible.
@@ -129,8 +93,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   // The logo for the default search engine. This is owned by the caching system
   // backing this logo.
   __weak UIImage* _dseLogo;
-  SearchEngineLogoMediator* _searchEngineLogoMediator;
-  SearchEngineLogoState _searchEngineLogoState;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -141,23 +103,17 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
     _useNewBadgeForCustomizationMenu = useNewBadgeForCustomizationMenu;
 
-    NSArray<UITrait>* traits = @[
-      UITraitHorizontalSizeClass.class,
-      UITraitPreferredContentSizeCategory.class, UITraitUserInterfaceStyle.class
-    ];
-    __weak __typeof(self) weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      [weakSelf updateUIOnTraitChange:previousCollection];
-    };
-    [self registerForTraitChanges:traits withHandler:handler];
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      [self registerForTraitChanges:
-                @[ NewTabPageTrait.class, NewTabPageImageBackgroundTrait.class ]
-                         withAction:@selector(applyBackgroundTheme)];
-    }
   }
   return self;
+}
+
+- (void)loadView {
+  self.view = [[NewTabPageHeaderView alloc]
+      initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
+}
+
+- (NewTabPageHeaderView*)headerView {
+  return (NewTabPageHeaderView*)self.view;
 }
 
 - (void)setOmniboxInBottomPosition:(BOOL)isBottomOmnibox {
@@ -182,36 +138,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 }
 
 - (void)expandHeaderForFocus {
-  // Make sure that the offset is after the pinned offset to have the fake
-  // omnibox taking the full width.
-  CGFloat offset = 9000;
-  [self updateLogoForOffset:offset];
-  [self.headerView updateSearchFieldWidth:self.fakeOmniboxWidthConstraint
-                                   height:self.fakeOmniboxHeightConstraint
-                                topMargin:self.fakeOmniboxTopMarginConstraint
-                                forOffset:offset
-                              screenWidth:self.headerView.bounds.size.width
-                           safeAreaInsets:self.view.safeAreaInsets];
-
-  self.fakeOmniboxWidthConstraint.constant = self.headerView.bounds.size.width;
-  [self.headerView layoutIfNeeded];
-  if (!IsComposeboxIOSEnabled()) {
-    UIView* topOmnibox =
-        [self.layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
-    CGRect omniboxFrameInFakebox =
-        [topOmnibox convertRect:topOmnibox.bounds
-                         toView:self.headerView.fakeOmniboxContainer];
-    self.headerView.fakeLocationBarLeadingConstraint.constant =
-        omniboxFrameInFakebox.origin.x;
-    self.headerView.fakeLocationBarTrailingConstraint.constant =
-        -(self.headerView.fakeOmniboxContainer.bounds.size.width -
-          (omniboxFrameInFakebox.origin.x + omniboxFrameInFakebox.size.width));
-    self.headerView.voiceSearchButton.alpha = 0;
-    self.headerView.cancelButton.alpha = 0.7;
-    self.headerView.omnibox.alpha = 1;
-    self.headerView.searchHintLabel.alpha = 0;
-  }
-  [self.headerView layoutIfNeeded];
+  [self.headerView expandHeaderForFocus];
 }
 
 - (void)completeHeaderFakeOmniboxFocusAnimationWithFinalPosition:
@@ -241,80 +168,68 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                        screenWidth:(CGFloat)screenWidth
                     safeAreaInsets:(UIEdgeInsets)safeAreaInsets
             animateScrollAnimation:(BOOL)animateScrollAnimation {
-  if (self.isShowing) {
-    [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
-    CGFloat progress =
-        (_searchEngineLogoState != SearchEngineLogoState::kNone) ||
-                !CanShowTabStrip(self)
-            ? [self.headerView searchFieldProgressForOffset:offset]
-            // RxR with no logo hides the fakebox, so always show the omnibox.
-            : 1;
-    [self updateLogoForOffset:offset];
-
-    if (!IsChromeNextIaEnabled()) {
-      if (!CanShowTabStrip(self) && IsSplitToolbarMode(self)) {
-        // Ensure omnibox is reset when not a regular tablet.
-        progress = 1.0;
-      }
-    }
-
-    [self.toolbarDelegate setScrollProgressForTabletOmnibox:progress];
-  }
-
-  if (animateScrollAnimation) {
-    [self.headerView updateSearchFieldWidth:self.fakeOmniboxWidthConstraint
-                                     height:self.fakeOmniboxHeightConstraint
-                                  topMargin:self.fakeOmniboxTopMarginConstraint
-                                  forOffset:offset
-                                screenWidth:screenWidth
-                             safeAreaInsets:safeAreaInsets];
-  }
+  [self.headerView updateFakeOmniboxForOffset:offset
+                                  screenWidth:screenWidth
+                               safeAreaInsets:safeAreaInsets
+                       animateScrollAnimation:animateScrollAnimation];
 }
 
 - (void)updateFakeOmniboxForWidth:(CGFloat)width {
-  self.fakeOmniboxWidthConstraint.constant =
-      content_suggestions::SearchFieldWidth(width, self.traitCollection);
+  [self.headerView updateFakeOmniboxForWidth:width];
 }
 
 - (void)layoutHeader {
-  [self.headerView layoutIfNeeded];
+  [self.headerView layoutHeader];
+}
+
+- (CGFloat)headerHeight {
+  return [self.headerView headerHeight];
 }
 
 - (CGFloat)pinnedOffsetY {
-  CGFloat offsetY = [self headerHeight];
+  CGFloat offsetY = [self.headerView headerHeight];
   if ([self.delegate shouldPinFakeOmnibox]) {
     offsetY -= content_suggestions::FakeToolbarHeight();
   }
 
   return AlignValueToPixel(offsetY);
 }
-
-- (CGFloat)headerHeight {
-  return content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
-                                                  self.traitCollection);
-}
-
 #pragma mark - Accessors & Mutators
+
+- (void)setShowing:(BOOL)showing {
+  _showing = showing;
+  if (self.isViewLoaded) {
+    self.headerView.showing = showing;
+  }
+}
 
 - (void)setIsGoogleDefaultSearchEngine:(BOOL)isGoogleDefaultSearchEngine {
   _isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
-  self.headerView.isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+  if (self.viewLoaded) {
+    self.headerView.isGoogleDefaultSearchEngine = isGoogleDefaultSearchEngine;
+  }
 }
 
 - (void)setAllowFontScaleAnimation:(BOOL)allowFontScaleAnimation {
   _allowFontScaleAnimation = allowFontScaleAnimation;
-  self.headerView.allowFontScaleAnimation = allowFontScaleAnimation;
+  if (self.isViewLoaded) {
+    self.headerView.allowFontScaleAnimation = allowFontScaleAnimation;
+  }
 }
 
 - (void)setNTPShortcutsHandler:
     (id<NewTabPageShortcutsHandler>)NTPShortcutsHandler {
   _NTPShortcutsHandler = NTPShortcutsHandler;
-  self.headerView.NTPShortcutsHandler = NTPShortcutsHandler;
+  if (self.isViewLoaded) {
+    self.headerView.NTPShortcutsHandler = NTPShortcutsHandler;
+  }
 }
 
 - (void)setLayoutGuideCenter:(LayoutGuideCenter*)layoutGuideCenter {
   _layoutGuideCenter = layoutGuideCenter;
-  self.headerView.layoutGuideCenter = layoutGuideCenter;
+  if (self.isViewLoaded) {
+    self.headerView.layoutGuideCenter = layoutGuideCenter;
+  }
 }
 
 - (UIButton*)customizationMenuButton {
@@ -330,111 +245,43 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (!self.headerView) {
-    self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  self.headerView.layoutGuideCenter = self.layoutGuideCenter;
+  self.headerView.commandHandler = self.commandHandler;
+  self.headerView.toolbarDelegate = self.toolbarDelegate;
+  [self.headerView setAIMAllowed:_isAIMAllowed];
+  [self.headerView setFuseboxEligible:_fuseboxEligible];
 
-    CGFloat width = self.view.frame.size.width;
-
-    self.headerView = [[NewTabPageHeaderView alloc]
-        initWithUseNewBadgeForLensButton:_useNewBadgeForLensButton];
-    self.headerView.layoutGuideCenter = self.layoutGuideCenter;
-    self.headerView.commandHandler = self.commandHandler;
-    self.headerView.toolbarDelegate = self.toolbarDelegate;
-    [self.headerView setAIMAllowed:_isAIMAllowed];
-    [self.headerView setFuseboxEligible:_fuseboxEligible];
-
-    if (IsChromeNextIaEnabled() && IsBottomOmniboxAvailable()) {
-      [self.headerView setOmniboxPositionIsBottom:_isBottomOmnibox];
-    }
-
-    self.headerView.NTPShortcutsHandler = self.NTPShortcutsHandler;
-    self.headerView.isGoogleDefaultSearchEngine =
-        self.isGoogleDefaultSearchEngine;
-    self.headerView.placeholderText = self.placeholderText;
-    self.headerView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:self.headerView];
-    AddSameConstraintsToSides(
-        self.headerView, self.view,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
-    NSLayoutConstraint* bottomConstraint = [self.headerView.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor];
-    bottomConstraint.priority = UILayoutPriorityRequired - 1;
-    bottomConstraint.active = YES;
-
-    [self.headerView setupSubviews];
-
-    if (_dseLogo) {
-      [self.headerView setDefaultSearchEngineLogo:_dseLogo];
-    }
-
-    if (self.headerView.lensButton) {
-      [self.layoutGuideCenter referenceView:self.headerView.lensButton
-                                  underName:kFakeboxLensIconGuide];
-    }
-
-    [self updateVoiceSearchDisplay];
-
-    _identityDiscWidthConstraint =
-        [self.headerView.identityDiscButton.widthAnchor
-            constraintEqualToConstant:0];
-    _identityDiscHeightConstraint =
-        [self.headerView.identityDiscButton.heightAnchor
-            constraintEqualToConstant:0];
-    _identityDiscTrailingConstraint =
-        [self.headerView.identityDiscButton.trailingAnchor
-            constraintEqualToAnchor:self.headerView.safeAreaLayoutGuide
-                                        .trailingAnchor
-                           constant:0];
-    _identityDiscTrailingConstraint.active = YES;
-    _identityDiscCapsuleWidthConstraint = [self.headerView.identityDiscButton
-                                               .widthAnchor
-        constraintGreaterThanOrEqualToAnchor:self.headerView.identityDiscButton
-                                                 .heightAnchor
-                                  multiplier:2.0];
-
-    [self.layoutGuideCenter referenceView:self.headerView.identityDiscButton
-                                underName:kNTPIdentityDiscButtonGuide];
-
-    if (self.identityDiscImage) {
-      [self updateIdentityDiscState];
-    }
-    [self updateIdentityDiscConstraints];
-
-    if (_hasAccountError) {
-      [self.headerView setIdentityDiscErrorBadge];
-    }
-
-    [self.headerView insertSubview:_searchEngineLogoMediator.view
-                      belowSubview:self.headerView.toolBarView];
-    _searchEngineLogoMediator.view.translatesAutoresizingMaskIntoConstraints =
-        NO;
-    _searchEngineLogoMediator.view.accessibilityIdentifier =
-        ntp_home::NTPLogoAccessibilityID();
-
-    [self addCustomizationMenu];
-
-    // Add a tools (overflow) menu entrypoint beside the customization menu.
-    if (IsChromeNextIaEnabled()) {
-      [self addToolsMenuIfNeeded];
-    }
-
-    UIEdgeInsets safeAreaInsets = self.baseViewController.view.safeAreaInsets;
-    width = std::max<CGFloat>(
-        0, width - safeAreaInsets.left - safeAreaInsets.right);
-
-    self.fakeOmniboxWidthConstraint =
-        [self.headerView.fakeOmniboxContainer.widthAnchor
-            constraintEqualToConstant:content_suggestions::SearchFieldWidth(
-                                          width, self.traitCollection)];
-    [self addConstraintsForLogoView:_searchEngineLogoMediator.view
-                        fakeOmnibox:self.headerView.fakeOmniboxContainer
-                      andHeaderView:self.headerView];
-
-    self.headerView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
-    if (IsNTPBackgroundCustomizationEnabled()) {
-      [self applyBackgroundTheme];
-    }
+  if (IsChromeNextIaEnabled() && IsBottomOmniboxAvailable()) {
+    [self.headerView setOmniboxPositionIsBottom:_isBottomOmnibox];
   }
+
+  self.headerView.NTPShortcutsHandler = self.NTPShortcutsHandler;
+  self.headerView.isGoogleDefaultSearchEngine =
+      self.isGoogleDefaultSearchEngine;
+  self.headerView.placeholderText = self.placeholderText;
+  self.headerView.showing = self.showing;
+
+  [self.headerView setupSubviews];
+
+  if (_dseLogo) {
+    [self.headerView setDefaultSearchEngineLogo:_dseLogo];
+  }
+
+  if (self.headerView.lensButton) {
+    [self.layoutGuideCenter referenceView:self.headerView.lensButton
+                                underName:kFakeboxLensIconGuide];
+  }
+
+  [self updateVoiceSearchDisplay];
+
+  [self addCustomizationMenu];
+
+  // Add a tools (overflow) menu entrypoint beside the customization menu.
+  if (IsChromeNextIaEnabled()) {
+    [self addToolsMenuIfNeeded];
+  }
+
+  self.headerView.tintAdjustmentMode = UIViewTintAdjustmentModeNormal;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -453,7 +300,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
   // Check if the identity disc button was properly set before the view appears.
   DCHECK(self.identityDiscButton);
-  DCHECK(self.identityDiscImage);
   DCHECK(self.identityDiscButton.accessibilityLabel);
 
   [self maybeShowSwitchAccountsIPH];
@@ -499,39 +345,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   return [self.headerView fakeboxButtonsSnapshot];
 }
 
-#pragma mark - SearchEngineLogoConsumer
-
-- (void)searchEngineLogoStateDidChange:(SearchEngineLogoState)logoState {
-  _searchEngineLogoState = logoState;
-  self.headerView.logoState = logoState;
-  [self.doodleHeightConstraint
-      setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
-                                                    self.traitCollection)];
-  self.doodleTopMarginConstraint.constant =
-      content_suggestions::DoodleTopMargin(_searchEngineLogoState,
-                                           self.traitCollection);
-  self.headerViewHeightConstraint.constant =
-      content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
-                                               self.traitCollection);
-  self.fakeOmniboxTopMarginConstraint.constant =
-      -content_suggestions::SearchFieldTopMargin(_searchEngineLogoState);
-
-  // Trigger relayout so that it immediately returns the updated content height
-  // for the NTP to update content inset.
-  [self.view setNeedsLayout];
-  [UIView performWithoutAnimation:^{
-    [self.view layoutIfNeeded];
-    [self.commandHandler updateForHeaderSizeChange];
-  }];
-  [self updateFakeboxDisplay];
-}
-
-#pragma mark - NewTabPageHeaderConsumer
-
 - (void)setSearchEngineLogoMediator:
     (SearchEngineLogoMediator*)searchEngineLogoMediator {
-  _searchEngineLogoMediator = searchEngineLogoMediator;
-  _searchEngineLogoMediator.consumer = self;
+  self.headerView.searchEngineLogoMediator = searchEngineLogoMediator;
 }
 
 - (void)setVoiceSearchIsEnabled:(BOOL)voiceSearchIsEnabled {
@@ -564,61 +380,20 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 - (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
                                 name:(NSString*)name
                                email:(NSString*)email {
-  if (hasAccountError == _hasAccountError) {
-    return;
-  }
-
-  _hasAccountError = hasAccountError;
-  if (_hasAccountError) {
-    [self.headerView setIdentityDiscErrorBadge];
-  } else {
-    [self.headerView removeIdentityDiscErrorBadge];
-  }
-  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
+  [self.headerView updateADPBadgeWithErrorFound:hasAccountError
+                                           name:name
+                                          email:email];
 }
 
 - (void)setAIMAllowed:(BOOL)allowed {
-  [_headerView setAIMAllowed:allowed];
+  [self.headerView setAIMAllowed:allowed];
   _isAIMAllowed = allowed;
 }
 
 - (void)setFuseboxEligible:(BOOL)eligible {
-  [_headerView setFuseboxEligible:eligible];
+  [self.headerView setFuseboxEligible:eligible];
   _fuseboxEligible = eligible;
   [self updatePlaceholderText];
-}
-
-#pragma mark - UserAccountImageUpdateDelegate
-
-- (void)setSignedOutAccountImage {
-  self.identityDiscImage = DefaultSymbolTemplateWithPointSize(
-      kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconSize);
-
-  self.isSignedIn = NO;
-
-  self.identityDiscAccessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_SIGN_IN_BUTTON_ACCESSIBILITY_LABEL);
-
-  // `self.identityDiscButton` should not be updated if the view has not been
-  // created yet.
-  if (self.identityDiscButton) {
-    [self updateIdentityDiscState];
-  }
-}
-
-- (void)updateAccountImage:(UIImage*)image
-                      name:(NSString*)name
-                     email:(NSString*)email {
-  DCHECK(image && image.size.width == ntp_home::kIdentityAvatarDimension &&
-         image.size.height == ntp_home::kIdentityAvatarDimension)
-      << base::SysNSStringToUTF8([image description]);
-  DCHECK(email);
-
-  self.identityDiscImage = image;
-
-  self.isSignedIn = YES;
-
-  [self updateIdentityDiscAccessibilityLabelWithName:name email:email];
 }
 
 #pragma mark - Private
@@ -713,118 +488,9 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.headerView.fakeTapButton.userInteractionEnabled = isSplitToolbarMode;
 }
 
-// Configures `identityDiscButton` with the current state of
-// `identityDiscImage`.
-- (void)updateIdentityDiscState {
-  DCHECK(self.identityDiscImage);
-  DCHECK(self.identityDiscAccessibilityLabel);
-
-  UIButton* button = self.identityDiscButton;
-
-  button.accessibilityLabel = self.identityDiscAccessibilityLabel;
-  button.clipsToBounds = YES;
-
-  if (self.isSignedIn) {
-    UIImage* image = self.identityDiscImage;
-    button.configuration = nil;
-    [button setImage:image forState:UIControlStateNormal];
-    button.backgroundColor = nil;
-    button.imageView.layer.cornerRadius = image.size.width / 2;
-    button.imageView.layer.masksToBounds = YES;
-    button.layer.cornerRadius = image.size.width;
-    return;
-  }
-
-  // Other configuration uses UIButtonConfiguration, not this property.
-  button.layer.cornerRadius = 0;
-
-  if (!IsNTPBackgroundCustomizationEnabled()) {
-    [button setImage:nil forState:UIControlStateNormal];
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration plainButtonConfiguration];
-    buttonConfiguration.background.backgroundColor =
-        [self defaultButtonBackgroundColor];
-    NSDictionary* attributes = @{
-      NSFontAttributeName : PreferredFontForTextStyle(
-          UIFontTextStyleSubheadline, UIFontWeightSemibold,
-          kIdentityDiscMaxFontSize),
-      NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color],
-    };
-    buttonConfiguration.attributedTitle = [[NSAttributedString alloc]
-        initWithString:l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT)
-            attributes:attributes];
-    buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kPillVerticalPadding, kPillHorizontalPadding, kPillVerticalPadding,
-        kPillHorizontalPadding);
-    button.configuration = buttonConfiguration;
-    return;
-  }
-
-  [button setImage:nil forState:UIControlStateNormal];
-
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
-  UIColor* foregroundColor;
-  if ([self.traitCollection boolForNewTabPageImageBackgroundTrait]) {
-    UIVisualEffect* blurEffect =
-        [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
-    UIVisualEffectView* blurBackgroundView =
-        [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-    buttonConfiguration.background.customView = blurBackgroundView;
-
-    foregroundColor = [UIColor colorNamed:kTextPrimaryColor];
-  } else {
-    NewTabPageColorPalette* colorPalette =
-        [self.traitCollection objectForNewTabPageTrait];
-    foregroundColor = colorPalette ? colorPalette.tintColor
-                                   : [UIColor colorNamed:kBlue600Color];
-
-    UIColor* backgroundColor = colorPalette
-                                   ? colorPalette.headerButtonColor
-                                   : [self defaultButtonBackgroundColor];
-    buttonConfiguration.background.backgroundColor = backgroundColor;
-  }
-
-  buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
-  buttonConfiguration.contentInsets =
-      NSDirectionalEdgeInsetsMake(kPillVerticalPadding, kPillHorizontalPadding,
-                                  kPillVerticalPadding, kPillHorizontalPadding);
-
-  NSDictionary* attributes = @{
-    NSFontAttributeName : PreferredFontForTextStyle(UIFontTextStyleSubheadline,
-                                                    UIFontWeightSemibold,
-                                                    kIdentityDiscMaxFontSize),
-    NSForegroundColorAttributeName : foregroundColor,
-  };
-  buttonConfiguration.attributedTitle = [[NSAttributedString alloc]
-      initWithString:l10n_util::GetNSString(IDS_IOS_SIGNIN_BUTTON_TEXT)
-          attributes:attributes];
-
-  button.configuration = buttonConfiguration;
-}
-
 - (void)focusAccessibilityOnOmnibox {
   UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
                                   self.headerView.fakeOmniboxContainer);
-}
-
-// If display is compact size, shows fakebox. If display is regular size,
-// shows fakebox if the logo is visible and hides otherwise
-- (void)updateFakeboxDisplay {
-  self.doodleTopMarginConstraint.constant =
-      content_suggestions::DoodleTopMargin(_searchEngineLogoState,
-                                           self.traitCollection);
-  [self.doodleHeightConstraint
-      setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
-                                                    self.traitCollection)];
-  self.headerView.fakeOmniboxContainer.hidden =
-      CanShowTabStrip(self) &&
-      (_searchEngineLogoState == SearchEngineLogoState::kNone);
-  [self.headerView layoutIfNeeded];
-  self.headerViewHeightConstraint.constant =
-      content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
-                                               self.traitCollection);
 }
 
 // Ensures the state of the Voice Search button matches whether or not it's
@@ -836,51 +502,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
       self.voiceSearchIsEnabled;
 }
 
-// Adds the constraints for the `logoView`, the `fakeomnibox` related to the
-// `headerView`. It also sets the properties constraints related to those views.
-- (void)addConstraintsForLogoView:(UIView*)logoView
-                      fakeOmnibox:(UIView*)fakeOmnibox
-                    andHeaderView:(UIView*)headerView {
-  self.doodleTopMarginConstraint = [logoView.topAnchor
-      constraintEqualToAnchor:headerView.topAnchor
-                     constant:content_suggestions::DoodleTopMargin(
-                                  _searchEngineLogoState,
-                                  self.traitCollection)];
-  self.doodleHeightConstraint = [logoView.heightAnchor
-      constraintEqualToConstant:content_suggestions::DoodleHeight(
-                                    _searchEngineLogoState,
-                                    self.traitCollection)];
-  self.fakeOmniboxHeightConstraint = [fakeOmnibox.heightAnchor
-      constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
-  self.fakeOmniboxTopMarginConstraint = [logoView.bottomAnchor
-      constraintEqualToAnchor:fakeOmnibox.topAnchor
-                     constant:-content_suggestions::SearchFieldTopMargin(
-                                  _searchEngineLogoState)];
-  self.headerViewHeightConstraint =
-      [headerView.heightAnchor constraintEqualToConstant:[self headerHeight]];
-  self.headerViewHeightConstraint.active = YES;
-  self.doodleTopMarginConstraint.active = YES;
-  self.doodleHeightConstraint.active = YES;
-  self.fakeOmniboxWidthConstraint.active = YES;
-  self.fakeOmniboxHeightConstraint.active = YES;
-  self.fakeOmniboxTopMarginConstraint.active = YES;
-  [logoView.widthAnchor constraintEqualToAnchor:headerView.widthAnchor].active =
-      YES;
-  [logoView.leadingAnchor constraintEqualToAnchor:headerView.leadingAnchor]
-      .active = YES;
-  [fakeOmnibox.centerXAnchor constraintEqualToAnchor:headerView.centerXAnchor]
-      .active = YES;
-}
-
-// Updates opacity of doodle for scroll position, preventing it from showing
-// within the safe area insets.
-- (void)updateLogoForOffset:(CGFloat)offset {
-  _searchEngineLogoMediator.view.alpha =
-      std::max(1 - [self.headerView searchFieldProgressForOffset:offset], 0.0);
-}
-
 - (void)maybeShowSwitchAccountsIPH {
-  if (!_isSignedIn) {
+  if (!self.headerView.isSignedIn) {
     return;
   }
 
@@ -901,127 +524,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                    : [[UIColor colorNamed:kSolidWhiteColor]
                          colorWithAlphaComponent:0.75];
       }];
-}
-// Sets the background using the current color palette, or defaults if none is
-// set.
-- (void)applyBackgroundTheme {
-  // `self.identityDiscButton` should not be updated if the view has not been
-  // created or initialized yet.
-  if (self.identityDiscButton && self.identityDiscImage &&
-      self.identityDiscAccessibilityLabel) {
-    [self updateIdentityDiscState];
-  }
-
-  BOOL hasBlurredBackground =
-      [self.traitCollection boolForNewTabPageImageBackgroundTrait];
-  if (hasBlurredBackground) {
-    _searchEngineLogoMediator.usesMonochromeLogo = YES;
-    _searchEngineLogoMediator.view.tintColor = UIColor.whiteColor;
-    return;
-  }
-
-  NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForNewTabPageTrait];
-  if (colorPalette) {
-    _searchEngineLogoMediator.usesMonochromeLogo = YES;
-    _searchEngineLogoMediator.view.tintColor = colorPalette.tintColor;
-    return;
-  }
-
-  _searchEngineLogoMediator.usesMonochromeLogo = NO;
-  _searchEngineLogoMediator.view.tintColor = nil;
-}
-
-- (void)setIsSignedIn:(BOOL)isSignedIn {
-  BOOL wasSignedIn = _isSignedIn;
-  _isSignedIn = isSignedIn;
-  if (wasSignedIn != _isSignedIn) {
-    [self updateIdentityDiscConstraints];
-    // `self.identityDiscButton` should not be updated if the view has not been
-    // created or initialized yet.
-    if (self.identityDiscButton && self.identityDiscImage &&
-        self.identityDiscAccessibilityLabel) {
-      [self updateIdentityDiscState];
-    }
-  }
-}
-
-// Activates or deactivates the identity disc constraints based on sign-in
-// state.
-- (void)updateIdentityDiscConstraints {
-  BOOL showSignInButtonWithoutAvatar = !self.isSignedIn;
-
-  CGFloat dimension = ntp_home::kIdentityAvatarDimension +
-                      kMarginMultiplier * ntp_home::kHeaderIconMargin;
-
-  CGFloat identityAvatarPadding = ntp_home::kIdentityAvatarPadding;
-
-  if (showSignInButtonWithoutAvatar) {
-    identityAvatarPadding *= kMarginMultiplier;
-  } else {
-    dimension += ntp_home::kHeaderIconMargin;
-    identityAvatarPadding -= ntp_home::kHeaderIconMargin / 2;
-  }
-
-  _identityDiscWidthConstraint.constant = dimension;
-  _identityDiscHeightConstraint.constant = dimension;
-  if (showSignInButtonWithoutAvatar) {
-    _identityDiscWidthConstraint.active = NO;
-    _identityDiscHeightConstraint.active = NO;
-    _identityDiscCapsuleWidthConstraint.active = YES;
-  } else {
-    _identityDiscCapsuleWidthConstraint.active = NO;
-    _identityDiscWidthConstraint.active = YES;
-    _identityDiscHeightConstraint.active = YES;
-  }
-  _identityDiscTrailingConstraint.constant = -identityAvatarPadding;
-}
-
-// `name` may be nil, `email` must not be nil.
-- (void)updateIdentityDiscAccessibilityLabelWithName:(NSString*)name
-                                               email:(NSString*)email {
-  NSString* accountButtonLabel;
-  // `_hasAccountError` is only set if the primary identity has an error.
-  if (name) {
-    accountButtonLabel =
-        _hasAccountError
-            ? l10n_util::GetNSStringF(
-                  IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
-                  base::SysNSStringToUTF16(name),
-                  base::SysNSStringToUTF16(email))
-            : l10n_util::GetNSStringF(
-                  IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU,
-                  base::SysNSStringToUTF16(name),
-                  base::SysNSStringToUTF16(email));
-  } else {
-    accountButtonLabel =
-        _hasAccountError
-            ? l10n_util::GetNSStringF(
-                  IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR,
-                  base::SysNSStringToUTF16(email))
-            : l10n_util::GetNSStringF(
-                  IDS_IOS_IDENTITY_DISC_WITH_EMAIL_OPEN_ACCOUNT_MENU,
-                  base::SysNSStringToUTF16(email));
-  }
-
-  self.identityDiscAccessibilityLabel = accountButtonLabel;
-
-  // `self.identityDiscButton` should not be updated if the view has not been
-  // created yet.
-  if (self.identityDiscButton) {
-    [self updateIdentityDiscState];
-  }
-}
-
-// Updates the fakebox or the header view when UITraits are modified on the
-// device.
-- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
-  if (self.traitCollection.horizontalSizeClass !=
-          previousTraitCollection.horizontalSizeClass ||
-      previousTraitCollection.preferredContentSizeCategory !=
-          self.traitCollection.preferredContentSizeCategory) {
-    [self updateFakeboxDisplay];
-  }
 }
 
 // Updates the placeholder text.

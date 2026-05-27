@@ -301,8 +301,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
 @property(nonatomic, assign) TemplateURLService* templateURLService;
 // Authentication Service to get the current user's avatar.
 @property(nonatomic, assign) AuthenticationService* authService;
-// This is the object that knows how to update the Identity Disc UI.
-@property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
 // DiscoverFeed Service to display the Feed.
 @property(nonatomic, assign) DiscoverFeedService* discoverFeedService;
 

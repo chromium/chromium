@@ -7,6 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/content_suggestions/ui/user_account_image_update_delegate.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
+
 @class GradientView;
 @class LayoutGuideCenter;
 @class NewTabPageColorPalette;
@@ -14,13 +17,15 @@
 @protocol NewTabPageHeaderCommands;
 @protocol NewTabPageControllerDelegate;
 @class OmniboxContainerView;
+@class SearchEngineLogoMediator;
 enum class SearchEngineLogoState;
 @class TabGroupIndicatorView;
 
 // Header view for the NTP. The header view contains all views that are
 // displayed above the list of most visited sites, which includes the
 // primary toolbar, doodle, and fake omnibox.
-@interface NewTabPageHeaderView : UIView
+@interface NewTabPageHeaderView
+    : UIView <UserAccountImageUpdateDelegate, SearchEngineLogoConsumer>
 
 // Returns the toolbar view.
 @property(nonatomic, readonly) UIView* toolBarView;
@@ -72,6 +77,9 @@ enum class SearchEngineLogoState;
 // `YES` if Google is the default search engine.
 @property(nonatomic, assign) BOOL isGoogleDefaultSearchEngine;
 
+// `YES` if the user is signed in.
+@property(nonatomic, assign, readonly) BOOL isSignedIn;
+
 // Name of the default search engine. Used for the omnibox placeholder text.
 @property(nonatomic, copy) NSString* placeholderText;
 
@@ -87,6 +95,12 @@ enum class SearchEngineLogoState;
 
 // Delegate for toolbar actions.
 @property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
+
+// Whether the NTP is currently showing.
+@property(nonatomic, assign, getter=isShowing) BOOL showing;
+
+// The mediator for the search engine logo.
+@property(nonatomic, strong) SearchEngineLogoMediator* searchEngineLogoMediator;
 
 // The logo state.
 @property(nonatomic, assign) SearchEngineLogoState logoState;
@@ -137,6 +151,11 @@ enum class SearchEngineLogoState;
 // Removes account disc particle error badge.
 - (void)removeIdentityDiscErrorBadge;
 
+// Updates the account particle disc error badge.
+- (void)updateADPBadgeWithErrorFound:(BOOL)hasAccountError
+                                name:(NSString*)name
+                               email:(NSString*)email;
+
 // Sets the Home customization menu entrypoint with a conditional "new feature"
 // badge.
 - (void)setCustomizationMenuButton:(UIButton*)customizationMenuButton
@@ -168,6 +187,24 @@ enum class SearchEngineLogoState;
 // Resets the resizing of this view for scroll progress in split toolbar mode.
 // Should be called on rotations.
 - (void)resetSplitToolbarResizing;
+
+// Animation to expand this header in response to focusing the omnibox.
+- (void)expandHeaderForFocus;
+
+// Updates the fake omnibox layout for the given scroll offset.
+- (void)updateFakeOmniboxForOffset:(CGFloat)offset
+                       screenWidth:(CGFloat)screenWidth
+                    safeAreaInsets:(UIEdgeInsets)safeAreaInsets
+            animateScrollAnimation:(BOOL)animateScrollAnimation;
+
+// Updates the fake omnibox layout for the given width.
+- (void)updateFakeOmniboxForWidth:(CGFloat)width;
+
+// Layouts the header view.
+- (void)layoutHeader;
+
+// Returns the height of the header.
+- (CGFloat)headerHeight;
 
 @end
 

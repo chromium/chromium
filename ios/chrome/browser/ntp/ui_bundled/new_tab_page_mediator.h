@@ -94,6 +94,8 @@ class UserUploadedImageManager;
 @property(nonatomic, weak) id<NewTabPageConsumer> consumer;
 // Consumer for NTP header model updates.
 @property(nonatomic, weak) id<NewTabPageHeaderConsumer> headerConsumer;
+// Delegate to update the identity disc image.
+@property(nonatomic, weak) id<UserAccountImageUpdateDelegate> imageUpdater;
 // Observer for feed visibility changes.
 @property(nonatomic, weak) id<DiscoverFeedVisibilityObserver>
     feedVisibilityObserver;
