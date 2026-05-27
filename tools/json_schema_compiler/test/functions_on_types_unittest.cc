@@ -8,7 +8,10 @@
 #include <vector>
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace functions_on_types = test::api::functions_on_types;
 

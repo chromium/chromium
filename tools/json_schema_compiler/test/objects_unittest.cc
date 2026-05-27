@@ -12,9 +12,12 @@
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/objects_movable.h"
 #include "tools/json_schema_compiler/test/objects_movable_json.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace objects_movable = test::api::objects_movable;
 

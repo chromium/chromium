@@ -11,8 +11,11 @@
 #include <utility>
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/enums.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace arrays = test::api::arrays;
 

@@ -6,7 +6,7 @@ import("//extensions/buildflags/buildflags.gni")
 import("//tools/json_schema_compiler/json_features.gni")
 import("//tools/json_schema_compiler/json_schema_api.gni")
 
-assert(enable_extensions)
+assert(enable_extensions_core)
 
 sources_ = [
   "additional_properties.json",
@@ -69,6 +69,7 @@ source_set("unit_tests") {
     "crossref_unittest.cc",
     "enums_unittest.cc",
     "error_generation_unittest.cc",
+    "features_generation_unittest.cc",
     "functions_as_parameters_unittest.cc",
     "functions_on_types_unittest.cc",
     "generated_schemas_unittest.cc",
@@ -88,6 +89,8 @@ source_set("unit_tests") {
     ":generated_types",
     "//base",
     "//base/test:test_support",
+    "//extensions/buildflags",
+    "//extensions/common",
     "//testing/gmock",
     "//testing/gtest",
   ]

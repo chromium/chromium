@@ -7,8 +7,11 @@
 #include <memory>
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/test_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 using test::api::functions_as_parameters::FunctionType;
 using test::api::functions_as_parameters::OptionalFunctionType;

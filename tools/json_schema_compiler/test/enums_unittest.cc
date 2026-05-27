@@ -8,8 +8,11 @@
 #include <vector>
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/test_util.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace enums = test::api::enums;
 using json_schema_compiler::test_util::Dictionary;

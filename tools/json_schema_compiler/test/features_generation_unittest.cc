@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "base/test/bind.h"
+#include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/features/complex_feature.h"
 #include "extensions/common/features/feature.h"
@@ -13,6 +14,8 @@
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/features_compiler_test.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 

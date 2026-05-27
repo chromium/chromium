@@ -9,6 +9,9 @@
 #include <string_view>
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace json_schema_compiler {
 namespace test_util {

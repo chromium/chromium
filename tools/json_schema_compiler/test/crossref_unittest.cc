@@ -9,8 +9,11 @@
 #include <vector>
 
 #include "base/values.h"
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "tools/json_schema_compiler/test/simple_api.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace crossref = test::api::crossref;
 namespace simple_api = test::api::simple_api;

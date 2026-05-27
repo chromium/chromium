@@ -9646,6 +9646,9 @@ test("unit_tests") {
       "//chrome/browser/extensions:unit_tests",
       "//chrome/common/extensions:unit_tests",
       "//chrome/renderer/extensions:unit_tests",
+
+      # Adds all of the unit tests for the schema compiler to this target.
+      "//tools/json_schema_compiler/test:unit_tests",
     ]
   }
 
@@ -9653,7 +9656,6 @@ test("unit_tests") {
   if (enable_extensions) {
     sources += [
       "../../apps/saved_files_service_unittest.cc",
-      "../../tools/json_schema_compiler/test/features_generation_unittest.cc",
       "../browser/controlled_frame/controlled_frame_menu_icon_loader_unittest.cc",
       "../browser/controlled_frame/controlled_frame_permissions_unittest.cc",
       "../browser/media/cast_mirroring_service_host_unittest.cc",
@@ -9765,10 +9767,6 @@ test("unit_tests") {
       "//extensions/browser/mime_handler:stream_container",
       "//extensions/browser/mime_handler:test_helpers",
       "//extensions/renderer:unit_test_support",
-
-      # This will add all of the unit tests for the schema compiler to this
-      # target.
-      "//tools/json_schema_compiler/test:unit_tests",
     ]
 
     if (is_mac) {

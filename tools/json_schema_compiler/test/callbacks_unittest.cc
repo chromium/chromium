@@ -7,7 +7,10 @@
 #include <memory>
 #include <utility>
 
+#include "extensions/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
   test::api::callbacks::ReturnsObject::Results::SomeObject some_object;
