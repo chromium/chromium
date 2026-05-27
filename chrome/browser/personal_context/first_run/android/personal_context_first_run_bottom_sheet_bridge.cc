@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility_annotator/first_run/android/personal_context_first_run_bottom_sheet_bridge.h"
+#include "chrome/browser/personal_context/first_run/android/personal_context_first_run_bottom_sheet_bridge.h"
 
 #include <string>
 

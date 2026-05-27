@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/accessibility_annotator/first_run/android/personal_context_first_run_bottom_sheet_bridge.h"
+#include "chrome/browser/personal_context/first_run/android/personal_context_first_run_bottom_sheet_bridge.h"
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
-#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
+#include "components/personal_context/first_run/personal_context_first_run_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

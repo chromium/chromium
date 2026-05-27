@@ -23,13 +23,12 @@ source_set("first_run") {
 
   deps = [
     "//base",
-    "//chrome/browser/accessibility_annotator",
     "//chrome/browser/personal_context",
     "//chrome/browser/profiles:profile",
     "//components/accessibility_annotator/core",
     "//components/accessibility_annotator/core:features",
-    "//components/accessibility_annotator/first_run",
     "//components/keyed_service/content",
+    "//components/personal_context/first_run",
     "//content/public/browser",
   ]
 
@@ -56,7 +55,7 @@ source_set("unit_tests") {
     ":first_run",
     "//base",
     "//base/test:test_support",
-    "//components/accessibility_annotator/first_run",
+    "//components/personal_context/first_run",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_
+#ifndef COMPONENTS_PERSONAL_CONTEXT_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_
+#define COMPONENTS_PERSONAL_CONTEXT_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_
 
 #include "base/functional/callback.h"
-#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
+#include "components/personal_context/first_run/personal_context_first_run_types.h"
 
 namespace content {
 class WebContents;
@@ -28,4 +28,4 @@ class PersonalContextFirstRunClient {
 };
 }  // namespace personal_context
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_
+#endif  // COMPONENTS_PERSONAL_CONTEXT_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_CLIENT_H_

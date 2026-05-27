@@ -15,7 +15,6 @@
 #include "chrome/browser/accessibility/page_colors_controller_factory.h"
 #include "chrome/browser/accessibility_annotator/accessibility_annotator_backend_factory.h"
 #include "chrome/browser/accessibility_annotator/accessibility_query_service_factory.h"
-#include "chrome/browser/accessibility_annotator/first_run/personal_context_first_run_service_factory.h"
 #include "chrome/browser/account_settings/account_setting_service_factory.h"
 #include "chrome/browser/actor/actor_keyed_service_factory.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
@@ -29,6 +28,7 @@
 #include "chrome/browser/autocomplete/provider_state_service_factory.h"
 #include "chrome/browser/autocomplete/shortcuts_backend_factory.h"
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
+#include "chrome/browser/personal_context/first_run/personal_context_first_run_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_enablement_service_factory.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

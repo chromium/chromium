@@ -473,7 +473,6 @@ test("components_unittests") {
 
   if (use_blink) {
     deps += [
-      "//components/accessibility_annotator/first_run:unit_tests",
       "//components/autofill/content/browser:unit_tests",
       "//components/autofill/core/common/mojom:unit_tests",
       "//components/browsing_data/content:unit_tests",
@@ -551,6 +550,7 @@ test("components_unittests") {
       "//components/performance_manager:unit_tests",
       "//components/performance_manager/scenario_api:unit_tests",
       "//components/permissions:unit_tests",
+      "//components/personal_context/first_run:unit_tests",
       "//components/policy/content:unit_tests",
       "//components/push_messaging:unit_tests",
       "//components/record_replay/content/browser:unit_tests",

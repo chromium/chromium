@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_
+#ifndef COMPONENTS_PERSONAL_CONTEXT_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_
+#define COMPONENTS_PERSONAL_CONTEXT_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "components/accessibility_annotator/first_run/personal_context_first_run_client.h"
-#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/personal_context/first_run/personal_context_first_run_client.h"
+#include "components/personal_context/first_run/personal_context_first_run_types.h"
 
 namespace content {
 class WebContents;
@@ -40,4 +40,4 @@ class PersonalContextFirstRunService : public KeyedService {
 
 }  // namespace personal_context
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_
+#endif  // COMPONENTS_PERSONAL_CONTEXT_FIRST_RUN_PERSONAL_CONTEXT_FIRST_RUN_SERVICE_H_

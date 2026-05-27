@@ -8222,6 +8222,7 @@ test("unit_tests") {
       "//chrome/browser/password_manager/android/grouped_affiliations:public",
       "//chrome/browser/password_manager/android/grouped_affiliations:test_utils",
       "//chrome/browser/password_manager/android/grouped_affiliations:unit_tests",
+      "//chrome/browser/personal_context/first_run:unit_tests",
       "//chrome/browser/predictors:unit_tests",
       "//chrome/browser/predictors/lcp_critical_path_predictor:unit_tests",
       "//chrome/browser/readaloud/android:native",

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_PERSONAL_CONTEXT_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_
-#define CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_PERSONAL_CONTEXT_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_
+#ifndef CHROME_BROWSER_PERSONAL_CONTEXT_FIRST_RUN_ANDROID_PERSONAL_CONTEXT_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_
+#define CHROME_BROWSER_PERSONAL_CONTEXT_FIRST_RUN_ANDROID_PERSONAL_CONTEXT_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_
 
 #include <jni.h>
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
-#include "components/accessibility_annotator/first_run/personal_context_first_run_types.h"
+#include "components/personal_context/first_run/personal_context_first_run_types.h"
 
 namespace content {
 class WebContents;
@@ -70,4 +70,4 @@ class PersonalContextFirstRunBottomSheetBridge {
 
 }  // namespace personal_context
 
-#endif  // CHROME_BROWSER_ACCESSIBILITY_ANNOTATOR_FIRST_RUN_ANDROID_PERSONAL_CONTEXT_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_
+#endif  // CHROME_BROWSER_PERSONAL_CONTEXT_FIRST_RUN_ANDROID_PERSONAL_CONTEXT_FIRST_RUN_BOTTOM_SHEET_BRIDGE_H_

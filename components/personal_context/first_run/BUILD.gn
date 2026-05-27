@@ -5,6 +5,7 @@ assert(use_blink)  # Needed because of content/public/browser dependency.
 static_library("first_run") {
   sources = [
     "personal_context_first_run_client.h",
+    "personal_context_first_run_service.h",
     "personal_context_first_run_service_impl.cc",
     "personal_context_first_run_service_impl.h",
     "personal_context_first_run_types.h",

@@ -26,10 +26,10 @@ source_set("personal_context_internals") {
 
   deps = [
     ":mojo_bindings",
-    "//chrome/browser/accessibility_annotator/first_run",
+    "//chrome/browser/personal_context/first_run",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/accessibility_annotator_internals:resources",
     "//chrome/common",
-    "//components/accessibility_annotator/first_run",
+    "//components/personal_context/first_run",
   ]
 }
