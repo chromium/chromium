@@ -321,14 +321,6 @@ public class BaseSuggestionProcessorUnitTest {
         assertEquals(1, monitor.getActionCount("MobileOmniboxRefineSuggestion.Search"));
         assertEquals(1, monitor.getActions().size());
         monitor.tearDown();
-
-        mControlsPositionSupplier.set(ControlsPosition.BOTTOM);
-        mProcessor.setRemoveOrRefineAction(mModel, mInput, mSuggestion, 0);
-        actions = mModel.get(BaseSuggestionViewProperties.ACTION_BUTTONS);
-        action = actions.get(0);
-        assertEquals(
-                R.drawable.btn_suggestion_refine_down,
-                shadowOf(action.icon.drawable).getCreatedFromResId());
     }
 
     @Test

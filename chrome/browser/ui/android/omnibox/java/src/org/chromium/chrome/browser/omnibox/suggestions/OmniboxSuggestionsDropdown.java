@@ -573,10 +573,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         cancelWindowContentChangedAnnouncement();
 
         @StringRes
-        int announcedStringRes =
-                mToolbarOnTop
-                        ? R.string.accessibility_omnibox_suggested_items
-                        : R.string.accessibility_omnibox_suggested_items_above;
+        int announcedStringRes = R.string.accessibility_omnibox_suggested_items;
 
         // Note: can't use postDelayed until minSdk is 28.
         mHandler.postAtTime(

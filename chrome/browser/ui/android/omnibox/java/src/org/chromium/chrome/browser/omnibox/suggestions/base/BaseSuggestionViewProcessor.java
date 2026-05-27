@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.content.Context;
 import android.graphics.Typeface;
 import android.text.Spannable;
@@ -19,7 +17,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.metrics.TimingMetric;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.R;
@@ -186,13 +183,7 @@ public abstract class BaseSuggestionViewProcessor implements SuggestionProcessor
                         mContext,
                         R.string.accessibility_omnibox_btn_refine,
                         suggestion.getFillIntoEdit());
-        @ControlsPosition Integer toolbarPosition = mUiContext.toolbarPositionSupplier.get();
-        assumeNonNull(toolbarPosition);
-        @DrawableRes
-        int icon =
-                toolbarPosition == ControlsPosition.BOTTOM
-                        ? R.drawable.btn_suggestion_refine_down
-                        : R.drawable.btn_suggestion_refine_up;
+        @DrawableRes int icon = R.drawable.btn_suggestion_refine_up;
 
         Runnable action =
                 () -> {
