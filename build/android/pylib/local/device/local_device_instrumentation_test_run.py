@@ -634,26 +634,6 @@ class LocalDeviceInstrumentationTestRun(
         if '--webview-verbose-logging' not in webview_flags:
           webview_flags.append('--webview-verbose-logging')
 
-        # Treat as desktop if the flag is present.
-        is_desktop = dev.is_desktop or any('--force-desktop-android' in f
-                                           for f in flags)
-
-        if is_desktop:
-          logging.info('Disabling Gboard for desktop environment')
-          dev.SetAppEnabled(device_utils.GBOARD_PKG, False)
-        elif dev.build_version_sdk >= version_codes.BAKLAVA:
-          logging.info(
-              'Enabling Gboard and setting preferences for non-desktop Baklava+'
-          )
-          dev.SetAppEnabled(device_utils.GBOARD_PKG, True)
-          # Writing Gboard's private prefs requires root; skip on non-rooted devices.
-          if dev.HasRoot():
-            with dev.GboardPreferences() as gboard_prefs:
-              # Disable the stylus.
-              gboard_prefs.SetBoolean('enable_scribe', False)
-              # Always show the soft keyboard.
-              gboard_prefs.SetBoolean('pk_always_show_vk', True)
-
         def _get_variations_seed_path_arg(seed_path):
           seed_path_components = device_dependencies.DevicePathComponentsFor(
               seed_path)
@@ -682,7 +662,54 @@ class LocalDeviceInstrumentationTestRun(
           logging.debug('Attempting to set WebView flags: %r', webview_flags)
           self._webview_flag_changers[str(dev)].AddFlags(webview_flags)
 
-      install_steps += [push_test_data, create_flag_changer]
+      @measures.timed_func('device_setup', 'setup_soft_keyboard')
+      @trace_event.traced
+      def setup_soft_keyboard(dev):
+        flags = self._test_instance.flags
+        # Treat as desktop if the flag is present.
+        is_desktop = dev.is_desktop or any('--force-desktop-android' in f
+                                           for f in flags)
+
+        if is_desktop:
+          logging.info('Disabling Gboard for desktop environment')
+          dev.SetAppEnabled(device_utils.GBOARD_PKG, False)
+          # Disable Voice IME to prevent it from appearing as fallback.
+          logging.info('Disabling com.google.android.tts package')
+          dev.SetAppEnabled('com.google.android.tts', False)
+        elif dev.build_version_sdk >= version_codes.BAKLAVA:
+          logging.info('Enabling Gboard and setting preferences for '
+                       'non-desktop Baklava+')
+          try:
+            dev.SetAppEnabled(device_utils.GBOARD_PKG, True)
+          except device_errors.CommandFailedError as e:
+            logging.warning('Failed to enable Gboard: %s', e)
+
+          # Writing Gboard's private prefs requires root; skip on non-rooted
+          # devices.
+          if dev.HasRoot():
+            try:
+              with dev.GboardPreferences() as gboard_prefs:
+                # Disable the stylus.
+                gboard_prefs.SetBoolean('enable_scribe', False)
+                # Always show the soft keyboard.
+                gboard_prefs.SetBoolean('pk_always_show_vk', True)
+            except device_errors.CommandFailedError as e:
+              logging.warning('Failed to set Gboard preferences: %s', e)
+
+          # Enable Voice IME for non-desktop to restore it if previously
+          # disabled.
+          try:
+            logging.info(
+                'Enabling com.google.android.tts package for non-desktop')
+            dev.SetAppEnabled('com.google.android.tts', True)
+          except device_errors.CommandFailedError as e:
+            logging.warning(
+                'Failed to enable com.google.android.tts '
+                '(expected if not present): %s', e)
+
+      install_steps += [
+          push_test_data, create_flag_changer, setup_soft_keyboard
+      ]
       post_install_steps += [
           self._SetDefaultBrowserApp, set_debug_app, approve_app_links,
           disable_system_modals, set_vega_permissions, DismissCrashDialogs

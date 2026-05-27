@@ -20,7 +20,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -41,7 +40,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@DisableIf.Device(DeviceFormFactor.DESKTOP_FREEFORM) // crbug.com/511288079
 public class IncognitoNtpOmniboxAutofocusTrackerTest {
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
@@ -75,7 +73,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction({DeviceFormFactor.ONLY_TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testRecordsHistograms_onAutofocus_tabletOrDesktopNonAuto() {
         mActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
         WebPageStation blankPage = mActivityTestRule.startOnIncognitoBlankPage();
@@ -121,7 +119,7 @@ public class IncognitoNtpOmniboxAutofocusTrackerTest {
     @EnableFeatures(
             ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":with_hardware_keyboard/true")
     @DisableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
-    @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
+    @Restriction({DeviceFormFactor.ONLY_TABLET, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
     public void testRecordsHistograms_onManualFocus_tabletOrDesktopNonAuto() {
         mActivityTestRule.closeAllWindowsAndDeleteInstanceAndTabState();
         WebPageStation blankPage = mActivityTestRule.startOnIncognitoBlankPage();
