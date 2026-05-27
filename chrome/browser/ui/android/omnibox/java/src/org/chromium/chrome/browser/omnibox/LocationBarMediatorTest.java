@@ -1589,6 +1589,46 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testSetUrlFocusChangeInProgress_accessibilityWorkaroundPreservesSession() {
+        mMediator.addUrlFocusChangeListener(mUrlCoordinator);
+        mMediator.setUrlFocusChangeInProgress(true);
+        mMediator.onFinishNativeInitialization();
+        mProfileSupplier.set(mProfile);
+
+        ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(true);
+        mMediator.beginInput(
+                new AutocompleteInput()
+                        .setUserText("text")
+                        .setFocusReason(OmniboxFocusReason.FAKE_BOX_TAP));
+        mMediator.onUrlFocusChange(true);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        doAnswer(
+                        invocation -> {
+                            mMediator.onUrlFocusChange(false);
+                            return null;
+                        })
+                .when(mUrlCoordinator)
+                .clearFocus();
+
+        doAnswer(
+                        invocation -> {
+                            mMediator.onUrlFocusChange(true);
+                            return null;
+                        })
+                .when(mUrlCoordinator)
+                .requestFocus();
+
+        reset(mAutocompleteCoordinator);
+
+        mMediator.setUrlFocusChangeInProgress(false);
+
+        verify(mUrlCoordinator).clearFocus();
+        verify(mUrlCoordinator, times(2)).requestFocus();
+        verify(mAutocompleteCoordinator, never()).endInput();
+    }
+
+    @Test
     public void testMicUpdatedAfterEventTriggered() {
         mMediator.onVoiceAvailabilityImpacted();
         verify(mLocationBarLayout, atLeast(1)).setMicButtonVisibility(false);

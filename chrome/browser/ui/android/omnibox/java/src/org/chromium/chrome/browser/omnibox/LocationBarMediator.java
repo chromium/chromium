@@ -262,6 +262,7 @@ class LocationBarMediator
     private final BooleanSupplier mIsToolbarMicEnabledSupplier;
     // Tracks if the location bar is laid out in a focused state due to an ntp scroll.
     private boolean mIsLocationBarFocusedFromNtpScroll;
+    private boolean mAccessibilityFocusWorkaroundInProgress;
     private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     // TODO(https://crbug.com/481357849): Remove this.
     private boolean mHasEverUpdatedBrandedColorScheme;
@@ -457,6 +458,9 @@ class LocationBarMediator
     }
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
+        if (mAccessibilityFocusWorkaroundInProgress) {
+            return;
+        }
         if (!hasFocus) {
             mPreviousLensButtonVisible = null;
         }
@@ -1134,8 +1138,10 @@ class LocationBarMediator
                     && mUrlHasFocus
                     && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
                 // TODO(crbug.com/475620206): likely an old workaround, consider removing.
+                mAccessibilityFocusWorkaroundInProgress = true;
                 mUrlCoordinator.clearFocus();
-                requestUrlFocus();
+                mUrlCoordinator.requestFocus();
+                mAccessibilityFocusWorkaroundInProgress = false;
                 // Existing text (e.g. if the user pasted via the fakebox) from the fake box
                 // should be restored after toggling the focus.
                 if (mCurrentInput != null && !mCurrentInput.getUserText().isEmpty()) {
