@@ -12,12 +12,11 @@
 #menu {
   --color-sys-divider: var(--color-composebox-file-carousel-divider);
   --cr-menu-background-color: var(--color-composebox-background,
-                                  var(--search-background-color));
+      var(--search-background-color));
   --cr-menu-border-radius: 16px;
   --cr-primary-text-color: var(--color-composebox-file-chip-text);
-  --cr-hover-background-color: var(
-    --color-composebox-context-entrypoint-hover-background
-  );
+  --cr-hover-background-color:
+      var(--color-composebox-context-entrypoint-hover-background);
   --cr-action-menu-overflow: visible;
 }
 
@@ -78,16 +77,30 @@
   width: 100%;
 }
 
+:host([context-management-enabled]) .dropdown-item {
+  max-width: 240px;
+}
+
 composebox-favicon-group {
   --composebox-favicon-border-color: var(--cr-menu-background-color,
-                                          var(--color-composebox-background,
-                                              #fff));
+      var(--color-composebox-background,
+          #fff));
   margin-inline-end: 10px;
   margin-inline-start: auto;
 }
 
 :host([enable-multi-tab-selection_]) .dropdown-item {
   width: 320px;
+}
+
+:host([context-management-enabled][enable-multi-tab-selection_])
+  .dropdown-item {
+  width: 240px;
+}
+
+:host([context-management-enabled]) .share-tabs-flyout .dropdown-item {
+  max-width: none !important;
+  width: 100% !important;
 }
 
 .dropdown-item:hover {
@@ -231,8 +244,8 @@ composebox-favicon-group {
 
 .share-tabs-flyout .dropdown-item {
   box-sizing: border-box;
-  max-width: none;
-  width: 100%;
+  max-width: none !important;
+  width: 100% !important;
 }
 
 .tab-title-group {

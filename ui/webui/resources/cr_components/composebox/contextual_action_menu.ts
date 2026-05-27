@@ -33,7 +33,7 @@ import {WindowProxy} from './window_proxy.js';
 /** The width of the dropdown menu in pixels. */
 const MENU_WIDTH_PX = 190;
 
-const SHARE_TABS_MENU_WIDTH_PX = 320;
+const SHARE_TABS_MENU_WIDTH_PX = 240;
 const SHARE_TABS_FLYOUT_CLOSE_DELAY_MS = 300;
 
 export interface ContextualActionMenuElement {
@@ -75,7 +75,11 @@ export class ContextualActionMenuElement extends
       showContextMenuHeaders_: {type: Boolean},
       smartTabSharingVisible_: {type: Boolean},
       disableAutoReposition: {type: Boolean},
-      contextManagementInComposeboxEnabled_: {type: Boolean},
+      contextManagementInComposeboxEnabled_: {
+        reflect: true,
+        type: Boolean,
+        attribute: 'context-management-enabled',
+      },
       shareTabsFlyoutOpen_: {type: Boolean},
       shareTabsFlyoutPosition_: {type: String},
       sharingTabsText_: {type: String},

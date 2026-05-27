@@ -950,7 +950,12 @@ suite('ContextualActionMenu', () => {
 
     // Enough space to the right positions the flyout to the right.
     trigger.getBoundingClientRect = () => ({
-      left: 10, right: 330, top: 100, bottom: 132, width: 320, height: 32,
+      left: 10,
+      right: 250,
+      top: 100,
+      bottom: 132,
+      width: 240,
+      height: 32,
     } as DOMRect);
     Object.defineProperty(window, 'innerWidth', {value: 1000, configurable: true});
 
@@ -963,7 +968,12 @@ suite('ContextualActionMenu', () => {
 
     // When blocked on the right, enough space to the left positions the flyout to the left.
     trigger.getBoundingClientRect = () => ({
-      left: 400, right: 720, top: 100, bottom: 132, width: 320, height: 32,
+      left: 400,
+      right: 640,
+      top: 100,
+      bottom: 132,
+      width: 240,
+      height: 32,
     } as DOMRect);
     Object.defineProperty(window, 'innerWidth', {value: 800, configurable: true});
 
@@ -976,7 +986,12 @@ suite('ContextualActionMenu', () => {
 
     // When blocked on both sides in a narrow panel, the flyout positions at the bottom with a bounded indent.
     trigger.getBoundingClientRect = () => ({
-      left: 16, right: 336, top: 100, bottom: 132, width: 320, height: 32,
+      left: 16,
+      right: 256,
+      top: 100,
+      bottom: 132,
+      width: 240,
+      height: 32,
     } as DOMRect);
     Object.defineProperty(window, 'innerWidth', {value: 380, configurable: true});
 
