@@ -83,6 +83,7 @@ class GlicGlobalEnabling {
   ~GlicGlobalEnabling();
   bool IsEnabledByGlobalCriteria();
   bool IsSystemRequirementMet() const;
+  bool IsOsVersionSupported() const;
   bool IsLocaleEnabled() const { return locale_enablement_.value_or(true); }
   bool IsCountryEnabled() const { return country_enablement_.value_or(true); }
 
@@ -247,6 +248,9 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
     // met.
     bool system_requirement_met : 1 = true;
 
+    // Whether the OS version is supported.
+    bool os_version_supported : 1 = true;
+
     // Whether the user has onboarded with this profile previously which keeps
     // Glic partially enabled to show error states instead of hiding the button.
     bool anchor_entrypoint_override_active : 1 = false;
@@ -263,7 +267,8 @@ class GlicEnabling final : public signin::IdentityManager::Observer,
       kCountryDisabled = 1,
       kLocaleDisabled = 2,
       kSystemRequirementNotMet = 3,
-      kMaxValue = kSystemRequirementNotMet,
+      kOsVersionNotSupported = 4,
+      kMaxValue = kOsVersionNotSupported,
     };
     // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicFeatureDisabledReason)
 
