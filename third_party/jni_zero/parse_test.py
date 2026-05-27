@@ -167,13 +167,14 @@ public class Callback2.JniHelper {
   def testParseWithAnnotationsAndModifiers(self):
     contents = """
 package org.jni_zero;
-@Foo
+@Foo.Bar
 @NullMarked
 @Bar("baz")
 public final class AnnotatedClass {
   @CalledByNative
   @Contract("_, !null -> !null")
-  public @Nullable @JniType("std::string") String cbn() {
+  @Foo.Bar
+  public @Foo.Bar @Nullable @JniType("std::string") String cbn() {
   }
 
   @NativeMethods

@@ -515,13 +515,13 @@ def _make_called_by_native_regex(is_javap):
   if not is_javap:
     sb.append(r'@CalledByNative((?P<Unchecked>(?:Unchecked)?|ForTesting))'
               r'(?:\(".*"\))?'
-              r'(?P<method_annotations>(?:\s*@\w+(?:\(.*?\))?)+)?')
+              r'(?P<method_annotations>(?:\s*@[\w.]+(?:\(.*?\))?)+)?')
   # Enfore a space after the type params to account for:
   # <T extends java.lang.Comparable<? super T>>
   sb.append(r'\s+(?P<modifiers>' + _MODIFIER_KEYWORDS + r')'
             r'(?:(?P<type_params><.*?>) )?')
   if not is_javap:
-    sb.append(r'\s*(?P<return_type_annotations>(?:\s*@\w+(?:\(.*?\))?)+)?')
+    sb.append(r'\s*(?P<return_type_annotations>(?:\s*@[\w.]+(?:\(.*?\))?)+)?')
   sb.append(r'\s*(?P<return_type>[\S ]*?)'
             r'\s*(?P<name>[\w.]+)'
             r'\s*\(\s*(?P<params>[^{;]*)\)'
