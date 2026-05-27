@@ -3204,6 +3204,9 @@ def create_modules_from_target(blueprint, gn, gn_target_name, parent_gn_type,
         ]:
             module.crate_name = target.crate_name
             module.crate_root = gn_utils.label_to_path(target.crate_root)
+            if target.inputs:
+                module.srcs.update(
+                    gn_utils.label_to_path(inp) for inp in target.inputs)
             if target.rust_package_version:
                 module.cargo_env_compat = True
                 module.cargo_pkg_version = target.rust_package_version

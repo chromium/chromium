@@ -713,6 +713,7 @@ class GnParser:
             target.arch[arch].sources.update(
                 source for source in desc.get('sources', [])
                 if not source.startswith("//out"))
+            target.arch[arch].inputs.update(desc.get('inputs', []))
             target.rust_package_version = _extract_rust_package_version(
                 desc['rustenv'])
         else:
