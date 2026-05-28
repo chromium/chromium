@@ -73,6 +73,7 @@ class NET_EXPORT_PRIVATE TlsStreamAttempt final : public StreamAttempt {
   // ServiceEndpoint) is applied within TlsStreamAttempt.
   TlsStreamAttempt(const StreamAttemptParams* params,
                    IPEndPoint ip_endpoint,
+                   handles::NetworkHandle target_network,
                    perfetto::Track track,
                    HostPortPair host_port_pair,
                    SSLConfig base_ssl_config,

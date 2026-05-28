@@ -51,14 +51,16 @@ class HttpStreamPool::Attempt::TcpAttempt : public TlsStreamAttempt::Delegate {
       : owner_(owner), ip_endpoint_(std::move(ip_endpoint)) {
     if (owner_->using_tls_) {
       attempt_ = std::make_unique<TlsStreamAttempt>(
-          &owner_->stream_attempt_params_.get(), ip_endpoint_, owner_->track_,
+          &owner_->stream_attempt_params_.get(), ip_endpoint_,
+          delegate().GetHttpStreamKey().target_network(), owner_->track_,
           HostPortPair::FromSchemeHostPort(
               delegate().GetHttpStreamKey().destination()),
           delegate().GetBaseSSLConfig(),
           /*delegate=*/this);
     } else {
       attempt_ = std::make_unique<TcpStreamAttempt>(
-          &owner_->stream_attempt_params_.get(), ip_endpoint_, owner_->track_);
+          &owner_->stream_attempt_params_.get(), ip_endpoint_,
+          delegate().GetHttpStreamKey().target_network(), owner_->track_);
     }
   }
 

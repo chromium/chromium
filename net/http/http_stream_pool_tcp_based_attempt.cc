@@ -91,14 +91,14 @@ HttpStreamPool::TcpBasedAttempt::TcpBasedAttempt(AttemptManager* manager,
   if (manager_->using_tls()) {
     attempt_ = std::make_unique<TlsStreamAttempt>(
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
-        track_,
+        manager_->stream_key().target_network(), track_,
         HostPortPair::FromSchemeHostPort(manager_->stream_key().destination()),
         manager_->GetBaseSSLConfig(),
         /*delegate=*/this);
   } else {
     attempt_ = std::make_unique<TcpStreamAttempt>(
         manager_->pool()->stream_attempt_params(), std::move(ip_endpoint),
-        track_);
+        manager_->stream_key().target_network(), track_);
   }
 }
 

@@ -76,6 +76,7 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::Delegate {
       : attempt_(std::make_unique<TlsStreamAttempt>(
             params,
             IPEndPoint(IPAddress(192, 0, 2, 1), 443),
+            handles::kInvalidNetworkHandle,
             perfetto::Track(),
             HostPortPair("a.test", 443),
             std::move(base_ssl_config),

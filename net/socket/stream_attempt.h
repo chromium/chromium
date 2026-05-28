@@ -16,6 +16,7 @@
 #include "net/base/load_states.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_export.h"
+#include "net/base/network_handle.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket_close_reason.h"
@@ -56,6 +57,7 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   // `params` must outlive `this`.
   StreamAttempt(const StreamAttemptParams* params,
                 IPEndPoint ip_endpoint,
+                handles::NetworkHandle target_network,
                 perfetto::Track track,
                 NetLogSourceType net_log_source_type,
                 NetLogEventType net_log_attempt_event_type,
@@ -85,6 +87,8 @@ class NET_EXPORT_PRIVATE StreamAttempt {
   std::unique_ptr<StreamSocket> ReleaseStreamSocket();
 
   const IPEndPoint& ip_endpoint() const { return ip_endpoint_; }
+
+  handles::NetworkHandle target_network() const { return target_network_; }
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
@@ -122,6 +126,7 @@ class NET_EXPORT_PRIVATE StreamAttempt {
 
   const raw_ptr<const StreamAttemptParams> params_;
   const IPEndPoint ip_endpoint_;
+  handles::NetworkHandle target_network_;
   perfetto::Track track_;
 
   NetLogWithSource net_log_;

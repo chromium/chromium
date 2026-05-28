@@ -43,12 +43,14 @@ std::string_view TlsStreamAttempt::StateToString(State state) {
 
 TlsStreamAttempt::TlsStreamAttempt(const StreamAttemptParams* params,
                                    IPEndPoint ip_endpoint,
+                                   handles::NetworkHandle target_network,
                                    perfetto::Track track,
                                    HostPortPair host_port_pair,
                                    SSLConfig base_ssl_config,
                                    Delegate* delegate)
     : StreamAttempt(params,
                     ip_endpoint,
+                    target_network,
                     track,
                     NetLogSourceType::TLS_STREAM_ATTEMPT,
                     NetLogEventType::TLS_STREAM_ATTEMPT_ALIVE),
@@ -143,8 +145,8 @@ int TlsStreamAttempt::DoLoop(int rv) {
 
 int TlsStreamAttempt::DoTcpAttempt() {
   next_state_ = State::kTcpAttemptComplete;
-  nested_attempt_ = std::make_unique<TcpStreamAttempt>(&params(), ip_endpoint(),
-                                                       track(), &net_log());
+  nested_attempt_ = std::make_unique<TcpStreamAttempt>(
+      &params(), ip_endpoint(), target_network(), track(), &net_log());
   return nested_attempt_->Start(
       base::BindOnce(&TlsStreamAttempt::OnIOComplete, base::Unretained(this)));
 }
