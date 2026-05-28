@@ -68,9 +68,15 @@ class MockHelpBubbleClient : public help_bubble::mojom::HelpBubbleClient {
 class TestHelpBubbleHandler : public HelpBubbleHandlerBase {
  public:
   explicit TestHelpBubbleHandler(
-      base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler)
-      : HelpBubbleHandlerBase(std::make_unique<ClientProvider>(),
-                              tracked_element_handler) {}
+      const std::vector<ui::ElementIdentifier>& identifiers)
+      : HelpBubbleHandlerBase(
+            std::make_unique<ClientProvider>(),
+            base::BindRepeating(
+                []() -> content::WebContents* { return nullptr; }),
+            identifiers,
+            ui::ElementContext::CreateFakeContextForTesting(this)) {
+    BindTrackedElementHandler(mojo::NullReceiver());
+  }
 
   ~TestHelpBubbleHandler() override = default;
 
@@ -135,15 +141,9 @@ class HelpBubbleHandlerTest : public testing::Test {
   ~HelpBubbleHandlerTest() override = default;
 
   void SetUp() override {
-    tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
-        nullptr, ui::ElementContext::CreateFakeContextForTesting(this),
+    test_handler_ = std::make_unique<TestHelpBubbleHandler>(
         std::vector{kHelpBubbleHandlerTestElementIdentifier,
                     kHelpBubbleHandlerTestElementIdentifier2});
-    tracked_element_handler_->BindInterface(mojo::NullReceiver());
-
-    test_handler_ = std::make_unique<TestHelpBubbleHandler>(
-        tracked_element_handler_->GetWeakPtr());
-
     tracked_element_handler()->OnVisibilityChanged(
         content::Visibility::VISIBLE);
   }
@@ -156,10 +156,9 @@ class HelpBubbleHandlerTest : public testing::Test {
   }
 
   ui::TrackedElementHandler* tracked_element_handler() {
-    return tracked_element_handler_.get();
+    return test_handler_.get()->GetTrackedElementHandlerForTesting();
   }
 
-  std::unique_ptr<ui::TrackedElementHandler> tracked_element_handler_;
   std::unique_ptr<TestHelpBubbleHandler> test_handler_;
   HelpBubbleFactoryRegistry help_bubble_factory_registry_;
 };
@@ -181,7 +180,6 @@ TEST_F(HelpBubbleHandlerTest, ElementCreatedOnEvent) {
 
   // Verify that we don't leave elements dangling if the handler is destroyed.
   test_handler_.reset();
-  tracked_element_handler_.reset();
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
       kHelpBubbleHandlerTestElementIdentifier));
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
@@ -558,7 +556,6 @@ TEST_F(HelpBubbleHandlerTest, DestroyHandlerCleansUpElement) {
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
       kHelpBubbleHandlerTestElementIdentifier, context));
   test_handler_.reset();
-  tracked_element_handler_.reset();
   EXPECT_FALSE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
       kHelpBubbleHandlerTestElementIdentifier, context));
 }
@@ -828,10 +825,7 @@ TEST_F(HelpBubbleHandlerTest, ElementHiddenWebContentsBecomingUnknown) {
   tracked_element_handler()->TrackedElementVisibilityChanged(
       kHelpBubbleHandlerTestElementIdentifier.GetName(), true, kElementBounds);
 
-  EXPECT_CALL_IN_SCOPE(element_hidden, Run, {
-    test_handler_.reset();
-    tracked_element_handler_.reset();
-  });
+  EXPECT_CALL_IN_SCOPE(element_hidden, Run, test_handler_.reset());
 }
 
 TEST_F(HelpBubbleHandlerTest, WebContentsVisibilityCanChangeMultipleTimes) {

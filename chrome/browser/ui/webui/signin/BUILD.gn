@@ -444,7 +444,6 @@ if (!is_chromeos) {
       "//ui/resources",
       "//ui/strings:ui_strings",
       "//ui/webui",
-      "//ui/webui/tracked_element",
       "//url",
     ]
   }

@@ -107,6 +107,16 @@ std::string GetFileNameFromIcon(const gfx::VectorIcon* icon) {
   return SnakeCaseFromCamelCase(icon_name);
 }
 
+content::WebContents* GetWebContentsCallbackForWebUIController(
+    content::WebUIController* controller) {
+  // A WebContents is always associated with a WebUIController, so this never
+  // returns nullptr in production code. The only possible reason for
+  // returning nullptr is in unit tests where the test WebUIController
+  // implementation is not set up correctly. If that happens, the test support
+  // code should be fixed.
+  return controller->web_ui()->GetWebContents();
+}
+
 }  // namespace
 
 struct HelpBubbleHandlerBase::ElementData {
@@ -132,22 +142,20 @@ struct HelpBubbleHandlerBase::ElementData {
 
 HelpBubbleHandlerBase::HelpBubbleHandlerBase(
     std::unique_ptr<ClientProvider> client_provider,
-    base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler)
+    GetWebContentsCallback get_web_contents_callback,
+    const std::vector<ui::ElementIdentifier>& identifiers,
+    ui::ElementContext context)
     : client_provider_(std::move(client_provider)),
-      tracked_element_handler_(tracked_element_handler) {
+      get_web_contents_callback_(std::move(get_web_contents_callback)),
+      context_(context) {
   DCHECK(client_provider_);
-  if (tracked_element_handler_) {
-    tracked_element_handler_->set_help_bubble_handler(
-        weak_ptr_factory_.GetWeakPtr());
+  DCHECK(get_web_contents_callback_);
+  DCHECK(context_);
 
-    for (const std::string& identifier_name :
-         tracked_element_handler_->GetIdentifiers()) {
-      const ui::ElementIdentifier identifier =
-          ui::ElementIdentifier::FromName(identifier_name.c_str());
-      DCHECK(identifier);
-      const auto it = element_data_.emplace(identifier, ElementData());
-      DCHECK(it.second) << "Duplicate identifier not allowed: " << identifier;
-    }
+  for (auto identifier : identifiers) {
+    DCHECK(identifier);
+    const auto it = element_data_.emplace(identifier, ElementData());
+    DCHECK(it.second) << "Duplicate identifier not allowed: " << identifier;
   }
 }
 
@@ -157,19 +165,10 @@ HelpBubbleHandlerBase::~HelpBubbleHandlerBase() {
       data.help_bubble->Close(HelpBubble::CloseReason::kBubbleDestroyed);
     }
   }
-  if (tracked_element_handler_) {
-    tracked_element_handler_->set_help_bubble_handler(nullptr);
-  }
-}
-
-ui::ElementContext HelpBubbleHandlerBase::context() const {
-  return tracked_element_handler_ ? tracked_element_handler_->context()
-                                  : ui::ElementContext();
 }
 
 content::WebContents* HelpBubbleHandlerBase::GetWebContents() {
-  return tracked_element_handler_ ? tracked_element_handler_->web_contents()
-                                  : nullptr;
+  return get_web_contents_callback_.Run();
 }
 
 bool HelpBubbleHandlerBase::IsHelpBubbleShowingForTesting(
@@ -212,7 +211,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
   }
   data.anchor_hidden_subscription =
       ui::ElementTracker::GetElementTracker()->AddElementHiddenCallback(
-          identifier, tracked_element_handler_->context(),
+          identifier, context_,
           base::BindRepeating(
               [](base::WeakPtr<HelpBubbleHandlerBase> handler,
                  ui::ElementIdentifier id, ui::TrackedElement* el) {
@@ -369,6 +368,21 @@ void HelpBubbleHandlerBase::HelpBubbleClosed(
   data->closing = false;
 }
 
+void HelpBubbleHandlerBase::BindTrackedElementHandler(
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        handler) {
+  std::vector<ui::ElementIdentifier> identifiers;
+  identifiers.reserve(element_data_.size());
+  for (const auto& [id, _] : element_data_) {
+    identifiers.emplace_back(id);
+  }
+  tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
+      GetWebContents(), context_, identifiers);
+  tracked_element_handler_->BindInterface(std::move(handler));
+  tracked_element_handler_->set_help_bubble_handler(
+      weak_ptr_factory_.GetWeakPtr());
+}
+
 bool HelpBubbleHandlerBase::ToggleHelpBubbleFocusForAccessibility(
     ui::ElementIdentifier anchor_id) {
   if (element_data_.contains(anchor_id)) {
@@ -454,10 +468,30 @@ HelpBubbleHandler::HelpBubbleHandler(
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
         pending_handler,
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
-    base::WeakPtr<ui::TrackedElementHandler> tracked_element_handler)
+    content::WebUIController* controller,
+    const std::vector<ui::ElementIdentifier>& identifiers)
+    : HelpBubbleHandler(
+          std::move(pending_handler),
+          std::move(pending_client),
+          base::BindRepeating(&GetWebContentsCallbackForWebUIController,
+                              controller),
+          controller,
+          identifiers) {
+  DCHECK(controller);
+}
+
+HelpBubbleHandler::HelpBubbleHandler(
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
+        pending_handler,
+    mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> pending_client,
+    GetWebContentsCallback get_web_contents_callback,
+    void* context,
+    const std::vector<ui::ElementIdentifier>& identifiers)
     : HelpBubbleHandlerBase(
           std::make_unique<ClientProvider>(std::move(pending_client)),
-          tracked_element_handler),
+          std::move(get_web_contents_callback),
+          identifiers,
+          ui::ElementContext(context, base::PassKey<HelpBubbleHandler>())),
       receiver_(this, std::move(pending_handler)) {}
 
 HelpBubbleHandler::~HelpBubbleHandler() = default;

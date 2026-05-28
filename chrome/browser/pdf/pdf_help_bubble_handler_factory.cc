@@ -19,7 +19,6 @@
 #include "pdf/pdf_features.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
-#include "ui/webui/tracked_element/tracked_element_handler.h"
 
 namespace pdf {
 
@@ -54,19 +53,17 @@ PdfHelpBubbleHandlerFactory::~PdfHelpBubbleHandlerFactory() = default;
 
 void PdfHelpBubbleHandlerFactory::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
-    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler>
-        help_bubble_handler,
-    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
-        tracked_element_handler) {
-  tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
-      content::WebContents::FromRenderFrameHost(&render_frame_host()),
-      ui::ElementContext(this, base::PassKey<PdfHelpBubbleHandlerFactory>()),
-      std::vector<ui::ElementIdentifier>{
-          PdfHelpBubbleHandlerFactory::kPdfInkSignaturesDrawElementId});
-  tracked_element_handler_->BindInterface(std::move(tracked_element_handler));
+    mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
+  // Normally, `WebUIController` implements `HelpBubbleHandlerFactory`. However,
+  // the PDF Viewer does not have a `WebUIController`, so this class uses a
+  // custom `HelpBubbleHandler::GetWebContentsCallback` instead.
+  auto pdf_get_web_contents_callback = base::BindRepeating(
+      [](content::WebContents* web_contents) { return web_contents; },
+      content::WebContents::FromRenderFrameHost(&render_frame_host()));
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(help_bubble_handler), std::move(client),
-      tracked_element_handler_->GetWeakPtr());
+      std::move(handler), std::move(client),
+      std::move(pdf_get_web_contents_callback), this,
+      std::vector<ui::ElementIdentifier>{kPdfInkSignaturesDrawElementId});
 }
 
 }  // namespace pdf

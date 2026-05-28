@@ -45,7 +45,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/views/widget/widget.h"
-#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/webui_util.h"
 
 WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
@@ -105,12 +105,6 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
 
   // Handles chrome.send() calls that records non-timestamp histograms.
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
-
-  if (browser) {
-    ui::TrackedElementHandlerDocumentSingleton::Register(
-        this, GetKnownElementIdentifiers(),
-        BrowserElements::From(browser)->GetContext());
-  }
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebUIToolbarUI)
@@ -146,6 +140,22 @@ void WebUIToolbarUI::BindInterface(
   CHECK(toolbar_channel_client_end_.is_valid())
       << "toolbar client end already bound";
   CHECK(FusePipes(std::move(receiver), std::move(toolbar_channel_client_end_)));
+}
+
+void WebUIToolbarUI::BindInterface(
+    mojo::PendingReceiver<tracked_element::mojom::TrackedElementHandler>
+        receiver) {
+  BrowserWindowInterface* browser_interface =
+      webui::GetBrowserWindowInterface(web_ui()->GetWebContents());
+  if (browser_interface) {
+    ui::ElementContext element_context =
+        BrowserElements::From(browser_interface)->GetContext();
+
+    tracked_element_handler_ = std::make_unique<ui::TrackedElementHandler>(
+        web_ui()->GetWebContents(), element_context,
+        GetKnownElementIdentifiers());
+    tracked_element_handler_->BindInterface(std::move(receiver));
+  }
 }
 
 void WebUIToolbarUI::BindInterface(
@@ -258,9 +268,8 @@ void WebUIToolbarUI::CreateHelpBubbleHandler(
     mojo::PendingRemote<help_bubble::mojom::HelpBubbleClient> client,
     mojo::PendingReceiver<help_bubble::mojom::HelpBubbleHandler> handler) {
   help_bubble_handler_ = std::make_unique<user_education::HelpBubbleHandler>(
-      std::move(handler), std::move(client),
-      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
-          web_ui()->GetRenderFrameHost()));
+      std::move(handler), std::move(client), this,
+      GetKnownElementIdentifiers());
 }
 
 void WebUIToolbarUI::CreatePageHandler(

@@ -378,7 +378,6 @@ source_set("ui_impl") {
     "//net",
     "//pdf:buildflags",
     "//ui/webui:buildflags",
-    "//ui/webui/tracked_element",
   ]
 
   if (is_android) {
