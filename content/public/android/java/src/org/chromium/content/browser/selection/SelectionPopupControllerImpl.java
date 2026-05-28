@@ -948,19 +948,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                         getSelectedText(),
                         menuType,
                         mSelectionActionMenuDelegate)) {
-            assert mContext != null;
-            PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
-            SelectActionMenuHelper.populateMenuItems(
-                    this,
-                    pendingMenu,
-                    mContext,
-                    mClassificationResult,
-                    menuType,
-                    isSelectionPassword(),
-                    !isFocusedNodeEditable(),
-                    getSelectedText(),
-                    isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT),
-                    mSelectionActionMenuDelegate);
+            PendingSelectionMenu pendingMenu = populateMenu(menuType, mClassificationResult);
             if (ContentFeatureMap.isEnabled(ContentFeatures.NO_SELECTION_MENU_CACHING)) {
                 return pendingMenu;
             }
@@ -1854,6 +1842,40 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         return PackageManagerUtils.canResolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY);
     }
 
+    /**
+     * Helper to get the menu type for caching (either DROPDOWN or FLOATING).
+     *
+     * @return The menu type for caching.
+     */
+    private @MenuType int getMenuTypeForCaching() {
+        return getMenuType() == SelectionMenuType.DROPDOWN ? MenuType.DROPDOWN : MenuType.FLOATING;
+    }
+
+    /**
+     * Populates a PendingSelectionMenu with items based on the classification result.
+     *
+     * @param menuType The type of menu to populate (FLOATING or DROPDOWN).
+     * @param result The classification result containing the items.
+     * @return The populated PendingSelectionMenu.
+     */
+    private PendingSelectionMenu populateMenu(
+            @MenuType int menuType, SelectionClient.@Nullable Result result) {
+        assert mContext != null;
+        PendingSelectionMenu pendingMenu = new PendingSelectionMenu(mContext);
+        SelectActionMenuHelper.populateMenuItems(
+                this,
+                pendingMenu,
+                mContext,
+                result,
+                menuType,
+                isSelectionPassword(),
+                !isFocusedNodeEditable(),
+                getSelectedText(),
+                isSelectActionModeAllowed(MENU_ITEM_PROCESS_TEXT),
+                mSelectionActionMenuDelegate);
+        return pendingMenu;
+    }
+
     // The callback class that delivers the result from a SmartSelectionClient.
     private class SmartSelectionCallback implements SelectionClient.ResultCallback {
         @Override
@@ -1875,7 +1897,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                 return;
             }
 
-            // The classificationresult is a property of the selection. Keep it even the action
+            // The classification result is a property of the selection. Keep it even if the action
             // mode has been dismissed.
             mClassificationResult = result;
 
@@ -1897,6 +1919,46 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
             // Rely on this method to clear |mHidden| and unhide the action mode.
             showSelectionMenuInternal();
+        }
+
+        @Override
+        public void onClassifiedLate(SelectionClient.Result result) {
+            // If the selection does not exist any more, discard |result|.
+            if (!hasSelection()) {
+                mClassificationResult = null;
+                return;
+            }
+
+            int originalStart = result.start - result.startAdjust;
+            int originalEnd = result.end - result.endAdjust;
+            if (result.text == null
+                    || originalStart < 0
+                    || originalEnd > result.text.length()
+                    || originalStart > originalEnd
+                    || !TextUtils.equals(
+                            mLastSelectedText, result.text.substring(originalStart, originalEnd))) {
+                return;
+            }
+            // Ignore adjustments for late result to avoid shifting selection late.
+            result.startAdjust = 0;
+            result.endAdjust = 0;
+
+            // The classification result is a property of the selection. Keep it even if the action
+            // mode has been dismissed.
+            mClassificationResult = result;
+
+            if (!ContentFeatureMap.isEnabled(ContentFeatures.NO_SELECTION_MENU_CACHING)) {
+                @MenuType final int menuType = getMenuTypeForCaching();
+                PendingSelectionMenu pendingMenu = populateMenu(menuType, result);
+                mSelectionMenuCachedResult =
+                        new SelectionMenuCachedResult(
+                                result,
+                                isSelectionPassword(),
+                                !isFocusedNodeEditable(),
+                                getSelectedText(),
+                                menuType,
+                                pendingMenu);
+            }
         }
     }
     ;

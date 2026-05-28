@@ -64,6 +64,9 @@ public interface SelectionClient {
     interface ResultCallback {
         /** The result is delivered with this method. */
         void onClassified(Result result);
+
+        /** The result is delivered late with this method (after timeout). */
+        default void onClassifiedLate(Result result) {}
     }
 
     interface SurroundingTextCallback {
