@@ -14,6 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -209,6 +210,7 @@ TEST_F(DevToolsHttpServiceHandlerTest, RequestStreamingHttpError) {
   EXPECT_EQ(result->error,
             DevToolsHttpServiceHandler::Result::Error::kHttpError);
   EXPECT_EQ(result->http_status, 500);
+  EXPECT_THAT(result->response_body, testing::Optional(std::string("Error")));
 }
 
 }  // namespace

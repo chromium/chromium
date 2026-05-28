@@ -4,6 +4,8 @@
 
 #include "chrome/browser/devtools/devtools_http_service_handler.h"
 
+#include <algorithm>
+
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -33,8 +35,32 @@ class DevToolsHttpServiceHandler::DevToolsStreamConsumer
 
   ~DevToolsStreamConsumer() override = default;
 
+  // We cannot call loader_->ResponseInfo() inside OnDataReceived because the
+  // request is not finished, and doing so triggers a finished-state DCHECK.
+  // Instead, we intercept the response headers here when the response starts
+  // to safely store the status code.
+  void OnResponseStarted(const GURL& final_url,
+                         const network::mojom::URLResponseHead& response_head) {
+    if (response_head.headers) {
+      http_status_ = response_head.headers->response_code();
+    }
+  }
+
   void OnDataReceived(std::string_view chunk,
                       base::OnceClosure resume) override {
+    if (http_status_.has_value()) {
+      int status = http_status_.value();
+      if (status < 200 || status >= 300) {
+        // Limit the captured error response size to prevent OOM / memory
+        // exhaustion if the server returns an unbounded error stream.
+        constexpr size_t kMaxStreamedErrorBodySize = 512 * 1024;  // 0.5 MB
+        if (error_body_.size() < kMaxStreamedErrorBodySize) {
+          size_t bytes_to_append = std::min(
+              chunk.size(), kMaxStreamedErrorBodySize - error_body_.size());
+          error_body_.append(chunk.data(), bytes_to_append);
+        }
+      }
+    }
     stream_writer_.Run(chunk);
     std::move(resume).Run();
   }
@@ -53,6 +79,7 @@ class DevToolsHttpServiceHandler::DevToolsStreamConsumer
       result->error = DevToolsHttpServiceHandler::Result::Error::kNetworkError;
     } else if (result->http_status < 200 || result->http_status >= 300) {
       result->error = DevToolsHttpServiceHandler::Result::Error::kHttpError;
+      result->response_body = std::move(error_body_);
     } else if (!success) {
       // There was an error and we don't know why, we default to network
       // error for such cases.
@@ -79,6 +106,8 @@ class DevToolsHttpServiceHandler::DevToolsStreamConsumer
   DevToolsHttpServiceHandler::Callback callback_;
   raw_ptr<network::SimpleURLLoader> loader_ = nullptr;
   base::OnceClosure cleanup_;
+  std::optional<int> http_status_;
+  std::string error_body_;
 };
 
 DevToolsHttpServiceHandler::Result::Result() = default;
@@ -203,6 +232,13 @@ void DevToolsHttpServiceHandler::OnTokenFetched(
         std::move(*stream_writer), std::move(callback), request.loader.get(),
         std::move(cleanup_callback));
     request.consumer = std::move(consumer);
+
+    // We must register this callback before starting the stream. Accessing the
+    // headers via ResponseInfo() during OnDataReceived() triggers a DCHECK that
+    // the loader is finished, which is false while streaming chunks.
+    request.loader->SetOnResponseStartedCallback(
+        base::BindOnce(&DevToolsStreamConsumer::OnResponseStarted,
+                       base::Unretained(request.consumer.get())));
 
     request.loader->DownloadAsStream(
         profile->GetDefaultStoragePartition()
