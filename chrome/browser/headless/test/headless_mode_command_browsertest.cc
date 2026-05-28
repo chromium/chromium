@@ -410,8 +410,14 @@ class HeadlessModeScreenshotCommandBrowserTest
   base::FilePath screenshot_filename_;
 };
 
+// TODO(crbug.com/517342172): Re-enable this test on Linux MSAN.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_HeadlessScreenshot DISABLED_HeadlessScreenshot
+#else
+#define MAYBE_HeadlessScreenshot HeadlessScreenshot
+#endif
 IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
-                       HeadlessScreenshot) {
+                       MAYBE_HeadlessScreenshot) {
   ASSERT_THAT(ProcessCommands(),
               testing::Eq(HeadlessCommandHandler::Result::kSuccess));
 
