@@ -329,6 +329,9 @@ fuzzer_test("browser_accessibility_fuzzer") {
     "//storage/browser:test_support",
     "//ui/accessibility:test_support",
   ]
+  if (is_android) {
+    deps += [ "//base/test:test_support" ]
+  }
 }
 
 source_set("indexed_db_fuzzer_support") {
