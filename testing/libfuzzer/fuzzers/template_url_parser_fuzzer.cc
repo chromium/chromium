@@ -44,7 +44,11 @@ base::AtExitManager at_exit_manager;  // used by ICU integration
 
 extern "C" int LLVMFuzzerInitialize(int* argc, char*** argv) {
   CHECK(base::i18n::InitializeICU());
-  CHECK(base::CommandLine::Init(*argc, *argv));
+  // Avoid crashing if CommandLine is already initialized, which can happen on
+  // Android.
+  if (!base::CommandLine::InitializedForCurrentProcess()) {
+    CHECK(base::CommandLine::Init(*argc, *argv));
+  }
   return 0;
 }
 
