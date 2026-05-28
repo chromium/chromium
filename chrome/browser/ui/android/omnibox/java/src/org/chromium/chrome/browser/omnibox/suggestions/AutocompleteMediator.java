@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator.O
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionFactory;
-import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionInSuggest;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.preloading.PreloadingFeatureMap;
@@ -748,21 +747,12 @@ class AutocompleteMediator
                 switchToTabGroup(suggestion);
                 return;
             } else {
-                var actions = suggestion.getActions();
-                if (!actions.isEmpty()) {
-                    var action = actions.get(0);
-                    if (action instanceof OmniboxActionInSuggest omniboxActionInSuggest) {
-                        if (mOmniboxActionDelegate.switchToTab(omniboxActionInSuggest.tabId, url)) {
-                            // This bypasses the execution flow that captures histograms for all
-                            // other cases.
-                            recordMetrics(
-                                    suggestion,
-                                    null,
-                                    matchIndex,
-                                    WindowOpenDisposition.SWITCH_TO_TAB);
-                            return;
-                        }
-                    }
+                if (mOmniboxActionDelegate.switchToTab(suggestion.getAndroidTabId(), url)) {
+                    // This bypasses the execution flow that captures histograms for all
+                    // other cases.
+                    recordMetrics(
+                            suggestion, null, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
+                    return;
                 }
             }
         }

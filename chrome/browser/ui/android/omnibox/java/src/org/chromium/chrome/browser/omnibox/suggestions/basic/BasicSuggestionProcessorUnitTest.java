@@ -411,7 +411,7 @@ public class BasicSuggestionProcessorUnitTest {
 
     @Test
     @SmallTest
-    public void switchTabIconShownForSwitchToTabSuggestions() {
+    public void switchTabIcon_shownForSwitchToTabSuggestions() {
         mInput.setPageClassification(
                 PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE);
 

@@ -288,6 +288,9 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       suggest_type(match.suggest_type),
       subtypes(match.subtypes),
       has_tab_match(match.has_tab_match),
+#if BUILDFLAG(IS_ANDROID)
+      android_tab_id(match.android_tab_id),
+#endif
       associated_keyword(match.associated_keyword),
       keyword(match.keyword),
       from_keyword(match.from_keyword),
@@ -316,7 +319,8 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       history_embeddings_answer_header_loading(
           match.history_embeddings_answer_header_loading),
       feedback_type(match.feedback_type),
-      matching_tab_group_uuid(match.matching_tab_group_uuid) {}
+      matching_tab_group_uuid(match.matching_tab_group_uuid) {
+}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
   *this = std::move(match);
@@ -390,6 +394,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   starter_pack_id = std::move(match.starter_pack_id);
   matching_tab_group_uuid = std::move(match.matching_tab_group_uuid);
 #if BUILDFLAG(IS_ANDROID)
+  android_tab_id = std::move(match.android_tab_id);
   DestroyJavaObject();
   std::swap(java_match_, match.java_match_);
   UpdateJavaObjectNativeRef();
@@ -476,6 +481,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   matching_tab_group_uuid = match.matching_tab_group_uuid;
 
 #if BUILDFLAG(IS_ANDROID)
+  android_tab_id = match.android_tab_id;
   // In case the target element previously held a java object, release it.
   // This happens, when in an expression "match1 = match2;" match1 already
   // is initialized and linked to a Java object: we rewrite the contents of the

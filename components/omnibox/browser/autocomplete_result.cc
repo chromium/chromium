@@ -30,6 +30,9 @@
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/actions/contextual_search_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
@@ -1091,21 +1094,25 @@ void AutocompleteResult::ConvertOpenTabMatches(
       if (is_ios || !match.has_tab_match.value()) {
         continue;
       }
-      if constexpr (is_android) {
-        // On Android, we always attach the action to allow switching to tab.
-        // This ensures the "Switch to Tab" button/chip is always available,
-        // and provides the necessary tab ID to the Java layer.
-        // Attach the action as ActionInSuggest that will be
-        // interpreted as either action button or chip per the form factor.
-        TemplateAction template_action;
-        template_action.set_action_type(TemplateAction::CHROME_TAB_SWITCH);
-        template_action.set_action_uri(match.destination_url.spec());
-        auto action_in_suggest = base::MakeRefCounted<OmniboxActionInSuggest>(
-            std::move(template_action), std::nullopt);
 #if BUILDFLAG(IS_ANDROID)
-        action_in_suggest->tab_id = tab_info->second.android_tab_id;
+      match.android_tab_id = tab_info->second.android_tab_id;
 #endif
-        match.actions.push_back(action_in_suggest);
+      if constexpr (is_android) {
+#if BUILDFLAG(IS_ANDROID)
+        if (!base::android::device_info::is_desktop()) {
+          // On Android Phone, we attach the action to allow switching to tab.
+          // This ensures the "Switch to Tab" button/chip is always available.
+          // Attach the action as ActionInSuggest that will be
+          // interpreted as either action button or chip per the form factor.
+          TemplateAction template_action;
+          template_action.set_action_type(TemplateAction::CHROME_TAB_SWITCH);
+          template_action.set_action_uri(match.destination_url.spec());
+          auto action_in_suggest = base::MakeRefCounted<OmniboxActionInSuggest>(
+              std::move(template_action), std::nullopt);
+          action_in_suggest->tab_id = tab_info->second.android_tab_id;
+          match.actions.push_back(action_in_suggest);
+        }
+#endif
       } else if (!match.from_keyword ||
                  match.type != AutocompleteMatchType::OPEN_TAB) {
         // The default action for suggestions from the open tab provider in

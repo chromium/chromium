@@ -115,8 +115,9 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
           image_url, image_dominant_color, SupportsDeletion(), starter_pack_id,
           post_content_type, j_post_data,
           suggestion_group_id.value_or(omnibox::GROUP_INVALID),
-          j_clipboard_image_data, has_tab_match.value_or(false), actions_list,
-          allowed_to_be_default_match, inline_autocompletion, additional_text,
+          j_clipboard_image_data, has_tab_match.value_or(false), android_tab_id,
+          actions_list, allowed_to_be_default_match, inline_autocompletion,
+          additional_text,
           matching_tab_group_uuid
               ? std::make_optional(matching_tab_group_uuid->AsLowercaseString())
               : std::nullopt,

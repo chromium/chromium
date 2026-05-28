@@ -1006,6 +1006,11 @@ struct AutocompleteMatch {
   // Unset if it has not been computed yet.
   std::optional<bool> has_tab_match;
 
+#if BUILDFLAG(IS_ANDROID)
+  // The Android tab ID of the matching tab, if `has_tab_match` is true.
+  int android_tab_id = 0;
+#endif
+
   // Set to a `TemplateURL`'s keyword; e.g. 'youtube.com' or '@bookmarks'. Set
   // by the `AutocompleteController`, not individual providers. This determines
   // which keyword to activate if the user focuses this instant-keyword (e.g.

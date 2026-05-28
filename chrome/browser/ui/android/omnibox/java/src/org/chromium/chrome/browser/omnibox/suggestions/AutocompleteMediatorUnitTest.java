@@ -872,6 +872,7 @@ public class AutocompleteMediatorUnitTest {
                 new AutocompleteMatchBuilder()
                         .setHasTabMatch(true)
                         .setType(OmniboxSuggestionType.OPEN_TAB)
+                        .setAndroidTabId(123)
                         .setActions(
                                 List.of(
                                         new OmniboxActionInSuggest(
