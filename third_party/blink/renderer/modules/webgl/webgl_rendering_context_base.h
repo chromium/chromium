@@ -78,7 +78,6 @@ namespace blink {
 
 class AcceleratedStaticBitmapImage;
 class CanvasNon2DResourceProviderSharedImage;
-class CanvasSnapshotProvider;
 struct CanvasSnapshotInfo;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
@@ -930,12 +929,12 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   // Fixed-size cache of reusable snapshot providers for image and video
   // texImage2D calls.
-  class LRUCanvasSnapshotProviderCache {
+  class LRUCanvasResourceProviderCache {
    public:
     enum class CacheType { kImage, kVideo };
-    LRUCanvasSnapshotProviderCache(wtf_size_t capacity, CacheType type);
+    LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
-    CanvasSnapshotProvider* GetCanvasSnapshotProvider(
+    CanvasNon2DResourceProviderSharedImage* GetCanvasResourceProvider(
         const CanvasSnapshotInfo& info,
         bool& tried_to_create_provider);
 
@@ -943,12 +942,12 @@ class MODULES_EXPORT WebGLRenderingContextBase
     void BubbleToFront(wtf_size_t idx);
     const wtf_size_t capacity_;
     const CacheType type_;
-    Vector<std::unique_ptr<CanvasSnapshotProvider>> snapshot_providers_;
+    Vector<std::unique_ptr<CanvasNon2DResourceProviderSharedImage>> providers_;
   };
-  LRUCanvasSnapshotProviderCache generated_image_cache_{
-      4, LRUCanvasSnapshotProviderCache::CacheType::kImage};
-  LRUCanvasSnapshotProviderCache generated_video_cache_{
-      4, LRUCanvasSnapshotProviderCache::CacheType::kVideo};
+  LRUCanvasResourceProviderCache generated_image_cache_{
+      4, LRUCanvasResourceProviderCache::CacheType::kImage};
+  LRUCanvasResourceProviderCache generated_video_cache_{
+      4, LRUCanvasResourceProviderCache::CacheType::kVideo};
 
   GLint max_texture_size_;
   GLint max_cube_map_texture_size_;

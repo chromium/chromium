@@ -6716,9 +6716,9 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   auto info = CreateSnapshotProviderInfoForVideoFrame(
       *media_video_frame, dest_rect.size(), reinterpret_video_as_srgb);
   bool tried_to_create_provider = false;
-  auto* snapshot_provider =
-      image_cache.GetCanvasSnapshotProvider(info, tried_to_create_provider);
-  if (!snapshot_provider && tried_to_create_provider) {
+  auto* provider =
+      image_cache.GetCanvasResourceProvider(info, tried_to_create_provider);
+  if (!provider && tried_to_create_provider) {
     return;
   }
 
@@ -6726,15 +6726,14 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
   const bool kPreferTaggedOrientation = false;
   scoped_refptr<StaticBitmapImage> image;
-  if (!snapshot_provider) {
+  if (!provider) {
     image = CreateUnacceleratedImageFromVideoFrame(
         std::move(media_video_frame), info, video_renderer,
         kPreferTaggedOrientation, reinterpret_video_as_srgb);
   } else {
     image = CreateAcceleratedImageFromVideoFrame(
-        std::move(media_video_frame),
-        static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider),
-        video_renderer, kPreferTaggedOrientation, reinterpret_video_as_srgb);
+        std::move(media_video_frame), provider, video_renderer,
+        kPreferTaggedOrientation, reinterpret_video_as_srgb);
   }
 
   if (!image) {
@@ -9069,28 +9068,27 @@ String WebGLRenderingContextBase::EnsureNotNull(const String& text) const {
   return text;
 }
 
-WebGLRenderingContextBase::LRUCanvasSnapshotProviderCache::
-    LRUCanvasSnapshotProviderCache(wtf_size_t capacity, CacheType type)
-    : capacity_(capacity), type_(type), snapshot_providers_(capacity) {}
+WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
+    LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type)
+    : capacity_(capacity), type_(type), providers_(capacity) {}
 
-CanvasSnapshotProvider* WebGLRenderingContextBase::
-    LRUCanvasSnapshotProviderCache::GetCanvasSnapshotProvider(
+CanvasNon2DResourceProviderSharedImage* WebGLRenderingContextBase::
+    LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
         const CanvasSnapshotInfo& info,
         bool& tried_to_create_provider) {
   tried_to_create_provider = false;
   wtf_size_t i;
   for (i = 0; i < capacity_; ++i) {
-    CanvasSnapshotProvider* snapshot_provider = snapshot_providers_[i].get();
-    if (!snapshot_provider) {
+    CanvasNon2DResourceProviderSharedImage* provider = providers_[i].get();
+    if (!provider) {
       break;
     }
-    if (!snapshot_provider->IsValid() ||
-        !info.Matches(snapshot_provider->GetInfo())) {
+    if (!provider->IsValid() || !info.Matches(provider->GetInfo())) {
       continue;
     }
     tried_to_create_provider = true;
     BubbleToFront(i);
-    return snapshot_provider;
+    return provider;
   }
 
   bool create_accelerated_provider = false;
@@ -9106,7 +9104,7 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
 
   tried_to_create_provider = create_accelerated_provider;
 
-  std::unique_ptr<CanvasSnapshotProvider> temp;
+  std::unique_ptr<CanvasNon2DResourceProviderSharedImage> temp;
   if (create_accelerated_provider) {
     temp = CanvasNon2DResourceProviderSharedImage::Create(
         info.size, info.format, info.alpha_type, info.color_space,
@@ -9119,17 +9117,17 @@ CanvasSnapshotProvider* WebGLRenderingContextBase::
   }
 
   i = std::min(capacity_ - 1, i);
-  snapshot_providers_[i] = std::move(temp);
+  providers_[i] = std::move(temp);
 
-  CanvasSnapshotProvider* snapshot_provider = snapshot_providers_[i].get();
+  CanvasNon2DResourceProviderSharedImage* provider = providers_[i].get();
   BubbleToFront(i);
-  return snapshot_provider;
+  return provider;
 }
 
-void WebGLRenderingContextBase::LRUCanvasSnapshotProviderCache::BubbleToFront(
+void WebGLRenderingContextBase::LRUCanvasResourceProviderCache::BubbleToFront(
     wtf_size_t idx) {
   for (wtf_size_t i = idx; i > 0; --i) {
-    snapshot_providers_[i].swap(snapshot_providers_[i - 1]);
+    providers_[i].swap(providers_[i - 1]);
   }
 }
 
