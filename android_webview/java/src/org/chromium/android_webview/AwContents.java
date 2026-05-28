@@ -1096,9 +1096,7 @@ public class AwContents implements SmartClipProvider {
             mAwDarkMode = new AwDarkMode(context);
             mStylusWritingController =
                     new StylusWritingController(
-                            context,
-                            AwFeatureMap.isEnabled(
-                                    AwFeatures.WEBVIEW_LAZY_FETCH_HAND_WRITING_ICON));
+                            context, /* lazyFetchHandWritingIconFeatureEnabled= */ true);
 
             setNewAwContents(
                     AwContentsJni.get().init(mBrowserContext.getNativeBrowserContextPointer()));

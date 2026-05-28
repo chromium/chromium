@@ -901,8 +901,6 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.BF_CACHE_OPEN_BROADCAST_CHANNEL,
                 "Start putting pages with broadcast channel into bfcache."),
         Flag.baseFeature(
-                AwFeatures.WEBVIEW_LAZY_FETCH_HAND_WRITING_ICON, "Fetch Hand Writing icon lazily"),
-        Flag.baseFeature(
                 AwFeatures.WEBVIEW_FORCE_WEB_AUTHN,
                 "Force all WebView instances to enable WebAuthn by default in APP mode. This has"
                         + " no effect for apps which explicitly choose a WebAuthn mode."),
