@@ -33,7 +33,6 @@
   --color-composebox-voice-button-hover-background: var(--color-omnibox-action-icon-hover);
   --color-composebox-context-entrypoint-text: var(--color-omnibox-context-entrypoint-text);
   --color-composebox-lens-search-button-border-color: var(--color-omnibox-keyword-separator);
-  --color-composebox-recent-tab-chip-outline: var(--color-omnibox-keyword-separator);
   --composebox-context-menu-entrypoint-button-color: var(--color-omnibox-context-entrypoint-text);
   --composebox-lens-search-icon-color: var(--color-omnibox-composebox-primary-action);
   --composebox-lens-search-button-text-color: var(--color-omnibox-text);

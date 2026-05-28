@@ -165,39 +165,6 @@ suite('AppTest', function() {
       assertFalse(entrypointButton.matches(':focus-within'));
     });
 
-    test('RecentTabChipShown', async () => {
-      loadTimeData.overrideValues({
-        omniboxShowContextButtonSuggestionLabel: false,
-        searchboxLayoutMode: 'TallBottomContext',
-        composeboxShowRecentTabChip: true,
-        addTabUploadDelayOnRecentTabChipClick: true,
-      });
-      const tabInfo = {
-        tabId: 1,
-        title: 'Tab 1',
-        url: 'https://www.google.com/search?q=foo',
-        showInPreviousTabChip: true,
-      };
-      testProxy.handler.setResultFor(
-          'getRecentTabs', Promise.resolve({tabs: [tabInfo]}));
-      localApp.remove();
-      localApp = document.createElement('omnibox-popup-app');
-      document.body.appendChild(localApp);
-      testProxy.page.autocompleteResultChanged(
-          createAutocompleteResultForTesting());
-      await microtasksFinished();
-
-      testProxy.initVisibilityPrefs();
-      await microtasksFinished();
-
-      callbackRouter.onShow();
-      await microtasksFinished();
-
-      const recentTabChip = localApp.shadowRoot?.querySelector(
-          'composebox-recent-tab-chip');
-      // Assert chip shows.
-      assertTrue(!!recentTabChip);
-    });
 
     test('HideClassicContextButton', async () => {
       let contextualEntrypoint =

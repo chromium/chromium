@@ -115,10 +115,8 @@ class OmniboxWebUiInteractiveTestBase
         {omnibox::internal::kWebUIOmniboxPopup, {}},
         {omnibox::kOmniboxWebUIDeferShowUntilVisualStateReady, {}}};
     if (force_enable_aim) {
-      base::FieldTrialParams aim_params = {
-          {omnibox::kShowRecentTabChip.name, "true"}};
       features.emplace_back(omnibox::internal::kWebUIOmniboxAimPopup,
-                            aim_params);
+                            base::FieldTrialParams());
       base::FieldTrialParams simplification_params = {
           {omnibox::kWebUIOmniboxAimPopupAddContextButtonVariantParam.name,
            "below_results"},

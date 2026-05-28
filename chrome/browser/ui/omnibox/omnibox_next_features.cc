@@ -335,14 +335,6 @@ const base::FeatureParam<bool> kShowLensSearchChip(
     &internal::kWebUIOmniboxSimplification,
     "Omnibox_ShowLensSearchChip",
     false);
-const base::FeatureParam<bool> kAddTabUploadDelayOnRecentTabChipClick(
-    &internal::kWebUIOmniboxAimPopup,
-    "Omnibox_AddTabUploadDelayOnRecentTabChipClick",
-    true);
-const base::FeatureParam<bool> kShowRecentTabChip(
-    &internal::kWebUIOmniboxAimPopup,
-    "Omnibox_ShowRecentTabChip",
-    false);
 const base::FeatureParam<bool> kShowSmartCompose(
     &internal::kWebUIOmniboxAimPopup,
     "Omnibox_ShowSmartCompose",
