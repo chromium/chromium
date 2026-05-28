@@ -509,7 +509,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxAimWebUiInteractiveTest,
 }
 
 // TODO(crbug.com/505548434): Flaky on Mac.
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/517370516): Flaky on Win Arm64.
+#if BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64))
 #define MAYBE_ClassicContextMenuOpensDeepSearch \
   DISABLED_ClassicContextMenuOpensDeepSearch
 #else
