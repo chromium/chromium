@@ -17,7 +17,6 @@
 #include "cc/input/browser_controls_state.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/paint/draw_image.h"
-#include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -91,7 +90,7 @@ class CC_EXPORT Proxy {
                                      PaintHoldingReason reason) = 0;
 
   // Immediately stop deferring commits.
-  virtual void StopDeferringCommits(PaintHoldingCommitTrigger) = 0;
+  virtual void StopDeferringCommits() = 0;
 
   virtual bool IsDeferringCommits() const = 0;
 

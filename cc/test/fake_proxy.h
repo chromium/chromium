@@ -42,7 +42,7 @@ class FakeProxy : public Proxy {
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override {}
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;
-  void StopDeferringCommits(PaintHoldingCommitTrigger) override {}
+  void StopDeferringCommits() override {}
   bool IsDeferringCommits() const override;
   bool CommitRequested() const override;
   void SetShouldThrottleFrameRate(bool flag) override {}

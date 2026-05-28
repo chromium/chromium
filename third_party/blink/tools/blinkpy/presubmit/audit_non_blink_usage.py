@@ -764,7 +764,6 @@ _CONFIG = [
             "gfx::TransformOperations",
 
             # UMA Enums
-            'cc::PaintHoldingCommitTrigger',
             'cc::PaintHoldingReason',
 
             # Scrolling

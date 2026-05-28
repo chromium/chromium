@@ -301,7 +301,7 @@ void ProxyMain::BeginMainFrame(
   // the status at this point to keep scroll in sync.
   bool commit_timeout = false;
   if (IsDeferringCommits() && base::TimeTicks::Now() > commits_restart_time_) {
-    StopDeferringCommits(ReasonToTimeoutTrigger(*paint_holding_reason_));
+    StopDeferringCommits();
     commit_timeout = true;
   }
 
@@ -790,22 +790,21 @@ bool ProxyMain::StartDeferringCommits(base::TimeDelta timeout,
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
 
   // Notify dependent systems that the deferral status has changed.
-  layer_tree_host_->OnDeferCommitsChanged(true, reason, std::nullopt);
+  layer_tree_host_->OnDeferCommitsChanged(true, reason);
   return true;
 }
 
-void ProxyMain::StopDeferringCommits(PaintHoldingCommitTrigger trigger) {
+void ProxyMain::StopDeferringCommits() {
   if (!IsDeferringCommits())
     return;
   auto reason = *paint_holding_reason_;
   paint_holding_reason_.reset();
-  UMA_HISTOGRAM_ENUMERATION("PaintHolding.CommitTrigger2", trigger);
   commits_restart_time_ = base::TimeTicks();
   TRACE_EVENT_END("cc", /*"ProxyMain::SetDeferCommits"*/
                   perfetto::Track::FromPointer(this));
 
   // Notify depended systems that the deferral status has changed.
-  layer_tree_host_->OnDeferCommitsChanged(false, reason, trigger);
+  layer_tree_host_->OnDeferCommitsChanged(false, reason);
 }
 
 void ProxyMain::SetShouldThrottleFrameRate(bool flag) {

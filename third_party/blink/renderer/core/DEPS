@@ -61,7 +61,6 @@ include_rules = [
     "+cc/metrics/frame_sequence_tracker_collection.h",
     "+cc/trees/browser_controls_params.h",
     "+cc/trees/layer_tree_host.h",
-    "+cc/trees/paint_holding_commit_trigger.h",
     "+cc/trees/paint_holding_reason.h",
     "+cc/trees/scroll_source_type.h",
     "+cc/trees/target_property.h",

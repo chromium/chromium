@@ -22595,17 +22595,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Was foregrounded and reached first contentful paint"/>
 </enum>
 
-<enum name="PaintHoldingCommitTrigger2">
-  <int value="0" label="Feature Disabled"/>
-  <int value="1" label="Disallowed"/>
-  <int value="2" label="First Contentful Paint"/>
-  <int value="3" label="FCP Timeout"/>
-  <int value="4" label="Not Deferred"/>
-  <int value="5" label="View Transition"/>
-  <int value="6" label="View Transition Timeout"/>
-  <int value="7" label="Widget swapped"/>
-</enum>
-
 <!-- LINT.IfChange(PasskeysParsingError) -->
 
 <enum name="PasskeysParsingError">

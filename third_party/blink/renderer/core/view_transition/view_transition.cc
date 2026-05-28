@@ -599,8 +599,7 @@ void ViewTransition::ProcessCurrentState() {
           // to send directives to the compositor and initiate pause of
           // rendering after one frame.
           document_->GetPage()->GetChromeClient().StopDeferringCommits(
-              *document_->GetFrame(),
-              cc::PaintHoldingCommitTrigger::kViewTransition);
+              *document_->GetFrame());
         }
         document_->GetPage()->GetChromeClient().RegisterForCommitObservation(
             this);

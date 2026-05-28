@@ -3727,8 +3727,7 @@ class CommitWithoutSynchronizingScrollOffsets : public LayerTreeHostScrollTest {
         ASSERT_TRUE(layer_tree_host()->IsDeferringCommits());
         EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(scroll_layer));
         layer_tree_host()->SetNeedsCommit();
-        layer_tree_host()->StopDeferringCommits(
-            PaintHoldingCommitTrigger::kTimeoutFCP);
+        layer_tree_host()->StopDeferringCommits();
         break;
       case 2:
         EXPECT_POINTF_EQ(gfx::PointF(10, 10),

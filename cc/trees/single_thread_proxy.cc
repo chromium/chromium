@@ -407,24 +407,22 @@ bool SingleThreadProxy::StartDeferringCommits(base::TimeDelta timeout,
   commits_restart_time_ = base::TimeTicks::Now() + timeout;
 
   // Notify dependent systems that the deferral status has changed.
-  layer_tree_host_->OnDeferCommitsChanged(true, reason, std::nullopt);
+  layer_tree_host_->OnDeferCommitsChanged(true, reason);
   return true;
 }
 
-void SingleThreadProxy::StopDeferringCommits(
-    PaintHoldingCommitTrigger trigger) {
+void SingleThreadProxy::StopDeferringCommits() {
   DCHECK(task_runner_provider_->IsMainThread());
   if (!IsDeferringCommits())
     return;
   auto reason = *paint_holding_reason_;
   paint_holding_reason_.reset();
   commits_restart_time_ = base::TimeTicks();
-  UMA_HISTOGRAM_ENUMERATION("PaintHolding.CommitTrigger2", trigger);
   TRACE_EVENT_END("cc", /*"SingleThreadProxy::SetDeferCommits"*/
                   perfetto::Track::FromPointer(this));
 
   // Notify dependent systems that the deferral status has changed.
-  layer_tree_host_->OnDeferCommitsChanged(false, reason, trigger);
+  layer_tree_host_->OnDeferCommitsChanged(false, reason);
 }
 
 bool SingleThreadProxy::IsDeferringCommits() const {
@@ -813,7 +811,7 @@ void SingleThreadProxy::CompositeImmediatelyForTest(
     // Note: We do not want to prevent SetNeedsAnimate from requesting
     // a commit here.
     commit_requested_ = true;
-    StopDeferringCommits(PaintHoldingCommitTrigger::kFeatureDisabled);
+    StopDeferringCommits();
     layer_tree_host_->RecordStartOfFrameMetrics();
     DoBeginMainFrame(begin_frame_args);
     commit_requested_ = false;
@@ -1099,7 +1097,7 @@ void SingleThreadProxy::BeginMainFrame(
   // DoBeginMainFrame because the latter updates scroll offsets, which
   // we should avoid if deferring commits.
   if (IsDeferringCommits() && frame_start_time > commits_restart_time_)
-    StopDeferringCommits(ReasonToTimeoutTrigger(*paint_holding_reason_));
+    StopDeferringCommits();
 
   layer_tree_host_->RecordStartOfFrameMetrics();
   DoBeginMainFrame(begin_frame_args);

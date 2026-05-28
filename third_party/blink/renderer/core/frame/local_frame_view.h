@@ -73,7 +73,6 @@ class AnimationHost;
 class AnimationTimeline;
 class Layer;
 class PaintRecord;
-enum class PaintHoldingCommitTrigger;
 enum class PropertyChangeForcesCommitCriteria;
 struct PaintBenchmarkResult;
 }

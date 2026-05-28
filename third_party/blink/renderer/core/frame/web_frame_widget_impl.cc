@@ -2142,11 +2142,10 @@ bool WebFrameWidgetImpl::StartDeferringCommits(base::TimeDelta timeout,
   return widget_base_->LayerTreeHost()->StartDeferringCommits(timeout, reason);
 }
 
-void WebFrameWidgetImpl::StopDeferringCommits(
-    cc::PaintHoldingCommitTrigger triggger) {
+void WebFrameWidgetImpl::StopDeferringCommits() {
   if (!View()->does_composite())
     return;
-  widget_base_->LayerTreeHost()->StopDeferringCommits(triggger);
+  widget_base_->LayerTreeHost()->StopDeferringCommits();
 }
 
 std::unique_ptr<cc::ScopedPauseRendering> WebFrameWidgetImpl::PauseRendering() {

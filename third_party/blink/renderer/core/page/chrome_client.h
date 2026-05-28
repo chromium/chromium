@@ -32,7 +32,6 @@
 #include "cc/input/overscroll_behavior.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/paint/draw_image.h"
-#include "cc/trees/paint_holding_commit_trigger.h"
 #include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -237,8 +236,7 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   virtual bool StartDeferringCommits(LocalFrame& main_frame,
                                      base::TimeDelta timeout,
                                      cc::PaintHoldingReason reason) = 0;
-  virtual void StopDeferringCommits(LocalFrame& main_frame,
-                                    cc::PaintHoldingCommitTrigger) = 0;
+  virtual void StopDeferringCommits(LocalFrame& main_frame) = 0;
   virtual void SetShouldThrottleFrameRate(bool flag,
                                           LocalFrame& main_frame) = 0;
   virtual void RequestMainFrameOnCompositorAnimation(

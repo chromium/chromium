@@ -453,10 +453,7 @@ class LayerTreeHostDelegateForTesting
   }
 
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(
-      bool,
-      PaintHoldingReason,
-      std::optional<PaintHoldingCommitTrigger>) override {}
+  void OnDeferCommitsChanged(bool, PaintHoldingReason) override {}
   void OnCommitRequested() override { test_hooks_->OnCommitRequested(); }
 
   void RecordStartOfFrameMetrics() override {}
@@ -1137,8 +1134,7 @@ void LayerTreeTest::DispatchDeferringCommitsStatus(bool is_deferring_commits) {
     layer_tree_host_->StartDeferringCommits(
         base::Milliseconds(1000), PaintHoldingReason::kFirstContentfulPaint);
   } else {
-    layer_tree_host_->StopDeferringCommits(
-        PaintHoldingCommitTrigger::kFirstContentfulPaint);
+    layer_tree_host_->StopDeferringCommits();
   }
 }
 

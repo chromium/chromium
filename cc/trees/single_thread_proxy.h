@@ -71,7 +71,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
   void SetInputResponsePending() override;
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;
-  void StopDeferringCommits(PaintHoldingCommitTrigger) override;
+  void StopDeferringCommits() override;
   bool IsDeferringCommits() const override;
   void SetShouldThrottleFrameRate(bool flag) override;
   bool CommitRequested() const override;

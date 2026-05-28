@@ -105,8 +105,6 @@ class WebFrameWidgetImpl;
 
 enum class FullscreenRequestType;
 
-using PaintHoldingCommitTrigger = cc::PaintHoldingCommitTrigger;
-
 class CORE_EXPORT WebViewImpl final : public WebView,
                                       public mojom::blink::PageBroadcast {
  public:

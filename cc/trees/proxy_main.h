@@ -110,7 +110,7 @@ class CC_EXPORT ProxyMain : public Proxy {
   void SetInputResponsePending() override;
   bool StartDeferringCommits(base::TimeDelta timeout,
                              PaintHoldingReason reason) override;
-  void StopDeferringCommits(PaintHoldingCommitTrigger) override;
+  void StopDeferringCommits() override;
   bool IsDeferringCommits() const override;
   void SetShouldThrottleFrameRate(bool flag) override;
   void SetRequestHighFramerate(bool flag) override;

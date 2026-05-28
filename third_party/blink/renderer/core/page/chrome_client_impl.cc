@@ -1172,13 +1172,11 @@ bool ChromeClientImpl::StartDeferringCommits(LocalFrame& main_frame,
       ->StartDeferringCommits(timeout, reason);
 }
 
-void ChromeClientImpl::StopDeferringCommits(
-    LocalFrame& main_frame,
-    cc::PaintHoldingCommitTrigger trigger) {
+void ChromeClientImpl::StopDeferringCommits(LocalFrame& main_frame) {
   DCHECK(main_frame.IsLocalRoot());
   WebLocalFrameImpl::FromFrame(main_frame)
       ->FrameWidgetImpl()
-      ->StopDeferringCommits(trigger);
+      ->StopDeferringCommits();
 }
 
 void ChromeClientImpl::SetShouldThrottleFrameRate(bool flag,

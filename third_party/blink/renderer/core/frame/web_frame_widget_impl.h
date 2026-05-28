@@ -576,7 +576,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   bool StartDeferringCommits(base::TimeDelta timeout,
                              cc::PaintHoldingReason reason);
   // Immediately stop deferring commits.
-  void StopDeferringCommits(cc::PaintHoldingCommitTrigger);
+  void StopDeferringCommits();
 
   void SetShouldThrottleFrameRate(bool flag);
 

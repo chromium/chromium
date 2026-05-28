@@ -458,12 +458,9 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
       }
     }
 
-    void OnDeferCommitsChanged(
-        bool defer_status,
-        cc::PaintHoldingReason reason,
-        std::optional<cc::PaintHoldingCommitTrigger> trigger) override {
+    void OnDeferCommitsChanged(bool defer_status,
+                               cc::PaintHoldingReason reason) override {
       commit_defer_status_ = defer_status;
-      last_paint_holding_trigger_ = trigger;
     }
 
     std::unique_ptr<cc::RenderFrameMetadataObserver> CreateRenderFrameObserver()
@@ -491,17 +488,11 @@ class LayerTreeViewDelegateChangeTest : public testing::Test {
 
     bool commit_defer_status() const { return commit_defer_status_; }
 
-    const std::optional<cc::PaintHoldingCommitTrigger>&
-    last_paint_holding_trigger() const {
-      return last_paint_holding_trigger_;
-    }
-
    private:
     bool did_request_frame_sink_ = false;
     bool did_request_frame_observer_ = false;
     bool service_frame_sink_request_ = false;
     bool commit_defer_status_ = false;
-    std::optional<cc::PaintHoldingCommitTrigger> last_paint_holding_trigger_;
   };
 
   class LayerTreeViewForTesting : public LayerTreeView {
@@ -637,19 +628,13 @@ TEST_F(LayerTreeViewDelegateChangeTest, SwapAfterFrameSinkInitialization) {
 
 TEST_F(LayerTreeViewDelegateChangeTest, StopDeferringCommitsOnSwap) {
   EXPECT_FALSE(old_layer_tree_view_delegate_.commit_defer_status());
-  EXPECT_EQ(old_layer_tree_view_delegate_.last_paint_holding_trigger(),
-            std::nullopt);
 
   layer_tree_view_.layer_tree_host()->StartDeferringCommits(
       base::Seconds(1), cc::PaintHoldingReason::kFirstContentfulPaint);
   EXPECT_TRUE(old_layer_tree_view_delegate_.commit_defer_status());
-  EXPECT_EQ(old_layer_tree_view_delegate_.last_paint_holding_trigger(),
-            std::nullopt);
 
   SwapDelegate();
   EXPECT_FALSE(old_layer_tree_view_delegate_.commit_defer_status());
-  EXPECT_EQ(old_layer_tree_view_delegate_.last_paint_holding_trigger(),
-            cc::PaintHoldingCommitTrigger::kWidgetSwapped);
 }
 
 TEST_F(LayerTreeViewDelegateChangeTest, ResetEventListenerPropertiesOnSwap) {

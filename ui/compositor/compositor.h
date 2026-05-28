@@ -403,10 +403,7 @@ class COMPOSITOR_EXPORT Compositor
   void WillBeginMainFrame() override {}
   void DidBeginMainFrame() override;
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(
-      bool,
-      cc::PaintHoldingReason,
-      std::optional<cc::PaintHoldingCommitTrigger>) override {}
+  void OnDeferCommitsChanged(bool, cc::PaintHoldingReason) override {}
   void OnCommitRequested() override {}
   void WillUpdateLayers() override {}
   void DidUpdateLayers() override;
