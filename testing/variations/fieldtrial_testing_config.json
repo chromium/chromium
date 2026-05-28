@@ -24472,46 +24472,6 @@
             ]
         }
     ],
-    "V8DisableEagerAllocationFailures": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled",
-                    "disable_features": [
-                        "V8Flag_enable_allocation_failures_optimize_memory",
-                        "V8Flag_enable_allocation_failures_optimize_memory_ignoring_priority"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8HighEndAndroid": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "V8HighEndAndroidMemoryThreshold": "8"
-                    },
-                    "enable_features": [
-                        "V8HighEndAndroid"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8InputHandlingLongerWindow": [
         {
             "platforms": [
@@ -24696,51 +24656,6 @@
                     "name": "Disabled",
                     "disable_features": [
                         "V8SideStepTransitions"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8SingleThreadedGCInBackgroundVariants": [
-        {
-            "platforms": [
-                "android",
-                "android_webview",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8SingleThreadedGCInBackground"
-                    ],
-                    "disable_features": [
-                        "V8SingleThreadedGCInBackgroundNoIncrementalMarking",
-                        "V8SingleThreadedGCInBackgroundParallelPause"
-                    ]
-                },
-                {
-                    "name": "ParallelPause",
-                    "enable_features": [
-                        "V8SingleThreadedGCInBackground",
-                        "V8SingleThreadedGCInBackgroundParallelPause"
-                    ],
-                    "disable_features": [
-                        "V8SingleThreadedGCInBackgroundNoIncrementalMarking"
-                    ]
-                },
-                {
-                    "name": "NoIncrementalMarking",
-                    "enable_features": [
-                        "V8SingleThreadedGCInBackground",
-                        "V8SingleThreadedGCInBackgroundNoIncrementalMarking"
-                    ],
-                    "disable_features": [
-                        "V8SingleThreadedGCInBackgroundParallelPause"
                     ]
                 }
             ]
