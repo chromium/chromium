@@ -5151,15 +5151,17 @@ TEST_F(DrawPropertiesStickyPositionTest, StickyPositionBottomRounded) {
 
   // Once we get past the top of the container it moves to be aligned 10px
   // up from the the bottom of the scroller.
+  // bottom_offset = 10.5 causes bottom_delta = -45.5 at this scroll position.
+  // floor(-45.5 + 0.5) = floor(-45.0) = -45. Screen y = 150 + (-45) - 25 = 80.
   SetScrollOffsetDelta(scroller_impl_, gfx::Vector2dF(0.f, 25.f));
   UpdateActiveTreeDrawProperties();
   EXPECT_VECTOR2DF_EQ(
-      gfx::Vector2dF(0.f, 79.f),
+      gfx::Vector2dF(0.f, 80.f),
       sticky_pos_impl_->ScreenSpaceTransform().To2dTranslation());
   SetScrollOffsetDelta(scroller_impl_, gfx::Vector2dF(0.f, 30.f));
   UpdateActiveTreeDrawProperties();
   EXPECT_VECTOR2DF_EQ(
-      gfx::Vector2dF(0.f, 79.f),
+      gfx::Vector2dF(0.f, 80.f),
       sticky_pos_impl_->ScreenSpaceTransform().To2dTranslation());
 }
 
@@ -5619,6 +5621,38 @@ TEST_F(DrawPropertiesStickyPositionTest, StickyPositionNested) {
   EXPECT_VECTOR2DF_EQ(
       gfx::Vector2dF(0.f, 25.f),
       inner_sticky_impl->ScreenSpaceTransform().To2dTranslation());
+}
+
+TEST_F(DrawPropertiesStickyPositionTest,
+       StickyPositionBottomPixelSnapRounding) {
+  CreateTree();
+
+  // Element at y=90, height=10, bottom at 100.
+  // constraint_box_rect bottom = 100 (integer, no clip mismatch).
+  SetPostTranslation(sticky_pos_.get(), gfx::Vector2dF(0, 90));
+  auto& sticky_position = EnsureStickyData(sticky_pos_.get()).constraints;
+  sticky_position.is_anchored_bottom = true;
+  sticky_position.bottom_offset = 0.0f;
+  sticky_position.constraint_box_rect = gfx::RectF(0, 0, 100, 100);
+  sticky_position.scroll_container_relative_sticky_box_rect =
+      gfx::RectF(0, 90, 10, 10);
+  sticky_position.scroll_container_relative_containing_block_rect =
+      gfx::RectF(0, 0, 50, 200);
+  // pixel_snap_offset of -0.5 is where LayoutUnit::Round and std::round
+  // disagree. LayoutUnit::Round(-0.5)=0, std::round(-0.5)=-1.
+  sticky_position.pixel_snap_offset = gfx::Vector2dF(0.0f, -0.5f);
+
+  CommitAndUpdateImplPointers();
+
+  // At scroll=0: clip bottom = 100, sticky_box bottom = 100.
+  // bottom_delta = min(0, 100 - 100) = 0. No sticking needed.
+  // sticky_offset = 0 + pixel_snap(-0.5) = -0.5.
+  //
+  // With std::round: round(-0.5) = -1. Element at 90 + (-1) = 89. Wrong!
+  // With floor(x+0.5): floor(0) = 0. Element at 90 + 0 = 90. Correct!
+  EXPECT_VECTOR2DF_EQ(
+      gfx::Vector2dF(0.f, 90.f),
+      sticky_pos_impl_->ScreenSpaceTransform().To2dTranslation());
 }
 
 class DrawPropertiesAnchorPositionScrollTest : public DrawPropertiesTest {
