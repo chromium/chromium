@@ -242,6 +242,7 @@ dependencies = [
  "cxxbridge-cmd",
  "fend-core",
  "font-types",
+ "harfrust",
  "hex",
  "hmac-sha256",
  "icu_casemap",
@@ -673,6 +674,17 @@ dependencies = [
 name = "gimli"
 version = "0.32.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
+
+[[package]]
+name = "harfrust"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "bitflags",
+ "bytemuck",
+ "read-fonts",
+ "smallvec",
+]
 
 [[package]]
 name = "hashbrown"

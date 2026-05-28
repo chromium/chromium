@@ -1,0 +1,59 @@
+@@ impl ChainRuleSet {
+     pub fn apply(&self, c: &mut ApplyContext) -> bool {
+-        for rule in &self.rules {
+-            if rule.apply(c) {
+-                return true;
+-            }
+-        }
+-        false
++        let count = self.rules.len();
++
++        if cfg!(feature = "optimize_size") || count <= 4 {
++            return self.apply_slow(c);
++        }
++
++        let mut skippy = c.iter_input();
++        skippy.reset(c.buffer.idx);
++        skippy.set_match_func(Some(match_always), None);
++
++        let mut unsafe_to = 0;
++        let matched = skippy.next(&mut unsafe_to);
++        if !matched {
++            return self.apply_slow(c);
++        }
++
++        let first = c.buffer.info[skippy.idx].codepoint;
++        let may_skip = skippy.may_skip(&c.buffer.info[skippy.idx]);
++        if may_skip {
++            return self.apply_slow(c);
++        }
++
++        let mut unsafe_to_concat = false;
++        for rule in &self.rules {
++            if rule.input_len() <= 1 || rule.first_input() == Some(first) {
++                if rule.apply(c) {
++                    if unsafe_to_concat {
++                        c.buffer.unsafe_to_concat(c.buffer.idx, unsafe_to);
++                    }
++                    return true;
++                }
++            } else if rule.input_len() > 1 {
++                unsafe_to_concat = true;
++            }
++        }
++        if unsafe_to_concat {
++            c.buffer.unsafe_to_concat(c.buffer.idx, unsafe_to);
++        }
++        false
++    }
++
++    fn apply_slow(&self, c: &mut ApplyContext) -> bool {
++        for rule in &self.rules {
++            if rule.apply(c) {
++                return true;
++            }
++        }
++        false
+     }
+ }
+

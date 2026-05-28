@@ -51,10 +51,14 @@ if (use_system_harfbuzz) {
     allow_unsafe = true
     no_allocator_crate = true
     edition = "2021"
-    features = [ "font" ]
+    features = [
+      "font",
+      "shape",
+    ]
     bindgen_deps = [ ":hb_rs_generator" ]
     deps = [
       "//third_party/rust/font_types/v0_11:lib",
+      "//third_party/rust/harfrust/v0_8:lib",
       "//third_party/rust/read_fonts/v0_39:lib",
       "//third_party/rust/skrifa/v0_42:lib",
     ]
@@ -463,6 +467,7 @@ if (use_system_harfbuzz) {
       "HAVE_FONTATIONS",
       "HB_NO_MMAP",
       "HB_NO_RESOURCE_FORK",
+      "HAVE_HARFRUST",
 
       # Use assignment to empty value to work around a build failure.
       "HB_NO_PAINT=",
@@ -560,6 +565,7 @@ if (use_system_harfbuzz) {
     deps = [
       ":harfbuzz_rust",
       "//third_party/icu:icuuc",
+      "//third_party/rust/harfrust/v0_8:lib",
     ]
 
     if (use_glib) {
