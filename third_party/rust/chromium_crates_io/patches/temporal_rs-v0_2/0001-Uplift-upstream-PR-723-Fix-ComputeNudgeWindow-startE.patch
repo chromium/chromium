@@ -1,0 +1,74 @@
+From eac2a61aa58d2ca573687784c479cba61749b7c7 Mon Sep 17 00:00:00 2001
+From: Manish Goregaokar <manishearth@google.com>
+Date: Wed, 27 May 2026 20:36:18 +0000
+Subject: [PATCH] Uplift upstream PR 723 (Fix ComputeNudgeWindow startEpochNs
+ computation to check full startDateDuration sign)
+
+Change-Id: I2f52d7bbe8c2fae81153844c38509b2c2d11413b
+---
+ .../src/builtins/core/duration/normalized.rs  |  2 +-
+ .../src/builtins/core/duration/tests.rs       | 38 +++++++++++++++++++
+ 2 files changed, 39 insertions(+), 1 deletion(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/normalized.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/normalized.rs
+index 60c366aec64da..9def7f7e08615 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/normalized.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/normalized.rs
+@@ -707,7 +707,7 @@ impl InternalDurationRecord {
+                 || (sign == NonZeroSign::Negative && r1 <= 0 && r1 > r2)
+         );
+ 
+-        let start_epoch_ns = if r1 == 0 {
++        let start_epoch_ns = if start_duration.sign() == Sign::Zero {
+             origin_epoch_ns
+         } else {
+             // 7. Let start be ? CalendarDateAdd(calendar, isoDateTime.[[ISODate]], startDuration, constrain).
+diff --git a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/tests.rs b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/tests.rs
+index 113d56802c2b5..2c1f448c57a1e 100644
+--- a/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/tests.rs
++++ b/third_party/rust/chromium_crates_io/vendor/temporal_rs-v0_2/src/builtins/core/duration/tests.rs
+@@ -605,3 +605,41 @@ fn out_of_bounds_duration_no_crash() {
+ 
+     assert!(duration.is_err());
+ }
++
++// https://github.com/tc39/test262/commit/a70493eb104948583a7928d50eac28b6c81114bf
++// https://github.com/tc39/proposal-temporal/issues/3316
++#[test]
++#[cfg(feature = "compiled_data")]
++fn test_exact_multiple_of_larger_unit_plaindate() {
++    use crate::options::RoundingMode;
++    use crate::PlainDate;
++
++    let relative_to = PlainDate::try_new_iso(2012, 1, 1).unwrap();
++
++    // Temporal.Duration(0, 0, 0, 31).round({ smallestUnit: "weeks", largestUnit: "months", roundingMode, relativeTo })
++    // should be 0, 1, 0, 0, 0, 0, 0, 0, 0, 0
++    let d1 = Duration::new(0, 0, 0, 31, 0, 0, 0, 0, 0, 0).unwrap();
++
++    for mode in [
++        RoundingMode::Ceil,
++        RoundingMode::Floor,
++        RoundingMode::Expand,
++        RoundingMode::HalfCeil,
++        RoundingMode::HalfFloor,
++        RoundingMode::HalfEven,
++        RoundingMode::HalfExpand,
++        RoundingMode::HalfTrunc,
++        RoundingMode::Trunc,
++    ] {
++        let options = RoundingOptions {
++            smallest_unit: Some(Unit::Week),
++            largest_unit: Some(Unit::Month),
++            rounding_mode: Some(mode),
++            ..Default::default()
++        };
++        let res = d1.round(options, Some(relative_to.clone().into())).unwrap();
++        assert_eq!(res.months(), 1, "P31D weeks..months {mode:?}");
++        assert_eq!(res.weeks(), 0, "P31D weeks..months {mode:?}");
++        assert_eq!(res.days(), 0, "P31D weeks..months {mode:?}");
++    }
++}
+-- 
+2.54.0.794.g4f17f83d09-goog
+
