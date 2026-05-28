@@ -7,10 +7,15 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,20 +36,26 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_management.TabListModel;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -52,16 +63,25 @@ import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelperJni;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.ServiceStatus;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modelutil.MVCListAdapter;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link VerticalTabListCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.DisableFeatures({
+    ChromeFeatureList.GLIC,
+    ChromeFeatureList.DATA_SHARING,
+    ChromeFeatureList.DATA_SHARING_JOIN_ONLY
+})
 public class VerticalTabListCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -79,6 +99,7 @@ public class VerticalTabListCoordinatorUnitTest {
     private Activity mActivity;
     private final SettableMonotonicObservableSupplier<TabModel> mCurrentTabModelSupplier =
             ObservableSuppliers.createMonotonic();
+    private final List<TabGroupObserver> mTabGroupObservers = new ArrayList<>();
     private VerticalTabListCoordinator mCoordinator;
 
     @Before
@@ -88,6 +109,9 @@ public class VerticalTabListCoordinatorUnitTest {
         TabGroupSyncServiceFactory.setForTesting(mTabGroupSyncService);
         DataSharingServiceFactory.setForTesting(mDataSharingService);
         CollaborationServiceFactory.setForTesting(mCollaborationService);
+        ServiceStatus serviceStatus = mock(ServiceStatus.class);
+        when(mCollaborationService.getServiceStatus()).thenReturn(serviceStatus);
+        when(serviceStatus.isAllowedToJoin()).thenReturn(false);
         ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
         doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
         PriceTrackingFeatures.setPriceAnnotationsEnabledForTesting(false);
@@ -103,6 +127,24 @@ public class VerticalTabListCoordinatorUnitTest {
         when(mTabModel.isTabModelRestored()).thenReturn(true);
         when(mTabModel.iterator()).thenReturn(java.util.Collections.emptyIterator());
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+
+        doAnswer(
+                        invocation -> {
+                            mTabGroupObservers.add(invocation.getArgument(0));
+                            return null;
+                        })
+                .when(mTabModel)
+                .addTabGroupObserver(any(TabGroupObserver.class));
+    }
+
+    private Tab prepareMockTab(int id) {
+        Tab tab = mock(Tab.class);
+        when(tab.getId()).thenReturn(id);
+        when(tab.isInitialized()).thenReturn(true);
+        when(tab.getTitle()).thenReturn("Tab " + id);
+        GURL gurl = new GURL("https://google.com");
+        when(tab.getUrl()).thenReturn(gurl);
+        return tab;
     }
 
     @Test
@@ -170,54 +212,140 @@ public class VerticalTabListCoordinatorUnitTest {
 
     @Test
     @SmallTest
-    public void testToggleTabGroupExpansion() {
+    public void testToggleTabGroupExpansion_Expand() {
+        Tab tab123 = prepareMockTab(123);
+        Token tabGroupId123 = new Token(1L, 2L);
+        when(tab123.getTabGroupId()).thenReturn(tabGroupId123);
+
+        when(mTabModel.getTabById(anyInt())).thenReturn(tab123);
+        when(mTabModel.getTabsInGroup(tabGroupId123)).thenReturn(List.of(tab123));
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(tab123));
+        when(mTabModel.getGroupLastShownTabId(tabGroupId123)).thenReturn(123);
+        when(mTabModel.getRelatedTabList(123)).thenReturn(List.of(tab123));
+        when(mTabModel.isTabInTabGroup(tab123)).thenReturn(true);
+
+        final boolean[] collapsedState = {true};
+        doAnswer(invocation -> collapsedState[0])
+                .when(mTabModel)
+                .getTabGroupCollapsed(any(Token.class));
+        doAnswer(
+                        invocation -> {
+                            collapsedState[0] = invocation.getArgument(1);
+                            for (TabGroupObserver observer : mTabGroupObservers) {
+                                observer.didChangeTabGroupCollapsed(
+                                        invocation.getArgument(0), collapsedState[0], false);
+                            }
+                            return null;
+                        })
+                .when(mTabModel)
+                .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
+
         mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
         TabListRecyclerView recycler =
                 mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
         SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
 
-        PropertyKey[] keys =
-                PropertyModel.concatKeys(
-                        TabProperties.ALL_KEYS_VERTICAL_TAB,
-                        new PropertyKey[] {TabListModel.CardProperties.CARD_TYPE});
-        PropertyModel groupModel =
-                new PropertyModel.Builder(keys)
-                        .with(TabProperties.TAB_ID, 123)
-                        .with(TabProperties.TAB_GROUP_CARD_COLOR, 1)
-                        .with(TabProperties.IS_EXPANDED, false)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .build();
+        assertEquals(1, adapter.getModelList().size());
+        PropertyModel groupModel = adapter.getModelList().get(0).model;
+        assertTrue(groupModel.get(TabProperties.IS_COLLAPSED));
+        assertNull(groupModel.get(TabProperties.TAB_ACTION_BUTTON_DATA));
 
-        assertNotNull(adapter);
-        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB_GROUP, groupModel));
+        mCoordinator.toggleTabGroupExpansion(123);
+        assertFalse(
+                "Tab group should be expanded (IS_COLLAPSED = false) after first toggle click.",
+                groupModel.get(TabProperties.IS_COLLAPSED));
+    }
+
+    @Test
+    @SmallTest
+    public void testToggleTabGroupExpansion_Collapse() {
+        Tab tab123 = prepareMockTab(123);
+        Token tabGroupId123 = new Token(1L, 2L);
+        when(tab123.getTabGroupId()).thenReturn(tabGroupId123);
+
+        when(mTabModel.getTabById(anyInt())).thenReturn(tab123);
+        when(mTabModel.getTabsInGroup(tabGroupId123)).thenReturn(List.of(tab123));
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(tab123));
+        when(mTabModel.getGroupLastShownTabId(tabGroupId123)).thenReturn(123);
+        when(mTabModel.getRelatedTabList(123)).thenReturn(List.of(tab123));
+        when(mTabModel.isTabInTabGroup(tab123)).thenReturn(true);
+
+        final boolean[] collapsedState = {false};
+        doAnswer(invocation -> collapsedState[0])
+                .when(mTabModel)
+                .getTabGroupCollapsed(any(Token.class));
+        doAnswer(
+                        invocation -> {
+                            collapsedState[0] = invocation.getArgument(1);
+                            for (TabGroupObserver observer : mTabGroupObservers) {
+                                observer.didChangeTabGroupCollapsed(
+                                        invocation.getArgument(0), collapsedState[0], false);
+                            }
+                            return null;
+                        })
+                .when(mTabModel)
+                .setTabGroupCollapsed(any(Token.class), anyBoolean(), anyBoolean());
+
+        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        assertEquals(2, adapter.getModelList().size());
+        PropertyModel groupModel = adapter.getModelList().get(0).model;
+        assertFalse(groupModel.get(TabProperties.IS_COLLAPSED));
 
         mCoordinator.toggleTabGroupExpansion(123);
         assertTrue(
-                "Tab group should be expanded after first toggle click.",
-                groupModel.get(TabProperties.IS_EXPANDED));
+                "Tab group should be collapsed (IS_COLLAPSED = true) after toggle click from"
+                        + " expanded state.",
+                groupModel.get(TabProperties.IS_COLLAPSED));
+        assertEquals(1, adapter.getModelList().size());
+    }
 
-        mCoordinator.toggleTabGroupExpansion(123);
-        assertFalse(
-                "Tab group should be collapsed after second toggle click.",
-                groupModel.get(TabProperties.IS_EXPANDED));
+    @Test
+    @SmallTest
+    public void testToggleTabGroupExpansion_RegularTabCannotToggle() {
+        Tab tab456 = prepareMockTab(456);
+        when(mTabModel.getTabById(anyInt())).thenReturn(tab456);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(tab456));
+        when(mTabModel.isTabInTabGroup(tab456)).thenReturn(false);
 
-        // 3. Add a regular tab (no TAB_GROUP_CARD_COLOR) to verify it cannot be toggled
-        PropertyModel tabModel =
-                new PropertyModel.Builder(keys)
-                        .with(TabProperties.TAB_ID, 456)
-                        .with(TabProperties.IS_EXPANDED, false)
-                        .with(
-                                TabListModel.CardProperties.CARD_TYPE,
-                                TabListModel.CardProperties.ModelType.TAB)
-                        .build();
-        adapter.getModelList().add(new MVCListAdapter.ListItem(UiType.TAB, tabModel));
+        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
 
-        // Toggling a regular tab ID should do nothing (remain false)
+        assertEquals(1, adapter.getModelList().size());
+        PropertyModel tabModel = adapter.getModelList().get(0).model;
+
         mCoordinator.toggleTabGroupExpansion(456);
-        assertFalse(
-                "Regular tab's expansion state should remain completely unchanged.",
-                tabModel.get(TabProperties.IS_EXPANDED));
+        assertFalse(tabModel.get(TabProperties.IS_COLLAPSED));
+    }
+
+    @Test
+    @SmallTest
+    public void testTabSelection_SelectsTabInSelector() {
+        Tab tab456 = prepareMockTab(456);
+        when(mTabModelSelector.getModelForTabId(456)).thenReturn(mTabModel);
+        when(mTabModel.getTabById(anyInt())).thenReturn(tab456);
+        when(mTabModel.indexOf(tab456)).thenReturn(0);
+        when(mTabModel.getRepresentativeTabList()).thenReturn(List.of(tab456));
+        when(mTabModel.isTabInTabGroup(tab456)).thenReturn(false);
+        when(mTabModel.iterator()).thenReturn(List.of(tab456).iterator());
+
+        mCoordinator = new VerticalTabListCoordinator(mActivity, mTabModelSelector, mProfile);
+        TabListRecyclerView recycler =
+                mCoordinator.getView().findViewById(R.id.tab_list_recycler_view);
+        SimpleRecyclerViewAdapter adapter = (SimpleRecyclerViewAdapter) recycler.getAdapter();
+
+        assertEquals(1, adapter.getModelList().size());
+        PropertyModel tabModel = adapter.getModelList().get(0).model;
+
+        TabActionListener clickListener = tabModel.get(TabProperties.TAB_CLICK_LISTENER);
+        assertNotNull("Tab click listener should be bound to model", clickListener);
+        clickListener.run(null, 456, null);
+
+        verify(mTabModel).setIndex(0, TabSelectionType.FROM_USER);
     }
 }

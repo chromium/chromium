@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.CreationMode;
@@ -309,6 +310,22 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                                         });
                                 RecordUserAction.record("Tabs.RestoreSingleTab");
                             });
+                }
+
+                @Nullable
+                @Override
+                public Boolean isTabGroupSelected(Tab tab, PropertyModel model) {
+                    return null;
+                }
+
+                @Nullable
+                @Override
+                public TabActionButtonData getTabGroupActionButtonData(
+                        Tab tab,
+                        PropertyModel model,
+                        Supplier<TabActionListener> defaultOverflowListenerSupplier) {
+                    return new TabActionButtonData(
+                            TabActionButtonType.OVERFLOW, defaultOverflowListenerSupplier.get());
                 }
             };
 

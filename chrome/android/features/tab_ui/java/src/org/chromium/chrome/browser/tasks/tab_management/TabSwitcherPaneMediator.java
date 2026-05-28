@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData.TabActionButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListContainerProperties.SupplementaryContainerAnimationMetadata;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator.TabListEditorController;
@@ -46,6 +47,7 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Mediator for {@link TabSwitcherPaneCoordinator}. */
 @NullMarked
@@ -336,6 +338,20 @@ public class TabSwitcherPaneMediator
     @Override
     public void onTabSelecting(int tabId, boolean fromActionButton) {
         mOnTabClickCallback.onResult(tabId);
+    }
+
+    @Override
+    public @Nullable Boolean isTabGroupSelected(Tab tab, PropertyModel model) {
+        return null;
+    }
+
+    @Override
+    public @Nullable TabActionButtonData getTabGroupActionButtonData(
+            Tab tab,
+            PropertyModel model,
+            Supplier<TabActionListener> defaultOverflowListenerSupplier) {
+        return new TabActionButtonData(
+                TabActionButtonType.OVERFLOW, defaultOverflowListenerSupplier.get());
     }
 
     @Override

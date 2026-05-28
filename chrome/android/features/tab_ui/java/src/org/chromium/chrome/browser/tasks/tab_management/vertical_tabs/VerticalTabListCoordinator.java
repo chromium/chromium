@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabActionButtonData;
 import org.chromium.chrome.browser.tasks.tab_management.TabActionListener;
 import org.chromium.chrome.browser.tasks.tab_management.TabComponentId;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator;
@@ -35,6 +36,8 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
+
+import java.util.function.Supplier;
 
 /** Coordinator to manage and display the Vertical Tab List. */
 @NullMarked
@@ -82,6 +85,24 @@ public class VerticalTabListCoordinator {
                 // dismissal or collapse animations when running on narrow screens.
                 TabModelUtils.selectTabById(selector, tabId, TabSelectionType.FROM_USER);
             }
+        }
+
+        @Override
+        public @Nullable Boolean isTabGroupSelected(Tab tab, PropertyModel model) {
+            // In Vertical Tabs, the Group Header card acts strictly as an expandable accordion
+            // header, and is never selectable (individual child webpage rows show active
+            // highlights).
+            return false;
+        }
+
+        @Override
+        public @Nullable TabActionButtonData getTabGroupActionButtonData(
+                Tab tab,
+                PropertyModel model,
+                Supplier<TabActionListener> defaultOverflowListenerSupplier) {
+            // Vertical Tabs group header cards act strictly as accordion expansion toggles
+            // and do not display any action button (neither close nor overflow menu).
+            return null;
         }
     }
 
@@ -192,6 +213,8 @@ public class VerticalTabListCoordinator {
 
         mMediator.initWithNative(profile.getOriginalProfile());
 
+        // TODO(crbug.com/509226293): Refactor to eliminate the need for full list resets
+        //  during tab additions, closures, and merges.
         mTabModelSelectorObserver =
                 new TabModelSelectorObserver() {
                     @Override
@@ -240,6 +263,7 @@ public class VerticalTabListCoordinator {
 
     private void resetWithListOfTabs(@Nullable TabModel tabModel) {
         if (mMediator == null || tabModel == null) return;
+
         mMediator.resetWithListOfTabs(
                 tabModel.getRepresentativeTabList(),
                 /* tabGroupSyncIds */ null,
@@ -252,17 +276,8 @@ public class VerticalTabListCoordinator {
      * @param tabId the ID of the representative tab representing the tab group.
      */
     void toggleTabGroupExpansion(int tabId) {
-        PropertyModel model = mModelList.getModelFromTabId(tabId);
-        if (model != null && model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null) {
-            boolean isExpanded = model.get(TabProperties.IS_EXPANDED);
-            model.set(TabProperties.IS_EXPANDED, !isExpanded);
-            // TODO(crbug.com/509226293):
-            // 1. Fetch child tabs using TabGroupModelFilter and dynamically insert them (if
-            //    expanded) or remove them (if collapsed).
-            // 2. Persist the expanded/collapsed state natively by calling
-            //    TabGroupModelFilter.setTabGroupCollapsed(tabGroupId, isCollapsed) instead of just
-            //    updating the model locally, and register a TabGroupModelFilterObserver to keep
-            //    our model list in sync across restarts and with the horizontal tab strip.
+        if (mMediator != null) {
+            mMediator.toggleTabGroupExpansion(tabId);
         }
     }
 

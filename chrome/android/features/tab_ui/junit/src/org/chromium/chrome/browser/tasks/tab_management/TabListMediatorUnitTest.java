@@ -328,14 +328,16 @@ public class TabListMediatorUnitTest {
     @IntDef({
         TabListMediatorType.TAB_SWITCHER,
         TabListMediatorType.TAB_STRIP,
-        TabListMediatorType.TAB_GRID_DIALOG
+        TabListMediatorType.TAB_GRID_DIALOG,
+        TabListMediatorType.VERTICAL_TABS
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabListMediatorType {
         int TAB_SWITCHER = 0;
         int TAB_STRIP = 1;
         int TAB_GRID_DIALOG = 2;
-        int NUM_ENTRIES = 3;
+        int VERTICAL_TABS = 3;
+        int NUM_ENTRIES = 4;
     }
 
     @Mock TabContentManager mTabContentManager;
@@ -518,6 +520,15 @@ public class TabListMediatorUnitTest {
         doReturn(mOpenGroupActionListener)
                 .when(mGridCardOnClickListenerProvider)
                 .onTabGroupClicked(anyString());
+        doAnswer(
+                        invocation -> {
+                            Supplier<TabActionListener> defaultListenerSupplier =
+                                    invocation.getArgument(2);
+                            return new TabActionButtonData(
+                                    TabActionButtonType.OVERFLOW, defaultListenerSupplier.get());
+                        })
+                .when(mGridCardOnClickListenerProvider)
+                .getTabGroupActionButtonData(any(), any(), any());
         doNothing().when(mActivity).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
         doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT)
@@ -2769,12 +2780,13 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void getLatestTitle_NoTitleUrlFallback() {
-        assertEquals(TAB1_TITLE,
-                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true));
+        assertEquals(
+                TAB1_TITLE, mMediator.getLatestTitleForTab(mTab1, null, /* useDefault= */ true));
 
         when(mTab1.getTitle()).thenReturn("");
-        assertEquals(TAB1_URL.getSpec(),
-                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true));
+        assertEquals(
+                TAB1_URL.getSpec(),
+                mMediator.getLatestTitleForTab(mTab1, null, /* useDefault= */ true));
     }
 
     @Test
@@ -2794,7 +2806,8 @@ public class TabListMediatorUnitTest {
 
         // Even if we have a stored title, we only show it in tab switcher.
         assertThat(
-                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true), equalTo(TAB1_TITLE));
+                mMediator.getLatestTitleForTab(mTab1, null, /* useDefault= */ true),
+                equalTo(TAB1_TITLE));
     }
 
     @Test
@@ -2812,7 +2825,7 @@ public class TabListMediatorUnitTest {
 
         // We never show stored title for single tab.
         assertThat(
-                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true),
+                mMediator.getLatestTitleForTab(mTab1, null, /* useDefault= */ true),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
     }
 
@@ -2832,7 +2845,8 @@ public class TabListMediatorUnitTest {
 
         // We never show stored title for single tab.
         assertThat(
-                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true), equalTo(TAB1_TITLE));
+                mMediator.getLatestTitleForTab(mTab1, null, /* useDefault= */ true),
+                equalTo(TAB1_TITLE));
     }
 
     @Test
@@ -2849,7 +2863,7 @@ public class TabListMediatorUnitTest {
         createTabGroup(tabs, TAB_GROUP_ID);
 
         assertThat(
-                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true),
+                mMediator.getLatestTitleForTab(mTab1, null, /* useDefault= */ true),
                 equalTo(CUSTOMIZED_DIALOG_TITLE1));
     }
 
@@ -2860,7 +2874,8 @@ public class TabListMediatorUnitTest {
         createTabGroup(tabs, TAB_GROUP_ID);
 
         assertThat(
-                mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ true), equalTo("2 tabs"));
+                mMediator.getLatestTitleForTab(mTab1, null, /* useDefault= */ true),
+                equalTo("2 tabs"));
     }
 
     @Test
@@ -2869,7 +2884,8 @@ public class TabListMediatorUnitTest {
         List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabs, TAB_GROUP_ID);
 
-        assertThat(mMediator.getLatestTitleForTab(mTab1, /* useDefault= */ false), equalTo(""));
+        assertThat(
+                mMediator.getLatestTitleForTab(mTab1, null, /* useDefault= */ false), equalTo(""));
     }
 
     @Test
@@ -3162,6 +3178,38 @@ public class TabListMediatorUnitTest {
         mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
         assertEquals(mTab1Domain, mModelList.get(POSITION1).model.get(TabProperties.URL_DOMAIN));
         assertEquals(mTab2Domain, mModelList.get(POSITION2).model.get(TabProperties.URL_DOMAIN));
+    }
+
+    @Test
+    public void tabMoveOutOfGroup_CreatesSingleTabGroup() {
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        mTabGroupObserverCaptor.getValue().didMergeTabToGroup(mTab2, /* isDestinationTab= */ false);
+        assertEquals(1, mModelList.size());
+
+        // Mock that mTab2 is moved out of the group, but immediately put into a new single tab
+        // group.
+        Token newGroupId = new Token(3L, 4L);
+        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(Arrays.asList(mTab1));
+        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(Arrays.asList(mTab2));
+        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTab2.getTabGroupId()).thenReturn(newGroupId);
+        when(mTabModel.getTabCountForGroup(TAB_GROUP_ID)).thenReturn(1);
+        when(mTabModel.getTabCountForGroup(newGroupId)).thenReturn(1);
+        when(mTabModel.tabGroupExists(newGroupId)).thenReturn(true);
+        when(mTabModel.getGroupLastShownTabId(newGroupId)).thenReturn(TAB2_ID);
+        doReturn(mTab1).when(mTabModel).getRepresentativeTabAt(POSITION1);
+        doReturn(mTab2).when(mTabModel).getRepresentativeTabAt(POSITION2);
+        doReturn(2).when(mTabModel).getIndividualTabAndGroupCount();
+
+        mTabGroupObserverCaptor.getValue().didMoveTabOutOfGroup(mTab2, POSITION1);
+
+        assertEquals(2, mModelList.size());
+        // Verify that mTab2's new card was created as a Tab Group Header card!
+        assertNotNull(mModelList.get(POSITION2).model.get(TabProperties.TAB_GROUP_CARD_COLOR));
+        assertNull(mModelList.get(POSITION2).model.get(TabProperties.TAB_GROUP_ID));
     }
 
     @Test
@@ -5689,6 +5737,9 @@ public class TabListMediatorUnitTest {
     public void testActorUiState_TabGroup() {
         // Create a tab group with Tab 1 and Tab 2.
         List<Tab> groupTabs = List.of(mTab1, mTab2);
+        Token tabGroupId = new Token(1L, 2L);
+        when(mTab1.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTab2.getTabGroupId()).thenReturn(tabGroupId);
         doReturn(groupTabs).when(mTabModel).getRelatedTabList(TAB1_ID);
         doReturn(groupTabs).when(mTabModel).getRelatedTabList(TAB2_ID);
         doReturn(true).when(mTabModel).isTabInTabGroup(mTab1);
@@ -5945,9 +5996,16 @@ public class TabListMediatorUnitTest {
 
         TabListMediator.TabGridDialogHandler handler =
                 type == TabListMediatorType.TAB_GRID_DIALOG ? mTabGridDialogHandler : null;
-        boolean actionOnRelatedTabs = type == TabListMediatorType.TAB_SWITCHER;
+        boolean actionOnRelatedTabs =
+                type == TabListMediatorType.TAB_SWITCHER
+                        || type == TabListMediatorType.VERTICAL_TABS;
         ThumbnailProvider thumbnailProvider =
                 mode == TabListMode.GRID ? getTabThumbnailCallback() : null;
+        @TabComponentId
+        int componentId =
+                type == TabListMediatorType.VERTICAL_TABS
+                        ? TabComponentId.VERTICAL_TABS
+                        : TabComponentId.GRID_TAB_SWITCHER;
 
         mMediator =
                 new TabListMediator(
@@ -5963,7 +6021,7 @@ public class TabListMediatorUnitTest {
                         mGridCardOnClickListenerProvider,
                         handler,
                         null,
-                        TabComponentId.GRID_TAB_SWITCHER,
+                        componentId,
                         tabActionState,
                         mDataSharingTabManager,
                         /* onTabGroupCreation= */ null,
@@ -5996,6 +6054,14 @@ public class TabListMediatorUnitTest {
             when(tab.getTabGroupId()).thenReturn(tabGroupId);
             if (index != null) {
                 when(mTabModel.representativeIndexOf(tab)).thenReturn(index);
+            }
+        }
+        int modelIndex = mModelList.indexFromTabId(firstTabId);
+        if (modelIndex != TabModel.INVALID_TAB_INDEX) {
+            PropertyModel model = mModelList.get(modelIndex).model;
+            if (model.containsKey(TabProperties.TAB_GROUP_CARD_COLOR)) {
+                model.set(TabProperties.TAB_GROUP_CARD_COLOR, TabGroupColorId.GREY);
+                model.set(TabProperties.TAB_GROUP_ID, null);
             }
         }
     }
@@ -6193,5 +6259,127 @@ public class TabListMediatorUnitTest {
         TabCardLabelData labelData = model.get(TabProperties.TAB_CARD_LABEL_DATA);
         assertNull(labelData);
         assertNull(userDataHost.getUserData(SendTabToSelfTabCardLabelData.class));
+    }
+
+    @Test
+    public void testVerticalTabsCollapse_RemovesNestedChildCards() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        assertEquals(3, mModelList.size());
+        assertTrue(mModelList.get(0).model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null);
+        assertNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
+
+        assertEquals(TAB_GROUP_ID, mModelList.get(1).model.get(TabProperties.TAB_GROUP_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+
+        assertEquals(TAB_GROUP_ID, mModelList.get(2).model.get(TabProperties.TAB_GROUP_ID));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupCollapsed(TAB_GROUP_ID, true, false);
+
+        assertEquals(1, mModelList.size());
+        assertTrue(mModelList.get(0).model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null);
+        assertNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
+    }
+
+    @Test
+    public void testVerticalTabsCollapse_Idempotent() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        assertEquals(3, mModelList.size());
+
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupCollapsed(TAB_GROUP_ID, true, false);
+        assertEquals(1, mModelList.size());
+
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupCollapsed(TAB_GROUP_ID, true, false);
+        assertEquals(1, mModelList.size());
+    }
+
+    @Test
+    public void testVerticalTabsExpand_InsertsNestedChildCards() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(true);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        assertEquals(1, mModelList.size());
+        assertTrue(mModelList.get(0).model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null);
+        assertNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
+
+        mTabGroupObserverCaptor.getValue().didChangeTabGroupCollapsed(TAB_GROUP_ID, false, false);
+
+        assertEquals(3, mModelList.size());
+        assertTrue(mModelList.get(0).model.get(TabProperties.TAB_GROUP_CARD_COLOR) != null);
+        assertNull(mModelList.get(0).model.get(TabProperties.TAB_GROUP_ID));
+
+        assertEquals(TAB_GROUP_ID, mModelList.get(1).model.get(TabProperties.TAB_GROUP_ID));
+        assertEquals(TAB1_ID, mModelList.get(1).model.get(TabProperties.TAB_ID));
+
+        assertEquals(TAB_GROUP_ID, mModelList.get(2).model.get(TabProperties.TAB_GROUP_ID));
+        assertEquals(TAB3_ID, mModelList.get(2).model.get(TabProperties.TAB_ID));
+    }
+
+    @Test
+    public void testVerticalTabs_IndexFromTabIdPrioritizesChildOverHeader() {
+        setUpTabListMediator(TabListMediatorType.VERTICAL_TABS, TabListMode.GRID);
+        mMediator.initWithNative(mProfile);
+        mMediator.resetWithListOfTabs(null, null, false);
+
+        Tab tab3 = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, tab3));
+        createTabGroup(tabs, TAB_GROUP_ID);
+
+        when(mTabModel.getTabsInGroup(TAB_GROUP_ID)).thenReturn(tabs);
+        when(mTabModel.getTabGroupCollapsed(TAB_GROUP_ID)).thenReturn(false);
+        when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
+        when(mTabModel.getTabById(TAB3_ID)).thenReturn(tab3);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        // Model list contains:
+        // [0] Group Header Card (shares TAB1_ID)
+        // [1] First Child webpage row (shares TAB1_ID)
+        // [2] Second Child webpage row (TAB3_ID)
+        assertEquals(3, mModelList.size());
+
+        // Verify that querying indexFromTabId for TAB1_ID correctly prioritizes and returns the
+        // nested child webpage row index (index 1) over the parent Group Header Card (index 0)
+        assertEquals(1, mModelList.indexFromTabId(TAB1_ID));
+        assertEquals(2, mModelList.indexFromTabId(TAB3_ID));
     }
 }

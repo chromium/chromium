@@ -89,7 +89,9 @@ public class TabListModel extends ModelList {
      * @return The index within the model list or {@link TabModel.INVALID_TAB_INDEX}.
      */
     public int indexFromTabId(int tabId) {
-        for (int i = 0; i < size(); i++) {
+        // Search in reverse to find the child tab card first rather than the group header card,
+        // since the first child and header share the same tab ID.
+        for (int i = size() - 1; i >= 0; i--) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return i;
         }
@@ -119,7 +121,8 @@ public class TabListModel extends ModelList {
      * @return The property model in the model list or null.
      */
     public @Nullable PropertyModel getModelFromTabId(int tabId) {
-        for (int i = 0; i < size(); i++) {
+        // Search in reverse to find the child tab card first rather than the group header card.
+        for (int i = size() - 1; i >= 0; i--) {
             PropertyModel model = get(i).model;
             if (model.get(CARD_TYPE) == TAB && model.get(TAB_ID) == tabId) return model;
         }

@@ -397,7 +397,7 @@ public class TabVerticalViewBinderUnitTest {
 
     @Test
     @SmallTest
-    public void testBindTabGroupHeader_ExpandedState() {
+    public void testBindTabGroupHeader_CollapsedState() {
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         ViewGroup headerView =
@@ -406,18 +406,42 @@ public class TabVerticalViewBinderUnitTest {
                                 .inflate(R.layout.vertical_tab_group_header, null, false);
         ImageView expandChevron = headerView.findViewById(R.id.expand_chevron);
 
-        // 0. Test Default/Null State (should point down - 0 degrees)
-        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_EXPANDED);
-        assertEquals(0f, expandChevron.getRotation(), 0.0f);
+        // 0. Test Default/Null State (should point up - 180 degrees as false = expanded)
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_COLLAPSED);
+        assertEquals(180f, expandChevron.getRotation(), 0.0f);
 
         // 1. Test Collapsed State (should point down - 0 degrees)
-        mModel.set(TabProperties.IS_EXPANDED, false);
-        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_EXPANDED);
+        mModel.set(TabProperties.IS_COLLAPSED, true);
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_COLLAPSED);
         assertEquals(0f, expandChevron.getRotation(), 0.0f);
 
-        // 2. Test Expanded State (should point up - 180 degrees)
-        mModel.set(TabProperties.IS_EXPANDED, true);
-        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_EXPANDED);
+        // 2. Test Expanded/Not-Collapsed State (should point up - 180 degrees)
+        mModel.set(TabProperties.IS_COLLAPSED, false);
+        TabVerticalViewBinder.bindTabGroupHeader(mModel, headerView, TabProperties.IS_COLLAPSED);
         assertEquals(180f, expandChevron.getRotation(), 0.0f);
+    }
+
+    @Test
+    @SmallTest
+    public void testBindTabGroupId_Padding() {
+        mItemView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+
+        mModel.set(TabProperties.TAB_GROUP_ID, new org.chromium.base.Token(1L, 2L));
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_GROUP_ID);
+
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) mItemView.getLayoutParams();
+        assertNotNull("MarginLayoutParams should not be null", lp);
+        int expectedMargin =
+                mItemView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_child_nesting_margin);
+        assertEquals(expectedMargin, lp.getMarginStart());
+
+        mModel.set(TabProperties.TAB_GROUP_ID, null);
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.TAB_GROUP_ID);
+        assertEquals(0, lp.getMarginStart());
     }
 }

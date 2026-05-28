@@ -13,6 +13,7 @@ import android.view.View.AccessibilityDelegate;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
@@ -123,7 +124,10 @@ public class TabProperties {
 
     public static final WritableBooleanPropertyKey IS_PINNED = new WritableBooleanPropertyKey();
 
-    public static final WritableBooleanPropertyKey IS_EXPANDED = new WritableBooleanPropertyKey();
+    public static final WritableBooleanPropertyKey IS_COLLAPSED = new WritableBooleanPropertyKey();
+
+    public static final WritableObjectPropertyKey<Token> TAB_GROUP_ID =
+            new WritableObjectPropertyKey<>();
 
     public static final WritableObjectPropertyKey<TabActionButtonData> TAB_ACTION_BUTTON_DATA =
             new WritableObjectPropertyKey<>();
@@ -259,6 +263,8 @@ public class TabProperties {
                         TAB_CARD_LABEL_DATA,
                         HIGHLIGHT_STATE,
                         IS_PINNED,
+                        IS_COLLAPSED,
+                        TAB_GROUP_ID,
                         MEDIA_INDICATOR
                     },
                     COMMON_KEYS_TAB_AND_GROUP_GRID);
@@ -301,7 +307,8 @@ public class TabProperties {
                 FAVICON_FETCHER,
                 IS_SELECTED,
                 IS_INCOGNITO,
-                IS_EXPANDED,
+                IS_COLLAPSED,
+                TAB_GROUP_ID,
                 TAB_CLICK_LISTENER,
                 TAB_LONG_CLICK_LISTENER,
                 TAB_CONTEXT_CLICK_LISTENER,

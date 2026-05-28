@@ -33,7 +33,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** View binder for the Vertical Tab List item rows. */
 @NullMarked
 class TabVerticalViewBinder {
-
     private static final float ROTATION_COLLAPSED = 0f;
     private static final float ROTATION_EXPANDED = 180f;
 
@@ -62,6 +61,8 @@ class TabVerticalViewBinder {
             if (actionButton != null) {
                 TabListViewBinderUtils.bindActionButton(model, actionButton, data);
             }
+        } else if (TabProperties.TAB_GROUP_ID == propertyKey) {
+            updateChildRowPadding(model, view);
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
             TabListViewBinderUtils.updateContentDescription(model, view);
         }
@@ -107,10 +108,11 @@ class TabVerticalViewBinder {
         } else if (TabProperties.CONTENT_DESCRIPTION_TEXT_RESOLVER == propertyKey) {
             TabListViewBinderUtils.updateContentDescription(model, view);
             // TODO(crbug.com/509226293): Override the default ACTION_CLICK action label
-            // to announce "expand" or "collapse" dynamically based on the TabProperties.IS_EXPANDED
+            // to announce "expand" or "collapse" dynamically based on the
+            // TabProperties.IS_COLLAPSED
             // state once child rows are implemented. Also confirm and resolve the conflicting
             // "Expand" prefix in the main content description string for active/expanded groups.
-        } else if (TabProperties.IS_EXPANDED == propertyKey) {
+        } else if (TabProperties.IS_COLLAPSED == propertyKey) {
             updateChevronRotation(model, view);
         }
     }
@@ -238,13 +240,30 @@ class TabVerticalViewBinder {
         }
     }
 
+    // Row-Specific Layout Geometry & Rotation Helpers
+
     private static void updateChevronRotation(PropertyModel model, ViewGroup view) {
-        boolean isExpanded = model.get(TabProperties.IS_EXPANDED);
+        boolean isCollapsed = model.get(TabProperties.IS_COLLAPSED);
         @Nullable ImageView expandChevron = view.findViewById(R.id.expand_chevron);
         if (expandChevron != null) {
             // TODO(crbug.com/509226293): Animate the rotation once child tab
             // expansion transitions are implemented.
-            expandChevron.setRotation(isExpanded ? ROTATION_EXPANDED : ROTATION_COLLAPSED);
+            expandChevron.setRotation(isCollapsed ? ROTATION_COLLAPSED : ROTATION_EXPANDED);
+        }
+    }
+
+    private static void updateChildRowPadding(PropertyModel model, View view) {
+        boolean isInGroup = model.get(TabProperties.TAB_GROUP_ID) != null;
+        int marginStart =
+                isInGroup
+                        ? view.getResources()
+                                .getDimensionPixelSize(R.dimen.vertical_tab_child_nesting_margin)
+                        : 0;
+        if (view.getLayoutParams() instanceof ViewGroup.MarginLayoutParams params) {
+            if (params.getMarginStart() != marginStart) {
+                params.setMarginStart(marginStart);
+                view.setLayoutParams(params);
+            }
         }
     }
 
