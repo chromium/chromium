@@ -316,8 +316,16 @@ TEST_F(DevToolsUIBindingsTest, SanitizeFrontendURL) {
        "devtools://devtools/?panel=sources"},
       {"devtools://devtools/?panel=resources",
        "devtools://devtools/?panel=resources"},
-      {"devtools://devtools/?panel=performance",
-       "devtools://devtools/?panel=performance"},
+      {"devtools://devtools/?panel=timeline",
+       "devtools://devtools/?panel=timeline"},
+      {"devtools://devtools/?panel=heap-profiler",
+       "devtools://devtools/?panel=heap-profiler"},
+      {"devtools://devtools/?panel=lighthouse",
+       "devtools://devtools/?panel=lighthouse"},
+      {"devtools://devtools/?panel=security",
+       "devtools://devtools/?panel=security"},
+      {"devtools://devtools/?panel=chrome-recorder",
+       "devtools://devtools/?panel=chrome-recorder"},
       {"devtools://devtools/?panel=unsupported", "devtools://devtools/"},
   };
 

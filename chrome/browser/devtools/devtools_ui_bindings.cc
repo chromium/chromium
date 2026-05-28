@@ -426,7 +426,9 @@ std::string SanitizeFrontendQueryParam(const std::string& key,
 
   if (key == "panel" &&
       (value == "elements" || value == "console" || value == "sources" ||
-       value == "network" || value == "resources" || value == "performance")) {
+       value == "network" || value == "resources" || value == "timeline" ||
+       value == "chrome-recorder" || value == "heap-profiler" ||
+         value == "lighthouse" || value == "security" )) {
     return value;
   }
 
