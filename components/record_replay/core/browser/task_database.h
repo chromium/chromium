@@ -51,11 +51,6 @@ class TaskDatabase {
   std::vector<TaskDefinition> GetTaskDefinitionsByUrl(std::string_view url);
   bool DeleteTaskDefinition(int64_t definition_id);
 
-  // Full CRUD for Suggestions Overrides
-  bool SaveTaskData(int64_t task_definition_id, const TaskData& data);
-  std::optional<TaskData> GetTaskData(int64_t task_definition_id);
-  bool DeleteTaskData(int64_t task_definition_id);
-
   // Full CRUD for Task Observations (Create & Update are unified under Save)
   int64_t SaveObservation(TaskObservation observation);
   std::vector<TaskObservation> GetObservationsForDefinition(
@@ -80,9 +75,6 @@ class TaskDatabase {
 
   // Creates the "task_parameters" table if it doesn't exist.
   bool CreateTaskParametersTable();
-
-  // Creates the "task_data" table if it doesn't exist.
-  bool CreateTaskDataTable();
 
   // Creates the "task_observations" table if it doesn't exist.
   bool CreateTaskObservationsTable();

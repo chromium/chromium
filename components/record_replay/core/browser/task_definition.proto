@@ -15,7 +15,6 @@ message TaskDefinition {
   string title = 4;
   string description = 5;
   repeated TaskStep task_steps = 6;
-  map<int32, StepDefinition> steps = 10;
 }
 
 message TaskStep {
@@ -53,21 +52,4 @@ enum ExecutionSource {
   MANUAL = 1;
 }
 
-// Legacy message. To be replaced with TaskStep.
-message StepDefinition {
-  string description = 1;
-  repeated string expected_data_keys = 2;
-}
 
-// Legacy message. To be replaced with TaskParameter.
-message TaskData {
-  // Maps step index to the data values.
-  map<int32, StepDataValues> step_data = 1;
-}
-
-// Legacy message. To be replaced with TaskParameter::values.
-message StepDataValues {
-  // Maps data key to its value. The keys are from StepDefinition
-  // expected_data_keys.
-  map<string, string> values = 1;
-}

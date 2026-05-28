@@ -75,7 +75,6 @@ void TaskDatabase::Init(const base::FilePath& profile_path) {
           switches::kWipeRecordings)) {
     std::ignore = db_.Execute("DROP TABLE IF EXISTS task_parameters");
     std::ignore = db_.Execute("DROP TABLE IF EXISTS task_steps");
-    std::ignore = db_.Execute("DROP TABLE IF EXISTS task_data");
     std::ignore = db_.Execute("DROP TABLE IF EXISTS task_definitions");
     std::ignore = db_.Execute("DROP TABLE IF EXISTS recordings");
     std::ignore = db_.Execute("DROP TABLE IF EXISTS task_parameter_values");
@@ -102,12 +101,6 @@ void TaskDatabase::Init(const base::FilePath& profile_path) {
 
   if (!CreateTaskParametersTable()) {
     DLOG(ERROR) << "Failed to create task_parameters table.";
-    db_.Close();
-    return;
-  }
-
-  if (!CreateTaskDataTable()) {
-    DLOG(ERROR) << "Failed to create task_data table.";
     db_.Close();
     return;
   }
@@ -262,21 +255,6 @@ bool TaskDatabase::CreateTaskParametersTable() {
   return db_.Execute(
       "CREATE INDEX IF NOT EXISTS idx_task_parameters_step ON "
       "task_parameters(step_id)");
-}
-
-bool TaskDatabase::CreateTaskDataTable() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (db_.DoesTableExist("task_data")) {
-    return true;
-  }
-
-  static constexpr char kSql[] =
-      // clang-format off
-      "CREATE TABLE task_data("
-          "task_definition_id INTEGER PRIMARY KEY NOT NULL,"
-          "proto BLOB NOT NULL)";
-  // clang-format on
-  return db_.Execute(kSql);
 }
 
 bool TaskDatabase::CreateTaskObservationsTable() {
@@ -499,21 +477,6 @@ int64_t TaskDatabase::SaveTaskDefinition(std::optional<int64_t> definition_id,
                                          TaskDefinition definition) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (definition.task_steps().empty()) {
-    for (const auto& [index, legacy_step] : definition.steps()) {
-      TaskStep* step = definition.add_task_steps();
-      step->set_step_index(index - 1);
-      step->set_description(legacy_step.description());
-      step->set_url(definition.url());
-      for (const std::string& key : legacy_step.expected_data_keys()) {
-        TaskParameter* param = step->add_parameters();
-        param->set_key(key);
-        param->set_name(key);
-        param->set_type("string");
-      }
-    }
-  }
-
   sql::Transaction transaction(&db_);
   if (!transaction.Begin()) {
     return 0;
@@ -647,14 +610,6 @@ std::optional<TaskDefinition> TaskDatabase::GetTaskDefinition(
       GetStepsOfDefinition(definition_id, std::move(step_params));
 
   for (TaskStep& step : steps) {
-    StepDefinition legacy_step;
-    legacy_step.set_description(step.description());
-    for (const TaskParameter& parameter : step.parameters()) {
-      legacy_step.add_expected_data_keys(parameter.key());
-    }
-    (*definition->mutable_steps())[step.step_index() + 1] =
-        std::move(legacy_step);
-
     *definition->add_task_steps() = std::move(step);
   }
 
@@ -732,17 +687,7 @@ bool TaskDatabase::DeleteTaskDefinition(int64_t definition_id) {
     return false;
   }
 
-  // 5. Delete task data.
-  static constexpr char kDeleteDataSql[] =
-      "DELETE FROM task_data WHERE task_definition_id=?";
-  sql::Statement delete_data(
-      db_.GetCachedStatement(SQL_FROM_HERE, kDeleteDataSql));
-  delete_data.BindInt64(0, definition_id);
-  if (!delete_data.Run()) {
-    return false;
-  }
-
-  // 6. Delete definition itself.
+  // 5. Delete definition itself.
   static constexpr char kDeleteDefSql[] =
       "DELETE FROM task_definitions WHERE definition_id=?";
   sql::Statement statement(
@@ -1049,53 +994,7 @@ std::optional<std::string> TaskDatabase::GetParameterValue(
   return std::nullopt;
 }
 
-bool TaskDatabase::SaveTaskData(int64_t task_definition_id,
-                                const TaskData& data) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!HasDefinitionWithId(task_definition_id)) {
-    return false;
-  }
-  static constexpr char kSql[] =
-      // clang-format off
-      "INSERT OR REPLACE INTO task_data(task_definition_id,proto) "
-      "VALUES(?,?)";
-  // clang-format on
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, task_definition_id);
-  statement.BindBlob(1, data.SerializeAsString());
-  return statement.Run();
-}
 
-std::optional<TaskData> TaskDatabase::GetTaskData(int64_t task_definition_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr char kSql[] =
-      // clang-format off
-      "SELECT proto FROM task_data WHERE task_definition_id=?";
-  // clang-format on
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, task_definition_id);
-
-  if (!statement.Step()) {
-    return std::nullopt;
-  }
-
-  TaskData data;
-  if (data.ParseFromString(statement.ColumnBlobAsString(0))) {
-    return data;
-  }
-  return std::nullopt;
-}
-
-bool TaskDatabase::DeleteTaskData(int64_t task_definition_id) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static constexpr char kSql[] =
-      // clang-format off
-      "DELETE FROM task_data WHERE task_definition_id=?";
-  // clang-format on
-  sql::Statement statement(db_.GetCachedStatement(SQL_FROM_HERE, kSql));
-  statement.BindInt64(0, task_definition_id);
-  return statement.Run();
-}
 
 bool TaskDatabase::HasDefinitionWithId(std::optional<int64_t> definition_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

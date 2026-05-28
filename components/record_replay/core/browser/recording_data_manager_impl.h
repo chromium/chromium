@@ -47,14 +47,6 @@ class RecordingDataManagerImpl : public RecordingDataManager {
   void GetTaskDefinitionsByUrl(
       std::string url,
       base::OnceCallback<void(std::vector<TaskDefinition>)> callback) override;
-  void SaveTaskData(int64_t task_definition_id,
-                    TaskData data,
-                    base::OnceCallback<void(bool)> callback) override;
-  void GetTaskData(
-      int64_t task_definition_id,
-      base::OnceCallback<void(std::optional<TaskData>)> callback) override;
-  void DeleteTaskData(int64_t task_definition_id,
-                      base::OnceCallback<void(bool)> callback) override;
 
  private:
   base::SequenceBound<TaskDatabase> db_;

@@ -90,29 +90,4 @@ void RecordingDataManagerImpl::GetTaskDefinitionsByUrl(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::SaveTaskData(
-    int64_t task_definition_id,
-    TaskData data,
-    base::OnceCallback<void(bool)> callback) {
-  db_.AsyncCall(&TaskDatabase::SaveTaskData)
-      .WithArgs(task_definition_id, std::move(data))
-      .Then(std::move(callback));
-}
-
-void RecordingDataManagerImpl::GetTaskData(
-    int64_t task_definition_id,
-    base::OnceCallback<void(std::optional<TaskData>)> callback) {
-  db_.AsyncCall(&TaskDatabase::GetTaskData)
-      .WithArgs(task_definition_id)
-      .Then(std::move(callback));
-}
-
-void RecordingDataManagerImpl::DeleteTaskData(
-    int64_t task_definition_id,
-    base::OnceCallback<void(bool)> callback) {
-  db_.AsyncCall(&TaskDatabase::DeleteTaskData)
-      .WithArgs(task_definition_id)
-      .Then(std::move(callback));
-}
-
 }  // namespace record_replay

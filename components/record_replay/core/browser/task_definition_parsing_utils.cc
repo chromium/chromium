@@ -127,14 +127,6 @@ base::expected<TaskDefinition, std::string> ParseDetailedSyntax(
         }
       }
     }
-
-    StepDefinition legacy_step;
-    legacy_step.set_description(step.value().description());
-    for (int i = 0; i < step.value().parameters_size(); ++i) {
-      legacy_step.add_expected_data_keys(step.value().parameters(i).key());
-    }
-    (*definition.mutable_steps())[step_index + 1] = std::move(legacy_step);
-
     *definition.add_task_steps() = std::move(step.value());
 
     step_index++;
@@ -155,11 +147,6 @@ base::expected<TaskDefinition, std::string> ParseQuickSyntax(
   step->set_step_index(0);
   step->set_description(fallback_desc);
   step->set_url(url.spec());
-
-  StepDefinition legacy_step;
-  legacy_step.set_description(fallback_desc);
-  (*definition.mutable_steps())[1] = legacy_step;
-
   return definition;
 }
 

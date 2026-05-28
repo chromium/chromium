@@ -54,19 +54,6 @@ class RecordingDataManager : public KeyedService {
       std::string url,
       base::OnceCallback<void(std::vector<TaskDefinition>)> callback) = 0;
 
-  // Saves or updates task data for a task definition.
-  virtual void SaveTaskData(int64_t task_definition_id,
-                            TaskData data,
-                            base::OnceCallback<void(bool)> callback) = 0;
-
-  // Retrieves task data for a task definition.
-  virtual void GetTaskData(
-      int64_t task_definition_id,
-      base::OnceCallback<void(std::optional<TaskData>)> callback) = 0;
-
-  // Deletes task data for a task definition.
-  virtual void DeleteTaskData(int64_t task_definition_id,
-                              base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace record_replay

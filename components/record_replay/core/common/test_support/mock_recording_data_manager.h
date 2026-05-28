@@ -51,23 +51,6 @@ class MockRecordingDataManager : public RecordingDataManager {
                base::OnceCallback<void(std::vector<TaskDefinition>)> callback),
               (override));
 
-  // Legacy Task Data mock targets (preserved for CL 1 / part4b base setup)
-  MOCK_METHOD(void,
-              SaveTaskData,
-              (int64_t task_definition_id,
-               TaskData data,
-               base::OnceCallback<void(bool)> callback),
-              (override));
-  MOCK_METHOD(void,
-              GetTaskData,
-              (int64_t task_definition_id,
-               base::OnceCallback<void(std::optional<TaskData>)> callback),
-              (override));
-  MOCK_METHOD(void,
-              DeleteTaskData,
-              (int64_t task_definition_id,
-               base::OnceCallback<void(bool)> callback),
-              (override));
 };
 
 }  // namespace record_replay
