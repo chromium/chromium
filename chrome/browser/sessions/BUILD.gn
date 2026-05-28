@@ -52,6 +52,7 @@ source_set("sessions") {
     public_deps += [
       "//chrome/browser/ui/browser_window",
       "//components/keyed_service/core",
+      "//components/paint_preview/buildflags",
       "//components/split_tabs",
       "//components/tab_groups",
       "//content/public/browser",
