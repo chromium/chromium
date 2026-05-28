@@ -4880,12 +4880,14 @@ interface HTMLTableSectionElement : HTMLElement
 interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
+    getter htmlFor
     getter shadowRootClonable
     getter shadowRootCustomElementRegistry
     getter shadowRootDelegatesFocus
     getter shadowRootMode
     getter shadowRootSerializable
     method constructor
+    setter htmlFor
     setter shadowRootClonable
     setter shadowRootCustomElementRegistry
     setter shadowRootDelegatesFocus
@@ -7202,6 +7204,13 @@ interface ProcessingInstruction : CharacterData
     getter sheet
     getter target
     method constructor
+    method getAttribute
+    method getAttributeNames
+    method hasAttribute
+    method hasAttributes
+    method removeAttribute
+    method setAttribute
+    method toggleAttribute
 interface Profiler : EventTarget
     attribute @@toStringTag
     getter sampleInterval
@@ -8923,10 +8932,12 @@ interface Sanitizer
     attribute @@toStringTag
     method allowAttribute
     method allowElement
+    method allowProcessingInstruction
     method constructor
     method get
     method removeAttribute
     method removeElement
+    method removeProcessingInstruction
     method removeUnsafe
     method replaceElementWithChildren
     method setComments

@@ -2374,7 +2374,7 @@
     // <template patchfor> etc.
     {
       name: "DocumentPatching",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "DocumentPictureInPictureAPI",
@@ -3407,7 +3407,7 @@
     {
       // Parse processing instructions in HTML.
       name: "HTMLProcessingInstruction",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "ICUCapitalization",
