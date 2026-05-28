@@ -24,8 +24,8 @@
 #include "components/record_replay/core/browser/record_replay_driver_factory.h"
 #include "components/record_replay/core/browser/recorder.h"
 #include "components/record_replay/core/browser/recording.pb.h"
-#include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/replayer.h"
+#include "components/record_replay/core/browser/task_store.h"
 #include "components/record_replay/core/common/aliases.h"
 #include "components/record_replay/core/common/element_id.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -193,8 +193,8 @@ void RecordReplayManager::GetMatchingRecording(
     return;
   }
 
-  RecordingDataManager* rdm = client_->GetRecordingDataManager();
-  if (!rdm) {
+  TaskStore* store = client_->GetTaskStore();
+  if (!store) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::nullopt));
     return;
@@ -227,9 +227,9 @@ void RecordReplayManager::GetMatchingRecording(
                            std::move(cb), std::move(recording)));
       };
 
-  rdm->GetRecordingsByUrl(client_->GetPrimaryMainFrameUrl().spec(),
-                          base::BindOnce(invoke_with_matching_recording,
-                                         GetWeakPtr(), std::move(cb)));
+  store->GetRecordingsByUrl(client_->GetPrimaryMainFrameUrl().spec(),
+                            base::BindOnce(invoke_with_matching_recording,
+                                           GetWeakPtr(), std::move(cb)));
 }
 
 void RecordReplayManager::GetMatchingRecordings(
@@ -240,8 +240,8 @@ void RecordReplayManager::GetMatchingRecordings(
     return;
   }
 
-  RecordingDataManager* rdm = client_->GetRecordingDataManager();
-  if (!rdm) {
+  TaskStore* store = client_->GetTaskStore();
+  if (!store) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::vector<Recording>()));
     return;
@@ -251,8 +251,8 @@ void RecordReplayManager::GetMatchingRecordings(
   // on whether their first action's element selector matches exactly one
   // element on the page (as done in `GetMatchingRecording`), but for the UI
   // we'll just return all recordings matching the URL.
-  rdm->GetRecordingsByUrl(client_->GetPrimaryMainFrameUrl().spec(),
-                          std::move(cb));
+  store->GetRecordingsByUrl(client_->GetPrimaryMainFrameUrl().spec(),
+                            std::move(cb));
 }
 
 void RecordReplayManager::StartReplaySpecific(Recording recording) {

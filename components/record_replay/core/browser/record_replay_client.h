@@ -19,7 +19,7 @@ class WebContents;
 
 namespace record_replay {
 
-class RecordingDataManager;
+class TaskStore;
 class RecordReplayDriverFactory;
 class RecordReplayManager;
 
@@ -39,9 +39,9 @@ class RecordReplayClient {
   // Returns the driver factory owned by this client.
   virtual RecordReplayDriverFactory& GetDriverFactory() = 0;
 
-  // Returns the data manager (if one exists), which may be shared with other
+  // Returns the task store (if one exists), which may be shared with other
   // clients.
-  virtual RecordingDataManager* GetRecordingDataManager() = 0;
+  virtual TaskStore* GetTaskStore() = 0;
 
   // Returns the primary main frame's last committed URL without credentials.
   virtual GURL GetPrimaryMainFrameUrl() = 0;

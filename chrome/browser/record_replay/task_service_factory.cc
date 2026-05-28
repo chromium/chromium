@@ -6,8 +6,8 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/record_replay/recording_data_manager_factory.h"
 #include "chrome/browser/record_replay/task_parameters_extractor_factory.h"
+#include "chrome/browser/record_replay/task_store_factory.h"
 #include "components/record_replay/core/browser/task_service.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 
@@ -27,9 +27,9 @@ TaskServiceFactory* TaskServiceFactory::GetInstance() {
 
 TaskServiceFactory::TaskServiceFactory()
     : ProfileKeyedServiceFactory("TaskService") {
-  // The TaskService depends on the RecordingDataManager to be able to use the
+  // The TaskService depends on the TaskStore to be able to use the
   // TaskDatabase.
-  DependsOn(RecordingDataManagerFactory::GetInstance());
+  DependsOn(TaskStoreFactory::GetInstance());
   DependsOn(TaskParametersExtractorFactory::GetInstance());
 }
 
@@ -43,7 +43,7 @@ TaskServiceFactory::BuildServiceInstanceForBrowserContext(
   }
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<TaskService>(
-      RecordingDataManagerFactory::GetForProfile(profile),
+      TaskStoreFactory::GetForProfile(profile),
       TaskParametersExtractorFactory::GetForProfile(profile));
 }
 

@@ -6,20 +6,20 @@
 
 #include "base/functional/callback.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/record_replay/core/browser/recording_data_manager.h"
+#include "components/record_replay/core/browser/task_store.h"
 
 namespace record_replay {
 
 SaveRecordingBubbleControllerImpl::SaveRecordingBubbleControllerImpl(
     Recording recording,
-    RecordingDataManager* recording_data_manager,
+    TaskStore* task_store,
     base::OnceCallback<void(std::string_view)> show_toast_callback,
     base::OnceClosure on_close_closure)
     : recording_(std::move(recording)),
-      recording_data_manager_(*recording_data_manager),
+      task_store_(*task_store),
       show_toast_callback_(std::move(show_toast_callback)),
       on_close_closure_(std::move(on_close_closure)) {
-  CHECK(recording_data_manager);
+  CHECK(task_store);
 }
 
 SaveRecordingBubbleControllerImpl::~SaveRecordingBubbleControllerImpl() {
@@ -30,8 +30,8 @@ SaveRecordingBubbleControllerImpl::~SaveRecordingBubbleControllerImpl() {
 
 void SaveRecordingBubbleControllerImpl::OnSave(std::u16string_view name) {
   recording_.set_name(base::UTF16ToUTF8(name));
-  recording_data_manager_->AddRecording(std::move(recording_),
-                                        base::BindOnce([](int64_t id) {}));
+  task_store_->AddRecording(std::move(recording_),
+                            base::BindOnce([](int64_t id) {}));
   if (show_toast_callback_) {
     std::move(show_toast_callback_).Run("Recording saved");
   }

@@ -12,7 +12,7 @@
 #include "components/record_replay/core/browser/record_replay_driver.h"
 #include "components/record_replay/core/browser/record_replay_driver_factory.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
-#include "components/record_replay/core/browser/recording_data_manager.h"
+#include "components/record_replay/core/browser/task_store.h"
 #include "components/record_replay/core/common/aliases.h"
 #include "components/record_replay/core/common/record_replay.mojom.h"
 #include "components/record_replay/core/common/record_replay_features.h"
@@ -80,7 +80,7 @@ class MockRecordReplayClient : public RecordReplayClient,
     ON_CALL(*this, GetManager()).WillByDefault(ReturnRef(manager_));
     ON_CALL(*this, GetDriverFactory())
         .WillByDefault(ReturnRef(driver_factory_));
-    ON_CALL(*this, GetRecordingDataManager()).WillByDefault(Return(nullptr));
+    ON_CALL(*this, GetTaskStore()).WillByDefault(Return(nullptr));
     web_contents->ForEachRenderFrameHost(
         [this](content::RenderFrameHost* rfh) { RenderFrameCreated(rfh); });
   }
@@ -88,7 +88,7 @@ class MockRecordReplayClient : public RecordReplayClient,
 
   MOCK_METHOD(RecordReplayManager&, GetManager, (), (override));
   MOCK_METHOD(RecordReplayDriverFactory&, GetDriverFactory, (), (override));
-  MOCK_METHOD(RecordingDataManager*, GetRecordingDataManager, (), (override));
+  MOCK_METHOD(TaskStore*, GetTaskStore, (), (override));
   MOCK_METHOD(GURL, GetPrimaryMainFrameUrl, (), (override));
   MOCK_METHOD(autofill::AutofillClient*, GetAutofillClient, (), (override));
   MOCK_METHOD(void, ReportToUser, (std::string_view message), (override));

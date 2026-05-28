@@ -11,7 +11,7 @@
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_driver_factory.h"
 #include "components/record_replay/core/common/record_replay_features.h"
-#include "components/record_replay/core/common/test_support/mock_recording_data_manager.h"
+#include "components/record_replay/core/common/test_support/mock_task_store.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -57,23 +57,19 @@ class MockRecordReplayClient : public RecordReplayClient {
     ON_CALL(*this, GetManager()).WillByDefault(ReturnRef(manager_));
     ON_CALL(*this, GetDriverFactory())
         .WillByDefault(ReturnRef(driver_factory_));
-    ON_CALL(*this, GetRecordingDataManager())
-        .WillByDefault(Return(&data_manager_));
+    ON_CALL(*this, GetTaskStore()).WillByDefault(Return(&data_manager_));
   }
   ~MockRecordReplayClient() override = default;
 
   MOCK_METHOD(RecordReplayManager&, GetManager, (), (override));
   MOCK_METHOD(RecordReplayDriverFactory&, GetDriverFactory, (), (override));
-  MOCK_METHOD(MockRecordingDataManager*,
-              GetRecordingDataManager,
-              (),
-              (override));
+  MOCK_METHOD(MockTaskStore*, GetTaskStore, (), (override));
   MOCK_METHOD(GURL, GetPrimaryMainFrameUrl, (), (override));
   MOCK_METHOD(autofill::AutofillClient*, GetAutofillClient, (), (override));
   MOCK_METHOD(void, ReportToUser, (std::string_view message), (override));
 
  private:
-  MockRecordingDataManager data_manager_;
+  MockTaskStore data_manager_;
   RecordReplayManager manager_;
   MockRecordReplayDriverFactory driver_factory_;
 };
@@ -94,9 +90,7 @@ class RecordReplayManagerTest : public content::RenderViewHostTestHarness {
   }
 
   MockRecordReplayClient& client() { return *client_; }
-  MockRecordingDataManager& data_manager() {
-    return *client_->GetRecordingDataManager();
-  }
+  MockTaskStore& data_manager() { return *client_->GetTaskStore(); }
   RecordReplayManager& manager() { return client_->GetManager(); }
 
  private:

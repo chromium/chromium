@@ -17,7 +17,7 @@ class GURL;
 
 namespace record_replay {
 
-class RecordingDataManager;
+class TaskStore;
 class TaskData;
 class TaskDefinition;
 class TaskObservation;
@@ -31,7 +31,7 @@ using TaskParameterValues = TaskData;
 // Service responsible for coordinating the lifecycle of automation tasks.
 class TaskService : public KeyedService {
  public:
-  TaskService(RecordingDataManager* recording_data_manager,
+  TaskService(TaskStore* task_store,
               TaskParametersExtractor* task_parameters_extractor);
   TaskService(const TaskService&) = delete;
   TaskService& operator=(const TaskService&) = delete;
@@ -61,7 +61,7 @@ class TaskService : public KeyedService {
   void OnTaskDefinitionsRetrieved(const GURL& visited_url,
                                   std::vector<TaskDefinition> task_definitions);
 
-  raw_ptr<RecordingDataManager> recording_data_manager_;
+  raw_ptr<TaskStore> task_store_;
   raw_ptr<TaskParametersExtractor> task_parameters_extractor_;
 
   // For simplification, we assume there is just one task to be observed at one

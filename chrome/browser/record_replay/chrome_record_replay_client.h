@@ -27,7 +27,7 @@ class WebContents;
 }
 
 namespace record_replay {
-class RecordingDataManager;
+class TaskStore;
 }
 
 // The Chrome-specific concrete implementation of `RecordReplayClient`.
@@ -54,7 +54,7 @@ class ChromeRecordReplayClient : public record_replay::RecordReplayClient,
   // record_replay::RecordReplayClient:
   record_replay::RecordReplayManager& GetManager() override;
   record_replay::RecordReplayDriverFactory& GetDriverFactory() override;
-  record_replay::RecordingDataManager* GetRecordingDataManager() override;
+  record_replay::TaskStore* GetTaskStore() override;
   GURL GetPrimaryMainFrameUrl() override;
   autofill::AutofillClient* GetAutofillClient() override;
   void ReportToUser(std::string_view message) override;

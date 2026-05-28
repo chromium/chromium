@@ -19,9 +19,6 @@ static_library("browser") {
     "record_replay_manager.h",
     "recorder.cc",
     "recorder.h",
-    "recording_data_manager.h",
-    "recording_data_manager_impl.cc",
-    "recording_data_manager_impl.h",
     "replayer.cc",
     "replayer.h",
     "task_database.cc",
@@ -39,6 +36,9 @@ static_library("browser") {
     "task_provider.h",
     "task_service.cc",
     "task_service.h",
+    "task_store.h",
+    "task_store_impl.cc",
+    "task_store_impl.h",
   ]
 
   deps = [
@@ -58,10 +58,10 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "file_task_provider_unittest.cc",
-    "recording_data_manager_impl_unittest.cc",
     "task_database_unittest.cc",
     "task_parameters_extractor_unittest.cc",
     "task_service_unittest.cc",
+    "task_store_impl_unittest.cc",
   ]
   deps = [
     ":browser",

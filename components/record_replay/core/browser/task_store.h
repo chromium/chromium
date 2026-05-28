@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_RECORDING_DATA_MANAGER_H_
-#define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_RECORDING_DATA_MANAGER_H_
+#ifndef COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_STORE_H_
+#define COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_STORE_H_
 
 #include <optional>
 #include <string>
@@ -17,17 +17,17 @@
 namespace record_replay {
 
 // Manages persistent storage for recording protos, task definitions, and
-// sensitive task data.
+// task observations.
 //
 // Tied to the lifecycle of a `Profile`.
-class RecordingDataManager : public KeyedService {
+class TaskStore : public KeyedService {
  public:
-  RecordingDataManager() = default;
-  RecordingDataManager(const RecordingDataManager&) = delete;
-  RecordingDataManager& operator=(const RecordingDataManager&) = delete;
-  RecordingDataManager(RecordingDataManager&&) = delete;
-  RecordingDataManager& operator=(RecordingDataManager&&) = delete;
-  ~RecordingDataManager() override = default;
+  TaskStore() = default;
+  TaskStore(const TaskStore&) = delete;
+  TaskStore& operator=(const TaskStore&) = delete;
+  TaskStore(TaskStore&&) = delete;
+  TaskStore& operator=(TaskStore&&) = delete;
+  ~TaskStore() override = default;
 
   // Adds a recording to the database.
   virtual void AddRecording(Recording recording,
@@ -71,4 +71,4 @@ class RecordingDataManager : public KeyedService {
 
 }  // namespace record_replay
 
-#endif  // COMPONENTS_RECORD_REPLAY_CORE_BROWSER_RECORDING_DATA_MANAGER_H_
+#endif  // COMPONENTS_RECORD_REPLAY_CORE_BROWSER_TASK_STORE_H_

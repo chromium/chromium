@@ -2,37 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/record_replay/recording_data_manager_factory.h"
+#include "chrome/browser/record_replay/task_store_factory.h"
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/record_replay/core/browser/recording_data_manager_impl.h"
+#include "components/record_replay/core/browser/task_store_impl.h"
 #include "components/record_replay/core/common/record_replay_features.h"
 #include "components/record_replay/core/common/record_replay_switches.h"
 
 namespace record_replay {
 
 // static
-RecordingDataManager* RecordingDataManagerFactory::GetForProfile(
-    Profile* profile) {
-  return static_cast<RecordingDataManager*>(
+TaskStore* TaskStoreFactory::GetForProfile(Profile* profile) {
+  return static_cast<TaskStore*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
-RecordingDataManagerFactory* RecordingDataManagerFactory::GetInstance() {
-  static base::NoDestructor<RecordingDataManagerFactory> instance;
+TaskStoreFactory* TaskStoreFactory::GetInstance() {
+  static base::NoDestructor<TaskStoreFactory> instance;
   return instance.get();
 }
 
-RecordingDataManagerFactory::RecordingDataManagerFactory()
-    : ProfileKeyedServiceFactory("RecordingDataManager",
+TaskStoreFactory::TaskStoreFactory()
+    : ProfileKeyedServiceFactory("TaskStore",
                                  ProfileSelections::BuildForRegularProfile()) {}
 
-RecordingDataManagerFactory::~RecordingDataManagerFactory() = default;
+TaskStoreFactory::~TaskStoreFactory() = default;
 
-bool RecordingDataManagerFactory::ServiceIsCreatedWithBrowserContext() const {
+bool TaskStoreFactory::ServiceIsCreatedWithBrowserContext() const {
   if (!base::FeatureList::IsEnabled(features::kRecordReplayBase)) {
     return false;
   }
@@ -48,12 +47,12 @@ bool RecordingDataManagerFactory::ServiceIsCreatedWithBrowserContext() const {
 }
 
 std::unique_ptr<KeyedService>
-RecordingDataManagerFactory::BuildServiceInstanceForBrowserContext(
+TaskStoreFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(features::kRecordReplayBase)) {
     return nullptr;
   }
-  return std::make_unique<RecordingDataManagerImpl>(
+  return std::make_unique<TaskStoreImpl>(
       Profile::FromBrowserContext(context)->GetPath());
 }
 

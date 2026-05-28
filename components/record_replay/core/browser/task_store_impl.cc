@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/record_replay/core/browser/recording_data_manager_impl.h"
+#include "components/record_replay/core/browser/task_store_impl.h"
 
 #include <optional>
 #include <string>
@@ -32,7 +32,7 @@ base::FilePath GetSeedingFilePath() {
 
 }  // namespace
 
-RecordingDataManagerImpl::RecordingDataManagerImpl(base::FilePath profile_path)
+TaskStoreImpl::TaskStoreImpl(base::FilePath profile_path)
     : db_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            // CRITICAL: MUST use BLOCK_SHUTDOWN. SQLite database writes and
@@ -52,20 +52,19 @@ RecordingDataManagerImpl::RecordingDataManagerImpl(base::FilePath profile_path)
                 features::kRecordReplayTaskDefinitionSeed.Get());
 }
 
-RecordingDataManagerImpl::~RecordingDataManagerImpl() {
+TaskStoreImpl::~TaskStoreImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void RecordingDataManagerImpl::AddRecording(
-    Recording recording,
-    base::OnceCallback<void(int64_t)> callback) {
+void TaskStoreImpl::AddRecording(Recording recording,
+                                 base::OnceCallback<void(int64_t)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_.AsyncCall(&TaskDatabase::AddRecording)
       .WithArgs(std::move(recording))
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::GetRecordingsByUrl(
+void TaskStoreImpl::GetRecordingsByUrl(
     std::string url,
     base::OnceCallback<void(std::vector<Recording>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -74,7 +73,7 @@ void RecordingDataManagerImpl::GetRecordingsByUrl(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::SaveTaskDefinition(
+void TaskStoreImpl::SaveTaskDefinition(
     std::optional<int64_t> task_definition_id,
     TaskDefinition task_definition,
     base::OnceCallback<void(int64_t)> callback) {
@@ -84,7 +83,7 @@ void RecordingDataManagerImpl::SaveTaskDefinition(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::GetTaskDefinition(
+void TaskStoreImpl::GetTaskDefinition(
     int64_t task_definition_id,
     base::OnceCallback<void(std::optional<TaskDefinition>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -93,7 +92,7 @@ void RecordingDataManagerImpl::GetTaskDefinition(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::GetTaskDefinitionsByUrl(
+void TaskStoreImpl::GetTaskDefinitionsByUrl(
     std::string url,
     base::OnceCallback<void(std::vector<TaskDefinition>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -102,7 +101,7 @@ void RecordingDataManagerImpl::GetTaskDefinitionsByUrl(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::DeleteTaskDefinition(
+void TaskStoreImpl::DeleteTaskDefinition(
     int64_t task_definition_id,
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -111,7 +110,7 @@ void RecordingDataManagerImpl::DeleteTaskDefinition(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::SaveObservation(
+void TaskStoreImpl::SaveObservation(
     TaskObservation observation,
     base::OnceCallback<void(int64_t)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -120,7 +119,7 @@ void RecordingDataManagerImpl::SaveObservation(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::GetObservationsForDefinition(
+void TaskStoreImpl::GetObservationsForDefinition(
     int64_t task_definition_id,
     base::OnceCallback<void(std::vector<TaskObservation>)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -129,9 +128,8 @@ void RecordingDataManagerImpl::GetObservationsForDefinition(
       .Then(std::move(callback));
 }
 
-void RecordingDataManagerImpl::DeleteObservation(
-    int64_t observation_id,
-    base::OnceCallback<void(bool)> callback) {
+void TaskStoreImpl::DeleteObservation(int64_t observation_id,
+                                      base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   db_.AsyncCall(&TaskDatabase::DeleteObservation)
       .WithArgs(observation_id)

@@ -22,11 +22,11 @@ It interfaces with these layers through the `RecordReplayClient` and
   into a `Recording` proto.
 - **`Replayer`**: Executes a previously recorded session by commanding the
   renderer to perform specific actions at the recorded times.
-- **`RecordingDataManager`**: An interface for persistent storage of recorded
+- **`TaskStore`**: An interface for persistent storage of recorded
   sessions.
 - **`TaskDatabase`**: A relational SQLite database that stores metadata
   about recordings, standalone `TaskDefinition` intent analysis, and
-  sensitive `TaskData` values. It supports efficient lookup by site and
+  completed `TaskObservation` values. It supports efficient lookup by site and
   handles database migrations and seeding from Finch parameters.
 - **Abstractions (`record_replay_client.h`, `record_replay_driver.h`, `record_replay_driver_factory.h`)**:
   Abstract interfaces that allow the core logic to communicate with the content
@@ -34,7 +34,7 @@ It interfaces with these layers through the `RecordReplayClient` and
 
 ## Object Ownership & Lifecycle
 
-- **Persistent Storage**: `RecordingDataManager` is typically tied to a user
+- **Persistent Storage**: `TaskStore` is typically tied to a user
   profile.
 - **State Management**: `RecordReplayManager` is typically tied to a tab.
 - **Active Sessions**: `Recorder` and `Replayer` are transient objects created

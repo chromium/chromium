@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/record_replay/core/browser/recording_data_manager_impl.h"
+#include "components/record_replay/core/browser/task_store_impl.h"
 
 #include <memory>
 #include <string>
@@ -57,17 +57,16 @@ Recording CreateAppointmentRecording() {
 
 using ::base::test::EqualsProto;
 
-class RecordingDataManagerImplTest : public ::testing::Test {
+class TaskStoreImplTest : public ::testing::Test {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    data_manager_ =
-        std::make_unique<RecordingDataManagerImpl>(temp_dir_.GetPath());
+    task_store_ = std::make_unique<TaskStoreImpl>(temp_dir_.GetPath());
     WaitForDatabaseOperations();
   }
 
   void TearDown() override {
-    data_manager_.reset();
+    task_store_.reset();
     WaitForDatabaseOperations();
     ASSERT_TRUE(temp_dir_.Delete());
   }
@@ -77,16 +76,15 @@ class RecordingDataManagerImplTest : public ::testing::Test {
     base::ThreadPoolInstance::Get()->FlushForTesting();
   }
 
-  RecordingDataManagerImpl& data_manager() { return *data_manager_; }
+  TaskStoreImpl& task_store() { return *task_store_; }
 
-  void ResetDataManager() {
-    data_manager_.reset();
+  void ResetTaskStore() {
+    task_store_.reset();
     WaitForDatabaseOperations();
   }
 
-  void RecreateDataManager() {
-    data_manager_ =
-        std::make_unique<RecordingDataManagerImpl>(temp_dir_.GetPath());
+  void RecreateTaskStore() {
+    task_store_ = std::make_unique<TaskStoreImpl>(temp_dir_.GetPath());
     WaitForDatabaseOperations();
   }
 
@@ -95,18 +93,18 @@ class RecordingDataManagerImplTest : public ::testing::Test {
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  std::unique_ptr<RecordingDataManagerImpl> data_manager_;
+  std::unique_ptr<TaskStoreImpl> task_store_;
   base::ScopedTempDir temp_dir_;
 };
 
-TEST_F(RecordingDataManagerImplTest, AddAndRetrieveRecording) {
+TEST_F(TaskStoreImplTest, AddAndRetrieveRecording) {
   const Recording recording = CreateLoginRecording();
 
-  data_manager().AddRecording(recording, base::BindOnce([](int64_t id) {}));
+  task_store().AddRecording(recording, base::BindOnce([](int64_t id) {}));
   WaitForDatabaseOperations();
 
   base::test::TestFuture<std::vector<Recording>> future;
-  data_manager().GetRecordingsByUrl(recording.url(), future.GetCallback());
+  task_store().GetRecordingsByUrl(recording.url(), future.GetCallback());
   std::vector<Recording> recordings = future.Get();
   ASSERT_EQ(recordings.size(), 1u);
   recordings[0].clear_id();
@@ -114,34 +112,33 @@ TEST_F(RecordingDataManagerImplTest, AddAndRetrieveRecording) {
 }
 
 // Tests that recordings can be added and retrieved from the database.
-TEST_F(RecordingDataManagerImplTest, AddMultipleRecordings) {
+TEST_F(TaskStoreImplTest, AddMultipleRecordings) {
   const Recording login_recording = CreateLoginRecording();
   const Recording appointment_recording = CreateAppointmentRecording();
 
   {
     base::test::TestFuture<std::vector<Recording>> login_future;
     base::test::TestFuture<std::vector<Recording>> appointment_future;
-    data_manager().GetRecordingsByUrl(login_recording.url(),
-                                      login_future.GetCallback());
-    data_manager().GetRecordingsByUrl(appointment_recording.url(),
-                                      appointment_future.GetCallback());
+    task_store().GetRecordingsByUrl(login_recording.url(),
+                                    login_future.GetCallback());
+    task_store().GetRecordingsByUrl(appointment_recording.url(),
+                                    appointment_future.GetCallback());
     EXPECT_TRUE(login_future.Get().empty());
     EXPECT_TRUE(appointment_future.Get().empty());
   }
 
-  data_manager().AddRecording(appointment_recording,
-                              base::BindOnce([](int64_t id) {}));
-  data_manager().AddRecording(login_recording,
-                              base::BindOnce([](int64_t id) {}));
+  task_store().AddRecording(appointment_recording,
+                            base::BindOnce([](int64_t id) {}));
+  task_store().AddRecording(login_recording, base::BindOnce([](int64_t id) {}));
   WaitForDatabaseOperations();
 
   {
     base::test::TestFuture<std::vector<Recording>> login_future;
     base::test::TestFuture<std::vector<Recording>> appointment_future;
-    data_manager().GetRecordingsByUrl(login_recording.url(),
-                                      login_future.GetCallback());
-    data_manager().GetRecordingsByUrl(appointment_recording.url(),
-                                      appointment_future.GetCallback());
+    task_store().GetRecordingsByUrl(login_recording.url(),
+                                    login_future.GetCallback());
+    task_store().GetRecordingsByUrl(appointment_recording.url(),
+                                    appointment_future.GetCallback());
     std::vector<Recording> login_recordings = login_future.Get();
     std::vector<Recording> appointment_recordings = appointment_future.Get();
     ASSERT_EQ(login_recordings.size(), 1u);
@@ -153,19 +150,16 @@ TEST_F(RecordingDataManagerImplTest, AddMultipleRecordings) {
   }
 }
 
-TEST_F(RecordingDataManagerImplTest, AddMultipleIdenticalRecordingsForSameUrl) {
+TEST_F(TaskStoreImplTest, AddMultipleIdenticalRecordingsForSameUrl) {
   const Recording first_recording = CreateLoginRecording();
   const Recording second_recording = CreateLoginRecording();
 
-  data_manager().AddRecording(first_recording,
-                              base::BindOnce([](int64_t id) {}));
-  data_manager().AddRecording(first_recording,
-                              base::BindOnce([](int64_t id) {}));
+  task_store().AddRecording(first_recording, base::BindOnce([](int64_t id) {}));
+  task_store().AddRecording(first_recording, base::BindOnce([](int64_t id) {}));
   WaitForDatabaseOperations();
 
   base::test::TestFuture<std::vector<Recording>> future;
-  data_manager().GetRecordingsByUrl(first_recording.url(),
-                                    future.GetCallback());
+  task_store().GetRecordingsByUrl(first_recording.url(), future.GetCallback());
   std::vector<Recording> recordings = future.Get();
   ASSERT_EQ(recordings.size(), 2u);
   // Ensure the newest recording is first since the UI currently uses that.
@@ -175,11 +169,11 @@ TEST_F(RecordingDataManagerImplTest, AddMultipleIdenticalRecordingsForSameUrl) {
   EXPECT_THAT(recordings[1], EqualsProto(first_recording));
 }
 
-TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskDefinition) {
+TEST_F(TaskStoreImplTest, SaveAndRetrieveTaskDefinition) {
   const Recording recording = CreateLoginRecording();
 
   base::test::TestFuture<int64_t> id_future;
-  data_manager().AddRecording(recording, id_future.GetCallback());
+  task_store().AddRecording(recording, id_future.GetCallback());
   int64_t recording_id = id_future.Get();
   ASSERT_GT(recording_id, 0);
 
@@ -194,14 +188,14 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskDefinition) {
   step->set_url(recording.url());
 
   base::test::TestFuture<int64_t> add_future;
-  data_manager().SaveTaskDefinition(std::nullopt, std::move(task_definition),
-                                    add_future.GetCallback());
+  task_store().SaveTaskDefinition(std::nullopt, std::move(task_definition),
+                                  add_future.GetCallback());
   int64_t def_id = add_future.Get();
   EXPECT_GT(def_id, 0);
 
   base::test::TestFuture<std::vector<TaskDefinition>> get_future;
-  data_manager().GetTaskDefinitionsByUrl(recording.url(),
-                                         get_future.GetCallback());
+  task_store().GetTaskDefinitionsByUrl(recording.url(),
+                                       get_future.GetCallback());
   auto retrieved = get_future.Get();
 
   ASSERT_EQ(retrieved.size(), 1u);
@@ -212,27 +206,27 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveTaskDefinition) {
   EXPECT_EQ(retrieved[0].task_steps(0).description(), "Step 1");
 }
 
-TEST_F(RecordingDataManagerImplTest, DeleteTaskDefinition) {
+TEST_F(TaskStoreImplTest, DeleteTaskDefinition) {
   TaskDefinition definition;
   definition.set_title("Simple Booking");
   definition.set_url("https://example.com");
 
   base::test::TestFuture<int64_t> save_future;
-  data_manager().SaveTaskDefinition(std::nullopt, std::move(definition),
-                                    save_future.GetCallback());
+  task_store().SaveTaskDefinition(std::nullopt, std::move(definition),
+                                  save_future.GetCallback());
   int64_t def_id = save_future.Get();
   ASSERT_GT(def_id, 0);
 
   base::test::TestFuture<bool> delete_future;
-  data_manager().DeleteTaskDefinition(def_id, delete_future.GetCallback());
+  task_store().DeleteTaskDefinition(def_id, delete_future.GetCallback());
   EXPECT_TRUE(delete_future.Get());
 
   base::test::TestFuture<std::optional<TaskDefinition>> get_future;
-  data_manager().GetTaskDefinition(def_id, get_future.GetCallback());
+  task_store().GetTaskDefinition(def_id, get_future.GetCallback());
   EXPECT_FALSE(get_future.Get().has_value());
 }
 
-TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveObservations) {
+TEST_F(TaskStoreImplTest, SaveAndRetrieveObservations) {
   TaskDefinition definition;
   definition.set_title("Simple Booking");
   definition.set_url("https://example.com");
@@ -248,13 +242,13 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveObservations) {
   param->set_type("string");
 
   base::test::TestFuture<int64_t> save_def_future;
-  data_manager().SaveTaskDefinition(std::nullopt, std::move(definition),
-                                    save_def_future.GetCallback());
+  task_store().SaveTaskDefinition(std::nullopt, std::move(definition),
+                                  save_def_future.GetCallback());
   int64_t def_id = save_def_future.Get();
   ASSERT_GT(def_id, 0);
 
   base::test::TestFuture<std::optional<TaskDefinition>> get_def_future;
-  data_manager().GetTaskDefinition(def_id, get_def_future.GetCallback());
+  task_store().GetTaskDefinition(def_id, get_def_future.GetCallback());
   std::optional<TaskDefinition> retrieved_def = get_def_future.Take();
   ASSERT_TRUE(retrieved_def.has_value());
 
@@ -273,13 +267,13 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveObservations) {
   const int64_t expected_start_time = obs.start_time();
 
   base::test::TestFuture<int64_t> save_obs_future;
-  data_manager().SaveObservation(std::move(obs), save_obs_future.GetCallback());
+  task_store().SaveObservation(std::move(obs), save_obs_future.GetCallback());
   int64_t obs_id = save_obs_future.Get();
   EXPECT_GT(obs_id, 0);
 
   base::test::TestFuture<std::vector<TaskObservation>> get_obs_future;
-  data_manager().GetObservationsForDefinition(def_id,
-                                              get_obs_future.GetCallback());
+  task_store().GetObservationsForDefinition(def_id,
+                                            get_obs_future.GetCallback());
   std::vector<TaskObservation> observations = get_obs_future.Take();
 
   ASSERT_EQ(observations.size(), 1u);
@@ -290,8 +284,8 @@ TEST_F(RecordingDataManagerImplTest, SaveAndRetrieveObservations) {
             "Window");
 }
 
-TEST_F(RecordingDataManagerImplTest, SeedFromFileQuickSyntax) {
-  ResetDataManager();
+TEST_F(TaskStoreImplTest, SeedFromFileQuickSyntax) {
+  ResetTaskStore();
 
   base::test::ScopedCommandLine scoped_command_line;
   base::FilePath seed_file = profile_path().AppendASCII("seed.json");
@@ -308,11 +302,11 @@ TEST_F(RecordingDataManagerImplTest, SeedFromFileQuickSyntax) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
       switches::kTaskDefinitionFile, seed_file);
 
-  RecreateDataManager();
+  RecreateTaskStore();
 
   base::test::TestFuture<std::vector<TaskDefinition>> future;
-  data_manager().GetTaskDefinitionsByUrl("https://example.com",
-                                         future.GetCallback());
+  task_store().GetTaskDefinitionsByUrl("https://example.com",
+                                       future.GetCallback());
   auto task_definitions = future.Get();
 
   ASSERT_EQ(task_definitions.size(), 1u);
@@ -323,8 +317,8 @@ TEST_F(RecordingDataManagerImplTest, SeedFromFileQuickSyntax) {
             "Quick Instructions");
 }
 
-TEST_F(RecordingDataManagerImplTest, SeedFromFileDetailedSyntax) {
-  ResetDataManager();
+TEST_F(TaskStoreImplTest, SeedFromFileDetailedSyntax) {
+  ResetTaskStore();
 
   base::test::ScopedCommandLine scoped_command_line;
   base::FilePath seed_file = profile_path().AppendASCII("seed_detailed.json");
@@ -351,11 +345,11 @@ TEST_F(RecordingDataManagerImplTest, SeedFromFileDetailedSyntax) {
   scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
       switches::kTaskDefinitionFile, seed_file);
 
-  RecreateDataManager();
+  RecreateTaskStore();
 
   base::test::TestFuture<std::vector<TaskDefinition>> future;
-  data_manager().GetTaskDefinitionsByUrl("https://example.com/detailed",
-                                         future.GetCallback());
+  task_store().GetTaskDefinitionsByUrl("https://example.com/detailed",
+                                       future.GetCallback());
   auto task_definitions = future.Get();
 
   ASSERT_EQ(task_definitions.size(), 1u);

@@ -7,22 +7,22 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "components/record_replay/core/browser/recording.pb.h"
-#include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
 #include "components/record_replay/core/browser/task_observer.h"
+#include "components/record_replay/core/browser/task_store.h"
 #include "url/gurl.h"
 
 namespace record_replay {
 
-TaskService::TaskService(RecordingDataManager* recording_data_manager,
+TaskService::TaskService(TaskStore* task_store,
                          TaskParametersExtractor* task_parameters_extractor)
-    : recording_data_manager_(recording_data_manager),
+    : task_store_(task_store),
       task_parameters_extractor_(task_parameters_extractor) {}
 
 TaskService::~TaskService() = default;
 
 void TaskService::OnURLVisited(const GURL& visited_url) {
-  if (!recording_data_manager_) {
+  if (!task_store_) {
     return;
   }
 
@@ -33,7 +33,7 @@ void TaskService::OnURLVisited(const GURL& visited_url) {
     return;
   }
 
-  recording_data_manager_->GetTaskDefinitionsByUrl(
+  task_store_->GetTaskDefinitionsByUrl(
       visited_url.spec(),
       base::BindOnce(&TaskService::OnTaskDefinitionsRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), visited_url));
@@ -56,7 +56,7 @@ void TaskService::OnTaskDefinitionsRetrieved(
 }
 
 void TaskService::OnTaskCompleted(const TaskObservation& observation) {
-  recording_data_manager_->SaveTaskDefinition(
+  task_store_->SaveTaskDefinition(
       /*task_definition_id=*/std::nullopt, observation.definition(),
       base::DoNothing());
   observer_.reset();

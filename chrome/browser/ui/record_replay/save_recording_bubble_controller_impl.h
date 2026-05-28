@@ -16,7 +16,7 @@
 
 namespace record_replay {
 
-class RecordingDataManager;
+class TaskStore;
 
 // Implementation of the SaveRecordingBubbleController.
 // Handles the logic for saving or discarding a recording.
@@ -24,7 +24,7 @@ class SaveRecordingBubbleControllerImpl : public SaveRecordingBubbleController {
  public:
   SaveRecordingBubbleControllerImpl(
       Recording recording,
-      RecordingDataManager* recording_data_manager,
+      TaskStore* task_store,
       base::OnceCallback<void(std::string_view)> show_toast_callback,
       base::OnceClosure on_close_closure);
   ~SaveRecordingBubbleControllerImpl() override;
@@ -37,7 +37,7 @@ class SaveRecordingBubbleControllerImpl : public SaveRecordingBubbleController {
 
  private:
   Recording recording_;
-  const raw_ref<RecordingDataManager> recording_data_manager_;
+  const raw_ref<TaskStore> task_store_;
   base::OnceCallback<void(std::string_view)> show_toast_callback_;
   base::OnceClosure on_close_closure_;
 };

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_RECORD_REPLAY_CORE_COMMON_TEST_SUPPORT_MOCK_RECORDING_DATA_MANAGER_H_
-#define COMPONENTS_RECORD_REPLAY_CORE_COMMON_TEST_SUPPORT_MOCK_RECORDING_DATA_MANAGER_H_
+#ifndef COMPONENTS_RECORD_REPLAY_CORE_COMMON_TEST_SUPPORT_MOCK_TASK_STORE_H_
+#define COMPONENTS_RECORD_REPLAY_CORE_COMMON_TEST_SUPPORT_MOCK_TASK_STORE_H_
 
 #include <optional>
 #include <string>
@@ -11,18 +11,18 @@
 
 #include "base/functional/callback.h"
 #include "components/record_replay/core/browser/recording.pb.h"
-#include "components/record_replay/core/browser/recording_data_manager.h"
 #include "components/record_replay/core/browser/task_definition.pb.h"
+#include "components/record_replay/core/browser/task_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace record_replay {
 
-class MockRecordingDataManager : public RecordingDataManager {
+class MockTaskStore : public TaskStore {
  public:
-  MockRecordingDataManager();
-  MockRecordingDataManager(const MockRecordingDataManager&) = delete;
-  MockRecordingDataManager& operator=(const MockRecordingDataManager&) = delete;
-  ~MockRecordingDataManager() override;
+  MockTaskStore();
+  MockTaskStore(const MockTaskStore&) = delete;
+  MockTaskStore& operator=(const MockTaskStore&) = delete;
+  ~MockTaskStore() override;
 
   MOCK_METHOD(void,
               AddRecording,
@@ -73,4 +73,4 @@ class MockRecordingDataManager : public RecordingDataManager {
 
 }  // namespace record_replay
 
-#endif  // COMPONENTS_RECORD_REPLAY_CORE_COMMON_TEST_SUPPORT_MOCK_RECORDING_DATA_MANAGER_H_
+#endif  // COMPONENTS_RECORD_REPLAY_CORE_COMMON_TEST_SUPPORT_MOCK_TASK_STORE_H_

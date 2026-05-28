@@ -22,7 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/record_replay/core/browser/record_replay_client.h"
 #include "components/record_replay/core/browser/record_replay_manager.h"
-#include "components/record_replay/core/browser/recording_data_manager.h"
+#include "components/record_replay/core/browser/task_store.h"
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -105,15 +105,15 @@ void RecordReplayPageActionController::ExecuteAction(
         break;
       }
 
-      auto* rdm = client->GetRecordingDataManager();
-      if (!rdm) {
+      auto* store = client->GetTaskStore();
+      if (!store) {
         break;
       }
 
       record_replay::SaveRecordingBubbleView::Show(
           anchor, tab_->GetContents(),
           std::make_unique<record_replay::SaveRecordingBubbleControllerImpl>(
-              std::move(*recording), rdm,
+              std::move(*recording), store,
               base::BindOnce(&record_replay::RecordReplayManager::ReportToUser,
                              manager.GetWeakPtr()),
               base::BindOnce(&RecordReplayPageActionController::UpdateState,
