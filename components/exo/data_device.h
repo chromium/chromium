@@ -15,6 +15,7 @@
 #include "components/exo/surface_observer.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
+#include "ui/aura/window_tracker.h"
 #include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 
@@ -105,6 +106,10 @@ class DataDevice : public DataOfferObserver,
   const raw_ptr<Seat> seat_;
   std::unique_ptr<ScopedDataOffer> data_offer_;
   std::unique_ptr<ScopedSurface> focused_surface_;
+
+  // Tracker for aura::Window's whose DragDropDelegate is `this` to avoid a
+  // dangling kDragDropDelegateKey property after `this` is destroyed.
+  aura::WindowTracker window_tracker_;
 
   base::OnceClosure quit_closure_;
   bool drop_succeeded_;
