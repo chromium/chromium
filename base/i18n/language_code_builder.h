@@ -12,6 +12,7 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/i18n/base_i18n_export.h"
+#include "base/i18n/internal/icu_bridge.rs.h"
 #include "base/i18n/language_code.h"
 
 namespace base {
@@ -52,13 +53,12 @@ class BASE_I18N_EXPORT LanguageCodeBuilder {
   //  - Normalize case (e.g. "EN-US" -> "en-US").
   //  - Normalize separator (e.g. "en_US" -> "en-US").
   std::optional<LanguageCode> FromString(std::string_view code) const;
-
- private:
-  class Impl;
-
   // Internal usage.
   LanguageCode FromIcu4xLocale(
       const base::i18n::internal::Icu4xLocale& icu_locale) const;
+
+ private:
+  class Impl;
   std::unique_ptr<Impl> impl_;
 };
 

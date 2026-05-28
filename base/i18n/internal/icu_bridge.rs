@@ -254,4 +254,13 @@ mod tests {
         // Currently, DataLocale ignores -u-rg extensions, so it falls back to en-US.
         assert_eq!(fallback_rg_strings, vec!["en-US", "en"]);
     }
+
+    #[test]
+    fn test_fallbacker_zh_hans() {
+        let fallbacker = IcuFallbacker::new();
+        let fallbacks = fallbacker.fallback_to_vec(b"zh-Hans");
+        let fallback_strings: Vec<String> = fallbacks.iter().map(|f| f.to_string()).collect();
+        // ICU4X fallback strips away the "Hans" script as it is the default for 'zh'.
+        assert_eq!(fallback_strings, vec!["zh"]);
+    }
 }
