@@ -491,6 +491,27 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
     return false;
   }
 
+  // Update active layer status in |svc_layers_|, and key frame is produced
+  // when active layer changed.
+  if (svc_layers_) {
+    std::pair<bool, std::optional<std::unique_ptr<SVCLayers>>> result =
+        svc_layers_->RecreateSVCLayersIfNeeded(
+            current_params_.bitrate_allocation);
+    if (!result.first) {
+      return false;
+    }
+    if (result.second.has_value()) {
+      svc_layers_ = std::move(result.second.value());
+    }
+    num_temporal_layers_ =
+        base::checked_cast<uint8_t>(svc_layers_->config().num_temporal_layers);
+  } else if (bitrate_allocation.GetSumBps() !=
+             bitrate_allocation.GetBitrateBps(0, 0)) {
+    // Unless |svc_layers_| is created in Initialize(), the temporal layer
+    // encoding is not allowed.
+    return false;
+  }
+
   current_params_.bitrate_allocation = bitrate_allocation;
   current_params_.framerate = framerate;
 
@@ -534,20 +555,6 @@ bool AV1VaapiVideoEncoderDelegate::UpdateRates(
   }
 
   rate_ctrl_->UpdateRateControl(rc_config);
-
-  // Update active layer status in |svc_layers_|, and key frame is produced
-  // when active layer changed.
-  if (svc_layers_) {
-    std::pair<bool, std::optional<std::unique_ptr<SVCLayers>>> result =
-        svc_layers_->RecreateSVCLayersIfNeeded(
-            current_params_.bitrate_allocation);
-    if (!result.first) {
-      return false;
-    }
-    if (result.second.has_value()) {
-      svc_layers_ = std::move(result.second.value());
-    }
-  }
 
   return true;
 }
@@ -648,6 +655,8 @@ AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
       .spatial_layer_id = 0,
       .temporal_layer_id = temporal_idx.value_or(0),
   };
+  CHECK_LT(frame_params.temporal_layer_id,
+           base::strict_cast<int>(num_temporal_layers_));
   if (rate_ctrl_->ComputeQP(frame_params) == aom::kFrameDropDecisionDrop) {
     CHECK(!encode_job.IsKeyframeRequested());
     DVLOGF(3) << "Drop frame";
