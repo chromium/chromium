@@ -17,6 +17,7 @@ import android.util.SparseArray;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 
+import androidx.annotation.GuardedBy;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
@@ -26,9 +27,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 /**
- * Utilities for accessing device input information. Note that this class is not thread-safe and
- * currently asserts all interactions occur on the UI thread. If usage is required off the UI thread
- * in the future, this class can be modified for multi-thread support.
+ * Utilities for accessing device input information.
  */
 @NullMarked
 public class DeviceInput implements InputDeviceListener {
@@ -48,12 +47,13 @@ public class DeviceInput implements InputDeviceListener {
     private static @Nullable Boolean sSupportsPrecisionPointerForTesting;
 
     /** Cached snapshots of all currently connected {@link InputDevice}s. */
+    @GuardedBy("mLock")
     private final SparseArray<DeviceSnapshot> mDeviceSnapshotsById = new SparseArray<>();
+
+    private final Object mLock = new Object();
 
     /** Only a lazy singleton instance may be instantiated. */
     private DeviceInput() {
-        ThreadUtils.assertOnUiThread();
-
         // Initialize cache.
         final int[] deviceIds = InputDevice.getDeviceIds();
         for (int i = 0; i < deviceIds.length; i++) {
@@ -67,13 +67,12 @@ public class DeviceInput implements InputDeviceListener {
         // Register listener to perform cache updates.
         var context = ContextUtils.getApplicationContext();
         var inputManager = (InputManager) context.getSystemService(Context.INPUT_SERVICE);
-        inputManager.registerInputDeviceListener(this, /* handler= */ null);
+        inputManager.registerInputDeviceListener(this, ThreadUtils.getUiThreadHandler());
     }
 
     /** Returns a lazily instantiated singleton instance. */
     @VisibleForTesting
     public static DeviceInput getInstance() {
-        ThreadUtils.assertOnUiThread();
         return LazyInit.sInstance;
     }
 
@@ -87,7 +86,6 @@ public class DeviceInput implements InputDeviceListener {
      * @return Whether any currently connected {@link InputDevice} supports an alphabetic keyboard.
      */
     public static boolean supportsAlphabeticKeyboard() {
-        ThreadUtils.assertOnUiThread();
         return getInstance().supportsAlphabeticKeyboardImpl();
     }
 
@@ -104,51 +102,52 @@ public class DeviceInput implements InputDeviceListener {
      * @return true if a physical keyboard (QWERTY or 12-key) is active and not hidden.
      */
     public static boolean supportsKeyboard(Context context) {
-        ThreadUtils.assertOnUiThread();
         return getInstance().supportsKeyboardImpl(context);
     }
 
     /** Implementation of {@link #supportsAlphabeticKeyboard()}. */
     public boolean supportsAlphabeticKeyboardImpl() {
-        ThreadUtils.assertOnUiThread();
-        if (sSupportsAlphabeticKeyboardForTesting != null) {
-            return sSupportsAlphabeticKeyboardForTesting;
-        }
-        for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
-            if (mDeviceSnapshotsById.valueAt(i).supportsAlphabeticKeyboard) {
-                return true;
+        synchronized (mLock) {
+            if (sSupportsAlphabeticKeyboardForTesting != null) {
+                return sSupportsAlphabeticKeyboardForTesting;
             }
-        }
-        return false;
-    }
-
-    /** Implementation of {@link #supportsKeyboard()}. */
-    public boolean supportsKeyboardImpl(Context context) {
-        // TODO(crbug.com/479570578): Remove the flag after this change is stalbe for awhile
-        if (UiAndroidFeatureList.sSupportKeyboard.isEnabled()) {
-            ThreadUtils.assertOnUiThread();
-            if (sSupportsKeyboardForTesting != null) {
-                return sSupportsKeyboardForTesting;
-            }
-
-            Configuration config = context.getResources().getConfiguration();
-            boolean hasKeyboard =
-                    config.keyboard == Configuration.KEYBOARD_QWERTY
-                            || config.keyboard == Configuration.KEYBOARD_12KEY;
-            boolean isUncovered = config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO;
-            return hasKeyboard && isUncovered;
-        } else {
-            ThreadUtils.assertOnUiThread();
-            if (sSupportsKeyboardForTesting != null) {
-                return sSupportsKeyboardForTesting;
-            }
-
             for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
-                if (mDeviceSnapshotsById.valueAt(i).supportsKeyboard) {
+                if (mDeviceSnapshotsById.valueAt(i).supportsAlphabeticKeyboard) {
                     return true;
                 }
             }
             return false;
+        }
+    }
+
+    /** Implementation of {@link #supportsKeyboard()}. */
+    public boolean supportsKeyboardImpl(Context context) {
+        synchronized (mLock) {
+            // TODO(crbug.com/479570578): Remove the flag after this change is stalbe for awhile
+            if (UiAndroidFeatureList.sSupportKeyboard.isEnabled()) {
+                if (sSupportsKeyboardForTesting != null) {
+                    return sSupportsKeyboardForTesting;
+                }
+
+                Configuration config = context.getResources().getConfiguration();
+                boolean hasKeyboard =
+                        config.keyboard == Configuration.KEYBOARD_QWERTY
+                                || config.keyboard == Configuration.KEYBOARD_12KEY;
+                boolean isUncovered =
+                        config.hardKeyboardHidden == Configuration.HARDKEYBOARDHIDDEN_NO;
+                return hasKeyboard && isUncovered;
+            } else {
+                if (sSupportsKeyboardForTesting != null) {
+                    return sSupportsKeyboardForTesting;
+                }
+
+                for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
+                    if (mDeviceSnapshotsById.valueAt(i).supportsKeyboard) {
+                        return true;
+                    }
+                }
+                return false;
+            }
         }
     }
 
@@ -164,22 +163,22 @@ public class DeviceInput implements InputDeviceListener {
      *     touchpad, etc).
      */
     public static boolean supportsPrecisionPointer() {
-        ThreadUtils.assertOnUiThread();
         return getInstance().supportsPrecisionPointerImpl();
     }
 
     /** Implementation of {@link #supportsPrecisionPointer()}. */
     private boolean supportsPrecisionPointerImpl() {
-        ThreadUtils.assertOnUiThread();
-        if (sSupportsPrecisionPointerForTesting != null) {
-            return sSupportsPrecisionPointerForTesting;
-        }
-        for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
-            if (mDeviceSnapshotsById.valueAt(i).supportsPrecisionPointer) {
-                return true;
+        synchronized (mLock) {
+            if (sSupportsPrecisionPointerForTesting != null) {
+                return sSupportsPrecisionPointerForTesting;
             }
+            for (int i = 0; i < mDeviceSnapshotsById.size(); i++) {
+                if (mDeviceSnapshotsById.valueAt(i).supportsPrecisionPointer) {
+                    return true;
+                }
+            }
+            return false;
         }
-        return false;
     }
 
     /**
@@ -187,13 +186,14 @@ public class DeviceInput implements InputDeviceListener {
      *     device is not found or the device doesn't support touchpad source
      */
     public static InputDevice.@Nullable MotionRange getTouchpadXAxisMotionRange(int deviceId) {
-        ThreadUtils.assertOnUiThread();
-        DeviceSnapshot snapshot = getInstance().mDeviceSnapshotsById.get(deviceId);
-        if (snapshot != null) {
-            return snapshot.touchpadXAxisMotionRange;
+        DeviceInput instance = getInstance();
+        synchronized (instance.mLock) {
+            DeviceSnapshot snapshot = instance.mDeviceSnapshotsById.get(deviceId);
+            if (snapshot != null) {
+                return snapshot.touchpadXAxisMotionRange;
+            }
+            return null;
         }
-
-        return null;
     }
 
     /**
@@ -201,39 +201,43 @@ public class DeviceInput implements InputDeviceListener {
      *     device is not found or the device doesn't support touchpad source
      */
     public static InputDevice.@Nullable MotionRange getTouchpadYAxisMotionRange(int deviceId) {
-        ThreadUtils.assertOnUiThread();
-        DeviceSnapshot snapshot = getInstance().mDeviceSnapshotsById.get(deviceId);
-        if (snapshot != null) {
-            return snapshot.touchpadYAxisMotionRange;
+        DeviceInput instance = getInstance();
+        synchronized (instance.mLock) {
+            DeviceSnapshot snapshot = instance.mDeviceSnapshotsById.get(deviceId);
+            if (snapshot != null) {
+                return snapshot.touchpadYAxisMotionRange;
+            }
+            return null;
         }
-
-        return null;
     }
 
     @Override
     public void onInputDeviceAdded(int deviceId) {
-        ThreadUtils.assertOnUiThread();
-        InputDevice device = InputDevice.getDevice(deviceId);
-        if (device != null) {
-            mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+        synchronized (mLock) {
+            InputDevice device = InputDevice.getDevice(deviceId);
+            if (device != null) {
+                mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+            }
         }
     }
 
     @Override
     public void onInputDeviceChanged(int deviceId) {
-        ThreadUtils.assertOnUiThread();
-        InputDevice device = InputDevice.getDevice(deviceId);
-        if (device != null) {
-            mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
-        } else {
-            mDeviceSnapshotsById.remove(deviceId);
+        synchronized (mLock) {
+            InputDevice device = InputDevice.getDevice(deviceId);
+            if (device != null) {
+                mDeviceSnapshotsById.put(deviceId, DeviceSnapshot.from(device));
+            } else {
+                mDeviceSnapshotsById.remove(deviceId);
+            }
         }
     }
 
     @Override
     public void onInputDeviceRemoved(int deviceId) {
-        ThreadUtils.assertOnUiThread();
-        mDeviceSnapshotsById.remove(deviceId);
+        synchronized (mLock) {
+            mDeviceSnapshotsById.remove(deviceId);
+        }
     }
 
     /** Class which represents a snapshot of given {@link InputDevice}. */
