@@ -251,6 +251,7 @@ void PageActionIconView::SetActive(bool active) {
   OnPropertyChanged(&active_, views::PropertyEffects::kNone);
   // For StarView
   UpdateTooltipText();
+  OnActiveStateChanged();
 }
 
 bool PageActionIconView::GetActive() const {

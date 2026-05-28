@@ -32,22 +32,27 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
 
   // Sets parameters to display ImageModel objects generated from the
   // lottie resource, with the given `color`.
-  // TODO(b/517231960): Use SkottieColorMap to set the colors
+  // TODO(crbug.com/517231960): Use SkottieColorMap to set the colors
   // when making the lottie animation.
   void SetAnimatedImage(int lottie_resource_id, SkColor color);
   void ClearAnimatedImage();
 
-  // Play the animation from start to the end. Until `HideAnimation()`
-  // or `StopAnimation()` is called, the image container will only
-  // `ImageModel` updates from the animation, and will ignore
-  // those from the `LabelButton`.
-  void ShowAnimation();
+  // Play the animation from start to the end.
+  // Animation is considered to be finished on end if `reset_on_completion`
+  // is true. Otherwise, the animation is considered to still be running
+  // until the animation rewinds to the start position by calling
+  // `HideAnimation` or `ResetAnimation` is called. While the
+  // animation is running, image updates not coming from the
+  // animation will be ignored.
+  void ShowAnimation(bool reset_on_completion = false);
 
   // Rewind the animation, and on completion set the image model
-  // according to the button's current state.
+  // according to the button's current state. If `start_from_end`
+  // is true, then we rewind the animation starting from the end
+  // of the animation
   void HideAnimation();
 
-  // Stops the animation and resets it to the starting position.
+  // Stops the animation and resets it to the start position.
   void ResetAnimation();
 
   const lottie::Animation* animated_image() const {
@@ -66,6 +71,7 @@ class VIEWS_EXPORT SingleAnimatedImageContainer : public SingleImageContainer,
   gfx::SlideAnimation slide_animation_;
   std::unique_ptr<lottie::Animation> animated_image_;
   SkColor color_;
+  bool reset_on_completion_ = false;
 };
 
 }  // namespace views

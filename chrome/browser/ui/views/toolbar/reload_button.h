@@ -52,10 +52,6 @@ class ReloadButton : public ToolbarButton, public ReloadControl {
   [[nodiscard]] base::CallbackListSubscription AddVisibleModeChangedCallback(
       views::PropertyChangedCallback callback);
 
-  void SetVectorIconsForMode(Mode mode,
-                             const gfx::VectorIcon& icon,
-                             const gfx::VectorIcon& touch_icon);
-
   // ToolbarButton:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;

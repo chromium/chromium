@@ -163,6 +163,10 @@ class PageActionIconView : public IconLabelBubbleView {
   // Invoked after the icon is pressed.
   virtual void OnPressed(bool activated) {}
 
+  // Invoked if setting the active state in |SetActive|
+  // changed the active state.
+  virtual void OnActiveStateChanged() {}
+
   // IconLabelBubbleView:
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;

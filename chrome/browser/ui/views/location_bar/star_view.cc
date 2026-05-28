@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -141,6 +142,28 @@ const gfx::VectorIcon& StarView::GetVectorIcon() const {
 std::u16string StarView::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(GetActive() ? IDS_TOOLTIP_STARRED
                                                : IDS_TOOLTIP_STAR);
+}
+
+void StarView::OnActiveStateChanged() {
+  const bool play_animations = features::IsToolbarGlowUpEnabled() &&
+                               !ui::TouchUiController::Get()->touch_ui();
+  if (!play_animations) {
+    return;
+  }
+
+  views::SingleAnimatedImageContainer* image_container =
+      animated_image_container();
+
+  if (!image_container->animated_image()) {
+    image_container->SetAnimatedImage(IDR_UNSTAR_TO_STAR_LOTTIE,
+                                      GetForegroundColor());
+  }
+
+  if (GetActive()) {
+    image_container->ShowAnimation(/*reset_on_completion=*/true);
+  } else {
+    image_container->HideAnimation();
+  }
 }
 
 void StarView::EditBookmarksPrefUpdated() {

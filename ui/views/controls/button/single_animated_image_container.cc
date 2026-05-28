@@ -90,12 +90,14 @@ void SingleAnimatedImageContainer::UpdateImage(const LabelButton* button) {
   }
 }
 
-void SingleAnimatedImageContainer::ShowAnimation() {
+void SingleAnimatedImageContainer::ShowAnimation(bool reset_on_completion) {
   slide_animation_.Reset(0.0f);
   slide_animation_.Show();
+  reset_on_completion_ = reset_on_completion;
 }
 
 void SingleAnimatedImageContainer::HideAnimation() {
+  slide_animation_.Reset(1.0f);
   slide_animation_.Hide();
 }
 
@@ -123,6 +125,10 @@ void SingleAnimatedImageContainer::AnimationEnded(
     const gfx::Animation* animation) {
   if (slide_animation_.GetCurrentValue() == 0.0f) {
     UpdateImage(button_);
+  } else if (reset_on_completion_) {
+    ResetAnimation();
+    UpdateImage(button_);
+    reset_on_completion_ = false;
   }
 }
 

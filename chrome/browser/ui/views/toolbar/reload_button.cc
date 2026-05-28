@@ -15,9 +15,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/waap/initial_webui_window_metrics_manager.h"
 #include "chrome/browser/ui/waap/waap_ui_metrics_recorder.h"
+#include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -90,7 +92,6 @@ ReloadButton::ReloadButton(
   UpdateAccessibleHasPopup();
   SetProperty(views::kElementIdentifierKey, kReloadButtonElementId);
   SetID(VIEW_ID_RELOAD_BUTTON);
-
   UpdateCachedTooltipText();
 }
 
@@ -128,24 +129,6 @@ void ReloadButton::ChangeMode(Mode mode, bool force) {
       mode_switch_timer_.Start(FROM_HERE, mode_switch_timer_delay_, this,
                                &ReloadButton::OnStopToReloadTimer);
     }
-  }
-}
-
-void ReloadButton::SetVectorIconsForMode(Mode mode,
-                                         const gfx::VectorIcon& icon,
-                                         const gfx::VectorIcon& touch_icon) {
-  switch (mode) {
-    case Mode::kReload:
-      reload_icon_ = icon;
-      reload_touch_icon_ = touch_icon;
-      break;
-    case Mode::kStop:
-      stop_icon_ = icon;
-      stop_touch_icon_ = touch_icon;
-      break;
-  }
-  if (mode == visible_mode_) {
-    SetVisibleMode(visible_mode_);
   }
 }
 
@@ -244,6 +227,24 @@ void ReloadButton::SetVisibleMode(Mode mode) {
   metrics_recorder_->OnChangeVisibleMode(ToRecorderButtonMode(visible_mode_),
                                          ToRecorderButtonMode(mode),
                                          base::TimeTicks::Now());
+  const bool play_animation = features::IsToolbarGlowUpEnabled() &&
+                              visible_mode_ != mode &&
+                              !ui::TouchUiController::Get()->touch_ui();
+  if (play_animation) {
+    views::SingleAnimatedImageContainer* image_container =
+        animated_image_container();
+
+    if (!image_container->animated_image()) {
+      image_container->SetAnimatedImage(IDR_RELOAD_TO_STOP_LOTTIE,
+                                        GetForegroundColor(GetState()));
+    }
+    if (mode == Mode::kStop) {
+      image_container->ShowAnimation(/*reset_on_completion=*/true);
+    } else {
+      image_container->HideAnimation();
+    }
+  }
+
   visible_mode_ = mode;
   switch (mode) {
     case Mode::kReload:
