@@ -380,20 +380,20 @@ bool StyleCommands::ExecuteUnderline(LocalFrame& frame,
       CSSPropertyID::kWebkitTextDecorationsInEffect, underline);
 }
 
-bool StyleCommands::ExecuteStyleWithCSS(LocalFrame& frame,
+bool StyleCommands::ExecuteStyleWithCss(LocalFrame& frame,
                                         Event*,
                                         EditorCommandSource,
                                         const String& value) {
-  frame.GetEditor().SetShouldStyleWithCSS(
+  frame.GetEditor().SetShouldStyleWithCss(
       !EqualIgnoringAsciiCase(value, "false"));
   return true;
 }
 
-bool StyleCommands::ExecuteUseCSS(LocalFrame& frame,
+bool StyleCommands::ExecuteUseCss(LocalFrame& frame,
                                   Event*,
                                   EditorCommandSource,
                                   const String& value) {
-  frame.GetEditor().SetShouldStyleWithCSS(
+  frame.GetEditor().SetShouldStyleWithCss(
       EqualIgnoringAsciiCase(value, "false"));
   return true;
 }
@@ -428,12 +428,12 @@ EditingTriState StyleCommands::StateStrikethrough(LocalFrame& frame, Event*) {
                     "line-through");
 }
 
-EditingTriState StyleCommands::StateStyleWithCSS(LocalFrame& frame, Event*) {
+EditingTriState StyleCommands::StateStyleWithCss(LocalFrame& frame, Event*) {
   if (frame.GetInputMethodController().GetActiveEditContext()) {
     return EditingTriState::kFalse;
   }
 
-  return frame.GetEditor().ShouldStyleWithCSS() ? EditingTriState::kTrue
+  return frame.GetEditor().ShouldStyleWithCss() ? EditingTriState::kTrue
                                                 : EditingTriState::kFalse;
 }
 
@@ -620,7 +620,7 @@ EditingTriState StyleCommands::StateUnderline(LocalFrame& frame, Event*) {
 }
 
 // Value functions
-String StyleCommands::SelectionStartCSSPropertyValue(
+String StyleCommands::SelectionStartCssPropertyValue(
     LocalFrame& frame,
     CSSPropertyID property_id) {
   EditingStyle* const selection_style =
@@ -645,7 +645,7 @@ String StyleCommands::ValueStyle(LocalFrame& frame, CSSPropertyID property_id) {
   // TODO(editing-dev): Rather than retrieving the style at the start of the
   // current selection, we should retrieve the style present throughout the
   // selection for non-Mac platforms.
-  return SelectionStartCSSPropertyValue(frame, property_id);
+  return SelectionStartCssPropertyValue(frame, property_id);
 }
 
 String StyleCommands::ValueBackColor(const EditorInternalCommand&,

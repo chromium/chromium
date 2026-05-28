@@ -136,7 +136,7 @@ class CORE_EXPORT CompositeEditCommand : public EditCommand {
   void ReplaceCollapsibleWhitespaceWithNonBreakingSpaceIfNeeded(
       const VisiblePosition&);
   bool CanRebalance(const Position&) const;
-  void RemoveCSSProperty(Element*, CSSPropertyID);
+  void RemoveCssProperty(Element*, CSSPropertyID);
   void RemoveElementAttribute(Element*, const QualifiedName& attribute);
   // Remove all children if possible
   void RemoveAllChildrenIfPossible(

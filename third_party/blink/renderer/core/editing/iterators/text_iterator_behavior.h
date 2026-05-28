@@ -71,7 +71,7 @@ class CORE_EXPORT TextIteratorBehavior final {
     return values_.bits.emits_punctuation_for_replaced_elements;
   }
 
-  bool IgnoresCSSTextTransforms() const {
+  bool IgnoresCssTextTransforms() const {
     return values_.bits.ignores_css_text_transforms;
   }
 
@@ -142,7 +142,7 @@ class CORE_EXPORT TextIteratorBehavior::Builder final {
   Builder& SetSuppressesExtraNewlineEmission(bool);
   Builder& SetIgnoresDisplayLock(bool);
   Builder& SetEmitsPunctuationForReplacedElements(bool);
-  Builder& SetIgnoresCSSTextTransforms(bool);
+  Builder& SetIgnoresCssTextTransforms(bool);
 
  private:
   TextIteratorBehavior behavior_;

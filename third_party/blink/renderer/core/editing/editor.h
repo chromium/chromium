@@ -111,8 +111,8 @@ class CORE_EXPORT Editor final : public GarbageCollected<Editor> {
   void ApplyParagraphStyleToSelection(CSSPropertyValueSet*,
                                       InputEvent::InputType);
 
-  void SetShouldStyleWithCSS(bool flag) { should_style_with_css_ = flag; }
-  bool ShouldStyleWithCSS() const { return should_style_with_css_; }
+  void SetShouldStyleWithCss(bool flag) { should_style_with_css_ = flag; }
+  bool ShouldStyleWithCss() const { return should_style_with_css_; }
 
   EditorCommand CreateCommand(const String& command_name)
       const;  // Command source is CommandFromMenuOrKeyBinding.

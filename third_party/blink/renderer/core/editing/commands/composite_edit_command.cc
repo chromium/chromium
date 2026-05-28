@@ -718,10 +718,10 @@ bool CompositeEditCommand::DeleteSelection(
   return true;
 }
 
-void CompositeEditCommand::RemoveCSSProperty(Element* element,
+void CompositeEditCommand::RemoveCssProperty(Element* element,
                                              CSSPropertyID property) {
-  // RemoveCSSPropertyCommand is never aborted.
-  ApplyCommandToComposite(MakeGarbageCollected<RemoveCSSPropertyCommand>(
+  // RemoveCssPropertyCommand is never aborted.
+  ApplyCommandToComposite(MakeGarbageCollected<RemoveCssPropertyCommand>(
                               GetDocument(), element, property),
                           ASSERT_NO_EDITING_ABORT);
 }

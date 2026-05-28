@@ -134,7 +134,7 @@ namespace blink {
   V(SelectWord)                                   \
   V(SetMark)                                      \
   V(Strikethrough)                                \
-  V(StyleWithCSS)                                 \
+  V(StyleWithCss)                                 \
   V(Subscript)                                    \
   V(Superscript)                                  \
   V(SwapWithMark)                                 \
@@ -147,7 +147,7 @@ namespace blink {
   V(Unlink)                                       \
   V(Unscript)                                     \
   V(Unselect)                                     \
-  V(UseCSS)                                       \
+  V(UseCss)                                       \
   V(Yank)                                         \
   V(YankAndSelect)
 

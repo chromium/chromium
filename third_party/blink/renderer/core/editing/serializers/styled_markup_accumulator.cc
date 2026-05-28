@@ -229,8 +229,8 @@ String StyledMarkupAccumulator::RenderedText(Text& text_node) {
   return PlainText(EphemeralRange(Position(&text_node, start_offset),
                                   Position(&text_node, end_offset)),
                    TextIteratorBehavior::Builder()
-                       .SetIgnoresCSSTextTransforms(
-                           options_.IgnoresCSSTextTransformsForRenderedText())
+                       .SetIgnoresCssTextTransforms(
+                           options_.IgnoresCssTextTransformsForRenderedText())
                        .Build());
 }
 

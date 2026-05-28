@@ -93,7 +93,7 @@ class CORE_EXPORT ApplyStyleCommand final : public CompositeEditCommand {
                                      InlineStyleRemovalMode,
                                      EditingStyle* extracted_style,
                                      EditingState*);
-  bool RemoveCSSStyle(EditingStyle*,
+  bool RemoveCssStyle(EditingStyle*,
                       HTMLElement*,
                       EditingState*,
                       InlineStyleRemovalMode = kRemoveIfNeeded,

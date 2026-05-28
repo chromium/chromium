@@ -1194,7 +1194,7 @@ String FrameSelection::SelectedHTMLForClipboard() const {
                       CreateMarkupOptions::Builder()
                           .SetShouldAnnotateForInterchange(true)
                           .SetShouldResolveURLs(kResolveNonLocalURLs)
-                          .SetIgnoresCSSTextTransformsForRenderedText(true)
+                          .SetIgnoresCssTextTransformsForRenderedText(true)
                           .SetShouldSkipUnselectableContent(true)
                           .Build());
 }
@@ -1216,7 +1216,7 @@ String FrameSelection::SelectedTextForClipboard() const {
                      frame_->GetSettings()->GetSelectionIncludesAltImageText())
                  .SetSkipsUnselectableContent(true)
                  .SetEntersTextControls(true)
-                 .SetIgnoresCSSTextTransforms(true)
+                 .SetIgnoresCssTextTransforms(true)
                  .Build());
 }
 

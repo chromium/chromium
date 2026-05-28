@@ -41,7 +41,7 @@ CreateMarkupOptions::Builder::SetIsForMarkupSanitization(
 }
 
 CreateMarkupOptions::Builder&
-CreateMarkupOptions::Builder::SetIgnoresCSSTextTransformsForRenderedText(
+CreateMarkupOptions::Builder::SetIgnoresCssTextTransformsForRenderedText(
     bool ignores_text_transforms) {
   data_.ignores_css_text_transforms_for_rendered_text_ =
       ignores_text_transforms;

@@ -31,7 +31,7 @@ class CORE_EXPORT CreateMarkupOptions final {
     return should_convert_blocks_to_inlines_;
   }
   bool IsForMarkupSanitization() const { return is_for_markup_sanitization_; }
-  bool IgnoresCSSTextTransformsForRenderedText() const {
+  bool IgnoresCssTextTransformsForRenderedText() const {
     return ignores_css_text_transforms_for_rendered_text_;
   }
   bool ShouldSkipUnselectableContent() const {
@@ -62,7 +62,7 @@ class CORE_EXPORT CreateMarkupOptions::Builder final {
   Builder& SetShouldAnnotateForInterchange(bool annotate_for_interchange);
   Builder& SetShouldConvertBlocksToInlines(bool convert_blocks_for_inlines);
   Builder& SetIsForMarkupSanitization(bool is_for_sanitization);
-  Builder& SetIgnoresCSSTextTransformsForRenderedText(
+  Builder& SetIgnoresCssTextTransformsForRenderedText(
       bool text_without_transforms);
   Builder& SetShouldSkipUnselectableContent(bool skip_unselectable_content);
 
