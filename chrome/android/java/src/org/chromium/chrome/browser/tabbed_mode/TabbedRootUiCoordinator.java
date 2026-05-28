@@ -1205,7 +1205,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
 
         initiateTabBottomSheetManagers();
-        initializeSideUi();
 
         if (GlicEnabling.isEnabledByFlags() && mTabBottomSheetManager != null) {
             GlicNavigationUtils.setLauncher(SigninAndHistorySyncActivityLauncherImpl::get);
@@ -1331,6 +1330,9 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                 mProfileSupplier,
                                 mSnackbarManagerSupplier);
             }
+        }
+        if (AndroidSidePanelEnabledFn.isEnabled()) {
+            initializeSideUi(currentlySelectedProfile);
         }
     }
 
@@ -2057,7 +2059,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         }
     }
 
-    private void initializeSideUi() {
+    private void initializeSideUi(Profile currentlySelectedProfile) {
         ViewGroup anchorContainerParent = mActivity.findViewById(R.id.constrained_views_container);
         ViewStub sideUiStartAnchorContainerStub =
                 mActivity.findViewById(R.id.side_ui_left_anchor_container_stub);
@@ -2111,7 +2113,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             chromeAndroidTask.addFeature(
                                     new ChromeAndroidTaskFeatureKey(
                                             SidePanelCoordinatorAndroid.class,
-                                            mProfileSupplier.get(),
+                                            currentlySelectedProfile,
                                             mWindowAndroid),
                                     () ->
                                             SidePanelCoordinatorAndroidFactory.create(
@@ -2122,7 +2124,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             chromeAndroidTask.addFeature(
                     new ChromeAndroidTaskFeatureKey(
                             WindowScopedSidePanelRegistryBridge.class,
-                            mProfileSupplier.get(),
+                            currentlySelectedProfile,
                             mWindowAndroid),
                     SidePanelRegistryBridgeFactory::createWindowScopedBridge);
 
