@@ -103,4 +103,26 @@ TEST_F(CommandDispatcherTest, RedispatchSendsEventIfWindowIsKey) {
   EXPECT_TRUE([dispatcher redispatchKeyEvent:key_event_]);
 }
 
+// Verifies that -redispatchKeyEvent: drops events with no associated window
+// if the dispatcher's owner is no longer the key window
+// (https://crbug.com/517040438).
+TEST_F(CommandDispatcherTest, RedispatchDropsEventIfNilWindowAndOwnerNotKey) {
+  CommandDispatcher* dispatcher = [window_ commandDispatcher];
+  window_.pretendIsKeyWindow = NO;
+  EXPECT_FALSE(window_.isKeyWindow);
+
+  NSEvent* nil_window_event = [NSEvent keyEventWithType:NSEventTypeKeyDown
+                                               location:NSZeroPoint
+                                          modifierFlags:0
+                                              timestamp:0
+                                           windowNumber:0
+                                                context:nil
+                                             characters:@"a"
+                            charactersIgnoringModifiers:@"a"
+                                              isARepeat:NO
+                                                keyCode:0];
+  EXPECT_EQ(nil_window_event.window, nil);
+  EXPECT_FALSE([dispatcher redispatchKeyEvent:nil_window_event]);
+}
+
 }  // namespace ui
