@@ -967,10 +967,19 @@ void RenderWidgetHostViewAndroid::OnRenderFrameMetadataChangedBeforeActivation(
   if (!gesture_listener_manager_)
     return;
 
+  base::WeakPtr<RenderWidgetHostViewAndroid> weak_this =
+      weak_ptr_factory_.GetWeakPtr();
+
   UpdateTouchSelectionController(metadata.selection, metadata.page_scale_factor,
                                  metadata.top_controls_height,
                                  metadata.top_controls_shown_ratio,
                                  scrollable_viewport_size_dip);
+
+  // Abort if the view was destroyed during UpdateTouchSelectionController
+  // (e.g. via synchronous JNI callout to Java).
+  if (!weak_this) {
+    return;
+  }
 
   // ViewAndroid::content_offset() must be in dip.
   float top_content_offset_dip = top_content_offset / dip_scale;

@@ -242,6 +242,9 @@ class TouchSelectionControllerTest : public testing::Test,
 
   TouchSelectionController& controller() { return *controller_; }
 
+ protected:
+  std::unique_ptr<TouchSelectionController> controller_;
+
  private:
   gfx::PointF last_event_start_;
   gfx::PointF last_event_end_;
@@ -257,7 +260,6 @@ class TouchSelectionControllerTest : public testing::Test,
   bool needs_animate_ = false;
   bool animation_enabled_ = true;
   bool dragging_enabled_ = false;
-  std::unique_ptr<TouchSelectionController> controller_;
 };
 
 TEST_F(TouchSelectionControllerTest, InsertionBasic) {
@@ -1905,6 +1907,38 @@ TEST_F(TouchSelectionControllerTest, SwipeToMoveCursor_HandleWasNotShown) {
   // Step 5: Swipe-to-move-cursor ends: show handles.
   controller().OnSwipeToMoveCursorEnd();
   EXPECT_TRUE(test_controller.GetStartVisible());
+}
+
+// Test class that destroys the controller when handles are shown,
+// to simulate embedder behavior in the UAF bug.
+class TouchSelectionControllerUAFTest : public TouchSelectionControllerTest {
+ public:
+  void OnSelectionEvent(SelectionEventType event) override {
+    TouchSelectionControllerTest::OnSelectionEvent(event);
+    if (event == SELECTION_HANDLES_SHOWN) {
+      // Destroy the controller when handles are shown.
+      controller_.reset();
+    }
+  }
+};
+
+// Tests that destroying the controller during a selection event callback
+// does not result in a write-after-free when the scoped reset goes out of
+// scope.
+TEST_F(TouchSelectionControllerUAFTest, AutoResetWriteAfterFree) {
+  // Setup handles to be shown.
+  OnLongPressEvent();
+
+  gfx::RectF start_rect(0, 0, 0, 10);
+  gfx::RectF end_rect(50, 0, 0, 10);
+  bool visible = true;
+
+  // This should trigger OnSelectionEvent(SELECTION_HANDLES_SHOWN)
+  // which will destroy the controller.
+  ChangeSelection(start_rect, visible, end_rect, visible);
+
+  // If fixed, this should not crash.
+  EXPECT_EQ(nullptr, controller_.get());
 }
 
 }  // namespace
