@@ -4842,6 +4842,7 @@ void RenderFrameHostImpl::RenderFrameDeleted() {
   // the corruption will cause a crash but later, making the bug very
   // difficult to understand.
   CHECK_NE(render_frame_state_, RenderFrameState::kDeleting);
+  CHECK(children_.empty());
   bool was_created = is_render_frame_created();
   render_frame_state_ = RenderFrameState::kDeleting;
   render_frame_scoped_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -7157,8 +7158,12 @@ void RenderFrameHostImpl::OnUnloadACK() {
       IsPendingDeletion() ? GetFrameTreeNodeForUnload() : owner_;
   if (!is_main_frame() &&
       owner->GetRenderFrameHostManager().is_inner_delegate_attached()) {
-    // This RFH was unloaded while attaching an inner delegate. The RFH
-    // will stay around but it will no longer be associated with a RenderFrame.
+    // This RFH was unloaded while attaching an inner delegate. The RFH will
+    // stay around but it will no longer be associated with a RenderFrame.
+    // Ensure there are no lingering child frames before marking the frame
+    // deleted - this matters for compromised renderers (see
+    // https://crbug.com/517241992).
+    ResetChildren();
     RenderFrameDeleted();
     return;
   }
